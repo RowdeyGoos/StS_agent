@@ -1,0 +1,23 @@
+# Codex Session Bootstrap
+
+Read these first:
+
+1. `README.md`
+2. `AGENTS.md`
+3. `DECISIONS.md`
+4. `docs/PROJECT_CONTEXT.md`
+5. `ROADMAP.md`
+
+Most important code after that:
+
+- `game/core.py`
+- `game/encoding.py`
+- `train.py`
+
+Key invariants:
+
+- keep structured observations separate from RL encoding
+- keep stable enemy slots in multi-enemy combat
+- keep action masks aligned with action encoding
+- keep reward shaping oriented toward winning with more HP left
+- maintain Python `3.10+` compatibility

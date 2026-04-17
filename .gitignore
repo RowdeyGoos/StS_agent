@@ -1,0 +1,42 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging / editable install artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+
+# Test, lint, and coverage caches
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+
+# Notebook and interactive session noise
+.ipynb_checkpoints/
+
+# Common experiment outputs
+artifacts/
+checkpoints/
+logs/
+runs/
+wandb/
+
+# Local editor / OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

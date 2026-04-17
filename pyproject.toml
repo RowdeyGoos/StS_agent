@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sts-agent"
+version = "0.1.0"
+description = "Minimal Slay-the-Spire-style combat simulator for reinforcement learning experiments."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+rl = [
+    "numpy>=1.26,<3.0",
+    "gymnasium>=0.29,<1.1",
+    "torch>=2.2,<3.0",
+]
+dev = [
+    "pytest>=8.0,<9.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["game*"]
