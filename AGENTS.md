@@ -56,6 +56,7 @@ Observation changes usually require updates to:
 
 - `game/core.py`
 - `game/encoding.py`
+- `game/action_features.py`
 - heuristic logic in `game/baselines.py`
 - tests
 - demo formatting in `main.py`
@@ -65,12 +66,14 @@ Action changes usually require updates to:
 - `game/actions.py`
 - `game/core.py`
 - `game/encoding.py`
+- `game/action_features.py`
 - action-mask tests
 
 ## File Map
 
 - `game/core.py`: combat loop, observations, reward shaping, terminal logic
 - `game/encoding.py`: fixed-width RL observation and action encoding
+- `game/action_features.py`: semantic legal-action summaries and action-feature encoding
 - `game/enemy.py`: enemy classes, intents, and encounter factories
 - `game/card.py`: card definitions and effects
 - `game/player.py`: player-side combat state transitions
@@ -78,9 +81,13 @@ Action changes usually require updates to:
 - `game/status.py`: status definitions and damage modifiers
 - `game/baselines.py`: random, heuristic, and tabular baselines
 - `game/dqn.py`: DQN and Double DQN training
+- `game/ppo.py`: masked PPO, including action-conditioned policy scoring
+- `game/trace_analysis.py`: post-hoc trace mistake analysis
 - `game/gym_env.py`: optional Gymnasium wrapper
 - `train.py`: CLI for training and evaluation
 - `main.py`: readable combat demo
+- `watch_policy.py`: one-combat trace logging
+- `analyze_trace.py`: CLI for analyzing saved trace logs
 - `tests/`: assert-based regression coverage
 
 ## Common Validation Commands

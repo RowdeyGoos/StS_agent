@@ -76,7 +76,8 @@ Reward is:
 
 - `+1` on win
 - `-1` on loss
-- minus normalized player HP lost during the step
+- minus scaled normalized player HP lost during the step
+- plus a small immediate bonus for reducing projected incoming enemy HP loss during the player turn
 
 ### Why
 
@@ -173,3 +174,159 @@ The project needed a richer encounter pool than the original single enemy, but n
 - introduces multi-enemy targeting and more diverse enemy behavior
 - still small enough to debug and train on quickly
 - a better intermediate step than jumping straight to relics, potions, or full map progression
+
+## D10. Use A Shared Save/Load And Single-Episode Trace Workflow Across Agent Types
+
+### Context
+
+Once multiple agent families existed, it became awkward to inspect one concrete combat run in a consistent way.
+
+### Decision
+
+- use shared persistence helpers to save trained `q_learning` and DQN-family agents
+- use one common traced-rollout path for both built-in policies and saved trained agents
+- write episode traces as structured JSON so they can be inspected later
+
+### Why
+
+- makes policy inspection architecture-independent
+- supports debugging what a trained agent struggles with on one specific combat seed
+- keeps the “watch one episode” workflow separate from the training loop itself
+
+## D11. Favor Training-Loop Throughput Over Training-Time Trace Richness
+
+### Context
+
+Once the environment gained richer observations, multi-enemy encounters, and trace logging, neural training became noticeably Python-bound. GPU acceleration alone was not enough because much of the wall-clock time was spent in environment stepping, tensor conversion, replay sampling, and checkpoint evaluation.
+
+### Decision
+
+- training environments created by `train.py` do not record full trajectory histories by default
+- DQN-family trainers optimize every 4 environment steps by default instead of every step
+- policy evaluation helpers and training loops reuse environment instances across episodes
+- replay sampling avoids rebuilding the entire replay container on every batch sample
+
+### Why
+
+- improves wall-clock training speed without changing the debugging and watch-policy workflows
+- keeps the readable structured environment API intact
+- targets the real bottleneck in this project: Python-side overhead rather than raw network compute
+
+## D12. Expose Enemy Behavior State, Not Sampled Future Moves
+
+### Context
+
+Some enemies have deterministic scripts and others can branch stochastically. Current intent alone is not always enough to infer the correct future move distribution, especially when the same visible move can occur in multiple script positions.
+
+### Decision
+
+- structured enemy observations include a `behavior_state` block
+- `behavior_state` exposes script-position information and the set of possible next move names
+- observations do not expose the exact sampled future move sequence
+
+### Why
+
+- makes the environment closer to Markov for RL agents
+- gives the agent the state needed to reason about future move probabilities
+- avoids leaking unresolved randomness that a player would not know in advance
+
+## D13. Add Dueling Double DQN As A Separate Policy, Not A Silent Replacement
+
+### Context
+
+The project already had `double_dqn` as the main stronger DQN-family baseline. Adding a dueling architecture is useful, but silently changing the existing Double DQN implementation would make old experiments and checkpoints harder to compare.
+
+### Decision
+
+- keep `double_dqn` unchanged
+- add `dueling_double_dqn` as a separate selectable policy and checkpoint type
+
+### Why
+
+- preserves backward compatibility for existing runs and saved agents
+- makes experiment comparisons cleaner
+- lets the dueling head architecture be evaluated as an explicit ablation
+
+## D14. Add Masked PPO As A Separate On-Policy Baseline
+
+### Context
+
+The project already had value-based baselines, but some policy-learning questions are easier to study with an on-policy actor-critic method that handles discrete masked actions directly.
+
+### Decision
+
+- add `masked_ppo` as a separate selectable policy and checkpoint type
+- keep it in its own module and training path rather than mixing it into the DQN code
+
+### Why
+
+- provides a meaningful non-value-based baseline
+- keeps the DQN codepath simpler
+- makes algorithm-family comparisons explicit in the CLI and saved checkpoints
+
+## D15. Add A Shared Legal-Action Feature Layer For Neural Policies
+
+### Context
+
+The fixed discrete action space works well for masking, but it makes neural policies treat semantically similar actions such as `play Strike from hand slot 0` and `play Strike from hand slot 3` as mostly unrelated logits.
+
+### Decision
+
+- add a shared action-summary and action-feature layer derived from the structured observation plus tuple action
+- expose those action features through `CombatEnv` and `ObservationEncoder`
+- keep the flat PPO policy head as a compatibility option
+- keep the flat DQN-family Q-heads as compatibility options
+- make action-conditioned PPO and DQN-family training the default architectures
+
+### Why
+
+- improves generalization across hand slots and target slots
+- gives policies direct access to action semantics such as projected damage, block gain, and target-conditioned features
+- creates one reusable place for future policy architectures and trace-analysis heuristics to share tactical action information
+
+### Consequence
+
+- non-targeted cards are canonicalized to a single legal action in multi-enemy fights instead of being duplicated once per enemy slot
+- target-specific action features are zeroed out for non-target cards so they do not pick up irrelevant enemy identity noise
+
+## D16. Keep Trace Analysis High-Confidence And Post-Hoc
+
+### Context
+
+Trace logs are useful only if they quickly surface the most actionable mistakes. Overly clever analysis risks producing noisy findings that are hard to trust.
+
+### Decision
+
+- keep trace analysis in a separate post-hoc CLI rather than mixing it into training
+- focus on a small set of high-confidence tactical categories:
+  - missed lethal
+  - avoidable incoming damage
+  - wasted dead-card plays
+  - suboptimal target choice
+  - premature end turns
+- enrich saved traces with pre-action legal actions and masks so later tooling has the right context
+
+### Why
+
+- keeps training output uncluttered
+- makes one-combat inspection more actionable
+- provides a stable debugging tool that works across agent families
+
+## D17. Prefer Optuna TPE Sweeps Over Manual Hyperparameter Guessing
+
+### Context
+
+Once the project had several neural agents and multiple reward-shaping knobs, manual CLI tuning became slow, noisy, and hard to reproduce. RL results also vary substantially with seed, so one-off runs are easy to over-interpret.
+
+### Decision
+
+- add a dedicated `sweep.py` entry point for hyperparameter search
+- use Optuna with TPE as the default sampler
+- score each trial by averaging over multiple fixed train seeds
+- keep the default sweep metric aligned with the project objective by combining win rate and remaining HP
+
+### Why
+
+- TPE handles mixed continuous, discrete, and categorical search spaces well
+- averaging across fixed seeds makes comparisons less noisy than manual tuning
+- a separate sweep entry point keeps `train.py` focused on running one concrete experiment cleanly

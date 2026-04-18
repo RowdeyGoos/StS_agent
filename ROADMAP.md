@@ -14,8 +14,11 @@ The project currently has:
 - starter deck cards plus `Slimed`
 - `vulnerable` and `shrink`
 - structured observations and fixed-width RL encodings
-- random, heuristic, Q-learning, DQN, and Double DQN baselines
+- fixed legal-action feature encodings for policy architectures
+- random, heuristic, Q-learning, DQN-family, and PPO baselines
+- masked PPO with an action-conditioned policy head
 - the `simple` encounter and the `overgrowth_easy` encounter pool
+- saved trace analysis for common tactical mistakes
 
 ## Near-Term Priorities
 
@@ -68,29 +71,30 @@ Why:
 
 - increases decision depth without requiring a much larger engine rewrite
 
-### 5. Model Checkpoint Save/Load
+### 5. Trace-Guided Policy Improvement
 
-- save the best DQN / Double DQN checkpoint to disk
-- allow later evaluation without retraining
-- make benchmark runs reproducible
+- compare analyzer findings across heuristic, DQN-family, and PPO agents
+- use those findings to guide reward tweaks, imitation data, or curriculum choices
+- consider simple behavior-cloning pretraining from the heuristic baseline
 
 Why:
 
-- useful for experiments and comparisons
-- natural follow-up to the existing in-memory best-checkpoint restore behavior
+- the repo now has trace analysis and an action-conditioned PPO path
+- the next leverage point is reducing recurring tactical mistakes, not just adding more algorithms
 
 ## Medium-Term Direction
 
 These are good next layers once the near-term items are in a solid place.
 
-### PPO Or Other Policy-Gradient Methods
+### Broader Action-Conditioned Policies
 
-- add PPO after the environment and benchmarking are a bit richer
-- keep masking support explicit
+- consider extending the shared action-feature architecture beyond PPO
+- evaluate whether action-conditioned value methods outperform flat DQN heads
 
 Why:
 
-- worth comparing once the state/action complexity grows beyond the current small DQN-friendly setup
+- action semantics are now represented explicitly
+- the same idea may help value-based agents too
 
 ### Better Observation Features
 
