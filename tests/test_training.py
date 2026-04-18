@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from random import Random
 
-from train import parse_args, resolve_dqn_learning_rate, resolve_q_learning_rate
+from train import (
+    parse_args,
+    resolve_dqn_learning_rate,
+    resolve_ppo_learning_rate,
+    resolve_q_learning_rate,
+)
 
 from game.baselines import (
     TrainingProgress,
@@ -130,7 +135,13 @@ def test_cli_uses_separate_default_learning_rates() -> None:
 
     assert resolve_q_learning_rate(args) == 0.1
     assert resolve_dqn_learning_rate(args) == 1e-3
+    assert resolve_ppo_learning_rate(args) == 3e-4
     assert args.restore_best_checkpoint is True
+    assert args.train_frequency == 4
+    assert args.gradient_steps == 1
+    assert args.record_trajectories is False
+    assert args.dqn_architecture == "action_feature"
+    assert args.ppo_policy_architecture == "action_feature"
 
 
 def test_cli_shared_learning_rate_override_applies_to_both_algorithms() -> None:
@@ -138,10 +149,64 @@ def test_cli_shared_learning_rate_override_applies_to_both_algorithms() -> None:
 
     assert resolve_q_learning_rate(args) == 0.02
     assert resolve_dqn_learning_rate(args) == 0.02
+    assert resolve_ppo_learning_rate(args) == 0.02
 
 
 def test_cli_algorithm_specific_learning_rates_remain_available() -> None:
-    args = parse_args(["--q-learning-rate", "0.25", "--dqn-learning-rate", "0.0005"])
+    args = parse_args(
+        [
+            "--q-learning-rate",
+            "0.25",
+            "--dqn-learning-rate",
+            "0.0005",
+            "--ppo-learning-rate",
+            "0.0003",
+        ]
+    )
 
     assert resolve_q_learning_rate(args) == 0.25
     assert resolve_dqn_learning_rate(args) == 0.0005
+    assert resolve_ppo_learning_rate(args) == 0.0003
+
+
+def test_cli_accepts_dueling_double_dqn_policy() -> None:
+    args = parse_args(["--policy", "dueling_double_dqn"])
+
+    assert args.policy == "dueling_double_dqn"
+
+
+def test_cli_accepts_masked_ppo_policy() -> None:
+    args = parse_args(["--policy", "masked_ppo"])
+
+    assert args.policy == "masked_ppo"
+
+
+def test_cli_accepts_action_conditioned_ppo_architecture() -> None:
+    args = parse_args(["--ppo-policy-architecture", "flat"])
+
+    assert args.ppo_policy_architecture == "flat"
+
+
+def test_cli_accepts_action_conditioned_dqn_architecture() -> None:
+    args = parse_args(["--dqn-architecture", "flat"])
+
+    assert args.dqn_architecture == "flat"
+
+
+def test_q_learning_training_can_disable_checkpoint_evaluations() -> None:
+    result = train_q_learning(
+        env_factory=lambda: CombatEnv(
+            deck_factory=lambda: [StrikeCard()],
+            enemy_factory=lambda: SimpleEnemy(max_hp=6),
+            cards_per_turn=1,
+            record_trajectory=False,
+        ),
+        episodes=4,
+        evaluation_interval=0,
+        evaluation_episodes=1,
+        seed=0,
+    )
+
+    assert len(result.training_metrics) == 4
+    assert result.evaluations == ()
+    assert result.final_evaluation.episodes == 1

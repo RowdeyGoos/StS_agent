@@ -261,6 +261,10 @@ class QLearningAgent:
         ]
         return self.rng.choice(best_actions)
 
+    def predict_q_values(self, state: StateKey) -> list[float]:
+        """Return the current Q-values for one encoded table state."""
+        return list(self._get_q_values(state))
+
     def update(
         self,
         state: StateKey,
@@ -291,6 +295,48 @@ class QLearningAgent:
         if state not in self.q_table:
             self.q_table[state] = [0.0] * self.action_space_size
         return self.q_table[state]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-serializable snapshot of the agent."""
+        serialized_q_table = [
+            {
+                "state": list(state),
+                "q_values": list(q_values),
+            }
+            for state, q_values in sorted(self.q_table.items())
+        ]
+        return {
+            "agent_type": "q_learning",
+            "action_space_size": self.action_space_size,
+            "learning_rate": self.learning_rate,
+            "discount": self.discount,
+            "epsilon": self.epsilon,
+            "epsilon_min": self.epsilon_min,
+            "epsilon_decay": self.epsilon_decay,
+            "q_table": serialized_q_table,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> "QLearningAgent":
+        """Reconstruct an agent from a serialized snapshot."""
+        agent = cls(
+            action_space_size=int(payload["action_space_size"]),
+            learning_rate=float(payload["learning_rate"]),
+            discount=float(payload["discount"]),
+            epsilon=float(payload["epsilon"]),
+            epsilon_min=float(payload["epsilon_min"]),
+            epsilon_decay=float(payload["epsilon_decay"]),
+        )
+        serialized_q_table = payload.get("q_table", [])
+        if not isinstance(serialized_q_table, list):
+            raise ValueError("Serialized q_table must be a list.")
+        agent.q_table = {
+            tuple(int(value) for value in entry["state"]): [
+                float(q_value) for q_value in entry["q_values"]
+            ]
+            for entry in serialized_q_table
+        }
+        return agent
 
 
 def rollout_episode(
@@ -334,8 +380,8 @@ def evaluate_policy(
         raise ValueError("episodes must be positive.")
 
     metrics: list[EpisodeMetrics] = []
+    env = env_factory()
     for episode_index in range(episodes):
-        env = env_factory()
         episode_seed = _episode_seed(seed, episode_index)
         metrics.append(rollout_episode(env, policy, seed=episode_seed))
 
@@ -359,6 +405,7 @@ def train_q_learning(
     evaluation_interval: int = 100,
     evaluation_episodes: int = 25,
     seed: int | None = None,
+    final_evaluation_seed: int | None = None,
     learning_rate: float = 0.1,
     discount: float = 0.99,
     epsilon: float = 1.0,
@@ -371,8 +418,8 @@ def train_q_learning(
     """Train a masked tabular Q-learning agent and periodically evaluate it."""
     if episodes <= 0:
         raise ValueError("episodes must be positive.")
-    if evaluation_interval <= 0:
-        raise ValueError("evaluation_interval must be positive.")
+    if evaluation_interval < 0:
+        raise ValueError("evaluation_interval cannot be negative.")
     if evaluation_episodes <= 0:
         raise ValueError("evaluation_episodes must be positive.")
     if progress_interval <= 0:
@@ -394,9 +441,9 @@ def train_q_learning(
     training_metrics: list[EpisodeMetrics] = []
     evaluations: list[EvaluationSnapshot] = []
     training_started_at = perf_counter()
+    env = template_env
 
     for episode_index in range(episodes):
-        env = env_factory()
         observation = env.reset(seed=_episode_seed(seed, episode_index))
         state = agent.encode_state(env, observation)
         done = False
@@ -406,7 +453,7 @@ def train_q_learning(
             action = agent.select_action(state, action_mask, training=True)
             next_observation, reward, done, info = env.step_discrete(action)
             next_state = agent.encode_state(env, next_observation)
-            next_mask = tuple(int(value) for value in info["action_mask"])
+            next_mask = tuple(info["action_mask"])
             agent.update(
                 state=state,
                 action=action,
@@ -429,7 +476,7 @@ def train_q_learning(
         )
         agent.decay_epsilon_value()
 
-        if (episode_index + 1) % evaluation_interval == 0:
+        if evaluation_interval > 0 and (episode_index + 1) % evaluation_interval == 0:
             evaluations.append(
                 EvaluationSnapshot(
                     episode=episode_index + 1,
@@ -469,7 +516,11 @@ def train_q_learning(
             training=False,
         ),
         episodes=evaluation_episodes,
-        seed=_episode_seed(seed, 20_000),
+        seed=(
+            _episode_seed(seed, 20_000)
+            if final_evaluation_seed is None
+            else final_evaluation_seed
+        ),
     )
     return TrainingResult(
         agent=agent,

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from .status import VULNERABLE
@@ -26,6 +27,30 @@ class Card(ABC):
 
     def __repr__(self) -> str:
         return f"{self.name}(cost={self.cost}, exhausts={self.exhausts})"
+
+
+@dataclass(frozen=True, slots=True)
+class CardSpec:
+    """Static card metadata used for encoding and trace analysis."""
+
+    name: str
+    cost: int
+    kind: str
+    base_damage: int = 0
+    block_gain: int = 0
+    applies_status_name: str | None = None
+    applies_status_stacks: int = 0
+    exhausts: bool = False
+    uses_target: bool = True
+
+    @property
+    def is_dead_card(self) -> bool:
+        """Return whether the card has no immediate tactical effect."""
+        return (
+            self.base_damage <= 0
+            and self.block_gain <= 0
+            and self.applies_status_name is None
+        )
 
 
 class StrikeCard(Card):
@@ -85,3 +110,43 @@ def create_starter_deck() -> list[Card]:
         + [DefendCard() for _ in range(4)]
         + [BashCard()]
     )
+
+
+CARD_SPECS: dict[str, CardSpec] = {
+    "Strike": CardSpec(
+        name="Strike",
+        cost=1,
+        kind="attack",
+        base_damage=6,
+    ),
+    "Defend": CardSpec(
+        name="Defend",
+        cost=1,
+        kind="block",
+        block_gain=5,
+        uses_target=False,
+    ),
+    "Bash": CardSpec(
+        name="Bash",
+        cost=2,
+        kind="attack",
+        base_damage=8,
+        applies_status_name=VULNERABLE,
+        applies_status_stacks=2,
+    ),
+    "Slimed": CardSpec(
+        name="Slimed",
+        cost=1,
+        kind="status",
+        exhausts=True,
+        uses_target=False,
+    ),
+}
+
+
+def get_card_spec(card_name: str) -> CardSpec:
+    """Return static metadata for a known card name."""
+    try:
+        return CARD_SPECS[card_name]
+    except KeyError as exc:
+        raise ValueError(f"Unknown card name for metadata lookup: {card_name!r}") from exc

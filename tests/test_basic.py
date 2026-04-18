@@ -128,6 +128,25 @@ def test_losing_hp_yields_negative_reward() -> None:
     assert isclose(info["hp_loss_penalty"], -0.075)
 
 
+def test_defend_gets_positive_reward_for_reducing_projected_incoming_damage() -> None:
+    env = CombatEnv(
+        seed=0,
+        deck_factory=lambda: [DefendCard()],
+        enemy_factory=lambda: SimpleEnemy(max_hp=20),
+        cards_per_turn=1,
+    )
+    env.reset()
+
+    observation, reward, done, info = env.step(("play", 0))
+
+    assert done is False
+    assert observation["player"]["block"] == 5
+    assert isclose(reward, 0.03125)
+    assert info["projected_incoming_hp_loss_before"] == 6
+    assert info["projected_incoming_hp_loss_after"] == 1
+    assert isclose(info["incoming_damage_reduction_bonus"], 0.03125)
+
+
 def test_player_vulnerable_expires_before_enemy_attacks_if_it_reaches_zero() -> None:
     env = CombatEnv(seed=0)
     env.reset()
@@ -141,3 +160,23 @@ def test_player_vulnerable_expires_before_enemy_attacks_if_it_reaches_zero() -> 
     assert observation["player"]["hp"] == 74
     assert info["player_hp_lost"] == 6
     assert isclose(reward, -0.075)
+    assert info["incoming_damage_reduction_bonus"] == 0.0
+
+
+def test_training_env_can_skip_trajectory_recording_without_breaking_summary() -> None:
+    env = CombatEnv(
+        seed=0,
+        deck_factory=lambda: [StrikeCard()],
+        enemy_factory=lambda: SimpleEnemy(max_hp=6),
+        cards_per_turn=1,
+        record_trajectory=False,
+    )
+    env.reset()
+    _observation, reward, done, _info = env.step(("play", 0))
+    summary = env.get_episode_summary()
+
+    assert done is True
+    assert reward == 1.0
+    assert summary.steps == 1
+    assert summary.winner == "player"
+    assert env.get_episode_history() == ()

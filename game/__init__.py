@@ -1,6 +1,7 @@
 """Minimal Slay-the-Spire-style combat simulator package."""
 
 from .actions import CombatAction
+from .agent_io import load_agent, save_agent
 from .baselines import (
     EvaluationSnapshot,
     EvaluationStats,
@@ -11,16 +12,27 @@ from .baselines import (
     evaluate_policy,
     train_q_learning,
 )
-from .card import BashCard, Card, DefendCard, SlimedCard, StrikeCard, create_starter_deck
+from .card import (
+    BashCard,
+    Card,
+    CardSpec,
+    DefendCard,
+    SlimedCard,
+    StrikeCard,
+    create_starter_deck,
+    get_card_spec,
+)
 from .core import CombatEnv
 from .dqn import (
     DQNAgent,
     DQNTrainingResult,
     DoubleDQNAgent,
+    DuelingDoubleDQNAgent,
     ReplayBuffer,
     ReplayTransition,
     train_double_dqn,
     train_dqn,
+    train_dueling_double_dqn,
 )
 from .encoding import ObservationEncoder
 from .enemy import (
@@ -39,6 +51,7 @@ from .enemy import (
 )
 from .gym_env import GymCombatEnv
 from .player import Player
+from .ppo import PPOAgent, PPOTrainingResult, train_masked_ppo
 from .status import (
     SHRINK,
     STATUS_STACK_SCALE,
@@ -47,19 +60,30 @@ from .status import (
     VULNERABLE,
 )
 from .trajectory import EpisodeSummary, TransitionRecord
+from .trace_analysis import TraceAnalysisReport, TraceFinding, analyze_episode_trace
+from .watch import (
+    EpisodeTrace,
+    StepTrace,
+    load_episode_trace,
+    save_episode_trace,
+    trace_policy_episode,
+)
 
 __all__ = [
     "BashCard",
     "Card",
+    "CardSpec",
     "CombatAction",
     "CombatEnv",
     "DefendCard",
     "DQNAgent",
     "DQNTrainingResult",
     "DoubleDQNAgent",
+    "DuelingDoubleDQNAgent",
     "Enemy",
     "EvaluationSnapshot",
     "EvaluationStats",
+    "EpisodeTrace",
     "EpisodeSummary",
     "FuzzyWurmCrawler",
     "GymCombatEnv",
@@ -69,6 +93,8 @@ __all__ = [
     "Nibbit",
     "ObservationEncoder",
     "Player",
+    "PPOAgent",
+    "PPOTrainingResult",
     "QLearningAgent",
     "ReplayBuffer",
     "ReplayTransition",
@@ -76,10 +102,13 @@ __all__ = [
     "SimpleEnemy",
     "SlimedCard",
     "SHRINK",
+    "StepTrace",
     "StatusCollection",
     "STATUS_STACK_SCALE",
     "StrikeCard",
     "SUPPORTED_STATUS_NAMES",
+    "TraceAnalysisReport",
+    "TraceFinding",
     "TrainingResult",
     "TransitionRecord",
     "TwigSlimeMedium",
@@ -90,8 +119,17 @@ __all__ = [
     "choose_random_action",
     "create_starter_deck",
     "evaluate_policy",
+    "get_card_spec",
+    "load_agent",
+    "load_episode_trace",
     "sample_overgrowth_first_three_encounter_builders",
+    "save_agent",
+    "save_episode_trace",
+    "analyze_episode_trace",
+    "trace_policy_episode",
     "train_double_dqn",
     "train_dqn",
+    "train_dueling_double_dqn",
+    "train_masked_ppo",
     "train_q_learning",
 ]

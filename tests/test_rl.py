@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from math import isclose
+
+from game.action_features import summarize_action
 from game.card import BashCard, DefendCard, StrikeCard
 from game.core import CombatEnv
-from game.enemy import SimpleEnemy, build_overgrowth_easy_encounter
+from game.enemy import FuzzyWurmCrawler, SimpleEnemy, build_overgrowth_easy_encounter
 from game.gym_env import GymCombatEnv
 from game.utils import make_rng
 
@@ -27,12 +30,20 @@ def test_fixed_width_observation_encoding() -> None:
     assert feature_map["hand_size_fraction"] == 0.1
     assert feature_map["hand_count_strike_fraction"] == 1.0
     assert feature_map["draw_pile_count_strike_fraction"] == 0.0
+    assert observation["enemy"]["behavior_state"]["phase_index"] == 0
+    assert observation["enemy"]["behavior_state"]["phase_count"] == 3
+    assert observation["enemy"]["behavior_state"]["possible_next_move_names"] == ["Defend"]
     assert feature_map["hand_slot_0_is_strike"] == 1.0
     assert feature_map["hand_slot_0_is_defend"] == 0.0
     assert feature_map["hand_slot_1_is_strike"] == 0.0
     assert feature_map["player_status_vulnerable_fraction"] == 0.0
     assert feature_map["enemy_0_status_vulnerable_fraction"] == 0.0
     assert feature_map["enemy_0_name_is_simpleenemy"] == 1.0
+    assert feature_map["enemy_0_behavior_phase_fraction"] == 0.0
+    assert isclose(feature_map["enemy_0_behavior_phase_count_fraction"], 0.375)
+    assert isclose(feature_map["enemy_0_behavior_next_move_count_fraction"], 1.0 / 15.0)
+    assert feature_map["enemy_0_behavior_next_move_can_be_defend"] == 1.0
+    assert feature_map["enemy_0_behavior_next_move_can_be_heavy_strike"] == 0.0
 
 
 def test_status_features_are_encoded() -> None:
@@ -50,6 +61,36 @@ def test_status_features_are_encoded() -> None:
     feature_map = dict(zip(env.encoder.feature_names, encoded, strict=True))
 
     assert feature_map["enemy_0_status_vulnerable_fraction"] == 0.4
+
+
+def test_behavior_state_features_distinguish_repeated_intents() -> None:
+    env = CombatEnv(
+        seed=0,
+        enemy_factory=lambda: FuzzyWurmCrawler(make_rng(0)),
+        cards_per_turn=1,
+    )
+    env.reset()
+
+    first_attack_features = dict(
+        zip(env.encoder.feature_names, env.encode_observation(), strict=True)
+    )
+    assert env.enemy is not None
+    env.enemy.advance_intent()
+    env.enemy.advance_intent()
+    second_attack_features = dict(
+        zip(env.encoder.feature_names, env.encode_observation(), strict=True)
+    )
+
+    assert (
+        first_attack_features["enemy_0_intent_attack_fraction"]
+        == second_attack_features["enemy_0_intent_attack_fraction"]
+    )
+    assert (
+        first_attack_features["enemy_0_behavior_phase_fraction"]
+        != second_attack_features["enemy_0_behavior_phase_fraction"]
+    )
+    assert first_attack_features["enemy_0_behavior_next_move_can_be_inhale"] == 1.0
+    assert second_attack_features["enemy_0_behavior_next_move_can_be_acid_goop"] == 1.0
 
 
 def test_action_mask_and_discrete_action_roundtrip() -> None:
@@ -87,6 +128,49 @@ def test_multi_enemy_targeted_actions_are_encoded() -> None:
     assert mask[2] == 1
     assert env.encode_action(("play", 0, 1)) == 2
     assert env.decode_action(2) == ("play", 0, 1)
+
+
+def test_action_feature_encoding_generalizes_across_slots_and_targets() -> None:
+    env = CombatEnv(
+        seed=0,
+        deck_factory=lambda: [StrikeCard(), StrikeCard(), DefendCard()],
+        encounter_factory=lambda _rng: [SimpleEnemy(max_hp=8), SimpleEnemy(max_hp=10)],
+        cards_per_turn=3,
+        max_enemy_count=3,
+    )
+    observation = env.reset()
+    action_features = env.encode_action_features(observation)
+
+    strike_indices = [
+        hand_index
+        for hand_index, card_name in enumerate(observation["hand"])
+        if card_name == "Strike"
+    ]
+    defend_indices = [
+        hand_index
+        for hand_index, card_name in enumerate(observation["hand"])
+        if card_name == "Defend"
+    ]
+
+    assert env.action_feature_size > 0
+    assert len(action_features) == env.action_space_size
+    assert len(strike_indices) == 2
+    assert len(defend_indices) == 1
+
+    first_strike_features = action_features[env.encode_action(("play", strike_indices[0], 0))]
+    second_strike_features = action_features[env.encode_action(("play", strike_indices[1], 0))]
+    legal_actions = env.get_legal_actions()
+
+    assert first_strike_features == second_strike_features
+    assert ("play", defend_indices[0], 0) in legal_actions
+    assert ("play", defend_indices[0], 1) not in legal_actions
+
+    first_defend_summary = summarize_action(observation, ("play", defend_indices[0], 0))
+    second_defend_summary = summarize_action(observation, ("play", defend_indices[0], 1))
+
+    assert first_defend_summary.target_index is None
+    assert second_defend_summary.target_index is None
+    assert first_defend_summary.block_gain == second_defend_summary.block_gain == 5
 
 
 def test_overgrowth_easy_encounter_builder_uses_supported_pool() -> None:

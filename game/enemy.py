@@ -118,7 +118,21 @@ class Enemy(ABC):
             "strength": self.strength,
             "statuses": self.statuses.as_dict(),
             "intent": self.intent.as_dict(),
+            "behavior_state": self.behavior_state,
             "alive": self.is_alive,
+        }
+
+    @property
+    def behavior_state(self) -> dict[str, int | str | list[str]]:
+        """Return enemy-internal script state needed to reason about future moves.
+
+        This exposes the state that determines future move probabilities without
+        revealing any unresolved random outcomes.
+        """
+        return {
+            "phase_index": self._behavior_phase_index(),
+            "phase_count": self._behavior_phase_count(),
+            "possible_next_move_names": self._possible_next_move_names(),
         }
 
     @property
@@ -188,6 +202,30 @@ class Enemy(ABC):
             slimed_added=template.slimed_added,
         )
 
+    def _behavior_phase_index(self) -> int:
+        """Return the current position in the enemy's move script."""
+        return 0
+
+    def _behavior_phase_count(self) -> int:
+        """Return the number of distinct script positions for this enemy."""
+        return 1
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        """Return the set of possible next move templates after the current intent."""
+        return (self.intent,)
+
+    def _possible_next_move_names(self) -> list[str]:
+        """Return unique possible next move names in deterministic order."""
+        seen_move_names: set[str] = set()
+        move_names: list[str] = []
+        for template in self._possible_next_templates():
+            move_name = template.move_name
+            if move_name in seen_move_names:
+                continue
+            seen_move_names.add(move_name)
+            move_names.append(move_name)
+        return move_names
+
 
 class SimpleEnemy(Enemy):
     """Single deterministic enemy used for early smoke tests."""
@@ -210,6 +248,16 @@ class SimpleEnemy(Enemy):
     def advance_intent(self) -> None:
         """Advance to the next intent in the repeating cycle."""
         self._intent_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
+
+    def _behavior_phase_index(self) -> int:
+        return self._intent_index
+
+    def _behavior_phase_count(self) -> int:
+        return len(self.INTENT_CYCLE)
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        next_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
+        return (self.INTENT_CYCLE[next_index],)
 
 
 class Nibbit(Enemy):
@@ -237,6 +285,16 @@ class Nibbit(Enemy):
 
     def advance_intent(self) -> None:
         self._intent_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
+
+    def _behavior_phase_index(self) -> int:
+        return self._intent_index
+
+    def _behavior_phase_count(self) -> int:
+        return len(self.INTENT_CYCLE)
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        next_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
+        return (self.INTENT_CYCLE[next_index],)
 
 
 class ShrinkerBeetle(Enemy):
@@ -270,6 +328,20 @@ class ShrinkerBeetle(Enemy):
             return
         self._post_opening_index = 1 - self._post_opening_index
 
+    def _behavior_phase_index(self) -> int:
+        if not self._used_opening:
+            return 0
+        return 1 + self._post_opening_index
+
+    def _behavior_phase_count(self) -> int:
+        return 3
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        if not self._used_opening:
+            return (self.CHOMP,)
+        next_template = self.STOMP if self._post_opening_index == 0 else self.CHOMP
+        return (next_template,)
+
 
 class FuzzyWurmCrawler(Enemy):
     """Fuzzy Wurm Crawler from the Overgrowth easy encounter pool."""
@@ -290,6 +362,16 @@ class FuzzyWurmCrawler(Enemy):
 
     def advance_intent(self) -> None:
         self._intent_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
+
+    def _behavior_phase_index(self) -> int:
+        return self._intent_index
+
+    def _behavior_phase_count(self) -> int:
+        return len(self.INTENT_CYCLE)
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        next_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
+        return (self.INTENT_CYCLE[next_index],)
 
 
 class LeafSlimeSmall(Enemy):
@@ -316,6 +398,20 @@ class LeafSlimeSmall(Enemy):
             return self.rng.choice((self.TACKLE, self.GOOP))
         return self.GOOP if self._last_move_name == self.TACKLE.move_name else self.TACKLE
 
+    def _behavior_phase_index(self) -> int:
+        return 0 if self._current_intent.move_name == self.TACKLE.move_name else 1
+
+    def _behavior_phase_count(self) -> int:
+        return 2
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        next_template = (
+            self.GOOP
+            if self._current_intent.move_name == self.TACKLE.move_name
+            else self.TACKLE
+        )
+        return (next_template,)
+
 
 class LeafSlimeMedium(Enemy):
     """Medium Leaf Slime from Overgrowth."""
@@ -336,6 +432,16 @@ class LeafSlimeMedium(Enemy):
     def advance_intent(self) -> None:
         self._intent_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
 
+    def _behavior_phase_index(self) -> int:
+        return self._intent_index
+
+    def _behavior_phase_count(self) -> int:
+        return len(self.INTENT_CYCLE)
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        next_index = (self._intent_index + 1) % len(self.INTENT_CYCLE)
+        return (self.INTENT_CYCLE[next_index],)
+
 
 class TwigSlimeSmall(Enemy):
     """Small Twig Slime from Overgrowth."""
@@ -351,6 +457,9 @@ class TwigSlimeSmall(Enemy):
 
     def advance_intent(self) -> None:
         return
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        return (self.TACKLE,)
 
 
 class TwigSlimeMedium(Enemy):
@@ -375,6 +484,17 @@ class TwigSlimeMedium(Enemy):
         self._current_intent = (
             self.CHOMP if self.rng.random() < (2.0 / 3.0) else self.STICKY_SHOT
         )
+
+    def _behavior_phase_index(self) -> int:
+        return 0 if self._current_intent.move_name == self.STICKY_SHOT.move_name else 1
+
+    def _behavior_phase_count(self) -> int:
+        return 2
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        if self._current_intent.move_name == self.STICKY_SHOT.move_name:
+            return (self.CHOMP,)
+        return (self.CHOMP, self.STICKY_SHOT)
 
 
 def build_overgrowth_easy_encounter(rng: Random) -> list[Enemy]:

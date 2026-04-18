@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections import deque
 from copy import deepcopy
 from dataclasses import dataclass
 from random import Random
@@ -23,6 +22,7 @@ from .core import CombatEnv
 
 VectorObservation = tuple[float, ...]
 ActionMask = tuple[int, ...]
+ActionFeatureBatch = tuple[tuple[float, ...], ...]
 DeepValueAgentFactory: TypeAlias = Callable[..., "DQNAgent"]
 
 try:
@@ -45,6 +45,9 @@ class ReplayTransition:
     next_state: VectorObservation
     next_action_mask: ActionMask
     done: bool
+    action_mask: ActionMask = ()
+    action_features: ActionFeatureBatch = ()
+    next_action_features: ActionFeatureBatch = ()
 
 
 class ReplayBuffer:
@@ -53,12 +56,18 @@ class ReplayBuffer:
     def __init__(self, capacity: int, seed: int | None = None) -> None:
         if capacity <= 0:
             raise ValueError("capacity must be positive.")
-        self._buffer: deque[ReplayTransition] = deque(maxlen=capacity)
+        self.capacity = capacity
+        self._buffer: list[ReplayTransition] = []
+        self._next_index = 0
         self.rng = Random(seed)
 
     def add(self, transition: ReplayTransition) -> None:
         """Append a transition to replay memory."""
-        self._buffer.append(transition)
+        if len(self._buffer) < self.capacity:
+            self._buffer.append(transition)
+        else:
+            self._buffer[self._next_index] = transition
+        self._next_index = (self._next_index + 1) % self.capacity
 
     def sample(self, batch_size: int) -> list[ReplayTransition]:
         """Sample a random mini-batch without replacement."""
@@ -66,7 +75,7 @@ class ReplayBuffer:
             raise ValueError("batch_size must be positive.")
         if batch_size > len(self._buffer):
             raise ValueError("batch_size cannot exceed replay buffer size.")
-        return self.rng.sample(list(self._buffer), batch_size)
+        return self.rng.sample(self._buffer, batch_size)
 
     def __len__(self) -> int:
         return len(self._buffer)
@@ -142,8 +151,162 @@ if torch is not None and nn is not None and optim is not None:
             return self.model(inputs)
 
 
+    class ActionConditionedDQNNetwork(nn.Module):
+        """Q-network that scores actions from state features plus action features."""
+
+        def __init__(
+            self,
+            input_dim: int,
+            action_feature_dim: int,
+            hidden_sizes: Sequence[int] = (128, 128),
+        ) -> None:
+            super().__init__()
+            if input_dim <= 0 or action_feature_dim <= 0:
+                raise ValueError("input_dim and action_feature_dim must be positive.")
+            if not hidden_sizes:
+                raise ValueError("hidden_sizes must contain at least one layer size.")
+
+            feature_layers: list[nn.Module] = []
+            current_dim = input_dim
+            for hidden_dim in hidden_sizes:
+                if hidden_dim <= 0:
+                    raise ValueError("Hidden layer sizes must be positive.")
+                feature_layers.append(nn.Linear(current_dim, hidden_dim))
+                feature_layers.append(nn.ReLU())
+                current_dim = hidden_dim
+
+            self.feature_extractor = nn.Sequential(*feature_layers)
+            self.action_scorer = nn.Sequential(
+                nn.Linear(current_dim + action_feature_dim, current_dim),
+                nn.ReLU(),
+                nn.Linear(current_dim, 1),
+            )
+
+        def forward(
+            self,
+            inputs: Tensor,
+            action_features: Tensor,
+            action_masks: Tensor | None = None,
+        ) -> Tensor:
+            """Compute Q-values for all discrete action slots in a batch."""
+            del action_masks
+            state_features = self.feature_extractor(inputs)
+            repeated_state_features = state_features.unsqueeze(1).expand(
+                -1,
+                action_features.shape[1],
+                -1,
+            )
+            joint_features = torch.cat(
+                [repeated_state_features, action_features],
+                dim=-1,
+            )
+            return self.action_scorer(joint_features).squeeze(-1)
+
+
+    class DuelingDQNNetwork(nn.Module):
+        """Dueling MLP that factorizes Q-values into value and advantage streams."""
+
+        def __init__(
+            self,
+            input_dim: int,
+            output_dim: int,
+            hidden_sizes: Sequence[int] = (128, 128),
+        ) -> None:
+            super().__init__()
+            if input_dim <= 0 or output_dim <= 0:
+                raise ValueError("input_dim and output_dim must be positive.")
+            if not hidden_sizes:
+                raise ValueError("hidden_sizes must contain at least one layer size.")
+
+            feature_layers: list[nn.Module] = []
+            current_dim = input_dim
+            for hidden_dim in hidden_sizes:
+                if hidden_dim <= 0:
+                    raise ValueError("Hidden layer sizes must be positive.")
+                feature_layers.append(nn.Linear(current_dim, hidden_dim))
+                feature_layers.append(nn.ReLU())
+                current_dim = hidden_dim
+
+            self.feature_extractor = nn.Sequential(*feature_layers)
+            self.value_head = nn.Linear(current_dim, 1)
+            self.advantage_head = nn.Linear(current_dim, output_dim)
+
+        def forward(self, inputs: Tensor) -> Tensor:
+            """Compute Q-values from shared features plus value/advantage heads."""
+            features = self.feature_extractor(inputs)
+            value = self.value_head(features)
+            advantage = self.advantage_head(features)
+            centered_advantage = advantage - advantage.mean(dim=1, keepdim=True)
+            return value + centered_advantage
+
+
+    class ActionConditionedDuelingDQNNetwork(nn.Module):
+        """Action-conditioned dueling Q-network."""
+
+        def __init__(
+            self,
+            input_dim: int,
+            action_feature_dim: int,
+            hidden_sizes: Sequence[int] = (128, 128),
+        ) -> None:
+            super().__init__()
+            if input_dim <= 0 or action_feature_dim <= 0:
+                raise ValueError("input_dim and action_feature_dim must be positive.")
+            if not hidden_sizes:
+                raise ValueError("hidden_sizes must contain at least one layer size.")
+
+            feature_layers: list[nn.Module] = []
+            current_dim = input_dim
+            for hidden_dim in hidden_sizes:
+                if hidden_dim <= 0:
+                    raise ValueError("Hidden layer sizes must be positive.")
+                feature_layers.append(nn.Linear(current_dim, hidden_dim))
+                feature_layers.append(nn.ReLU())
+                current_dim = hidden_dim
+
+            self.feature_extractor = nn.Sequential(*feature_layers)
+            self.value_head = nn.Linear(current_dim, 1)
+            self.advantage_head = nn.Sequential(
+                nn.Linear(current_dim + action_feature_dim, current_dim),
+                nn.ReLU(),
+                nn.Linear(current_dim, 1),
+            )
+
+        def forward(
+            self,
+            inputs: Tensor,
+            action_features: Tensor,
+            action_masks: Tensor | None = None,
+        ) -> Tensor:
+            """Compute action-conditioned dueling Q-values for a batch."""
+            state_features = self.feature_extractor(inputs)
+            repeated_state_features = state_features.unsqueeze(1).expand(
+                -1,
+                action_features.shape[1],
+                -1,
+            )
+            joint_features = torch.cat(
+                [repeated_state_features, action_features],
+                dim=-1,
+            )
+            advantage = self.advantage_head(joint_features).squeeze(-1)
+            value = self.value_head(state_features)
+            if action_masks is not None:
+                legal_counts = action_masks.sum(dim=1, keepdim=True).clamp_min(1)
+                centered_advantage = advantage - (
+                    (advantage * action_masks.float()).sum(dim=1, keepdim=True)
+                    / legal_counts
+                )
+            else:
+                centered_advantage = advantage - advantage.mean(dim=1, keepdim=True)
+            return value + centered_advantage
+
+
     class DQNAgent:
         """Masked DQN agent with target network and epsilon-greedy exploration."""
+
+        network_class: type[nn.Module] = DQNNetwork
+        action_conditioned_network_class: type[nn.Module] = ActionConditionedDQNNetwork
 
         def __init__(
             self,
@@ -155,6 +318,8 @@ if torch is not None and nn is not None and optim is not None:
             epsilon: float = 1.0,
             epsilon_min: float = 0.05,
             epsilon_decay: float = 0.995,
+            architecture: str = "flat",
+            action_feature_size: int | None = None,
             device: str | None = None,
             seed: int | None = None,
         ) -> None:
@@ -164,23 +329,48 @@ if torch is not None and nn is not None and optim is not None:
             if seed is not None:
                 torch.manual_seed(seed)
 
+            self.observation_size = observation_size
+            self.action_space_size = action_space_size
+            self.hidden_sizes = tuple(int(hidden_size) for hidden_size in hidden_sizes)
+            self.learning_rate = learning_rate
             self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
             self.discount = discount
             self.epsilon = epsilon
             self.epsilon_min = epsilon_min
             self.epsilon_decay = epsilon_decay
+            self.architecture = architecture
+            self.action_feature_size = action_feature_size
             self.rng = Random(seed)
 
-            self.policy_network = DQNNetwork(
-                input_dim=observation_size,
-                output_dim=action_space_size,
-                hidden_sizes=hidden_sizes,
-            ).to(self.device)
-            self.target_network = DQNNetwork(
-                input_dim=observation_size,
-                output_dim=action_space_size,
-                hidden_sizes=hidden_sizes,
-            ).to(self.device)
+            if self.architecture not in {"flat", "action_feature"}:
+                raise ValueError("architecture must be 'flat' or 'action_feature'.")
+
+            if self.architecture == "action_feature":
+                if self.action_feature_size is None or self.action_feature_size <= 0:
+                    raise ValueError(
+                        "action_feature_size must be positive for action_feature DQN."
+                    )
+                self.policy_network = self.action_conditioned_network_class(
+                    input_dim=observation_size,
+                    action_feature_dim=self.action_feature_size,
+                    hidden_sizes=hidden_sizes,
+                ).to(self.device)
+                self.target_network = self.action_conditioned_network_class(
+                    input_dim=observation_size,
+                    action_feature_dim=self.action_feature_size,
+                    hidden_sizes=hidden_sizes,
+                ).to(self.device)
+            else:
+                self.policy_network = self.network_class(
+                    input_dim=observation_size,
+                    output_dim=action_space_size,
+                    hidden_sizes=hidden_sizes,
+                ).to(self.device)
+                self.target_network = self.network_class(
+                    input_dim=observation_size,
+                    output_dim=action_space_size,
+                    hidden_sizes=hidden_sizes,
+                ).to(self.device)
             self.target_network.load_state_dict(self.policy_network.state_dict())
             self.target_network.eval()
 
@@ -191,6 +381,7 @@ if torch is not None and nn is not None and optim is not None:
             self,
             state: VectorObservation,
             action_mask: ActionMask,
+            action_features: ActionFeatureBatch | None = None,
             training: bool = True,
         ) -> int:
             """Choose an epsilon-greedy legal action."""
@@ -198,25 +389,98 @@ if torch is not None and nn is not None and optim is not None:
             if training and self.rng.random() < self.epsilon:
                 return self.rng.choice(legal_indices)
 
-            q_values = self.predict_q_values(state)
-            best_value = max(q_values[action_index] for action_index in legal_indices)
+            q_values = self._predict_q_values_tensor(
+                state,
+                action_mask=action_mask,
+                action_features=action_features,
+            )
+            action_mask_tensor = torch.as_tensor(
+                action_mask,
+                dtype=torch.bool,
+                device=self.device,
+            )
+            masked_q_values = _mask_illegal_q_values(
+                q_values.unsqueeze(0),
+                action_mask_tensor.unsqueeze(0),
+            ).squeeze(0)
+            best_value = masked_q_values.max()
             best_actions = [
-                action_index
-                for action_index in legal_indices
-                if q_values[action_index] == best_value
+                int(action_index)
+                for action_index in torch.nonzero(
+                    masked_q_values == best_value,
+                    as_tuple=False,
+                ).flatten().tolist()
             ]
             return self.rng.choice(best_actions)
 
-        def predict_q_values(self, state: VectorObservation) -> list[float]:
+        def predict_q_values(
+            self,
+            state: VectorObservation,
+            action_mask: ActionMask | None = None,
+            action_features: ActionFeatureBatch | None = None,
+        ) -> list[float]:
             """Run the policy network for one encoded state."""
+            q_values = self._predict_q_values_tensor(
+                state,
+                action_mask=action_mask,
+                action_features=action_features,
+            )
+            return [float(value) for value in q_values.detach().cpu().tolist()]
+
+        def _predict_q_values_tensor(
+            self,
+            state: VectorObservation,
+            action_mask: ActionMask | None = None,
+            action_features: ActionFeatureBatch | None = None,
+        ) -> Tensor:
+            """Run the policy network for one encoded state and keep the result on-device."""
             with torch.no_grad():
-                state_tensor = torch.tensor(
-                    [list(state)],
+                state_tensor = torch.as_tensor(
+                    state,
                     dtype=torch.float32,
                     device=self.device,
+                ).unsqueeze(0)
+                action_mask_tensor = (
+                    None
+                    if action_mask is None
+                    else torch.as_tensor(
+                        action_mask,
+                        dtype=torch.bool,
+                        device=self.device,
+                    ).unsqueeze(0)
                 )
-                q_values = self.policy_network(state_tensor).squeeze(0)
-            return [float(value) for value in q_values.detach().cpu().tolist()]
+                action_feature_tensor = self._action_feature_tensor(action_features)
+                q_values = self._compute_network_q_values(
+                    network=self.policy_network,
+                    states=state_tensor,
+                    action_masks=action_mask_tensor,
+                    action_features=action_feature_tensor,
+                ).squeeze(0)
+            return q_values
+
+        def checkpoint_payload(self) -> dict[str, Any]:
+            """Return a serializable snapshot of the agent state."""
+            return {
+                "agent_type": self.algorithm_name,
+                "observation_size": self.observation_size,
+                "action_space_size": self.action_space_size,
+                "hidden_sizes": list(self.hidden_sizes),
+                "learning_rate": self.learning_rate,
+                "discount": self.discount,
+                "epsilon": self.epsilon,
+                "epsilon_min": self.epsilon_min,
+                "epsilon_decay": self.epsilon_decay,
+                "architecture": self.architecture,
+                "action_feature_size": self.action_feature_size,
+                "policy_network_state": self.policy_network.state_dict(),
+                "target_network_state": self.target_network.state_dict(),
+                "optimizer_state": self.optimizer.state_dict(),
+            }
+
+        @property
+        def algorithm_name(self) -> str:
+            """Return the stable algorithm name used in saved checkpoints."""
+            return "dqn"
 
         def optimize(
             self,
@@ -230,48 +494,65 @@ if torch is not None and nn is not None and optim is not None:
 
             transitions = replay_buffer.sample(batch_size)
 
-            states = torch.tensor(
+            states = torch.as_tensor(
                 [list(transition.state) for transition in transitions],
                 dtype=torch.float32,
                 device=self.device,
             )
-            actions = torch.tensor(
+            actions = torch.as_tensor(
                 [transition.action for transition in transitions],
                 dtype=torch.long,
                 device=self.device,
             ).unsqueeze(1)
-            rewards = torch.tensor(
+            rewards = torch.as_tensor(
                 [transition.reward for transition in transitions],
                 dtype=torch.float32,
                 device=self.device,
             )
-            next_states = torch.tensor(
+            next_states = torch.as_tensor(
                 [list(transition.next_state) for transition in transitions],
                 dtype=torch.float32,
                 device=self.device,
             )
-            dones = torch.tensor(
+            dones = torch.as_tensor(
                 [transition.done for transition in transitions],
                 dtype=torch.float32,
                 device=self.device,
             )
-            next_action_masks = torch.tensor(
+            action_masks = torch.as_tensor(
+                [list(transition.action_mask) for transition in transitions],
+                dtype=torch.bool,
+                device=self.device,
+            )
+            next_action_masks = torch.as_tensor(
                 [list(transition.next_action_mask) for transition in transitions],
                 dtype=torch.bool,
                 device=self.device,
             )
+            action_features = self._action_feature_batch_tensor(
+                [transition.action_features for transition in transitions]
+            )
+            next_action_features = self._action_feature_batch_tensor(
+                [transition.next_action_features for transition in transitions]
+            )
 
-            predicted_q_values = self.policy_network(states).gather(1, actions).squeeze(1)
+            predicted_q_values = self._compute_network_q_values(
+                network=self.policy_network,
+                states=states,
+                action_masks=action_masks,
+                action_features=action_features,
+            ).gather(1, actions).squeeze(1)
 
             with torch.no_grad():
                 max_next_q_values = self._compute_next_state_values(
                     next_states=next_states,
                     next_action_masks=next_action_masks,
+                    next_action_features=next_action_features,
                 )
                 targets = rewards + (1.0 - dones) * self.discount * max_next_q_values
 
             loss = self.loss_fn(predicted_q_values, targets)
-            self.optimizer.zero_grad()
+            self.optimizer.zero_grad(set_to_none=True)
             loss.backward()
             if gradient_clip is not None:
                 nn.utils.clip_grad_norm_(self.policy_network.parameters(), gradient_clip)
@@ -290,29 +571,94 @@ if torch is not None and nn is not None and optim is not None:
             self,
             next_states: Tensor,
             next_action_masks: Tensor,
+            next_action_features: Tensor | None = None,
         ) -> Tensor:
             """Estimate bootstrap values using the target network max over legal actions."""
-            next_q_values = self.target_network(next_states)
+            next_q_values = self._compute_network_q_values(
+                network=self.target_network,
+                states=next_states,
+                action_masks=next_action_masks,
+                action_features=next_action_features,
+            )
             return _masked_max_q_values(next_q_values, next_action_masks)
+
+        def _compute_network_q_values(
+            self,
+            network: nn.Module,
+            states: Tensor,
+            action_masks: Tensor | None,
+            action_features: Tensor | None,
+        ) -> Tensor:
+            if self.architecture == "action_feature":
+                if action_features is None:
+                    raise ValueError(
+                        "Action-conditioned DQN requires action features."
+                    )
+                return network(states, action_features, action_masks)
+            return network(states)
+
+        def _action_feature_tensor(
+            self,
+            action_features: ActionFeatureBatch | None,
+        ) -> Tensor | None:
+            if self.architecture != "action_feature":
+                return None
+            if action_features is None:
+                raise ValueError(
+                    "Action-conditioned DQN requires action features for inference."
+                )
+            return torch.as_tensor(
+                action_features,
+                dtype=torch.float32,
+                device=self.device,
+            ).unsqueeze(0)
+
+        def _action_feature_batch_tensor(
+            self,
+            action_features_batch: list[ActionFeatureBatch],
+        ) -> Tensor | None:
+            if self.architecture != "action_feature":
+                return None
+            return torch.as_tensor(
+                action_features_batch,
+                dtype=torch.float32,
+                device=self.device,
+            )
 
 
     class DoubleDQNAgent(DQNAgent):
         """Double DQN variant that decouples action selection and evaluation."""
 
+        @property
+        def algorithm_name(self) -> str:
+            """Return the stable algorithm name used in saved checkpoints."""
+            return "double_dqn"
+
         def _compute_next_state_values(
             self,
             next_states: Tensor,
             next_action_masks: Tensor,
+            next_action_features: Tensor | None = None,
         ) -> Tensor:
             """Select next actions with the policy network and evaluate with the target network."""
-            policy_next_q_values = self.policy_network(next_states)
+            policy_next_q_values = self._compute_network_q_values(
+                network=self.policy_network,
+                states=next_states,
+                action_masks=next_action_masks,
+                action_features=next_action_features,
+            )
             masked_policy_next_q_values = _mask_illegal_q_values(
                 policy_next_q_values,
                 next_action_masks,
             )
             selected_next_actions = masked_policy_next_q_values.argmax(dim=1, keepdim=True)
 
-            target_next_q_values = self.target_network(next_states)
+            target_next_q_values = self._compute_network_q_values(
+                network=self.target_network,
+                states=next_states,
+                action_masks=next_action_masks,
+                action_features=next_action_features,
+            )
             chosen_target_q_values = target_next_q_values.gather(
                 1,
                 selected_next_actions,
@@ -325,6 +671,18 @@ if torch is not None and nn is not None and optim is not None:
             )
 
 
+    class DuelingDoubleDQNAgent(DoubleDQNAgent):
+        """Double DQN agent with a dueling value/advantage network architecture."""
+
+        network_class = DuelingDQNNetwork
+        action_conditioned_network_class = ActionConditionedDuelingDQNNetwork
+
+        @property
+        def algorithm_name(self) -> str:
+            """Return the stable algorithm name used in saved checkpoints."""
+            return "dueling_double_dqn"
+
+
     def train_dqn(
         env_factory: Callable[[], CombatEnv],
         episodes: int,
@@ -333,15 +691,19 @@ if torch is not None and nn is not None and optim is not None:
         replay_capacity: int = 20_000,
         batch_size: int = 64,
         warmup_steps: int = 250,
+        train_frequency: int = 4,
+        gradient_steps: int = 1,
         target_update_interval: int = 100,
         hidden_sizes: Sequence[int] = (128, 128),
         seed: int | None = None,
+        final_evaluation_seed: int | None = None,
         learning_rate: float = 1e-3,
         discount: float = 0.99,
         epsilon: float = 1.0,
         epsilon_min: float = 0.05,
         epsilon_decay: float = 0.995,
         gradient_clip: float | None = 1.0,
+        architecture: str = "action_feature",
         device: str | None = None,
         restore_best_checkpoint: bool = True,
         progress_callback: ProgressCallback | None = None,
@@ -359,15 +721,19 @@ if torch is not None and nn is not None and optim is not None:
             replay_capacity=replay_capacity,
             batch_size=batch_size,
             warmup_steps=warmup_steps,
+            train_frequency=train_frequency,
+            gradient_steps=gradient_steps,
             target_update_interval=target_update_interval,
             hidden_sizes=hidden_sizes,
             seed=seed,
+            final_evaluation_seed=final_evaluation_seed,
             learning_rate=learning_rate,
             discount=discount,
             epsilon=epsilon,
             epsilon_min=epsilon_min,
             epsilon_decay=epsilon_decay,
             gradient_clip=gradient_clip,
+            architecture=architecture,
             device=device,
             restore_best_checkpoint=restore_best_checkpoint,
             progress_callback=progress_callback,
@@ -384,15 +750,19 @@ if torch is not None and nn is not None and optim is not None:
         replay_capacity: int = 20_000,
         batch_size: int = 64,
         warmup_steps: int = 250,
+        train_frequency: int = 4,
+        gradient_steps: int = 1,
         target_update_interval: int = 100,
         hidden_sizes: Sequence[int] = (128, 128),
         seed: int | None = None,
+        final_evaluation_seed: int | None = None,
         learning_rate: float = 1e-3,
         discount: float = 0.99,
         epsilon: float = 1.0,
         epsilon_min: float = 0.05,
         epsilon_decay: float = 0.995,
         gradient_clip: float | None = 1.0,
+        architecture: str = "action_feature",
         device: str | None = None,
         restore_best_checkpoint: bool = True,
         progress_callback: ProgressCallback | None = None,
@@ -410,15 +780,78 @@ if torch is not None and nn is not None and optim is not None:
             replay_capacity=replay_capacity,
             batch_size=batch_size,
             warmup_steps=warmup_steps,
+            train_frequency=train_frequency,
+            gradient_steps=gradient_steps,
             target_update_interval=target_update_interval,
             hidden_sizes=hidden_sizes,
             seed=seed,
+            final_evaluation_seed=final_evaluation_seed,
             learning_rate=learning_rate,
             discount=discount,
             epsilon=epsilon,
             epsilon_min=epsilon_min,
             epsilon_decay=epsilon_decay,
             gradient_clip=gradient_clip,
+            architecture=architecture,
+            device=device,
+            restore_best_checkpoint=restore_best_checkpoint,
+            progress_callback=progress_callback,
+            progress_interval=progress_interval,
+            progress_window=progress_window,
+        )
+
+
+    def train_dueling_double_dqn(
+        env_factory: Callable[[], CombatEnv],
+        episodes: int,
+        evaluation_interval: int = 100,
+        evaluation_episodes: int = 25,
+        replay_capacity: int = 20_000,
+        batch_size: int = 64,
+        warmup_steps: int = 250,
+        train_frequency: int = 4,
+        gradient_steps: int = 1,
+        target_update_interval: int = 100,
+        hidden_sizes: Sequence[int] = (128, 128),
+        seed: int | None = None,
+        final_evaluation_seed: int | None = None,
+        learning_rate: float = 1e-3,
+        discount: float = 0.99,
+        epsilon: float = 1.0,
+        epsilon_min: float = 0.05,
+        epsilon_decay: float = 0.995,
+        gradient_clip: float | None = 1.0,
+        architecture: str = "action_feature",
+        device: str | None = None,
+        restore_best_checkpoint: bool = True,
+        progress_callback: ProgressCallback | None = None,
+        progress_interval: int = 25,
+        progress_window: int = 25,
+    ) -> DQNTrainingResult:
+        """Train a Dueling Double DQN agent with periodic greedy evaluation."""
+        return _train_deep_value_agent(
+            algorithm="dueling_double_dqn",
+            agent_factory=DuelingDoubleDQNAgent,
+            env_factory=env_factory,
+            episodes=episodes,
+            evaluation_interval=evaluation_interval,
+            evaluation_episodes=evaluation_episodes,
+            replay_capacity=replay_capacity,
+            batch_size=batch_size,
+            warmup_steps=warmup_steps,
+            train_frequency=train_frequency,
+            gradient_steps=gradient_steps,
+            target_update_interval=target_update_interval,
+            hidden_sizes=hidden_sizes,
+            seed=seed,
+            final_evaluation_seed=final_evaluation_seed,
+            learning_rate=learning_rate,
+            discount=discount,
+            epsilon=epsilon,
+            epsilon_min=epsilon_min,
+            epsilon_decay=epsilon_decay,
+            gradient_clip=gradient_clip,
+            architecture=architecture,
             device=device,
             restore_best_checkpoint=restore_best_checkpoint,
             progress_callback=progress_callback,
@@ -437,15 +870,19 @@ if torch is not None and nn is not None and optim is not None:
         replay_capacity: int = 20_000,
         batch_size: int = 64,
         warmup_steps: int = 250,
+        train_frequency: int = 4,
+        gradient_steps: int = 1,
         target_update_interval: int = 100,
         hidden_sizes: Sequence[int] = (128, 128),
         seed: int | None = None,
+        final_evaluation_seed: int | None = None,
         learning_rate: float = 1e-3,
         discount: float = 0.99,
         epsilon: float = 1.0,
         epsilon_min: float = 0.05,
         epsilon_decay: float = 0.995,
         gradient_clip: float | None = 1.0,
+        architecture: str = "action_feature",
         device: str | None = None,
         restore_best_checkpoint: bool = True,
         progress_callback: ProgressCallback | None = None,
@@ -455,14 +892,18 @@ if torch is not None and nn is not None and optim is not None:
         """Shared trainer for DQN-family agents."""
         if episodes <= 0:
             raise ValueError("episodes must be positive.")
-        if evaluation_interval <= 0:
-            raise ValueError("evaluation_interval must be positive.")
+        if evaluation_interval < 0:
+            raise ValueError("evaluation_interval cannot be negative.")
         if evaluation_episodes <= 0:
             raise ValueError("evaluation_episodes must be positive.")
         if replay_capacity <= 0:
             raise ValueError("replay_capacity must be positive.")
         if batch_size <= 0:
             raise ValueError("batch_size must be positive.")
+        if train_frequency <= 0:
+            raise ValueError("train_frequency must be positive.")
+        if gradient_steps <= 0:
+            raise ValueError("gradient_steps must be positive.")
         if target_update_interval <= 0:
             raise ValueError("target_update_interval must be positive.")
         if progress_interval <= 0:
@@ -480,10 +921,13 @@ if torch is not None and nn is not None and optim is not None:
             epsilon=epsilon,
             epsilon_min=epsilon_min,
             epsilon_decay=epsilon_decay,
+            architecture=architecture,
+            action_feature_size=template_env.action_feature_size,
             device=device,
             seed=seed,
         )
         replay_buffer = ReplayBuffer(capacity=replay_capacity, seed=seed)
+        training_env = template_env
 
         training_metrics: list[EpisodeMetrics] = []
         evaluations: list[EvaluationSnapshot] = []
@@ -496,20 +940,24 @@ if torch is not None and nn is not None and optim is not None:
         best_target_state: dict[str, Tensor] | None = None
 
         for episode_index in range(episodes):
-            env = env_factory()
-            observation = env.reset(seed=_episode_seed(seed, episode_index))
-            state = tuple(float(value) for value in env.encode_observation(observation))
+            observation = training_env.reset(seed=_episode_seed(seed, episode_index))
+            state = training_env.encode_observation(observation)
             done = False
             episode_losses: list[float] = []
 
             while not done:
-                action_mask = env.get_action_mask()
-                action = agent.select_action(state, action_mask, training=True)
-                next_observation, reward, done, info = env.step_discrete(action)
-                next_state = tuple(
-                    float(value) for value in env.encode_observation(next_observation)
+                action_mask = training_env.get_action_mask()
+                action_features = training_env.encode_action_features(observation)
+                action = agent.select_action(
+                    state,
+                    action_mask,
+                    action_features=action_features,
+                    training=True,
                 )
-                next_action_mask = tuple(int(value) for value in info["action_mask"])
+                next_observation, reward, done, info = training_env.step_discrete(action)
+                next_state = training_env.encode_observation(next_observation)
+                next_action_mask = tuple(info["action_mask"])
+                next_action_features = training_env.encode_action_features(next_observation)
 
                 replay_buffer.add(
                     ReplayTransition(
@@ -519,25 +967,34 @@ if torch is not None and nn is not None and optim is not None:
                         next_state=next_state,
                         next_action_mask=next_action_mask,
                         done=done,
+                        action_mask=action_mask,
+                        action_features=action_features,
+                        next_action_features=next_action_features,
                     )
                 )
 
                 state = next_state
                 total_environment_steps += 1
 
-                if total_environment_steps >= warmup_steps:
-                    loss = agent.optimize(
-                        replay_buffer=replay_buffer,
-                        batch_size=batch_size,
-                        gradient_clip=gradient_clip,
-                    )
-                    if loss is not None:
+                should_optimize = (
+                    total_environment_steps >= warmup_steps
+                    and total_environment_steps % train_frequency == 0
+                )
+                if should_optimize:
+                    for _gradient_step in range(gradient_steps):
+                        loss = agent.optimize(
+                            replay_buffer=replay_buffer,
+                            batch_size=batch_size,
+                            gradient_clip=gradient_clip,
+                        )
+                        if loss is None:
+                            break
                         episode_losses.append(loss)
                         optimization_steps += 1
                         if optimization_steps % target_update_interval == 0:
                             agent.update_target_network()
 
-            summary = env.get_episode_summary()
+            summary = training_env.get_episode_summary()
             training_metrics.append(
                 EpisodeMetrics(
                     total_reward=summary.total_reward,
@@ -552,14 +1009,15 @@ if torch is not None and nn is not None and optim is not None:
             )
             agent.decay_epsilon_value()
 
-            if (episode_index + 1) % evaluation_interval == 0:
+            if evaluation_interval > 0 and (episode_index + 1) % evaluation_interval == 0:
                 evaluation_snapshot = EvaluationSnapshot(
                     episode=episode_index + 1,
                     stats=evaluate_policy(
                         env_factory=env_factory,
                         policy=lambda env, obs, mask, trained_agent=agent: trained_agent.select_action(
-                            tuple(float(value) for value in env.encode_observation(obs)),
+                            env.encode_observation(obs),
                             mask,
+                            action_features=env.encode_action_features(obs),
                             training=False,
                         ),
                         episodes=evaluation_episodes,
@@ -596,12 +1054,17 @@ if torch is not None and nn is not None and optim is not None:
         final_evaluation = evaluate_policy(
             env_factory=env_factory,
             policy=lambda env, obs, mask, trained_agent=agent: trained_agent.select_action(
-                tuple(float(value) for value in env.encode_observation(obs)),
+                env.encode_observation(obs),
                 mask,
+                action_features=env.encode_action_features(obs),
                 training=False,
             ),
             episodes=evaluation_episodes,
-            seed=_episode_seed(seed, 20_000),
+            seed=(
+                _episode_seed(seed, 20_000)
+                if final_evaluation_seed is None
+                else final_evaluation_seed
+            ),
         )
         return DQNTrainingResult(
             agent=agent,
@@ -684,6 +1147,16 @@ else:
             )
 
 
+    class DuelingDoubleDQNAgent:
+        """Placeholder agent that explains the missing dependency."""
+
+        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            raise ModuleNotFoundError(
+                "Dueling Double DQN support requires the optional dependency 'torch'. "
+                "Install it with `pip install -r requirements.txt` or `pip install -e .[rl]`."
+            )
+
+
     def train_dqn(*_args: Any, **_kwargs: Any) -> DQNTrainingResult:
         """Placeholder trainer that explains the missing dependency."""
         raise ModuleNotFoundError(
@@ -696,5 +1169,13 @@ else:
         """Placeholder trainer that explains the missing dependency."""
         raise ModuleNotFoundError(
             "Double DQN support requires the optional dependency 'torch'. "
+            "Install it with `pip install -r requirements.txt` or `pip install -e .[rl]`."
+        )
+
+
+    def train_dueling_double_dqn(*_args: Any, **_kwargs: Any) -> DQNTrainingResult:
+        """Placeholder trainer that explains the missing dependency."""
+        raise ModuleNotFoundError(
+            "Dueling Double DQN support requires the optional dependency 'torch'. "
             "Install it with `pip install -r requirements.txt` or `pip install -e .[rl]`."
         )

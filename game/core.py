@@ -7,13 +7,14 @@ from random import Random
 from typing import Any, Callable, Sequence
 
 from .actions import CombatAction, validate_action
-from .card import Card, create_starter_deck
+from .card import Card, create_starter_deck, get_card_spec
 from .deck import Deck
 from .encoding import ObservationEncoder
 from .enemy import EncounterFactory, Enemy, SimpleEnemy
 from .player import Player
+from .status import modify_attack_damage_for_statuses
 from .trajectory import EpisodeSummary, TransitionRecord
-from .utils import make_rng
+from .utils import apply_damage_to_block_and_hp, make_rng
 
 Observation = dict[str, Any]
 
@@ -24,7 +25,8 @@ class CombatEnv:
     Rewards use simple shaping:
     - `+1` on victory
     - `-1` on defeat
-    - minus the fraction of player max HP lost during the step
+    - minus scaled player HP loss during the step
+    - plus a small bonus for reducing projected incoming enemy damage during the player turn
     """
 
     def __init__(
@@ -38,6 +40,9 @@ class CombatEnv:
         cards_per_turn: int = 5,
         max_hand_size: int = 10,
         max_enemy_count: int = 1,
+        hp_loss_penalty_scale: float = 1.0,
+        incoming_damage_shaping_scale: float = 0.5,
+        record_trajectory: bool = True,
     ) -> None:
         self.rng = make_rng(seed)
         self.deck_factory = deck_factory
@@ -46,6 +51,9 @@ class CombatEnv:
         self.player_max_hp = player_max_hp
         self.energy_per_turn = energy_per_turn
         self.cards_per_turn = cards_per_turn
+        self.hp_loss_penalty_scale = hp_loss_penalty_scale
+        self.incoming_damage_shaping_scale = incoming_damage_shaping_scale
+        self.record_trajectory = record_trajectory
         self.encoder = ObservationEncoder(
             max_hand_size=max_hand_size,
             max_enemy_count=max_enemy_count,
@@ -58,6 +66,7 @@ class CombatEnv:
         self.winner: str | None = None
         self.last_observation: Observation | None = None
         self.episode_reward = 0.0
+        self.episode_step_count = 0
         self.episode_transitions: list[TransitionRecord] = []
 
         # TODO: Add relic hooks that can modify reset, draw, and turn transitions.
@@ -86,6 +95,7 @@ class CombatEnv:
         self.done = False
         self.winner = None
         self.episode_reward = 0.0
+        self.episode_step_count = 0
         self.episode_transitions = []
 
         self.player.start_turn(draw_count=self.cards_per_turn)
@@ -195,6 +205,16 @@ class CombatEnv:
         for hand_index, card in enumerate(self.player.hand):
             if card.cost > self.player.energy:
                 continue
+            card_spec = get_card_spec(card.name)
+
+            if not card_spec.uses_target:
+                if self.encoder.max_enemy_count == 1 and len(living_enemy_indices) == 1:
+                    actions.append(("play", hand_index))
+                    continue
+
+                if living_enemy_indices:
+                    actions.append(("play", hand_index, living_enemy_indices[0]))
+                continue
 
             if self.encoder.max_enemy_count == 1 and len(living_enemy_indices) == 1:
                 actions.append(("play", hand_index))
@@ -245,6 +265,18 @@ class CombatEnv:
         source_observation = observation if observation is not None else self.get_observation()
         return self.encoder.encode(source_observation)
 
+    def encode_action_features(
+        self,
+        observation: Observation | None = None,
+    ) -> tuple[tuple[float, ...], ...]:
+        """Return fixed action-conditioned features for every discrete action slot."""
+        source_observation = observation if observation is not None else self.get_observation()
+        legal_actions = self.get_legal_actions() if observation is None else None
+        return self.encoder.encode_action_features(
+            source_observation,
+            legal_actions=legal_actions,
+        )
+
     def encode_action(self, action: CombatAction) -> int:
         """Encode a tuple action into the fixed discrete action space."""
         return self.encoder.encode_action(action)
@@ -263,6 +295,11 @@ class CombatEnv:
         """Return the length of the encoded observation vector."""
         return self.encoder.vector_size
 
+    @property
+    def action_feature_size(self) -> int:
+        """Return the width of one encoded action-feature vector."""
+        return self.encoder.action_feature_count
+
     def get_episode_history(self) -> tuple[TransitionRecord, ...]:
         """Return the transitions recorded in the current episode."""
         return tuple(self.episode_transitions)
@@ -274,7 +311,7 @@ class CombatEnv:
 
         return EpisodeSummary(
             total_reward=self.episode_reward,
-            steps=len(self.episode_transitions),
+            steps=self.episode_step_count,
             final_turn=self.turn,
             winner=self.winner,
             player_hp=self.player.hp,
@@ -388,25 +425,40 @@ class CombatEnv:
             previous_observation=previous_observation,
             next_observation=next_observation,
         )
-        shaped_reward = reward + hp_loss_penalty
-        self.episode_reward += shaped_reward
-
-        transition = TransitionRecord(
-            step_index=len(self.episode_transitions),
-            turn=int(previous_observation["turn"]),
-            action=action,
-            action_index=self.encode_action(action),
-            reward=shaped_reward,
-            done=self.done,
-            observation=previous_observation,
-            next_observation=next_observation,
-            info=dict(info),
+        incoming_damage_bonus, projected_before, projected_after = (
+            self._calculate_incoming_damage_reduction_bonus(
+                action=action,
+                previous_observation=previous_observation,
+                next_observation=next_observation,
+            )
         )
-        self.episode_transitions.append(transition)
+        scaled_hp_loss_penalty = self.hp_loss_penalty_scale * hp_loss_penalty
+        shaped_reward = reward + scaled_hp_loss_penalty + incoming_damage_bonus
+        self.episode_reward += shaped_reward
+        step_index = self.episode_step_count
+        self.episode_step_count += 1
+
+        if self.record_trajectory:
+            transition = TransitionRecord(
+                step_index=step_index,
+                turn=int(previous_observation["turn"]),
+                action=action,
+                action_index=self.encode_action(action),
+                reward=shaped_reward,
+                done=self.done,
+                observation=previous_observation,
+                next_observation=next_observation,
+                info=dict(info),
+            )
+            self.episode_transitions.append(transition)
 
         enriched_info = dict(info)
         enriched_info["player_hp_lost"] = player_hp_lost
-        enriched_info["hp_loss_penalty"] = hp_loss_penalty
+        enriched_info["hp_loss_penalty"] = scaled_hp_loss_penalty
+        enriched_info["raw_hp_loss_penalty"] = hp_loss_penalty
+        enriched_info["projected_incoming_hp_loss_before"] = projected_before
+        enriched_info["projected_incoming_hp_loss_after"] = projected_after
+        enriched_info["incoming_damage_reduction_bonus"] = incoming_damage_bonus
         enriched_info["action_mask"] = self.get_action_mask()
         if self.done:
             enriched_info["episode_summary"] = self.get_episode_summary().as_dict()
@@ -429,3 +481,65 @@ class CombatEnv:
         player_hp_lost = max(0, previous_hp - next_hp)
         hp_loss_penalty = -(player_hp_lost / max_hp) if player_hp_lost > 0 else 0.0
         return hp_loss_penalty, player_hp_lost
+
+    def _calculate_incoming_damage_reduction_bonus(
+        self,
+        action: CombatAction,
+        previous_observation: Observation,
+        next_observation: Observation,
+    ) -> tuple[float, int, int]:
+        """Reward player actions that reduce immediate projected incoming HP loss."""
+        projected_before = self._project_incoming_hp_loss(previous_observation)
+        projected_after = self._project_incoming_hp_loss(next_observation)
+
+        if (
+            self.incoming_damage_shaping_scale <= 0.0
+            or action[0] != "play"
+            or self.done
+        ):
+            return 0.0, projected_before, projected_after
+
+        previous_player = previous_observation["player"]
+        assert isinstance(previous_player, dict)
+        max_hp = max(1, int(previous_player["max_hp"]))
+        damage_reduction_fraction = (projected_before - projected_after) / max_hp
+        bonus = self.incoming_damage_shaping_scale * damage_reduction_fraction
+        return bonus, projected_before, projected_after
+
+    def _project_incoming_hp_loss(self, observation: Observation) -> int:
+        """Estimate HP loss from currently telegraphed enemy attacks in slot order."""
+        player = observation["player"]
+        enemies = observation.get("enemies", [observation["enemy"]])
+        assert isinstance(player, dict)
+        assert isinstance(enemies, list)
+
+        player_statuses = player["statuses"]
+        assert isinstance(player_statuses, dict)
+
+        original_hp = int(player["hp"])
+        simulated_hp = int(player["hp"])
+        simulated_block = int(player["block"])
+        for enemy in enemies:
+            if not isinstance(enemy, dict) or not bool(enemy.get("alive", True)):
+                continue
+            intent = enemy["intent"]
+            if not isinstance(intent, dict):
+                continue
+            base_attack_damage = int(intent.get("attack_damage", 0))
+            if base_attack_damage <= 0:
+                continue
+
+            resolved_attack_damage = modify_attack_damage_for_statuses(
+                base_attack_damage,
+                player_statuses,
+            )
+            previous_hp = simulated_hp
+            simulated_hp, simulated_block = apply_damage_to_block_and_hp(
+                simulated_hp,
+                simulated_block,
+                resolved_attack_damage,
+            )
+            if simulated_hp <= 0:
+                return original_hp
+
+        return max(0, original_hp - simulated_hp)

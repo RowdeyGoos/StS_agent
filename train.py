@@ -7,6 +7,7 @@ from statistics import mean
 from typing import Callable, Sequence
 
 from game import CombatEnv, SimpleEnemy, build_overgrowth_easy_encounter
+from game.agent_io import save_agent
 from game.baselines import (
     EvaluationStats,
     TrainingProgress,
@@ -16,10 +17,17 @@ from game.baselines import (
     evaluate_policy,
     train_q_learning,
 )
-from game.dqn import DQNTrainingResult, train_double_dqn, train_dqn
+from game.dqn import (
+    DQNTrainingResult,
+    train_double_dqn,
+    train_dqn,
+    train_dueling_double_dqn,
+)
+from game.ppo import PPOTrainingResult, train_masked_ppo
 
 DEFAULT_Q_LEARNING_RATE = 0.1
 DEFAULT_DQN_LEARNING_RATE = 1e-3
+DEFAULT_PPO_LEARNING_RATE = 3e-4
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -29,7 +37,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--policy",
-        choices=("random", "heuristic", "q_learning", "dqn", "double_dqn", "compare"),
+        choices=(
+            "random",
+            "heuristic",
+            "q_learning",
+            "dqn",
+            "double_dqn",
+            "dueling_double_dqn",
+            "masked_ppo",
+            "compare",
+        ),
         default="compare",
         help="Which baseline workflow to run.",
     )
@@ -49,7 +66,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--eval-interval",
         type=int,
         default=100,
-        help="Checkpoint interval for q_learning evaluation.",
+        help="Checkpoint interval for q_learning evaluation. Use 0 to disable checkpoint evals.",
     )
     parser.add_argument(
         "--seed",
@@ -82,10 +99,25 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Cards drawn at the start of each player turn.",
     )
     parser.add_argument(
+        "--hp-loss-penalty-scale",
+        type=float,
+        default=1.0,
+        help="Scale factor applied to the per-step player HP loss penalty.",
+    )
+    parser.add_argument(
+        "--incoming-damage-shaping-scale",
+        type=float,
+        default=0.0,
+        help=(
+            "Scale for the immediate reward bonus from reducing projected incoming "
+            "enemy damage during the player turn."
+        ),
+    )
+    parser.add_argument(
         "--learning-rate",
         type=float,
         default=None,
-        help="Optional shared learning-rate override applied to q_learning and DQN.",
+        help="Optional shared learning-rate override applied to q_learning, DQN, and PPO.",
     )
     parser.add_argument(
         "--q-learning-rate",
@@ -100,10 +132,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Learning rate for DQN and Double DQN when --learning-rate is not provided.",
     )
     parser.add_argument(
+        "--ppo-learning-rate",
+        type=float,
+        default=DEFAULT_PPO_LEARNING_RATE,
+        help="Learning rate for masked PPO when --learning-rate is not provided.",
+    )
+    parser.add_argument(
         "--discount",
         type=float,
         default=0.99,
-        help="Discount factor for q_learning and dqn.",
+        help="Discount factor for q_learning, dqn, and masked_ppo.",
     )
     parser.add_argument(
         "--epsilon",
@@ -142,6 +180,18 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Environment steps collected before DQN optimization begins.",
     )
     parser.add_argument(
+        "--train-frequency",
+        type=int,
+        default=4,
+        help="Run DQN optimization every N environment steps.",
+    )
+    parser.add_argument(
+        "--gradient-steps",
+        type=int,
+        default=1,
+        help="Number of DQN optimizer updates each time training is triggered.",
+    )
+    parser.add_argument(
         "--target-update-interval",
         type=int,
         default=100,
@@ -154,10 +204,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Comma-separated hidden layer sizes for the DQN MLP.",
     )
     parser.add_argument(
+        "--dqn-architecture",
+        choices=("flat", "action_feature"),
+        default="action_feature",
+        help="Q-network architecture used by DQN-family agents.",
+    )
+    parser.add_argument(
         "--device",
         type=str,
         default=None,
-        help="Torch device for DQN, for example `cpu` or `cuda`.",
+        help="Torch device for neural agents, for example `cpu` or `cuda`.",
     )
     parser.add_argument(
         "--restore-best-checkpoint",
@@ -177,6 +233,72 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         default=25,
         help="Number of recent episodes used for rolling progress statistics.",
     )
+    parser.add_argument(
+        "--save-agent",
+        type=str,
+        default=None,
+        help="Optional output path for saving a trained q_learning, DQN-family, or PPO agent.",
+    )
+    parser.add_argument(
+        "--record-trajectories",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Store full per-step episode histories inside training environments.",
+    )
+    parser.add_argument(
+        "--rollout-steps",
+        type=int,
+        default=512,
+        help="Number of on-policy environment steps collected per PPO update.",
+    )
+    parser.add_argument(
+        "--ppo-epochs",
+        type=int,
+        default=4,
+        help="Number of PPO optimization epochs per rollout.",
+    )
+    parser.add_argument(
+        "--ppo-minibatch-size",
+        type=int,
+        default=64,
+        help="Mini-batch size for PPO optimization.",
+    )
+    parser.add_argument(
+        "--gae-lambda",
+        type=float,
+        default=0.95,
+        help="GAE lambda used by masked PPO.",
+    )
+    parser.add_argument(
+        "--clip-ratio",
+        type=float,
+        default=0.2,
+        help="PPO clipping ratio for policy updates.",
+    )
+    parser.add_argument(
+        "--value-loss-coef",
+        type=float,
+        default=0.5,
+        help="Multiplier for the PPO value loss term.",
+    )
+    parser.add_argument(
+        "--entropy-coef",
+        type=float,
+        default=0.01,
+        help="Entropy bonus coefficient for PPO.",
+    )
+    parser.add_argument(
+        "--max-grad-norm",
+        type=float,
+        default=0.5,
+        help="Gradient clipping norm for PPO updates.",
+    )
+    parser.add_argument(
+        "--ppo-policy-architecture",
+        choices=("flat", "action_feature"),
+        default="action_feature",
+        help="Policy head used by masked PPO.",
+    )
     return parser.parse_args(argv)
 
 
@@ -188,12 +310,18 @@ def make_env_factory(args: argparse.Namespace) -> Callable[[], CombatEnv]:
             cards_per_turn=args.cards_per_turn,
             encounter_factory=build_overgrowth_easy_encounter,
             max_enemy_count=3,
+            hp_loss_penalty_scale=args.hp_loss_penalty_scale,
+            incoming_damage_shaping_scale=args.incoming_damage_shaping_scale,
+            record_trajectory=args.record_trajectories,
         )
 
     return lambda: CombatEnv(
         player_max_hp=args.player_hp,
         cards_per_turn=args.cards_per_turn,
         enemy_factory=lambda: SimpleEnemy(max_hp=args.enemy_hp),
+        hp_loss_penalty_scale=args.hp_loss_penalty_scale,
+        incoming_damage_shaping_scale=args.incoming_damage_shaping_scale,
+        record_trajectory=args.record_trajectories,
     )
 
 
@@ -240,7 +368,40 @@ def print_deep_value_summary(label: str, result: DQNTrainingResult) -> None:
         f"train_win_rate={mean(training_wins):.3f} "
         f"mean_loss={mean_loss:.5f} "
         f"final_epsilon={result.agent.epsilon:.3f} "
+        f"architecture={result.agent.architecture} "
         f"optimization_steps={result.optimization_steps} "
+        f"device={result.agent.device} "
+        f"restored_best={result.restored_best_checkpoint}"
+    )
+    for snapshot in result.evaluations:
+        print_evaluation(f"  Eval @{snapshot.episode}", snapshot.stats)
+    if result.best_evaluation is not None:
+        print_evaluation(
+            f"  Best eval @{result.best_evaluation.episode}",
+            result.best_evaluation.stats,
+        )
+    print_evaluation("  Final eval", result.final_evaluation)
+
+
+def print_ppo_summary(result: PPOTrainingResult) -> None:
+    """Print the main outputs of a masked PPO training run."""
+    training_rewards = [metric.total_reward for metric in result.training_metrics]
+    training_wins = [1.0 if metric.win else 0.0 for metric in result.training_metrics]
+    mean_total_loss = mean(result.mean_total_losses) if result.mean_total_losses else 0.0
+    mean_policy_loss = mean(result.mean_policy_losses) if result.mean_policy_losses else 0.0
+    mean_value_loss = mean(result.mean_value_losses) if result.mean_value_losses else 0.0
+    mean_entropy = mean(result.mean_entropies) if result.mean_entropies else 0.0
+    print(
+        "Masked PPO training: "
+        f"episodes={len(result.training_metrics)} "
+        f"mean_train_reward={mean(training_rewards):.3f} "
+        f"train_win_rate={mean(training_wins):.3f} "
+        f"mean_total_loss={mean_total_loss:.5f} "
+        f"mean_policy_loss={mean_policy_loss:.5f} "
+        f"mean_value_loss={mean_value_loss:.5f} "
+        f"mean_entropy={mean_entropy:.5f} "
+        f"optimization_steps={result.optimization_steps} "
+        f"policy_architecture={result.agent.policy_architecture} "
         f"device={result.agent.device} "
         f"restored_best={result.restored_best_checkpoint}"
     )
@@ -278,6 +439,13 @@ def resolve_dqn_learning_rate(args: argparse.Namespace) -> float:
     if args.learning_rate is not None:
         return args.learning_rate
     return args.dqn_learning_rate
+
+
+def resolve_ppo_learning_rate(args: argparse.Namespace) -> float:
+    """Resolve the effective PPO learning rate from CLI arguments."""
+    if args.learning_rate is not None:
+        return args.learning_rate
+    return args.ppo_learning_rate
 
 
 def format_duration(seconds: float) -> str:
@@ -320,11 +488,23 @@ def make_progress_reporter() -> Callable[[TrainingProgress], None]:
 def main() -> None:
     """Run the selected baseline training or evaluation workflow."""
     args = parse_args()
+    if args.save_agent is not None and args.policy not in {
+        "q_learning",
+        "dqn",
+        "double_dqn",
+        "dueling_double_dqn",
+        "masked_ppo",
+    }:
+        raise SystemExit(
+            "--save-agent is only supported for q_learning, dqn, double_dqn, dueling_double_dqn, or masked_ppo."
+        )
+
     env_factory = make_env_factory(args)
     hidden_sizes = parse_hidden_sizes(args.hidden_sizes)
     progress_reporter = make_progress_reporter()
     q_learning_rate = resolve_q_learning_rate(args)
     dqn_learning_rate = resolve_dqn_learning_rate(args)
+    ppo_learning_rate = resolve_ppo_learning_rate(args)
 
     if args.policy in {"random", "compare"}:
         random_stats = evaluate_policy(
@@ -366,6 +546,9 @@ def main() -> None:
             progress_window=args.progress_window,
         )
         print_training_summary(result)
+        if args.save_agent is not None:
+            save_agent(result.agent, args.save_agent)
+            print(f"Saved q_learning agent to {args.save_agent}")
 
     if args.policy in {"dqn", "compare"}:
         try:
@@ -377,6 +560,8 @@ def main() -> None:
                 replay_capacity=args.replay_capacity,
                 batch_size=args.batch_size,
                 warmup_steps=args.warmup_steps,
+                train_frequency=args.train_frequency,
+                gradient_steps=args.gradient_steps,
                 target_update_interval=args.target_update_interval,
                 hidden_sizes=hidden_sizes,
                 seed=args.seed,
@@ -386,6 +571,7 @@ def main() -> None:
                 epsilon_min=args.epsilon_min,
                 epsilon_decay=args.epsilon_decay,
                 device=args.device,
+                architecture=args.dqn_architecture,
                 restore_best_checkpoint=args.restore_best_checkpoint,
                 progress_callback=progress_reporter,
                 progress_interval=args.progress_interval,
@@ -398,6 +584,9 @@ def main() -> None:
             print(f"DQN unavailable: {exc}")
         else:
             print_deep_value_summary("DQN", dqn_result)
+            if args.save_agent is not None:
+                save_agent(dqn_result.agent, args.save_agent)
+                print(f"Saved DQN agent to {args.save_agent}")
 
     if args.policy in {"double_dqn", "compare"}:
         try:
@@ -409,6 +598,8 @@ def main() -> None:
                 replay_capacity=args.replay_capacity,
                 batch_size=args.batch_size,
                 warmup_steps=args.warmup_steps,
+                train_frequency=args.train_frequency,
+                gradient_steps=args.gradient_steps,
                 target_update_interval=args.target_update_interval,
                 hidden_sizes=hidden_sizes,
                 seed=args.seed,
@@ -418,6 +609,7 @@ def main() -> None:
                 epsilon_min=args.epsilon_min,
                 epsilon_decay=args.epsilon_decay,
                 device=args.device,
+                architecture=args.dqn_architecture,
                 restore_best_checkpoint=args.restore_best_checkpoint,
                 progress_callback=progress_reporter,
                 progress_interval=args.progress_interval,
@@ -430,6 +622,80 @@ def main() -> None:
             print(f"Double DQN unavailable: {exc}")
         else:
             print_deep_value_summary("Double DQN", double_dqn_result)
+            if args.save_agent is not None:
+                save_agent(double_dqn_result.agent, args.save_agent)
+                print(f"Saved Double DQN agent to {args.save_agent}")
+
+    if args.policy == "dueling_double_dqn":
+        try:
+            dueling_double_dqn_result = train_dueling_double_dqn(
+                env_factory=env_factory,
+                episodes=args.episodes,
+                evaluation_interval=args.eval_interval,
+                evaluation_episodes=args.eval_episodes,
+                replay_capacity=args.replay_capacity,
+                batch_size=args.batch_size,
+                warmup_steps=args.warmup_steps,
+                train_frequency=args.train_frequency,
+                gradient_steps=args.gradient_steps,
+                target_update_interval=args.target_update_interval,
+                hidden_sizes=hidden_sizes,
+                seed=args.seed,
+                learning_rate=dqn_learning_rate,
+                discount=args.discount,
+                epsilon=args.epsilon,
+                epsilon_min=args.epsilon_min,
+                epsilon_decay=args.epsilon_decay,
+                device=args.device,
+                architecture=args.dqn_architecture,
+                restore_best_checkpoint=args.restore_best_checkpoint,
+                progress_callback=progress_reporter,
+                progress_interval=args.progress_interval,
+                progress_window=args.progress_window,
+            )
+        except ModuleNotFoundError as exc:
+            print(f"Dueling Double DQN unavailable: {exc}")
+            raise SystemExit(1)
+        else:
+            print_deep_value_summary("Dueling Double DQN", dueling_double_dqn_result)
+            if args.save_agent is not None:
+                save_agent(dueling_double_dqn_result.agent, args.save_agent)
+                print(f"Saved Dueling Double DQN agent to {args.save_agent}")
+
+    if args.policy == "masked_ppo":
+        try:
+            ppo_result = train_masked_ppo(
+                env_factory=env_factory,
+                episodes=args.episodes,
+                evaluation_interval=args.eval_interval,
+                evaluation_episodes=args.eval_episodes,
+                rollout_steps=args.rollout_steps,
+                hidden_sizes=hidden_sizes,
+                seed=args.seed,
+                learning_rate=ppo_learning_rate,
+                discount=args.discount,
+                gae_lambda=args.gae_lambda,
+                clip_ratio=args.clip_ratio,
+                value_loss_coef=args.value_loss_coef,
+                entropy_coef=args.entropy_coef,
+                ppo_epochs=args.ppo_epochs,
+                minibatch_size=args.ppo_minibatch_size,
+                max_grad_norm=args.max_grad_norm,
+                policy_architecture=args.ppo_policy_architecture,
+                device=args.device,
+                restore_best_checkpoint=args.restore_best_checkpoint,
+                progress_callback=progress_reporter,
+                progress_interval=args.progress_interval,
+                progress_window=args.progress_window,
+            )
+        except ModuleNotFoundError as exc:
+            print(f"Masked PPO unavailable: {exc}")
+            raise SystemExit(1)
+        else:
+            print_ppo_summary(ppo_result)
+            if args.save_agent is not None:
+                save_agent(ppo_result.agent, args.save_agent)
+                print(f"Saved Masked PPO agent to {args.save_agent}")
 
 
 if __name__ == "__main__":

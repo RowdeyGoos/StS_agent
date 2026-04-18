@@ -5,6 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
+from .action_features import (
+    action_feature_names,
+    encode_action_summary_features,
+    infer_legal_actions_from_observation,
+    summarize_action,
+)
 from .actions import CombatAction, validate_action
 from .status import STATUS_STACK_SCALE, SUPPORTED_STATUS_NAMES
 
@@ -26,7 +32,25 @@ DEFAULT_ENEMY_NAME_TO_ID: dict[str, int] = {
     "Shrinker Beetle": 7,
     "Fuzzy Wurm Crawler": 8,
 }
+DEFAULT_MOVE_NAME_TO_ID: dict[str, int] = {
+    "Strike": 1,
+    "Defend": 2,
+    "Heavy Strike": 3,
+    "Butt": 4,
+    "Hesitant Slice": 5,
+    "Hiss": 6,
+    "Shrinker": 7,
+    "Chomp": 8,
+    "Stomp": 9,
+    "Acid Goop": 10,
+    "Inhale": 11,
+    "Tackle": 12,
+    "Goop": 13,
+    "Sticky Shot": 14,
+    "Clump Shot": 15,
+}
 PILE_COUNT_ORDER: tuple[str, ...] = ("hand", "draw_pile", "discard_pile", "exhaust_pile")
+BEHAVIOR_STATE_SCALE = 8.0
 
 
 @dataclass(slots=True)
@@ -40,6 +64,9 @@ class ObservationEncoder:
     )
     enemy_name_to_id: dict[str, int] = field(
         default_factory=lambda: dict(DEFAULT_ENEMY_NAME_TO_ID)
+    )
+    move_name_to_id: dict[str, int] = field(
+        default_factory=lambda: dict(DEFAULT_MOVE_NAME_TO_ID)
     )
 
     def __post_init__(self) -> None:
@@ -81,6 +108,15 @@ class ObservationEncoder:
     def supported_status_names(self) -> tuple[str, ...]:
         """Return all status names that can appear in encoded observations."""
         return SUPPORTED_STATUS_NAMES
+
+    @property
+    def supported_move_names(self) -> tuple[str, ...]:
+        """Return all move names that can be encoded in behavior-state features."""
+        supported_moves = sorted(
+            self.move_name_to_id.items(),
+            key=lambda item: item[1],
+        )
+        return tuple(move_name for move_name, _move_id in supported_moves)
 
     @property
     def scalar_feature_names(self) -> tuple[str, ...]:
@@ -129,6 +165,10 @@ class ObservationEncoder:
             f"intent_status_{status_name}_fraction"
             for status_name in self.supported_status_names
         )
+        behavior_next_move_feature_names = tuple(
+            f"behavior_next_move_can_be_{move_name.lower().replace(' ', '_').replace('(', '').replace(')', '')}"
+            for move_name in self.supported_move_names
+        )
         return (
             "alive",
             "hp_fraction",
@@ -141,6 +181,10 @@ class ObservationEncoder:
             "intent_strength_gain_fraction",
             *intent_status_feature_names,
             "intent_slimed_fraction",
+            "behavior_phase_fraction",
+            "behavior_phase_count_fraction",
+            "behavior_next_move_count_fraction",
+            *behavior_next_move_feature_names,
             *enemy_type_feature_names,
         )
 
@@ -172,6 +216,20 @@ class ObservationEncoder:
     def vector_size(self) -> int:
         """Return the full encoded observation length."""
         return self.base_feature_count + self.slot_feature_count
+
+    @property
+    def action_feature_names(self) -> tuple[str, ...]:
+        """Return semantic names for each encoded action feature."""
+        return action_feature_names(
+            supported_card_names=self.supported_card_names,
+            supported_enemy_names=self.supported_enemy_names,
+            supported_status_names=self.supported_status_names,
+        )
+
+    @property
+    def action_feature_count(self) -> int:
+        """Return the width of one encoded legal-action feature vector."""
+        return len(self.action_feature_names)
 
     @property
     def feature_names(self) -> tuple[str, ...]:
@@ -221,6 +279,8 @@ class ObservationEncoder:
         supported_card_name_set = set(supported_card_names)
         supported_enemy_names = self.supported_enemy_names
         supported_enemy_name_set = set(supported_enemy_names)
+        supported_move_names = self.supported_move_names
+        supported_move_name_set = set(supported_move_names)
 
         for card_name in hand:
             self._validate_card_name(str(card_name), supported_card_name_set)
@@ -262,6 +322,8 @@ class ObservationEncoder:
                 enemies=enemies,
                 supported_enemy_names=supported_enemy_names,
                 supported_enemy_name_set=supported_enemy_name_set,
+                supported_move_names=supported_move_names,
+                supported_move_name_set=supported_move_name_set,
                 hp_scale=hp_scale,
             ),
             *self._encode_hand_slots(hand, supported_card_names),
@@ -299,6 +361,8 @@ class ObservationEncoder:
         enemies: list[Mapping[str, Any]],
         supported_enemy_names: tuple[str, ...],
         supported_enemy_name_set: set[str],
+        supported_move_names: tuple[str, ...],
+        supported_move_name_set: set[str],
         hp_scale: int,
     ) -> list[float]:
         """Encode a fixed number of enemy slots."""
@@ -310,6 +374,8 @@ class ObservationEncoder:
                     enemy=enemy,
                     supported_enemy_names=supported_enemy_names,
                     supported_enemy_name_set=supported_enemy_name_set,
+                    supported_move_names=supported_move_names,
+                    supported_move_name_set=supported_move_name_set,
                     hp_scale=hp_scale,
                 )
             )
@@ -320,6 +386,8 @@ class ObservationEncoder:
         enemy: Mapping[str, Any] | None,
         supported_enemy_names: tuple[str, ...],
         supported_enemy_name_set: set[str],
+        supported_move_names: tuple[str, ...],
+        supported_move_name_set: set[str],
         hp_scale: int,
     ) -> list[float]:
         """Encode one enemy slot."""
@@ -328,8 +396,17 @@ class ObservationEncoder:
 
         enemy_statuses = _require_mapping(enemy, "statuses")
         intent = _require_mapping(enemy, "intent")
+        behavior_state = _require_mapping(enemy, "behavior_state")
         enemy_name = str(enemy["name"])
         self._validate_enemy_name(enemy_name, supported_enemy_name_set)
+
+        possible_next_move_names = behavior_state.get("possible_next_move_names", [])
+        if not isinstance(possible_next_move_names, list):
+            raise ValueError(
+                "Enemy behavior_state field 'possible_next_move_names' must be a list."
+            )
+        for move_name in possible_next_move_names:
+            self._validate_move_name(str(move_name), supported_move_name_set)
 
         intent_status_features = []
         for status_name in self.supported_status_names:
@@ -340,10 +417,17 @@ class ObservationEncoder:
             else:
                 intent_status_features.append(0.0)
 
+        next_move_features = [
+            1.0 if supported_move_name in possible_next_move_names else 0.0
+            for supported_move_name in supported_move_names
+        ]
         enemy_type_features = [
             1.0 if enemy_name == supported_enemy_name else 0.0
             for supported_enemy_name in supported_enemy_names
         ]
+
+        phase_count = max(1, int(behavior_state.get("phase_count", 1)))
+        phase_index = max(0, int(behavior_state.get("phase_index", 0)))
 
         return [
             1.0 if bool(enemy.get("alive", True)) else 0.0,
@@ -357,6 +441,10 @@ class ObservationEncoder:
             float(int(intent.get("strength_gain", 0))) / float(hp_scale),
             *intent_status_features,
             float(int(intent.get("slimed_added", 0))) / float(self.max_hand_size),
+            float(phase_index) / BEHAVIOR_STATE_SCALE,
+            float(phase_count) / BEHAVIOR_STATE_SCALE,
+            float(len(possible_next_move_names)) / float(len(supported_move_names)),
+            *next_move_features,
             *enemy_type_features,
         ]
 
@@ -392,6 +480,16 @@ class ObservationEncoder:
         known_enemy_names = supported_enemy_name_set or set(self.supported_enemy_names)
         if enemy_name not in known_enemy_names:
             raise ValueError(f"Unknown enemy name for encoding: {enemy_name!r}")
+
+    def _validate_move_name(
+        self,
+        move_name: str,
+        supported_move_name_set: set[str] | None = None,
+    ) -> None:
+        """Raise if an observation contains a move the encoder does not know about."""
+        known_move_names = supported_move_name_set or set(self.supported_move_names)
+        if move_name not in known_move_names:
+            raise ValueError(f"Unknown move name for encoding: {move_name!r}")
 
     def encode_legal_actions(
         self, legal_actions: list[CombatAction] | tuple[CombatAction, ...]
@@ -436,6 +534,45 @@ class ObservationEncoder:
         if self.max_enemy_count == 1:
             return ("play", hand_index)
         return ("play", hand_index, target_index)
+
+    def encode_action_features(
+        self,
+        observation: Mapping[str, Any],
+        legal_actions: list[CombatAction] | tuple[CombatAction, ...] | None = None,
+    ) -> tuple[tuple[float, ...], ...]:
+        """Encode every discrete action slot as a fixed action-feature vector."""
+        source_legal_actions = (
+            tuple(legal_actions)
+            if legal_actions is not None
+            else infer_legal_actions_from_observation(observation)
+        )
+        player = _require_mapping(observation, "player")
+        enemies = _get_enemies(observation)
+        hp_scale = max(
+            int(player["max_hp"]),
+            max((int(enemy["max_hp"]) for enemy in enemies), default=1),
+            1,
+        )
+        energy_per_turn = max(1, int(player.get("energy_per_turn", player["energy"])))
+
+        encoded_features = [
+            [0.0] * self.action_feature_count for _ in range(self.action_space_size)
+        ]
+        for action in source_legal_actions:
+            action_summary = summarize_action(observation, action)
+            encoded_features[self.encode_action(action)] = list(
+                encode_action_summary_features(
+                    action_summary,
+                    supported_card_names=self.supported_card_names,
+                    supported_enemy_names=self.supported_enemy_names,
+                    supported_status_names=self.supported_status_names,
+                    max_enemy_count=self.max_enemy_count,
+                    hp_scale=hp_scale,
+                    energy_per_turn=energy_per_turn,
+                )
+            )
+
+        return tuple(tuple(row) for row in encoded_features)
 
 
 def _require_mapping(container: Mapping[str, Any], key: str) -> Mapping[str, Any]:
