@@ -12,6 +12,7 @@ from .utils import apply_damage_to_block_and_hp
 
 ObservationLike = Mapping[str, Any]
 
+# Keep card kind ordering stable: neural checkpoints depend on feature positions.
 CARD_KIND_ORDER: tuple[str, ...] = ("attack", "block", "skill", "status")
 
 
@@ -70,6 +71,8 @@ def infer_legal_actions_from_observation(
         if card_spec.cost > energy:
             continue
 
+        # Non-targeted cards should not be duplicated once per enemy. A Defend
+        # is the same action no matter which enemy slot happens to exist.
         if not card_spec.uses_target:
             if len(enemies) == 1 and len(living_enemy_indices) == 1:
                 legal_actions.append(("play", hand_index))
@@ -77,6 +80,8 @@ def infer_legal_actions_from_observation(
                 legal_actions.append(("play", hand_index, living_enemy_indices[0]))
             continue
 
+        # Targeted cards expand into one legal action per living enemy so the
+        # policy can learn target selection explicitly.
         if len(enemies) == 1 and len(living_enemy_indices) == 1:
             legal_actions.append(("play", hand_index))
             continue
@@ -146,6 +151,8 @@ def summarize_action(
     target_index = None if not card_spec.uses_target else _resolve_target_index(action, enemies)
     target_enemy = enemies[target_index] if target_index is not None else None
 
+    # Work on copies so feature construction never mutates the real observation.
+    # We only simulate the immediate card effect, not the whole future turn.
     copied_enemies = [_copy_enemy(enemy) for enemy in enemies]
     copied_target = copied_enemies[target_index] if target_index is not None else None
 
@@ -166,6 +173,7 @@ def summarize_action(
         target_intent_attack_damage = int(target_intent.get("attack_damage", 0))
 
         if card_spec.base_damage > 0:
+            # Damage features use the same status/strength rules as combat.
             damage_to_target = modify_attack_damage_for_statuses(
                 card_spec.base_damage,
                 _require_mapping(copied_target, "statuses"),
@@ -183,6 +191,8 @@ def summarize_action(
             card_spec.applies_status_name is not None
             and bool(copied_target.get("alive", True))
         ):
+            # Status application matters for action value even when it does not
+            # immediately change HP, so include the post-action target state.
             target_statuses = _require_mapping(copied_target, "statuses")
             copied_target["statuses"] = dict(target_statuses)
             copied_target["statuses"][card_spec.applies_status_name] = (
@@ -193,6 +203,8 @@ def summarize_action(
         target_hp_after = int(copied_target["hp"])
         target_block_after = int(copied_target["block"])
 
+    # This is the defensive signal used by reward shaping and action features:
+    # how much visible incoming HP loss would remain after playing this card?
     projected_after = project_incoming_hp_loss_from_state(
         player_hp=int(player["hp"]),
         player_block=player_block_after,
@@ -261,6 +273,8 @@ def project_incoming_hp_loss_from_state(
     simulated_hp = player_hp
     simulated_block = player_block
 
+    # Process living enemies in slot order, mirroring the enemy phase closely
+    # enough for a one-turn tactical estimate.
     for enemy in enemies:
         if not bool(enemy.get("alive", True)):
             continue
@@ -295,6 +309,8 @@ def encode_action_summary_features(
     energy_per_turn: int,
 ) -> tuple[float, ...]:
     """Encode one structured action summary into a numeric feature vector."""
+    # These features are consumed by action-conditioned neural policies. The
+    # order must stay aligned with action_feature_names().
     action_type_features = (
         1.0 if summary.action[0] == "end_turn" else 0.0,
         1.0 if summary.action[0] == "play" else 0.0,
@@ -321,6 +337,8 @@ def encode_action_summary_features(
     )
     target_slot_fraction = 0.0
     if summary.target_index is not None and max_enemy_count > 1:
+        # Slot position is useful, but normalized so the network does not see
+        # raw integer IDs on a different scale from the rest of the features.
         target_slot_fraction = float(summary.target_index) / float(max_enemy_count - 1)
 
     return (
@@ -440,6 +458,7 @@ def _resolve_target_index(
     if len(action) == 3:
         return action[2]
 
+    # Two-part play actions are kept for single-enemy compatibility.
     living_enemy_indices = [
         enemy_index
         for enemy_index, enemy in enumerate(enemies)

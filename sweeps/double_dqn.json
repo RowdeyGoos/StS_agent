@@ -1,0 +1,493 @@
+{
+  "best_trial": {
+    "number": 5,
+    "params": {
+      "batch_size": 128,
+      "discount": 0.98511913932307,
+      "epsilon": 0.7446466590848229,
+      "epsilon_decay": 0.995672688364959,
+      "epsilon_min": 0.01890711999779726,
+      "gradient_steps": 1,
+      "hidden_sizes": "256,256",
+      "hp_loss_penalty_scale": 1.8742853020018186,
+      "incoming_damage_shaping_scale": 0.2470749881685193,
+      "learning_rate": 0.0001164461663929776,
+      "replay_capacity": 10000,
+      "target_update_interval": 400,
+      "train_frequency": 8,
+      "warmup_steps": 512
+    },
+    "state": "COMPLETE",
+    "user_attrs": {
+      "mean_player_hp": 75.7,
+      "mean_reward": 0.9843539088591099,
+      "mean_steps": 26.373333333333335,
+      "sampled_config": {
+        "architecture": "action_feature",
+        "batch_size": 128,
+        "discount": 0.98511913932307,
+        "epsilon": 0.7446466590848229,
+        "epsilon_decay": 0.995672688364959,
+        "epsilon_min": 0.01890711999779726,
+        "gradient_clip": 1.0,
+        "gradient_steps": 1,
+        "hidden_sizes": [
+          256,
+          256
+        ],
+        "hp_loss_penalty_scale": 1.8742853020018186,
+        "incoming_damage_shaping_scale": 0.2470749881685193,
+        "learning_rate": 0.0001164461663929776,
+        "replay_capacity": 10000,
+        "target_update_interval": 400,
+        "train_frequency": 8,
+        "warmup_steps": 512
+      },
+      "score": 1.2365625,
+      "seed_runs": [
+        {
+          "evaluation_seed": 100007,
+          "mean_player_hp": 73.66,
+          "mean_reward": 0.8933421003109201,
+          "mean_steps": 17.32,
+          "score": 1.2301875,
+          "train_seed": 7,
+          "win_rate": 1.0
+        },
+        {
+          "evaluation_seed": 101007,
+          "mean_player_hp": 76.16,
+          "mean_reward": 1.019056144033272,
+          "mean_steps": 32.18,
+          "score": 1.238,
+          "train_seed": 1007,
+          "win_rate": 1.0
+        },
+        {
+          "evaluation_seed": 102007,
+          "mean_player_hp": 77.28,
+          "mean_reward": 1.0406634822331378,
+          "mean_steps": 29.62,
+          "score": 1.2415,
+          "train_seed": 2007,
+          "win_rate": 1.0
+        }
+      ],
+      "win_rate": 1.0
+    },
+    "value": 1.2365625
+  },
+  "encounter_set": "simple",
+  "episodes": 750,
+  "evaluation_episodes": 50,
+  "evaluation_seeds": [
+    100007,
+    101007,
+    102007
+  ],
+  "hp_weight": 0.25,
+  "metric": "hp_preserving_score",
+  "policy": "double_dqn",
+  "pruner": "none",
+  "sampler": "tpe",
+  "study_name": "sts_agent_double_dqn_sweep",
+  "top_trials": [
+    {
+      "number": 5,
+      "params": {
+        "batch_size": 128,
+        "discount": 0.98511913932307,
+        "epsilon": 0.7446466590848229,
+        "epsilon_decay": 0.995672688364959,
+        "epsilon_min": 0.01890711999779726,
+        "gradient_steps": 1,
+        "hidden_sizes": "256,256",
+        "hp_loss_penalty_scale": 1.8742853020018186,
+        "incoming_damage_shaping_scale": 0.2470749881685193,
+        "learning_rate": 0.0001164461663929776,
+        "replay_capacity": 10000,
+        "target_update_interval": 400,
+        "train_frequency": 8,
+        "warmup_steps": 512
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 75.7,
+        "mean_reward": 0.9843539088591099,
+        "mean_steps": 26.373333333333335,
+        "sampled_config": {
+          "architecture": "action_feature",
+          "batch_size": 128,
+          "discount": 0.98511913932307,
+          "epsilon": 0.7446466590848229,
+          "epsilon_decay": 0.995672688364959,
+          "epsilon_min": 0.01890711999779726,
+          "gradient_clip": 1.0,
+          "gradient_steps": 1,
+          "hidden_sizes": [
+            256,
+            256
+          ],
+          "hp_loss_penalty_scale": 1.8742853020018186,
+          "incoming_damage_shaping_scale": 0.2470749881685193,
+          "learning_rate": 0.0001164461663929776,
+          "replay_capacity": 10000,
+          "target_update_interval": 400,
+          "train_frequency": 8,
+          "warmup_steps": 512
+        },
+        "score": 1.2365625,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 73.66,
+            "mean_reward": 0.8933421003109201,
+            "mean_steps": 17.32,
+            "score": 1.2301875,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 76.16,
+            "mean_reward": 1.019056144033272,
+            "mean_steps": 32.18,
+            "score": 1.238,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 102007,
+            "mean_player_hp": 77.28,
+            "mean_reward": 1.0406634822331378,
+            "mean_steps": 29.62,
+            "score": 1.2415,
+            "train_seed": 2007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.2365625
+    },
+    {
+      "number": 24,
+      "params": {
+        "batch_size": 128,
+        "discount": 0.9923983314559471,
+        "epsilon": 0.7888389015060321,
+        "epsilon_decay": 0.9958364572761167,
+        "epsilon_min": 0.07275115626075075,
+        "gradient_steps": 1,
+        "hidden_sizes": "256,256",
+        "hp_loss_penalty_scale": 2.4196986476672273,
+        "incoming_damage_shaping_scale": 0.4740183974366937,
+        "learning_rate": 0.00012209049766077798,
+        "replay_capacity": 10000,
+        "target_update_interval": 400,
+        "train_frequency": 4,
+        "warmup_steps": 512
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 75.13333333333334,
+        "mean_reward": 1.0477022300129641,
+        "mean_steps": 30.18,
+        "sampled_config": {
+          "architecture": "action_feature",
+          "batch_size": 128,
+          "discount": 0.9923983314559471,
+          "epsilon": 0.7888389015060321,
+          "epsilon_decay": 0.9958364572761167,
+          "epsilon_min": 0.07275115626075075,
+          "gradient_clip": 1.0,
+          "gradient_steps": 1,
+          "hidden_sizes": [
+            256,
+            256
+          ],
+          "hp_loss_penalty_scale": 2.4196986476672273,
+          "incoming_damage_shaping_scale": 0.4740183974366937,
+          "learning_rate": 0.00012209049766077798,
+          "replay_capacity": 10000,
+          "target_update_interval": 400,
+          "train_frequency": 4,
+          "warmup_steps": 512
+        },
+        "score": 1.2347916666666667,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 73.6,
+            "mean_reward": 0.8958950807027977,
+            "mean_steps": 16.44,
+            "score": 1.23,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 75.76,
+            "mean_reward": 1.108291151994547,
+            "mean_steps": 36.12,
+            "score": 1.23675,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 102007,
+            "mean_player_hp": 76.04,
+            "mean_reward": 1.1389204573415477,
+            "mean_steps": 37.98,
+            "score": 1.237625,
+            "train_seed": 2007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.2347916666666667
+    },
+    {
+      "number": 22,
+      "params": {
+        "batch_size": 128,
+        "discount": 0.9891608747099433,
+        "epsilon": 0.7916688234443243,
+        "epsilon_decay": 0.9961418273332047,
+        "epsilon_min": 0.02792602982213119,
+        "gradient_steps": 1,
+        "hidden_sizes": "256,256",
+        "hp_loss_penalty_scale": 2.4212931502274517,
+        "incoming_damage_shaping_scale": 0.38798711711608663,
+        "learning_rate": 0.0001445105114012133,
+        "replay_capacity": 10000,
+        "target_update_interval": 400,
+        "train_frequency": 4,
+        "warmup_steps": 512
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 74.93333333333334,
+        "mean_reward": 0.9730382372194933,
+        "mean_steps": 25.013333333333332,
+        "sampled_config": {
+          "architecture": "action_feature",
+          "batch_size": 128,
+          "discount": 0.9891608747099433,
+          "epsilon": 0.7916688234443243,
+          "epsilon_decay": 0.9961418273332047,
+          "epsilon_min": 0.02792602982213119,
+          "gradient_clip": 1.0,
+          "gradient_steps": 1,
+          "hidden_sizes": [
+            256,
+            256
+          ],
+          "hp_loss_penalty_scale": 2.4212931502274517,
+          "incoming_damage_shaping_scale": 0.38798711711608663,
+          "learning_rate": 0.0001445105114012133,
+          "replay_capacity": 10000,
+          "target_update_interval": 400,
+          "train_frequency": 4,
+          "warmup_steps": 512
+        },
+        "score": 1.2341666666666666,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 73.06,
+            "mean_reward": 0.8787048722580734,
+            "mean_steps": 20.24,
+            "score": 1.2283125,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 75.4,
+            "mean_reward": 1.054963195978523,
+            "mean_steps": 34.78,
+            "score": 1.235625,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 102007,
+            "mean_player_hp": 76.34,
+            "mean_reward": 0.9854466434218836,
+            "mean_steps": 20.02,
+            "score": 1.2385625,
+            "train_seed": 2007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.2341666666666666
+    },
+    {
+      "number": 21,
+      "params": {
+        "batch_size": 128,
+        "discount": 0.9901514352336425,
+        "epsilon": 0.7851225590590426,
+        "epsilon_decay": 0.9968695388399256,
+        "epsilon_min": 0.03354188762889694,
+        "gradient_steps": 1,
+        "hidden_sizes": "256,256",
+        "hp_loss_penalty_scale": 2.286266838213079,
+        "incoming_damage_shaping_scale": 0.29567220695174645,
+        "learning_rate": 0.000164035674440547,
+        "replay_capacity": 10000,
+        "target_update_interval": 400,
+        "train_frequency": 4,
+        "warmup_steps": 512
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 74.87333333333333,
+        "mean_reward": 0.9865901719472897,
+        "mean_steps": 30.78,
+        "sampled_config": {
+          "architecture": "action_feature",
+          "batch_size": 128,
+          "discount": 0.9901514352336425,
+          "epsilon": 0.7851225590590426,
+          "epsilon_decay": 0.9968695388399256,
+          "epsilon_min": 0.03354188762889694,
+          "gradient_clip": 1.0,
+          "gradient_steps": 1,
+          "hidden_sizes": [
+            256,
+            256
+          ],
+          "hp_loss_penalty_scale": 2.286266838213079,
+          "incoming_damage_shaping_scale": 0.29567220695174645,
+          "learning_rate": 0.000164035674440547,
+          "replay_capacity": 10000,
+          "target_update_interval": 400,
+          "train_frequency": 4,
+          "warmup_steps": 512
+        },
+        "score": 1.2339791666666666,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 75.62,
+            "mean_reward": 1.0304983075679288,
+            "mean_steps": 34.28,
+            "score": 1.2363125,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 76.5,
+            "mean_reward": 1.017431610039759,
+            "mean_steps": 27.68,
+            "score": 1.2390625,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 102007,
+            "mean_player_hp": 72.5,
+            "mean_reward": 0.9118405982341815,
+            "mean_steps": 30.38,
+            "score": 1.2265625,
+            "train_seed": 2007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.2339791666666666
+    },
+    {
+      "number": 25,
+      "params": {
+        "batch_size": 128,
+        "discount": 0.9923700250045683,
+        "epsilon": 0.8116201596100687,
+        "epsilon_decay": 0.9959337158343613,
+        "epsilon_min": 0.07183712433898745,
+        "gradient_steps": 1,
+        "hidden_sizes": "256,256",
+        "hp_loss_penalty_scale": 2.5828830757941565,
+        "incoming_damage_shaping_scale": 0.5124219955832123,
+        "learning_rate": 0.00011925922301252636,
+        "replay_capacity": 40000,
+        "target_update_interval": 400,
+        "train_frequency": 4,
+        "warmup_steps": 512
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 74.57333333333334,
+        "mean_reward": 1.046374242615404,
+        "mean_steps": 30.08,
+        "sampled_config": {
+          "architecture": "action_feature",
+          "batch_size": 128,
+          "discount": 0.9923700250045683,
+          "epsilon": 0.8116201596100687,
+          "epsilon_decay": 0.9959337158343613,
+          "epsilon_min": 0.07183712433898745,
+          "gradient_clip": 1.0,
+          "gradient_steps": 1,
+          "hidden_sizes": [
+            256,
+            256
+          ],
+          "hp_loss_penalty_scale": 2.5828830757941565,
+          "incoming_damage_shaping_scale": 0.5124219955832123,
+          "learning_rate": 0.00011925922301252636,
+          "replay_capacity": 40000,
+          "target_update_interval": 400,
+          "train_frequency": 4,
+          "warmup_steps": 512
+        },
+        "score": 1.2330416666666666,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 74.64,
+            "mean_reward": 0.9618419242590722,
+            "mean_steps": 19.72,
+            "score": 1.23325,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 75.72,
+            "mean_reward": 1.1644009438368996,
+            "mean_steps": 39.66,
+            "score": 1.236625,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 102007,
+            "mean_player_hp": 73.36,
+            "mean_reward": 1.0128798597502398,
+            "mean_steps": 30.86,
+            "score": 1.22925,
+            "train_seed": 2007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.2330416666666666
+    }
+  ],
+  "train_seeds": [
+    7,
+    1007,
+    2007
+  ],
+  "trials_completed": 30,
+  "trials_requested": 30
+}

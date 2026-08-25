@@ -77,7 +77,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--encounter-set",
         choices=("simple", "overgrowth_easy"),
-        default="simple",
+        default="overgrowth_easy",
         help="Encounter pool to train or evaluate against.",
     )
     parser.add_argument(
