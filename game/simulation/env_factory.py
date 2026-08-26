@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from random import Random
 
 from .core import CombatEnv
+from .deck_presets import resolve_deck_factory
 from .enemy import (
     Enemy,
     FuzzyWurmCrawler,
@@ -76,12 +77,18 @@ class CombatEnvFactory:
     hp_loss_penalty_scale: float = 1.0
     incoming_damage_shaping_scale: float = 0.0
     record_trajectory: bool = False
+    deck: str = "starter"
+
+    def __post_init__(self) -> None:
+        resolve_deck_factory(self.deck)
 
     def __call__(self) -> CombatEnv:
+        deck_factory = resolve_deck_factory(self.deck)
         if self.encounter_set == "simple":
             return CombatEnv(
                 player_max_hp=self.player_hp,
                 cards_per_turn=self.cards_per_turn,
+                deck_factory=deck_factory,
                 enemy_factory=_SimpleEnemyFactory(self.enemy_hp),
                 hp_loss_penalty_scale=self.hp_loss_penalty_scale,
                 incoming_damage_shaping_scale=self.incoming_damage_shaping_scale,
@@ -96,6 +103,7 @@ class CombatEnvFactory:
             return CombatEnv(
                 player_max_hp=self.player_hp,
                 cards_per_turn=self.cards_per_turn,
+                deck_factory=deck_factory,
                 encounter_factory=encounter_factory,
                 max_enemy_count=3,
                 hp_loss_penalty_scale=self.hp_loss_penalty_scale,
@@ -106,6 +114,7 @@ class CombatEnvFactory:
             return CombatEnv(
                 player_max_hp=self.player_hp,
                 cards_per_turn=self.cards_per_turn,
+                deck_factory=deck_factory,
                 encounter_factory=_FIXED_ENCOUNTER_FACTORIES[self.encounter_set],
                 max_enemy_count=3,
                 hp_loss_penalty_scale=self.hp_loss_penalty_scale,

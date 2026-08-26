@@ -52,6 +52,7 @@ def test_q_learning_checkpoint_can_include_training_config() -> None:
         "policy": "q_learning",
         "episodes": 25,
         "encounter_set": "simple",
+        "deck": "ironclad_sequencing",
     }
     run_metadata = {
         "episodes_completed": 25,

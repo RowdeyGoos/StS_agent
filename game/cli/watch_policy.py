@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Sequence
 
 from game.simulation.core import CombatEnv
+from game.simulation.deck_presets import SUPPORTED_DECKS
 from game.simulation.env_factory import CombatEnvFactory, SUPPORTED_ENCOUNTERS
 from game.agents.agent_io import load_agent
 from game.analysis.render import describe_action, describe_intent, format_observation
@@ -61,6 +62,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         type=int,
         default=40,
         help="Enemy HP for the default simple enemy.",
+    )
+    parser.add_argument(
+        "--deck",
+        choices=SUPPORTED_DECKS,
+        default="starter",
+        help="Named deck preset used for the traced combat.",
     )
     parser.add_argument(
         "--player-hp",
@@ -126,6 +133,7 @@ def make_env(args: argparse.Namespace) -> CombatEnv:
     """Create a combat environment from watch CLI arguments."""
     return CombatEnvFactory(
         encounter_set=args.encounter,
+        deck=args.deck,
         enemy_hp=args.enemy_hp,
         player_hp=args.player_hp,
         cards_per_turn=args.cards_per_turn,
@@ -144,8 +152,10 @@ def print_trace(trace: object, show_action_scores: bool, top_action_scores: int)
     encounter_fragment = (
         "" if trace.encounter is None else f" encounter={trace.encounter}"
     )
+    deck_fragment = "" if trace.deck is None else f" deck={trace.deck}"
     print(
-        f"Policy trace: policy={trace.policy_name}{encounter_fragment} seed={trace.seed}"
+        f"Policy trace: policy={trace.policy_name}{encounter_fragment}"
+        f"{deck_fragment} seed={trace.seed}"
     )
     print(format_observation(trace.initial_observation))
 
@@ -226,6 +236,7 @@ def main() -> None:
         seed=args.seed,
         traced_agent=traced_agent,
         encounter=args.encounter,
+        deck=args.deck,
     )
     print_trace(
         trace,

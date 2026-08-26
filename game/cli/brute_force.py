@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Sequence
 
 from game.simulation.core import CombatEnv
+from game.simulation.deck_presets import SUPPORTED_DECKS
 from game.simulation.env_factory import CombatEnvFactory, SUPPORTED_ENCOUNTERS
 from game.analysis.bruteforce import BruteForceProgress, brute_force_combat
 from game.agents.agent_io import load_agent
@@ -44,6 +45,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help=(
             "Named encounter or sampled pool to solve using the combat seed."
         ),
+    )
+    parser.add_argument(
+        "--deck",
+        choices=SUPPORTED_DECKS,
+        default="starter",
+        help="Named deck preset used for the seeded combat.",
     )
     parser.add_argument("--seed", type=int, default=7, help="Exact combat seed to solve.")
     parser.add_argument(
@@ -201,6 +208,7 @@ def make_env(args: argparse.Namespace) -> CombatEnv:
     """Create the requested fixed or seed-sampled combat environment."""
     return CombatEnvFactory(
         encounter_set=args.encounter,
+        deck=args.deck,
         enemy_hp=args.enemy_hp,
         player_hp=args.player_hp,
         cards_per_turn=args.cards_per_turn,
@@ -227,14 +235,19 @@ def print_progress(progress: BruteForceProgress) -> None:
     )
 
 
-def print_oracle_result(result: object, encounter: str, seed: int) -> None:
+def print_oracle_result(
+    result: object,
+    encounter: str,
+    deck: str,
+    seed: int,
+) -> None:
     """Print the best line and its proof status."""
     from game.analysis.bruteforce import BruteForceResult
 
     assert isinstance(result, BruteForceResult)
     print(
         "Oracle search: "
-        f"encounter={encounter} seed={seed} "
+        f"encounter={encounter} deck={deck} seed={seed} "
         f"proven_optimal={result.proven_optimal} "
         f"reason={result.termination_reason} "
         f"expanded={result.expanded_nodes} "
@@ -503,10 +516,11 @@ def main() -> None:
         progress_callback=print_progress,
         progress_interval=args.progress_interval,
     )
-    print_oracle_result(result, args.encounter, args.seed)
+    print_oracle_result(result, args.encounter, args.deck, args.seed)
 
     output_payload: dict[str, object] = {
         "encounter": args.encounter,
+        "deck": args.deck,
         "seed": args.seed,
         "search_workers": args.search_workers,
         "oracle": result.as_dict(),
@@ -521,6 +535,7 @@ def main() -> None:
             seed=args.seed,
             traced_agent=agent,
             encounter=args.encounter,
+            deck=args.deck,
         )
         metrics = _comparison_payload(result, agent_trace)
         summary = agent_trace.summary

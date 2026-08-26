@@ -172,6 +172,7 @@ def test_report_json_and_table_are_stable(tmp_path) -> None:
     assert payload["benchmark_format_version"] == BENCHMARK_FORMAT_VERSION
     assert payload["config"]["episode_seeds"] == [3, 4]
     assert payload["config"]["device"] == "cpu"
+    assert payload["config"]["environment"]["deck"] == "starter"
     assert payload["policies"][0]["source_kind"] == "built_in"
     assert payload["results"][0]["metrics"] == dict(
         monkey_report.results[0].metrics

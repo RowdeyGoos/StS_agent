@@ -64,6 +64,7 @@ def test_trace_policy_episode_and_save_log() -> None:
         seed=0,
         traced_agent=agent,
         encounter="simple",
+        deck="ironclad_sequencing",
     )
 
     assert trace.summary["winner"] == "player"
@@ -81,11 +82,32 @@ def test_trace_policy_episode_and_save_log() -> None:
 
         assert payload["policy_name"] == "q_learning"
         assert payload["encounter"] == "simple"
+        assert payload["deck"] == "ironclad_sequencing"
         assert payload["summary"]["winner"] == "player"
         assert payload["steps"][0]["action"] == ["play", 0]
         assert payload["steps"][0]["legal_actions"] == [["end_turn"], ["play", 0]]
         assert loaded_trace.steps[0].legal_actions == (("end_turn",), ("play", 0))
         assert loaded_trace.encounter == "simple"
+        assert loaded_trace.deck == "ironclad_sequencing"
+
+
+def test_legacy_trace_without_deck_loads_as_unknown(tmp_path) -> None:
+    trace_path = tmp_path / "legacy.json"
+    trace_path.write_text(
+        json.dumps(
+            {
+                "policy_name": "heuristic",
+                "seed": 7,
+                "encounter": "simple",
+                "initial_observation": {},
+                "steps": [],
+                "summary": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert load_episode_trace(trace_path).deck is None
 
 
 def test_watch_and_brute_force_build_identical_seeded_encounters() -> None:
@@ -93,6 +115,8 @@ def test_watch_and_brute_force_build_identical_seeded_encounters() -> None:
         common_args = [
             "--encounter",
             encounter,
+            "--deck",
+            "ironclad_sequencing",
             "--seed",
             "19",
             "--player-hp",
@@ -130,3 +154,44 @@ def test_watch_retains_encounter_set_as_cli_alias() -> None:
     )
 
     assert args.encounter == "slimes"
+
+
+def test_watch_and_oracle_deck_defaults_and_choices_match() -> None:
+    watch_default = watch_policy.parse_args(["--policy", "heuristic"])
+    oracle_default = brute_force_cli.parse_args([])
+    watch_named = watch_policy.parse_args(
+        ["--policy", "heuristic", "--deck", "ironclad_sequencing"]
+    )
+    oracle_named = brute_force_cli.parse_args(
+        ["--deck", "ironclad_sequencing"]
+    )
+
+    assert watch_default.deck == oracle_default.deck == "starter"
+    assert watch_named.deck == oracle_named.deck == "ironclad_sequencing"
+
+
+def test_oracle_json_records_deck(tmp_path, monkeypatch) -> None:
+    output_path = tmp_path / "oracle.json"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "sts-oracle",
+            "--encounter",
+            "simple",
+            "--deck",
+            "ironclad_sequencing",
+            "--seed",
+            "3",
+            "--max-steps",
+            "1",
+            "--max-nodes",
+            "1",
+            "--json-out",
+            str(output_path),
+        ],
+    )
+
+    brute_force_cli.main()
+
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert payload["deck"] == "ironclad_sequencing"

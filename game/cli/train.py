@@ -14,6 +14,7 @@ from time import perf_counter
 from typing import Any, Callable, Sequence
 
 from game.simulation.core import CombatEnv
+from game.simulation.deck_presets import SUPPORTED_DECKS
 from game.agents.agent_io import CHECKPOINT_FORMAT_VERSION, save_agent
 from game.agents.baselines import (
     EvaluationStats,
@@ -148,6 +149,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         choices=SUPPORTED_TRAINING_ENCOUNTER_SETS,
         default="overgrowth_easy",
         help="Encounter pool to train or evaluate against.",
+    )
+    parser.add_argument(
+        "--deck",
+        choices=SUPPORTED_DECKS,
+        default="starter",
+        help="Named deck preset used for training and evaluation.",
     )
     parser.add_argument(
         "--enemy-hp",
@@ -757,6 +764,7 @@ def make_env_factory(args: argparse.Namespace) -> Callable[[], CombatEnv]:
     """Build a deterministic env factory from CLI arguments."""
     return CombatEnvFactory(
         encounter_set=args.encounter_set,
+        deck=args.deck,
         enemy_hp=args.enemy_hp,
         player_hp=args.player_hp,
         cards_per_turn=args.cards_per_turn,
