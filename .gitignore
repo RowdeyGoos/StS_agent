@@ -34,6 +34,7 @@ checkpoints/
 logs/
 runs/
 wandb/
+sweeps/*.journal
 
 # Local editor / OS files
 .DS_Store

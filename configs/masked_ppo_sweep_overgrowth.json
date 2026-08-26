@@ -1,0 +1,115 @@
+{
+  "cards_per_turn": 5,
+  "device": "cpu",
+  "encounter_set": "overgrowth_easy",
+  "env_workers": 4,
+  "episodes": 10000,
+  "evaluation_episodes": 50,
+  "evaluation_interval": 0,
+  "hp_weight": 0.25,
+  "journal_file": "sweeps/masked_ppo_overgrowth.journal",
+  "json_out": "sweeps/masked_ppo_overgrowth.json",
+  "metric": "hp_preserving_score",
+  "num_envs": 64,
+  "player_hp": 80,
+  "policy": "masked_ppo",
+  "ppo_policy_architecture": "action_feature",
+  "pruner": "none",
+  "restore_best_checkpoint": true,
+  "sampler": "tpe",
+  "study_name": "masked_ppo_overgrowth",
+  "search_space": {
+    "clip_ratio": {
+      "high": 0.25,
+      "low": 0.1,
+      "type": "float"
+    },
+    "discount": {
+      "choices": [
+        0.99,
+        0.995,
+        0.999
+      ],
+      "type": "categorical"
+    },
+    "entropy_coef": {
+      "high": 1.0,
+      "log": true,
+      "low": 0.001,
+      "type": "float"
+    },
+    "gae_lambda": {
+      "high": 0.98,
+      "low": 0.9,
+      "type": "float"
+    },
+    "hidden_sizes": {
+      "choices": [
+        [
+          128,
+          128
+        ],
+        [
+          256,
+          128
+        ],
+        [
+          256,
+          256
+        ]
+      ],
+      "type": "categorical"
+    },
+    "hp_loss_penalty_scale": {
+      "high": 3.0,
+      "low": 0.5,
+      "type": "float"
+    },
+    "incoming_damage_shaping_scale": 0.0,
+    "learning_rate": {
+      "high": 0.0008,
+      "log": true,
+      "low": 0.0001,
+      "type": "float"
+    },
+    "max_grad_norm": {
+      "choices": [
+        0.5,
+        1.0
+      ],
+      "type": "categorical"
+    },
+    "minibatch_size": {
+      "choices": [
+        1024,
+        2048
+      ],
+      "type": "categorical"
+    },
+    "ppo_epochs": {
+      "choices": [
+        2,
+        3,
+        4
+      ],
+      "type": "categorical"
+    },
+    "rollout_steps": {
+      "choices": [
+        2048,
+        4096
+      ],
+      "type": "categorical"
+    },
+    "value_loss_coef": {
+      "high": 0.75,
+      "low": 0.25,
+      "type": "float"
+    }
+  },
+  "seed": 7,
+  "top_k": 5,
+  "train_seeds": 2,
+  "trial_workers": 2,
+  "trials": 30
+}
