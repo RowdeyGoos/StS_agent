@@ -6,7 +6,8 @@ import importlib
 
 import game
 from game.agents import ppo
-from game.analysis import bruteforce
+from game.analysis import benchmark, bruteforce
+from game.cli import benchmark as benchmark_cli
 from game.cli import brute_force, sweep, train, watch_policy
 from game.simulation import core
 from game.training import profile
@@ -23,6 +24,10 @@ def test_packaged_cli_modules_are_directly_usable() -> None:
     assert sweep.parse_args([]).policy == "double_dqn"
     assert watch_policy.parse_args(["--policy", "heuristic"]).policy == "heuristic"
     assert brute_force.parse_args([]).encounter == "simple"
+    assert benchmark_cli.parse_args(["--encounter", "simple"]).encounter == [
+        "simple"
+    ]
+    assert benchmark.BENCHMARK_FORMAT_VERSION == 1
     assert profile.TrainingProfiler is not None
 
 
