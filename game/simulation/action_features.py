@@ -191,7 +191,14 @@ def summarize_action(
         target_hp_before = int(copied_target["hp"])
         target_block_before = int(copied_target["block"])
         target_intent = _require_mapping(copied_target, "intent")
-        target_intent_attack_damage = int(target_intent.get("attack_damage", 0))
+        intent_attack_damage = int(target_intent.get("attack_damage", 0))
+        intent_attack_count = int(
+            target_intent.get(
+                "attack_count",
+                1 if intent_attack_damage > 0 else 0,
+            )
+        )
+        target_intent_attack_damage = intent_attack_damage * intent_attack_count
 
         if card_spec.base_damage > 0:
             # Damage features use the same status/strength rules as combat.
@@ -358,20 +365,22 @@ def project_incoming_hp_loss_from_state(
             continue
         intent = _require_mapping(enemy, "intent")
         attack_damage = int(intent.get("attack_damage", 0))
-        if attack_damage <= 0:
+        attack_count = int(intent.get("attack_count", 1 if attack_damage > 0 else 0))
+        if attack_damage <= 0 or attack_count <= 0:
             continue
 
-        resolved_damage = modify_attack_damage_for_statuses(
-            attack_damage,
-            player_statuses,
-        )
-        simulated_hp, simulated_block = apply_damage_to_block_and_hp(
-            simulated_hp,
-            simulated_block,
-            resolved_damage,
-        )
-        if simulated_hp <= 0:
-            return original_hp
+        for _hit_index in range(attack_count):
+            resolved_damage = modify_attack_damage_for_statuses(
+                attack_damage,
+                player_statuses,
+            )
+            simulated_hp, simulated_block = apply_damage_to_block_and_hp(
+                simulated_hp,
+                simulated_block,
+                resolved_damage,
+            )
+            if simulated_hp <= 0:
+                return original_hp
 
     return max(0, original_hp - simulated_hp)
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from game.simulation.core import CombatEnv
 from game.agents.baselines import choose_heuristic_action
-from game.analysis.render import describe_action, format_observation
+from game.analysis.render import describe_action, describe_intent, format_observation
 
 
 def run_demo(seed: int = 7) -> None:
@@ -35,7 +35,7 @@ def run_demo(seed: int = 7) -> None:
                 print(
                     "  Enemy turn: "
                     f"enemy[{enemy_action['enemy_index']}] {enemy_action['enemy_name']} -> "
-                    f"{intent['move_name']} ({intent['kind']} {intent['value']})"
+                    f"{describe_intent(intent)}"
                 )
         print(f"  Next action mask: {info['action_mask']}")
 

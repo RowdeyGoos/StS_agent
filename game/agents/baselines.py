@@ -197,9 +197,16 @@ def choose_heuristic_action(
             assert isinstance(target_enemy, dict)
             target_intent = target_enemy["intent"]
             assert isinstance(target_intent, dict)
+            intent_attack_damage = int(target_intent.get("attack_damage", 0))
+            intent_attack_count = int(
+                target_intent.get(
+                    "attack_count",
+                    1 if intent_attack_damage > 0 else 0,
+                )
+            )
             preferred_actions.append(
                 (
-                    -int(target_intent.get("attack_damage", 0)),
+                    -(intent_attack_damage * intent_attack_count),
                     int(target_enemy["hp"]),
                     target_index,
                     action_index,

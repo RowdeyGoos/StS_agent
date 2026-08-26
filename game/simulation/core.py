@@ -556,20 +556,21 @@ class CombatEnv:
             if not isinstance(intent, dict):
                 continue
             base_attack_damage = int(intent.get("attack_damage", 0))
-            if base_attack_damage <= 0:
+            attack_count = int(intent.get("attack_count", 1 if base_attack_damage > 0 else 0))
+            if base_attack_damage <= 0 or attack_count <= 0:
                 continue
 
-            resolved_attack_damage = modify_attack_damage_for_statuses(
-                base_attack_damage,
-                player_statuses,
-            )
-            previous_hp = simulated_hp
-            simulated_hp, simulated_block = apply_damage_to_block_and_hp(
-                simulated_hp,
-                simulated_block,
-                resolved_attack_damage,
-            )
-            if simulated_hp <= 0:
-                return original_hp
+            for _hit_index in range(attack_count):
+                resolved_attack_damage = modify_attack_damage_for_statuses(
+                    base_attack_damage,
+                    player_statuses,
+                )
+                simulated_hp, simulated_block = apply_damage_to_block_and_hp(
+                    simulated_hp,
+                    simulated_block,
+                    resolved_attack_damage,
+                )
+                if simulated_hp <= 0:
+                    return original_hp
 
         return max(0, original_hp - simulated_hp)

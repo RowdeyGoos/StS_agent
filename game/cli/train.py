@@ -30,7 +30,10 @@ from game.agents.dqn import (
     train_dqn,
     train_dueling_double_dqn,
 )
-from game.simulation.env_factory import CombatEnvFactory
+from game.simulation.env_factory import (
+    CombatEnvFactory,
+    SUPPORTED_TRAINING_ENCOUNTER_SETS,
+)
 from game.agents.ppo import PPOTrainingResult, train_masked_ppo
 from game.training.profile import TrainingProfiler, print_training_profile
 
@@ -142,7 +145,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--encounter-set",
-        choices=("simple", "overgrowth_easy"),
+        choices=SUPPORTED_TRAINING_ENCOUNTER_SETS,
         default="overgrowth_easy",
         help="Encounter pool to train or evaluate against.",
     )

@@ -2,8 +2,20 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import Any
+
 from ..simulation.actions import CombatAction
 from ..simulation.core import Observation
+
+
+def describe_intent(intent: Mapping[str, Any]) -> str:
+    """Render one intent, preserving visible per-hit attack semantics."""
+    value_fragment = str(intent["value"])
+    attack_count = int(intent.get("attack_count", 0))
+    if int(intent.get("attack_damage", 0)) > 0 and attack_count > 1:
+        value_fragment = f"{intent['attack_damage']} x {attack_count}"
+    return f"{intent['move_name']} ({intent['kind']} {value_fragment})"
 
 
 def describe_action(action: CombatAction, observation: Observation) -> str:
@@ -50,7 +62,7 @@ def format_observation(observation: Observation) -> str:
             f"  Enemy {enemy_index}: {enemy['name']} | "
             f"HP {enemy['hp']}/{enemy['max_hp']} | Block {enemy['block']} | "
             f"Str {enemy.get('strength', 0)} | Status {enemy_statuses} | "
-            f"Intent {intent['move_name']} ({intent['kind']} {intent['value']})"
+            f"Intent {describe_intent(intent)}"
         )
     enemy_summary = "\n".join(enemy_lines)
 

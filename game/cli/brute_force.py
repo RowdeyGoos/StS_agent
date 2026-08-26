@@ -42,8 +42,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         choices=SUPPORTED_ENCOUNTERS,
         default="simple",
         help=(
-            "Fixed encounter to solve. overgrowth_easy samples from its pool using "
-            "the combat seed."
+            "Named encounter or sampled pool to solve using the combat seed."
         ),
     )
     parser.add_argument("--seed", type=int, default=7, help="Exact combat seed to solve.")
