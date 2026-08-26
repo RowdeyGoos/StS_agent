@@ -11,7 +11,7 @@ The project currently has:
 - a modular combat simulator
 - deterministic seeded runs
 - single-enemy and multi-enemy encounters
-- starter deck cards plus `Slimed`
+- starter deck cards plus `Slimed`, with an optional four-card Ironclad sequencing preset
 - `vulnerable` and `shrink`
 - structured observations and fixed-width RL encodings
 - fixed legal-action feature encodings for policy architectures
@@ -21,7 +21,9 @@ The project currently has:
 - batched multi-environment PPO rollout collection with per-environment GAE
 - opt-in process-parallel CPU PPO environment collection through shared memory
 - opt-in PPO phase timing and CPU/memory/accelerator resource reports
-- the `simple` encounter and the `overgrowth_easy` encounter pool
+- the `simple` encounter, canonical `overgrowth_easy`, and a versioned partial `overgrowth_hard_v1` pool with Mawler
+- aggregate and per-encounter evaluation metrics, including damage taken
+- deterministic fixed-seed policy benchmarks with table and JSON output
 - saved trace analysis for common tactical mistakes
 - a seeded brute-force oracle for small-encounter optimal-policy comparisons
 - per-decision oracle regret traces for ranking trained-policy weak points
@@ -39,10 +41,14 @@ These are the highest-value next steps.
 
 ### 1. Better Evaluation Reporting
 
-- break down evaluation results by encounter type
-- report per-enemy or per-encounter win rates
-- surface damage taken, not just final reward
-- make it easier to compare heuristic, tabular, and neural policies fairly
+Completed foundation:
+
+- evaluation results break down by encounter composition
+- aggregate and per-encounter rows report win rate, reward, final HP, steps, and damage taken
+- compare mode and `sts-benchmark` use explicit shared held-out seeds across policies
+
+Next:
+
 - use the brute-force oracle on tractable fixed seeds to report policy optimality gaps
 - compare hindsight and information-aware regret so hidden future knowledge is not mislabeled as an agent weakness
 
@@ -53,8 +59,14 @@ Why:
 
 ### 2. More Encounter Diversity
 
-- correct the easy Slimes composition to one Leaf Slime (S), one random medium
-  slime, and one Twig Slime (S)
+Completed foundation:
+
+- corrected easy Slimes to one Leaf Slime (S), one random medium slime, and one Twig Slime (S)
+- added Mawler with per-hit intents and the partial `overgrowth_hard_v1` pool
+- added fixed two-Nibbit and Shrinker Beetle plus Fuzzy Wurm Crawler matchups
+
+Next:
+
 - add a few more enemy types or encounter pools before adding full progression
 - keep them small and explicit
 - prefer encounter diversity over a huge card pool at first
@@ -77,11 +89,16 @@ Why:
 
 ### 4. More Cards With Sequencing Decisions
 
+Completed foundation:
+
+- added Pommel Strike and Shrug It Off for draw decisions
+- added Iron Wave for mixed block/attack sequencing
+- added Body Slam for block-dependent damage
+- kept the canonical starter deck as the default and exposed an optional research preset
+
 Good next card types:
 
-- draw cards
 - multi-hit attacks
-- mixed attack/block cards
 - cards that care about statuses
 
 Why:
@@ -125,8 +142,13 @@ Why:
 
 ### Better Experiment Tooling
 
-- benchmark scripts with fixed seed splits
-- automated comparison tables
+Completed foundation:
+
+- versioned fixed-seed benchmark reports
+- deterministic comparison tables and JSON output
+
+Next:
+
 - optional plotting utilities
 
 Why:

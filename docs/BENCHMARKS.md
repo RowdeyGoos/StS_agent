@@ -28,10 +28,10 @@ damage reporting is available display `0.00` in that column. The optional
 versioned JSON preserves the complete `EvaluationStats.as_dict()` payload for
 later tooling.
 
-Only fixed encounter names are accepted. The sampled `overgrowth_easy` pool is
-intentionally excluded because a per-encounter comparison should not mix
-matchups inside one table row. The command obtains its choices from the shared
-fixed-encounter registry when available.
+Only fixed encounter names are accepted. The sampled `overgrowth_easy` and
+`overgrowth_hard_v1` pools are intentionally excluded because a per-encounter
+comparison should not mix matchups inside one table row. The command obtains
+its choices from the shared fixed-encounter registry.
 
 Saved agents must match each selected environment's observation and action
 layouts. In particular, a checkpoint trained with the three-enemy encoder is

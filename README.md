@@ -11,6 +11,9 @@ Contributor and coding-session docs:
 - [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md): current technical state of the simulator
 - [docs/AGENT_FLOW.md](docs/AGENT_FLOW.md): visual walkthrough of observation encoding and Double DQN action scoring
 - [docs/EXPERIMENT_WORKFLOWS.md](docs/EXPERIMENT_WORKFLOWS.md): practical training, profiling, sweep, trace, and oracle workflows
+- [docs/BENCHMARKS.md](docs/BENCHMARKS.md): deterministic multi-policy benchmark workflow and JSON format
+- [docs/OVERGROWTH_HARD_V1.md](docs/OVERGROWTH_HARD_V1.md): partial hard-pool contents, Mawler behavior, and content sources
+- [docs/IRONCLAD_CARDS.md](docs/IRONCLAD_CARDS.md): supported sequencing cards and source data
 - [ROADMAP.md](ROADMAP.md): current priorities and likely next steps
 
 ## Setup
@@ -48,8 +51,11 @@ sts-train --config configs/masked_ppo_overgrowth.json
 sts-train --config configs/masked_ppo_overgrowth.json --profile-training --episodes 500 --eval-interval 0 --eval-episodes 10
 sts-analyze-training runs/masked-ppo-overgrowth/example-run
 sts-train --policy heuristic --encounter-set overgrowth_easy --episodes 200
+sts-train --policy heuristic --encounter-set overgrowth_hard_v1 --episodes 200
 sts-train --policy double_dqn --encounter-set overgrowth_easy --episodes 1500 --eval-interval 100
+sts-benchmark --encounter nibbit --encounter slimes --episodes 100 --seed 1000 --json-out benchmarks/fixed-seeds.json
 sts-watch --policy heuristic --encounter overgrowth_easy --seed 7
+sts-watch --policy heuristic --encounter mawler --seed 7
 sts-watch --policy double_dqn --agent-path checkpoints/double_dqn_agent.pt --encounter slimes --seed 7 --log-file logs/double_dqn_trace.json
 sts-watch --policy dueling_double_dqn --agent-path checkpoints/dueling_double_dqn_agent.pt --encounter nibbit --seed 7 --log-file logs/dueling_double_dqn_trace.json
 sts-watch --policy masked_ppo --agent-path checkpoints/masked_ppo_agent.pt --encounter fuzzy_wurm_crawler --seed 7 --log-file logs/masked_ppo_trace.json
@@ -72,10 +78,29 @@ Useful options:
 - `sts-train --policy double_dqn --episodes 2000 --batch-size 128 --train-frequency 4 --eval-interval 0`
 - `sts-train --policy double_dqn --incoming-damage-shaping-scale 0.75 --discount 0.999`
 - `sts-train --encounter-set overgrowth_easy --policy compare --episodes 1000`
+- `sts-train --encounter-set overgrowth_hard_v1 --policy compare --episodes 1000`
+- `sts-benchmark --encounter mawler --encounter nibbits --episodes 100 --seed 1000`
 - `sts-sweep --policy masked_ppo --trials 20 --episodes 1000 --train-seeds 2 --evaluation-episodes 40`
 - `sts-sweep --policy q_learning --trials 15 --episodes 500 --train-seeds 3 --sampler random`
 - `sts-watch --policy q_learning --agent-path checkpoints/q_learning_agent.json --seed 11 --log-file logs/q_learning_trace.json`
 - `sts-analyze-trace logs/masked_ppo_trace.json --json-out logs/masked_ppo_analysis.json`
+
+Evaluation summaries now retain the aggregate metrics and add deterministic
+per-encounter rows plus mean damage taken. `--policy compare` uses the same
+held-out seed range for random, heuristic, Q-learning, DQN, and Double DQN final
+evaluation. Use `sts-benchmark` when comparing built-ins and saved checkpoints
+over an explicit grid of fixed encounters and seeds.
+
+The canonical starter deck remains the default. A non-canonical ten-card deck
+with Pommel Strike, Shrug It Off, Iron Wave, and Body Slam is available through
+the public Python API:
+
+```python
+from game import CombatEnv, create_ironclad_sequencing_deck
+
+env = CombatEnv(deck_factory=create_ironclad_sequencing_deck)
+observation = env.reset(seed=7)
+```
 
 ## Training configuration files
 
@@ -213,7 +238,7 @@ Notes:
 
 - `q_learning`, DQN-family agents, and `masked_ppo` now use separate default learning rates.
 - The DQN family currently includes `dqn`, `double_dqn`, and `dueling_double_dqn`, with `action_feature` as the default training architecture.
-- The policy-gradient family currently includes `masked_ppo`, with `action_feature` as the default training architecture. The opt-in `shared_enemy` architecture applies the same learned encoder to every enemy, mean-pools living-enemy context, and scores a targeted action using that target's embedding. It excludes `target_slot_fraction`, making target scores equivariant to enemy-slot reordering. Use `configs/masked_ppo_shared_enemy_overgrowth.json` for a direct comparison run; existing checkpoints remain compatible.
+- The policy-gradient family currently includes `masked_ppo`, with `action_feature` as the default training architecture. The opt-in `shared_enemy` architecture applies the same learned encoder to every enemy, mean-pools living-enemy context, and scores a targeted action using that target's embedding. It excludes `target_slot_fraction`, making target scores equivariant to enemy-slot reordering. Use `configs/masked_ppo_shared_enemy_overgrowth.json` for a direct comparison run; checkpoints must match the current encoder schema.
 - Masked PPO supports batched rollout collection with `--num-envs`. `--rollout-steps` is the total number of transitions across all environments per update; `--num-envs 1` preserves serial collection.
 - CPU PPO can use `--env-workers N` to shard simulator slots across persistent processes. Workers communicate through shared numeric arrays; use it for longer runs where process startup can amortize.
 - Neural training automatically selects CUDA, then Apple Metal (`mps`), then CPU. Use `--device cpu`, `--device cuda`, or `--device mps` to override it explicitly.
@@ -229,9 +254,14 @@ Notes:
 - `--eval-interval 0` disables checkpoint evaluations and is the quickest way to speed up long exploratory runs.
 - `--learning-rate` still works as a shared override when you want the same value everywhere.
 - `--encounter-set overgrowth_easy` samples from the first-three-fights pool in Overgrowth, including solo enemies and the 3-slime pack.
+- `--encounter-set overgrowth_hard_v1` samples a deliberately partial hard benchmark: Mawler, two Nibbits, or Shrinker Beetle plus Fuzzy Wurm Crawler.
+- The Slimes encounter now always contains one random medium, one Leaf Slime (S), and one Twig Slime (S).
+- Enemy intents represent multi-hit attacks as per-hit `attack_damage` plus `attack_count`; projections, block, and status rounding resolve each hit separately.
+- The optional sequencing deck adds four base Ironclad cards without changing the default starter deck or discrete action-space size.
 - Multi-enemy encounters use targeted play actions under the hood, but the fixed discrete action encoder and legal-action mask handle that automatically for RL agents.
 - `sts-watch` runs one traced combat with either a built-in policy or a saved trained agent and writes richer JSON logs, including encounter name, seed, pre-action legal actions, and masks.
-- `sts-watch --encounter` accepts the same `simple`, `overgrowth_easy`, `nibbit`, `slimes`, `shrinker_beetle`, and `fuzzy_wurm_crawler` values as `sts-oracle`. `--encounter-set` remains a deprecated argument alias.
+- `sts-watch --encounter` and `sts-oracle --encounter` accept `simple`, the sampled `overgrowth_easy` and `overgrowth_hard_v1` pools, and the fixed `nibbit`, `slimes`, `shrinker_beetle`, `fuzzy_wurm_crawler`, `mawler`, `nibbits`, and `shrinker_fuzzy` matchups. `sts-watch --encounter-set` remains a deprecated argument alias.
+- `sts-benchmark` accepts fixed matchups only, always includes random and heuristic policies, and can add labeled saved checkpoints with repeated `--agent LABEL=PATH` options.
 - Matching encounter, seed, player/deck settings, and action sequence now yields the same seeded combat realization in both tools. Different policy actions can naturally produce a different later state trajectory.
 - `sts-analyze-trace` reads a saved trace and flags high-confidence tactical mistakes such as missed lethal, avoidable incoming damage, wasted dead cards, bad target choice, and premature end turns.
 - `sts-sweep` runs Optuna-based hyperparameter sweeps, averages each trial over multiple train seeds, supports process-parallel trials through shared journal/database storage, and can save the best-trial summary as JSON.
@@ -255,7 +285,7 @@ Notes:
 - `game/cli/`: packaged command implementations
 - `tests/`: matching `simulation`, `agents`, `training`, `analysis`, and `cli` suites
 
-Installing the package exposes `sts-train`, `sts-sweep`, `sts-watch`,
+Installing the package exposes `sts-train`, `sts-sweep`, `sts-benchmark`, `sts-watch`,
 `sts-oracle`, `sts-analyze-trace`, `sts-analyze-training`, and `sts-demo`.
 These installed commands are the supported CLI surface; the removed root scripts
 are intentionally not retained as wrappers. Code should use canonical module

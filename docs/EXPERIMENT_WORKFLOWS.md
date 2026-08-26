@@ -326,6 +326,27 @@ Matching encounter, seed, player/deck settings, and actions produce the same
 combat realization. Once two policies choose different actions, their later
 states can naturally diverge despite sharing the original seed.
 
+## Fixed-Seed Policy Benchmarks
+
+Compare the built-ins and any labeled checkpoints on an identical fixed grid:
+
+```bash
+sts-benchmark \
+  --encounter nibbit \
+  --encounter slimes \
+  --episodes 100 \
+  --seed 1000 \
+  --agent ddqn=runs/double-dqn/example-run \
+  --json-out benchmarks/fixed-seeds.json
+```
+
+Random and heuristic are always included. Each policy/encounter cell receives
+the same contiguous seed sequence. The command rejects sampled pools, validates
+checkpoint dimensions before running, prints a deterministic table, and writes
+the complete encounter-stratified evaluation payload to versioned JSON. See
+[Fixed-Seed Policy Benchmarks](BENCHMARKS.md) for the schema and compatibility
+rules.
+
 ## Seeded Brute-Force Oracle
 
 Run the exact seeded search with explicit safety limits:
@@ -429,15 +450,17 @@ shared encoder. It does not guarantee that a trained policy will use enemy
 intent correctly; trace/oracle analysis is still needed to measure learned
 behavior.
 
-## Known Encounter-Fidelity Caveat
+## Encounter-Fidelity Boundaries
 
-The current `build_overgrowth_slimes_encounter` samples two small slime types
-independently. This can produce two Leaf Slimes (S) or two Twig Slimes (S).
-Current [Overgrowth reference data](https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2%3AOvergrowth)
-describes the easy encounter as exactly one Leaf Slime (S), one random medium
-slime, and one Twig Slime (S). Until the builder is corrected, training and
-oracle results for `slimes` include non-canonical compositions.
+`build_overgrowth_slimes_encounter` now uses the canonical composition: one
+random medium slime, one Leaf Slime (S), and one Twig Slime (S). Seeded results
+from before this correction represent a different environment version.
 
 The `overgrowth_easy` helper samples one independent encounter from the
 four-item early pool. It does not model a complete run's selection of three
 unique fights without replacement.
+
+`overgrowth_hard_v1` is intentionally only a three-encounter partial benchmark,
+not the complete hard pool. It contains Mawler, two Nibbits, and Shrinker Beetle
+plus Fuzzy Wurm Crawler. Keep the versioned name in experiment records so later
+pool expansion cannot be confused with the current benchmark.

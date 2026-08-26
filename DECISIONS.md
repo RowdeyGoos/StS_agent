@@ -693,3 +693,71 @@ harder to understand.
   requires a managed deprecation window
 - does not affect state-dict checkpoints, whose model formats are independent of
   the removed Python module aliases
+
+## D31. Version Partial Encounter Pools And Represent Multi-Hit Intents Per Hit
+
+### Context
+
+The easy Slimes builder allowed duplicate small-slime types, and adding Mawler
+required attacks whose block and status interactions depend on individual hit
+boundaries. Calling a small subset the complete Overgrowth hard pool would also
+make benchmark results misleading as more encounters are added later.
+
+### Decision
+
+- make Slimes exactly one random medium, one Leaf Slime (S), and one Twig Slime (S)
+- name the bounded hard subset `overgrowth_hard_v1`
+- keep its three compositions explicit: Mawler, two Nibbits, and Shrinker Beetle plus Fuzzy Wurm Crawler
+- store enemy attack damage per hit and add an explicit `attack_count`
+- execute and project every hit separately, including block consumption and status rounding
+- append Mawler, its move identities, and the intent-count feature to the encoder
+- treat the resulting observation/action-feature expansion as a new representation that requires retraining
+
+### Why
+
+- versioned names avoid presenting partial content as full game parity
+- per-hit execution is necessary for correct Strength, Shrink, Vulnerable, block, and integer rounding behavior
+- stable structured intent semantics keep rendering, heuristics, rewards, and encoders consistent
+- explicit incompatibility is safer than silently padding or remapping older checkpoints
+
+### Consequence
+
+Before the card expansion in D32, simple observations grow from 108 to 113,
+three-enemy observations from 186 to 201, and action features from 42 to 43.
+The checkpoint file format is unchanged, but old neural dimensions and tabular
+state keys are not compatible with the new representation.
+
+## D32. Model Draw And Dynamic Card Damage Without Changing The Action Space
+
+### Context
+
+Pommel Strike, Shrug It Off, Iron Wave, and Body Slam add useful sequencing
+decisions, but static base-damage/block metadata cannot describe draw effects or
+damage based on current player block. Adding them directly to the canonical
+starter deck would also change every existing experiment at once.
+
+### Decision
+
+- add `draw_count` and `damage_equals_player_block` to card metadata
+- summarize draw count and state-dependent Body Slam damage in legal-action features
+- resolve card effects in printed order and draw before the played card enters discard
+- expose the four cards in a separate non-canonical sequencing deck factory
+- leave the starter deck, tuple/discrete action structure, and action-space sizes unchanged
+- append card identities and `cards_drawn_fraction` to the encoders
+- make heuristics, trace analysis, and the exact oracle consume the same dynamic action summaries
+- require retraining rather than silently adapting checkpoints trained on the earlier schema
+
+### Why
+
+- the simulator can add decision depth without introducing a generic event engine
+- one source of tactical summaries prevents Body Slam and mixed-effect cards from drifting across policies and analysis tools
+- keeping the preset opt-in preserves old starter-deck combat semantics
+- unchanged action spaces preserve legal-action mapping while richer features describe the new cards
+
+### Consequence
+
+The card identities add 56 observation features and five action features. After
+both D31 and D32, simple observations have width 169, three-enemy observations
+have width 257, and action features have width 48; discrete action spaces remain
+11 and 31. The checkpoint serialization version is unchanged, but old neural
+models and tabular state keys require retraining.

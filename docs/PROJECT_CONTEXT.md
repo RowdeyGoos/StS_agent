@@ -15,6 +15,9 @@ The current codebase already supports:
 - random, heuristic, tabular, and neural baselines
 - deterministic seeded runs
 - seeded brute-force oracle searches for exact small-encounter comparisons
+- aggregate and encounter-stratified evaluation metrics with damage taken
+- deterministic fixed-seed benchmarks for built-in and saved policies
+- an optional four-card Ironclad sequencing deck
 
 ## Main Gameplay Model
 
@@ -34,9 +37,18 @@ The current codebase already supports:
   - hand
 - Reshuffles discard into draw when needed
 
+### Cards
+
+- The canonical starter deck remains five Strikes, four Defends, and Bash
+- `Slimed` is the supported generated status card
+- Pommel Strike, Shrug It Off, Iron Wave, and Body Slam are available through
+  `create_ironclad_sequencing_deck()` without changing the default deck
+- Card metadata represents draw count and damage based on current player block
+
 ### Enemy
 
 - Uses explicit `Intent` objects
+- Attack intents store per-hit damage and an explicit hit count
 - Each enemy class is responsible for producing its next intent and advancing its intent state
 - Enemies can be used alone or as part of an encounter list
 
@@ -66,13 +78,24 @@ which an Overgrowth run selects its first three fights:
 - `Fuzzy Wurm Crawler`
 - `Slimes`
   - one random medium slime
-  - currently two independently random small slimes
+  - one Leaf Slime (S)
+  - one Twig Slime (S)
 
 The slimes encounter is the first place where multi-enemy targeting matters.
-The independent small-slime sampling is a known simulator-fidelity mismatch:
-current [Overgrowth reference data](https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2%3AOvergrowth)
-specifies exactly one Leaf Slime (S) and one Twig Slime (S). See
-[Experiment Workflows](EXPERIMENT_WORKFLOWS.md#known-encounter-fidelity-caveat).
+
+### Overgrowth Hard V1
+
+`overgrowth_hard_v1` is deliberately versioned because it is a partial hard
+pool rather than full Overgrowth parity. It samples uniformly from:
+
+- solo `Mawler`
+- two `Nibbit` enemies
+- `Shrinker Beetle` plus `Fuzzy Wurm Crawler`
+
+The three compositions are also exposed as fixed `mawler`, `nibbits`, and
+`shrinker_fuzzy` encounters. Mawler opens with Claw for 4 damage twice and then
+uses its constrained non-repeating move script. See
+[Overgrowth Hard V1](OVERGROWTH_HARD_V1.md) for exact behavior and sources.
 
 ## RL Interface
 
@@ -95,6 +118,7 @@ Important fields include:
 - `exhaust_pile_size`
 - `card_counts`
 - `behavior_state` inside each enemy snapshot
+- per-hit `attack_damage` and `attack_count` inside attack intents
 
 The old single-enemy compatibility key `enemy` is still included when possible.
 
@@ -110,6 +134,7 @@ The encoder currently includes:
 - per-pile card-count features
 - fixed enemy-slot features
 - enemy behavior-state features
+- total visible intent damage plus intent hit count
 - one-hot hand-slot features
 
 Enemy behavior-state features are meant to expose the state that determines future move probabilities, such as script position and possible next move names. They do not reveal an exact sampled future move queue.
@@ -153,6 +178,7 @@ These features are built from the structured observation plus the tuple action a
 - card identity and coarse card type
 - energy cost and remaining energy
 - projected damage, block gain, and status application
+- effective draw count and dynamic block-based damage
 - target-conditioned enemy features
 - projected incoming HP-loss reduction
 
@@ -168,6 +194,8 @@ Reward is intentionally shaped toward winning while preserving HP:
 - add a small immediate bonus when a player action reduces projected incoming enemy HP loss
 
 This means two winning policies can still be distinguished by how much damage they take.
+Evaluation reports preserve aggregate metrics and add deterministic encounter
+rows with win rate, reward, steps, final HP, and damage taken.
 
 ## Current Training Stack
 
@@ -289,6 +317,12 @@ available through `storage`. The journal is persistent and therefore also acts
 as the resume record. Process-level trials are kept separate from PPO's
 `env_workers`, which parallelizes simulation inside each individual trial.
 
+`sts-benchmark` compares random, heuristic, and labeled saved agents over the
+same explicit fixed-encounter and contiguous-seed grid. It preflights checkpoint
+action/observation dimensions before evaluation, prints a deterministic table,
+and can write a timestamp-free versioned JSON report containing the complete
+`EvaluationStats.as_dict()` payload.
+
 `sts-watch` is the one-episode inspection entry point for:
 
 - built-in policies such as `heuristic` or `random`
@@ -297,8 +331,9 @@ as the resume record. Process-level trials are kept separate from PPO's
 - saved trained `dueling_double_dqn` and `masked_ppo` agents
 
 `sts-watch` and `sts-oracle` share the same `CombatEnvFactory` and
-named encounter set: `simple`, seed-sampled `overgrowth_easy`, and the fixed
-`nibbit`, `slimes`, `shrinker_beetle`, and `fuzzy_wurm_crawler` encounters.
+named encounter set: `simple`, seed-sampled `overgrowth_easy` and
+`overgrowth_hard_v1`, plus the fixed `nibbit`, `slimes`, `shrinker_beetle`,
+`fuzzy_wurm_crawler`, `mawler`, `nibbits`, and `shrinker_fuzzy` encounters.
 With matching combat settings and seed they start from the same visible and
 hidden simulator state. Replaying the same actions preserves identical
 transitions; selecting different actions creates different trajectories as
@@ -356,6 +391,8 @@ duplicate card actions are skipped only when they leave the exact same ordered
 hand, preserving the effect of discard order on future seeded shuffles. The
 proof bound also includes an optimistic minimum number of damaging card plays,
 based on remaining enemy HP, target count, and maximum possible card damage.
+When Body Slam is present, the bound falls back to the safe living-target count
+because fixed base damage no longer bounds the card's possible damage.
 These changes preserve seeded oracle semantics while reducing both per-node
 cost and the number of nodes needed for many optimality proofs.
 
@@ -410,6 +447,11 @@ If you change the structured observation, you likely also need to update:
 - heuristic policy
 - tests
 - demo formatting
+
+The current combined encoder widths are 169 for one-enemy environments, 257 for
+three-enemy environments, and 48 for action features. Checkpoints trained on the
+previous enemy/card maps are representation-incompatible and must be retrained;
+the checkpoint file format itself did not change.
 
 ### Action Changes Ripple
 
