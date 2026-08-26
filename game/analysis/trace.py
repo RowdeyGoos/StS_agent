@@ -270,8 +270,12 @@ def _make_finding(
             else None
         ),
         "chosen_card": chosen_summary.card_name,
+        "chosen_cards_drawn": chosen_summary.cards_drawn,
         "recommended_card": (
             None if recommended_summary is None else recommended_summary.card_name
+        ),
+        "recommended_cards_drawn": (
+            None if recommended_summary is None else recommended_summary.cards_drawn
         ),
     }
     if step.legal_action_scores is not None and recommended_summary is not None:
@@ -310,6 +314,7 @@ def _priority_tuple(summary: Any) -> tuple[float, ...]:
         float(summary.damage_to_target),
         float(summary.block_gain),
         float(summary.applies_status_stacks),
+        float(summary.cards_drawn),
         0.0 if summary.is_dead_card else 1.0,
         0.0 if summary.action[0] == "end_turn" else 1.0,
     )
@@ -323,6 +328,7 @@ def _defensive_priority_tuple(summary: Any) -> tuple[float, ...]:
         float(summary.block_gain),
         float(summary.damage_to_target),
         float(summary.applies_status_stacks),
+        float(summary.cards_drawn),
         0.0 if summary.is_dead_card else 1.0,
     )
 

@@ -7,20 +7,13 @@ from random import Random
 from time import perf_counter
 from typing import Any, Callable, TypeAlias
 
+from ..simulation.action_features import summarize_action
 from ..simulation.core import CombatEnv, Observation
-from ..simulation.status import modify_attack_damage_for_statuses
 
 StateKey: TypeAlias = tuple[int, ...]
 ActionMask: TypeAlias = tuple[int, ...]
 PolicyFn: TypeAlias = Callable[[CombatEnv, Observation, ActionMask], int]
 ProgressCallback: TypeAlias = Callable[["TrainingProgress"], None]
-
-CARD_DAMAGE = {
-    "Strike": 6,
-    "Bash": 8,
-    "Slimed": 0,
-}
-
 
 @dataclass(frozen=True, slots=True)
 class EpisodeMetrics:
@@ -132,16 +125,8 @@ def choose_heuristic_action(
         action_mask = env.get_action_mask()
 
     legal_indices = tuple(legal_action_indices(action_mask))
-    hand = observation["hand"]
-    player_state = observation["player"]
     enemy_states = observation.get("enemies", [observation["enemy"]])
-    assert isinstance(hand, list)
-    assert isinstance(player_state, dict)
     assert isinstance(enemy_states, list)
-
-    player_statuses = player_state["statuses"]
-    player_strength = int(player_state.get("strength", 0))
-    assert isinstance(player_statuses, dict)
 
     living_enemy_states = [
         enemy_state
@@ -153,68 +138,74 @@ def choose_heuristic_action(
         for enemy_state in living_enemy_states
     )
 
+    summarized_actions = []
     for action_index in legal_indices:
         if action_index == 0:
             continue
-
         action = env.decode_action(action_index)
-        hand_index = action[1]
+        summarized_actions.append(
+            (action_index, action, summarize_action(observation, action))
+        )
+
+    for action_index, _action, summary in summarized_actions:
+        if summary.kills_target:
+            return action_index
+
+    incoming_ranks = {
+        "Shrug It Off": 0,
+        "Defend": 1,
+        "Iron Wave": 2,
+        "Bash": 4,
+        "Pommel Strike": 5,
+        "Strike": 6,
+        "Slimed": 8,
+    }
+    quiet_ranks = {
+        "Bash": 0,
+        "Pommel Strike": 2,
+        "Iron Wave": 3,
+        "Strike": 4,
+        "Shrug It Off": 5,
+        "Defend": 6,
+        "Slimed": 8,
+    }
+    preferred_actions = []
+    for action_index, action, summary in summarized_actions:
+        if summary.card_name == "Body Slam":
+            preference_rank = 3 if incoming_attack else 1
+            if summary.damage_to_target <= 0:
+                preference_rank = 7
+        else:
+            preference_rank = (incoming_ranks if incoming_attack else quiet_ranks).get(
+                summary.card_name,
+                9,
+            )
+
         target_index = 0 if len(action) == 2 else action[2]
         target_enemy = enemy_states[target_index]
         assert isinstance(target_enemy, dict)
-        target_statuses = target_enemy["statuses"]
-        assert isinstance(target_statuses, dict)
-
-        card_name = str(hand[hand_index])
-        card_damage = CARD_DAMAGE.get(card_name, 0)
-        effective_damage = modify_attack_damage_for_statuses(
-            card_damage,
-            target_statuses,
-            attacker_statuses=player_statuses,
-            attacker_strength=player_strength,
+        target_intent = target_enemy["intent"]
+        assert isinstance(target_intent, dict)
+        intent_attack_damage = int(target_intent.get("attack_damage", 0))
+        intent_attack_count = int(
+            target_intent.get(
+                "attack_count",
+                1 if intent_attack_damage > 0 else 0,
+            )
         )
-        if effective_damage >= int(target_enemy["hp"]):
-            return action_index
-
-    preferred_order = ("Defend", "Bash", "Strike", "Slimed") if incoming_attack else (
-        "Bash",
-        "Strike",
-        "Defend",
-        "Slimed",
-    )
-    for preferred_name in preferred_order:
-        preferred_actions = []
-        for action_index in legal_indices:
-            if action_index == 0:
-                continue
-            action = env.decode_action(action_index)
-            hand_index = action[1]
-            if str(hand[hand_index]) != preferred_name:
-                continue
-
-            target_index = 0 if len(action) == 2 else action[2]
-            target_enemy = enemy_states[target_index]
-            assert isinstance(target_enemy, dict)
-            target_intent = target_enemy["intent"]
-            assert isinstance(target_intent, dict)
-            intent_attack_damage = int(target_intent.get("attack_damage", 0))
-            intent_attack_count = int(
-                target_intent.get(
-                    "attack_count",
-                    1 if intent_attack_damage > 0 else 0,
-                )
+        preferred_actions.append(
+            (
+                preference_rank,
+                -(intent_attack_damage * intent_attack_count),
+                int(target_enemy["hp"]),
+                target_index,
+                action_index,
             )
-            preferred_actions.append(
-                (
-                    -(intent_attack_damage * intent_attack_count),
-                    int(target_enemy["hp"]),
-                    target_index,
-                    action_index,
-                )
-            )
-        if preferred_actions:
-            preferred_actions.sort()
-            return preferred_actions[0][3]
+        )
+
+    if preferred_actions:
+        preferred_actions.sort()
+        return preferred_actions[0][4]
 
     return 0
 

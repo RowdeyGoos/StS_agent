@@ -34,6 +34,7 @@ class ActionSummary:
     player_block_after: int
     damage_to_target: int
     block_gain: int
+    cards_drawn: int
     applies_status_name: str | None
     applies_status_stacks: int
     target_hp_before: int | None
@@ -148,6 +149,7 @@ def summarize_action(
             player_block_after=player_block,
             damage_to_target=0,
             block_gain=0,
+            cards_drawn=0,
             applies_status_name=None,
             applies_status_stacks=0,
             target_hp_before=None,
@@ -179,6 +181,12 @@ def summarize_action(
 
     player_energy_after = max(0, player_energy - card_spec.cost)
     player_block_after = player_block + card_spec.block_gain
+    available_draw_count = max(
+        0,
+        int(observation.get("draw_pile_size", 0))
+        + int(observation.get("discard_pile_size", 0)),
+    )
+    cards_drawn = min(card_spec.draw_count, available_draw_count)
 
     damage_to_target = 0
     target_hp_before: int | None = None
@@ -200,10 +208,15 @@ def summarize_action(
         )
         target_intent_attack_damage = intent_attack_damage * intent_attack_count
 
-        if card_spec.base_damage > 0:
+        if card_spec.base_damage > 0 or card_spec.damage_equals_player_block:
             # Damage features use the same status/strength rules as combat.
+            base_damage = (
+                player_block
+                if card_spec.damage_equals_player_block
+                else card_spec.base_damage
+            )
             damage_to_target = modify_attack_damage_for_statuses(
-                card_spec.base_damage,
+                base_damage,
                 _require_mapping(copied_target, "statuses"),
                 attacker_statuses=player_statuses,
                 attacker_strength=player_strength,
@@ -248,6 +261,12 @@ def summarize_action(
         and target_hp_before > 0
         and target_hp_after <= 0
     )
+    is_dead_card = (
+        damage_to_target <= 0
+        and card_spec.block_gain <= 0
+        and cards_drawn <= 0
+        and card_spec.applies_status_name is None
+    )
 
     return ActionSummary(
         action=action,
@@ -258,11 +277,12 @@ def summarize_action(
         cost=card_spec.cost,
         exhausts=card_spec.exhausts,
         uses_target=card_spec.uses_target,
-        is_dead_card=card_spec.is_dead_card,
+        is_dead_card=is_dead_card,
         player_energy_after=player_energy_after,
         player_block_after=player_block_after,
         damage_to_target=damage_to_target,
         block_gain=card_spec.block_gain,
+        cards_drawn=cards_drawn,
         applies_status_name=card_spec.applies_status_name,
         applies_status_stacks=card_spec.applies_status_stacks,
         target_hp_before=target_hp_before,
@@ -392,6 +412,7 @@ def encode_action_summary_features(
     supported_enemy_names: tuple[str, ...],
     supported_status_names: tuple[str, ...] = SUPPORTED_STATUS_NAMES,
     max_enemy_count: int,
+    max_hand_size: int,
     hp_scale: int,
     energy_per_turn: int,
 ) -> tuple[float, ...]:
@@ -440,6 +461,7 @@ def encode_action_summary_features(
         1.0 if summary.is_dead_card else 0.0,
         float(summary.damage_to_target) / float(max(1, hp_scale)),
         float(summary.block_gain) / float(max(1, hp_scale)),
+        float(summary.cards_drawn) / float(max(1, max_hand_size)),
         *applies_status_features,
         1.0 if summary.target_index is not None else 0.0,
         target_slot_fraction,
@@ -487,7 +509,10 @@ def action_feature_names(
         "is_end_turn",
         "is_play",
         *(f"card_kind_is_{card_kind}" for card_kind in CARD_KIND_ORDER),
-        *(f"card_is_{card_name.lower()}" for card_name in supported_card_names),
+        *(
+            f"card_is_{card_name.lower().replace(' ', '_')}"
+            for card_name in supported_card_names
+        ),
         "cost_fraction",
         "energy_after_fraction",
         "exhausts",
@@ -495,6 +520,7 @@ def action_feature_names(
         "is_dead_card",
         "damage_to_target_fraction",
         "block_gain_fraction",
+        "cards_drawn_fraction",
         *(
             f"applies_status_{status_name}_fraction"
             for status_name in supported_status_names

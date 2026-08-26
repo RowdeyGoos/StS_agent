@@ -20,11 +20,16 @@ from .analysis.bruteforce import (
 )
 from .simulation.card import (
     BashCard,
+    BodySlamCard,
     Card,
     CardSpec,
     DefendCard,
+    IronWaveCard,
+    PommelStrikeCard,
+    ShrugItOffCard,
     SlimedCard,
     StrikeCard,
+    create_ironclad_sequencing_deck,
     create_starter_deck,
     get_card_spec,
 )
@@ -104,6 +109,7 @@ from .analysis.watch import (
 
 __all__ = [
     "BashCard",
+    "BodySlamCard",
     "BruteForceProgress",
     "BruteForceResult",
     "Card",
@@ -127,6 +133,7 @@ __all__ = [
     "InformationAwareDecisionAnalysis",
     "InformationAwarePolicyAnalysis",
     "Intent",
+    "IronWaveCard",
     "LeafSlimeMedium",
     "LeafSlimeSmall",
     "Mawler",
@@ -139,10 +146,12 @@ __all__ = [
     "Player",
     "PPOAgent",
     "PPOTrainingResult",
+    "PommelStrikeCard",
     "QLearningAgent",
     "ReplayBuffer",
     "ReplayTransition",
     "ShrinkerBeetle",
+    "ShrugItOffCard",
     "SimpleEnemy",
     "SlimedCard",
     "SHRINK",
@@ -170,6 +179,7 @@ __all__ = [
     "brute_force_combat",
     "choose_heuristic_action",
     "choose_random_action",
+    "create_ironclad_sequencing_deck",
     "create_starter_deck",
     "evaluate_policy",
     "get_card_spec",

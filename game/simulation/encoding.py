@@ -24,6 +24,10 @@ DEFAULT_CARD_NAME_TO_ID: dict[str, int] = {
     "Defend": 2,
     "Bash": 3,
     "Slimed": 4,
+    "Pommel Strike": 5,
+    "Shrug It Off": 6,
+    "Iron Wave": 7,
+    "Body Slam": 8,
 }
 DEFAULT_ENEMY_NAME_TO_ID: dict[str, int] = {
     "SimpleEnemy": 1,
@@ -255,7 +259,7 @@ class ObservationEncoder:
     def feature_names(self) -> tuple[str, ...]:
         """Return the semantic name of every feature in the encoded vector."""
         pile_count_feature_names = tuple(
-            f"{pile_name}_count_{card_name.lower()}_fraction"
+            f"{pile_name}_count_{card_name.lower().replace(' ', '_')}_fraction"
             for pile_name in PILE_COUNT_ORDER
             for card_name in self.supported_card_names
         )
@@ -265,7 +269,7 @@ class ObservationEncoder:
             for feature_name in self.enemy_slot_feature_names
         )
         hand_slot_feature_names = tuple(
-            f"hand_slot_{slot_index}_is_{card_name.lower()}"
+            f"hand_slot_{slot_index}_is_{card_name.lower().replace(' ', '_')}"
             for slot_index in range(self.max_hand_size)
             for card_name in self.supported_card_names
         )
@@ -606,6 +610,7 @@ class ObservationEncoder:
                     supported_enemy_names=supported_enemy_names,
                     supported_status_names=supported_status_names,
                     max_enemy_count=self.max_enemy_count,
+                    max_hand_size=self.max_hand_size,
                     hp_scale=hp_scale,
                     energy_per_turn=energy_per_turn,
                 )

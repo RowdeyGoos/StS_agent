@@ -45,7 +45,11 @@ class Player:
         """Start the player's turn by clearing block, resetting energy, and drawing."""
         self.block = 0
         self.energy = self.energy_per_turn
-        self.deck.draw(draw_count)
+        self.draw_cards(draw_count)
+
+    def draw_cards(self, count: int) -> list[Card]:
+        """Draw cards through the player's deck and return the cards drawn."""
+        return self.deck.draw(count)
 
     def end_turn(self) -> None:
         """End the player's turn by discarding the current hand."""
