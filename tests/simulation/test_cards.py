@@ -191,6 +191,18 @@ def test_sequencing_deck_has_exact_fresh_contents_and_starter_is_unchanged() -> 
             "Body Slam": 1,
         }
     )
+    assert [card.name for card in first] == [
+        "Strike",
+        "Strike",
+        "Defend",
+        "Defend",
+        "Defend",
+        "Bash",
+        "Pommel Strike",
+        "Shrug It Off",
+        "Iron Wave",
+        "Body Slam",
+    ]
     assert len(first) == 10
     assert all(
         first_card is not second_card
