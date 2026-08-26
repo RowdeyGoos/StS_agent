@@ -3,6 +3,7 @@
 from .simulation.actions import CombatAction
 from .agents.agent_io import load_agent, save_agent
 from .agents.baselines import (
+    EncounterEvaluationStats,
     EvaluationSnapshot,
     EvaluationStats,
     QLearningAgent,
@@ -123,6 +124,7 @@ __all__ = [
     "DoubleDQNAgent",
     "DuelingDoubleDQNAgent",
     "Enemy",
+    "EncounterEvaluationStats",
     "EvaluationSnapshot",
     "EvaluationStats",
     "EpisodeTrace",
