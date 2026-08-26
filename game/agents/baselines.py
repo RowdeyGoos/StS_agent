@@ -16,6 +16,7 @@ ActionMask: TypeAlias = tuple[int, ...]
 PolicyFn: TypeAlias = Callable[[CombatEnv, Observation, ActionMask], int]
 ProgressCallback: TypeAlias = Callable[["TrainingProgress"], None]
 
+
 @dataclass(frozen=True, slots=True)
 class EpisodeMetrics:
     """Summary metrics for a single rollout episode."""
