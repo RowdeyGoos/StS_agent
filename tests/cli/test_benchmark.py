@@ -8,8 +8,10 @@ import pytest
 
 from game.agents.agent_io import save_agent
 from game.agents.baselines import QLearningAgent
+from game.agents.dqn import DQNAgent
 from game.analysis import benchmark as benchmark_module
 from game.cli import benchmark
+from game.simulation.env_factory import CombatEnvFactory
 
 
 def test_cli_parses_ordered_fixed_encounters_and_labeled_agents() -> None:
@@ -191,3 +193,45 @@ def test_main_writes_versioned_json_after_success(tmp_path, capsys) -> None:
     ]
     assert "Encounter" in output
     assert "Saved benchmark report" in output
+
+
+def test_shared_enemy_layout_is_checked_during_benchmark_preflight() -> None:
+    env_factory = CombatEnvFactory(encounter_set="slimes", record_trajectory=False)
+    env = env_factory()
+    encoder = env.encoder
+    agent = DQNAgent(
+        observation_size=env.observation_size,
+        action_space_size=env.action_space_size,
+        hidden_sizes=(16,),
+        architecture="shared_enemy",
+        action_feature_size=env.action_feature_size,
+        max_enemy_count=encoder.max_enemy_count,
+        enemy_feature_start=(
+            encoder.scalar_feature_count + encoder.pile_count_feature_count
+        ),
+        enemy_slot_feature_size=encoder.enemy_slot_feature_count,
+        uses_target_feature_index=encoder.action_feature_names.index("uses_target"),
+        target_slot_feature_index=encoder.action_feature_names.index(
+            "target_slot_fraction"
+        ),
+        device="cpu",
+        seed=0,
+    )
+    policies = (
+        benchmark.ResolvedBenchmarkPolicy(
+            metadata=benchmark.BenchmarkPolicyMetadata(
+                label="shared",
+                source_kind="checkpoint",
+                policy_type="dqn",
+            ),
+            policy=lambda _env, _observation, _mask: 0,
+            agent=agent,
+        ),
+    )
+    environments = (("slimes", env_factory),)
+
+    benchmark.validate_agent_compatibility(policies, environments)
+    agent.enemy_slot_feature_size = encoder.enemy_slot_feature_count + 1
+
+    with pytest.raises(ValueError, match="enemy_slot_feature_size"):
+        benchmark.validate_agent_compatibility(policies, environments)

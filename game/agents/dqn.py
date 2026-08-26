@@ -204,6 +204,172 @@ if torch is not None and nn is not None and optim is not None:
             return self.action_scorer(joint_features).squeeze(-1)
 
 
+    class _SharedEnemyDQNBackbone(nn.Module):
+        """Build permutation-invariant state and target-aware action features."""
+
+        def __init__(
+            self,
+            input_dim: int,
+            output_dim: int,
+            action_feature_dim: int,
+            max_enemy_count: int,
+            enemy_feature_start: int,
+            enemy_slot_feature_dim: int,
+            uses_target_feature_index: int,
+            target_slot_feature_index: int,
+            hidden_sizes: Sequence[int] = (128, 128),
+        ) -> None:
+            super().__init__()
+            if input_dim <= 0 or output_dim <= 0 or action_feature_dim <= 1:
+                raise ValueError("Network input and output dimensions must be positive.")
+            if max_enemy_count <= 0 or enemy_slot_feature_dim <= 0:
+                raise ValueError("Enemy encoder dimensions must be positive.")
+            if not hidden_sizes or any(size <= 0 for size in hidden_sizes):
+                raise ValueError("hidden_sizes must contain positive layer sizes.")
+            enemy_feature_end = (
+                enemy_feature_start + max_enemy_count * enemy_slot_feature_dim
+            )
+            if enemy_feature_start < 0 or enemy_feature_end > input_dim:
+                raise ValueError("Enemy feature segment falls outside the observation.")
+            for feature_index in (
+                uses_target_feature_index,
+                target_slot_feature_index,
+            ):
+                if not 0 <= feature_index < action_feature_dim:
+                    raise ValueError("Action feature index falls outside its feature row.")
+
+            self.output_dim = output_dim
+            self.action_feature_dim = action_feature_dim
+            self.max_enemy_count = max_enemy_count
+            self.enemy_feature_start = enemy_feature_start
+            self.enemy_feature_end = enemy_feature_end
+            self.enemy_slot_feature_dim = enemy_slot_feature_dim
+            self.uses_target_feature_index = uses_target_feature_index
+            self.target_slot_feature_index = target_slot_feature_index
+
+            embedding_dim = int(hidden_sizes[0])
+            self.embedding_dim = embedding_dim
+            self.enemy_encoder = nn.Sequential(
+                nn.Linear(enemy_slot_feature_dim, embedding_dim),
+                nn.ReLU(),
+            )
+
+            non_enemy_dim = input_dim - max_enemy_count * enemy_slot_feature_dim
+            state_layers: list[nn.Module] = []
+            current_dim = non_enemy_dim + embedding_dim
+            for hidden_dim in hidden_sizes:
+                state_layers.append(nn.Linear(current_dim, hidden_dim))
+                state_layers.append(nn.ReLU())
+                current_dim = hidden_dim
+            self.state_encoder = nn.Sequential(*state_layers)
+            self.state_feature_dim = current_dim
+            self.action_input_dim = (
+                current_dim + embedding_dim + action_feature_dim - 1
+            )
+
+            target_indices = [
+                0 if action_index == 0 else (action_index - 1) % max_enemy_count
+                for action_index in range(output_dim)
+            ]
+            self.register_buffer(
+                "action_target_indices",
+                torch.as_tensor(target_indices, dtype=torch.long),
+                persistent=False,
+            )
+
+        def _encode_state(self, inputs: Tensor) -> tuple[Tensor, Tensor]:
+            enemy_slots = inputs[
+                :, self.enemy_feature_start : self.enemy_feature_end
+            ].reshape(-1, self.max_enemy_count, self.enemy_slot_feature_dim)
+            enemy_embeddings = self.enemy_encoder(enemy_slots)
+
+            # "alive" is the first feature in every encoded enemy slot. Applying
+            # the mask after the shared MLP also removes bias from dead/padded slots.
+            alive_mask = enemy_slots[..., :1].clamp(0.0, 1.0)
+            living_enemy_embeddings = enemy_embeddings * alive_mask
+            pooled_enemy_embedding = living_enemy_embeddings.sum(dim=1) / (
+                alive_mask.sum(dim=1).clamp_min(1.0)
+            )
+            non_enemy_features = torch.cat(
+                [
+                    inputs[:, : self.enemy_feature_start],
+                    inputs[:, self.enemy_feature_end :],
+                ],
+                dim=-1,
+            )
+            state_features = self.state_encoder(
+                torch.cat([non_enemy_features, pooled_enemy_embedding], dim=-1)
+            )
+            return state_features, living_enemy_embeddings
+
+        def _prepare_action_inputs(
+            self,
+            inputs: Tensor,
+            action_features: Tensor | None,
+        ) -> tuple[Tensor, Tensor]:
+            if action_features is None:
+                raise ValueError("Shared-enemy DQN requires action feature tensors.")
+            if action_features.shape[1] != self.output_dim:
+                raise ValueError("Action feature rows do not match the action space.")
+            if action_features.shape[2] != self.action_feature_dim:
+                raise ValueError("Action feature width does not match the network layout.")
+
+            state_features, enemy_embeddings = self._encode_state(inputs)
+            target_embeddings = enemy_embeddings[:, self.action_target_indices, :]
+            uses_target = action_features[
+                ..., self.uses_target_feature_index : self.uses_target_feature_index + 1
+            ]
+            target_embeddings = target_embeddings * uses_target
+
+            # The action index still identifies a stable slot. Removing this
+            # ordinal input prevents the scorer from learning slot preferences.
+            slot_index = self.target_slot_feature_index
+            position_free_action_features = torch.cat(
+                [
+                    action_features[..., :slot_index],
+                    action_features[..., slot_index + 1 :],
+                ],
+                dim=-1,
+            )
+            repeated_state_features = state_features.unsqueeze(1).expand(
+                -1, self.output_dim, -1
+            )
+            return state_features, torch.cat(
+                [
+                    repeated_state_features,
+                    target_embeddings,
+                    position_free_action_features,
+                ],
+                dim=-1,
+            )
+
+
+    class SharedEnemyDQNNetwork(_SharedEnemyDQNBackbone):
+        """Score actions from invariant encounter context and selected enemies."""
+
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, **kwargs)
+            self.q_head = nn.Sequential(
+                nn.Linear(self.action_input_dim, self.state_feature_dim),
+                nn.ReLU(),
+                nn.Linear(self.state_feature_dim, 1),
+            )
+
+        def forward(
+            self,
+            inputs: Tensor,
+            action_features: Tensor | None = None,
+            action_masks: Tensor | None = None,
+        ) -> Tensor:
+            """Return one target-aware Q-value per discrete action slot."""
+            del action_masks
+            _state_features, joint_features = self._prepare_action_inputs(
+                inputs,
+                action_features,
+            )
+            return self.q_head(joint_features).squeeze(-1)
+
+
     class DuelingDQNNetwork(nn.Module):
         """Dueling MLP that factorizes Q-values into value and advantage streams."""
 
@@ -303,11 +469,48 @@ if torch is not None and nn is not None and optim is not None:
             return value + centered_advantage
 
 
+    class SharedEnemyDuelingDQNNetwork(_SharedEnemyDQNBackbone):
+        """Dueling Q-network with invariant value and target-aware advantage."""
+
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, **kwargs)
+            self.value_head = nn.Linear(self.state_feature_dim, 1)
+            self.advantage_head = nn.Sequential(
+                nn.Linear(self.action_input_dim, self.state_feature_dim),
+                nn.ReLU(),
+                nn.Linear(self.state_feature_dim, 1),
+            )
+
+        def forward(
+            self,
+            inputs: Tensor,
+            action_features: Tensor | None = None,
+            action_masks: Tensor | None = None,
+        ) -> Tensor:
+            """Return legal-centered dueling Q-values for every action slot."""
+            state_features, joint_features = self._prepare_action_inputs(
+                inputs,
+                action_features,
+            )
+            value = self.value_head(state_features)
+            advantage = self.advantage_head(joint_features).squeeze(-1)
+            if action_masks is not None:
+                legal_counts = action_masks.sum(dim=1, keepdim=True).clamp_min(1)
+                centered_advantage = advantage - (
+                    (advantage * action_masks.float()).sum(dim=1, keepdim=True)
+                    / legal_counts
+                )
+            else:
+                centered_advantage = advantage - advantage.mean(dim=1, keepdim=True)
+            return value + centered_advantage
+
+
     class DQNAgent:
         """Masked DQN agent with target network and epsilon-greedy exploration."""
 
         network_class: type[nn.Module] = DQNNetwork
         action_conditioned_network_class: type[nn.Module] = ActionConditionedDQNNetwork
+        shared_enemy_network_class: type[nn.Module] = SharedEnemyDQNNetwork
 
         def __init__(
             self,
@@ -321,6 +524,11 @@ if torch is not None and nn is not None and optim is not None:
             epsilon_decay: float = 0.995,
             architecture: str = "flat",
             action_feature_size: int | None = None,
+            max_enemy_count: int | None = None,
+            enemy_feature_start: int | None = None,
+            enemy_slot_feature_size: int | None = None,
+            uses_target_feature_index: int | None = None,
+            target_slot_feature_index: int | None = None,
             device: str | None = None,
             seed: int | None = None,
         ) -> None:
@@ -341,10 +549,17 @@ if torch is not None and nn is not None and optim is not None:
             self.epsilon_decay = epsilon_decay
             self.architecture = architecture
             self.action_feature_size = action_feature_size
+            self.max_enemy_count = max_enemy_count
+            self.enemy_feature_start = enemy_feature_start
+            self.enemy_slot_feature_size = enemy_slot_feature_size
+            self.uses_target_feature_index = uses_target_feature_index
+            self.target_slot_feature_index = target_slot_feature_index
             self.rng = Random(seed)
 
-            if self.architecture not in {"flat", "action_feature"}:
-                raise ValueError("architecture must be 'flat' or 'action_feature'.")
+            if self.architecture not in {"flat", "action_feature", "shared_enemy"}:
+                raise ValueError(
+                    "architecture must be 'flat', 'action_feature', or 'shared_enemy'."
+                )
 
             if self.architecture == "action_feature":
                 if self.action_feature_size is None or self.action_feature_size <= 0:
@@ -360,6 +575,46 @@ if torch is not None and nn is not None and optim is not None:
                     input_dim=observation_size,
                     action_feature_dim=self.action_feature_size,
                     hidden_sizes=hidden_sizes,
+                ).to(self.device)
+            elif self.architecture == "shared_enemy":
+                required_metadata = {
+                    "max_enemy_count": self.max_enemy_count,
+                    "enemy_feature_start": self.enemy_feature_start,
+                    "enemy_slot_feature_size": self.enemy_slot_feature_size,
+                    "uses_target_feature_index": self.uses_target_feature_index,
+                    "target_slot_feature_index": self.target_slot_feature_index,
+                }
+                if self.action_feature_size is None or self.action_feature_size <= 0:
+                    raise ValueError(
+                        "action_feature_size must be positive for shared_enemy DQN."
+                    )
+                if any(value is None for value in required_metadata.values()):
+                    missing = ", ".join(
+                        name for name, value in required_metadata.items() if value is None
+                    )
+                    raise ValueError(
+                        f"Shared-enemy DQN is missing encoder metadata: {missing}."
+                    )
+                shared_network_kwargs = {
+                    "input_dim": observation_size,
+                    "output_dim": action_space_size,
+                    "action_feature_dim": self.action_feature_size,
+                    "max_enemy_count": int(self.max_enemy_count),
+                    "enemy_feature_start": int(self.enemy_feature_start),
+                    "enemy_slot_feature_dim": int(self.enemy_slot_feature_size),
+                    "uses_target_feature_index": int(
+                        self.uses_target_feature_index
+                    ),
+                    "target_slot_feature_index": int(
+                        self.target_slot_feature_index
+                    ),
+                    "hidden_sizes": hidden_sizes,
+                }
+                self.policy_network = self.shared_enemy_network_class(
+                    **shared_network_kwargs
+                ).to(self.device)
+                self.target_network = self.shared_enemy_network_class(
+                    **shared_network_kwargs
                 ).to(self.device)
             else:
                 self.policy_network = self.network_class(
@@ -473,6 +728,11 @@ if torch is not None and nn is not None and optim is not None:
                 "epsilon_decay": self.epsilon_decay,
                 "architecture": self.architecture,
                 "action_feature_size": self.action_feature_size,
+                "max_enemy_count": self.max_enemy_count,
+                "enemy_feature_start": self.enemy_feature_start,
+                "enemy_slot_feature_size": self.enemy_slot_feature_size,
+                "uses_target_feature_index": self.uses_target_feature_index,
+                "target_slot_feature_index": self.target_slot_feature_index,
                 "policy_network_state": self.policy_network.state_dict(),
                 "target_network_state": self.target_network.state_dict(),
                 "optimizer_state": self.optimizer.state_dict(),
@@ -590,7 +850,7 @@ if torch is not None and nn is not None and optim is not None:
             action_masks: Tensor | None,
             action_features: Tensor | None,
         ) -> Tensor:
-            if self.architecture == "action_feature":
+            if self.architecture in {"action_feature", "shared_enemy"}:
                 if action_features is None:
                     raise ValueError(
                         "Action-conditioned DQN requires action features."
@@ -602,7 +862,7 @@ if torch is not None and nn is not None and optim is not None:
             self,
             action_features: ActionFeatureBatch | None,
         ) -> Tensor | None:
-            if self.architecture != "action_feature":
+            if self.architecture not in {"action_feature", "shared_enemy"}:
                 return None
             if action_features is None:
                 raise ValueError(
@@ -618,7 +878,7 @@ if torch is not None and nn is not None and optim is not None:
             self,
             action_features_batch: list[ActionFeatureBatch],
         ) -> Tensor | None:
-            if self.architecture != "action_feature":
+            if self.architecture not in {"action_feature", "shared_enemy"}:
                 return None
             return torch.as_tensor(
                 action_features_batch,
@@ -677,6 +937,7 @@ if torch is not None and nn is not None and optim is not None:
 
         network_class = DuelingDQNNetwork
         action_conditioned_network_class = ActionConditionedDuelingDQNNetwork
+        shared_enemy_network_class = SharedEnemyDuelingDQNNetwork
 
         @property
         def algorithm_name(self) -> str:
@@ -924,6 +1185,20 @@ if torch is not None and nn is not None and optim is not None:
             epsilon_decay=epsilon_decay,
             architecture=architecture,
             action_feature_size=template_env.action_feature_size,
+            max_enemy_count=template_env.encoder.max_enemy_count,
+            enemy_feature_start=(
+                template_env.encoder.scalar_feature_count
+                + template_env.encoder.pile_count_feature_count
+            ),
+            enemy_slot_feature_size=template_env.encoder.enemy_slot_feature_count,
+            uses_target_feature_index=(
+                template_env.encoder.action_feature_names.index("uses_target")
+            ),
+            target_slot_feature_index=(
+                template_env.encoder.action_feature_names.index(
+                    "target_slot_fraction"
+                )
+            ),
             device=device,
             seed=seed,
         )

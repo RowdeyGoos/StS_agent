@@ -294,6 +294,33 @@ def validate_agent_compatibility(
                     f"{env.action_feature_size}"
                 )
 
+            architecture = getattr(agent, "architecture", None)
+            policy_architecture = getattr(agent, "policy_architecture", None)
+            if "shared_enemy" in {architecture, policy_architecture}:
+                encoder = env.encoder
+                expected_layout = {
+                    "max_enemy_count": encoder.max_enemy_count,
+                    "enemy_feature_start": (
+                        encoder.scalar_feature_count
+                        + encoder.pile_count_feature_count
+                    ),
+                    "enemy_slot_feature_size": encoder.enemy_slot_feature_count,
+                    "uses_target_feature_index": (
+                        encoder.action_feature_names.index("uses_target")
+                    ),
+                    "target_slot_feature_index": (
+                        encoder.action_feature_names.index("target_slot_fraction")
+                    ),
+                }
+                for field_name, expected_value in expected_layout.items():
+                    checkpoint_value = getattr(agent, field_name, None)
+                    if checkpoint_value is None or int(checkpoint_value) != expected_value:
+                        errors.append(
+                            f"{policy_description}: checkpoint {field_name}="
+                            f"{checkpoint_value}, environment {field_name}="
+                            f"{expected_value}"
+                        )
+
             if isinstance(agent, QLearningAgent) and agent.q_table:
                 state_widths = {len(state) for state in agent.q_table}
                 if state_widths != {env.observation_size}:

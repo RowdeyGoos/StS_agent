@@ -203,6 +203,31 @@ def load_agent(path: str | Path, device: str | None = None) -> SupportedAgent:
             if checkpoint.get("action_feature_size") is None
             else int(checkpoint["action_feature_size"])
         ),
+        max_enemy_count=(
+            None
+            if checkpoint.get("max_enemy_count") is None
+            else int(checkpoint["max_enemy_count"])
+        ),
+        enemy_feature_start=(
+            None
+            if checkpoint.get("enemy_feature_start") is None
+            else int(checkpoint["enemy_feature_start"])
+        ),
+        enemy_slot_feature_size=(
+            None
+            if checkpoint.get("enemy_slot_feature_size") is None
+            else int(checkpoint["enemy_slot_feature_size"])
+        ),
+        uses_target_feature_index=(
+            None
+            if checkpoint.get("uses_target_feature_index") is None
+            else int(checkpoint["uses_target_feature_index"])
+        ),
+        target_slot_feature_index=(
+            None
+            if checkpoint.get("target_slot_feature_index") is None
+            else int(checkpoint["target_slot_feature_index"])
+        ),
         device=device,
     )
     agent.policy_network.load_state_dict(checkpoint["policy_network_state"])

@@ -347,7 +347,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--dqn-architecture",
-        choices=("flat", "action_feature"),
+        choices=("flat", "action_feature", "shared_enemy"),
         default="action_feature",
         help="Fixed DQN-family architecture used during the sweep.",
     )

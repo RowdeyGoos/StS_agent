@@ -55,6 +55,12 @@ def test_sweep_selects_named_deck_in_config_and_factory() -> None:
     }
 
 
+def test_sweep_cli_accepts_shared_enemy_dqn_architecture() -> None:
+    args = sweep.parse_args(["--dqn-architecture", "shared_enemy"])
+
+    assert args.dqn_architecture == "shared_enemy"
+
+
 def test_seed_generation_is_stable() -> None:
     assert sweep.resolve_train_seeds(7, 3) == (7, 1007, 2007)
     assert sweep.resolve_evaluation_seeds(7, 3) == (100007, 101007, 102007)

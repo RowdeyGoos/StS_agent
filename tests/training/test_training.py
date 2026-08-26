@@ -245,6 +245,23 @@ def test_cli_accepts_action_conditioned_dqn_architecture() -> None:
     assert args.dqn_architecture == "flat"
 
 
+def test_cli_accepts_shared_enemy_dqn_architecture() -> None:
+    args = parse_args(["--dqn-architecture", "shared_enemy"])
+
+    assert args.dqn_architecture == "shared_enemy"
+
+
+def test_shared_enemy_double_dqn_config_is_reusable() -> None:
+    args = parse_args(
+        ["--config", "configs/double_dqn_shared_enemy_overgrowth.json"]
+    )
+    resolved = resolved_training_config(args)
+
+    assert args.policy == "double_dqn"
+    assert args.dqn_architecture == "shared_enemy"
+    assert resolved["output_dir"] == "runs/double-dqn-shared-enemy-overgrowth"
+
+
 def test_training_config_loads_json_and_cli_overrides_it() -> None:
     with TemporaryDirectory() as temp_dir:
         config_path = Path(temp_dir) / "training.json"
