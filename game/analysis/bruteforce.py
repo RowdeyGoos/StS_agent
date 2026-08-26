@@ -16,12 +16,31 @@ from time import monotonic
 from typing import Any, Callable, Hashable, Mapping
 
 from ..simulation.actions import CombatAction
-from ..simulation.card import BashCard, DefendCard, SlimedCard, StrikeCard, get_card_spec
+from ..simulation.card import (
+    BashCard,
+    BodySlamCard,
+    DefendCard,
+    IronWaveCard,
+    PommelStrikeCard,
+    ShrugItOffCard,
+    SlimedCard,
+    StrikeCard,
+    get_card_spec,
+)
 from ..simulation.core import CombatEnv, Observation
 from ..simulation.status import StatusCollection
 
 OracleScore = tuple[int, int, int, int]
-_STATELESS_CARD_TYPES = (BashCard, DefendCard, SlimedCard, StrikeCard)
+_STATELESS_CARD_TYPES = (
+    BashCard,
+    BodySlamCard,
+    DefendCard,
+    IronWaveCard,
+    PommelStrikeCard,
+    ShrugItOffCard,
+    SlimedCard,
+    StrikeCard,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -515,6 +534,7 @@ def _minimum_actions_to_win_lower_bound(env: CombatEnv) -> int:
 
     deck = env.player.deck
     maximum_damage = 0
+    has_dynamic_damage = False
     seen_card_names: set[str] = set()
     for card in (
         *deck.draw_pile,
@@ -526,6 +546,7 @@ def _minimum_actions_to_win_lower_bound(env: CombatEnv) -> int:
             continue
         seen_card_names.add(card.name)
         card_spec = get_card_spec(card.name)
+        has_dynamic_damage = has_dynamic_damage or card_spec.damage_equals_player_block
         damage_before_vulnerable = max(
             0,
             card_spec.base_damage + env.player.strength,
@@ -538,6 +559,8 @@ def _minimum_actions_to_win_lower_bound(env: CombatEnv) -> int:
     # One card can target at most one enemy. Ignoring energy, draw timing,
     # block, and incoming damage makes both terms optimistic and therefore safe.
     enemy_count_bound = len(living_enemies)
+    if has_dynamic_damage:
+        return enemy_count_bound
     if maximum_damage <= 0:
         return enemy_count_bound
     total_enemy_hp = sum(enemy.hp for enemy in living_enemies)
