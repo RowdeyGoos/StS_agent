@@ -1,0 +1,547 @@
+{
+  "best_trial": {
+    "number": 16,
+    "params": {
+      "clip_ratio": 0.22513111834270194,
+      "discount": 0.99,
+      "entropy_coef": 0.15180479724645968,
+      "gae_lambda": 0.9220032537269476,
+      "hidden_sizes": "128,128",
+      "hp_loss_penalty_scale": 2.0004662762795906,
+      "learning_rate": 0.0005976726176464522,
+      "max_grad_norm": 0.5,
+      "minibatch_size": 1024,
+      "ppo_epochs": 4,
+      "rollout_steps": 2048,
+      "value_loss_coef": 0.37960105809479217
+    },
+    "state": "COMPLETE",
+    "user_attrs": {
+      "mean_player_hp": 73.53999999999999,
+      "mean_reward": 0.8384623481904231,
+      "mean_steps": 13.76,
+      "sampled_config": {
+        "clip_ratio": 0.22513111834270194,
+        "discount": 0.99,
+        "entropy_coef": 0.15180479724645968,
+        "env_workers": 4,
+        "gae_lambda": 0.9220032537269476,
+        "hidden_sizes": [
+          128,
+          128
+        ],
+        "hp_loss_penalty_scale": 2.0004662762795906,
+        "incoming_damage_shaping_scale": 0.0,
+        "learning_rate": 0.0005976726176464522,
+        "max_grad_norm": 0.5,
+        "minibatch_size": 1024,
+        "num_envs": 64,
+        "policy_architecture": "action_feature",
+        "ppo_epochs": 4,
+        "rollout_steps": 2048,
+        "value_loss_coef": 0.37960105809479217
+      },
+      "score": 1.2298125,
+      "seed_runs": [
+        {
+          "evaluation_seed": 100007,
+          "mean_player_hp": 74.26,
+          "mean_reward": 0.8564665446769394,
+          "mean_steps": 13.28,
+          "score": 1.2320625,
+          "train_seed": 7,
+          "win_rate": 1.0
+        },
+        {
+          "evaluation_seed": 101007,
+          "mean_player_hp": 72.82,
+          "mean_reward": 0.8204581517039068,
+          "mean_steps": 14.24,
+          "score": 1.2275625,
+          "train_seed": 1007,
+          "win_rate": 1.0
+        }
+      ],
+      "win_rate": 1.0
+    },
+    "value": 1.2298125
+  },
+  "configuration": {
+    "cards_per_turn": 5,
+    "device": "cpu",
+    "dqn_architecture": "action_feature",
+    "encounter_set": "overgrowth_easy",
+    "enemy_hp": 40,
+    "env_workers": 4,
+    "episodes": 10000,
+    "evaluation_episodes": 50,
+    "evaluation_interval": 0,
+    "hp_weight": 0.25,
+    "json_out": "sweeps/masked_ppo_overgrowth.json",
+    "metric": "hp_preserving_score",
+    "num_envs": 64,
+    "player_hp": 80,
+    "policy": "masked_ppo",
+    "ppo_policy_architecture": "action_feature",
+    "print_config": true,
+    "pruner": "none",
+    "resolved_config_out": null,
+    "restore_best_checkpoint": true,
+    "sampler": "tpe",
+    "search_space": {
+      "clip_ratio": {
+        "high": 0.25,
+        "low": 0.1,
+        "type": "float"
+      },
+      "discount": {
+        "choices": [
+          0.99,
+          0.995,
+          0.999
+        ],
+        "type": "categorical"
+      },
+      "entropy_coef": {
+        "high": 1.0,
+        "log": true,
+        "low": 0.001,
+        "type": "float"
+      },
+      "env_workers": 4,
+      "gae_lambda": {
+        "high": 0.98,
+        "low": 0.9,
+        "type": "float"
+      },
+      "hidden_sizes": {
+        "choices": [
+          [
+            128,
+            128
+          ],
+          [
+            256,
+            128
+          ],
+          [
+            256,
+            256
+          ]
+        ],
+        "type": "categorical"
+      },
+      "hp_loss_penalty_scale": {
+        "high": 3.0,
+        "low": 0.5,
+        "type": "float"
+      },
+      "incoming_damage_shaping_scale": 0.0,
+      "learning_rate": {
+        "high": 0.0008,
+        "log": true,
+        "low": 0.0001,
+        "type": "float"
+      },
+      "max_grad_norm": {
+        "choices": [
+          0.5,
+          1.0
+        ],
+        "type": "categorical"
+      },
+      "minibatch_size": {
+        "choices": [
+          1024,
+          2048
+        ],
+        "type": "categorical"
+      },
+      "num_envs": 64,
+      "policy_architecture": "action_feature",
+      "ppo_epochs": {
+        "choices": [
+          2,
+          3,
+          4
+        ],
+        "type": "categorical"
+      },
+      "rollout_steps": {
+        "choices": [
+          2048,
+          4096
+        ],
+        "type": "categorical"
+      },
+      "value_loss_coef": {
+        "high": 0.75,
+        "low": 0.25,
+        "type": "float"
+      }
+    },
+    "seed": 7,
+    "storage": null,
+    "study_name": null,
+    "timeout_seconds": null,
+    "top_k": 5,
+    "train_seeds": 2,
+    "trials": 30
+  },
+  "encounter_set": "overgrowth_easy",
+  "episodes": 10000,
+  "evaluation_episodes": 50,
+  "evaluation_seeds": [
+    100007,
+    101007
+  ],
+  "hp_weight": 0.25,
+  "metric": "hp_preserving_score",
+  "policy": "masked_ppo",
+  "pruner": "none",
+  "sampler": "tpe",
+  "study_name": "sts_agent_masked_ppo_sweep",
+  "top_trials": [
+    {
+      "number": 16,
+      "params": {
+        "clip_ratio": 0.22513111834270194,
+        "discount": 0.99,
+        "entropy_coef": 0.15180479724645968,
+        "gae_lambda": 0.9220032537269476,
+        "hidden_sizes": "128,128",
+        "hp_loss_penalty_scale": 2.0004662762795906,
+        "learning_rate": 0.0005976726176464522,
+        "max_grad_norm": 0.5,
+        "minibatch_size": 1024,
+        "ppo_epochs": 4,
+        "rollout_steps": 2048,
+        "value_loss_coef": 0.37960105809479217
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 73.53999999999999,
+        "mean_reward": 0.8384623481904231,
+        "mean_steps": 13.76,
+        "sampled_config": {
+          "clip_ratio": 0.22513111834270194,
+          "discount": 0.99,
+          "entropy_coef": 0.15180479724645968,
+          "env_workers": 4,
+          "gae_lambda": 0.9220032537269476,
+          "hidden_sizes": [
+            128,
+            128
+          ],
+          "hp_loss_penalty_scale": 2.0004662762795906,
+          "incoming_damage_shaping_scale": 0.0,
+          "learning_rate": 0.0005976726176464522,
+          "max_grad_norm": 0.5,
+          "minibatch_size": 1024,
+          "num_envs": 64,
+          "policy_architecture": "action_feature",
+          "ppo_epochs": 4,
+          "rollout_steps": 2048,
+          "value_loss_coef": 0.37960105809479217
+        },
+        "score": 1.2298125,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 74.26,
+            "mean_reward": 0.8564665446769394,
+            "mean_steps": 13.28,
+            "score": 1.2320625,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 72.82,
+            "mean_reward": 0.8204581517039068,
+            "mean_steps": 14.24,
+            "score": 1.2275625,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.2298125
+    },
+    {
+      "number": 12,
+      "params": {
+        "clip_ratio": 0.24433954962799664,
+        "discount": 0.99,
+        "entropy_coef": 0.8924632445234612,
+        "gae_lambda": 0.9005908338793867,
+        "hidden_sizes": "128,128",
+        "hp_loss_penalty_scale": 1.56754898772986,
+        "learning_rate": 0.0007153389028616,
+        "max_grad_norm": 0.5,
+        "minibatch_size": 1024,
+        "ppo_epochs": 4,
+        "rollout_steps": 2048,
+        "value_loss_coef": 0.45820000433046204
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 73.41999999999999,
+        "mean_reward": 0.8710690957592186,
+        "mean_steps": 14.36,
+        "sampled_config": {
+          "clip_ratio": 0.24433954962799664,
+          "discount": 0.99,
+          "entropy_coef": 0.8924632445234612,
+          "env_workers": 4,
+          "gae_lambda": 0.9005908338793867,
+          "hidden_sizes": [
+            128,
+            128
+          ],
+          "hp_loss_penalty_scale": 1.56754898772986,
+          "incoming_damage_shaping_scale": 0.0,
+          "learning_rate": 0.0007153389028616,
+          "max_grad_norm": 0.5,
+          "minibatch_size": 1024,
+          "num_envs": 64,
+          "policy_architecture": "action_feature",
+          "ppo_epochs": 4,
+          "rollout_steps": 2048,
+          "value_loss_coef": 0.45820000433046204
+        },
+        "score": 1.2294375,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 73.38,
+            "mean_reward": 0.8702853212653539,
+            "mean_steps": 11.98,
+            "score": 1.2293125,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 73.46,
+            "mean_reward": 0.8718528702530834,
+            "mean_steps": 16.74,
+            "score": 1.2295625,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.2294375
+    },
+    {
+      "number": 25,
+      "params": {
+        "clip_ratio": 0.18870816349382355,
+        "discount": 0.99,
+        "entropy_coef": 0.12955140307962426,
+        "gae_lambda": 0.9068693269178346,
+        "hidden_sizes": "128,128",
+        "hp_loss_penalty_scale": 1.6165410573458698,
+        "learning_rate": 0.0006323098666906842,
+        "max_grad_norm": 0.5,
+        "minibatch_size": 1024,
+        "ppo_epochs": 4,
+        "rollout_steps": 2048,
+        "value_loss_coef": 0.4056538716488596
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 73.32,
+        "mean_reward": 0.8650188217116197,
+        "mean_steps": 13.620000000000001,
+        "sampled_config": {
+          "clip_ratio": 0.18870816349382355,
+          "discount": 0.99,
+          "entropy_coef": 0.12955140307962426,
+          "env_workers": 4,
+          "gae_lambda": 0.9068693269178346,
+          "hidden_sizes": [
+            128,
+            128
+          ],
+          "hp_loss_penalty_scale": 1.6165410573458698,
+          "incoming_damage_shaping_scale": 0.0,
+          "learning_rate": 0.0006323098666906842,
+          "max_grad_norm": 0.5,
+          "minibatch_size": 1024,
+          "num_envs": 64,
+          "policy_architecture": "action_feature",
+          "ppo_epochs": 4,
+          "rollout_steps": 2048,
+          "value_loss_coef": 0.4056538716488596
+        },
+        "score": 1.229125,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 73.32,
+            "mean_reward": 0.8650188217116198,
+            "mean_steps": 13.28,
+            "score": 1.229125,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 73.32,
+            "mean_reward": 0.8650188217116197,
+            "mean_steps": 13.96,
+            "score": 1.229125,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.229125
+    },
+    {
+      "number": 11,
+      "params": {
+        "clip_ratio": 0.24792650833380114,
+        "discount": 0.99,
+        "entropy_coef": 0.5707742216519647,
+        "gae_lambda": 0.9029341349497658,
+        "hidden_sizes": "128,128",
+        "hp_loss_penalty_scale": 1.7869608282527334,
+        "learning_rate": 0.000786383147708658,
+        "max_grad_norm": 0.5,
+        "minibatch_size": 1024,
+        "ppo_epochs": 4,
+        "rollout_steps": 2048,
+        "value_loss_coef": 0.44849179293988706
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 73.31,
+        "mean_reward": 0.8505654007373653,
+        "mean_steps": 12.280000000000001,
+        "sampled_config": {
+          "clip_ratio": 0.24792650833380114,
+          "discount": 0.99,
+          "entropy_coef": 0.5707742216519647,
+          "env_workers": 4,
+          "gae_lambda": 0.9029341349497658,
+          "hidden_sizes": [
+            128,
+            128
+          ],
+          "hp_loss_penalty_scale": 1.7869608282527334,
+          "incoming_damage_shaping_scale": 0.0,
+          "learning_rate": 0.000786383147708658,
+          "max_grad_norm": 0.5,
+          "minibatch_size": 1024,
+          "num_envs": 64,
+          "policy_architecture": "action_feature",
+          "ppo_epochs": 4,
+          "rollout_steps": 2048,
+          "value_loss_coef": 0.44849179293988706
+        },
+        "score": 1.22909375,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 73.38,
+            "mean_reward": 0.8521289914620863,
+            "mean_steps": 12.5,
+            "score": 1.2293125,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 73.24,
+            "mean_reward": 0.8490018100126442,
+            "mean_steps": 12.06,
+            "score": 1.228875,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.22909375
+    },
+    {
+      "number": 20,
+      "params": {
+        "clip_ratio": 0.2093941957622376,
+        "discount": 0.995,
+        "entropy_coef": 0.20901536623158892,
+        "gae_lambda": 0.910658055351215,
+        "hidden_sizes": "256,128",
+        "hp_loss_penalty_scale": 2.9802577762660056,
+        "learning_rate": 0.00042482061172883487,
+        "max_grad_norm": 0.5,
+        "minibatch_size": 1024,
+        "ppo_epochs": 3,
+        "rollout_steps": 2048,
+        "value_loss_coef": 0.2545838657189009
+      },
+      "state": "COMPLETE",
+      "user_attrs": {
+        "mean_player_hp": 73.11,
+        "mean_reward": 0.7433252990190904,
+        "mean_steps": 19.490000000000002,
+        "sampled_config": {
+          "clip_ratio": 0.2093941957622376,
+          "discount": 0.995,
+          "entropy_coef": 0.20901536623158892,
+          "env_workers": 4,
+          "gae_lambda": 0.910658055351215,
+          "hidden_sizes": [
+            256,
+            128
+          ],
+          "hp_loss_penalty_scale": 2.9802577762660056,
+          "incoming_damage_shaping_scale": 0.0,
+          "learning_rate": 0.00042482061172883487,
+          "max_grad_norm": 0.5,
+          "minibatch_size": 1024,
+          "num_envs": 64,
+          "policy_architecture": "action_feature",
+          "ppo_epochs": 3,
+          "rollout_steps": 2048,
+          "value_loss_coef": 0.2545838657189009
+        },
+        "score": 1.22846875,
+        "seed_runs": [
+          {
+            "evaluation_seed": 100007,
+            "mean_player_hp": 71.86,
+            "mean_reward": 0.6967587712649339,
+            "mean_steps": 20.66,
+            "score": 1.2245625,
+            "train_seed": 7,
+            "win_rate": 1.0
+          },
+          {
+            "evaluation_seed": 101007,
+            "mean_player_hp": 74.36,
+            "mean_reward": 0.7898918267732468,
+            "mean_steps": 18.32,
+            "score": 1.232375,
+            "train_seed": 1007,
+            "win_rate": 1.0
+          }
+        ],
+        "win_rate": 1.0
+      },
+      "value": 1.22846875
+    }
+  ],
+  "train_seeds": [
+    7,
+    1007
+  ],
+  "trials_completed": 30,
+  "trials_requested": 30
+}
