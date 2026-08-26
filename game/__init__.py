@@ -1,8 +1,8 @@
-"""Minimal Slay-the-Spire-style combat simulator package."""
+"""Stable symbol-level public API for the combat simulator package."""
 
-from .actions import CombatAction
-from .agent_io import load_agent, save_agent
-from .baselines import (
+from .simulation.actions import CombatAction
+from .agents.agent_io import load_agent, save_agent
+from .agents.baselines import (
     EvaluationSnapshot,
     EvaluationStats,
     QLearningAgent,
@@ -12,7 +12,13 @@ from .baselines import (
     evaluate_policy,
     train_q_learning,
 )
-from .card import (
+from .analysis.bruteforce import (
+    BruteForceProgress,
+    BruteForceResult,
+    OracleStep,
+    brute_force_combat,
+)
+from .simulation.card import (
     BashCard,
     Card,
     CardSpec,
@@ -22,8 +28,8 @@ from .card import (
     create_starter_deck,
     get_card_spec,
 )
-from .core import CombatEnv
-from .dqn import (
+from .simulation.core import CombatEnv
+from .agents.dqn import (
     DQNAgent,
     DQNTrainingResult,
     DoubleDQNAgent,
@@ -34,8 +40,9 @@ from .dqn import (
     train_dqn,
     train_dueling_double_dqn,
 )
-from .encoding import ObservationEncoder
-from .enemy import (
+from .simulation.encoding import ObservationEncoder
+from .simulation.env_factory import CombatEnvFactory, SUPPORTED_ENCOUNTERS
+from .simulation.enemy import (
     Enemy,
     FuzzyWurmCrawler,
     Intent,
@@ -47,21 +54,37 @@ from .enemy import (
     TwigSlimeMedium,
     TwigSlimeSmall,
     build_overgrowth_easy_encounter,
+    build_overgrowth_slimes_encounter,
     sample_overgrowth_first_three_encounter_builders,
 )
-from .gym_env import GymCombatEnv
-from .player import Player
-from .ppo import PPOAgent, PPOTrainingResult, train_masked_ppo
-from .status import (
+from .simulation.gym_env import GymCombatEnv
+from .simulation.player import Player
+from .agents.ppo import PPOAgent, PPOTrainingResult, train_masked_ppo
+from .analysis.oracle import (
+    OracleActionEvaluation,
+    OracleDecisionAnalysis,
+    OraclePolicyAnalysis,
+    analyze_episode_trace_with_oracle,
+    analyze_oracle_decision,
+)
+from .analysis.uncertainty import (
+    InformationAwareActionEvaluation,
+    InformationAwareDecisionAnalysis,
+    InformationAwarePolicyAnalysis,
+    analyze_episode_trace_with_uncertainty,
+    analyze_information_aware_decision,
+    sample_hidden_combat_states,
+)
+from .simulation.status import (
     SHRINK,
     STATUS_STACK_SCALE,
     SUPPORTED_STATUS_NAMES,
     StatusCollection,
     VULNERABLE,
 )
-from .trajectory import EpisodeSummary, TransitionRecord
-from .trace_analysis import TraceAnalysisReport, TraceFinding, analyze_episode_trace
-from .watch import (
+from .simulation.trajectory import EpisodeSummary, TransitionRecord
+from .analysis.trace import TraceAnalysisReport, TraceFinding, analyze_episode_trace
+from .analysis.watch import (
     EpisodeTrace,
     StepTrace,
     load_episode_trace,
@@ -71,10 +94,13 @@ from .watch import (
 
 __all__ = [
     "BashCard",
+    "BruteForceProgress",
+    "BruteForceResult",
     "Card",
     "CardSpec",
     "CombatAction",
     "CombatEnv",
+    "CombatEnvFactory",
     "DefendCard",
     "DQNAgent",
     "DQNTrainingResult",
@@ -87,11 +113,18 @@ __all__ = [
     "EpisodeSummary",
     "FuzzyWurmCrawler",
     "GymCombatEnv",
+    "InformationAwareActionEvaluation",
+    "InformationAwareDecisionAnalysis",
+    "InformationAwarePolicyAnalysis",
     "Intent",
     "LeafSlimeMedium",
     "LeafSlimeSmall",
     "Nibbit",
     "ObservationEncoder",
+    "OracleActionEvaluation",
+    "OracleDecisionAnalysis",
+    "OraclePolicyAnalysis",
+    "OracleStep",
     "Player",
     "PPOAgent",
     "PPOTrainingResult",
@@ -106,6 +139,7 @@ __all__ = [
     "StatusCollection",
     "STATUS_STACK_SCALE",
     "StrikeCard",
+    "SUPPORTED_ENCOUNTERS",
     "SUPPORTED_STATUS_NAMES",
     "TraceAnalysisReport",
     "TraceFinding",
@@ -115,6 +149,8 @@ __all__ = [
     "TwigSlimeSmall",
     "VULNERABLE",
     "build_overgrowth_easy_encounter",
+    "build_overgrowth_slimes_encounter",
+    "brute_force_combat",
     "choose_heuristic_action",
     "choose_random_action",
     "create_starter_deck",
@@ -123,9 +159,14 @@ __all__ = [
     "load_agent",
     "load_episode_trace",
     "sample_overgrowth_first_three_encounter_builders",
+    "sample_hidden_combat_states",
     "save_agent",
     "save_episode_trace",
     "analyze_episode_trace",
+    "analyze_episode_trace_with_oracle",
+    "analyze_episode_trace_with_uncertainty",
+    "analyze_information_aware_decision",
+    "analyze_oracle_decision",
     "trace_policy_episode",
     "train_double_dqn",
     "train_dqn",
