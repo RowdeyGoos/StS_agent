@@ -24,11 +24,25 @@ class Intent:
     value: int
     move_name: str = ""
     attack_damage: int = 0
+    attack_count: int = 0
     block_gain: int = 0
     strength_gain: int = 0
     status_name: str | None = None
     status_stacks: int = 0
     slimed_added: int = 0
+
+    def __post_init__(self) -> None:
+        if self.attack_damage < 0:
+            raise ValueError("Intent attack damage cannot be negative.")
+        if self.attack_count < 0:
+            raise ValueError("Intent attack count cannot be negative.")
+        is_attack_intent = self.kind in {"attack", "attack_defend"}
+        if is_attack_intent and self.attack_count <= 0:
+            raise ValueError(
+                "Attack intents must define a positive attack count."
+            )
+        if not is_attack_intent and self.attack_count > 0:
+            raise ValueError("Non-attack intents cannot define an attack count.")
 
     def as_dict(self) -> dict[str, int | str | None]:
         """Return a plain dict representation for observations and logging."""
@@ -37,6 +51,7 @@ class Intent:
             "value": self.value,
             "move_name": self.move_name,
             "attack_damage": self.attack_damage,
+            "attack_count": self.attack_count,
             "block_gain": self.block_gain,
             "strength_gain": self.strength_gain,
             "status_name": self.status_name,
@@ -150,12 +165,14 @@ class Enemy(ABC):
 
         current_intent = self.intent
 
-        if current_intent.attack_damage > 0:
+        for _hit_index in range(current_intent.attack_count):
             player.take_damage(
                 current_intent.attack_damage,
                 attacker_statuses=None,
                 attacker_strength=0,
             )
+            if not player.is_alive:
+                break
         if current_intent.block_gain > 0:
             self.gain_block(current_intent.block_gain)
         if current_intent.strength_gain > 0:
@@ -195,6 +212,7 @@ class Enemy(ABC):
             value=resolved_value,
             move_name=template.move_name,
             attack_damage=resolved_attack_damage,
+            attack_count=template.attack_count,
             block_gain=template.block_gain,
             strength_gain=template.strength_gain,
             status_name=template.status_name,
@@ -231,9 +249,9 @@ class SimpleEnemy(Enemy):
     """Single deterministic enemy used for early smoke tests."""
 
     INTENT_CYCLE: tuple[Intent, ...] = (
-        Intent(kind="attack", value=6, move_name="Strike", attack_damage=6),
+        Intent(kind="attack", value=6, move_name="Strike", attack_damage=6, attack_count=1),
         Intent(kind="defend", value=6, move_name="Defend", block_gain=6),
-        Intent(kind="attack", value=8, move_name="Heavy Strike", attack_damage=8),
+        Intent(kind="attack", value=8, move_name="Heavy Strike", attack_damage=8, attack_count=1),
     )
 
     def __init__(self, max_hp: int = 40, rng: Random | None = None) -> None:
@@ -264,12 +282,13 @@ class Nibbit(Enemy):
     """Solo Nibbit from the Overgrowth easy encounter pool."""
 
     INTENT_CYCLE: tuple[Intent, ...] = (
-        Intent(kind="attack", value=12, move_name="Butt", attack_damage=12),
+        Intent(kind="attack", value=12, move_name="Butt", attack_damage=12, attack_count=1),
         Intent(
             kind="attack_defend",
             value=6,
             move_name="Hesitant Slice",
             attack_damage=6,
+            attack_count=1,
             block_gain=5,
         ),
         Intent(kind="buff", value=2, move_name="Hiss", strength_gain=2),
@@ -307,8 +326,8 @@ class ShrinkerBeetle(Enemy):
         status_name="shrink",
         status_stacks=1,
     )
-    CHOMP = Intent(kind="attack", value=7, move_name="Chomp", attack_damage=7)
-    STOMP = Intent(kind="attack", value=13, move_name="Stomp", attack_damage=13)
+    CHOMP = Intent(kind="attack", value=7, move_name="Chomp", attack_damage=7, attack_count=1)
+    STOMP = Intent(kind="attack", value=13, move_name="Stomp", attack_damage=13, attack_count=1)
 
     def __init__(self, rng: Random) -> None:
         super().__init__(name="Shrinker Beetle", max_hp=rng.randint(38, 40), rng=rng)
@@ -347,9 +366,9 @@ class FuzzyWurmCrawler(Enemy):
     """Fuzzy Wurm Crawler from the Overgrowth easy encounter pool."""
 
     INTENT_CYCLE: tuple[Intent, ...] = (
-        Intent(kind="attack", value=4, move_name="Acid Goop", attack_damage=4),
+        Intent(kind="attack", value=4, move_name="Acid Goop", attack_damage=4, attack_count=1),
         Intent(kind="buff", value=7, move_name="Inhale", strength_gain=7),
-        Intent(kind="attack", value=4, move_name="Acid Goop", attack_damage=4),
+        Intent(kind="attack", value=4, move_name="Acid Goop", attack_damage=4, attack_count=1),
     )
 
     def __init__(self, rng: Random) -> None:
@@ -374,10 +393,74 @@ class FuzzyWurmCrawler(Enemy):
         return (self.INTENT_CYCLE[next_index],)
 
 
+class Mawler(Enemy):
+    """Solo Mawler from the first partial Overgrowth hard benchmark."""
+
+    CLAW = Intent(
+        kind="attack",
+        value=4,
+        move_name="Claw",
+        attack_damage=4,
+        attack_count=2,
+    )
+    RIP_AND_TEAR = Intent(
+        kind="attack",
+        value=14,
+        move_name="Rip and Tear",
+        attack_damage=14,
+        attack_count=1,
+    )
+    ROAR = Intent(
+        kind="debuff",
+        value=3,
+        move_name="Roar",
+        status_name="vulnerable",
+        status_stacks=3,
+    )
+    MOVE_TEMPLATES: tuple[Intent, ...] = (CLAW, RIP_AND_TEAR, ROAR)
+
+    def __init__(self, rng: Random) -> None:
+        super().__init__(name="Mawler", max_hp=72, rng=rng)
+        self._current_intent = self.CLAW
+        self._roar_used = False
+
+    @property
+    def intent(self) -> Intent:
+        return self._resolve_intent(self._current_intent)
+
+    def advance_intent(self) -> None:
+        if self._current_intent.move_name == self.ROAR.move_name:
+            self._roar_used = True
+        self._current_intent = self.rng.choice(self._candidate_templates())
+
+    def _candidate_templates(self) -> tuple[Intent, ...]:
+        return tuple(
+            template
+            for template in self.MOVE_TEMPLATES
+            if template.move_name != self._current_intent.move_name
+            and not (self._roar_used and template.move_name == self.ROAR.move_name)
+        )
+
+    def _behavior_phase_index(self) -> int:
+        if self._roar_used:
+            return 3 if self._current_intent.move_name == self.CLAW.move_name else 4
+        if self._current_intent.move_name == self.CLAW.move_name:
+            return 0
+        if self._current_intent.move_name == self.RIP_AND_TEAR.move_name:
+            return 1
+        return 2
+
+    def _behavior_phase_count(self) -> int:
+        return 5
+
+    def _possible_next_templates(self) -> tuple[Intent, ...]:
+        return self._candidate_templates()
+
+
 class LeafSlimeSmall(Enemy):
     """Small Leaf Slime from Overgrowth."""
 
-    TACKLE = Intent(kind="attack", value=3, move_name="Tackle", attack_damage=3)
+    TACKLE = Intent(kind="attack", value=3, move_name="Tackle", attack_damage=3, attack_count=1)
     GOOP = Intent(kind="shuffle", value=1, move_name="Goop", slimed_added=1)
 
     def __init__(self, rng: Random) -> None:
@@ -418,7 +501,7 @@ class LeafSlimeMedium(Enemy):
 
     INTENT_CYCLE: tuple[Intent, ...] = (
         Intent(kind="shuffle", value=2, move_name="Sticky Shot", slimed_added=2),
-        Intent(kind="attack", value=8, move_name="Clump Shot", attack_damage=8),
+        Intent(kind="attack", value=8, move_name="Clump Shot", attack_damage=8, attack_count=1),
     )
 
     def __init__(self, rng: Random) -> None:
@@ -446,7 +529,7 @@ class LeafSlimeMedium(Enemy):
 class TwigSlimeSmall(Enemy):
     """Small Twig Slime from Overgrowth."""
 
-    TACKLE = Intent(kind="attack", value=4, move_name="Tackle", attack_damage=4)
+    TACKLE = Intent(kind="attack", value=4, move_name="Tackle", attack_damage=4, attack_count=1)
 
     def __init__(self, rng: Random) -> None:
         super().__init__(name="Twig Slime (S)", max_hp=rng.randint(7, 11), rng=rng)
@@ -466,7 +549,7 @@ class TwigSlimeMedium(Enemy):
     """Medium Twig Slime from Overgrowth."""
 
     STICKY_SHOT = Intent(kind="shuffle", value=1, move_name="Sticky Shot", slimed_added=1)
-    CHOMP = Intent(kind="attack", value=11, move_name="Chomp", attack_damage=11)
+    CHOMP = Intent(kind="attack", value=11, move_name="Chomp", attack_damage=11, attack_count=1)
 
     def __init__(self, rng: Random) -> None:
         super().__init__(name="Twig Slime (M)", max_hp=rng.randint(26, 28), rng=rng)
@@ -526,5 +609,33 @@ def sample_overgrowth_first_three_encounter_builders(
 def build_overgrowth_slimes_encounter(rng: Random) -> list[Enemy]:
     """Build the Overgrowth easy Slimes encounter."""
     medium_enemy = rng.choice((LeafSlimeMedium, TwigSlimeMedium))(rng)
-    small_enemies = [rng.choice((LeafSlimeSmall, TwigSlimeSmall))(rng) for _ in range(2)]
+    small_enemies: list[Enemy] = [LeafSlimeSmall(rng), TwigSlimeSmall(rng)]
+    rng.shuffle(small_enemies)
     return [medium_enemy, *small_enemies]
+
+
+def build_overgrowth_mawler_encounter(rng: Random) -> list[Enemy]:
+    """Build the fixed solo Mawler encounter."""
+    return [Mawler(rng)]
+
+
+def build_overgrowth_nibbits_encounter(rng: Random) -> list[Enemy]:
+    """Build the fixed two-Nibbit encounter."""
+    return [Nibbit(rng), Nibbit(rng)]
+
+
+def build_overgrowth_shrinker_fuzzy_encounter(rng: Random) -> list[Enemy]:
+    """Build the fixed Shrinker Beetle plus Fuzzy Wurm Crawler encounter."""
+    return [ShrinkerBeetle(rng), FuzzyWurmCrawler(rng)]
+
+
+def build_overgrowth_hard_v1_encounter(rng: Random) -> list[Enemy]:
+    """Sample one encounter from the deliberately partial hard-v1 pool."""
+    encounter_builder = rng.choice(
+        (
+            build_overgrowth_mawler_encounter,
+            build_overgrowth_nibbits_encounter,
+            build_overgrowth_shrinker_fuzzy_encounter,
+        )
+    )
+    return list(encounter_builder(rng))

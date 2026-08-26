@@ -13,16 +13,32 @@ from .enemy import (
     ShrinkerBeetle,
     SimpleEnemy,
     build_overgrowth_easy_encounter,
+    build_overgrowth_hard_v1_encounter,
+    build_overgrowth_mawler_encounter,
+    build_overgrowth_nibbits_encounter,
+    build_overgrowth_shrinker_fuzzy_encounter,
     build_overgrowth_slimes_encounter,
 )
 
-SUPPORTED_ENCOUNTERS: tuple[str, ...] = (
+SUPPORTED_TRAINING_ENCOUNTER_SETS: tuple[str, ...] = (
     "simple",
     "overgrowth_easy",
+    "overgrowth_hard_v1",
+)
+SUPPORTED_FIXED_ENCOUNTERS: tuple[str, ...] = (
+    "simple",
     "nibbit",
     "slimes",
     "shrinker_beetle",
     "fuzzy_wurm_crawler",
+    "mawler",
+    "nibbits",
+    "shrinker_fuzzy",
+)
+SUPPORTED_ENCOUNTERS: tuple[str, ...] = tuple(
+    dict.fromkeys(
+        (*SUPPORTED_TRAINING_ENCOUNTER_SETS, *SUPPORTED_FIXED_ENCOUNTERS)
+    )
 )
 
 
@@ -43,6 +59,9 @@ _FIXED_ENCOUNTER_FACTORIES = {
     "slimes": build_overgrowth_slimes_encounter,
     "shrinker_beetle": _build_shrinker_beetle_encounter,
     "fuzzy_wurm_crawler": _build_fuzzy_wurm_crawler_encounter,
+    "mawler": build_overgrowth_mawler_encounter,
+    "nibbits": build_overgrowth_nibbits_encounter,
+    "shrinker_fuzzy": build_overgrowth_shrinker_fuzzy_encounter,
 }
 
 
@@ -68,11 +87,16 @@ class CombatEnvFactory:
                 incoming_damage_shaping_scale=self.incoming_damage_shaping_scale,
                 record_trajectory=self.record_trajectory,
             )
-        if self.encounter_set == "overgrowth_easy":
+        if self.encounter_set in {"overgrowth_easy", "overgrowth_hard_v1"}:
+            encounter_factory = (
+                build_overgrowth_easy_encounter
+                if self.encounter_set == "overgrowth_easy"
+                else build_overgrowth_hard_v1_encounter
+            )
             return CombatEnv(
                 player_max_hp=self.player_hp,
                 cards_per_turn=self.cards_per_turn,
-                encounter_factory=build_overgrowth_easy_encounter,
+                encounter_factory=encounter_factory,
                 max_enemy_count=3,
                 hp_loss_penalty_scale=self.hp_loss_penalty_scale,
                 incoming_damage_shaping_scale=self.incoming_damage_shaping_scale,

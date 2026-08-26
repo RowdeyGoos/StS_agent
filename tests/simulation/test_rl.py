@@ -10,6 +10,7 @@ from game.simulation.card import BashCard, DefendCard, StrikeCard
 from game.simulation.core import CombatEnv
 from game.simulation.enemy import (
     FuzzyWurmCrawler,
+    Mawler,
     SimpleEnemy,
     build_overgrowth_easy_encounter,
 )
@@ -46,7 +47,7 @@ def test_fixed_width_observation_encoding() -> None:
     assert feature_map["enemy_0_name_is_simpleenemy"] == 1.0
     assert feature_map["enemy_0_behavior_phase_fraction"] == 0.0
     assert isclose(feature_map["enemy_0_behavior_phase_count_fraction"], 0.375)
-    assert isclose(feature_map["enemy_0_behavior_next_move_count_fraction"], 1.0 / 15.0)
+    assert isclose(feature_map["enemy_0_behavior_next_move_count_fraction"], 1.0 / 18.0)
     assert feature_map["enemy_0_behavior_next_move_can_be_defend"] == 1.0
     assert feature_map["enemy_0_behavior_next_move_can_be_heavy_strike"] == 0.0
 
@@ -96,6 +97,30 @@ def test_behavior_state_features_distinguish_repeated_intents() -> None:
     )
     assert first_attack_features["enemy_0_behavior_next_move_can_be_inhale"] == 1.0
     assert second_attack_features["enemy_0_behavior_next_move_can_be_acid_goop"] == 1.0
+
+
+def test_mawler_multi_hit_intent_is_encoded_and_summarized() -> None:
+    env = CombatEnv(
+        seed=0,
+        deck_factory=lambda: [StrikeCard()],
+        encounter_factory=lambda rng: [Mawler(rng)],
+        cards_per_turn=1,
+        max_enemy_count=3,
+    )
+    observation = env.reset()
+    feature_map = dict(
+        zip(env.encoder.feature_names, env.encode_observation(), strict=True)
+    )
+    summary = summarize_action(observation, ("play", 0))
+
+    assert feature_map["enemy_0_name_is_mawler"] == 1.0
+    assert feature_map["enemy_0_intent_attack_fraction"] == 0.1
+    assert feature_map["enemy_0_intent_attack_count_fraction"] == 0.4
+    assert feature_map["enemy_0_behavior_next_move_can_be_rip_and_tear"] == 1.0
+    assert feature_map["enemy_0_behavior_next_move_can_be_roar"] == 1.0
+    assert feature_map["enemy_0_behavior_next_move_can_be_claw"] == 0.0
+    assert summary.target_intent_attack_damage == 8
+    assert summary.projected_incoming_hp_loss_before == 8
 
 
 def test_action_mask_and_discrete_action_roundtrip() -> None:

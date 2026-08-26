@@ -34,6 +34,7 @@ DEFAULT_ENEMY_NAME_TO_ID: dict[str, int] = {
     "Twig Slime (M)": 6,
     "Shrinker Beetle": 7,
     "Fuzzy Wurm Crawler": 8,
+    "Mawler": 9,
 }
 DEFAULT_MOVE_NAME_TO_ID: dict[str, int] = {
     "Strike": 1,
@@ -51,9 +52,13 @@ DEFAULT_MOVE_NAME_TO_ID: dict[str, int] = {
     "Goop": 13,
     "Sticky Shot": 14,
     "Clump Shot": 15,
+    "Claw": 16,
+    "Rip and Tear": 17,
+    "Roar": 18,
 }
 PILE_COUNT_ORDER: tuple[str, ...] = ("hand", "draw_pile", "discard_pile", "exhaust_pile")
 BEHAVIOR_STATE_SCALE = 8.0
+ATTACK_COUNT_SCALE = 5.0
 
 
 @dataclass(slots=True)
@@ -195,6 +200,7 @@ class ObservationEncoder:
             "strength_scale",
             *status_feature_names,
             "intent_attack_fraction",
+            "intent_attack_count_fraction",
             "intent_block_fraction",
             "intent_strength_gain_fraction",
             *intent_status_feature_names,
@@ -442,6 +448,10 @@ class ObservationEncoder:
 
         phase_count = max(1, int(behavior_state.get("phase_count", 1)))
         phase_index = max(0, int(behavior_state.get("phase_index", 0)))
+        intent_attack_damage = int(intent.get("attack_damage", 0))
+        intent_attack_count = int(
+            intent.get("attack_count", 1 if intent_attack_damage > 0 else 0)
+        )
 
         return [
             1.0 if bool(enemy.get("alive", True)) else 0.0,
@@ -450,7 +460,8 @@ class ObservationEncoder:
             float(enemy["block"]) / float(hp_scale),
             float(int(enemy.get("strength", 0))) / float(hp_scale),
             *self._encode_status_features(enemy_statuses),
-            float(int(intent.get("attack_damage", 0))) / float(hp_scale),
+            float(intent_attack_damage * intent_attack_count) / float(hp_scale),
+            float(intent_attack_count) / ATTACK_COUNT_SCALE,
             float(int(intent.get("block_gain", 0))) / float(hp_scale),
             float(int(intent.get("strength_gain", 0))) / float(hp_scale),
             *intent_status_features,

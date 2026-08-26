@@ -6,6 +6,14 @@ from typing import Any
 
 from .core import CombatEnv
 
+
+def _describe_intent(intent: dict[str, Any]) -> str:
+    value_fragment = str(intent["value"])
+    attack_count = int(intent.get("attack_count", 0))
+    if int(intent.get("attack_damage", 0)) > 0 and attack_count > 1:
+        value_fragment = f"{intent['attack_damage']} x {attack_count}"
+    return f"{intent['move_name']} ({intent['kind']} {value_fragment})"
+
 try:
     import gymnasium as gym
     import numpy as np
@@ -89,7 +97,7 @@ if gym is not None and np is not None:
                 intent = enemy["intent"]
                 enemy_fragments.append(
                     f"{enemy['name']} HP {enemy['hp']}/{enemy['max_hp']} "
-                    f"Block {enemy['block']} Intent {intent['move_name']} ({intent['kind']} {intent['value']})"
+                    f"Block {enemy['block']} Intent {_describe_intent(intent)}"
                 )
             return (
                 f"Turn {observation['turn']} | "

@@ -9,7 +9,7 @@ from typing import Sequence
 from game.simulation.core import CombatEnv
 from game.simulation.env_factory import CombatEnvFactory, SUPPORTED_ENCOUNTERS
 from game.agents.agent_io import load_agent
-from game.analysis.render import describe_action, format_observation
+from game.analysis.render import describe_action, describe_intent, format_observation
 from game.analysis.watch import (
     describe_top_action_scores,
     policy_name_from_agent,
@@ -52,8 +52,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         choices=SUPPORTED_ENCOUNTERS,
         default="simple",
         help=(
-            "Fixed encounter to trace. overgrowth_easy samples from its pool using "
-            "the combat seed. --encounter-set is retained as an alias."
+            "Named encounter or sampled pool to trace using the combat seed. "
+            "--encounter-set is retained as an alias."
         ),
     )
     parser.add_argument(
@@ -168,7 +168,7 @@ def print_trace(trace: object, show_action_scores: bool, top_action_scores: int)
                 print(
                     "  Enemy turn: "
                     f"enemy[{enemy_action['enemy_index']}] {enemy_action['enemy_name']} -> "
-                    f"{intent['move_name']} ({intent['kind']} {intent['value']})"
+                    f"{describe_intent(intent)}"
                 )
         print(f"  Reward: {step.reward:.3f}")
         print(f"  Next action mask: {step.info['action_mask']}")

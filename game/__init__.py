@@ -41,19 +41,29 @@ from .agents.dqn import (
     train_dueling_double_dqn,
 )
 from .simulation.encoding import ObservationEncoder
-from .simulation.env_factory import CombatEnvFactory, SUPPORTED_ENCOUNTERS
+from .simulation.env_factory import (
+    CombatEnvFactory,
+    SUPPORTED_ENCOUNTERS,
+    SUPPORTED_FIXED_ENCOUNTERS,
+    SUPPORTED_TRAINING_ENCOUNTER_SETS,
+)
 from .simulation.enemy import (
     Enemy,
     FuzzyWurmCrawler,
     Intent,
     LeafSlimeMedium,
     LeafSlimeSmall,
+    Mawler,
     Nibbit,
     ShrinkerBeetle,
     SimpleEnemy,
     TwigSlimeMedium,
     TwigSlimeSmall,
     build_overgrowth_easy_encounter,
+    build_overgrowth_hard_v1_encounter,
+    build_overgrowth_mawler_encounter,
+    build_overgrowth_nibbits_encounter,
+    build_overgrowth_shrinker_fuzzy_encounter,
     build_overgrowth_slimes_encounter,
     sample_overgrowth_first_three_encounter_builders,
 )
@@ -119,6 +129,7 @@ __all__ = [
     "Intent",
     "LeafSlimeMedium",
     "LeafSlimeSmall",
+    "Mawler",
     "Nibbit",
     "ObservationEncoder",
     "OracleActionEvaluation",
@@ -140,6 +151,8 @@ __all__ = [
     "STATUS_STACK_SCALE",
     "StrikeCard",
     "SUPPORTED_ENCOUNTERS",
+    "SUPPORTED_FIXED_ENCOUNTERS",
+    "SUPPORTED_TRAINING_ENCOUNTER_SETS",
     "SUPPORTED_STATUS_NAMES",
     "TraceAnalysisReport",
     "TraceFinding",
@@ -149,6 +162,10 @@ __all__ = [
     "TwigSlimeSmall",
     "VULNERABLE",
     "build_overgrowth_easy_encounter",
+    "build_overgrowth_hard_v1_encounter",
+    "build_overgrowth_mawler_encounter",
+    "build_overgrowth_nibbits_encounter",
+    "build_overgrowth_shrinker_fuzzy_encounter",
     "build_overgrowth_slimes_encounter",
     "brute_force_combat",
     "choose_heuristic_action",
