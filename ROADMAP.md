@@ -96,14 +96,59 @@ Completed foundation:
 - added Body Slam for block-dependent damage
 - kept the canonical starter deck as the default and exposed an optional research preset
 
+Deck selection and training distributions:
+
+- add a named, pickle-safe deck registry to `CombatEnvFactory`, initially with
+  `starter` and `ironclad_sequencing`, while keeping `starter` as the default
+- add a `--deck` option to training and the matching configuration/sweep fields;
+  expose the same selection in watch, benchmark, and other evaluation tools so
+  checkpoints can be tested with the deck they were trained on
+- persist the resolved deck name in checkpoint metadata, traces, benchmark
+  reports, and experiment summaries
+- add a later `--deck-set` option for named, versioned training distributions
+  that can sample a different supported deck for each episode
+- make deck sampling deterministic through the environment seed/RNG and support
+  explicit uniform or configured weighted distributions
+- report evaluation both per fixed deck and over the sampled deck distribution,
+  using matched seed grids so deck robustness is not hidden in one aggregate
+- require every deck in a sampled set to share a compatible observation/action
+  schema, and fail before training when dimensions or supported cards differ
+- establish a uniform mixed-deck baseline before considering curricula that
+  gradually change deck probabilities during training
+
 Good next card types:
 
 - multi-hit attacks
 - cards that care about statuses
 
+Before expanding to a broad card catalog:
+
+- replace the globally expanding per-card one-hot observation fields with a
+  fixed-width card representation
+- describe cards through reusable semantic features such as cost, damage,
+  block, draw, targeting, statuses, exhaust, and dynamic-damage rules
+- combine those semantics with a small learned embedding keyed by the existing
+  append-only card ID so cards with unique behavior remain distinguishable
+- represent pile contents as exact `(card ID, count)` records processed by a
+  shared card encoder and fixed-width pooling/attention layer, rather than one
+  permanent column per supported card and pile
+- preserve exact card names and counts in structured observations for debugging;
+  the compact representation is only the RL encoding layer
+- version the new representation and plan an explicit checkpoint migration or
+  retraining boundary before changing the current encoder
+
 Why:
 
 - increases decision depth without requiring a much larger engine rewrite
+- named deck selection makes non-default-deck experiments reproducible through
+  the supported CLI instead of one-off Python environment factories
+- multi-deck sampling can reduce overfitting to one deck composition and test
+  whether policies learn transferable card and sequencing concepts
+- the current encoding adds 14 observation values and one action-identity
+  feature for every supported card, which becomes sparse and repeatedly breaks
+  checkpoint dimensions as the catalog grows
+- semantic features allow policies to transfer knowledge between mechanically
+  similar cards while embeddings retain card-specific information
 
 ### 5. Trace-Guided Policy Improvement
 
@@ -122,13 +167,29 @@ These are good next layers once the near-term items are in a solid place.
 
 ### Broader Action-Conditioned Policies
 
-- consider extending the shared action-feature architecture beyond PPO
-- evaluate whether action-conditioned value methods outperform flat DQN heads
+- add `shared_enemy` as an opt-in architecture for DQN, Double DQN, and Dueling
+  Double DQN
+- reuse the PPO design: one encoder for every stable enemy slot,
+  permutation-invariant pooling for encounter context, and the selected enemy
+  embedding for targeted action scores
+- remove `target_slot_fraction` from the learned action inputs in this mode so
+  swapping equivalent enemy slots produces equivalent Q-values
+- give Dueling Double DQN a compatible invariant value stream and target-aware
+  advantage stream
+- extend training and sweep CLI choices, checkpoint metadata/loading, benchmark
+  compatibility checks, and configuration examples
+- add enemy-slot permutation-equivariance, training-smoke, and checkpoint
+  round-trip tests for every supported DQN-family variant
+- compare `shared_enemy` against `action_feature` on identical fixed-seed
+  multi-enemy benchmarks before changing any default
 
 Why:
 
-- action semantics are now represented explicitly
-- the same idea may help value-based agents too
+- the existing DQN `action_feature` architecture shares an action scorer but
+  still encodes enemy slots as one flat ordered state, allowing arbitrary
+  slot-specific preferences
+- shared enemy encoding should improve transfer between encounter layouts and
+  prevent target decisions from depending on incidental slot order
 
 ### Better Observation Features
 
