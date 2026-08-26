@@ -25,6 +25,7 @@ from game.analysis.watch import (
     policy_name_from_agent,
 )
 from game.simulation import env_factory as env_factory_module
+from game.simulation.deck_presets import SUPPORTED_DECKS
 from game.simulation.env_factory import CombatEnvFactory
 
 _POLICY_LABEL_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\Z")
@@ -93,6 +94,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         type=int,
         default=100,
         help="Evaluation episodes per policy/encounter cell.",
+    )
+    parser.add_argument(
+        "--deck",
+        choices=SUPPORTED_DECKS,
+        default="starter",
+        help="Named deck preset shared by every benchmark cell.",
     )
     parser.add_argument(
         "--seed",
@@ -173,6 +180,7 @@ def environment_config_from_args(
 ) -> BenchmarkEnvironmentConfig:
     """Resolve the environment settings recorded in the report."""
     return BenchmarkEnvironmentConfig(
+        deck=args.deck,
         enemy_hp=args.enemy_hp,
         player_hp=args.player_hp,
         cards_per_turn=args.cards_per_turn,
@@ -190,6 +198,7 @@ def make_environment_factories(
             encounter,
             CombatEnvFactory(
                 encounter_set=encounter,
+                deck=args.deck,
                 enemy_hp=args.enemy_hp,
                 player_hp=args.player_hp,
                 cards_per_turn=args.cards_per_turn,

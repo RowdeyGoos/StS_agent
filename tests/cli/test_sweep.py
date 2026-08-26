@@ -27,6 +27,32 @@ def test_sweep_cli_defaults() -> None:
     assert args.pruner == "none"
     assert args.dqn_architecture == "action_feature"
     assert args.ppo_policy_architecture == "action_feature"
+    assert args.deck == "starter"
+
+
+def test_sweep_selects_named_deck_in_config_and_factory() -> None:
+    with TemporaryDirectory() as temp_dir:
+        config_path = Path(temp_dir) / "deck-sweep.json"
+        config_path.write_text(
+            json.dumps({"deck": "ironclad_sequencing"}),
+            encoding="utf-8",
+        )
+        args = sweep.parse_args(["--config", str(config_path)])
+
+    env_factory = sweep.make_env_factory(
+        args,
+        hp_loss_penalty_scale=1.0,
+        incoming_damage_shaping_scale=0.0,
+    )
+    env = env_factory()
+    observation = env.reset(seed=7)
+
+    assert sweep.resolved_sweep_config(args)["deck"] == "ironclad_sequencing"
+    assert "Pommel Strike" in {
+        card_name
+        for pile_counts in observation["card_counts"].values()
+        for card_name in pile_counts
+    }
 
 
 def test_seed_generation_is_stable() -> None:
@@ -148,6 +174,7 @@ def test_parallel_sweep_runs_global_trial_budget_through_journal() -> None:
     assert summary["trials_existing_before"] == 0
     assert summary["trials_total"] == 2
     assert summary["trials_completed"] == 2
+    assert summary["deck"] == "starter"
 
 
 def test_parallel_sweep_requires_shared_storage() -> None:
@@ -265,3 +292,16 @@ def test_sweep_config_rejects_unknown_keys() -> None:
             assert exc.code == 2
         else:
             raise AssertionError("Unknown sweep config keys should fail parsing.")
+
+
+def test_sweep_config_rejects_unknown_deck() -> None:
+    with TemporaryDirectory() as temp_dir:
+        config_path = Path(temp_dir) / "invalid-deck.json"
+        config_path.write_text('{"deck": "unknown"}', encoding="utf-8")
+
+        try:
+            sweep.parse_args(["--config", str(config_path)])
+        except SystemExit as exc:
+            assert exc.code == 2
+        else:
+            raise AssertionError("Unknown named decks should fail parsing.")

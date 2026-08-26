@@ -35,6 +35,7 @@ from .simulation.card import (
     get_card_spec,
 )
 from .simulation.core import CombatEnv
+from .simulation.deck_presets import SUPPORTED_DECKS, resolve_deck_factory
 from .agents.dqn import (
     DQNAgent,
     DQNTrainingResult,
@@ -162,6 +163,7 @@ __all__ = [
     "STATUS_STACK_SCALE",
     "StrikeCard",
     "SUPPORTED_ENCOUNTERS",
+    "SUPPORTED_DECKS",
     "SUPPORTED_FIXED_ENCOUNTERS",
     "SUPPORTED_TRAINING_ENCOUNTER_SETS",
     "SUPPORTED_STATUS_NAMES",
@@ -189,6 +191,7 @@ __all__ = [
     "load_episode_trace",
     "sample_overgrowth_first_three_encounter_builders",
     "sample_hidden_combat_states",
+    "resolve_deck_factory",
     "save_agent",
     "save_episode_trace",
     "analyze_episode_trace",

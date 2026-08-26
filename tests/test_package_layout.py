@@ -27,7 +27,7 @@ def test_packaged_cli_modules_are_directly_usable() -> None:
     assert benchmark_cli.parse_args(["--encounter", "simple"]).encounter == [
         "simple"
     ]
-    assert benchmark.BENCHMARK_FORMAT_VERSION == 1
+    assert benchmark.BENCHMARK_FORMAT_VERSION == 2
     assert profile.TrainingProfiler is not None
 
 

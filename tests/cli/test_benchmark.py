@@ -31,6 +31,7 @@ def test_cli_parses_ordered_fixed_encounters_and_labeled_agents() -> None:
     assert args.encounter == ["nibbit", "slimes"]
     assert args.episodes == 12
     assert args.seed == 31
+    assert args.deck == "starter"
     assert args.agent == [benchmark.AgentSpec("ddqn", "runs/model=one")]
 
 
@@ -74,7 +75,11 @@ def test_fixed_encounter_seam_prefers_shared_registry(monkeypatch) -> None:
 
 def test_labeled_q_learning_checkpoint_runs_and_records_provenance(tmp_path) -> None:
     checkpoint_path = tmp_path / "tabular.json"
-    save_agent(QLearningAgent(action_space_size=11, epsilon=0.0), checkpoint_path)
+    save_agent(
+        QLearningAgent(action_space_size=11, epsilon=0.0),
+        checkpoint_path,
+        training_config={"deck": "starter"},
+    )
     args = benchmark.parse_args(
         [
             "--encounter",
@@ -85,6 +90,8 @@ def test_labeled_q_learning_checkpoint_runs_and_records_provenance(tmp_path) -> 
             "5",
             "--enemy-hp",
             "6",
+            "--deck",
+            "ironclad_sequencing",
             "--agent",
             f"tabular={checkpoint_path}",
         ]
@@ -99,6 +106,7 @@ def test_labeled_q_learning_checkpoint_runs_and_records_provenance(tmp_path) -> 
     ]
     assert report.policies[-1].policy_type == "q_learning"
     assert report.policies[-1].agent_path == str(checkpoint_path)
+    assert report.environment.deck == "ironclad_sequencing"
     assert len(report.results) == 3
 
 
@@ -174,8 +182,9 @@ def test_main_writes_versioned_json_after_success(tmp_path, capsys) -> None:
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     output = capsys.readouterr().out
 
-    assert payload["benchmark_format_version"] == 1
+    assert payload["benchmark_format_version"] == 2
     assert payload["config"]["episode_seeds"] == [2]
+    assert payload["config"]["environment"]["deck"] == "starter"
     assert [policy["label"] for policy in payload["policies"]] == [
         "random",
         "heuristic",

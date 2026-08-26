@@ -13,6 +13,7 @@ from game.cli.train import (
     agent_profile_sidecar_path,
     agent_run_sidecar_path,
     create_run_directory,
+    make_env_factory,
     parse_args,
     resolved_training_config,
     resolve_dqn_learning_rate,
@@ -156,6 +157,21 @@ def test_cli_uses_separate_default_learning_rates() -> None:
     assert args.env_workers == 0
     assert args.profile_training is False
     assert args.profile_out is None
+    assert args.deck == "starter"
+
+
+def test_cli_selects_named_deck_and_env_factory_uses_it() -> None:
+    args = parse_args(
+        ["--encounter-set", "simple", "--deck", "ironclad_sequencing"]
+    )
+    env = make_env_factory(args)()
+    observation = env.reset(seed=7)
+
+    assert args.deck == "ironclad_sequencing"
+    assert "Pommel Strike" in observation["hand"] or any(
+        "Pommel Strike" in pile
+        for pile in observation["card_counts"].values()
+    )
 
 
 def test_cli_shared_learning_rate_override_applies_to_both_algorithms() -> None:
@@ -236,6 +252,7 @@ def test_training_config_loads_json_and_cli_overrides_it() -> None:
             json.dumps(
                 {
                     "policy": "double_dqn",
+                    "deck": "ironclad_sequencing",
                     "episodes": 1200,
                     "hidden_sizes": [256, 128],
                     "restore_best_checkpoint": False,
@@ -255,6 +272,7 @@ def test_training_config_loads_json_and_cli_overrides_it() -> None:
         )
 
     assert args.policy == "double_dqn"
+    assert args.deck == "ironclad_sequencing"
     assert args.episodes == 25
     assert args.hidden_sizes == (256, 128)
     assert args.restore_best_checkpoint is True
@@ -296,6 +314,18 @@ def test_training_config_rejects_unknown_keys() -> None:
             assert exc.code == 2
         else:
             raise AssertionError("Unknown config keys should fail parsing.")
+
+
+def test_training_config_rejects_unknown_deck() -> None:
+    with TemporaryDirectory() as temp_dir:
+        config_path = Path(temp_dir) / "invalid-deck.json"
+        config_path.write_text('{"deck": "unknown"}', encoding="utf-8")
+        try:
+            parse_args(["--config", str(config_path)])
+        except SystemExit as exc:
+            assert exc.code == 2
+        else:
+            raise AssertionError("Unknown named decks should fail parsing.")
 
 
 def test_agent_config_sidecar_path_replaces_checkpoint_suffix() -> None:

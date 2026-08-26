@@ -14,6 +14,7 @@ from typing import Any, Callable, Sequence, TypeAlias
 from game.agents import dqn as dqn_module
 from game.agents import ppo as ppo_module
 from game.simulation.core import CombatEnv
+from game.simulation.deck_presets import SUPPORTED_DECKS
 from game.agents.baselines import EvaluationStats, TrainingResult, train_q_learning
 from game.agents.dqn import (
     DQNTrainingResult,
@@ -321,6 +322,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Encounter pool used during the sweep.",
     )
     parser.add_argument(
+        "--deck",
+        choices=SUPPORTED_DECKS,
+        default="starter",
+        help="Named deck preset used for every trial.",
+    )
+    parser.add_argument(
         "--enemy-hp",
         type=int,
         default=40,
@@ -509,6 +516,7 @@ def make_env_factory(
     """Create an env factory for one sampled reward-shaping setup."""
     return CombatEnvFactory(
         encounter_set=args.encounter_set,
+        deck=args.deck,
         enemy_hp=args.enemy_hp,
         player_hp=args.player_hp,
         cards_per_turn=args.cards_per_turn,
@@ -773,6 +781,7 @@ def run_sweep(args: argparse.Namespace) -> dict[str, Any]:
         "trials_total": len(study.trials),
         "trials_completed": len(completed_trials),
         "encounter_set": args.encounter_set,
+        "deck": args.deck,
         "episodes": args.episodes,
         "evaluation_episodes": args.evaluation_episodes,
         "train_seeds": list(train_seeds),

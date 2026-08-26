@@ -11,7 +11,7 @@ from ..agents.baselines import PolicyFn, evaluate_policy
 from ..simulation.core import CombatEnv
 from .watch import TraceableAgent
 
-BENCHMARK_FORMAT_VERSION = 1
+BENCHMARK_FORMAT_VERSION = 2
 PolicySourceKind = Literal["built_in", "checkpoint"]
 EnvironmentFactory = Callable[[], CombatEnv]
 
@@ -25,9 +25,11 @@ class BenchmarkEnvironmentConfig:
     cards_per_turn: int = 5
     hp_loss_penalty_scale: float = 1.0
     incoming_damage_shaping_scale: float = 0.0
+    deck: str = "starter"
 
-    def as_dict(self) -> dict[str, int | float]:
+    def as_dict(self) -> dict[str, int | float | str]:
         return {
+            "deck": self.deck,
             "enemy_hp": self.enemy_hp,
             "player_hp": self.player_hp,
             "cards_per_turn": self.cards_per_turn,

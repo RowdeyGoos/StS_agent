@@ -109,6 +109,7 @@ class EpisodeTrace:
     steps: tuple[StepTrace, ...]
     summary: dict[str, Any]
     encounter: str | None = None
+    deck: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable representation of the episode trace."""
@@ -116,6 +117,7 @@ class EpisodeTrace:
             "policy_name": self.policy_name,
             "seed": self.seed,
             "encounter": self.encounter,
+            "deck": self.deck,
             "initial_observation": self.initial_observation,
             "steps": [step.as_dict() for step in self.steps],
             "summary": self.summary,
@@ -140,6 +142,7 @@ class EpisodeTrace:
                 if payload.get("encounter") is None
                 else str(payload["encounter"])
             ),
+            deck=None if payload.get("deck") is None else str(payload["deck"]),
         )
 
 
@@ -239,6 +242,7 @@ def trace_policy_episode(
     seed: int | None = None,
     traced_agent: TraceableAgent | None = None,
     encounter: str | None = None,
+    deck: str | None = None,
 ) -> EpisodeTrace:
     """Run one traced combat episode using a policy or trained agent."""
     observation = env.reset(seed=seed)
@@ -290,6 +294,7 @@ def trace_policy_episode(
         steps=tuple(steps),
         summary=env.get_episode_summary().as_dict(),
         encounter=encounter,
+        deck=deck,
     )
 
 
