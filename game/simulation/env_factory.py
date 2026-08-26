@@ -26,6 +26,7 @@ SUPPORTED_TRAINING_ENCOUNTER_SETS: tuple[str, ...] = (
     "overgrowth_hard_v1",
 )
 SUPPORTED_FIXED_ENCOUNTERS: tuple[str, ...] = (
+    "simple",
     "nibbit",
     "slimes",
     "shrinker_beetle",
@@ -34,9 +35,10 @@ SUPPORTED_FIXED_ENCOUNTERS: tuple[str, ...] = (
     "nibbits",
     "shrinker_fuzzy",
 )
-SUPPORTED_ENCOUNTERS: tuple[str, ...] = (
-    *SUPPORTED_TRAINING_ENCOUNTER_SETS,
-    *SUPPORTED_FIXED_ENCOUNTERS,
+SUPPORTED_ENCOUNTERS: tuple[str, ...] = tuple(
+    dict.fromkeys(
+        (*SUPPORTED_TRAINING_ENCOUNTER_SETS, *SUPPORTED_FIXED_ENCOUNTERS)
+    )
 )
 
 

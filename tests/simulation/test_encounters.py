@@ -144,9 +144,11 @@ def test_hard_v1_fixed_encounters_and_exported_registries() -> None:
         assert env.encoder.max_enemy_count == 3
 
     assert "overgrowth_hard_v1" in SUPPORTED_TRAINING_ENCOUNTER_SETS
+    assert "simple" in SUPPORTED_FIXED_ENCOUNTERS
     assert set(expected_fixed) <= set(SUPPORTED_FIXED_ENCOUNTERS)
     assert set(SUPPORTED_TRAINING_ENCOUNTER_SETS) <= set(SUPPORTED_ENCOUNTERS)
     assert set(SUPPORTED_FIXED_ENCOUNTERS) <= set(SUPPORTED_ENCOUNTERS)
+    assert len(SUPPORTED_ENCOUNTERS) == len(set(SUPPORTED_ENCOUNTERS))
 
 
 def test_overgrowth_hard_v1_samples_only_declared_encounters_reproducibly() -> None:

@@ -38,3 +38,10 @@ environment version.
 
 Exact oracle search remains exponential. Use explicit node or time limits for
 the hard-v1 encounters, especially the two-enemy fights.
+
+## Sources
+
+- [Overgrowth encounter table](https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2%3AOvergrowth),
+  accessed 2026-08-26
+- [Mawler](https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2%3AMawler),
+  accessed 2026-08-26
