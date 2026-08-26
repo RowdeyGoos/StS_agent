@@ -763,6 +763,13 @@ def make_env_factory(args: argparse.Namespace) -> Callable[[], CombatEnv]:
     )
 
 
+def comparison_evaluation_seed(args: argparse.Namespace) -> int | None:
+    """Return the common final-evaluation seed used by compare mode."""
+    if args.policy != "compare":
+        return None
+    return args.seed + 100_000
+
+
 def print_evaluation(label: str, stats: EvaluationStats) -> None:
     """Print a compact evaluation summary."""
     stats_dict = stats.as_dict()
@@ -772,8 +779,19 @@ def print_evaluation(label: str, stats: EvaluationStats) -> None:
         f"mean_reward={stats_dict['mean_reward']:.3f} "
         f"win_rate={stats_dict['win_rate']:.3f} "
         f"mean_steps={stats_dict['mean_steps']:.2f} "
-        f"mean_player_hp={stats_dict['mean_player_hp']:.2f}"
+        f"mean_player_hp={stats_dict['mean_player_hp']:.2f} "
+        f"mean_damage_taken={stats_dict['mean_damage_taken']:.2f}"
     )
+    for encounter_stats in stats.by_encounter:
+        print(
+            f"  {encounter_stats.encounter}: "
+            f"episodes={encounter_stats.episodes} "
+            f"mean_reward={encounter_stats.mean_reward:.3f} "
+            f"win_rate={encounter_stats.win_rate:.3f} "
+            f"mean_steps={encounter_stats.mean_steps:.2f} "
+            f"mean_player_hp={encounter_stats.mean_player_hp:.2f} "
+            f"mean_damage_taken={encounter_stats.mean_damage_taken:.2f}"
+        )
 
 
 def print_training_summary(result: TrainingResult) -> None:
@@ -947,8 +965,9 @@ def main() -> None:
     q_learning_rate = resolve_q_learning_rate(args)
     dqn_learning_rate = resolve_dqn_learning_rate(args)
     ppo_learning_rate = resolve_ppo_learning_rate(args)
+    compare_seed = comparison_evaluation_seed(args)
 
-    if args.policy in {"random", "compare"}:
+    if args.policy == "random":
         random_stats = evaluate_policy(
             env_factory=env_factory,
             policy=lambda env, obs, mask: choose_random_action(
@@ -957,16 +976,16 @@ def main() -> None:
                 mask,
                 rng=env.rng,
             ),
-            episodes=args.eval_episodes if args.policy == "compare" else args.episodes,
+            episodes=args.episodes,
             seed=args.seed,
         )
         print_evaluation("Random policy", random_stats)
 
-    if args.policy in {"heuristic", "compare"}:
+    if args.policy == "heuristic":
         heuristic_stats = evaluate_policy(
             env_factory=env_factory,
             policy=choose_heuristic_action,
-            episodes=args.eval_episodes if args.policy == "compare" else args.episodes,
+            episodes=args.episodes,
             seed=args.seed,
         )
         print_evaluation("Heuristic policy", heuristic_stats)
@@ -980,6 +999,7 @@ def main() -> None:
             evaluation_interval=args.eval_interval,
             evaluation_episodes=args.eval_episodes,
             seed=args.seed,
+            final_evaluation_seed=compare_seed,
             learning_rate=q_learning_rate,
             discount=args.discount,
             epsilon=args.epsilon,
@@ -1022,6 +1042,7 @@ def main() -> None:
                 target_update_interval=args.target_update_interval,
                 hidden_sizes=hidden_sizes,
                 seed=args.seed,
+                final_evaluation_seed=compare_seed,
                 learning_rate=dqn_learning_rate,
                 discount=args.discount,
                 epsilon=args.epsilon,
@@ -1073,6 +1094,7 @@ def main() -> None:
                 target_update_interval=args.target_update_interval,
                 hidden_sizes=hidden_sizes,
                 seed=args.seed,
+                final_evaluation_seed=compare_seed,
                 learning_rate=dqn_learning_rate,
                 discount=args.discount,
                 epsilon=args.epsilon,
@@ -1106,6 +1128,28 @@ def main() -> None:
                     ),
                     training_summary=build_training_summary(double_dqn_result),
                 )
+
+    if args.policy == "compare":
+        assert compare_seed is not None
+        random_stats = evaluate_policy(
+            env_factory=env_factory,
+            policy=lambda env, obs, mask: choose_random_action(
+                env,
+                obs,
+                mask,
+                rng=env.rng,
+            ),
+            episodes=args.eval_episodes,
+            seed=compare_seed,
+        )
+        print_evaluation("Random policy final comparison", random_stats)
+        heuristic_stats = evaluate_policy(
+            env_factory=env_factory,
+            policy=choose_heuristic_action,
+            episodes=args.eval_episodes,
+            seed=compare_seed,
+        )
+        print_evaluation("Heuristic policy final comparison", heuristic_stats)
 
     if args.policy == "dueling_double_dqn":
         run_started_at = datetime.now(timezone.utc)

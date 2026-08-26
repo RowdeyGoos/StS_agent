@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from random import Random
+import re
 from time import perf_counter
 from typing import Any, Callable, TypeAlias
 
@@ -31,6 +32,33 @@ class EpisodeMetrics:
     win: bool
     player_hp: int
     enemy_hp: int
+    damage_taken: int = 0
+    encounter: str = "unknown"
+
+
+@dataclass(frozen=True, slots=True)
+class EncounterEvaluationStats:
+    """Aggregate evaluation statistics for one encounter composition."""
+
+    encounter: str
+    episodes: int
+    mean_reward: float
+    win_rate: float
+    mean_steps: float
+    mean_player_hp: float
+    mean_damage_taken: float
+
+    def as_dict(self) -> dict[str, float | int | str]:
+        """Return a plain dict for logging and reporting."""
+        return {
+            "encounter": self.encounter,
+            "episodes": self.episodes,
+            "mean_reward": self.mean_reward,
+            "win_rate": self.win_rate,
+            "mean_steps": self.mean_steps,
+            "mean_player_hp": self.mean_player_hp,
+            "mean_damage_taken": self.mean_damage_taken,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,8 +70,10 @@ class EvaluationStats:
     win_rate: float
     mean_steps: float
     mean_player_hp: float
+    mean_damage_taken: float = 0.0
+    by_encounter: tuple[EncounterEvaluationStats, ...] = ()
 
-    def as_dict(self) -> dict[str, float | int]:
+    def as_dict(self) -> dict[str, Any]:
         """Return a plain dict for logging and reporting."""
         return {
             "episodes": self.episodes,
@@ -51,6 +81,8 @@ class EvaluationStats:
             "win_rate": self.win_rate,
             "mean_steps": self.mean_steps,
             "mean_player_hp": self.mean_player_hp,
+            "mean_damage_taken": self.mean_damage_taken,
+            "by_encounter": [stats.as_dict() for stats in self.by_encounter],
         }
 
 
@@ -346,6 +378,10 @@ def rollout_episode(
 ) -> EpisodeMetrics:
     """Run one episode with a policy and return summary metrics."""
     observation = env.reset(seed=seed)
+    encounter = _encounter_label_from_observation(observation)
+    player_state = observation["player"]
+    assert isinstance(player_state, dict)
+    initial_player_hp = int(player_state["hp"])
     done = False
     total_reward = 0.0
     steps = 0
@@ -366,6 +402,8 @@ def rollout_episode(
         win=summary.winner == "player",
         player_hp=summary.player_hp,
         enemy_hp=summary.enemy_hp,
+        damage_taken=max(0, initial_player_hp - summary.player_hp),
+        encounter=encounter,
     )
 
 
@@ -385,17 +423,101 @@ def evaluate_policy(
         episode_seed = _episode_seed(seed, episode_index)
         metrics.append(rollout_episode(env, policy, seed=episode_seed))
 
-    total_reward = sum(metric.total_reward for metric in metrics)
-    total_wins = sum(1 for metric in metrics if metric.win)
-    total_steps = sum(metric.steps for metric in metrics)
-    total_player_hp = sum(metric.player_hp for metric in metrics)
+    by_encounter = tuple(
+        _aggregate_encounter_metrics(encounter, encounter_metrics)
+        for encounter, encounter_metrics in sorted(
+            _group_metrics_by_encounter(metrics).items()
+        )
+    )
+    return _aggregate_evaluation_metrics(metrics, by_encounter=by_encounter)
 
+
+def _encounter_label_from_observation(observation: Observation) -> str:
+    """Return a stable label for the encounter visible after reset."""
+    raw_enemies = observation.get("enemies")
+    if not isinstance(raw_enemies, list):
+        raw_enemy = observation.get("enemy")
+        raw_enemies = [raw_enemy] if isinstance(raw_enemy, dict) else []
+
+    enemy_names = tuple(
+        str(enemy.get("name", "Enemy"))
+        for enemy in raw_enemies
+        if isinstance(enemy, dict)
+    )
+    exact_labels = {
+        ("SimpleEnemy",): "simple",
+        ("Nibbit",): "nibbit",
+        ("Shrinker Beetle",): "shrinker_beetle",
+        ("Fuzzy Wurm Crawler",): "fuzzy_wurm_crawler",
+        ("Mawler",): "mawler",
+        ("Nibbit", "Nibbit"): "nibbits",
+        ("Shrinker Beetle", "Fuzzy Wurm Crawler"): "shrinker_fuzzy",
+    }
+    exact_label = exact_labels.get(enemy_names)
+    if exact_label is not None:
+        return exact_label
+
+    medium_slime_names = {"Leaf Slime (M)", "Twig Slime (M)"}
+    small_slime_names = {"Leaf Slime (S)", "Twig Slime (S)"}
+    if (
+        len(enemy_names) == 3
+        and enemy_names[0] in medium_slime_names
+        and set(enemy_names[1:]) == small_slime_names
+    ):
+        return "slimes"
+
+    slugs = tuple(_slugify_enemy_name(name) for name in enemy_names)
+    return "__".join(slugs) if slugs else "unknown"
+
+
+def _slugify_enemy_name(name: str) -> str:
+    """Normalize one enemy name without losing stable slot ordering."""
+    slug = re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
+    return slug or "enemy"
+
+
+def _group_metrics_by_encounter(
+    metrics: list[EpisodeMetrics],
+) -> dict[str, list[EpisodeMetrics]]:
+    """Group rollout metrics by their stable encounter label."""
+    grouped: dict[str, list[EpisodeMetrics]] = {}
+    for metric in metrics:
+        grouped.setdefault(metric.encounter, []).append(metric)
+    return grouped
+
+
+def _aggregate_encounter_metrics(
+    encounter: str,
+    metrics: list[EpisodeMetrics],
+) -> EncounterEvaluationStats:
+    """Aggregate one non-empty encounter group."""
+    episodes = len(metrics)
+    return EncounterEvaluationStats(
+        encounter=encounter,
+        episodes=episodes,
+        mean_reward=sum(metric.total_reward for metric in metrics) / episodes,
+        win_rate=sum(1 for metric in metrics if metric.win) / episodes,
+        mean_steps=sum(metric.steps for metric in metrics) / episodes,
+        mean_player_hp=sum(metric.player_hp for metric in metrics) / episodes,
+        mean_damage_taken=sum(metric.damage_taken for metric in metrics) / episodes,
+    )
+
+
+def _aggregate_evaluation_metrics(
+    metrics: list[EpisodeMetrics],
+    *,
+    by_encounter: tuple[EncounterEvaluationStats, ...],
+) -> EvaluationStats:
+    """Aggregate a non-empty collection of rollout metrics."""
+    episodes = len(metrics)
     return EvaluationStats(
         episodes=episodes,
-        mean_reward=total_reward / episodes,
-        win_rate=total_wins / episodes,
-        mean_steps=total_steps / episodes,
-        mean_player_hp=total_player_hp / episodes,
+        mean_reward=sum(metric.total_reward for metric in metrics) / episodes,
+        win_rate=sum(1 for metric in metrics if metric.win) / episodes,
+        mean_steps=sum(metric.steps for metric in metrics) / episodes,
+        mean_player_hp=sum(metric.player_hp for metric in metrics) / episodes,
+        mean_damage_taken=sum(metric.damage_taken for metric in metrics) / episodes,
+        by_encounter=by_encounter,
     )
 
 
