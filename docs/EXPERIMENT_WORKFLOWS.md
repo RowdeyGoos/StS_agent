@@ -41,6 +41,15 @@ Training arguments can be stored in strict JSON files:
 sts-train --config configs/masked_ppo_overgrowth.json
 ```
 
+Choose a supported complete deck with `--deck`; `starter` remains the default:
+
+```bash
+sts-train --config configs/double_dqn_overgrowth.json --deck ironclad_sequencing
+```
+
+The named deck is part of resolved configuration and run/checkpoint provenance.
+It can also be selected in sweeps, watch, oracle, and fixed-seed benchmarks.
+
 Resolution order is:
 
 1. built-in defaults
@@ -140,12 +149,12 @@ sampling uses CPU multinomial. This avoids an observed Apple MPS failure that
 could occasionally select a masked zero-probability action. The sampled action
 index is moved back to the policy device afterward.
 
-## Shared Enemy PPO Architecture
+## Shared Enemy Neural Architecture
 
-The original `action_feature` PPO architecture flattened all enemy slots into
-the state vector and exposed `target_slot_fraction` to the action scorer. That
-allowed the model to distinguish enemies, but also allowed it to learn shortcuts
-such as preferring a lower-numbered target.
+The original `action_feature` neural architectures flattened all enemy slots
+into the state vector and exposed `target_slot_fraction` to the action scorer.
+That allowed the model to distinguish enemies, but also allowed it to learn
+shortcuts such as preferring a lower-numbered target.
 
 The opt-in `shared_enemy` architecture uses this flow:
 
@@ -169,15 +178,17 @@ Because the same MLP handles every enemy and raw target position is removed,
 swapping two enemy rows and their corresponding action targets swaps their
 policy logits. Position alone cannot change which enemy is preferred.
 
-Train it with the A/B config:
+Train PPO or Double DQN with the corresponding A/B config:
 
 ```bash
 sts-train --config configs/masked_ppo_shared_enemy_overgrowth.json
+sts-train --config configs/double_dqn_shared_enemy_overgrowth.json
 ```
 
-This is a distinct architecture, so existing `action_feature` checkpoints remain
-loadable but cannot be converted into a trained `shared_enemy` model. A new run
-is required.
+This is a distinct architecture for masked PPO, DQN, Double DQN, and Dueling
+Double DQN. Existing `action_feature` checkpoints remain loadable but cannot be
+converted into trained `shared_enemy` models. The PPO and DQN-family backbones
+are separate implementations to preserve their existing state-dict contracts.
 
 ## Finding Training Bottlenecks
 
@@ -334,6 +345,7 @@ Compare the built-ins and any labeled checkpoints on an identical fixed grid:
 sts-benchmark \
   --encounter nibbit \
   --encounter slimes \
+  --deck ironclad_sequencing \
   --episodes 100 \
   --seed 1000 \
   --agent ddqn=runs/double-dqn/example-run \
@@ -343,7 +355,8 @@ sts-benchmark \
 Random and heuristic are always included. Each policy/encounter cell receives
 the same contiguous seed sequence. The command rejects sampled pools, validates
 checkpoint dimensions before running, prints a deterministic table, and writes
-the complete encounter-stratified evaluation payload to versioned JSON. See
+the complete encounter-stratified evaluation payload to versioned JSON. Format
+version 2 records the named deck; version 1 implicitly used `starter`. See
 [Fixed-Seed Policy Benchmarks](BENCHMARKS.md) for the schema and compatibility
 rules.
 
@@ -436,9 +449,10 @@ the few decisions that remain important.
 
 For a clean `action_feature` versus `shared_enemy` comparison:
 
-1. Keep encounter, reward, seed set, episode budget, and PPO hyperparameters
-   identical.
-2. Change only `ppo_policy_architecture` and use separate output directories.
+1. Keep encounter, deck, reward, seed set, episode budget, and algorithm
+   hyperparameters identical.
+2. Change only `ppo_policy_architecture` or `dqn_architecture` and use separate
+   output directories.
 3. Compare multiple training seeds, not one checkpoint.
 4. Evaluate both policies on the same held-out encounter/seed list.
 5. Compare win rate and remaining HP first.

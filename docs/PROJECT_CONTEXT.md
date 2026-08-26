@@ -18,6 +18,9 @@ The current codebase already supports:
 - aggregate and encounter-stratified evaluation metrics with damage taken
 - deterministic fixed-seed benchmarks for built-in and saved policies
 - an optional four-card Ironclad sequencing deck
+- named deck selection and provenance across training and inspection tools
+- opt-in shared-enemy PPO and DQN-family neural architectures
+- an experimental fixed-capacity semantic card-record kernel
 
 ## Main Gameplay Model
 
@@ -43,6 +46,9 @@ The current codebase already supports:
 - `Slimed` is the supported generated status card
 - Pommel Strike, Shrug It Off, Iron Wave, and Body Slam are available through
   `create_ironclad_sequencing_deck()` without changing the default deck
+- `CombatEnvFactory` resolves `starter` and `ironclad_sequencing` through a
+  pickle-safe named registry; the same names are accepted by training, sweeps,
+  watch, oracle, and benchmark commands
 - Card metadata represents draw count and damage based on current player block
 
 ### Enemy
@@ -146,6 +152,12 @@ Important design choice:
 
 That stability matters for RL. It prevents target indices and observation layout from shifting after one enemy dies.
 
+The current production representation remains this fixed legacy encoding. The
+programmatic `game.simulation.card_records` and `game.agents.card_encoder`
+modules are an opt-in future kernel: they preserve ordered hand IDs, exact
+sorted pile counts, fixed semantic rows, a 256-by-16 ID embedding, and shared
+32-value card embeddings without changing any current observation width.
+
 ### Actions
 
 Tuple action API:
@@ -217,14 +229,21 @@ The heuristic is intentionally fairly competent for the current environment, so 
 - DQN
 - Double DQN
 - Dueling Double DQN
-- flat and action-conditioned Q-network architectures
+- flat, action-conditioned, and shared-enemy Q-network architectures
 - target network logic
 - progress reporting hooks
 - best-checkpoint restoration before final evaluation
 - checkpoint payload support for saving trained agents
 - throughput-oriented training controls such as `train_frequency` and `gradient_steps`
 
-The default DQN-family training path now uses the `action_feature` architecture, which scores legal actions from state features plus encoded legal-action features. The older flat Q-head is still available as a compatibility option.
+The default DQN-family training path now uses the `action_feature` architecture,
+which scores legal actions from state features plus encoded legal-action
+features. The older flat Q-head is still available as a compatibility option.
+The opt-in `shared_enemy` variant is available for DQN, Double DQN, and Dueling
+Double DQN. It shares an encoder across enemy rows, mean-pools living context,
+gathers the selected target embedding, and removes `target_slot_fraction` from
+learned action input. The dueling variant keeps an invariant value stream and
+centers target-aware advantages over legal actions.
 
 `game/agents/ppo.py` contains:
 
@@ -321,7 +340,9 @@ as the resume record. Process-level trials are kept separate from PPO's
 same explicit fixed-encounter and contiguous-seed grid. It preflights checkpoint
 action/observation dimensions before evaluation, prints a deterministic table,
 and can write a timestamp-free versioned JSON report containing the complete
-`EvaluationStats.as_dict()` payload.
+`EvaluationStats.as_dict()` payload. Benchmark format version 2 records the
+required named deck; version 1 is interpreted as the starter deck. Cross-deck
+checkpoint evaluation is allowed when dimensions and architecture layouts match.
 
 `sts-watch` is the one-episode inspection entry point for:
 
@@ -399,6 +420,8 @@ cost and the number of nodes needed for many optimality proofs.
 Two especially important knobs:
 
 - `--encounter-set`
+- `--deck`
+- `--dqn-architecture`
 - `--dqn-learning-rate`
 - `--train-frequency`
 - `--eval-interval`
@@ -451,7 +474,12 @@ If you change the structured observation, you likely also need to update:
 The current combined encoder widths are 169 for one-enemy environments, 257 for
 three-enemy environments, and 48 for action features. Checkpoints trained on the
 previous enemy/card maps are representation-incompatible and must be retrained;
-the checkpoint file format itself did not change.
+the checkpoint file format itself did not change. This feature batch does not
+change those widths: existing flat/action-feature checkpoints keep loading, and
+new shared-enemy checkpoints add explicit layout metadata. The experimental
+`card_records_v1` kernel is not yet stored in or consumed by checkpoints; its
+future policy integration is an explicit retraining boundary for `legacy_flat`
+models.
 
 ### Action Changes Ripple
 

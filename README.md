@@ -14,6 +14,7 @@ Contributor and coding-session docs:
 - [docs/BENCHMARKS.md](docs/BENCHMARKS.md): deterministic multi-policy benchmark workflow and JSON format
 - [docs/OVERGROWTH_HARD_V1.md](docs/OVERGROWTH_HARD_V1.md): partial hard-pool contents, Mawler behavior, and content sources
 - [docs/IRONCLAD_CARDS.md](docs/IRONCLAD_CARDS.md): supported sequencing cards and source data
+- [docs/CARD_REPRESENTATION.md](docs/CARD_REPRESENTATION.md): experimental fixed-capacity semantic card records and learned encoder
 - [ROADMAP.md](ROADMAP.md): current priorities and likely next steps
 
 ## Setup
@@ -38,6 +39,8 @@ sts-train --policy double_dqn --episodes 1000 --eval-interval 100 --batch-size 6
 sts-train --policy dueling_double_dqn --episodes 1000 --eval-interval 100 --batch-size 64 --dqn-architecture action_feature
 sts-train --policy masked_ppo --episodes 1000 --num-envs 64 --env-workers 4 --device cpu --rollout-steps 2048 --ppo-epochs 4 --ppo-policy-architecture action_feature
 sts-train --config configs/masked_ppo_shared_enemy_overgrowth.json
+sts-train --config configs/double_dqn_shared_enemy_overgrowth.json
+sts-train --policy double_dqn --deck ironclad_sequencing --episodes 1500
 sts-train --policy double_dqn --episodes 1500 --train-frequency 4 --batch-size 128 --eval-interval 0
 sts-sweep --policy double_dqn --trials 30 --episodes 750 --train-seeds 3 --evaluation-episodes 50 --sampler tpe --json-out sweeps/double_dqn.json
 sts-sweep --config configs/masked_ppo_sweep_overgrowth.json
@@ -53,15 +56,15 @@ sts-analyze-training runs/masked-ppo-overgrowth/example-run
 sts-train --policy heuristic --encounter-set overgrowth_easy --episodes 200
 sts-train --policy heuristic --encounter-set overgrowth_hard_v1 --episodes 200
 sts-train --policy double_dqn --encounter-set overgrowth_easy --episodes 1500 --eval-interval 100
-sts-benchmark --encounter nibbit --encounter slimes --episodes 100 --seed 1000 --json-out benchmarks/fixed-seeds.json
-sts-watch --policy heuristic --encounter overgrowth_easy --seed 7
+sts-benchmark --encounter nibbit --encounter slimes --deck ironclad_sequencing --episodes 100 --seed 1000 --json-out benchmarks/fixed-seeds.json
+sts-watch --policy heuristic --encounter overgrowth_easy --deck ironclad_sequencing --seed 7
 sts-watch --policy heuristic --encounter mawler --seed 7
 sts-watch --policy double_dqn --agent-path checkpoints/double_dqn_agent.pt --encounter slimes --seed 7 --log-file logs/double_dqn_trace.json
 sts-watch --policy dueling_double_dqn --agent-path checkpoints/dueling_double_dqn_agent.pt --encounter nibbit --seed 7 --log-file logs/dueling_double_dqn_trace.json
 sts-watch --policy masked_ppo --agent-path checkpoints/masked_ppo_agent.pt --encounter fuzzy_wurm_crawler --seed 7 --log-file logs/masked_ppo_trace.json
 sts-analyze-trace logs/double_dqn_trace.json --max-findings 10
 sts-oracle --encounter simple --seed 7
-sts-oracle --encounter slimes --seed 7 --time-limit-seconds 60 --json-out logs/slimes_seed_7_oracle.json
+sts-oracle --encounter slimes --deck ironclad_sequencing --seed 7 --time-limit-seconds 60 --json-out logs/slimes_seed_7_oracle.json
 sts-oracle --encounter overgrowth_easy --seed 7 --agent-path checkpoints/double_dqn_agent.pt --time-limit-seconds 60
 sts-oracle --encounter slimes --seed 7 --agent-path runs/example/run-id --information-aware-regret --information-samples 16
 ```
@@ -91,9 +94,11 @@ held-out seed range for random, heuristic, Q-learning, DQN, and Double DQN final
 evaluation. Use `sts-benchmark` when comparing built-ins and saved checkpoints
 over an explicit grid of fixed encounters and seeds.
 
-The canonical starter deck remains the default. A non-canonical ten-card deck
-with Pommel Strike, Shrug It Off, Iron Wave, and Body Slam is available through
-the public Python API:
+The canonical starter deck remains the default. Training, sweeps, watch, oracle,
+and benchmark commands accept `--deck starter|ironclad_sequencing`; the resolved
+name is recorded in run, checkpoint, trace, oracle, sweep, and benchmark
+provenance. A non-canonical ten-card deck with Pommel Strike, Shrug It Off, Iron
+Wave, and Body Slam is also available through the public Python API:
 
 ```python
 from game import CombatEnv, create_ironclad_sequencing_deck
@@ -237,8 +242,8 @@ trials inform later suggestions.
 Notes:
 
 - `q_learning`, DQN-family agents, and `masked_ppo` now use separate default learning rates.
-- The DQN family currently includes `dqn`, `double_dqn`, and `dueling_double_dqn`, with `action_feature` as the default training architecture.
-- The policy-gradient family currently includes `masked_ppo`, with `action_feature` as the default training architecture. The opt-in `shared_enemy` architecture applies the same learned encoder to every enemy, mean-pools living-enemy context, and scores a targeted action using that target's embedding. It excludes `target_slot_fraction`, making target scores equivariant to enemy-slot reordering. Use `configs/masked_ppo_shared_enemy_overgrowth.json` for a direct comparison run; checkpoints must match the current encoder schema.
+- The DQN family currently includes `dqn`, `double_dqn`, and `dueling_double_dqn`, with `action_feature` as the default training architecture. All three also support opt-in `shared_enemy`; use `configs/double_dqn_shared_enemy_overgrowth.json` for a direct run.
+- The policy-gradient family currently includes `masked_ppo`, with `action_feature` as the default training architecture. The opt-in `shared_enemy` architecture is available in both neural families: it applies the same learned encoder to every enemy, mean-pools living-enemy context, and scores a targeted action using that target's embedding. It excludes `target_slot_fraction`, making target scores equivariant to enemy-slot reordering. The PPO and DQN implementations are deliberately local to their families so existing state dictionaries remain loadable; shared-enemy checkpoints must match the recorded encoder layout.
 - Masked PPO supports batched rollout collection with `--num-envs`. `--rollout-steps` is the total number of transitions across all environments per update; `--num-envs 1` preserves serial collection.
 - CPU PPO can use `--env-workers N` to shard simulator slots across persistent processes. Workers communicate through shared numeric arrays; use it for longer runs where process startup can amortize.
 - Neural training automatically selects CUDA, then Apple Metal (`mps`), then CPU. Use `--device cpu`, `--device cuda`, or `--device mps` to override it explicitly.
@@ -261,7 +266,8 @@ Notes:
 - Multi-enemy encounters use targeted play actions under the hood, but the fixed discrete action encoder and legal-action mask handle that automatically for RL agents.
 - `sts-watch` runs one traced combat with either a built-in policy or a saved trained agent and writes richer JSON logs, including encounter name, seed, pre-action legal actions, and masks.
 - `sts-watch --encounter` and `sts-oracle --encounter` accept `simple`, the sampled `overgrowth_easy` and `overgrowth_hard_v1` pools, and the fixed `nibbit`, `slimes`, `shrinker_beetle`, `fuzzy_wurm_crawler`, `mawler`, `nibbits`, and `shrinker_fuzzy` matchups. `sts-watch --encounter-set` remains a deprecated argument alias.
-- `sts-benchmark` accepts fixed matchups only, always includes random and heuristic policies, and can add labeled saved checkpoints with repeated `--agent LABEL=PATH` options.
+- `sts-benchmark` accepts fixed matchups only, always includes random and heuristic policies, and can add labeled saved checkpoints with repeated `--agent LABEL=PATH` options. Format-v2 JSON records the required named deck; version 1 is interpreted as the starter deck.
+- `game.simulation.card_records` and `game.agents.card_encoder` provide an experimental `card_records_v1` kernel with fixed capacities, semantic records, exact pile counts, and shared learned embeddings. It is programmatic only and is not yet wired into environments, policies, trainers, or checkpoints.
 - Matching encounter, seed, player/deck settings, and action sequence now yields the same seeded combat realization in both tools. Different policy actions can naturally produce a different later state trajectory.
 - `sts-analyze-trace` reads a saved trace and flags high-confidence tactical mistakes such as missed lethal, avoidable incoming damage, wasted dead cards, bad target choice, and premature end turns.
 - `sts-sweep` runs Optuna-based hyperparameter sweeps, averages each trial over multiple train seeds, supports process-parallel trials through shared journal/database storage, and can save the best-trial summary as JSON.

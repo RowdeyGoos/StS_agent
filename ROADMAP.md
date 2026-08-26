@@ -18,6 +18,9 @@ The project currently has:
 - random, heuristic, Q-learning, DQN-family, and PPO baselines
 - masked PPO with an action-conditioned policy head
 - opt-in permutation-equivariant shared-enemy PPO policy scoring
+- opt-in permutation-equivariant shared-enemy DQN-family Q scoring
+- named starter and Ironclad sequencing deck selection across training and inspection tools
+- an experimental fixed-capacity semantic card-record and learned-embedding kernel
 - batched multi-environment PPO rollout collection with per-environment GAE
 - opt-in process-parallel CPU PPO environment collection through shared memory
 - opt-in PPO phase timing and CPU/memory/accelerator resource reports
@@ -96,15 +99,18 @@ Completed foundation:
 - added Body Slam for block-dependent damage
 - kept the canonical starter deck as the default and exposed an optional research preset
 
-Deck selection and training distributions:
+Completed deck-selection foundation:
 
-- add a named, pickle-safe deck registry to `CombatEnvFactory`, initially with
+- added a named, pickle-safe deck registry to `CombatEnvFactory`, initially with
   `starter` and `ironclad_sequencing`, while keeping `starter` as the default
-- add a `--deck` option to training and the matching configuration/sweep fields;
+- added a `--deck` option to training and the matching configuration/sweep fields;
   expose the same selection in watch, benchmark, and other evaluation tools so
   checkpoints can be tested with the deck they were trained on
-- persist the resolved deck name in checkpoint metadata, traces, benchmark
+- persisted the resolved deck name in checkpoint metadata, traces, benchmark
   reports, and experiment summaries
+
+Next for deck training distributions:
+
 - add a later `--deck-set` option for named, versioned training distributions
   that can sample a different supported deck for each episode
 - make deck sampling deterministic through the environment seed/RNG and support
@@ -121,21 +127,27 @@ Good next card types:
 - multi-hit attacks
 - cards that care about statuses
 
-Before expanding to a broad card catalog:
+Completed representation foundation before expanding to a broad card catalog:
 
-- replace the globally expanding per-card one-hot observation fields with a
-  fixed-width card representation
-- describe cards through reusable semantic features such as cost, damage,
+- added opt-in `card_records_v1` semantic records for cost, damage,
   block, draw, targeting, statuses, exhaust, and dynamic-damage rules
-- combine those semantics with a small learned embedding keyed by the existing
+- combined those semantics with a small learned embedding keyed by the existing
   append-only card ID so cards with unique behavior remain distinguishable
-- represent pile contents as exact `(card ID, count)` records processed by a
-  shared card encoder and fixed-width pooling/attention layer, rather than one
+- represented pile contents as exact `(card ID, count)` records processed by a
+  shared card encoder and fixed-width pooling layer, rather than one
   permanent column per supported card and pile
-- preserve exact card names and counts in structured observations for debugging;
+- preserved exact card names and counts in structured observations for debugging;
   the compact representation is only the RL encoding layer
-- version the new representation and plan an explicit checkpoint migration or
-  retraining boundary before changing the current encoder
+
+Next for card representation:
+
+- integrate `card_records_v1` with policy inputs, rollout/replay storage, and
+  checkpoint preflight without changing the structured observation
+- implement the documented checkpoint contract: representation version, schema
+  fingerprint, registry prefix, maximum trained card ID, capacities, and
+  embedding dimensions
+- keep existing models labeled `legacy_flat` and require retraining for the
+  future card-record policy path rather than silently adapting weights
 
 Why:
 
@@ -167,19 +179,24 @@ These are good next layers once the near-term items are in a solid place.
 
 ### Broader Action-Conditioned Policies
 
-- add `shared_enemy` as an opt-in architecture for DQN, Double DQN, and Dueling
+Completed foundation:
+
+- added `shared_enemy` as an opt-in architecture for DQN, Double DQN, and Dueling
   Double DQN
-- reuse the PPO design: one encoder for every stable enemy slot,
+- reused the PPO design: one encoder for every stable enemy slot,
   permutation-invariant pooling for encounter context, and the selected enemy
   embedding for targeted action scores
-- remove `target_slot_fraction` from the learned action inputs in this mode so
+- removed `target_slot_fraction` from the learned action inputs in this mode so
   swapping equivalent enemy slots produces equivalent Q-values
-- give Dueling Double DQN a compatible invariant value stream and target-aware
+- gave Dueling Double DQN a compatible invariant value stream and target-aware
   advantage stream
-- extend training and sweep CLI choices, checkpoint metadata/loading, benchmark
+- extended training and sweep CLI choices, checkpoint metadata/loading, benchmark
   compatibility checks, and configuration examples
-- add enemy-slot permutation-equivariance, training-smoke, and checkpoint
+- added enemy-slot permutation-equivariance, training-smoke, and checkpoint
   round-trip tests for every supported DQN-family variant
+
+Next:
+
 - compare `shared_enemy` against `action_feature` on identical fixed-seed
   multi-enemy benchmarks before changing any default
 

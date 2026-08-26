@@ -761,3 +761,92 @@ both D31 and D32, simple observations have width 169, three-enemy observations
 have width 257, and action features have width 48; discrete action spaces remain
 11 and 31. The checkpoint serialization version is unchanged, but old neural
 models and tabular state keys require retraining.
+
+## D33. Select Complete Decks By Stable Name And Record Their Provenance
+
+### Context
+
+The sequencing deck was available only through Python construction, which made
+training it through the standard commands awkward and made saved results
+ambiguous about which complete deck had been used.
+
+### Decision
+
+- add a top-level, pickle-safe named registry for `starter` and
+  `ironclad_sequencing`
+- keep `starter` as the default and avoid extra RNG consumption when resolving it
+- expose one fixed `deck` setting in training, sweep, watch, oracle, and benchmark
+- record the resolved name in configs, checkpoints, run summaries, traces,
+  oracle output, and benchmark reports
+- advance benchmark JSON to format version 2; interpret version 1 as implicitly
+  using `starter`
+- allow cross-deck checkpoint evaluation whenever representation dimensions match
+- defer per-episode named-deck-set sampling
+
+### Why
+
+- symbolic names remain pickle-safe in spawned workers
+- complete experiment provenance no longer depends on remembering a Python factory
+- a different deck is a useful robustness test and is not by itself a schema error
+- benchmark schema versioning makes the new required provenance explicit
+
+## D34. Give The DQN Family Its Own Shared-Enemy Architecture
+
+### Context
+
+PPO could remove incidental enemy-slot preferences with `shared_enemy`, while
+DQN-family policies still consumed the enemy portion of state as one flat ordered
+vector.
+
+### Decision
+
+- add opt-in `shared_enemy` networks for DQN, Double DQN, and Dueling Double DQN
+- share one enemy encoder, mask dead/padded slots, and mean-pool living context
+- combine targeted actions with the selected enemy embedding and exclude
+  `target_slot_fraction` from learned action input
+- keep the dueling value stream permutation-invariant and center advantages over
+  legal actions when a mask is available
+- implement the backbone locally in the DQN module instead of importing PPO
+  network internals
+- persist and preflight the complete enemy/action layout while leaving checkpoint
+  format version 1 unchanged
+- retain `action_feature` as the default architecture
+
+### Why
+
+- corresponding enemy and target permutations produce corresponding Q-values by
+  construction
+- separate implementations preserve existing PPO and DQN state-dict contracts
+- explicit layout metadata rejects genuinely incompatible evaluation environments
+- opt-in naming keeps legacy flat and action-feature checkpoints reproducible
+
+## D35. Ship Card Records As An Experimental Kernel Before Trainer Integration
+
+### Context
+
+The current encoder grows a new group of one-hot observation and action features
+for every card. Replacing it across all policies at once would combine schema,
+trainer, replay, and checkpoint risks in one change.
+
+### Decision
+
+- define `card_records_v1` with stable append-only IDs, fixed capacities,
+  immutable semantics, ordered hand IDs, and exact sorted pile counts
+- reserve card ID zero for padding and preallocate 256 learned 16-value ID rows
+- combine ID embeddings with fixed semantic rows through one shared MLP that
+  produces 32-value card embeddings for hands, piles, and future actions
+- pool pile records invariantly with exact count weighting and retain pile totals
+- expose the kernel only through canonical programmatic subpackage imports
+- do not alter current environments, policies, trainers, observation widths,
+  checkpoint payloads, or defaults
+- require a future card-aware checkpoint to record representation version, schema
+  fingerprint, registry prefix, maximum trained ID, capacities, and dimensions
+
+### Why
+
+- the foundation can be tested without silently changing trained-agent behavior
+- fixed capacity lets append-only card additions keep tensor and parameter shapes
+  stable
+- semantic sharing supports transfer while learned identity preserves unique cards
+- existing models remain `legacy_flat`; later policy integration is an explicit
+  retraining boundary rather than an unsafe automatic conversion
