@@ -22,9 +22,11 @@ directory. The checkpoint type is detected automatically.
 
 For `--episodes 100 --seed 1000`, every policy/encounter pair uses seeds 1000
 through 1099. Saved-agent tie-breaking is reset for every encounter so changing
-the encounter order cannot change a result. The terminal table shows the common
-headline metrics, while the optional versioned JSON preserves the complete
-`EvaluationStats.as_dict()` payload for later tooling.
+the encounter order cannot change a result. The terminal table shows win rate,
+remaining HP, damage taken, reward, and step count. Reports created before
+damage reporting is available display `0.00` in that column. The optional
+versioned JSON preserves the complete `EvaluationStats.as_dict()` payload for
+later tooling.
 
 Only fixed encounter names are accepted. The sampled `overgrowth_easy` pool is
 intentionally excluded because a per-encounter comparison should not mix

@@ -75,6 +75,12 @@ def test_benchmark_uses_identical_seed_range_for_every_cell(monkeypatch) -> None
     assert calls == [(3, 41)] * 4
     assert report.episode_seeds == (41, 42, 43)
     assert report.results[0].metrics["mean_damage_taken"] == 20.0
+    table = format_benchmark_table(report)
+    table_heading = table.splitlines()[0]
+    assert table_heading.index("Mean HP") < table_heading.index(
+        "Mean damage"
+    ) < table_heading.index("Mean reward")
+    assert "20.00" in table.splitlines()[1]
     assert [
         (result.encounter, result.policy_label) for result in report.results
     ] == [
@@ -171,5 +177,7 @@ def test_report_json_and_table_are_stable(tmp_path) -> None:
         monkey_report.results[0].metrics
     )
     assert table.splitlines()[0].startswith("Encounter")
+    assert "Mean damage" in table.splitlines()[0]
+    assert "0.00" in table.splitlines()[1]
     assert "tiny" in table
     assert "heuristic" in table

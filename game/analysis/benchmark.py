@@ -187,6 +187,7 @@ def format_benchmark_table(report: BenchmarkReport) -> str:
         "N",
         "Win%",
         "Mean HP",
+        "Mean damage",
         "Mean reward",
         "Mean steps",
     )
@@ -198,6 +199,7 @@ def format_benchmark_table(report: BenchmarkReport) -> str:
             str(int(result.metrics["episodes"])),
             f"{float(result.metrics['win_rate']) * 100.0:.1f}",
             f"{float(result.metrics['mean_player_hp']):.2f}",
+            f"{float(result.metrics.get('mean_damage_taken', 0.0)):.2f}",
             f"{float(result.metrics['mean_reward']):.2f}",
             f"{float(result.metrics['mean_steps']):.2f}",
         )
