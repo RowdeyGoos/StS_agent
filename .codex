@@ -10,9 +10,9 @@ Read these first:
 
 Most important code after that:
 
-- `game/core.py`
-- `game/encoding.py`
-- `train.py`
+- `game/simulation/core.py`
+- `game/simulation/encoding.py`
+- `game/cli/train.py`
 
 Key invariants:
 

@@ -14,6 +14,7 @@ The current codebase already supports:
 - single-enemy and multi-enemy encounters
 - random, heuristic, tabular, and neural baselines
 - deterministic seeded runs
+- seeded brute-force oracle searches for exact small-encounter comparisons
 
 ## Main Gameplay Model
 
@@ -57,18 +58,26 @@ The default debugging encounter is a single `SimpleEnemy` with a deterministic i
 
 ### Overgrowth Easy
 
-This is the current multi-enemy encounter pool based on the first three Overgrowth encounters:
+This is the current multi-enemy encounter pool based on the four encounters from
+which an Overgrowth run selects its first three fights:
 
 - `Nibbit`
 - `Shrinker Beetle`
 - `Fuzzy Wurm Crawler`
 - `Slimes`
-  - one medium slime
-  - two small slimes
+  - one random medium slime
+  - currently two independently random small slimes
 
 The slimes encounter is the first place where multi-enemy targeting matters.
+The independent small-slime sampling is a known simulator-fidelity mismatch:
+current [Overgrowth reference data](https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2%3AOvergrowth)
+specifies exactly one Leaf Slime (S) and one Twig Slime (S). See
+[Experiment Workflows](EXPERIMENT_WORKFLOWS.md#known-encounter-fidelity-caveat).
 
 ## RL Interface
+
+For a diagram of the complete inference and training paths, see
+[Double DQN Agent Flow](AGENT_FLOW.md).
 
 ### Structured Observation
 
@@ -132,6 +141,12 @@ In multi-enemy fights, non-targeted cards such as `Defend` and `Slimed` are cano
 ### Action Features
 
 The encoder now also exposes fixed action-feature vectors for every discrete action slot.
+The action-feature hot path builds its static feature schema once per encoder,
+and training collectors reuse one legal-action result for both masks and
+features. Observation-wide tactical values are prepared once, and duplicate
+copies of the same card reuse a feature row when they have the same target.
+This preserves the exact representation while avoiding repeated schema,
+legality, and tactical-effect reconstruction during neural rollout collection.
 
 These features are built from the structured observation plus the tuple action and include:
 
@@ -158,7 +173,7 @@ This means two winning policies can still be distinguished by how much damage th
 
 ### Baselines
 
-`game/baselines.py` contains:
+`game/agents/baselines.py` contains:
 
 - random policy
 - heuristic policy
@@ -168,7 +183,7 @@ The heuristic is intentionally fairly competent for the current environment, so 
 
 ### Deep RL
 
-`game/dqn.py` contains:
+`game/agents/dqn.py` contains:
 
 - replay buffer
 - DQN
@@ -183,39 +198,166 @@ The heuristic is intentionally fairly competent for the current environment, so 
 
 The default DQN-family training path now uses the `action_feature` architecture, which scores legal actions from state features plus encoded legal-action features. The older flat Q-head is still available as a compatibility option.
 
-`game/ppo.py` contains:
+`game/agents/ppo.py` contains:
 
 - masked PPO
-- flat and action-conditioned actor-critic policy heads
+- flat, action-conditioned, and shared-enemy actor-critic policy heads
 - on-policy rollout storage
+- optional multi-environment rollout collection with batched policy inference
 - GAE advantage estimation
 - clipped policy updates
 - checkpoint payload support for saving trained agents
 
 The default training path now uses the `action_feature` PPO architecture, which scores legal actions from state features plus encoded legal-action features. The older flat discrete policy head is still available as a compatibility option.
 
+The opt-in `shared_enemy` PPO architecture splits the fixed observation back
+into non-enemy features and enemy-slot rows. One MLP encodes every enemy row,
+living embeddings are mean-pooled for global combat context, and each targeted
+action gathers its selected enemy's embedding. The action scorer does not
+receive `target_slot_fraction`; consequently, permuting enemy rows and the
+matching target indices permutes target logits instead of changing their
+meaning. Stable environment slots and discrete action indices are preserved.
+The encoder-layout indices needed to reconstruct this model are stored in its
+checkpoint.
+
+PPO rollout collection accepts `num_envs`. Each environment has an independent,
+deterministically seeded episode stream, while observations, legal-action masks,
+and action features are evaluated by the policy as a batch. `rollout_steps`
+counts total transitions across all environments, and GAE is calculated
+separately for each environment slot so interleaved trajectories cannot affect
+one another. The default `num_envs=1` retains the original serial behavior.
+
+CPU PPO can additionally set `env_workers` above zero. Persistent spawned
+processes own fixed environment-slot shards and write encoded observations,
+masks, action features, rewards, and terminal summaries into shared NumPy
+buffers. The parent process keeps Torch inference and optimization and sends
+only action indices to workers. This bypasses the Python GIL without repeatedly
+pickling structured observations. Worker count is opt-in because process startup
+only amortizes well on substantial runs. The standard CLI factory is
+pickle-friendly; custom parallel callers must also provide a pickle-friendly
+top-level factory.
+
+Optional PPO training profiling measures semantic phases with accelerator
+synchronization around device work. It reports phase totals and call means,
+process CPU core equivalents, logical CPU capacity, peak resident memory, Torch
+backend details, and accelerator-memory values when the backend exposes them.
+Profiled artifact runs add `profile.json`, which `sts-analyze-training` can read
+from either the file itself or its run directory. MPS compute utilization is not
+available through a reliable portable PyTorch API and must be corroborated with
+Activity Monitor GPU History when needed.
+
+DQN-family and PPO agents share automatic Torch device selection. With no
+explicit `--device`, the order is CUDA, Apple Metal (`mps`), then CPU. This makes
+the normal training and sweep commands use supported Apple Silicon GPUs without
+requiring a Mac-specific command line.
+
 ### CLI
 
-`train.py` is the main training entry point.
+`sts-train` is the main training entry point, implemented by
+`game/cli/train.py`.
 
-`sweep.py` is the hyperparameter-search entry point. It calls the trainers directly rather than shelling out through `train.py`, uses Optuna with TPE by default, and averages each trial over multiple train seeds so comparisons are less noisy than one-off manual tuning runs.
+Training setups can be stored as JSON and loaded with `sts-train --config`. The
+file uses snake_case CLI destination names, explicit CLI arguments override file
+values, and unknown keys fail fast. Before a run starts, `sts-train` resolves the
+built-in defaults, config values, and CLI overrides into one complete
+configuration. The preferred `output_dir` workflow creates a unique
+timestamp/policy/seed directory per run containing `checkpoint.pt` (or
+`checkpoint.json` for tabular Q-learning), `config.json`, and `run.json`.
+Checkpoints embed the resolved configuration, versioned run metadata, and a
+compact outcome summary. `run.json` exposes the same audit information without
+requiring PyTorch. It records execution facts such as timestamps, duration,
+environment and optimizer steps, best-checkpoint restoration, runtime versions,
+actual device, and Git revision/dirty state, but deliberately excludes replay
+buffers and full trajectories. Agent-loading workflows accept either the
+checkpoint file or its run directory. The legacy `save_agent` file option and
+sidecar layout remain supported.
 
-`watch_policy.py` is the one-episode inspection entry point for:
+`sts-sweep` is the hyperparameter-search entry point. It calls the trainers
+directly, uses Optuna with TPE by default, and averages each trial over multiple
+train seeds so comparisons are less noisy than one-off manual tuning runs.
+Sweep CLI values can be loaded from strict JSON config files with explicit CLI
+overrides. PPO configs may include a `search_space` object containing fixed
+values or categorical/integer/float Optuna specifications. Custom entries
+overlay the built-in PPO ranges, while resolved sweep configs and summaries
+expand the complete effective search space for reproducibility.
+
+The sweep can distribute one global trial budget across independent spawned
+processes with `trial_workers`. Workers reopen the same Optuna study and use
+distinct deterministic sampler streams. Local workers coordinate through
+`JournalStorage` backed by `journal_file`; a shared database URL remains
+available through `storage`. The journal is persistent and therefore also acts
+as the resume record. Process-level trials are kept separate from PPO's
+`env_workers`, which parallelizes simulation inside each individual trial.
+
+`sts-watch` is the one-episode inspection entry point for:
 
 - built-in policies such as `heuristic` or `random`
 - saved trained `q_learning` agents
 - saved trained `dqn` and `double_dqn` agents
 - saved trained `dueling_double_dqn` and `masked_ppo` agents
 
+`sts-watch` and `sts-oracle` share the same `CombatEnvFactory` and
+named encounter set: `simple`, seed-sampled `overgrowth_easy`, and the fixed
+`nibbit`, `slimes`, `shrinker_beetle`, and `fuzzy_wurm_crawler` encounters.
+With matching combat settings and seed they start from the same visible and
+hidden simulator state. Replaying the same actions preserves identical
+transitions; selecting different actions creates different trajectories as
+expected.
+
 It can print a readable combat trace and write a structured JSON log for later analysis.
 
-`analyze_trace.py` is the post-hoc inspection entry point for those saved trace logs. It flags high-confidence tactical mistakes such as:
+`sts-analyze-trace` is the post-hoc inspection entry point for those saved trace
+logs. It flags high-confidence tactical mistakes such as:
 
 - missed lethal
 - avoidable incoming damage
 - wasted dead-card plays
 - suboptimal target choice
 - premature end turns
+
+`sts-oracle` is the exact seeded-combat inspection entry point. It searches
+the real simulator state rather than the observation encoding and includes pile
+order, enemy script internals, RNG state, and shared-RNG identity in its state
+key. The objective is lexicographic: win, preserve player HP, reduce remaining
+enemy HP, then minimize player decisions. A saved agent can be replayed on the
+same seed for a direct outcome comparison.
+
+When a saved agent is supplied, the brute-force CLI also replays the agent's
+actual trace and evaluates every legal action at every visited decision state.
+This produces a per-decision regret report with tied optimal alternatives,
+winner/HP/enemy-HP/action-count regret, a first proven divergence, and ranked
+weak points. Each legal-action continuation retains its own proof status, so a
+resource-limited search is labeled best-found rather than exact.
+
+The exact oracle is intentionally a hindsight benchmark: its full simulator
+state includes the hidden draw order and RNG state. Optional information-aware
+regret analysis constructs reproducible hidden-state samples that preserve the
+agent's complete visible observation while randomizing unseen draw order and
+future RNG. Every legal current action is evaluated on the same samples, then
+ranked by sampled win rate, mean player HP, mean enemy HP, and mean action count.
+It also reports Wilson 95% win-rate intervals and how often each action ties for
+the hindsight-best action in a sample. This removes direct knowledge of the
+realized seed from the current decision, but each sampled continuation still
+uses the hindsight oracle; the result is a Monte Carlo root-action estimate,
+not an exact POMDP policy or population-level proof.
+
+Because a policy can intentionally stall, searches have explicit step and node
+bounds plus an optional time bound. The result distinguishes a globally proven
+optimum from the best terminal line found within those limits. A victory can
+often be certified before exhausting the tree because player HP never increases;
+once every remaining state has an HP/action-count upper bound no better than the
+best victory, no unexplored line can win the objective.
+
+The search hot path avoids generic copies where the simulator has stronger
+invariants. RNGs are cloned through `getstate`/`setstate` while preserving shared
+identity, player/deck state uses explicit mutable-container copies, and built-in
+stateless cards are shared between branches. Semantic card keys are cached, and
+duplicate card actions are skipped only when they leave the exact same ordered
+hand, preserving the effect of discard order on future seeded shuffles. The
+proof bound also includes an optimistic minimum number of damaging card plays,
+based on remaining enemy HP, target count, and maximum possible card damage.
+These changes preserve seeded oracle semantics while reducing both per-node
+cost and the number of nodes needed for many optimality proofs.
 
 Two especially important knobs:
 
@@ -224,13 +366,18 @@ Two especially important knobs:
 - `--train-frequency`
 - `--eval-interval`
 - `--ppo-learning-rate`
+- `--num-envs`
 - `--rollout-steps`
+- `--profile-training`
 - `--ppo-policy-architecture`
 
 The DQN-family defaults are separate from the tabular Q-learning defaults on purpose. This was added after discovering that a shared high default learning rate was bad for neural training. The DQN CLI also defaults to the action-conditioned architecture for the same reason PPO does: slot- and target-generalization is better when the network can see action semantics directly.
 The training CLI also disables trajectory recording by default and only runs DQN optimization every 4 env steps, because this project is still more Python-bound than network-bound.
 
-For systematic tuning, `sweep.py` is now the preferred workflow over manual one-run-at-a-time CLI tuning. Its default objective is `hp_preserving_score`, which combines win rate with remaining HP so the sweep aligns with the project goal of winning cleanly rather than merely surviving.
+For systematic tuning, `sts-sweep` is now the preferred workflow over manual
+one-run-at-a-time CLI tuning. Its default objective is `hp_preserving_score`,
+which combines win rate with remaining HP so the sweep aligns with the project
+goal of winning cleanly rather than merely surviving.
 
 ## Testing Philosophy
 
@@ -284,22 +431,24 @@ Example:
 
 ## Useful File Map
 
-- `game/core.py`: environment logic and reward shaping
-- `game/encoding.py`: RL representation layer
-- `game/action_features.py`: semantic legal-action summaries and action-feature encodings
-- `game/enemy.py`: encounters and enemy intent logic
-- `game/status.py`: status definitions and damage modifiers
-- `game/card.py`: card definitions and effects
-- `game/player.py`: player state transitions
-- `game/deck.py`: card pile bookkeeping
-- `game/baselines.py`: non-neural baselines and evaluation helpers
-- `game/dqn.py`: neural training loop
-- `game/ppo.py`: masked PPO and action-conditioned policy scoring
-- `game/trace_analysis.py`: post-hoc trace analysis heuristics
-- `main.py`: manual demo output
-- `train.py`: CLI orchestration
+- `configs/`: reusable JSON training setups
+- `game/simulation/`: rules, combat state, observations, encoders, and encounters
+- `game/agents/`: baselines, DQN-family agents, PPO, devices, and persistence
+- `game/training/`: process-parallel PPO collection and profiling infrastructure
+- `game/analysis/`: policy traces, rendering, exact search, regret, and uncertainty
+- `game/cli/`: training, sweep, inspection, analysis, and demo entry points
+- `game/__init__.py`: stable symbol-level public API
+- `tests/`: suites grouped by the same responsibilities as the package
+
+Canonical internal imports use the responsibility-based paths, for example
+`game.simulation.core`, `game.agents.ppo`, and `game.analysis.bruteforce`.
+Installed `sts-*` commands map directly to `game.cli` modules. Flat paths such as
+`game.core` and root command wrappers are intentionally unsupported so there is
+only one module and command surface to maintain.
 
 ## Relationship To Other Docs
 
 - See [DECISIONS.md](../DECISIONS.md) for why major architecture choices were made.
+- See [Experiment Workflows](EXPERIMENT_WORKFLOWS.md) for practical training,
+  profiling, sweep, trace-analysis, and oracle commands.
 - See [ROADMAP.md](../ROADMAP.md) for likely next steps.

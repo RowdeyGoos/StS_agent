@@ -19,9 +19,9 @@ When starting a fresh session, read in this order:
 2. [DECISIONS.md](DECISIONS.md)
 3. [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md)
 4. [ROADMAP.md](ROADMAP.md)
-5. [game/core.py](game/core.py)
-6. [game/encoding.py](game/encoding.py)
-7. [train.py](train.py)
+5. [game/simulation/core.py](game/simulation/core.py)
+6. [game/simulation/encoding.py](game/simulation/encoding.py)
+7. [game/cli/train.py](game/cli/train.py)
 
 ## Doc Roles
 
@@ -54,41 +54,39 @@ When starting a fresh session, read in this order:
 
 Observation changes usually require updates to:
 
-- `game/core.py`
-- `game/encoding.py`
-- `game/action_features.py`
-- heuristic logic in `game/baselines.py`
+- `game/simulation/core.py`
+- `game/simulation/encoding.py`
+- `game/simulation/action_features.py`
+- heuristic logic in `game/agents/baselines.py`
 - tests
-- demo formatting in `main.py`
+- demo formatting in `game/cli/demo.py`
 
 Action changes usually require updates to:
 
-- `game/actions.py`
-- `game/core.py`
-- `game/encoding.py`
-- `game/action_features.py`
+- `game/simulation/actions.py`
+- `game/simulation/core.py`
+- `game/simulation/encoding.py`
+- `game/simulation/action_features.py`
 - action-mask tests
 
 ## File Map
 
-- `game/core.py`: combat loop, observations, reward shaping, terminal logic
-- `game/encoding.py`: fixed-width RL observation and action encoding
-- `game/action_features.py`: semantic legal-action summaries and action-feature encoding
-- `game/enemy.py`: enemy classes, intents, and encounter factories
-- `game/card.py`: card definitions and effects
-- `game/player.py`: player-side combat state transitions
-- `game/deck.py`: draw/discard/exhaust/shuffle behavior
-- `game/status.py`: status definitions and damage modifiers
-- `game/baselines.py`: random, heuristic, and tabular baselines
-- `game/dqn.py`: DQN and Double DQN training
-- `game/ppo.py`: masked PPO, including action-conditioned policy scoring
-- `game/trace_analysis.py`: post-hoc trace mistake analysis
-- `game/gym_env.py`: optional Gymnasium wrapper
-- `train.py`: CLI for training and evaluation
-- `main.py`: readable combat demo
-- `watch_policy.py`: one-combat trace logging
-- `analyze_trace.py`: CLI for analyzing saved trace logs
-- `tests/`: assert-based regression coverage
+- `game/simulation/`: combat rules, mutable state, observations, encoding, and factories
+- `game/agents/`: baselines, DQN-family agents, PPO, devices, and persistence
+- `game/training/`: PPO worker infrastructure and semantic profiling
+- `game/analysis/`: traces, rendering, brute-force search, regret, and uncertainty
+- `game/cli/`: real command-line implementations
+- `game/__init__.py`: stable symbol-level public API
+- `configs/`: reusable training and sweep configurations
+- `tests/simulation/`: combat and encoding coverage
+- `tests/agents/`: model architecture and persistence coverage
+- `tests/training/`: trainer, profiling, and worker coverage
+- `tests/analysis/`: trace and oracle coverage
+- `tests/cli/`: command configuration and sweep coverage
+
+Use canonical subpackage paths. Do not reintroduce flat-module aliases or root
+CLI wrappers; stale imports and commands should fail visibly instead of creating
+a permanent second API surface.
 
 ## Common Validation Commands
 
@@ -102,22 +100,19 @@ pip install -r requirements-dev.txt
 pip install -e .
 ```
 
-Smoke checks:
+Regression checks:
 
 ```bash
-python3 -m compileall game train.py main.py tests
-PYTHONPATH=. python3 tests/test_basic.py
-PYTHONPATH=. python3 tests/test_rl.py
-PYTHONPATH=. python3 tests/test_training.py
-PYTHONPATH=. python3 tests/test_dqn.py
+python3 -m compileall game tests
+PYTHONPATH=. python3 -m pytest -q
 ```
 
 Manual runs:
 
 ```bash
-python3 main.py
-python3 train.py --policy compare --episodes 500 --eval-episodes 100
-python3 train.py --policy heuristic --encounter-set overgrowth_easy --episodes 200
+sts-demo
+sts-train --policy compare --episodes 500 --eval-episodes 100
+sts-train --policy heuristic --encounter-set overgrowth_easy --episodes 200
 ```
 
 ## When Editing

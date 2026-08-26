@@ -17,8 +17,21 @@ The project currently has:
 - fixed legal-action feature encodings for policy architectures
 - random, heuristic, Q-learning, DQN-family, and PPO baselines
 - masked PPO with an action-conditioned policy head
+- opt-in permutation-equivariant shared-enemy PPO policy scoring
+- batched multi-environment PPO rollout collection with per-environment GAE
+- opt-in process-parallel CPU PPO environment collection through shared memory
+- opt-in PPO phase timing and CPU/memory/accelerator resource reports
 - the `simple` encounter and the `overgrowth_easy` encounter pool
 - saved trace analysis for common tactical mistakes
+- a seeded brute-force oracle for small-encounter optimal-policy comparisons
+- per-decision oracle regret traces for ranking trained-policy weak points
+- sampled information-aware regret over hidden draw orders and future RNG
+- automatic CUDA, Apple MPS, and CPU selection for neural training
+- self-contained run directories with reusable configs, checkpoints, and metadata
+- reusable PPO sweep configs with explicit Optuna search spaces
+- process-parallel Optuna trials with resumable local journal storage
+- responsibility-based `simulation`, `agents`, `training`, `analysis`, and `cli`
+  packages with one canonical import and command surface
 
 ## Near-Term Priorities
 
@@ -30,6 +43,8 @@ These are the highest-value next steps.
 - report per-enemy or per-encounter win rates
 - surface damage taken, not just final reward
 - make it easier to compare heuristic, tabular, and neural policies fairly
+- use the brute-force oracle on tractable fixed seeds to report policy optimality gaps
+- compare hindsight and information-aware regret so hidden future knowledge is not mislabeled as an agent weakness
 
 Why:
 
@@ -38,6 +53,8 @@ Why:
 
 ### 2. More Encounter Diversity
 
+- correct the easy Slimes composition to one Leaf Slime (S), one random medium
+  slime, and one Twig Slime (S)
 - add a few more enemy types or encounter pools before adding full progression
 - keep them small and explicit
 - prefer encounter diversity over a huge card pool at first
