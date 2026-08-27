@@ -51,6 +51,12 @@ PRIMARY_FIXED_ENCOUNTERS: tuple[str, ...] = (
     "nibbits",
     "shrinker_fuzzy",
 )
+EASY_FIXED_ENCOUNTERS: frozenset[str] = frozenset(
+    {"nibbit", "slimes", "shrinker_beetle", "fuzzy_wurm_crawler"}
+)
+HARD_FIXED_ENCOUNTERS: frozenset[str] = frozenset(
+    {"mawler", "nibbits", "shrinker_fuzzy"}
+)
 EVALUATION_DECKS: tuple[str, ...] = ("starter", "ironclad_sequencing")
 DQN_POLICIES: tuple[str, ...] = ("dqn", "double_dqn", "dueling_double_dqn")
 NEURAL_ARCHITECTURES: tuple[str, ...] = ("flat", "action_feature", "shared_enemy")
@@ -585,6 +591,7 @@ def execute_training_run(
 ) -> dict[str, Any]:
     """Run or resume one trainer process and return its stable status payload."""
     if resume and training_run_is_complete(manifest, spec):
+        (_run_directory(manifest, spec) / "failure.json").unlink(missing_ok=True)
         return json.loads(
             _training_marker_path(manifest, spec).read_text(encoding="utf-8")
         )
@@ -653,6 +660,17 @@ def execute_training_run(
         "optimization_steps": int(metadata["optimization_steps"]),
         "training_elapsed_seconds": float(metadata["training_elapsed_seconds"]),
         "training_cpu_seconds": float(metadata.get("training_cpu_seconds", 0.0)),
+        "checkpoint_training_seconds": float(
+            metadata.get(
+                "checkpoint_training_seconds",
+                min(
+                    float(metadata["training_elapsed_seconds"]),
+                    float(spec.max_training_seconds)
+                    if spec.max_training_seconds is not None
+                    else float(metadata["training_elapsed_seconds"]),
+                ),
+            )
+        ),
         "training_stop_reason": str(metadata["training_stop_reason"]),
         "wall_seconds": round(perf_counter() - started, 6),
     }
@@ -675,6 +693,7 @@ def execute_training_run(
             f"expected exactly {spec.max_environment_steps}."
         )
     _write_json(_training_marker_path(manifest, spec), payload)
+    (run_dir / "failure.json").unlink(missing_ok=True)
     return payload
 
 
@@ -1840,16 +1859,28 @@ def _paired_comparisons(rows: Sequence[EvaluationRow]) -> list[dict[str, Any]]:
         shared_keys = sorted(set(leader_rows) & set(competitor_rows), key=str)
         if not shared_keys:
             continue
+        win_differences = [
+            (1.0 if leader_rows[key].win else 0.0)
+            - (1.0 if competitor_rows[key].win else 0.0)
+            for key in shared_keys
+        ]
+        mean_win_difference = statistics.fmean(win_differences)
+        if len(win_differences) > 1:
+            margin = 1.959963984540054 * statistics.stdev(win_differences) / math.sqrt(
+                len(win_differences)
+            )
+        else:
+            margin = 0.0
         comparisons.append(
             {
                 "leader": leader,
                 "competitor": score.variant,
                 "paired_episodes": len(shared_keys),
-                "mean_win_difference": statistics.fmean(
-                    (1.0 if leader_rows[key].win else 0.0)
-                    - (1.0 if competitor_rows[key].win else 0.0)
-                    for key in shared_keys
-                ),
+                "mean_win_difference": mean_win_difference,
+                "win_difference_95_interval": [
+                    max(-1.0, mean_win_difference - margin),
+                    min(1.0, mean_win_difference + margin),
+                ],
                 "mean_damage_difference": statistics.fmean(
                     leader_rows[key].damage_taken
                     - competitor_rows[key].damage_taken
@@ -1881,6 +1912,265 @@ def _deck_transfer_summary(rows: Sequence[EvaluationRow]) -> list[dict[str, Any]
     return summaries
 
 
+def _row_group_summary(rows: Sequence[EvaluationRow]) -> dict[str, Any]:
+    """Return deterministic descriptive metrics for one non-empty row group."""
+    if not rows:
+        return {
+            "episodes": 0,
+            "win_rate": 0.0,
+            "mean_damage_taken": 0.0,
+            "mean_player_hp": 0.0,
+            "mean_reward": 0.0,
+            "win_rate_interval": [0.0, 0.0],
+        }
+    wins = sum(1 for row in rows if row.win)
+    return {
+        "episodes": len(rows),
+        "win_rate": wins / len(rows),
+        "mean_damage_taken": statistics.fmean(row.damage_taken for row in rows),
+        "mean_player_hp": statistics.fmean(row.player_hp for row in rows),
+        "mean_reward": statistics.fmean(row.total_reward for row in rows),
+        "win_rate_interval": list(wilson_interval(wins, len(rows))),
+    }
+
+
+def _reference_baseline_summary(rows: Sequence[EvaluationRow]) -> list[dict[str, Any]]:
+    summaries = []
+    for variant in ("random", "heuristic"):
+        variant_rows = [row for row in rows if row.variant == variant]
+        if variant_rows:
+            summaries.append({"variant": variant, **_row_group_summary(variant_rows)})
+    return summaries
+
+
+def _difficulty_summary(rows: Sequence[EvaluationRow]) -> list[dict[str, Any]]:
+    summaries: list[dict[str, Any]] = []
+    for variant in sorted({row.variant for row in rows if row.training_deck is not None}):
+        variant_rows = [row for row in rows if row.variant == variant]
+        for label, encounters in (
+            ("easy", EASY_FIXED_ENCOUNTERS),
+            ("hard", HARD_FIXED_ENCOUNTERS),
+        ):
+            group = [row for row in variant_rows if row.encounter in encounters]
+            if group:
+                summaries.append(
+                    {"variant": variant, "difficulty": label, **_row_group_summary(group)}
+                )
+    return summaries
+
+
+def _training_seed_distribution(rows: Sequence[EvaluationRow]) -> list[dict[str, Any]]:
+    """Summarize between-training-seed variability for confirmation runs."""
+    summaries = []
+    for variant in sorted({row.variant for row in rows if row.training_seed is not None}):
+        by_seed: dict[int, list[EvaluationRow]] = {}
+        for row in rows:
+            if row.variant == variant and row.training_seed is not None:
+                by_seed.setdefault(row.training_seed, []).append(row)
+        seed_win_rates = [
+            _row_group_summary(by_seed[seed])["win_rate"] for seed in sorted(by_seed)
+        ]
+        if not seed_win_rates:
+            continue
+        summaries.append(
+            {
+                "variant": variant,
+                "training_seeds": sorted(by_seed),
+                "seed_win_rates": seed_win_rates,
+                "mean_win_rate": statistics.fmean(seed_win_rates),
+                "median_win_rate": statistics.median(seed_win_rates),
+                "min_win_rate": min(seed_win_rates),
+                "max_win_rate": max(seed_win_rates),
+                "spread": max(seed_win_rates) - min(seed_win_rates),
+            }
+        )
+    return summaries
+
+
+def _hard_training_comparison(
+    easy_rows: Sequence[EvaluationRow],
+    hard_rows: Sequence[EvaluationRow],
+    finalists: Sequence[PolicyVariant],
+) -> list[dict[str, Any]]:
+    """Compare matched easy-trained and hard-trained finalist evaluations."""
+    comparisons: list[dict[str, Any]] = []
+    finalist_labels = {variant.label for variant in finalists}
+    for variant in sorted(finalist_labels):
+        for difficulty, encounters in (
+            ("all", frozenset(PRIMARY_FIXED_ENCOUNTERS)),
+            ("easy", EASY_FIXED_ENCOUNTERS),
+            ("hard", HARD_FIXED_ENCOUNTERS),
+        ):
+            easy_group = [
+                row
+                for row in easy_rows
+                if row.variant == variant and row.encounter in encounters
+            ]
+            hard_group = [
+                row
+                for row in hard_rows
+                if row.variant == variant and row.encounter in encounters
+            ]
+            if not easy_group or not hard_group:
+                continue
+            easy_summary = _row_group_summary(easy_group)
+            hard_summary = _row_group_summary(hard_group)
+            comparisons.append(
+                {
+                    "variant": variant,
+                    "difficulty": difficulty,
+                    "easy_trained_win_rate": easy_summary["win_rate"],
+                    "hard_trained_win_rate": hard_summary["win_rate"],
+                    "win_rate_difference": (
+                        hard_summary["win_rate"] - easy_summary["win_rate"]
+                    ),
+                    "easy_trained_mean_damage": easy_summary["mean_damage_taken"],
+                    "hard_trained_mean_damage": hard_summary["mean_damage_taken"],
+                    "mean_damage_difference": (
+                        hard_summary["mean_damage_taken"]
+                        - easy_summary["mean_damage_taken"]
+                    ),
+                }
+            )
+    return comparisons
+
+
+def _training_throughput_summary(
+    manifest: BenchmarkSuiteManifest,
+    stage: str,
+) -> list[dict[str, Any]]:
+    path = manifest.output_path / "training" / f"{stage}-status.json"
+    if not path.is_file():
+        return []
+    results = json.loads(path.read_text(encoding="utf-8"))["results"]
+    summaries = []
+    for result in results:
+        elapsed = float(result.get("training_elapsed_seconds", 0.0))
+        summaries.append(
+            {
+                **result,
+                "transitions_per_second": (
+                    float(result["environment_steps"]) / elapsed if elapsed > 0.0 else 0.0
+                ),
+                "updates_per_second": (
+                    float(result["optimization_steps"]) / elapsed if elapsed > 0.0 else 0.0
+                ),
+            }
+        )
+    return summaries
+
+
+def _resource_summary(
+    model_resources: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    summaries: list[dict[str, Any]] = []
+    for variant in sorted({str(row["variant"]) for row in model_resources}):
+        rows = [row for row in model_resources if row["variant"] == variant]
+        parameter_values = [
+            int(row["parameter_count"])
+            for row in rows
+            if row.get("parameter_count") is not None
+        ]
+        q_sizes = [
+            int(row["q_table_size"])
+            for row in rows
+            if row.get("q_table_size") is not None
+        ]
+        summaries.append(
+            {
+                "variant": variant,
+                "parameter_count": (
+                    None if not parameter_values else int(statistics.median(parameter_values))
+                ),
+                "q_table_size": None if not q_sizes else int(statistics.median(q_sizes)),
+                "checkpoint_size_bytes": int(
+                    statistics.median(int(row["checkpoint_size_bytes"]) for row in rows)
+                ),
+                "inference_seconds_per_observation": {
+                    batch: statistics.median(
+                        float(row["inference_seconds_per_observation"][batch])
+                        for row in rows
+                    )
+                    for batch in ("1", "32", "256")
+                },
+            }
+        )
+    return summaries
+
+
+def _oracle_result_summary(
+    oracle_results: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    enriched = []
+    for result in oracle_results:
+        item = dict(result)
+        json_path = Path(str(result.get("json", "")))
+        if result.get("status") == "complete" and json_path.is_file():
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+            oracle = payload.get("oracle", {})
+            item.update(
+                {
+                    "proven_optimal": bool(oracle.get("proven_optimal", False)),
+                    "termination_reason": oracle.get("termination_reason"),
+                    "expanded_nodes": oracle.get("expanded_nodes"),
+                    "oracle_regret": payload.get("oracle_regret"),
+                }
+            )
+        enriched.append(item)
+    proven = sum(1 for item in enriched if item.get("proven_optimal"))
+    return {
+        "cases": enriched,
+        "complete_cases": sum(1 for item in enriched if item.get("status") == "complete"),
+        "proven_cases": proven,
+        "resource_limited_cases": sum(
+            1
+            for item in enriched
+            if item.get("status") == "complete" and not item.get("proven_optimal")
+        ),
+    }
+
+
+def _simple_environment_sanity(manifest: BenchmarkSuiteManifest) -> dict[str, Any]:
+    """Exercise the intentionally different single-enemy environment separately."""
+    rows = []
+    for deck in manifest.decks:
+        env = CombatEnvFactory(
+            encounter_set="simple",
+            deck=deck,
+            record_trajectory=False,
+        )()
+        metrics = rollout_episode(
+            env,
+            choose_heuristic_action,
+            seed=manifest.evaluation_base_seed,
+        )
+        rows.append(
+            {
+                "deck": deck,
+                "observation_size": env.observation_size,
+                "action_space_size": env.action_space_size,
+                "action_feature_size": env.action_feature_size,
+                "heuristic_smoke": asdict(metrics),
+            }
+        )
+    multi_env = CombatEnvFactory(
+        encounter_set=manifest.fixed_encounters[0],
+        deck=manifest.decks[0],
+        record_trajectory=False,
+    )()
+    return {
+        "status": "passed",
+        "simple": rows,
+        "multi_enemy_reference": {
+            "encounter": manifest.fixed_encounters[0],
+            "observation_size": multi_env.observation_size,
+            "action_space_size": multi_env.action_space_size,
+            "action_feature_size": multi_env.action_feature_size,
+        },
+        "intentionally_separate_from_leaderboards": True,
+    }
+
+
 def write_suite_report(
     manifest: BenchmarkSuiteManifest,
     *,
@@ -1906,6 +2196,20 @@ def write_suite_report(
         stage: score_variants(rows) for stage, rows in stage_rows.items()
     }
     transfer = _deck_transfer_summary(confirmation_rows)
+    references = _reference_baseline_summary(screen_rows)
+    confirmation_difficulty = _difficulty_summary(confirmation_rows)
+    confirmation_seed_distribution = _training_seed_distribution(confirmation_rows)
+    hard_comparison = _hard_training_comparison(
+        confirmation_rows,
+        hard_rows,
+        hard_finalists,
+    )
+    paired_comparisons = _paired_comparisons(confirmation_rows)
+    time_throughput = _training_throughput_summary(manifest, "time")
+    resources = _resource_summary(model_resources)
+    oracle_summary = _oracle_result_summary(oracle_results)
+    simple_sanity = _simple_environment_sanity(manifest)
+    _write_json(manifest.output_path / "simple-environment-sanity.json", simple_sanity)
     compatible_history = sum(1 for entry in inventory if entry.get("compatible"))
     recommendations: list[str] = []
     if stage_scores["confirmation"]:
@@ -1929,13 +2233,36 @@ def write_suite_report(
             "Integrate card_records_v1 behind an explicit policy/checkpoint contract "
             "before making any learning-quality claim."
         )
+    hard_overall = [
+        item
+        for item in hard_comparison
+        if item["difficulty"] == "all"
+    ]
+    if hard_overall:
+        best_hard_gain = max(hard_overall, key=lambda item: item["win_rate_difference"])
+        recommendations.append(
+            "Use hard-pool training selectively: the largest overall measured gain was "
+            f"{best_hard_gain['win_rate_difference']:+.1%} for "
+            f"{best_hard_gain['variant']}; inspect the per-difficulty table before "
+            "replacing easy-pool training globally."
+        )
+
+    try:
+        import torch
+    except ModuleNotFoundError:
+        torch_version: str | None = None
+    else:
+        torch_version = str(torch.__version__)
 
     payload = {
         "suite_format_version": SUITE_FORMAT_VERSION,
         "manifest": manifest.as_dict(),
         "runtime": {
             "python_version": platform.python_version(),
+            "torch_version": torch_version,
             "platform": platform.platform(),
+            "machine": platform.machine(),
+            "processor": platform.processor(),
             "logical_cpus": os.cpu_count(),
         },
         "controlled_rankings": {
@@ -1944,13 +2271,20 @@ def write_suite_report(
         },
         "confirmation_finalists": [variant.label for variant in confirmation_finalists],
         "hard_finalists": [variant.label for variant in hard_finalists],
+        "reference_baselines": references,
         "deck_transfer": transfer,
-        "paired_confirmation_comparisons": _paired_comparisons(confirmation_rows),
+        "confirmation_by_difficulty": confirmation_difficulty,
+        "confirmation_training_seed_distribution": confirmation_seed_distribution,
+        "paired_confirmation_comparisons": paired_comparisons,
+        "hard_training_comparison": hard_comparison,
+        "time_training_throughput": time_throughput,
+        "resource_summary": resources,
+        "simple_environment_sanity": simple_sanity,
         "historical_checkpoint_count": len(inventory),
         "compatible_historical_checkpoint_count": compatible_history,
         "card_encoding_microbenchmark": dict(card_microbenchmark),
         "model_resource_benchmarks": [dict(result) for result in model_resources],
-        "oracle_results": [dict(result) for result in oracle_results],
+        "oracle_results": oracle_summary,
         "recommendations": recommendations,
     }
     _write_json(manifest.output_path / "summary.json", payload)
@@ -1960,6 +2294,12 @@ def write_suite_report(
         "",
         "The primary ranking uses identical environment-transition budgets. "
         "The equal-time ranking is separate and includes only isolated finalist runs.",
+        "",
+        f"Screening budget: {manifest.screen_transition_budget:,} transitions; "
+        f"confirmation/hard budget: {manifest.confirmation_transition_budget:,} "
+        f"transitions; isolated budget: {manifest.time_budget_seconds:.0f} seconds. "
+        "Combat-level Wilson intervals do not replace the separate training-seed "
+        "spread shown below.",
         "",
     ]
     for stage, title in (
@@ -1975,15 +2315,33 @@ def write_suite_report(
             continue
         lines.extend(
             (
-                "| Rank | Variant | Macro win | Worst cell | Mean damage | Mean HP |",
-                "|---:|---|---:|---:|---:|---:|",
+                "| Rank | Variant | Macro win | 95% combat CI | Worst cell | Mean damage | Mean HP |",
+                "|---:|---|---:|---:|---:|---:|---:|",
             )
         )
         for rank, score in enumerate(scores, start=1):
             lines.append(
                 f"| {rank} | {score.variant} | {score.macro_win_rate:.3f} | "
+                f"{score.win_rate_interval[0]:.3f}–{score.win_rate_interval[1]:.3f} | "
                 f"{score.worst_cell_win_rate:.3f} | "
                 f"{score.mean_damage_taken:.2f} | {score.mean_player_hp:.2f} |"
+            )
+        lines.append("")
+    lines.extend(("## Random and heuristic references", ""))
+    if references:
+        lines.extend(
+            (
+                "| Policy | Win rate | 95% combat CI | Mean damage | Mean HP |",
+                "|---|---:|---:|---:|---:|",
+            )
+        )
+        for summary in references:
+            interval = summary["win_rate_interval"]
+            lines.append(
+                f"| {summary['variant']} | {summary['win_rate']:.3f} | "
+                f"{interval[0]:.3f}–{interval[1]:.3f} | "
+                f"{summary['mean_damage_taken']:.2f} | "
+                f"{summary['mean_player_hp']:.2f} |"
             )
         lines.append("")
     lines.extend(("## Deck transfer", ""))
@@ -2001,6 +2359,110 @@ def write_suite_report(
                 f"{summary['generalization_gap']:.3f} |"
             )
         lines.append("")
+    lines.extend(("## Easy versus hard encounters", ""))
+    lines.extend(
+        (
+            "| Variant | Group | Win rate | Mean damage |",
+            "|---|---|---:|---:|",
+        )
+    )
+    for summary in confirmation_difficulty:
+        lines.append(
+            f"| {summary['variant']} | {summary['difficulty']} | "
+            f"{summary['win_rate']:.3f} | {summary['mean_damage_taken']:.2f} |"
+        )
+    lines.append("")
+
+    lines.extend(("## Confirmation training-seed spread", ""))
+    lines.extend(
+        (
+            "| Variant | Mean | Median | Min | Max | Spread |",
+            "|---|---:|---:|---:|---:|---:|",
+        )
+    )
+    for summary in confirmation_seed_distribution:
+        lines.append(
+            f"| {summary['variant']} | {summary['mean_win_rate']:.3f} | "
+            f"{summary['median_win_rate']:.3f} | {summary['min_win_rate']:.3f} | "
+            f"{summary['max_win_rate']:.3f} | {summary['spread']:.3f} |"
+        )
+    lines.append("")
+
+    lines.extend(("## Paired confirmation differences", ""))
+    if paired_comparisons:
+        lines.extend(
+            (
+                "| Leader | Competitor | Paired episodes | Win difference | 95% paired CI | Damage difference |",
+                "|---|---|---:|---:|---:|---:|",
+            )
+        )
+        for comparison in paired_comparisons:
+            interval = comparison["win_difference_95_interval"]
+            lines.append(
+                f"| {comparison['leader']} | {comparison['competitor']} | "
+                f"{comparison['paired_episodes']} | "
+                f"{comparison['mean_win_difference']:+.3f} | "
+                f"{interval[0]:+.3f}–{interval[1]:+.3f} | "
+                f"{comparison['mean_damage_difference']:+.2f} |"
+            )
+        lines.append("")
+
+    lines.extend(("## Hard-pool training effect", ""))
+    lines.extend(
+        (
+            "Positive win differences favor hard-pool training; positive damage differences mean more damage was taken.",
+            "",
+            "| Variant | Evaluation group | Easy-trained win | Hard-trained win | Difference | Damage difference |",
+            "|---|---|---:|---:|---:|---:|",
+        )
+    )
+    for comparison in hard_comparison:
+        lines.append(
+            f"| {comparison['variant']} | {comparison['difficulty']} | "
+            f"{comparison['easy_trained_win_rate']:.3f} | "
+            f"{comparison['hard_trained_win_rate']:.3f} | "
+            f"{comparison['win_rate_difference']:+.3f} | "
+            f"{comparison['mean_damage_difference']:+.2f} |"
+        )
+    lines.append("")
+
+    lines.extend(("## Exclusive-time throughput", ""))
+    lines.extend(
+        (
+            "| Variant | Deck | Transitions | Updates | Checkpoint time (s) | Transitions/s | CPU seconds |",
+            "|---|---|---:|---:|---:|---:|---:|",
+        )
+    )
+    for result in time_throughput:
+        lines.append(
+            f"| {result['variant']} | {result['deck']} | "
+            f"{result['environment_steps']:,} | {result['optimization_steps']:,} | "
+            f"{result.get('checkpoint_training_seconds', result['training_elapsed_seconds']):.3f} | "
+            f"{result['transitions_per_second']:.1f} | "
+            f"{result.get('training_cpu_seconds', 0.0):.1f} |"
+        )
+    lines.append("")
+
+    lines.extend(("## Model resources and inference", ""))
+    lines.extend(
+        (
+            "Medians combine the two screening-deck checkpoints for each variant.",
+            "",
+            "| Variant | Parameters | Q states | Checkpoint MiB | Batch 1 µs/item | Batch 32 µs/item | Batch 256 µs/item |",
+            "|---|---:|---:|---:|---:|---:|---:|",
+        )
+    )
+    for resource in resources:
+        latency = resource["inference_seconds_per_observation"]
+        lines.append(
+            f"| {resource['variant']} | "
+            f"{resource['parameter_count'] if resource['parameter_count'] is not None else '—'} | "
+            f"{resource['q_table_size'] if resource['q_table_size'] is not None else '—'} | "
+            f"{resource['checkpoint_size_bytes'] / (1024 * 1024):.2f} | "
+            f"{latency['1'] * 1e6:.2f} | {latency['32'] * 1e6:.2f} | "
+            f"{latency['256'] * 1e6:.2f} |"
+        )
+    lines.append("")
     lines.extend(
         (
             "## Card records",
@@ -2008,6 +2470,45 @@ def write_suite_report(
             "`card_records_v1` is a computational representation experiment only. "
             "It is not connected to a trainable policy, so this report deliberately "
             "does not assign it a win rate.",
+            "",
+            f"Corpus observations: {card_microbenchmark.get('observations', 0):,}; "
+            f"learnable parameters: {card_microbenchmark.get('learnable_parameters', 0):,}; "
+            f"sample tensor bytes: {card_microbenchmark.get('sample_tensor_bytes', 0):,}.",
+            "",
+            "| Batch | Shared encoder µs/observation |",
+            "|---:|---:|",
+        )
+    )
+    for batch in ("1", "32", "256"):
+        seconds = card_microbenchmark.get("encoder_seconds_per_observation", {}).get(
+            batch, 0.0
+        )
+        lines.append(f"| {batch} | {seconds * 1e6:.2f} |")
+    projected_growth = card_microbenchmark.get("projected_legacy_growth", {})
+    lines.extend(
+        (
+            "",
+            "Legacy projected widths after +10/+50/+100 cards: "
+            + ", ".join(
+                f"{count}: obs {projected_growth.get(count, {}).get('observation_width', '—')}, "
+                f"action {projected_growth.get(count, {}).get('action_feature_width', '—')}"
+                for count in ("10", "50", "100")
+            )
+            + ". The card-record tensor dimensions remain fixed under the synthetic "
+            "append-only registry test.",
+            "",
+            "## Simple-environment sanity check",
+            "",
+            "The `simple` encounter is intentionally excluded from multi-enemy "
+            "leaderboards because its observation/action layout differs. Separate "
+            "seeded heuristic smoke runs passed for both decks.",
+            "",
+            "## Bounded oracle diagnostics",
+            "",
+            f"Completed {oracle_summary['complete_cases']} cases: "
+            f"{oracle_summary['proven_cases']} proven and "
+            f"{oracle_summary['resource_limited_cases']} stopped at a resource bound. "
+            "Resource-limited results are not presented as exact regret proofs.",
             "",
             "## Historical checkpoints",
             "",
@@ -2206,6 +2707,12 @@ def run_full_benchmark_suite(
     oracle_results = (
         run_bounded_oracle_diagnostics(manifest, hard_specs, hard_rows)
         if "oracle" in stages
+        else tuple(
+            json.loads(
+                (output / "oracle" / "index.json").read_text(encoding="utf-8")
+            )["results"]
+        )
+        if (output / "oracle" / "index.json").is_file()
         else ()
     )
     report = (

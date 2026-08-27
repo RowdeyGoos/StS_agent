@@ -871,6 +871,8 @@ slow.
   combat-seed grid
 - make every trainer accept optional transition and active-training-time limits
   while preserving episode-driven behavior when limits are absent
+- retain and timestamp the latest optimizer state completed at or before an
+  equal-time cutoff, rolling back a near-boundary update that finishes late
 - keep `card_records_v1` to computational benchmarks until policy integration
   exists
 

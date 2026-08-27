@@ -101,6 +101,7 @@ class TrainingResult:
     optimization_steps: int = 0
     training_elapsed_seconds: float = 0.0
     training_cpu_seconds: float = 0.0
+    checkpoint_training_seconds: float = 0.0
     stop_reason: TrainingStopReason = "episodes"
 
     def as_dict(self) -> dict[str, Any]:
@@ -113,6 +114,7 @@ class TrainingResult:
             "optimization_steps": self.optimization_steps,
             "training_elapsed_seconds": self.training_elapsed_seconds,
             "training_cpu_seconds": self.training_cpu_seconds,
+            "checkpoint_training_seconds": self.checkpoint_training_seconds,
             "stop_reason": self.stop_reason,
             "final_evaluation": self.final_evaluation.as_dict(),
             "evaluation_points": [
@@ -580,6 +582,7 @@ def train_q_learning(
     evaluations: list[EvaluationSnapshot] = []
     training_started_at = perf_counter()
     training_cpu_started_at = process_time()
+    checkpoint_training_seconds = 0.0
     env = template_env
     total_environment_steps = 0
     stop_reason: TrainingStopReason = "episodes"
@@ -621,6 +624,7 @@ def train_q_learning(
                     next_action_mask=next_mask,
                     done=done,
                 )
+                checkpoint_training_seconds = perf_counter() - training_started_at
             state = next_state
             if exhausted is not None:
                 stop_reason = exhausted
@@ -702,6 +706,7 @@ def train_q_learning(
         optimization_steps=0,
         training_elapsed_seconds=training_elapsed_seconds,
         training_cpu_seconds=training_cpu_seconds,
+        checkpoint_training_seconds=checkpoint_training_seconds,
         stop_reason=stop_reason,
     )
 

@@ -41,6 +41,7 @@ def test_q_learning_stops_at_exact_transition_budget() -> None:
     assert result.stop_reason == "environment_steps"
     assert result.training_elapsed_seconds >= 0.0
     assert result.training_cpu_seconds >= 0.0
+    assert result.checkpoint_training_seconds <= result.training_elapsed_seconds
 
 
 def test_dqn_stops_at_exact_transition_budget() -> None:
@@ -63,6 +64,7 @@ def test_dqn_stops_at_exact_transition_budget() -> None:
     assert result.stop_reason == "environment_steps"
     assert result.optimization_steps > 0
     assert result.training_cpu_seconds >= 0.0
+    assert result.checkpoint_training_seconds <= result.training_elapsed_seconds
 
 
 def test_ppo_stops_on_aligned_optimizer_boundary() -> None:
@@ -85,6 +87,7 @@ def test_ppo_stops_on_aligned_optimizer_boundary() -> None:
     assert result.stop_reason == "environment_steps"
     assert result.optimization_steps == 4
     assert result.training_cpu_seconds >= 0.0
+    assert result.checkpoint_training_seconds <= result.training_elapsed_seconds
 
 
 def test_time_budget_can_stop_before_one_episode_finishes() -> None:

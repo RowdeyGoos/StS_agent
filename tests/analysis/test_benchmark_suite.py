@@ -156,6 +156,16 @@ def test_report_markdown_is_deterministic(tmp_path: Path) -> None:
     assert (manifest_a.output_path / "report.md").read_bytes() == (
         manifest_b.output_path / "report.md"
     ).read_bytes()
+    report = (manifest_a.output_path / "report.md").read_text(encoding="utf-8")
+    assert "Confirmation training-seed spread" in report
+    assert "Hard-pool training effect" in report
+    assert "Model resources and inference" in report
+    assert "Bounded oracle diagnostics" in report
+    summary = json.loads(
+        (manifest_a.output_path / "summary.json").read_text(encoding="utf-8")
+    )
+    assert summary["simple_environment_sanity"]["status"] == "passed"
+    assert "hard_training_comparison" in summary
 
 
 def test_card_microbenchmark_exposes_kernel_limitations(tmp_path: Path) -> None:

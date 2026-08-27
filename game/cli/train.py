@@ -630,6 +630,10 @@ def build_run_metadata(
             float(getattr(result, "training_cpu_seconds", 0.0)),
             6,
         ),
+        "checkpoint_training_seconds": round(
+            float(getattr(result, "checkpoint_training_seconds", 0.0)),
+            6,
+        ),
         "training_stop_reason": str(getattr(result, "stop_reason", "episodes")),
         "best_evaluation_episode": (
             None if best_evaluation is None else int(best_evaluation.episode)

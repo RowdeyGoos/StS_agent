@@ -119,6 +119,7 @@ class PPOTrainingResult:
     environment_steps: int = 0
     training_elapsed_seconds: float = 0.0
     training_cpu_seconds: float = 0.0
+    checkpoint_training_seconds: float = 0.0
     stop_reason: TrainingStopReason = "episodes"
 
     def as_dict(self) -> dict[str, Any]:
@@ -129,6 +130,7 @@ class PPOTrainingResult:
             "environment_steps": self.environment_steps,
             "training_elapsed_seconds": self.training_elapsed_seconds,
             "training_cpu_seconds": self.training_cpu_seconds,
+            "checkpoint_training_seconds": self.checkpoint_training_seconds,
             "stop_reason": self.stop_reason,
             "num_envs": self.num_envs,
             "env_workers": self.env_workers,
@@ -1065,6 +1067,7 @@ if torch is not None and nn is not None and optim is not None:
         optimization_steps = 0
         training_started_at = perf_counter()
         training_cpu_started_at = process_time()
+        checkpoint_training_seconds = 0.0
         best_evaluation: EvaluationSnapshot | None = None
         best_policy_state: dict[str, Tensor] | None = None
         best_optimizer_state: dict[str, Any] | None = None
@@ -1434,6 +1437,7 @@ if torch is not None and nn is not None and optim is not None:
                 mean_value_losses.append(mean_value_loss)
                 mean_entropies.append(mean_entropy)
                 optimization_steps += update_steps
+                checkpoint_training_seconds = elapsed_after_update
 
             exhausted = budget.stop_reason(
                 environment_steps=total_environment_steps,
@@ -1504,6 +1508,7 @@ if torch is not None and nn is not None and optim is not None:
             environment_steps=total_environment_steps,
             training_elapsed_seconds=training_elapsed_seconds,
             training_cpu_seconds=training_cpu_seconds,
+            checkpoint_training_seconds=checkpoint_training_seconds,
             stop_reason=stop_reason,
         )
 

@@ -14,8 +14,10 @@ because contention changes elapsed time, not training experience.
 
 The time-to-result leaderboard is secondary. It reruns only the four confirmed
 finalists, one at a time, for 900 active training seconds. Evaluation and
-artifact serialization are outside that timer. Historical checkpoints retain
-their original budgets and never enter either controlled leaderboard.
+artifact serialization are outside that timer. The run records both the timer
+cutoff and the precise elapsed time of the retained optimizer state; an update
+that crosses the cutoff is rolled back. Historical checkpoints retain their
+original budgets and never enter either controlled leaderboard.
 
 ## Running The Campaign
 
@@ -78,14 +80,17 @@ The suite produces:
 - raw per-episode JSONL
 - per-stage JSON and CSV rankings
 - model resource and card-encoding microbenchmarks
+- explicit simple-environment sanity results
 - finalist selections
 - bounded oracle diagnostics
 - `summary.json`
 - `report.md`
 
 The robust ranking orders macro win rate first, then the worst deck/encounter
-cell, damage taken, remaining HP, reward, and stable variant name. Wilson win-rate
-intervals and paired combat-seed differences remain available in the report data.
+cell, damage taken, remaining HP, reward, and stable variant name. The Markdown
+report and JSON include Wilson win-rate intervals, training-seed spread, paired
+combat-seed differences, easy/hard and deck-transfer views, hard-vs-easy-pool
+comparisons, throughput, checkpoint/model size, and batched inference latency.
 
 `card_records_v1` is measured for extraction, tensorization, inference cost,
 memory, gradients, invariance, and append-only dimension stability. It is not
