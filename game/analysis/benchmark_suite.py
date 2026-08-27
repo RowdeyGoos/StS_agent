@@ -1402,11 +1402,39 @@ def run_card_encoding_microbenchmark(
     encoder = SharedCardEncoder()
     encoder.eval()
     parameter_count = sum(parameter.numel() for parameter in encoder.parameters())
+    legacy_latency: dict[str, float] = {}
+    extraction_latency: dict[str, float] = {}
+    tensorization_latency: dict[str, float] = {}
     latency: dict[str, float] = {}
     for batch_size in (1, 32, 256):
+        batch_corpus = tuple(
+            corpus[index % len(corpus)] for index in range(batch_size)
+        )
+        batch_observations = tuple(observation for _env, observation in batch_corpus)
         batch_records = tuple(
             records[index % len(records)] for index in range(batch_size)
         )
+        legacy_latency[str(batch_size)] = _median_seconds(
+            lambda batch_corpus=batch_corpus: [
+                env.encode_observation(observation)
+                for env, observation in batch_corpus
+            ],
+            repeats=10,
+        ) / batch_size
+        extraction_latency[str(batch_size)] = _median_seconds(
+            lambda batch_observations=batch_observations: [
+                extract_card_zone_records(observation)
+                for observation in batch_observations
+            ],
+            repeats=10,
+        ) / batch_size
+        tensorization_latency[str(batch_size)] = _median_seconds(
+            lambda batch_records=batch_records: tensorize_card_zone_records(
+                batch_records,
+                device="cpu",
+            ),
+            repeats=10,
+        ) / batch_size
         tensors = tensorize_card_zone_records(batch_records, device="cpu")
         with torch.no_grad():
             encoder(tensors)
@@ -1448,6 +1476,34 @@ def run_card_encoding_microbenchmark(
             permuted_pile_output.pile_embeddings,
             atol=1e-6,
         )
+    )
+    count_sensitive_tensors = type(sample_tensors)(
+        hand_ids=sample_tensors.hand_ids,
+        hand_mask=sample_tensors.hand_mask,
+        pile_ids=sample_tensors.pile_ids,
+        pile_counts=sample_tensors.pile_counts.clone(),
+        pile_mask=sample_tensors.pile_mask,
+    )
+    first_count_index = tuple(
+        int(value) for value in count_sensitive_tensors.pile_mask.nonzero()[0]
+    )
+    count_sensitive_tensors.pile_counts[first_count_index] += 1
+    with torch.no_grad():
+        count_sensitive_output = encoder(count_sensitive_tensors)
+    pile_count_sensitive = not bool(
+        torch.allclose(
+            encoded.pile_embeddings,
+            count_sensitive_output.pile_embeddings,
+            atol=1e-6,
+        )
+    )
+    padding_zero = bool(
+        torch.count_nonzero(
+            encoded.hand_embeddings.masked_select(
+                (~sample_tensors.hand_mask).unsqueeze(-1)
+            )
+        )
+        == 0
     )
 
     hand_permutation = torch.arange(sample_tensors.hand_ids.shape[1] - 1, -1, -1)
@@ -1513,10 +1569,15 @@ def run_card_encoding_microbenchmark(
         "legacy_seconds_total": legacy_elapsed,
         "record_extraction_seconds_total": extraction_elapsed,
         "record_tensorization_seconds_total": tensorization_elapsed,
+        "legacy_seconds_per_observation": legacy_latency,
+        "record_extraction_seconds_per_observation": extraction_latency,
+        "record_tensorization_seconds_per_observation": tensorization_latency,
         "encoder_seconds_per_observation": latency,
         "sample_tensor_bytes": tensor_bytes,
         "pile_permutation_invariant": pile_invariant,
+        "pile_count_sensitive": pile_count_sensitive,
         "hand_slot_equivariant": hand_equivariant,
+        "padding_zero": padding_zero,
         "gradient_nonzero": gradient_nonzero,
         "synthetic_append_dimension_stable": synthetic_dimension_stable,
         "current_legacy_observation_width": reference_env.observation_size,
@@ -2427,6 +2488,19 @@ def write_suite_report(
     lines.append("")
 
     lines.extend(("## Exclusive-time throughput", ""))
+    if (
+        manifest.output_path
+        / "superseded"
+        / "time-stage-before-checkpoint-timestamp"
+    ).is_dir():
+        lines.extend(
+            (
+                "The initial timing pass is preserved under `superseded/` for audit. "
+                "It is excluded from every aggregate below; the current runs record "
+                "the precise retained optimizer-state time.",
+                "",
+            )
+        )
     lines.extend(
         (
             "| Variant | Deck | Transitions | Updates | Checkpoint time (s) | Transitions/s | CPU seconds |",
@@ -2437,7 +2511,7 @@ def write_suite_report(
         lines.append(
             f"| {result['variant']} | {result['deck']} | "
             f"{result['environment_steps']:,} | {result['optimization_steps']:,} | "
-            f"{result.get('checkpoint_training_seconds', result['training_elapsed_seconds']):.3f} | "
+            f"{result.get('checkpoint_training_seconds', result['training_elapsed_seconds']):.6f} | "
             f"{result['transitions_per_second']:.1f} | "
             f"{result.get('training_cpu_seconds', 0.0):.1f} |"
         )
@@ -2475,15 +2549,29 @@ def write_suite_report(
             f"learnable parameters: {card_microbenchmark.get('learnable_parameters', 0):,}; "
             f"sample tensor bytes: {card_microbenchmark.get('sample_tensor_bytes', 0):,}.",
             "",
-            "| Batch | Shared encoder µs/observation |",
-            "|---:|---:|",
+            "| Batch | Legacy encode µs/obs | Record extraction µs/obs | Tensorization µs/obs | Shared forward µs/obs |",
+            "|---:|---:|---:|---:|---:|",
         )
     )
     for batch in ("1", "32", "256"):
-        seconds = card_microbenchmark.get("encoder_seconds_per_observation", {}).get(
-            batch, 0.0
+        legacy_seconds = card_microbenchmark.get(
+            "legacy_seconds_per_observation", {}
+        ).get(batch, 0.0)
+        extraction_seconds = card_microbenchmark.get(
+            "record_extraction_seconds_per_observation", {}
+        ).get(batch, 0.0)
+        tensorization_seconds = card_microbenchmark.get(
+            "record_tensorization_seconds_per_observation", {}
+        ).get(batch, 0.0)
+        encoder_seconds = card_microbenchmark.get(
+            "encoder_seconds_per_observation", {}
+        ).get(batch, 0.0)
+        lines.append(
+            f"| {batch} | {legacy_seconds * 1e6:.2f} | "
+            f"{extraction_seconds * 1e6:.2f} | "
+            f"{tensorization_seconds * 1e6:.2f} | "
+            f"{encoder_seconds * 1e6:.2f} |"
         )
-        lines.append(f"| {batch} | {seconds * 1e6:.2f} |")
     projected_growth = card_microbenchmark.get("projected_legacy_growth", {})
     lines.extend(
         (
@@ -2495,7 +2583,9 @@ def write_suite_report(
                 for count in ("10", "50", "100")
             )
             + ". The card-record tensor dimensions remain fixed under the synthetic "
-            "append-only registry test.",
+            "append-only registry test. Pile permutation invariance, count "
+            "sensitivity, zero padding, hand-slot equivariance, and gradient flow "
+            "all passed.",
             "",
             "## Simple-environment sanity check",
             "",

@@ -178,6 +178,13 @@ def test_card_microbenchmark_exposes_kernel_limitations(tmp_path: Path) -> None:
     )
     result = suite.run_card_encoding_microbenchmark(manifest)
     assert result["pile_permutation_invariant"] is True
+    assert result["pile_count_sensitive"] is True
     assert result["hand_slot_equivariant"] is True
+    assert result["padding_zero"] is True
     assert result["synthetic_append_dimension_stable"] is True
     assert result["policy_win_rate_comparison_available"] is False
+    assert set(result["record_extraction_seconds_per_observation"]) == {
+        "1",
+        "32",
+        "256",
+    }
