@@ -21,6 +21,7 @@ The current codebase already supports:
 - named deck selection and provenance across training and inspection tools
 - opt-in shared-enemy PPO and DQN-family neural architectures
 - an experimental fixed-capacity semantic card-record kernel
+- a resumable equal-transition/equal-time full-system benchmark campaign
 
 ## Main Gameplay Model
 
@@ -343,6 +344,19 @@ and can write a timestamp-free versioned JSON report containing the complete
 `EvaluationStats.as_dict()` payload. Benchmark format version 2 records the
 required named deck; version 1 is interpreted as the starter deck. Cross-deck
 checkpoint evaluation is allowed when dimensions and architecture layouts match.
+
+`sts-benchmark-suite` orchestrates the larger controlled research campaign. It
+uses exact transition budgets for the primary ranking, runs independent training
+cells in at most three bounded subprocesses, evaluates both named decks over one
+common fixed-seed grid, and selects confirmation and hard-pool finalists from a
+deterministic robust score. The secondary equal-time runs are isolated so process
+contention cannot become an accidental model advantage. Per-cell artifacts and
+stable run IDs make the campaign resumable after interruption.
+
+The suite also catalogs representation-compatible historical checkpoints and
+benchmarks the experimental card-record kernel. Historical budgets remain
+context only, and card records receive no win rate until a future trainer path
+actually consumes them.
 
 `sts-watch` is the one-episode inspection entry point for:
 

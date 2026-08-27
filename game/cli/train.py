@@ -127,6 +127,24 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Training episodes for q_learning or evaluation episodes otherwise.",
     )
     parser.add_argument(
+        "--max-environment-steps",
+        type=int,
+        default=None,
+        help=(
+            "Optional active-training transition budget for trainable policies. "
+            "The episode count remains a safety ceiling."
+        ),
+    )
+    parser.add_argument(
+        "--max-training-seconds",
+        type=float,
+        default=None,
+        help=(
+            "Optional active-training wall-time budget in seconds, excluding "
+            "final evaluation and artifact writing."
+        ),
+    )
+    parser.add_argument(
         "--eval-episodes",
         type=int,
         default=100,
@@ -596,8 +614,23 @@ def build_run_metadata(
         "completed_at": _format_utc_timestamp(completed_at),
         "duration_seconds": round(perf_counter() - started_perf_counter, 6),
         "episodes_completed": len(result.training_metrics),
-        "environment_steps": sum(metric.steps for metric in result.training_metrics),
+        "environment_steps": int(
+            getattr(
+                result,
+                "environment_steps",
+                sum(metric.steps for metric in result.training_metrics),
+            )
+        ),
         "optimization_steps": int(getattr(result, "optimization_steps", 0)),
+        "training_elapsed_seconds": round(
+            float(getattr(result, "training_elapsed_seconds", 0.0)),
+            6,
+        ),
+        "training_cpu_seconds": round(
+            float(getattr(result, "training_cpu_seconds", 0.0)),
+            6,
+        ),
+        "training_stop_reason": str(getattr(result, "stop_reason", "episodes")),
         "best_evaluation_episode": (
             None if best_evaluation is None else int(best_evaluation.episode)
         ),
@@ -625,12 +658,18 @@ def build_training_summary(
     summary = _json_safe(result.as_dict())
     assert isinstance(summary, dict)
     summary["training_aggregate"] = {
-        "mean_reward": mean(metric.total_reward for metric in metrics),
-        "win_rate": mean(1.0 if metric.win else 0.0 for metric in metrics),
-        "mean_steps": mean(metric.steps for metric in metrics),
-        "mean_player_hp": mean(metric.player_hp for metric in metrics),
+        "mean_reward": _mean_or_zero(metric.total_reward for metric in metrics),
+        "win_rate": _mean_or_zero(1.0 if metric.win else 0.0 for metric in metrics),
+        "mean_steps": _mean_or_zero(metric.steps for metric in metrics),
+        "mean_player_hp": _mean_or_zero(metric.player_hp for metric in metrics),
     }
     return summary
+
+
+def _mean_or_zero(values: Any) -> float:
+    """Return a mean for possibly empty budget-truncated training metrics."""
+    collected = tuple(values)
+    return mean(collected) if collected else 0.0
 
 
 def _json_safe(value: Any) -> Any:
@@ -812,8 +851,8 @@ def print_training_summary(result: TrainingResult) -> None:
     print(
         "Q-learning training: "
         f"episodes={len(result.training_metrics)} "
-        f"mean_train_reward={mean(training_rewards):.3f} "
-        f"train_win_rate={mean(training_wins):.3f} "
+        f"mean_train_reward={_mean_or_zero(training_rewards):.3f} "
+        f"train_win_rate={_mean_or_zero(training_wins):.3f} "
         f"final_epsilon={result.agent.epsilon:.3f} "
         f"q_table_size={len(result.agent.q_table)}"
     )
@@ -831,8 +870,8 @@ def print_deep_value_summary(label: str, result: DQNTrainingResult) -> None:
     print(
         f"{label} training: "
         f"episodes={len(result.training_metrics)} "
-        f"mean_train_reward={mean(training_rewards):.3f} "
-        f"train_win_rate={mean(training_wins):.3f} "
+        f"mean_train_reward={_mean_or_zero(training_rewards):.3f} "
+        f"train_win_rate={_mean_or_zero(training_wins):.3f} "
         f"mean_loss={mean_loss:.5f} "
         f"final_epsilon={result.agent.epsilon:.3f} "
         f"architecture={result.agent.architecture} "
@@ -861,8 +900,8 @@ def print_ppo_summary(result: PPOTrainingResult) -> None:
     print(
         "Masked PPO training: "
         f"episodes={len(result.training_metrics)} "
-        f"mean_train_reward={mean(training_rewards):.3f} "
-        f"train_win_rate={mean(training_wins):.3f} "
+        f"mean_train_reward={_mean_or_zero(training_rewards):.3f} "
+        f"train_win_rate={_mean_or_zero(training_wins):.3f} "
         f"mean_total_loss={mean_total_loss:.5f} "
         f"mean_policy_loss={mean_policy_loss:.5f} "
         f"mean_value_loss={mean_value_loss:.5f} "
@@ -955,6 +994,18 @@ def main() -> None:
 
     if args.save_agent is not None and args.output_dir is not None:
         raise SystemExit("--save-agent and --output-dir cannot be used together.")
+    if args.max_environment_steps is not None and args.max_environment_steps <= 0:
+        raise SystemExit("--max-environment-steps must be positive.")
+    if args.max_training_seconds is not None and args.max_training_seconds <= 0.0:
+        raise SystemExit("--max-training-seconds must be positive.")
+    if (
+        args.policy in {"random", "heuristic", "compare"}
+        and (args.max_environment_steps is not None or args.max_training_seconds is not None)
+    ):
+        raise SystemExit(
+            "Training budgets require q_learning, dqn, double_dqn, "
+            "dueling_double_dqn, or masked_ppo."
+        )
     if (args.profile_training or args.profile_out is not None) and args.policy != "masked_ppo":
         raise SystemExit("Training phase profiling currently supports --policy masked_ppo.")
     saves_training_artifacts = args.save_agent is not None or args.output_dir is not None
@@ -1019,6 +1070,8 @@ def main() -> None:
             progress_callback=progress_reporter,
             progress_interval=args.progress_interval,
             progress_window=args.progress_window,
+            max_environment_steps=args.max_environment_steps,
+            max_training_seconds=args.max_training_seconds,
         )
         print_training_summary(result)
         if saves_training_artifacts:
@@ -1065,6 +1118,8 @@ def main() -> None:
                 progress_callback=progress_reporter,
                 progress_interval=args.progress_interval,
                 progress_window=args.progress_window,
+                max_environment_steps=args.max_environment_steps,
+                max_training_seconds=args.max_training_seconds,
             )
         except ModuleNotFoundError as exc:
             if args.policy == "dqn":
@@ -1117,6 +1172,8 @@ def main() -> None:
                 progress_callback=progress_reporter,
                 progress_interval=args.progress_interval,
                 progress_window=args.progress_window,
+                max_environment_steps=args.max_environment_steps,
+                max_training_seconds=args.max_training_seconds,
             )
         except ModuleNotFoundError as exc:
             if args.policy == "double_dqn":
@@ -1190,6 +1247,8 @@ def main() -> None:
                 progress_callback=progress_reporter,
                 progress_interval=args.progress_interval,
                 progress_window=args.progress_window,
+                max_environment_steps=args.max_environment_steps,
+                max_training_seconds=args.max_training_seconds,
             )
         except ModuleNotFoundError as exc:
             print(f"Dueling Double DQN unavailable: {exc}")
@@ -1246,6 +1305,8 @@ def main() -> None:
                 progress_callback=progress_reporter,
                 progress_interval=args.progress_interval,
                 progress_window=args.progress_window,
+                max_environment_steps=args.max_environment_steps,
+                max_training_seconds=args.max_training_seconds,
             )
         except ModuleNotFoundError as exc:
             print(f"Masked PPO unavailable: {exc}")

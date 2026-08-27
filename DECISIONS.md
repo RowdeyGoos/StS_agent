@@ -850,3 +850,36 @@ trainer, replay, and checkpoint risks in one change.
 - semantic sharing supports transfer while learned identity preserves unique cards
 - existing models remain `legacy_flat`; later policy integration is an explicit
   retraining boundary rather than an unsafe automatic conversion
+
+## D36. Separate Equal-Experience Rankings From Equal-Time Diagnostics
+
+### Context
+
+Comparing model families after different episode counts mixes policy quality with
+episode length and training budget. Running every model sequentially for the same
+wall time is fair but makes a broad multi-seed, multi-deck campaign unnecessarily
+slow.
+
+### Decision
+
+- use identical environment-transition counts for the primary model ranking
+- allow those independent transition-controlled runs to train in up to three
+  bounded subprocesses
+- rerun only confirmed finalists under one-at-a-time wall-time budgets
+- keep historical checkpoints with different budgets in a contextual inventory
+- evaluate both named decks and every fixed multi-enemy encounter on one shared
+  combat-seed grid
+- make every trainer accept optional transition and active-training-time limits
+  while preserving episode-driven behavior when limits are absent
+- keep `card_records_v1` to computational benchmarks until policy integration
+  exists
+
+### Why
+
+- transitions compare sample efficiency without episode-length bias
+- isolated time runs compare practical throughput without process contention
+- staged selection keeps the complete campaign feasible on one CPU workstation
+- separate leaderboards prevent a fast implementation from being confused with a
+  data-efficient learner
+- resumable per-cell artifacts make a multi-hour experiment auditable and safe to
+  continue after interruption

@@ -8,6 +8,7 @@ import game
 from game.agents import ppo
 from game.analysis import benchmark, bruteforce
 from game.cli import benchmark as benchmark_cli
+from game.cli import benchmark_suite as benchmark_suite_cli
 from game.cli import brute_force, sweep, train, watch_policy
 from game.simulation import core
 from game.training import profile
@@ -27,6 +28,9 @@ def test_packaged_cli_modules_are_directly_usable() -> None:
     assert benchmark_cli.parse_args(["--encounter", "simple"]).encounter == [
         "simple"
     ]
+    assert benchmark_suite_cli.parse_args([]).config.endswith(
+        "full_system_benchmark_balanced.json"
+    )
     assert benchmark.BENCHMARK_FORMAT_VERSION == 2
     assert profile.TrainingProfiler is not None
 

@@ -5,11 +5,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from random import Random
 import re
-from time import perf_counter
+from time import perf_counter, process_time
 from typing import Any, Callable, TypeAlias
 
 from ..simulation.action_features import summarize_action
 from ..simulation.core import CombatEnv, Observation
+from ..training.budget import TrainingBudget, TrainingStopReason
 
 StateKey: TypeAlias = tuple[int, ...]
 ActionMask: TypeAlias = tuple[int, ...]
@@ -96,6 +97,11 @@ class TrainingResult:
     training_metrics: tuple[EpisodeMetrics, ...]
     evaluations: tuple[EvaluationSnapshot, ...]
     final_evaluation: EvaluationStats
+    environment_steps: int = 0
+    optimization_steps: int = 0
+    training_elapsed_seconds: float = 0.0
+    training_cpu_seconds: float = 0.0
+    stop_reason: TrainingStopReason = "episodes"
 
     def as_dict(self) -> dict[str, Any]:
         """Return a compact dict representation of the training result."""
@@ -103,6 +109,11 @@ class TrainingResult:
             "episodes": len(self.training_metrics),
             "final_epsilon": self.agent.epsilon,
             "q_table_size": len(self.agent.q_table),
+            "environment_steps": self.environment_steps,
+            "optimization_steps": self.optimization_steps,
+            "training_elapsed_seconds": self.training_elapsed_seconds,
+            "training_cpu_seconds": self.training_cpu_seconds,
+            "stop_reason": self.stop_reason,
             "final_evaluation": self.final_evaluation.as_dict(),
             "evaluation_points": [
                 {"episode": snapshot.episode, **snapshot.stats.as_dict()}
@@ -535,6 +546,8 @@ def train_q_learning(
     progress_callback: ProgressCallback | None = None,
     progress_interval: int = 25,
     progress_window: int = 25,
+    max_environment_steps: int | None = None,
+    max_training_seconds: float | None = None,
 ) -> TrainingResult:
     """Train a masked tabular Q-learning agent and periodically evaluate it."""
     if episodes <= 0:
@@ -547,6 +560,10 @@ def train_q_learning(
         raise ValueError("progress_interval must be positive.")
     if progress_window <= 0:
         raise ValueError("progress_window must be positive.")
+    budget = TrainingBudget(
+        max_environment_steps=max_environment_steps,
+        max_training_seconds=max_training_seconds,
+    )
 
     template_env = env_factory()
     agent = QLearningAgent(
@@ -562,7 +579,11 @@ def train_q_learning(
     training_metrics: list[EpisodeMetrics] = []
     evaluations: list[EvaluationSnapshot] = []
     training_started_at = perf_counter()
+    training_cpu_started_at = process_time()
     env = template_env
+    total_environment_steps = 0
+    stop_reason: TrainingStopReason = "episodes"
+    stopped = False
 
     for episode_index in range(episodes):
         observation = env.reset(seed=_episode_seed(seed, episode_index))
@@ -570,20 +591,44 @@ def train_q_learning(
         done = False
 
         while not done:
+            exhausted = budget.stop_reason(
+                environment_steps=total_environment_steps,
+                elapsed_seconds=perf_counter() - training_started_at,
+            )
+            if exhausted is not None:
+                stop_reason = exhausted
+                stopped = True
+                break
             action_mask = env.get_action_mask()
             action = agent.select_action(state, action_mask, training=True)
             next_observation, reward, done, info = env.step_discrete(action)
+            total_environment_steps += 1
             next_state = agent.encode_state(env, next_observation)
             next_mask = tuple(info["action_mask"])
-            agent.update(
-                state=state,
-                action=action,
-                reward=reward,
-                next_state=next_state,
-                next_action_mask=next_mask,
-                done=done,
+            exhausted = budget.stop_reason(
+                environment_steps=total_environment_steps,
+                elapsed_seconds=perf_counter() - training_started_at,
             )
+            if exhausted == "training_time":
+                stop_reason = exhausted
+                stopped = True
+            else:
+                agent.update(
+                    state=state,
+                    action=action,
+                    reward=reward,
+                    next_state=next_state,
+                    next_action_mask=next_mask,
+                    done=done,
+                )
             state = next_state
+            if exhausted is not None:
+                stop_reason = exhausted
+                stopped = True
+                break
+
+        if not done:
+            break
 
         summary = env.get_episode_summary()
         training_metrics.append(
@@ -628,6 +673,11 @@ def train_q_learning(
             optimization_steps=0,
             recent_losses=None,
         )
+        if stopped:
+            break
+
+    training_elapsed_seconds = perf_counter() - training_started_at
+    training_cpu_seconds = process_time() - training_cpu_started_at
 
     final_evaluation = evaluate_policy(
         env_factory=env_factory,
@@ -648,6 +698,11 @@ def train_q_learning(
         training_metrics=tuple(training_metrics),
         evaluations=tuple(evaluations),
         final_evaluation=final_evaluation,
+        environment_steps=total_environment_steps,
+        optimization_steps=0,
+        training_elapsed_seconds=training_elapsed_seconds,
+        training_cpu_seconds=training_cpu_seconds,
+        stop_reason=stop_reason,
     )
 
 

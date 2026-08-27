@@ -35,6 +35,7 @@ logs/
 runs/
 wandb/
 sweeps/*.journal
+benchmarks/suites/
 
 # Local editor / OS files
 .DS_Store

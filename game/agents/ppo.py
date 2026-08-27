@@ -5,7 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass
 from random import Random
-from time import perf_counter
+from time import perf_counter, process_time
 from typing import Any, Callable, Mapping, Sequence
 
 from .baselines import (
@@ -19,6 +19,7 @@ from .baselines import (
 )
 from ..simulation.core import CombatEnv, Observation
 from .torch_device import resolve_torch_device
+from ..training.budget import TrainingBudget, TrainingStopReason
 from ..training.profile import TrainingProfile, TrainingProfiler, profile_phase
 
 VectorObservation = tuple[float, ...]
@@ -115,12 +116,20 @@ class PPOTrainingResult:
     profile: TrainingProfile | None = None
     best_evaluation: EvaluationSnapshot | None = None
     restored_best_checkpoint: bool = False
+    environment_steps: int = 0
+    training_elapsed_seconds: float = 0.0
+    training_cpu_seconds: float = 0.0
+    stop_reason: TrainingStopReason = "episodes"
 
     def as_dict(self) -> dict[str, Any]:
         """Return a compact summary for loggers and notebooks."""
         return {
             "episodes": len(self.training_metrics),
             "optimization_steps": self.optimization_steps,
+            "environment_steps": self.environment_steps,
+            "training_elapsed_seconds": self.training_elapsed_seconds,
+            "training_cpu_seconds": self.training_cpu_seconds,
+            "stop_reason": self.stop_reason,
             "num_envs": self.num_envs,
             "env_workers": self.env_workers,
             "device": self.agent.device,
@@ -952,6 +961,8 @@ if torch is not None and nn is not None and optim is not None:
         progress_callback: ProgressCallback | None = None,
         progress_interval: int = 25,
         progress_window: int = 25,
+        max_environment_steps: int | None = None,
+        max_training_seconds: float | None = None,
     ) -> PPOTrainingResult:
         """Train a masked PPO agent and periodically evaluate greedy performance."""
         if episodes <= 0:
@@ -976,6 +987,10 @@ if torch is not None and nn is not None and optim is not None:
             raise ValueError("progress_interval must be positive.")
         if progress_window <= 0:
             raise ValueError("progress_window must be positive.")
+        budget = TrainingBudget(
+            max_environment_steps=max_environment_steps,
+            max_training_seconds=max_training_seconds,
+        )
 
         active_environment_count = min(num_envs, episodes)
         with profile_phase(
@@ -1049,6 +1064,7 @@ if torch is not None and nn is not None and optim is not None:
         mean_entropies: list[float] = []
         optimization_steps = 0
         training_started_at = perf_counter()
+        training_cpu_started_at = process_time()
         best_evaluation: EvaluationSnapshot | None = None
         best_policy_state: dict[str, Tensor] | None = None
         best_optimizer_state: dict[str, Any] | None = None
@@ -1079,11 +1095,30 @@ if torch is not None and nn is not None and optim is not None:
         next_episode_index = active_environment_count
         completed_episodes = 0
         collector_cursor = 0
+        total_environment_steps = 0
+        stop_reason: TrainingStopReason = "episodes"
+        stopped = False
+        last_update_seconds = 0.0
 
         while completed_episodes < episodes:
+            exhausted = budget.stop_reason(
+                environment_steps=total_environment_steps,
+                elapsed_seconds=perf_counter() - training_started_at,
+            )
+            if exhausted is not None:
+                stop_reason = exhausted
+                break
             rollout = PPORolloutBuffer()
 
             while len(rollout) < rollout_steps and completed_episodes < episodes:
+                exhausted = budget.stop_reason(
+                    environment_steps=total_environment_steps,
+                    elapsed_seconds=perf_counter() - training_started_at,
+                )
+                if exhausted is not None:
+                    stop_reason = exhausted
+                    stopped = True
+                    break
                 ordered_slots = [
                     (collector_cursor + offset) % active_environment_count
                     for offset in range(active_environment_count)
@@ -1098,6 +1133,18 @@ if torch is not None and nn is not None and optim is not None:
                         "PPO has unfinished episodes but no active environments."
                     )
                 remaining_rollout_steps = rollout_steps - len(rollout)
+                remaining_budget_steps = budget.remaining_environment_steps(
+                    total_environment_steps
+                )
+                if remaining_budget_steps is not None:
+                    remaining_rollout_steps = min(
+                        remaining_rollout_steps,
+                        remaining_budget_steps,
+                    )
+                if remaining_rollout_steps <= 0:
+                    stop_reason = "environment_steps"
+                    stopped = True
+                    break
                 batch_slots = active_slots[:remaining_rollout_steps]
                 collector_cursor = (batch_slots[-1] + 1) % active_environment_count
 
@@ -1206,6 +1253,7 @@ if torch is not None and nn is not None and optim is not None:
                         action_features=action_features,
                         environment_id=environment_id,
                     )
+                    total_environment_steps += 1
 
                     if done:
                         if summary is None:
@@ -1314,6 +1362,11 @@ if torch is not None and nn is not None and optim is not None:
                     ):
                         parallel_pool.reset(pending_parallel_resets)
 
+            if stopped and stop_reason == "training_time":
+                break
+            if len(rollout) == 0:
+                break
+
             bootstrap_slots = [
                 environment_id
                 for environment_id in set(rollout.environment_ids)
@@ -1338,6 +1391,19 @@ if torch is not None and nn is not None and optim is not None:
                 )
             }
 
+            pre_update_policy_state: dict[str, Tensor] | None = None
+            pre_update_optimizer_state: dict[str, Any] | None = None
+            if budget.max_training_seconds is not None:
+                elapsed_before_update = perf_counter() - training_started_at
+                remaining_seconds = (
+                    budget.max_training_seconds - elapsed_before_update
+                )
+                snapshot_window = max(5.0, last_update_seconds * 2.0)
+                if remaining_seconds <= snapshot_window:
+                    pre_update_policy_state = deepcopy(agent.actor_critic.state_dict())
+                    pre_update_optimizer_state = deepcopy(agent.optimizer.state_dict())
+
+            update_started_at = perf_counter()
             (
                 mean_total_loss,
                 mean_policy_loss,
@@ -1349,18 +1415,49 @@ if torch is not None and nn is not None and optim is not None:
                 last_value=bootstrap_values,
                 profiler=profiler,
             )
-            mean_total_losses.append(mean_total_loss)
-            mean_policy_losses.append(mean_policy_loss)
-            mean_value_losses.append(mean_value_loss)
-            mean_entropies.append(mean_entropy)
-            optimization_steps += update_steps
+            last_update_seconds = perf_counter() - update_started_at
+            elapsed_after_update = perf_counter() - training_started_at
+            crossed_time_limit = (
+                budget.max_training_seconds is not None
+                and elapsed_after_update > budget.max_training_seconds
+                and pre_update_policy_state is not None
+                and pre_update_optimizer_state is not None
+            )
+            if crossed_time_limit:
+                agent.actor_critic.load_state_dict(pre_update_policy_state)
+                agent.optimizer.load_state_dict(pre_update_optimizer_state)
+                stop_reason = "training_time"
+                stopped = True
+            else:
+                mean_total_losses.append(mean_total_loss)
+                mean_policy_losses.append(mean_policy_loss)
+                mean_value_losses.append(mean_value_loss)
+                mean_entropies.append(mean_entropy)
+                optimization_steps += update_steps
+
+            exhausted = budget.stop_reason(
+                environment_steps=total_environment_steps,
+                elapsed_seconds=perf_counter() - training_started_at,
+            )
+            if exhausted is not None:
+                stop_reason = exhausted
+                stopped = True
+            if stopped:
+                break
+
+        training_elapsed_seconds = perf_counter() - training_started_at
+        worker_cpu_seconds = 0.0
 
         if parallel_pool is not None:
             parallel_pool.close()
+            worker_cpu_seconds = parallel_pool.worker_cpu_seconds
             if profiler is not None:
                 profiler.add_external_process_cpu_seconds(
-                    parallel_pool.worker_cpu_seconds
+                    worker_cpu_seconds
                 )
+        training_cpu_seconds = (
+            process_time() - training_cpu_started_at + worker_cpu_seconds
+        )
 
         restored_best_checkpoint = False
         if restore_best_checkpoint and best_policy_state is not None and best_optimizer_state is not None:
@@ -1404,6 +1501,10 @@ if torch is not None and nn is not None and optim is not None:
             profile=training_profile,
             best_evaluation=best_evaluation,
             restored_best_checkpoint=restored_best_checkpoint,
+            environment_steps=total_environment_steps,
+            training_elapsed_seconds=training_elapsed_seconds,
+            training_cpu_seconds=training_cpu_seconds,
+            stop_reason=stop_reason,
         )
 
 
