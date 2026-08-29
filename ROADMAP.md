@@ -224,10 +224,16 @@ Completed foundation:
 
 - versioned fixed-seed benchmark reports
 - deterministic comparison tables and JSON output
+- a resumable full-system campaign with parallel equal-transition training,
+  isolated equal-time finalist runs, cross-deck testing, historical checkpoint
+  inventory, card-record microbenchmarks, and deterministic robust rankings
 
 Next:
 
 - optional plotting utilities
+- run the balanced campaign regularly as encounter/card coverage grows and use
+  its paired results to decide whether shared-enemy or card-record policies
+  should become defaults
 
 Why:
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass
 from random import Random
-from time import perf_counter
+from time import perf_counter, process_time
 from typing import Any, Callable, Sequence, TypeAlias
 
 from .baselines import (
@@ -19,6 +19,7 @@ from .baselines import (
     legal_action_indices,
 )
 from ..simulation.core import CombatEnv
+from ..training.budget import TrainingBudget, TrainingStopReason
 from .torch_device import resolve_torch_device
 
 VectorObservation = tuple[float, ...]
@@ -94,6 +95,11 @@ class DQNTrainingResult:
     mean_losses: tuple[float, ...]
     best_evaluation: EvaluationSnapshot | None = None
     restored_best_checkpoint: bool = False
+    environment_steps: int = 0
+    training_elapsed_seconds: float = 0.0
+    training_cpu_seconds: float = 0.0
+    checkpoint_training_seconds: float = 0.0
+    stop_reason: TrainingStopReason = "episodes"
 
     def as_dict(self) -> dict[str, Any]:
         """Return a compact summary for loggers and notebooks."""
@@ -101,6 +107,11 @@ class DQNTrainingResult:
             "episodes": len(self.training_metrics),
             "final_epsilon": self.agent.epsilon,
             "optimization_steps": self.optimization_steps,
+            "environment_steps": self.environment_steps,
+            "training_elapsed_seconds": self.training_elapsed_seconds,
+            "training_cpu_seconds": self.training_cpu_seconds,
+            "checkpoint_training_seconds": self.checkpoint_training_seconds,
+            "stop_reason": self.stop_reason,
             "device": self.agent.device,
             "final_evaluation": self.final_evaluation.as_dict(),
             "best_evaluation": (
@@ -971,6 +982,8 @@ if torch is not None and nn is not None and optim is not None:
         progress_callback: ProgressCallback | None = None,
         progress_interval: int = 25,
         progress_window: int = 25,
+        max_environment_steps: int | None = None,
+        max_training_seconds: float | None = None,
     ) -> DQNTrainingResult:
         """Train a standard DQN agent and periodically evaluate greedy performance."""
         return _train_deep_value_agent(
@@ -1001,6 +1014,8 @@ if torch is not None and nn is not None and optim is not None:
             progress_callback=progress_callback,
             progress_interval=progress_interval,
             progress_window=progress_window,
+            max_environment_steps=max_environment_steps,
+            max_training_seconds=max_training_seconds,
         )
 
 
@@ -1030,6 +1045,8 @@ if torch is not None and nn is not None and optim is not None:
         progress_callback: ProgressCallback | None = None,
         progress_interval: int = 25,
         progress_window: int = 25,
+        max_environment_steps: int | None = None,
+        max_training_seconds: float | None = None,
     ) -> DQNTrainingResult:
         """Train a Double DQN agent and periodically evaluate greedy performance."""
         return _train_deep_value_agent(
@@ -1060,6 +1077,8 @@ if torch is not None and nn is not None and optim is not None:
             progress_callback=progress_callback,
             progress_interval=progress_interval,
             progress_window=progress_window,
+            max_environment_steps=max_environment_steps,
+            max_training_seconds=max_training_seconds,
         )
 
 
@@ -1089,6 +1108,8 @@ if torch is not None and nn is not None and optim is not None:
         progress_callback: ProgressCallback | None = None,
         progress_interval: int = 25,
         progress_window: int = 25,
+        max_environment_steps: int | None = None,
+        max_training_seconds: float | None = None,
     ) -> DQNTrainingResult:
         """Train a Dueling Double DQN agent with periodic greedy evaluation."""
         return _train_deep_value_agent(
@@ -1119,6 +1140,8 @@ if torch is not None and nn is not None and optim is not None:
             progress_callback=progress_callback,
             progress_interval=progress_interval,
             progress_window=progress_window,
+            max_environment_steps=max_environment_steps,
+            max_training_seconds=max_training_seconds,
         )
 
 
@@ -1150,6 +1173,8 @@ if torch is not None and nn is not None and optim is not None:
         progress_callback: ProgressCallback | None = None,
         progress_interval: int = 25,
         progress_window: int = 25,
+        max_environment_steps: int | None = None,
+        max_training_seconds: float | None = None,
     ) -> DQNTrainingResult:
         """Shared trainer for DQN-family agents."""
         if episodes <= 0:
@@ -1172,6 +1197,10 @@ if torch is not None and nn is not None and optim is not None:
             raise ValueError("progress_interval must be positive.")
         if progress_window <= 0:
             raise ValueError("progress_window must be positive.")
+        budget = TrainingBudget(
+            max_environment_steps=max_environment_steps,
+            max_training_seconds=max_training_seconds,
+        )
 
         template_env = env_factory()
         agent = agent_factory(
@@ -1211,9 +1240,14 @@ if torch is not None and nn is not None and optim is not None:
         total_environment_steps = 0
         optimization_steps = 0
         training_started_at = perf_counter()
+        training_cpu_started_at = process_time()
+        checkpoint_training_seconds = 0.0
+        last_optimization_seconds = 0.0
         best_evaluation: EvaluationSnapshot | None = None
         best_policy_state: dict[str, Tensor] | None = None
         best_target_state: dict[str, Tensor] | None = None
+        stop_reason: TrainingStopReason = "episodes"
+        stopped = False
 
         for episode_index in range(episodes):
             observation = training_env.reset(seed=_episode_seed(seed, episode_index))
@@ -1222,6 +1256,14 @@ if torch is not None and nn is not None and optim is not None:
             episode_losses: list[float] = []
 
             while not done:
+                exhausted = budget.stop_reason(
+                    environment_steps=total_environment_steps,
+                    elapsed_seconds=perf_counter() - training_started_at,
+                )
+                if exhausted is not None:
+                    stop_reason = exhausted
+                    stopped = True
+                    break
                 action_mask, action_features = training_env.encode_policy_inputs(
                     observation
                 )
@@ -1256,23 +1298,87 @@ if torch is not None and nn is not None and optim is not None:
                 state = next_state
                 total_environment_steps += 1
 
+                exhausted = budget.stop_reason(
+                    environment_steps=total_environment_steps,
+                    elapsed_seconds=perf_counter() - training_started_at,
+                )
                 should_optimize = (
-                    total_environment_steps >= warmup_steps
+                    exhausted != "training_time"
+                    and total_environment_steps >= warmup_steps
                     and total_environment_steps % train_frequency == 0
                 )
                 if should_optimize:
                     for _gradient_step in range(gradient_steps):
+                        pre_update_policy_state: dict[str, Tensor] | None = None
+                        pre_update_target_state: dict[str, Tensor] | None = None
+                        pre_update_optimizer_state: dict[str, Any] | None = None
+                        if budget.max_training_seconds is not None:
+                            elapsed_before_update = (
+                                perf_counter() - training_started_at
+                            )
+                            remaining_seconds = (
+                                budget.max_training_seconds
+                                - elapsed_before_update
+                            )
+                            snapshot_window = max(
+                                5.0,
+                                last_optimization_seconds * 2.0,
+                            )
+                            if remaining_seconds <= snapshot_window:
+                                pre_update_policy_state = deepcopy(
+                                    agent.policy_network.state_dict()
+                                )
+                                pre_update_target_state = deepcopy(
+                                    agent.target_network.state_dict()
+                                )
+                                pre_update_optimizer_state = deepcopy(
+                                    agent.optimizer.state_dict()
+                                )
+                        update_started_at = perf_counter()
                         loss = agent.optimize(
                             replay_buffer=replay_buffer,
                             batch_size=batch_size,
                             gradient_clip=gradient_clip,
                         )
+                        last_optimization_seconds = (
+                            perf_counter() - update_started_at
+                        )
                         if loss is None:
+                            break
+                        elapsed_after_update = perf_counter() - training_started_at
+                        crossed_time_limit = (
+                            budget.max_training_seconds is not None
+                            and elapsed_after_update > budget.max_training_seconds
+                            and pre_update_policy_state is not None
+                            and pre_update_target_state is not None
+                            and pre_update_optimizer_state is not None
+                        )
+                        if crossed_time_limit:
+                            agent.policy_network.load_state_dict(
+                                pre_update_policy_state
+                            )
+                            agent.target_network.load_state_dict(
+                                pre_update_target_state
+                            )
+                            agent.optimizer.load_state_dict(
+                                pre_update_optimizer_state
+                            )
+                            exhausted = "training_time"
+                            stop_reason = "training_time"
+                            stopped = True
                             break
                         episode_losses.append(loss)
                         optimization_steps += 1
                         if optimization_steps % target_update_interval == 0:
                             agent.update_target_network()
+                        checkpoint_training_seconds = elapsed_after_update
+                if exhausted is not None:
+                    stop_reason = exhausted
+                    stopped = True
+                    break
+
+            if not done:
+                break
 
             summary = training_env.get_episode_summary()
             training_metrics.append(
@@ -1327,6 +1433,11 @@ if torch is not None and nn is not None and optim is not None:
                 optimization_steps=optimization_steps,
                 recent_losses=mean_losses[-progress_window:],
             )
+            if stopped:
+                break
+
+        training_elapsed_seconds = perf_counter() - training_started_at
+        training_cpu_seconds = process_time() - training_cpu_started_at
 
         restored_best_checkpoint = False
         if restore_best_checkpoint and best_policy_state is not None and best_target_state is not None:
@@ -1361,6 +1472,11 @@ if torch is not None and nn is not None and optim is not None:
             mean_losses=tuple(mean_losses),
             best_evaluation=best_evaluation,
             restored_best_checkpoint=restored_best_checkpoint,
+            environment_steps=total_environment_steps,
+            training_elapsed_seconds=training_elapsed_seconds,
+            training_cpu_seconds=training_cpu_seconds,
+            checkpoint_training_seconds=checkpoint_training_seconds,
+            stop_reason=stop_reason,
         )
 
 

@@ -12,6 +12,7 @@ Contributor and coding-session docs:
 - [docs/AGENT_FLOW.md](docs/AGENT_FLOW.md): visual walkthrough of observation encoding and Double DQN action scoring
 - [docs/EXPERIMENT_WORKFLOWS.md](docs/EXPERIMENT_WORKFLOWS.md): practical training, profiling, sweep, trace, and oracle workflows
 - [docs/BENCHMARKS.md](docs/BENCHMARKS.md): deterministic multi-policy benchmark workflow and JSON format
+- [docs/BENCHMARK_SUITE.md](docs/BENCHMARK_SUITE.md): resumable controlled full-system campaign
 - [docs/OVERGROWTH_HARD_V1.md](docs/OVERGROWTH_HARD_V1.md): partial hard-pool contents, Mawler behavior, and content sources
 - [docs/IRONCLAD_CARDS.md](docs/IRONCLAD_CARDS.md): supported sequencing cards and source data
 - [docs/CARD_REPRESENTATION.md](docs/CARD_REPRESENTATION.md): experimental fixed-capacity semantic card records and learned encoder
@@ -57,6 +58,9 @@ sts-train --policy heuristic --encounter-set overgrowth_easy --episodes 200
 sts-train --policy heuristic --encounter-set overgrowth_hard_v1 --episodes 200
 sts-train --policy double_dqn --encounter-set overgrowth_easy --episodes 1500 --eval-interval 100
 sts-benchmark --encounter nibbit --encounter slimes --deck ironclad_sequencing --episodes 100 --seed 1000 --json-out benchmarks/fixed-seeds.json
+sts-benchmark-suite --dry-run
+sts-benchmark-suite
+sts-benchmark-suite --mini --output-dir benchmarks/suites/smoke
 sts-watch --policy heuristic --encounter overgrowth_easy --deck ironclad_sequencing --seed 7
 sts-watch --policy heuristic --encounter mawler --seed 7
 sts-watch --policy double_dqn --agent-path checkpoints/double_dqn_agent.pt --encounter slimes --seed 7 --log-file logs/double_dqn_trace.json
@@ -268,6 +272,7 @@ Notes:
 - `sts-watch --encounter` and `sts-oracle --encounter` accept `simple`, the sampled `overgrowth_easy` and `overgrowth_hard_v1` pools, and the fixed `nibbit`, `slimes`, `shrinker_beetle`, `fuzzy_wurm_crawler`, `mawler`, `nibbits`, and `shrinker_fuzzy` matchups. `sts-watch --encounter-set` remains a deprecated argument alias.
 - `sts-benchmark` accepts fixed matchups only, always includes random and heuristic policies, and can add labeled saved checkpoints with repeated `--agent LABEL=PATH` options. Format-v2 JSON records the required named deck; version 1 is interpreted as the starter deck.
 - `game.simulation.card_records` and `game.agents.card_encoder` provide an experimental `card_records_v1` kernel with fixed capacities, semantic records, exact pile counts, and shared learned embeddings. It is programmatic only and is not yet wired into environments, policies, trainers, or checkpoints.
+- `sts-benchmark-suite` runs a resumable campaign across every policy architecture and both named decks. Its primary ranking uses equal transition budgets in up to three parallel processes; isolated equal-time finalist runs are reported separately. The balanced campaign takes roughly 4–6 hours on the current CPU host.
 - Matching encounter, seed, player/deck settings, and action sequence now yields the same seeded combat realization in both tools. Different policy actions can naturally produce a different later state trajectory.
 - `sts-analyze-trace` reads a saved trace and flags high-confidence tactical mistakes such as missed lethal, avoidable incoming damage, wasted dead cards, bad target choice, and premature end turns.
 - `sts-sweep` runs Optuna-based hyperparameter sweeps, averages each trial over multiple train seeds, supports process-parallel trials through shared journal/database storage, and can save the best-trial summary as JSON.
@@ -291,7 +296,7 @@ Notes:
 - `game/cli/`: packaged command implementations
 - `tests/`: matching `simulation`, `agents`, `training`, `analysis`, and `cli` suites
 
-Installing the package exposes `sts-train`, `sts-sweep`, `sts-benchmark`, `sts-watch`,
+Installing the package exposes `sts-train`, `sts-sweep`, `sts-benchmark`, `sts-benchmark-suite`, `sts-watch`,
 `sts-oracle`, `sts-analyze-trace`, `sts-analyze-training`, and `sts-demo`.
 These installed commands are the supported CLI surface; the removed root scripts
 are intentionally not retained as wrappers. Code should use canonical module

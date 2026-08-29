@@ -29,6 +29,7 @@ sts-oracle = "game.cli.brute_force:main"
 sts-analyze-trace = "game.cli.analyze_trace:main"
 sts-analyze-training = "game.cli.analyze_training:main"
 sts-benchmark = "game.cli.benchmark:main"
+sts-benchmark-suite = "game.cli.benchmark_suite:main"
 sts-demo = "game.cli.demo:run_demo"
 
 [tool.setuptools.packages.find]
