@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 604
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+Connection: close
+
+{"schema_version":1,"protocol":"live_probe_v0","bridge_id":"sts2_agent_bridge","bridge_version":"0.8.0","mode":"live_probe_v0","build_compatibility":"compatible","target_build_manifest_id":"sts2-steam-main-build-23811903-macos-universal","target_game_version":"v0.107.1","target_steam_build_id":"23811903","capabilities":{"observe_public_screen":true,"observe_decision":true,"apply":true,"profile_access":false,"privileged_state":false,"snapshot_restore":false,"bridge_filesystem_writes":false,"host_logging":"sanitized_existing_sink","harmony_patches":false,"outbound_network":false,"hot_unload":false}}

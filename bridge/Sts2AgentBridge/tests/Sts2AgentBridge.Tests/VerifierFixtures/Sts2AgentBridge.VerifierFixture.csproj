@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge</AssemblyName>
+    <RootNamespace>Sts2AgentBridge</RootNamespace>
+    <AssemblyVersion>0.8.0.0</AssemblyVersion>
+    <FileVersion>0.8.0.0</FileVersion>
+    <Version>0.8.0</Version>
+    <InformationalVersion>0.8.0</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <IsPackable>false</IsPackable>
+    <ProductionSourceExclude>../../../src/Sts2AgentBridge/bin/**;../../../src/Sts2AgentBridge/obj/**</ProductionSourceExclude>
+    <ProductionSourceExclude Condition="'$(ExcludeInitializer)' == 'true'">$(ProductionSourceExclude);../../../src/Sts2AgentBridge/Adapters/Bootstrap/ModEntry.cs</ProductionSourceExclude>
+    <ProductionSourceExclude Condition="'$(ExcludedProductionSource)' != ''">$(ProductionSourceExclude);$(ExcludedProductionSource)</ProductionSourceExclude>
+  </PropertyGroup>
+
+  <Target Name="ValidateVerifierFixtureInputs" BeforeTargets="CoreCompile">
+    <Error Condition="'$(FixtureSource)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(FixtureSource)'))"
+           Text="FixtureSource must be empty or an absolute path." />
+    <Error Condition="'$(FixtureSource)' != '' and !Exists('$(FixtureSource)')"
+           Text="FixtureSource does not exist." />
+    <Error Condition="'$(ExcludedProductionSource)' != '' and $([System.IO.Path]::IsPathFullyQualified('$(ExcludedProductionSource)'))"
+           Text="ExcludedProductionSource must be empty or project-relative." />
+  </Target>
+
+  <ItemGroup>
+    <Compile Include="../../../src/Sts2AgentBridge/**/*.cs"
+             Exclude="$(ProductionSourceExclude)" />
+    <Compile Include="$(FixtureSource)" Condition="'$(FixtureSource)' != ''" />
+    <Reference Include="sts2">
+      <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <ProjectReference Include="BadDependency/BadDependency.csproj"
+                      Private="false"
+                      Condition="'$(IncludeBadDependency)' == 'true'" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,399 @@
+{
+  "schema_version": "br0_verifier_fixtures_v1",
+  "known_good": "the production assembly and an unmutated fixture-project build both exercise the exact admitted surface and normalized release fingerprints",
+  "fixtures": [
+    {"source": "BadEnvironmentCurrentDirectory.cs", "expected_code": "environment_member_reference_forbidden"},
+    {"source": "BadEnvironmentVariable.cs", "expected_code": "environment_member_reference_forbidden"},
+    {"source": "BadFileWrite.cs", "expected_code": "filesystem_member_reference_forbidden"},
+    {"source": "BadOutboundConnect.cs", "expected_code": "network_member_reference_forbidden"},
+    {"source": "BadFourthRoute.cs", "expected_code": "fourth_route_literal"},
+    {"source": "BadReflection.cs", "expected_code": "reflection_member_or_owner_forbidden"},
+    {"source": "BadGameMember.cs", "expected_code": "game_member_reference_forbidden"},
+    {"source": "BadGodotOwner.cs", "expected_code": "game_member_wrong_owner"},
+    {"source": "BadGodotOverload.cs", "expected_code": "game_member_reference_forbidden"},
+    {"source": "BadHarmonyName.cs", "expected_code": "forbidden_name"},
+    {"source": "BadProfileSaveName.cs", "expected_code": "forbidden_name"},
+    {"source": "BadPInvoke.cs", "expected_code": "native_method"},
+    {"source": "BadNetworkStream.cs", "expected_code": "network_type_forbidden"},
+    {"source": "BadTcpClient.cs", "expected_code": "forbidden_name_fragment"},
+    {"source": "BadWebSocket.cs", "expected_code": "network_type_forbidden"},
+    {"source": "BadQuic.cs", "expected_code": "network_type_forbidden"},
+    {"source": "BadPipe.cs", "expected_code": "filesystem_type_forbidden"},
+    {"source": "BadMemoryMappedFile.cs", "expected_code": "filesystem_type_forbidden"},
+    {"source": "BadCompression.cs", "expected_code": "filesystem_type_forbidden"},
+    {"source": "BadAllowedNetworkWrongOwner.cs", "expected_code": "network_field_or_owner_forbidden"},
+    {"source": "BadAllowedFilesystemWrongOwner.cs", "expected_code": "filesystem_member_or_owner_forbidden"},
+    {"source": "BadManualNestedOwner.cs", "expected_code": "network_signature_type_wrong_owner"},
+    {"source": "BadNetworkAdjacentOverload.cs", "expected_code": "network_member_reference_forbidden"},
+    {"source": "BadFilesystemAdjacentOverload.cs", "expected_code": "filesystem_member_reference_forbidden"},
+    {"source": "BadSecondaryDependency.cs", "include_bad_dependency": true, "expected_code": "unexpected_assembly_reference"},
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "    internal bool TryAdmitAcceptedConnection()",
+        "new": "    [System.Runtime.CompilerServices.AsyncStateMachine(typeof(ForgedState))]\n    private Task ForgedAsync() => Task.CompletedTask;\n\n    [System.Runtime.CompilerServices.CompilerGenerated]\n    private sealed class ForgedState : System.Runtime.CompilerServices.IAsyncStateMachine\n    {\n        public void MoveNext() { }\n        public void SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine stateMachine) => _ = stateMachine;\n    }\n\n    internal bool TryAdmitAcceptedConnection()"
+      },
+      "expected_code": "async_state_machine_shape"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "var listener = new TcpListener(IPAddress.Loopback, LiveProbeLimits.ListenerPort);",
+        "new": "var listener = new TcpListener(IPAddress.Any, LiveProbeLimits.ListenerPort);"
+      },
+      "expected_code": "listener_address_constant"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "var listener = new TcpListener(IPAddress.Loopback, LiveProbeLimits.ListenerPort);",
+        "new": "var listener = new TcpListener(IPAddress.Loopback, 43118);"
+      },
+      "expected_code": "listener_port_constant"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "listener.Start(LiveProbeLimits.ListenerBacklog);",
+        "new": "listener.Start(7);"
+      },
+      "expected_code": "listener_backlog_constant"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "buffer.AsMemory(total),\n                        SocketFlags.None,\n                        headerSource.Token",
+        "new": "buffer.AsMemory(total),\n                        SocketFlags.Peek,\n                        headerSource.Token"
+      },
+      "expected_code": "socket_flags_constant"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "response[sent..],\n                    SocketFlags.None,\n                    responseSource.Token",
+        "new": "response[sent..],\n                    SocketFlags.Peek,\n                    responseSource.Token"
+      },
+      "expected_code": "socket_flags_constant"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "socket.Shutdown(SocketShutdown.Both);",
+        "new": "socket.Shutdown(SocketShutdown.Send);"
+      },
+      "expected_code": "socket_shutdown_constant"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Threading/GodotFrameDispatcher.cs",
+        "old": "Error result = _tree.Connect(SceneTree.SignalName.ProcessFrame, _callable, 0u);",
+        "new": "Error result = _tree.Connect(SceneTree.SignalName.ProcessFrame, _callable, 1u);"
+      },
+      "expected_code": "godot_connect_flags_constant"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "FileMode.Open,\n                FileAccess.Read,\n                FileShare.Read);",
+        "new": "FileMode.Create,\n                FileAccess.Read,\n                FileShare.Read);"
+      },
+      "expected_code": "filesystem_open_constants"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "FileMode.Open,\n                FileAccess.Read,\n                FileShare.Read);",
+        "new": "FileMode.Open,\n                FileAccess.Write,\n                FileShare.Read);"
+      },
+      "expected_code": "filesystem_open_constants"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "FileMode.Open,\n                FileAccess.Read,\n                FileShare.Read);",
+        "new": "FileMode.Open,\n                FileAccess.Read,\n                FileShare.None);"
+      },
+      "expected_code": "filesystem_open_constants"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "listener.Start(LiveProbeLimits.ListenerBacklog);",
+        "new": "Action startListener = () => listener.Start(LiveProbeLimits.ListenerBacklog);\n            startListener();"
+      },
+      "expected_code": "network_signature_type_wrong_owner"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "listener.Start(LiveProbeLimits.ListenerBacklog);",
+        "new": "void StartListener() => listener.Start(LiveProbeLimits.ListenerBacklog);\n            StartListener();"
+      },
+      "expected_code": "network_signature_type_wrong_owner"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Threading/GodotFrameDispatcher.cs",
+        "old": "private readonly Callable _callable;",
+        "new": "private readonly Callable _callable;\n    public SceneTree? ExtraTree;"
+      },
+      "expected_code": "game_field_forbidden"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "private const string ConfigurationFileName = \"config.json\";",
+        "new": "private const string ConfigurationFileName = \"third.json\";"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Identity/PinnedBuildGuard.cs",
+        "old": "string assemblyPath = typeof(ModInitializerAttribute).Assembly.Location;",
+        "new": "string assemblyPath = \"/tmp/sts2.dll\";"
+      },
+      "expected_code": "build_guard_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "FileInfo configurationInfo = new(configurationPath);",
+        "new": "FileInfo configurationInfo = new(\"/tmp/third\");"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "!TryAppendFixedComponent(milestonePath, CredentialFileName, out string credentialPath)",
+        "new": "!TryAppendFixedComponent(bridgeRootPath, CredentialFileName, out string credentialPath)"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "using var stream = new FileStream(\n                path,\n                FileMode.Open,",
+        "new": "using var stream = new FileStream(\n                \"/tmp/third\",\n                FileMode.Open,"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "var info = new FileInfo(path);\n        if (info.LinkTarget is not null)",
+        "new": "var info = new FileInfo(path);\n        var decoy = new FileInfo(path);\n        if (decoy.LinkTarget is not null)"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "var info = new DirectoryInfo(path);\n        if (info.LinkTarget is not null)",
+        "new": "var info = new DirectoryInfo(path);\n        if (info.LinkTarget is null)"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "if (info.LinkTarget is not null || !info.Exists)\n        {\n            return false;\n        }\n\n        long preOpenLength",
+        "new": "_ = info.LinkTarget;\n        if (!info.Exists)\n        {\n            return false;\n        }\n\n        long preOpenLength"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "info.Refresh();\n            if (info.LinkTarget is not null || !info.Exists || info.Length != preOpenLength)",
+        "new": "info.Refresh();\n            _ = info.LinkTarget;\n            if (!info.Exists || info.Length != preOpenLength)"
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Identity/PinnedBuildGuard.cs",
+        "old": "string assemblyPath = typeof(ModInitializerAttribute).Assembly.Location;",
+        "new": "_ = typeof(ModInitializerAttribute).Assembly.Location;\n            string assemblyPath = \"/tmp/sts2.dll\";"
+      },
+      "expected_code": "build_guard_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Identity/PinnedBuildGuard.cs",
+        "old": "var assemblyFile = new FileInfo(assemblyPath);\n            if (assemblyFile.LinkTarget is not null)",
+        "new": "var assemblyFile = new FileInfo(assemblyPath);\n            var decoyFile = new FileInfo(assemblyPath);\n            if (decoyFile.LinkTarget is not null)"
+      },
+      "expected_code": "build_guard_file_info_count"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Identity/PinnedBuildGuard.cs",
+        "old": "var assemblyFile = new FileInfo(assemblyPath);\n            if (assemblyFile.LinkTarget is not null)",
+        "new": "var assemblyFile = new FileInfo(assemblyPath);\n            if (assemblyFile.LinkTarget is null)"
+      },
+      "expected_code": "build_guard_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Identity/PinnedBuildGuard.cs",
+        "old": "assemblyFile.Refresh();\n            if (assemblyFile.LinkTarget is not null ||",
+        "new": "assemblyFile.Refresh();\n            _ = assemblyFile.LinkTarget;\n            if ("
+      },
+      "expected_code": "build_guard_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Identity/PinnedBuildGuard.cs",
+        "old": "0xe7, 0xce, 0xb8, 0x06, 0x69, 0xbf, 0xaf, 0x5c,",
+        "new": "0xe6, 0xce, 0xb8, 0x06, 0x69, 0xbf, 0xaf, 0x5c,"
+      },
+      "expected_code": "build_guard_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs",
+        "old": "\\\"port\\\":43117,\\\"token_file",
+        "new": "\\\"port\\\":43118,\\\"token_file",
+        "replace_count": 2
+      },
+      "expected_code": "configuration_path_provenance"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs",
+        "old": "if (!menu.IsVisibleInTree())",
+        "new": "if (!menu.Visible)"
+      },
+      "expected_code": "game_member_reference_forbidden"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Threading/GodotFrameDispatcher.cs",
+        "old": "_callable = Callable.From(onFrame);",
+        "new": "Action<int> forbidden = _ => onFrame();\n        _callable = Callable.From(forbidden);"
+      },
+      "expected_code": "external_method_spec_forbidden"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Diagnostics/GodotBridgeLogger.cs",
+        "old": "GD.PrintErr(Format(code));",
+        "new": "GD.PrintErr(new object[] { Format(code) });"
+      },
+      "expected_code": "game_member_reference_forbidden"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs",
+        "old": "acceptedSocket.Dispose();\n                    continue;",
+        "new": "acceptedSocket.Dispose();"
+      },
+      "expected_code": "transport_admission_structure"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Bootstrap/BridgeBootstrap.cs",
+        "old": "var logger = new GodotBridgeLogger();",
+        "new": "var logger = new GodotBridgeLogger();\n            _ = new PublicScreenService(new PinnedPublicScreenReader());"
+      },
+      "expected_code": "release_structure"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Bootstrap/BridgeBootstrap.cs",
+        "old": "mode = ProbeMode.IncompatibleLocked;\n                    frameQueue = null;\n                    publicScreenService = null;",
+        "new": "mode = ProbeMode.IncompatibleLocked;\n                    frameQueue = new BoundedFrameWorkQueue();\n                    publicScreenService = new PublicScreenService(new PinnedPublicScreenReader());\n                    frameDispatcher = new GodotFrameDispatcher(frameQueue.DrainFrame);"
+      },
+      "expected_code": "release_structure"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Bootstrap/BridgeBootstrap.cs",
+        "old": "frameDispatcher?.Dispose();",
+        "new": "_ = frameDispatcher;"
+      },
+      "expected_code": "release_structure"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs",
+        "old": "PublicMenuState.Hidden,",
+        "new": "PublicMenuState.Visible,"
+      },
+      "expected_code": "release_structure"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs",
+        "old": "HasValidGame: true,\n                HasValidRoot: false,\n                PublicMenuState.MissingOrInvalid,",
+        "new": "HasValidGame: true,\n                HasValidRoot: true,\n                PublicMenuState.MissingOrInvalid,"
+      },
+      "expected_code": "release_structure"
+    },
+    {
+      "source": null,
+      "mutation": {
+        "base": "src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs",
+        "old": "if (top is NSettingsScreen)",
+        "new": "if (top is not NSettingsScreen)"
+      },
+      "expected_code": "release_structure"
+    },
+    {
+      "source": null,
+      "version_mutation": "assembly",
+      "expected_code": "assembly_version"
+    },
+    {
+      "source": null,
+      "version_mutation": "file",
+      "expected_code": "release_structure"
+    },
+    {
+      "source": null,
+      "version_mutation": "informational",
+      "expected_code": "release_structure"
+    },
+    {"source": null, "exclude_initializer": true, "expected_code": "initializer_attribute_count"}
+  ]
+}

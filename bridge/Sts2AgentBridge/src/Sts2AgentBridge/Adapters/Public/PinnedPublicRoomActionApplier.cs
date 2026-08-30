@@ -1,0 +1,208 @@
+using System;
+using System.Collections.Generic;
+using Godot;
+using MegaCrit.Sts2.Core.Entities.RestSite;
+using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Events;
+using MegaCrit.Sts2.Core.Nodes.RestSite;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
+using Sts2AgentBridge.Core.Public;
+
+namespace Sts2AgentBridge.Adapters.Public;
+
+public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
+{
+    private readonly PinnedPublicRoomDecisionReader _reader;
+    private readonly object _gate = new();
+    private readonly Dictionary<string, string> _acceptedByDecision = new(StringComparer.Ordinal);
+
+    public PinnedPublicRoomActionApplier(PinnedPublicRoomDecisionReader reader)
+    {
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+    }
+
+    public PublicRoomActionApplyResult Apply(PublicRoomActionRequest request)
+    {
+        PublicRoomActionApplyOutcome? initialFailure = ReservationFailure(request.DecisionId);
+        if (initialFailure.HasValue)
+        {
+            return Result(initialFailure.Value, request);
+        }
+
+        PublicRoomDecisionSnapshot snapshot = _reader.Read();
+        if (snapshot.Status != PublicDecisionStatus.Ready ||
+            !string.Equals(snapshot.DecisionId, request.DecisionId, StringComparison.Ordinal))
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
+
+        PublicRoomCandidate? selected = null;
+        foreach (PublicRoomCandidate candidate in snapshot.Candidates)
+        {
+            if (string.Equals(candidate.ActionId, request.ActionId, StringComparison.Ordinal))
+            {
+                selected = candidate;
+                break;
+            }
+        }
+        if (!selected.HasValue || !selected.Value.Enabled || !selected.Value.Supported ||
+            !Contains(snapshot.LegalActions, request.ActionId) ||
+            (!string.Equals(request.ActionId, PublicRoomActionRequest.ProceedActionId, StringComparison.Ordinal) &&
+             selected.Value.CandidateIndex != request.CandidateIndex))
+        {
+            return Result(PublicRoomActionApplyOutcome.InvalidAction, request);
+        }
+
+        return snapshot.ScreenKind switch
+        {
+            "rest_site" => ApplyRestSite(request, selected.Value),
+            "event" => ApplyEvent(request, selected.Value),
+            _ => Result(PublicRoomActionApplyOutcome.StaleDecision, request),
+        };
+    }
+
+    private PublicRoomActionApplyResult ApplyRestSite(
+        PublicRoomActionRequest request,
+        PublicRoomCandidate candidate)
+    {
+        NRestSiteRoom? room = NRun.Instance?.RestSiteRoom;
+        if (!PinnedPublicRoomDecisionReader.IsVisible(room))
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
+
+        if (candidate.Kind == PublicRoomCandidateKind.Proceed)
+        {
+            var proceed = room!.ProceedButton;
+            if (!PinnedPublicRoomDecisionReader.IsVisible(proceed) || !proceed.IsEnabled)
+            {
+                return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+            }
+            return ReserveAndClick(request, proceed);
+        }
+
+        IReadOnlyList<RestSiteOption>? options = room!.Options;
+        if (candidate.Kind != PublicRoomCandidateKind.RestHeal ||
+            options is null || candidate.CandidateIndex < 0 ||
+            candidate.CandidateIndex >= options.Count ||
+            options[candidate.CandidateIndex] is not HealRestSiteOption option ||
+            !option.IsEnabled ||
+            !string.Equals(option.OptionId, candidate.StableId, StringComparison.Ordinal))
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
+
+        NRestSiteButton? button = room.GetButtonForOption(option);
+        if (!PinnedPublicRoomDecisionReader.IsVisible(button) || !button!.IsEnabled)
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
+        return ReserveAndClick(request, button);
+    }
+
+    private PublicRoomActionApplyResult ApplyEvent(
+        PublicRoomActionRequest request,
+        PublicRoomCandidate candidate)
+    {
+        NEventRoom? room = NRun.Instance?.EventRoom;
+        NEventLayout? layout = room?.Layout;
+        if (!PinnedPublicRoomDecisionReader.IsVisible(room) || room!.CustomEventNode is not null ||
+            !PinnedPublicRoomDecisionReader.IsVisible(layout))
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
+
+        var buttons = new List<NEventOptionButton>();
+        foreach (NEventOptionButton? button in layout!.OptionButtons)
+        {
+            if (buttons.Count >= PublicRoomLimits.MaximumCandidates ||
+                button is null || !GodotObject.IsInstanceValid(button))
+            {
+                return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+            }
+            buttons.Add(button);
+        }
+        if (candidate.Kind != PublicRoomCandidateKind.EventOption ||
+            candidate.CandidateIndex < 0 || candidate.CandidateIndex >= buttons.Count)
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
+
+        NEventOptionButton selected = buttons[candidate.CandidateIndex];
+        EventOption? option = selected.Option;
+        if (!PinnedPublicRoomDecisionReader.IsVisible(selected) || !selected.IsEnabled ||
+            option is null || option.IsLocked ||
+            !string.Equals(option.TextKey, candidate.StableId, StringComparison.Ordinal) ||
+            PinnedPublicRoomDecisionReader.IsDangerous(selected, option))
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
+        return ReserveAndClick(request, selected);
+    }
+
+    private PublicRoomActionApplyResult ReserveAndClick(
+        PublicRoomActionRequest request,
+        MegaCrit.Sts2.Core.Nodes.GodotExtensions.NClickableControl control)
+    {
+        PublicRoomActionApplyOutcome? failure = Reserve(request.DecisionId, request.ActionId);
+        if (failure.HasValue)
+        {
+            return Result(failure.Value, request);
+        }
+
+        control.ForceClick();
+        _reader.RecordAcceptedDecision(request.DecisionId);
+        return Result(PublicRoomActionApplyOutcome.Accepted, request);
+    }
+
+    private PublicRoomActionApplyOutcome? ReservationFailure(string decisionId)
+    {
+        lock (_gate)
+        {
+            if (_acceptedByDecision.ContainsKey(decisionId))
+            {
+                return PublicRoomActionApplyOutcome.AlreadyApplied;
+            }
+            if (_acceptedByDecision.Count >= PublicRoomActionBudget.MaximumAcceptedActions)
+            {
+                return PublicRoomActionApplyOutcome.ActionLimitReached;
+            }
+            return null;
+        }
+    }
+
+    private PublicRoomActionApplyOutcome? Reserve(string decisionId, string actionId)
+    {
+        lock (_gate)
+        {
+            if (_acceptedByDecision.ContainsKey(decisionId))
+            {
+                return PublicRoomActionApplyOutcome.AlreadyApplied;
+            }
+            if (_acceptedByDecision.Count >= PublicRoomActionBudget.MaximumAcceptedActions)
+            {
+                return PublicRoomActionApplyOutcome.ActionLimitReached;
+            }
+            _acceptedByDecision.Add(decisionId, actionId);
+            return null;
+        }
+    }
+
+    private static bool Contains(IReadOnlyList<string> values, string expected)
+    {
+        foreach (string value in values)
+        {
+            if (string.Equals(value, expected, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static PublicRoomActionApplyResult Result(
+        PublicRoomActionApplyOutcome outcome,
+        PublicRoomActionRequest request) =>
+        PublicRoomActionApplyResult.FromRequest(outcome, request);
+}

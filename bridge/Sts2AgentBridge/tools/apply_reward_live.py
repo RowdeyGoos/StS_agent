@@ -1,0 +1,539 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import sys
+
+sys.dont_write_bytecode = True
+
+import json
+import time
+from pathlib import Path
+from typing import Any, Callable
+
+import probe_live as probe
+from tool_common import (
+    EXIT_INTERNAL,
+    EXIT_INVALID_INVOCATION,
+    EXIT_MISMATCH,
+    ToolFailure,
+    absolute_path,
+    fail,
+    main,
+)
+
+_APPLY_DEADLINE_SECONDS = 45.0
+_POLL_SECONDS = 0.1
+_MAXIMUM_ACCEPTED_ACTIONS = 17
+_PROVIDERS = frozenset(("first-card", "skip-card", "skip"))
+_REWARD_WAITING = (
+    b'{"schema_version":1,"status":"waiting","decision_kind":"reward",'
+    b'"actionable":false,"decision_id":null,"screen_kind":"unknown",'
+    b'"player":null,"rewards":[],"legal_actions":[]}'
+)
+_REWARD_UNSUPPORTED = _REWARD_WAITING.replace(b'"waiting"', b'"unsupported"')
+
+
+def parse_args(arguments: list[str] | None = None) -> tuple[str, int, str]:
+    values = sys.argv[1:] if arguments is None else arguments
+    if len(values) != 6:
+        fail(EXIT_INVALID_INVOCATION, "invalid_invocation")
+    allowed = frozenset(("--user-profile", "--effective-uid", "--decision-provider"))
+    parsed: dict[str, str] = {}
+    for offset in range(0, len(values), 2):
+        name = values[offset]
+        if name not in allowed or name in parsed:
+            fail(EXIT_INVALID_INVOCATION, "invalid_invocation")
+        parsed[name] = values[offset + 1]
+    if set(parsed) != allowed:
+        fail(EXIT_INVALID_INVOCATION, "invalid_invocation")
+    if parsed["--decision-provider"] not in _PROVIDERS:
+        fail(EXIT_INVALID_INVOCATION, "invalid_decision_provider")
+    return (
+        parsed["--user-profile"],
+        probe._parse_effective_uid(parsed["--effective-uid"]),
+        parsed["--decision-provider"],
+    )
+
+
+def _read_body(
+    label: str,
+    route: str,
+    credential: bytearray,
+    connector: Callable[[], Any],
+    deadline: float,
+    decision_id: str | None = None,
+    action_id: str | None = None,
+) -> bytes:
+    response = probe._exchange(
+        label,
+        route,
+        credential,
+        connector,
+        deadline,
+        decision_id,
+        action_id,
+    )
+    body: memoryview | None = None
+    try:
+        body = probe._canonical_body(response, label)
+        return bytes(body)
+    finally:
+        if body is not None:
+            body.release()
+        probe._zero(response)
+
+
+def _decode_exact(body: bytes, keys: tuple[str, ...]) -> dict[str, object]:
+    try:
+        root = json.loads(
+            body.decode("ascii"),
+            object_pairs_hook=probe._unique_object,
+            parse_constant=probe._reject_json_constant,
+        )
+        return probe._validate_exact_keys(root, keys)
+    except (UnicodeDecodeError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+        fail(EXIT_MISMATCH, "reward_response_mismatch")
+
+
+def _validate_player(value: object) -> dict[str, int]:
+    player = probe._validate_exact_keys(value, ("hp", "max_hp", "gold", "deck_count"))
+    if any(not probe._is_bounded_nonnegative_integer(player[name]) for name in player):
+        raise ValueError("player values")
+    if player["hp"] < 1 or player["max_hp"] < 1 or player["hp"] > player["max_hp"]:
+        raise ValueError("player health")
+    if player["deck_count"] < 1:
+        raise ValueError("deck count")
+    return {name: int(value) for name, value in player.items()}
+
+
+def _validate_reward(raw_reward: object, expected_slot: int) -> dict[str, object]:
+    reward = probe._validate_exact_keys(
+        raw_reward,
+        (
+            "reward_slot",
+            "reward_index",
+            "kind",
+            "successfully_selected",
+            "gold_amount",
+            "cards",
+            "card_selection_can_skip",
+        ),
+    )
+    if reward["reward_slot"] != expected_slot:
+        raise ValueError("reward slot")
+    if not probe._is_bounded_nonnegative_integer(reward["reward_index"]):
+        raise ValueError("reward index")
+    if type(reward["successfully_selected"]) is not bool:
+        raise ValueError("reward selection")
+    if type(reward["card_selection_can_skip"]) is not bool:
+        raise ValueError("card skip")
+    cards = reward["cards"]
+    if not isinstance(cards, list) or len(cards) > 5 or any(
+        not probe._is_public_string(card) for card in cards
+    ):
+        raise ValueError("reward cards")
+    if reward["kind"] == "gold":
+        if (
+            not probe._is_bounded_nonnegative_integer(reward["gold_amount"])
+            or cards != []
+            or reward["card_selection_can_skip"] is not False
+        ):
+            raise ValueError("gold reward")
+    elif reward["kind"] == "card":
+        if reward["gold_amount"] is not None or not cards:
+            raise ValueError("card reward")
+    elif reward["kind"] == "unsupported":
+        if (
+            reward["gold_amount"] is not None
+            or cards != []
+            or reward["card_selection_can_skip"] is not False
+        ):
+            raise ValueError("unsupported reward")
+    else:
+        raise ValueError("reward kind")
+    return reward
+
+
+def _validate_action(raw_action: object, screen_kind: str) -> dict[str, object]:
+    action = probe._validate_exact_keys(
+        raw_action,
+        ("action_id", "kind", "reward_slot", "card_slot"),
+    )
+    action_id = action["action_id"]
+    if not isinstance(action_id, str):
+        raise ValueError("action id")
+    if screen_kind == "rewards":
+        if action["kind"] == "claim_gold":
+            prefix = "claim:"
+        elif action["kind"] == "open_card":
+            prefix = "open:"
+        elif action["kind"] == "proceed":
+            if action != {
+                "action_id": "proceed",
+                "kind": "proceed",
+                "reward_slot": None,
+                "card_slot": None,
+            }:
+                raise ValueError("proceed")
+            return action
+        else:
+            raise ValueError("parent action kind")
+        reward_slot = action["reward_slot"]
+        if (
+            type(reward_slot) is not int
+            or reward_slot < 0
+            or reward_slot > 7
+            or action["card_slot"] is not None
+            or action_id != prefix + str(reward_slot)
+        ):
+            raise ValueError("parent action")
+        return action
+
+    if action["kind"] == "choose_card":
+        card_slot = action["card_slot"]
+        if (
+            type(card_slot) is not int
+            or card_slot < 0
+            or card_slot > 4
+            or action["reward_slot"] is not None
+            or action_id != "choose:" + str(card_slot)
+        ):
+            raise ValueError("card choice")
+        return action
+    if action != {
+        "action_id": "skip_card",
+        "kind": "skip_card",
+        "reward_slot": None,
+        "card_slot": None,
+    }:
+        raise ValueError("child action")
+    return action
+
+
+def _validate_ready(body: bytes) -> dict[str, object]:
+    try:
+        root = _decode_exact(
+            body,
+            (
+                "schema_version",
+                "status",
+                "decision_kind",
+                "actionable",
+                "decision_id",
+                "decision_revision",
+                "screen_kind",
+                "player",
+                "rewards",
+                "legal_actions",
+            ),
+        )
+        decision_id = root["decision_id"]
+        revision = root["decision_revision"]
+        screen_kind = root["screen_kind"]
+        if (
+            root["schema_version"] != 1
+            or root["status"] != "ready"
+            or root["decision_kind"] != "reward"
+            or root["actionable"] is not True
+            or screen_kind not in ("rewards", "card_reward")
+            or not isinstance(decision_id, str)
+            or len(decision_id) != 64
+            or any(ord(value) not in probe._LOWER_HEX for value in decision_id)
+            or not probe._is_bounded_nonnegative_integer(revision)
+        ):
+            raise ValueError("reward header")
+        player = _validate_player(root["player"])
+
+        raw_rewards = root["rewards"]
+        if not isinstance(raw_rewards, list) or len(raw_rewards) > 8:
+            raise ValueError("reward count")
+        if screen_kind == "card_reward" and len(raw_rewards) != 1:
+            raise ValueError("child reward count")
+        rewards: list[dict[str, object]] = []
+        previous_index = -1
+        for slot, raw_reward in enumerate(raw_rewards):
+            reward = _validate_reward(raw_reward, slot)
+            if int(reward["reward_index"]) <= previous_index:
+                raise ValueError("reward index order")
+            previous_index = int(reward["reward_index"])
+            rewards.append(reward)
+
+        raw_actions = root["legal_actions"]
+        if not isinstance(raw_actions, list) or not 1 <= len(raw_actions) <= 9:
+            raise ValueError("legal action count")
+        actions = [_validate_action(action, str(screen_kind)) for action in raw_actions]
+        action_ids = [str(action["action_id"]) for action in actions]
+        if len(action_ids) != len(set(action_ids)):
+            raise ValueError("duplicate action")
+
+        if screen_kind == "rewards":
+            if action_ids[-1] != "proceed" or action_ids.count("proceed") != 1:
+                raise ValueError("parent proceed")
+            for action in actions[:-1]:
+                reward = rewards[int(action["reward_slot"])]
+                expected_kind = "gold" if action["kind"] == "claim_gold" else "card"
+                if reward["kind"] != expected_kind or reward["successfully_selected"] is True:
+                    raise ValueError("parent target")
+        else:
+            reward = rewards[0]
+            if reward["kind"] != "card":
+                raise ValueError("child reward")
+            cards = reward["cards"]
+            for action in actions:
+                if action["kind"] == "choose_card" and int(action["card_slot"]) >= len(cards):
+                    raise ValueError("card target")
+                if action["kind"] == "skip_card" and reward["card_selection_can_skip"] is not True:
+                    raise ValueError("illegal card skip")
+    except (ValueError, TypeError, KeyError):
+        fail(EXIT_MISMATCH, "reward_response_mismatch")
+
+    return {
+        "decision_id": decision_id,
+        "decision_revision": int(revision),
+        "screen_kind": screen_kind,
+        "player": player,
+        "rewards": rewards,
+        "legal_actions": actions,
+    }
+
+
+def _validate_complete(body: bytes) -> dict[str, object]:
+    try:
+        root = _decode_exact(
+            body,
+            (
+                "schema_version",
+                "status",
+                "decision_kind",
+                "actionable",
+                "decision_id",
+                "screen_kind",
+                "player",
+                "rewards",
+                "legal_actions",
+            ),
+        )
+        if (
+            root["schema_version"] != 1
+            or root["status"] != "complete"
+            or root["decision_kind"] != "reward"
+            or root["actionable"] is not False
+            or root["decision_id"] is not None
+            or root["screen_kind"] != "map"
+            or root["rewards"] != []
+            or root["legal_actions"] != []
+        ):
+            raise ValueError("reward completion")
+        player = _validate_player(root["player"])
+    except (ValueError, TypeError, KeyError):
+        fail(EXIT_MISMATCH, "reward_complete_response_mismatch")
+    return {"screen_kind": "map", "player": player}
+
+
+def _validate_action_response(body: bytes, decision_id: str, action_id: str) -> None:
+    expected = (
+        b'{"schema_version":1,"status":"accepted","mutation_state":"applied",'
+        b'"decision_id":"'
+        + decision_id.encode("ascii")
+        + b'","action_id":"'
+        + action_id.encode("ascii")
+        + b'","reason":"accepted"}'
+    )
+    if body != expected:
+        fail(EXIT_MISMATCH, "reward_action_response_mismatch")
+
+
+def _choose_action(state: dict[str, object], provider: str) -> dict[str, object]:
+    actions = list(state["legal_actions"])
+    if state["screen_kind"] == "rewards":
+        for kind in ("claim_gold", "open_card", "proceed"):
+            for action in actions:
+                if action["kind"] == kind:
+                    return action
+    else:
+        desired = "choose_card" if provider == "first-card" else "skip_card"
+        for action in actions:
+            if action["kind"] == desired:
+                return action
+        if desired == "skip_card":
+            fail(EXIT_MISMATCH, "card_reward_not_skippable")
+    fail(EXIT_MISMATCH, "reward_provider_no_action")
+
+
+def _poll_next(
+    credential: bytearray,
+    connector: Callable[[], Any],
+    deadline: float,
+    prior_decision_id: str,
+) -> dict[str, object]:
+    while time.monotonic() < deadline:
+        observed = _read_body(
+            "reward",
+            probe._REWARD_ROUTE[0][1],
+            credential,
+            connector,
+            deadline,
+        )
+        if observed == _REWARD_WAITING:
+            time.sleep(_POLL_SECONDS)
+            continue
+        if observed == _REWARD_UNSUPPORTED:
+            fail(EXIT_MISMATCH, "post_reward_state_unsupported")
+        try:
+            decoded = json.loads(observed.decode("ascii"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            fail(EXIT_MISMATCH, "reward_response_mismatch")
+        if isinstance(decoded, dict) and decoded.get("status") == "complete":
+            return _validate_complete(observed)
+        ready = _validate_ready(observed)
+        if ready["decision_id"] == prior_decision_id:
+            fail(EXIT_MISMATCH, "reward_decision_not_advanced")
+        return ready
+    fail(EXIT_MISMATCH, "post_reward_state_timeout")
+
+
+def _same_player(left: dict[str, int], right: dict[str, int]) -> bool:
+    return left == right
+
+
+def _validate_transition(
+    before: dict[str, object],
+    after: dict[str, object],
+    action: dict[str, object],
+) -> None:
+    before_player = before["player"]
+    after_player = after["player"]
+    kind = action["kind"]
+    if kind == "claim_gold":
+        reward = before["rewards"][int(action["reward_slot"])]
+        expected = dict(before_player)
+        expected["gold"] += int(reward["gold_amount"])
+        if after["screen_kind"] != "rewards" or after_player != expected:
+            fail(EXIT_MISMATCH, "gold_claim_reconciliation_failed")
+    elif kind == "open_card":
+        if after["screen_kind"] != "card_reward" or not _same_player(before_player, after_player):
+            fail(EXIT_MISMATCH, "card_open_reconciliation_failed")
+    elif kind == "choose_card":
+        expected = dict(before_player)
+        expected["deck_count"] += 1
+        if after["screen_kind"] != "rewards" or after_player != expected:
+            fail(EXIT_MISMATCH, "card_choice_reconciliation_failed")
+    elif kind == "skip_card":
+        if after["screen_kind"] != "rewards" or not _same_player(before_player, after_player):
+            fail(EXIT_MISMATCH, "card_skip_reconciliation_failed")
+    elif kind == "proceed":
+        if after["screen_kind"] != "map" or not _same_player(before_player, after_player):
+            fail(EXIT_MISMATCH, "reward_proceed_reconciliation_failed")
+    else:
+        fail(EXIT_MISMATCH, "reward_unknown_transition")
+
+    if after["screen_kind"] != "map" and (
+        int(after["decision_revision"]) != int(before["decision_revision"]) + 1
+    ):
+        fail(EXIT_MISMATCH, "reward_revision_mismatch")
+
+
+def _run_apply_reward(
+    credential: bytearray,
+    decision_provider: str,
+    connector: Callable[[], Any],
+) -> dict[str, object]:
+    deadline = time.monotonic() + _APPLY_DEADLINE_SECONDS
+    try:
+        health = _read_body("health", probe._BASE_ROUTES[0][1], credential, connector, deadline)
+        with memoryview(health) as body:
+            probe._validate_health(body)
+        manifest = _read_body("manifest", probe._BASE_ROUTES[1][1], credential, connector, deadline)
+        with memoryview(manifest) as body:
+            probe._validate_manifest(body)
+
+        initial_body = _read_body(
+            "reward",
+            probe._REWARD_ROUTE[0][1],
+            credential,
+            connector,
+            deadline,
+        )
+        if initial_body in (_REWARD_WAITING, _REWARD_UNSUPPORTED):
+            fail(EXIT_MISMATCH, "reward_not_ready")
+        initial = _validate_ready(initial_body)
+        state = initial
+        applied: list[dict[str, object]] = []
+        claimed_gold = 0
+        selected_cards: list[str] = []
+
+        while state["screen_kind"] != "map":
+            if len(applied) >= _MAXIMUM_ACCEPTED_ACTIONS:
+                fail(EXIT_MISMATCH, "reward_action_budget_exhausted")
+            action = _choose_action(state, decision_provider)
+            action_id = str(action["action_id"])
+            decision_id = str(state["decision_id"])
+            chosen_card: str | None = None
+            if action["kind"] == "claim_gold":
+                reward = state["rewards"][int(action["reward_slot"])]
+                claimed_gold += int(reward["gold_amount"])
+            elif action["kind"] == "choose_card":
+                chosen_card = str(state["rewards"][0]["cards"][int(action["card_slot"])])
+
+            action_body = _read_body(
+                "reward_action",
+                probe._REWARD_ACTION_ROUTE,
+                credential,
+                connector,
+                deadline,
+                decision_id,
+                action_id,
+            )
+            _validate_action_response(action_body, decision_id, action_id)
+            after = _poll_next(credential, connector, deadline, decision_id)
+            _validate_transition(state, after, action)
+            applied.append(
+                {
+                    "action_id": action_id,
+                    "kind": action["kind"],
+                    "decision_revision": state["decision_revision"],
+                    "chosen_card": chosen_card,
+                }
+            )
+            if chosen_card is not None:
+                selected_cards.append(chosen_card)
+            state = after
+
+        return {
+            "schema_version": 1,
+            "status": "passed",
+            "milestone": "r0i_reward_resolution",
+            "decision_provider": decision_provider,
+            "applied": applied,
+            "claimed_gold": claimed_gold,
+            "selected_cards": selected_cards,
+            "before": initial,
+            "after": state,
+            "routes_checked": 3 + 2 * len(applied),
+        }
+    finally:
+        probe._zero(credential)
+
+
+def _operation() -> dict[str, object]:
+    user_profile_value, supplied_uid, provider = parse_args()
+    user_profile: Path = absolute_path(user_profile_value, "user_profile")
+    uid = probe._require_identity(user_profile, supplied_uid)
+    credential = probe._load_fixed_credential(user_profile, uid)
+    try:
+        return _run_apply_reward(credential, provider, probe._literal_loopback_connector)
+    finally:
+        probe._zero(credential)
+
+
+def operation() -> dict[str, object]:
+    try:
+        return _operation()
+    except ToolFailure:
+        raise
+    except Exception:
+        fail(EXIT_INTERNAL, "internal_failure")
+
+
+if __name__ == "__main__":
+    main(operation)

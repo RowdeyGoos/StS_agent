@@ -1,10 +1,17 @@
 # Project Context
 
-This document is the deeper technical companion to the root [AGENTS.md](../AGENTS.md). It is meant to help a new coding session understand the current shape of the simulator quickly.
+This document is the deeper technical companion to the root
+[AGENTS.md](../AGENTS.md). It is meant to help a new coding session understand
+the current shape of the simulator quickly. It describes the present combat
+subsystem, not the full-game end state.
 
 ## Project Summary
 
-The project is a small, modular combat simulator inspired by Slay the Spire. The main goal is to provide a controllable environment for reinforcement learning experiments, not to fully reproduce the game.
+The current subsystem is a small, modular combat simulator inspired by Slay the
+Spire. Its purpose is to provide a controllable environment for reinforcement
+learning experiments, not to reproduce the full game. The overall project now
+targets a full Slay the Spire 2 agent under the separate
+[long-term architecture](LONG_TERM_ARCHITECTURE_ROADMAP.md).
 
 The current codebase already supports:
 
@@ -145,6 +152,12 @@ The encoder currently includes:
 - one-hot hand-slot features
 
 Enemy behavior-state features are meant to expose the state that determines future move probabilities, such as script position and possible next move names. They do not reveal an exact sampled future move queue.
+
+This is a synthetic `combat_v0` representation choice. An enemy-internal script
+position is not automatically legal input to the eventual live agent. The
+full-game public projector may expose only fields visible to a player or
+reconstructible from public history and known rules; other behavior fields stay
+in simulator/debug state.
 
 Important design choice:
 
@@ -401,9 +414,10 @@ resource-limited search is labeled best-found rather than exact.
 
 The exact oracle is intentionally a hindsight benchmark: its full simulator
 state includes the hidden draw order and RNG state. Optional information-aware
-regret analysis constructs reproducible hidden-state samples that preserve the
-agent's complete visible observation while randomizing unseen draw order and
-future RNG. Every legal current action is evaluated on the same samples, then
+regret analysis constructs reproducible samples that preserve the agent's
+complete visible observation, vary hypotheses about unseen current draw order,
+and separately sample future chance rollouts. Every legal current action is
+evaluated on the same samples, then
 ranked by sampled win rate, mean player HP, mean enemy HP, and mean action count.
 It also reports Wilson 95% win-rate intervals and how often each action ties for
 the hindsight-best action in a sample. This removes direct knowledge of the
@@ -533,6 +547,45 @@ only one module and command surface to maintain.
 ## Relationship To Other Docs
 
 - See [DECISIONS.md](../DECISIONS.md) for why major architecture choices were made.
+- See the [long-term architecture roadmap](LONG_TERM_ARCHITECTURE_ROADMAP.md)
+  for the full-game destination and dependency order.
+- See the [Phase 0 target charter](PHASE_0_TARGET_CHARTER.md) for the accepted
+  first target and unresolved program gates.
+- See the [dedicated profile fixture plan](PHASE_0_PROFILE_FIXTURE_PLAN.md) for
+  privacy-safe construction, reset, and validation before live tests.
+- See the [dedicated-profile metadata request](PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md)
+  for the exact approved first filesystem scope, and its
+  [sanitized result](research/PHASE_0_PROFILE_METADATA_DISCOVERY_RESULT.md) for
+  the local-boundary pass and caveats. The separately approved
+  [backup-sidecar follow-up](PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_REQUEST.md)
+  and its [sanitized result](research/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_RESULT.md)
+  establish only that the current shallow projection matches the predicted
+  sidecar pair. D1C was reviewed, deliberately unselected/skipped, and never
+  executed; its fail-closed profile-root/empty-history predicate is incorporated
+  into the exact frozen
+  [baseline fingerprint request](PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md).
+  Its first approved invocation
+  [stopped before target-content access](research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md)
+  because the runner used the wrong fixed profile-component construction. The
+  request would perform two fixed-boundary byte samples only after the embedded
+  preflight passes, but no corrected invocation is currently authorized.
+  Copying, parsing, recoverability, Cloud, and logical state remain open.
+- See the [Phase 1 integration spike](PHASE_1_INTEGRATION_SPIKE.md) for the
+  current live-bridge and fast-backend evidence plan.
+- See the [Phase 1 static audit synthesis](PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
+  for the candidate shortlist and ordered executable gates.
+- See the [restricted bridge design](PHASE_1_RESTRICTED_BRIDGE_DESIGN.md) for
+  the selected project-owned read-only live path and its staged safety gates.
+- See the [`R0a` bridge guide](../bridge/Sts2AgentBridge/README.md) and
+  [implementation evidence](research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
+  for the now-complete install-free artifact, executable contract, reproducible
+  package, exact hashes, and known residuals. This is not yet live-load
+  evidence.
+- See the [live campaign request](PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md) for the
+  separate artifact-bound overlay, configuration, launch, probe, teardown, and
+  rollback approval boundary.
+- See the [multi-agent execution model](MULTI_AGENT_EXECUTION.md) for parallel
+  ownership, review, integration, and user reporting.
 - See [Experiment Workflows](EXPERIMENT_WORKFLOWS.md) for practical training,
   profiling, sweep, trace-analysis, and oracle commands.
 - See [ROADMAP.md](../ROADMAP.md) for likely next steps.

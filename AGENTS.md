@@ -23,6 +23,45 @@ When starting a fresh session, read in this order:
 6. [game/simulation/encoding.py](game/simulation/encoding.py)
 7. [game/cli/train.py](game/cli/train.py)
 
+For work on the full-game program, live integration, shared contracts, or
+long-term agent architecture, also read:
+
+1. [docs/LONG_TERM_ARCHITECTURE_ROADMAP.md](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md)
+2. [docs/PHASE_0_TARGET_CHARTER.md](docs/PHASE_0_TARGET_CHARTER.md)
+3. [docs/PHASE_0_PROFILE_FIXTURE_PLAN.md](docs/PHASE_0_PROFILE_FIXTURE_PLAN.md)
+4. [docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md](docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md)
+   and its [sanitized result](docs/research/PHASE_0_PROFILE_METADATA_DISCOVERY_RESULT.md)
+   plus the approved
+   [D1B sidecar scope](docs/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_REQUEST.md)
+   and its [sanitized result](docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_RESULT.md)
+   before any further profile-filesystem work. D1C was reviewed, deliberately
+   unselected/skipped, and never executed; its fail-closed predicate is
+   incorporated into the
+   [baseline fingerprint request](docs/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md).
+   Its first approved invocation stopped before target-content access because
+   the runner used the wrong fixed profile-component construction; see the
+   [sanitized attempt-1 result](docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md).
+   No corrected rerun is currently authorized. No earlier approval authorizes
+   it or a later copy, parse, Cloud, restore, or launch step
+5. the active phase plan, currently
+   [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md)
+6. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
+7. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
+   for the staged bridge boundary and live acceptance gates
+8. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
+   before bridge build, test, package, or verifier work
+9. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
+   for the exact frozen repository artifact and known residuals
+10. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
+    before any operator-config write, game overlay change, launch, live probe,
+    teardown, or rollback work
+
+For delegated or parallel work, read
+[docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md) before assigning
+write ownership. These additional documents are not mandatory for an isolated
+combat-prototype change unless that change affects a full-game contract or
+program decision.
+
 ## Doc Roles
 
 - `README.md`: user-facing overview, setup, and run commands
@@ -30,9 +69,63 @@ When starting a fresh session, read in this order:
 - `DECISIONS.md`: why important architecture and training choices were made
 - `docs/PROJECT_CONTEXT.md`: current technical state of the simulator
 - `ROADMAP.md`: likely next steps and current priorities
+- `docs/LONG_TERM_ARCHITECTURE_ROADMAP.md`: strategic destination and phase order
+- `docs/PHASE_0_TARGET_CHARTER.md`: initial benchmark target and open gates
+- `docs/PHASE_0_PROFILE_FIXTURE_PLAN.md`: dedicated profile construction,
+  privacy, reset, and validation plan
+- `docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md`: exact first
+  metadata-only profile read scope; its approved hash is preserved and does not
+  authorize broader follow-up work
+- `docs/research/PHASE_0_PROFILE_METADATA_DISCOVERY_RESULT.md`: sanitized D1
+  local-boundary result, caveats, and historically redacted entries
+- `docs/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_REQUEST.md`: preserved exact
+  approved D1B scope for testing the current shallow state against the
+  statically predicted backup-sidecar pair
+- `docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_RESULT.md`: sanitized
+  D1B current-projection pass, execution attempts, and strict limits
+- `docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_RESULT_REVIEW.md`: independent
+  hash-bound D1B execution-result, privacy, and gate-disposition review
+- `docs/PHASE_0_PROFILE_RECOVERY_UNIT_METADATA_REQUEST.md`: preserved exact D1C
+  metadata-only alternative; reviewed, deliberately unselected/skipped, and
+  never executed
+- `docs/research/PHASE_0_PROFILE_RECOVERY_UNIT_SCOPE_REVIEW.md`: independent
+  hash-bound review of the preserved D1C alternative
+- `docs/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md`: current exact, frozen
+  two-sample byte-fingerprint scope with the D1C fail-closed predicate as its
+  mandatory pre-read gate; attempt 1 stopped and no corrected invocation is
+  authorized
+- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_SCOPE_REVIEW.md`: independent
+  exact-hash authorization, race/claim, canonicalization, and privacy review of
+  the baseline-fingerprint request
+- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md`: sanitized
+  fail-closed first-invocation result, implementation defect, and fresh-rerun
+  approval boundary
+- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_REVIEW.md`: independent
+  hash-bound execution-stage, static-path, privacy, and rerun-authorization
+  review of attempt 1
+- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_CORRECTED_RUNNER_SYNTHETIC_VALIDATION.md`:
+  disposable no-user-data validation of the corrected path binding, byte
+  ceiling, result markers, canonicalization, and fail-closed cases
+- `docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md`: independent
+  historical hash-bound review of the sanitized D1 result and exact D1B scope
+- `docs/PHASE_1_INTEGRATION_SPIKE.md`: current live/fast-backend evidence plan
+- `docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md`: current candidate shortlist and
+  next executable gates
+- `docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`: selected project-owned live
+  bridge boundary, staged capabilities, and acceptance gates
+- `bridge/Sts2AgentBridge/README.md`: implemented `R0a` build, contract,
+  verifier, package, and operational-boundary guide
+- `docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md`: exact install-free
+  artifact identities, gate results, independent reviews, and residuals
+- `docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md`: exact approval-bound live smoke,
+  teardown, rollback, privacy, and claim boundary
+- `docs/MULTI_AGENT_EXECUTION.md`: parallel-development operating model
 - `.codex`: ultra-short bootstrap note for fresh Codex sessions
 
 ## Core Working Assumptions
+
+These assumptions describe the current combat research path. They are not the
+end-state full-game contracts.
 
 - `CombatEnv` is the main RL-facing environment.
 - The structured observation is the source of truth for debugging and tests.
@@ -78,6 +171,7 @@ Action changes usually require updates to:
 - `game/cli/`: real command-line implementations
 - `game/__init__.py`: stable symbol-level public API
 - `configs/`: reusable training and sweep configurations
+- `manifests/game-builds/`: sanitized immutable identities for pinned game builds
 - `tests/simulation/`: combat and encoding coverage
 - `tests/agents/`: model architecture and persistence coverage
 - `tests/training/`: trainer, profiling, and worker coverage

@@ -1,0 +1,15 @@
+{
+  "schema_version": "br0_package_layout_v1",
+  "archive_name": "Sts2AgentBridge-0.8.0.zip",
+  "compression": "stored",
+  "entry_timestamp": "1980-01-01T00:00:00",
+  "entry_unix_mode": "0644",
+  "allow_directory_entries": false,
+  "allow_symlinks": false,
+  "allow_comments": false,
+  "allow_extra_fields": false,
+  "entries": [
+    "Sts2AgentBridge/Sts2AgentBridge.dll",
+    "Sts2AgentBridge/Sts2AgentBridge.json"
+  ]
+}

@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <Target Name="ValidateSts2GameDataDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''"
+           Text="STS2GameDataDir is required and must name the explicit pinned managed-data directory." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))"
+           Text="STS2GameDataDir must be an absolute path." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')"
+           Text="The explicit STS2GameDataDir does not contain sts2.dll." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')"
+           Text="The explicit STS2GameDataDir does not contain GodotSharp.dll." />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Sts2AgentBridge/Sts2AgentBridge.csproj"
+                      AdditionalProperties="BridgeTestSeam=true" />
+    <Reference Include="sts2">
+      <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../contracts/live_probe_v0/config_enabled.json">
+      <Link>ContractArtifacts/live_probe_v0/config_enabled.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="../../contracts/live_probe_v0/config_disabled.json">
+      <Link>ContractArtifacts/live_probe_v0/config_disabled.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="../../contracts/live_probe_v0/limits.json">
+      <Link>ContractArtifacts/live_probe_v0/limits.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="../../contracts/live_probe_v0/vectors/**/*">
+      <Link>ContractArtifacts/live_probe_v0/vectors/%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

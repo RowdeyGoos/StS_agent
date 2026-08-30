@@ -1,14 +1,40 @@
 # StS Agent
 
-Minimal Slay-the-Spire-style combat simulator for reinforcement learning experiments.
+Research project for a functional, eventually near-optimal Slay the Spire 2
+agent. The current executable foundation is a compact Slay-the-Spire-style
+combat simulator for reinforcement learning experiments.
 
 Requires Python 3.10+.
 
-Contributor and coding-session docs:
+Project and contributor documentation:
 
 - [AGENTS.md](AGENTS.md): working guide and repo invariants
 - [DECISIONS.md](DECISIONS.md): why key architecture and training choices were made
 - [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md): current technical state of the simulator
+- [docs/LONG_TERM_ARCHITECTURE_ROADMAP.md](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md): strategic architecture and phased plan for a full-game near-optimal agent
+- [docs/PHASE_0_TARGET_CHARTER.md](docs/PHASE_0_TARGET_CHARTER.md): accepted initial scope, information rules, objective, and evaluation gates
+- [docs/PHASE_0_PROFILE_FIXTURE_PLAN.md](docs/PHASE_0_PROFILE_FIXTURE_PLAN.md): privacy-safe dedicated profile, reset, and evidence design
+- [docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md](docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md): preserved hash-bound scope for the approved metadata-only dedicated-profile lookup
+- [docs/research/PHASE_0_PROFILE_METADATA_DISCOVERY_RESULT.md](docs/research/PHASE_0_PROFILE_METADATA_DISCOVERY_RESULT.md): sanitized result and limits of the approved shallow profile lookup
+- [docs/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_REQUEST.md](docs/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_REQUEST.md): preserved approved fixed-allowlist check of the current shallow state against the predicted backup-sidecar pair
+- [docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_RESULT.md](docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_RESULT.md): sanitized D1B current-projection result and limits
+- [docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_RESULT_REVIEW.md](docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_RESULT_REVIEW.md): independent hash-bound review of the D1B execution result
+- [docs/PHASE_0_PROFILE_RECOVERY_UNIT_METADATA_REQUEST.md](docs/PHASE_0_PROFILE_RECOVERY_UNIT_METADATA_REQUEST.md): preserved reviewed D1C metadata-only alternative, deliberately skipped and never executed
+- [docs/research/PHASE_0_PROFILE_RECOVERY_UNIT_SCOPE_REVIEW.md](docs/research/PHASE_0_PROFILE_RECOVERY_UNIT_SCOPE_REVIEW.md): independent hash-bound review of the preserved D1C alternative
+- [docs/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md](docs/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md): exact frozen two-sample byte-fingerprint scope with a mandatory fail-closed metadata preflight; no corrected invocation is currently authorized
+- [docs/research/PHASE_0_PROFILE_BASELINE_HASH_SCOPE_REVIEW.md](docs/research/PHASE_0_PROFILE_BASELINE_HASH_SCOPE_REVIEW.md): independent exact-hash scope, privacy, and claim-boundary review of the fingerprint request
+- [docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md](docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md): sanitized fail-closed first invocation, runner path-binding defect, and corrected-rerun gate
+- [docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_REVIEW.md](docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_REVIEW.md): independent hash-bound review of attempt 1 and its fresh-approval boundary
+- [docs/research/PHASE_0_PROFILE_BASELINE_HASH_CORRECTED_RUNNER_SYNTHETIC_VALIDATION.md](docs/research/PHASE_0_PROFILE_BASELINE_HASH_CORRECTED_RUNNER_SYNTHETIC_VALIDATION.md): disposable validation of the corrected runner without real-profile access
+- [docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md](docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md): historical independent hash-bound review of the D1 result and D1B scope
+- [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md): preregistration and evidence plan for choosing the live bridge and fast backend
+- [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md): current static shortlist, safety gaps, and ordered experiment gates
+- [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md): selected project-owned read-only bridge boundary, staged control design, and gates
+- [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md): implemented `R0a` bridge boundary, contracts, and reproducible build/package commands
+- [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md): exact install-free implementation, test, surface, and package evidence
+- [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md): exact approval-bound live smoke, teardown, and rollback scope
+- [docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md): coordination, ownership, review, and user-update model for parallel development
+- [manifests/game-builds/README.md](manifests/game-builds/README.md): sanitized immutable identities for pinned game installations
 - [docs/AGENT_FLOW.md](docs/AGENT_FLOW.md): visual walkthrough of observation encoding and Double DQN action scoring
 - [docs/EXPERIMENT_WORKFLOWS.md](docs/EXPERIMENT_WORKFLOWS.md): practical training, profiling, sweep, trace, and oracle workflows
 - [docs/BENCHMARKS.md](docs/BENCHMARKS.md): deterministic multi-policy benchmark workflow and JSON format

@@ -1,0 +1,9 @@
+HTTP/1.1 429 Too Many Requests
+Content-Type: application/json; charset=utf-8
+Content-Length: 135
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+Retry-After: 1
+Connection: close
+
+{"schema_version":1,"code":"rate_limited","retryable":true,"mutation_state":"none","correlation_id":"00000000000000000000000000000000"}

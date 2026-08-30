@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import sys
+
+sys.dont_write_bytecode = True
+
+from decision_providers import get_map_decision_provider, map_provider_names
+from tool_common import EXIT_MISMATCH, fail, main
+
+
+def _candidate(index: int, kind: str, col: int) -> dict[str, object]:
+    return {
+        "candidate_index": index,
+        "col": col,
+        "row": 4,
+        "kind": kind,
+    }
+
+
+def _action(index: int) -> dict[str, object]:
+    return {
+        "action_id": f"select:{index}",
+        "kind": "select_map_node",
+        "candidate_index": index,
+    }
+
+
+def _require_selection(
+    selected: dict[str, object],
+    action: dict[str, object],
+    candidate: dict[str, object],
+    basis: str,
+) -> None:
+    expected = {
+        "action_id": action["action_id"],
+        "kind": action["kind"],
+        "candidate_index": action["candidate_index"],
+        "col": candidate["col"],
+        "row": candidate["row"],
+        "node_kind": candidate["kind"],
+        "basis": basis,
+    }
+    if selected != expected:
+        fail(EXIT_MISMATCH, "map_provider_fixture_selection")
+
+
+def _priority() -> None:
+    candidates = [
+        _candidate(0, "unknown", 1),
+        _candidate(1, "monster", 2),
+        _candidate(2, "rest_site", 3),
+    ]
+    actions = [_action(0), _action(1), _action(2)]
+    _require_selection(
+        get_map_decision_provider("first").choose(candidates, actions),
+        actions[0],
+        candidates[0],
+        "first_reachable",
+    )
+    _require_selection(
+        get_map_decision_provider("combat").choose(candidates, actions),
+        actions[1],
+        candidates[1],
+        "combat_continuation",
+    )
+    _require_selection(
+        get_map_decision_provider("coverage").choose(candidates, actions),
+        actions[2],
+        candidates[2],
+        "room_coverage",
+    )
+
+    without_rest = candidates[:2]
+    _require_selection(
+        get_map_decision_provider("coverage").choose(without_rest, actions[:2]),
+        actions[0],
+        candidates[0],
+        "room_coverage",
+    )
+
+
+def _fallback() -> None:
+    candidates = [
+        _candidate(0, "shop", 5),
+        _candidate(1, "treasure", 3),
+    ]
+    actions = [_action(0), _action(1)]
+    _require_selection(
+        get_map_decision_provider("combat").choose(candidates, actions),
+        actions[1],
+        candidates[1],
+        "combat_continuation",
+    )
+    _require_selection(
+        get_map_decision_provider("coverage").choose(candidates, actions),
+        actions[1],
+        candidates[1],
+        "room_coverage",
+    )
+
+
+def _advertised_legal_alignment() -> None:
+    candidates = [
+        _candidate(0, "rest_site", 1),
+        _candidate(1, "monster", 2),
+        _candidate(2, "unknown", 3),
+    ]
+    advertised_actions = [_action(1), _action(2)]
+    selected = get_map_decision_provider("coverage").choose(
+        candidates,
+        advertised_actions,
+    )
+    _require_selection(
+        selected,
+        advertised_actions[1],
+        candidates[2],
+        "room_coverage",
+    )
+    if not any(
+        selected["action_id"] == action["action_id"]
+        and selected["kind"] == action["kind"]
+        and selected["candidate_index"] == action["candidate_index"]
+        for action in advertised_actions
+    ):
+        fail(EXIT_MISMATCH, "map_provider_fixture_unadvertised_action")
+
+
+def operation() -> dict[str, object]:
+    checks: list[str] = []
+    if map_provider_names() != frozenset(("first", "combat", "coverage")):
+        fail(EXIT_MISMATCH, "map_provider_fixture_registry")
+    checks.append("provider_registry")
+    _priority()
+    checks.append("priority")
+    _fallback()
+    checks.append("fallback")
+    _advertised_legal_alignment()
+    checks.append("advertised_legal_alignment")
+    return {
+        "schema_version": 1,
+        "status": "passed",
+        "suite": "decision_providers_fixtures",
+        "checks": checks,
+        "check_count": len(checks),
+    }
+
+
+if __name__ == "__main__":
+    main(operation)

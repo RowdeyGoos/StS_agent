@@ -1,6 +1,9 @@
 # DECISIONS.md
 
-This file records the main architectural decisions behind the current simulator. It is intentionally lightweight: the goal is to help future contributors and coding sessions understand why the code looks the way it does.
+This file records the main architectural decisions behind the current simulator
+and the accepted full-game program. It is intentionally lightweight: the goal
+is to help future contributors and coding sessions understand why the code and
+project boundaries look the way they do.
 
 When a change alters core assumptions about observations, actions, rewards, encounter structure, or training defaults, update this file.
 
@@ -43,6 +46,11 @@ Once multi-enemy encounters were added, the environment needed targetable enemie
 
 Callers should filter on living enemies rather than assuming every slot is active.
 
+This slot rule belongs to the fixed-width `combat_v0` representation. Full-game
+state and candidate contracts use stable semantic entity IDs independent of a
+temporary tensor position, while an encoder may still assign stable slots inside
+one batch or encounter.
+
 ## D3. Use A Fixed Discrete Action Space With Legal-Action Masking
 
 ### Context
@@ -64,6 +72,10 @@ RL methods in this repo currently assume a small discrete action space, but comb
 - keeps invalid-action handling explicit
 - preserves a clean debugging API while still supporting neural agents
 
+This fixed grid is a `combat_v0` training interface, not the full-game action
+contract. The full-game path uses typed variable legal candidates and accepts an
+explicit retraining boundary.
+
 ## D4. Reward Should Favor Winning While Preserving HP
 
 ### Context
@@ -83,7 +95,11 @@ Reward is:
 
 - encourages policies that win cleanly, not just eventually
 - gives denser learning signal than terminal rewards alone
-- lines up with the intended objective for this project: win with as much HP left as possible
+- provides useful combat-local learning pressure and diagnostics
+
+This shaped reward applies to `combat_v0`. It does not define the full-game
+utility accepted in D37: complete-run win probability is canonical, while HP is
+an auxiliary consequence or diagnostic.
 
 ## D5. Keep A Very Small "Simple" Encounter Alongside Richer Encounter Sets
 
@@ -232,6 +248,12 @@ Some enemies have deterministic scripts and others can branch stochastically. Cu
 - makes the environment closer to Markov for RL agents
 - gives the agent the state needed to reason about future move probabilities
 - avoids leaking unresolved randomness that a player would not know in advance
+
+This decision describes the synthetic `combat_v0` observation. Before any
+`behavior_state` field enters a deployed full-game `PublicObservation`, it must
+be classified as currently player-visible or reconstructible solely from public
+history and known rules. Enemy-internal script positions that fail that test
+remain privileged simulator/debug state; D12 does not authorize exposing them.
 
 ## D13. Add Dueling Double DQN As A Separate Policy, Not A Silent Replacement
 
@@ -503,7 +525,8 @@ future knowledge rather than a weakness in the learned behavior.
 
 - retain the exact seeded oracle as the reproducible hindsight benchmark
 - add opt-in sampled information-aware regret analysis at every visited agent state
-- preserve the complete visible observation while randomizing unseen draw order and future RNG streams
+- preserve the complete visible observation while sampling unseen current draw
+  order hypotheses and separately sampling future chance rollouts
 - evaluate every legal action on the same hidden-state samples to reduce comparison noise
 - rank actions lexicographically by sampled wins, total remaining player HP, total remaining enemy HP, and total action count
 - report win-rate confidence intervals, resolved/proven sample counts, and hindsight-best frequency
@@ -517,6 +540,11 @@ future knowledge rather than a weakness in the learned behavior.
 - keeping the exact and sampled reports side by side exposes both realized regret and expected regret
 - explicit limitations avoid presenting approximate determinization as an exact POMDP solution
 - opt-in controls prevent the multiplicative search cost from slowing ordinary oracle use
+
+The sampled future rollouts estimate chance outcomes; they are not an assertion
+that ungenerated future events are latent current facts. Any explicit deployed
+belief is limited to action-relevant hidden current state and remains
+evidence-gated under D37.
 
 ## D25. Optimize Exact Search Without Weakening Seeded Proofs
 
@@ -885,3 +913,315 @@ slow.
   data-efficient learner
 - resumable per-cell artifacts make a multi-hour experiment auditable and safe to
   continue after interruption
+
+## D37. Build The Full-Game Program Behind Backend-Neutral Decision Contracts
+
+### Context
+
+The combat prototype is valuable for controlled RL research, but extending its
+fixed observation vector, global discrete action grid, and combat-local utility
+cannot produce a reliable full-run Slay the Spire 2 agent. The full project also
+needs to support direct policy play, optional planning, and parallel development
+without splitting state/action semantics across several controllers.
+
+### Decision
+
+- freeze and preserve the current combat environment through the pending Phase
+  0 `combat_v0` baseline package, then retain it as an adapter rather than making
+  its interfaces the final full-game contracts
+- treat one exactly pinned live game build as the semantic authority and require
+  simulator behavior to earn support through differential evidence
+- put live, simulator, and replay backends behind one versioned, typed decision
+  protocol containing public information and variable legal action candidates
+- optimize complete-run win probability and build one reduced-content full-run
+  vertical slice before investing in an advanced tactical learner or broad
+  content parity
+- replace catalog-sized one-hot outputs with shared entity representations and
+  ragged candidate scoring at the explicit retraining boundary
+- make heuristic, policy-only, tactical-search, and later strategic-search
+  controllers interchangeable `DecisionStrategy` implementations over the same
+  information and candidate contract; report policy-only and planner-enhanced
+  budgets separately
+- begin with normalized public observation and observable history; treat
+  recurrence and explicit hidden-state beliefs as evidence-gated additions, and
+  model future ungenerated randomness as chance rather than belief state
+- gate implementation and claims through the accepted Phase 0 target charter,
+  phase-specific evidence plans, public/privileged separation, artifact
+  fingerprints, and preregistered evaluation
+
+### Why
+
+- live authority and conformance prevent optimizing a subtly different game
+- backend-neutral contracts let integration, simulation, learning, search, and
+  evaluation progress independently behind stable boundaries
+- a common decision-strategy interface makes search genuinely optional and makes
+  with/without-search comparisons attributable rather than architectural
+- an early full-run slice exposes long-horizon state and value problems before
+  effort is spent on shallow content breadth
+- evidence-gated memory and belief retain useful tools without assuming that a
+  mostly observable game needs a complex partial-observability solution
+
+### Consequence
+
+This decision records direction, not a completed migration. Existing combat
+commands and tests remain current behavior until an explicit phase changes them.
+The short-term `ROADMAP.md` continues to track nearby combat work; the strategic
+roadmap, target charter, and active phase plan own the full-game program.
+Parallel tasks may proceed where contracts and file ownership are stable, using
+the multi-agent execution model and consolidated milestone updates so the user
+can follow decisions and evidence without coordinating the agents directly.
+Earlier decisions D2–D4 and D12 continue to define the legacy combat path rather
+than immutable full-game contracts. D18, D24, and D25 remain diagnostic search
+references, not deployed-planner or global-objective definitions.
+
+## D38. Start Live Integration With A Project-Owned Read-Only Bridge
+
+### Context
+
+The pinned STS2MCP source compiles cleanly against the exact target assemblies,
+but compilation does not make its runtime boundary suitable for the project.
+Its bootstrap, transport, state builder, action dispatch, profile operations,
+and lifecycle are tightly coupled. Reads can alter UI, actions are positional
+and non-transactional, and broad unauthenticated routes mix public,
+operational, privileged, and destructive capabilities.
+
+Narrowing that code would require replacing the central seams that otherwise
+justify a fork. The first live experiment needs a much smaller claim: prove that
+an authenticated mod can load, verify the pinned build, classify one visible
+screen without side effects, and shut down cleanly.
+
+### Decision
+
+- build the first live path as a lean project-owned C# bridge rather than an
+  STS2MCP fork or unchanged third-party binary
+- retain the pinned MIT STS2MCP source as compatibility/coverage evidence and
+  permit only individually audited snippet reuse with file-level source/license
+  provenance behind project-owned typed interfaces
+- stage capabilities so the first `live_probe_v0` binary contains only
+  authenticated health, manifest, and passive visible-screen reads; compile no
+  action, profile, privileged, Harmony, or bridge-write surface into it
+- keep transport, public projection, operational metadata, future control, and
+  privileged conformance capture as explicit boundaries; privileged capture is
+  a separate package that is never co-loaded with the deployed actor
+- introduce read-only decision/candidate capture only after the minimal load and
+  passivity gate, and introduce one leased transactional mutation surface only
+  after public-boundary, phase, recovery, and fixture gates pass
+- keep search, policies, models, simulators, and training outside the bridge so
+  policy-only and planner-enhanced strategies consume the same public decision
+  and candidate contract
+
+### Why
+
+- the smallest binary gives security and passivity claims a tractable audit
+  surface
+- an allowlisted public projector prevents privileged engine state from
+  becoming the de facto actor schema
+- the absence of dormant mutation/profile code is stronger than a runtime
+  `disabled` flag
+- a transport-independent typed core prevents an experimental REST shape from
+  becoming the permanent full-game domain API
+- staged artifacts make failures attributable and keep installation/load
+  approval separate from source design and compilation
+- a backend-neutral bridge preserves the optional-search architecture selected
+  in D37
+
+### Consequence
+
+The detailed boundary and gates are normative in
+`docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`. No bridge implementation or live
+authorization follows from this decision alone. Before any source is installed,
+the project-owned read-only package must pass its exact compile, reproducibility,
+forbidden-surface, and independent-review gates. Before any game launch, the
+dedicated profile must have a separately approved recoverable baseline and the
+user must approve the exact overlay, configuration, launch, close, and removal
+procedure.
+
+## D39. Compose The Final Metadata Boundary Check Into The Baseline Fingerprint
+
+### Context
+
+After D1 and D1B, a standalone D1C request was reviewed to repeat the complete
+profile-root, saves, and empty-history predicate without reading bytes. Running
+it separately would add an approval and execution round, followed by the same
+predicate again before a content fingerprint. The user asked to shorten this
+sequence while preserving the privacy and fail-closed boundary.
+
+### Decision
+
+- leave the exact D1C request and review immutable, but mark that alternative as
+  deliberately unselected/skipped and never executed
+- incorporate D1C's complete two-snapshot predicate as the mandatory pre-read
+  gate of `PF-HASH-BASELINE-V1`
+- permit no candidate-file open, size check, or byte read until both complete
+  snapshots match
+- limit PF-HASH to two fresh-open samples of four fixed roles at their already
+  observed exact sizes, with protected hashes and explicit content-only claims
+- keep copying, offline parsing, Cloud containment, restore, launch, and bridge
+  work as distinct later requests and approval IDs
+
+### Why
+
+- the composition removes a redundant user round without removing the reviewed
+  pre-read predicate
+- performing the predicate immediately before hashing is fresher than relying
+  on a separate earlier observation
+- strict byte roles and size bounds prevent the accelerated approval from
+  becoming a general save-content read
+- separate later approvals keep reversible evidence work distinct from Cloud or
+  game-state changes
+
+### Consequence
+
+The next profile request is PF-HASH, not D1C. Its first approved invocation
+stopped before target-content access after the runner used the protected slot
+itself instead of the statically required `profile<number>` component. The
+request and reviewed hash remain unchanged, but that invocation consumed its
+approval; one corrected invocation requires fresh explicit approval and all
+immediate confirmations. A passing result would establish only two matching
+path-scoped content samples; it would not establish file-object continuity,
+atomicity, semantic validity, recoverability, or Cloud behavior.
+
+## D40. Freeze The Minimal Live Probe Before Parallel Bridge Implementation
+
+### Context
+
+The first project-owned bridge is small enough to implement in parallel only if
+its wire bytes, resource limits, game accessors, filesystem roots, build guard,
+package shape, forbidden surface, and file ownership are fixed first. Early
+preflight drafts still left individual implementers discretion over security
+boundaries such as overloads, generated async callsites, symbolic-link order,
+path provenance, and verifier fixtures.
+
+### Decision
+
+- accept `docs/PHASE_1_BR0_PREFLIGHT.md` as the implementation freeze for
+  `R0a` / `live_probe_v0` after independent contract/test, security, and pinned
+  loader/game-API reviews
+- keep the first production artifact to one attributed DLL plus one manifest,
+  with exactly authenticated health, manifest, and passive public-screen routes
+- default-deny game, Godot, filesystem, environment, and network surfaces
+  outside the exact reviewed members, callsites, constants, paths, and type
+  closure
+- assign contract/configuration, host/build identity, transport, public reader,
+  packaging/verifiers, and integration to disjoint write boundaries
+- require executable golden vectors, malformed/fuzz coverage, known-good and
+  known-bad verifier fixtures, dual-SDK compilation, deterministic clean-root
+  packaging, and independent source/package review before installation
+
+### Why
+
+- parallel workers can now consume one byte- and overload-exact contract rather
+  than inventing subtly different seams
+- default-deny metadata and path-provenance checks make absence of profile,
+  mutation, outbound-network, and undeclared IPC capabilities reviewable
+- keeping the live artifact deliberately small makes load, passivity, and
+  teardown failures attributable before observation or control is expanded
+
+### Consequence
+
+Repository-local implementation may proceed behind the frozen ownership table.
+Any substantive contract change invalidates the freeze and requires focused
+re-review. Compilation and package success remain install-free evidence only;
+operator-configuration writes, game overlay installation, launch, live probing,
+and removal still wait for the exact built artifacts and a consolidated
+reversible operational checkpoint. The corrected profile baseline hash probe
+also remains a separate approval-bound task.
+
+## D41. Accept One Reproducible R0a Artifact Without Promoting It To A Live Claim
+
+### Context
+
+The `live_probe_v0` implementation was completed behind the BR0 freeze, but a
+first apparent release binary differed from two clean copied-root builds. The
+direct repository build had inherited the Git source revision in its assembly
+informational version, while a source copy without `.git` emitted the frozen
+`0.1.0`. Static semantic checks alone correctly could not prove that those
+different build contexts produced the same bytes.
+
+### Decision
+
+- explicitly disable source-revision suffix injection in the production and
+  verifier-fixture projects, shared build properties, and controlled build
+  invocation
+- accept only the replacement artifact produced byte-identically by the pinned
+  parity SDK, the servicing SDK, and two independent copied-source parity builds
+- bind acceptance to exact contract artifacts, production-source and normalized
+  whole-assembly fingerprints, a default-deny member/callsite surface, named
+  adversarial fixtures, canonical two-entry packaging, and independent review
+- keep the test-only OS-assigned loopback seam out of the release assembly and
+  retain the production endpoint as literal `127.0.0.1:43117`
+- record the unexpected post-start listener-fault/runtime-state gap as a
+  fail-closed P2 liveness residual rather than broadening the first live scope
+
+### Why
+
+- byte reproducibility across repository and clean roots closes a provenance
+  gap that normalized IL equivalence intentionally does not cover
+- exact default-deny closure and an allowlisted public projector make the
+  absence of profile, action, privileged, and undeclared network surfaces
+  independently reviewable
+- a discarded candidate history prevents a stale but semantically similar DLL
+  from being mistaken for the approved package
+- preserving a separate live checkpoint keeps install-free compatibility
+  evidence distinct from actual loader, screen, passivity, and teardown claims
+
+### Consequence
+
+The canonical repository artifact and evidence are recorded in
+`docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md`. The repository boundary
+is accepted, but `R0a` is not a live-load pass and Phase 1 is not complete.
+Writing operator configuration, adding the game overlay, launching, probing,
+and removing it require the exact reversible campaign in
+`docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md`. The earlier Git-suffixed binary is
+discarded and must never be installed.
+
+## D42. Permit A Preliminary Menu Smoke Without Calling It R0a Acceptance
+
+### Context
+
+The exact `R0a` artifact is ready for controlled live evidence, while the
+corrected dedicated-profile baseline fingerprint remains separately
+unauthorized after its first invocation stopped before target-content access.
+The full restricted-bridge design requires a recoverable fixture and Cloud
+rollback before its first acceptance load. At the same time, loader discovery,
+authenticated health/manifest reads, and the pinned main-menu/settings mapping
+can be tested without starting a run or directly inspecting profile content.
+
+Ordinary Steam and game launches may still read, write, or synchronize profile,
+save, preference, and Cloud state. Without the baseline those effects are
+unobserved and potentially unrecoverable, so a menu smoke cannot silently stand
+in for the full gate.
+
+### Decision
+
+- allow one separately approved preliminary menu-only smoke before the
+  recoverable-baseline prerequisite only when the user explicitly accepts the
+  ordinary opaque Steam/game I/O and no-recovery risk
+- require the dedicated profile to be already selected; forbid profile-screen
+  visits, profile switching, run start/resume, and direct profile/save/Cloud
+  content access or comparison by campaign helpers, bridge code, or operator
+- bind exact artifacts and tool hashes, exclusive/no-follow file creation,
+  finite process/port/UI/Cloud checkpoints, normal-exit-only quarantine, and
+  exact generated-material deletion behind a reviewed operational request
+- classify success only as a preliminary compatible-loader, authenticated
+  happy-path, visible-screen, normal-exit, removal, and base-restart smoke
+- retain the recoverable fixture and Cloud rollback as prerequisites for full
+  `R0a`, `L-BOOT`, and `L-PASSIVE` acceptance
+
+### Why
+
+- the preliminary result answers the narrow engineering question needed before
+  expanding the bridge while keeping the missing recovery evidence visible
+- explicit risk acceptance is more honest than claiming approved launches have
+  no profile or Cloud effects
+- the same exact artifact can be removed after normal exit without authorizing
+  gameplay, profile inspection, or a broader live security campaign
+
+### Consequence
+
+`docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md` is a preliminary smoke request, not
+the full first isolated load gate. A pass cannot close full `R0a`, complete
+`L-NET`/`L-ERROR`, establish passivity, test incompatible locked mode, or remove
+the need for the profile baseline. If the game cannot exit normally, no overlay
+or credential may be moved, revoked, or deleted under this authorization while
+the process remains alive.

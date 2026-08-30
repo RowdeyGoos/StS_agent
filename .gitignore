@@ -42,3 +42,12 @@ benchmarks/suites/
 Thumbs.db
 .idea/
 .vscode/
+
+# Project-owned STS2 bridge build/test outputs
+bridge/**/bin/
+bridge/**/obj/
+bridge/**/.dotnet/
+bridge/**/.nuget/
+bridge/**/out/
+bridge/**/work/
+bridge/**/artifacts/

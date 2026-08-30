@@ -1,0 +1,1 @@
+{"schema_version":"live_probe_v0_config_v1","enabled":false,"bind_address":"127.0.0.1","port":43117,"token_file":"credential.hex"}

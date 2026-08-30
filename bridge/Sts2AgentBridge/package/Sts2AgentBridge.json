@@ -1,0 +1,12 @@
+{
+  "id": "Sts2AgentBridge",
+  "name": "STS2 Agent Bridge",
+  "author": "StS Agent Project",
+  "description": "Restricted combat, reward, and map bridge for StS agent research",
+  "version": "0.8.0",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": true,
+  "min_game_version": "0.107.1"
+}
