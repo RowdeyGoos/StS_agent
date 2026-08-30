@@ -1,7 +1,7 @@
 # Long-Term Architecture and Research Roadmap
 
 - **Status:** strategic north-star document
-- **Last reviewed:** 2026-08-29
+- **Last reviewed:** 2026-08-31
 - **Scope:** a functional, single-player Slay the Spire 2 agent that can
   eventually support a defensible near-optimal claim
 
@@ -17,19 +17,24 @@ Active program artifacts:
   scope, information boundary, objective, and unresolved evaluation gates.
 - [`PHASE_1_INTEGRATION_SPIKE.md`](PHASE_1_INTEGRATION_SPIKE.md) defines the
   evidence campaign for selecting the live truth path and fast backend.
+- [`PHASE_1_CURRENT_STATUS.md`](PHASE_1_CURRENT_STATUS.md) records the current
+  `R0i` live-bridge capability, evidence levels, exclusions, and next bounded
+  target.
 - [`MULTI_AGENT_EXECUTION.md`](MULTI_AGENT_EXECUTION.md) defines how parallel
   work is owned, reviewed, integrated, and reported to the user.
 
 It is intentionally not a promise of dates. The simulator-fidelity work and the
-quantity of game content make calendar estimates misleading until the first
-live-game integration and conformance milestones have been completed.
+quantity of game content make calendar estimates misleading until repeatable
+full-game control and conformance milestones have been completed.
 
 ## 1. Executive direction
 
-The current repository is a useful deterministic combat research laboratory.
-It is not yet a small version of the final system. A near-optimal full-run agent
-needs several foundations that cannot be obtained by continuing to widen the
-current observation vector or fixed combat action grid.
+The current repository contains a useful deterministic combat research
+laboratory and a bounded `R0i` live-game interface. It is not yet a small
+version of the final system: the live path is not a complete autonomous run,
+and the combat simulator is not yet a faithful full-game backend. A near-optimal
+full-run agent needs several foundations that cannot be obtained by continuing
+to widen the current observation vector or fixed combat action grid.
 
 The recommended project is a hybrid of three systems:
 

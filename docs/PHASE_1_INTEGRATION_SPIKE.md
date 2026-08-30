@@ -1,9 +1,10 @@
 # Phase 1 Integration and Fast-Backend Evidence Plan
 
-- **Status:** draft; the project-owned `R0a` repository artifact passed its
-  install-free gates, while live loading and candidate-comparison evidence are
-  not yet authorized or executed
-- **Campaign ID:** `TBD`
+- **Status:** active; the project-owned bridge is implemented through `R0i` and
+  has passed bounded live observation/control smokes, while representative
+  phase coverage, corpus work, reliability evidence, and the fast-backend
+  decision remain open
+- **Full Phase 1 campaign ID:** `TBD`
 - **Target-charter ID/hash:** `TBD`
 - **Preregistration freeze commit/time:** `TBD`
 - **Decision owners/reviewers:** `TBD`
@@ -15,15 +16,23 @@ with reproducible observations, which live-game bridge should establish semantic
 ground truth and whether the fast backend should be Python, engine-hosted, or a
 hybrid.
 
-The first live-path engineering direction is now fixed: a lean project-owned
-bridge will enter the gates before any third-party runtime. Its staged boundary
-is defined in
+The living implementation and evidence disposition is maintained in
+[`PHASE_1_CURRENT_STATUS.md`](PHASE_1_CURRENT_STATUS.md). Point-in-time status
+statements in preserved freezes and campaign requests remain historical.
+
+The first live-path engineering direction is fixed: a lean project-owned bridge
+entered the gates before any third-party runtime and is now the selected live
+path. Its staged boundary is defined in
 [`PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`](PHASE_1_RESTRICTED_BRIDGE_DESIGN.md).
-The resulting artifact now satisfies the repository compile, contract,
-reproducibility, package, and forbidden-surface gates recorded in
+The resulting artifact satisfies the repository compile, contract,
+reproducibility, package, and forbidden-surface gates initially recorded in
 [`research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md`](research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md).
-It does not yet satisfy a live load, passivity, phase, or transaction gate; the
-evidence plan below still decides whether the artifact is viable in the game.
+Bounded live campaigns have since established loader viability, authenticated
+public observation, snapshot-bound control, complete combat, reward handling,
+map selection, and one composed floor transition. They have not established
+full gameplay passivity, representative phase coverage, general transaction
+recovery, complete-run control, or sustained reliability. The evidence plan
+below remains open for those broader claims and for the fast-backend decision.
 
 Phase 1 consumes the target charter produced by Phase 0 of the long-term
 roadmap. The charter's exact build, branch, character, Ascension, unlock state,

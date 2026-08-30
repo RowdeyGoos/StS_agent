@@ -8,11 +8,19 @@ Read these first:
 4. `docs/PROJECT_CONTEXT.md`
 5. `ROADMAP.md`
 
+For full-game or bridge work, also read:
+
+- `docs/PHASE_1_CURRENT_STATUS.md`
+- `bridge/Sts2AgentBridge/README.md`
+
 Most important code after that:
 
 - `game/simulation/core.py`
 - `game/simulation/encoding.py`
 - `game/cli/train.py`
+
+The current live integration milestone is `R0i`; it is a bounded external
+bridge/controller substrate, not yet a complete autonomous run.
 
 Key invariants:
 

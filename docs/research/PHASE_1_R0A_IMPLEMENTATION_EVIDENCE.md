@@ -5,8 +5,9 @@
 - **Target:** Slay the Spire 2 `v0.107.1`, Steam build `23811903`, macOS arm64
 - **Repository disposition:** implementation, tests, static verification, and
   deterministic package gates passed
-- **Live disposition:** not run; installation, operator configuration, game
-  launch, live probing, and removal remain a later artifact-bound checkpoint
+- **Live disposition:** the later `R0a` menu smoke and `R0b` read-only combat
+  smoke passed; subsequent `R0c`–`R0i` progress is summarized in
+  [`../PHASE_1_CURRENT_STATUS.md`](../PHASE_1_CURRENT_STATUS.md)
 - **Controlling freeze:**
   [PHASE_1_BR0_PREFLIGHT.md](../PHASE_1_BR0_PREFLIGHT.md)
 - **Parent boundary:**
@@ -14,15 +15,20 @@
 
 ## 1. Claim boundary
 
+Sections 1–11 preserve the point-in-time repository disposition before the
+first installation. Sections 12–13 record the later `R0a` and `R0b` live
+results. They should be read chronologically; the initial “not live” statements
+are historical boundaries, not the current project status.
+
 This report closes the repository-side implementation gate for the first
 project-owned bridge. It establishes that one exact source tree produces one
 deterministic, statically restricted, two-file package and that its package-free
 tests pass against the pinned compile assemblies.
 
-It does **not** establish that the game loader accepts the package, that the
-bridge sees the correct live menu/settings state, that it is passive in a live
-process, or that its teardown is clean in the game. Those claims require the
-later reversible live campaign.
+At that initial repository freeze, it did **not** establish that the game loader
+accepts the package, that the bridge sees the correct live menu/settings state,
+that it is passive in a live process, or that its teardown is clean in the game.
+Those claims require the later reversible live campaign recorded in Section 12.
 
 No bridge overlay was installed. No real operator configuration or credential
 was created, read, or changed. The game was not launched. This work did not

@@ -2,7 +2,11 @@
 
 This file tracks the most useful next steps for the project. It is not a strict commitment list; it is a guide for future work and for quickly understanding where the simulator is headed.
 
-The goal is to keep the scope growing in a way that stays useful for RL research without turning the codebase into a full game clone too early.
+The goal is to keep the scope growing in a way that stays useful for RL research
+without turning the codebase into a full game clone too early. The combat-
+research priorities below coexist with the active full-game integration track;
+the latter's authoritative progress summary is
+[`docs/PHASE_1_CURRENT_STATUS.md`](docs/PHASE_1_CURRENT_STATUS.md).
 
 ## Current Position
 
@@ -38,9 +42,39 @@ The project currently has:
 - responsibility-based `simulation`, `agents`, `training`, `analysis`, and `cli`
   packages with one canonical import and command surface
 
+The full-game integration track additionally has:
+
+- a project-owned authenticated live bridge at milestone `R0i`;
+- bounded live reads at the main menu, Settings, combat, rewards, and map;
+- snapshot-bound combat, reward, and map actions with reconciliation;
+- replaceable external providers for combat, rewards, map travel, and supported
+  rooms;
+- a verified live complete-combat loop and one composed floor transition;
+- repository and disposable-fixture coverage for a controller capped at three
+  combat floors; and
+- repeated normal teardown, bridge removal, and clean base-game relaunches.
+
+This is not yet a complete autonomous run. Shops and potion decisions remain
+unsupported, rest-site and standard-event handling still need bounded live
+acceptance, and the batched controller has one unresolved transient
+`decision_response_mismatch` observation.
+
 ## Near-Term Priorities
 
 These are the highest-value next steps.
+
+### Full-Game Integration Priority
+
+Before expanding the bridge surface, stabilize the existing `R0i` batched
+controller and demonstrate one repeatable multi-floor live sequence using only
+the already implemented combat, reward, map, and supported-room contracts.
+Minimize or explain the response mismatch, exercise rest-site and standard-
+event handling live when encountered, and retain the existing clean teardown
+and base-game relaunch checks.
+
+Keep models and search outside the bridge and postpone shop support until this
+composition is reliable. This preserves easy comparison among heuristic,
+policy-only, and future planner-enhanced providers.
 
 ### 1. Better Evaluation Reporting
 
@@ -239,9 +273,11 @@ Why:
 
 - makes the project more useful as a research sandbox
 
-## Later, But Not Yet
+## Later In The Combat Simulator, But Not Yet
 
-These are interesting, but they should probably wait until the combat core is more mature.
+These items refer to the Python research simulator. Some now have deliberately
+narrow live-bridge contracts, but they should still wait in the simulator until
+the combat core and the Phase 1 backend decision are more mature.
 
 - relics
 - potions

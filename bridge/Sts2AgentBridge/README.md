@@ -54,9 +54,23 @@ packaging do **not** authorize any of the following:
 - accessing a profile, save, Steam Cloud state, or operator credential; or
 - conducting a live probe or removal campaign.
 
-Those operations require a later, exact artifact-bound authorization
-checkpoint. Until that checkpoint, use only disposable work/output roots and
-the pinned game assemblies as read-only compile references.
+Each such operation requires its own exact artifact-bound authorization
+checkpoint. Earlier completed campaigns are evidence, not standing permission
+for another installation or launch. Outside an active approval, use only
+disposable work/output roots and the pinned game assemblies as read-only compile
+references.
+
+## Current verification status
+
+The living cross-milestone disposition is maintained in
+[`docs/PHASE_1_CURRENT_STATUS.md`](../../docs/PHASE_1_CURRENT_STATUS.md). In
+summary, bounded live smokes have reached `R0i` and demonstrated menu/Settings,
+combat, granular card/gold rewards, map selection, and one composed floor
+transition. Rest-site and standard-event controllers and the full three-combat-
+floor cap remain fixture-demonstrated rather than live-accepted. One batched
+attempt stopped on a transient `decision_response_mismatch`; the narrower combat
+path subsequently resumed, but the composed controller still needs a repeatable
+multi-floor live pass.
 
 ## Prerequisites
 

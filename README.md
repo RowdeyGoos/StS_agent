@@ -1,8 +1,10 @@
 # StS Agent
 
 Research project for a functional, eventually near-optimal Slay the Spire 2
-agent. The current executable foundation is a compact Slay-the-Spire-style
-combat simulator for reinforcement learning experiments.
+agent. The repository currently contains two complementary executable
+foundations: a compact combat simulator for reinforcement-learning research and
+an authenticated live-game bridge, currently at the bounded `R0i` integration
+milestone.
 
 Requires Python 3.10+.
 
@@ -28,11 +30,12 @@ Project and contributor documentation:
 - [docs/research/PHASE_0_PROFILE_BASELINE_HASH_CORRECTED_RUNNER_SYNTHETIC_VALIDATION.md](docs/research/PHASE_0_PROFILE_BASELINE_HASH_CORRECTED_RUNNER_SYNTHETIC_VALIDATION.md): disposable validation of the corrected runner without real-profile access
 - [docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md](docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md): historical independent hash-bound review of the D1 result and D1B scope
 - [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md): preregistration and evidence plan for choosing the live bridge and fast backend
-- [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md): current static shortlist, safety gaps, and ordered experiment gates
-- [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md): selected project-owned read-only bridge boundary, staged control design, and gates
-- [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md): implemented `R0a` bridge boundary, contracts, and reproducible build/package commands
-- [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md): exact install-free implementation, test, surface, and package evidence
-- [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md): exact approval-bound live smoke, teardown, and rollback scope
+- [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md): living account of demonstrated bridge progress, current limitations, and the next bounded target
+- [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md): preserved pre-implementation candidate shortlist, safety gaps, and ordered experiment gates
+- [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md): preserved initial read-only bridge boundary, staged control design, and gates
+- [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md): implemented `R0i` bridge boundary, contracts, controllers, and reproducible build/package commands
+- [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md): preserved initial repository evidence plus detailed `R0a` and `R0b` live results
+- [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md): preserved exact authorization for the completed first live smoke; not standing authorization for another campaign
 - [docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md): coordination, ownership, review, and user-update model for parallel development
 - [manifests/game-builds/README.md](manifests/game-builds/README.md): sanitized immutable identities for pinned game installations
 - [docs/AGENT_FLOW.md](docs/AGENT_FLOW.md): visual walkthrough of observation encoding and Double DQN action scoring

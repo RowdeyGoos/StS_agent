@@ -13,6 +13,13 @@ learning experiments, not to reproduce the full game. The overall project now
 targets a full Slay the Spire 2 agent under the separate
 [long-term architecture](LONG_TERM_ARCHITECTURE_ROADMAP.md).
 
+In parallel, the repository now contains the `R0i` project-owned live bridge.
+That bridge has passed bounded live observation and control smokes through
+combat, rewards, map travel, and one composed floor transition. It is an
+integration substrate, not a full-game simulator or learned agent. The current
+evidence boundary and remaining gaps are maintained in
+[PHASE_1_CURRENT_STATUS.md](PHASE_1_CURRENT_STATUS.md).
+
 The current codebase already supports:
 
 - structured observations for debugging
@@ -572,18 +579,22 @@ only one module and command surface to maintain.
   Copying, parsing, recoverability, Cloud, and logical state remain open.
 - See the [Phase 1 integration spike](PHASE_1_INTEGRATION_SPIKE.md) for the
   current live-bridge and fast-backend evidence plan.
+- See [Phase 1 current status](PHASE_1_CURRENT_STATUS.md) for the living `R0i`
+  capability summary, live-versus-fixture evidence, known residuals, and next
+  bounded target.
 - See the [Phase 1 static audit synthesis](PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
-  for the candidate shortlist and ordered executable gates.
+  for the preserved pre-implementation candidate shortlist and ordered gates.
 - See the [restricted bridge design](PHASE_1_RESTRICTED_BRIDGE_DESIGN.md) for
-  the selected project-owned read-only live path and its staged safety gates.
-- See the [`R0a` bridge guide](../bridge/Sts2AgentBridge/README.md) and
-  [implementation evidence](research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
-  for the now-complete install-free artifact, executable contract, reproducible
-  package, exact hashes, and known residuals. This is not yet live-load
-  evidence.
-- See the [live campaign request](PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md) for the
-  separate artifact-bound overlay, configuration, launch, probe, teardown, and
-  rollback approval boundary.
+  the preserved initial read-only path and its staged safety gates.
+- See the [`R0i` bridge guide](../bridge/Sts2AgentBridge/README.md) for the
+  current executable contract, controllers, reproducible package, exact limits,
+  and operational boundaries. The preserved
+  [R0a implementation evidence](research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
+  records the initial artifact and detailed `R0a`/`R0b` live results.
+- See the historical [first live campaign request](PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
+  for the exact artifact-bound overlay, configuration, launch, probe, teardown,
+  and rollback authorization that was exercised. It does not authorize another
+  live campaign.
 - See the [multi-agent execution model](MULTI_AGENT_EXECUTION.md) for parallel
   ownership, review, integration, and user reporting.
 - See [Experiment Workflows](EXPERIMENT_WORKFLOWS.md) for practical training,

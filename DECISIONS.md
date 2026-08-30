@@ -1225,3 +1225,66 @@ the full first isolated load gate. A pass cannot close full `R0a`, complete
 the need for the profile baseline. If the game cannot exit normally, no overlay
 or credential may be moved, revoked, or deleted under this authorization while
 the process remains alive.
+
+## D43. Advance The Live Bridge Through Bounded R0i Vertical Slices
+
+### Context
+
+The first `R0a` menu smoke and `R0b` read-only combat decision succeeded on the
+pinned live build. Continuing with document-only design or one broad control
+surface would not answer the next engineering question efficiently: whether the
+same restricted public boundary could apply real decisions and compose them
+across combat, rewards, map travel, and rooms. The user also asked to accelerate
+development while keeping components replaceable and comparisons attributable.
+
+The staged design originally reserved broad transactional control for `R1`.
+The implemented `R0c` through `R0i` sequence instead exercised smaller
+snapshot-bound control slices, each with explicit action caps, advertised legal
+candidates, post-action reconciliation, separate approval-bound live campaigns,
+and clean teardown. These slices provide useful evidence, but they do not close
+the complete recovery, corpus, phase-coverage, or transaction gates assigned to
+`R1`.
+
+### Decision
+
+- accept bridge version `0.8.0` / milestone `R0i` as the current project-owned
+  live integration artifact for the pinned build
+- retain the `R0c`–`R0i` capabilities as bounded pre-`R1` vertical slices:
+  snapshot-bound combat actions, complete combat, granular reward handling,
+  map selection, supported room choices, and an external controller capped at
+  three combat floors
+- keep combat, reward, map, and room decision providers outside the bridge and
+  independently replaceable so heuristic, learned, and future search-enhanced
+  strategies use the same public action boundary
+- distinguish repository/fixture evidence from bounded live evidence; do not
+  promote fixture-only room handling or the three-floor cap to a live claim
+- record the transient batched-controller `decision_response_mismatch` as an
+  open stability residual even though narrower combat control subsequently
+  resumed
+- preserve exact historical requests and freezes, and maintain
+  `docs/PHASE_1_CURRENT_STATUS.md` as the living cross-milestone status source
+- make the next target a repeatable multi-floor composition of existing
+  capabilities before adding shops, models, search, or a broader control API
+
+### Why
+
+- small live slices made failures attributable and produced working evidence
+  faster than another broad design phase
+- snapshot binding, advertised-candidate checks, reconciliation, and strict
+  process budgets retain a narrow safety boundary while real control is tested
+- external provider seams preserve the optional-search architecture and permit
+  direct with/without-component comparisons
+- explicit evidence levels prevent a successful fixture suite or isolated live
+  checkpoint from being mislabeled as full-run reliability
+- stabilizing composition before adding more decision types reduces the risk of
+  carrying an intermittent protocol/controller defect into a much larger
+  surface
+
+### Consequence
+
+The project has a functional bounded live bridge, not merely a combat prototype
+or install-free artifact. It still does not have a complete autonomous run,
+selected fast backend, trained full-game policy, deployed search component, or
+near-optimal result. Phase 1 remains open. Any new installation or game launch
+still requires its own explicit authorization; the completed campaign requests
+are historical evidence, not standing permission.

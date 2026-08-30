@@ -45,16 +45,20 @@ long-term agent architecture, also read:
    it or a later copy, parse, Cloud, restore, or launch step
 5. the active phase plan, currently
    [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md)
-6. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
-7. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
+6. [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md)
+   for the living `R0i` capability, evidence-level, residual, and next-target
+   summary
+7. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
+8. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
    for the staged bridge boundary and live acceptance gates
-8. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
+9. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
    before bridge build, test, package, or verifier work
-9. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
-   for the exact frozen repository artifact and known residuals
-10. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
-    before any operator-config write, game overlay change, launch, live probe,
-    teardown, or rollback work
+10. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
+    for the exact initial repository artifact and detailed `R0a`/`R0b` results
+11. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
+    as the preserved first-campaign authorization boundary. It is not standing
+    authorization for any new operator-config write, overlay change, launch,
+    live probe, teardown, or rollback work
 
 For delegated or parallel work, read
 [docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md) before assigning
@@ -109,16 +113,19 @@ program decision.
 - `docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md`: independent
   historical hash-bound review of the sanitized D1 result and exact D1B scope
 - `docs/PHASE_1_INTEGRATION_SPIKE.md`: current live/fast-backend evidence plan
-- `docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md`: current candidate shortlist and
-  next executable gates
-- `docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`: selected project-owned live
-  bridge boundary, staged capabilities, and acceptance gates
-- `bridge/Sts2AgentBridge/README.md`: implemented `R0a` build, contract,
-  verifier, package, and operational-boundary guide
-- `docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md`: exact install-free
-  artifact identities, gate results, independent reviews, and residuals
-- `docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md`: exact approval-bound live smoke,
-  teardown, rollback, privacy, and claim boundary
+- `docs/PHASE_1_CURRENT_STATUS.md`: living bridge progress, demonstrated versus
+  fixture-only evidence, residuals, exclusions, and next bounded target
+- `docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md`: preserved pre-implementation
+  candidate shortlist and ordered gates
+- `docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`: preserved initial project-owned
+  live-bridge boundary, staged capabilities, and acceptance gates
+- `bridge/Sts2AgentBridge/README.md`: implemented `R0i` build, contract,
+  controllers, verifier, package, and operational-boundary guide
+- `docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md`: preserved initial
+  artifact identities and gate results plus detailed `R0a`/`R0b` live evidence
+- `docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md`: preserved exact approval-bound
+  first live smoke, teardown, rollback, privacy, and claim boundary; historical,
+  not reusable authorization
 - `docs/MULTI_AGENT_EXECUTION.md`: parallel-development operating model
 - `.codex`: ultra-short bootstrap note for fresh Codex sessions
 
