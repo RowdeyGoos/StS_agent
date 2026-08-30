@@ -1,0 +1,287 @@
+{
+  "schema": {
+    "name": "sts2_game_build_manifest",
+    "version": 1,
+    "identity_canonicalization": "jq-1.7.1-apple -cSj .identity",
+    "identity_hash_algorithm": "sha256"
+  },
+  "manifest_id": "sts2-steam-main-build-23811903-macos-universal",
+  "identity": {
+    "game": {
+      "title": "Slay the Spire 2",
+      "storefront": "Steam",
+      "app_id": "2868840",
+      "selected_channel": "default",
+      "steam_beta_key": "public",
+      "resolved_branch_role": "main/default public channel",
+      "build_id": "23811903",
+      "installed_size_bytes": 2323747842,
+      "depot_manifests": [
+        {
+          "depot_id": "2868842",
+          "manifest_id": "8653035385353091849"
+        }
+      ]
+    },
+    "steam_appmanifest_projection": {
+      "canonical_json": "{\"app_id\":\"2868840\",\"beta_key\":\"public\",\"branch_role\":\"default\",\"build_id\":\"23811903\",\"depot_manifests\":[{\"depot_id\":\"2868842\",\"manifest_id\":\"8653035385353091849\"}],\"name\":\"Slay the Spire 2\"}",
+      "sha256": "bd2eb2c5d36e4118a4a668b8290a2cc8a99a8e854961aa5b3788b7fff7cfeab8",
+      "raw_manifest_committed": false,
+      "steam_state_flags": 4,
+      "update_result": 0,
+      "bytes_to_download": 472875392,
+      "bytes_downloaded": 472875392,
+      "bytes_to_stage": 2131216729,
+      "bytes_staged": 2131216729,
+      "depot_cache_record": {
+        "file_name": "2868842_8653035385353091849.manifest",
+        "size_bytes": 174790,
+        "sha256": "854d4a0329acbd5223b8fec8ce3d8e22f347bb5d52118a110879466a9afaae51"
+      }
+    },
+    "release": {
+      "version": "v0.107.1",
+      "commit": "59260271",
+      "date": "2026-06-18T15:43:56-07:00",
+      "branch": "v0.107.1",
+      "main_assembly_hash": -1718063421
+    },
+    "bundle": {
+      "bundle_identifier": "com.megacrit.SlayTheSpire2",
+      "platform": "macOS",
+      "architectures": [
+        "arm64",
+        "x86_64"
+      ],
+      "minimum_macos_version": "12.0",
+      "code_signature": {
+        "kind": "adhoc",
+        "team_identifier": null,
+        "cdhash_sha256_full": "985cdcaefd49b5534a5f9b4590c3d32fe13d115bdce513547eafe2ee248346b1",
+        "deep_strict_verification": "passed"
+      }
+    },
+    "runtime": {
+      "target_framework": "net9.0",
+      "runtime_target_arm64": ".NETCoreApp,Version=v9.0/osx-arm64",
+      "bundled_microsoft_netcore_app": "9.0.7",
+      "godot_sharp": "4.5.1",
+      "harmony": "2.4.2.0",
+      "monomod_backports": "1.1.2",
+      "monomod_ilhelpers": "1.1.0",
+      "system_dotnet_sdk_required_to_run_game": false
+    },
+    "installation_tree": {
+      "scope": "regular files below the Steam game installation root; symlinks excluded",
+      "regular_file_count": 429,
+      "canonical_record": "<lowercase sha256><two spaces><install-relative path><LF>",
+      "ordering": "LC_ALL=C path order",
+      "sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0"
+    },
+    "files": [
+      {
+        "role": "bundle_metadata",
+        "path": "SlayTheSpire2.app/Contents/Info.plist",
+        "size_bytes": 1792,
+        "sha256": "7af8035294c0c6160dc30645a5d962ba1070f8d44cfe6c3b33cbc38e703c60b8"
+      },
+      {
+        "role": "application_executable",
+        "path": "SlayTheSpire2.app/Contents/MacOS/Slay the Spire 2",
+        "size_bytes": 179706736,
+        "sha256": "7fadae8d46f0074ba745bc3beebe31a13df5fafed2f2ac69cd68b3c5dd8508e6"
+      },
+      {
+        "role": "content_archive",
+        "path": "SlayTheSpire2.app/Contents/Resources/Slay the Spire 2.pck",
+        "size_bytes": 1901118240,
+        "sha256": "62c887be791250b7a90c6cd929c19d03d33e17cc76aa7ff610b2889cccdadadb"
+      },
+      {
+        "role": "arm64_mod_support_harmony",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/0Harmony.dll",
+        "size_bytes": 2328064,
+        "sha256": "ef1898322c9f5c86dc1b0758b272a9c440823b4a41ca9a0b82a3aa6b3d206387"
+      },
+      {
+        "role": "arm64_godot_managed_runtime",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/GodotSharp.dll",
+        "size_bytes": 5613568,
+        "sha256": "0e4897ecdfb31456a97c7d8028dfb8d7dbdc632e2f73fc9b438d7b266a139289"
+      },
+      {
+        "role": "arm64_mod_support_backports",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/MonoMod.Backports.dll",
+        "size_bytes": 27648,
+        "sha256": "ac3f32bfd44aab83abf71abdff6dde548d57b7c0f8a1fe6d8964e348b4eeafb1"
+      },
+      {
+        "role": "arm64_mod_support_ilhelpers",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/MonoMod.ILHelpers.dll",
+        "size_bytes": 4096,
+        "sha256": "fdd0e3538340fd78b8f521e62b8cac1ebb7683ac1f27f6aaedfc1044b14bf4bb"
+      },
+      {
+        "role": "arm64_dotnet_runtime",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/libcoreclr.dylib",
+        "size_bytes": 6401600,
+        "sha256": "e366a1c5a2deca159af3e36012e4e730dbd18d80802e59099c9eee213e280dd0"
+      },
+      {
+        "role": "arm64_dotnet_hostfxr",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/libhostfxr.dylib",
+        "size_bytes": 373136,
+        "sha256": "e4a448a3e5271c873a2724c9f5be3c06d8ddd1fdbec6b0972ba0ac3a2d3dbb28"
+      },
+      {
+        "role": "arm64_dotnet_hostpolicy",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/libhostpolicy.dylib",
+        "size_bytes": 392176,
+        "sha256": "e83f391513ac07cba8db55bb70722339a894c1150a3c85a7af01e29d6afb2f3c"
+      },
+      {
+        "role": "arm64_dependency_manifest",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/sts2.deps.json",
+        "size_bytes": 35339,
+        "sha256": "b5a9c3d643343e4a3f3e8d80eb94656ce0caf0cc1a2783dd4f013d9d287b9178"
+      },
+      {
+        "role": "arm64_main_managed_assembly",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/sts2.dll",
+        "size_bytes": 9363456,
+        "sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18"
+      },
+      {
+        "role": "arm64_runtime_configuration",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/sts2.runtimeconfig.json",
+        "size_bytes": 357,
+        "sha256": "bd81a252bc3f0e8bcb649b404c1da945913c5377b9d3a2c416c52730be8714c0"
+      },
+      {
+        "role": "arm64_api_documentation",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64/sts2.xml",
+        "size_bytes": 5325651,
+        "sha256": "940ccc0cd6c2be3d75ae831a1b91a3375de571d94fdf896f45b26761148eccce"
+      },
+      {
+        "role": "x86_64_mod_support_harmony",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/0Harmony.dll",
+        "size_bytes": 2328064,
+        "sha256": "ef1898322c9f5c86dc1b0758b272a9c440823b4a41ca9a0b82a3aa6b3d206387"
+      },
+      {
+        "role": "x86_64_godot_managed_runtime",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/GodotSharp.dll",
+        "size_bytes": 5613568,
+        "sha256": "0e4897ecdfb31456a97c7d8028dfb8d7dbdc632e2f73fc9b438d7b266a139289"
+      },
+      {
+        "role": "x86_64_mod_support_backports",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/MonoMod.Backports.dll",
+        "size_bytes": 27648,
+        "sha256": "ac3f32bfd44aab83abf71abdff6dde548d57b7c0f8a1fe6d8964e348b4eeafb1"
+      },
+      {
+        "role": "x86_64_mod_support_ilhelpers",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/MonoMod.ILHelpers.dll",
+        "size_bytes": 4096,
+        "sha256": "fdd0e3538340fd78b8f521e62b8cac1ebb7683ac1f27f6aaedfc1044b14bf4bb"
+      },
+      {
+        "role": "x86_64_dotnet_runtime",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/libcoreclr.dylib",
+        "size_bytes": 6822064,
+        "sha256": "d5cf5ee471925eab391eb0d9371dd53faaa9f3e89e92448ab485760c433e15f0"
+      },
+      {
+        "role": "x86_64_dotnet_hostfxr",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/libhostfxr.dylib",
+        "size_bytes": 389920,
+        "sha256": "358091f9793351d33ba0c9f2d2ff9fdd53af6b3b246c2518274c40c9e29fd565"
+      },
+      {
+        "role": "x86_64_dotnet_hostpolicy",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/libhostpolicy.dylib",
+        "size_bytes": 411248,
+        "sha256": "8f73a8b057c4c26bc5a435598bd1aa6467e63bc71b0bed0237ff4a6be673261c"
+      },
+      {
+        "role": "x86_64_dependency_manifest",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/sts2.deps.json",
+        "size_bytes": 35325,
+        "sha256": "22532ab453dbb10db2ceb67210bc4f3d4cc2ca896eaf4986df066b2811a39375"
+      },
+      {
+        "role": "x86_64_main_managed_assembly",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/sts2.dll",
+        "size_bytes": 9363456,
+        "sha256": "3c28ff10ce6c37cd2d1dd90a407a98f3dbdb4a8e45ebf4c2d0eaad95189a11a7"
+      },
+      {
+        "role": "x86_64_runtime_configuration",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/sts2.runtimeconfig.json",
+        "size_bytes": 357,
+        "sha256": "bd81a252bc3f0e8bcb649b404c1da945913c5377b9d3a2c416c52730be8714c0"
+      },
+      {
+        "role": "x86_64_api_documentation",
+        "path": "SlayTheSpire2.app/Contents/Resources/data_sts2_macos_x86_64/sts2.xml",
+        "size_bytes": 5325651,
+        "sha256": "940ccc0cd6c2be3d75ae831a1b91a3375de571d94fdf896f45b26761148eccce"
+      },
+      {
+        "role": "release_metadata",
+        "path": "SlayTheSpire2.app/Contents/Resources/release_info.json",
+        "size_bytes": 151,
+        "sha256": "93838093ff803a60a8f086355a1d1a9cb103358089f8a46ae41743ddd8919b42"
+      },
+      {
+        "role": "steam_controller_mapping",
+        "path": "controller_config/game_actions_2868840.vdf",
+        "size_bytes": 10635,
+        "sha256": "dc1059ab6c119ab2be822a193bbc518ffb95c49a8f2f638118870aae53a28df6"
+      }
+    ]
+  },
+  "capture": {
+    "captured_at_utc": "2026-08-29T18:33:42Z",
+    "stage": "phase0_pre_bridge_binary_identity",
+    "operator": "local_user_authorized_capture",
+    "host": {
+      "os": "macOS",
+      "os_version": "26.5.2",
+      "os_build": "25F84",
+      "architecture": "arm64"
+    },
+    "tools": {
+      "sha256": "shasum 6.02",
+      "json_canonicalization": "jq-1.7.1-apple",
+      "bundle_verification": "macOS codesign --verify --deep --strict"
+    },
+    "source_repository": {
+      "revision": "3d3b12e4803de72c30d0d10f71558d9f66420ec7",
+      "working_tree_dirty_before_capture": true
+    }
+  },
+  "open_requirements": {
+    "profile_fixture": "not_captured; personal saves were not inspected",
+    "unlock_manifest": "not_captured",
+    "rule_affecting_settings": "not_captured",
+    "ordered_enabled_mods": "not_captured; installed Workshop items do not prove enabled state and are intentionally not listed",
+    "bridge": "not_selected_or_installed",
+    "content_rules_state_action_observation_protocol_manifests": "not_generated",
+    "old_build_retention_or_reconstruction": "legal_and_operations_review_pending"
+  },
+  "retention": {
+    "game_binaries_committed": false,
+    "game_assets_committed": false,
+    "raw_steam_manifests_committed": false,
+    "workshop_inventory_committed": false,
+    "personal_data_included": false,
+    "absolute_user_paths_included": false,
+    "reconstruction_note": "Identifiers and hashes refer to a user-owned Steam installation; continued storefront availability of this depot is not guaranteed."
+  },
+  "integrity": {
+    "identity_payload_sha256": "a0f7f8f57621122e4c246372115783909f4bb97f4b4eb7e57340428143d4c4cf"
+  }
+}
