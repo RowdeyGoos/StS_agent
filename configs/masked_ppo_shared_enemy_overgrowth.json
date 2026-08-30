@@ -6,7 +6,7 @@
   "encounter_set": "overgrowth_easy",
   "entropy_coef": 0.1,
   "env_workers": 4,
-  "episodes": 200000,
+  "episodes": 100000,
   "eval_episodes": 50,
   "eval_interval": 500,
   "gae_lambda": 0.95,
@@ -14,7 +14,7 @@
     128,
     128
   ],
-  "hp_loss_penalty_scale": 3.0,
+  "hp_loss_penalty_scale": 1.0,
   "incoming_damage_shaping_scale": 0.0,
   "max_grad_norm": 0.5,
   "num_envs": 64,
