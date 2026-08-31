@@ -66,8 +66,9 @@ These are the highest-value next steps.
 ### Full-Game Integration Priority
 
 Before expanding the bridge surface, stabilize the existing `R0i` batched
-controller and demonstrate one repeatable multi-floor live sequence using only
-the already implemented combat, reward, map, and supported-room contracts.
+controller, compose its currently separate room controller, and demonstrate one
+repeatable multi-floor live sequence using only the already implemented combat,
+reward, map, and supported-room contracts.
 Minimize or explain the response mismatch, exercise rest-site and standard-
 event handling live when encountered, and retain the existing clean teardown
 and base-game relaunch checks.
@@ -75,6 +76,10 @@ and base-game relaunch checks.
 Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
+
+The concrete dependency, ownership, acceptance, and handoff packets for running
+this work with parallel agents are in
+[`docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md).
 
 ### 1. Better Evaluation Reporting
 

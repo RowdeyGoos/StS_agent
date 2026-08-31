@@ -48,14 +48,17 @@ long-term agent architecture, also read:
 6. [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md)
    for the living `R0i` capability, evidence-level, residual, and next-target
    summary
-7. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
-8. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
+7. [docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md)
+   for the active dependency waves, exact agent ownership, acceptance gates,
+   and handoff format
+8. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
+9. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
    for the staged bridge boundary and live acceptance gates
-9. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
+10. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
    before bridge build, test, package, or verifier work
-10. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
+11. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
     for the exact initial repository artifact and detailed `R0a`/`R0b` results
-11. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
+12. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
     as the preserved first-campaign authorization boundary. It is not standing
     authorization for any new operator-config write, overlay change, launch,
     live probe, teardown, or rollback work
@@ -115,6 +118,8 @@ program decision.
 - `docs/PHASE_1_INTEGRATION_SPIKE.md`: current live/fast-backend evidence plan
 - `docs/PHASE_1_CURRENT_STATUS.md`: living bridge progress, demonstrated versus
   fixture-only evidence, residuals, exclusions, and next bounded target
+- `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`: active parallel work packets,
+  dependencies, file ownership, acceptance gates, and agent handoffs
 - `docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md`: preserved pre-implementation
   candidate shortlist and ordered gates
 - `docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`: preserved initial project-owned

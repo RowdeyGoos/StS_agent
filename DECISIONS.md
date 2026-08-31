@@ -1258,9 +1258,9 @@ the complete recovery, corpus, phase-coverage, or transaction gates assigned to
   strategies use the same public action boundary
 - distinguish repository/fixture evidence from bounded live evidence; do not
   promote fixture-only room handling or the three-floor cap to a live claim
-- record the transient batched-controller `decision_response_mismatch` as an
-  open stability residual even though narrower combat control subsequently
-  resumed
+- record the observed batched-controller `decision_response_mismatch` as an
+  open stability residual; narrower combat control subsequently resumed, but
+  that does not establish a transient, timing, or stale-decision root cause
 - preserve exact historical requests and freezes, and maintain
   `docs/PHASE_1_CURRENT_STATUS.md` as the living cross-milestone status source
 - make the next target a repeatable multi-floor composition of existing

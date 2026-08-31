@@ -12,9 +12,11 @@ Skip through the game's public reward APIs, then verify arrival at the map.
 snapshot-bound node selection through the game's public map API. `R0h`
 composes the existing bounded controllers into one verified floor transition:
 combat victory, reward skip, and one legal map selection. `R0i` expands that
-same boundary into a batched run slice: granular gold/card reward handling,
-bounded rest-site and standard-event choices, and up to three combat-floor
-transitions under replaceable host decision providers.
+same boundary with granular gold/card reward handling, a separate bounded
+rest-site and standard-event controller, and a combat/reward/map runner capped
+at three completed combats under replaceable host decision providers. The
+current batched runner stops at non-combat destinations; composing the room
+client into that runner is the next bounded source target.
 
 The controlling contract is the accepted
 [Phase 1 BR0 preflight freeze](../../docs/PHASE_1_BR0_PREFLIGHT.md). The broader
@@ -41,7 +43,9 @@ proceed and safe standard-event choices share a 12-action process cap. Custom,
 nested, dangerous, and unsupported room interactions fail closed. Potions,
 shops, full-map planning, search, models, and an in-process agent runtime remain
 out of scope. The batched controller attempts at most three combat floors and
-keeps combat, reward, map, and room provider seams separate. It does not read
+currently wires the separate combat, reward, and map provider seams; the room
+client has its own separate provider seam but is not yet invoked by the batched
+runner. It does not read
 profiles, saves, progress,
 preferences, history, replay, seeds, or multiplayer identity. It does not use
 Harmony, input dispatch, outbound networking, or arbitrary filesystem access.
@@ -68,9 +72,9 @@ summary, bounded live smokes have reached `R0i` and demonstrated menu/Settings,
 combat, granular card/gold rewards, map selection, and one composed floor
 transition. Rest-site and standard-event controllers and the full three-combat-
 floor cap remain fixture-demonstrated rather than live-accepted. One batched
-attempt stopped on a transient `decision_response_mismatch`; the narrower combat
-path subsequently resumed, but the composed controller still needs a repeatable
-multi-floor live pass.
+attempt stopped on `decision_response_mismatch`; the narrower combat path
+subsequently resumed, but that does not establish the mismatch's cause and the
+composed controller still needs a repeatable multi-floor live pass.
 
 ## Prerequisites
 
@@ -261,8 +265,9 @@ only observes; `apply_one_live.py` preserves the earlier single-card smoke and
 `apply_turn_live.py` preserves the bounded one-turn loop. `apply_combat_live.py`
 performs the bounded complete-combat loop. `apply_reward_live.py` resolves the
 supported reward choices, `apply_map_live.py` selects one legal map node,
-`apply_room_live.py` handles the bounded room slice, and `apply_run_live.py`
-composes up to three combat floors for `R0i`. The campaign
+`apply_room_live.py` handles the separate bounded room slice, and
+`apply_run_live.py` composes combat, reward, and map over up to three completed
+combats for `R0i`, stopping at non-combat destinations. The campaign
 manager documented later is the only tool allowed to generate, activate,
 quarantine, or purge project-owned live material. None of these tools launches
 the game. Under repository-local authorization alone, do not point them at the

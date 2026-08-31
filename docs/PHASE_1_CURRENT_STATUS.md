@@ -31,9 +31,11 @@ bridge and external bounded controllers. Together they can:
   reward, and proceed;
 - expose currently travelable map destinations and select one advertised legal
   destination;
-- represent bounded rest-site and safe standard-event choices; and
-- compose combat, reward, map, and supported-room controllers into an external
-  controller capped at three combat floors.
+- represent bounded rest-site and safe standard-event choices through a
+  separate room controller; and
+- compose combat, reward, and map controllers into an external controller
+  capped at three combat floors. The current batched runner stops at non-combat
+  destinations rather than invoking the room controller.
 
 The bridge does not contain a learned model, search implementation, simulator,
 or gameplay policy. Those remain host-side replaceable components behind the
@@ -51,7 +53,7 @@ same decision-provider seams.
 | `R0f` | One reward decision followed by map arrival | Initial screen-transition timing blocked the first attempt; the narrowed retry passed reward and map checkpoints |
 | `R0g` | Read and apply one legal map destination | Bounded live map observation and destination application passed |
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
-| `R0i` | Granular reward handling, supported room choices, and a capped multi-floor controller | Repository gates and fixtures passed; live smokes covered menu, Settings, combat, gold/card reward flows, card choose/skip, and map continuation. Full continuous three-floor live acceptance remains open |
+| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map runner | Repository gates and fixtures passed; live smokes covered menu, Settings, combat, gold/card reward flows, card choose/skip, and map continuation. Batched room composition and full continuous three-floor live acceptance remain open |
 
 Every completed campaign in this sequence ended with a normal game exit,
 bridge quarantine/removal, a base-game main-menu relaunch with the listener
@@ -70,13 +72,14 @@ narrower:
   action and completion loops; gold and card-reward progression; card choice;
   card skip; legal map selection; one composed floor transition; and clean
   teardown/base relaunch.
-- **Fixture demonstrated but not yet live accepted:** rest-site handling, safe
-  standard-event handling, and a continuous controller covering the full
-  three-combat-floor cap.
-- **Observed residual:** one batched-controller attempt stopped on a transient
+- **Fixture demonstrated but not yet live accepted:** separate rest-site and
+  safe standard-event handling, plus a continuous combat/reward/map controller
+  covering the full three-combat-floor cap on ordinary-combat continuations.
+- **Observed residual:** one batched-controller attempt stopped on
   `decision_response_mismatch`. The narrower combat controller subsequently
-  resumed successfully, but the batched path needs a reproducible live pass or
-  a minimized failure before it can be called stable.
+  resumed successfully, but that does not establish a transient or timing root
+  cause. The batched path needs a reproducible live pass or a minimized failure
+  before it can be called stable.
 
 ## Current exclusions
 
@@ -108,8 +111,9 @@ passivity/rollback claims also remain unresolved; the approved live smokes
 accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 
 The smallest useful next target is to stabilize the existing batched controller
-and demonstrate one reproducible multi-floor live sequence using only already
-implemented combat, reward, map, and supported-room contracts. That target
+and compose the existing room controller into one reproducible multi-floor live
+sequence using only already implemented combat, reward, map, and supported-room
+contracts. That target
 should:
 
 1. minimize or explain `decision_response_mismatch` without adding privileged
@@ -122,6 +126,10 @@ should:
    and
 5. avoid adding shops, models, search, or broader architecture until the
    existing slice is repeatable.
+
+The dependency-aware worker packets for this target and the following narrow
+Python host foundation are maintained in
+[`PHASE_1_PARALLEL_EXECUTION_PLAN.md`](PHASE_1_PARALLEL_EXECUTION_PLAN.md).
 
 ## Document map
 
