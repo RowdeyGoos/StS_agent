@@ -79,6 +79,8 @@ def _read_body(
     )
     body: memoryview | None = None
     try:
+        if probe._is_retryable_backend_response(response):
+            fail(EXIT_MISMATCH, f"{label}_backend_retryable")
         body = probe._canonical_body(response, label)
         return bytes(body)
     finally:

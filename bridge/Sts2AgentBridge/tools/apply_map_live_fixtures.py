@@ -344,6 +344,37 @@ def operation() -> dict[str, object]:
     _request_builder_oracle()
     checks.append("independent_request_builder_oracle")
 
+    retryable_response = (
+        probe._RETRYABLE_BACKEND_HEADER
+        + probe._RETRYABLE_BACKEND_BODY_PREFIX
+        + b"0" * 32
+        + probe._RETRYABLE_BACKEND_BODY_SUFFIX
+    )
+    retryable_connector = _Connector(
+        [retryable_response],
+        [_get(map_client._MAP_DECISION_ROUTE)],
+    )
+    retryable_credential = bytearray(_CREDENTIAL)
+    try:
+        map_client._read_body(
+            "map",
+            map_client._MAP_DECISION_ROUTE,
+            retryable_credential,
+            retryable_connector,
+            1_000_000_000.0,
+        )
+    except ToolFailure as failure:
+        if (
+            failure.exit_code != EXIT_MISMATCH
+            or failure.error_code != "map_backend_retryable"
+        ):
+            fail(EXIT_MISMATCH, "map_fixture_wrong_retryable_failure")
+    else:
+        fail(EXIT_MISMATCH, "map_fixture_retryable_response_accepted")
+    probe._zero(retryable_credential)
+    retryable_connector.assert_cleanup()
+    checks.append("retryable_backend_classification")
+
     _run_success()
     checks.append("ready_accepted_waiting_complete")
 

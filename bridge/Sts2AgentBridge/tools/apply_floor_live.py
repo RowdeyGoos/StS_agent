@@ -97,13 +97,19 @@ def _wait_for_map_ready(
     attempts = 0
     while time.monotonic() < deadline:
         attempts += 1
-        body = map_client._read_body(
-            "map",
-            map_client._MAP_DECISION_ROUTE,
-            credential,
-            connector,
-            deadline,
-        )
+        try:
+            body = map_client._read_body(
+                "map",
+                map_client._MAP_DECISION_ROUTE,
+                credential,
+                connector,
+                deadline,
+            )
+        except ToolFailure as failure:
+            if failure.error_code != "map_backend_retryable":
+                raise
+            time.sleep(_POLL_SECONDS)
+            continue
         if body == map_client._MAP_WAITING:
             time.sleep(_POLL_SECONDS)
             continue

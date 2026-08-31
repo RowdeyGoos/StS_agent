@@ -107,6 +107,36 @@ def _run_completed_map_transition() -> None:
         fail(EXIT_MISMATCH, "floor_fixture_completed_map_attempts")
 
 
+def _run_retryable_map_transition() -> None:
+    credential = bytearray(_CREDENTIAL)
+    connector = object()
+    responses: list[bytes | ToolFailure] = [
+        ToolFailure(EXIT_MISMATCH, "map_backend_retryable"),
+        _map_body("ready"),
+    ]
+    original_read = floor.map_client._read_body
+    original_sleep = floor.time.sleep
+
+    def read_body(*_: object) -> bytes:
+        value = responses.pop(0)
+        if isinstance(value, ToolFailure):
+            raise value
+        return value
+
+    floor.map_client._read_body = read_body  # type: ignore[assignment]
+    floor.time.sleep = lambda _: None
+    try:
+        attempts = floor._wait_for_map_ready(
+            credential,
+            connector,  # type: ignore[arg-type]
+        )
+    finally:
+        floor.map_client._read_body = original_read
+        floor.time.sleep = original_sleep
+    if attempts != 2 or responses:
+        fail(EXIT_MISMATCH, "floor_fixture_retryable_map_attempts")
+
+
 def _run_success() -> None:
     loader = CredentialLoader()
     calls: list[str] = []
@@ -233,6 +263,7 @@ def _expect_invocation_failure(arguments: list[str], expected_code: str) -> None
 def operation() -> dict[str, object]:
     _run_success()
     _run_completed_map_transition()
+    _run_retryable_map_transition()
     _expect_floor_failure(
         "floor_combat_not_victory",
         _component(
@@ -286,11 +317,12 @@ def operation() -> dict[str, object]:
         "checks": [
             "one_floor_sequence",
             "completed_map_transition",
+            "retryable_map_transition",
             "combat_defeat_fail_stop",
             "player_continuity_fail_stop",
             "provider_surface",
         ],
-        "check_count": 5,
+        "check_count": 6,
     }
 
 

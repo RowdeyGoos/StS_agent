@@ -82,6 +82,26 @@ _CANONICAL_HEADER_SUFFIX = (
 )
 _HEADER_TERMINATOR = b"\r\n\r\n"
 
+_RETRYABLE_BACKEND_BODY_PREFIX = (
+    b'{"schema_version":1,"code":"backend_fault","retryable":true,'
+    b'"mutation_state":"none","correlation_id":"'
+)
+_RETRYABLE_BACKEND_BODY_SUFFIX = b'"}'
+_RETRYABLE_BACKEND_BODY_LENGTH = (
+    len(_RETRYABLE_BACKEND_BODY_PREFIX) + 32 + len(_RETRYABLE_BACKEND_BODY_SUFFIX)
+)
+_RETRYABLE_BACKEND_HEADER = (
+    b"HTTP/1.1 503 Service Unavailable\r\n"
+    b"Content-Type: application/json; charset=utf-8\r\n"
+    b"Content-Length: "
+    + str(_RETRYABLE_BACKEND_BODY_LENGTH).encode("ascii")
+    + b"\r\n"
+    b"Cache-Control: no-store\r\n"
+    b"X-Content-Type-Options: nosniff\r\n"
+    b"Connection: close\r\n"
+    b"\r\n"
+)
+
 _HEALTH_PREFIX = (
     b'{"schema_version":1,"lifecycle_state":"running","correlation_id":"'
 )
@@ -544,6 +564,24 @@ def _canonical_body(response: bytearray, label: str) -> memoryview:
     finally:
         header.release()
     return memoryview(response)[body_offset:]
+
+
+def _is_retryable_backend_response(response: bytes | bytearray) -> bool:
+    expected_length = (
+        len(_RETRYABLE_BACKEND_HEADER) + _RETRYABLE_BACKEND_BODY_LENGTH
+    )
+    if len(response) != expected_length or not response.startswith(
+        _RETRYABLE_BACKEND_HEADER
+    ):
+        return False
+    body_offset = len(_RETRYABLE_BACKEND_HEADER)
+    prefix_end = body_offset + len(_RETRYABLE_BACKEND_BODY_PREFIX)
+    correlation_end = prefix_end + 32
+    return (
+        response[body_offset:prefix_end] == _RETRYABLE_BACKEND_BODY_PREFIX
+        and response[correlation_end:] == _RETRYABLE_BACKEND_BODY_SUFFIX
+        and all(value in _LOWER_HEX for value in response[prefix_end:correlation_end])
+    )
 
 
 def _validate_health(body: memoryview) -> None:

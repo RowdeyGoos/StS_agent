@@ -262,6 +262,23 @@ def _expect_invalid_provider_result() -> None:
 def operation() -> dict[str, object]:
     checks: list[str] = []
 
+    retryable = (
+        probe._RETRYABLE_BACKEND_HEADER
+        + probe._RETRYABLE_BACKEND_BODY_PREFIX
+        + b"0" * 32
+        + probe._RETRYABLE_BACKEND_BODY_SUFFIX
+    )
+    if (
+        not probe._is_retryable_backend_response(retryable)
+        or probe._is_retryable_backend_response(retryable.replace(b"503", b"500", 1))
+        or probe._is_retryable_backend_response(
+            retryable.replace(b'"retryable":true', b'"retryable":false', 1)
+        )
+        or probe._is_retryable_backend_response(retryable[:-3] + b"XYZ")
+    ):
+        fail(EXIT_MISMATCH, "probe_fixture_retryable_backend_classifier")
+    checks.append("retryable_backend_classifier")
+
     _run_success("main_menu", probe._SCREEN_MAIN_MENU)
     checks.append("success_main_menu")
     _run_success("settings", probe._SCREEN_SETTINGS)
