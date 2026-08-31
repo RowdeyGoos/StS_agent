@@ -24,6 +24,8 @@ from tool_common import (
 
 _APPLY_DEADLINE_SECONDS = 30.0
 _POLL_SECONDS = 0.1
+_RATE_LIMIT_RETRY_SECONDS = 1.0
+_MAXIMUM_RATE_LIMIT_RETRIES = 1
 _MAP_DECISION_ROUTE = "/probe/v0/public/map-decision"
 _MAP_ACTION_ROUTE = "/probe/v0/public/map-action"
 _MAP_WAITING = (
@@ -67,26 +69,44 @@ def _read_body(
     deadline: float,
     decision_id: str | None = None,
     action_id: str | None = None,
+    *,
+    sleeper: Callable[[float], None] = time.sleep,
 ) -> bytes:
-    response = probe._exchange(
-        label,
-        route,
-        credential,
-        connector,
-        deadline,
-        decision_id,
-        action_id,
-    )
-    body: memoryview | None = None
-    try:
-        if probe._is_retryable_backend_response(response):
-            fail(EXIT_MISMATCH, f"{label}_backend_retryable")
-        body = probe._canonical_body(response, label)
-        return bytes(body)
-    finally:
-        if body is not None:
-            body.release()
-        probe._zero(response)
+    rate_limit_retries = 0
+    while True:
+        response = probe._exchange(
+            label,
+            route,
+            credential,
+            connector,
+            deadline,
+            decision_id,
+            action_id,
+        )
+        body: memoryview | None = None
+        should_retry_rate_limit = False
+        try:
+            if probe._is_rate_limited_response(response):
+                if (
+                    rate_limit_retries >= _MAXIMUM_RATE_LIMIT_RETRIES
+                    or time.monotonic() + _RATE_LIMIT_RETRY_SECONDS >= deadline
+                ):
+                    fail(EXIT_MISMATCH, f"{label}_rate_limited")
+                should_retry_rate_limit = True
+            elif probe._is_retryable_backend_response(response):
+                fail(EXIT_MISMATCH, f"{label}_backend_retryable")
+            elif probe._is_backend_fault_response(response):
+                fail(EXIT_MISMATCH, f"{label}_backend_fault")
+            else:
+                body = probe._canonical_body(response, label)
+                return bytes(body)
+        finally:
+            if body is not None:
+                body.release()
+            probe._zero(response)
+        if should_retry_rate_limit:
+            rate_limit_retries += 1
+            sleeper(_RATE_LIMIT_RETRY_SECONDS)
 
 
 def _decode_exact(body: bytes, keys: tuple[str, ...]) -> dict[str, object]:

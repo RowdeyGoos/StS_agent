@@ -344,6 +344,58 @@ def operation() -> dict[str, object]:
     _request_builder_oracle()
     checks.append("independent_request_builder_oracle")
 
+    rate_limited_response = (
+        probe._RATE_LIMITED_HEADER
+        + probe._RATE_LIMITED_BODY_PREFIX
+        + b"0" * 32
+        + probe._RATE_LIMITED_BODY_SUFFIX
+    )
+    accepted_body = _action_body(_DECISION_ZERO, "select:0", "accepted")
+    rate_limited_connector = _Connector(
+        [rate_limited_response, _response(accepted_body)],
+        [_post(_DECISION_ZERO, "select:0"), _post(_DECISION_ZERO, "select:0")],
+    )
+    rate_limited_credential = bytearray(_CREDENTIAL)
+    sleeps: list[float] = []
+    observed = map_client._read_body(
+        "map_action",
+        map_client._MAP_ACTION_ROUTE,
+        rate_limited_credential,
+        rate_limited_connector,
+        1_000_000_000.0,
+        _DECISION_ZERO,
+        "select:0",
+        sleeper=sleeps.append,
+    )
+    if observed != accepted_body or sleeps != [map_client._RATE_LIMIT_RETRY_SECONDS]:
+        fail(EXIT_MISMATCH, "map_fixture_rate_limit_retry")
+    probe._zero(rate_limited_credential)
+    rate_limited_connector.assert_cleanup()
+    checks.append("exact_rate_limit_post_retry")
+
+    exhausted_connector = _Connector(
+        [rate_limited_response, rate_limited_response],
+        [_get(map_client._MAP_DECISION_ROUTE), _get(map_client._MAP_DECISION_ROUTE)],
+    )
+    exhausted_credential = bytearray(_CREDENTIAL)
+    try:
+        map_client._read_body(
+            "map",
+            map_client._MAP_DECISION_ROUTE,
+            exhausted_credential,
+            exhausted_connector,
+            1_000_000_000.0,
+            sleeper=lambda _: None,
+        )
+    except ToolFailure as failure:
+        if failure.exit_code != EXIT_MISMATCH or failure.error_code != "map_rate_limited":
+            fail(EXIT_MISMATCH, "map_fixture_wrong_rate_limit_failure")
+    else:
+        fail(EXIT_MISMATCH, "map_fixture_rate_limit_exhaustion_accepted")
+    probe._zero(exhausted_credential)
+    exhausted_connector.assert_cleanup()
+    checks.append("rate_limit_retry_exhaustion")
+
     retryable_response = (
         probe._RETRYABLE_BACKEND_HEADER
         + probe._RETRYABLE_BACKEND_BODY_PREFIX
@@ -374,6 +426,37 @@ def operation() -> dict[str, object]:
     probe._zero(retryable_credential)
     retryable_connector.assert_cleanup()
     checks.append("retryable_backend_classification")
+
+    backend_fault_response = (
+        probe._BACKEND_FAULT_HEADER
+        + probe._BACKEND_FAULT_BODY_PREFIX
+        + b"0" * 32
+        + probe._BACKEND_FAULT_BODY_SUFFIX
+    )
+    backend_fault_connector = _Connector(
+        [backend_fault_response],
+        [_get(map_client._MAP_DECISION_ROUTE)],
+    )
+    backend_fault_credential = bytearray(_CREDENTIAL)
+    try:
+        map_client._read_body(
+            "map",
+            map_client._MAP_DECISION_ROUTE,
+            backend_fault_credential,
+            backend_fault_connector,
+            1_000_000_000.0,
+        )
+    except ToolFailure as failure:
+        if (
+            failure.exit_code != EXIT_MISMATCH
+            or failure.error_code != "map_backend_fault"
+        ):
+            fail(EXIT_MISMATCH, "map_fixture_wrong_backend_fault")
+    else:
+        fail(EXIT_MISMATCH, "map_fixture_backend_fault_accepted")
+    probe._zero(backend_fault_credential)
+    backend_fault_connector.assert_cleanup()
+    checks.append("backend_fault_classification")
 
     _run_success()
     checks.append("ready_accepted_waiting_complete")

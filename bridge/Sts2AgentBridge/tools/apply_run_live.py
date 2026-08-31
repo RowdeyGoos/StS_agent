@@ -273,6 +273,28 @@ def _destination_kind(map_result: dict[str, object]) -> str:
     return kind
 
 
+def _has_bounded_post_combat_player_transition(
+    final_player: object,
+    reward_player: object,
+) -> bool:
+    if not isinstance(final_player, dict) or not isinstance(reward_player, dict):
+        return False
+    final_hp = final_player.get("hp")
+    final_max_hp = final_player.get("max_hp")
+    reward_hp = reward_player.get("hp")
+    reward_max_hp = reward_player.get("max_hp")
+    if not all(
+        probe._is_bounded_nonnegative_integer(value)
+        for value in (final_hp, final_max_hp, reward_hp, reward_max_hp)
+    ):
+        return False
+    return (
+        final_max_hp > 0
+        and final_max_hp == reward_max_hp
+        and 0 <= final_hp <= reward_hp <= reward_max_hp
+    )
+
+
 def _run_bounded_run(
     credential_loader: Callable[[], bytearray],
     connector: Callable[[], Any],
@@ -352,12 +374,7 @@ def _run_bounded_run(
         final_player = combat.get("final_player")
         reward_before = reward.get("before")
         reward_player = reward_before.get("player") if isinstance(reward_before, dict) else None
-        if (
-            not isinstance(final_player, dict)
-            or not isinstance(reward_player, dict)
-            or final_player.get("hp") != reward_player.get("hp")
-            or final_player.get("max_hp") != reward_player.get("max_hp")
-        ):
+        if not _has_bounded_post_combat_player_transition(final_player, reward_player):
             fail(EXIT_MISMATCH, "run_player_continuity_mismatch")
 
         map_attempts = _with_credential(credential_loader, map_waiter, connector)

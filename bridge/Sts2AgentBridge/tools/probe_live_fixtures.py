@@ -262,6 +262,26 @@ def _expect_invalid_provider_result() -> None:
 def operation() -> dict[str, object]:
     checks: list[str] = []
 
+    rate_limited = (
+        probe._RATE_LIMITED_HEADER
+        + probe._RATE_LIMITED_BODY_PREFIX
+        + b"0" * 32
+        + probe._RATE_LIMITED_BODY_SUFFIX
+    )
+    if (
+        not probe._is_rate_limited_response(rate_limited)
+        or probe._is_rate_limited_response(rate_limited.replace(b"429", b"503", 1))
+        or probe._is_rate_limited_response(
+            rate_limited.replace(b"Retry-After: 1", b"Retry-After: 2", 1)
+        )
+        or probe._is_rate_limited_response(
+            rate_limited.replace(b'"retryable":true', b'"retryable":false', 1)
+        )
+        or probe._is_rate_limited_response(rate_limited[:-3] + b"XYZ")
+    ):
+        fail(EXIT_MISMATCH, "probe_fixture_rate_limited_classifier")
+    checks.append("rate_limited_classifier")
+
     retryable = (
         probe._RETRYABLE_BACKEND_HEADER
         + probe._RETRYABLE_BACKEND_BODY_PREFIX
@@ -278,6 +298,23 @@ def operation() -> dict[str, object]:
     ):
         fail(EXIT_MISMATCH, "probe_fixture_retryable_backend_classifier")
     checks.append("retryable_backend_classifier")
+
+    backend_fault = (
+        probe._BACKEND_FAULT_HEADER
+        + probe._BACKEND_FAULT_BODY_PREFIX
+        + b"0" * 32
+        + probe._BACKEND_FAULT_BODY_SUFFIX
+    )
+    if (
+        not probe._is_backend_fault_response(backend_fault)
+        or probe._is_backend_fault_response(backend_fault.replace(b"500", b"503", 1))
+        or probe._is_backend_fault_response(
+            backend_fault.replace(b'"retryable":false', b'"retryable":true', 1)
+        )
+        or probe._is_backend_fault_response(backend_fault[:-3] + b"XYZ")
+    ):
+        fail(EXIT_MISMATCH, "probe_fixture_backend_fault_classifier")
+    checks.append("backend_fault_classifier")
 
     _run_success("main_menu", probe._SCREEN_MAIN_MENU)
     checks.append("success_main_menu")

@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Protocol
 
 
-_UNSUPPORTED_FOLLOWUP_CARD_IDS = frozenset(("survivor",))
+_UNSUPPORTED_FOLLOWUP_CARD_IDS = frozenset(("prepared", "survivor"))
 
 
 class DecisionProvider(Protocol):

@@ -82,6 +82,26 @@ _CANONICAL_HEADER_SUFFIX = (
 )
 _HEADER_TERMINATOR = b"\r\n\r\n"
 
+_RATE_LIMITED_BODY_PREFIX = (
+    b'{"schema_version":1,"code":"rate_limited","retryable":true,'
+    b'"mutation_state":"none","correlation_id":"'
+)
+_RATE_LIMITED_BODY_SUFFIX = b'"}'
+_RATE_LIMITED_BODY_LENGTH = (
+    len(_RATE_LIMITED_BODY_PREFIX) + 32 + len(_RATE_LIMITED_BODY_SUFFIX)
+)
+_RATE_LIMITED_HEADER = (
+    b"HTTP/1.1 429 Too Many Requests\r\n"
+    b"Content-Type: application/json; charset=utf-8\r\n"
+    b"Content-Length: "
+    + str(_RATE_LIMITED_BODY_LENGTH).encode("ascii")
+    + b"\r\n"
+    b"Cache-Control: no-store\r\n"
+    b"X-Content-Type-Options: nosniff\r\n"
+    b"Retry-After: 1\r\n"
+    b"Connection: close\r\n"
+    b"\r\n"
+)
 _RETRYABLE_BACKEND_BODY_PREFIX = (
     b'{"schema_version":1,"code":"backend_fault","retryable":true,'
     b'"mutation_state":"none","correlation_id":"'
@@ -95,6 +115,25 @@ _RETRYABLE_BACKEND_HEADER = (
     b"Content-Type: application/json; charset=utf-8\r\n"
     b"Content-Length: "
     + str(_RETRYABLE_BACKEND_BODY_LENGTH).encode("ascii")
+    + b"\r\n"
+    b"Cache-Control: no-store\r\n"
+    b"X-Content-Type-Options: nosniff\r\n"
+    b"Connection: close\r\n"
+    b"\r\n"
+)
+_BACKEND_FAULT_BODY_PREFIX = (
+    b'{"schema_version":1,"code":"backend_fault","retryable":false,'
+    b'"mutation_state":"none","correlation_id":"'
+)
+_BACKEND_FAULT_BODY_SUFFIX = b'"}'
+_BACKEND_FAULT_BODY_LENGTH = (
+    len(_BACKEND_FAULT_BODY_PREFIX) + 32 + len(_BACKEND_FAULT_BODY_SUFFIX)
+)
+_BACKEND_FAULT_HEADER = (
+    b"HTTP/1.1 500 Internal Server Error\r\n"
+    b"Content-Type: application/json; charset=utf-8\r\n"
+    b"Content-Length: "
+    + str(_BACKEND_FAULT_BODY_LENGTH).encode("ascii")
     + b"\r\n"
     b"Cache-Control: no-store\r\n"
     b"X-Content-Type-Options: nosniff\r\n"
@@ -580,6 +619,36 @@ def _is_retryable_backend_response(response: bytes | bytearray) -> bool:
     return (
         response[body_offset:prefix_end] == _RETRYABLE_BACKEND_BODY_PREFIX
         and response[correlation_end:] == _RETRYABLE_BACKEND_BODY_SUFFIX
+        and all(value in _LOWER_HEX for value in response[prefix_end:correlation_end])
+    )
+
+
+def _is_rate_limited_response(response: bytes | bytearray) -> bool:
+    expected_length = len(_RATE_LIMITED_HEADER) + _RATE_LIMITED_BODY_LENGTH
+    if len(response) != expected_length or not response.startswith(_RATE_LIMITED_HEADER):
+        return False
+    body_offset = len(_RATE_LIMITED_HEADER)
+    prefix_end = body_offset + len(_RATE_LIMITED_BODY_PREFIX)
+    correlation_end = prefix_end + 32
+    return (
+        response[body_offset:prefix_end] == _RATE_LIMITED_BODY_PREFIX
+        and response[correlation_end:] == _RATE_LIMITED_BODY_SUFFIX
+        and all(value in _LOWER_HEX for value in response[prefix_end:correlation_end])
+    )
+
+
+def _is_backend_fault_response(response: bytes | bytearray) -> bool:
+    expected_length = len(_BACKEND_FAULT_HEADER) + _BACKEND_FAULT_BODY_LENGTH
+    if len(response) != expected_length or not response.startswith(
+        _BACKEND_FAULT_HEADER
+    ):
+        return False
+    body_offset = len(_BACKEND_FAULT_HEADER)
+    prefix_end = body_offset + len(_BACKEND_FAULT_BODY_PREFIX)
+    correlation_end = prefix_end + 32
+    return (
+        response[body_offset:prefix_end] == _BACKEND_FAULT_BODY_PREFIX
+        and response[correlation_end:] == _BACKEND_FAULT_BODY_SUFFIX
         and all(value in _LOWER_HEX for value in response[prefix_end:correlation_end])
     )
 

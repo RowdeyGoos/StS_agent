@@ -38,19 +38,24 @@ def _component(milestone: str, **values: object) -> dict[str, object]:
     }
 
 
-def _combat(outcome: str = "victory", hp: int = 70, actions: int = 5) -> dict[str, object]:
+def _combat(
+    outcome: str = "victory",
+    hp: int = 70,
+    actions: int = 5,
+    max_hp: int = 80,
+) -> dict[str, object]:
     return _component(
         "r0e_complete_combat",
         outcome=outcome,
         accepted_action_count=actions,
-        final_player={"hp": hp, "max_hp": 80},
+        final_player={"hp": hp, "max_hp": max_hp},
     )
 
 
-def _reward(hp: int = 70) -> dict[str, object]:
+def _reward(hp: int = 70, max_hp: int = 80) -> dict[str, object]:
     return _component(
         "r0i_reward_resolution",
-        before={"player": {"hp": hp, "max_hp": 80}},
+        before={"player": {"hp": hp, "max_hp": max_hp}},
         applied=[{"action_id": "proceed"}],
     )
 
@@ -119,6 +124,10 @@ def _run_sequence(
     room_screen: str | None = None,
     room_ordinal: int = 4,
     call_log: list[str] | None = None,
+    combat_hp: int = 70,
+    combat_max_hp: int = 80,
+    reward_hp: int = 70,
+    reward_max_hp: int = 80,
 ) -> tuple[dict[str, object], list[str], CredentialLoader]:
     loader = CredentialLoader()
     calls: list[str] = [] if call_log is None else call_log
@@ -140,7 +149,11 @@ def _run_sequence(
         calls.append("combat")
         if defeat_on_combat == combat_number:
             return _combat("defeat", 0, 3)
-        return _combat(actions=4 + combat_number)
+        return _combat(
+            hp=combat_hp,
+            actions=4 + combat_number,
+            max_hp=combat_max_hp,
+        )
 
     def reward_waiter(credential: bytearray, supplied: object) -> int:
         if bytes(credential) != _CREDENTIAL or supplied is not connector:
@@ -152,7 +165,7 @@ def _run_sequence(
         if bytes(credential) != _CREDENTIAL or provider != "skip" or supplied is not connector:
             fail(EXIT_MISMATCH, "run_fixture_reward_arguments")
         calls.append("reward")
-        return _reward()
+        return _reward(reward_hp, reward_max_hp)
 
     def map_waiter(credential: bytearray, supplied: object) -> int:
         if bytes(credential) != _CREDENTIAL or supplied is not connector:
@@ -304,6 +317,49 @@ def _run_defeat_stop() -> None:
         or calls[-2:] != ["next_wait", "combat"]
     ):
         fail(EXIT_MISMATCH, "run_fixture_defeat_stop")
+
+
+def _run_post_combat_player_transition_contract() -> None:
+    healed, _, _ = _run_sequence(
+        ["shop"],
+        1,
+        combat_hp=69,
+        reward_hp=75,
+    )
+    if healed.get("completed_floor_count") != 1:
+        fail(EXIT_MISMATCH, "run_fixture_post_combat_heal")
+
+    for values in (
+        {"combat_hp": 70, "reward_hp": 69},
+        {"combat_max_hp": 80, "reward_max_hp": 81},
+    ):
+        try:
+            _run_sequence(["shop"], 1, **values)
+        except ToolFailure as failure:
+            if (
+                failure.exit_code == EXIT_MISMATCH
+                and failure.error_code == "run_player_continuity_mismatch"
+            ):
+                continue
+            fail(EXIT_MISMATCH, "run_fixture_wrong_player_transition_failure")
+        fail(EXIT_MISMATCH, "run_fixture_player_transition_passed")
+
+    valid = {"hp": 70, "max_hp": 80}
+    invalid_pairs: tuple[tuple[object, object], ...] = (
+        (None, valid),
+        ({}, valid),
+        ({"hp": "70", "max_hp": 80}, valid),
+        ({"hp": True, "max_hp": 80}, valid),
+        ({"hp": -1, "max_hp": 80}, valid),
+        ({"hp": 81, "max_hp": 80}, valid),
+        ({"hp": 1_000_001, "max_hp": 1_000_001},
+         {"hp": 1_000_001, "max_hp": 1_000_001}),
+    )
+    if any(
+        run._has_bounded_post_combat_player_transition(final, reward)
+        for final, reward in invalid_pairs
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_invalid_player_transition")
 
 
 def _run_safe_room_handoffs() -> None:
@@ -766,6 +822,7 @@ def operation() -> dict[str, object]:
     _run_three_floor_success()
     _run_unsupported_stops()
     _run_defeat_stop()
+    _run_post_combat_player_transition_contract()
     _run_safe_room_handoffs()
     _run_room_continuations()
     _run_room_continuation_fail_closed()
@@ -782,6 +839,7 @@ def operation() -> dict[str, object]:
             "three_floor_sequence",
             "unsupported_destination_stops",
             "defeat_stop",
+            "bounded_post_combat_player_transition",
             "rest_and_event_room_handoffs",
             "rest_and_event_room_continuations",
             "post_room_unsupported_and_second_room_fail_closed",
@@ -792,7 +850,7 @@ def operation() -> dict[str, object]:
             "provider_and_floor_limit_surface",
             "credential_cleanup",
         ],
-        "check_count": 12,
+        "check_count": 13,
     }
 
 

@@ -167,6 +167,7 @@ def _combat_followup_safety() -> None:
     enemies = [{"hp": 20, "intents": ["attack"]}]
     hand = [
         {"id": "SURVIVOR", "type": "skill"},
+        {"id": "PREPARED", "type": "skill"},
         {"id": "STRIKE_SILENT", "type": "attack"},
     ]
     survivor = {
@@ -176,10 +177,16 @@ def _combat_followup_safety() -> None:
         "target_index": None,
     }
     strike = {
-        "action_id": "play:1:0",
+        "action_id": "play:2:0",
+        "kind": "play_card",
+        "hand_index": 2,
+        "target_index": 0,
+    }
+    prepared = {
+        "action_id": "play:1",
         "kind": "play_card",
         "hand_index": 1,
-        "target_index": 0,
+        "target_index": None,
     }
     end_turn = {
         "action_id": "end_turn",
@@ -188,7 +195,11 @@ def _combat_followup_safety() -> None:
         "target_index": None,
     }
     provider = get_decision_provider("heuristic")
-    selected = provider.choose(enemies, hand, [survivor, strike, end_turn])
+    selected = provider.choose(
+        enemies,
+        hand,
+        [survivor, prepared, strike, end_turn],
+    )
     if selected != {
         **strike,
         "card_id": "STRIKE_SILENT",
@@ -196,7 +207,11 @@ def _combat_followup_safety() -> None:
     }:
         fail(EXIT_MISMATCH, "combat_provider_fixture_followup_avoidance")
 
-    selected = provider.choose(enemies, hand[:1], [survivor, end_turn])
+    selected = provider.choose(
+        enemies,
+        hand[:2],
+        [survivor, prepared, end_turn],
+    )
     if selected != {
         **end_turn,
         "card_id": None,
