@@ -1,0 +1,1 @@
+{"fixture_id":"event","schema":"headless_v0_fixture_v1","steps":[{"action":"room.event_option","phase":"room","room_kind":"event","routes":{"recorded":1},"status":"actionable"},{"action":"room.proceed","phase":"room","room_kind":"event","routes":{"recorded":2},"status":"actionable"},{"phase":"terminal","status":"terminal"}]}

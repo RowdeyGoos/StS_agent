@@ -1,0 +1,1 @@
+{"fixture_id":"rest","schema":"headless_v0_fixture_v1","steps":[{"action":"room.rest_heal","phase":"room","room_kind":"rest","routes":{"recorded":1},"status":"actionable"},{"action":"room.proceed","phase":"room","room_kind":"rest","routes":{"recorded":2},"status":"actionable"},{"phase":"terminal","status":"terminal"}]}
