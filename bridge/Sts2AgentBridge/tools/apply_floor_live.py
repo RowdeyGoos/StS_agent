@@ -109,7 +109,17 @@ def _wait_for_map_ready(
             continue
         if body == map_client._MAP_UNSUPPORTED:
             fail(EXIT_MISMATCH, "map_state_unsupported")
-        map_client._validate_ready(body)
+        try:
+            map_client._validate_ready(body)
+        except ToolFailure as failure:
+            if failure.error_code != "map_response_mismatch":
+                raise
+            # The accepted destination from the previous floor can remain
+            # observable briefly while the next map decision is materialized.
+            # Accept only the strict completed-map shape as a transient state.
+            map_client._validate_complete(body)
+            time.sleep(_POLL_SECONDS)
+            continue
         return attempts
     fail(EXIT_MISMATCH, "map_ready_timeout")
 

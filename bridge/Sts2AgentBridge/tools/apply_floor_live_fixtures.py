@@ -5,6 +5,8 @@ import sys
 
 sys.dont_write_bytecode = True
 
+import json
+
 import apply_floor_live as floor
 from tool_common import EXIT_INVALID_INVOCATION, EXIT_MISMATCH, ToolFailure, fail, main
 
@@ -32,6 +34,77 @@ def _component(milestone: str, **values: object) -> dict[str, object]:
         "milestone": milestone,
         **values,
     }
+
+
+def _map_body(status: str) -> bytes:
+    complete = status == "complete"
+    candidate = {
+        "candidate_index": 0,
+        "col": 0,
+        "row": 1,
+        "kind": "monster",
+    }
+    return json.dumps(
+        {
+            "schema_version": 1,
+            "status": status,
+            "decision_kind": "map",
+            "actionable": not complete,
+            "decision_id": None if complete else "0" * 64,
+            "screen_kind": "room" if complete else "map",
+            "destination": candidate if complete else None,
+            "candidates": [] if complete else [candidate],
+            "legal_actions": []
+            if complete
+            else [
+                {
+                    "action_id": "select:0",
+                    "kind": "select_map_node",
+                    "candidate_index": 0,
+                }
+            ],
+        },
+        separators=(",", ":"),
+    ).encode("ascii")
+
+
+def _run_completed_map_transition() -> None:
+    credential = bytearray(_CREDENTIAL)
+    connector = object()
+    responses = iter((_map_body("complete"), _map_body("ready")))
+    original_read = floor.map_client._read_body
+    original_sleep = floor.time.sleep
+
+    def read_body(
+        label: str,
+        route: str,
+        supplied_credential: bytearray,
+        supplied_connector: object,
+        deadline: float,
+    ) -> bytes:
+        del deadline
+        if (
+            label != "map"
+            or route != floor.map_client._MAP_DECISION_ROUTE
+            or supplied_credential is not credential
+            or supplied_connector is not connector
+        ):
+            fail(EXIT_MISMATCH, "floor_fixture_completed_map_arguments")
+        return next(responses)
+
+    floor.map_client._read_body = read_body  # type: ignore[assignment]
+    floor.time.sleep = lambda _: None
+    try:
+        attempts = floor._wait_for_map_ready(
+            credential,
+            connector,  # type: ignore[arg-type]
+        )
+    finally:
+        floor.map_client._read_body = original_read
+        floor.time.sleep = original_sleep
+
+    if attempts != 2:
+        fail(EXIT_MISMATCH, "floor_fixture_completed_map_attempts")
 
 
 def _run_success() -> None:
@@ -159,6 +232,7 @@ def _expect_invocation_failure(arguments: list[str], expected_code: str) -> None
 
 def operation() -> dict[str, object]:
     _run_success()
+    _run_completed_map_transition()
     _expect_floor_failure(
         "floor_combat_not_victory",
         _component(
@@ -211,11 +285,12 @@ def operation() -> dict[str, object]:
         "suite": "apply_floor_live_fixtures",
         "checks": [
             "one_floor_sequence",
+            "completed_map_transition",
             "combat_defeat_fail_stop",
             "player_continuity_fail_stop",
             "provider_surface",
         ],
-        "check_count": 4,
+        "check_count": 5,
     }
 
 
