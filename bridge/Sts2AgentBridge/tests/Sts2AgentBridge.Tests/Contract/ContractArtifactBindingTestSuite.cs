@@ -134,6 +134,8 @@ internal static class ContractArtifactBindingTestSuite
             CanonicalProbeEncoder.EncodePublicScreenResponse(
                 new PublicScreenSnapshot(PublicScreenStatus.Unsupported, PublicScreenKind.Unknown)));
 
+        AddPublicDecisionAndReceiptVectors(expected);
+
         AddErrorVector(expected, "error_400", ProbeErrorKind.InvalidRequest);
         AddErrorVector(expected, "error_401", ProbeErrorKind.Unauthenticated);
         AddErrorVector(expected, "error_403", ProbeErrorKind.Forbidden);
@@ -179,6 +181,111 @@ internal static class ContractArtifactBindingTestSuite
         expected.Add(baseName + ".json", body);
         expected.Add(baseName + ".http", response);
     }
+
+    private static void AddBodyVector(
+        IDictionary<string, byte[]> expected,
+        string baseName,
+        byte[] body)
+    {
+        expected.Add(baseName + ".json", body);
+    }
+
+    private static void AddPublicDecisionAndReceiptVectors(IDictionary<string, byte[]> expected)
+    {
+        const string readyDecisionId = "0000000000000000000000000000000000000000000000000000000000000000";
+        const string limitedDecisionId = "1111111111111111111111111111111111111111111111111111111111111111";
+
+        AddBodyVector(expected, "combat_decision_ready", CanonicalProbeEncoder.EncodePublicCombatDecisionBody(ReadyCombatDecision(readyDecisionId)));
+        AddBodyVector(expected, "combat_decision_waiting", CanonicalProbeEncoder.EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot.Waiting()));
+        AddBodyVector(expected, "combat_decision_unsupported", CanonicalProbeEncoder.EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot.Unsupported()));
+        AddBodyVector(expected, "combat_decision_complete", CanonicalProbeEncoder.EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot.Complete(3, new PublicCombatPlayer(61, 80, 0, 2), Array.Empty<PublicCombatEnemy>(), PublicCombatOutcome.Victory)));
+
+        AddBodyVector(expected, "reward_decision_ready", CanonicalProbeEncoder.EncodePublicRewardDecisionBody(ReadyRewardDecision(readyDecisionId)));
+        AddBodyVector(expected, "reward_decision_waiting", CanonicalProbeEncoder.EncodePublicRewardDecisionBody(PublicRewardDecisionSnapshot.Waiting()));
+        AddBodyVector(expected, "reward_decision_unsupported", CanonicalProbeEncoder.EncodePublicRewardDecisionBody(PublicRewardDecisionSnapshot.Unsupported()));
+        AddBodyVector(expected, "reward_decision_complete", CanonicalProbeEncoder.EncodePublicRewardDecisionBody(PublicRewardDecisionSnapshot.Complete(new PublicRewardPlayer(74, 80, 99, 10))));
+
+        AddBodyVector(expected, "map_decision_ready", CanonicalProbeEncoder.EncodePublicMapDecisionBody(ReadyMapDecision(readyDecisionId)));
+        AddBodyVector(expected, "map_decision_waiting", CanonicalProbeEncoder.EncodePublicMapDecisionBody(PublicMapDecisionSnapshot.Waiting()));
+        AddBodyVector(expected, "map_decision_unsupported", CanonicalProbeEncoder.EncodePublicMapDecisionBody(PublicMapDecisionSnapshot.Unsupported()));
+        AddBodyVector(expected, "map_decision_complete", CanonicalProbeEncoder.EncodePublicMapDecisionBody(PublicMapDecisionSnapshot.Complete(new PublicMapCandidate(1, 4, 3, "shop"))));
+
+        AddBodyVector(expected, "room_decision_ready", CanonicalProbeEncoder.EncodePublicRoomDecisionBody(ReadyRoomDecision(readyDecisionId)));
+        AddBodyVector(expected, "room_decision_waiting", CanonicalProbeEncoder.EncodePublicRoomDecisionBody(PublicRoomDecisionSnapshot.Waiting()));
+        AddBodyVector(expected, "room_decision_unsupported", CanonicalProbeEncoder.EncodePublicRoomDecisionBody(PublicRoomDecisionSnapshot.Unsupported("event", 4)));
+        AddBodyVector(expected, "room_decision_complete", CanonicalProbeEncoder.EncodePublicRoomDecisionBody(PublicRoomDecisionSnapshot.Complete("rest_site", 4)));
+
+        PublicCombatActionRequest.TryCreate(readyDecisionId, "play:0:0", out PublicCombatActionRequest combatRequest);
+        AddCombatReceiptVectors(expected, combatRequest, limitedDecisionId);
+        PublicRewardActionRequest.TryCreate(readyDecisionId, PublicRewardActionRequest.ProceedActionId, out PublicRewardActionRequest rewardRequest);
+        AddRewardReceiptVectors(expected, rewardRequest, limitedDecisionId);
+        PublicMapActionRequest.TryCreate(readyDecisionId, "select:1", out PublicMapActionRequest mapRequest);
+        AddMapReceiptVectors(expected, mapRequest, limitedDecisionId);
+        PublicRoomActionRequest.TryCreate(readyDecisionId, PublicRoomActionRequest.ProceedActionId, out PublicRoomActionRequest roomRequest);
+        AddRoomReceiptVectors(expected, roomRequest, limitedDecisionId);
+    }
+
+    private static void AddCombatReceiptVectors(IDictionary<string, byte[]> expected, PublicCombatActionRequest request, string limitedDecisionId)
+    {
+        AddBodyVector(expected, "combat_receipt_accepted", CanonicalProbeEncoder.EncodePublicCombatActionBody(PublicCombatActionApplyResult.FromRequest(PublicCombatActionApplyOutcome.Accepted, request)));
+        AddBodyVector(expected, "combat_receipt_stale_decision", CanonicalProbeEncoder.EncodePublicCombatActionBody(PublicCombatActionApplyResult.FromRequest(PublicCombatActionApplyOutcome.StaleDecision, request)));
+        AddBodyVector(expected, "combat_receipt_invalid_action", CanonicalProbeEncoder.EncodePublicCombatActionBody(PublicCombatActionApplyResult.FromRequest(PublicCombatActionApplyOutcome.InvalidAction, request)));
+        AddBodyVector(expected, "combat_receipt_already_applied", CanonicalProbeEncoder.EncodePublicCombatActionBody(PublicCombatActionApplyResult.FromRequest(PublicCombatActionApplyOutcome.AlreadyApplied, request)));
+        PublicCombatActionRequest.TryCreate(limitedDecisionId, "end_turn", out PublicCombatActionRequest limitedRequest);
+        AddBodyVector(expected, "combat_receipt_action_limit_reached", CanonicalProbeEncoder.EncodePublicCombatActionBody(PublicCombatActionApplyResult.FromRequest(PublicCombatActionApplyOutcome.ActionLimitReached, limitedRequest)));
+    }
+
+    private static void AddRewardReceiptVectors(IDictionary<string, byte[]> expected, PublicRewardActionRequest request, string limitedDecisionId)
+    {
+        AddBodyVector(expected, "reward_receipt_accepted", CanonicalProbeEncoder.EncodePublicRewardActionBody(PublicRewardActionApplyResult.FromRequest(PublicRewardActionApplyOutcome.Accepted, request)));
+        AddBodyVector(expected, "reward_receipt_stale_decision", CanonicalProbeEncoder.EncodePublicRewardActionBody(PublicRewardActionApplyResult.FromRequest(PublicRewardActionApplyOutcome.StaleDecision, request)));
+        AddBodyVector(expected, "reward_receipt_invalid_action", CanonicalProbeEncoder.EncodePublicRewardActionBody(PublicRewardActionApplyResult.FromRequest(PublicRewardActionApplyOutcome.InvalidAction, request)));
+        AddBodyVector(expected, "reward_receipt_already_applied", CanonicalProbeEncoder.EncodePublicRewardActionBody(PublicRewardActionApplyResult.FromRequest(PublicRewardActionApplyOutcome.AlreadyApplied, request)));
+        PublicRewardActionRequest.TryCreate(limitedDecisionId, PublicRewardActionRequest.ProceedActionId, out PublicRewardActionRequest limitedRequest);
+        AddBodyVector(expected, "reward_receipt_action_limit_reached", CanonicalProbeEncoder.EncodePublicRewardActionBody(PublicRewardActionApplyResult.FromRequest(PublicRewardActionApplyOutcome.ActionLimitReached, limitedRequest)));
+    }
+
+    private static void AddMapReceiptVectors(IDictionary<string, byte[]> expected, PublicMapActionRequest request, string limitedDecisionId)
+    {
+        AddBodyVector(expected, "map_receipt_accepted", CanonicalProbeEncoder.EncodePublicMapActionBody(PublicMapActionApplyResult.FromRequest(PublicMapActionApplyOutcome.Accepted, request)));
+        AddBodyVector(expected, "map_receipt_stale_decision", CanonicalProbeEncoder.EncodePublicMapActionBody(PublicMapActionApplyResult.FromRequest(PublicMapActionApplyOutcome.StaleDecision, request)));
+        AddBodyVector(expected, "map_receipt_invalid_action", CanonicalProbeEncoder.EncodePublicMapActionBody(PublicMapActionApplyResult.FromRequest(PublicMapActionApplyOutcome.InvalidAction, request)));
+        AddBodyVector(expected, "map_receipt_already_applied", CanonicalProbeEncoder.EncodePublicMapActionBody(PublicMapActionApplyResult.FromRequest(PublicMapActionApplyOutcome.AlreadyApplied, request)));
+        PublicMapActionRequest.TryCreate(limitedDecisionId, "select:1", out PublicMapActionRequest limitedRequest);
+        AddBodyVector(expected, "map_receipt_action_limit_reached", CanonicalProbeEncoder.EncodePublicMapActionBody(PublicMapActionApplyResult.FromRequest(PublicMapActionApplyOutcome.ActionLimitReached, limitedRequest)));
+    }
+
+    private static void AddRoomReceiptVectors(IDictionary<string, byte[]> expected, PublicRoomActionRequest request, string limitedDecisionId)
+    {
+        AddBodyVector(expected, "room_receipt_accepted", CanonicalProbeEncoder.EncodePublicRoomActionBody(PublicRoomActionApplyResult.FromRequest(PublicRoomActionApplyOutcome.Accepted, request)));
+        AddBodyVector(expected, "room_receipt_stale_decision", CanonicalProbeEncoder.EncodePublicRoomActionBody(PublicRoomActionApplyResult.FromRequest(PublicRoomActionApplyOutcome.StaleDecision, request)));
+        AddBodyVector(expected, "room_receipt_invalid_action", CanonicalProbeEncoder.EncodePublicRoomActionBody(PublicRoomActionApplyResult.FromRequest(PublicRoomActionApplyOutcome.InvalidAction, request)));
+        AddBodyVector(expected, "room_receipt_already_applied", CanonicalProbeEncoder.EncodePublicRoomActionBody(PublicRoomActionApplyResult.FromRequest(PublicRoomActionApplyOutcome.AlreadyApplied, request)));
+        PublicRoomActionRequest.TryCreate(limitedDecisionId, PublicRoomActionRequest.ProceedActionId, out PublicRoomActionRequest limitedRequest);
+        AddBodyVector(expected, "room_receipt_action_limit_reached", CanonicalProbeEncoder.EncodePublicRoomActionBody(PublicRoomActionApplyResult.FromRequest(PublicRoomActionApplyOutcome.ActionLimitReached, limitedRequest)));
+    }
+
+    private static PublicCombatDecisionSnapshot ReadyCombatDecision(string decisionId) => new(
+        PublicDecisionStatus.Ready, decisionId, 1, new PublicCombatPlayer(42, 80, 5, 2),
+        new[] { new PublicCombatEnemy(0, "CULTIST", 48, 48, 0, new[] { "Attack" }) },
+        new[] { new PublicCombatCard(0, "STRIKE_IRONCLAD", "Attack", "1", "AnyEnemy", true) },
+        new[] { new PublicDecisionAction(PublicDecisionActionKind.PlayCard, 0, 0), new PublicDecisionAction(PublicDecisionActionKind.EndTurn, -1, -1) },
+        PublicCombatOutcome.None);
+
+    private static PublicRewardDecisionSnapshot ReadyRewardDecision(string decisionId) => new(
+        PublicDecisionStatus.Ready, decisionId, "rewards", new PublicRewardPlayer(74, 80, 99, 10),
+        new[] { new PublicRewardItem(0, PublicRewardKind.Gold, false, 18, Array.Empty<string>(), false), new PublicRewardItem(1, PublicRewardKind.Card, false, 0, new[] { "ANGER", "BASH" }, true), new PublicRewardItem(2, PublicRewardKind.Unsupported, false, 0, Array.Empty<string>(), false) },
+        new[] { PublicRewardActionRequest.ClaimGoldActionIdFor(0), PublicRewardActionRequest.OpenCardActionIdFor(1), PublicRewardActionRequest.ProceedActionId });
+
+    private static PublicMapDecisionSnapshot ReadyMapDecision(string decisionId) => new(
+        PublicDecisionStatus.Ready, decisionId, "map", null,
+        new[] { new PublicMapCandidate(0, 2, 3, "monster"), new PublicMapCandidate(1, 4, 3, "shop") },
+        new[] { "select:0", "select:1" });
+
+    private static PublicRoomDecisionSnapshot ReadyRoomDecision(string decisionId) => new(
+        PublicDecisionStatus.Ready, decisionId, "rest_site", "choose_or_proceed", 4,
+        new[] { new PublicRoomCandidate(0, "choose:0", PublicRoomCandidateKind.RestHeal, "heal", true, true, false, false), new PublicRoomCandidate(1, "choose:1", PublicRoomCandidateKind.RestUnsupported, "smith", true, false, false, false), new PublicRoomCandidate(2, "proceed", PublicRoomCandidateKind.Proceed, "proceed", true, true, true, false) },
+        new[] { "choose:0", "proceed" });
 
     private static void AddErrorVector(
         IDictionary<string, byte[]> expected,
