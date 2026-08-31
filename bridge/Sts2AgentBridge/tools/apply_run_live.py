@@ -227,6 +227,16 @@ def _result(
         if type(accepted_action_count) is not int or accepted_action_count < 1:
             fail(EXIT_INTERNAL, "internal_failure")
         room_actions = accepted_action_count
+        if room_handoff.get("post_room_map") is not None:
+            map_actions += 1
+        continuation_combat = room_handoff.get("next_combat")
+        if continuation_combat is not None and continuation_combat is not terminal_combat:
+            if not isinstance(continuation_combat, dict):
+                fail(EXIT_INTERNAL, "internal_failure")
+            continuation_actions = continuation_combat.get("accepted_action_count")
+            if type(continuation_actions) is not int or continuation_actions < 1:
+                fail(EXIT_INTERNAL, "internal_failure")
+            combat_actions += continuation_actions
     return {
         "schema_version": 1,
         "status": "passed",
@@ -426,6 +436,66 @@ def _run_bounded_run(
                 "room": room,
                 "map_attempts": post_room_map_attempts,
             }
+            if floor_number == floor_limit:
+                return _result(
+                    combat_provider,
+                    reward_provider,
+                    map_provider,
+                    room_provider,
+                    floor_limit,
+                    floors,
+                    None,
+                    readiness,
+                    room_handoff,
+                    _termination("room_handoff_complete", floor_number, kind),
+                )
+            post_room_map = _require_component(
+                _with_credential(credential_loader, map_runner, map_provider, connector),
+                "r0g_map_selection",
+                "run_post_room_map_result_mismatch",
+            )
+            post_room_kind = _destination_kind(post_room_map)
+            room_handoff["post_room_map"] = post_room_map
+            if post_room_kind in _ROOM_KINDS_BY_DESTINATION:
+                fail(EXIT_MISMATCH, "run_second_room_destination")
+            if post_room_kind != "monster":
+                fail(EXIT_MISMATCH, "run_post_room_destination_unsupported")
+            next_combat_attempts = _with_credential(
+                credential_loader,
+                next_combat_waiter,
+                combat_provider,
+                connector,
+            )
+            if type(next_combat_attempts) is not int or next_combat_attempts < 1:
+                fail(EXIT_INTERNAL, "internal_failure")
+            next_combat = _require_component(
+                _with_credential(
+                    credential_loader,
+                    combat_runner,
+                    combat_provider,
+                    connector,
+                ),
+                "r0e_complete_combat",
+                "run_next_combat_result_mismatch",
+            )
+            next_combat_outcome = next_combat.get("outcome")
+            if next_combat_outcome not in ("victory", "defeat"):
+                fail(EXIT_MISMATCH, "run_combat_outcome_mismatch")
+            room_handoff["next_combat_attempts"] = next_combat_attempts
+            room_handoff["next_combat"] = next_combat
+            if next_combat_outcome == "defeat":
+                return _result(
+                    combat_provider,
+                    reward_provider,
+                    map_provider,
+                    room_provider,
+                    floor_limit,
+                    floors,
+                    next_combat,
+                    readiness,
+                    room_handoff,
+                    _termination("run_defeat", len(floors), None),
+                )
             return _result(
                 combat_provider,
                 reward_provider,
@@ -436,7 +506,7 @@ def _run_bounded_run(
                 None,
                 readiness,
                 room_handoff,
-                _termination("room_handoff_complete", floor_number, kind),
+                _termination("room_continuation_complete", floor_number, post_room_kind),
             )
 
         if floor_number == floor_limit:

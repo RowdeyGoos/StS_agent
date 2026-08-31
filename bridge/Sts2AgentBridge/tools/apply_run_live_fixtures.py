@@ -343,7 +343,7 @@ def _run_safe_room_handoffs() -> None:
     ):
         fail(EXIT_MISMATCH, "run_fixture_rest_handoff")
 
-    event, event_calls, _ = _run_sequence(["ancient"], 3)
+    event, event_calls, _ = _run_sequence(["ancient"], 1)
     event_handoff = event.get("room_handoff")
     event_room = event_handoff.get("room") if isinstance(event_handoff, dict) else None
     if (
@@ -365,6 +365,136 @@ def _run_safe_room_handoffs() -> None:
         or "next_wait" in event_calls
     ):
         fail(EXIT_MISMATCH, "run_fixture_event_handoff")
+
+
+def _continuation(handoff: object) -> dict[str, object]:
+    if not isinstance(handoff, dict):
+        fail(EXIT_MISMATCH, "run_fixture_missing_room_handoff")
+    return handoff
+
+
+def _run_room_continuations() -> None:
+    rest, rest_calls, _ = _run_sequence(["rest_site", "monster"], 2)
+    rest_handoff = _continuation(rest.get("room_handoff"))
+    rest_next_combat = rest_handoff.get("next_combat")
+    if (
+        rest.get("completed_floor_count") != 1
+        or rest.get("terminal_combat") is not None
+        or rest.get("termination")
+        != {
+            "reason": "room_continuation_complete",
+            "after_floor": 1,
+            "destination_kind": "monster",
+        }
+        or rest_handoff.get("destination_kind") != "rest_site"
+        or rest_handoff.get("expected_screen_kind") != "rest_site"
+        or rest_handoff.get("preflight")
+        != {"attempts": 2, "screen_kind": "rest_site", "room_ordinal": 4}
+        or rest_handoff.get("map_attempts") != 4
+        or rest_handoff.get("post_room_map") != _map("monster")
+        or rest_handoff.get("next_combat_attempts") != 2
+        or not isinstance(rest_next_combat, dict)
+        or rest_next_combat.get("outcome") != "victory"
+        or rest.get("action_totals")
+        != {"combat": 11, "reward": 1, "map": 2, "room": 2, "total": 16}
+        or rest_calls
+        != [
+            "combat",
+            "reward_wait",
+            "reward",
+            "map_wait",
+            "map",
+            "room_wait",
+            "room",
+            "map_wait",
+            "map",
+            "next_wait",
+            "combat",
+        ]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_rest_continuation")
+
+    event, event_calls, _ = _run_sequence(["ancient", "monster"], 3)
+    event_handoff = _continuation(event.get("room_handoff"))
+    event_next_combat = event_handoff.get("next_combat")
+    if (
+        event.get("termination")
+        != {
+            "reason": "room_continuation_complete",
+            "after_floor": 1,
+            "destination_kind": "monster",
+        }
+        or event_handoff.get("destination_kind") != "ancient"
+        or event_handoff.get("expected_screen_kind") != "event"
+        or event_handoff.get("post_room_map") != _map("monster")
+        or event_handoff.get("next_combat_attempts") != 2
+        or not isinstance(event_next_combat, dict)
+        or event_next_combat.get("outcome") != "victory"
+        or event.get("action_totals")
+        != {"combat": 11, "reward": 1, "map": 2, "room": 1, "total": 15}
+        or event_calls[-4:] != ["map_wait", "map", "next_wait", "combat"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_event_continuation")
+
+
+def _expect_post_room_failure(destination: str, expected_code: str) -> None:
+    calls: list[str] = []
+    try:
+        _run_sequence(["rest_site", destination], 2, call_log=calls)
+    except ToolFailure as failure:
+        if (
+            failure.exit_code == EXIT_MISMATCH
+            and failure.error_code == expected_code
+            and calls.count("room_wait") == 1
+            and calls.count("room") == 1
+            and calls.count("map") == 2
+            and "next_wait" not in calls
+        ):
+            return
+        fail(EXIT_MISMATCH, "run_fixture_wrong_post_room_failure")
+    fail(EXIT_MISMATCH, "run_fixture_post_room_failure_passed")
+
+
+def _run_room_continuation_fail_closed() -> None:
+    _expect_post_room_failure("rest_site", "run_second_room_destination")
+    _expect_post_room_failure("shop", "run_post_room_destination_unsupported")
+    _expect_post_room_failure("boss", "run_post_room_destination_unsupported")
+
+
+def _run_room_continuation_terminal_and_cap() -> None:
+    capped, capped_calls, _ = _run_sequence(["rest_site"], 1)
+    if (
+        capped.get("termination")
+        != {
+            "reason": "room_handoff_complete",
+            "after_floor": 1,
+            "destination_kind": "rest_site",
+        }
+        or capped.get("action_totals")
+        != {"combat": 5, "reward": 1, "map": 1, "room": 2, "total": 9}
+        or capped_calls[-3:] != ["room_wait", "room", "map_wait"]
+        or capped_calls.count("map") != 1
+        or "next_wait" in capped_calls
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_room_continuation_cap")
+
+    defeated, defeated_calls, _ = _run_sequence(
+        ["rest_site", "monster"],
+        2,
+        defeat_on_combat=2,
+    )
+    defeated_handoff = _continuation(defeated.get("room_handoff"))
+    if (
+        defeated.get("completed_floor_count") != 1
+        or defeated.get("termination")
+        != {"reason": "run_defeat", "after_floor": 1, "destination_kind": None}
+        or not isinstance(defeated.get("terminal_combat"), dict)
+        or defeated_handoff.get("next_combat") != defeated.get("terminal_combat")
+        or defeated.get("action_totals")
+        != {"combat": 8, "reward": 1, "map": 2, "room": 2, "total": 13}
+        or defeated_calls[-2:] != ["next_wait", "combat"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_room_continuation_defeat")
 
 
 def _expect_room_failure(
@@ -637,6 +767,9 @@ def operation() -> dict[str, object]:
     _run_unsupported_stops()
     _run_defeat_stop()
     _run_safe_room_handoffs()
+    _run_room_continuations()
+    _run_room_continuation_fail_closed()
+    _run_room_continuation_terminal_and_cap()
     _run_room_fail_closed()
     _run_room_preflight_contract()
     _run_cached_terminal_wait()
@@ -650,13 +783,16 @@ def operation() -> dict[str, object]:
             "unsupported_destination_stops",
             "defeat_stop",
             "rest_and_event_room_handoffs",
+            "rest_and_event_room_continuations",
+            "post_room_unsupported_and_second_room_fail_closed",
+            "post_room_cap_and_terminal_combat",
             "room_mismatch_and_unsupported_fail_closed",
             "read_only_room_preflight_contract",
             "cached_terminal_wait",
             "provider_and_floor_limit_surface",
             "credential_cleanup",
         ],
-        "check_count": 9,
+        "check_count": 12,
     }
 
 
