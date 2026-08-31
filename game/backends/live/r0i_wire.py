@@ -344,7 +344,7 @@ def _validate_family_decision(value: Mapping[str, Any], family: str, status: str
                 raise R0iWireError("enemy indexes must be stable")
             _string(enemy["id"], "enemy id")
             _integer(enemy["hp"], "enemy hp", minimum=0)
-            _integer(enemy["max_hp"], "enemy max_hp", minimum=1)
+            _integer(enemy["max_hp"], "enemy max_hp", minimum=0)
             _integer(enemy["block"], "enemy block", minimum=0)
             _strings(enemy["intents"], "enemy intents")
             if len(enemy["intents"]) > 8:
@@ -573,7 +573,7 @@ def _bool(value: Any, name: str) -> bool:
 
 
 def _integer(value: Any, name: str, *, minimum: int = 0) -> int:
-    if type(value) is not int or value < minimum:
+    if type(value) is not int or value < minimum or value > 2_147_483_647:
         raise R0iWireError("invalid " + name)
     return value
 

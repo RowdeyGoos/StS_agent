@@ -123,6 +123,37 @@ def test_encoder_bounds_and_linkage_invariants_reject() -> None:
         r0i_wire.parse_decision(room_unsupported.replace(b'"room_ordinal":4', b'"room_ordinal":1000'))
 
 
+def test_csharp_int32_domain_and_ready_zero_max_hp_are_exact() -> None:
+    ready = (VECTORS / "combat_decision_ready.json").read_bytes()
+    maximum = ready.replace(b'"round":1', b'"round":2147483647', 1)
+    assert r0i_wire.encode_decision(r0i_wire.parse_decision(maximum)) == maximum
+    with pytest.raises(r0i_wire.R0iWireError):
+        r0i_wire.parse_decision(
+            ready.replace(b'"round":1', b'"round":2147483648', 1)
+        )
+
+    zero_max_hp = ready.replace(b'"hp":48,"max_hp":48', b'"hp":0,"max_hp":0', 1)
+    assert r0i_wire.encode_decision(r0i_wire.parse_decision(zero_max_hp)) == zero_max_hp
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        (VECTORS / "combat_decision_ready.json").read_bytes().replace(
+            b'{"schema_version"', b'{ "schema_version"', 1
+        ),
+        (VECTORS / "combat_decision_ready.json").read_bytes().replace(
+            b'{"schema_version":1,"status":"ready"',
+            b'{"status":"ready","schema_version":1',
+            1,
+        ),
+    ],
+)
+def test_noncanonical_whitespace_and_field_order_reject(body: bytes) -> None:
+    with pytest.raises(r0i_wire.R0iWireError):
+        r0i_wire.parse_decision(body)
+
+
 def test_encoders_share_parser_invariants() -> None:
     decision = r0i_wire.parse_decision((VECTORS / "map_decision_ready.json").read_bytes())
     with pytest.raises(r0i_wire.R0iWireError):
