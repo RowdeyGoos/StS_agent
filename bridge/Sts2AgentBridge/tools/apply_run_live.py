@@ -13,6 +13,7 @@ import apply_combat_live as combat_client
 import apply_floor_live as floor_client
 import apply_map_live as map_client
 import apply_reward_live as reward_client
+import apply_room_live as room_client
 import apply_one_live as action_client
 import probe_live as probe
 from decision_providers import map_provider_names, provider_names
@@ -29,14 +30,18 @@ from tool_common import (
 _MAXIMUM_FLOORS = 3
 _NEXT_COMBAT_READY_DEADLINE_SECONDS = 30.0
 _POLL_SECONDS = 0.1
-_ACT_BOUNDARY_KINDS = frozenset(("boss", "ancient"))
+_ACT_BOUNDARY_KINDS = frozenset(("boss",))
+_ROOM_KINDS_BY_DESTINATION = {
+    "rest_site": "rest_site",
+    "ancient": "event",
+}
 
 
 def parse_args(
     arguments: list[str] | None = None,
-) -> tuple[str, int, str, str, str, int]:
+) -> tuple[str, int, str, str, str, str, int]:
     values = sys.argv[1:] if arguments is None else arguments
-    if len(values) != 12:
+    if len(values) != 14:
         fail(EXIT_INVALID_INVOCATION, "invalid_invocation")
     allowed = frozenset(
         (
@@ -45,6 +50,7 @@ def parse_args(
             "--combat-provider",
             "--reward-provider",
             "--map-provider",
+            "--room-provider",
             "--floor-limit",
         )
     )
@@ -62,6 +68,8 @@ def parse_args(
         fail(EXIT_INVALID_INVOCATION, "invalid_reward_provider")
     if parsed["--map-provider"] not in map_provider_names():
         fail(EXIT_INVALID_INVOCATION, "invalid_map_provider")
+    if parsed["--room-provider"] != room_client._ROOM_PROVIDER:
+        fail(EXIT_INVALID_INVOCATION, "invalid_room_provider")
     floor_limit_text = parsed["--floor-limit"]
     if floor_limit_text not in tuple(str(value) for value in range(1, _MAXIMUM_FLOORS + 1)):
         fail(EXIT_INVALID_INVOCATION, "invalid_floor_limit")
@@ -71,6 +79,7 @@ def parse_args(
         parsed["--combat-provider"],
         parsed["--reward-provider"],
         parsed["--map-provider"],
+        parsed["--room-provider"],
         int(floor_limit_text),
     )
 
@@ -106,6 +115,45 @@ def _wait_for_next_combat_ready(
             probe._validate_combat(view, decision_provider)
         return attempts
     fail(EXIT_MISMATCH, "next_combat_ready_timeout")
+
+
+def _wait_for_room_ready(
+    credential: bytearray,
+    expected_screen_kind: str,
+    connector: Callable[[], Any],
+    *,
+    body_reader: Callable[..., bytes] = room_client._read_body,
+) -> dict[str, object]:
+    if expected_screen_kind not in _ROOM_KINDS_BY_DESTINATION.values():
+        fail(EXIT_INTERNAL, "internal_failure")
+    deadline = time.monotonic() + room_client._ROOM_DEADLINE_SECONDS
+    attempts = 0
+    while time.monotonic() < deadline:
+        attempts += 1
+        body = body_reader(
+            "room",
+            room_client._ROOM_DECISION_ROUTE,
+            credential,
+            connector,
+            deadline,
+        )
+        decision = room_client._validate_room(body)
+        status = decision["status"]
+        if status == "waiting":
+            time.sleep(_POLL_SECONDS)
+            continue
+        if status == "unsupported":
+            fail(EXIT_MISMATCH, "run_room_state_unsupported")
+        if status != "ready":
+            fail(EXIT_MISMATCH, "run_room_not_ready")
+        if decision["screen_kind"] != expected_screen_kind:
+            fail(EXIT_MISMATCH, "run_room_kind_mismatch")
+        return {
+            "attempts": attempts,
+            "screen_kind": decision["screen_kind"],
+            "room_ordinal": decision["room_ordinal"],
+        }
+    fail(EXIT_MISMATCH, "run_room_ready_timeout")
 
 
 def _with_credential(
@@ -147,10 +195,12 @@ def _result(
     combat_provider: str,
     reward_provider: str,
     map_provider: str,
+    room_provider: str,
     floor_limit: int,
     floors: list[dict[str, object]],
     terminal_combat: dict[str, object] | None,
     readiness: list[dict[str, int]],
+    room_handoff: dict[str, object] | None,
     termination: dict[str, object],
 ) -> dict[str, object]:
     combat_actions = sum(
@@ -168,6 +218,15 @@ def _result(
             fail(EXIT_INTERNAL, "internal_failure")
         reward_actions += len(applied)
     map_actions = len(floors)
+    room_actions = 0
+    if room_handoff is not None:
+        room = room_handoff.get("room")
+        accepted_action_count = (
+            room.get("accepted_action_count") if isinstance(room, dict) else None
+        )
+        if type(accepted_action_count) is not int or accepted_action_count < 1:
+            fail(EXIT_INTERNAL, "internal_failure")
+        room_actions = accepted_action_count
     return {
         "schema_version": 1,
         "status": "passed",
@@ -176,6 +235,7 @@ def _result(
             "combat": combat_provider,
             "reward": reward_provider,
             "map": map_provider,
+            "room": room_provider,
         },
         "floor_limit": floor_limit,
         "completed_floor_count": len(floors),
@@ -183,11 +243,13 @@ def _result(
             "combat": combat_actions,
             "reward": reward_actions,
             "map": map_actions,
-            "total": combat_actions + reward_actions + map_actions,
+            "room": room_actions,
+            "total": combat_actions + reward_actions + map_actions + room_actions,
         },
         "readiness": readiness,
         "floors": floors,
         "terminal_combat": terminal_combat,
+        "room_handoff": room_handoff,
         "termination": termination,
     }
 
@@ -207,6 +269,7 @@ def _run_bounded_run(
     combat_provider: str,
     reward_provider: str,
     map_provider: str,
+    room_provider: str,
     floor_limit: int,
     *,
     combat_runner: Callable[[bytearray, str, Callable[[], Any]], dict[str, object]] =
@@ -219,6 +282,11 @@ def _run_bounded_run(
         floor_client._wait_for_map_ready,
     map_runner: Callable[[bytearray, str, Callable[[], Any]], dict[str, object]] =
         map_client._run_apply_map,
+    room_waiter: Callable[
+        [bytearray, str, Callable[[], Any]], dict[str, object]
+    ] = _wait_for_room_ready,
+    room_runner: Callable[[bytearray, str, Callable[[], Any]], dict[str, object]] =
+        room_client._run_apply_room,
     next_combat_waiter: Callable[[bytearray, str, Callable[[], Any]], int] =
         _wait_for_next_combat_ready,
 ) -> dict[str, object]:
@@ -251,10 +319,12 @@ def _run_bounded_run(
                 combat_provider,
                 reward_provider,
                 map_provider,
+                room_provider,
                 floor_limit,
                 floors,
                 combat,
                 readiness,
+                None,
                 _termination("run_defeat", len(floors), None),
             )
         if outcome != "victory":
@@ -305,15 +375,81 @@ def _run_bounded_run(
             }
         )
 
+        expected_room_kind = _ROOM_KINDS_BY_DESTINATION.get(kind)
+        if expected_room_kind is not None:
+            room_preflight = _with_credential(
+                credential_loader,
+                room_waiter,
+                expected_room_kind,
+                connector,
+            )
+            if (
+                not isinstance(room_preflight, dict)
+                or set(room_preflight) != {"attempts", "screen_kind", "room_ordinal"}
+                or type(room_preflight.get("attempts")) is not int
+                or int(room_preflight["attempts"]) < 1
+                or type(room_preflight.get("room_ordinal")) is not int
+                or not 0 <= int(room_preflight["room_ordinal"]) <= 999
+            ):
+                fail(EXIT_MISMATCH, "run_room_preflight_mismatch")
+            if room_preflight.get("screen_kind") != expected_room_kind:
+                fail(EXIT_MISMATCH, "run_room_kind_mismatch")
+            room = _require_component(
+                _with_credential(
+                    credential_loader,
+                    room_runner,
+                    room_provider,
+                    connector,
+                ),
+                "r0i_room_interaction",
+                "run_room_result_mismatch",
+            )
+            if room.get("decision_provider") != room_provider:
+                fail(EXIT_MISMATCH, "run_room_provider_mismatch")
+            if (
+                room.get("screen_kind") != room_preflight["screen_kind"]
+                or room.get("room_ordinal") != room_preflight["room_ordinal"]
+            ):
+                fail(EXIT_MISMATCH, "run_room_reconciliation_mismatch")
+            post_room_map_attempts = _with_credential(
+                credential_loader,
+                map_waiter,
+                connector,
+            )
+            if type(post_room_map_attempts) is not int or post_room_map_attempts < 1:
+                fail(EXIT_INTERNAL, "internal_failure")
+            room_handoff = {
+                "after_floor": floor_number,
+                "destination_kind": kind,
+                "expected_screen_kind": expected_room_kind,
+                "preflight": room_preflight,
+                "room": room,
+                "map_attempts": post_room_map_attempts,
+            }
+            return _result(
+                combat_provider,
+                reward_provider,
+                map_provider,
+                room_provider,
+                floor_limit,
+                floors,
+                None,
+                readiness,
+                room_handoff,
+                _termination("room_handoff_complete", floor_number, kind),
+            )
+
         if floor_number == floor_limit:
             return _result(
                 combat_provider,
                 reward_provider,
                 map_provider,
+                room_provider,
                 floor_limit,
                 floors,
                 None,
                 readiness,
+                None,
                 _termination("floor_limit_reached", floor_number, kind),
             )
         if kind == "monster":
@@ -326,10 +462,12 @@ def _run_bounded_run(
             combat_provider,
             reward_provider,
             map_provider,
+            room_provider,
             floor_limit,
             floors,
             None,
             readiness,
+            None,
             _termination(reason, floor_number, kind),
         )
 
@@ -343,6 +481,7 @@ def _operation() -> dict[str, object]:
         combat_provider,
         reward_provider,
         map_provider,
+        room_provider,
         floor_limit,
     ) = parse_args()
     user_profile: Path = absolute_path(profile_value, "user_profile")
@@ -357,6 +496,7 @@ def _operation() -> dict[str, object]:
         combat_provider,
         reward_provider,
         map_provider,
+        room_provider,
         floor_limit,
     )
 
