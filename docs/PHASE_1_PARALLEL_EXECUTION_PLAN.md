@@ -93,6 +93,7 @@ All of these tasks may start immediately and concurrently:
 - `R0I-DIAG-01`
 - `R0I-MAP-02`
 - `R0I-RUN-03`
+- `R0I-VECTORS-06`
 - `H0-CONTRACT-01`
 - `H0-RNG-02`
 - `H0-SCENARIOS-03`
@@ -108,6 +109,83 @@ A worker can be dispatched with: “Execute task `<TASK-ID>` exactly as specifie
 in `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`, starting from `<BASE-COMMIT>`.” The
 task block and common rules are the complete brief; the worker must not absorb a
 neighboring packet.
+
+### 3.2 Cost-aware model and reasoning allocation
+
+These are execution defaults for separate Codex tasks, not part of any game or
+backend contract. They follow current
+[official OpenAI model guidance](https://developers.openai.com/api/docs/models):
+Sol is reserved for flagship complex work, Terra is the normal intelligence/
+cost balance, and Luna is used for cost-sensitive bounded work. No task starts
+at `xhigh`, `max`, or `ultra`; `high` is reserved for work where additional
+reasoning is expected to prevent expensive downstream rework.
+
+“Relative budget” estimates the combined reasoning/context/retry footprint, not
+a fixed token allowance or a Codex billing promise. A cheaper model that needs
+several repair turns can cost more overall than a stronger first pass, so the
+allocation optimizes accepted-result cost rather than price per request alone.
+
+| Task | Default model | Effort | Relative budget | Selection reason |
+| --- | --- | --- | --- | --- |
+| `R0I-DIAG-01` | `gpt-5.6-terra` | `high` | medium | Privacy-safe fail-closed taxonomy over a bounded validator |
+| `R0I-MAP-02` | `gpt-5.6-luna` | `medium` | low | Patterned socket fixtures with only fixture-proven local fixes |
+| `R0I-RUN-03` | `gpt-5.6-sol` | `high` | high | First mutating cross-client room handoff and reconciliation join |
+| `R0I-RUN-04` | `gpt-5.6-terra` | `high` | medium | Narrow continuation over the accepted `R0I-RUN-03` seam |
+| `R0I-ROUTE-05` | `gpt-5.6-luna` | `medium` | low | Isolated deterministic ranking and tie-break fixtures |
+| `R0I-VECTORS-06` | `gpt-5.6-terra` | `medium` | medium-low | Exact but mechanical encoder/receipt binding with byte tests |
+| `H0-CONTRACT-01` | `gpt-5.6-sol` | `high` | high | Highest-fan-out shared contract and canonical binding semantics |
+| `H0-RNG-02` | `gpt-5.6-terra` | `high` | medium | Subtle determinism/snapshot work contained by exact property tests |
+| `H0-SCENARIOS-03` | `gpt-5.6-luna` | `medium` | low | Closed adapter and validation over existing factory APIs |
+| `H0-CHARACTERIZE-04` | `gpt-5.6-terra` | `medium` | medium-low | Focused black-box tests with no production semantics |
+| `H0-BOUNDARY-REVIEW-05` | `gpt-5.6-sol` | `high` | high | Independent public-information and control-boundary review |
+| `H1-STATE-01` | `gpt-5.6-sol` | `high` | high | Durable identity, snapshots, RNG ownership, and combat seam |
+| `H1-PROJECTION-02` | `gpt-5.6-sol` | `high` | high | Actor-facing information firewall and negative leakage tests |
+| `H1-CANDIDATES-03` | `gpt-5.6-terra` | `high` | medium | Legal-action bijection is subtle but bounded and conformance-gated |
+| `H1-FIXTURE-04` | `gpt-5.6-terra` | `medium` | medium-low | Frozen corpus and capabilities constrained by exact fixtures |
+| `H1-RUNNER-05` | `gpt-5.6-terra` | `medium` | medium-low | Generic loop over an already accepted contract |
+| `H1-TRACE-06` | `gpt-5.6-sol` | `high` | high | First policy/target/audit schema and immutable cross-stream binding |
+| `H1-CONTENT-07` | `gpt-5.6-terra` | `medium` | medium-low | Closed materializer/content table with deterministic tests |
+| `H2-COMBAT-BACKEND-01` | `gpt-5.6-sol` | `high` | high | Legacy adapter, persistent handoff, replay, and snapshot join |
+| `H2-REWARD-02` | `gpt-5.6-terra` | `high` | medium | Persistent mutation, RNG ordering, and atomic rejection |
+| `H2-MAP-03` | `gpt-5.6-luna` | `medium` | low | Small explicit DAG with stable-ID and legality fixtures |
+| `H2-ROOM-04` | `gpt-5.6-terra` | `high` | medium | Persistent event mutation, RNG/public boundary, and snapshots |
+| `H3-REDUCED-BACKEND-01` | `gpt-5.6-sol` | `high` | high | Main state-machine, snapshot, evidence, and process-factory join |
+| `H3-BASELINE-02` | `gpt-5.6-luna` | `medium` | low | Deliberately simple post-conformance public-candidate choosers |
+| `H3-ROLLOUT-03` | `gpt-5.6-terra` | `high` | medium | Spawn safety, seed partitioning, interruption, and record binding |
+| `H3-CONFORMANCE-04` | `gpt-5.6-sol` | `high` | high | Independent adversarial verification of every backend claim |
+| `H4-LIVE-WIRE-01` | `gpt-5.6-terra` | `high` | medium | Strict wire parsing and public/control/audit separation |
+| `H4-LIVE-DIFF-02` | `gpt-5.6-sol` | `high` | high | Cross-contract evidence, privacy, and fidelity-promotion boundary |
+
+The coordinator uses `gpt-5.6-sol` at `high` only for contract acceptance,
+high-risk integration joins, disputed semantic review, and final conformance
+interpretation. Routine ownership checks, clean merges, and deterministic test
+reruns do not need a separate flagship-model task.
+
+#### Token-control and escalation rules
+
+1. Start each worker with only the task ID, exact base commit, task brief, and
+   repository reading order. Do not copy the full coordinator conversation.
+2. Give one focused repair cycle at the assigned model/effort. A second failure
+   with the same root cause stops the task and returns minimized evidence.
+3. Escalate Luna to Terra `high` only for a shared-state, identity, snapshot,
+   protocol, or reconciliation ambiguity. Raise Terra `medium` to Terra `high`
+   when the issue stays inside the accepted contract but needs more semantic
+   reasoning. Escalate Terra `high` to Sol `high` only for a cross-contract
+   conflict, public-information leak, replay divergence, or evidence/capability
+   dispute.
+4. A required accepted-contract change is not a model escalation: stop and
+   return it to the contract/coordinator owner.
+5. `xhigh` requires a coordinator decision for one minimized disputed invariant.
+   `max` and `ultra` are excluded from this plan unless the user explicitly
+   changes the cost policy.
+6. Changing model or reasoning effort never grants authority for a contract
+   revision, live install/launch/capture, or profile/credential/Cloud access.
+7. Reviewers receive the diff, consumed contract fingerprints, focused test
+   output, and handoff—not another worker's full transcript.
+8. After the initial dispatch, compare first-pass acceptance, repair cycles,
+   elapsed time, and token metrics when the host exposes them. Promote or
+   downgrade a task class only from that evidence; test one reasoning level
+   lower on a later representative task before adopting a cheaper default.
 
 ## 4. Provisional headless contract freeze
 
@@ -1198,8 +1276,12 @@ Every worker returns:
 7. evidence label for every claim;
 8. tests not run and why;
 9. known limitations and unsupported cases;
-10. blockers/follow-ups/assumptions requiring coordinator action; and
-11. merge-order notes.
+10. blockers/follow-ups/assumptions requiring coordinator action;
+11. merge-order notes; and
+12. executor model, reasoning effort, repair-cycle count, elapsed wall time, and
+    input/output/reasoning-token counts when the host exposes them. Record only
+    aggregate numeric telemetry—never reasoning text, prompts, or transcripts;
+    write `unavailable` rather than estimating missing metrics.
 
 One clean logical commit is preferred. “Code compiles” is not acceptance
 evidence.
