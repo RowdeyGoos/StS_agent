@@ -190,6 +190,8 @@ _PUBLIC_REFERENCE_PATTERN = re.compile(
     r"pub\.(card|enemy|reward|offer|node|option)\.[0-9a-f]{64}\Z"
 )
 _CANDIDATE_ID_PATTERN = re.compile(r"cand\.[0-9a-f]{64}\Z")
+_HISTORY_SCOPE_PATTERN = re.compile(r"scope\.history\.[0-9a-f]{64}\Z")
+_DECISION_SCOPE_PATTERN = re.compile(r"scope\.decision\.[0-9a-f]{64}\Z")
 
 MAX_COLLECTION_SIZE = 128
 MAX_PUBLIC_COUNTER = 1_000_000_000
@@ -331,40 +333,60 @@ _CANDIDATE_FIELD_NAMES: Mapping[CandidateKind, tuple[str, ...]] = MappingProxyTy
     {
         CandidateKind.COMBAT_PLAY_CARD: (
             "candidate_id",
+            "decision_scope",
             "kind",
             "card_ref",
             "target_ref",
         ),
-        CandidateKind.COMBAT_END_TURN: ("candidate_id", "kind"),
+        CandidateKind.COMBAT_END_TURN: ("candidate_id", "decision_scope", "kind"),
         CandidateKind.REWARD_CLAIM_GOLD: (
             "candidate_id",
+            "decision_scope",
             "kind",
             "amount",
             "reward_ref",
         ),
         CandidateKind.REWARD_OPEN_CARD_REWARD: (
             "candidate_id",
+            "decision_scope",
             "kind",
             "reward_ref",
         ),
         CandidateKind.REWARD_CHOOSE_CARD: (
             "candidate_id",
+            "decision_scope",
             "kind",
             "card_definition_id",
             "offer_ref",
             "reward_ref",
         ),
-        CandidateKind.REWARD_SKIP_CARD: ("candidate_id", "kind", "reward_ref"),
-        CandidateKind.REWARD_PROCEED: ("candidate_id", "kind"),
-        CandidateKind.MAP_CHOOSE_NODE: ("candidate_id", "kind", "node_ref"),
+        CandidateKind.REWARD_SKIP_CARD: (
+            "candidate_id",
+            "decision_scope",
+            "kind",
+            "reward_ref",
+        ),
+        CandidateKind.REWARD_PROCEED: ("candidate_id", "decision_scope", "kind"),
+        CandidateKind.MAP_CHOOSE_NODE: (
+            "candidate_id",
+            "decision_scope",
+            "kind",
+            "node_ref",
+        ),
         CandidateKind.ROOM_REST_HEAL: (
             "candidate_id",
+            "decision_scope",
             "kind",
             "heal_amount",
             "option_ref",
         ),
-        CandidateKind.ROOM_EVENT_OPTION: ("candidate_id", "kind", "option_ref"),
-        CandidateKind.ROOM_PROCEED: ("candidate_id", "kind"),
+        CandidateKind.ROOM_EVENT_OPTION: (
+            "candidate_id",
+            "decision_scope",
+            "kind",
+            "option_ref",
+        ),
+        CandidateKind.ROOM_PROCEED: ("candidate_id", "decision_scope", "kind"),
     }
 )
 
@@ -640,6 +662,122 @@ def _domain_hash(domain: str, value: Any) -> str:
     return sha256(domain.encode("ascii") + b"\0" + canonical_json_bytes(value)).hexdigest()
 
 
+def public_history_scope(history_ordinal: int) -> str:
+    ordinal = _validate_bounded_int(
+        history_ordinal,
+        "history_ordinal",
+        0,
+        MAX_PUBLIC_COUNTER,
+    )
+    digest = _domain_hash(
+        "headless_v0.public_history_scope.v1",
+        {"history_ordinal": ordinal},
+    )
+    return f"scope.history.{digest}"
+
+
+def public_decision_scope(history_scope: str, decision_ordinal: int) -> str:
+    history = _validate_unicode_text(history_scope, "history_scope")
+    if _HISTORY_SCOPE_PATTERN.fullmatch(history) is None:
+        raise ContractValidationError("history_scope must be canonically derived.")
+    ordinal = _validate_bounded_int(
+        decision_ordinal,
+        "decision_ordinal",
+        0,
+        MAX_PUBLIC_COUNTER,
+    )
+    digest = _domain_hash(
+        "headless_v0.public_decision_scope.v1",
+        {"decision_ordinal": ordinal, "history_scope": history},
+    )
+    return f"scope.decision.{digest}"
+
+
+@dataclass(frozen=True, slots=True)
+class PublicScope:
+    """Policy-visible allocation state for decision and reveal lifetimes.
+
+    The ordinals describe public history only. They are not engine sequence
+    numbers, run IDs, RNG counters, storage handles, or other private state.
+    """
+
+    history_ordinal: int
+    decision_ordinal: int
+    reveal_ordinals: Mapping[str, int]
+
+    def __post_init__(self) -> None:
+        _validate_bounded_int(
+            self.history_ordinal,
+            "public_scope.history_ordinal",
+            0,
+            MAX_PUBLIC_COUNTER,
+        )
+        _validate_bounded_int(
+            self.decision_ordinal,
+            "public_scope.decision_ordinal",
+            0,
+            MAX_PUBLIC_COUNTER,
+        )
+        if not isinstance(self.reveal_ordinals, Mapping):
+            raise ContractValidationError("public_scope.reveal_ordinals must be an object.")
+        normalized: dict[str, int] = {}
+        for raw_kind, value in self.reveal_ordinals.items():
+            kind = _enum_value(
+                PublicReferenceKind,
+                raw_kind,
+                "public_scope.reveal_ordinals key",
+            )
+            if kind.value in normalized:
+                raise ContractValidationError("Public reveal kinds must be unique.")
+            normalized[kind.value] = _validate_bounded_int(
+                value,
+                f"public_scope.reveal_ordinals.{kind.value}",
+                0,
+                MAX_PUBLIC_COUNTER,
+            )
+        expected = {kind.value for kind in PublicReferenceKind}
+        _require_exact_fields(
+            normalized,
+            frozenset(expected),
+            "public_scope.reveal_ordinals",
+        )
+        object.__setattr__(self, "reveal_ordinals", MappingProxyType(normalized))
+
+    @property
+    def history_scope(self) -> str:
+        return public_history_scope(self.history_ordinal)
+
+    @property
+    def decision_scope(self) -> str:
+        return public_decision_scope(self.history_scope, self.decision_ordinal)
+
+    def reveal_ordinal(self, kind: PublicReferenceKind) -> int:
+        return self.reveal_ordinals[kind.value]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "decision_ordinal": self.decision_ordinal,
+            "history_ordinal": self.history_ordinal,
+            "reveal_ordinals": dict(self.reveal_ordinals),
+        }
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "PublicScope":
+        _require_exact_fields(
+            value,
+            {"decision_ordinal", "history_ordinal", "reveal_ordinals"},
+            "public_scope",
+        )
+        reveals = value["reveal_ordinals"]
+        if not isinstance(reveals, Mapping):
+            raise ContractValidationError("public_scope.reveal_ordinals must be an object.")
+        return cls(
+            history_ordinal=value["history_ordinal"],
+            decision_ordinal=value["decision_ordinal"],
+            reveal_ordinals=reveals,
+        )
+
+
 def _require_object(
     value: Any,
     path: str,
@@ -673,8 +811,21 @@ def _reference_value(kind: PublicReferenceKind, basis: Mapping[str, Any]) -> str
     return f"pub.{kind.value}.{digest}"
 
 
-def combat_card_reference(card_definition_id: str, presentation_ordinal: int) -> str:
-    """Derive a decision-local card alias from explicit public presentation data."""
+def _reference_scope_basis(scope: PublicScope, kind: PublicReferenceKind) -> dict[str, Any]:
+    if not isinstance(scope, PublicScope):
+        raise ContractValidationError("Reference scope must be a PublicScope.")
+    return {
+        "history_scope": scope.history_scope,
+        "reveal_ordinal": scope.reveal_ordinal(kind),
+    }
+
+
+def combat_card_reference(
+    scope: PublicScope,
+    card_definition_id: str,
+    presentation_ordinal: int,
+) -> str:
+    """Derive a reveal-scoped card alias from explicit public presentation data."""
 
     definition = _validate_semantic_id(card_definition_id, "card_definition_id")
     ordinal = _validate_bounded_int(
@@ -683,14 +834,20 @@ def combat_card_reference(card_definition_id: str, presentation_ordinal: int) ->
         0,
         MAX_COLLECTION_SIZE - 1,
     )
+    basis = _reference_scope_basis(scope, PublicReferenceKind.CARD)
+    basis.update(card_definition_id=definition, presentation_ordinal=ordinal)
     return _reference_value(
         PublicReferenceKind.CARD,
-        {"card_definition_id": definition, "presentation_ordinal": ordinal},
+        basis,
     )
 
 
-def combat_enemy_reference(enemy_definition_id: str, presentation_ordinal: int) -> str:
-    """Derive a decision-local enemy alias without accepting an internal ID."""
+def combat_enemy_reference(
+    scope: PublicScope,
+    enemy_definition_id: str,
+    presentation_ordinal: int,
+) -> str:
+    """Derive an encounter-reveal alias without accepting an internal ID."""
 
     definition = _validate_semantic_id(enemy_definition_id, "enemy_definition_id")
     ordinal = _validate_bounded_int(
@@ -699,13 +856,19 @@ def combat_enemy_reference(enemy_definition_id: str, presentation_ordinal: int) 
         0,
         MAX_COLLECTION_SIZE - 1,
     )
+    basis = _reference_scope_basis(scope, PublicReferenceKind.ENEMY)
+    basis.update(enemy_definition_id=definition, presentation_ordinal=ordinal)
     return _reference_value(
         PublicReferenceKind.ENEMY,
-        {"enemy_definition_id": definition, "presentation_ordinal": ordinal},
+        basis,
     )
 
 
-def reward_reference(kind: RewardKind | str, presentation_ordinal: int) -> str:
+def reward_reference(
+    scope: PublicScope,
+    kind: RewardKind | str,
+    presentation_ordinal: int,
+) -> str:
     normalized = _enum_value(RewardKind, kind, "reward_kind")
     ordinal = _validate_bounded_int(
         presentation_ordinal,
@@ -713,13 +876,16 @@ def reward_reference(kind: RewardKind | str, presentation_ordinal: int) -> str:
         0,
         MAX_COLLECTION_SIZE - 1,
     )
+    basis = _reference_scope_basis(scope, PublicReferenceKind.REWARD)
+    basis.update(kind=normalized.value, presentation_ordinal=ordinal)
     return _reference_value(
         PublicReferenceKind.REWARD,
-        {"kind": normalized.value, "presentation_ordinal": ordinal},
+        basis,
     )
 
 
 def reward_offer_reference(
+    scope: PublicScope,
     reward_ref: str,
     card_definition_id: str,
     presentation_ordinal: int,
@@ -736,17 +902,23 @@ def reward_offer_reference(
         0,
         MAX_COLLECTION_SIZE - 1,
     )
+    basis = _reference_scope_basis(scope, PublicReferenceKind.OFFER)
+    basis.update(
+        card_definition_id=definition,
+        presentation_ordinal=ordinal,
+        reward_ref=reward_value,
+    )
     return _reference_value(
         PublicReferenceKind.OFFER,
-        {
-            "card_definition_id": definition,
-            "presentation_ordinal": ordinal,
-            "reward_ref": reward_value,
-        },
+        basis,
     )
 
 
-def map_node_reference(kind: NodeKind | str, presentation_ordinal: int) -> str:
+def map_node_reference(
+    scope: PublicScope,
+    kind: NodeKind | str,
+    presentation_ordinal: int,
+) -> str:
     normalized = _enum_value(NodeKind, kind, "node_kind")
     ordinal = _validate_bounded_int(
         presentation_ordinal,
@@ -754,13 +926,16 @@ def map_node_reference(kind: NodeKind | str, presentation_ordinal: int) -> str:
         0,
         MAX_COLLECTION_SIZE - 1,
     )
+    basis = _reference_scope_basis(scope, PublicReferenceKind.NODE)
+    basis.update(kind=normalized.value, presentation_ordinal=ordinal)
     return _reference_value(
         PublicReferenceKind.NODE,
-        {"kind": normalized.value, "presentation_ordinal": ordinal},
+        basis,
     )
 
 
 def room_option_reference(
+    scope: PublicScope,
     room_kind: RoomKind | str,
     option_kind: RoomOptionKind | str,
     presentation_ordinal: int,
@@ -773,13 +948,15 @@ def room_option_reference(
         0,
         MAX_COLLECTION_SIZE - 1,
     )
+    basis = _reference_scope_basis(scope, PublicReferenceKind.OPTION)
+    basis.update(
+        option_kind=option.value,
+        presentation_ordinal=ordinal,
+        room_kind=room.value,
+    )
     return _reference_value(
         PublicReferenceKind.OPTION,
-        {
-            "option_kind": option.value,
-            "presentation_ordinal": ordinal,
-            "room_kind": room.value,
-        },
+        basis,
     )
 
 
@@ -799,6 +976,13 @@ def _validate_candidate_id(value: Any, path: str) -> str:
     text = _validate_unicode_text(value, path)
     if _CANDIDATE_ID_PATTERN.fullmatch(text) is None:
         raise ContractValidationError(f"{path} must be a derived candidate identifier.")
+    return text
+
+
+def _validate_decision_scope(value: Any, path: str) -> str:
+    text = _validate_unicode_text(value, path)
+    if _DECISION_SCOPE_PATTERN.fullmatch(text) is None:
+        raise ContractValidationError(f"{path} must be a canonical public decision scope.")
     return text
 
 
@@ -902,7 +1086,7 @@ def _validate_intent(value: Any, path: str) -> None:
         raise ContractValidationError(f"{path} fields do not match intent kind {kind.value!r}.")
 
 
-def _validate_combat_observation(data: Mapping[str, Any]) -> None:
+def _validate_combat_observation(data: Mapping[str, Any], scope: PublicScope) -> None:
     path = "public_observation.data"
     _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.COMBAT]["top"]), path)
     _validate_bounded_int(data["turn"], f"{path}.turn", 1, MAX_PUBLIC_COUNTER)
@@ -935,7 +1119,7 @@ def _validate_combat_observation(data: Mapping[str, Any]) -> None:
             enemy["enemy_definition_id"],
             f"{enemy_path}.enemy_definition_id",
         )
-        expected_ref = combat_enemy_reference(definition, index)
+        expected_ref = combat_enemy_reference(scope, definition, index)
         if enemy["enemy_ref"] != expected_ref:
             raise ContractValidationError(f"{enemy_path}.enemy_ref is not canonically derived.")
         enemy_refs.add(expected_ref)
@@ -968,7 +1152,7 @@ def _validate_combat_observation(data: Mapping[str, Any]) -> None:
             card["card_definition_id"],
             f"{card_path}.card_definition_id",
         )
-        expected_ref = combat_card_reference(definition, index)
+        expected_ref = combat_card_reference(scope, definition, index)
         if card["card_ref"] != expected_ref:
             raise ContractValidationError(f"{card_path}.card_ref is not canonically derived.")
         card_refs.add(expected_ref)
@@ -991,7 +1175,7 @@ def _validate_combat_observation(data: Mapping[str, Any]) -> None:
         raise ContractValidationError(f"{path} defeat outcome requires zero player hp.")
 
 
-def _validate_reward_observation(data: Mapping[str, Any]) -> None:
+def _validate_reward_observation(data: Mapping[str, Any], scope: PublicScope) -> None:
     path = "public_observation.data"
     _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.REWARD]["top"]), path)
     _validate_run_player(data["player"], f"{path}.player")
@@ -1006,7 +1190,7 @@ def _validate_reward_observation(data: Mapping[str, Any]) -> None:
             _OBSERVATION_SCHEMAS[DecisionPhase.REWARD]["reward"],
         )
         kind = _enum_value(RewardKind, reward["kind"], f"{reward_path}.kind")
-        expected_ref = reward_reference(kind, index)
+        expected_ref = reward_reference(scope, kind, index)
         if reward["reward_ref"] != expected_ref:
             raise ContractValidationError(f"{reward_path}.reward_ref is not canonically derived.")
         reward_refs.add(expected_ref)
@@ -1039,6 +1223,7 @@ def _validate_reward_observation(data: Mapping[str, Any]) -> None:
                 f"{offer_path}.card_definition_id",
             )
             expected_offer_ref = reward_offer_reference(
+                scope,
                 expected_ref,
                 definition,
                 offer_index,
@@ -1053,7 +1238,7 @@ def _validate_reward_observation(data: Mapping[str, Any]) -> None:
         raise ContractValidationError(f"{path}.rewards has duplicate references.")
 
 
-def _validate_map_observation(data: Mapping[str, Any]) -> None:
+def _validate_map_observation(data: Mapping[str, Any], scope: PublicScope) -> None:
     path = "public_observation.data"
     _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.MAP]["top"]), path)
     _validate_run_player(data["player"], f"{path}.player")
@@ -1068,7 +1253,7 @@ def _validate_map_observation(data: Mapping[str, Any]) -> None:
             _OBSERVATION_SCHEMAS[DecisionPhase.MAP]["node"],
         )
         kind = _enum_value(NodeKind, node["kind"], f"{node_path}.kind")
-        expected_ref = map_node_reference(kind, index)
+        expected_ref = map_node_reference(scope, kind, index)
         if node["node_ref"] != expected_ref:
             raise ContractValidationError(f"{node_path}.node_ref is not canonically derived.")
         node_refs.add(expected_ref)
@@ -1124,7 +1309,7 @@ def _validate_map_observation(data: Mapping[str, Any]) -> None:
         raise ContractValidationError(f"{path}.edges must use canonical reference order.")
 
 
-def _validate_room_observation(data: Mapping[str, Any]) -> None:
+def _validate_room_observation(data: Mapping[str, Any], scope: PublicScope) -> None:
     path = "public_observation.data"
     _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.ROOM]["top"]), path)
     _validate_run_player(data["player"], f"{path}.player")
@@ -1141,7 +1326,7 @@ def _validate_room_observation(data: Mapping[str, Any]) -> None:
         )
         option_kind = _enum_value(RoomOptionKind, option["kind"], f"{option_path}.kind")
         effect = _enum_value(RoomEffectKind, option["effect"], f"{option_path}.effect")
-        expected_ref = room_option_reference(room_kind, option_kind, index)
+        expected_ref = room_option_reference(scope, room_kind, option_kind, index)
         if option["option_ref"] != expected_ref:
             raise ContractValidationError(f"{option_path}.option_ref is not canonically derived.")
         option_refs.add(expected_ref)
@@ -1167,7 +1352,8 @@ def _validate_room_observation(data: Mapping[str, Any]) -> None:
         raise ContractValidationError(f"{path}.options has duplicate references.")
 
 
-def _validate_terminal_observation(data: Mapping[str, Any]) -> None:
+def _validate_terminal_observation(data: Mapping[str, Any], scope: PublicScope) -> None:
+    del scope
     path = "public_observation.data"
     _require_exact_fields(
         data,
@@ -1182,7 +1368,8 @@ def _validate_terminal_observation(data: Mapping[str, Any]) -> None:
         raise ContractValidationError(f"{path} defeat requires zero player hp.")
 
 
-def _validate_unsupported_observation(data: Mapping[str, Any]) -> None:
+def _validate_unsupported_observation(data: Mapping[str, Any], scope: PublicScope) -> None:
+    del scope
     path = "public_observation.data"
     _require_exact_fields(
         data,
@@ -1192,7 +1379,11 @@ def _validate_unsupported_observation(data: Mapping[str, Any]) -> None:
     _enum_value(UnsupportedReasonCode, data["reason_code"], f"{path}.reason_code")
 
 
-def _validate_public_observation(phase: DecisionPhase, data: Mapping[str, Any]) -> None:
+def _validate_public_observation(
+    phase: DecisionPhase,
+    data: Mapping[str, Any],
+    scope: PublicScope,
+) -> None:
     validators = {
         DecisionPhase.COMBAT: _validate_combat_observation,
         DecisionPhase.REWARD: _validate_reward_observation,
@@ -1201,7 +1392,7 @@ def _validate_public_observation(phase: DecisionPhase, data: Mapping[str, Any]) 
         DecisionPhase.TERMINAL: _validate_terminal_observation,
         DecisionPhase.UNSUPPORTED: _validate_unsupported_observation,
     }
-    validators[phase](data)
+    validators[phase](data, scope)
 
 
 def _validate_public_event_payload(
@@ -1262,7 +1453,7 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
             kind.value: fields for kind, fields in _CANDIDATE_FIELD_NAMES.items()
         },
         "candidate_hash_domain": "headless_v0.candidate.v1",
-        "candidate_identity": "sha256_of_normalized_public_candidate_semantics",
+        "candidate_identity": "sha256_of_public_decision_scope_and_normalized_semantics",
         "candidate_id_format": "cand.<sha256>",
         "candidate_kinds": tuple(kind.value for kind in CandidateKind),
         "candidate_phases": {
@@ -1310,6 +1501,17 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
         ),
         "policy_forbidden_field_names": tuple(sorted(_FORBIDDEN_POLICY_FIELD_NAMES)),
         "public_observation_schema": "headless_v0.public_observation.v1",
+        "public_scope": {
+            "allocation_rules": {
+                "decision_ordinal": "increments_for_each_distinct_public_decision_in_history",
+                "history_ordinal": "changes_when_the_public_history_lifetime_restarts",
+                "reveal_ordinal": "per_kind_increment_after_declared_public_linkage_expires",
+            },
+            "decision_domain": "headless_v0.public_decision_scope.v1",
+            "fields": ("decision_ordinal", "history_ordinal", "reveal_ordinals"),
+            "history_domain": "headless_v0.public_history_scope.v1",
+            "reveal_kinds": tuple(kind.value for kind in PublicReferenceKind),
+        },
         "public_event_specs": {
             kind.value: {"fields": fields, "phase": phase.value}
             for kind, (phase, fields) in _PUBLIC_EVENT_SPECS.items()
@@ -1319,12 +1521,47 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
             "hash_domain_template": "headless_v0.public_ref.<kind>.v1",
             "kinds": tuple(kind.value for kind in PublicReferenceKind),
             "basis": {
-                "card": ("card_definition_id", "presentation_ordinal"),
-                "enemy": ("enemy_definition_id", "presentation_ordinal"),
-                "node": ("kind", "presentation_ordinal"),
-                "offer": ("card_definition_id", "presentation_ordinal", "reward_ref"),
-                "option": ("option_kind", "presentation_ordinal", "room_kind"),
-                "reward": ("kind", "presentation_ordinal"),
+                "card": (
+                    "history_scope",
+                    "reveal_ordinal",
+                    "card_definition_id",
+                    "presentation_ordinal",
+                ),
+                "enemy": (
+                    "history_scope",
+                    "reveal_ordinal",
+                    "enemy_definition_id",
+                    "presentation_ordinal",
+                ),
+                "node": ("history_scope", "reveal_ordinal", "kind", "presentation_ordinal"),
+                "offer": (
+                    "history_scope",
+                    "reveal_ordinal",
+                    "card_definition_id",
+                    "presentation_ordinal",
+                    "reward_ref",
+                ),
+                "option": (
+                    "history_scope",
+                    "reveal_ordinal",
+                    "option_kind",
+                    "presentation_ordinal",
+                    "room_kind",
+                ),
+                "reward": (
+                    "history_scope",
+                    "reveal_ordinal",
+                    "kind",
+                    "presentation_ordinal",
+                ),
+            },
+            "lifetimes": {
+                "card": "hand_reveal_until_public_linkage_break",
+                "enemy": "combat_encounter_reveal",
+                "node": "map_graph_reveal",
+                "offer": "opened_card_reward_reveal",
+                "option": "room_decision_reveal",
+                "reward": "reward_screen_reveal",
             },
         },
         "records": {
@@ -1380,7 +1617,8 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
                 "run_id",
             ),
             "public_event": ("data", "event_type", "phase", "sequence"),
-            "public_observation": ("data", "phase", "schema"),
+            "public_observation": ("data", "phase", "public_scope", "schema"),
+            "public_scope": ("decision_ordinal", "history_ordinal", "reveal_ordinals"),
             "policy_view": (
                 "candidates",
                 "observation",
@@ -1401,7 +1639,8 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
         "semantic_invariants": (
             "actionable_requires_nonempty_same_phase_candidates",
             "candidate_ids_unique_per_decision",
-            "candidate_ids_derived_only_from_normalized_public_semantics",
+            "candidate_ids_derived_only_from_public_scope_and_normalized_semantics",
+            "candidate_ids_include_canonical_public_decision_scope",
             "candidate_order_canonical_by_derived_public_id",
             "candidate_references_resolve_in_same_public_observation",
             "combat_pile_counts_are_combat_v0_or_structural_not_live_truth",
@@ -1414,6 +1653,8 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
             "non_actionable_has_no_candidates",
             "policy_view_revalidates_status_candidate_provenance_uniqueness_event_sequence",
             "public_aliases_derived_from_explicit_public_presentation_basis",
+            "public_reference_continuity_requires_same_history_and_reveal_allocation",
+            "public_reference_expiry_requires_new_reveal_ordinal",
             "public_projector_provenance_required_outside_contract_validation",
             "public_json_has_no_floating_point_values",
             "public_json_rejects_unpaired_utf16_surrogates",
@@ -1673,6 +1914,7 @@ class BackendManifest:
 class PublicObservation:
     phase: DecisionPhase
     data: Mapping[str, Any]
+    public_scope: PublicScope
     schema: str = "headless_v0.public_observation.v1"
 
     def __post_init__(self) -> None:
@@ -1683,9 +1925,11 @@ class PublicObservation:
         )
         if self.schema != "headless_v0.public_observation.v1":
             raise ContractValidationError("Unsupported public observation schema.")
+        if not isinstance(self.public_scope, PublicScope):
+            raise ContractValidationError("public_observation.public_scope has the wrong type.")
         if not isinstance(self.data, Mapping):
             raise ContractValidationError("public_observation.data must be an object.")
-        _validate_public_observation(self.phase, self.data)
+        _validate_public_observation(self.phase, self.data, self.public_scope)
         object.__setattr__(
             self,
             "data",
@@ -1693,15 +1937,32 @@ class PublicObservation:
         )
 
     def to_dict(self) -> dict[str, Any]:
-        return {"data": _thaw_json(self.data), "phase": self.phase.value, "schema": self.schema}
+        return {
+            "data": _thaw_json(self.data),
+            "phase": self.phase.value,
+            "public_scope": self.public_scope.to_dict(),
+            "schema": self.schema,
+        }
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "PublicObservation":
-        _require_exact_fields(value, {"data", "phase", "schema"}, "public_observation")
+        _require_exact_fields(
+            value,
+            {"data", "phase", "public_scope", "schema"},
+            "public_observation",
+        )
         data = value["data"]
+        scope = value["public_scope"]
         if not isinstance(data, Mapping):
             raise ContractValidationError("public_observation.data must be an object.")
-        return cls(phase=value["phase"], data=data, schema=value["schema"])
+        if not isinstance(scope, Mapping):
+            raise ContractValidationError("public_observation.public_scope must be an object.")
+        return cls(
+            phase=value["phase"],
+            data=data,
+            public_scope=PublicScope.from_dict(scope),
+            schema=value["schema"],
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1761,10 +2022,12 @@ class PublicEvent:
 
 @dataclass(frozen=True, slots=True)
 class Candidate:
+    decision_scope: str
     candidate_id: str = field(init=False)
     KIND: ClassVar[CandidateKind]
 
     def __post_init__(self) -> None:
+        _validate_decision_scope(self.decision_scope, "candidate.decision_scope")
         object.__setattr__(self, "candidate_id", _derive_candidate_id(self))
 
     @property
@@ -1989,13 +2252,20 @@ def _candidate_semantics(candidate: TypedCandidate) -> dict[str, Any]:
 
 
 def _derive_candidate_id(candidate: TypedCandidate) -> str:
-    digest = _domain_hash("headless_v0.candidate.v1", _candidate_semantics(candidate))
+    digest = _domain_hash(
+        "headless_v0.candidate.v1",
+        {
+            "decision_scope": candidate.decision_scope,
+            "semantics": _candidate_semantics(candidate),
+        },
+    )
     return f"cand.{digest}"
 
 
 def candidate_to_dict(candidate: TypedCandidate) -> dict[str, Any]:
     result = _candidate_semantics(candidate)
     result["candidate_id"] = candidate.candidate_id
+    result["decision_scope"] = candidate.decision_scope
     return result
 
 
@@ -2015,44 +2285,64 @@ def candidate_from_dict(value: Mapping[str, Any]) -> TypedCandidate:
         value["candidate_id"],
         "candidate.candidate_id",
     )
+    decision_scope = _validate_decision_scope(
+        value["decision_scope"],
+        "candidate.decision_scope",
+    )
     if kind is CandidateKind.COMBAT_PLAY_CARD:
         target = value["target_ref"]
         if target is not None and not isinstance(target, str):
             raise ContractValidationError("candidate.target_ref must be a string or null.")
         candidate: TypedCandidate = CombatPlayCardCandidate(
+            decision_scope=decision_scope,
             card_ref=value["card_ref"],
             target_ref=target,
         )
     elif kind is CandidateKind.COMBAT_END_TURN:
-        candidate = CombatEndTurnCandidate()
+        candidate = CombatEndTurnCandidate(decision_scope)
     elif kind is CandidateKind.REWARD_CLAIM_GOLD:
         candidate = RewardClaimGoldCandidate(
+            decision_scope=decision_scope,
             reward_ref=value["reward_ref"],
             amount=value["amount"],
         )
     elif kind is CandidateKind.REWARD_OPEN_CARD_REWARD:
-        candidate = RewardOpenCardRewardCandidate(reward_ref=value["reward_ref"])
+        candidate = RewardOpenCardRewardCandidate(
+            decision_scope=decision_scope,
+            reward_ref=value["reward_ref"],
+        )
     elif kind is CandidateKind.REWARD_CHOOSE_CARD:
         candidate = RewardChooseCardCandidate(
+            decision_scope=decision_scope,
             reward_ref=value["reward_ref"],
             offer_ref=value["offer_ref"],
             card_definition_id=value["card_definition_id"],
         )
     elif kind is CandidateKind.REWARD_SKIP_CARD:
-        candidate = RewardSkipCardCandidate(reward_ref=value["reward_ref"])
+        candidate = RewardSkipCardCandidate(
+            decision_scope=decision_scope,
+            reward_ref=value["reward_ref"],
+        )
     elif kind is CandidateKind.REWARD_PROCEED:
-        candidate = RewardProceedCandidate()
+        candidate = RewardProceedCandidate(decision_scope)
     elif kind is CandidateKind.MAP_CHOOSE_NODE:
-        candidate = MapChooseNodeCandidate(node_ref=value["node_ref"])
+        candidate = MapChooseNodeCandidate(
+            decision_scope=decision_scope,
+            node_ref=value["node_ref"],
+        )
     elif kind is CandidateKind.ROOM_REST_HEAL:
         candidate = RoomRestHealCandidate(
+            decision_scope=decision_scope,
             option_ref=value["option_ref"],
             heal_amount=value["heal_amount"],
         )
     elif kind is CandidateKind.ROOM_EVENT_OPTION:
-        candidate = RoomEventOptionCandidate(option_ref=value["option_ref"])
+        candidate = RoomEventOptionCandidate(
+            decision_scope=decision_scope,
+            option_ref=value["option_ref"],
+        )
     elif kind is CandidateKind.ROOM_PROCEED:
-        candidate = RoomProceedCandidate()
+        candidate = RoomProceedCandidate(decision_scope)
     else:
         raise ContractValidationError("Unsupported candidate kind.")
     if encoded_candidate_id != candidate.candidate_id:
@@ -2065,6 +2355,11 @@ def _validate_candidate_references(
     candidates: tuple[TypedCandidate, ...],
 ) -> None:
     data = observation.data
+    expected_scope = observation.public_scope.decision_scope
+    if any(candidate.decision_scope != expected_scope for candidate in candidates):
+        raise ContractValidationError(
+            "Candidate decision_scope does not match its public observation."
+        )
     if observation.phase is DecisionPhase.COMBAT:
         if data["terminal"] or data["outcome"] != CombatOutcome.ONGOING.value:
             raise ContractValidationError("An actionable combat observation cannot be terminal.")
