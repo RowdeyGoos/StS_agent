@@ -96,7 +96,7 @@ def _read_after_rejection(
     decision_provider: str,
     connector: Callable[[], Any],
     deadline: float,
-) -> dict[str, object]:
+) -> tuple[str, dict[str, object]]:
     while time.monotonic() < deadline:
         body = action_client._read_body(
             "decision",
@@ -110,10 +110,10 @@ def _read_after_rejection(
             continue
         if body == probe._COMBAT_UNSUPPORTED:
             fail(EXIT_MISMATCH, "post_rejection_state_unsupported")
-        if body.startswith(probe._COMBAT_COMPLETE_PREFIX):
-            fail(EXIT_MISMATCH, "terminal_after_rejected_action")
         with memoryview(body) as view:
-            return probe._validate_combat(view, decision_provider)
+            if body.startswith(probe._COMBAT_COMPLETE_PREFIX):
+                return "complete", probe._validate_combat_terminal(view)
+            return "ready", probe._validate_combat(view, decision_provider)
     fail(EXIT_MISMATCH, "post_rejection_state_timeout")
 
 
@@ -122,6 +122,37 @@ def _enemy_hp(decision: dict[str, object]) -> int:
     if not isinstance(enemies, list):
         fail(EXIT_INTERNAL, "internal_failure")
     return sum(int(enemy["hp"]) for enemy in enemies)
+
+
+def _terminal_result(
+    decision_provider: str,
+    initial_round: int,
+    action_trace: list[dict[str, object]],
+    terminal: dict[str, object],
+) -> dict[str, object]:
+    terminal_player = terminal["player"]
+    if not isinstance(terminal_player, dict):
+        fail(EXIT_INTERNAL, "internal_failure")
+    final_round = int(terminal["round"])
+    final_round_count = final_round - initial_round + 1
+    if final_round_count < 1 or final_round_count > _MAX_ROUNDS_OBSERVED:
+        fail(EXIT_MISMATCH, "combat_round_limit_reached")
+    return {
+        "schema_version": 1,
+        "status": "passed",
+        "milestone": "r0e_complete_combat",
+        "decision_provider": decision_provider,
+        "outcome": terminal["outcome"],
+        "initial_round": initial_round,
+        "final_round": final_round,
+        "rounds_observed": final_round_count,
+        "accepted_action_count": len(action_trace),
+        "action_limit": _MAX_ACCEPTED_ACTIONS,
+        "round_limit": _MAX_ROUNDS_OBSERVED,
+        "final_player": terminal_player,
+        "final_enemies": terminal["enemies"],
+        "actions": action_trace,
+    }
 
 
 def _run_apply_combat(
@@ -198,12 +229,26 @@ def _run_apply_combat(
                 if stale_retries > _MAX_STALE_RETRIES:
                     fail(EXIT_MISMATCH, "stale_action_retry_limit_reached")
                 time.sleep(_POLL_SECONDS)
-                current = _read_after_rejection(
+                following_kind, following = _read_after_rejection(
                     credential,
                     decision_provider,
                     connector,
                     deadline,
                 )
+                if following_kind == "complete":
+                    # A previously accepted action can finish asynchronously
+                    # after a later decision has already gone stale. Attribute
+                    # terminal completion only when this invocation has an
+                    # accepted action in its immutable trace.
+                    if not action_trace:
+                        fail(EXIT_MISMATCH, "terminal_after_rejected_action")
+                    return _terminal_result(
+                        decision_provider,
+                        initial_round,
+                        action_trace,
+                        following,
+                    )
+                current = following
                 continue
             if action_outcome == "invalid_action":
                 fail(EXIT_MISMATCH, "action_rejected_invalid")
@@ -238,26 +283,12 @@ def _run_apply_combat(
                 trace_item["player_hp_after"] = int(terminal_player["hp"])
                 trace_item["enemy_hp_after"] = _enemy_hp(following)
                 action_trace.append(trace_item)
-                final_round = int(following["round"])
-                final_round_count = final_round - initial_round + 1
-                if final_round_count < 1 or final_round_count > _MAX_ROUNDS_OBSERVED:
-                    fail(EXIT_MISMATCH, "combat_round_limit_reached")
-                return {
-                    "schema_version": 1,
-                    "status": "passed",
-                    "milestone": "r0e_complete_combat",
-                    "decision_provider": decision_provider,
-                    "outcome": following["outcome"],
-                    "initial_round": initial_round,
-                    "final_round": final_round,
-                    "rounds_observed": final_round_count,
-                    "accepted_action_count": len(action_trace),
-                    "action_limit": _MAX_ACCEPTED_ACTIONS,
-                    "round_limit": _MAX_ROUNDS_OBSERVED,
-                    "final_player": terminal_player,
-                    "final_enemies": following["enemies"],
-                    "actions": action_trace,
-                }
+                return _terminal_result(
+                    decision_provider,
+                    initial_round,
+                    action_trace,
+                    following,
+                )
 
             following_round = int(following["round"])
             if action_kind == "end_turn":
