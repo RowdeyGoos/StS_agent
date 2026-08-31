@@ -56,8 +56,8 @@ The full-game integration track additionally has:
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
 unsupported, rest-site and standard-event handling still need bounded live
-acceptance, and the batched controller has one unresolved transient
-`decision_response_mismatch` observation.
+acceptance, and the batched controller has one unresolved
+`decision_response_mismatch` observation whose cause is not yet established.
 
 ## Near-Term Priorities
 
@@ -77,8 +77,18 @@ Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
 
-The concrete dependency, ownership, acceptance, and handoff packets for running
-this work with parallel agents are in
+In parallel, begin the provisional Python headless environment immediately.
+The first deliverable is a backend-neutral wrapper around deterministic
+`combat_v0` episodes; the next is a reduced counterfactual
+combat → reward → map → supported-room → next-combat slice with explicit RNG,
+serializable state, snapshots, typed candidates, replay, and batched episode
+execution. Structural reward/map/room rules remain labelled synthetic until
+named live differential cases pass. This work does not wait for the next live
+campaign and does not imply target-game parity.
+
+The concrete dependency graph, ownership, acceptance, and handoff packets for
+running both tracks with as many independent agents as their dependencies allow
+are in
 [`docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md).
 
 ### 1. Better Evaluation Reporting

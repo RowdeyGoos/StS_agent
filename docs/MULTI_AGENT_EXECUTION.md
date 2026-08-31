@@ -58,6 +58,10 @@ implementations, or repeated user clarification.
    slice with an end-to-end test over many disconnected partial implementations.
 10. **Concurrency is reversible.** Work should be easy to pause, isolate,
     review, or discard without damaging unrelated user changes.
+11. **Do not impose an arbitrary worker cap.** Dispatch every dependency-ready
+    task with exclusive writable ownership when review and integration capacity
+    are available; shared contracts and semantic join points, not a default
+    headcount, determine what must remain sequential.
 
 ## 3. Workstream lanes
 

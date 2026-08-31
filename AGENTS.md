@@ -49,8 +49,8 @@ long-term agent architecture, also read:
    for the living `R0i` capability, evidence-level, residual, and next-target
    summary
 7. [docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md)
-   for the active dependency waves, exact agent ownership, acceptance gates,
-   and handoff format
+   for the active live-bridge and headless-environment dependency graph, exact
+   agent ownership, acceptance gates, and handoff format
 8. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
 9. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
    for the staged bridge boundary and live acceptance gates
@@ -118,8 +118,8 @@ program decision.
 - `docs/PHASE_1_INTEGRATION_SPIKE.md`: current live/fast-backend evidence plan
 - `docs/PHASE_1_CURRENT_STATUS.md`: living bridge progress, demonstrated versus
   fixture-only evidence, residuals, exclusions, and next bounded target
-- `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`: active parallel work packets,
-  dependencies, file ownership, acceptance gates, and agent handoffs
+- `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`: active live/headless parallel work
+  packets, dependencies, file ownership, acceptance gates, and agent handoffs
 - `docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md`: preserved pre-implementation
   candidate shortlist and ordered gates
 - `docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`: preserved initial project-owned

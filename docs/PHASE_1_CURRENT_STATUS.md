@@ -124,11 +124,18 @@ should:
    still be compared independently;
 4. finish with the existing quarantine, clean-base relaunch, and purge checks;
    and
-5. avoid adding shops, models, search, or broader architecture until the
-   existing slice is repeatable.
+5. avoid expanding the live bridge into shops, models, search, or broader
+   control surfaces until the existing slice is repeatable.
 
-The dependency-aware worker packets for this target and the following narrow
-Python host foundation are maintained in
+Independently of that live target, provisional headless-environment work now
+starts immediately. It may implement the backend/decision contract,
+deterministic RNG, serializable state, snapshots, legacy-combat adapter,
+structural reduced progression, replay, and episode runner in parallel. It may
+not claim target-game fidelity until named live differential cases pass, and it
+does not close Phase 1 or authorize a live campaign.
+
+The dependency-aware worker packets for both the live and headless tracks are
+maintained in
 [`PHASE_1_PARALLEL_EXECUTION_PLAN.md`](PHASE_1_PARALLEL_EXECUTION_PLAN.md).
 
 ## Document map

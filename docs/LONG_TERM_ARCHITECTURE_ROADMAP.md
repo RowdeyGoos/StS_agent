@@ -1024,9 +1024,23 @@ project-owned bridge**, staged from a minimal read-only probe. See the
 This resolves the source-boundary choice only; the Phase 1 compile, load,
 passivity, coverage, control, and fast-backend exit gates remain open.
 
+Execution acceleration under D44 allows a provisional, capability-scoped
+Python `headless_v0` contract, legacy combat adapter, deterministic state/RNG/
+snapshot infrastructure, and project-authored reduced structural run to begin
+during Phase 1. This work is deliberately labelled `combat_v0` or
+`structural_fixture`; it does not satisfy the Phase 1 exit gate, select the
+final fast backend, or claim target-game fidelity. Live differential evidence
+may supersede its provisional rules and contracts through explicit versioned
+migration.
+
 ### Phase 2 — Canonical protocol, recorder, and extracted kernel (`L`)
 
 **Goal:** create stable seams without changing current combat behavior.
+
+Some provisional implementations may already exist from the parallel Phase 1
+headless track. Phase 2 accepts, revises, or supersedes them using the live
+evidence and compatibility gates below; starting code early does not make its
+contract canonical or its rules verified.
 
 Deliverables:
 
@@ -1197,16 +1211,18 @@ objectives. It should not be treated as another observation field.
 | --- | --- | --- | --- |
 | Target and governance | Scope charter, versions, licenses, information rules, artifact policy | Phase 0 | Never ends; gates every release |
 | Live integration | Bridge, content extraction, actual-game automation, security/recovery | Phase 1 | Full representative run and patch smoke suite |
-| Rules and simulator | State, effects, RNG, snapshots, content semantics, conformance | Phase 2 | Differential parity for supported slices |
+| Rules and simulator | State, effects, RNG, snapshots, content semantics, conformance | Provisional structural slice in Phase 1; canonicalization in Phase 2 | Differential parity for supported slices |
 | Representation and agent | Tokens, candidates, information state, optional memory/belief, policy/value, planners, runtime | Phase 5; prototypes may start after Phase 2 contracts | Public-information and candidate contracts are stable and a thin run supplies continuation value |
-| Data and training | Recorder, datasets, actors, learners, search teachers, reanalysis, registry | Phase 2 | Versioned provenance and leakage separation |
+| Data and training | Recorder, datasets, actors, learners, search teachers, reanalysis, registry | Provisional fixture recorder/episode runner in Phase 1; canonicalization in Phase 2 | Versioned provenance and leakage separation |
 | Evaluation | Correctness, regret, paired full runs, statistics, certification | Phase 0 | Independent sealed campaign |
 | Patch operations | Diffs, compatibility, migrations, re-certification | Phase 1 | First game update after support begins |
 
-Useful parallelism begins after the Phase 2 contracts: one team can expand a
-conformance-gated rules slice, another can build the token/candidate model on
-recorded states, and another can construct evaluation/data infrastructure. The
-critical path remains:
+Useful structural parallelism can begin during Phase 1 behind one provisional,
+versioned, capability-scoped contract: live integration can stabilize while
+separate teams build state/RNG/snapshots, a legacy combat adapter, reduced
+structural progression, replay, and episode infrastructure. Fidelity promotion,
+canonical protocol status, broad content, and strategic learning still wait for
+their evidence gates. The critical path remains:
 
 > target contract → live bridge → backend/data contracts → conformance-tested
 > rules → complete run → strategic learning/search → sealed certification

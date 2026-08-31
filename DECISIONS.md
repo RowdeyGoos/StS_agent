@@ -1288,3 +1288,77 @@ selected fast backend, trained full-game policy, deployed search component, or
 near-optimal result. Phase 1 remains open. Any new installation or game launch
 still requires its own explicit authorization; the completed campaign requests
 are historical evidence, not standing permission.
+
+## D44. Start The Provisional Headless Environment In Parallel With Live Stabilization
+
+### Context
+
+The live bridge has reached a useful but incomplete `R0i` slice. It is the
+semantic oracle and deployment boundary, but running the real game cannot
+provide the reset, snapshot, branching, and throughput required for large-scale
+training and search. Waiting for complete Phase 1 evidence before implementing
+generic backend, state, RNG, replay, and episode infrastructure would serialize
+work that can be developed and tested independently. The user explicitly chose
+maximum sensible parallelism and removed the earlier planning assumption of
+three coding-agent slots. This does not change the bounded subprocess limits of
+individual training or benchmark protocols such as D36.
+
+At the same time, reward, map, and room behavior implemented before live
+differential evidence cannot be presented as Slay the Spire 2 fidelity. The
+existing `CombatEnv` also remains a valuable deterministic combat research
+environment whose behavior must not silently become the universal full-game
+contract.
+
+### Decision
+
+- begin a real Python headless-environment track immediately, in parallel with
+  the existing live-bridge stabilization track
+- define one provisional, versioned `headless_v0` backend/decision/candidate
+  contract with explicit capability and evidence labels; treat it as accepted
+  only for the named experimental slice, not as a final immutable Phase 2 API
+- deliver a usable `combat_v0` episode backend first by adapting the existing
+  structured observation and legal-action APIs without modifying legacy combat
+  semantics
+- concurrently build explicit named RNG, serializable reduced run/world state,
+  snapshots, fixture playback, trajectory separation, an episode runner, and a
+  small project-authored structural progression slice covering current
+  reward/map/supported-room verbs
+- distinguish `live_observed`, `bridge_fixture`, `combat_v0`,
+  `structural_fixture`, and later `differential_verified` evidence in manifests,
+  fixtures, traces, and claims
+- keep live and headless implementations independent; parse bridge payloads
+  through a separately fingerprinted strict wire contract, compare only an
+  explicit common public subset, and promote only named mechanics that pass
+  later differential comparisons
+- apply no fixed numerical worker cap: start every task whose hard dependencies
+  are accepted and writable paths are exclusive, while retaining one writer
+  for shared contracts and dependency-ordered integration
+- continue deferring learned models, search, broad content, shops, potions, and
+  target-game parity claims until their required contracts and evidence exist
+
+### Why
+
+- the bridge and simulator solve different problems and can progress in
+  parallel without sharing mutable implementation files
+- early backend and episode plumbing exposes architectural mistakes before
+  expensive content, training, or search work depends on them
+- a first combat backend is immediately useful for algorithm and throughput
+  integration, while the reduced structural run exposes long-horizon state and
+  snapshot requirements
+- explicit evidence labels permit fast implementation without turning synthetic
+  rules into undocumented assumptions about the pinned game
+- dependency and ownership constraints scale better than an arbitrary worker
+  count and keep consolidation reviewable
+
+### Consequence
+
+The prior live-first gate for Python implementation is superseded. Headless
+contract, infrastructure, combat adapter, and structural reduced-run work may
+start now and does not wait for another game launch. This acceleration accepts
+that some provisional contracts or rules may require versioned migration when
+live evidence disagrees. The live bridge remains authoritative for game
+semantics, and only named passing differential cases earn fidelity claims.
+
+`docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md` is the active task graph and ownership
+source. Phase 1 remains open, and this decision grants no installation, launch,
+profile, credential, Cloud, or live-probe authorization.
