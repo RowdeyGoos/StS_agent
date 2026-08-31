@@ -93,10 +93,107 @@ class TransitionReason(str, Enum):
     STALE_BINDING = "stale_binding"
 
 
+class CombatOutcome(str, Enum):
+    ONGOING = "ongoing"
+    VICTORY = "victory"
+    DEFEAT = "defeat"
+
+
+class RunOutcome(str, Enum):
+    VICTORY = "victory"
+    DEFEAT = "defeat"
+    ABANDONED = "abandoned"
+
+
+class IntentKind(str, Enum):
+    ATTACK = "attack"
+    DEFEND = "defend"
+    ATTACK_DEFEND = "attack_defend"
+    BUFF = "buff"
+    DEBUFF = "debuff"
+    SHUFFLE = "shuffle"
+
+
+class StatusKind(str, Enum):
+    NONE = "none"
+    VULNERABLE = "vulnerable"
+    SHRINK = "shrink"
+
+
+class RewardKind(str, Enum):
+    GOLD = "gold"
+    CARD = "card"
+
+
+class NodeKind(str, Enum):
+    COMBAT = "combat"
+    REST = "rest"
+    EVENT = "event"
+    TERMINAL = "terminal"
+
+
+class RoomKind(str, Enum):
+    REST = "rest"
+    EVENT = "event"
+
+
+class RoomOptionKind(str, Enum):
+    REST_HEAL = "rest_heal"
+    EVENT_OPTION = "event_option"
+
+
+class RoomEffectKind(str, Enum):
+    NONE = "none"
+    HEAL = "heal"
+    GAIN_GOLD = "gain_gold"
+    LOSE_HP = "lose_hp"
+
+
+class UnsupportedReasonCode(str, Enum):
+    UNSUPPORTED_PHASE = "unsupported_phase"
+    UNSUPPORTED_CONTENT = "unsupported_content"
+    UNSUPPORTED_RULE = "unsupported_rule"
+    BACKEND_UNAVAILABLE = "backend_unavailable"
+
+
+class PublicReferenceKind(str, Enum):
+    CARD = "card"
+    ENEMY = "enemy"
+    REWARD = "reward"
+    OFFER = "offer"
+    NODE = "node"
+    OPTION = "option"
+
+
+class PublicEventKind(str, Enum):
+    COMBAT_CARD_PLAYED = "combat.card_played"
+    COMBAT_TURN_ENDED = "combat.turn_ended"
+    COMBAT_RESOLVED = "combat.resolved"
+    REWARD_GOLD_CLAIMED = "reward.gold_claimed"
+    REWARD_CARD_OPENED = "reward.card_opened"
+    REWARD_CARD_CHOSEN = "reward.card_chosen"
+    REWARD_CARD_SKIPPED = "reward.card_skipped"
+    REWARD_PROCEEDED = "reward.proceeded"
+    MAP_NODE_CHOSEN = "map.node_chosen"
+    ROOM_REST_HEALED = "room.rest_healed"
+    ROOM_EVENT_OPTION_CHOSEN = "room.event_option_chosen"
+    ROOM_PROCEEDED = "room.proceeded"
+    RUN_TERMINATED = "run.terminated"
+
+
 _ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
 _VERSION_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:+/-]{0,127}\Z")
 _SLUG_PATTERN = re.compile(r"[a-z][a-z0-9_.-]{0,127}\Z")
+_SEMANTIC_ID_PATTERN = re.compile(r"[a-z][a-z0-9_.-]{0,63}\Z")
 _SHA256_PATTERN = re.compile(r"[0-9a-f]{64}\Z")
+_PUBLIC_REFERENCE_PATTERN = re.compile(
+    r"pub\.(card|enemy|reward|offer|node|option)\.[0-9a-f]{64}\Z"
+)
+_CANDIDATE_ID_PATTERN = re.compile(r"cand\.[0-9a-f]{64}\Z")
+
+MAX_COLLECTION_SIZE = 128
+MAX_PUBLIC_COUNTER = 1_000_000_000
+MAX_PUBLIC_HP = 100_000
 
 _FORBIDDEN_POLICY_FIELD_COMPONENTS = frozenset(
     {
@@ -127,6 +224,7 @@ _FORBIDDEN_POLICY_FIELD_COMPONENTS = frozenset(
         "tensor",
         "token",
         "trace",
+        "trajectory",
     }
 )
 _FORBIDDEN_POLICY_FIELD_NAMES = frozenset(
@@ -141,98 +239,11 @@ _FORBIDDEN_POLICY_FIELD_NAMES = frozenset(
     }
 )
 
-# Every object key below PublicObservation.data or PublicEvent.data must be a
-# member of this semantic allowlist.  IDs are opaque values, never list
-# positions.  Adding a key is therefore a contract change, not an adapter
-# convenience.
-_PUBLIC_POLICY_FIELD_NAMES = frozenset(
-    {
-        "after",
-        "alive",
-        "amount",
-        "attack_count",
-        "attack_damage",
-        "available",
-        "before",
-        "block",
-        "block_gain",
-        "can_proceed",
-        "can_skip",
-        "card_definition_id",
-        "card_instance_id",
-        "card_offers",
-        "claimed",
-        "cost",
-        "current_node_id",
-        "delta",
-        "discard_count",
-        "discard_pile_size",
-        "draw_count",
-        "draw_pile_size",
-        "edges",
-        "enabled",
-        "enemies",
-        "energy",
-        "energy_per_turn",
-        "entity_id",
-        "exhaust_count",
-        "exhaust_pile_size",
-        "gold",
-        "hand",
-        "heal_amount",
-        "hp",
-        "intent",
-        "kind",
-        "label",
-        "map_node_id",
-        "max_hp",
-        "move_name",
-        "name",
-        "node_id",
-        "node_kind",
-        "nodes",
-        "offer_id",
-        "offers",
-        "opened",
-        "option_id",
-        "options",
-        "outcome",
-        "player",
-        "reason",
-        "reason_code",
-        "reward_id",
-        "reward_kind",
-        "rewards",
-        "room_kind",
-        "shrink",
-        "skippable",
-        "slimed_added",
-        "source_entity_id",
-        "source_node_id",
-        "status_name",
-        "status_stacks",
-        "statuses",
-        "strength",
-        "strength_gain",
-        "summary",
-        "target_entity_id",
-        "target_node_id",
-        "terminal",
-        "turn",
-        "upgraded",
-        "value",
-        "visited",
-        "visited_node_ids",
-        "vulnerable",
-        "winner",
-    }
-)
-
-_PUBLIC_OBSERVATION_TOP_LEVEL_FIELDS: Mapping[DecisionPhase, frozenset[str]] = (
+_OBSERVATION_SCHEMAS: Mapping[DecisionPhase, Mapping[str, tuple[str, ...]]] = (
     MappingProxyType(
         {
-            DecisionPhase.COMBAT: frozenset(
-                {
+            DecisionPhase.COMBAT: {
+                "top": (
                     "discard_pile_size",
                     "draw_pile_size",
                     "enemies",
@@ -242,19 +253,76 @@ _PUBLIC_OBSERVATION_TOP_LEVEL_FIELDS: Mapping[DecisionPhase, frozenset[str]] = (
                     "player",
                     "terminal",
                     "turn",
-                }
-            ),
-            DecisionPhase.REWARD: frozenset(
-                {"can_proceed", "can_skip", "card_offers", "gold", "player", "rewards"}
-            ),
-            DecisionPhase.MAP: frozenset(
-                {"current_node_id", "edges", "nodes", "player", "visited_node_ids"}
-            ),
-            DecisionPhase.ROOM: frozenset(
-                {"can_proceed", "options", "player", "room_kind"}
-            ),
-            DecisionPhase.TERMINAL: frozenset({"outcome", "player", "summary"}),
-            DecisionPhase.UNSUPPORTED: frozenset({"reason", "reason_code"}),
+                ),
+                "player": (
+                    "block",
+                    "energy",
+                    "energy_per_turn",
+                    "hp",
+                    "max_hp",
+                    "statuses",
+                    "strength",
+                ),
+                "statuses": ("shrink", "vulnerable"),
+                "enemy": (
+                    "alive",
+                    "block",
+                    "enemy_definition_id",
+                    "enemy_ref",
+                    "hp",
+                    "intent",
+                    "max_hp",
+                    "statuses",
+                    "strength",
+                ),
+                "intent": (
+                    "attack_count",
+                    "attack_damage",
+                    "block_gain",
+                    "kind",
+                    "slimed_added",
+                    "status_kind",
+                    "status_stacks",
+                    "strength_gain",
+                ),
+                "card": ("card_definition_id", "card_ref", "cost", "upgraded"),
+            },
+            DecisionPhase.REWARD: {
+                "top": ("can_proceed", "player", "rewards"),
+                "player": ("deck_size", "gold", "hp", "max_hp"),
+                "reward": (
+                    "amount",
+                    "can_skip",
+                    "claimed",
+                    "kind",
+                    "offers",
+                    "opened",
+                    "reward_ref",
+                ),
+                "offer": ("card_definition_id", "offer_ref", "upgraded"),
+            },
+            DecisionPhase.MAP: {
+                "top": (
+                    "current_node_ref",
+                    "edges",
+                    "nodes",
+                    "player",
+                    "visited_node_refs",
+                ),
+                "player": ("deck_size", "gold", "hp", "max_hp"),
+                "node": ("available", "kind", "node_ref", "visited"),
+                "edge": ("source_node_ref", "target_node_ref"),
+            },
+            DecisionPhase.ROOM: {
+                "top": ("can_proceed", "options", "player", "room_kind"),
+                "player": ("deck_size", "gold", "hp", "max_hp"),
+                "option": ("amount", "effect", "enabled", "kind", "option_ref"),
+            },
+            DecisionPhase.TERMINAL: {
+                "top": ("outcome", "player"),
+                "player": ("deck_size", "gold", "hp", "max_hp"),
+            },
+            DecisionPhase.UNSUPPORTED: {"top": ("reason_code",)},
         }
     )
 )
@@ -264,26 +332,78 @@ _CANDIDATE_FIELD_NAMES: Mapping[CandidateKind, tuple[str, ...]] = MappingProxyTy
         CandidateKind.COMBAT_PLAY_CARD: (
             "candidate_id",
             "kind",
-            "card_instance_id",
-            "target_entity_id",
+            "card_ref",
+            "target_ref",
         ),
         CandidateKind.COMBAT_END_TURN: ("candidate_id", "kind"),
-        CandidateKind.REWARD_CLAIM_GOLD: ("candidate_id", "kind", "amount"),
-        CandidateKind.REWARD_OPEN_CARD_REWARD: ("candidate_id", "kind", "reward_id"),
+        CandidateKind.REWARD_CLAIM_GOLD: (
+            "candidate_id",
+            "kind",
+            "amount",
+            "reward_ref",
+        ),
+        CandidateKind.REWARD_OPEN_CARD_REWARD: (
+            "candidate_id",
+            "kind",
+            "reward_ref",
+        ),
         CandidateKind.REWARD_CHOOSE_CARD: (
             "candidate_id",
             "kind",
-            "reward_id",
-            "offer_id",
             "card_definition_id",
+            "offer_ref",
+            "reward_ref",
         ),
-        CandidateKind.REWARD_SKIP_CARD: ("candidate_id", "kind", "reward_id"),
+        CandidateKind.REWARD_SKIP_CARD: ("candidate_id", "kind", "reward_ref"),
         CandidateKind.REWARD_PROCEED: ("candidate_id", "kind"),
-        CandidateKind.MAP_CHOOSE_NODE: ("candidate_id", "kind", "map_node_id"),
-        CandidateKind.ROOM_REST_HEAL: ("candidate_id", "kind", "heal_amount"),
-        CandidateKind.ROOM_EVENT_OPTION: ("candidate_id", "kind", "option_id"),
+        CandidateKind.MAP_CHOOSE_NODE: ("candidate_id", "kind", "node_ref"),
+        CandidateKind.ROOM_REST_HEAL: (
+            "candidate_id",
+            "kind",
+            "heal_amount",
+            "option_ref",
+        ),
+        CandidateKind.ROOM_EVENT_OPTION: ("candidate_id", "kind", "option_ref"),
         CandidateKind.ROOM_PROCEED: ("candidate_id", "kind"),
     }
+)
+
+_PUBLIC_EVENT_SPECS: Mapping[PublicEventKind, tuple[DecisionPhase, tuple[str, ...]]] = (
+    MappingProxyType(
+        {
+            PublicEventKind.COMBAT_CARD_PLAYED: (
+                DecisionPhase.COMBAT,
+                ("card_definition_id", "target_enemy_definition_id"),
+            ),
+            PublicEventKind.COMBAT_TURN_ENDED: (DecisionPhase.COMBAT, ()),
+            PublicEventKind.COMBAT_RESOLVED: (DecisionPhase.COMBAT, ("outcome",)),
+            PublicEventKind.REWARD_GOLD_CLAIMED: (
+                DecisionPhase.REWARD,
+                ("amount",),
+            ),
+            PublicEventKind.REWARD_CARD_OPENED: (
+                DecisionPhase.REWARD,
+                ("offer_count",),
+            ),
+            PublicEventKind.REWARD_CARD_CHOSEN: (
+                DecisionPhase.REWARD,
+                ("card_definition_id", "upgraded"),
+            ),
+            PublicEventKind.REWARD_CARD_SKIPPED: (DecisionPhase.REWARD, ()),
+            PublicEventKind.REWARD_PROCEEDED: (DecisionPhase.REWARD, ()),
+            PublicEventKind.MAP_NODE_CHOSEN: (DecisionPhase.MAP, ("node_kind",)),
+            PublicEventKind.ROOM_REST_HEALED: (
+                DecisionPhase.ROOM,
+                ("amount",),
+            ),
+            PublicEventKind.ROOM_EVENT_OPTION_CHOSEN: (
+                DecisionPhase.ROOM,
+                ("amount", "effect"),
+            ),
+            PublicEventKind.ROOM_PROCEEDED: (DecisionPhase.ROOM, ()),
+            PublicEventKind.RUN_TERMINATED: (DecisionPhase.TERMINAL, ("outcome",)),
+        }
+    )
 )
 
 _CANDIDATE_PHASE_NAMES: Mapping[CandidateKind, DecisionPhase] = MappingProxyType(
@@ -306,26 +426,34 @@ _CANDIDATE_PHASE_NAMES: Mapping[CandidateKind, DecisionPhase] = MappingProxyType
 ImmutableJson: TypeAlias = Any
 
 
+def _validate_unicode_text(value: Any, path: str) -> str:
+    if not isinstance(value, str):
+        raise ContractValidationError(f"{path} must be a string.")
+    if any(0xD800 <= ord(character) <= 0xDFFF for character in value):
+        raise ContractValidationError(f"{path} cannot contain an unpaired surrogate.")
+    return value
+
+
 def _validate_identifier(value: Any, path: str) -> str:
-    if not isinstance(value, str) or _ID_PATTERN.fullmatch(value) is None:
+    if _ID_PATTERN.fullmatch(_validate_unicode_text(value, path)) is None:
         raise ContractValidationError(f"{path} must be a non-empty opaque identifier.")
     return value
 
 
 def _validate_version(value: Any, path: str) -> str:
-    if not isinstance(value, str) or _VERSION_PATTERN.fullmatch(value) is None:
+    if _VERSION_PATTERN.fullmatch(_validate_unicode_text(value, path)) is None:
         raise ContractValidationError(f"{path} must be a non-empty version identifier.")
     return value
 
 
 def _validate_slug(value: Any, path: str) -> str:
-    if not isinstance(value, str) or _SLUG_PATTERN.fullmatch(value) is None:
+    if _SLUG_PATTERN.fullmatch(_validate_unicode_text(value, path)) is None:
         raise ContractValidationError(f"{path} must be a lower-case semantic slug.")
     return value
 
 
 def _validate_fingerprint(value: Any, path: str) -> str:
-    if not isinstance(value, str) or _SHA256_PATTERN.fullmatch(value) is None:
+    if _SHA256_PATTERN.fullmatch(_validate_unicode_text(value, path)) is None:
         raise ContractValidationError(f"{path} must be a lower-case SHA-256 digest.")
     return value
 
@@ -336,17 +464,36 @@ def _validate_nonnegative_int(value: Any, path: str) -> int:
     return value
 
 
-def _validate_positive_int(value: Any, path: str) -> int:
-    if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-        raise ContractValidationError(f"{path} must be a positive integer.")
+def _validate_bounded_int(value: Any, path: str, minimum: int, maximum: int) -> int:
+    if (
+        not isinstance(value, int)
+        or isinstance(value, bool)
+        or value < minimum
+        or value > maximum
+    ):
+        raise ContractValidationError(
+            f"{path} must be an integer from {minimum} through {maximum}."
+        )
     return value
+
+
+def _validate_bool(value: Any, path: str) -> bool:
+    if not isinstance(value, bool):
+        raise ContractValidationError(f"{path} must be a boolean.")
+    return value
+
+
+def _validate_semantic_id(value: Any, path: str) -> str:
+    text = _validate_unicode_text(value, path)
+    if _SEMANTIC_ID_PATTERN.fullmatch(text) is None:
+        raise ContractValidationError(f"{path} must be a canonical semantic identifier.")
+    return text
 
 
 def _enum_value(enum_type: type[Enum], value: Any, path: str) -> Any:
     if isinstance(value, enum_type):
         return value
-    if not isinstance(value, str):
-        raise ContractValidationError(f"{path} must be a string enum value.")
+    _validate_unicode_text(value, path)
     try:
         return enum_type(value)
     except ValueError as exc:
@@ -360,6 +507,7 @@ def _normalized_field_components(key: str) -> tuple[str, ...]:
 
 
 def _validate_policy_field_name(key: str, path: str) -> None:
+    _validate_unicode_text(key, path)
     components = _normalized_field_components(key)
     normalized = "_".join(components)
     if (
@@ -369,25 +517,13 @@ def _validate_policy_field_name(key: str, path: str) -> None:
         raise ContractValidationError(
             f"{path} uses forbidden policy field name {key!r}."
         )
-    if normalized not in _PUBLIC_POLICY_FIELD_NAMES:
-        raise ContractValidationError(
-            f"{path} uses unknown policy field name {key!r}."
-        )
-
-
-def _validate_public_label(value: str, path: str) -> None:
-    components = _normalized_field_components(value)
-    normalized = "_".join(components)
-    if (
-        normalized in _FORBIDDEN_POLICY_FIELD_NAMES
-        or any(component in _FORBIDDEN_POLICY_FIELD_COMPONENTS for component in components)
-    ):
-        raise ContractValidationError(f"{path} uses forbidden public semantics {value!r}.")
 
 
 def _freeze_json(value: Any, path: str, *, policy_view: bool) -> ImmutableJson:
-    if value is None or isinstance(value, (str, bool)):
+    if value is None or isinstance(value, bool):
         return value
+    if isinstance(value, str):
+        return _validate_unicode_text(value, path)
     if isinstance(value, int) and not isinstance(value, bool):
         return value
     if isinstance(value, float):
@@ -399,6 +535,7 @@ def _freeze_json(value: Any, path: str, *, policy_view: bool) -> ImmutableJson:
         for key, item in value.items():
             if not isinstance(key, str):
                 raise ContractValidationError(f"{path} object keys must be strings.")
+            _validate_unicode_text(key, f"{path} object key")
             if policy_view:
                 _validate_policy_field_name(key, path)
             frozen[key] = _freeze_json(
@@ -456,7 +593,7 @@ def _loads_object(text: str | bytes | bytearray) -> dict[str, Any]:
         raise ContractValidationError("Invalid JSON input.") from exc
     if not isinstance(value, dict):
         raise ContractValidationError("The JSON root must be an object.")
-    return value
+    return _thaw_json(_freeze_json(value, "$", policy_view=False))
 
 
 def _require_exact_fields(
@@ -490,9 +627,9 @@ def canonical_json_bytes(value: Any) -> bytes:
             separators=(",", ":"),
             sort_keys=True,
         )
-    except (TypeError, ValueError) as exc:
+        return encoded.encode("utf-8")
+    except (TypeError, ValueError, UnicodeEncodeError) as exc:
         raise ContractValidationError("Value cannot be canonically serialized.") from exc
-    return encoded.encode("utf-8")
 
 
 def canonical_json(value: Any) -> str:
@@ -503,33 +640,692 @@ def _domain_hash(domain: str, value: Any) -> str:
     return sha256(domain.encode("ascii") + b"\0" + canonical_json_bytes(value)).hexdigest()
 
 
+def _require_object(
+    value: Any,
+    path: str,
+    fields: Sequence[str],
+) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ContractValidationError(f"{path} must be an object.")
+    _require_exact_fields(value, frozenset(fields), path)
+    return value
+
+
+def _require_array(
+    value: Any,
+    path: str,
+    *,
+    minimum: int = 0,
+    maximum: int = MAX_COLLECTION_SIZE,
+) -> tuple[Any, ...]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        raise ContractValidationError(f"{path} must be an array.")
+    result = tuple(value)
+    if not minimum <= len(result) <= maximum:
+        raise ContractValidationError(
+            f"{path} must contain from {minimum} through {maximum} items."
+        )
+    return result
+
+
+def _reference_value(kind: PublicReferenceKind, basis: Mapping[str, Any]) -> str:
+    digest = _domain_hash(f"headless_v0.public_ref.{kind.value}.v1", basis)
+    return f"pub.{kind.value}.{digest}"
+
+
+def combat_card_reference(card_definition_id: str, presentation_ordinal: int) -> str:
+    """Derive a decision-local card alias from explicit public presentation data."""
+
+    definition = _validate_semantic_id(card_definition_id, "card_definition_id")
+    ordinal = _validate_bounded_int(
+        presentation_ordinal,
+        "presentation_ordinal",
+        0,
+        MAX_COLLECTION_SIZE - 1,
+    )
+    return _reference_value(
+        PublicReferenceKind.CARD,
+        {"card_definition_id": definition, "presentation_ordinal": ordinal},
+    )
+
+
+def combat_enemy_reference(enemy_definition_id: str, presentation_ordinal: int) -> str:
+    """Derive a decision-local enemy alias without accepting an internal ID."""
+
+    definition = _validate_semantic_id(enemy_definition_id, "enemy_definition_id")
+    ordinal = _validate_bounded_int(
+        presentation_ordinal,
+        "presentation_ordinal",
+        0,
+        MAX_COLLECTION_SIZE - 1,
+    )
+    return _reference_value(
+        PublicReferenceKind.ENEMY,
+        {"enemy_definition_id": definition, "presentation_ordinal": ordinal},
+    )
+
+
+def reward_reference(kind: RewardKind | str, presentation_ordinal: int) -> str:
+    normalized = _enum_value(RewardKind, kind, "reward_kind")
+    ordinal = _validate_bounded_int(
+        presentation_ordinal,
+        "presentation_ordinal",
+        0,
+        MAX_COLLECTION_SIZE - 1,
+    )
+    return _reference_value(
+        PublicReferenceKind.REWARD,
+        {"kind": normalized.value, "presentation_ordinal": ordinal},
+    )
+
+
+def reward_offer_reference(
+    reward_ref: str,
+    card_definition_id: str,
+    presentation_ordinal: int,
+) -> str:
+    reward_value = _validate_public_reference(
+        reward_ref,
+        PublicReferenceKind.REWARD,
+        "reward_ref",
+    )
+    definition = _validate_semantic_id(card_definition_id, "card_definition_id")
+    ordinal = _validate_bounded_int(
+        presentation_ordinal,
+        "presentation_ordinal",
+        0,
+        MAX_COLLECTION_SIZE - 1,
+    )
+    return _reference_value(
+        PublicReferenceKind.OFFER,
+        {
+            "card_definition_id": definition,
+            "presentation_ordinal": ordinal,
+            "reward_ref": reward_value,
+        },
+    )
+
+
+def map_node_reference(kind: NodeKind | str, presentation_ordinal: int) -> str:
+    normalized = _enum_value(NodeKind, kind, "node_kind")
+    ordinal = _validate_bounded_int(
+        presentation_ordinal,
+        "presentation_ordinal",
+        0,
+        MAX_COLLECTION_SIZE - 1,
+    )
+    return _reference_value(
+        PublicReferenceKind.NODE,
+        {"kind": normalized.value, "presentation_ordinal": ordinal},
+    )
+
+
+def room_option_reference(
+    room_kind: RoomKind | str,
+    option_kind: RoomOptionKind | str,
+    presentation_ordinal: int,
+) -> str:
+    room = _enum_value(RoomKind, room_kind, "room_kind")
+    option = _enum_value(RoomOptionKind, option_kind, "option_kind")
+    ordinal = _validate_bounded_int(
+        presentation_ordinal,
+        "presentation_ordinal",
+        0,
+        MAX_COLLECTION_SIZE - 1,
+    )
+    return _reference_value(
+        PublicReferenceKind.OPTION,
+        {
+            "option_kind": option.value,
+            "presentation_ordinal": ordinal,
+            "room_kind": room.value,
+        },
+    )
+
+
+def _validate_public_reference(
+    value: Any,
+    kind: PublicReferenceKind,
+    path: str,
+) -> str:
+    text = _validate_unicode_text(value, path)
+    match = _PUBLIC_REFERENCE_PATTERN.fullmatch(text)
+    if match is None or match.group(1) != kind.value:
+        raise ContractValidationError(f"{path} must be a canonical public {kind.value} reference.")
+    return text
+
+
+def _validate_candidate_id(value: Any, path: str) -> str:
+    text = _validate_unicode_text(value, path)
+    if _CANDIDATE_ID_PATTERN.fullmatch(text) is None:
+        raise ContractValidationError(f"{path} must be a derived candidate identifier.")
+    return text
+
+
+def _validate_statuses(value: Any, path: str) -> None:
+    statuses = _require_object(value, path, _OBSERVATION_SCHEMAS[DecisionPhase.COMBAT]["statuses"])
+    _validate_bounded_int(statuses["shrink"], f"{path}.shrink", 0, MAX_PUBLIC_COUNTER)
+    _validate_bounded_int(
+        statuses["vulnerable"],
+        f"{path}.vulnerable",
+        0,
+        MAX_PUBLIC_COUNTER,
+    )
+
+
+def _validate_hp_pair(value: Mapping[str, Any], path: str) -> None:
+    maximum = _validate_bounded_int(value["max_hp"], f"{path}.max_hp", 1, MAX_PUBLIC_HP)
+    _validate_bounded_int(value["hp"], f"{path}.hp", 0, maximum)
+
+
+def _validate_run_player(value: Any, path: str) -> None:
+    player = _require_object(
+        value,
+        path,
+        _OBSERVATION_SCHEMAS[DecisionPhase.REWARD]["player"],
+    )
+    _validate_hp_pair(player, path)
+    _validate_bounded_int(player["gold"], f"{path}.gold", 0, MAX_PUBLIC_COUNTER)
+    _validate_bounded_int(player["deck_size"], f"{path}.deck_size", 0, MAX_COLLECTION_SIZE)
+
+
+def _validate_intent(value: Any, path: str) -> None:
+    intent = _require_object(
+        value,
+        path,
+        _OBSERVATION_SCHEMAS[DecisionPhase.COMBAT]["intent"],
+    )
+    kind = _enum_value(IntentKind, intent["kind"], f"{path}.kind")
+    status_kind = _enum_value(StatusKind, intent["status_kind"], f"{path}.status_kind")
+    numeric_names = (
+        "attack_count",
+        "attack_damage",
+        "block_gain",
+        "slimed_added",
+        "status_stacks",
+        "strength_gain",
+    )
+    values = {
+        name: _validate_bounded_int(
+            intent[name],
+            f"{path}.{name}",
+            0,
+            MAX_PUBLIC_COUNTER,
+        )
+        for name in numeric_names
+    }
+    attack = values["attack_damage"] > 0 and values["attack_count"] > 0
+    valid = {
+        IntentKind.ATTACK: attack
+        and values["block_gain"] == 0
+        and values["strength_gain"] == 0
+        and status_kind is StatusKind.NONE
+        and values["status_stacks"] == 0
+        and values["slimed_added"] == 0,
+        IntentKind.ATTACK_DEFEND: attack
+        and values["block_gain"] > 0
+        and values["strength_gain"] == 0
+        and status_kind is StatusKind.NONE
+        and values["status_stacks"] == 0
+        and values["slimed_added"] == 0,
+        IntentKind.DEFEND: not attack
+        and values["attack_damage"] == 0
+        and values["attack_count"] == 0
+        and values["block_gain"] > 0
+        and values["strength_gain"] == 0
+        and status_kind is StatusKind.NONE
+        and values["status_stacks"] == 0
+        and values["slimed_added"] == 0,
+        IntentKind.BUFF: values["attack_damage"] == 0
+        and values["attack_count"] == 0
+        and values["block_gain"] == 0
+        and values["strength_gain"] > 0
+        and status_kind is StatusKind.NONE
+        and values["status_stacks"] == 0
+        and values["slimed_added"] == 0,
+        IntentKind.DEBUFF: values["attack_damage"] == 0
+        and values["attack_count"] == 0
+        and values["block_gain"] == 0
+        and values["strength_gain"] == 0
+        and status_kind is not StatusKind.NONE
+        and values["status_stacks"] > 0
+        and values["slimed_added"] == 0,
+        IntentKind.SHUFFLE: values["attack_damage"] == 0
+        and values["attack_count"] == 0
+        and values["block_gain"] == 0
+        and values["strength_gain"] == 0
+        and status_kind is StatusKind.NONE
+        and values["status_stacks"] == 0
+        and values["slimed_added"] > 0,
+    }
+    if not valid[kind]:
+        raise ContractValidationError(f"{path} fields do not match intent kind {kind.value!r}.")
+
+
+def _validate_combat_observation(data: Mapping[str, Any]) -> None:
+    path = "public_observation.data"
+    _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.COMBAT]["top"]), path)
+    _validate_bounded_int(data["turn"], f"{path}.turn", 1, MAX_PUBLIC_COUNTER)
+    player = _require_object(
+        data["player"],
+        f"{path}.player",
+        _OBSERVATION_SCHEMAS[DecisionPhase.COMBAT]["player"],
+    )
+    _validate_hp_pair(player, f"{path}.player")
+    for name in ("block", "energy", "energy_per_turn", "strength"):
+        minimum = 1 if name == "energy_per_turn" else 0
+        _validate_bounded_int(
+            player[name],
+            f"{path}.player.{name}",
+            minimum,
+            MAX_PUBLIC_COUNTER,
+        )
+    _validate_statuses(player["statuses"], f"{path}.player.statuses")
+
+    enemies = _require_array(data["enemies"], f"{path}.enemies", minimum=1)
+    enemy_refs: set[str] = set()
+    for index, raw_enemy in enumerate(enemies):
+        enemy_path = f"{path}.enemies[{index}]"
+        enemy = _require_object(
+            raw_enemy,
+            enemy_path,
+            _OBSERVATION_SCHEMAS[DecisionPhase.COMBAT]["enemy"],
+        )
+        definition = _validate_semantic_id(
+            enemy["enemy_definition_id"],
+            f"{enemy_path}.enemy_definition_id",
+        )
+        expected_ref = combat_enemy_reference(definition, index)
+        if enemy["enemy_ref"] != expected_ref:
+            raise ContractValidationError(f"{enemy_path}.enemy_ref is not canonically derived.")
+        enemy_refs.add(expected_ref)
+        _validate_hp_pair(enemy, enemy_path)
+        for name in ("block", "strength"):
+            _validate_bounded_int(
+                enemy[name],
+                f"{enemy_path}.{name}",
+                0,
+                MAX_PUBLIC_COUNTER,
+            )
+        alive = _validate_bool(enemy["alive"], f"{enemy_path}.alive")
+        if alive != (enemy["hp"] > 0):
+            raise ContractValidationError(f"{enemy_path}.alive must equal hp > 0.")
+        _validate_statuses(enemy["statuses"], f"{enemy_path}.statuses")
+        _validate_intent(enemy["intent"], f"{enemy_path}.intent")
+    if len(enemy_refs) != len(enemies):
+        raise ContractValidationError(f"{path}.enemies contains duplicate public references.")
+
+    hand = _require_array(data["hand"], f"{path}.hand")
+    card_refs: set[str] = set()
+    for index, raw_card in enumerate(hand):
+        card_path = f"{path}.hand[{index}]"
+        card = _require_object(
+            raw_card,
+            card_path,
+            _OBSERVATION_SCHEMAS[DecisionPhase.COMBAT]["card"],
+        )
+        definition = _validate_semantic_id(
+            card["card_definition_id"],
+            f"{card_path}.card_definition_id",
+        )
+        expected_ref = combat_card_reference(definition, index)
+        if card["card_ref"] != expected_ref:
+            raise ContractValidationError(f"{card_path}.card_ref is not canonically derived.")
+        card_refs.add(expected_ref)
+        _validate_bounded_int(card["cost"], f"{card_path}.cost", 0, MAX_PUBLIC_COUNTER)
+        _validate_bool(card["upgraded"], f"{card_path}.upgraded")
+    if len(card_refs) != len(hand):
+        raise ContractValidationError(f"{path}.hand contains duplicate public references.")
+    for name in ("draw_pile_size", "discard_pile_size", "exhaust_pile_size"):
+        _validate_bounded_int(data[name], f"{path}.{name}", 0, MAX_PUBLIC_COUNTER)
+    terminal = _validate_bool(data["terminal"], f"{path}.terminal")
+    outcome = _enum_value(CombatOutcome, data["outcome"], f"{path}.outcome")
+    if terminal != (outcome is not CombatOutcome.ONGOING):
+        raise ContractValidationError(f"{path}.terminal and outcome are inconsistent.")
+    living_enemies = sum(bool(enemy["alive"]) for enemy in enemies)
+    if outcome is CombatOutcome.ONGOING and (player["hp"] == 0 or living_enemies == 0):
+        raise ContractValidationError(f"{path} ongoing outcome requires living actors.")
+    if outcome is CombatOutcome.VICTORY and (player["hp"] == 0 or living_enemies != 0):
+        raise ContractValidationError(f"{path} victory outcome is inconsistent with actors.")
+    if outcome is CombatOutcome.DEFEAT and player["hp"] != 0:
+        raise ContractValidationError(f"{path} defeat outcome requires zero player hp.")
+
+
+def _validate_reward_observation(data: Mapping[str, Any]) -> None:
+    path = "public_observation.data"
+    _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.REWARD]["top"]), path)
+    _validate_run_player(data["player"], f"{path}.player")
+    _validate_bool(data["can_proceed"], f"{path}.can_proceed")
+    rewards = _require_array(data["rewards"], f"{path}.rewards")
+    reward_refs: set[str] = set()
+    for index, raw_reward in enumerate(rewards):
+        reward_path = f"{path}.rewards[{index}]"
+        reward = _require_object(
+            raw_reward,
+            reward_path,
+            _OBSERVATION_SCHEMAS[DecisionPhase.REWARD]["reward"],
+        )
+        kind = _enum_value(RewardKind, reward["kind"], f"{reward_path}.kind")
+        expected_ref = reward_reference(kind, index)
+        if reward["reward_ref"] != expected_ref:
+            raise ContractValidationError(f"{reward_path}.reward_ref is not canonically derived.")
+        reward_refs.add(expected_ref)
+        amount = _validate_bounded_int(
+            reward["amount"],
+            f"{reward_path}.amount",
+            0,
+            MAX_PUBLIC_COUNTER,
+        )
+        claimed = _validate_bool(reward["claimed"], f"{reward_path}.claimed")
+        opened = _validate_bool(reward["opened"], f"{reward_path}.opened")
+        can_skip = _validate_bool(reward["can_skip"], f"{reward_path}.can_skip")
+        offers = _require_array(reward["offers"], f"{reward_path}.offers")
+        if kind is RewardKind.GOLD:
+            if amount <= 0 or opened or can_skip or offers:
+                raise ContractValidationError(f"{reward_path} is not a canonical gold reward.")
+        else:
+            if amount != 0 or (not opened and offers) or (can_skip and (not opened or claimed)):
+                raise ContractValidationError(f"{reward_path} is not a canonical card reward.")
+        offer_refs: set[str] = set()
+        for offer_index, raw_offer in enumerate(offers):
+            offer_path = f"{reward_path}.offers[{offer_index}]"
+            offer = _require_object(
+                raw_offer,
+                offer_path,
+                _OBSERVATION_SCHEMAS[DecisionPhase.REWARD]["offer"],
+            )
+            definition = _validate_semantic_id(
+                offer["card_definition_id"],
+                f"{offer_path}.card_definition_id",
+            )
+            expected_offer_ref = reward_offer_reference(
+                expected_ref,
+                definition,
+                offer_index,
+            )
+            if offer["offer_ref"] != expected_offer_ref:
+                raise ContractValidationError(f"{offer_path}.offer_ref is not canonically derived.")
+            offer_refs.add(expected_offer_ref)
+            _validate_bool(offer["upgraded"], f"{offer_path}.upgraded")
+        if len(offer_refs) != len(offers):
+            raise ContractValidationError(f"{reward_path}.offers has duplicate references.")
+    if len(reward_refs) != len(rewards):
+        raise ContractValidationError(f"{path}.rewards has duplicate references.")
+
+
+def _validate_map_observation(data: Mapping[str, Any]) -> None:
+    path = "public_observation.data"
+    _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.MAP]["top"]), path)
+    _validate_run_player(data["player"], f"{path}.player")
+    nodes = _require_array(data["nodes"], f"{path}.nodes", minimum=1)
+    node_refs: set[str] = set()
+    visited_from_nodes: set[str] = set()
+    for index, raw_node in enumerate(nodes):
+        node_path = f"{path}.nodes[{index}]"
+        node = _require_object(
+            raw_node,
+            node_path,
+            _OBSERVATION_SCHEMAS[DecisionPhase.MAP]["node"],
+        )
+        kind = _enum_value(NodeKind, node["kind"], f"{node_path}.kind")
+        expected_ref = map_node_reference(kind, index)
+        if node["node_ref"] != expected_ref:
+            raise ContractValidationError(f"{node_path}.node_ref is not canonically derived.")
+        node_refs.add(expected_ref)
+        _validate_bool(node["available"], f"{node_path}.available")
+        if _validate_bool(node["visited"], f"{node_path}.visited"):
+            visited_from_nodes.add(expected_ref)
+    if len(node_refs) != len(nodes):
+        raise ContractValidationError(f"{path}.nodes has duplicate references.")
+    current_ref = data["current_node_ref"]
+    if current_ref is not None:
+        _validate_public_reference(
+            current_ref,
+            PublicReferenceKind.NODE,
+            f"{path}.current_node_ref",
+        )
+        if current_ref not in node_refs:
+            raise ContractValidationError(f"{path}.current_node_ref does not resolve.")
+    visited_values = _require_array(data["visited_node_refs"], f"{path}.visited_node_refs")
+    expected_visited = tuple(
+        node["node_ref"] for node in nodes if node["visited"]
+    )
+    for value in visited_values:
+        _validate_public_reference(
+            value,
+            PublicReferenceKind.NODE,
+            f"{path}.visited_node_refs",
+        )
+    if visited_values != expected_visited or set(visited_values) != visited_from_nodes:
+        raise ContractValidationError(f"{path}.visited_node_refs is inconsistent with nodes.")
+    edges = _require_array(data["edges"], f"{path}.edges")
+    seen_edges: set[tuple[str, str]] = set()
+    for index, raw_edge in enumerate(edges):
+        edge_path = f"{path}.edges[{index}]"
+        edge = _require_object(
+            raw_edge,
+            edge_path,
+            _OBSERVATION_SCHEMAS[DecisionPhase.MAP]["edge"],
+        )
+        source = _validate_public_reference(
+            edge["source_node_ref"], PublicReferenceKind.NODE, f"{edge_path}.source_node_ref"
+        )
+        target = _validate_public_reference(
+            edge["target_node_ref"], PublicReferenceKind.NODE, f"{edge_path}.target_node_ref"
+        )
+        if source not in node_refs or target not in node_refs or source == target:
+            raise ContractValidationError(f"{edge_path} has unresolved or reflexive references.")
+        seen_edges.add((source, target))
+    if len(seen_edges) != len(edges):
+        raise ContractValidationError(f"{path}.edges contains duplicates.")
+    if seen_edges and tuple(
+        (edge["source_node_ref"], edge["target_node_ref"]) for edge in edges
+    ) != tuple(sorted(seen_edges)):
+        raise ContractValidationError(f"{path}.edges must use canonical reference order.")
+
+
+def _validate_room_observation(data: Mapping[str, Any]) -> None:
+    path = "public_observation.data"
+    _require_exact_fields(data, frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.ROOM]["top"]), path)
+    _validate_run_player(data["player"], f"{path}.player")
+    room_kind = _enum_value(RoomKind, data["room_kind"], f"{path}.room_kind")
+    _validate_bool(data["can_proceed"], f"{path}.can_proceed")
+    options = _require_array(data["options"], f"{path}.options")
+    option_refs: set[str] = set()
+    for index, raw_option in enumerate(options):
+        option_path = f"{path}.options[{index}]"
+        option = _require_object(
+            raw_option,
+            option_path,
+            _OBSERVATION_SCHEMAS[DecisionPhase.ROOM]["option"],
+        )
+        option_kind = _enum_value(RoomOptionKind, option["kind"], f"{option_path}.kind")
+        effect = _enum_value(RoomEffectKind, option["effect"], f"{option_path}.effect")
+        expected_ref = room_option_reference(room_kind, option_kind, index)
+        if option["option_ref"] != expected_ref:
+            raise ContractValidationError(f"{option_path}.option_ref is not canonically derived.")
+        option_refs.add(expected_ref)
+        _validate_bool(option["enabled"], f"{option_path}.enabled")
+        amount = _validate_bounded_int(
+            option["amount"],
+            f"{option_path}.amount",
+            0,
+            MAX_PUBLIC_COUNTER,
+        )
+        if room_kind is RoomKind.REST:
+            if (
+                option_kind is not RoomOptionKind.REST_HEAL
+                or effect is not RoomEffectKind.HEAL
+                or amount <= 0
+            ):
+                raise ContractValidationError(f"{option_path} is not a canonical rest option.")
+        elif option_kind is not RoomOptionKind.EVENT_OPTION:
+            raise ContractValidationError(f"{option_path} is not a canonical event option.")
+        elif (effect is RoomEffectKind.NONE) != (amount == 0):
+            raise ContractValidationError(f"{option_path}.amount does not match its effect.")
+    if len(option_refs) != len(options):
+        raise ContractValidationError(f"{path}.options has duplicate references.")
+
+
+def _validate_terminal_observation(data: Mapping[str, Any]) -> None:
+    path = "public_observation.data"
+    _require_exact_fields(
+        data,
+        frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.TERMINAL]["top"]),
+        path,
+    )
+    outcome = _enum_value(RunOutcome, data["outcome"], f"{path}.outcome")
+    _validate_run_player(data["player"], f"{path}.player")
+    if outcome is RunOutcome.VICTORY and data["player"]["hp"] == 0:
+        raise ContractValidationError(f"{path} victory requires positive player hp.")
+    if outcome is RunOutcome.DEFEAT and data["player"]["hp"] != 0:
+        raise ContractValidationError(f"{path} defeat requires zero player hp.")
+
+
+def _validate_unsupported_observation(data: Mapping[str, Any]) -> None:
+    path = "public_observation.data"
+    _require_exact_fields(
+        data,
+        frozenset(_OBSERVATION_SCHEMAS[DecisionPhase.UNSUPPORTED]["top"]),
+        path,
+    )
+    _enum_value(UnsupportedReasonCode, data["reason_code"], f"{path}.reason_code")
+
+
+def _validate_public_observation(phase: DecisionPhase, data: Mapping[str, Any]) -> None:
+    validators = {
+        DecisionPhase.COMBAT: _validate_combat_observation,
+        DecisionPhase.REWARD: _validate_reward_observation,
+        DecisionPhase.MAP: _validate_map_observation,
+        DecisionPhase.ROOM: _validate_room_observation,
+        DecisionPhase.TERMINAL: _validate_terminal_observation,
+        DecisionPhase.UNSUPPORTED: _validate_unsupported_observation,
+    }
+    validators[phase](data)
+
+
+def _validate_public_event_payload(
+    event_type: PublicEventKind,
+    phase: DecisionPhase,
+    data: Mapping[str, Any],
+) -> None:
+    expected_phase, fields = _PUBLIC_EVENT_SPECS[event_type]
+    if phase is not expected_phase:
+        raise ContractValidationError("public_event phase does not match event_type.")
+    _require_exact_fields(data, frozenset(fields), "public_event.data")
+    if event_type is PublicEventKind.COMBAT_CARD_PLAYED:
+        _validate_semantic_id(
+            data["card_definition_id"],
+            "public_event.data.card_definition_id",
+        )
+        target = data["target_enemy_definition_id"]
+        if target is not None:
+            _validate_semantic_id(target, "public_event.data.target_enemy_definition_id")
+    elif event_type is PublicEventKind.COMBAT_RESOLVED:
+        outcome = _enum_value(CombatOutcome, data["outcome"], "public_event.data.outcome")
+        if outcome is CombatOutcome.ONGOING:
+            raise ContractValidationError("combat.resolved requires a terminal outcome.")
+    elif event_type is PublicEventKind.REWARD_GOLD_CLAIMED:
+        _validate_bounded_int(data["amount"], "public_event.data.amount", 1, MAX_PUBLIC_COUNTER)
+    elif event_type is PublicEventKind.REWARD_CARD_OPENED:
+        _validate_bounded_int(
+            data["offer_count"],
+            "public_event.data.offer_count",
+            0,
+            MAX_COLLECTION_SIZE,
+        )
+    elif event_type is PublicEventKind.REWARD_CARD_CHOSEN:
+        _validate_semantic_id(data["card_definition_id"], "public_event.data.card_definition_id")
+        _validate_bool(data["upgraded"], "public_event.data.upgraded")
+    elif event_type is PublicEventKind.MAP_NODE_CHOSEN:
+        _enum_value(NodeKind, data["node_kind"], "public_event.data.node_kind")
+    elif event_type is PublicEventKind.ROOM_REST_HEALED:
+        _validate_bounded_int(data["amount"], "public_event.data.amount", 1, MAX_PUBLIC_COUNTER)
+    elif event_type is PublicEventKind.ROOM_EVENT_OPTION_CHOSEN:
+        effect = _enum_value(RoomEffectKind, data["effect"], "public_event.data.effect")
+        amount = _validate_bounded_int(
+            data["amount"],
+            "public_event.data.amount",
+            0,
+            MAX_PUBLIC_COUNTER,
+        )
+        if (effect is RoomEffectKind.NONE) != (amount == 0):
+            raise ContractValidationError("room event amount does not match effect.")
+    elif event_type is PublicEventKind.RUN_TERMINATED:
+        _enum_value(RunOutcome, data["outcome"], "public_event.data.outcome")
+
+
 CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
     {
         "canonicalization": CANONICALIZATION,
         "candidate_fields": {
             kind.value: fields for kind, fields in _CANDIDATE_FIELD_NAMES.items()
         },
-        "candidate_identity": "opaque_per_decision_id",
+        "candidate_hash_domain": "headless_v0.candidate.v1",
+        "candidate_identity": "sha256_of_normalized_public_candidate_semantics",
+        "candidate_id_format": "cand.<sha256>",
         "candidate_kinds": tuple(kind.value for kind in CandidateKind),
         "candidate_phases": {
             kind.value: phase.value for kind, phase in _CANDIDATE_PHASE_NAMES.items()
         },
         "compatibility_class": COMPATIBILITY_CLASS,
         "contract": CONTRACT_VERSION,
+        "cross_field_rules": (
+            "combat_alive_equals_hp_positive",
+            "combat_intent_effect_fields_match_finite_kind",
+            "combat_outcome_matches_terminal_and_living_actors",
+            "map_current_visited_and_edges_resolve_to_nodes",
+            "reward_gold_and_card_shapes_match_kind_opened_claimed_skip_state",
+            "room_option_kind_effect_amount_match_room_kind",
+            "terminal_outcome_matches_player_hp_where_determined",
+        ),
         "decision_hash_domain": "headless_v0.decision.v1",
         "decision_phases": tuple(phase.value for phase in DecisionPhase),
         "decision_statuses": tuple(status.value for status in DecisionStatus),
         "evidence_labels": tuple(label.value for label in EvidenceLabel),
         "hash_algorithm": HASH_ALGORITHM,
+        "finite_public_enums": {
+            "combat_outcome": tuple(item.value for item in CombatOutcome),
+            "intent_kind": tuple(item.value for item in IntentKind),
+            "node_kind": tuple(item.value for item in NodeKind),
+            "reward_kind": tuple(item.value for item in RewardKind),
+            "room_effect_kind": tuple(item.value for item in RoomEffectKind),
+            "room_kind": tuple(item.value for item in RoomKind),
+            "room_option_kind": tuple(item.value for item in RoomOptionKind),
+            "run_outcome": tuple(item.value for item in RunOutcome),
+            "status_kind": tuple(item.value for item in StatusKind),
+            "unsupported_reason_code": tuple(item.value for item in UnsupportedReasonCode),
+        },
+        "limits": {
+            "max_collection_size": MAX_COLLECTION_SIZE,
+            "max_public_counter": MAX_PUBLIC_COUNTER,
+            "max_public_hp": MAX_PUBLIC_HP,
+        },
+        "observation_schemas": {
+            phase.value: {name: fields for name, fields in schema.items()}
+            for phase, schema in _OBSERVATION_SCHEMAS.items()
+        },
         "policy_forbidden_field_components": tuple(
             sorted(_FORBIDDEN_POLICY_FIELD_COMPONENTS)
         ),
         "policy_forbidden_field_names": tuple(sorted(_FORBIDDEN_POLICY_FIELD_NAMES)),
-        "policy_public_field_allowlist": tuple(sorted(_PUBLIC_POLICY_FIELD_NAMES)),
         "public_observation_schema": "headless_v0.public_observation.v1",
-        "policy_top_level_fields": {
-            phase.value: tuple(sorted(fields))
-            for phase, fields in _PUBLIC_OBSERVATION_TOP_LEVEL_FIELDS.items()
+        "public_event_specs": {
+            kind.value: {"fields": fields, "phase": phase.value}
+            for kind, (phase, fields) in _PUBLIC_EVENT_SPECS.items()
+        },
+        "public_reference": {
+            "format": "pub.<kind>.<sha256>",
+            "hash_domain_template": "headless_v0.public_ref.<kind>.v1",
+            "kinds": tuple(kind.value for kind in PublicReferenceKind),
+            "basis": {
+                "card": ("card_definition_id", "presentation_ordinal"),
+                "enemy": ("enemy_definition_id", "presentation_ordinal"),
+                "node": ("kind", "presentation_ordinal"),
+                "offer": ("card_definition_id", "presentation_ordinal", "reward_ref"),
+                "option": ("option_kind", "presentation_ordinal", "room_kind"),
+                "reward": ("kind", "presentation_ordinal"),
+            },
         },
         "records": {
             "action_request": ("binding", "contract", "contract_fingerprint"),
@@ -605,13 +1401,22 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
         "semantic_invariants": (
             "actionable_requires_nonempty_same_phase_candidates",
             "candidate_ids_unique_per_decision",
-            "candidate_order_canonical_by_candidate_id",
-            "event_sequences_strictly_increase",
+            "candidate_ids_derived_only_from_normalized_public_semantics",
+            "candidate_order_canonical_by_derived_public_id",
+            "candidate_references_resolve_in_same_public_observation",
+            "combat_pile_counts_are_combat_v0_or_structural_not_live_truth",
+            "exact_path_phase_schemas_and_raw_key_spelling",
+            "map_set_like_reference_arrays_use_canonical_order",
+            "event_sequences_are_zero_based_contiguous",
+            "finite_event_catalog_with_exact_phase_and_payload",
             "manifest_action_phases_are_exact_partition",
             "manifest_evidence_components_unique_and_sorted",
             "non_actionable_has_no_candidates",
-            "policy_objects_use_recursive_semantic_field_allowlist",
+            "policy_view_revalidates_status_candidate_provenance_uniqueness_event_sequence",
+            "public_aliases_derived_from_explicit_public_presentation_basis",
+            "public_projector_provenance_required_outside_contract_validation",
             "public_json_has_no_floating_point_values",
+            "public_json_rejects_unpaired_utf16_surrogates",
             "rejected_transition_returns_bound_authoritative_identity",
             "stale_transition_returns_different_authoritative_identity",
             "terminal_and_unsupported_status_require_matching_phase",
@@ -880,14 +1685,7 @@ class PublicObservation:
             raise ContractValidationError("Unsupported public observation schema.")
         if not isinstance(self.data, Mapping):
             raise ContractValidationError("public_observation.data must be an object.")
-        allowed_top_level = _PUBLIC_OBSERVATION_TOP_LEVEL_FIELDS[self.phase]
-        unknown_top_level = sorted(set(self.data) - allowed_top_level)
-        if unknown_top_level:
-            raise ContractValidationError(
-                "public_observation.data has field(s) outside the phase schema: "
-                + ", ".join(unknown_top_level)
-                + "."
-            )
+        _validate_public_observation(self.phase, self.data)
         object.__setattr__(
             self,
             "data",
@@ -909,14 +1707,22 @@ class PublicObservation:
 @dataclass(frozen=True, slots=True)
 class PublicEvent:
     sequence: int
-    event_type: str
+    event_type: PublicEventKind
     phase: DecisionPhase
     data: Mapping[str, Any]
 
     def __post_init__(self) -> None:
-        _validate_nonnegative_int(self.sequence, "public_event.sequence")
-        _validate_slug(self.event_type, "public_event.event_type")
-        _validate_public_label(self.event_type, "public_event.event_type")
+        _validate_bounded_int(
+            self.sequence,
+            "public_event.sequence",
+            0,
+            MAX_COLLECTION_SIZE - 1,
+        )
+        object.__setattr__(
+            self,
+            "event_type",
+            _enum_value(PublicEventKind, self.event_type, "public_event.event_type"),
+        )
         object.__setattr__(
             self,
             "phase",
@@ -924,6 +1730,7 @@ class PublicEvent:
         )
         if not isinstance(self.data, Mapping):
             raise ContractValidationError("public_event.data must be an object.")
+        _validate_public_event_payload(self.event_type, self.phase, self.data)
         object.__setattr__(
             self,
             "data",
@@ -933,7 +1740,7 @@ class PublicEvent:
     def to_dict(self) -> dict[str, Any]:
         return {
             "data": _thaw_json(self.data),
-            "event_type": self.event_type,
+            "event_type": self.event_type.value,
             "phase": self.phase.value,
             "sequence": self.sequence,
         }
@@ -954,11 +1761,11 @@ class PublicEvent:
 
 @dataclass(frozen=True, slots=True)
 class Candidate:
-    candidate_id: str
+    candidate_id: str = field(init=False)
     KIND: ClassVar[CandidateKind]
 
     def __post_init__(self) -> None:
-        _validate_identifier(self.candidate_id, "candidate.candidate_id")
+        object.__setattr__(self, "candidate_id", _derive_candidate_id(self))
 
     @property
     def kind(self) -> CandidateKind:
@@ -967,15 +1774,19 @@ class Candidate:
 
 @dataclass(frozen=True, slots=True)
 class CombatPlayCardCandidate(Candidate):
-    card_instance_id: str
-    target_entity_id: str | None = None
+    card_ref: str
+    target_ref: str | None = None
     KIND: ClassVar[CandidateKind] = CandidateKind.COMBAT_PLAY_CARD
 
     def __post_init__(self) -> None:
+        _validate_public_reference(self.card_ref, PublicReferenceKind.CARD, "candidate.card_ref")
+        if self.target_ref is not None:
+            _validate_public_reference(
+                self.target_ref,
+                PublicReferenceKind.ENEMY,
+                "candidate.target_ref",
+            )
         super(CombatPlayCardCandidate, self).__post_init__()
-        _validate_identifier(self.card_instance_id, "candidate.card_instance_id")
-        if self.target_entity_id is not None:
-            _validate_identifier(self.target_entity_id, "candidate.target_entity_id")
 
 
 @dataclass(frozen=True, slots=True)
@@ -985,46 +1796,73 @@ class CombatEndTurnCandidate(Candidate):
 
 @dataclass(frozen=True, slots=True)
 class RewardClaimGoldCandidate(Candidate):
+    reward_ref: str
     amount: int
     KIND: ClassVar[CandidateKind] = CandidateKind.REWARD_CLAIM_GOLD
 
     def __post_init__(self) -> None:
+        _validate_public_reference(
+            self.reward_ref,
+            PublicReferenceKind.REWARD,
+            "candidate.reward_ref",
+        )
+        _validate_bounded_int(
+            self.amount,
+            "candidate.amount",
+            1,
+            MAX_PUBLIC_COUNTER,
+        )
         super(RewardClaimGoldCandidate, self).__post_init__()
-        _validate_positive_int(self.amount, "candidate.amount")
 
 
 @dataclass(frozen=True, slots=True)
 class RewardOpenCardRewardCandidate(Candidate):
-    reward_id: str
+    reward_ref: str
     KIND: ClassVar[CandidateKind] = CandidateKind.REWARD_OPEN_CARD_REWARD
 
     def __post_init__(self) -> None:
+        _validate_public_reference(
+            self.reward_ref,
+            PublicReferenceKind.REWARD,
+            "candidate.reward_ref",
+        )
         super(RewardOpenCardRewardCandidate, self).__post_init__()
-        _validate_identifier(self.reward_id, "candidate.reward_id")
 
 
 @dataclass(frozen=True, slots=True)
 class RewardChooseCardCandidate(Candidate):
-    reward_id: str
-    offer_id: str
+    reward_ref: str
+    offer_ref: str
     card_definition_id: str
     KIND: ClassVar[CandidateKind] = CandidateKind.REWARD_CHOOSE_CARD
 
     def __post_init__(self) -> None:
+        _validate_public_reference(
+            self.reward_ref,
+            PublicReferenceKind.REWARD,
+            "candidate.reward_ref",
+        )
+        _validate_public_reference(
+            self.offer_ref,
+            PublicReferenceKind.OFFER,
+            "candidate.offer_ref",
+        )
+        _validate_semantic_id(self.card_definition_id, "candidate.card_definition_id")
         super(RewardChooseCardCandidate, self).__post_init__()
-        _validate_identifier(self.reward_id, "candidate.reward_id")
-        _validate_identifier(self.offer_id, "candidate.offer_id")
-        _validate_identifier(self.card_definition_id, "candidate.card_definition_id")
 
 
 @dataclass(frozen=True, slots=True)
 class RewardSkipCardCandidate(Candidate):
-    reward_id: str
+    reward_ref: str
     KIND: ClassVar[CandidateKind] = CandidateKind.REWARD_SKIP_CARD
 
     def __post_init__(self) -> None:
+        _validate_public_reference(
+            self.reward_ref,
+            PublicReferenceKind.REWARD,
+            "candidate.reward_ref",
+        )
         super(RewardSkipCardCandidate, self).__post_init__()
-        _validate_identifier(self.reward_id, "candidate.reward_id")
 
 
 @dataclass(frozen=True, slots=True)
@@ -1034,32 +1872,51 @@ class RewardProceedCandidate(Candidate):
 
 @dataclass(frozen=True, slots=True)
 class MapChooseNodeCandidate(Candidate):
-    map_node_id: str
+    node_ref: str
     KIND: ClassVar[CandidateKind] = CandidateKind.MAP_CHOOSE_NODE
 
     def __post_init__(self) -> None:
+        _validate_public_reference(
+            self.node_ref,
+            PublicReferenceKind.NODE,
+            "candidate.node_ref",
+        )
         super(MapChooseNodeCandidate, self).__post_init__()
-        _validate_identifier(self.map_node_id, "candidate.map_node_id")
 
 
 @dataclass(frozen=True, slots=True)
 class RoomRestHealCandidate(Candidate):
+    option_ref: str
     heal_amount: int
     KIND: ClassVar[CandidateKind] = CandidateKind.ROOM_REST_HEAL
 
     def __post_init__(self) -> None:
+        _validate_public_reference(
+            self.option_ref,
+            PublicReferenceKind.OPTION,
+            "candidate.option_ref",
+        )
+        _validate_bounded_int(
+            self.heal_amount,
+            "candidate.heal_amount",
+            1,
+            MAX_PUBLIC_COUNTER,
+        )
         super(RoomRestHealCandidate, self).__post_init__()
-        _validate_positive_int(self.heal_amount, "candidate.heal_amount")
 
 
 @dataclass(frozen=True, slots=True)
 class RoomEventOptionCandidate(Candidate):
-    option_id: str
+    option_ref: str
     KIND: ClassVar[CandidateKind] = CandidateKind.ROOM_EVENT_OPTION
 
     def __post_init__(self) -> None:
+        _validate_public_reference(
+            self.option_ref,
+            PublicReferenceKind.OPTION,
+            "candidate.option_ref",
+        )
         super(RoomEventOptionCandidate, self).__post_init__()
-        _validate_identifier(self.option_id, "candidate.option_id")
 
 
 @dataclass(frozen=True, slots=True)
@@ -1099,41 +1956,46 @@ _TYPED_CANDIDATE_TYPES = (
 _CANDIDATE_PHASE = _CANDIDATE_PHASE_NAMES
 
 
-def candidate_to_dict(candidate: TypedCandidate) -> dict[str, Any]:
+def _candidate_semantics(candidate: TypedCandidate) -> dict[str, Any]:
     if type(candidate) not in _TYPED_CANDIDATE_TYPES:
         raise ContractValidationError("Unsupported typed candidate instance.")
-    result: dict[str, Any] = {
-        "candidate_id": candidate.candidate_id,
-        "kind": candidate.kind.value,
-    }
+    result: dict[str, Any] = {"kind": candidate.kind.value}
     if isinstance(candidate, CombatPlayCardCandidate):
-        result.update(
-            card_instance_id=candidate.card_instance_id,
-            target_entity_id=candidate.target_entity_id,
-        )
+        result.update(card_ref=candidate.card_ref, target_ref=candidate.target_ref)
     elif isinstance(candidate, RewardClaimGoldCandidate):
-        result["amount"] = candidate.amount
+        result.update(amount=candidate.amount, reward_ref=candidate.reward_ref)
     elif isinstance(candidate, RewardOpenCardRewardCandidate):
-        result["reward_id"] = candidate.reward_id
+        result["reward_ref"] = candidate.reward_ref
     elif isinstance(candidate, RewardChooseCardCandidate):
         result.update(
             card_definition_id=candidate.card_definition_id,
-            offer_id=candidate.offer_id,
-            reward_id=candidate.reward_id,
+            offer_ref=candidate.offer_ref,
+            reward_ref=candidate.reward_ref,
         )
     elif isinstance(candidate, RewardSkipCardCandidate):
-        result["reward_id"] = candidate.reward_id
+        result["reward_ref"] = candidate.reward_ref
     elif isinstance(candidate, MapChooseNodeCandidate):
-        result["map_node_id"] = candidate.map_node_id
+        result["node_ref"] = candidate.node_ref
     elif isinstance(candidate, RoomRestHealCandidate):
-        result["heal_amount"] = candidate.heal_amount
+        result.update(heal_amount=candidate.heal_amount, option_ref=candidate.option_ref)
     elif isinstance(candidate, RoomEventOptionCandidate):
-        result["option_id"] = candidate.option_id
+        result["option_ref"] = candidate.option_ref
     elif not isinstance(
         candidate,
         (CombatEndTurnCandidate, RewardProceedCandidate, RoomProceedCandidate),
     ):
         raise ContractValidationError("Unsupported typed candidate instance.")
+    return result
+
+
+def _derive_candidate_id(candidate: TypedCandidate) -> str:
+    digest = _domain_hash("headless_v0.candidate.v1", _candidate_semantics(candidate))
+    return f"cand.{digest}"
+
+
+def candidate_to_dict(candidate: TypedCandidate) -> dict[str, Any]:
+    result = _candidate_semantics(candidate)
+    result["candidate_id"] = candidate.candidate_id
     return result
 
 
@@ -1149,50 +2011,155 @@ def candidate_from_dict(value: Mapping[str, Any]) -> TypedCandidate:
         raise ContractValidationError("candidate is missing field: kind.")
     kind = _enum_value(CandidateKind, value["kind"], "candidate.kind")
     _require_exact_fields(value, _CANDIDATE_FIELDS[kind], "candidate")
-    common = {"candidate_id": value["candidate_id"]}
+    encoded_candidate_id = _validate_candidate_id(
+        value["candidate_id"],
+        "candidate.candidate_id",
+    )
     if kind is CandidateKind.COMBAT_PLAY_CARD:
-        target = value["target_entity_id"]
+        target = value["target_ref"]
         if target is not None and not isinstance(target, str):
-            raise ContractValidationError("candidate.target_entity_id must be a string or null.")
-        return CombatPlayCardCandidate(
-            **common,
-            card_instance_id=value["card_instance_id"],
-            target_entity_id=target,
+            raise ContractValidationError("candidate.target_ref must be a string or null.")
+        candidate: TypedCandidate = CombatPlayCardCandidate(
+            card_ref=value["card_ref"],
+            target_ref=target,
         )
-    if kind is CandidateKind.COMBAT_END_TURN:
-        return CombatEndTurnCandidate(**common)
-    if kind is CandidateKind.REWARD_CLAIM_GOLD:
-        return RewardClaimGoldCandidate(**common, amount=value["amount"])
-    if kind is CandidateKind.REWARD_OPEN_CARD_REWARD:
-        return RewardOpenCardRewardCandidate(**common, reward_id=value["reward_id"])
-    if kind is CandidateKind.REWARD_CHOOSE_CARD:
-        return RewardChooseCardCandidate(
-            **common,
-            reward_id=value["reward_id"],
-            offer_id=value["offer_id"],
+    elif kind is CandidateKind.COMBAT_END_TURN:
+        candidate = CombatEndTurnCandidate()
+    elif kind is CandidateKind.REWARD_CLAIM_GOLD:
+        candidate = RewardClaimGoldCandidate(
+            reward_ref=value["reward_ref"],
+            amount=value["amount"],
+        )
+    elif kind is CandidateKind.REWARD_OPEN_CARD_REWARD:
+        candidate = RewardOpenCardRewardCandidate(reward_ref=value["reward_ref"])
+    elif kind is CandidateKind.REWARD_CHOOSE_CARD:
+        candidate = RewardChooseCardCandidate(
+            reward_ref=value["reward_ref"],
+            offer_ref=value["offer_ref"],
             card_definition_id=value["card_definition_id"],
         )
-    if kind is CandidateKind.REWARD_SKIP_CARD:
-        return RewardSkipCardCandidate(**common, reward_id=value["reward_id"])
-    if kind is CandidateKind.REWARD_PROCEED:
-        return RewardProceedCandidate(**common)
-    if kind is CandidateKind.MAP_CHOOSE_NODE:
-        return MapChooseNodeCandidate(**common, map_node_id=value["map_node_id"])
-    if kind is CandidateKind.ROOM_REST_HEAL:
-        return RoomRestHealCandidate(**common, heal_amount=value["heal_amount"])
-    if kind is CandidateKind.ROOM_EVENT_OPTION:
-        return RoomEventOptionCandidate(**common, option_id=value["option_id"])
-    if kind is CandidateKind.ROOM_PROCEED:
-        return RoomProceedCandidate(**common)
-    raise ContractValidationError("Unsupported candidate kind.")
+    elif kind is CandidateKind.REWARD_SKIP_CARD:
+        candidate = RewardSkipCardCandidate(reward_ref=value["reward_ref"])
+    elif kind is CandidateKind.REWARD_PROCEED:
+        candidate = RewardProceedCandidate()
+    elif kind is CandidateKind.MAP_CHOOSE_NODE:
+        candidate = MapChooseNodeCandidate(node_ref=value["node_ref"])
+    elif kind is CandidateKind.ROOM_REST_HEAL:
+        candidate = RoomRestHealCandidate(
+            option_ref=value["option_ref"],
+            heal_amount=value["heal_amount"],
+        )
+    elif kind is CandidateKind.ROOM_EVENT_OPTION:
+        candidate = RoomEventOptionCandidate(option_ref=value["option_ref"])
+    elif kind is CandidateKind.ROOM_PROCEED:
+        candidate = RoomProceedCandidate()
+    else:
+        raise ContractValidationError("Unsupported candidate kind.")
+    if encoded_candidate_id != candidate.candidate_id:
+        raise ContractValidationError("candidate.candidate_id is not canonically derived.")
+    return candidate
+
+
+def _validate_candidate_references(
+    observation: PublicObservation,
+    candidates: tuple[TypedCandidate, ...],
+) -> None:
+    data = observation.data
+    if observation.phase is DecisionPhase.COMBAT:
+        if data["terminal"] or data["outcome"] != CombatOutcome.ONGOING.value:
+            raise ContractValidationError("An actionable combat observation cannot be terminal.")
+        card_refs = {card["card_ref"] for card in data["hand"]}
+        living_enemy_refs = {
+            enemy["enemy_ref"] for enemy in data["enemies"] if enemy["alive"]
+        }
+        for candidate in candidates:
+            if isinstance(candidate, CombatPlayCardCandidate):
+                if candidate.card_ref not in card_refs:
+                    raise ContractValidationError("Combat candidate card_ref does not resolve.")
+                if (
+                    candidate.target_ref is not None
+                    and candidate.target_ref not in living_enemy_refs
+                ):
+                    raise ContractValidationError("Combat candidate target_ref does not resolve.")
+        return
+
+    if observation.phase is DecisionPhase.REWARD:
+        rewards = {reward["reward_ref"]: reward for reward in data["rewards"]}
+        for candidate in candidates:
+            if isinstance(candidate, RewardProceedCandidate):
+                if not data["can_proceed"]:
+                    raise ContractValidationError("Reward proceed is not publicly available.")
+                continue
+            reward_ref = candidate.reward_ref
+            if reward_ref not in rewards:
+                raise ContractValidationError("Reward candidate reward_ref does not resolve.")
+            reward = rewards[reward_ref]
+            if reward["claimed"]:
+                raise ContractValidationError("Reward candidate references a claimed reward.")
+            if isinstance(candidate, RewardClaimGoldCandidate):
+                if reward["kind"] != RewardKind.GOLD.value or reward["amount"] != candidate.amount:
+                    raise ContractValidationError("Gold candidate does not match its reward.")
+            elif isinstance(candidate, RewardOpenCardRewardCandidate):
+                if reward["kind"] != RewardKind.CARD.value or reward["opened"]:
+                    raise ContractValidationError("Open-card candidate does not match its reward.")
+            elif isinstance(candidate, RewardChooseCardCandidate):
+                offers = {offer["offer_ref"]: offer for offer in reward["offers"]}
+                if (
+                    reward["kind"] != RewardKind.CARD.value
+                    or not reward["opened"]
+                    or candidate.offer_ref not in offers
+                    or offers[candidate.offer_ref]["card_definition_id"]
+                    != candidate.card_definition_id
+                ):
+                    raise ContractValidationError("Choose-card candidate does not match its offer.")
+            elif isinstance(candidate, RewardSkipCardCandidate):
+                if (
+                    reward["kind"] != RewardKind.CARD.value
+                    or not reward["opened"]
+                    or not reward["can_skip"]
+                ):
+                    raise ContractValidationError("Skip-card candidate is not publicly available.")
+        return
+
+    if observation.phase is DecisionPhase.MAP:
+        available_refs = {
+            node["node_ref"] for node in data["nodes"] if node["available"]
+        }
+        for candidate in candidates:
+            if candidate.node_ref not in available_refs:
+                raise ContractValidationError("Map candidate node_ref is not available.")
+        return
+
+    if observation.phase is DecisionPhase.ROOM:
+        options = {option["option_ref"]: option for option in data["options"]}
+        for candidate in candidates:
+            if isinstance(candidate, RoomProceedCandidate):
+                if not data["can_proceed"]:
+                    raise ContractValidationError("Room proceed is not publicly available.")
+                continue
+            option_ref = candidate.option_ref
+            if option_ref not in options or not options[option_ref]["enabled"]:
+                raise ContractValidationError("Room candidate option_ref is not available.")
+            option = options[option_ref]
+            if isinstance(candidate, RoomRestHealCandidate):
+                if (
+                    option["kind"] != RoomOptionKind.REST_HEAL.value
+                    or option["effect"] != RoomEffectKind.HEAL.value
+                    or option["amount"] != candidate.heal_amount
+                ):
+                    raise ContractValidationError("Rest-heal candidate does not match its option.")
+            elif option["kind"] != RoomOptionKind.EVENT_OPTION.value:
+                raise ContractValidationError("Event candidate does not match its option.")
 
 
 def _validate_event_sequence(events: tuple[PublicEvent, ...], path: str) -> None:
     if any(not isinstance(event, PublicEvent) for event in events):
         raise ContractValidationError(f"{path} must contain PublicEvent values.")
     sequences = tuple(event.sequence for event in events)
-    if any(next_value <= value for value, next_value in zip(sequences, sequences[1:])):
-        raise ContractValidationError(f"{path} sequences must be strictly increasing.")
+    if sequences != tuple(range(len(events))):
+        raise ContractValidationError(
+            f"{path} sequences must be canonical contiguous values starting at zero."
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1204,6 +2171,52 @@ class PolicyView:
     observation: PublicObservation
     candidates: tuple[TypedCandidate, ...]
     public_events: tuple[PublicEvent, ...]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "status",
+            _enum_value(DecisionStatus, self.status, "policy_view.status"),
+        )
+        object.__setattr__(
+            self,
+            "phase",
+            _enum_value(DecisionPhase, self.phase, "policy_view.phase"),
+        )
+        if not isinstance(self.observation, PublicObservation):
+            raise ContractValidationError("policy_view.observation has the wrong type.")
+        if self.observation.phase is not self.phase:
+            raise ContractValidationError("Policy view and observation phases must match.")
+        if (self.status is DecisionStatus.TERMINAL) != (
+            self.phase is DecisionPhase.TERMINAL
+        ):
+            raise ContractValidationError("Policy terminal status and phase must match.")
+        if (self.status is DecisionStatus.UNSUPPORTED) != (
+            self.phase is DecisionPhase.UNSUPPORTED
+        ):
+            raise ContractValidationError("Policy unsupported status and phase must match.")
+        candidates = tuple(self.candidates)
+        if any(type(candidate) not in _TYPED_CANDIDATE_TYPES for candidate in candidates):
+            raise ContractValidationError("policy_view.candidates must be typed candidates.")
+        if self.status is DecisionStatus.ACTIONABLE:
+            if not candidates or self.phase not in ACTION_PHASES:
+                raise ContractValidationError("Actionable policy view requires candidates.")
+            if any(_CANDIDATE_PHASE[item.kind] is not self.phase for item in candidates):
+                raise ContractValidationError("Policy candidate phase does not match.")
+            _validate_candidate_references(self.observation, candidates)
+        elif candidates:
+            raise ContractValidationError("Non-actionable policy view cannot have candidates.")
+        candidate_ids = tuple(candidate.candidate_id for candidate in candidates)
+        if len(set(candidate_ids)) != len(candidate_ids):
+            raise ContractValidationError("Policy candidate IDs must be unique.")
+        object.__setattr__(
+            self,
+            "candidates",
+            tuple(sorted(candidates, key=lambda item: item.candidate_id)),
+        )
+        events = tuple(self.public_events)
+        _validate_event_sequence(events, "policy_view.public_events")
+        object.__setattr__(self, "public_events", events)
 
 
 def _decision_hash_payload(
@@ -1306,6 +2319,7 @@ class DecisionState:
                 raise ContractValidationError("An actionable decision requires an action phase.")
             if any(_CANDIDATE_PHASE[candidate.kind] is not self.phase for candidate in candidates):
                 raise ContractValidationError("Candidate kind does not match the decision phase.")
+            _validate_candidate_references(self.observation, candidates)
         elif candidates:
             raise ContractValidationError("A non-actionable decision cannot contain candidates.")
         if (self.status is DecisionStatus.TERMINAL) != (
@@ -1518,7 +2532,7 @@ class HeadlessBinding:
         _validate_identifier(self.run_id, "binding.run_id")
         _validate_nonnegative_int(self.decision_sequence, "binding.decision_sequence")
         _validate_fingerprint(self.decision_hash, "binding.decision_hash")
-        _validate_identifier(self.candidate_id, "binding.candidate_id")
+        _validate_candidate_id(self.candidate_id, "binding.candidate_id")
 
     @classmethod
     def for_candidate(cls, decision: DecisionState, candidate_id: str) -> "HeadlessBinding":
