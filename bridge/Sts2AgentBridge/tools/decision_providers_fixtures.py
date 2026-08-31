@@ -9,11 +9,16 @@ from decision_providers import get_map_decision_provider, map_provider_names
 from tool_common import EXIT_MISMATCH, fail, main
 
 
-def _candidate(index: int, kind: str, col: int) -> dict[str, object]:
+def _candidate(
+    index: int,
+    kind: str,
+    col: int,
+    row: int = 4,
+) -> dict[str, object]:
     return {
         "candidate_index": index,
         "col": col,
-        "row": 4,
+        "row": row,
         "kind": kind,
     }
 
@@ -49,9 +54,10 @@ def _priority() -> None:
     candidates = [
         _candidate(0, "unknown", 1),
         _candidate(1, "monster", 2),
-        _candidate(2, "rest_site", 3),
+        _candidate(2, "ancient", 3),
+        _candidate(3, "rest_site", 4),
     ]
-    actions = [_action(0), _action(1), _action(2)]
+    actions = [_action(0), _action(1), _action(2), _action(3)]
     _require_selection(
         get_map_decision_provider("first").choose(candidates, actions),
         actions[0],
@@ -66,16 +72,16 @@ def _priority() -> None:
     )
     _require_selection(
         get_map_decision_provider("coverage").choose(candidates, actions),
-        actions[2],
-        candidates[2],
+        actions[3],
+        candidates[3],
         "room_coverage",
     )
 
-    without_rest = candidates[:2]
+    without_rest = candidates[:3]
     _require_selection(
-        get_map_decision_provider("coverage").choose(without_rest, actions[:2]),
-        actions[0],
-        candidates[0],
+        get_map_decision_provider("coverage").choose(without_rest, actions[:3]),
+        actions[2],
+        candidates[2],
         "room_coverage",
     )
 
@@ -113,8 +119,8 @@ def _advertised_legal_alignment() -> None:
     )
     _require_selection(
         selected,
-        advertised_actions[1],
-        candidates[2],
+        advertised_actions[0],
+        candidates[1],
         "room_coverage",
     )
     if not any(
@@ -124,6 +130,33 @@ def _advertised_legal_alignment() -> None:
         for action in advertised_actions
     ):
         fail(EXIT_MISMATCH, "map_provider_fixture_unadvertised_action")
+
+
+def _deterministic_tie_breaking() -> None:
+    candidates = [
+        _candidate(0, "monster", 1, row=5),
+        _candidate(1, "monster", 9, row=4),
+        _candidate(2, "monster", 2, row=4),
+    ]
+    actions = [_action(2), _action(1), _action(0)]
+    _require_selection(
+        get_map_decision_provider("coverage").choose(candidates, actions),
+        actions[0],
+        candidates[2],
+        "room_coverage",
+    )
+
+    tied_candidates = [
+        _candidate(0, "monster", 2),
+        _candidate(1, "monster", 2),
+    ]
+    tied_actions = [_action(1), _action(0)]
+    _require_selection(
+        get_map_decision_provider("coverage").choose(tied_candidates, tied_actions),
+        tied_actions[1],
+        tied_candidates[0],
+        "room_coverage",
+    )
 
 
 def operation() -> dict[str, object]:
@@ -137,6 +170,8 @@ def operation() -> dict[str, object]:
     checks.append("fallback")
     _advertised_legal_alignment()
     checks.append("advertised_legal_alignment")
+    _deterministic_tie_breaking()
+    checks.append("deterministic_tie_breaking")
     return {
         "schema_version": 1,
         "status": "passed",

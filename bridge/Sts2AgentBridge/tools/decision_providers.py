@@ -169,10 +169,8 @@ class CoverageMapDecisionProvider:
     ) -> dict[str, object]:
         priorities = {
             "rest_site": 0,
-            "unknown": 1,
+            "ancient": 1,
             "monster": 2,
-            "elite": 2,
-            "boss": 2,
         }
         selected = min(
             actions,
