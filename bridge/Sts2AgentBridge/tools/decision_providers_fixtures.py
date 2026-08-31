@@ -5,7 +5,11 @@ import sys
 
 sys.dont_write_bytecode = True
 
-from decision_providers import get_map_decision_provider, map_provider_names
+from decision_providers import (
+    get_decision_provider,
+    get_map_decision_provider,
+    map_provider_names,
+)
 from tool_common import EXIT_MISMATCH, fail, main
 
 
@@ -159,6 +163,48 @@ def _deterministic_tie_breaking() -> None:
     )
 
 
+def _combat_followup_safety() -> None:
+    enemies = [{"hp": 20, "intents": ["attack"]}]
+    hand = [
+        {"id": "SURVIVOR", "type": "skill"},
+        {"id": "STRIKE_SILENT", "type": "attack"},
+    ]
+    survivor = {
+        "action_id": "play:0",
+        "kind": "play_card",
+        "hand_index": 0,
+        "target_index": None,
+    }
+    strike = {
+        "action_id": "play:1:0",
+        "kind": "play_card",
+        "hand_index": 1,
+        "target_index": 0,
+    }
+    end_turn = {
+        "action_id": "end_turn",
+        "kind": "end_turn",
+        "hand_index": None,
+        "target_index": None,
+    }
+    provider = get_decision_provider("heuristic")
+    selected = provider.choose(enemies, hand, [survivor, strike, end_turn])
+    if selected != {
+        **strike,
+        "card_id": "STRIKE_SILENT",
+        "basis": "incoming_attack",
+    }:
+        fail(EXIT_MISMATCH, "combat_provider_fixture_followup_avoidance")
+
+    selected = provider.choose(enemies, hand[:1], [survivor, end_turn])
+    if selected != {
+        **end_turn,
+        "card_id": None,
+        "basis": "no_safe_card",
+    }:
+        fail(EXIT_MISMATCH, "combat_provider_fixture_followup_end_turn")
+
+
 def operation() -> dict[str, object]:
     checks: list[str] = []
     if map_provider_names() != frozenset(("first", "combat", "coverage")):
@@ -172,6 +218,8 @@ def operation() -> dict[str, object]:
     checks.append("advertised_legal_alignment")
     _deterministic_tie_breaking()
     checks.append("deterministic_tie_breaking")
+    _combat_followup_safety()
+    checks.append("combat_followup_safety")
     return {
         "schema_version": 1,
         "status": "passed",

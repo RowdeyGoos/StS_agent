@@ -4,6 +4,9 @@ from __future__ import annotations
 from typing import Protocol
 
 
+_UNSUPPORTED_FOLLOWUP_CARD_IDS = frozenset(("survivor",))
+
+
 class DecisionProvider(Protocol):
     def choose(
         self,
@@ -42,10 +45,16 @@ class HeuristicDecisionProvider:
             for enemy in enemies
             for intent in enemy["intents"]
         )
-        candidates = [action for action in actions if action["kind"] == "play_card"]
+        candidates = [
+            action
+            for action in actions
+            if action["kind"] == "play_card"
+            and str(hand[int(action["hand_index"])]["id"]).lower()
+            not in _UNSUPPORTED_FOLLOWUP_CARD_IDS
+        ]
         if not candidates:
             selected = next(action for action in actions if action["kind"] == "end_turn")
-            return _selection(selected, hand, "no_playable_card")
+            return _selection(selected, hand, "no_safe_card")
 
         def rank(action: dict[str, object]) -> tuple[int, int, int, int]:
             hand_index = int(action["hand_index"])
