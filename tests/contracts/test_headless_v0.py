@@ -127,6 +127,7 @@ def _decision(
     events: tuple[PublicEvent, ...] | None = None,
     status: DecisionStatus = DecisionStatus.ACTIONABLE,
     content_fingerprint: str = CONTENT_FINGERPRINT,
+    run_id: str = "run:fixture:001",
 ) -> DecisionState:
     return DecisionState.create(
         backend_id="fixture_backend",
@@ -136,7 +137,7 @@ def _decision(
         content_fingerprint=content_fingerprint,
         rules_version="fixture_rules_v1",
         rules_fingerprint=RULES_FINGERPRINT,
-        run_id="run:fixture:001",
+        run_id=run_id,
         decision_sequence=sequence,
         status=status,
         phase=DecisionPhase.COMBAT,
@@ -224,13 +225,13 @@ def test_contract_identity_and_canonical_json_vectors_are_stable() -> None:
     assert CONTRACT_VERSION == "headless_v0"
     assert COMPATIBILITY_CLASS == "exact_contract_fingerprint"
     assert CONTRACT_FINGERPRINT == (
-        "5b1070acc4d0ca333862ad138e8410eb35505ae023a897e6a61e4c322c4d99aa"
+        "61f9fffee143b32d473c45c94ea2c038ddb2abbe2b227dd8d1b48d7e6969f18f"
     )
     assert canonical_json({"z": 0, "a": "é", "list": [True, None]}) == (
         '{"a":"é","list":[true,null],"z":0}'
     )
     assert _decision().decision_hash == (
-        "7dd56bf8742fd7df5defda80070f79d12dc4bc01f7f77b3e54315ddf19cb6e47"
+        "c75078b065929a45eb060f307cc5c894aee2573bcc6567b0621623176690d037"
     )
 
 
@@ -425,7 +426,7 @@ def test_non_json_floats_wrong_phase_candidates_and_event_order_fail_closed() ->
         _decision(events=(_combat_event(), _combat_event()))
 
 
-def test_transition_result_reason_and_sequence_rules_fail_closed() -> None:
+def test_transition_result_reason_sequence_and_event_rules_fail_closed() -> None:
     decision = _decision()
     binding = HeadlessBinding.for_candidate(decision, "candidate:end_turn")
     with pytest.raises(ContractValidationError, match="combination is invalid"):
@@ -452,11 +453,131 @@ def test_transition_result_reason_and_sequence_rules_fail_closed() -> None:
             public_events=(),
             next_decision=_terminal_decision(events=(_combat_event(),)),
         )
-    with pytest.raises(ContractValidationError, match="bound decision unchanged"):
+
+
+def test_stale_transition_accepts_prior_sequence_current_authority() -> None:
+    decision = _decision()
+    binding = HeadlessBinding.for_candidate(decision, "candidate:end_turn")
+    current = _decision(sequence=8)
+    transition = Transition(
+        result=TransitionResult.STALE,
+        reason=TransitionReason.STALE_BINDING,
+        binding=binding,
+        public_events=current.public_events,
+        next_decision=current,
+    )
+    assert transition.next_decision is current
+
+
+def test_stale_transition_accepts_wrong_hash_at_same_sequence() -> None:
+    current = _decision()
+    binding = HeadlessBinding(
+        run_id=current.run_id,
+        decision_sequence=current.decision_sequence,
+        decision_hash="0" * 64,
+        candidate_id="candidate:end_turn",
+    )
+    transition = Transition(
+        result=TransitionResult.STALE,
+        reason=TransitionReason.STALE_BINDING,
+        binding=binding,
+        public_events=current.public_events,
+        next_decision=current,
+    )
+    assert transition.next_decision.decision_hash != binding.decision_hash
+
+
+def test_stale_transition_accepts_wrong_run() -> None:
+    current = _decision()
+    wrong_run_decision = _decision(run_id="run:wrong:001")
+    binding = HeadlessBinding.for_candidate(
+        wrong_run_decision,
+        "candidate:end_turn",
+    )
+    transition = Transition(
+        result=TransitionResult.STALE,
+        reason=TransitionReason.STALE_BINDING,
+        binding=binding,
+        public_events=current.public_events,
+        next_decision=current,
+    )
+    assert transition.next_decision.run_id != binding.run_id
+
+
+def test_stale_transition_rejects_exact_binding_identity() -> None:
+    current = _decision()
+    binding = HeadlessBinding.for_candidate(current, "candidate:end_turn")
+    with pytest.raises(ContractValidationError, match="identity that differs"):
         Transition(
             result=TransitionResult.STALE,
             reason=TransitionReason.STALE_BINDING,
             binding=binding,
-            public_events=(_combat_event(),),
-            next_decision=_decision(sequence=8),
+            public_events=current.public_events,
+            next_decision=current,
+        )
+
+
+def test_rejected_transition_requires_same_authoritative_identity() -> None:
+    decision = _decision()
+    binding = HeadlessBinding.for_candidate(decision, "candidate:end_turn")
+    rejected = Transition(
+        result=TransitionResult.REJECTED,
+        reason=TransitionReason.REJECTED_BY_RULES,
+        binding=binding,
+        public_events=decision.public_events,
+        next_decision=decision,
+    )
+    assert rejected.next_decision is decision
+
+    current = _decision(sequence=8)
+    with pytest.raises(ContractValidationError, match="bound authoritative identity"):
+        Transition(
+            result=TransitionResult.REJECTED,
+            reason=TransitionReason.REJECTED_BY_RULES,
+            binding=binding,
+            public_events=current.public_events,
+            next_decision=current,
+        )
+    with pytest.raises(ContractValidationError, match="cannot use that reason"):
+        Transition(
+            result=TransitionResult.REJECTED,
+            reason=TransitionReason.INVALID_CANDIDATE,
+            binding=binding,
+            public_events=decision.public_events,
+            next_decision=decision,
+        )
+
+
+def test_unadvertised_current_candidate_is_invalid_not_stale() -> None:
+    current = _decision()
+    binding = HeadlessBinding(
+        run_id=current.run_id,
+        decision_sequence=current.decision_sequence,
+        decision_hash=current.decision_hash,
+        candidate_id="candidate:missing",
+    )
+    rejected = Transition(
+        result=TransitionResult.REJECTED,
+        reason=TransitionReason.INVALID_CANDIDATE,
+        binding=binding,
+        public_events=current.public_events,
+        next_decision=current,
+    )
+    assert rejected.reason is TransitionReason.INVALID_CANDIDATE
+
+    with pytest.raises(ContractValidationError, match="identity that differs"):
+        Transition(
+            result=TransitionResult.STALE,
+            reason=TransitionReason.STALE_BINDING,
+            binding=binding,
+            public_events=current.public_events,
+            next_decision=current,
+        )
+    with pytest.raises(ContractValidationError, match="requires invalid_candidate"):
+        Transition(
+            result=TransitionResult.REJECTED,
+            reason=TransitionReason.REJECTED_BY_RULES,
+            binding=binding,
+            public_events=current.public_events,
+            next_decision=current,
         )

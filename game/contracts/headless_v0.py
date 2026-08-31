@@ -612,9 +612,11 @@ CONTRACT_SCHEMA: Mapping[str, Any] = _freeze_json(
             "non_actionable_has_no_candidates",
             "policy_objects_use_recursive_semantic_field_allowlist",
             "public_json_has_no_floating_point_values",
-            "rejected_or_stale_transition_returns_bound_decision",
+            "rejected_transition_returns_bound_authoritative_identity",
+            "stale_transition_returns_different_authoritative_identity",
             "terminal_and_unsupported_status_require_matching_phase",
             "transition_events_equal_next_decision_events",
+            "unadvertised_current_candidate_requires_invalid_candidate_reason",
         ),
         "transition_reason_matrix": {
             "accepted": ("accepted",),
@@ -1643,15 +1645,33 @@ class Transition:
                 raise ContractValidationError("Accepted transition cannot change run identity.")
             if self.next_decision.decision_sequence <= self.binding.decision_sequence:
                 raise ContractValidationError("Accepted transition must advance decision sequence.")
-        else:
+        elif self.result is TransitionResult.REJECTED:
             if (
                 self.next_decision.run_id != self.binding.run_id
                 or self.next_decision.decision_sequence != self.binding.decision_sequence
                 or self.next_decision.decision_hash != self.binding.decision_hash
             ):
                 raise ContractValidationError(
-                    "Rejected or stale transition must return the bound decision unchanged."
+                    "Rejected transition must return the bound authoritative identity."
                 )
+            candidate_is_advertised = self.binding.candidate_id in {
+                candidate.candidate_id for candidate in self.next_decision.candidates
+            }
+            candidate_is_invalid = self.reason is TransitionReason.INVALID_CANDIDATE
+            if candidate_is_advertised == candidate_is_invalid:
+                raise ContractValidationError(
+                    "An unadvertised current candidate requires invalid_candidate; "
+                    "an advertised candidate cannot use that reason."
+                )
+        elif (
+            self.next_decision.run_id == self.binding.run_id
+            and self.next_decision.decision_sequence == self.binding.decision_sequence
+            and self.next_decision.decision_hash == self.binding.decision_hash
+        ):
+            raise ContractValidationError(
+                "Stale transition must return an authoritative identity that differs "
+                "from the attempted binding."
+            )
         if events != self.next_decision.public_events:
             raise ContractValidationError(
                 "Transition events must equal the next decision's public events."
