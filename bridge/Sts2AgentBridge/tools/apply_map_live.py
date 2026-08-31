@@ -217,7 +217,7 @@ def _validate_complete(body: bytes) -> dict[str, object]:
 
 
 def _validate_action(body: bytes, decision_id: str, action_id: str) -> None:
-    expected = (
+    accepted = (
         b'{"schema_version":1,"status":"accepted","mutation_state":"applied",'
         b'"decision_id":"'
         + decision_id.encode("ascii")
@@ -225,8 +225,27 @@ def _validate_action(body: bytes, decision_id: str, action_id: str) -> None:
         + action_id.encode("ascii")
         + b'","reason":"accepted"}'
     )
-    if body != expected:
-        fail(EXIT_MISMATCH, "map_action_response_mismatch")
+    if body == accepted:
+        return
+    for reason in (
+        "stale_decision",
+        "invalid_action",
+        "already_applied",
+        "action_limit_reached",
+    ):
+        rejected = (
+            b'{"schema_version":1,"status":"rejected","mutation_state":"none",'
+            b'"decision_id":"'
+            + decision_id.encode("ascii")
+            + b'","action_id":"'
+            + action_id.encode("ascii")
+            + b'","reason":"'
+            + reason.encode("ascii")
+            + b'"}'
+        )
+        if body == rejected:
+            fail(EXIT_MISMATCH, f"map_action_{reason}")
+    fail(EXIT_MISMATCH, "map_action_response_mismatch")
 
 
 def _run_apply_map(
@@ -235,15 +254,36 @@ def _run_apply_map(
     connector: Callable[[], Any],
 ) -> dict[str, object]:
     deadline = time.monotonic() + _APPLY_DEADLINE_SECONDS
+    route_count = 0
+
+    def read(
+        label: str,
+        route: str,
+        decision_id: str | None = None,
+        action_id: str | None = None,
+    ) -> bytes:
+        nonlocal route_count
+        body = _read_body(
+            label,
+            route,
+            credential,
+            connector,
+            deadline,
+            decision_id,
+            action_id,
+        )
+        route_count += 1
+        return body
+
     try:
-        health = _read_body("health", probe._BASE_ROUTES[0][1], credential, connector, deadline)
+        health = read("health", probe._BASE_ROUTES[0][1])
         with memoryview(health) as body:
             probe._validate_health(body)
-        manifest = _read_body("manifest", probe._BASE_ROUTES[1][1], credential, connector, deadline)
+        manifest = read("manifest", probe._BASE_ROUTES[1][1])
         with memoryview(manifest) as body:
             probe._validate_manifest(body)
 
-        before_body = _read_body("map", _MAP_DECISION_ROUTE, credential, connector, deadline)
+        before_body = read("map", _MAP_DECISION_ROUTE)
         if before_body in (_MAP_WAITING, _MAP_UNSUPPORTED):
             fail(EXIT_MISMATCH, "map_not_ready")
         before = _validate_ready(before_body)
@@ -255,12 +295,9 @@ def _run_apply_map(
         decision_id = str(before["decision_id"])
         action_id = str(selected["action_id"])
 
-        action_body = _read_body(
+        action_body = read(
             "map_action",
             _MAP_ACTION_ROUTE,
-            credential,
-            connector,
-            deadline,
             decision_id,
             action_id,
         )
@@ -268,7 +305,7 @@ def _run_apply_map(
 
         after: dict[str, object] | None = None
         while time.monotonic() < deadline:
-            observed = _read_body("map", _MAP_DECISION_ROUTE, credential, connector, deadline)
+            observed = read("map", _MAP_DECISION_ROUTE)
             if observed == _MAP_WAITING:
                 time.sleep(_POLL_SECONDS)
                 continue
@@ -296,7 +333,7 @@ def _run_apply_map(
             "applied": selected,
             "before": before,
             "after": after,
-            "routes_checked": 5,
+            "routes_checked": route_count,
         }
     finally:
         probe._zero(credential)
