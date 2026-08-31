@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 import sys
 
 sys.dont_write_bytecode = True
@@ -210,6 +211,54 @@ def _expect_invocation_failure(operation: Callable[[], object], expected_code: s
     fail(EXIT_MISMATCH, "probe_fixture_invocation_unexpected_pass")
 
 
+def _validated_combat(body: bytes, decision_provider: str = "heuristic") -> dict[str, object]:
+    view = memoryview(body)
+    try:
+        return probe._validate_combat(view, decision_provider)
+    finally:
+        view.release()
+
+
+def _expect_combat_validation_failure(body: bytes, expected_code: str) -> None:
+    try:
+        _validated_combat(body)
+    except ToolFailure as failure:
+        if failure.exit_code == EXIT_MISMATCH and failure.error_code == expected_code:
+            return
+        fail(EXIT_MISMATCH, "probe_fixture_wrong_combat_rejection")
+    fail(EXIT_MISMATCH, "probe_fixture_combat_unexpected_pass")
+
+
+class _InvalidCombatProvider:
+    def choose(
+        self,
+        enemies: list[dict[str, object]],
+        hand: list[dict[str, object]],
+        actions: list[dict[str, object]],
+    ) -> dict[str, object]:
+        del enemies, hand, actions
+        return {
+            "action_id": "end_turn",
+            "kind": "play_card",
+            "hand_index": 0,
+            "target_index": 0,
+            "card_id": None,
+            "basis": "fixture",
+        }
+
+
+def _expect_invalid_provider_result() -> None:
+    original_provider_factory = probe.get_decision_provider
+    try:
+        probe.get_decision_provider = lambda _: _InvalidCombatProvider()
+        _expect_combat_validation_failure(
+            _FIXTURE_COMBAT,
+            "decision_provider_result_mismatch",
+        )
+    finally:
+        probe.get_decision_provider = original_provider_factory
+
+
 def operation() -> dict[str, object]:
     checks: list[str] = []
 
@@ -219,6 +268,102 @@ def operation() -> dict[str, object]:
     checks.append("success_settings")
     _run_combat_success()
     checks.append("success_combat_recommendation")
+
+    combat_summary = _validated_combat(_FIXTURE_COMBAT)
+    expected_combat_summary = {
+        "decision_id": "0" * 64,
+        "round": 1,
+        "player": {"hp": 72, "max_hp": 80, "block": 0, "energy": 3},
+        "enemies": [
+            {
+                "index": 0,
+                "id": "CULTIST",
+                "hp": 48,
+                "max_hp": 48,
+                "block": 0,
+                "intents": ["attack"],
+            }
+        ],
+        "hand": [
+            {
+                "hand_index": 0,
+                "id": "STRIKE_IRONCLAD",
+                "type": "attack",
+                "cost": "1",
+                "target_type": "anyenemy",
+                "playable": True,
+            },
+            {
+                "hand_index": 1,
+                "id": "DEFEND_IRONCLAD",
+                "type": "skill",
+                "cost": "1",
+                "target_type": "self",
+                "playable": True,
+            },
+        ],
+        "legal_action_count": 3,
+        "legal_actions": [
+            {"action_id": "play:0:0", "kind": "play_card", "hand_index": 0, "target_index": 0},
+            {"action_id": "play:1", "kind": "play_card", "hand_index": 1, "target_index": None},
+            {"action_id": "end_turn", "kind": "end_turn", "hand_index": None, "target_index": None},
+        ],
+        "recommendation": {
+            "action_id": "play:1",
+            "kind": "play_card",
+            "hand_index": 1,
+            "target_index": None,
+            "card_id": "DEFEND_IRONCLAD",
+            "basis": "incoming_attack",
+        },
+    }
+    if (
+        combat_summary != expected_combat_summary
+        or json.dumps(combat_summary, separators=(",", ":"), sort_keys=True).encode("ascii")
+        != json.dumps(expected_combat_summary, separators=(",", ":"), sort_keys=True).encode("ascii")
+    ):
+        fail(EXIT_MISMATCH, "probe_fixture_combat_normalization")
+    checks.append("combat_normalization_unchanged")
+
+    _expect_combat_validation_failure(b"{", "decision_envelope_mismatch")
+    checks.append("combat_envelope_malformed_json")
+    _expect_combat_validation_failure(
+        _FIXTURE_COMBAT.replace(b'}]}', b'}],"unexpected":0}', 1),
+        "decision_envelope_mismatch",
+    )
+    checks.append("combat_envelope_unknown_field")
+    _expect_combat_validation_failure(
+        _FIXTURE_COMBAT.replace(b'"status":"ready"', b'"status":"ready","status":"ready"', 1),
+        "decision_envelope_mismatch",
+    )
+    checks.append("combat_envelope_duplicate_field")
+    _expect_combat_validation_failure(
+        _FIXTURE_COMBAT.replace(b'"round":1', b'"round":0', 1),
+        "decision_identity_mismatch",
+    )
+    checks.append("combat_identity")
+    _expect_combat_validation_failure(
+        _FIXTURE_COMBAT.replace(b'"energy":3', b'"energy":-1', 1),
+        "decision_player_mismatch",
+    )
+    checks.append("combat_player")
+    _expect_combat_validation_failure(
+        _FIXTURE_COMBAT.replace(b'"intents":["attack"]}', b'"intents":["attack"],"unexpected":0}', 1),
+        "decision_enemies_mismatch",
+    )
+    checks.append("combat_enemies_unknown_field")
+    _expect_combat_validation_failure(
+        _FIXTURE_COMBAT.replace(b'"playable":true}', b'"playable":true,"unexpected":0}', 1),
+        "decision_hand_mismatch",
+    )
+    checks.append("combat_hand_unknown_field")
+    _expect_combat_validation_failure(
+        _FIXTURE_COMBAT.replace(b'"action_id":"play:1"', b'"action_id":"play:0:0"', 1),
+        "decision_legal_actions_mismatch",
+    )
+    checks.append("combat_legal_actions_duplicate_identity")
+    _expect_invalid_provider_result()
+    checks.append("combat_provider_result")
 
     reordered_header = _response(_FIXTURE_HEALTH).replace(
         b"Cache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n",

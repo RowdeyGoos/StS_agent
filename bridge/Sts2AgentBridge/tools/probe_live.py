@@ -126,6 +126,14 @@ _COMBAT_WAITING = (
 _COMBAT_UNSUPPORTED = _COMBAT_WAITING.replace(b'"waiting"', b'"unsupported"')
 _COMBAT_COMPLETE_PREFIX = b'{"schema_version":1,"status":"complete",'
 
+_COMBAT_MISMATCH_ENVELOPE = "decision_envelope_mismatch"
+_COMBAT_MISMATCH_IDENTITY = "decision_identity_mismatch"
+_COMBAT_MISMATCH_PLAYER = "decision_player_mismatch"
+_COMBAT_MISMATCH_ENEMIES = "decision_enemies_mismatch"
+_COMBAT_MISMATCH_HAND = "decision_hand_mismatch"
+_COMBAT_MISMATCH_LEGAL_ACTIONS = "decision_legal_actions_mismatch"
+_COMBAT_MISMATCH_PROVIDER_RESULT = "decision_provider_result_mismatch"
+
 
 def _parse_effective_uid(value: str) -> int:
     if not value or not value.isascii() or not value.isdecimal():
@@ -626,14 +634,24 @@ def _validate_combat(
             or root["status"] != "ready"
             or root["decision_kind"] != "combat"
             or root["actionable"] is not True
-            or not isinstance(root["decision_id"], str)
+        ):
+            raise ValueError("decision envelope")
+    except (UnicodeDecodeError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+        fail(EXIT_MISMATCH, _COMBAT_MISMATCH_ENVELOPE)
+
+    try:
+        if (
+            not isinstance(root["decision_id"], str)
             or len(root["decision_id"]) != 64
             or any(ord(value) not in _LOWER_HEX for value in root["decision_id"])
             or not _is_bounded_nonnegative_integer(root["round"])
             or root["round"] < 1
         ):
-            raise ValueError("decision header")
+            raise ValueError("decision identity")
+    except (ValueError, TypeError, KeyError):
+        fail(EXIT_MISMATCH, _COMBAT_MISMATCH_IDENTITY)
 
+    try:
         player = _validate_exact_keys(
             root["player"],
             ("hp", "max_hp", "block", "energy"),
@@ -642,7 +660,10 @@ def _validate_combat(
             raise ValueError("player values")
         if player["max_hp"] < 1 or player["hp"] > player["max_hp"]:
             raise ValueError("player health")
+    except (ValueError, TypeError, KeyError):
+        fail(EXIT_MISMATCH, _COMBAT_MISMATCH_PLAYER)
 
+    try:
         enemies = root["enemies"]
         if not isinstance(enemies, list) or not 1 <= len(enemies) <= 6:
             raise ValueError("enemy count")
@@ -669,7 +690,10 @@ def _validate_combat(
             ):
                 raise ValueError("enemy intents")
             validated_enemies.append(enemy)
+    except (ValueError, TypeError, KeyError):
+        fail(EXIT_MISMATCH, _COMBAT_MISMATCH_ENEMIES)
 
+    try:
         hand = root["hand"]
         if not isinstance(hand, list) or len(hand) > 10:
             raise ValueError("hand count")
@@ -686,7 +710,10 @@ def _validate_combat(
             if type(card["playable"]) is not bool:
                 raise ValueError("card playable")
             validated_hand.append(card)
+    except (ValueError, TypeError, KeyError):
+        fail(EXIT_MISMATCH, _COMBAT_MISMATCH_HAND)
 
+    try:
         legal_actions = root["legal_actions"]
         if not isinstance(legal_actions, list) or not 1 <= len(legal_actions) <= 64:
             raise ValueError("legal action count")
@@ -731,14 +758,38 @@ def _validate_combat(
             validated_actions.append(action)
         if end_turn_count != 1:
             raise ValueError("end turn cardinality")
-    except (UnicodeDecodeError, ValueError, TypeError, KeyError, json.JSONDecodeError):
-        fail(EXIT_MISMATCH, "decision_response_mismatch")
+    except (ValueError, TypeError, KeyError):
+        fail(EXIT_MISMATCH, _COMBAT_MISMATCH_LEGAL_ACTIONS)
 
-    recommendation = get_decision_provider(decision_provider).choose(
-        validated_enemies,
-        validated_hand,
-        validated_actions,
-    )
+    try:
+        recommendation = get_decision_provider(decision_provider).choose(
+            validated_enemies,
+            validated_hand,
+            validated_actions,
+        )
+        recommendation = _validate_exact_keys(
+            recommendation,
+            ("action_id", "kind", "hand_index", "target_index", "card_id", "basis"),
+        )
+        if not _is_public_string(recommendation["basis"]):
+            raise ValueError("provider basis")
+        selected = next(
+            action
+            for action in validated_actions
+            if action["action_id"] == recommendation["action_id"]
+        )
+        hand_index = selected["hand_index"]
+        expected_card_id = None if hand_index is None else validated_hand[hand_index]["id"]
+        if (
+            recommendation["kind"] != selected["kind"]
+            or recommendation["hand_index"] != hand_index
+            or recommendation["target_index"] != selected["target_index"]
+            or recommendation["card_id"] != expected_card_id
+        ):
+            raise ValueError("provider selection")
+    except Exception:
+        fail(EXIT_MISMATCH, _COMBAT_MISMATCH_PROVIDER_RESULT)
+
     return {
         "decision_id": root["decision_id"],
         "round": root["round"],
