@@ -26,6 +26,7 @@ from game.contracts.headless_v0 import (
     DecisionPhase,
     DecisionState,
     DecisionStatus,
+    MAX_COLLECTION_SIZE,
     MAX_PUBLIC_COUNTER,
     PublicEvent,
     PublicEventKind,
@@ -51,16 +52,18 @@ from game.engine.headless_state import (
     PersistentCardInstance,
     StableIdAllocator,
     WorldState,
+    canonical_private_json,
 )
 from game.engine.random_service import GameRandomService
 
 
-REWARD_RULES_VERSION = "reduced_reward_rules_v1"
+REWARD_RULES_VERSION = "reduced_reward_rules_v2"
 REWARD_RULES_EVIDENCE = "structural_fixture"
-REWARD_CONTEXT_VERSION = "reduced_reward_context_v1"
+REWARD_CONTEXT_VERSION = "reduced_reward_context_v2"
 _RULE_DESCRIPTOR = {
     "context_version": REWARD_CONTEXT_VERSION,
     "evidence": REWARD_RULES_EVIDENCE,
+    "origin_commitment": "pending_kind_prefix_plus_55_hex_sha256_v1",
     "offer_draw_order": "one_reward_offer_stream_shuffle_of_declared_table_cards_on_open",
     "reward_tables": "reduced_content_v0",
     "version": REWARD_RULES_VERSION,
@@ -69,8 +72,9 @@ REWARD_RULES_FINGERPRINT = sha256(
     json.dumps(_RULE_DESCRIPTOR, sort_keys=True, separators=(",", ":")).encode("utf-8")
 ).hexdigest()
 
-_PENDING_KIND = "reward_choice"
-_PROCEEDED_KIND = "reward_proceeded"
+_PENDING_KIND_PREFIX = "reward_c."
+_PROCEEDED_KIND_PREFIX = "reward_p."
+_ORIGIN_COMMITMENT_HEX_LENGTH = 55
 _CONTEXT_FIELDS = frozenset(
     {
         "card_claimed",
@@ -83,7 +87,9 @@ _CONTEXT_FIELDS = frozenset(
         "opening_allocator",
         "opening_deck",
         "opening_gold",
+        "opening_public_scope",
         "opening_rng",
+        "opening_sequence",
         "public_events",
         "public_scope",
         "reward_table_id",
@@ -145,11 +151,16 @@ class RewardRules:
                 gold_claimed=False,
                 card_opened=False,
                 card_claimed=False,
+                opening_sequence=decision_sequence,
                 offers=(),
                 public_scope=public_scope,
                 public_events=(),
             )
-            pending = PendingDecision(_PENDING_KIND, decision_sequence, context)
+            pending = PendingDecision(
+                self._committed_pending_kind(world, context, proceeded=False),
+                decision_sequence,
+                context,
+            )
             world.pending_decision = pending
             world.validate()
             return self.decision(world)
@@ -162,10 +173,9 @@ class RewardRules:
 
         world.validate()
         self._validate_reduced_content_provenance(world)
-        pending, context = self._session(world)
+        pending, context, proceeded = self._session(world)
         scope = PublicScope.from_dict(context["public_scope"])
         events = self._events(context["public_events"])
-        proceeded = pending.decision_kind == _PROCEEDED_KIND
         if not proceeded:
             self._assert_session_is_completable(world, context, scope)
         observation = PublicObservation(
@@ -233,13 +243,15 @@ class RewardRules:
 
         before = world.to_private_dict()
         try:
-            pending, context = self._session(world)
+            pending, context, _ = self._session(world)
             next_context, event = self._accepted_update(world, context, candidate)
             next_scope = self._next_scope(PublicScope.from_dict(context["public_scope"]))
             next_context["public_scope"] = next_scope.to_dict()
             next_context["public_events"] = [event.to_dict()]
-            next_kind = (
-                _PROCEEDED_KIND if isinstance(candidate, RewardProceedCandidate) else _PENDING_KIND
+            next_kind = self._committed_pending_kind(
+                world,
+                next_context,
+                proceeded=isinstance(candidate, RewardProceedCandidate),
             )
             next_pending = PendingDecision(next_kind, pending.sequence + 1, next_context)
 
@@ -410,7 +422,10 @@ class RewardRules:
         if not context["card_opened"]:
             candidates.append(RewardOpenCardRewardCandidate(decision_scope, card_ref))
         elif not context["card_claimed"]:
-            if world.identity_allocator.can_allocate_card_id():
+            if (
+                world.identity_allocator.can_allocate_card_id()
+                and len(world.master_deck) < MAX_COLLECTION_SIZE
+            ):
                 candidates.extend(
                     RewardChooseCardCandidate(
                         decision_scope,
@@ -441,21 +456,26 @@ class RewardRules:
                 return definition_id
         raise RewardRuleError("Card candidate does not match an offered card.")
 
-    def _session(self, world: WorldState) -> tuple[PendingDecision, dict[str, Any]]:
+    def _session(
+        self,
+        world: WorldState,
+    ) -> tuple[PendingDecision, dict[str, Any], bool]:
         if world.phase is not DecisionPhase.REWARD:
             raise RewardRuleError("Reward rules require the reward phase.")
         pending = world.pending_decision
-        if pending is None or pending.decision_kind not in {_PENDING_KIND, _PROCEEDED_KIND}:
+        if pending is None:
             raise RewardRuleError("World has no active reward session.")
         context = self._copy_context(pending.private_context)
         self._table(context["reward_table_id"])
+        proceeded = self._validate_pending_commitment(world, pending, context)
+        self._validate_origin_progress(pending, context, proceeded=proceeded)
         self._validate_persistent_session(world, context)
-        if pending.decision_kind == _PROCEEDED_KIND and not (
+        if proceeded and not (
             context["gold_claimed"] and context["card_claimed"]
         ):
             raise RewardRuleError("Proceeded reward session is incomplete.")
-        self._validate_last_event(pending, context)
-        return pending, context
+        self._validate_last_event(context, proceeded=proceeded)
+        return pending, context, proceeded
 
     def _validate_world_for_begin(self, world: WorldState) -> None:
         if not isinstance(world, WorldState):
@@ -521,11 +541,12 @@ class RewardRules:
 
     def _validate_last_event(
         self,
-        pending: PendingDecision,
         context: Mapping[str, Any],
+        *,
+        proceeded: bool,
     ) -> None:
         events = self._events(context["public_events"])
-        if pending.decision_kind == _PROCEEDED_KIND:
+        if proceeded:
             if (
                 len(events) != 1
                 or events[0].event_type is not PublicEventKind.REWARD_PROCEEDED
@@ -654,6 +675,89 @@ class RewardRules:
             raise RewardRuleError("Card allocator does not match the reward opening baseline.")
 
     @staticmethod
+    def _origin_commitment(world: WorldState, context: Mapping[str, Any]) -> str:
+        basis = {
+            "context_version": context["context_version"],
+            "opening_allocator": context["opening_allocator"],
+            "opening_deck": context["opening_deck"],
+            "opening_gold": context["opening_gold"],
+            "opening_public_scope": context["opening_public_scope"],
+            "opening_rng": context["opening_rng"],
+            "opening_sequence": context["opening_sequence"],
+            "reward_table_id": context["reward_table_id"],
+            "rules_version": REWARD_RULES_VERSION,
+            "run_id": world.run_id,
+        }
+        payload = (
+            "reduced_reward_origin.v1\0" + canonical_private_json(basis)
+        ).encode("utf-8")
+        return sha256(payload).hexdigest()[:_ORIGIN_COMMITMENT_HEX_LENGTH]
+
+    def _committed_pending_kind(
+        self,
+        world: WorldState,
+        context: Mapping[str, Any],
+        *,
+        proceeded: bool,
+    ) -> str:
+        prefix = _PROCEEDED_KIND_PREFIX if proceeded else _PENDING_KIND_PREFIX
+        return prefix + self._origin_commitment(world, context)
+
+    def _validate_pending_commitment(
+        self,
+        world: WorldState,
+        pending: PendingDecision,
+        context: Mapping[str, Any],
+    ) -> bool:
+        if pending.decision_kind.startswith(_PENDING_KIND_PREFIX):
+            proceeded = False
+            digest = pending.decision_kind[len(_PENDING_KIND_PREFIX) :]
+        elif pending.decision_kind.startswith(_PROCEEDED_KIND_PREFIX):
+            proceeded = True
+            digest = pending.decision_kind[len(_PROCEEDED_KIND_PREFIX) :]
+        else:
+            raise RewardRuleError("Reward pending kind has an invalid commitment prefix.")
+        expected = self._origin_commitment(world, context)
+        if len(digest) != _ORIGIN_COMMITMENT_HEX_LENGTH or digest != expected:
+            raise RewardRuleError("Reward pending kind has an invalid opening commitment.")
+        return proceeded
+
+    @staticmethod
+    def _accepted_action_count(
+        context: Mapping[str, Any],
+        *,
+        proceeded: bool,
+    ) -> int:
+        count = 1 if context["gold_claimed"] else 0
+        resolution = context["card_resolution"]
+        if resolution == "pending":
+            count += 1
+        elif resolution in {"chosen", "skipped"}:
+            count += 2
+        if proceeded:
+            count += 1
+        return count
+
+    def _validate_origin_progress(
+        self,
+        pending: PendingDecision,
+        context: Mapping[str, Any],
+        *,
+        proceeded: bool,
+    ) -> None:
+        opening_scope = PublicScope.from_dict(context["opening_public_scope"])
+        current_scope = PublicScope.from_dict(context["public_scope"])
+        action_count = self._accepted_action_count(context, proceeded=proceeded)
+        if pending.sequence != context["opening_sequence"] + action_count:
+            raise RewardRuleError("Reward sequence does not match its immutable opening origin.")
+        if current_scope.history_ordinal != opening_scope.history_ordinal:
+            raise RewardRuleError("Reward history scope changed after opening.")
+        if dict(current_scope.reveal_ordinals) != dict(opening_scope.reveal_ordinals):
+            raise RewardRuleError("Reward reveal scopes changed after opening.")
+        if current_scope.decision_ordinal != opening_scope.decision_ordinal + action_count:
+            raise RewardRuleError("Reward decision scope does not match its opening origin.")
+
+    @staticmethod
     def _restore_world(world: WorldState, snapshot: Mapping[str, Any]) -> None:
         """Restore a pre-mutation private snapshot into the original object.
 
@@ -684,6 +788,7 @@ class RewardRules:
         gold_claimed: bool,
         card_opened: bool,
         card_claimed: bool,
+        opening_sequence: int,
         offers: tuple[str, ...],
         public_scope: PublicScope,
         public_events: tuple[PublicEvent, ...],
@@ -699,7 +804,9 @@ class RewardRules:
             "opening_allocator": world.identity_allocator.to_dict(),
             "opening_deck": [card.to_dict() for card in world.master_deck],
             "opening_gold": world.gold,
+            "opening_public_scope": public_scope.to_dict(),
             "opening_rng": world.rng.snapshot(),
+            "opening_sequence": opening_sequence,
             "public_events": [event.to_dict() for event in public_events],
             "public_scope": public_scope.to_dict(),
             "reward_table_id": reward_table_id,
@@ -755,8 +862,20 @@ class RewardRules:
             raise RewardRuleError("Reward session opening deck is invalid.")
         opening_allocator = value["opening_allocator"]
         opening_rng = value["opening_rng"]
-        if not isinstance(opening_allocator, Mapping) or not isinstance(opening_rng, Mapping):
+        opening_scope = value["opening_public_scope"]
+        opening_sequence = value["opening_sequence"]
+        if (
+            not isinstance(opening_allocator, Mapping)
+            or not isinstance(opening_rng, Mapping)
+            or not isinstance(opening_scope, Mapping)
+        ):
             raise RewardRuleError("Reward session opening state is invalid.")
+        if (
+            not isinstance(opening_sequence, int)
+            or isinstance(opening_sequence, bool)
+            or opening_sequence < 0
+        ):
+            raise RewardRuleError("Reward session opening sequence is invalid.")
         try:
             StableIdAllocator.from_dict(self._mutable_private(opening_allocator))
             tuple(
@@ -765,6 +884,7 @@ class RewardRules:
             )
             opening_random = GameRandomService(0)
             opening_random.restore(self._mutable_private(opening_rng))
+            PublicScope.from_dict(self._mutable_private(opening_scope))
         except (TypeError, ValueError) as error:
             raise RewardRuleError("Reward session opening state is invalid.") from error
         scope = value["public_scope"]
