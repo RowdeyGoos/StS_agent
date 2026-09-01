@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from hashlib import sha256
 import json
 from typing import Any
 
@@ -13,6 +14,7 @@ from game.backends.headless.fixture_backend import FixtureBackend
 from game.backends.headless.reduced_run_backend import (
     HeadlessRunConfig,
     ReducedRunBackend,
+    ReducedRunBackendError,
     create_reduced_run_backend,
 )
 from game.backends.headless.scenarios import scenario_from_id
@@ -25,7 +27,10 @@ from game.contracts.headless_v0 import (
     DecisionStatus,
     HeadlessBinding,
     PolicyView,
+    PublicEvent,
+    PublicEventKind,
     TransitionResult,
+    canonical_json,
 )
 from game.data.headless_trajectory import (
     StreamRole,
@@ -38,6 +43,8 @@ from game.data.headless_trajectory import (
     validate_trajectory,
 )
 from game.runtime.episode_runner import EpisodeStopReason, run_episode
+from game.engine.headless_state import WorldState
+from game.engine.random_service import GameRandomService
 
 
 _ATTACKS = frozenset({"bash", "body_slam", "iron_wave", "pommel_strike", "strike"})
@@ -179,19 +186,63 @@ def test_reduced_snapshot_restore_at_every_decision_replays_exact_suffix(room: s
         _config(initial_hp=60, combat_settings={"enemy_max_hp": 6})
     )
     snapshots: list[dict[str, Any]] = []
+    source_decisions: list[str] = []
+    source_transitions: list[str] = []
     for _ in range(100):
         snapshots.append(deepcopy(backend.snapshot()))
+        source_decisions.append(decision.to_json())
         if decision.status is not DecisionStatus.ACTIONABLE:
             break
         candidate_id = _choose(decision.policy_view(), room=room)
-        decision = backend.apply(_request(decision, candidate_id)).next_decision
+        transition = backend.apply(_request(decision, candidate_id))
+        source_transitions.append(transition.to_json())
+        decision = transition.next_decision
     else:
         raise AssertionError("route exceeded bounded snapshot budget")
 
     phases = {snapshot["phase"] for snapshot in snapshots}
     assert {"combat", "reward", "map", "room", "terminal"} <= phases
-    for snapshot in snapshots:
-        assert _snapshot_suffix(snapshot, room=room) == _snapshot_suffix(snapshot, room=room)
+    for index, snapshot in enumerate(snapshots):
+        expected = (source_decisions[index], *source_transitions[index:])
+        restored = _snapshot_suffix(snapshot, room=room)
+        assert restored == expected
+
+
+def test_reduced_runtime_unsupported_snapshot_matches_original_boundary() -> None:
+    backend = ReducedRunBackend()
+    decision = backend.reset(
+        _config(event_id="cool_spring", combat_settings={"enemy_max_hp": 1})
+    )
+    for _ in range(80):
+        if decision.status is not DecisionStatus.ACTIONABLE:
+            break
+        candidate_id = _choose(decision.policy_view(), room="event")
+        decision = backend.apply(_request(decision, candidate_id)).next_decision
+    else:
+        raise AssertionError("runtime-unsupported route exceeded bounded budget")
+    assert decision.status is DecisionStatus.UNSUPPORTED
+    snapshot = deepcopy(backend.snapshot())
+
+    restored = ReducedRunBackend()
+    restored_decision = restored.restore(deepcopy(snapshot))
+    assert restored_decision.to_json() == decision.to_json()
+    assert restored.snapshot() == snapshot
+    assert _snapshot_suffix(snapshot, room="event") == (decision.to_json(),)
+
+
+def _combat_snapshot_suffix(snapshot: dict[str, Any]) -> tuple[str, ...]:
+    backend = CombatV0Backend()
+    decision = backend.restore(deepcopy(snapshot))
+    suffix = [decision.to_json()]
+    for _ in range(40):
+        if decision.status is not DecisionStatus.ACTIONABLE:
+            return tuple(suffix)
+        candidate_id = _choose(decision.policy_view())
+        transition = backend.apply(_request(decision, candidate_id))
+        assert transition.result is TransitionResult.ACCEPTED
+        suffix.append(transition.to_json())
+        decision = transition.next_decision
+    raise AssertionError("restored combat suffix exceeded bounded budget")
 
 
 def test_combat_snapshot_restore_at_arbitrary_boundaries_replays_exact_suffix() -> None:
@@ -200,26 +251,23 @@ def test_combat_snapshot_restore_at_arbitrary_boundaries_replays_exact_suffix() 
         scenario_from_id("simple__starter", seed=29, enemy_max_hp=18)
     )
     snapshots: list[dict[str, Any]] = []
+    source_decisions: list[str] = []
+    source_transitions: list[str] = []
     for _ in range(40):
         snapshots.append(deepcopy(backend.snapshot()))
+        source_decisions.append(decision.to_json())
         if decision.status is not DecisionStatus.ACTIONABLE:
             break
         candidate_id = _choose(decision.policy_view())
-        decision = backend.apply(_request(decision, candidate_id)).next_decision
+        transition = backend.apply(_request(decision, candidate_id))
+        source_transitions.append(transition.to_json())
+        decision = transition.next_decision
     else:
         raise AssertionError("combat exceeded bounded snapshot budget")
 
-    for snapshot in snapshots:
-        first = CombatV0Backend()
-        second = CombatV0Backend()
-        first_decision = first.restore(deepcopy(snapshot))
-        second_decision = second.restore(deepcopy(snapshot))
-        assert first_decision == second_decision
-        if first_decision.status is DecisionStatus.ACTIONABLE:
-            candidate_id = _choose(first_decision.policy_view())
-            assert first.apply(_request(first_decision, candidate_id)) == second.apply(
-                _request(second_decision, candidate_id)
-            )
+    for index, snapshot in enumerate(snapshots):
+        expected = (source_decisions[index], *source_transitions[index:])
+        assert _combat_snapshot_suffix(snapshot) == expected
 
 
 def test_generic_runner_and_public_factory_replay_without_seed_coupling() -> None:
@@ -239,6 +287,97 @@ def test_generic_runner_and_public_factory_replay_without_seed_coupling() -> Non
     assert first.transition_count == second.transition_count
     assert first.final_decision.to_json() == second.final_decision.to_json()
     assert seen
+
+
+class _RecordingChooser:
+    def __init__(self, *, room: str = "rest", end_turn_only: bool = False) -> None:
+        self.room = room
+        self.end_turn_only = end_turn_only
+        self.views: list[PolicyView] = []
+
+    def __call__(self, view: PolicyView) -> str:
+        assert view.status is DecisionStatus.ACTIONABLE
+        self.views.append(view)
+        if self.end_turn_only and view.phase is DecisionPhase.COMBAT:
+            return next(
+                item.candidate_id
+                for item in view.candidates
+                if item.kind is CandidateKind.COMBAT_END_TURN
+            )
+        return _choose(view, room=self.room)
+
+
+def _assert_chooser_stopped_at_boundary(
+    backend: ReducedRunBackend,
+    chooser: _RecordingChooser,
+    transition_count: int,
+) -> None:
+    assert len(chooser.views) == transition_count
+    calls_at_stop = len(chooser.views)
+    backend.observe()
+    assert len(chooser.views) == calls_at_stop
+
+
+def test_reduced_runner_reports_structural_route_completion_not_full_game_win() -> None:
+    backend = ReducedRunBackend()
+    chooser = _RecordingChooser(room="rest")
+    result = run_episode(
+        backend,
+        _config(initial_hp=60, combat_settings={"enemy_max_hp": 1}),
+        chooser,
+        transition_budget=100,
+    )
+
+    assert result.stop_reason is EpisodeStopReason.TERMINAL
+    assert result.final_decision.status is DecisionStatus.TERMINAL
+    assert result.final_decision.phase is DecisionPhase.TERMINAL
+    assert result.final_decision.observation.data["outcome"] == "victory"
+    assert result.final_decision.candidates == ()
+    assert backend.terminal_reason == "route_complete"
+    assert backend.unsupported_reason is None
+    _assert_chooser_stopped_at_boundary(backend, chooser, result.transition_count)
+
+
+def test_reduced_runner_reports_defeat_with_exact_nonpolicy_reason() -> None:
+    backend = ReducedRunBackend()
+    chooser = _RecordingChooser(end_turn_only=True)
+    result = run_episode(
+        backend,
+        _config(initial_hp=1),
+        chooser,
+        transition_budget=100,
+    )
+
+    assert result.stop_reason is EpisodeStopReason.TERMINAL
+    assert result.final_decision.status is DecisionStatus.TERMINAL
+    assert result.final_decision.phase is DecisionPhase.TERMINAL
+    assert result.final_decision.observation.data["outcome"] == "defeat"
+    assert result.final_decision.candidates == ()
+    assert backend.terminal_reason == "defeat"
+    assert backend.unsupported_reason is None
+    _assert_chooser_stopped_at_boundary(backend, chooser, result.transition_count)
+
+
+def test_reduced_runner_reports_runtime_unsupported_with_exact_nonpolicy_reason() -> None:
+    backend = ReducedRunBackend()
+    chooser = _RecordingChooser(room="event")
+    result = run_episode(
+        backend,
+        _config(event_id="cool_spring", combat_settings={"enemy_max_hp": 1}),
+        chooser,
+        transition_budget=100,
+    )
+
+    assert result.stop_reason is EpisodeStopReason.UNSUPPORTED
+    assert result.final_decision.status is DecisionStatus.UNSUPPORTED
+    assert result.final_decision.phase is DecisionPhase.UNSUPPORTED
+    assert dict(result.final_decision.observation.data) == {
+        "reason_code": "unsupported_content"
+    }
+    assert result.final_decision.candidates == ()
+    assert backend.terminal_reason is None
+    assert backend.unsupported_reason == "room_unavailable"
+    _assert_chooser_stopped_at_boundary(backend, chooser, result.transition_count)
 
 
 def test_trajectory_replay_is_policy_target_audit_separated_and_manifest_bound() -> None:
@@ -335,8 +474,171 @@ def test_fixture_and_combat_manifests_bind_replay_records_without_claim_promotio
     assert b'"run_id"' not in finalized.policy_replay_jsonl
 
 
+def _reduced_descriptor_hash(snapshot: dict[str, Any]) -> str:
+    descriptor = {
+        key: value for key, value in snapshot.items() if key != "descriptor_hash"
+    }
+    return sha256(
+        b"reduced_headless.snapshot_descriptor.v3\0"
+        + canonical_json(descriptor).encode("utf-8")
+    ).hexdigest()
+
+
+def _rehash_reduced_snapshot(snapshot: dict[str, Any]) -> None:
+    snapshot["descriptor_hash"] = _reduced_descriptor_hash(snapshot)
+
+
+def _rehash_world_and_reduced_snapshot(snapshot: dict[str, Any]) -> None:
+    private_snapshot = snapshot["private_world_snapshot"]
+    world = WorldState.from_private_dict(private_snapshot["payload"])
+    private_snapshot["semantic_key"] = world.semantic_key()
+    _rehash_reduced_snapshot(snapshot)
+
+
+def _replace_snapshot_public_events(
+    snapshot: dict[str, Any],
+    source: DecisionState,
+    events: tuple[PublicEvent, ...],
+) -> None:
+    forged = DecisionState.create(
+        backend_id=source.backend_id,
+        backend_version=source.backend_version,
+        backend_fingerprint=source.backend_fingerprint,
+        content_version=source.content_version,
+        content_fingerprint=source.content_fingerprint,
+        rules_version=source.rules_version,
+        rules_fingerprint=source.rules_fingerprint,
+        run_id=source.run_id,
+        decision_sequence=source.decision_sequence,
+        status=source.status,
+        phase=source.phase,
+        observation=source.observation,
+        candidates=source.candidates,
+        public_events=events,
+    )
+    snapshot["last_public_events"] = [event.to_dict() for event in events]
+    snapshot["current_decision_hash"] = forged.decision_hash
+    _rehash_reduced_snapshot(snapshot)
+
+
+def _terminal_source() -> tuple[DecisionState, dict[str, Any]]:
+    backend = ReducedRunBackend()
+    result = run_episode(
+        backend,
+        _config(initial_hp=60, combat_settings={"enemy_max_hp": 1}),
+        _RecordingChooser(room="rest"),
+        transition_budget=100,
+    )
+    assert result.stop_reason is EpisodeStopReason.TERMINAL
+    assert backend.terminal_reason == "route_complete"
+    return result.final_decision, deepcopy(backend.snapshot())
+
+
+def _assert_semantic_snapshot_rejection_is_atomic(snapshot: dict[str, Any]) -> None:
+    assert snapshot["descriptor_hash"] == _reduced_descriptor_hash(snapshot)
+    target = ReducedRunBackend()
+    target.reset(_config(combat_settings={"enemy_max_hp": 6}))
+    before = deepcopy(target.snapshot())
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        target.restore(deepcopy(snapshot))
+
+    assert target.snapshot() == before
+
+
+@pytest.mark.parametrize(
+    "tamper",
+    (
+        "outer_action_history",
+        "child_state",
+        "public_event_payload",
+        "rng_stream",
+        "closed_map_history",
+        "combat_entry_chronology",
+    ),
+)
+def test_coordinated_semantic_snapshot_tampering_reaches_replay_validation_and_is_atomic(
+    tamper: str,
+) -> None:
+    if tamper == "outer_action_history":
+        source = ReducedRunBackend()
+        decision = source.reset(_config(combat_settings={"enemy_max_hp": 20}))
+        candidate_id = _choose(decision.policy_view())
+        transition = source.apply(_request(decision, candidate_id))
+        assert transition.result is TransitionResult.ACCEPTED
+        forged = deepcopy(source.snapshot())
+        assert forged["accepted_outer_candidate_ids"]
+        forged["accepted_outer_candidate_ids"] = forged[
+            "accepted_outer_candidate_ids"
+        ][:-1]
+        _rehash_reduced_snapshot(forged)
+    elif tamper == "child_state":
+        source = ReducedRunBackend()
+        source.reset(_config(combat_settings={"enemy_max_hp": 40}))
+        forged = deepcopy(source.snapshot())
+        child = CombatV0Backend()
+        child_decision = child.restore(deepcopy(forged["combat_snapshot"]))
+        child_transition = child.apply(
+            _request(child_decision, _choose(child_decision.policy_view()))
+        )
+        assert child_transition.result is TransitionResult.ACCEPTED
+        assert child_transition.next_decision.status is DecisionStatus.ACTIONABLE
+        forged["combat_snapshot"] = child.snapshot()
+        _rehash_reduced_snapshot(forged)
+    elif tamper == "public_event_payload":
+        terminal, forged = _terminal_source()
+        assert [event.event_type for event in terminal.public_events] == [
+            PublicEventKind.MAP_NODE_CHOSEN,
+            PublicEventKind.RUN_TERMINATED,
+        ]
+        events = (
+            PublicEvent(
+                0,
+                PublicEventKind.MAP_NODE_CHOSEN,
+                DecisionPhase.MAP,
+                {"node_kind": "rest"},
+            ),
+            terminal.public_events[1],
+        )
+        _replace_snapshot_public_events(forged, terminal, events)
+    elif tamper == "rng_stream":
+        source = ReducedRunBackend()
+        source.reset(_config())
+        forged = deepcopy(source.snapshot())
+        payload = forged["private_world_snapshot"]["payload"]
+        rng = GameRandomService(0)
+        rng.restore(payload["rng"])
+        rng.randint("event_effect", 0, 10)
+        payload["rng"] = rng.snapshot()
+        _rehash_world_and_reduced_snapshot(forged)
+    elif tamper == "closed_map_history":
+        _terminal, forged = _terminal_source()
+        payload = forged["private_world_snapshot"]["payload"]
+        payload["node_history"] = payload["node_history"][:-1]
+        payload["current_node_id"] = payload["node_history"][-1]
+        _rehash_world_and_reduced_snapshot(forged)
+    else:
+        source = ReducedRunBackend()
+        decision = source.reset(
+            _config(initial_hp=60, combat_settings={"enemy_max_hp": 1})
+        )
+        for _ in range(80):
+            if source.combat_launch_count == 2 and decision.phase is DecisionPhase.COMBAT:
+                break
+            candidate_id = _choose(decision.policy_view(), room="rest")
+            decision = source.apply(_request(decision, candidate_id)).next_decision
+        else:
+            raise AssertionError("second combat entry was not reached")
+        forged = deepcopy(source.snapshot())
+        assert forged["combat_entry_sequence"] > 0
+        forged["combat_entry_sequence"] -= 1
+        _rehash_reduced_snapshot(forged)
+
+    _assert_semantic_snapshot_rejection_is_atomic(forged)
+
+
 def test_snapshot_serialization_tamper_fails_closed_without_mutating_backend() -> None:
-    """Isolated adversarial mutation of the public serialized-snapshot boundary."""
+    """Outer checksum rejection remains separate from semantic replay checks."""
 
     backend = ReducedRunBackend()
     original = backend.reset(_config(combat_settings={"enemy_max_hp": 6}))

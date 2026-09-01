@@ -42,6 +42,111 @@ _ACCEPTED_BACKEND_FINGERPRINT = "cab0ed8cfe70a6fe3013f366592360ba8570bb362c8d0df
 _ACCEPTED_RULES_FINGERPRINT = "71c5859d41a62dcd9013720635f59dab2fbe57198d48c685150e1e5873127c5a"
 _ACCEPTED_SNAPSHOT_FINGERPRINT = "5f1880a3e22db87fbf8f7dc37c9987db9b48cdc142a760dd2e60a2cded48db4c"
 
+_ACCEPTED_EVIDENCE = {
+    "headless.fixture": (
+        {
+            "component": "fixture_corpus",
+            "label": "structural_fixture",
+            "version": "v1",
+            "fingerprint": "d9cc190fa89a371eaa4e2245ca3ef80472312b738492e6a2d2215f9fb24dc8a4",
+        },
+        {
+            "component": "fixture_playback",
+            "label": "structural_fixture",
+            "version": "v1",
+            "fingerprint": "a760b1d1d02a833927fdeaec687cdfb9a12045ecbfc44ec07d35dbe27c6411f0",
+        },
+    ),
+    "combat_v0": (
+        {
+            "component": "backend",
+            "label": "combat_v0",
+            "version": "combat_v0_backend_v1",
+            "fingerprint": "65e8a6d3ee1d815bb0e07c8b104a7e51ecce41514d58e2bc188fb1ed64f8fdfe",
+        },
+        {
+            "component": "content",
+            "label": "structural_fixture",
+            "version": "reduced_content_v0",
+            "fingerprint": "fe771ea0f82c114d1d6a6389a44b169525c047914d955ce49d6db54e2472230f",
+        },
+        {
+            "component": "projection",
+            "label": "combat_v0",
+            "version": "combat_v0_public_projection_v1",
+            "fingerprint": "083cdcbf18d4481be689b1e6ea1d9b7d270b2cf9ab92e96a821e971ec018a56a",
+        },
+        {
+            "component": "rules",
+            "label": "combat_v0",
+            "version": "legacy_combat_v0",
+            "fingerprint": "9d046f9fa1f1051f465e3a8a8122896e2b55ddd63fe2ddc7e5178b7d7ac1c780",
+        },
+    ),
+    "reduced_headless": (
+        {
+            "component": "combat_backend",
+            "label": "combat_v0",
+            "version": "combat_v0_backend_v1",
+            "fingerprint": "65e8a6d3ee1d815bb0e07c8b104a7e51ecce41514d58e2bc188fb1ed64f8fdfe",
+        },
+        {
+            "component": "combat_projection",
+            "label": "combat_v0",
+            "version": "combat_v0_public_projection_v1",
+            "fingerprint": "083cdcbf18d4481be689b1e6ea1d9b7d270b2cf9ab92e96a821e971ec018a56a",
+        },
+        {
+            "component": "combat_rules",
+            "label": "combat_v0",
+            "version": "legacy_combat_v0",
+            "fingerprint": "9d046f9fa1f1051f465e3a8a8122896e2b55ddd63fe2ddc7e5178b7d7ac1c780",
+        },
+        {
+            "component": "composer",
+            "label": "structural_fixture",
+            "version": "reduced_headless_v3",
+            "fingerprint": "cab0ed8cfe70a6fe3013f366592360ba8570bb362c8d0dffd2156cd8d3d001c3",
+        },
+        {
+            "component": "content",
+            "label": "structural_fixture",
+            "version": "reduced_content_v0",
+            "fingerprint": "fe771ea0f82c114d1d6a6389a44b169525c047914d955ce49d6db54e2472230f",
+        },
+        {
+            "component": "map",
+            "label": "structural_fixture",
+            "version": "reduced_map_rules_v0",
+            "fingerprint": "6ab912d069ccb8224c9a9c387946aaf52d1b88b3a6e4924e68d9e280060fba5e",
+        },
+        {
+            "component": "reward",
+            "label": "structural_fixture",
+            "version": "reduced_reward_rules_v4",
+            "fingerprint": "c843a1711d22036f0d6b4db25c1b3977cf1d5038dba82ffbf628554f2b9fc327",
+        },
+        {
+            "component": "room",
+            "label": "structural_fixture",
+            "version": "reduced_room_rules_v0",
+            "fingerprint": "ed97167333934f3e98409d8c4e4cf9393f3b3fcc58ce21f23b54bc72859a94b4",
+        },
+        {
+            "component": "snapshot",
+            "label": "structural_fixture",
+            "version": "reduced_headless_snapshot_v3",
+            "fingerprint": "5f1880a3e22db87fbf8f7dc37c9987db9b48cdc142a760dd2e60a2cded48db4c",
+        },
+        {
+            "component": "state",
+            "label": "structural_fixture",
+            "version": "reduced_world_state_v0",
+            "fingerprint": "62f27941ece933f760244b5dbbcbbaf6bbc4a7a0f16bfcc428e936aa8bc8b4e3",
+        },
+    ),
+}
+
 
 def _config(**settings: Any) -> HeadlessRunConfig:
     return HeadlessRunConfig(
@@ -168,6 +273,9 @@ def test_reduced_manifest_is_component_addressable_and_never_promotes_live_truth
 def test_no_headless_manifest_contains_live_or_differential_evidence(backend: object) -> None:
     manifest = backend.manifest()  # type: ignore[attr-defined]
     assert BackendManifest.from_json(manifest.to_json()) == manifest
+    assert tuple(item.to_dict() for item in manifest.evidence) == _ACCEPTED_EVIDENCE[
+        manifest.backend_id
+    ]
     assert manifest.capabilities.live_truth is False
     assert not {
         EvidenceLabel.LIVE_OBSERVED,

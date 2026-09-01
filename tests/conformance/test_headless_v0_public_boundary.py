@@ -159,6 +159,11 @@ def _normalized_components(key: str) -> set[str]:
 
 def _assert_public_boundary(decision: DecisionState) -> None:
     view = decision.policy_view()
+    assert view.status is decision.status
+    assert view.phase is decision.phase
+    assert view.observation == decision.observation
+    assert view.candidates == decision.candidates
+    assert view.public_events == decision.public_events
     assert tuple(field.name for field in fields(view)) == (
         "status",
         "phase",

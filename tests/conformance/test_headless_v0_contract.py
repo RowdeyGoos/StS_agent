@@ -99,6 +99,46 @@ def test_stale_and_unadvertised_requests_are_atomic_across_backends(
     assert _snapshot_json(backend) == after
 
 
+@pytest.mark.parametrize(
+    ("factory", "configuration"),
+    (
+        (FixtureBackend, "combat"),
+        (CombatV0Backend, scenario_from_id("simple__starter", seed=13)),
+        (ReducedRunBackend, _reduced_config()),
+    ),
+    ids=("fixture", "combat_v0", "reduced"),
+)
+@pytest.mark.parametrize("tampered_field", ("run_id", "decision_sequence", "decision_hash"))
+def test_each_current_binding_identity_field_tamper_is_stale_and_atomic(
+    factory: Callable[[], object], configuration: object, tampered_field: str
+) -> None:
+    backend = factory()
+    decision = backend.reset(configuration)  # type: ignore[attr-defined]
+    before = _snapshot_json(backend)
+    values: dict[str, object] = {
+        "run_id": decision.run_id,
+        "decision_sequence": decision.decision_sequence,
+        "decision_hash": decision.decision_hash,
+        "candidate_id": decision.candidates[0].candidate_id,
+    }
+    if tampered_field == "run_id":
+        values[tampered_field] = decision.run_id + ".tampered"
+    elif tampered_field == "decision_sequence":
+        values[tampered_field] = decision.decision_sequence + 1
+    else:
+        values[tampered_field] = "0" * 64
+    request = ActionRequest(HeadlessBinding(**values))  # type: ignore[arg-type]
+
+    transition = backend.apply(request)  # type: ignore[attr-defined]
+
+    assert transition.result is TransitionResult.STALE
+    assert transition.reason is TransitionReason.STALE_BINDING
+    assert transition.binding == request.binding
+    assert transition.next_decision == decision
+    assert backend.observe() == decision  # type: ignore[attr-defined]
+    assert _snapshot_json(backend) == before
+
+
 def _strict_samples() -> tuple[tuple[type[Any], str], ...]:
     backend = FixtureBackend()
     decision = backend.reset("combat")
