@@ -1,6 +1,6 @@
 # Phase 1 Current Integration Status
 
-- **Status date:** 2026-08-31
+- **Status date:** 2026-09-01
 - **Active bridge milestone:** `R0i`
 - **Bridge version:** `0.8.0`
 - **Protocol:** `live_probe_v0`
@@ -40,6 +40,37 @@ bridge and external bounded controllers. Together they can:
 The bridge does not contain a learned model, search implementation, simulator,
 or gameplay policy. Those remain host-side replaceable components behind the
 same decision-provider seams.
+
+## Parallel headless execution status
+
+The accepted offline stack now includes the canonical `headless_v0` public
+contract, named RNG streams, reduced structural content, serializable private
+world state and snapshots, combat projection/candidates, fixture playback, a
+bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
+and deterministic reduced reward, map, and room rules. The integration branch
+passed `613` repository tests after the final `H2-REWARD-02` join.
+
+The progression producers remain deliberately separate from the composed
+backend boundary:
+
+- combat behavior is attributed to `combat_v0` evidence;
+- reduced content, persistent state, snapshots, rewards, map, and rooms are
+  attributed to `structural_fixture` evidence; and
+- none of the headless progression behavior is live-demonstrated or
+  differentially verified.
+
+The high-risk reward join now authenticates the accepted-action history and
+derives the exact current reward semantics from it before reconstructing gold,
+offers, RNG, deck, and allocator effects. Independent adversarial review covered
+every legal reward-history prefix and rejected all material cross-prefix state
+splices. A coordinated replacement of the complete private pending decision,
+including a recomputed commitment, remains outside that rule-layer integrity
+boundary and must not be exposed by the composed backend.
+
+`H3-REDUCED-BACKEND-01` is the active offline join. Until that packet passes,
+the repository has accepted producers but no accepted multi-phase reduced-run
+backend, no headless conformance result for that join, and no rollout or
+throughput claim.
 
 ## Milestone evidence
 
