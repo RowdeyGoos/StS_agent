@@ -10,6 +10,7 @@ from game.backends.headless.combat_v0_backend import (
     BACKEND_FINGERPRINT,
     BACKEND_ID,
     BACKEND_VERSION,
+    STANDALONE_SEED_NORMALIZATION,
     CombatV0Backend,
     CombatV0BackendError,
 )
@@ -116,6 +117,68 @@ def test_standalone_seeded_victory_returns_valid_resolution_and_preserves_deck()
     restored = CombatV0Backend()
     assert restored.restore(backend.snapshot()) == transition.next_decision
     assert restored.resolution == backend.resolution
+
+
+@pytest.mark.parametrize(
+    ("source_seed", "expected_combat_seed"),
+    (
+        (-1, (1 << 63) - 1),
+        ((1 << 63) - 1, (1 << 63) - 1),
+        (1 << 63, 0),
+        ((1 << 200) + 123, 123),
+        (-(1 << 200) - 123, (1 << 63) - 123),
+    ),
+)
+def test_standalone_seed_normalizes_full_python_integer_domain(
+    source_seed: int,
+    expected_combat_seed: int,
+) -> None:
+    scenario = scenario_from_id("simple__starter", seed=source_seed)
+    first = CombatV0Backend()
+    second = CombatV0Backend()
+
+    first_decision = first.reset(scenario)
+    second_decision = second.reset(scenario)
+
+    assert STANDALONE_SEED_NORMALIZATION == "python_integer_modulo_2_to_63_v1"
+    assert first.launch_spec is not None
+    assert second.launch_spec is not None
+    assert first.launch_spec.combat_seed == expected_combat_seed
+    assert second.launch_spec.combat_seed == expected_combat_seed
+    assert first_decision == second_decision
+    candidate = _end_turn(first_decision)
+    matching = next(
+        item
+        for item in second_decision.candidates
+        if item.candidate_id == candidate.candidate_id
+    )
+    assert first.apply(_request(first_decision, candidate)) == second.apply(
+        _request(second_decision, matching)
+    )
+    assert first.snapshot() == second.snapshot()
+
+
+def test_seed_modulo_equivalence_does_not_collapse_source_run_identity() -> None:
+    modulus = 1 << 63
+    representative_seeds = (-1, modulus - 1, 0, modulus, 1, modulus + 1)
+    backends = []
+    for source_seed in representative_seeds:
+        backend = CombatV0Backend()
+        backend.reset(scenario_from_id("simple__starter", seed=source_seed))
+        backends.append(backend)
+
+    assert [backend.launch_spec.combat_seed for backend in backends] == [
+        modulus - 1,
+        modulus - 1,
+        0,
+        0,
+        1,
+        1,
+    ]
+    # Modulo-equivalent sources intentionally share combat RNG, while the
+    # original scenario seed remains bound into distinct standalone run IDs.
+    assert len({backend.launch_spec.run_id for backend in backends}) == len(backends)
+    assert len({backend.observe().decision_hash for backend in backends}) == len(backends)
 
 
 def test_composer_launch_initializes_current_hp_and_seeded_defeat_preserves_deck() -> None:

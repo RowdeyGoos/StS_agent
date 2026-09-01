@@ -75,6 +75,8 @@ BACKEND_ID = "combat_v0"
 BACKEND_VERSION = "combat_v0_backend_v1"
 RULES_VERSION = "legacy_combat_v0"
 SNAPSHOT_VERSION = "combat_v0_replay_snapshot_v1"
+STANDALONE_SEED_NORMALIZATION = "python_integer_modulo_2_to_63_v1"
+_COMBAT_SEED_MODULUS = 1 << 63
 
 _CARD_DEFINITIONS = {
     definition.definition_id: definition for definition in SUPPORTED_CARD_DEFINITIONS
@@ -145,6 +147,10 @@ BACKEND_FINGERPRINT = _fingerprint(
         "recovery": "launch_plus_accepted_candidate_history",
         "rules_fingerprint": RULES_FINGERPRINT,
         "snapshot_version": SNAPSHOT_VERSION,
+        "standalone_seed_normalization": {
+            "modulus": _COMBAT_SEED_MODULUS,
+            "rule": STANDALONE_SEED_NORMALIZATION,
+        },
         "supported_settings": sorted(_SUPPORTED_SETTING_KEYS),
     },
 )
@@ -622,7 +628,7 @@ def _standalone_launch(scenario: CombatScenario) -> CombatLaunchSpec:
     launch = CombatLaunchSpec(
         run_id=f"run.combat.{namespace[:32]}",
         scenario_id=scenario.scenario_id,
-        combat_seed=scenario.seed,
+        combat_seed=_normalize_standalone_seed(scenario.seed),
         current_hp=scenario.player_max_hp,
         max_hp=scenario.player_max_hp,
         combat_settings={
@@ -645,6 +651,19 @@ def _standalone_launch(scenario: CombatScenario) -> CombatLaunchSpec:
     )
     _validate_launch(launch)
     return launch
+
+
+def _normalize_standalone_seed(seed: int) -> int:
+    """Map H0's full integer domain into the launch seam's 63-bit domain.
+
+    Seeds are congruent for combat RNG exactly when they are equal modulo
+    ``2**63``.  The standalone run identity still hashes the original H0
+    scenario descriptor, so distinct source seeds do not collapse control
+    identity even when they intentionally select the same combat RNG stream.
+    """
+    if not isinstance(seed, int) or isinstance(seed, bool):
+        raise CombatV0BackendError("Standalone scenario seed must be an integer.")
+    return seed % _COMBAT_SEED_MODULUS
 
 
 def _validate_launch(launch: CombatLaunchSpec) -> None:
