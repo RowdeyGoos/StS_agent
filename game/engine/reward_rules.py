@@ -57,12 +57,13 @@ from game.engine.headless_state import (
 from game.engine.random_service import GameRandomService
 
 
-REWARD_RULES_VERSION = "reduced_reward_rules_v3"
+REWARD_RULES_VERSION = "reduced_reward_rules_v4"
 REWARD_RULES_EVIDENCE = "structural_fixture"
 REWARD_CONTEXT_VERSION = "reduced_reward_context_v3"
 _RULE_DESCRIPTOR = {
     "context_version": REWARD_CONTEXT_VERSION,
     "evidence": REWARD_RULES_EVIDENCE,
+    "history_semantics": "exact_cumulative_state_derived_from_accepted_actions_v1",
     "origin_commitment": "pending_kind_prefix_plus_55_hex_sha256_v2_with_action_history",
     "offer_draw_order": "one_reward_offer_stream_shuffle_of_declared_table_cards_on_open",
     "reward_tables": "reduced_content_v0",
@@ -794,11 +795,44 @@ class RewardRules:
             raise RewardRuleError("Reward action history is not a legal ordering prefix.")
         if proceeded != (bool(normalized_tuple) and normalized_tuple[-1] == "proceed"):
             raise RewardRuleError("Reward pending prefix contradicts its action history.")
-        if context["card_resolution"] == "chosen":
-            if chosen_definition != context["chosen_card_definition_id"]:
-                raise RewardRuleError("Chosen card metadata contradicts action history.")
-        elif chosen_definition is not None:
-            raise RewardRuleError("Non-chosen card state contains a choose action.")
+
+        expected_card_opened = "open_card_reward" in normalized_tuple
+        expected_gold_claimed = "claim_gold" in normalized_tuple
+        if "choose_card" in normalized_tuple:
+            expected_card_claimed = True
+            expected_card_resolution = "chosen"
+            expected_chosen_definition = chosen_definition
+        elif "skip_card" in normalized_tuple:
+            expected_card_claimed = True
+            expected_card_resolution = "skipped"
+            expected_chosen_definition = None
+        elif expected_card_opened:
+            expected_card_claimed = False
+            expected_card_resolution = "pending"
+            expected_chosen_definition = None
+        else:
+            expected_card_claimed = False
+            expected_card_resolution = "unopened"
+            expected_chosen_definition = None
+
+        expected_semantics = (
+            expected_gold_claimed,
+            expected_card_opened,
+            expected_card_claimed,
+            expected_card_resolution,
+            expected_chosen_definition,
+        )
+        actual_semantics = (
+            context["gold_claimed"],
+            context["card_opened"],
+            context["card_claimed"],
+            context["card_resolution"],
+            context["chosen_card_definition_id"],
+        )
+        if actual_semantics != expected_semantics:
+            raise RewardRuleError(
+                "Reward semantic state does not match its accepted-action history."
+            )
         return history
 
     def _validate_origin_progress(

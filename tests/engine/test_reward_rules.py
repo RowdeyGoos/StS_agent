@@ -34,6 +34,29 @@ from game.engine.snapshots import WorldSnapshotCodec
 
 RULES_FINGERPRINT = "a" * 64
 BACKEND_FINGERPRINT = "b" * 64
+_LEGAL_REWARD_ACTION_ORDERS = (
+    ("reward.claim_gold", "reward.open_card_reward", "reward.choose_card", "reward.proceed"),
+    ("reward.claim_gold", "reward.open_card_reward", "reward.skip_card", "reward.proceed"),
+    ("reward.open_card_reward", "reward.claim_gold", "reward.choose_card", "reward.proceed"),
+    ("reward.open_card_reward", "reward.claim_gold", "reward.skip_card", "reward.proceed"),
+    ("reward.open_card_reward", "reward.choose_card", "reward.claim_gold", "reward.proceed"),
+    ("reward.open_card_reward", "reward.skip_card", "reward.claim_gold", "reward.proceed"),
+)
+_LEGAL_REWARD_PREFIXES = tuple(
+    dict.fromkeys(
+        order[:length]
+        for order in _LEGAL_REWARD_ACTION_ORDERS
+        for length in range(1, len(order) + 1)
+    )
+)
+_CURRENT_REWARD_CONTEXT_FIELDS = (
+    "gold_claimed",
+    "card_opened",
+    "card_claimed",
+    "card_resolution",
+    "chosen_card_definition_id",
+    "offers",
+)
 
 
 def _scope(*, decision: int = 0) -> PublicScope:
@@ -86,6 +109,56 @@ def _replace_pending_context(world: WorldState, update, *, decision_kind: str | 
         pending["sequence"],
         context,
     )
+
+
+def _world_at_reward_prefix(action_order: tuple[str, ...], *, seed: int = 505) -> WorldState:
+    world = _world(seed)
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=6,
+        public_scope=_scope(decision=8),
+    )
+    for kind in action_order:
+        decision = rules.apply(
+            world,
+            _request(decision, lambda item, selected=kind: item.kind.value == selected),
+        ).next_decision
+    return world
+
+
+def _current_reward_payload(world: WorldState) -> dict[str, object]:
+    assert world.pending_decision is not None
+    context = world.pending_decision.private_context
+    return {
+        "allocator": world.identity_allocator.to_dict(),
+        "context": {
+            field: deepcopy(context[field])
+            for field in _CURRENT_REWARD_CONTEXT_FIELDS
+        },
+        "deck": [card.to_dict() for card in world.master_deck],
+        "gold": world.gold,
+        "rng": world.rng.snapshot(),
+    }
+
+
+def _transplant_current_reward_payload(target: WorldState, donor: WorldState) -> None:
+    assert donor.pending_decision is not None
+    donor_context = donor.pending_decision.private_context
+    _replace_pending_context(
+        target,
+        lambda context: context.update(
+            {
+                field: deepcopy(donor_context[field])
+                for field in _CURRENT_REWARD_CONTEXT_FIELDS
+            }
+        ),
+    )
+    target.gold = donor.gold
+    target.rng = deepcopy(donor.rng)
+    target.master_deck = deepcopy(donor.master_deck)
+    target.identity_allocator = deepcopy(donor.identity_allocator)
 
 
 def test_reward_sequence_exposes_all_and_only_legal_candidates_and_mutates_persistent_state() -> None:
@@ -161,9 +234,9 @@ def test_reward_context_version_fingerprint_and_outer_commitment_are_pinned() ->
     )
 
     assert REWARD_CONTEXT_VERSION == "reduced_reward_context_v3"
-    assert REWARD_RULES_VERSION == "reduced_reward_rules_v3"
+    assert REWARD_RULES_VERSION == "reduced_reward_rules_v4"
     assert REWARD_RULES_FINGERPRINT == (
-        "b1e7351114f5dbe0ffa9840b44fd8949901de5c3bdc0defe8163fbefb2378af3"
+        "c843a1711d22036f0d6b4db25c1b3977cf1d5038dba82ffbf628554f2b9fc327"
     )
     assert world.pending_decision is not None
     assert len(world.pending_decision.decision_kind) == 64
@@ -268,14 +341,7 @@ def test_snapshot_restore_continues_opened_offer_and_allocator_exactly() -> None
 
 @pytest.mark.parametrize(
     "action_order",
-    (
-        ("reward.claim_gold", "reward.open_card_reward", "reward.choose_card", "reward.proceed"),
-        ("reward.claim_gold", "reward.open_card_reward", "reward.skip_card", "reward.proceed"),
-        ("reward.open_card_reward", "reward.claim_gold", "reward.choose_card", "reward.proceed"),
-        ("reward.open_card_reward", "reward.claim_gold", "reward.skip_card", "reward.proceed"),
-        ("reward.open_card_reward", "reward.choose_card", "reward.claim_gold", "reward.proceed"),
-        ("reward.open_card_reward", "reward.skip_card", "reward.claim_gold", "reward.proceed"),
-    ),
+    _LEGAL_REWARD_ACTION_ORDERS,
 )
 def test_all_legal_reward_orders_restore_at_every_boundary(action_order: tuple[str, ...]) -> None:
     world = _world(303)
@@ -303,6 +369,84 @@ def test_all_legal_reward_orders_restore_at_every_boundary(action_order: tuple[s
     assert world.gold == 37
     expected_deck_size = 4 if "reward.choose_card" in action_order else 3
     assert len(world.master_deck) == expected_deck_size
+
+
+def test_claim_history_rejects_coherent_open_state_transplant_after_snapshot() -> None:
+    claimed_world = _world_at_reward_prefix(("reward.claim_gold",))
+    opened_world = _world_at_reward_prefix(("reward.open_card_reward",))
+    assert claimed_world.run_id == opened_world.run_id
+    assert claimed_world.pending_decision is not None
+    original_pending = claimed_world.pending_decision
+    original_pending_dict = original_pending.to_dict()
+    protected_context = {
+        key: deepcopy(value)
+        for key, value in original_pending_dict["private_context"].items()
+        if key not in _CURRENT_REWARD_CONTEXT_FIELDS
+    }
+
+    _transplant_current_reward_payload(claimed_world, opened_world)
+
+    assert claimed_world.pending_decision is not None
+    assert claimed_world.pending_decision.decision_kind == original_pending.decision_kind
+    assert claimed_world.pending_decision.sequence == original_pending.sequence
+    current_pending_dict = claimed_world.pending_decision.to_dict()
+    assert {
+        key: deepcopy(value)
+        for key, value in current_pending_dict["private_context"].items()
+        if key not in _CURRENT_REWARD_CONTEXT_FIELDS
+    } == protected_context
+    assert current_pending_dict["private_context"]["accepted_actions"] == ["claim_gold"]
+    assert _current_reward_payload(claimed_world) == _current_reward_payload(opened_world)
+
+    codec = WorldSnapshotCodec(CONTENT_FINGERPRINT, RULES_FINGERPRINT)
+    restored = codec.loads(codec.dumps(claimed_world))
+    for forged_world in (claimed_world, restored):
+        with pytest.raises(RewardRuleError, match="semantic state.*accepted-action history"):
+            _rules().decision(forged_world)
+
+
+def test_every_legal_history_prefix_rejects_material_cross_prefix_state_transplant() -> None:
+    assert len(_LEGAL_REWARD_PREFIXES) == 18
+    snapshots = {
+        prefix: _world_at_reward_prefix(prefix).to_private_dict()
+        for prefix in _LEGAL_REWARD_PREFIXES
+    }
+    rules = _rules()
+    rejected_pairs = 0
+    equivalent_pairs = 0
+
+    for kept_prefix in _LEGAL_REWARD_PREFIXES:
+        for donor_prefix in _LEGAL_REWARD_PREFIXES:
+            if donor_prefix == kept_prefix:
+                continue
+            target = WorldState.from_private_dict(deepcopy(snapshots[kept_prefix]))
+            donor = WorldState.from_private_dict(deepcopy(snapshots[donor_prefix]))
+            expected_decision = rules.decision(target)
+            target_payload = _current_reward_payload(target)
+            donor_payload = _current_reward_payload(donor)
+            _transplant_current_reward_payload(target, donor)
+
+            if donor_payload == target_payload:
+                equivalent_pairs += 1
+                assert rules.decision(target) == expected_decision
+                continue
+
+            rejected_pairs += 1
+            try:
+                rules.decision(target)
+            except RewardRuleError as error:
+                assert "semantic state does not match its accepted-action history" in str(error)
+            else:
+                pytest.fail(
+                    "Accepted material reward-state splice for "
+                    f"kept={kept_prefix!r}, donor={donor_prefix!r}."
+                )
+
+    assert rejected_pairs == 244
+    assert equivalent_pairs == 62
+    assert rejected_pairs + equivalent_pairs == len(_LEGAL_REWARD_PREFIXES) * (
+        len(_LEGAL_REWARD_PREFIXES) - 1
+    )
 
 
 @pytest.mark.parametrize(
@@ -808,7 +952,7 @@ def test_forged_gold_flag_and_event_without_gold_mutation_fails_closed() -> None
         ),
     )
 
-    with pytest.raises(RewardRuleError, match="action history does not match derived progress"):
+    with pytest.raises(RewardRuleError, match="semantic state.*accepted-action history"):
         rules.decision(world)
     assert world.gold == baseline_gold
 
