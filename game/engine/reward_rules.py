@@ -48,13 +48,18 @@ from game.contracts.headless_v0 import (
 from game.engine.headless_state import (
     REWARD_OFFER_STREAM,
     PendingDecision,
+    PersistentCardInstance,
+    StableIdAllocator,
     WorldState,
 )
+from game.engine.random_service import GameRandomService
 
 
-REWARD_RULES_VERSION = "reduced_reward_rules_v0"
+REWARD_RULES_VERSION = "reduced_reward_rules_v1"
 REWARD_RULES_EVIDENCE = "structural_fixture"
+REWARD_CONTEXT_VERSION = "reduced_reward_context_v1"
 _RULE_DESCRIPTOR = {
+    "context_version": REWARD_CONTEXT_VERSION,
     "evidence": REWARD_RULES_EVIDENCE,
     "offer_draw_order": "one_reward_offer_stream_shuffle_of_declared_table_cards_on_open",
     "reward_tables": "reduced_content_v0",
@@ -70,14 +75,22 @@ _CONTEXT_FIELDS = frozenset(
     {
         "card_claimed",
         "card_opened",
+        "card_resolution",
+        "chosen_card_definition_id",
+        "context_version",
         "gold_claimed",
         "offers",
+        "opening_allocator",
+        "opening_deck",
+        "opening_gold",
+        "opening_rng",
         "public_events",
         "public_scope",
         "reward_table_id",
     }
 )
 _TABLES_BY_ID = {table.table_id: table for table in REWARD_TABLES}
+_CARD_RESOLUTIONS = frozenset({"unopened", "pending", "chosen", "skipped"})
 
 
 class RewardRuleError(ValueError):
@@ -127,6 +140,7 @@ class RewardRules:
         before = world.to_private_dict()
         try:
             context = self._context(
+                world=world,
                 reward_table_id=table.table_id,
                 gold_claimed=False,
                 card_opened=False,
@@ -273,6 +287,7 @@ class RewardRules:
             # only after every validation above has completed.
             world.rng.shuffle(REWARD_OFFER_STREAM, offers)
             next_context["card_opened"] = True
+            next_context["card_resolution"] = "pending"
             next_context["offers"] = offers
             event = PublicEvent(
                 sequence=0,
@@ -289,6 +304,8 @@ class RewardRules:
                 raise RewardRuleError("Reward offers must be persistent card definitions.")
             world.add_card(card_definition_id)
             next_context["card_claimed"] = True
+            next_context["card_resolution"] = "chosen"
+            next_context["chosen_card_definition_id"] = card_definition_id
             event = PublicEvent(
                 sequence=0,
                 event_type=PublicEventKind.REWARD_CARD_CHOSEN,
@@ -299,6 +316,7 @@ class RewardRules:
             if not next_context["card_opened"] or next_context["card_claimed"]:
                 raise RewardRuleError("Card reward is not currently skippable.")
             next_context["card_claimed"] = True
+            next_context["card_resolution"] = "skipped"
             event = PublicEvent(
                 sequence=0,
                 event_type=PublicEventKind.REWARD_CARD_SKIPPED,
@@ -431,6 +449,7 @@ class RewardRules:
             raise RewardRuleError("World has no active reward session.")
         context = self._copy_context(pending.private_context)
         self._table(context["reward_table_id"])
+        self._validate_persistent_session(world, context)
         if pending.decision_kind == _PROCEEDED_KIND and not (
             context["gold_claimed"] and context["card_claimed"]
         ):
@@ -513,12 +532,18 @@ class RewardRules:
                 or not context["gold_claimed"]
                 or not context["card_opened"]
                 or not context["card_claimed"]
+                or context["card_resolution"] not in {"chosen", "skipped"}
             ):
                 raise RewardRuleError("Proceeded reward session has an invalid last event.")
             return
 
         if not events:
-            if context["gold_claimed"] or context["card_opened"] or context["card_claimed"]:
+            if (
+                context["gold_claimed"]
+                or context["card_opened"]
+                or context["card_claimed"]
+                or context["card_resolution"] != "unopened"
+            ):
                 raise RewardRuleError("Only an initial reward session may have no public event.")
             return
         if len(events) != 1:
@@ -531,26 +556,102 @@ class RewardRules:
                 raise RewardRuleError("Gold-claimed event contradicts the reward session.")
         elif event.event_type is PublicEventKind.REWARD_CARD_OPENED:
             if (
-                not context["card_opened"]
-                or context["card_claimed"]
+                context["card_resolution"] != "pending"
                 or event.data["offer_count"] != len(table.card_definition_ids)
             ):
                 raise RewardRuleError("Card-opened event contradicts the reward session.")
         elif event.event_type is PublicEventKind.REWARD_CARD_CHOSEN:
             if (
-                not context["card_opened"]
-                or not context["card_claimed"]
+                context["card_resolution"] != "chosen"
                 or event.data["upgraded"]
-                or event.data["card_definition_id"] not in context["offers"]
+                or event.data["card_definition_id"]
+                != context["chosen_card_definition_id"]
             ):
                 raise RewardRuleError("Card-chosen event contradicts the reward session.")
         elif event.event_type is PublicEventKind.REWARD_CARD_SKIPPED:
-            if not context["card_opened"] or not context["card_claimed"]:
+            if context["card_resolution"] != "skipped":
                 raise RewardRuleError("Card-skipped event contradicts the reward session.")
         elif event.event_type is PublicEventKind.REWARD_PROCEEDED:
             raise RewardRuleError("Reward-proceeded event requires the proceeded pending kind.")
         else:
             raise RewardRuleError("Reward session contains an unsupported public event.")
+
+    def _validate_persistent_session(
+        self,
+        world: WorldState,
+        context: Mapping[str, Any],
+    ) -> None:
+        """Validate the complete reward trajectory against its opening baseline."""
+
+        table = self._table(context["reward_table_id"])
+        expected_gold = context["opening_gold"] + (
+            table.gold_amount if context["gold_claimed"] else 0
+        )
+        if world.gold != expected_gold:
+            raise RewardRuleError("Persistent gold does not match the reward opening baseline.")
+
+        opening_rng = GameRandomService(0)
+        opening_rng.restore(self._mutable_private(context["opening_rng"]))
+        expected_offers: list[str] = []
+        if context["card_opened"]:
+            expected_offers = list(table.card_definition_ids)
+            opening_rng.shuffle(REWARD_OFFER_STREAM, expected_offers)
+        if list(context["offers"]) != expected_offers:
+            raise RewardRuleError("Card offers do not match the deterministic opening draw.")
+        if world.rng.snapshot() != opening_rng.snapshot():
+            raise RewardRuleError("World RNG does not match the reward opening baseline.")
+
+        opening_allocator = StableIdAllocator.from_dict(
+            self._mutable_private(context["opening_allocator"])
+        )
+        opening_deck = tuple(
+            PersistentCardInstance.from_dict(self._mutable_private(item))
+            for item in context["opening_deck"]
+        )
+        if opening_allocator.run_id != world.run_id:
+            raise RewardRuleError("Reward opening allocator belongs to another run.")
+        opening_ids = [card.instance_id for card in opening_deck]
+        if len(set(opening_ids)) != len(opening_ids):
+            raise RewardRuleError("Reward opening deck contains duplicate card identities.")
+        try:
+            for card_id in opening_ids:
+                opening_allocator.validate_card_id(card_id)
+        except ValueError as error:
+            raise RewardRuleError("Reward opening deck does not match its allocator.") from error
+
+        resolution = context["card_resolution"]
+        chosen_definition = context["chosen_card_definition_id"]
+        expected_allocator = opening_allocator
+        expected_deck = opening_deck
+        if resolution == "unopened":
+            if context["card_opened"] or context["card_claimed"] or chosen_definition is not None:
+                raise RewardRuleError("Unopened card metadata is contradictory.")
+        elif resolution == "pending":
+            if not context["card_opened"] or context["card_claimed"] or chosen_definition is not None:
+                raise RewardRuleError("Pending card metadata is contradictory.")
+        elif resolution == "chosen":
+            if (
+                not context["card_opened"]
+                or not context["card_claimed"]
+                or chosen_definition not in expected_offers
+            ):
+                raise RewardRuleError("Chosen card metadata is contradictory.")
+            instance_id = expected_allocator.allocate_card_id()
+            expected_deck += (
+                PersistentCardInstance(instance_id, chosen_definition, False),
+            )
+        elif resolution == "skipped":
+            if (
+                not context["card_opened"]
+                or not context["card_claimed"]
+                or chosen_definition is not None
+            ):
+                raise RewardRuleError("Skipped card metadata is contradictory.")
+
+        if world.master_deck != expected_deck:
+            raise RewardRuleError("Persistent deck does not match the reward opening baseline.")
+        if world.identity_allocator.to_dict() != expected_allocator.to_dict():
+            raise RewardRuleError("Card allocator does not match the reward opening baseline.")
 
     @staticmethod
     def _restore_world(world: WorldState, snapshot: Mapping[str, Any]) -> None:
@@ -578,6 +679,7 @@ class RewardRules:
     @staticmethod
     def _context(
         *,
+        world: WorldState,
         reward_table_id: str,
         gold_claimed: bool,
         card_opened: bool,
@@ -589,8 +691,15 @@ class RewardRules:
         return {
             "card_claimed": card_claimed,
             "card_opened": card_opened,
+            "card_resolution": "unopened",
+            "chosen_card_definition_id": None,
+            "context_version": REWARD_CONTEXT_VERSION,
             "gold_claimed": gold_claimed,
             "offers": list(offers),
+            "opening_allocator": world.identity_allocator.to_dict(),
+            "opening_deck": [card.to_dict() for card in world.master_deck],
+            "opening_gold": world.gold,
+            "opening_rng": world.rng.snapshot(),
             "public_events": [event.to_dict() for event in public_events],
             "public_scope": public_scope.to_dict(),
             "reward_table_id": reward_table_id,
@@ -599,6 +708,8 @@ class RewardRules:
     def _copy_context(self, value: Mapping[str, Any]) -> dict[str, Any]:
         if not isinstance(value, Mapping) or set(value) != _CONTEXT_FIELDS:
             raise RewardRuleError("Reward session context has an incompatible schema.")
+        if value["context_version"] != REWARD_CONTEXT_VERSION:
+            raise RewardRuleError("Reward session context version is incompatible.")
         reward_table_id = value["reward_table_id"]
         self._table(reward_table_id)
         flags = ("gold_claimed", "card_opened", "card_claimed")
@@ -606,6 +717,15 @@ class RewardRules:
             raise RewardRuleError("Reward session flags must be booleans.")
         if value["card_claimed"] and not value["card_opened"]:
             raise RewardRuleError("A card reward cannot resolve before it opens.")
+        resolution = value["card_resolution"]
+        if not isinstance(resolution, str) or resolution not in _CARD_RESOLUTIONS:
+            raise RewardRuleError("Reward session card resolution is invalid.")
+        chosen_definition = value["chosen_card_definition_id"]
+        if chosen_definition is not None and (
+            not isinstance(chosen_definition, str)
+            or chosen_definition not in REWARDABLE_CARD_DEFINITION_IDS
+        ):
+            raise RewardRuleError("Reward session chosen card definition is invalid.")
         offers = value["offers"]
         if not isinstance(offers, (tuple, list)) or any(
             not isinstance(item, str) for item in offers
@@ -621,6 +741,32 @@ class RewardRules:
                 raise RewardRuleError("Opened reward offers do not match their declared table.")
         elif offers:
             raise RewardRuleError("Unopened card rewards cannot expose offers.")
+        opening_gold = value["opening_gold"]
+        if (
+            not isinstance(opening_gold, int)
+            or isinstance(opening_gold, bool)
+            or not 0 <= opening_gold <= MAX_PUBLIC_COUNTER
+        ):
+            raise RewardRuleError("Reward session opening gold is invalid.")
+        opening_deck = value["opening_deck"]
+        if not isinstance(opening_deck, (tuple, list)) or not opening_deck or any(
+            not isinstance(item, Mapping) for item in opening_deck
+        ):
+            raise RewardRuleError("Reward session opening deck is invalid.")
+        opening_allocator = value["opening_allocator"]
+        opening_rng = value["opening_rng"]
+        if not isinstance(opening_allocator, Mapping) or not isinstance(opening_rng, Mapping):
+            raise RewardRuleError("Reward session opening state is invalid.")
+        try:
+            StableIdAllocator.from_dict(self._mutable_private(opening_allocator))
+            tuple(
+                PersistentCardInstance.from_dict(self._mutable_private(item))
+                for item in opening_deck
+            )
+            opening_random = GameRandomService(0)
+            opening_random.restore(self._mutable_private(opening_rng))
+        except (TypeError, ValueError) as error:
+            raise RewardRuleError("Reward session opening state is invalid.") from error
         scope = value["public_scope"]
         if not isinstance(scope, Mapping):
             raise RewardRuleError("Reward session public_scope must be an object.")
@@ -632,14 +778,20 @@ class RewardRules:
         if len(events) > 1 or any(event.phase is not DecisionPhase.REWARD for event in events):
             raise RewardRuleError("Reward session contains invalid public events.")
         return {
-            "card_claimed": value["card_claimed"],
-            "card_opened": value["card_opened"],
-            "gold_claimed": value["gold_claimed"],
-            "offers": list(offers),
-            "public_events": [dict(item) for item in raw_events],
-            "public_scope": dict(scope),
-            "reward_table_id": reward_table_id,
+            key: self._mutable_private(value[key])
+            for key in sorted(_CONTEXT_FIELDS)
         }
+
+    @staticmethod
+    def _mutable_private(value: Any) -> Any:
+        if isinstance(value, Mapping):
+            return {
+                key: RewardRules._mutable_private(item)
+                for key, item in value.items()
+            }
+        if isinstance(value, (tuple, list)):
+            return [RewardRules._mutable_private(item) for item in value]
+        return value
 
     @staticmethod
     def _events(raw_events: Any) -> tuple[PublicEvent, ...]:

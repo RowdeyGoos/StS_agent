@@ -233,6 +233,45 @@ def test_snapshot_restore_continues_opened_offer_and_allocator_exactly() -> None
     }
 
 
+@pytest.mark.parametrize(
+    "action_order",
+    (
+        ("reward.claim_gold", "reward.open_card_reward", "reward.choose_card", "reward.proceed"),
+        ("reward.claim_gold", "reward.open_card_reward", "reward.skip_card", "reward.proceed"),
+        ("reward.open_card_reward", "reward.claim_gold", "reward.choose_card", "reward.proceed"),
+        ("reward.open_card_reward", "reward.claim_gold", "reward.skip_card", "reward.proceed"),
+        ("reward.open_card_reward", "reward.choose_card", "reward.claim_gold", "reward.proceed"),
+        ("reward.open_card_reward", "reward.skip_card", "reward.claim_gold", "reward.proceed"),
+    ),
+)
+def test_all_legal_reward_orders_restore_at_every_boundary(action_order: tuple[str, ...]) -> None:
+    world = _world(303)
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=4,
+        public_scope=_scope(decision=11),
+    )
+    codec = WorldSnapshotCodec(CONTENT_FINGERPRINT, RULES_FINGERPRINT)
+
+    world = codec.loads(codec.dumps(world))
+    decision = rules.decision(world)
+    for kind in action_order:
+        transition = rules.apply(
+            world,
+            _request(decision, lambda item, selected=kind: item.kind.value == selected),
+        )
+        decision = transition.next_decision
+        world = codec.loads(codec.dumps(world))
+        assert rules.decision(world) == decision
+
+    assert decision.status.value == "waiting"
+    assert world.gold == 37
+    expected_deck_size = 4 if "reward.choose_card" in action_order else 3
+    assert len(world.master_deck) == expected_deck_size
+
+
 def test_begin_rejects_non_reward_or_pending_world_without_mutation() -> None:
     world = _world()
     world.phase = DecisionPhase.COMBAT
@@ -414,6 +453,7 @@ def test_tampered_reward_event_payload_and_empty_event_state_fail_closed() -> No
         decision_sequence=0,
         public_scope=_scope(),
     )
+    world.gold += 25
     _replace_pending_context(
         world,
         lambda context: context.update(
@@ -438,12 +478,42 @@ def test_tampered_reward_event_payload_and_empty_event_state_fail_closed() -> No
         decision_sequence=0,
         public_scope=_scope(),
     )
+    world.gold += 25
     _replace_pending_context(
         world,
         lambda context: context.__setitem__("gold_claimed", True),
     )
     with pytest.raises(RewardRuleError, match="no public event"):
         rules.decision(world)
+
+
+def test_forged_gold_flag_and_event_without_gold_mutation_fails_closed() -> None:
+    world = _world()
+    rules = _rules()
+    rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    baseline_gold = world.gold
+    gold_event = PublicEvent(
+        0,
+        PublicEventKind.REWARD_GOLD_CLAIMED,
+        DecisionPhase.REWARD,
+        {"amount": 25},
+    ).to_dict()
+    _replace_pending_context(
+        world,
+        lambda context: context.update(
+            gold_claimed=True,
+            public_events=[gold_event],
+        ),
+    )
+
+    with pytest.raises(RewardRuleError, match="Persistent gold"):
+        rules.decision(world)
+    assert world.gold == baseline_gold
 
 
 def test_tampered_proceeded_kind_and_multiple_last_events_fail_closed() -> None:
@@ -500,6 +570,79 @@ def test_tampered_proceeded_kind_and_multiple_last_events_fail_closed() -> None:
     )
     with pytest.raises(RewardRuleError):
         rules.decision(world)
+
+
+def test_forged_chosen_state_without_open_rng_or_card_mutation_fails_closed() -> None:
+    world = _world()
+    rules = _rules()
+    rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    deck_before = world.master_deck
+    allocator_before = world.identity_allocator.to_dict()
+    rng_before = world.rng.snapshot()
+    chosen_event = PublicEvent(
+        0,
+        PublicEventKind.REWARD_CARD_CHOSEN,
+        DecisionPhase.REWARD,
+        {"card_definition_id": "strike", "upgraded": False},
+    ).to_dict()
+    _replace_pending_context(
+        world,
+        lambda context: context.update(
+            card_opened=True,
+            card_claimed=True,
+            card_resolution="chosen",
+            chosen_card_definition_id="strike",
+            offers=list(REWARD_TABLES[0].card_definition_ids),
+            public_events=[chosen_event],
+        ),
+    )
+
+    with pytest.raises(RewardRuleError):
+        rules.decision(world)
+    assert world.master_deck == deck_before
+    assert world.identity_allocator.to_dict() == allocator_before
+    assert world.rng.snapshot() == rng_before
+
+
+def test_forged_skipped_state_without_opening_shuffle_fails_closed() -> None:
+    world = _world()
+    rules = _rules()
+    rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    deck_before = world.master_deck
+    allocator_before = world.identity_allocator.to_dict()
+    rng_before = world.rng.snapshot()
+    skipped_event = PublicEvent(
+        0,
+        PublicEventKind.REWARD_CARD_SKIPPED,
+        DecisionPhase.REWARD,
+        {},
+    ).to_dict()
+    _replace_pending_context(
+        world,
+        lambda context: context.update(
+            card_opened=True,
+            card_claimed=True,
+            card_resolution="skipped",
+            offers=list(REWARD_TABLES[0].card_definition_ids),
+            public_events=[skipped_event],
+        ),
+    )
+
+    with pytest.raises(RewardRuleError):
+        rules.decision(world)
+    assert world.master_deck == deck_before
+    assert world.identity_allocator.to_dict() == allocator_before
+    assert world.rng.snapshot() == rng_before
 
 
 def test_forced_post_mutation_validation_failure_restores_world_exactly(monkeypatch) -> None:
