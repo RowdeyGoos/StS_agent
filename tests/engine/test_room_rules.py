@@ -1,0 +1,224 @@
+"""Structural-fixture tests for reduced rest and safe-event room rules."""
+
+from __future__ import annotations
+
+from copy import deepcopy
+
+import pytest
+
+from game.content.reduced_v0 import CONTENT_FINGERPRINT
+from game.contracts.headless_v0 import (
+    DecisionPhase,
+    NodeKind,
+    PublicReferenceKind,
+    PublicScope,
+    RoomEventOptionCandidate,
+    RoomKind,
+    RoomProceedCandidate,
+    RoomRestHealCandidate,
+)
+from game.engine.headless_state import PendingDecision, WorldState
+from game.engine.room_rules import (
+    ROOM_RULES_EVIDENCE,
+    ROOM_RULES_FINGERPRINT,
+    ROOM_RULES_VERSION,
+    RoomRuleError,
+    UnsupportedRoomContentError,
+    apply_room_candidate,
+    open_room,
+    room_candidates,
+    room_public_observation,
+)
+from game.engine.snapshots import WorldSnapshotCodec
+
+
+def _world(*, hp: int = 68, gold: int = 99, seed: int = 71) -> WorldState:
+    return WorldState.create(
+        seed=seed,
+        current_hp=hp,
+        max_hp=80,
+        gold=gold,
+        deck_definition_ids=("strike", "defend"),
+        map_node_definitions=(("rest_1", NodeKind.REST), ("event_1", NodeKind.EVENT)),
+        content_fingerprint=CONTENT_FINGERPRINT,
+        rules_fingerprint=ROOM_RULES_FINGERPRINT,
+        phase=DecisionPhase.ROOM,
+    )
+
+
+def _scope(decision: int = 0, option: int = 0) -> PublicScope:
+    reveals = {kind.value: 0 for kind in PublicReferenceKind}
+    reveals[PublicReferenceKind.OPTION.value] = option
+    return PublicScope(history_ordinal=2, decision_ordinal=decision, reveal_ordinals=reveals)
+
+
+def _open_rest(world: WorldState) -> None:
+    open_room(world, RoomKind.REST, decision_sequence=4)
+
+
+def _open_event(world: WorldState, event_id: str = "quiet_cache") -> None:
+    open_room(world, RoomKind.EVENT, event_id=event_id, decision_sequence=4)
+
+
+def test_rest_candidates_are_complete_heal_is_capped_and_then_only_proceed() -> None:
+    world = _world(hp=72)
+    _open_rest(world)
+
+    observation = room_public_observation(world, _scope())
+    candidates = room_candidates(world, _scope())
+
+    assert ROOM_RULES_VERSION == "reduced_room_rules_v0"
+    assert ROOM_RULES_EVIDENCE == "structural_fixture"
+    assert observation.data == {
+        "room_kind": "rest",
+        "player": {"deck_size": 2, "gold": 99, "hp": 72, "max_hp": 80},
+        "options": ({
+            "option_ref": observation.data["options"][0]["option_ref"],
+            "kind": "rest_heal", "effect": "heal", "amount": 15, "enabled": True,
+        },),
+        "can_proceed": False,
+    }
+    assert len(candidates) == 1 and isinstance(candidates[0], RoomRestHealCandidate)
+    assert candidates[0].heal_amount == 15
+
+    result = apply_room_candidate(world, _scope(), candidates[0])
+    assert world.current_hp == 80
+    assert result.completed is False
+    assert result.public_events[0].to_dict() == {
+        "sequence": 0, "event_type": "room.rest_healed", "phase": "room", "data": {"amount": 8},
+    }
+    assert room_public_observation(world, _scope(decision=1)).data["options"] == ()
+    afterwards = room_candidates(world, _scope(decision=1))
+    assert len(afterwards) == 1 and isinstance(afterwards[0], RoomProceedCandidate)
+
+    completed = apply_room_candidate(world, _scope(decision=1), afterwards[0])
+    assert completed.completed is True
+    assert world.phase is DecisionPhase.MAP and world.pending_decision is None
+    assert completed.public_events[0].event_type.value == "room.proceeded"
+
+
+@pytest.mark.parametrize(
+    ("event_id", "initial_hp", "initial_gold", "expected_hp", "expected_gold", "effect", "amount"),
+    [
+        ("quiet_cache", 68, 99, 68, 119, "gain_gold", 20),
+        ("cool_spring", 76, 99, 80, 99, "heal", 4),
+    ],
+)
+def test_whitelisted_safe_event_option_then_proceed(
+    event_id: str,
+    initial_hp: int,
+    initial_gold: int,
+    expected_hp: int,
+    expected_gold: int,
+    effect: str,
+    amount: int,
+) -> None:
+    world = _world(hp=initial_hp, gold=initial_gold)
+    _open_event(world, event_id)
+
+    observation = room_public_observation(world, _scope())
+    candidates = room_candidates(world, _scope())
+    assert observation.data["room_kind"] == "event"
+    assert "event_id" not in observation.data
+    assert len(candidates) == 1 and isinstance(candidates[0], RoomEventOptionCandidate)
+    assert observation.data["options"][0]["effect"] == effect
+
+    result = apply_room_candidate(world, _scope(), candidates[0])
+    assert world.current_hp == expected_hp and world.gold == expected_gold
+    assert result.public_events[0].data == {"effect": effect, "amount": amount}
+    proceed = room_candidates(world, _scope(decision=1))
+    assert len(proceed) == 1 and isinstance(proceed[0], RoomProceedCandidate)
+    assert apply_room_candidate(world, _scope(decision=1), proceed[0]).completed is True
+
+
+def test_full_hp_rest_exposes_only_proceed() -> None:
+    world = _world(hp=80)
+    _open_rest(world)
+
+    observation = room_public_observation(world, _scope())
+    candidates = room_candidates(world, _scope())
+    assert observation.data["options"] == ()
+    assert observation.data["can_proceed"] is True
+    assert len(candidates) == 1 and isinstance(candidates[0], RoomProceedCandidate)
+
+
+def test_invalid_or_stale_candidate_is_atomic_and_does_not_advance_rng() -> None:
+    world = _world(hp=70)
+    _open_rest(world)
+    before = deepcopy(world.to_private_dict())
+    stale = room_candidates(world, _scope())[0]
+
+    with pytest.raises(RoomRuleError, match="not currently legal"):
+        apply_room_candidate(world, _scope(decision=1), stale)
+    with pytest.raises(RoomRuleError, match="not a room candidate"):
+        apply_room_candidate(world, _scope(), object())  # type: ignore[arg-type]
+
+    assert world.to_private_dict() == before
+    assert world.rng_stream_counters() == {"combat_launch": 0, "event_effect": 0, "reward_offer": 0}
+
+
+def test_unsupported_content_and_malformed_private_context_fail_closed_without_mutation() -> None:
+    world = _world()
+    before = deepcopy(world.to_private_dict())
+    with pytest.raises(UnsupportedRoomContentError, match="allowlist"):
+        _open_event(world, "dangerous_custom")
+    assert world.to_private_dict() == before
+
+    _open_event(world)
+    before = deepcopy(world.to_private_dict())
+    pending = world.pending_decision
+    assert pending is not None
+    world.pending_decision = PendingDecision(
+        pending.decision_kind, pending.sequence, {"room_kind": "event", "event_id": "unknown", "state": "ready"}
+    )
+    with pytest.raises(UnsupportedRoomContentError, match="unsupported event"):
+        room_public_observation(world, _scope())
+    assert world.current_hp == before["current_hp"]
+    assert world.gold == before["gold"]
+
+
+def test_snapshot_restore_continues_room_and_preserves_exact_event_stream_counter() -> None:
+    world = _world(seed=83)
+    _open_event(world, "quiet_cache")
+    # Simulate an earlier approved structural stochastic event; the room rules
+    # must preserve it and must not consume any additional named stream request
+    # for the current deterministic safe events.
+    world.rng.randint("event_effect", 0, 99)
+    codec = WorldSnapshotCodec(CONTENT_FINGERPRINT, ROOM_RULES_FINGERPRINT)
+    snapshot = codec.capture(world)
+    candidate = room_candidates(world, _scope())[0]
+    direct = apply_room_candidate(world, _scope(), candidate)
+    direct_state = world.to_private_dict()
+
+    restored = codec.restore(snapshot)
+    restored_candidate = room_candidates(restored, _scope())[0]
+    replayed = apply_room_candidate(restored, _scope(), restored_candidate)
+    assert replayed == direct
+    assert restored.to_private_dict() == direct_state
+    assert restored.rng_stream_counters()["event_effect"] == 1
+
+
+def test_public_projection_excludes_private_event_identity_pending_state_and_rng() -> None:
+    world = _world()
+    _open_event(world, "quiet_cache")
+    world.rng.randint("event_effect", 0, 9)
+    public = room_public_observation(world, _scope()).to_dict()
+    rendered = repr(public)
+
+    assert "quiet_cache" not in rendered
+    assert "event_id" not in rendered
+    assert "pending_decision" not in rendered
+    assert "rng" not in rendered
+    assert "seed" not in rendered
+
+
+def test_room_actions_do_not_perturb_other_named_streams() -> None:
+    world = _world()
+    world.rng.randint("combat_launch", 0, 9)
+    world.rng.randint("reward_offer", 0, 9)
+    before = world.rng_stream_counters()
+    _open_event(world, "cool_spring")
+    event = room_candidates(world, _scope())[0]
+    apply_room_candidate(world, _scope(), event)
+
+    assert world.rng_stream_counters() == before
