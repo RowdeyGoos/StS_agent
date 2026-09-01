@@ -134,7 +134,7 @@ def _action_body(
     return _encode({
         "schema_version": 1,
         "status": "accepted" if accepted else "rejected",
-        "mutation_state": "queued" if accepted else "none",
+        "mutation_state": "applied" if accepted else "none",
         "decision_id": decision_id,
         "action_id": action_id,
         "reason": "accepted" if accepted else "stale_decision",
@@ -568,6 +568,21 @@ def operation() -> dict[str, object]:
             "room_response_mismatch",
         )
     checks.append("unsupported_screen_ordinal_pairing_rejected")
+
+    queued_receipt = _encode({
+        "schema_version": 1,
+        "status": "accepted",
+        "mutation_state": "queued",
+        "decision_id": _DECISION_ZERO,
+        "action_id": "choose:0",
+        "reason": "accepted",
+    })
+    _expect_failure(
+        _base_responses() + [decision, queued_receipt],
+        prefix_requests,
+        "room_action_response_mismatch",
+    )
+    checks.append("queued_room_receipt_rejected")
 
     _expect_failure(
         _base_responses() + [decision, _action_body(_DECISION_ZERO, "choose:0", accepted=False)],

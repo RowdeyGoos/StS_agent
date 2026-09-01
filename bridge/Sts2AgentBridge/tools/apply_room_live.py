@@ -433,7 +433,7 @@ def _select_action(decision: dict[str, object]) -> dict[str, object]:
 
 def _validate_action_response(body: bytes, decision_id: str, action_id: str) -> None:
     accepted = (
-        b'{"schema_version":1,"status":"accepted","mutation_state":"queued",'
+        b'{"schema_version":1,"status":"accepted","mutation_state":"applied",'
         b'"decision_id":"' + decision_id.encode("ascii") +
         b'","action_id":"' + action_id.encode("ascii") +
         b'","reason":"accepted"}'
