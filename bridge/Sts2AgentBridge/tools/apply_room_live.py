@@ -323,7 +323,9 @@ def _validate_room(body: bytes) -> dict[str, object]:
             if kind == "proceed":
                 if (
                     action != "proceed"
+                    or screen_kind != "rest_site"
                     or candidate["stable_id"] != "proceed"
+                    or candidate["enabled"] is not True
                     or candidate["supported"] is not True
                     or candidate["is_proceed"] is not True
                     or candidate["is_dangerous"] is not False
@@ -342,7 +344,9 @@ def _validate_room(body: bytes) -> dict[str, object]:
             ):
                 raise ValueError("rest heal candidate")
             if kind == "rest_unsupported" and (
-                candidate["supported"] is not False or candidate["is_proceed"] is not False
+                candidate["supported"] is not False
+                or candidate["is_proceed"] is not False
+                or candidate["is_dangerous"] is not False
             ):
                 raise ValueError("unsupported rest candidate")
             if kind == "event_option" and (
@@ -350,6 +354,8 @@ def _validate_room(body: bytes) -> dict[str, object]:
                 or candidate["supported"] is candidate["is_dangerous"]
             ):
                 raise ValueError("event candidate safety")
+            if candidate["is_dangerous"] and candidate["enabled"]:
+                raise ValueError("enabled dangerous candidate")
             if candidate["enabled"] and candidate["supported"]:
                 eligible_actions.add(action)
             validated_candidates.append(candidate)

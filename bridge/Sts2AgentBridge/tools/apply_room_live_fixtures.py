@@ -408,6 +408,104 @@ def operation() -> dict[str, object]:
         "room_response_mismatch",
     )
     checks.append("wire_invalid_event_proceed_rejected")
+
+    literal_event_proceed = _candidate(
+        0,
+        "proceed",
+        "proceed",
+        enabled=True,
+        supported=True,
+        is_proceed=True,
+    )
+    _expect_failure(
+        _base_responses()
+        + [
+            _ready(
+                _DECISION_ZERO,
+                "event",
+                "proceed",
+                [literal_event_proceed],
+                [_legal(literal_event_proceed)],
+            )
+        ],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_response_mismatch",
+    )
+    checks.append("literal_event_proceed_rejected")
+
+    heal = _candidate(0, "rest_heal", "HEAL", enabled=True, supported=True)
+    disabled_proceed = _candidate(
+        1,
+        "proceed",
+        "proceed",
+        enabled=False,
+        supported=True,
+        is_proceed=True,
+    )
+    _expect_failure(
+        _base_responses()
+        + [
+            _ready(
+                _DECISION_ZERO,
+                "rest_site",
+                "choose_option",
+                [heal, disabled_proceed],
+                [_legal(heal)],
+            )
+        ],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_response_mismatch",
+    )
+    checks.append("disabled_proceed_rejected")
+
+    dangerous_event = _candidate(
+        1,
+        "event_option",
+        "EVENT.FATAL",
+        enabled=True,
+        supported=False,
+        is_dangerous=True,
+    )
+    _expect_failure(
+        _base_responses()
+        + [
+            _ready(
+                _DECISION_ZERO,
+                "event",
+                "choose_option",
+                [event, dangerous_event],
+                [_legal(event)],
+            )
+        ],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_response_mismatch",
+    )
+    checks.append("enabled_dangerous_event_rejected")
+
+    dangerous_rest = _candidate(
+        1,
+        "rest_unsupported",
+        "SMITH",
+        enabled=False,
+        supported=False,
+        is_dangerous=True,
+    )
+    _expect_failure(
+        _base_responses()
+        + [
+            _ready(
+                _DECISION_ZERO,
+                "rest_site",
+                "choose_option",
+                [heal, dangerous_rest],
+                [_legal(heal)],
+            )
+        ],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_response_mismatch",
+    )
+    checks.append("dangerous_rest_unsupported_rejected")
+
     _expect_failure(
         _base_responses() + [decision, _action_body(_DECISION_ZERO, "choose:0", accepted=False)],
         prefix_requests,
