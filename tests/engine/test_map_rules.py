@@ -1,6 +1,7 @@
 """Structural-fixture coverage for deterministic, snapshot-safe map traversal."""
 
 from copy import deepcopy
+from dataclasses import replace
 
 import pytest
 
@@ -13,9 +14,14 @@ from game.contracts.headless_v0 import (
     ActionRequest,
     DecisionPhase,
     HeadlessBinding,
+    MAX_PUBLIC_COUNTER,
+    NodeKind,
+    PublicEvent,
+    PublicEventKind,
+    RunOutcome,
     TransitionResult,
 )
-from game.engine.headless_state import WorldState
+from game.engine.headless_state import PendingDecision, TerminalResult, WorldState
 from game.engine.map_rules import (
     RULES_FINGERPRINT,
     MapRuleError,
@@ -209,3 +215,218 @@ def test_post_mutation_projection_failure_rolls_back_exact_private_state(monkeyp
         "event_effect": 0,
         "reward_offer": 0,
     }
+
+
+def test_stale_and_rejected_after_choice_replay_current_events_from_snapshot() -> None:
+    rules = MapRules()
+    world = _world(61)
+    initial = rules.reset(world)
+    old_request = _request(initial)
+    accepted = rules.choose_node(world, old_request)
+    restored = WorldState.from_private_dict(world.to_private_dict())
+    before = deepcopy(restored.to_private_dict())
+    fresh = MapRules()
+
+    stale = fresh.choose_node(restored, old_request)
+    assert stale.result is TransitionResult.STALE
+    assert stale.public_events == stale.next_decision.public_events
+    assert stale.public_events == accepted.public_events
+    assert restored.to_private_dict() == before
+
+    current = fresh.decision(restored)
+    invalid = HeadlessBinding(
+        current.run_id,
+        current.decision_sequence,
+        current.decision_hash,
+        "cand." + "0" * 64,
+    )
+    rejected = fresh.choose_node(restored, invalid)
+    assert rejected.result is TransitionResult.REJECTED
+    assert rejected.public_events == rejected.next_decision.public_events
+    assert rejected.public_events == current.public_events
+    assert restored.to_private_dict() == before
+
+
+@pytest.mark.parametrize("tamper", ("duplicate", "kind"))
+def test_installed_nodes_require_exact_definition_and_kind_bijection(tamper: str) -> None:
+    world = _world()
+    rules = MapRules()
+    rules.reset(world)
+    nodes = list(world.map_nodes)
+    if tamper == "duplicate":
+        nodes[1] = replace(
+            nodes[1],
+            definition_id=nodes[0].definition_id,
+            node_kind=nodes[0].node_kind,
+        )
+    else:
+        replacement = NodeKind.REST if nodes[0].node_kind is not NodeKind.REST else NodeKind.EVENT
+        nodes[0] = replace(nodes[0], node_kind=replacement)
+    world.map_nodes = tuple(nodes)
+
+    with pytest.raises(MapRuleError, match="map node"):
+        rules.decision(world)
+
+
+def test_session_rejects_pending_context_and_content_identity_forgery() -> None:
+    rules = MapRules()
+
+    wrong_kind = _world(71)
+    rules.reset(wrong_kind)
+    pending = wrong_kind.pending_decision
+    assert pending is not None
+    wrong_kind.pending_decision = PendingDecision(
+        "reward_choice", pending.sequence, pending.private_context
+    )
+    with pytest.raises(MapRuleError, match="pending decision kind"):
+        rules.decision(wrong_kind)
+
+    missing_template = _world(72)
+    rules.reset(missing_template)
+    pending = missing_template.pending_decision
+    assert pending is not None
+    missing_template.pending_decision = PendingDecision(
+        pending.decision_kind, pending.sequence, {"public_events": []}
+    )
+    with pytest.raises(MapRuleError, match="context fields"):
+        rules.decision(missing_template)
+
+    conflicting_template = _world(73)
+    MapRules("short_rest_path").reset(conflicting_template)
+    with pytest.raises(MapRuleError, match="conflicts"):
+        MapRules("two_combat_rest").decision(conflicting_template)
+
+    bad_content = _world(74)
+    bad_content.content_fingerprint = "a" * 64
+    with pytest.raises(MapRuleError, match="content fingerprint"):
+        rules.reset(bad_content)
+
+    bad_rules = _world(75)
+    bad_rules.rules_fingerprint = "b" * 64
+    with pytest.raises(MapRuleError, match="rules fingerprint"):
+        rules.reset(bad_rules)
+
+
+def test_session_rejects_impossible_history_current_and_terminal_state() -> None:
+    rules = MapRules()
+
+    impossible = _world(81)
+    rules.reset(impossible)
+    by_definition = {node.definition_id: node for node in impossible.map_nodes}
+    start = by_definition["start"]
+    skipped = by_definition["combat_2"]
+    event = PublicEvent(
+        0,
+        PublicEventKind.MAP_NODE_CHOSEN,
+        DecisionPhase.MAP,
+        {"node_kind": skipped.node_kind.value},
+    )
+    pending = impossible.pending_decision
+    assert pending is not None
+    impossible.node_history = (start.instance_id, skipped.instance_id)
+    impossible.current_node_id = skipped.instance_id
+    impossible.pending_decision = PendingDecision(
+        pending.decision_kind,
+        pending.sequence,
+        {"public_events": [event.to_dict()], "template_id": "two_combat_rest"},
+    )
+    with pytest.raises(MapRuleError, match="impossible edge"):
+        rules.decision(impossible)
+
+    duplicate = _world(82)
+    first = rules.reset(duplicate)
+    rules.choose_node(duplicate, _request(first))
+    duplicate.node_history = (*duplicate.node_history, duplicate.node_history[-1])
+    with pytest.raises(MapRuleError, match="more than once"):
+        rules.decision(duplicate)
+
+    incoherent = _world(83)
+    first = rules.reset(incoherent)
+    rules.choose_node(incoherent, _request(first))
+    incoherent.current_node_id = None
+    with pytest.raises(MapRuleError, match="history tail"):
+        rules.decision(incoherent)
+
+    forged_terminal = _world(84)
+    rules.reset(forged_terminal)
+    forged_terminal.phase = DecisionPhase.TERMINAL
+    forged_terminal.terminal_result = TerminalResult(RunOutcome.VICTORY, "map_complete")
+    with pytest.raises(MapRuleError, match="requires visiting"):
+        rules.decision(forged_terminal)
+
+
+@pytest.mark.parametrize("event_case", ("combat", "multiple", "wrong_kind"))
+def test_session_rejects_forged_or_noncanonical_current_events(event_case: str) -> None:
+    world = _world(90)
+    rules = MapRules()
+    first = rules.reset(world)
+    rules.choose_node(world, _request(first))
+    pending = world.pending_decision
+    assert pending is not None
+    current = next(node for node in world.map_nodes if node.instance_id == world.current_node_id)
+    map_event = PublicEvent(
+        0,
+        PublicEventKind.MAP_NODE_CHOSEN,
+        DecisionPhase.MAP,
+        {"node_kind": current.node_kind.value},
+    )
+    if event_case == "combat":
+        events = [
+            PublicEvent(
+                0, PublicEventKind.COMBAT_TURN_ENDED, DecisionPhase.COMBAT, {}
+            ).to_dict()
+        ]
+    elif event_case == "multiple":
+        events = [map_event.to_dict(), replace(map_event, sequence=1).to_dict()]
+    else:
+        wrong_kind = NodeKind.REST if current.node_kind is not NodeKind.REST else NodeKind.EVENT
+        events = [
+            PublicEvent(
+                0,
+                PublicEventKind.MAP_NODE_CHOSEN,
+                DecisionPhase.MAP,
+                {"node_kind": wrong_kind.value},
+            ).to_dict()
+        ]
+    world.pending_decision = PendingDecision(
+        pending.decision_kind,
+        pending.sequence,
+        {"public_events": events, "template_id": "two_combat_rest"},
+    )
+
+    with pytest.raises(MapRuleError, match="map event|exactly one"):
+        rules.decision(world)
+
+
+def test_sequence_capacity_rejects_before_advertising_and_exact_limit_completes() -> None:
+    rules = MapRules()
+    exhausted = _world(101)
+    rules.reset(exhausted)
+    pending = exhausted.pending_decision
+    assert pending is not None
+    exhausted.pending_decision = PendingDecision(
+        pending.decision_kind,
+        MAX_PUBLIC_COUNTER - 3,
+        pending.private_context,
+    )
+    before = deepcopy(exhausted.to_private_dict())
+    with pytest.raises(MapRuleError, match="cannot complete"):
+        rules.decision(exhausted)
+    assert exhausted.to_private_dict() == before
+
+    exact = _world(102)
+    decision = rules.reset(exact)
+    pending = exact.pending_decision
+    assert pending is not None
+    exact.pending_decision = PendingDecision(
+        pending.decision_kind,
+        MAX_PUBLIC_COUNTER - 4,
+        pending.private_context,
+    )
+    decision = rules.decision(exact)
+    while decision.candidates:
+        transition = rules.choose_node(exact, _request(decision))
+        assert transition.result is TransitionResult.ACCEPTED
+        decision = transition.next_decision
+    assert decision.phase is DecisionPhase.TERMINAL
+    assert decision.decision_sequence == MAX_PUBLIC_COUNTER
