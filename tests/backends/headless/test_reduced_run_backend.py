@@ -1161,6 +1161,35 @@ def test_outer_history_append_rolls_back_exactly(monkeypatch) -> None:
     assert backend.snapshot() == before
 
 
+def test_full_outer_history_replay_runs_only_during_snapshot_parse(
+    monkeypatch,
+) -> None:
+    calls: list[int] = []
+    original = ReducedRunBackend._validate_outer_action_history
+
+    def tracked(backend: ReducedRunBackend) -> None:
+        calls.append(backend._outer_sequence)
+        original(backend)
+
+    monkeypatch.setattr(
+        ReducedRunBackend,
+        "_validate_outer_action_history",
+        tracked,
+    )
+    backend = ReducedRunBackend()
+    decision = backend.reset(_config())
+    decision = backend.apply(
+        _request(decision, _combat_choice(decision))
+    ).next_decision
+    assert calls == []
+
+    snapshot = deepcopy(backend.snapshot())
+    restored = ReducedRunBackend()
+    restored_decision = restored.restore(snapshot)
+    assert calls == [1]
+    assert restored_decision.to_json() == decision.to_json()
+
+
 def test_restore_rejects_premature_event_effect_rng_draw() -> None:
     backend = ReducedRunBackend()
     backend.reset(_config())

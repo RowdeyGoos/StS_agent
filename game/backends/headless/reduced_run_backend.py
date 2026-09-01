@@ -588,7 +588,6 @@ class ReducedRunBackend:
         self._terminal_reason: str | None = None
         self._unsupported_reason: str | None = None
         self._decision: DecisionState | None = None
-        self._skip_outer_history_validation = False
 
     @property
     def terminal_reason(self) -> str | None:
@@ -673,7 +672,6 @@ class ReducedRunBackend:
         candidate._world = world
         candidate._map_rules = map_rules
         candidate._combat = combat
-        candidate._skip_outer_history_validation = self._skip_outer_history_validation
         candidate._last_public_events = ()
         candidate._boundary_scope = combat.observe().observation.public_scope
         candidate._validate_private_boundary()
@@ -1152,8 +1150,10 @@ class ReducedRunBackend:
             if self._world.pending_decision is not None or self._world.terminal_result is not None:
                 raise ReducedRunBackendError("Unsupported boundary retains hidden phase state.")
         self._validate_public_event_provenance()
-        if not self._skip_outer_history_validation:
-            self._validate_outer_action_history()
+        if len(self._accepted_outer_candidate_ids) != self._outer_sequence:
+            raise ReducedRunBackendError(
+                "Accepted outer history length does not match the decision sequence."
+            )
 
     def _validate_closed_map_history(self) -> None:
         """Validate map provenance without manufacturing a pending decision."""
@@ -1407,13 +1407,7 @@ class ReducedRunBackend:
         """
 
         assert self._config is not None and self._world is not None
-        if len(self._accepted_outer_candidate_ids) != self._outer_sequence:
-            raise ReducedRunBackendError(
-                "Accepted outer history length does not match the decision sequence."
-            )
-
         replay = ReducedRunBackend()
-        replay._skip_outer_history_validation = True
         replay._generation_high_water = self._reset_generation - 1
         decision = replay.reset(self._config)
         for candidate_id in self._accepted_outer_candidate_ids:
@@ -1625,6 +1619,7 @@ class ReducedRunBackend:
         candidate._unsupported_reason = snapshot["unsupported_reason"]
         try:
             candidate._validate_private_boundary()
+            candidate._validate_outer_action_history()
             candidate._decision = candidate._project_current()
         except (ValueError, TypeError, RuntimeError) as error:
             raise ReducedRunBackendError("Snapshot private boundary is inconsistent.") from error
