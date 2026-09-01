@@ -170,6 +170,19 @@ def test_constructor_rejects_bad_routes_action_links_and_unsafe_fixture_ids(tmp_
     with pytest.raises(ValueError):
         FixtureBackend(root)
 
+    root = _copy_corpus(tmp_path / "unfinished")
+    combat = json.loads((root / "combat.json").read_text())
+    combat["steps"][-1] = {
+        "action": "combat.end_turn",
+        "phase": "combat",
+        "routes": {"recorded": 3},
+        "status": "actionable",
+    }
+    _write_json(root / "combat.json", combat)
+    _rehash(root)
+    with pytest.raises(ValueError, match="end at a terminal"):
+        FixtureBackend(root)
+
     root = _copy_corpus(tmp_path / "room")
     rest = json.loads((root / "rest.json").read_text())
     rest["steps"][0]["room_kind"] = "event"
@@ -200,6 +213,46 @@ def test_constructor_rejects_bad_routes_action_links_and_unsafe_fixture_ids(tmp_
     _write_json(root / "manifest.json", manifest)
     with pytest.raises(ValueError):
         FixtureBackend(root)
+
+
+def test_constructor_rejects_manifest_symlinks_and_uses_bounded_reads(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = _copy_corpus(tmp_path)
+    outside = tmp_path / "outside-manifest.json"
+    outside.write_bytes((root / "manifest.json").read_bytes())
+    (root / "manifest.json").unlink()
+    (root / "manifest.json").symlink_to(outside)
+    with pytest.raises(ValueError, match="symlinks"):
+        FixtureBackend(root)
+
+    root = _copy_corpus(tmp_path / "bounded")
+    (root / "manifest.json").write_bytes(b" " * 20_000)
+    original_open = Path.open
+    requested_sizes: list[int] = []
+
+    class BoundedSource:
+        def __init__(self, source: object) -> None:
+            self._source = source
+
+        def __enter__(self) -> "BoundedSource":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            self._source.close()  # type: ignore[union-attr]
+
+        def read(self, size: int = -1) -> bytes:
+            requested_sizes.append(size)
+            return self._source.read(size)  # type: ignore[union-attr]
+
+    def bounded_open(path: Path, *args: object, **kwargs: object) -> BoundedSource:
+        return BoundedSource(original_open(path, *args, **kwargs))
+
+    monkeypatch.setattr(Path, "open", bounded_open)
+    with pytest.raises(ValueError):
+        FixtureBackend(root)
+    assert requested_sizes == [16_385]
 
 
 def test_constructor_rejects_empty_oversized_and_mutable_corpora(tmp_path: Path) -> None:

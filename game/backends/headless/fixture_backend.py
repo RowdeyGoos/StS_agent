@@ -235,7 +235,7 @@ class FixtureBackend:
         self._closed = True
 
     def _load_corpus(self) -> tuple[Mapping[str, Any], Mapping[str, Mapping[str, Any]], str]:
-        corpus_path = self._root / "manifest.json"
+        corpus_path = _corpus_path(self._root, "manifest.json")
         corpus = _read_canonical_json(corpus_path, _MAX_CORPUS_BYTES)
         if set(corpus) != {"fixtures", "schema"} or corpus.get("schema") != CORPUS_SCHEMA or not isinstance(corpus.get("fixtures"), dict):
             raise ValueError("Fixture corpus manifest has an unsupported schema.")
@@ -245,7 +245,7 @@ class FixtureBackend:
         for fixture_id, expected_hash in corpus["fixtures"].items():
             if not isinstance(fixture_id, str) or _FIXTURE_ID.fullmatch(fixture_id) is None or not isinstance(expected_hash, str) or _HASH.fullmatch(expected_hash) is None:
                 raise ValueError("Fixture manifest entries must use safe IDs and SHA-256 hashes.")
-            raw = _read_canonical_json(_fixture_path(self._root, fixture_id), _MAX_FIXTURE_BYTES)
+            raw = _read_canonical_json(_corpus_path(self._root, f"{fixture_id}.json"), _MAX_FIXTURE_BYTES)
             if raw.get("schema") != FIXTURE_SCHEMA or raw.get("fixture_id") != fixture_id:
                 raise ValueError(f"Fixture {fixture_id!r} has an invalid identity.")
             if _digest(raw) != expected_hash:
@@ -312,7 +312,8 @@ def _digest(value: Any) -> str:
 
 
 def _read_canonical_json(path: Path, limit: int) -> dict[str, Any]:
-    raw = path.read_bytes()
+    with path.open("rb") as source:
+        raw = source.read(limit + 1)
     if len(raw) > limit:
         raise ValueError(f"Fixture file exceeds the {limit}-byte bound: {path}")
     try:
@@ -327,12 +328,16 @@ def _read_canonical_json(path: Path, limit: int) -> dict[str, Any]:
     return value
 
 
-def _fixture_path(root: Path, fixture_id: str) -> Path:
-    root = root.resolve()
-    path = (root / f"{fixture_id}.json").resolve()
-    if path.parent != root:
-        raise ValueError("Fixture path escapes the configured corpus root.")
-    return path
+def _corpus_path(root: Path, filename: str) -> Path:
+    """Resolve one regular, non-symlink file contained by the corpus root."""
+    resolved_root = root.resolve(strict=True)
+    candidate = root / filename
+    if candidate.is_symlink():
+        raise ValueError("Corpus files cannot be symlinks.")
+    resolved = candidate.resolve(strict=True)
+    if resolved.parent != resolved_root or not resolved.is_file():
+        raise ValueError("Corpus file escapes the configured corpus root or is not regular.")
+    return resolved
 
 
 def _freeze(value: Any) -> Any:
@@ -349,6 +354,12 @@ def _validate_fixture(fixture: Mapping[str, Any]) -> None:
     steps = fixture.get("steps")
     if not isinstance(steps, list) or not 1 <= len(steps) <= _MAX_STEPS:
         raise ValueError("Fixture must contain a non-empty steps array.")
+    final = steps[-1]
+    if not isinstance(final, dict) or (final.get("status"), final.get("phase")) not in {
+        (DecisionStatus.TERMINAL.value, DecisionPhase.TERMINAL.value),
+        (DecisionStatus.UNSUPPORTED.value, DecisionPhase.UNSUPPORTED.value),
+    }:
+        raise ValueError("Fixture must end at a terminal or unsupported boundary.")
     for index, step in enumerate(steps):
         if not isinstance(step, dict):
             raise ValueError("Fixture step has unsupported fields.")
