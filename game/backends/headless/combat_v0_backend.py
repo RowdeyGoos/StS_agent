@@ -613,7 +613,13 @@ def _configuration_to_launch(
     return _standalone_launch(configuration)
 
 
-def _standalone_launch(scenario: CombatScenario) -> CombatLaunchSpec:
+def scenario_initial_deck_definition_ids(scenario_id: str) -> tuple[str, ...]:
+    """Return the ordered persistent deck definitions for a registered scenario."""
+
+    return _scenario_deck_definition_ids(scenario_from_id(scenario_id))
+
+
+def _scenario_deck_definition_ids(scenario: CombatScenario) -> tuple[str, ...]:
     source_cards = scenario.build().deck_factory()
     definition_ids: list[str] = []
     for card in source_cards:
@@ -623,6 +629,11 @@ def _standalone_launch(scenario: CombatScenario) -> CombatLaunchSpec:
             raise CombatV0BackendError(
                 f"Standalone scenario deck contains unsupported card {card.name!r}."
             ) from error
+    return tuple(definition_ids)
+
+
+def _standalone_launch(scenario: CombatScenario) -> CombatLaunchSpec:
+    definition_ids = _scenario_deck_definition_ids(scenario)
     scenario_payload = scenario.to_dict()
     namespace = _fingerprint("combat_v0_backend.standalone.v1", scenario_payload)
     launch = CombatLaunchSpec(

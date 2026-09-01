@@ -13,6 +13,7 @@ from game.backends.headless.combat_v0_backend import (
     STANDALONE_SEED_NORMALIZATION,
     CombatV0Backend,
     CombatV0BackendError,
+    scenario_initial_deck_definition_ids,
 )
 from game.backends.headless.scenarios import scenario_from_id
 from game.content.reduced_v0 import CONTENT_FINGERPRINT
@@ -66,6 +67,23 @@ def _launch(
 
 def _request(decision, candidate) -> ActionRequest:
     return ActionRequest(HeadlessBinding.for_candidate(decision, candidate.candidate_id))
+
+
+@pytest.mark.parametrize(
+    "scenario_id",
+    ("simple__starter", "simple__ironclad_sequencing"),
+)
+def test_registered_scenario_exposes_its_ordered_persistent_deck(
+    scenario_id: str,
+) -> None:
+    backend = CombatV0Backend()
+    backend.reset(scenario_id)
+    launch = backend.launch_spec
+    assert launch is not None
+
+    assert scenario_initial_deck_definition_ids(scenario_id) == tuple(
+        card.definition_id for card in launch.ordered_deck
+    )
 
 
 def _end_turn(decision):
