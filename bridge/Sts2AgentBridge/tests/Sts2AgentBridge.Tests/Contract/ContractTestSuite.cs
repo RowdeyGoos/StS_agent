@@ -228,6 +228,16 @@ internal static class ContractTestSuite
             readyRoom,
             Encoding.ASCII.GetByteCount(readyRoom),
             CanonicalProbeEncoder.EncodePublicRoomDecisionBody(ReadyRoomSnapshot()));
+        string readyEventRoom =
+            "{\"schema_version\":1,\"status\":\"ready\",\"decision_kind\":\"room\",\"actionable\":true,\"decision_id\":\"" + new string('0', 64) + "\"," +
+            "\"screen_kind\":\"event\",\"phase\":\"choose_option\",\"room_ordinal\":4," +
+            "\"candidates\":[{\"candidate_index\":0,\"action_id\":\"choose:0\",\"kind\":\"event_option\",\"stable_id\":\"EVENT.PROCEED\",\"enabled\":true,\"supported\":true,\"is_proceed\":false,\"is_dangerous\":false}]," +
+            "\"legal_actions\":[{\"action_id\":\"choose:0\",\"kind\":\"choose_room_option\",\"candidate_index\":0}]}";
+        AssertBody(
+            "room_event_proceed_normalized",
+            readyEventRoom,
+            Encoding.ASCII.GetByteCount(readyEventRoom),
+            CanonicalProbeEncoder.EncodePublicRoomDecisionBody(ReadyEventRoomSnapshot()));
         string waitingRoom =
             "{\"schema_version\":1,\"status\":\"waiting\",\"decision_kind\":\"room\",\"actionable\":false,\"decision_id\":null," +
             "\"screen_kind\":\"unknown\",\"phase\":\"unknown\",\"room_ordinal\":null,\"candidates\":[],\"legal_actions\":[]}";
@@ -511,6 +521,14 @@ internal static class ContractTestSuite
         TestAssert.Throws<ArgumentException>(
             () => CanonicalProbeEncoder.EncodePublicRoomDecisionBody(default),
             "default room decision snapshot");
+        PublicRoomDecisionSnapshot invalidEventProceed = ReadyEventRoomSnapshot();
+        invalidEventProceed = invalidEventProceed with
+        {
+            Candidates = new[] { invalidEventProceed.Candidates[0] with { IsProceed = true } },
+        };
+        TestAssert.Throws<ArgumentException>(
+            () => CanonicalProbeEncoder.EncodePublicRoomDecisionBody(invalidEventProceed),
+            "indexed event option cannot claim the literal proceed flag");
         TestAssert.Throws<ArgumentException>(
             () => CanonicalProbeEncoder.EncodePublicRoomActionBody(default),
             "default room action result");
@@ -661,6 +679,29 @@ internal static class ContractTestSuite
                     false),
             },
             new[] { "choose:0", "proceed" });
+    }
+
+    private static PublicRoomDecisionSnapshot ReadyEventRoomSnapshot()
+    {
+        return new PublicRoomDecisionSnapshot(
+            PublicDecisionStatus.Ready,
+            new string('0', 64),
+            "event",
+            "choose_option",
+            4,
+            new[]
+            {
+                new PublicRoomCandidate(
+                    0,
+                    "choose:0",
+                    PublicRoomCandidateKind.EventOption,
+                    "EVENT.PROCEED",
+                    true,
+                    true,
+                    false,
+                    false),
+            },
+            new[] { "choose:0" });
     }
 
     private readonly record struct ErrorExpectation(

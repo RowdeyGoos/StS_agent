@@ -31,7 +31,7 @@ from tool_common import (
 
 CAMPAIGN_ID = "R0I-BATCHED-BRIDGE-SMOKE-V1"
 STATE_ROOT_NAME = "Sts2AgentBridgeCampaign-r0i-batched-bridge-smoke-v1"
-ARTIFACT_ROOT = Path("/private/tmp/sts-r0i-v5-package.AgboAp")
+ARTIFACT_ROOT = Path("/private/tmp/sts-room-repro-out.fD3vcr")
 CONFIG_BYTES = (
     b'{"schema_version":"live_probe_v0_config_v1","enabled":true,'
     b'"bind_address":"127.0.0.1","port":43117,"token_file":"credential.hex"}'
@@ -70,8 +70,8 @@ class ArtifactPolicy:
 CANONICAL_ARTIFACTS = ArtifactPolicy(
     dll=ArtifactSpec(
         OVERLAY_DLL_NAME,
-        195_584,
-        "3d44887ac8935a1cbe8920e610db4a7d1209556242f555fce524e22c5f77b748",
+        196_096,
+        "befe5a90d538032d7a89ec5075b5259b95bb6d8b20bfa75a3e00dca509dcdbbc",
     ),
     manifest=ArtifactSpec(
         OVERLAY_MANIFEST_NAME,
@@ -80,8 +80,8 @@ CANONICAL_ARTIFACTS = ArtifactPolicy(
     ),
     archive=ArtifactSpec(
         "Sts2AgentBridge-0.8.0.zip",
-        196_223,
-        "dfc4a85877aa9488584ee116959657dc114ccc3f458ee0c44b0a6e725799b385",
+        196_735,
+        "7f4194ece6bda1e7f2979f4a1b0aebb8bcae88c127af66bcf69a7e4325dc6dd0",
     ),
 )
 

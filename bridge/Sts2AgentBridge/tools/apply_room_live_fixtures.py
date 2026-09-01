@@ -271,7 +271,7 @@ def _rest_heal_then_proceed() -> None:
     )
 
 
-def _event_prefers_proceed_and_rejects_fatal() -> None:
+def _event_handles_indexed_game_proceed_and_rejects_fatal() -> None:
     safe = _candidate(0, "event_option", "EVENT.SAFE", enabled=True, supported=True)
     fatal = _candidate(
         1,
@@ -281,36 +281,49 @@ def _event_prefers_proceed_and_rejects_fatal() -> None:
         supported=False,
         is_dangerous=True,
     )
-    proceed = _candidate(
-        2,
-        "event_option",
-        "EVENT.PROCEED",
-        enabled=True,
-        supported=True,
-        is_proceed=True,
-    )
     decision = _ready(
         _DECISION_ZERO,
         "event",
         "choose_option",
-        [safe, fatal, proceed],
-        [_legal(safe), _legal(proceed)],
+        [safe, fatal],
+        [_legal(safe)],
+    )
+    proceed = _candidate(
+        0,
+        "event_option",
+        "EVENT.PROCEED",
+        enabled=True,
+        supported=True,
+    )
+    proceed_decision = _ready(
+        _DECISION_ONE,
+        "event",
+        "choose_option",
+        [proceed],
+        [_legal(proceed)],
     )
     requests = _base_requests() + [
         _get(room._ROOM_DECISION_ROUTE),
-        _post(_DECISION_ZERO, "choose:2"),
+        _post(_DECISION_ZERO, "choose:0"),
+        _get(room._ROOM_DECISION_ROUTE),
+        _post(_DECISION_ONE, "choose:0"),
         _get(room._ROOM_DECISION_ROUTE),
     ]
     responses = _base_responses() + [
         decision,
-        _action_body(_DECISION_ZERO, "choose:2"),
+        _action_body(_DECISION_ZERO, "choose:0"),
+        proceed_decision,
+        _action_body(_DECISION_ONE, "choose:0"),
         _COMPLETE_EVENT,
     ]
     _run_case(
         responses,
         requests,
         expected_screen="event",
-        expected_actions=[("choose:2", "event_proceed")],
+        expected_actions=[
+            ("choose:0", "event_first_supported"),
+            ("choose:0", "event_first_supported"),
+        ],
     )
 
 
@@ -347,8 +360,8 @@ def operation() -> dict[str, object]:
     checks: list[str] = []
     _rest_heal_then_proceed()
     checks.append("rest_heal_then_proceed")
-    _event_prefers_proceed_and_rejects_fatal()
-    checks.append("event_proceed_and_fatal_guard")
+    _event_handles_indexed_game_proceed_and_rejects_fatal()
+    checks.append("indexed_event_proceed_and_fatal_guard")
 
     event = _candidate(0, "event_option", "EVENT.SAFE", enabled=True, supported=True)
     decision = _ready(_DECISION_ZERO, "event", "choose_option", [event], [_legal(event)])
@@ -372,6 +385,29 @@ def operation() -> dict[str, object]:
         "room_decision_replayed",
     )
     checks.append("decision_replay_rejected")
+    invalid_event_proceed = _candidate(
+        0,
+        "event_option",
+        "EVENT.PROCEED",
+        enabled=True,
+        supported=True,
+        is_proceed=True,
+    )
+    _expect_failure(
+        _base_responses()
+        + [
+            _ready(
+                _DECISION_ZERO,
+                "event",
+                "choose_option",
+                [invalid_event_proceed],
+                [_legal(invalid_event_proceed)],
+            )
+        ],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_response_mismatch",
+    )
+    checks.append("wire_invalid_event_proceed_rejected")
     _expect_failure(
         _base_responses() + [decision, _action_body(_DECISION_ZERO, "choose:0", accepted=False)],
         prefix_requests,

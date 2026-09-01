@@ -346,7 +346,8 @@ def _validate_room(body: bytes) -> dict[str, object]:
             ):
                 raise ValueError("unsupported rest candidate")
             if kind == "event_option" and (
-                candidate["supported"] is candidate["is_dangerous"]
+                candidate["is_proceed"] is not False
+                or candidate["supported"] is candidate["is_dangerous"]
             ):
                 raise ValueError("event candidate safety")
             if candidate["enabled"] and candidate["supported"]:
@@ -402,9 +403,6 @@ def _select_action(decision: dict[str, object]) -> dict[str, object]:
         if "proceed" in legal_ids:
             return {"action_id": "proceed", "basis": "proceed"}
     elif screen_kind == "event":
-        for candidate in candidates:
-            if isinstance(candidate, dict) and candidate.get("is_proceed") is True and candidate.get("action_id") in legal_ids:
-                return {"action_id": candidate["action_id"], "basis": "event_proceed"}
         for candidate in candidates:
             if (
                 isinstance(candidate, dict)

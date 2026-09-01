@@ -38,8 +38,8 @@ _FIXTURE_CREDENTIAL = b"a5" * 32
 _EXPECTED_CANONICAL_ARTIFACTS = (
     (
         "Sts2AgentBridge.dll",
-        195_584,
-        "3d44887ac8935a1cbe8920e610db4a7d1209556242f555fce524e22c5f77b748",
+        196_096,
+        "befe5a90d538032d7a89ec5075b5259b95bb6d8b20bfa75a3e00dca509dcdbbc",
     ),
     (
         "Sts2AgentBridge.json",
@@ -48,8 +48,8 @@ _EXPECTED_CANONICAL_ARTIFACTS = (
     ),
     (
         "Sts2AgentBridge-0.8.0.zip",
-        196_223,
-        "dfc4a85877aa9488584ee116959657dc114ccc3f458ee0c44b0a6e725799b385",
+        196_735,
+        "7f4194ece6bda1e7f2979f4a1b0aebb8bcae88c127af66bcf69a7e4325dc6dd0",
     ),
 )
 
@@ -657,7 +657,7 @@ def _verify_production_bindings() -> None:
         / "Application Support"
         / "Sts2AgentBridgeCampaign-r0i-batched-bridge-smoke-v1"
         or manager.ARTIFACT_ROOT
-        != Path("/private/tmp/sts-r0i-v5-package.AgboAp")
+        != Path("/private/tmp/sts-room-repro-out.fD3vcr")
         or layout.staged_operator != layout.state_root / "staging" / "operator"
         or layout.staged_overlay != layout.state_root / "staging" / "overlay"
         or layout.quarantine_overlay != layout.state_root / "quarantine" / "overlay"

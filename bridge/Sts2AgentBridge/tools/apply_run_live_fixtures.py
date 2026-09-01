@@ -422,6 +422,26 @@ def _run_safe_room_handoffs() -> None:
     ):
         fail(EXIT_MISMATCH, "run_fixture_event_handoff")
 
+    unknown, unknown_calls, _ = _run_sequence(["unknown"], 1)
+    unknown_handoff = unknown.get("room_handoff")
+    unknown_room = (
+        unknown_handoff.get("room") if isinstance(unknown_handoff, dict) else None
+    )
+    if (
+        unknown.get("termination")
+        != {
+            "reason": "room_handoff_complete",
+            "after_floor": 1,
+            "destination_kind": "unknown",
+        }
+        or not isinstance(unknown_handoff, dict)
+        or unknown_handoff.get("expected_screen_kind") != "event"
+        or not isinstance(unknown_room, dict)
+        or unknown_room.get("screen_kind") != "event"
+        or unknown_calls[-3:] != ["room_wait", "room", "map_wait"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_unknown_event_handoff")
+
 
 def _continuation(handoff: object) -> dict[str, object]:
     if not isinstance(handoff, dict):

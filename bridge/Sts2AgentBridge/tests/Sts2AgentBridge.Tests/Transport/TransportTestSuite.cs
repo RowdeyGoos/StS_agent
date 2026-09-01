@@ -275,6 +275,40 @@ internal static class TransportTestSuite
             TestAssert.Equal(roomActionRequest, fixture.RoomActionService.LastRequest, "exact room action request");
         }
 
+        var eventCandidate = new PublicRoomCandidate(
+            0,
+            "choose:0",
+            PublicRoomCandidateKind.EventOption,
+            "EVENT.PROCEED",
+            true,
+            true,
+            false,
+            false);
+        var eventSnapshot = new PublicRoomDecisionSnapshot(
+            PublicDecisionStatus.Ready,
+            new string('0', 64),
+            "event",
+            "choose_option",
+            4,
+            new[] { eventCandidate },
+            new[] { "choose:0" });
+        var normalizedRoomService = new RecordingPublicRoomDecisionService(
+            () => PublicRoomDecisionReadResult.FromSnapshot(eventSnapshot));
+        using (var fixture = new TransportProcessorFixture(
+            roomDecisionService: normalizedRoomService))
+        {
+            ProbeProcessingResult response = fixture.ProcessScreen(
+                TransportProcessorFixture.Request(target: "/probe/v0/public/room-decision"));
+            TransportProcessorFixture.AssertStatus(
+                200,
+                response,
+                "normalized event proceed transport response");
+            TestAssert.SequenceEqual(
+                CanonicalProbeEncoder.EncodePublicRoomDecisionResponse(eventSnapshot),
+                response.Response,
+                "normalized event proceed exact response");
+        }
+
         using (var fixture = new TransportProcessorFixture(ProbeMode.IncompatibleLocked))
         {
             ProbeProcessingResult manifest = fixture.Process(

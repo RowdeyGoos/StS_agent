@@ -34,6 +34,7 @@ _ACT_BOUNDARY_KINDS = frozenset(("boss",))
 _ROOM_KINDS_BY_DESTINATION = {
     "rest_site": "rest_site",
     "ancient": "event",
+    "unknown": "event",
 }
 
 

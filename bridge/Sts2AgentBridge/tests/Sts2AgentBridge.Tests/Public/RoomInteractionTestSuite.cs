@@ -1,4 +1,5 @@
 using System;
+using Sts2AgentBridge.Adapters.Public;
 using Sts2AgentBridge.Core.Public;
 
 namespace Sts2AgentBridge.Tests.Public;
@@ -11,6 +12,7 @@ internal static class RoomInteractionTestSuite
         RequestGrammarAndBudgetAreBounded();
         ServicesPreserveResultsAndScrubFaults();
         StableIdsAreAsciiAndBounded();
+        EventProceedOptionsRemainIndexedChoices();
     }
 
     private static void IdentityBindsRoomAndCandidateSafetyState()
@@ -97,6 +99,25 @@ internal static class RoomInteractionTestSuite
             PublicRoomDecisionIdentity.IsBoundedPublicId(
                 new string('a', PublicRoomLimits.MaximumStableIdLength + 1)),
             "oversized id rejected");
+    }
+
+    private static void EventProceedOptionsRemainIndexedChoices()
+    {
+        PublicRoomCandidate candidate = PinnedPublicRoomDecisionReader.CreateEventCandidate(
+            0,
+            "EVENT.PROCEED",
+            true,
+            false);
+
+        TestAssert.Equal("choose:0", candidate.ActionId, "event proceed remains indexed");
+        TestAssert.Equal(
+            PublicRoomCandidateKind.EventOption,
+            candidate.Kind,
+            "event proceed remains an event option");
+        TestAssert.True(candidate.Enabled, "event proceed remains enabled");
+        TestAssert.True(candidate.Supported, "event proceed remains supported");
+        TestAssert.False(candidate.IsProceed, "wire proceed flag is literal-action-only");
+        TestAssert.False(candidate.IsDangerous, "event proceed remains safe");
     }
 
     private static PublicRoomDecisionSnapshot ReadySnapshot()

@@ -196,7 +196,6 @@
       "System.Collections.Generic.IEnumerator<MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton>.get_Current()",
       "MegaCrit.Sts2.Core.Events.EventOption.get_TextKey()",
       "MegaCrit.Sts2.Core.Events.EventOption.get_IsLocked()",
-      "MegaCrit.Sts2.Core.Events.EventOption.get_IsProceed()",
       "MegaCrit.Sts2.Core.Events.EventOption.get_WillKillPlayer()",
       "MegaCrit.Sts2.Core.Models.EventModel.get_Owner()",
       "System.Func<MegaCrit.Sts2.Core.Entities.Players.Player,System.Boolean>.Invoke(!0)",
@@ -372,8 +371,8 @@
   "release_structure": {
     "source_root_relative_path": "src/Sts2AgentBridge",
     "source_file_count": 43,
-    "source_projection_sha256": "0de2fa650dceaa32c3e8977d666220b7fa57a3b2e8bb941754219764c87191df",
-    "assembly_structure_sha256": "15e024312f394f571173e01a9dc2209528db4d10cd1ad376498095bd1a7c8623"
+    "source_projection_sha256": "f0b8e1f0fb40d6609a95cf7fb6896121fa64bce4ca14a9b4f1fcc52b086df78c",
+    "assembly_structure_sha256": "df9ad3fcada7dc8cbf7026cd27fb2fc090a26932d55a9c385682391d4216eaff"
   },
   "network": {
     "namespace_family": "System.Net",

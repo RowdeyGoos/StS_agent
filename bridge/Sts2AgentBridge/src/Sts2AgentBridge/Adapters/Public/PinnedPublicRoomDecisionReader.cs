@@ -208,19 +208,15 @@ public sealed class PinnedPublicRoomDecisionReader : IPublicRoomDecisionReader
             bool dangerous = IsDangerous(button, option);
             bool enabled = button.IsVisibleInTree() && button.IsEnabled && !option.IsLocked && !dangerous;
             int index = candidates.Count;
-            string actionId = PublicRoomActionRequest.ChoiceActionIdFor(index);
-            candidates.Add(new PublicRoomCandidate(
+            PublicRoomCandidate candidate = CreateEventCandidate(
                 index,
-                actionId,
-                PublicRoomCandidateKind.EventOption,
                 option.TextKey,
                 enabled,
-                !dangerous,
-                option.IsProceed,
-                dangerous));
+                dangerous);
+            candidates.Add(candidate);
             if (enabled)
             {
-                legalActions.Add(actionId);
+                legalActions.Add(candidate.ActionId);
             }
         }
 
@@ -242,6 +238,26 @@ public sealed class PinnedPublicRoomDecisionReader : IPublicRoomDecisionReader
             candidates,
             legalActions);
         return snapshot with { DecisionId = PublicRoomDecisionIdentity.Compute(snapshot) };
+    }
+
+    internal static PublicRoomCandidate CreateEventCandidate(
+        int index,
+        string stableId,
+        bool enabled,
+        bool dangerous)
+    {
+        string actionId = PublicRoomActionRequest.ChoiceActionIdFor(index);
+        // A game event's final "proceed" option is still an indexed event choice.
+        // The public IsProceed flag is reserved for the bridge's literal proceed action.
+        return new PublicRoomCandidate(
+            index,
+            actionId,
+            PublicRoomCandidateKind.EventOption,
+            stableId,
+            enabled,
+            !dangerous,
+            false,
+            dangerous);
     }
 
     internal static bool IsDangerous(NEventOptionButton button, EventOption option)
