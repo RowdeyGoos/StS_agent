@@ -538,6 +538,37 @@ def operation() -> dict[str, object]:
     )
     checks.append("duplicate_proceed_action_rejected")
 
+    for invalid_version in (True, 1.0):
+        invalid = json.loads(decision)
+        invalid["schema_version"] = invalid_version
+        _expect_failure(
+            _base_responses() + [_encode(invalid)],
+            _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+            "room_response_mismatch",
+        )
+    checks.append("non_integer_schema_versions_rejected")
+
+    for invalid_index in (False, 0.0):
+        invalid = json.loads(decision)
+        invalid["candidates"][0]["candidate_index"] = invalid_index
+        _expect_failure(
+            _base_responses() + [_encode(invalid)],
+            _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+            "room_response_mismatch",
+        )
+    checks.append("non_integer_candidate_indices_rejected")
+
+    for invalid_unsupported in (
+        _inactive("unsupported", "unknown", "unsupported", 4),
+        _inactive("unsupported", "event", "unsupported", None),
+    ):
+        _expect_failure(
+            _base_responses() + [invalid_unsupported],
+            _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+            "room_response_mismatch",
+        )
+    checks.append("unsupported_screen_ordinal_pairing_rejected")
+
     _expect_failure(
         _base_responses() + [decision, _action_body(_DECISION_ZERO, "choose:0", accepted=False)],
         prefix_requests,

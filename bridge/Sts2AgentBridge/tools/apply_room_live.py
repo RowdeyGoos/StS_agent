@@ -248,7 +248,8 @@ def _validate_room(body: bytes) -> dict[str, object]:
         status = root["status"]
         screen_kind = root["screen_kind"]
         if (
-            root["schema_version"] != 1
+            type(root["schema_version"]) is not int
+            or root["schema_version"] != 1
             or status not in ("waiting", "unsupported", "ready", "complete")
             or root["decision_kind"] != "room"
             or screen_kind not in ("unknown", "rest_site", "event")
@@ -273,7 +274,13 @@ def _validate_room(body: bytes) -> dict[str, object]:
             elif status == "complete":
                 if screen_kind == "unknown" or not _bounded_ordinal(root["room_ordinal"]):
                     raise ValueError("complete room decision")
-            elif root["room_ordinal"] is not None and not _bounded_ordinal(root["room_ordinal"]):
+            elif (
+                (screen_kind == "unknown" and root["room_ordinal"] is not None)
+                or (
+                    screen_kind != "unknown"
+                    and not _bounded_ordinal(root["room_ordinal"])
+                )
+            ):
                 raise ValueError("unsupported room decision")
             return root
 
@@ -310,7 +317,8 @@ def _validate_room(body: bytes) -> dict[str, object]:
             kind = candidate["kind"]
             action = candidate["action_id"]
             if (
-                candidate["candidate_index"] != expected_index
+                type(candidate["candidate_index"]) is not int
+                or candidate["candidate_index"] != expected_index
                 or not isinstance(action, str)
                 or not _canonical_action_id(action)
                 or action in candidate_action_ids
