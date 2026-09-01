@@ -38,6 +38,7 @@ from game.engine.headless_state import PendingDecision, StateValidationError, Wo
 ROOM_RULES_VERSION = "reduced_room_rules_v0"
 ROOM_RULES_EVIDENCE = "structural_fixture"
 ROOM_DECISION_KIND = "room_action"
+ROOM_RULES_ACTION_TRUST_BOUNDARY = "internal_after_headless_binding_authentication_v1"
 
 _CONTEXT_FIELDS = frozenset({"event_id", "public_scope", "room_kind", "state"})
 _READY = "ready"
@@ -45,6 +46,8 @@ _RESOLVED = "resolved"
 _RULES_DESCRIPTOR = {
     "version": ROOM_RULES_VERSION,
     "decision_binding": "exact_pending_public_scope_and_sequence_v1",
+    "action_trust_boundary": ROOM_RULES_ACTION_TRUST_BOUNDARY,
+    "initial_boundary_validation": "observation_and_candidates_before_commit_v1",
     "maximum_open_sequence": MAX_PUBLIC_COUNTER - 1,
     "next_boundary_validation": "event_and_observation_before_commit_v1",
     "rest": {"heal_amount": REST_HEAL_PARAMETERS.heal_amount, "one_use": True},
@@ -116,13 +119,11 @@ def open_room(
     else:
         if not isinstance(event_id, str) or event_id not in _SAFE_EVENTS_BY_ID:
             raise UnsupportedRoomContentError("Event is not in the safe-event allowlist.")
-        event = _SAFE_EVENTS_BY_ID[event_id]
-        if event.effect_kind == RoomEffectKind.HEAL.value and world.current_hp >= world.max_hp:
-            raise RoomRuleError("Healing event has no contract-valid effect at full HP.")
+        _validate_event_effect_available(world, _SAFE_EVENTS_BY_ID[event_id])
 
     _mutate_atomically(
         world,
-        lambda: _set_pending_room_decision(
+        lambda: _open_and_validate_room(
             world,
             decision_sequence,
             kind.value,
@@ -193,7 +194,14 @@ def apply_room_candidate(
     public_scope: PublicScope,
     candidate: TypedCandidate,
 ) -> RoomTransition:
-    """Apply one advertised room candidate without partial mutation on rejection."""
+    """Apply one advertised candidate at the internal room-component seam.
+
+    This helper checks exact candidate membership and the persisted public scope,
+    but a ``TypedCandidate`` intentionally carries no run ID or decision hash.
+    The composing ``HeadlessBackend`` must authenticate the complete
+    ``ActionRequest``/``HeadlessBinding`` before invoking this function.  This
+    helper is not itself an authenticated backend operation.
+    """
 
     if type(candidate) not in (
         RoomRestHealCandidate,
@@ -310,6 +318,25 @@ def _set_pending_room_decision(
     )
 
 
+def _open_and_validate_room(
+    world: WorldState,
+    sequence: int,
+    room_kind: str,
+    event_id: str | None,
+    state: str,
+    public_scope: PublicScope,
+) -> None:
+    _set_pending_room_decision(
+        world,
+        sequence,
+        room_kind,
+        event_id,
+        state,
+        public_scope,
+    )
+    room_candidates(world, public_scope)
+
+
 def _complete_room(world: WorldState) -> None:
     world.pending_decision = None
     world.phase = DecisionPhase.MAP
@@ -401,8 +428,7 @@ def _public_options(
             }
         ]
     event = _event_from_context(context)
-    if event.effect_kind == RoomEffectKind.HEAL.value and world.current_hp >= world.max_hp:
-        raise RoomRuleError("Healing event has no contract-valid effect at full HP.")
+    _validate_event_effect_available(world, event)
     return [
         {
             "option_ref": room_option_reference(
@@ -422,6 +448,29 @@ def _event_from_context(context: Mapping[str, Any]):
         return _SAFE_EVENTS_BY_ID[event_id]
     except KeyError as error:
         raise UnsupportedRoomContentError("Room decision names unsupported event content.") from error
+
+
+def _validate_event_effect_available(world: WorldState, event: Any) -> None:
+    """Reject declared effects that cannot produce a public-valid transition."""
+
+    try:
+        effect = RoomEffectKind(event.effect_kind)
+    except (AttributeError, TypeError, ValueError) as error:
+        raise UnsupportedRoomContentError("Safe event names an unsupported effect.") from error
+    amount = event.amount
+    if effect is RoomEffectKind.HEAL:
+        if min(amount, world.max_hp - world.current_hp) <= 0:
+            raise RoomRuleError("Healing event has no contract-valid effect at full HP.")
+        return
+    if effect is RoomEffectKind.GAIN_GOLD:
+        if world.gold > MAX_PUBLIC_COUNTER - amount:
+            raise RoomRuleError("Gold event would exceed the public counter bound.")
+        return
+    if effect is RoomEffectKind.LOSE_HP:
+        if min(amount, world.current_hp) <= 0:
+            raise RoomRuleError("HP-loss event has no contract-valid effect at zero HP.")
+        return
+    raise UnsupportedRoomContentError("Safe event names an unsupported effect.")
 
 
 def _mark_resolved(world: WorldState, context: Mapping[str, Any]) -> None:

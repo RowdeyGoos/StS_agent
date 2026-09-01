@@ -21,6 +21,7 @@ from game.contracts.headless_v0 import (
 )
 from game.engine.headless_state import PendingDecision, WorldState
 from game.engine.room_rules import (
+    ROOM_RULES_ACTION_TRUST_BOUNDARY,
     ROOM_RULES_EVIDENCE,
     ROOM_RULES_FINGERPRINT,
     ROOM_RULES_VERSION,
@@ -77,6 +78,9 @@ def test_rest_candidates_are_complete_heal_is_capped_and_then_only_proceed() -> 
 
     assert ROOM_RULES_VERSION == "reduced_room_rules_v0"
     assert ROOM_RULES_EVIDENCE == "structural_fixture"
+    assert ROOM_RULES_ACTION_TRUST_BOUNDARY == (
+        "internal_after_headless_binding_authentication_v1"
+    )
     assert observation.data == {
         "room_kind": "rest",
         "player": {"deck_size": 2, "gold": 99, "hp": 72, "max_hp": 80},
@@ -347,16 +351,29 @@ def test_room_opening_rejects_exhausted_public_ordinal_before_advertising() -> N
     assert len(proceed) == 1 and isinstance(proceed[0], RoomProceedCandidate)
 
 
-def test_gold_projection_failure_rolls_back_effect_event_and_next_decision() -> None:
+def test_gold_event_overflow_fails_before_candidate_advertisement() -> None:
     world = _world(gold=MAX_PUBLIC_COUNTER - 10)
-    _open_event(world, "quiet_cache")
-    candidate = room_candidates(world, _scope())[0]
     before = deepcopy(world.to_private_dict())
 
-    with pytest.raises(ContractValidationError, match="public_observation.data.player.gold"):
-        apply_room_candidate(world, _scope(), candidate)
+    with pytest.raises(RoomRuleError, match="public counter bound"):
+        _open_event(world, "quiet_cache")
 
     assert world.to_private_dict() == before
+    assert world.pending_decision is None
+    with pytest.raises(RoomRuleError, match="No room decision"):
+        room_candidates(world, _scope())
+
+
+def test_gold_event_at_exact_public_bound_remains_sound() -> None:
+    world = _world(gold=MAX_PUBLIC_COUNTER - 20)
+    _open_event(world, "quiet_cache")
+    candidate = room_candidates(world, _scope())[0]
+
+    transition = apply_room_candidate(world, _scope(), candidate)
+
+    assert world.gold == MAX_PUBLIC_COUNTER
+    assert transition.public_events[0].data == {"effect": "gain_gold", "amount": 20}
+    assert len(room_candidates(world, _scope(decision=5))) == 1
 
 
 def test_full_hp_healing_event_fails_closed_before_candidate_advertisement() -> None:
@@ -367,3 +384,15 @@ def test_full_hp_healing_event_fails_closed_before_candidate_advertisement() -> 
         _open_event(world, "cool_spring")
 
     assert world.to_private_dict() == before
+    assert world.pending_decision is None
+
+
+def test_open_room_rolls_back_when_initial_public_boundary_is_unprojectable() -> None:
+    world = _world(gold=MAX_PUBLIC_COUNTER + 1)
+    before = deepcopy(world.to_private_dict())
+
+    with pytest.raises(ContractValidationError, match="public_observation.data.player.gold"):
+        _open_rest(world)
+
+    assert world.to_private_dict() == before
+    assert world.pending_decision is None
