@@ -15,6 +15,7 @@ import json
 from typing import Any
 
 from game.content.reduced_v0 import (
+    CONTENT_FINGERPRINT,
     CONTENT_VERSION,
     REWARD_TABLES,
     REWARDABLE_CARD_DEFINITION_IDS,
@@ -46,7 +47,6 @@ from game.contracts.headless_v0 import (
 )
 from game.engine.headless_state import (
     REWARD_OFFER_STREAM,
-    _IDENTITY_CAPACITY,
     PendingDecision,
     WorldState,
 )
@@ -99,6 +99,10 @@ class RewardRules:
     content_version: str = CONTENT_VERSION
     rules_version: str = REWARD_RULES_VERSION
 
+    def __post_init__(self) -> None:
+        if self.content_version != CONTENT_VERSION:
+            raise RewardRuleError("Reward rules require the fixed reduced content version.")
+
     def begin(
         self,
         world: WorldState,
@@ -110,6 +114,7 @@ class RewardRules:
         """Start one declared reward screen without consuming world RNG."""
 
         self._validate_world_for_begin(world)
+        self._validate_reduced_content_provenance(world)
         table = self._table(reward_table_id)
         if not isinstance(decision_sequence, int) or isinstance(decision_sequence, bool):
             raise RewardRuleError("decision_sequence must be an integer.")
@@ -142,6 +147,7 @@ class RewardRules:
         """Project the current private reward session into its typed decision."""
 
         world.validate()
+        self._validate_reduced_content_provenance(world)
         pending, context = self._session(world)
         scope = PublicScope.from_dict(context["public_scope"])
         events = self._events(context["public_events"])
@@ -386,7 +392,7 @@ class RewardRules:
         if not context["card_opened"]:
             candidates.append(RewardOpenCardRewardCandidate(decision_scope, card_ref))
         elif not context["card_claimed"]:
-            if self._can_allocate_persistent_card(world):
+            if world.identity_allocator.can_allocate_card_id():
                 candidates.extend(
                     RewardChooseCardCandidate(
                         decision_scope,
@@ -429,6 +435,7 @@ class RewardRules:
             context["gold_claimed"] and context["card_claimed"]
         ):
             raise RewardRuleError("Proceeded reward session is incomplete.")
+        self._validate_last_event(pending, context)
         return pending, context
 
     def _validate_world_for_begin(self, world: WorldState) -> None:
@@ -441,10 +448,6 @@ class RewardRules:
             raise RewardRuleError("World already has a pending decision.")
         if world.active_combat_launch_key is not None:
             raise RewardRuleError("Reward rules cannot begin during an active combat launch.")
-
-    @staticmethod
-    def _can_allocate_persistent_card(world: WorldState) -> bool:
-        return world.identity_allocator.next_card_ordinal < _IDENTITY_CAPACITY
 
     @staticmethod
     def _remaining_actions(context: Mapping[str, Any]) -> int:
@@ -491,6 +494,63 @@ class RewardRules:
             raise RewardRuleError("Unclaimed gold reward exceeds the public reward bound.")
         if scope.decision_ordinal + self._remaining_actions(context) > MAX_PUBLIC_COUNTER:
             raise RewardRuleError("Reward session cannot complete within the public scope budget.")
+
+    @staticmethod
+    def _validate_reduced_content_provenance(world: WorldState) -> None:
+        if world.content_fingerprint != CONTENT_FINGERPRINT:
+            raise RewardRuleError("Reward rules require the fixed reduced content fingerprint.")
+
+    def _validate_last_event(
+        self,
+        pending: PendingDecision,
+        context: Mapping[str, Any],
+    ) -> None:
+        events = self._events(context["public_events"])
+        if pending.decision_kind == _PROCEEDED_KIND:
+            if (
+                len(events) != 1
+                or events[0].event_type is not PublicEventKind.REWARD_PROCEEDED
+                or not context["gold_claimed"]
+                or not context["card_opened"]
+                or not context["card_claimed"]
+            ):
+                raise RewardRuleError("Proceeded reward session has an invalid last event.")
+            return
+
+        if not events:
+            if context["gold_claimed"] or context["card_opened"] or context["card_claimed"]:
+                raise RewardRuleError("Only an initial reward session may have no public event.")
+            return
+        if len(events) != 1:
+            raise RewardRuleError("Reward session must retain exactly one last public event.")
+
+        event = events[0]
+        table = self._table(context["reward_table_id"])
+        if event.event_type is PublicEventKind.REWARD_GOLD_CLAIMED:
+            if not context["gold_claimed"] or event.data["amount"] != table.gold_amount:
+                raise RewardRuleError("Gold-claimed event contradicts the reward session.")
+        elif event.event_type is PublicEventKind.REWARD_CARD_OPENED:
+            if (
+                not context["card_opened"]
+                or context["card_claimed"]
+                or event.data["offer_count"] != len(table.card_definition_ids)
+            ):
+                raise RewardRuleError("Card-opened event contradicts the reward session.")
+        elif event.event_type is PublicEventKind.REWARD_CARD_CHOSEN:
+            if (
+                not context["card_opened"]
+                or not context["card_claimed"]
+                or event.data["upgraded"]
+                or event.data["card_definition_id"] not in context["offers"]
+            ):
+                raise RewardRuleError("Card-chosen event contradicts the reward session.")
+        elif event.event_type is PublicEventKind.REWARD_CARD_SKIPPED:
+            if not context["card_opened"] or not context["card_claimed"]:
+                raise RewardRuleError("Card-skipped event contradicts the reward session.")
+        elif event.event_type is PublicEventKind.REWARD_PROCEEDED:
+            raise RewardRuleError("Reward-proceeded event requires the proceeded pending kind.")
+        else:
+            raise RewardRuleError("Reward session contains an unsupported public event.")
 
     @staticmethod
     def _restore_world(world: WorldState, snapshot: Mapping[str, Any]) -> None:

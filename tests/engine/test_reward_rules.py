@@ -2,22 +2,25 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 import pytest
 
-from game.content.reduced_v0 import CONTENT_FINGERPRINT, REWARD_TABLES
+from game.content.reduced_v0 import CONTENT_FINGERPRINT, CONTENT_VERSION, REWARD_TABLES
 from game.contracts.headless_v0 import (
     ActionRequest,
     ContractValidationError,
     DecisionPhase,
     HeadlessBinding,
     MAX_PUBLIC_COUNTER,
+    PublicEvent,
     PublicEventKind,
     PublicReferenceKind,
     PublicScope,
     TransitionReason,
     TransitionResult,
 )
-from game.engine.headless_state import _IDENTITY_CAPACITY, NodeKind, WorldState
+from game.engine.headless_state import NodeKind, PendingDecision, WorldState
 from game.engine.reward_rules import RewardRuleError, RewardRules
 from game.engine.snapshots import WorldSnapshotCodec
 
@@ -59,6 +62,18 @@ def _request(decision, predicate):
 
 def _candidate_kinds(decision) -> set[str]:
     return {candidate.kind.value for candidate in decision.candidates}
+
+
+def _replace_pending_context(world: WorldState, update, *, decision_kind: str | None = None) -> None:
+    assert world.pending_decision is not None
+    pending = world.pending_decision.to_dict()
+    context = deepcopy(pending["private_context"])
+    update(context)
+    world.pending_decision = PendingDecision(
+        decision_kind or pending["decision_kind"],
+        pending["sequence"],
+        context,
+    )
 
 
 def test_reward_sequence_exposes_all_and_only_legal_candidates_and_mutates_persistent_state() -> None:
@@ -228,6 +243,25 @@ def test_begin_rejects_non_reward_or_pending_world_without_mutation() -> None:
     assert world.to_private_dict() == before
 
 
+def test_reward_rules_bind_the_fixed_reduced_content_version_and_fingerprint() -> None:
+    with pytest.raises(RewardRuleError, match="fixed reduced content version"):
+        RewardRules(backend_fingerprint=BACKEND_FINGERPRINT, content_version="fabricated_v0")
+
+    world = _world()
+    world.content_fingerprint = "c" * 64
+    before = world.to_private_dict()
+    with pytest.raises(RewardRuleError, match="fixed reduced content fingerprint"):
+        _rules().begin(
+            world,
+            reward_table_id="combat_reward_basic",
+            decision_sequence=0,
+            public_scope=_scope(),
+        )
+
+    assert world.to_private_dict() == before
+    assert RewardRules(backend_fingerprint=BACKEND_FINGERPRINT).content_version == CONTENT_VERSION
+
+
 @pytest.mark.parametrize("decision_ordinal", [MAX_PUBLIC_COUNTER - 3, MAX_PUBLIC_COUNTER])
 def test_begin_rejects_public_scope_without_a_complete_reward_budget(decision_ordinal: int) -> None:
     world = _world()
@@ -296,7 +330,8 @@ def test_begin_rejects_gold_reward_that_cannot_be_publicly_projected() -> None:
 
 def test_exhausted_card_allocator_omits_choose_but_retains_skip_completion() -> None:
     world = _world()
-    world.identity_allocator.next_card_ordinal = _IDENTITY_CAPACITY
+    world.identity_allocator.next_card_ordinal = 100_000_000
+    assert world.identity_allocator.can_allocate_card_id() is False
     rules = _rules()
     decision = rules.begin(
         world,
@@ -324,7 +359,147 @@ def test_exhausted_card_allocator_omits_choose_but_retains_skip_completion() -> 
     )
 
     assert proceeded.next_decision.status.value == "waiting"
-    assert world.identity_allocator.next_card_ordinal == _IDENTITY_CAPACITY
+    assert world.identity_allocator.next_card_ordinal == 100_000_000
+
+
+@pytest.mark.parametrize(
+    "event",
+    (
+        PublicEvent(
+            0,
+            PublicEventKind.REWARD_GOLD_CLAIMED,
+            DecisionPhase.REWARD,
+            {"amount": 25},
+        ),
+        PublicEvent(
+            0,
+            PublicEventKind.REWARD_CARD_OPENED,
+            DecisionPhase.REWARD,
+            {"offer_count": 3},
+        ),
+        PublicEvent(
+            0,
+            PublicEventKind.REWARD_CARD_CHOSEN,
+            DecisionPhase.REWARD,
+            {"card_definition_id": "strike", "upgraded": False},
+        ),
+        PublicEvent(0, PublicEventKind.REWARD_CARD_SKIPPED, DecisionPhase.REWARD, {}),
+        PublicEvent(0, PublicEventKind.REWARD_PROCEEDED, DecisionPhase.REWARD, {}),
+    ),
+)
+def test_tampered_last_reward_event_cannot_contradict_initial_reward_flags(event: PublicEvent) -> None:
+    world = _world()
+    rules = _rules()
+    rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    _replace_pending_context(
+        world,
+        lambda context: context.__setitem__("public_events", [event.to_dict()]),
+    )
+
+    with pytest.raises(RewardRuleError):
+        rules.decision(world)
+
+
+def test_tampered_reward_event_payload_and_empty_event_state_fail_closed() -> None:
+    world = _world()
+    rules = _rules()
+    rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    _replace_pending_context(
+        world,
+        lambda context: context.update(
+            gold_claimed=True,
+            public_events=[
+                PublicEvent(
+                    0,
+                    PublicEventKind.REWARD_GOLD_CLAIMED,
+                    DecisionPhase.REWARD,
+                    {"amount": 26},
+                ).to_dict()
+            ],
+        ),
+    )
+    with pytest.raises(RewardRuleError, match="Gold-claimed"):
+        rules.decision(world)
+
+    world = _world()
+    rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    _replace_pending_context(
+        world,
+        lambda context: context.__setitem__("gold_claimed", True),
+    )
+    with pytest.raises(RewardRuleError, match="no public event"):
+        rules.decision(world)
+
+
+def test_tampered_proceeded_kind_and_multiple_last_events_fail_closed() -> None:
+    world = _world()
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    claimed = rules.apply(
+        world,
+        _request(decision, lambda item: item.kind.value == "reward.claim_gold"),
+    )
+    opened = rules.apply(
+        world,
+        _request(claimed.next_decision, lambda item: item.kind.value == "reward.open_card_reward"),
+    )
+    skipped = rules.apply(
+        world,
+        _request(opened.next_decision, lambda item: item.kind.value == "reward.skip_card"),
+    )
+    rules.apply(
+        world,
+        _request(skipped.next_decision, lambda item: item.kind.value == "reward.proceed"),
+    )
+    _replace_pending_context(
+        world,
+        lambda context: context.__setitem__(
+            "public_events",
+            [PublicEvent(0, PublicEventKind.REWARD_CARD_SKIPPED, DecisionPhase.REWARD, {}).to_dict()],
+        ),
+    )
+    with pytest.raises(RewardRuleError, match="Proceeded"):
+        rules.decision(world)
+
+    world = _world()
+    rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    gold_event = PublicEvent(
+        0,
+        PublicEventKind.REWARD_GOLD_CLAIMED,
+        DecisionPhase.REWARD,
+        {"amount": 25},
+    ).to_dict()
+    _replace_pending_context(
+        world,
+        lambda context: context.__setitem__("public_events", [gold_event, gold_event]),
+    )
+    with pytest.raises(RewardRuleError):
+        rules.decision(world)
 
 
 def test_forced_post_mutation_validation_failure_restores_world_exactly(monkeypatch) -> None:
