@@ -9,7 +9,7 @@ existing private snapshot codec captures it without extending the state schema.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from hashlib import sha256
 import json
 from typing import Any
@@ -112,19 +112,24 @@ class RewardRules:
         if not isinstance(public_scope, PublicScope):
             raise RewardRuleError("public_scope must be a PublicScope.")
 
-        context = self._context(
-            reward_table_id=table.table_id,
-            gold_claimed=False,
-            card_opened=False,
-            card_claimed=False,
-            offers=(),
-            public_scope=public_scope,
-            public_events=(),
-        )
-        pending = PendingDecision(_PENDING_KIND, decision_sequence, context)
-        world.pending_decision = pending
-        world.validate()
-        return self.decision(world)
+        before = world.to_private_dict()
+        try:
+            context = self._context(
+                reward_table_id=table.table_id,
+                gold_claimed=False,
+                card_opened=False,
+                card_claimed=False,
+                offers=(),
+                public_scope=public_scope,
+                public_events=(),
+            )
+            pending = PendingDecision(_PENDING_KIND, decision_sequence, context)
+            world.pending_decision = pending
+            world.validate()
+            return self.decision(world)
+        except Exception:
+            self._restore_world(world, before)
+            raise
 
     def decision(self, world: WorldState) -> DecisionState:
         """Project the current private reward session into its typed decision."""
@@ -197,26 +202,31 @@ class RewardRules:
                 next_decision=current,
             )
 
-        pending, context = self._session(world)
-        next_context, event = self._accepted_update(world, context, candidate)
-        next_scope = self._next_scope(PublicScope.from_dict(context["public_scope"]))
-        next_context["public_scope"] = next_scope.to_dict()
-        next_context["public_events"] = [event.to_dict()]
-        next_kind = _PROCEEDED_KIND if isinstance(candidate, RewardProceedCandidate) else _PENDING_KIND
-        next_pending = PendingDecision(next_kind, pending.sequence + 1, next_context)
+        before = world.to_private_dict()
+        try:
+            pending, context = self._session(world)
+            next_context, event = self._accepted_update(world, context, candidate)
+            next_scope = self._next_scope(PublicScope.from_dict(context["public_scope"]))
+            next_context["public_scope"] = next_scope.to_dict()
+            next_context["public_events"] = [event.to_dict()]
+            next_kind = (
+                _PROCEEDED_KIND if isinstance(candidate, RewardProceedCandidate) else _PENDING_KIND
+            )
+            next_pending = PendingDecision(next_kind, pending.sequence + 1, next_context)
 
-        # All validation and, for an open, the sole RNG operation have completed
-        # above.  The final state assignment cannot introduce a new allocation.
-        world.pending_decision = next_pending
-        world.validate()
-        next_decision = self.decision(world)
-        return Transition(
-            result=TransitionResult.ACCEPTED,
-            reason=TransitionReason.ACCEPTED,
-            binding=binding,
-            public_events=next_decision.public_events,
-            next_decision=next_decision,
-        )
+            world.pending_decision = next_pending
+            world.validate()
+            next_decision = self.decision(world)
+            return Transition(
+                result=TransitionResult.ACCEPTED,
+                reason=TransitionReason.ACCEPTED,
+                binding=binding,
+                public_events=next_decision.public_events,
+                next_decision=next_decision,
+            )
+        except Exception:
+            self._restore_world(world, before)
+            raise
 
     def _accepted_update(
         self,
@@ -420,6 +430,20 @@ class RewardRules:
             raise RewardRuleError("World already has a pending decision.")
         if world.active_combat_launch_key is not None:
             raise RewardRuleError("Reward rules cannot begin during an active combat launch.")
+
+    @staticmethod
+    def _restore_world(world: WorldState, snapshot: Mapping[str, Any]) -> None:
+        """Restore a pre-mutation private snapshot into the original object.
+
+        The state kernel deliberately owns the snapshot schema.  Rehydrating
+        through it restores all persistent fields, the sole ID allocator, and
+        every RNG stream/counter rather than trying to reverse individual
+        writes made by a partially failed reward action.
+        """
+
+        restored = WorldState.from_private_dict(snapshot)
+        for descriptor in fields(WorldState):
+            setattr(world, descriptor.name, getattr(restored, descriptor.name))
 
     @staticmethod
     def _table(reward_table_id: Any) -> RewardTable:

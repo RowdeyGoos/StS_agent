@@ -7,8 +7,10 @@ import pytest
 from game.content.reduced_v0 import CONTENT_FINGERPRINT, REWARD_TABLES
 from game.contracts.headless_v0 import (
     ActionRequest,
+    ContractValidationError,
     DecisionPhase,
     HeadlessBinding,
+    MAX_PUBLIC_COUNTER,
     PublicEventKind,
     PublicReferenceKind,
     PublicScope,
@@ -223,4 +225,123 @@ def test_begin_rejects_non_reward_or_pending_world_without_mutation() -> None:
     before = world.to_private_dict()
     with pytest.raises(RewardRuleError):
         rules.begin(world, reward_table_id="combat_reward_basic", decision_sequence=0, public_scope=_scope())
+    assert world.to_private_dict() == before
+
+
+def test_open_at_maximum_public_decision_ordinal_restores_rng_and_pending_state() -> None:
+    world = _world()
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(decision=MAX_PUBLIC_COUNTER),
+    )
+    before = world.to_private_dict()
+
+    with pytest.raises(ContractValidationError):
+        rules.apply(
+            world,
+            _request(decision, lambda item: item.kind.value == "reward.open_card_reward"),
+        )
+
+    assert world.to_private_dict() == before
+    assert world.rng_stream_counters()["reward_offer"] == 0
+
+
+def test_choose_at_maximum_public_decision_ordinal_restores_allocator_and_deck() -> None:
+    world = _world()
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(decision=MAX_PUBLIC_COUNTER - 1),
+    )
+    opened = rules.apply(
+        world,
+        _request(decision, lambda item: item.kind.value == "reward.open_card_reward"),
+    )
+    before = world.to_private_dict()
+
+    with pytest.raises(ContractValidationError):
+        rules.apply(
+            world,
+            _request(opened.next_decision, lambda item: item.kind.value == "reward.choose_card"),
+        )
+
+    assert world.to_private_dict() == before
+    assert len(world.master_deck) == 3
+    assert world.identity_allocator.next_card_ordinal == 3
+
+
+def test_claim_that_exceeds_the_public_gold_bound_restores_world_exactly() -> None:
+    world = _world()
+    world.gold = MAX_PUBLIC_COUNTER - 10
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    before = world.to_private_dict()
+
+    with pytest.raises(ContractValidationError):
+        rules.apply(
+            world,
+            _request(decision, lambda item: item.kind.value == "reward.claim_gold"),
+        )
+
+    assert world.to_private_dict() == before
+
+
+def test_forced_post_mutation_validation_failure_restores_world_exactly(monkeypatch) -> None:
+    world = _world()
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=0,
+        public_scope=_scope(),
+    )
+    before = world.to_private_dict()
+    original_validate = WorldState.validate
+    calls = 0
+
+    def fail_after_current_validation(self):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise RuntimeError("forced post-mutation validation failure")
+        return original_validate(self)
+
+    monkeypatch.setattr(WorldState, "validate", fail_after_current_validation)
+    with pytest.raises(RuntimeError, match="forced post-mutation"):
+        rules.apply(
+            world,
+            _request(decision, lambda item: item.kind.value == "reward.claim_gold"),
+        )
+
+    assert world.to_private_dict() == before
+
+
+def test_forced_begin_decision_failure_restores_pending_state(monkeypatch) -> None:
+    world = _world()
+    rules = _rules()
+    before = world.to_private_dict()
+
+    def fail_begin_projection(self, current_world):
+        del self, current_world
+        raise RuntimeError("forced begin projection failure")
+
+    monkeypatch.setattr(RewardRules, "decision", fail_begin_projection)
+    with pytest.raises(RuntimeError, match="forced begin projection"):
+        rules.begin(
+            world,
+            reward_table_id="combat_reward_basic",
+            decision_sequence=0,
+            public_scope=_scope(),
+        )
+
     assert world.to_private_dict() == before
