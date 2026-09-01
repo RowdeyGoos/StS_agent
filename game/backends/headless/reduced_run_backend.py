@@ -58,12 +58,14 @@ from game.contracts.headless_v0 import (
     canonical_json,
 )
 from game.engine.headless_state import (
+    COMBAT_LAUNCH_STREAM,
     WORLD_STATE_FINGERPRINT,
     AutomaticTransition,
     PendingDecision,
     TerminalResult,
     WorldState,
 )
+from game.engine.random_service import GameRandomService
 from game.engine.map_rules import (
     BACKEND_FINGERPRINT as MAP_BACKEND_FINGERPRINT,
     MAP_RULES_VERSION,
@@ -95,14 +97,17 @@ from game.engine.snapshots import (
 
 
 BACKEND_ID = "reduced_headless"
-BACKEND_VERSION = "reduced_headless_v0"
-RULES_VERSION = "reduced_headless_rules_v0"
-SNAPSHOT_VERSION = "reduced_headless_snapshot_v0"
+BACKEND_VERSION = "reduced_headless_v1"
+RULES_VERSION = "reduced_headless_rules_v1"
+SNAPSHOT_VERSION = "reduced_headless_snapshot_v1"
 MAP_CONTINUATION_KIND = "resume_map"
 
 _MAP_TEMPLATE_IDS = frozenset(item.template_id for item in MAP_TEMPLATES)
 _REWARD_TABLE_IDS = frozenset(item.table_id for item in REWARD_TABLES)
 _SAFE_EVENT_IDS = frozenset(item.event_id for item in SAFE_EVENT_DEFINITIONS)
+_MAP_TEMPLATES_BY_ID = {item.template_id: item for item in MAP_TEMPLATES}
+_REWARD_TABLES_BY_ID = {item.table_id: item for item in REWARD_TABLES}
+_SAFE_EVENTS_BY_ID = {item.event_id: item for item in SAFE_EVENT_DEFINITIONS}
 _SETTING_FIELDS = frozenset(
     {
         "combat_settings",
@@ -140,7 +145,7 @@ _COMBAT_MANIFEST = CombatV0Backend().manifest()
 _COMBAT_EVIDENCE = {item.component: item for item in _COMBAT_MANIFEST.evidence}
 
 RULES_FINGERPRINT = _canonical_hash(
-    "reduced_headless.rules.v0",
+    "reduced_headless.rules.v1",
     {
         "combat_backend_fingerprint": COMBAT_BACKEND_FINGERPRINT,
         "combat_projection_fingerprint": _COMBAT_EVIDENCE["projection"].fingerprint,
@@ -164,12 +169,20 @@ RULES_FINGERPRINT = _canonical_hash(
             "public_structural_outcome": RunOutcome.VICTORY.value,
             "non_policy_terminal_reason": "route_complete",
         },
+        "combat_child_binding": (
+            "active_actionable_nonterminal_child",
+            "accepted_history_equals_outer_sequence_minus_entry_sequence",
+            "launch_matches_config_and_named_world_rng_history",
+        ),
+        "configuration_liveness": "all_declared_required_and_selectable_gold_deltas_preflighted",
+        "phase_ownership": "exact_pending_queue_child_terminal_unsupported_partition_v1",
+        "reset_epoch": "active_generation_plus_instance_high_water_v1",
         "version": RULES_VERSION,
     },
 )
 
 SNAPSHOT_FINGERPRINT = _canonical_hash(
-    "reduced_headless.snapshot_schema.v0",
+    "reduced_headless.snapshot_schema.v1",
     {
         "private_world_schema": PRIVATE_SNAPSHOT_SCHEMA,
         "private_world_version": PRIVATE_SNAPSHOT_VERSION,
@@ -177,6 +190,7 @@ SNAPSHOT_FINGERPRINT = _canonical_hash(
         "fields": (
             "backend_fingerprint",
             "combat_snapshot",
+            "combat_entry_sequence",
             "config",
             "content_fingerprint",
             "contract_fingerprint",
@@ -200,7 +214,7 @@ SNAPSHOT_FINGERPRINT = _canonical_hash(
 )
 
 BACKEND_FINGERPRINT = _canonical_hash(
-    "reduced_headless.backend.v0",
+    "reduced_headless.backend.v1",
     {
         "backend_id": BACKEND_ID,
         "backend_version": BACKEND_VERSION,
@@ -450,6 +464,28 @@ def _validate_backend_settings(settings: Mapping[str, Any], scenario_id: str) ->
             raise ReducedRunBackendError(
                 "combat_settings.enemy_max_hp is configurable only for the simple scenario."
             )
+    _validate_route_liveness(settings)
+
+
+def _validate_route_liveness(settings: Mapping[str, Any]) -> None:
+    """Reject configurations whose declared route can deterministically deadlock."""
+
+    template_id = settings.get("map_template_id", "two_combat_rest")
+    reward_table_id = settings.get("reward_table_id", "combat_reward_basic")
+    event_id = settings.get("event_id", "quiet_cache")
+    initial_gold = settings.get("initial_gold", 0)
+    template = _MAP_TEMPLATES_BY_ID[template_id]
+    reward_table = _REWARD_TABLES_BY_ID[reward_table_id]
+    combat_count = sum(node.kind == NodeKind.COMBAT.value for node in template.nodes)
+    maximum_gold = initial_gold + combat_count * reward_table.gold_amount
+    if any(node.kind == NodeKind.EVENT.value for node in template.nodes):
+        event = _SAFE_EVENTS_BY_ID[event_id]
+        if event.effect_kind == "gain_gold":
+            maximum_gold += event.amount
+    if maximum_gold > MAX_PUBLIC_COUNTER:
+        raise ReducedRunBackendError(
+            "backend_settings can exceed the public gold bound on a declared route."
+        )
 
 
 def _resolved_settings(config: HeadlessRunConfig) -> dict[str, Any]:
@@ -520,8 +556,10 @@ class ReducedRunBackend:
         self._config: HeadlessRunConfig | None = None
         self._settings: dict[str, Any] | None = None
         self._reset_generation = -1
+        self._generation_high_water = -1
         self._outer_run_id: str | None = None
         self._outer_sequence = 0
+        self._combat_entry_sequence: int | None = None
         self._world: WorldState | None = None
         self._codec = WorldSnapshotCodec(CONTENT_FINGERPRINT, RULES_FINGERPRINT)
         self._map_rules: MapRules | None = None
@@ -567,7 +605,7 @@ class ReducedRunBackend:
         scenario = resolve_scenario_reference(config.scenario_id)
         deck = scenario_initial_deck_definition_ids(config.scenario_id)
         settings = _resolved_settings(config)
-        generation = self._reset_generation + 1
+        generation = self._generation_high_water + 1
         outer_run = _outer_run_id(config, generation)
 
         world = WorldState.create(
@@ -608,8 +646,10 @@ class ReducedRunBackend:
         candidate._config = config
         candidate._settings = settings
         candidate._reset_generation = generation
+        candidate._generation_high_water = generation
         candidate._outer_run_id = outer_run
         candidate._outer_sequence = 0
+        candidate._combat_entry_sequence = 0
         candidate._world = world
         candidate._map_rules = map_rules
         candidate._combat = combat
@@ -687,6 +727,7 @@ class ReducedRunBackend:
         descriptor = {
             "backend_fingerprint": BACKEND_FINGERPRINT,
             "combat_snapshot": combat_snapshot,
+            "combat_entry_sequence": self._combat_entry_sequence,
             "config": self._config.to_dict(),
             "content_fingerprint": CONTENT_FINGERPRINT,
             "contract_fingerprint": CONTRACT_FINGERPRINT,
@@ -708,13 +749,15 @@ class ReducedRunBackend:
         return {
             **descriptor,
             "descriptor_hash": _canonical_hash(
-                "reduced_headless.snapshot_descriptor.v0", descriptor
+                "reduced_headless.snapshot_descriptor.v1", descriptor
             ),
         }
 
     def restore(self, snapshot: Mapping[str, Any]) -> DecisionState:
         candidate = self._parse_snapshot(snapshot)
+        high_water = max(self._generation_high_water, candidate._reset_generation)
         self._install_from(candidate)
+        self._generation_high_water = high_water
         return self.observe()
 
     def close(self) -> None:
@@ -724,6 +767,7 @@ class ReducedRunBackend:
         self._settings = None
         self._outer_run_id = None
         self._outer_sequence = 0
+        self._combat_entry_sequence = None
         self._world = None
         self._map_rules = None
         self._combat = None
@@ -772,6 +816,7 @@ class ReducedRunBackend:
         self._world.apply_combat_resolution(launch, resolution)
         self._combat.close()
         self._combat = None
+        self._combat_entry_sequence = None
         self._boundary_scope = _next_scope(self.observe().observation.public_scope)
         if resolution.outcome.value == "defeat":
             self._world.pending_decision = None
@@ -834,6 +879,7 @@ class ReducedRunBackend:
             combat = CombatV0Backend()
             combat.reset(launch)
             self._combat = combat
+            self._combat_entry_sequence = self._outer_sequence + 1
             self._boundary_scope = combat.observe().observation.public_scope
         elif node_kind in (NodeKind.REST, NodeKind.EVENT):
             room_kind = RoomKind(node_kind.value)
@@ -861,6 +907,7 @@ class ReducedRunBackend:
             # distinct non-policy stop reason without relabelling it as a
             # target-game win.
             self._terminal_reason = "route_complete"
+            self._world.pending_decision = None
             self._boundary_scope = _next_scope(child.observation.public_scope)
             events = _renumber_events(
                 (*events, PublicEvent(0, PublicEventKind.RUN_TERMINATED, DecisionPhase.TERMINAL, {"outcome": RunOutcome.VICTORY.value}))
@@ -880,7 +927,9 @@ class ReducedRunBackend:
         if isinstance(error, UnsupportedRoomContentError):
             return True
         return (
-            room_kind is RoomKind.EVENT
+            type(error) is RoomRuleError
+            and str(error) == "Healing event has no contract-valid effect at full HP."
+            and room_kind is RoomKind.EVENT
             and self._settings["event_id"] == "cool_spring"
             and self._world.current_hp == self._world.max_hp
         )
@@ -973,21 +1022,52 @@ class ReducedRunBackend:
         )
 
     def _validate_private_boundary(self) -> None:
-        assert self._world is not None
+        assert self._world is not None and self._config is not None and self._settings is not None
         self._world.validate()
         phase = self._world.phase
+        self._validate_world_config_rng_provenance()
+
+        if phase is DecisionPhase.TERMINAL:
+            if self._terminal_reason not in {"defeat", "route_complete"} or self._unsupported_reason is not None:
+                raise ReducedRunBackendError("Terminal boundary has inconsistent stop reasons.")
+        elif phase is DecisionPhase.UNSUPPORTED:
+            if self._unsupported_reason != "room_unavailable" or self._terminal_reason is not None:
+                raise ReducedRunBackendError("Unsupported boundary has inconsistent stop reasons.")
+        elif self._terminal_reason is not None or self._unsupported_reason is not None:
+            raise ReducedRunBackendError("Actionable boundary cannot retain a stop reason.")
+
         if phase in (DecisionPhase.COMBAT, DecisionPhase.REWARD, DecisionPhase.ROOM):
             _map_continuation(self._world)
             self._validate_parked_map_continuation()
         elif self._world.automatic_queue:
             raise ReducedRunBackendError("Map/terminal/unsupported boundaries cannot retain a continuation queue.")
         if phase is DecisionPhase.COMBAT:
-            if self._world.pending_decision is not None or self._combat is None:
+            if (
+                self._world.pending_decision is not None
+                or self._world.terminal_result is not None
+                or self._combat is None
+                or self._combat_entry_sequence is None
+            ):
                 raise ReducedRunBackendError("Combat boundary has inconsistent child state.")
             launch = self._combat.launch_spec
             if launch is None:
                 raise ReducedRunBackendError("Combat boundary has no launch spec.")
             self._world.validate_combat_launch(launch)
+            child = self._combat.observe()
+            if (
+                child.phase is not DecisionPhase.COMBAT
+                or child.status is not DecisionStatus.ACTIONABLE
+                or not child.candidates
+                or self._combat.get_resolution() is not None
+            ):
+                raise ReducedRunBackendError("Combat child is not an actionable nonterminal boundary.")
+            expected_history_count = self._outer_sequence - self._combat_entry_sequence
+            if (
+                expected_history_count < 0
+                or len(self._combat.accepted_action_history) != expected_history_count
+                or child.decision_sequence != expected_history_count
+            ):
+                raise ReducedRunBackendError("Combat child progress does not match the outer sequence.")
             child_manifest = self._combat.manifest()
             if (
                 child_manifest.backend_fingerprint != COMBAT_BACKEND_FINGERPRINT
@@ -995,34 +1075,98 @@ class ReducedRunBackend:
                 or child_manifest.content_fingerprint != CONTENT_FINGERPRINT
             ):
                 raise ReducedRunBackendError("Combat child provenance is incompatible.")
-        elif self._combat is not None:
-            raise ReducedRunBackendError("Noncombat boundary cannot retain a combat child.")
+        elif self._combat is not None or self._combat_entry_sequence is not None or self._world.active_combat_launch_key is not None:
+            raise ReducedRunBackendError("Noncombat boundary cannot retain combat state.")
         if phase is DecisionPhase.REWARD:
+            if self._world.terminal_result is not None or self._world.pending_decision is None:
+                raise ReducedRunBackendError("Reward boundary has inconsistent private ownership.")
             decision = self._reward_rules.decision(self._world)
-            if decision.status is DecisionStatus.WAITING:
-                raise ReducedRunBackendError("Reward WAITING must be joined automatically.")
+            if decision.status is not DecisionStatus.ACTIONABLE or not decision.candidates:
+                raise ReducedRunBackendError("Reward boundary must be actionable; WAITING joins automatically.")
         elif phase is DecisionPhase.MAP:
-            if self._world.pending_decision is None or self._world.pending_decision.decision_kind != "map_choose_node":
+            if (
+                self._world.terminal_result is not None
+                or self._world.pending_decision is None
+                or self._world.pending_decision.decision_kind != "map_choose_node"
+            ):
                 raise ReducedRunBackendError("Map boundary has no exact pending map decision.")
             assert self._map_rules is not None
-            self._map_rules.decision(self._world)
+            decision = self._map_rules.decision(self._world)
+            if decision.status is not DecisionStatus.ACTIONABLE or not decision.candidates:
+                raise ReducedRunBackendError("Map boundary must be actionable.")
         elif phase is DecisionPhase.ROOM:
-            if self._world.pending_decision is None or self._world.pending_decision.decision_kind != ROOM_DECISION_KIND:
+            if (
+                self._world.terminal_result is not None
+                or self._world.pending_decision is None
+                or self._world.pending_decision.decision_kind != ROOM_DECISION_KIND
+            ):
                 raise ReducedRunBackendError("Room boundary has no exact pending room decision.")
             assert self._boundary_scope is not None
-            room_candidates(self._world, self._boundary_scope)
+            if not room_candidates(self._world, self._boundary_scope):
+                raise ReducedRunBackendError("Room boundary must be actionable.")
         elif phase is DecisionPhase.TERMINAL:
-            if self._world.terminal_result is None or self._terminal_reason not in {"defeat", "route_complete"}:
+            if (
+                self._world.pending_decision is not None
+                or self._world.terminal_result is None
+            ):
                 raise ReducedRunBackendError("Terminal boundary has no supported stop reason.")
             expected_persistent_reason = {
                 "defeat": "defeat",
                 "route_complete": "map_complete",
             }[self._terminal_reason]
-            if self._world.terminal_result.reason != expected_persistent_reason:
+            expected_outcome = {
+                "defeat": RunOutcome.DEFEAT,
+                "route_complete": RunOutcome.VICTORY,
+            }[self._terminal_reason]
+            if (
+                self._world.terminal_result.reason != expected_persistent_reason
+                or self._world.terminal_result.outcome is not expected_outcome
+            ):
                 raise ReducedRunBackendError("Terminal reason disagrees with persistent state.")
         elif phase is DecisionPhase.UNSUPPORTED:
-            if self._unsupported_reason != "room_unavailable":
-                raise ReducedRunBackendError("Unsupported boundary has no normalized reason.")
+            if self._world.pending_decision is not None or self._world.terminal_result is not None:
+                raise ReducedRunBackendError("Unsupported boundary retains hidden phase state.")
+
+    def _validate_world_config_rng_provenance(self) -> None:
+        """Bind world identity and every combat launch to config and named RNG history."""
+
+        assert self._world is not None and self._config is not None and self._settings is not None
+        if self._world.rng.seed != self._config.game_seed:
+            raise ReducedRunBackendError("World RNG seed does not match the exact run config.")
+        if self._settings != _resolved_settings(self._config):
+            raise ReducedRunBackendError("Resolved backend settings changed after configuration.")
+
+        nodes = {node.instance_id: node for node in self._world.map_nodes}
+        try:
+            launch_count = sum(
+                nodes[node_id].node_kind is NodeKind.COMBAT
+                for node_id in self._world.node_history
+            )
+        except KeyError as error:
+            raise ReducedRunBackendError("Map history cannot bind combat launch provenance.") from error
+        if self._world.rng_stream_counters()["combat_launch"] != launch_count:
+            raise ReducedRunBackendError("Combat launch count does not match visited combat nodes.")
+
+        replay_rng = GameRandomService(self._config.game_seed)
+        launch_seeds = [
+            replay_rng.randint(COMBAT_LAUNCH_STREAM, 0, (1 << 63) - 1)
+            for _ in range(launch_count)
+        ]
+        actual_stream = self._world.rng.snapshot()["streams"].get(COMBAT_LAUNCH_STREAM)
+        expected_stream = replay_rng.snapshot()["streams"].get(COMBAT_LAUNCH_STREAM)
+        if actual_stream != expected_stream:
+            raise ReducedRunBackendError("Combat launch RNG state does not match its named history.")
+
+        if self._world.phase is DecisionPhase.COMBAT:
+            if not launch_seeds or self._combat is None or self._combat.launch_spec is None:
+                raise ReducedRunBackendError("Active combat cannot bind its launch RNG draw.")
+            launch = self._combat.launch_spec
+            if (
+                launch.combat_seed != launch_seeds[-1]
+                or launch.scenario_id != self._config.scenario_id
+                or launch.to_dict()["combat_settings"] != self._settings["combat_settings"]
+            ):
+                raise ReducedRunBackendError("Combat launch does not match RNG/config provenance.")
 
     def _validate_parked_map_continuation(self) -> None:
         """Replay-validate the parked pending map decision without mutating live state."""
@@ -1043,6 +1187,7 @@ class ReducedRunBackend:
         return {
             "world": self._world.to_private_dict(),
             "combat": None if self._combat is None else self._combat.snapshot(),
+            "combat_entry_sequence": self._combat_entry_sequence,
             "last_public_events": self._last_public_events,
             "boundary_scope": self._boundary_scope,
             "terminal_reason": self._terminal_reason,
@@ -1060,6 +1205,7 @@ class ReducedRunBackend:
             combat = CombatV0Backend()
             combat.restore(combat_snapshot)
             self._combat = combat
+        self._combat_entry_sequence = preimage["combat_entry_sequence"]
         self._last_public_events = preimage["last_public_events"]
         self._boundary_scope = preimage["boundary_scope"]
         self._terminal_reason = preimage["terminal_reason"]
@@ -1073,6 +1219,7 @@ class ReducedRunBackend:
         expected = {
             "backend_fingerprint",
             "combat_snapshot",
+            "combat_entry_sequence",
             "config",
             "content_fingerprint",
             "contract_fingerprint",
@@ -1106,7 +1253,7 @@ class ReducedRunBackend:
         if any(snapshot[name] != value for name, value in identities.items()):
             raise ReducedRunBackendError("Snapshot provenance is incompatible.")
         if snapshot["descriptor_hash"] != _canonical_hash(
-            "reduced_headless.snapshot_descriptor.v0", descriptor
+            "reduced_headless.snapshot_descriptor.v1", descriptor
         ):
             raise ReducedRunBackendError("Snapshot descriptor hash is invalid.")
         config_payload = snapshot["config"]
@@ -1120,6 +1267,7 @@ class ReducedRunBackend:
         config = HeadlessRunConfig.from_dict(config_payload)
         generation = snapshot["reset_generation"]
         sequence = snapshot["decision_sequence"]
+        combat_entry_sequence = snapshot["combat_entry_sequence"]
         if (
             not isinstance(generation, int)
             or isinstance(generation, bool)
@@ -1129,6 +1277,12 @@ class ReducedRunBackend:
             or sequence < 0
         ):
             raise ReducedRunBackendError("Snapshot generation and sequence must be nonnegative integers.")
+        if combat_entry_sequence is not None and (
+            not isinstance(combat_entry_sequence, int)
+            or isinstance(combat_entry_sequence, bool)
+            or not 0 <= combat_entry_sequence <= sequence
+        ):
+            raise ReducedRunBackendError("Snapshot combat entry sequence is invalid.")
         if snapshot["outer_run_id"] != _outer_run_id(config, generation):
             raise ReducedRunBackendError("Snapshot outer run identity is invalid.")
         try:
@@ -1153,8 +1307,10 @@ class ReducedRunBackend:
         candidate._config = config
         candidate._settings = settings
         candidate._reset_generation = generation
+        candidate._generation_high_water = generation
         candidate._outer_run_id = snapshot["outer_run_id"]
         candidate._outer_sequence = sequence
+        candidate._combat_entry_sequence = combat_entry_sequence
         candidate._world = world
         candidate._map_rules = map_rules
         candidate._combat = combat
@@ -1188,8 +1344,10 @@ class ReducedRunBackendState:
     _config: Any = None
     _settings: Any = None
     _reset_generation: Any = None
+    _generation_high_water: Any = None
     _outer_run_id: Any = None
     _outer_sequence: Any = None
+    _combat_entry_sequence: Any = None
     _world: Any = None
     _codec: Any = None
     _map_rules: Any = None

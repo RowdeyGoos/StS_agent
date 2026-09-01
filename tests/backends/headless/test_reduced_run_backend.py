@@ -9,7 +9,9 @@ from typing import Any
 
 import pytest
 
+import game.backends.headless.combat_v0_backend as combat_module
 import game.backends.headless.reduced_run_backend as reduced_module
+from game.backends.headless.combat_v0_backend import CombatV0Backend
 from game.backends.headless.reduced_run_backend import (
     BACKEND_FINGERPRINT,
     BACKEND_ID,
@@ -29,13 +31,16 @@ from game.contracts.headless_v0 import (
     DecisionStatus,
     EvidenceLabel,
     HeadlessBinding,
+    MAX_PUBLIC_COUNTER,
     PolicyView,
     PublicEventKind,
     TransitionReason,
     TransitionResult,
 )
 from game.data.headless_trajectory import TrajectoryRecorder
-from game.engine.headless_state import WorldState
+from game.engine.headless_state import CombatLaunchSpec, WorldState
+from game.engine.random_service import GameRandomService
+from game.engine.room_rules import RoomRuleError
 from game.runtime.episode_runner import EpisodeStopReason, run_episode
 
 
@@ -153,7 +158,21 @@ def _spawn_factory_probe(queue) -> None:
 def _rehash_snapshot(snapshot: dict[str, Any]) -> None:
     descriptor = {key: value for key, value in snapshot.items() if key != "descriptor_hash"}
     snapshot["descriptor_hash"] = reduced_module._canonical_hash(
-        "reduced_headless.snapshot_descriptor.v0", descriptor
+        "reduced_headless.snapshot_descriptor.v1", descriptor
+    )
+
+
+def _rehash_world_snapshot(snapshot: dict[str, Any]) -> None:
+    private = snapshot["private_world_snapshot"]
+    world = WorldState.from_private_dict(private["payload"])
+    private["semantic_key"] = world.semantic_key()
+    _rehash_snapshot(snapshot)
+
+
+def _rehash_combat_snapshot(snapshot: dict[str, Any]) -> None:
+    descriptor = {key: value for key, value in snapshot.items() if key != "descriptor_hash"}
+    snapshot["descriptor_hash"] = combat_module._fingerprint(
+        "combat_v0_backend.snapshot_descriptor.v1", descriptor
     )
 
 
@@ -243,6 +262,37 @@ def test_invalid_configuration_rejects_before_backend_mutation(payload) -> None:
     assert backend.snapshot() == original_snapshot
 
 
+@pytest.mark.parametrize(
+    "settings",
+    (
+        {"initial_gold": MAX_PUBLIC_COUNTER, "combat_settings": {"enemy_max_hp": 1}},
+        {
+            "initial_gold": MAX_PUBLIC_COUNTER - 25,
+            "event_id": "cool_spring",
+            "combat_settings": {"enemy_max_hp": 1},
+        },
+        {
+            "initial_gold": MAX_PUBLIC_COUNTER - 50,
+            "event_id": "quiet_cache",
+            "combat_settings": {"enemy_max_hp": 1},
+        },
+    ),
+)
+def test_configuration_preflight_rejects_deterministic_gold_deadlocks(settings) -> None:
+    with pytest.raises(ReducedRunBackendError, match="gold bound"):
+        _config(**settings)
+
+
+def test_liveness_preflight_allows_exact_single_reward_bound() -> None:
+    config = _config(
+        initial_gold=MAX_PUBLIC_COUNTER - 25,
+        map_template_id="short_rest_path",
+        combat_settings={"enemy_max_hp": 1},
+    )
+    decision = ReducedRunBackend().reset(config)
+    assert decision.status is DecisionStatus.ACTIONABLE
+
+
 def test_fresh_determinism_repeated_reset_identity_and_stale_old_binding() -> None:
     first, second = ReducedRunBackend(), ReducedRunBackend()
     first_decision, second_decision = first.reset(_config()), second.reset(_config())
@@ -262,6 +312,31 @@ def test_fresh_determinism_repeated_reset_identity_and_stale_old_binding() -> No
     assert stale.reason is TransitionReason.STALE_BINDING
     assert stale.next_decision.to_json() == reset_decision.to_json()
     assert first.snapshot() == before
+
+
+def test_restore_reconstructs_active_generation_without_rewinding_lifetime_epoch() -> None:
+    backend = ReducedRunBackend()
+    generation_zero = backend.reset(_config())
+    snapshot_zero = deepcopy(backend.snapshot())
+    generation_one = backend.reset(_config())
+    request_one = _request(
+        generation_one,
+        _candidate(generation_one, CandidateKind.COMBAT_END_TURN),
+    )
+
+    restored_zero = backend.restore(snapshot_zero)
+    assert restored_zero.run_id == generation_zero.run_id
+    assert backend.snapshot()["reset_generation"] == 0
+    generation_two = backend.reset(_config())
+    assert backend.snapshot()["reset_generation"] == 2
+    assert generation_two.run_id not in {generation_zero.run_id, generation_one.run_id}
+    assert generation_two.decision_hash != generation_one.decision_hash
+    assert backend.apply(request_one).result is TransitionResult.STALE
+
+    fresh = ReducedRunBackend()
+    fresh.restore(deepcopy(backend.snapshot()))
+    assert fresh.reset(_config()).run_id != generation_two.run_id
+    assert fresh.snapshot()["reset_generation"] == 3
 
 
 @pytest.mark.parametrize("room_kind", ("rest", "event"))
@@ -476,6 +551,104 @@ def test_pre_combat_two_restore_reproduces_launch_decision_events_and_rng() -> N
     assert restored.combat_launch_count == 2
 
 
+def _progress_combat_snapshot(outer_snapshot: dict[str, Any]) -> CombatV0Backend:
+    child = CombatV0Backend()
+    decision = child.restore(deepcopy(outer_snapshot["combat_snapshot"]))
+    transition = child.apply(_request(decision, _combat_choice(decision)))
+    assert transition.result is TransitionResult.ACCEPTED
+    return child
+
+
+def test_restore_rejects_terminal_combat_child_under_active_combat_world() -> None:
+    source = ReducedRunBackend()
+    source.reset(_config(combat_settings={"enemy_max_hp": 1}))
+    snapshot = deepcopy(source.snapshot())
+    child = _progress_combat_snapshot(snapshot)
+    assert child.get_resolution() is not None
+    snapshot["combat_snapshot"] = child.snapshot()
+    _rehash_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+@pytest.mark.parametrize("combat_number", (1, 2))
+def test_restore_rejects_child_progress_spliced_ahead_of_outer_sequence(
+    combat_number: int,
+) -> None:
+    source = ReducedRunBackend()
+    source.reset(_config())
+    if combat_number == 2:
+        pre_combat_two = _to_pre_combat_two(source)
+        _choose_map_kind(source, pre_combat_two, "combat")
+    snapshot = deepcopy(source.snapshot())
+    child = _progress_combat_snapshot(snapshot)
+    assert child.get_resolution() is None
+    snapshot["combat_snapshot"] = child.snapshot()
+    _rehash_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+@pytest.mark.parametrize("splice", ("seed", "scenario", "settings"))
+def test_restore_binds_active_launch_to_world_rng_and_exact_config(splice: str) -> None:
+    source = ReducedRunBackend()
+    source.reset(_config())
+    snapshot = deepcopy(source.snapshot())
+    combat_snapshot = snapshot["combat_snapshot"]
+    launch_payload = combat_snapshot["launch"]
+    if splice == "seed":
+        launch_payload["combat_seed"] += 1
+    elif splice == "scenario":
+        launch_payload["scenario_id"] = "nibbit__starter"
+    else:
+        launch_payload["combat_settings"] = {"cards_per_turn": 4}
+    launch = CombatLaunchSpec.from_dict(launch_payload)
+    _rehash_combat_snapshot(combat_snapshot)
+    snapshot["private_world_snapshot"]["payload"]["active_combat_launch_key"] = (
+        launch.semantic_key()
+    )
+    _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_binds_config_seed_and_named_combat_rng_history() -> None:
+    source = ReducedRunBackend()
+    source.reset(_config())
+
+    config_splice = deepcopy(source.snapshot())
+    config_splice["config"]["game_seed"] = 8
+    spliced_config = HeadlessRunConfig.from_dict(config_splice["config"])
+    config_splice["outer_run_id"] = reduced_module._outer_run_id(
+        spliced_config, config_splice["reset_generation"]
+    )
+    _rehash_snapshot(config_splice)
+    with pytest.raises(ReducedRunBackendError):
+        ReducedRunBackend().restore(config_splice)
+
+    history_splice = deepcopy(source.snapshot())
+    history_splice["private_world_snapshot"]["payload"]["rng"]["streams"][
+        "combat_launch"
+    ]["request_count"] += 1
+    _rehash_world_snapshot(history_splice)
+    with pytest.raises(ReducedRunBackendError):
+        ReducedRunBackend().restore(history_splice)
+
+
+def test_restore_rejects_pristine_rng_spliced_under_active_first_combat() -> None:
+    source = ReducedRunBackend()
+    source.reset(_config())
+    snapshot = deepcopy(source.snapshot())
+    snapshot["private_world_snapshot"]["payload"]["rng"] = GameRandomService(7).snapshot()
+    _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError):
+        ReducedRunBackend().restore(snapshot)
+
+
 @pytest.mark.parametrize(
     "tamper",
     ("provenance", "phase", "queue", "combat_key", "parked_map"),
@@ -610,3 +783,75 @@ def test_runtime_unavailable_room_is_visible_unsupported_and_snapshot_capable() 
     assert decision.decision_sequence == transition_source.decision_sequence + 1
     restored = ReducedRunBackend()
     assert restored.restore(backend.snapshot()).to_json() == decision.to_json()
+
+
+def test_injected_room_rule_error_under_same_public_conditions_rolls_back(
+    monkeypatch,
+) -> None:
+    backend = ReducedRunBackend()
+    decision = backend.reset(
+        _config(event_id="cool_spring", combat_settings={"enemy_max_hp": 1})
+    )
+    decision = _finish_combat(backend, decision)
+    decision = _finish_reward(backend, decision)
+    kind_by_reference = {
+        node["node_ref"]: node["kind"] for node in decision.observation.data["nodes"]
+    }
+    event_candidate = next(
+        item for item in decision.candidates
+        if kind_by_reference[item.node_ref] == "event"
+    )
+    before = backend.snapshot()
+
+    def injected_failure(*args, **kwargs):
+        raise RoomRuleError("injected room failure")
+
+    monkeypatch.setattr(reduced_module, "open_room", injected_failure)
+    transition = backend.apply(_request(decision, event_candidate))
+    assert transition.result is TransitionResult.REJECTED
+    assert transition.reason is TransitionReason.REJECTED_BY_RULES
+    assert transition.next_decision.to_json() == decision.to_json()
+    assert backend.snapshot() == before
+
+
+def test_restore_rejects_stop_reason_on_actionable_boundary() -> None:
+    backend = ReducedRunBackend()
+    backend.reset(_config())
+    snapshot = deepcopy(backend.snapshot())
+    snapshot["terminal_reason"] = "defeat"
+    _rehash_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+@pytest.mark.parametrize("boundary", ("unsupported", "terminal"))
+def test_restore_rejects_hidden_pending_decision_on_closed_boundary(boundary: str) -> None:
+    if boundary == "unsupported":
+        backend = ReducedRunBackend()
+        decision = backend.reset(
+            _config(event_id="cool_spring", combat_settings={"enemy_max_hp": 1})
+        )
+        decision = _finish_combat(backend, decision)
+        decision = _finish_reward(backend, decision)
+        valid_pending = deepcopy(
+            backend.snapshot()["private_world_snapshot"]["payload"]["pending_decision"]
+        )
+        _choose_map_kind(backend, decision, "event")
+    else:
+        backend = ReducedRunBackend()
+        backend.reset(_config())
+        decision = _to_pre_combat_two(backend)
+        decision = _choose_map_kind(backend, decision, "combat")
+        decision = _finish_combat(backend, decision)
+        decision = _finish_reward(backend, decision)
+        valid_pending = deepcopy(
+            backend.snapshot()["private_world_snapshot"]["payload"]["pending_decision"]
+        )
+        _choose_map_kind(backend, decision, "terminal")
+    snapshot = deepcopy(backend.snapshot())
+    snapshot["private_world_snapshot"]["payload"]["pending_decision"] = valid_pending
+    _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
