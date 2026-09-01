@@ -6,6 +6,7 @@ from copy import deepcopy
 
 import pytest
 
+import game.engine.room_rules as room_rules_module
 from game.content.reduced_v0 import CONTENT_FINGERPRINT
 from game.contracts.headless_v0 import (
     MAX_PUBLIC_COUNTER,
@@ -180,15 +181,12 @@ def test_unsupported_content_and_malformed_private_context_fail_closed_without_m
     before = deepcopy(world.to_private_dict())
     pending = world.pending_decision
     assert pending is not None
+    malformed_context = dict(pending.private_context)
+    malformed_context["event_id"] = "unknown"
     world.pending_decision = PendingDecision(
         pending.decision_kind,
         pending.sequence,
-        {
-            "room_kind": "event",
-            "event_id": "unknown",
-            "state": "ready",
-            "public_scope": _scope().to_dict(),
-        },
+        malformed_context,
     )
     with pytest.raises(UnsupportedRoomContentError, match="unsupported event"):
         room_public_observation(world, _scope())
@@ -396,3 +394,116 @@ def test_open_room_rolls_back_when_initial_public_boundary_is_unprojectable() ->
 
     assert world.to_private_dict() == before
     assert world.pending_decision is None
+
+
+def test_forged_resolved_event_cannot_bypass_required_effect_after_restore() -> None:
+    world = _world(gold=40)
+    _open_event(world, "quiet_cache")
+    codec = WorldSnapshotCodec(CONTENT_FINGERPRINT, ROOM_RULES_FINGERPRINT)
+    restored = codec.restore(codec.capture(world))
+    pending = restored.pending_decision
+    assert pending is not None
+    forged_context = dict(pending.private_context)
+    forged_context["state"] = "resolved"
+    forged_context["public_scope"] = _scope(decision=5).to_dict()
+    restored.pending_decision = PendingDecision(
+        pending.decision_kind,
+        5,
+        forged_context,
+    )
+    before = deepcopy(restored.to_private_dict())
+
+    with pytest.raises(RoomRuleError, match="exact effect receipt"):
+        room_candidates(restored, _scope(decision=5))
+
+    assert restored.gold == 40
+    assert restored.to_private_dict() == before
+
+    forged_context["resolved_receipt"] = {"effect": "gain_gold", "amount": 20}
+    restored.pending_decision = PendingDecision(
+        pending.decision_kind,
+        5,
+        forged_context,
+    )
+    with pytest.raises(RoomRuleError, match="does not match its effect receipt"):
+        room_candidates(restored, _scope(decision=5))
+
+
+@pytest.mark.parametrize(
+    ("room_kind", "event_id", "hp", "effect", "amount"),
+    [
+        (RoomKind.REST, None, 72, "heal", 8),
+        (RoomKind.EVENT, "quiet_cache", 68, "gain_gold", 20),
+        (RoomKind.EVENT, "cool_spring", 76, "heal", 4),
+    ],
+)
+def test_exact_resolved_receipts_survive_snapshot_rehydration(
+    room_kind: RoomKind,
+    event_id: str | None,
+    hp: int,
+    effect: str,
+    amount: int,
+) -> None:
+    world = _world(hp=hp)
+    open_room(
+        world,
+        room_kind,
+        event_id=event_id,
+        decision_sequence=4,
+        public_scope=_scope(),
+    )
+    apply_room_candidate(world, _scope(), room_candidates(world, _scope())[0])
+    pending = world.pending_decision
+    assert pending is not None
+    assert pending.private_context["resolved_receipt"] == {
+        "effect": effect,
+        "amount": amount,
+    }
+
+    codec = WorldSnapshotCodec(CONTENT_FINGERPRINT, ROOM_RULES_FINGERPRINT)
+    restored = codec.restore(codec.capture(world))
+    proceed = room_candidates(restored, _scope(decision=5))
+    assert len(proceed) == 1 and isinstance(proceed[0], RoomProceedCandidate)
+
+    restored_pending = restored.pending_decision
+    assert restored_pending is not None
+    contradictory = dict(restored_pending.private_context)
+    contradictory["resolved_receipt"] = {"effect": effect, "amount": amount + 1}
+    restored.pending_decision = PendingDecision(
+        restored_pending.decision_kind,
+        restored_pending.sequence,
+        contradictory,
+    )
+    with pytest.raises(RoomRuleError, match="does not match its allowlisted effect"):
+        room_candidates(restored, _scope(decision=5))
+
+
+def test_ready_room_rejects_external_player_mutation() -> None:
+    world = _world()
+    _open_rest(world)
+    world.gold += 1
+
+    with pytest.raises(RoomRuleError, match="differs from its opening baseline"):
+        room_candidates(world, _scope())
+
+
+def test_proceed_event_construction_failure_rolls_back_completion(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    world = _world()
+    _open_event(world, "quiet_cache")
+    apply_room_candidate(world, _scope(), room_candidates(world, _scope())[0])
+    proceed_scope = _scope(decision=5)
+    proceed = room_candidates(world, proceed_scope)[0]
+    before = deepcopy(world.to_private_dict())
+
+    def reject_public_event(*args, **kwargs):
+        del args, kwargs
+        raise RuntimeError("forced proceed event construction failure")
+
+    monkeypatch.setattr(room_rules_module, "PublicEvent", reject_public_event)
+    with pytest.raises(RuntimeError, match="forced proceed event"):
+        apply_room_candidate(world, proceed_scope, proceed)
+
+    assert world.phase is DecisionPhase.ROOM
+    assert world.to_private_dict() == before

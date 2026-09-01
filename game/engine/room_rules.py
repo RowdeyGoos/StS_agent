@@ -40,7 +40,20 @@ ROOM_RULES_EVIDENCE = "structural_fixture"
 ROOM_DECISION_KIND = "room_action"
 ROOM_RULES_ACTION_TRUST_BOUNDARY = "internal_after_headless_binding_authentication_v1"
 
-_CONTEXT_FIELDS = frozenset({"event_id", "public_scope", "room_kind", "state"})
+_CONTEXT_FIELDS = frozenset(
+    {
+        "event_id",
+        "opening_baseline",
+        "public_scope",
+        "resolved_receipt",
+        "room_kind",
+        "state",
+    }
+)
+_OPENING_BASELINE_FIELDS = frozenset(
+    {"current_hp", "gold", "max_hp", "public_scope", "sequence"}
+)
+_RESOLVED_RECEIPT_FIELDS = frozenset({"amount", "effect"})
 _READY = "ready"
 _RESOLVED = "resolved"
 _RULES_DESCRIPTOR = {
@@ -50,6 +63,7 @@ _RULES_DESCRIPTOR = {
     "initial_boundary_validation": "observation_and_candidates_before_commit_v1",
     "maximum_open_sequence": MAX_PUBLIC_COUNTER - 1,
     "next_boundary_validation": "event_and_observation_before_commit_v1",
+    "private_state_invariant": "opening_baseline_plus_exact_resolved_effect_receipt_v1",
     "rest": {"heal_amount": REST_HEAL_PARAMETERS.heal_amount, "one_use": True},
     "resolved_proceed_sequence": "increment_one",
     "safe_events": [item.to_dict() for item in SAFE_EVENT_DEFINITIONS],
@@ -219,12 +233,9 @@ def apply_room_candidate(
         # Room completion is the local handoff boundary.  The composer decides
         # which map decision follows; it receives a normal MAP phase with no
         # lingering private room configuration.
-        _mutate_atomically(world, lambda: _complete_room(world))
-        return RoomTransition(
-            completed=True,
-            public_events=(
-                PublicEvent(0, PublicEventKind.ROOM_PROCEEDED, DecisionPhase.ROOM, {}),
-            ),
+        return _mutate_atomically(
+            world,
+            lambda: _apply_proceed_transition(world),
         )
 
     if isinstance(candidate, RoomRestHealCandidate):
@@ -289,7 +300,148 @@ def _room_context(world: WorldState) -> dict[str, Any]:
         not isinstance(event_id, str) or event_id not in _SAFE_EVENTS_BY_ID
     ):
         raise UnsupportedRoomContentError("Room decision names unsupported event content.")
+    baseline = _opening_baseline_from_context(context)
+    opening_scope = PublicScope.from_dict(baseline["public_scope"])
+    if opening_scope.decision_ordinal != baseline["sequence"]:
+        raise RoomRuleError("Opening public scope does not bind to opening sequence.")
+    if context["state"] == _READY:
+        if pending.sequence != baseline["sequence"] or stored_scope != opening_scope:
+            raise RoomRuleError("Ready room decision does not match its opening identity.")
+        if context["resolved_receipt"] is not None:
+            raise RoomRuleError("Ready room decision cannot contain an effect receipt.")
+        _require_exact_player_baseline(world, baseline)
+    else:
+        expected_scope = _next_public_scope(opening_scope)
+        if pending.sequence != baseline["sequence"] + 1 or stored_scope != expected_scope:
+            raise RoomRuleError("Resolved room decision does not follow its opening identity.")
+        _validate_resolved_effect(world, room_kind, event_id, baseline, context)
     return context
+
+
+def _opening_baseline_from_context(context: Mapping[str, Any]) -> dict[str, Any]:
+    baseline = context["opening_baseline"]
+    if not isinstance(baseline, Mapping) or set(baseline) != _OPENING_BASELINE_FIELDS:
+        raise RoomRuleError("Room opening baseline has an incompatible schema.")
+    current_hp = _require_nonnegative_private_int(
+        baseline["current_hp"], "opening_baseline.current_hp"
+    )
+    max_hp = _require_nonnegative_private_int(
+        baseline["max_hp"], "opening_baseline.max_hp"
+    )
+    gold = _require_nonnegative_private_int(
+        baseline["gold"], "opening_baseline.gold"
+    )
+    sequence = _require_nonnegative_private_int(
+        baseline["sequence"], "opening_baseline.sequence"
+    )
+    if max_hp <= 0 or current_hp > max_hp:
+        raise RoomRuleError("Room opening baseline has invalid HP.")
+    if sequence >= MAX_PUBLIC_COUNTER:
+        raise RoomRuleError("Room opening baseline cannot advance to proceed.")
+    public_scope = baseline["public_scope"]
+    if not isinstance(public_scope, Mapping):
+        raise RoomRuleError("Room opening baseline public scope must be an object.")
+    try:
+        normalized_scope = PublicScope.from_dict(public_scope)
+    except Exception as error:
+        raise RoomRuleError("Room opening baseline has an invalid public scope.") from error
+    return {
+        "current_hp": current_hp,
+        "gold": gold,
+        "max_hp": max_hp,
+        "public_scope": normalized_scope.to_dict(),
+        "sequence": sequence,
+    }
+
+
+def _require_nonnegative_private_int(value: Any, path: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise RoomRuleError(f"{path} must be a nonnegative integer.")
+    return value
+
+
+def _require_exact_player_baseline(
+    world: WorldState,
+    baseline: Mapping[str, Any],
+) -> None:
+    if (
+        world.current_hp != baseline["current_hp"]
+        or world.max_hp != baseline["max_hp"]
+        or world.gold != baseline["gold"]
+    ):
+        raise RoomRuleError("Ready room state differs from its opening baseline.")
+
+
+def _validate_resolved_effect(
+    world: WorldState,
+    room_kind: RoomKind,
+    event_id: str | None,
+    baseline: Mapping[str, Any],
+    context: Mapping[str, Any],
+) -> None:
+    receipt = context["resolved_receipt"]
+    if not isinstance(receipt, Mapping) or set(receipt) != _RESOLVED_RECEIPT_FIELDS:
+        raise RoomRuleError("Resolved room decision requires an exact effect receipt.")
+    try:
+        receipt_effect = RoomEffectKind(receipt["effect"])
+    except (TypeError, ValueError) as error:
+        raise RoomRuleError("Resolved room receipt names an invalid effect.") from error
+    receipt_amount = _require_nonnegative_private_int(
+        receipt["amount"], "resolved_receipt.amount"
+    )
+    expected_effect, expected_amount, expected_hp, expected_gold = (
+        _expected_resolved_effect(room_kind, event_id, baseline)
+    )
+    if receipt_effect is not expected_effect or receipt_amount != expected_amount:
+        raise RoomRuleError("Resolved room receipt does not match its allowlisted effect.")
+    if (
+        world.current_hp != expected_hp
+        or world.max_hp != baseline["max_hp"]
+        or world.gold != expected_gold
+    ):
+        raise RoomRuleError("Resolved room state does not match its effect receipt.")
+
+
+def _expected_resolved_effect(
+    room_kind: RoomKind,
+    event_id: str | None,
+    baseline: Mapping[str, Any],
+) -> tuple[RoomEffectKind, int, int, int]:
+    opening_hp = baseline["current_hp"]
+    max_hp = baseline["max_hp"]
+    opening_gold = baseline["gold"]
+    if room_kind is RoomKind.REST:
+        effect = RoomEffectKind.HEAL
+        declared_amount = REST_HEAL_PARAMETERS.heal_amount
+    else:
+        event = _SAFE_EVENTS_BY_ID[event_id]
+        effect = RoomEffectKind(event.effect_kind)
+        declared_amount = event.amount
+
+    expected_hp = opening_hp
+    expected_gold = opening_gold
+    if effect is RoomEffectKind.HEAL:
+        applied = min(declared_amount, max_hp - opening_hp)
+        expected_hp += applied
+    elif effect is RoomEffectKind.GAIN_GOLD:
+        applied = declared_amount
+        expected_gold += applied
+    elif effect is RoomEffectKind.LOSE_HP:
+        applied = min(declared_amount, opening_hp)
+        expected_hp -= applied
+    else:
+        raise UnsupportedRoomContentError("Safe event names an unsupported effect.")
+    if applied <= 0:
+        raise RoomRuleError("Resolved room effect must produce a positive delta.")
+    return effect, applied, expected_hp, expected_gold
+
+
+def _next_public_scope(public_scope: PublicScope) -> PublicScope:
+    return PublicScope(
+        history_ordinal=public_scope.history_ordinal,
+        decision_ordinal=public_scope.decision_ordinal + 1,
+        reveal_ordinals=public_scope.reveal_ordinals,
+    )
 
 
 def _require_bound_scope(context: Mapping[str, Any], public_scope: PublicScope) -> None:
@@ -305,6 +457,8 @@ def _set_pending_room_decision(
     event_id: str | None,
     state: str,
     public_scope: PublicScope,
+    opening_baseline: Mapping[str, Any],
+    resolved_receipt: Mapping[str, Any] | None,
 ) -> None:
     world.pending_decision = PendingDecision(
         ROOM_DECISION_KIND,
@@ -312,8 +466,10 @@ def _set_pending_room_decision(
         {
             "room_kind": room_kind,
             "event_id": event_id,
+            "opening_baseline": opening_baseline,
             "state": state,
             "public_scope": public_scope.to_dict(),
+            "resolved_receipt": resolved_receipt,
         },
     )
 
@@ -326,6 +482,13 @@ def _open_and_validate_room(
     state: str,
     public_scope: PublicScope,
 ) -> None:
+    opening_baseline = {
+        "current_hp": world.current_hp,
+        "gold": world.gold,
+        "max_hp": world.max_hp,
+        "public_scope": public_scope.to_dict(),
+        "sequence": sequence,
+    }
     _set_pending_room_decision(
         world,
         sequence,
@@ -333,6 +496,8 @@ def _open_and_validate_room(
         event_id,
         state,
         public_scope,
+        opening_baseline,
+        None,
     )
     room_candidates(world, public_scope)
 
@@ -342,13 +507,23 @@ def _complete_room(world: WorldState) -> None:
     world.phase = DecisionPhase.MAP
 
 
+def _apply_proceed_transition(world: WorldState) -> RoomTransition:
+    _complete_room(world)
+    return RoomTransition(
+        completed=True,
+        public_events=(
+            PublicEvent(0, PublicEventKind.ROOM_PROCEEDED, DecisionPhase.ROOM, {}),
+        ),
+    )
+
+
 def _apply_rest_heal_transition(
     world: WorldState,
     context: Mapping[str, Any],
     applied: int,
 ) -> RoomTransition:
     world.current_hp += applied
-    _mark_resolved(world, context)
+    _mark_resolved(world, context, RoomEffectKind.HEAL, applied)
     transition = RoomTransition(
         completed=False,
         public_events=(
@@ -371,7 +546,7 @@ def _apply_event_option_transition(
     amount: int,
 ) -> RoomTransition:
     applied = _apply_event_effect(world, effect, amount)
-    _mark_resolved(world, context)
+    _mark_resolved(world, context, effect, applied)
     transition = RoomTransition(
         completed=False,
         public_events=(
@@ -473,16 +648,17 @@ def _validate_event_effect_available(world: WorldState, event: Any) -> None:
     raise UnsupportedRoomContentError("Safe event names an unsupported effect.")
 
 
-def _mark_resolved(world: WorldState, context: Mapping[str, Any]) -> None:
+def _mark_resolved(
+    world: WorldState,
+    context: Mapping[str, Any],
+    effect: RoomEffectKind,
+    applied: int,
+) -> None:
     pending = world.pending_decision
     assert pending is not None  # established by _room_context before mutation
     current_scope = PublicScope.from_dict(context["public_scope"])
     next_sequence = pending.sequence + 1
-    next_scope = PublicScope(
-        history_ordinal=current_scope.history_ordinal,
-        decision_ordinal=current_scope.decision_ordinal + 1,
-        reveal_ordinals=current_scope.reveal_ordinals,
-    )
+    next_scope = _next_public_scope(current_scope)
     _set_pending_room_decision(
         world,
         next_sequence,
@@ -490,6 +666,8 @@ def _mark_resolved(world: WorldState, context: Mapping[str, Any]) -> None:
         context["event_id"],
         _RESOLVED,
         next_scope,
+        context["opening_baseline"],
+        {"effect": effect.value, "amount": applied},
     )
 
 
