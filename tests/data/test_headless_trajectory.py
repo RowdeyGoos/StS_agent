@@ -11,6 +11,7 @@ from game.backends.headless.fixture_backend import FixtureBackend
 from game.contracts.headless_v0 import (
     ActionRequest,
     ComponentEvidence,
+    DecisionState,
     DecisionStatus,
     EvidenceLabel,
     HeadlessBinding,
@@ -20,6 +21,7 @@ from game.contracts.headless_v0 import (
 from game.data.headless_trajectory import (
     HindsightTargetRecord,
     InterruptionPoint,
+    PolicyReplayRecord,
     StreamRole,
     SyntheticAuditRecord,
     TrajectoryCompletion,
@@ -58,11 +60,17 @@ def _validate(finalized):
         finalized.policy_replay_jsonl,
         finalized.hindsight_target_jsonl,
         finalized.synthetic_audit_jsonl,
+        expected_manifest_sha256=finalized.manifest_sha256,
     )
 
 
 def _jsonl(raw: bytes) -> list[dict[str, object]]:
     return [json.loads(line) for line in raw.splitlines()]
+
+
+def _manifest_digest(raw: bytes | str) -> str:
+    encoded = raw.encode("utf-8") if isinstance(raw, str) else raw
+    return sha256(encoded).hexdigest()
 
 
 def _manifest_with_stream(
@@ -76,6 +84,91 @@ def _manifest_with_stream(
             stream["sha256"] = sha256(raw).hexdigest()
             stream["record_count"] = len(raw.splitlines())
     return canonical_json(value).encode("utf-8")
+
+
+def _coordinated_rewrite(
+    finalized,
+    *,
+    policy_hp: int | None = None,
+    backend_fingerprint: str | None = None,
+    evidence_label: str | None = None,
+):
+    manifest = json.loads(finalized.manifest_json)
+    policy_values = _jsonl(finalized.policy_replay_jsonl)
+    audit_values = _jsonl(finalized.synthetic_audit_jsonl)
+    if policy_hp is not None:
+        policy_values[0]["observation"]["data"]["player"]["hp"] = policy_hp
+    if backend_fingerprint is not None:
+        manifest["backend_fingerprint"] = backend_fingerprint
+    if evidence_label is not None:
+        manifest["evidence"][0]["label"] = evidence_label
+
+    for policy_value, audit_value in zip(policy_values, audit_values):
+        policy = PolicyReplayRecord.from_dict(policy_value)
+        correlation = audit_value["decision_correlation"]
+        decision = DecisionState.create(
+            backend_id=manifest["backend_id"],
+            backend_version=manifest["backend_version"],
+            backend_fingerprint=manifest["backend_fingerprint"],
+            content_version=manifest["content_version"],
+            content_fingerprint=manifest["content_fingerprint"],
+            rules_version=manifest["rules_version"],
+            rules_fingerprint=manifest["rules_fingerprint"],
+            run_id=correlation["run_id"],
+            decision_sequence=correlation["decision_sequence"],
+            status=policy.status,
+            phase=policy.phase,
+            observation=policy.observation,
+            candidates=policy.candidates,
+            public_events=policy.public_events,
+        )
+        correlation["decision_hash"] = decision.decision_hash
+
+    for current, following in zip(audit_values, audit_values[1:]):
+        if current["receipt"] is not None:
+            next_correlation = following["decision_correlation"]
+            current["receipt"]["next_run_id"] = next_correlation["run_id"]
+            current["receipt"]["next_decision_sequence"] = next_correlation[
+                "decision_sequence"
+            ]
+            current["receipt"]["next_decision_hash"] = next_correlation[
+                "decision_hash"
+            ]
+
+    provenance = {
+        "backend_fingerprint": manifest["backend_fingerprint"],
+        "backend_id": manifest["backend_id"],
+        "backend_version": manifest["backend_version"],
+        "content_fingerprint": manifest["content_fingerprint"],
+        "content_version": manifest["content_version"],
+        "contract": manifest["contract"],
+        "contract_fingerprint": manifest["contract_fingerprint"],
+        "evidence": manifest["evidence"],
+        "rules_fingerprint": manifest["rules_fingerprint"],
+        "rules_version": manifest["rules_version"],
+    }
+    provenance_hash = sha256(
+        b"headless_trajectory_v0.manifest_provenance.v1\0"
+        + canonical_json(provenance).encode("utf-8")
+    ).hexdigest()
+    for audit_value in audit_values:
+        audit_value["manifest_provenance_hash"] = provenance_hash
+
+    policy_raw = b"".join(
+        canonical_json(item).encode("utf-8") + b"\n" for item in policy_values
+    )
+    audit_raw = b"".join(
+        canonical_json(item).encode("utf-8") + b"\n" for item in audit_values
+    )
+    for stream in manifest["streams"]:
+        if stream["role"] == StreamRole.POLICY_REPLAY.value:
+            stream["sha256"] = sha256(policy_raw).hexdigest()
+            stream["record_count"] = len(policy_values)
+        elif stream["role"] == StreamRole.SYNTHETIC_AUDIT.value:
+            stream["sha256"] = sha256(audit_raw).hexdigest()
+            stream["record_count"] = len(audit_values)
+    manifest_raw = canonical_json(manifest).encode("utf-8")
+    return manifest_raw, policy_raw, audit_raw
 
 
 def test_golden_fixture_outputs_are_byte_deterministic_and_manifest_bound() -> None:
@@ -175,8 +268,6 @@ def test_policy_conversion_is_type_gated_away_from_both_sidecars() -> None:
     target = HindsightTargetRecord.from_dict(_jsonl(finalized.hindsight_target_jsonl)[0])
     audit = SyntheticAuditRecord.from_dict(_jsonl(finalized.synthetic_audit_jsonl)[0])
 
-    from game.data.headless_trajectory import PolicyReplayRecord
-
     view = policy_view_for(PolicyReplayRecord.from_dict(policy[0]))
     assert isinstance(view, PolicyView)
     assert not hasattr(target, "policy_view")
@@ -214,6 +305,7 @@ def test_modifying_or_truncating_each_stream_breaks_manifest_validation(role) ->
             modified[StreamRole.POLICY_REPLAY],
             modified[StreamRole.HINDSIGHT_TARGET],
             modified[StreamRole.SYNTHETIC_AUDIT],
+            expected_manifest_sha256=finalized.manifest_sha256,
         )
 
     truncated = dict(streams)
@@ -224,6 +316,7 @@ def test_modifying_or_truncating_each_stream_breaks_manifest_validation(role) ->
             truncated[StreamRole.POLICY_REPLAY],
             truncated[StreamRole.HINDSIGHT_TARGET],
             truncated[StreamRole.SYNTHETIC_AUDIT],
+            expected_manifest_sha256=finalized.manifest_sha256,
         )
 
 
@@ -237,6 +330,7 @@ def test_swapping_stream_roles_or_trajectories_breaks_manifest_validation() -> N
             combat.hindsight_target_jsonl,
             combat.policy_replay_jsonl,
             combat.synthetic_audit_jsonl,
+            expected_manifest_sha256=combat.manifest_sha256,
         )
     with pytest.raises(TrajectoryIntegrityError, match="stream hash"):
         validate_trajectory(
@@ -244,6 +338,7 @@ def test_swapping_stream_roles_or_trajectories_breaks_manifest_validation() -> N
             reward.policy_replay_jsonl,
             combat.hindsight_target_jsonl,
             combat.synthetic_audit_jsonl,
+            expected_manifest_sha256=combat.manifest_sha256,
         )
     with pytest.raises(TrajectoryIntegrityError, match="stream hash"):
         validate_trajectory(
@@ -251,6 +346,7 @@ def test_swapping_stream_roles_or_trajectories_breaks_manifest_validation() -> N
             combat.policy_replay_jsonl,
             reward.hindsight_target_jsonl,
             combat.synthetic_audit_jsonl,
+            expected_manifest_sha256=combat.manifest_sha256,
         )
     with pytest.raises(TrajectoryIntegrityError, match="stream hash"):
         validate_trajectory(
@@ -258,6 +354,7 @@ def test_swapping_stream_roles_or_trajectories_breaks_manifest_validation() -> N
             combat.policy_replay_jsonl,
             combat.hindsight_target_jsonl,
             reward.synthetic_audit_jsonl,
+            expected_manifest_sha256=combat.manifest_sha256,
         )
 
 
@@ -276,6 +373,7 @@ def test_cross_stream_correlations_fail_even_if_a_tampered_stream_is_rehashed() 
             finalized.policy_replay_jsonl,
             finalized.hindsight_target_jsonl,
             audit_raw,
+            expected_manifest_sha256=_manifest_digest(manifest),
         )
 
 
@@ -297,6 +395,7 @@ def test_rehashed_policy_fact_change_fails_authoritative_decision_reconstruction
             policy_raw,
             finalized.hindsight_target_jsonl,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(manifest),
         )
 
 
@@ -304,23 +403,27 @@ def test_manifest_backend_fingerprint_change_fails_boundary_reconstruction() -> 
     finalized = _record_fixture()
     manifest = json.loads(finalized.manifest_json)
     manifest["backend_fingerprint"] = "0" * 64
+    manifest_raw = canonical_json(manifest)
 
     with pytest.raises(TrajectoryIntegrityError, match="audit decision identity"):
         validate_trajectory(
-            canonical_json(manifest),
+            manifest_raw,
             finalized.policy_replay_jsonl,
             finalized.hindsight_target_jsonl,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(manifest_raw),
         )
 
     evidence_manifest = json.loads(finalized.manifest_json)
     evidence_manifest["evidence"][0]["label"] = "combat_v0"
+    evidence_manifest_raw = canonical_json(evidence_manifest)
     with pytest.raises(TrajectoryIntegrityError, match="Audit provenance"):
         validate_trajectory(
-            canonical_json(evidence_manifest),
+            evidence_manifest_raw,
             finalized.policy_replay_jsonl,
             finalized.hindsight_target_jsonl,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(evidence_manifest_raw),
         )
 
     [target] = _jsonl(finalized.hindsight_target_jsonl)
@@ -335,6 +438,67 @@ def test_manifest_backend_fingerprint_change_fails_boundary_reconstruction() -> 
             finalized.policy_replay_jsonl,
             target_raw,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(manifest),
+        )
+
+
+@pytest.mark.parametrize(
+    "rewrite",
+    (
+        {"policy_hp": 60},
+        {"backend_fingerprint": "0" * 64},
+        {"evidence_label": "combat_v0"},
+    ),
+)
+def test_coordinated_rewrites_fail_the_original_trusted_manifest_anchor(rewrite) -> None:
+    finalized = _record_fixture()
+    manifest_raw, policy_raw, audit_raw = _coordinated_rewrite(
+        finalized, **rewrite
+    )
+    rewritten_digest = _manifest_digest(manifest_raw)
+    assert rewritten_digest != finalized.manifest_sha256
+
+    # The rewrite is internally self-consistent, which is deliberately not an
+    # immutability claim without the caller's previously retained digest.
+    validate_trajectory(
+        manifest_raw,
+        policy_raw,
+        finalized.hindsight_target_jsonl,
+        audit_raw,
+        expected_manifest_sha256=rewritten_digest,
+    )
+    with pytest.raises(TrajectoryIntegrityError, match="trusted expected SHA-256"):
+        validate_trajectory(
+            manifest_raw,
+            policy_raw,
+            finalized.hindsight_target_jsonl,
+            audit_raw,
+            expected_manifest_sha256=finalized.manifest_sha256,
+        )
+
+
+def test_public_validation_requires_a_strict_external_manifest_anchor() -> None:
+    finalized = _record_fixture()
+    arguments = (
+        finalized.manifest_json,
+        finalized.policy_replay_jsonl,
+        finalized.hindsight_target_jsonl,
+        finalized.synthetic_audit_jsonl,
+    )
+
+    with pytest.raises(TypeError, match="expected_manifest_sha256"):
+        validate_trajectory(*arguments)
+    for invalid in ("0" * 63, "A" * 64, "not-a-digest"):
+        with pytest.raises(TrajectoryValidationError, match="canonical form"):
+            validate_trajectory(*arguments, expected_manifest_sha256=invalid)
+    with pytest.raises(TrajectoryIntegrityError, match="trusted expected SHA-256"):
+        validate_trajectory(*arguments, expected_manifest_sha256="0" * 64)
+    noncanonical = b" " + finalized.manifest_json
+    with pytest.raises(TrajectoryValidationError, match="not canonical"):
+        validate_trajectory(
+            noncanonical,
+            *arguments[1:],
+            expected_manifest_sha256=_manifest_digest(noncanonical),
         )
 
 
@@ -352,6 +516,7 @@ def test_unknown_duplicate_and_noncanonical_policy_fields_fail_closed() -> None:
             raw,
             finalized.hindsight_target_jsonl,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(manifest),
         )
 
     duplicate = first[:-1] + b',"status":"actionable"}'
@@ -363,6 +528,7 @@ def test_unknown_duplicate_and_noncanonical_policy_fields_fail_closed() -> None:
             raw,
             finalized.hindsight_target_jsonl,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(manifest),
         )
 
     raw = b" " + finalized.policy_replay_jsonl
@@ -373,6 +539,7 @@ def test_unknown_duplicate_and_noncanonical_policy_fields_fail_closed() -> None:
             raw,
             finalized.hindsight_target_jsonl,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(manifest),
         )
 
 
@@ -462,6 +629,7 @@ def test_rehashed_missing_boundary_correlation_rejects_unsupported_and_interrupt
                 finalized.policy_replay_jsonl,
                 finalized.hindsight_target_jsonl,
                 b"",
+                expected_manifest_sha256=_manifest_digest(manifest),
             )
 
 
@@ -495,6 +663,43 @@ def test_recorder_rejects_live_or_nonfixture_evidence_and_provenance_mismatch() 
         recorder.record_boundary(decision, decision.candidates[0].candidate_id)
 
 
+def test_rejected_next_boundary_choice_is_atomic_and_retry_matches_clean_recording() -> None:
+    clean = _record_fixture()
+    backend = FixtureBackend()
+    decision = backend.reset("combat")
+    recorder = TrajectoryRecorder("fixture-combat-001", backend.manifest())
+
+    first_choice = decision.candidates[0].candidate_id
+    recorder.record_boundary(decision, first_choice)
+    wrong_backend = FixtureBackend()
+    wrong_backend.reset("combat")
+    wrong_decision = wrong_backend.reset("combat")
+    wrong_choice = wrong_decision.candidates[0].candidate_id
+    wrong_transition = wrong_backend.apply(
+        ActionRequest(HeadlessBinding.for_candidate(wrong_decision, wrong_choice))
+    )
+    with pytest.raises(TrajectoryValidationError, match="does not correlate"):
+        recorder.record_transition(wrong_transition)
+    first_transition = backend.apply(
+        ActionRequest(HeadlessBinding.for_candidate(decision, first_choice))
+    )
+    recorder.record_transition(first_transition)
+    next_decision = first_transition.next_decision
+
+    with pytest.raises(TrajectoryValidationError, match="not advertised"):
+        recorder.record_boundary(next_decision, "cand." + "0" * 64)
+
+    second_choice = next_decision.candidates[0].candidate_id
+    recorder.record_boundary(next_decision, second_choice)
+    second_transition = backend.apply(
+        ActionRequest(HeadlessBinding.for_candidate(next_decision, second_choice))
+    )
+    recorder.record_transition(second_transition)
+    recorder.record_boundary(second_transition.next_decision)
+
+    assert recorder.finalize() == clean
+
+
 def test_file_set_is_physical_exclusive_and_manifest_is_written_last(tmp_path: Path) -> None:
     finalized = _record_fixture()
     paths = finalized.write_to(tmp_path)
@@ -503,9 +708,49 @@ def test_file_set_is_physical_exclusive_and_manifest_is_written_last(tmp_path: P
     assert paths.hindsight_target.read_bytes() == finalized.hindsight_target_jsonl
     assert paths.synthetic_audit.read_bytes() == finalized.synthetic_audit_jsonl
     assert paths.manifest.read_bytes() == finalized.manifest_json
-    assert load_trajectory(tmp_path, finalized.manifest.trajectory_id) == finalized
+    assert load_trajectory(
+        tmp_path,
+        finalized.manifest.trajectory_id,
+        expected_manifest_sha256=finalized.manifest_sha256,
+    ) == finalized
     with pytest.raises(FileExistsError):
         finalized.write_to(tmp_path)
+
+
+def test_disk_load_requires_anchor_and_rejects_requested_id_renames(tmp_path: Path) -> None:
+    finalized = _record_fixture(trajectory_id="actual-trajectory")
+    source = finalized.write_to(tmp_path / "source")
+
+    with pytest.raises(TypeError, match="expected_manifest_sha256"):
+        load_trajectory(tmp_path / "source", "actual-trajectory")
+    with pytest.raises(TrajectoryValidationError, match="canonical form"):
+        load_trajectory(
+            tmp_path / "source",
+            "actual-trajectory",
+            expected_manifest_sha256="A" * 64,
+        )
+    with pytest.raises(TrajectoryIntegrityError, match="trusted expected SHA-256"):
+        load_trajectory(
+            tmp_path / "source",
+            "actual-trajectory",
+            expected_manifest_sha256="0" * 64,
+        )
+
+    renamed_root = tmp_path / "renamed"
+    renamed_root.mkdir()
+    requested = "requested-trajectory"
+    renamed = type(source).in_directory(renamed_root, requested)
+    renamed.policy_replay.write_bytes(source.policy_replay.read_bytes())
+    renamed.hindsight_target.write_bytes(source.hindsight_target.read_bytes())
+    renamed.synthetic_audit.write_bytes(source.synthetic_audit.read_bytes())
+    renamed.manifest.write_bytes(source.manifest.read_bytes())
+
+    with pytest.raises(TrajectoryIntegrityError, match="Requested trajectory ID"):
+        load_trajectory(
+            renamed_root,
+            requested,
+            expected_manifest_sha256=finalized.manifest_sha256,
+        )
 
 
 def test_missing_manifest_or_stream_is_detected_as_interrupted(tmp_path: Path) -> None:
@@ -513,14 +758,22 @@ def test_missing_manifest_or_stream_is_detected_as_interrupted(tmp_path: Path) -
     paths = finalized.write_to(tmp_path / "complete")
     paths.synthetic_audit.unlink()
     with pytest.raises(TrajectoryInterruptedError, match="incomplete"):
-        load_trajectory(tmp_path / "complete", finalized.manifest.trajectory_id)
+        load_trajectory(
+            tmp_path / "complete",
+            finalized.manifest.trajectory_id,
+            expected_manifest_sha256=finalized.manifest_sha256,
+        )
 
     partial = tmp_path / "partial"
     partial.mkdir()
     partial_paths = type(paths).in_directory(partial, finalized.manifest.trajectory_id)
     partial_paths.policy_replay.write_bytes(finalized.policy_replay_jsonl)
     with pytest.raises(TrajectoryInterruptedError, match="incomplete"):
-        load_trajectory(partial, finalized.manifest.trajectory_id)
+        load_trajectory(
+            partial,
+            finalized.manifest.trajectory_id,
+            expected_manifest_sha256=finalized.manifest_sha256,
+        )
 
 
 def test_manifest_and_records_are_frozen_and_stream_file_names_are_role_bound() -> None:
@@ -533,9 +786,11 @@ def test_manifest_and_records_are_frozen_and_stream_file_names_are_role_bound() 
     value = json.loads(finalized.manifest_json)
     value["streams"][0]["file_name"] = "other.policy.jsonl"
     with pytest.raises(TrajectoryValidationError, match="file names"):
+        manifest_raw = canonical_json(value)
         validate_trajectory(
-            canonical_json(value),
+            manifest_raw,
             finalized.policy_replay_jsonl,
             finalized.hindsight_target_jsonl,
             finalized.synthetic_audit_jsonl,
+            expected_manifest_sha256=_manifest_digest(manifest_raw),
         )

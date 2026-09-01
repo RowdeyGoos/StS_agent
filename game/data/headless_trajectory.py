@@ -6,6 +6,11 @@ plus the chosen advertised candidate.  Terminal hindsight labels and
 operational correlation/receipt data use distinct record types and distinct
 files, and a manifest written last binds the three finalized byte streams.
 
+Persisted validation is an external-provenance operation: callers must retain
+the SHA-256 of the exact canonical manifest bytes and supply it when validating
+or loading later.  This is not a signature; a newly supplied digest can anchor
+a coordinated replacement, while the previously retained digest detects it.
+
 This module accepts only non-live ``combat_v0`` and ``structural_fixture``
 evidence.  It is not a live capture or audit facility.
 """
@@ -15,6 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from hashlib import sha256
+import hmac
 import json
 import os
 from pathlib import Path
@@ -881,6 +887,12 @@ class FinalizedTrajectory:
     def manifest_json(self) -> bytes:
         return self.manifest.to_bytes()
 
+    @property
+    def manifest_sha256(self) -> str:
+        """Digest callers must retain as provenance before a later disk load."""
+
+        return _sha256(self.manifest_json)
+
     def write_to(self, directory: str | Path) -> TrajectoryPaths:
         """Write separate streams exclusively, committing with the manifest last."""
 
@@ -961,14 +973,15 @@ class TrajectoryRecorder:
                 "A rejected or stale transition must finalize as interrupted."
             )
         self._validate_decision_provenance(decision)
-        if self._run_id is None:
-            self._run_id = decision.run_id
+        first_boundary = self._run_id is None
+        if first_boundary:
             if decision.decision_sequence != 0:
                 raise TrajectoryValidationError(
                     "A trajectory must begin at decision sequence zero."
                 )
         elif decision.run_id != self._run_id:
             raise TrajectoryValidationError("Trajectory run identity changed.")
+        consumes_expected_next = self._expected_next is not None
         if self._expected_next is not None:
             identity = (
                 decision.run_id,
@@ -979,43 +992,53 @@ class TrajectoryRecorder:
                 raise TrajectoryValidationError(
                     "The next boundary does not match the recorded transition receipt."
                 )
-            self._expected_next = None
         elif self._last_decision is not None:
             raise TrajectoryValidationError(
                 "A new boundary requires the preceding accepted transition receipt."
             )
+
+        # Construct and validate the complete prospective update before
+        # mutating run identity, receipt expectations, or either record array.
         record = PolicyReplayRecord.from_decision(decision, chosen_candidate_id)
         index = len(self._policy_records)
-        self._policy_records.append(record)
         candidate_id = (
             None if record.chosen_action is None else record.chosen_action.candidate_id
         )
-        self._audit_records.append(
-            SyntheticAuditRecord(
-                trajectory_id=self._trajectory_id,
-                local_sequence=index,
-                policy_record_index=index,
-                decision_correlation=DecisionCorrelation(
-                    decision.run_id,
-                    decision.decision_sequence,
-                    decision.decision_hash,
-                    candidate_id,
-                ),
-                receipt=None,
-                manifest_provenance_hash=_manifest_provenance_hash(
-                    self._backend_manifest
-                ),
-            )
+        audit = SyntheticAuditRecord(
+            trajectory_id=self._trajectory_id,
+            local_sequence=index,
+            policy_record_index=index,
+            decision_correlation=DecisionCorrelation(
+                decision.run_id,
+                decision.decision_sequence,
+                decision.decision_hash,
+                candidate_id,
+            ),
+            receipt=None,
+            manifest_provenance_hash=_manifest_provenance_hash(
+                self._backend_manifest
+            ),
         )
-        self._last_decision = decision
+        pending = None
         if record.chosen_action is not None:
-            self._pending = _PendingBoundary(
+            pending = _PendingBoundary(
                 index,
                 decision.run_id,
                 decision.decision_sequence,
                 decision.decision_hash,
                 record.chosen_action.candidate_id,
             )
+        prospective_policy_records = [*self._policy_records, record]
+        prospective_audit_records = [*self._audit_records, audit]
+
+        if first_boundary:
+            self._run_id = decision.run_id
+        if consumes_expected_next:
+            self._expected_next = None
+        self._policy_records = prospective_policy_records
+        self._audit_records = prospective_audit_records
+        self._last_decision = decision
+        self._pending = pending
         return record
 
     def record_transition(self, transition: Transition) -> SyntheticAuditRecord:
@@ -1066,7 +1089,9 @@ class TrajectoryRecorder:
             raise TrajectoryValidationError(
                 "Stored boundary correlation changed before its transition receipt."
             )
-        self._audit_records[pending.policy_record_index] = record
+        prospective_audit_records = [*self._audit_records]
+        prospective_audit_records[pending.policy_record_index] = record
+        self._audit_records = prospective_audit_records
         self._pending = None
         if transition.result is TransitionResult.ACCEPTED:
             self._expected_next = (
@@ -1202,7 +1227,14 @@ class TrajectoryRecorder:
             streams=streams,
             interruption_point=interruption_point,
         )
-        finalized = FinalizedTrajectory(manifest, policy_raw, target_raw, audit_raw)
+        manifest_raw = manifest.to_bytes()
+        finalized = validate_trajectory(
+            manifest_raw,
+            policy_raw,
+            target_raw,
+            audit_raw,
+            expected_manifest_sha256=_sha256(manifest_raw),
+        )
         self._finalized = True
         return finalized
 
@@ -1245,9 +1277,16 @@ def validate_trajectory(
     policy_replay_jsonl: bytes,
     hindsight_target_jsonl: bytes,
     synthetic_audit_jsonl: bytes,
+    *,
+    expected_manifest_sha256: str,
 ) -> FinalizedTrajectory:
-    """Parse and validate canonical bytes, hashes, roles, and cross-stream joins."""
+    """Validate persisted bytes against a caller-held canonical manifest digest."""
 
+    expected_digest = _require_pattern(
+        expected_manifest_sha256,
+        _HASH_PATTERN,
+        "expected_manifest_sha256",
+    )
     manifest_raw = (
         manifest_json.encode("utf-8") if isinstance(manifest_json, str) else manifest_json
     )
@@ -1256,6 +1295,11 @@ def validate_trajectory(
     if len(manifest_raw) > _MAX_MANIFEST_BYTES:
         raise TrajectoryValidationError("Trajectory manifest exceeds its size bound.")
     manifest_value = _load_canonical_object(manifest_raw, "trajectory manifest")
+    actual_digest = _sha256(manifest_raw)
+    if not hmac.compare_digest(actual_digest, expected_digest):
+        raise TrajectoryIntegrityError(
+            "Trajectory manifest does not match the trusted expected SHA-256."
+        )
     manifest = TrajectoryManifest.from_dict(manifest_value)
     return FinalizedTrajectory(
         manifest,
@@ -1265,8 +1309,13 @@ def validate_trajectory(
     )
 
 
-def load_trajectory(directory: str | Path, trajectory_id: str) -> FinalizedTrajectory:
-    """Load a finalized physical file set; missing members signal interruption."""
+def load_trajectory(
+    directory: str | Path,
+    trajectory_id: str,
+    *,
+    expected_manifest_sha256: str,
+) -> FinalizedTrajectory:
+    """Load an anchored finalized file set; missing members signal interruption."""
 
     paths = TrajectoryPaths.in_directory(directory, trajectory_id)
     all_paths = (
@@ -1285,12 +1334,30 @@ def load_trajectory(directory: str | Path, trajectory_id: str) -> FinalizedTraje
             raise TrajectoryIntegrityError(
                 "Trajectory members must be regular non-symlink files."
             )
-    return validate_trajectory(
+    finalized = validate_trajectory(
         _read_bounded(paths.manifest, _MAX_MANIFEST_BYTES),
         _read_bounded(paths.policy_replay, _MAX_STREAM_BYTES),
         _read_bounded(paths.hindsight_target, _MAX_STREAM_BYTES),
         _read_bounded(paths.synthetic_audit, _MAX_STREAM_BYTES),
+        expected_manifest_sha256=expected_manifest_sha256,
     )
+    if finalized.manifest.trajectory_id != trajectory_id:
+        raise TrajectoryIntegrityError(
+            "Requested trajectory ID does not match the anchored manifest."
+        )
+    physical_names = {
+        StreamRole.POLICY_REPLAY: paths.policy_replay.name,
+        StreamRole.HINDSIGHT_TARGET: paths.hindsight_target.name,
+        StreamRole.SYNTHETIC_AUDIT: paths.synthetic_audit.name,
+    }
+    if any(
+        finalized.manifest.descriptor(role).file_name != physical_names[role]
+        for role in _ROLE_ORDER
+    ):
+        raise TrajectoryIntegrityError(
+            "Physical trajectory filenames do not match manifest stream roles."
+        )
+    return finalized
 
 
 def decode_policy_replay(raw: bytes) -> tuple[PolicyReplayRecord, ...]:
