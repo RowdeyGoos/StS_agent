@@ -1,11 +1,27 @@
-"""Structural-fixture tests for the deterministic reduced map DAG."""
+"""Structural-fixture coverage for deterministic, snapshot-safe map traversal."""
 
 from copy import deepcopy
 
-from game.content.reduced_v0 import CONTENT_FINGERPRINT
-from game.contracts.headless_v0 import DecisionPhase, TransitionResult
+import pytest
+
+from game.content.reduced_v0 import (
+    CONTENT_FINGERPRINT,
+    MapNodeTemplate,
+    MapTemplate,
+)
+from game.contracts.headless_v0 import (
+    ActionRequest,
+    DecisionPhase,
+    HeadlessBinding,
+    TransitionResult,
+)
 from game.engine.headless_state import WorldState
-from game.engine.map_rules import MapRules, RULES_FINGERPRINT
+from game.engine.map_rules import (
+    RULES_FINGERPRINT,
+    MapRuleError,
+    MapRules,
+    _validate_closed_template,
+)
 
 
 def _world(seed: int = 7) -> WorldState:
@@ -21,19 +37,22 @@ def _world(seed: int = 7) -> WorldState:
     )
 
 
-def test_reset_exposes_only_reachable_graph_and_deterministic_candidates() -> None:
+def _request(decision, index: int = 0) -> ActionRequest:
+    return ActionRequest(
+        HeadlessBinding.for_candidate(decision, decision.candidates[index].candidate_id)
+    )
+
+
+def test_reset_exposes_exactly_reachable_candidates_and_preserves_rng() -> None:
     world = _world()
     decision = MapRules().reset(world)
+    graph = decision.observation.data
 
     assert decision.phase is DecisionPhase.MAP
-    assert {node["kind"] for node in decision.observation.data["nodes"]} == {
-        "combat", "rest", "event", "terminal"
-    }
-    assert len(decision.observation.data["nodes"]) == 5
-    assert len(decision.candidates) == 1
-    assert [node["kind"] for node in decision.observation.data["nodes"]] == [
-        "combat", "event", "terminal", "rest", "combat"
-    ]
+    assert len(graph["nodes"]) == 5
+    assert {
+        node["node_ref"] for node in graph["nodes"] if node["available"]
+    } == {candidate.node_ref for candidate in decision.candidates}
     assert world.rng_stream_counters() == {
         "combat_launch": 0,
         "event_effect": 0,
@@ -41,46 +60,152 @@ def test_reset_exposes_only_reachable_graph_and_deterministic_candidates() -> No
     }
 
 
-def test_route_is_deterministic_and_choice_emits_map_event() -> None:
-    first, second = _world(22), _world(22)
+def test_full_bound_route_replays_every_transition_boundary() -> None:
     rules = MapRules("two_combat_rest")
-    left, right = rules.reset(first), rules.reset(second)
-    assert left.to_json() == right.to_json()
+    world = _world(22)
+    decision = rules.reset(world)
+    event_kinds = []
 
-    transition = rules.choose_node(first, left.candidates[0])
-    assert transition.result is TransitionResult.ACCEPTED
-    assert transition.public_events[0].data == {"node_kind": "combat"}
-    assert first.node_history == (first.current_node_id,)
-    assert tuple(c.node_ref for c in transition.next_decision.candidates) == tuple(
-        c.node_ref for c in rules.decision(first).candidates
+    while decision.candidates:
+        transition = rules.choose_node(world, _request(decision))
+        assert transition.result is TransitionResult.ACCEPTED
+        assert rules.decision(world).to_json() == transition.next_decision.to_json()
+        assert transition.public_events == transition.next_decision.public_events
+        event_kinds.append(transition.public_events[0].data["node_kind"])
+        decision = transition.next_decision
+
+    assert decision.phase is DecisionPhase.TERMINAL
+    assert event_kinds == ["combat", "event", "combat", "terminal"]
+
+
+def test_raw_candidate_cross_run_and_tampered_bindings_are_atomic() -> None:
+    rules = MapRules()
+    first, second = _world(31), _world(32)
+    first_decision, second_decision = rules.reset(first), rules.reset(second)
+    before = deepcopy(first.to_private_dict())
+
+    with pytest.raises(TypeError):
+        rules.choose_node(first, first_decision.candidates[0])
+    assert first.to_private_dict() == before
+
+    cross_run = _request(second_decision)
+    assert rules.choose_node(first, cross_run).result is TransitionResult.STALE
+    assert first.to_private_dict() == before
+
+    current = _request(first_decision).binding
+    for binding in (
+        HeadlessBinding("run." + "0" * 16 + ".00000000", current.decision_sequence, current.decision_hash, current.candidate_id),
+        HeadlessBinding(current.run_id, current.decision_sequence + 1, current.decision_hash, current.candidate_id),
+        HeadlessBinding(current.run_id, current.decision_sequence, "0" * 64, current.candidate_id),
+    ):
+        assert rules.choose_node(first, binding).result is TransitionResult.STALE
+        assert first.to_private_dict() == before
+
+    unadvertised = HeadlessBinding(
+        current.run_id,
+        current.decision_sequence,
+        current.decision_hash,
+        "cand." + "0" * 64,
+    )
+    assert rules.choose_node(first, unadvertised).result is TransitionResult.REJECTED
+    assert first.to_private_dict() == before
+
+
+def test_repeated_reset_makes_old_full_binding_stale() -> None:
+    rules = MapRules()
+    world = _world()
+    first = rules.reset(world)
+    old_request = _request(first)
+    second = rules.reset(world)
+
+    assert second.decision_sequence > first.decision_sequence
+    assert rules.choose_node(world, old_request).result is TransitionResult.STALE
+
+
+@pytest.mark.parametrize(
+    "template",
+    (
+        MapTemplate(
+            "cycle",
+            (
+                MapNodeTemplate("start", "combat", ("loop",)),
+                MapNodeTemplate("loop", "rest", ("start",)),
+                MapNodeTemplate("finish", "terminal", ()),
+            ),
+        ),
+        MapTemplate(
+            "self_cycle",
+            (
+                MapNodeTemplate("start", "combat", ("start",)),
+                MapNodeTemplate("finish", "terminal", ()),
+            ),
+        ),
+        MapTemplate(
+            "nonterminal_leaf",
+            (
+                MapNodeTemplate("start", "combat", ("leaf",)),
+                MapNodeTemplate("leaf", "rest", ()),
+                MapNodeTemplate("finish", "terminal", ()),
+            ),
+        ),
+    ),
+)
+def test_arbitrary_invalid_templates_reject_before_mutation(template: MapTemplate) -> None:
+    world = _world()
+    before = deepcopy(world.to_private_dict())
+
+    with pytest.raises(MapRuleError):
+        _validate_closed_template(template)
+    with pytest.raises(MapRuleError, match="exact registered"):
+        MapRules(template).reset(world)
+    assert world.to_private_dict() == before
+
+
+def test_availability_bijection_wrong_phase_and_nondefault_snapshot_restore() -> None:
+    rules = MapRules("short_rest_path")
+    world = _world(51)
+    first = rules.reset(world)
+    start = rules.choose_node(world, _request(first))
+    graph = start.next_decision.observation.data
+
+    assert {
+        node["node_ref"] for node in graph["nodes"] if node["available"]
+    } == {candidate.node_ref for candidate in start.next_decision.candidates}
+    assert not next(
+        node["available"] for node in graph["nodes"] if node["node_ref"] == first.candidates[0].node_ref
     )
 
+    restored = WorldState.from_private_dict(world.to_private_dict())
+    fresh = MapRules()
+    assert fresh.decision(restored).to_json() == start.next_decision.to_json()
+    assert fresh.choose_node(restored, _request(fresh.decision(restored))).result is TransitionResult.ACCEPTED
 
-def test_invalid_and_stale_choices_are_mutation_atomic() -> None:
+    wrong_phase = _world()
+    with pytest.raises(MapRuleError, match="map phase"):
+        MapRules().decision(wrong_phase)
+
+
+def test_post_mutation_projection_failure_rolls_back_exact_private_state(monkeypatch) -> None:
     rules = MapRules()
     world = _world()
     decision = rules.reset(world)
     before = deepcopy(world.to_private_dict())
+    original_decision = MapRules.decision
+    calls = 0
 
-    invalid = rules.choose_node(world, "cand." + "0" * 64)
-    assert invalid.result is TransitionResult.REJECTED
+    def fail_after_mutation(self, state):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise RuntimeError("forced projection failure")
+        return original_decision(self, state)
+
+    monkeypatch.setattr(MapRules, "decision", fail_after_mutation)
+    with pytest.raises(RuntimeError, match="forced projection"):
+        rules.choose_node(world, _request(decision))
     assert world.to_private_dict() == before
-
-    rules.choose_node(world, decision.candidates[0])
-    after = deepcopy(world.to_private_dict())
-    stale = rules.choose_node(world, decision.candidates[0])
-    assert stale.result is TransitionResult.STALE
-    assert world.to_private_dict() == after
-
-
-def test_snapshot_round_trip_replays_same_next_map_choice() -> None:
-    rules = MapRules()
-    world = _world(44)
-    decision = rules.reset(world)
-    rules.choose_node(world, decision.candidates[0])
-    payload = world.to_private_dict()
-    restored = WorldState.from_private_dict(payload)
-    current = rules.decision(world)
-    replay = MapRules().decision(restored)
-    assert replay.to_json() == current.to_json()
-    assert MapRules().choose_node(restored, replay.candidates[0]).next_decision.to_json() == rules.choose_node(world, current.candidates[0]).next_decision.to_json()
+    assert world.rng_stream_counters() == {
+        "combat_launch": 0,
+        "event_effect": 0,
+        "reward_offer": 0,
+    }
