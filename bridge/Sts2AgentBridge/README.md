@@ -13,10 +13,11 @@ snapshot-bound node selection through the game's public map API. `R0h`
 composes the existing bounded controllers into one verified floor transition:
 combat victory, reward skip, and one legal map selection. `R0i` expands that
 same boundary with granular gold/card reward handling, a separate bounded
-rest-site and standard-event controller, and a combat/reward/map runner capped
-at three completed combats under replaceable host decision providers. The
-current batched runner stops at non-combat destinations; composing the room
-client into that runner is the next bounded source target.
+rest-site and standard-event controller, and a combat/reward/map/room runner
+capped at three completed combats under replaceable host decision providers.
+The runner reconciles a supported room preflight, bounded room interaction,
+return to map, and—when the next destination is an ordinary monster—one next-
+combat continuation. Unsupported or inconsistent handoffs fail closed.
 
 The controlling contract is the accepted
 [Phase 1 BR0 preflight freeze](../../docs/PHASE_1_BR0_PREFLIGHT.md). The broader
@@ -43,11 +44,9 @@ proceed and safe standard-event choices share a 12-action process cap. Custom,
 nested, dangerous, and unsupported room interactions fail closed. Potions,
 shops, full-map planning, search, models, and an in-process agent runtime remain
 out of scope. The batched controller attempts at most three combat floors and
-currently wires the separate combat, reward, and map provider seams; the room
-client has its own separate provider seam but is not yet invoked by the batched
-runner. It does not read
-profiles, saves, progress,
-preferences, history, replay, seeds, or multiplayer identity. It does not use
+keeps separate combat, reward, map, and safe-room provider seams. It does not
+read profiles, saves, progress, preferences, history, replay, seeds, or
+multiplayer identity. It does not use
 Harmony, input dispatch, outbound networking, or arbitrary filesystem access.
 
 Repository-local compilation, tests, surface verification, and install-free
@@ -69,12 +68,13 @@ references.
 The living cross-milestone disposition is maintained in
 [`docs/PHASE_1_CURRENT_STATUS.md`](../../docs/PHASE_1_CURRENT_STATUS.md). In
 summary, bounded live smokes have reached `R0i` and demonstrated menu/Settings,
-combat, granular card/gold rewards, map selection, and one composed floor
-transition. Rest-site and standard-event controllers and the full three-combat-
-floor cap remain fixture-demonstrated rather than live-accepted. One batched
-attempt stopped on `decision_response_mismatch`; the narrower combat path
-subsequently resumed, but that does not establish the mismatch's cause and the
-composed controller still needs a repeatable multi-floor live pass.
+combat, granular card/gold rewards, map selection, one direct safe event-to-map
+transition, and two consecutive composed combat/reward/map handoffs. The full
+three-combat-floor cap, rest-site handling, and a reconciled batched room
+handoff remain unaccepted live. The latest composed attempt stopped fail-closed
+at `run_room_not_ready`; a narrowed multi-step event attempt applied one action
+and then stopped at `room_interaction_timeout`. See the living status page for
+the evidence classification and cleanup result.
 
 ## Prerequisites
 
@@ -266,8 +266,8 @@ only observes; `apply_one_live.py` preserves the earlier single-card smoke and
 performs the bounded complete-combat loop. `apply_reward_live.py` resolves the
 supported reward choices, `apply_map_live.py` selects one legal map node,
 `apply_room_live.py` handles the separate bounded room slice, and
-`apply_run_live.py` composes combat, reward, and map over up to three completed
-combats for `R0i`, stopping at non-combat destinations. The campaign
+`apply_run_live.py` composes combat, reward, map, and supported-room handoffs
+over up to three completed combats for `R0i`. The campaign
 manager documented later is the only tool allowed to generate, activate,
 quarantine, or purge project-owned live material. None of these tools launches
 the game. Under repository-local authorization alone, do not point them at the
@@ -375,6 +375,7 @@ The batched controller exposes each provider explicitly:
   --combat-provider heuristic \
   --reward-provider first-card \
   --map-provider coverage \
+  --room-provider safe \
   --floor-limit 3
 ```
 

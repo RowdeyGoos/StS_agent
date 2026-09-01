@@ -33,9 +33,9 @@ bridge and external bounded controllers. Together they can:
   destination;
 - represent bounded rest-site and safe standard-event choices through a
   separate room controller; and
-- compose combat, reward, and map controllers into an external controller
-  capped at three combat floors. The current batched runner stops at non-combat
-  destinations rather than invoking the room controller.
+- compose combat, reward, map, and supported-room controllers into an external
+  controller capped at three combat floors, with explicit fail-closed handoff
+  and reconciliation checks.
 
 The bridge does not contain a learned model, search implementation, simulator,
 or gameplay policy. Those remain host-side replaceable components behind the
@@ -47,8 +47,10 @@ The accepted offline stack now includes the canonical `headless_v0` public
 contract, named RNG streams, reduced structural content, serializable private
 world state and snapshots, combat projection/candidates, fixture playback, a
 bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
-and deterministic reduced reward, map, and room rules. The integration branch
-passed `613` repository tests after the final `H2-REWARD-02` join.
+deterministic reduced reward/map/room rules, and the composed multi-phase
+`ReducedRunBackend`. The independent `H3-CONFORMANCE-04` gate is integrated;
+the integration branch passes `66` conformance tests and `740` repository
+tests.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:
@@ -59,18 +61,27 @@ backend boundary:
 - none of the headless progression behavior is live-demonstrated or
   differentially verified.
 
-The high-risk reward join now authenticates the accepted-action history and
-derives the exact current reward semantics from it before reconstructing gold,
-offers, RNG, deck, and allocator effects. Independent adversarial review covered
-every legal reward-history prefix and rejected all material cross-prefix state
-splices. A coordinated replacement of the complete private pending decision,
-including a recomputed commitment, remains outside that rule-layer integrity
-boundary and must not be exposed by the composed backend.
+The composed backend keeps combat evidence at `combat_v0` and all reduced
+progression/composition evidence at `structural_fixture`. Its private snapshot
+records the complete accepted outer candidate-ID history, closed map history,
+combat-entry chronology, RNG provenance, child snapshot, public events, and
+current boundary. Restore replays the accepted outer history and compares the
+complete reconstructed boundary. Ordinary reset/apply paths use the bounded
+local checks instead of replaying the full history on every step; this preserves
+the accepted integrity gate without the earlier order-of-magnitude throughput
+regression.
 
-`H3-REDUCED-BACKEND-01` is the active offline join. Until that packet passes,
-the repository has accepted producers but no accepted multi-phase reduced-run
-backend, no headless conformance result for that join, and no rollout or
-throughput claim.
+The snapshot commitments are deterministic consistency checks, not keyed
+authenticators. They reject local splices and the conformance suite exercises
+coordinated rehashed mutations, but a wholesale alternative history that is
+internally valid and fully replayable is outside this trust boundary. The
+reduced terminal public outcome `victory` means only that the structural route
+completed; the authoritative non-policy reason is `route_complete`, not a
+full-game win.
+
+`H3-BASELINE-02` and `H3-ROLLOUT-03` remain unstarted. Therefore there is no
+accepted backend-neutral smoke-policy package, process-batch collector, or
+rollout throughput claim yet.
 
 ## Milestone evidence
 
@@ -84,14 +95,16 @@ throughput claim.
 | `R0f` | One reward decision followed by map arrival | Initial screen-transition timing blocked the first attempt; the narrowed retry passed reward and map checkpoints |
 | `R0g` | Read and apply one legal map destination | Bounded live map observation and destination application passed |
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
-| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map runner | Repository gates and fixtures passed; live smokes covered menu, Settings, combat, gold/card reward flows, card choose/skip, and map continuation. Batched room composition and full continuous three-floor live acceptance remain open |
+| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner | Repository gates and fixtures passed. The 2026-09-01 campaign live-demonstrated menu, Settings, combat, one safe event-to-map action, legal map selection, two completed combats, and their reward/map handoffs. The composed room handoff stopped fail-closed at `run_room_not_ready`; a narrowed multi-step event attempt then applied one action but ended at `room_interaction_timeout` |
 
 Every completed campaign in this sequence ended with a normal game exit,
 bridge quarantine/removal, a base-game main-menu relaunch with the listener
-closed, and final cleanup while Steam Cloud was reported idle. The final base
-projection again contained the expected `429` base files and no bridge overlay.
-These results are bounded point observations, not proof that ordinary Steam or
-game launches never touch profile, preference, save, or Cloud state.
+closed, and final cleanup. During the latest campaign Steam Cloud remained at
+the previously established disabled setting; it was neither changed nor given
+an idle-state acceptance claim. The final base projection again contained the
+expected `429` base files and no bridge overlay, with no game process or bridge
+listener. These results are bounded point observations, not proof that ordinary
+Steam or game launches never touch profile, preference, save, or Cloud state.
 
 ## Evidence levels inside R0i
 
@@ -101,16 +114,18 @@ narrower:
 
 - **Live demonstrated:** authenticated menu/Settings/combat reads; combat
   action and completion loops; gold and card-reward progression; card choice;
-  card skip; legal map selection; one composed floor transition; and clean
-  teardown/base relaunch.
-- **Fixture demonstrated but not yet live accepted:** separate rest-site and
-  safe standard-event handling, plus a continuous combat/reward/map controller
-  covering the full three-combat-floor cap on ordinary-combat continuations.
-- **Observed residual:** one batched-controller attempt stopped on
-  `decision_response_mismatch`. The narrower combat controller subsequently
-  resumed successfully, but that does not establish a transient or timing root
-  cause. The batched path needs a reproducible live pass or a minimized failure
-  before it can be called stable.
+  card skip; legal map selection; a direct safe standard-event action reaching
+  the map; two consecutive composed combat completions with intervening
+  reward/map handoffs; and clean teardown/base relaunch.
+- **Fixture demonstrated but not yet live accepted:** rest-site handling; a
+  complete reconciled room handoff inside the batched runner; multi-step event
+  completion; and the full three-combat-floor cap.
+- **Observed residuals:** an earlier batched attempt stopped on
+  `decision_response_mismatch`; the latest reached a real event after two
+  combats but returned `run_room_not_ready`. A standalone safe-room retry
+  applied the first action of the multi-step event and then returned
+  `room_interaction_timeout`. Normal UI recovery completed the event without
+  broadening bridge authority. These are live failures, not passed room cases.
 
 ## Current exclusions
 
@@ -141,29 +156,32 @@ control path. The recoverable dedicated-profile baseline and its broader
 passivity/rollback claims also remain unresolved; the approved live smokes
 accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 
-The smallest useful next target is to stabilize the existing batched controller
-and compose the existing room controller into one reproducible multi-floor live
-sequence using only already implemented combat, reward, map, and supported-room
-contracts. That target
+The smallest useful next live target is to stabilize the existing room handoff
+inside one reproducible multi-floor sequence using only already implemented
+combat, reward, map, and supported-room contracts. That target
 should:
 
-1. minimize or explain `decision_response_mismatch` without adding privileged
-   state;
-2. obtain bounded live evidence for rest-site and standard-event handling when
-   encountered;
-3. preserve separate combat, reward, map, and room providers so components can
+1. minimize the `run_room_not_ready` readiness race or classification mismatch
+   without adding privileged state;
+2. make multi-step event continuation either complete within its bounded
+   contract or fail immediately with a precise supported/unsupported reason;
+3. retain `decision_response_mismatch` as a separate historical residual until
+   reproduced or explained;
+4. obtain bounded live evidence for a fully reconciled rest-site or standard-
+   event handoff when encountered;
+5. preserve separate combat, reward, map, and room providers so components can
    still be compared independently;
-4. finish with the existing quarantine, clean-base relaunch, and purge checks;
+6. finish with the existing quarantine, clean-base relaunch, and purge checks;
    and
-5. avoid expanding the live bridge into shops, models, search, or broader
+7. avoid expanding the live bridge into shops, models, search, or broader
    control surfaces until the existing slice is repeatable.
 
-Independently of that live target, provisional headless-environment work now
-starts immediately. It may implement the backend/decision contract,
-deterministic RNG, serializable state, snapshots, legacy-combat adapter,
-structural reduced progression, replay, and episode runner in parallel. It may
-not claim target-game fidelity until named live differential cases pass, and it
-does not close Phase 1 or authorize a live campaign.
+Independently of that live target, the provisional headless environment has
+passed its composed-backend and independent conformance gates. When development
+resumes, the next unstarted consumers are the public-only smoke baselines and
+then bounded rollout/throughput collection. None may claim target-game fidelity
+until named live differential cases pass, and the ordinary bridge campaign did
+not authorize creation of a persistent differential-capture artifact.
 
 The dependency-aware worker packets for both the live and headless tracks are
 maintained in

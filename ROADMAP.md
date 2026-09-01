@@ -49,15 +49,21 @@ The full-game integration track additionally has:
 - snapshot-bound combat, reward, and map actions with reconciliation;
 - replaceable external providers for combat, rewards, map travel, and supported
   rooms;
-- a verified live complete-combat loop and one composed floor transition;
-- repository and disposable-fixture coverage for a controller capped at three
-  combat floors; and
+- a verified live complete-combat loop, one direct safe event-to-map action,
+  and a composed live sequence spanning two combat/reward/map handoffs;
+- repository and disposable-fixture coverage for a combat/reward/map/room
+  controller capped at three combat floors;
+- the accepted `headless_v0` contract, composed deterministic reduced-run
+  backend, component-addressable evidence, snapshots/replay, and an independent
+  66-test conformance gate; and
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
-unsupported, rest-site and standard-event handling still need bounded live
-acceptance, and the batched controller has one unresolved
-`decision_response_mismatch` observation whose cause is not yet established.
+unsupported, rest-site and fully reconciled event handling still need bounded
+live acceptance, and the batched controller has unresolved
+`decision_response_mismatch`, `run_room_not_ready`, and multi-step
+`room_interaction_timeout` observations. The headless stack still lacks its
+backend-neutral smoke choosers and rollout/throughput consumer.
 
 ## Near-Term Priorities
 
@@ -65,26 +71,25 @@ These are the highest-value next steps.
 
 ### Full-Game Integration Priority
 
-Before expanding the bridge surface, stabilize the existing `R0i` batched
-controller, compose its currently separate room controller, and demonstrate one
-repeatable multi-floor live sequence using only the already implemented combat,
-reward, map, and supported-room contracts.
-Minimize or explain the response mismatch, exercise rest-site and standard-
-event handling live when encountered, and retain the existing clean teardown
-and base-game relaunch checks.
+Before expanding the bridge surface, stabilize the existing `R0i` room handoff
+and demonstrate one repeatable multi-floor live sequence using only the already
+implemented combat, reward, map, and supported-room contracts. Minimize the
+`run_room_not_ready` handoff failure, make multi-step event continuation either
+complete or reject precisely within its bound, keep the earlier response
+mismatch explicit, and retain the existing clean teardown and base-game
+relaunch checks.
 
 Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
 
-In parallel, begin the provisional Python headless environment immediately.
-The first deliverable is a backend-neutral wrapper around deterministic
-`combat_v0` episodes; the next is a reduced counterfactual
-combat → reward → map → supported-room → next-combat slice with explicit RNG,
-serializable state, snapshots, typed candidates, replay, and batched episode
-execution. Structural reward/map/room rules remain labelled synthetic until
-named live differential cases pass. This work does not wait for the next live
-campaign and does not imply target-game parity.
+The provisional Python headless environment has reached its accepted composed
+backend and independent-conformance boundary. When work resumes, add only the
+public-observation smoke choosers, then the bounded process-safe rollout and
+throughput consumer already defined in the execution plan. Structural
+reward/map/room rules remain labelled synthetic until named live differential
+cases pass. The completed ordinary bridge campaign did not authorize a retained
+live differential capture and does not imply target-game parity.
 
 The concrete dependency graph, ownership, acceptance, and handoff packets for
 running both tracks with as many independent agents as their dependencies allow

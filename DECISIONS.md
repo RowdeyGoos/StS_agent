@@ -1362,3 +1362,72 @@ semantics, and only named passing differential cases earn fidelity claims.
 `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md` is the active task graph and ownership
 source. Phase 1 remains open, and this decision grants no installation, launch,
 profile, credential, Cloud, or live-probe authorization.
+
+## D45. Accept The Reduced Headless Join With Restore-Time History Replay
+
+### Context
+
+The provisional `headless_v0` producers now cover deterministic combat,
+structural reward/map/room progression, explicit RNG, serializable world state,
+public candidates, snapshots, a generic episode runner, and separated replay,
+target, and audit records. Composing them exposed two competing risks. A shallow
+snapshot could accept individually valid state fragments that did not share one
+history, while replaying the complete run after every accepted action reduced
+local throughput by roughly an order of magnitude.
+
+The public bridge wire, normalized policy observation, private headless state,
+training encoding, and replay/audit records also overlap semantically without
+having the same identity or trust contract. Treating them as one representation
+would manufacture live identity and blur structural evidence into a fidelity
+claim.
+
+### Decision
+
+- accept `ReducedRunBackend` as the composed experimental `headless_v0`
+  backend for the current reduced slice
+- retain the complete accepted outer candidate-ID history, closed map history,
+  combat-entry chronology, RNG provenance, child snapshot, events, and current
+  boundary in the versioned private snapshot
+- on untrusted restore, replay the accepted outer history and compare the full
+  reconstructed private/public boundary; on ordinary reset/apply, retain the
+  bounded local invariants and history-length check instead of replaying the
+  full prefix
+- treat snapshot hashes and semantic keys as deterministic consistency checks,
+  not keyed authenticity or proof against a wholesale internally valid
+  alternative history
+- keep live wire DTOs, public normalized observations, private headless state,
+  training encodings, and replay/target/audit streams as explicit separate
+  contracts
+- preserve component-addressable evidence: legacy combat remains `combat_v0`,
+  reduced content/state/composition remains `structural_fixture`, and no
+  headless capability becomes `live_observed` or `differential_verified`
+  without a named comparison
+- interpret the reduced public terminal outcome `victory` only as structural
+  route completion; retain the non-policy reason `route_complete` and never
+  report it as a full target-game win
+- require the independent conformance suite to verify exact source-suffix
+  restore, semantically rehashed tamper rejection, stale-binding atomicity,
+  public-boundary equality, terminal/unsupported semantics, and exact evidence
+  identities before downstream policies or rollout collection consume the
+  backend
+
+### Why
+
+- restore-time replay closes the high-risk cross-component provenance join
+  while keeping the normal stepping path fast enough for later rollout work
+- explicit representation boundaries prevent control identity, RNG, hindsight,
+  or live-wire omissions from leaking into actor-facing data
+- evidence labels make the reduced environment useful immediately without
+  misrepresenting project-authored structural rules as demonstrated game truth
+- the independent black-box gate can catch a deterministic but wrong restore,
+  schema-valid covert public values, and truthful-capability regressions that
+  producer-owned tests may miss
+
+### Consequence
+
+`H3-REDUCED-BACKEND-01` and `H3-CONFORMANCE-04` are accepted on the integration
+branch. The accepted fingerprints and current test evidence are recorded in
+`docs/PHASE_1_CURRENT_STATUS.md`. This does not accept target-game parity,
+training quality, a full-game win contract, or rollout throughput.
+`H3-BASELINE-02` and `H3-ROLLOUT-03` are unblocked but remain unstarted until
+development resumes.
