@@ -17,6 +17,7 @@ from typing import Any, Callable, Mapping, TypeVar
 from game.content.reduced_v0 import REST_HEAL_PARAMETERS, SAFE_EVENT_DEFINITIONS
 from game.contracts.headless_v0 import (
     DecisionPhase,
+    MAX_PUBLIC_COUNTER,
     PublicEvent,
     PublicEventKind,
     PublicObservation,
@@ -44,6 +45,8 @@ _RESOLVED = "resolved"
 _RULES_DESCRIPTOR = {
     "version": ROOM_RULES_VERSION,
     "decision_binding": "exact_pending_public_scope_and_sequence_v1",
+    "maximum_open_sequence": MAX_PUBLIC_COUNTER - 1,
+    "next_boundary_validation": "event_and_observation_before_commit_v1",
     "rest": {"heal_amount": REST_HEAL_PARAMETERS.heal_amount, "one_use": True},
     "resolved_proceed_sequence": "increment_one",
     "safe_events": [item.to_dict() for item in SAFE_EVENT_DEFINITIONS],
@@ -104,6 +107,8 @@ def open_room(
         raise TypeError("public_scope must be a PublicScope.")
     if public_scope.decision_ordinal != decision_sequence:
         raise RoomRuleError("Room public scope does not bind to decision_sequence.")
+    if decision_sequence >= MAX_PUBLIC_COUNTER:
+        raise RoomRuleError("Room decision sequence cannot advance to a proceed boundary.")
 
     if kind is RoomKind.REST:
         if event_id is not None:
@@ -111,6 +116,9 @@ def open_room(
     else:
         if not isinstance(event_id, str) or event_id not in _SAFE_EVENTS_BY_ID:
             raise UnsupportedRoomContentError("Event is not in the safe-event allowlist.")
+        event = _SAFE_EVENTS_BY_ID[event_id]
+        if event.effect_kind == RoomEffectKind.HEAL.value and world.current_hp >= world.max_hp:
+            raise RoomRuleError("Healing event has no contract-valid effect at full HP.")
 
     _mutate_atomically(
         world,
@@ -219,20 +227,9 @@ def apply_room_candidate(
             raise RoomRuleError("Rest healing is unavailable at full HP.")
         # The candidate was validated against the declared content amount.  The
         # emitted amount records the capped persistent delta instead.
-        _mutate_atomically(
+        return _mutate_atomically(
             world,
-            lambda: _resolve_rest_heal(world, context, applied),
-        )
-        return RoomTransition(
-            completed=False,
-            public_events=(
-                PublicEvent(
-                    0,
-                    PublicEventKind.ROOM_REST_HEALED,
-                    DecisionPhase.ROOM,
-                    {"amount": applied},
-                ),
-            ),
+            lambda: _apply_rest_heal_transition(world, context, applied),
         )
 
     if room_kind is not RoomKind.EVENT:
@@ -240,20 +237,9 @@ def apply_room_candidate(
     event = _event_from_context(context)
     effect = RoomEffectKind(event.effect_kind)
     amount = event.amount
-    applied = _mutate_atomically(
+    return _mutate_atomically(
         world,
-        lambda: _resolve_event_option(world, context, effect, amount),
-    )
-    return RoomTransition(
-        completed=False,
-        public_events=(
-            PublicEvent(
-                0,
-                PublicEventKind.ROOM_EVENT_OPTION_CHOSEN,
-                DecisionPhase.ROOM,
-                {"effect": effect.value, "amount": applied},
-            ),
-        ),
+        lambda: _apply_event_option_transition(world, context, effect, amount),
     )
 
 
@@ -284,9 +270,11 @@ def _room_context(world: WorldState) -> dict[str, Any]:
         raise RoomRuleError("Room decision names an unsupported room kind.") from error
     event_id = context["event_id"]
     try:
-        PublicScope.from_dict(context["public_scope"])
+        stored_scope = PublicScope.from_dict(context["public_scope"])
     except Exception as error:
         raise RoomRuleError("Room decision has an invalid public scope binding.") from error
+    if stored_scope.decision_ordinal != pending.sequence:
+        raise RoomRuleError("Persisted public scope does not bind to pending sequence.")
     if room_kind is RoomKind.REST and event_id is not None:
         raise RoomRuleError("Rest decision contains an event identifier.")
     if room_kind is RoomKind.EVENT and (
@@ -327,24 +315,57 @@ def _complete_room(world: WorldState) -> None:
     world.phase = DecisionPhase.MAP
 
 
-def _resolve_rest_heal(
+def _apply_rest_heal_transition(
     world: WorldState,
     context: Mapping[str, Any],
     applied: int,
-) -> None:
+) -> RoomTransition:
     world.current_hp += applied
     _mark_resolved(world, context)
+    transition = RoomTransition(
+        completed=False,
+        public_events=(
+            PublicEvent(
+                0,
+                PublicEventKind.ROOM_REST_HEALED,
+                DecisionPhase.ROOM,
+                {"amount": applied},
+            ),
+        ),
+    )
+    _validate_next_room_boundary(world)
+    return transition
 
 
-def _resolve_event_option(
+def _apply_event_option_transition(
     world: WorldState,
     context: Mapping[str, Any],
     effect: RoomEffectKind,
     amount: int,
-) -> int:
+) -> RoomTransition:
     applied = _apply_event_effect(world, effect, amount)
     _mark_resolved(world, context)
-    return applied
+    transition = RoomTransition(
+        completed=False,
+        public_events=(
+            PublicEvent(
+                0,
+                PublicEventKind.ROOM_EVENT_OPTION_CHOSEN,
+                DecisionPhase.ROOM,
+                {"effect": effect.value, "amount": applied},
+            ),
+        ),
+    )
+    _validate_next_room_boundary(world)
+    return transition
+
+
+def _validate_next_room_boundary(world: WorldState) -> None:
+    """Construct the next public decision before committing an option effect."""
+
+    context = _room_context(world)
+    next_scope = PublicScope.from_dict(context["public_scope"])
+    room_candidates(world, next_scope)
 
 
 def _public_player(world: WorldState) -> dict[str, int]:
@@ -380,6 +401,8 @@ def _public_options(
             }
         ]
     event = _event_from_context(context)
+    if event.effect_kind == RoomEffectKind.HEAL.value and world.current_hp >= world.max_hp:
+        raise RoomRuleError("Healing event has no contract-valid effect at full HP.")
     return [
         {
             "option_ref": room_option_reference(

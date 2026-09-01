@@ -8,6 +8,8 @@ import pytest
 
 from game.content.reduced_v0 import CONTENT_FINGERPRINT
 from game.contracts.headless_v0 import (
+    MAX_PUBLIC_COUNTER,
+    ContractValidationError,
     DecisionPhase,
     NodeKind,
     PublicReferenceKind,
@@ -291,5 +293,77 @@ def test_post_mutation_validation_failure_restores_the_exact_world(monkeypatch: 
     with pytest.raises(RuntimeError, match="forced post-mutation"):
         apply_room_candidate(world, _scope(), candidate)
     monkeypatch.setattr(WorldState, "validate", original_validate)
+
+    assert world.to_private_dict() == before
+
+
+def test_persisted_scope_ordinal_must_match_pending_sequence() -> None:
+    world = _world()
+    _open_event(world)
+    pending = world.pending_decision
+    assert pending is not None
+    world.pending_decision = PendingDecision(
+        pending.decision_kind,
+        99,
+        dict(pending.private_context),
+    )
+    before = deepcopy(world.to_private_dict())
+
+    with pytest.raises(RoomRuleError, match="Persisted public scope does not bind"):
+        room_public_observation(world, _scope())
+
+    assert world.to_private_dict() == before
+
+
+def test_room_opening_rejects_exhausted_public_ordinal_before_advertising() -> None:
+    world = _world(hp=70)
+    before = deepcopy(world.to_private_dict())
+    exhausted_scope = _scope(decision=MAX_PUBLIC_COUNTER)
+
+    with pytest.raises(RoomRuleError, match="cannot advance"):
+        open_room(
+            world,
+            RoomKind.REST,
+            decision_sequence=MAX_PUBLIC_COUNTER,
+            public_scope=exhausted_scope,
+        )
+
+    assert world.to_private_dict() == before
+
+    last_advance = _world(hp=70)
+    penultimate_scope = _scope(decision=MAX_PUBLIC_COUNTER - 1)
+    open_room(
+        last_advance,
+        RoomKind.REST,
+        decision_sequence=MAX_PUBLIC_COUNTER - 1,
+        public_scope=penultimate_scope,
+    )
+    heal = room_candidates(last_advance, penultimate_scope)[0]
+    apply_room_candidate(last_advance, penultimate_scope, heal)
+    pending = last_advance.pending_decision
+    assert pending is not None and pending.sequence == MAX_PUBLIC_COUNTER
+    final_scope = _scope(decision=MAX_PUBLIC_COUNTER)
+    proceed = room_candidates(last_advance, final_scope)
+    assert len(proceed) == 1 and isinstance(proceed[0], RoomProceedCandidate)
+
+
+def test_gold_projection_failure_rolls_back_effect_event_and_next_decision() -> None:
+    world = _world(gold=MAX_PUBLIC_COUNTER - 10)
+    _open_event(world, "quiet_cache")
+    candidate = room_candidates(world, _scope())[0]
+    before = deepcopy(world.to_private_dict())
+
+    with pytest.raises(ContractValidationError, match="public_observation.data.player.gold"):
+        apply_room_candidate(world, _scope(), candidate)
+
+    assert world.to_private_dict() == before
+
+
+def test_full_hp_healing_event_fails_closed_before_candidate_advertisement() -> None:
+    world = _world(hp=80)
+    before = deepcopy(world.to_private_dict())
+
+    with pytest.raises(RoomRuleError, match="no contract-valid effect"):
+        _open_event(world, "cool_spring")
 
     assert world.to_private_dict() == before
