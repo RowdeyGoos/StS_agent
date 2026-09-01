@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import replace
+from hashlib import sha256
 import json
 
 import pytest
@@ -18,12 +19,14 @@ from game.engine.headless_state import (
     COMBAT_LAUNCH_STREAM,
     EVENT_EFFECT_STREAM,
     REWARD_OFFER_STREAM,
+    WORLD_SEMANTIC_KEY_VERSION,
     WORLD_STATE_FINGERPRINT,
     AutomaticTransition,
     CombatResolution,
     PendingDecision,
     StateValidationError,
     WorldState,
+    canonical_private_json,
 )
 from game.engine.snapshots import (
     PRIVATE_SNAPSHOT_SCHEMA,
@@ -36,6 +39,13 @@ from game.engine.snapshots import (
 
 CONTENT_FINGERPRINT = "a" * 64
 RULES_FINGERPRINT = "b" * 64
+
+
+def _forged_semantic_key(payload: dict) -> str:
+    encoded = (
+        f"{WORLD_SEMANTIC_KEY_VERSION}\0{canonical_private_json(payload)}"
+    ).encode("utf-8")
+    return sha256(encoded).hexdigest()
 
 
 def _world(seed: int = 123) -> WorldState:
@@ -248,6 +258,43 @@ def test_recomputed_semantic_key_cannot_forge_payload_fingerprints(
     )
 
     with pytest.raises(SnapshotValidationError, match=f"payload {field}"):
+        codec.restore(forged)
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda allocator: allocator.__setitem__("run_id", None),
+        lambda allocator: allocator.__setitem__("next_run_ordinal", 2),
+    ],
+)
+def test_recomputed_semantic_key_cannot_forge_one_run_allocator(mutate) -> None:
+    codec = _codec()
+    snapshot = codec.capture(_world())
+    payload = deepcopy(snapshot.to_dict()["payload"])
+    mutate(payload["identity_allocator"])
+    forged = replace(
+        snapshot,
+        payload=payload,
+        semantic_key=_forged_semantic_key(payload),
+    )
+
+    with pytest.raises(SnapshotValidationError, match="payload"):
+        codec.restore(forged)
+
+
+def test_unhashable_current_node_id_is_translated_to_snapshot_validation_error() -> None:
+    codec = _codec()
+    snapshot = codec.capture(_world())
+    payload = deepcopy(snapshot.to_dict()["payload"])
+    payload["current_node_id"] = []
+    forged = replace(
+        snapshot,
+        payload=payload,
+        semantic_key=_forged_semantic_key(payload),
+    )
+
+    with pytest.raises(SnapshotValidationError, match="payload"):
         codec.restore(forged)
 
 

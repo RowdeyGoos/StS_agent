@@ -198,10 +198,17 @@ class StableIdAllocator:
             value = _validate_integer(getattr(self, name), f"identity_allocator.{name}", minimum=0)
             if value > _IDENTITY_CAPACITY:
                 raise StateValidationError(f"identity_allocator.{name} is exhausted.")
-        if self.run_id is not None:
+        if self.run_id is None:
+            if self.next_run_ordinal != 0:
+                raise StateValidationError(
+                    "An allocator without a run must have a zero run counter."
+                )
+        else:
+            if self.next_run_ordinal != 1:
+                raise StateValidationError(
+                    "The one-run allocator must have run counter exactly one."
+                )
             self.validate_run_id(self.run_id)
-            if self.next_run_ordinal == 0:
-                raise StateValidationError("An allocated run requires a positive run counter.")
 
     @classmethod
     def for_seed(cls, seed: int) -> "StableIdAllocator":
@@ -217,7 +224,7 @@ class StableIdAllocator:
         return identifier
 
     def allocate_run_id(self) -> str:
-        if self.run_id is not None:
+        if self.run_id is not None or self.next_run_ordinal != 0:
             raise StateValidationError("This allocator already owns a run ID.")
         self.run_id = self._allocate("run", "next_run_ordinal")
         return self.run_id
@@ -250,7 +257,7 @@ class StableIdAllocator:
 
     def validate_run_id(self, value: Any) -> str:
         identifier = self._validate_allocated(value, "run", self.next_run_ordinal)
-        if self.run_id is not None and identifier != self.run_id:
+        if self.run_id is None or identifier != self.run_id:
             raise StateValidationError("run_id does not identify this run.")
         return identifier
 
@@ -691,6 +698,13 @@ class WorldState:
             raise StateValidationError("world.rng has the wrong type.")
         if self.identity_allocator.namespace != _identity_namespace(self.rng.seed):
             raise StateValidationError("Identity namespace does not match the world RNG seed.")
+        if (
+            self.identity_allocator.run_id != self.run_id
+            or self.identity_allocator.next_run_ordinal != 1
+        ):
+            raise StateValidationError(
+                "World run ID does not match the one-run identity allocator."
+            )
         self.identity_allocator.validate_run_id(self.run_id)
         current_hp = _validate_integer(self.current_hp, "world.current_hp", minimum=0)
         max_hp = _validate_integer(self.max_hp, "world.max_hp", minimum=1)
@@ -714,10 +728,16 @@ class WorldState:
         for map_id in map_ids:
             self.identity_allocator.validate_map_id(map_id)
         known_map_ids = set(map_ids)
-        if self.current_node_id is not None and self.current_node_id not in known_map_ids:
-            raise StateValidationError("world.current_node_id is not a known map node.")
-        if any(node_id not in known_map_ids for node_id in self.node_history):
-            raise StateValidationError("world.node_history references an unknown map node.")
+        if self.current_node_id is not None:
+            current_node_id = self.identity_allocator.validate_map_id(self.current_node_id)
+            if current_node_id not in known_map_ids:
+                raise StateValidationError("world.current_node_id is not a known map node.")
+        for node_id in self.node_history:
+            validated_node_id = self.identity_allocator.validate_map_id(node_id)
+            if validated_node_id not in known_map_ids:
+                raise StateValidationError(
+                    "world.node_history references an unknown map node."
+                )
         if self.pending_decision is not None and not isinstance(
             self.pending_decision, PendingDecision
         ):

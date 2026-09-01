@@ -110,6 +110,8 @@ def test_allocator_rejects_wrong_namespace_kind_and_unallocated_ids() -> None:
     world = _world(seed=19)
     other = _world(seed=20)
 
+    assert world.identity_allocator.run_id == world.run_id
+    assert world.identity_allocator.next_run_ordinal == 1
     with pytest.raises(StateValidationError, match="not allocated"):
         world.identity_allocator.validate_card_id(other.master_deck[0].instance_id)
     with pytest.raises(StateValidationError, match="not allocated"):
@@ -340,7 +342,7 @@ def test_resolution_outcome_and_hp_must_be_consistent() -> None:
 
 def test_world_rejects_unknown_node_and_contract_fingerprint() -> None:
     world = _world()
-    world.current_node_id = "map.0000000000000000.00000000"
+    world.current_node_id = world.identity_allocator.allocate_map_id()
     with pytest.raises(StateValidationError, match="known map node"):
         world.validate()
 
