@@ -307,14 +307,16 @@ def test_forced_post_mutation_validation_failure_restores_world_exactly(monkeypa
     )
     before = world.to_private_dict()
     original_validate = WorldState.validate
-    calls = 0
+    baseline_gold = world.gold
+    observed_mutated_world = False
 
     def fail_after_current_validation(self):
-        nonlocal calls
-        calls += 1
-        if calls == 2:
+        nonlocal observed_mutated_world
+        result = original_validate(self)
+        if self is world and self.gold != baseline_gold:
+            observed_mutated_world = True
             raise RuntimeError("forced post-mutation validation failure")
-        return original_validate(self)
+        return result
 
     monkeypatch.setattr(WorldState, "validate", fail_after_current_validation)
     with pytest.raises(RuntimeError, match="forced post-mutation"):
@@ -324,6 +326,7 @@ def test_forced_post_mutation_validation_failure_restores_world_exactly(monkeypa
         )
 
     assert world.to_private_dict() == before
+    assert observed_mutated_world
 
 
 def test_forced_begin_decision_failure_restores_pending_state(monkeypatch) -> None:
