@@ -33,9 +33,9 @@ def test_reset_exposes_only_reachable_graph_and_deterministic_candidates() -> No
     }
     assert len(decision.observation.data["nodes"]) == 5
     assert len(decision.candidates) == 1
-    assert decision.observation.data["nodes"] == sorted(
-        decision.observation.data["nodes"], key=lambda node: node["node_ref"]
-    )
+    assert [node["kind"] for node in decision.observation.data["nodes"]] == [
+        "combat", "event", "terminal", "rest", "combat"
+    ]
     assert world.rng_stream_counters() == {
         "combat_launch": 0,
         "event_effect": 0,

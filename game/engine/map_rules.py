@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from hashlib import sha256
 import json
 from typing import Any, Mapping
@@ -58,6 +58,7 @@ class MapRules:
     """Own the explicit DAG projection while persistent state owns identities."""
 
     template: MapTemplate | str | None = None
+    _bindings: dict[str, HeadlessBinding] = field(default_factory=dict, init=False, repr=False)
 
     def _resolved(self) -> MapTemplate:
         return _template(self.template)
@@ -152,15 +153,28 @@ class MapRules:
         for index, node in enumerate(nodes):
             if node.definition_id in self._next_ids(world):
                 candidates.append(MapChooseNodeCandidate(scope.decision_scope, map_node_reference(scope, node.node_kind, index)))
-        return DecisionState.create(backend_id=BACKEND_ID, backend_version=BACKEND_VERSION, backend_fingerprint=BACKEND_FINGERPRINT,
+        result = DecisionState.create(backend_id=BACKEND_ID, backend_version=BACKEND_VERSION, backend_fingerprint=BACKEND_FINGERPRINT,
             content_version="reduced_content_v0", content_fingerprint=world.content_fingerprint, rules_version=MAP_RULES_VERSION,
             rules_fingerprint=RULES_FINGERPRINT, run_id=world.run_id, decision_sequence=scope.decision_ordinal,
             status=DecisionStatus.ACTIONABLE, phase=DecisionPhase.MAP, observation=PublicObservation(DecisionPhase.MAP, self.visible_graph(world), scope), candidates=candidates)
+        for item in result.candidates:
+            self._bindings[item.candidate_id] = HeadlessBinding.for_candidate(result, item.candidate_id)
+        return result
 
     def choose_node(self, world: WorldState, candidate: MapChooseNodeCandidate | str | HeadlessBinding) -> Transition:
         before = self.decision(world)
-        binding = candidate if isinstance(candidate, HeadlessBinding) else HeadlessBinding.for_candidate(before, candidate.candidate_id if isinstance(candidate, MapChooseNodeCandidate) else candidate)
-        if binding.decision_hash != before.decision_hash or binding.decision_sequence != before.decision_sequence:
+        if isinstance(candidate, HeadlessBinding):
+            binding = candidate
+        elif isinstance(candidate, MapChooseNodeCandidate):
+            binding = self._bindings.get(candidate.candidate_id)
+            if binding is None:
+                binding = HeadlessBinding.for_candidate(before, candidate.candidate_id)
+        else:
+            # A well-formed but unadvertised candidate is rejected with an
+            # authoritative binding; malformed IDs still fail closed.
+            binding = HeadlessBinding(before.run_id, before.decision_sequence, before.decision_hash, candidate)
+        if (binding.run_id != before.run_id or binding.decision_hash != before.decision_hash
+                or binding.decision_sequence != before.decision_sequence):
             return Transition(TransitionResult.STALE, TransitionReason.STALE_BINDING, binding, (), before)
         selected = next((item for item in before.candidates if item.candidate_id == binding.candidate_id), None)
         if selected is None:
