@@ -2,8 +2,6 @@
 
 from copy import deepcopy
 
-import pytest
-
 from game.content.reduced_v0 import CONTENT_FINGERPRINT
 from game.contracts.headless_v0 import DecisionPhase, TransitionResult
 from game.engine.headless_state import WorldState
@@ -64,8 +62,8 @@ def test_invalid_and_stale_choices_are_mutation_atomic() -> None:
     decision = rules.reset(world)
     before = deepcopy(world.to_private_dict())
 
-    with pytest.raises(ValueError):
-        rules.choose_node(world, "cand." + "0" * 64)
+    invalid = rules.choose_node(world, "cand." + "0" * 64)
+    assert invalid.result is TransitionResult.REJECTED
     assert world.to_private_dict() == before
 
     rules.choose_node(world, decision.candidates[0])
@@ -83,6 +81,6 @@ def test_snapshot_round_trip_replays_same_next_map_choice() -> None:
     payload = world.to_private_dict()
     restored = WorldState.from_private_dict(payload)
     current = rules.decision(world)
-    replay = rules.decision(restored)
+    replay = MapRules().decision(restored)
     assert replay.to_json() == current.to_json()
-    assert rules.choose_node(restored, replay.candidates[0]).next_decision.to_json() == rules.choose_node(world, current.candidates[0]).next_decision.to_json()
+    assert MapRules().choose_node(restored, replay.candidates[0]).next_decision.to_json() == rules.choose_node(world, current.candidates[0]).next_decision.to_json()

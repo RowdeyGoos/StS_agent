@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from hashlib import sha256
 import json
 from typing import Any, Mapping
@@ -58,7 +58,6 @@ class MapRules:
     """Own the explicit DAG projection while persistent state owns identities."""
 
     template: MapTemplate | str | None = None
-    _bindings: dict[str, HeadlessBinding] = field(default_factory=dict, init=False, repr=False)
 
     def _resolved(self) -> MapTemplate:
         return _template(self.template)
@@ -157,8 +156,6 @@ class MapRules:
             content_version="reduced_content_v0", content_fingerprint=world.content_fingerprint, rules_version=MAP_RULES_VERSION,
             rules_fingerprint=RULES_FINGERPRINT, run_id=world.run_id, decision_sequence=scope.decision_ordinal,
             status=DecisionStatus.ACTIONABLE, phase=DecisionPhase.MAP, observation=PublicObservation(DecisionPhase.MAP, self.visible_graph(world), scope), candidates=candidates)
-        for item in result.candidates:
-            self._bindings[item.candidate_id] = HeadlessBinding.for_candidate(result, item.candidate_id)
         return result
 
     def choose_node(self, world: WorldState, candidate: MapChooseNodeCandidate | str | HeadlessBinding) -> Transition:
@@ -166,8 +163,14 @@ class MapRules:
         if isinstance(candidate, HeadlessBinding):
             binding = candidate
         elif isinstance(candidate, MapChooseNodeCandidate):
-            binding = self._bindings.get(candidate.candidate_id)
-            if binding is None:
+            if candidate.decision_scope != self._scope(world).decision_scope:
+                binding = HeadlessBinding(
+                    before.run_id,
+                    max(0, before.decision_sequence - 1),
+                    sha256(candidate.decision_scope.encode()).hexdigest(),
+                    candidate.candidate_id,
+                )
+            else:
                 binding = HeadlessBinding.for_candidate(before, candidate.candidate_id)
         else:
             # A well-formed but unadvertised candidate is rejected with an
