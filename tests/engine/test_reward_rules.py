@@ -17,7 +17,7 @@ from game.contracts.headless_v0 import (
     TransitionReason,
     TransitionResult,
 )
-from game.engine.headless_state import NodeKind, WorldState
+from game.engine.headless_state import _IDENTITY_CAPACITY, NodeKind, WorldState
 from game.engine.reward_rules import RewardRuleError, RewardRules
 from game.engine.snapshots import WorldSnapshotCodec
 
@@ -228,56 +228,75 @@ def test_begin_rejects_non_reward_or_pending_world_without_mutation() -> None:
     assert world.to_private_dict() == before
 
 
-def test_open_at_maximum_public_decision_ordinal_restores_rng_and_pending_state() -> None:
+@pytest.mark.parametrize("decision_ordinal", [MAX_PUBLIC_COUNTER - 3, MAX_PUBLIC_COUNTER])
+def test_begin_rejects_public_scope_without_a_complete_reward_budget(decision_ordinal: int) -> None:
     world = _world()
     rules = _rules()
-    decision = rules.begin(
-        world,
-        reward_table_id="combat_reward_basic",
-        decision_sequence=0,
-        public_scope=_scope(decision=MAX_PUBLIC_COUNTER),
-    )
     before = world.to_private_dict()
 
-    with pytest.raises(ContractValidationError):
-        rules.apply(
+    with pytest.raises(RewardRuleError, match="scope budget"):
+        rules.begin(
             world,
-            _request(decision, lambda item: item.kind.value == "reward.open_card_reward"),
+            reward_table_id="combat_reward_basic",
+            decision_sequence=0,
+            public_scope=_scope(decision=decision_ordinal),
         )
 
     assert world.to_private_dict() == before
     assert world.rng_stream_counters()["reward_offer"] == 0
 
 
-def test_choose_at_maximum_public_decision_ordinal_restores_allocator_and_deck() -> None:
+def test_near_maximum_scope_finishes_without_a_dead_end() -> None:
     world = _world()
     rules = _rules()
     decision = rules.begin(
         world,
         reward_table_id="combat_reward_basic",
         decision_sequence=0,
-        public_scope=_scope(decision=MAX_PUBLIC_COUNTER - 1),
+        public_scope=_scope(decision=MAX_PUBLIC_COUNTER - 4),
     )
     opened = rules.apply(
         world,
         _request(decision, lambda item: item.kind.value == "reward.open_card_reward"),
     )
+    assert _candidate_kinds(opened.next_decision) == {"reward.claim_gold", "reward.choose_card", "reward.skip_card"}
+    skipped = rules.apply(
+        world,
+        _request(opened.next_decision, lambda item: item.kind.value == "reward.skip_card"),
+    )
+    claimed = rules.apply(
+        world,
+        _request(skipped.next_decision, lambda item: item.kind.value == "reward.claim_gold"),
+    )
+    proceeded = rules.apply(
+        world,
+        _request(claimed.next_decision, lambda item: item.kind.value == "reward.proceed"),
+    )
+
+    assert proceeded.next_decision.status.value == "waiting"
+    assert proceeded.next_decision.observation.public_scope.decision_ordinal == MAX_PUBLIC_COUNTER
+
+
+def test_begin_rejects_gold_reward_that_cannot_be_publicly_projected() -> None:
+    world = _world()
+    world.gold = MAX_PUBLIC_COUNTER - 10
+    rules = _rules()
     before = world.to_private_dict()
 
-    with pytest.raises(ContractValidationError):
-        rules.apply(
+    with pytest.raises(RewardRuleError, match="gold reward"):
+        rules.begin(
             world,
-            _request(opened.next_decision, lambda item: item.kind.value == "reward.choose_card"),
+            reward_table_id="combat_reward_basic",
+            decision_sequence=0,
+            public_scope=_scope(),
         )
 
     assert world.to_private_dict() == before
-    assert len(world.master_deck) == 3
-    assert world.identity_allocator.next_card_ordinal == 3
 
 
-def test_claim_that_exceeds_the_public_gold_bound_restores_world_exactly() -> None:
+def test_exhausted_card_allocator_omits_choose_but_retains_skip_completion() -> None:
     world = _world()
-    world.gold = MAX_PUBLIC_COUNTER - 10
+    world.identity_allocator.next_card_ordinal = _IDENTITY_CAPACITY
     rules = _rules()
     decision = rules.begin(
         world,
@@ -285,15 +304,27 @@ def test_claim_that_exceeds_the_public_gold_bound_restores_world_exactly() -> No
         decision_sequence=0,
         public_scope=_scope(),
     )
-    before = world.to_private_dict()
+    opened = rules.apply(
+        world,
+        _request(decision, lambda item: item.kind.value == "reward.open_card_reward"),
+    )
 
-    with pytest.raises(ContractValidationError):
-        rules.apply(
-            world,
-            _request(decision, lambda item: item.kind.value == "reward.claim_gold"),
-        )
+    assert _candidate_kinds(opened.next_decision) == {"reward.claim_gold", "reward.skip_card"}
+    skipped = rules.apply(
+        world,
+        _request(opened.next_decision, lambda item: item.kind.value == "reward.skip_card"),
+    )
+    claimed = rules.apply(
+        world,
+        _request(skipped.next_decision, lambda item: item.kind.value == "reward.claim_gold"),
+    )
+    proceeded = rules.apply(
+        world,
+        _request(claimed.next_decision, lambda item: item.kind.value == "reward.proceed"),
+    )
 
-    assert world.to_private_dict() == before
+    assert proceeded.next_decision.status.value == "waiting"
+    assert world.identity_allocator.next_card_ordinal == _IDENTITY_CAPACITY
 
 
 def test_forced_post_mutation_validation_failure_restores_world_exactly(monkeypatch) -> None:

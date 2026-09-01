@@ -25,6 +25,7 @@ from game.contracts.headless_v0 import (
     DecisionPhase,
     DecisionState,
     DecisionStatus,
+    MAX_PUBLIC_COUNTER,
     PublicEvent,
     PublicEventKind,
     PublicObservation,
@@ -43,7 +44,12 @@ from game.contracts.headless_v0 import (
     reward_offer_reference,
     reward_reference,
 )
-from game.engine.headless_state import REWARD_OFFER_STREAM, PendingDecision, WorldState
+from game.engine.headless_state import (
+    REWARD_OFFER_STREAM,
+    _IDENTITY_CAPACITY,
+    PendingDecision,
+    WorldState,
+)
 
 
 REWARD_RULES_VERSION = "reduced_reward_rules_v0"
@@ -111,6 +117,7 @@ class RewardRules:
             raise RewardRuleError("decision_sequence must be non-negative.")
         if not isinstance(public_scope, PublicScope):
             raise RewardRuleError("public_scope must be a PublicScope.")
+        self._assert_begin_is_projectable(world, table, public_scope)
 
         before = world.to_private_dict()
         try:
@@ -139,12 +146,14 @@ class RewardRules:
         scope = PublicScope.from_dict(context["public_scope"])
         events = self._events(context["public_events"])
         proceeded = pending.decision_kind == _PROCEEDED_KIND
+        if not proceeded:
+            self._assert_session_is_completable(world, context, scope)
         observation = PublicObservation(
             phase=DecisionPhase.REWARD,
             data=self._observation_data(world, context, scope, proceeded=proceeded),
             public_scope=scope,
         )
-        candidates = () if proceeded else self._candidates(context, scope)
+        candidates = () if proceeded else self._candidates(world, context, scope)
         status = DecisionStatus.WAITING if proceeded else DecisionStatus.ACTIONABLE
         return DecisionState.create(
             backend_id=self.backend_id,
@@ -363,6 +372,7 @@ class RewardRules:
 
     def _candidates(
         self,
+        world: WorldState,
         context: Mapping[str, Any],
         scope: PublicScope,
     ) -> tuple[TypedCandidate, ...]:
@@ -376,15 +386,16 @@ class RewardRules:
         if not context["card_opened"]:
             candidates.append(RewardOpenCardRewardCandidate(decision_scope, card_ref))
         elif not context["card_claimed"]:
-            candidates.extend(
-                RewardChooseCardCandidate(
-                    decision_scope,
-                    card_ref,
-                    reward_offer_reference(scope, card_ref, definition_id, index),
-                    definition_id,
+            if self._can_allocate_persistent_card(world):
+                candidates.extend(
+                    RewardChooseCardCandidate(
+                        decision_scope,
+                        card_ref,
+                        reward_offer_reference(scope, card_ref, definition_id, index),
+                        definition_id,
+                    )
+                    for index, definition_id in enumerate(context["offers"])
                 )
-                for index, definition_id in enumerate(context["offers"])
-            )
             candidates.append(RewardSkipCardCandidate(decision_scope, card_ref))
         if context["gold_claimed"] and context["card_claimed"]:
             candidates.append(RewardProceedCandidate(decision_scope))
@@ -430,6 +441,56 @@ class RewardRules:
             raise RewardRuleError("World already has a pending decision.")
         if world.active_combat_launch_key is not None:
             raise RewardRuleError("Reward rules cannot begin during an active combat launch.")
+
+    @staticmethod
+    def _can_allocate_persistent_card(world: WorldState) -> bool:
+        return world.identity_allocator.next_card_ordinal < _IDENTITY_CAPACITY
+
+    @staticmethod
+    def _remaining_actions(context: Mapping[str, Any]) -> int:
+        """Return the shortest remaining supported path through this reward screen."""
+
+        claim_gold = 0 if context["gold_claimed"] else 1
+        if context["card_claimed"]:
+            resolve_card = 0
+        elif context["card_opened"]:
+            resolve_card = 1
+        else:
+            resolve_card = 2  # Open, then choose or skip.
+        return claim_gold + resolve_card + 1  # The final proceed is always required.
+
+    def _assert_begin_is_projectable(
+        self,
+        world: WorldState,
+        table: RewardTable,
+        public_scope: PublicScope,
+    ) -> None:
+        if world.gold > MAX_PUBLIC_COUNTER:
+            raise RewardRuleError("Current gold exceeds the public reward bound.")
+        if world.gold + table.gold_amount > MAX_PUBLIC_COUNTER:
+            raise RewardRuleError("Declared gold reward exceeds the public reward bound.")
+        # Four accepted transitions are required from an unopened screen:
+        # claim, open, choose-or-skip, and proceed.  ``decision_sequence`` is
+        # contract-nonnegative but intentionally has no finite upper bound.
+        if public_scope.decision_ordinal + 4 > MAX_PUBLIC_COUNTER:
+            raise RewardRuleError("Reward session cannot complete within the public scope budget.")
+
+    def _assert_session_is_completable(
+        self,
+        world: WorldState,
+        context: Mapping[str, Any],
+        scope: PublicScope,
+    ) -> None:
+        table = self._table(context["reward_table_id"])
+        if world.gold > MAX_PUBLIC_COUNTER:
+            raise RewardRuleError("Current gold exceeds the public reward bound.")
+        if (
+            not context["gold_claimed"]
+            and world.gold + table.gold_amount > MAX_PUBLIC_COUNTER
+        ):
+            raise RewardRuleError("Unclaimed gold reward exceeds the public reward bound.")
+        if scope.decision_ordinal + self._remaining_actions(context) > MAX_PUBLIC_COUNTER:
+            raise RewardRuleError("Reward session cannot complete within the public scope budget.")
 
     @staticmethod
     def _restore_world(world: WorldState, snapshot: Mapping[str, Any]) -> None:
