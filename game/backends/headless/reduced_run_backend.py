@@ -97,11 +97,11 @@ from game.engine.snapshots import (
 
 
 BACKEND_ID = "reduced_headless"
-BACKEND_VERSION = "reduced_headless_v2"
-RULES_VERSION = "reduced_headless_rules_v2"
-SNAPSHOT_VERSION = "reduced_headless_snapshot_v2"
+BACKEND_VERSION = "reduced_headless_v3"
+RULES_VERSION = "reduced_headless_rules_v3"
+SNAPSHOT_VERSION = "reduced_headless_snapshot_v3"
 MAP_CONTINUATION_KIND = "resume_map"
-_SNAPSHOT_DESCRIPTOR_DOMAIN = "reduced_headless.snapshot_descriptor.v2"
+_SNAPSHOT_DESCRIPTOR_DOMAIN = "reduced_headless.snapshot_descriptor.v3"
 
 _MAP_TEMPLATE_IDS = frozenset(item.template_id for item in MAP_TEMPLATES)
 _REWARD_TABLE_IDS = frozenset(item.table_id for item in REWARD_TABLES)
@@ -146,7 +146,7 @@ _COMBAT_MANIFEST = CombatV0Backend().manifest()
 _COMBAT_EVIDENCE = {item.component: item for item in _COMBAT_MANIFEST.evidence}
 
 RULES_FINGERPRINT = _canonical_hash(
-    "reduced_headless.rules.v2",
+    "reduced_headless.rules.v3",
     {
         "combat_backend_fingerprint": COMBAT_BACKEND_FINGERPRINT,
         "combat_projection_fingerprint": _COMBAT_EVIDENCE["projection"].fingerprint,
@@ -187,13 +187,18 @@ RULES_FINGERPRINT = _canonical_hash(
             "map_node_kind_binds_map_entry_and_return_events",
             "terminal_outcome_binds_resolution_and_run_events",
         ),
+        "outer_history_replay": (
+            "exact_accepted_candidate_id_history",
+            "deterministic_config_and_generation_replay",
+            "complete_private_boundary_rng_event_and_entry_comparison",
+        ),
         "reset_epoch": "active_generation_plus_instance_high_water_v1",
         "version": RULES_VERSION,
     },
 )
 
 SNAPSHOT_FINGERPRINT = _canonical_hash(
-    "reduced_headless.snapshot_schema.v2",
+    "reduced_headless.snapshot_schema.v3",
     {
         "private_world_schema": PRIVATE_SNAPSHOT_SCHEMA,
         "private_world_version": PRIVATE_SNAPSHOT_VERSION,
@@ -202,6 +207,7 @@ SNAPSHOT_FINGERPRINT = _canonical_hash(
             "backend_fingerprint",
             "combat_snapshot",
             "combat_entry_sequence",
+            "accepted_outer_candidate_ids",
             "config",
             "content_fingerprint",
             "contract_fingerprint",
@@ -225,7 +231,7 @@ SNAPSHOT_FINGERPRINT = _canonical_hash(
 )
 
 BACKEND_FINGERPRINT = _canonical_hash(
-    "reduced_headless.backend.v2",
+    "reduced_headless.backend.v3",
     {
         "backend_id": BACKEND_ID,
         "backend_version": BACKEND_VERSION,
@@ -570,6 +576,7 @@ class ReducedRunBackend:
         self._generation_high_water = -1
         self._outer_run_id: str | None = None
         self._outer_sequence = 0
+        self._accepted_outer_candidate_ids: tuple[str, ...] = ()
         self._combat_entry_sequence: int | None = None
         self._world: WorldState | None = None
         self._codec = WorldSnapshotCodec(CONTENT_FINGERPRINT, RULES_FINGERPRINT)
@@ -581,6 +588,7 @@ class ReducedRunBackend:
         self._terminal_reason: str | None = None
         self._unsupported_reason: str | None = None
         self._decision: DecisionState | None = None
+        self._skip_outer_history_validation = False
 
     @property
     def terminal_reason(self) -> str | None:
@@ -660,10 +668,12 @@ class ReducedRunBackend:
         candidate._generation_high_water = generation
         candidate._outer_run_id = outer_run
         candidate._outer_sequence = 0
+        candidate._accepted_outer_candidate_ids = ()
         candidate._combat_entry_sequence = 0
         candidate._world = world
         candidate._map_rules = map_rules
         candidate._combat = combat
+        candidate._skip_outer_history_validation = self._skip_outer_history_validation
         candidate._last_public_events = ()
         candidate._boundary_scope = combat.observe().observation.public_scope
         candidate._validate_private_boundary()
@@ -710,6 +720,7 @@ class ReducedRunBackend:
         try:
             events = self._dispatch(candidate)
             self._outer_sequence += 1
+            self._accepted_outer_candidate_ids += (candidate.candidate_id,)
             self._last_public_events = _renumber_events(events)
             self._validate_private_boundary()
             self._decision = self._project_current()
@@ -736,6 +747,7 @@ class ReducedRunBackend:
         assert self._world is not None and self._config is not None
         combat_snapshot = None if self._combat is None else self._combat.snapshot()
         descriptor = {
+            "accepted_outer_candidate_ids": list(self._accepted_outer_candidate_ids),
             "backend_fingerprint": BACKEND_FINGERPRINT,
             "combat_snapshot": combat_snapshot,
             "combat_entry_sequence": self._combat_entry_sequence,
@@ -778,6 +790,7 @@ class ReducedRunBackend:
         self._settings = None
         self._outer_run_id = None
         self._outer_sequence = 0
+        self._accepted_outer_candidate_ids = ()
         self._combat_entry_sequence = None
         self._world = None
         self._map_rules = None
@@ -1139,6 +1152,8 @@ class ReducedRunBackend:
             if self._world.pending_decision is not None or self._world.terminal_result is not None:
                 raise ReducedRunBackendError("Unsupported boundary retains hidden phase state.")
         self._validate_public_event_provenance()
+        if not self._skip_outer_history_validation:
+            self._validate_outer_action_history()
 
     def _validate_closed_map_history(self) -> None:
         """Validate map provenance without manufacturing a pending decision."""
@@ -1347,7 +1362,7 @@ class ReducedRunBackend:
             raise ReducedRunBackendError("Defeat terminal events do not match combat outcome.")
 
     def _validate_world_config_rng_provenance(self) -> None:
-        """Bind world identity and every combat launch to config and named RNG history."""
+        """Bind config and the current launch to named combat RNG history."""
 
         assert self._world is not None and self._config is not None and self._settings is not None
         if self._world.rng.seed != self._config.game_seed:
@@ -1371,10 +1386,6 @@ class ReducedRunBackend:
             replay_rng.randint(COMBAT_LAUNCH_STREAM, 0, (1 << 63) - 1)
             for _ in range(launch_count)
         ]
-        actual_stream = self._world.rng.snapshot()["streams"].get(COMBAT_LAUNCH_STREAM)
-        expected_stream = replay_rng.snapshot()["streams"].get(COMBAT_LAUNCH_STREAM)
-        if actual_stream != expected_stream:
-            raise ReducedRunBackendError("Combat launch RNG state does not match its named history.")
 
         if self._world.phase is DecisionPhase.COMBAT:
             if not launch_seeds or self._combat is None or self._combat.launch_spec is None:
@@ -1386,6 +1397,68 @@ class ReducedRunBackend:
                 or launch.to_dict()["combat_settings"] != self._settings["combat_settings"]
             ):
                 raise ReducedRunBackendError("Combat launch does not match RNG/config provenance.")
+
+    def _validate_outer_action_history(self) -> None:
+        """Replay the bounded H3 history and compare the complete boundary.
+
+        This is a semantic consistency proof for partial snapshot rewrites, not
+        an authenticity claim.  A wholesale alternate history that itself
+        replays through every producer remains a fully reauthored snapshot.
+        """
+
+        assert self._config is not None and self._world is not None
+        if len(self._accepted_outer_candidate_ids) != self._outer_sequence:
+            raise ReducedRunBackendError(
+                "Accepted outer history length does not match the decision sequence."
+            )
+
+        replay = ReducedRunBackend()
+        replay._skip_outer_history_validation = True
+        replay._generation_high_water = self._reset_generation - 1
+        decision = replay.reset(self._config)
+        for candidate_id in self._accepted_outer_candidate_ids:
+            candidate = next(
+                (
+                    item
+                    for item in decision.candidates
+                    if item.candidate_id == candidate_id
+                ),
+                None,
+            )
+            if candidate is None:
+                raise ReducedRunBackendError(
+                    "Accepted outer history is unavailable at its replay boundary."
+                )
+            transition = replay.apply(
+                ActionRequest(
+                    HeadlessBinding.for_candidate(decision, candidate.candidate_id)
+                )
+            )
+            if transition.result is not TransitionResult.ACCEPTED:
+                raise ReducedRunBackendError(
+                    "Accepted outer history did not replay through its producer."
+                )
+            decision = transition.next_decision
+
+        live_combat = None if self._combat is None else self._combat.snapshot()
+        replay_combat = None if replay._combat is None else replay._combat.snapshot()
+        if (
+            replay._outer_run_id != self._outer_run_id
+            or replay._outer_sequence != self._outer_sequence
+            or replay._accepted_outer_candidate_ids != self._accepted_outer_candidate_ids
+            or replay._combat_entry_sequence != self._combat_entry_sequence
+            or replay._world is None
+            or replay._world.to_private_dict() != self._world.to_private_dict()
+            or replay_combat != live_combat
+            or replay._last_public_events != self._last_public_events
+            or replay._boundary_scope != self._boundary_scope
+            or replay._terminal_reason != self._terminal_reason
+            or replay._unsupported_reason != self._unsupported_reason
+            or decision.to_json() != self._project_current().to_json()
+        ):
+            raise ReducedRunBackendError(
+                "Accepted outer history does not reconstruct the complete boundary."
+            )
 
     def _validate_parked_map_continuation(self) -> None:
         """Replay-validate the parked pending map decision without mutating live state."""
@@ -1407,6 +1480,7 @@ class ReducedRunBackend:
             "world": self._world.to_private_dict(),
             "combat": None if self._combat is None else self._combat.snapshot(),
             "combat_entry_sequence": self._combat_entry_sequence,
+            "accepted_outer_candidate_ids": self._accepted_outer_candidate_ids,
             "last_public_events": self._last_public_events,
             "boundary_scope": self._boundary_scope,
             "terminal_reason": self._terminal_reason,
@@ -1425,6 +1499,9 @@ class ReducedRunBackend:
             combat.restore(combat_snapshot)
             self._combat = combat
         self._combat_entry_sequence = preimage["combat_entry_sequence"]
+        self._accepted_outer_candidate_ids = preimage[
+            "accepted_outer_candidate_ids"
+        ]
         self._last_public_events = preimage["last_public_events"]
         self._boundary_scope = preimage["boundary_scope"]
         self._terminal_reason = preimage["terminal_reason"]
@@ -1436,6 +1513,7 @@ class ReducedRunBackend:
         if not isinstance(snapshot, Mapping):
             raise ReducedRunBackendError("Snapshot must be an object.")
         expected = {
+            "accepted_outer_candidate_ids",
             "backend_fingerprint",
             "combat_snapshot",
             "combat_entry_sequence",
@@ -1486,6 +1564,7 @@ class ReducedRunBackend:
         config = HeadlessRunConfig.from_dict(config_payload)
         generation = snapshot["reset_generation"]
         sequence = snapshot["decision_sequence"]
+        outer_history = snapshot["accepted_outer_candidate_ids"]
         combat_entry_sequence = snapshot["combat_entry_sequence"]
         if (
             not isinstance(generation, int)
@@ -1496,6 +1575,12 @@ class ReducedRunBackend:
             or sequence < 0
         ):
             raise ReducedRunBackendError("Snapshot generation and sequence must be nonnegative integers.")
+        if not isinstance(outer_history, list) or not all(
+            isinstance(candidate_id, str) for candidate_id in outer_history
+        ):
+            raise ReducedRunBackendError(
+                "Accepted outer candidate history must be an array of strings."
+            )
         if combat_entry_sequence is not None and (
             not isinstance(combat_entry_sequence, int)
             or isinstance(combat_entry_sequence, bool)
@@ -1529,6 +1614,7 @@ class ReducedRunBackend:
         candidate._generation_high_water = generation
         candidate._outer_run_id = snapshot["outer_run_id"]
         candidate._outer_sequence = sequence
+        candidate._accepted_outer_candidate_ids = tuple(outer_history)
         candidate._combat_entry_sequence = combat_entry_sequence
         candidate._world = world
         candidate._map_rules = map_rules
@@ -1566,6 +1652,7 @@ class ReducedRunBackendState:
     _generation_high_water: Any = None
     _outer_run_id: Any = None
     _outer_sequence: Any = None
+    _accepted_outer_candidate_ids: Any = None
     _combat_entry_sequence: Any = None
     _world: Any = None
     _codec: Any = None

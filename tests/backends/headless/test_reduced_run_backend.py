@@ -212,6 +212,35 @@ def _replace_snapshot_events(
     _rehash_snapshot(snapshot)
 
 
+def _replace_snapshot_combat_boundary(
+    snapshot: dict[str, Any],
+    outer: DecisionState,
+    child: DecisionState,
+) -> None:
+    forged = DecisionState.create(
+        backend_id=outer.backend_id,
+        backend_version=outer.backend_version,
+        backend_fingerprint=outer.backend_fingerprint,
+        content_version=outer.content_version,
+        content_fingerprint=outer.content_fingerprint,
+        rules_version=outer.rules_version,
+        rules_fingerprint=outer.rules_fingerprint,
+        run_id=outer.run_id,
+        decision_sequence=outer.decision_sequence,
+        status=child.status,
+        phase=child.phase,
+        observation=child.observation,
+        candidates=child.candidates,
+        public_events=child.public_events,
+    )
+    snapshot["current_decision_hash"] = forged.decision_hash
+    snapshot["last_public_events"] = [
+        event.to_dict() for event in child.public_events
+    ]
+    snapshot["public_scope"] = child.observation.public_scope.to_dict()
+    _rehash_snapshot(snapshot)
+
+
 def test_manifest_is_exact_component_addressable_and_truthful() -> None:
     manifest = ReducedRunBackend().manifest()
 
@@ -651,6 +680,25 @@ def test_restore_binds_active_launch_to_world_rng_and_exact_config(splice: str) 
         ReducedRunBackend().restore(snapshot)
 
 
+def test_restore_rejects_second_combat_progress_reassigned_to_entry_slot() -> None:
+    source = ReducedRunBackend()
+    source.reset(_config())
+    pre_combat_two = _to_pre_combat_two(source)
+    entry = _choose_map_kind(source, pre_combat_two, "combat")
+    snapshot = deepcopy(source.snapshot())
+    assert snapshot["combat_entry_sequence"] == snapshot["decision_sequence"]
+
+    child = _progress_combat_snapshot(snapshot)
+    progressed = child.observe()
+    assert child.get_resolution() is None
+    snapshot["combat_snapshot"] = child.snapshot()
+    snapshot["combat_entry_sequence"] -= 1
+    _replace_snapshot_combat_boundary(snapshot, entry, progressed)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
 def test_restore_binds_config_seed_and_named_combat_rng_history() -> None:
     source = ReducedRunBackend()
     source.reset(_config())
@@ -987,3 +1035,263 @@ def test_restore_rejects_map_return_event_from_wrong_producer() -> None:
 
     with pytest.raises(ReducedRunBackendError, match="private boundary"):
         ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_forged_victory_card_event_payload() -> None:
+    backend = ReducedRunBackend()
+    decision = _finish_combat(
+        backend,
+        backend.reset(_config(combat_settings={"enemy_max_hp": 1})),
+    )
+    assert decision.phase is DecisionPhase.REWARD
+    assert decision.public_events[0].event_type is PublicEventKind.COMBAT_CARD_PLAYED
+    snapshot = deepcopy(backend.snapshot())
+    events = (
+        PublicEvent(
+            0,
+            PublicEventKind.COMBAT_CARD_PLAYED,
+            DecisionPhase.COMBAT,
+            {
+                "card_definition_id": "forged_card",
+                "target_enemy_definition_id": None,
+            },
+        ),
+        decision.public_events[1],
+    )
+    _replace_snapshot_events(snapshot, decision, events)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_forged_defeat_terminal_action_event() -> None:
+    backend = ReducedRunBackend()
+    decision = backend.reset(_config(initial_hp=1))
+    while decision.phase is DecisionPhase.COMBAT:
+        decision = _apply_kind(backend, decision, CandidateKind.COMBAT_END_TURN)
+    assert decision.public_events[0].event_type is PublicEventKind.COMBAT_TURN_ENDED
+    snapshot = deepcopy(backend.snapshot())
+    events = (
+        PublicEvent(
+            0,
+            PublicEventKind.COMBAT_CARD_PLAYED,
+            DecisionPhase.COMBAT,
+            {
+                "card_definition_id": "forged_card",
+                "target_enemy_definition_id": None,
+            },
+        ),
+        *decision.public_events[1:],
+    )
+    _replace_snapshot_events(snapshot, decision, events)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+@pytest.mark.parametrize("boundary", ("victory", "defeat"))
+def test_restore_requires_exact_outer_history_at_closed_combat_boundary(
+    boundary: str,
+) -> None:
+    backend = ReducedRunBackend()
+    if boundary == "victory":
+        decision = _finish_combat(
+            backend,
+            backend.reset(_config(combat_settings={"enemy_max_hp": 1})),
+        )
+        assert decision.phase is DecisionPhase.REWARD
+    else:
+        decision = backend.reset(_config(initial_hp=1))
+        while decision.phase is DecisionPhase.COMBAT:
+            decision = _apply_kind(
+                backend,
+                decision,
+                CandidateKind.COMBAT_END_TURN,
+            )
+        assert decision.status is DecisionStatus.TERMINAL
+
+    snapshot = deepcopy(backend.snapshot())
+    assert len(snapshot["accepted_outer_candidate_ids"]) == snapshot["decision_sequence"]
+    restored = ReducedRunBackend()
+    assert restored.restore(deepcopy(snapshot)).to_json() == decision.to_json()
+    assert restored.snapshot() == snapshot
+
+    snapshot["accepted_outer_candidate_ids"] = snapshot[
+        "accepted_outer_candidate_ids"
+    ][:-1]
+    _rehash_snapshot(snapshot)
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_snapshot_detaches_accepted_outer_history_from_caller_mutation() -> None:
+    backend = ReducedRunBackend()
+    decision = _finish_combat(
+        backend,
+        backend.reset(_config(combat_settings={"enemy_max_hp": 1})),
+    )
+    expected = backend.snapshot()
+    detached = backend.snapshot()
+    detached["accepted_outer_candidate_ids"].append(
+        decision.candidates[0].candidate_id
+    )
+
+    assert backend.snapshot() == expected
+
+
+def test_outer_history_append_rolls_back_exactly(monkeypatch) -> None:
+    backend = ReducedRunBackend()
+    decision = _finish_combat(
+        backend,
+        backend.reset(_config(combat_settings={"enemy_max_hp": 1})),
+    )
+    before = deepcopy(backend.snapshot())
+
+    def fail_projection() -> DecisionState:
+        raise RuntimeError("forced post-validation projection failure")
+
+    monkeypatch.setattr(backend, "_project_current", fail_projection)
+    transition = backend.apply(
+        _request(decision, _candidate(decision, CandidateKind.REWARD_CLAIM_GOLD))
+    )
+
+    assert transition.result is TransitionResult.REJECTED
+    assert transition.reason is TransitionReason.REJECTED_BY_RULES
+    assert transition.next_decision.to_json() == decision.to_json()
+    assert backend.snapshot() == before
+
+
+def test_restore_rejects_premature_event_effect_rng_draw() -> None:
+    backend = ReducedRunBackend()
+    backend.reset(_config())
+    snapshot = deepcopy(backend.snapshot())
+    payload = snapshot["private_world_snapshot"]["payload"]
+    rng = GameRandomService(0)
+    rng.restore(payload["rng"])
+    rng.randint("event_effect", 0, 10)
+    payload["rng"] = rng.snapshot()
+    _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_rewound_reward_offer_and_clean_continuation_counts_two() -> None:
+    backend = ReducedRunBackend()
+    decision = _finish_combat(
+        backend,
+        backend.reset(_config(combat_settings={"enemy_max_hp": 1})),
+    )
+    decision = _finish_reward(backend, decision)
+    assert backend.rng_stream_counters["reward_offer"] == 1
+    clean = deepcopy(backend.snapshot())
+    forged = deepcopy(clean)
+    rng_streams = forged["private_world_snapshot"]["payload"]["rng"]["streams"]
+    del rng_streams["reward_offer"]
+    _rehash_world_snapshot(forged)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(forged)
+
+    restored = ReducedRunBackend()
+    decision = restored.restore(clean)
+    decision = _choose_map_kind(restored, decision, "rest")
+    if any(
+        item.kind is CandidateKind.ROOM_REST_HEAL
+        for item in decision.candidates
+    ):
+        decision = _apply_kind(
+            restored,
+            decision,
+            CandidateKind.ROOM_REST_HEAL,
+        )
+    decision = _apply_kind(restored, decision, CandidateKind.ROOM_PROCEED)
+    decision = _choose_map_kind(restored, decision, "combat")
+    decision = _finish_combat(restored, decision)
+    decision = _apply_kind(
+        restored,
+        decision,
+        CandidateKind.REWARD_OPEN_CARD_REWARD,
+    )
+    assert restored.rng_stream_counters["reward_offer"] == 2
+
+
+def test_outer_history_replay_rng_count_matrix_across_route_boundaries() -> None:
+    def assert_counts(
+        backend: ReducedRunBackend,
+        *,
+        combat_launch: int,
+        reward_offer: int,
+    ) -> None:
+        assert backend.rng_stream_counters == {
+            "combat_launch": combat_launch,
+            "event_effect": 0,
+            "reward_offer": reward_offer,
+        }
+        snapshot = backend.snapshot()
+        assert len(snapshot["accepted_outer_candidate_ids"]) == snapshot[
+            "decision_sequence"
+        ]
+        expected_streams = {"combat_launch"}
+        if reward_offer:
+            expected_streams.add("reward_offer")
+        assert set(
+            snapshot["private_world_snapshot"]["payload"]["rng"]["streams"]
+        ) == expected_streams
+
+    backend = ReducedRunBackend()
+    decision = backend.reset(_config(combat_settings={"enemy_max_hp": 1}))
+    assert_counts(backend, combat_launch=1, reward_offer=0)
+    decision = _finish_combat(backend, decision)
+    assert decision.phase is DecisionPhase.REWARD
+    assert_counts(backend, combat_launch=1, reward_offer=0)
+    decision = _apply_kind(
+        backend,
+        decision,
+        CandidateKind.REWARD_OPEN_CARD_REWARD,
+    )
+    assert_counts(backend, combat_launch=1, reward_offer=1)
+    decision = _finish_reward(backend, decision)
+    assert decision.phase is DecisionPhase.MAP
+    assert_counts(backend, combat_launch=1, reward_offer=1)
+    decision = _choose_map_kind(backend, decision, "rest")
+    assert_counts(backend, combat_launch=1, reward_offer=1)
+    if any(item.kind is CandidateKind.ROOM_REST_HEAL for item in decision.candidates):
+        decision = _apply_kind(backend, decision, CandidateKind.ROOM_REST_HEAL)
+    decision = _apply_kind(backend, decision, CandidateKind.ROOM_PROCEED)
+    decision = _choose_map_kind(backend, decision, "combat")
+    assert decision.phase is DecisionPhase.COMBAT
+    assert_counts(backend, combat_launch=2, reward_offer=1)
+    decision = _finish_combat(backend, decision)
+    assert decision.phase is DecisionPhase.REWARD
+    assert_counts(backend, combat_launch=2, reward_offer=1)
+    decision = _apply_kind(
+        backend,
+        decision,
+        CandidateKind.REWARD_OPEN_CARD_REWARD,
+    )
+    assert_counts(backend, combat_launch=2, reward_offer=2)
+    decision = _finish_reward(backend, decision)
+    decision = _choose_map_kind(backend, decision, "terminal")
+    assert decision.status is DecisionStatus.TERMINAL
+    assert_counts(backend, combat_launch=2, reward_offer=2)
+
+    defeat = ReducedRunBackend()
+    decision = defeat.reset(_config(initial_hp=1))
+    while decision.phase is DecisionPhase.COMBAT:
+        decision = _apply_kind(
+            defeat,
+            decision,
+            CandidateKind.COMBAT_END_TURN,
+        )
+    assert decision.status is DecisionStatus.TERMINAL
+    assert_counts(defeat, combat_launch=1, reward_offer=0)
+
+    unsupported = ReducedRunBackend()
+    decision = unsupported.reset(
+        _config(event_id="cool_spring", combat_settings={"enemy_max_hp": 1})
+    )
+    decision = _finish_reward(unsupported, _finish_combat(unsupported, decision))
+    decision = _choose_map_kind(unsupported, decision, "event")
+    assert decision.status is DecisionStatus.UNSUPPORTED
+    assert_counts(unsupported, combat_launch=1, reward_offer=1)
