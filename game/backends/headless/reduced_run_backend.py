@@ -97,10 +97,11 @@ from game.engine.snapshots import (
 
 
 BACKEND_ID = "reduced_headless"
-BACKEND_VERSION = "reduced_headless_v1"
-RULES_VERSION = "reduced_headless_rules_v1"
-SNAPSHOT_VERSION = "reduced_headless_snapshot_v1"
+BACKEND_VERSION = "reduced_headless_v2"
+RULES_VERSION = "reduced_headless_rules_v2"
+SNAPSHOT_VERSION = "reduced_headless_snapshot_v2"
 MAP_CONTINUATION_KIND = "resume_map"
+_SNAPSHOT_DESCRIPTOR_DOMAIN = "reduced_headless.snapshot_descriptor.v2"
 
 _MAP_TEMPLATE_IDS = frozenset(item.template_id for item in MAP_TEMPLATES)
 _REWARD_TABLE_IDS = frozenset(item.table_id for item in REWARD_TABLES)
@@ -145,7 +146,7 @@ _COMBAT_MANIFEST = CombatV0Backend().manifest()
 _COMBAT_EVIDENCE = {item.component: item for item in _COMBAT_MANIFEST.evidence}
 
 RULES_FINGERPRINT = _canonical_hash(
-    "reduced_headless.rules.v1",
+    "reduced_headless.rules.v2",
     {
         "combat_backend_fingerprint": COMBAT_BACKEND_FINGERPRINT,
         "combat_projection_fingerprint": _COMBAT_EVIDENCE["projection"].fingerprint,
@@ -176,13 +177,23 @@ RULES_FINGERPRINT = _canonical_hash(
         ),
         "configuration_liveness": "all_declared_required_and_selectable_gold_deltas_preflighted",
         "phase_ownership": "exact_pending_queue_child_terminal_unsupported_partition_v1",
+        "closed_map_history": (
+            "configured_template_node_bijection",
+            "nonempty_unique_legal_edge_history_with_current_tail",
+            "phase_specific_terminal_unsupported_defeat_location",
+        ),
+        "public_event_provenance": (
+            "exact_producer_event_when_retained",
+            "map_node_kind_binds_map_entry_and_return_events",
+            "terminal_outcome_binds_resolution_and_run_events",
+        ),
         "reset_epoch": "active_generation_plus_instance_high_water_v1",
         "version": RULES_VERSION,
     },
 )
 
 SNAPSHOT_FINGERPRINT = _canonical_hash(
-    "reduced_headless.snapshot_schema.v1",
+    "reduced_headless.snapshot_schema.v2",
     {
         "private_world_schema": PRIVATE_SNAPSHOT_SCHEMA,
         "private_world_version": PRIVATE_SNAPSHOT_VERSION,
@@ -214,7 +225,7 @@ SNAPSHOT_FINGERPRINT = _canonical_hash(
 )
 
 BACKEND_FINGERPRINT = _canonical_hash(
-    "reduced_headless.backend.v1",
+    "reduced_headless.backend.v2",
     {
         "backend_id": BACKEND_ID,
         "backend_version": BACKEND_VERSION,
@@ -749,7 +760,7 @@ class ReducedRunBackend:
         return {
             **descriptor,
             "descriptor_hash": _canonical_hash(
-                "reduced_headless.snapshot_descriptor.v1", descriptor
+                _SNAPSHOT_DESCRIPTOR_DOMAIN, descriptor
             ),
         }
 
@@ -1025,6 +1036,7 @@ class ReducedRunBackend:
         assert self._world is not None and self._config is not None and self._settings is not None
         self._world.validate()
         phase = self._world.phase
+        self._validate_closed_map_history()
         self._validate_world_config_rng_provenance()
 
         if phase is DecisionPhase.TERMINAL:
@@ -1126,6 +1138,213 @@ class ReducedRunBackend:
         elif phase is DecisionPhase.UNSUPPORTED:
             if self._world.pending_decision is not None or self._world.terminal_result is not None:
                 raise ReducedRunBackendError("Unsupported boundary retains hidden phase state.")
+        self._validate_public_event_provenance()
+
+    def _validate_closed_map_history(self) -> None:
+        """Validate map provenance without manufacturing a pending decision."""
+
+        assert self._world is not None and self._settings is not None
+        template = _MAP_TEMPLATES_BY_ID[self._settings["map_template_id"]]
+        declared = {node.node_id: node for node in template.nodes}
+        actual: dict[str, Any] = {}
+        for node in self._world.map_nodes:
+            if node.definition_id in actual:
+                raise ReducedRunBackendError("World map has duplicate template definitions.")
+            expected = declared.get(node.definition_id)
+            if expected is None or node.node_kind is not NodeKind(expected.kind):
+                raise ReducedRunBackendError("World map nodes do not match the configured template.")
+            actual[node.definition_id] = node
+        if set(actual) != set(declared) or len(self._world.map_nodes) != len(template.nodes):
+            raise ReducedRunBackendError("World map is not a bijection with the configured template.")
+
+        history_ids = self._world.node_history
+        if not history_ids or len(set(history_ids)) != len(history_ids):
+            raise ReducedRunBackendError("Closed map history must be nonempty and unique.")
+        by_instance = {node.instance_id: node for node in self._world.map_nodes}
+        try:
+            history = tuple(by_instance[node_id] for node_id in history_ids)
+        except KeyError as error:
+            raise ReducedRunBackendError("Closed map history references an undeclared node.") from error
+        if history[0].definition_id != "start" or self._world.current_node_id != history[-1].instance_id:
+            raise ReducedRunBackendError("Closed map history start/current-tail coherence failed.")
+        for source, target in zip(history, history[1:]):
+            if target.definition_id not in declared[source.definition_id].next_node_ids:
+                raise ReducedRunBackendError("Closed map history contains an illegal edge.")
+
+        phase = self._world.phase
+        current_kind = history[-1].node_kind
+        terminal_visited = any(node.node_kind is NodeKind.TERMINAL for node in history)
+        if phase is DecisionPhase.TERMINAL:
+            if self._terminal_reason == "route_complete":
+                if current_kind is not NodeKind.TERMINAL:
+                    raise ReducedRunBackendError("Route completion requires the declared terminal node.")
+            elif self._terminal_reason == "defeat":
+                if current_kind is not NodeKind.COMBAT or terminal_visited:
+                    raise ReducedRunBackendError("Defeat must end at the latest combat node.")
+        elif phase is DecisionPhase.UNSUPPORTED:
+            if (
+                current_kind is not NodeKind.EVENT
+                or self._settings["event_id"] != "cool_spring"
+                or self._world.current_hp != self._world.max_hp
+                or terminal_visited
+            ):
+                raise ReducedRunBackendError(
+                    "Room-unavailable boundary does not end at its explaining event node."
+                )
+        else:
+            if terminal_visited:
+                raise ReducedRunBackendError("An actionable boundary cannot have visited map terminal.")
+            if phase in (DecisionPhase.COMBAT, DecisionPhase.REWARD) and current_kind is not NodeKind.COMBAT:
+                raise ReducedRunBackendError("Combat/reward phase must follow the latest combat node.")
+            if phase is DecisionPhase.ROOM and current_kind not in (NodeKind.REST, NodeKind.EVENT):
+                raise ReducedRunBackendError("Room phase must follow the selected room node.")
+
+    def _validate_public_event_provenance(self) -> None:
+        """Bind H3's last public events to retained producer/private facts."""
+
+        assert self._world is not None
+        events = self._last_public_events
+        phase = self._world.phase
+        current = next(
+            node for node in self._world.map_nodes
+            if node.instance_id == self._world.current_node_id
+        )
+        map_event = PublicEvent(
+            0,
+            PublicEventKind.MAP_NODE_CHOSEN,
+            DecisionPhase.MAP,
+            {"node_kind": current.node_kind.value},
+        )
+
+        if phase is DecisionPhase.COMBAT:
+            assert self._combat is not None and self._combat_entry_sequence is not None
+            if self._outer_sequence == self._combat_entry_sequence:
+                expected = () if self._outer_sequence == 0 else (map_event,)
+            else:
+                expected = self._combat.observe().public_events
+            if events != expected:
+                raise ReducedRunBackendError("Combat public events do not match child/entry provenance.")
+            return
+
+        if phase is DecisionPhase.REWARD:
+            decision = self._reward_rules.decision(self._world)
+            if decision.public_events:
+                if events != decision.public_events:
+                    raise ReducedRunBackendError("Reward public events do not match producer state.")
+                return
+            if (
+                len(events) != 2
+                or events[0].event_type not in {
+                    PublicEventKind.COMBAT_CARD_PLAYED,
+                    PublicEventKind.COMBAT_TURN_ENDED,
+                }
+                or events[1]
+                != PublicEvent(
+                    1,
+                    PublicEventKind.COMBAT_RESOLVED,
+                    DecisionPhase.COMBAT,
+                    {"outcome": "victory"},
+                )
+            ):
+                raise ReducedRunBackendError("Initial reward events do not prove combat victory.")
+            return
+
+        if phase is DecisionPhase.MAP:
+            if current.node_kind is NodeKind.COMBAT:
+                expected = (
+                    PublicEvent(
+                        0,
+                        PublicEventKind.REWARD_PROCEEDED,
+                        DecisionPhase.REWARD,
+                        {},
+                    ),
+                )
+            elif current.node_kind in (NodeKind.REST, NodeKind.EVENT):
+                expected = (
+                    PublicEvent(
+                        0,
+                        PublicEventKind.ROOM_PROCEEDED,
+                        DecisionPhase.ROOM,
+                        {},
+                    ),
+                )
+            else:
+                raise ReducedRunBackendError("Map boundary has no completed producer node.")
+            if events != expected:
+                raise ReducedRunBackendError("Map public events do not match an automatic return.")
+            return
+
+        if phase is DecisionPhase.ROOM:
+            pending = self._world.pending_decision
+            assert pending is not None
+            context = pending.private_context
+            if context["state"] == "ready":
+                expected = (map_event,)
+            else:
+                receipt = context["resolved_receipt"]
+                if context["room_kind"] == RoomKind.REST.value:
+                    expected = (
+                        PublicEvent(
+                            0,
+                            PublicEventKind.ROOM_REST_HEALED,
+                            DecisionPhase.ROOM,
+                            {"amount": receipt["amount"]},
+                        ),
+                    )
+                else:
+                    expected = (
+                        PublicEvent(
+                            0,
+                            PublicEventKind.ROOM_EVENT_OPTION_CHOSEN,
+                            DecisionPhase.ROOM,
+                            {"amount": receipt["amount"], "effect": receipt["effect"]},
+                        ),
+                    )
+            if events != expected:
+                raise ReducedRunBackendError("Room public events do not match producer state.")
+            return
+
+        if phase is DecisionPhase.UNSUPPORTED:
+            if events != (map_event,):
+                raise ReducedRunBackendError("Unsupported public event does not match its room node.")
+            return
+
+        assert phase is DecisionPhase.TERMINAL and self._terminal_reason is not None
+        if self._terminal_reason == "route_complete":
+            expected = (
+                map_event,
+                PublicEvent(
+                    1,
+                    PublicEventKind.RUN_TERMINATED,
+                    DecisionPhase.TERMINAL,
+                    {"outcome": RunOutcome.VICTORY.value},
+                ),
+            )
+            if events != expected:
+                raise ReducedRunBackendError("Route terminal events do not match map terminal.")
+            return
+        if (
+            len(events) != 3
+            or events[0].event_type not in {
+                PublicEventKind.COMBAT_CARD_PLAYED,
+                PublicEventKind.COMBAT_TURN_ENDED,
+            }
+            or events[1]
+            != PublicEvent(
+                1,
+                PublicEventKind.COMBAT_RESOLVED,
+                DecisionPhase.COMBAT,
+                {"outcome": "defeat"},
+            )
+            or events[2]
+            != PublicEvent(
+                2,
+                PublicEventKind.RUN_TERMINATED,
+                DecisionPhase.TERMINAL,
+                {"outcome": RunOutcome.DEFEAT.value},
+            )
+        ):
+            raise ReducedRunBackendError("Defeat terminal events do not match combat outcome.")
 
     def _validate_world_config_rng_provenance(self) -> None:
         """Bind world identity and every combat launch to config and named RNG history."""
@@ -1253,7 +1472,7 @@ class ReducedRunBackend:
         if any(snapshot[name] != value for name, value in identities.items()):
             raise ReducedRunBackendError("Snapshot provenance is incompatible.")
         if snapshot["descriptor_hash"] != _canonical_hash(
-            "reduced_headless.snapshot_descriptor.v1", descriptor
+            _SNAPSHOT_DESCRIPTOR_DOMAIN, descriptor
         ):
             raise ReducedRunBackendError("Snapshot descriptor hash is invalid.")
         config_payload = snapshot["config"]

@@ -28,11 +28,13 @@ from game.contracts.headless_v0 import (
     ActionRequest,
     CandidateKind,
     DecisionPhase,
+    DecisionState,
     DecisionStatus,
     EvidenceLabel,
     HeadlessBinding,
     MAX_PUBLIC_COUNTER,
     PolicyView,
+    PublicEvent,
     PublicEventKind,
     TransitionReason,
     TransitionResult,
@@ -158,7 +160,7 @@ def _spawn_factory_probe(queue) -> None:
 def _rehash_snapshot(snapshot: dict[str, Any]) -> None:
     descriptor = {key: value for key, value in snapshot.items() if key != "descriptor_hash"}
     snapshot["descriptor_hash"] = reduced_module._canonical_hash(
-        "reduced_headless.snapshot_descriptor.v1", descriptor
+        reduced_module._SNAPSHOT_DESCRIPTOR_DOMAIN, descriptor
     )
 
 
@@ -174,6 +176,40 @@ def _rehash_combat_snapshot(snapshot: dict[str, Any]) -> None:
     snapshot["descriptor_hash"] = combat_module._fingerprint(
         "combat_v0_backend.snapshot_descriptor.v1", descriptor
     )
+
+
+def _map_node_instance(snapshot: dict[str, Any], definition_id: str) -> str:
+    return next(
+        node["instance_id"]
+        for node in snapshot["private_world_snapshot"]["payload"]["map_nodes"]
+        if node["definition_id"] == definition_id
+    )
+
+
+def _replace_snapshot_events(
+    snapshot: dict[str, Any],
+    decision: DecisionState,
+    events: tuple[PublicEvent, ...],
+) -> None:
+    forged = DecisionState.create(
+        backend_id=decision.backend_id,
+        backend_version=decision.backend_version,
+        backend_fingerprint=decision.backend_fingerprint,
+        content_version=decision.content_version,
+        content_fingerprint=decision.content_fingerprint,
+        rules_version=decision.rules_version,
+        rules_fingerprint=decision.rules_fingerprint,
+        run_id=decision.run_id,
+        decision_sequence=decision.decision_sequence,
+        status=decision.status,
+        phase=decision.phase,
+        observation=decision.observation,
+        candidates=decision.candidates,
+        public_events=events,
+    )
+    snapshot["last_public_events"] = [event.to_dict() for event in events]
+    snapshot["current_decision_hash"] = forged.decision_hash
+    _rehash_snapshot(snapshot)
 
 
 def test_manifest_is_exact_component_addressable_and_truthful() -> None:
@@ -852,6 +888,102 @@ def test_restore_rejects_hidden_pending_decision_on_closed_boundary(boundary: st
     snapshot = deepcopy(backend.snapshot())
     snapshot["private_world_snapshot"]["payload"]["pending_decision"] = valid_pending
     _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_route_terminal_history_without_terminal_tail() -> None:
+    backend = ReducedRunBackend()
+    backend.reset(_config(combat_settings={"enemy_max_hp": 1}))
+    terminal = _finish_route(backend, _to_pre_combat_two(backend))
+    assert terminal.status is DecisionStatus.TERMINAL
+    snapshot = deepcopy(backend.snapshot())
+    payload = snapshot["private_world_snapshot"]["payload"]
+    payload["node_history"] = payload["node_history"][:-1]
+    payload["current_node_id"] = _map_node_instance(snapshot, "combat_2")
+    _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_runtime_unsupported_moved_to_rest_node() -> None:
+    backend = ReducedRunBackend()
+    decision = backend.reset(
+        _config(event_id="cool_spring", combat_settings={"enemy_max_hp": 1})
+    )
+    decision = _finish_combat(backend, decision)
+    decision = _finish_reward(backend, decision)
+    decision = _choose_map_kind(backend, decision, "event")
+    assert decision.status is DecisionStatus.UNSUPPORTED
+    snapshot = deepcopy(backend.snapshot())
+    payload = snapshot["private_world_snapshot"]["payload"]
+    payload["node_history"][-1] = _map_node_instance(snapshot, "rest_1")
+    payload["current_node_id"] = payload["node_history"][-1]
+    _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_defeat_history_after_noncombat_room() -> None:
+    backend = ReducedRunBackend()
+    decision = backend.reset(_config(initial_hp=1))
+    while decision.phase is DecisionPhase.COMBAT:
+        decision = _apply_kind(backend, decision, CandidateKind.COMBAT_END_TURN)
+    assert decision.status is DecisionStatus.TERMINAL
+    restored = ReducedRunBackend().restore(deepcopy(backend.snapshot()))
+    assert restored.to_json() == decision.to_json()
+
+    snapshot = deepcopy(backend.snapshot())
+    payload = snapshot["private_world_snapshot"]["payload"]
+    payload["node_history"].append(_map_node_instance(snapshot, "rest_1"))
+    payload["current_node_id"] = payload["node_history"][-1]
+    _rehash_world_snapshot(snapshot)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_terminal_map_event_forged_as_rest() -> None:
+    backend = ReducedRunBackend()
+    backend.reset(_config(combat_settings={"enemy_max_hp": 1}))
+    terminal = _finish_route(backend, _to_pre_combat_two(backend))
+    snapshot = deepcopy(backend.snapshot())
+    events = (
+        PublicEvent(
+            0,
+            PublicEventKind.MAP_NODE_CHOSEN,
+            DecisionPhase.MAP,
+            {"node_kind": "rest"},
+        ),
+        terminal.public_events[1],
+    )
+    _replace_snapshot_events(snapshot, terminal, events)
+
+    with pytest.raises(ReducedRunBackendError, match="private boundary"):
+        ReducedRunBackend().restore(snapshot)
+
+
+def test_restore_rejects_map_return_event_from_wrong_producer() -> None:
+    backend = ReducedRunBackend()
+    decision = _finish_combat(
+        backend,
+        backend.reset(_config(combat_settings={"enemy_max_hp": 1})),
+    )
+    decision = _finish_reward(backend, decision)
+    assert decision.phase is DecisionPhase.MAP
+    snapshot = deepcopy(backend.snapshot())
+    events = (
+        PublicEvent(
+            0,
+            PublicEventKind.ROOM_PROCEEDED,
+            DecisionPhase.ROOM,
+            {},
+        ),
+    )
+    _replace_snapshot_events(snapshot, decision, events)
 
     with pytest.raises(ReducedRunBackendError, match="private boundary"):
         ReducedRunBackend().restore(snapshot)
