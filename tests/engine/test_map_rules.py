@@ -30,7 +30,11 @@ from game.engine.map_rules import (
 )
 
 
-def _world(seed: int = 7) -> WorldState:
+def _world(
+    seed: int = 7,
+    *,
+    rules_fingerprint: str = RULES_FINGERPRINT,
+) -> WorldState:
     return WorldState.create(
         seed=seed,
         current_hp=70,
@@ -39,7 +43,7 @@ def _world(seed: int = 7) -> WorldState:
         deck_definition_ids=("strike", "defend"),
         map_node_definitions=(),
         content_fingerprint=CONTENT_FINGERPRINT,
-        rules_fingerprint=RULES_FINGERPRINT,
+        rules_fingerprint=rules_fingerprint,
     )
 
 
@@ -430,3 +434,42 @@ def test_sequence_capacity_rejects_before_advertising_and_exact_limit_completes(
         decision = transition.next_decision
     assert decision.phase is DecisionPhase.TERMINAL
     assert decision.decision_sequence == MAX_PUBLIC_COUNTER
+
+
+def test_configured_combined_world_provenance_restores_nondefault_map_snapshot() -> None:
+    combined_fingerprint = "c" * 64
+    world = _world(111, rules_fingerprint=combined_fingerprint)
+    rules = MapRules(
+        "short_rest_path",
+        world_rules_fingerprint=combined_fingerprint,
+    )
+    first = rules.reset(world)
+    accepted = rules.choose_node(world, _request(first))
+    restored = WorldState.from_private_dict(world.to_private_dict())
+    fresh = MapRules(world_rules_fingerprint=combined_fingerprint)
+
+    resumed = fresh.decision(restored)
+    assert resumed.to_json() == accepted.next_decision.to_json()
+    assert resumed.rules_fingerprint == RULES_FINGERPRINT
+    assert restored.rules_fingerprint == combined_fingerprint
+    assert fresh.choose_node(restored, _request(resumed)).result is TransitionResult.ACCEPTED
+
+
+def test_world_provenance_mismatch_and_invalid_configuration_fail_before_mutation() -> None:
+    combined_fingerprint = "d" * 64
+    world = _world(112, rules_fingerprint=combined_fingerprint)
+    before = deepcopy(world.to_private_dict())
+
+    with pytest.raises(MapRuleError, match="configured provenance"):
+        MapRules().reset(world)
+    assert world.to_private_dict() == before
+
+    standalone = _world(113)
+    before = deepcopy(standalone.to_private_dict())
+    with pytest.raises(MapRuleError, match="configured provenance"):
+        MapRules(world_rules_fingerprint=combined_fingerprint).reset(standalone)
+    assert standalone.to_private_dict() == before
+
+    for value in ("", "A" * 64, "0" * 63, 7):
+        with pytest.raises(MapRuleError, match="canonical SHA-256"):
+            MapRules(world_rules_fingerprint=value)

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from hashlib import sha256
 import json
+import re
 from typing import Any, Mapping
 
 from game.content.reduced_v0 import (
@@ -48,6 +49,7 @@ RULES_FINGERPRINT = sha256(
     ).encode()
 ).hexdigest()
 _TEMPLATES_BY_ID = {template.template_id: template for template in MAP_TEMPLATES}
+_SHA256_PATTERN = re.compile(r"[0-9a-f]{64}\Z")
 if len(_TEMPLATES_BY_ID) != len(MAP_TEMPLATES):
     raise RuntimeError("Reduced map content contains duplicate template IDs.")
 
@@ -108,6 +110,14 @@ class MapRules:
     """Traverse one declared map while WorldState owns persistent identity."""
 
     template: MapTemplate | str | None = None
+    world_rules_fingerprint: str = RULES_FINGERPRINT
+
+    def __post_init__(self) -> None:
+        if (
+            not isinstance(self.world_rules_fingerprint, str)
+            or _SHA256_PATTERN.fullmatch(self.world_rules_fingerprint) is None
+        ):
+            raise MapRuleError("Expected world rules fingerprint must be canonical SHA-256.")
 
     def _resolved(self, world: WorldState | None = None) -> MapTemplate:
         configured = None if self.template is None else _template(self.template)
@@ -126,16 +136,15 @@ class MapRules:
             raise MapRuleError("Configured map template conflicts with persisted state.")
         return persisted
 
-    @staticmethod
-    def _validate_base_world(world: WorldState) -> None:
+    def _validate_base_world(self, world: WorldState) -> None:
         try:
             world.validate()
         except ValueError as error:
             raise MapRuleError("World state is invalid at the map boundary.") from error
         if world.content_fingerprint != CONTENT_FINGERPRINT:
             raise MapRuleError("World content fingerprint is not reduced_content_v0.")
-        if world.rules_fingerprint != RULES_FINGERPRINT:
-            raise MapRuleError("World rules fingerprint is not reduced_map_rules_v0.")
+        if world.rules_fingerprint != self.world_rules_fingerprint:
+            raise MapRuleError("World rules fingerprint does not match configured provenance.")
 
     @staticmethod
     def _restore_private(world: WorldState, payload: Mapping[str, Any]) -> None:
