@@ -401,7 +401,7 @@ class DecisionCorrelation:
     run_id: str
     decision_sequence: int
     decision_hash: str
-    candidate_id: str
+    candidate_id: str | None
 
     def __post_init__(self) -> None:
         _require_pattern(self.run_id, _OPAQUE_ID_PATTERN, "audit.correlation.run_id")
@@ -411,13 +411,18 @@ class DecisionCorrelation:
         _require_pattern(
             self.decision_hash, _HASH_PATTERN, "audit.correlation.decision_hash"
         )
-        if not self.candidate_id.startswith("cand."):
-            raise TrajectoryValidationError(
-                "audit.correlation.candidate_id must be a canonical candidate ID."
+        if self.candidate_id is not None:
+            if not isinstance(self.candidate_id, str) or not self.candidate_id.startswith(
+                "cand."
+            ):
+                raise TrajectoryValidationError(
+                    "audit.correlation.candidate_id must be a canonical candidate ID or null."
+                )
+            _require_pattern(
+                self.candidate_id[5:],
+                _HASH_PATTERN,
+                "audit.correlation.candidate_id",
             )
-        _require_pattern(
-            self.candidate_id[5:], _HASH_PATTERN, "audit.correlation.candidate_id"
-        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -515,7 +520,8 @@ class SyntheticAuditRecord:
     local_sequence: int
     policy_record_index: int
     decision_correlation: DecisionCorrelation
-    receipt: SyntheticReceipt
+    receipt: SyntheticReceipt | None
+    manifest_provenance_hash: str
     audit_scope: str = "synthetic_headless"
 
     def __post_init__(self) -> None:
@@ -524,10 +530,21 @@ class SyntheticAuditRecord:
         _require_nonnegative_int(self.policy_record_index, "audit.policy_record_index")
         if not isinstance(self.decision_correlation, DecisionCorrelation):
             raise TrajectoryValidationError("Audit decision correlation has the wrong type.")
-        if not isinstance(self.receipt, SyntheticReceipt):
+        if self.receipt is not None and not isinstance(self.receipt, SyntheticReceipt):
             raise TrajectoryValidationError("Audit receipt has the wrong type.")
+        _require_pattern(
+            self.manifest_provenance_hash,
+            _HASH_PATTERN,
+            "audit.manifest_provenance_hash",
+        )
         if self.audit_scope != "synthetic_headless":
             raise TrajectoryValidationError("Only synthetic headless audit is supported.")
+        if self.receipt is not None and self.decision_correlation.candidate_id is None:
+            raise TrajectoryValidationError(
+                "An audit receipt requires a correlated chosen candidate."
+            )
+        if self.receipt is None:
+            return
         correlation_identity = (
             self.decision_correlation.run_id,
             self.decision_correlation.decision_sequence,
@@ -562,8 +579,9 @@ class SyntheticAuditRecord:
             "audit_scope": self.audit_scope,
             "decision_correlation": self.decision_correlation.to_dict(),
             "local_sequence": self.local_sequence,
+            "manifest_provenance_hash": self.manifest_provenance_hash,
             "policy_record_index": self.policy_record_index,
-            "receipt": self.receipt.to_dict(),
+            "receipt": None if self.receipt is None else self.receipt.to_dict(),
             "trajectory_id": self.trajectory_id,
         }
 
@@ -575,6 +593,7 @@ class SyntheticAuditRecord:
                 "audit_scope",
                 "decision_correlation",
                 "local_sequence",
+                "manifest_provenance_hash",
                 "policy_record_index",
                 "receipt",
                 "trajectory_id",
@@ -583,16 +602,17 @@ class SyntheticAuditRecord:
         )
         correlation = value["decision_correlation"]
         receipt = value["receipt"]
-        if not isinstance(correlation, Mapping) or not isinstance(receipt, Mapping):
-            raise TrajectoryValidationError(
-                "Audit correlation and receipt must be objects."
-            )
+        if not isinstance(correlation, Mapping):
+            raise TrajectoryValidationError("Audit correlation must be an object.")
+        if receipt is not None and not isinstance(receipt, Mapping):
+            raise TrajectoryValidationError("Audit receipt must be an object or null.")
         return cls(
             trajectory_id=value["trajectory_id"],
             local_sequence=value["local_sequence"],
             policy_record_index=value["policy_record_index"],
             decision_correlation=DecisionCorrelation.from_dict(correlation),
-            receipt=SyntheticReceipt.from_dict(receipt),
+            receipt=None if receipt is None else SyntheticReceipt.from_dict(receipt),
+            manifest_provenance_hash=value["manifest_provenance_hash"],
             audit_scope=value["audit_scope"],
         )
 
@@ -967,6 +987,26 @@ class TrajectoryRecorder:
         record = PolicyReplayRecord.from_decision(decision, chosen_candidate_id)
         index = len(self._policy_records)
         self._policy_records.append(record)
+        candidate_id = (
+            None if record.chosen_action is None else record.chosen_action.candidate_id
+        )
+        self._audit_records.append(
+            SyntheticAuditRecord(
+                trajectory_id=self._trajectory_id,
+                local_sequence=index,
+                policy_record_index=index,
+                decision_correlation=DecisionCorrelation(
+                    decision.run_id,
+                    decision.decision_sequence,
+                    decision.decision_hash,
+                    candidate_id,
+                ),
+                receipt=None,
+                manifest_provenance_hash=_manifest_provenance_hash(
+                    self._backend_manifest
+                ),
+            )
+        )
         self._last_decision = decision
         if record.chosen_action is not None:
             self._pending = _PendingBoundary(
@@ -1007,7 +1047,7 @@ class TrajectoryRecorder:
         self._validate_decision_provenance(transition.next_decision)
         record = SyntheticAuditRecord(
             trajectory_id=self._trajectory_id,
-            local_sequence=len(self._audit_records),
+            local_sequence=pending.policy_record_index,
             policy_record_index=pending.policy_record_index,
             decision_correlation=DecisionCorrelation(*expected),
             receipt=SyntheticReceipt(
@@ -1017,8 +1057,16 @@ class TrajectoryRecorder:
                 transition.next_decision.decision_sequence,
                 transition.next_decision.decision_hash,
             ),
+            manifest_provenance_hash=_manifest_provenance_hash(
+                self._backend_manifest
+            ),
         )
-        self._audit_records.append(record)
+        existing = self._audit_records[pending.policy_record_index]
+        if existing.decision_correlation != record.decision_correlation:
+            raise TrajectoryValidationError(
+                "Stored boundary correlation changed before its transition receipt."
+            )
+        self._audit_records[pending.policy_record_index] = record
         self._pending = None
         if transition.result is TransitionResult.ACCEPTED:
             self._expected_next = (
@@ -1263,6 +1311,27 @@ def decode_synthetic_audit(raw: bytes) -> tuple[SyntheticAuditRecord, ...]:
     return _decode_jsonl(raw, SyntheticAuditRecord.from_dict, "synthetic audit")
 
 
+def _manifest_provenance_hash(
+    manifest: BackendManifest | TrajectoryManifest,
+) -> str:
+    payload = {
+        "backend_fingerprint": manifest.backend_fingerprint,
+        "backend_id": manifest.backend_id,
+        "backend_version": manifest.backend_version,
+        "content_fingerprint": manifest.content_fingerprint,
+        "content_version": manifest.content_version,
+        "contract": manifest.contract,
+        "contract_fingerprint": manifest.contract_fingerprint,
+        "evidence": [item.to_dict() for item in manifest.evidence],
+        "rules_fingerprint": manifest.rules_fingerprint,
+        "rules_version": manifest.rules_version,
+    }
+    return sha256(
+        b"headless_trajectory_v0.manifest_provenance.v1\0"
+        + canonical_json(payload).encode("utf-8")
+    ).hexdigest()
+
+
 def _validate_finalized(finalized: FinalizedTrajectory) -> None:
     manifest = finalized.manifest
     raw_by_role = {
@@ -1322,41 +1391,51 @@ def _validate_cross_stream(
     ):
         raise TrajectoryIntegrityError("Target completion metadata does not match manifest.")
 
-    chosen_indices = [
-        index for index, record in enumerate(policy) if record.chosen_action is not None
-    ]
-    if tuple(item.local_sequence for item in audits) != tuple(range(len(audits))):
+    if len(audits) != len(policy):
+        raise TrajectoryValidationError(
+            "Every policy boundary requires one synthetic audit correlation."
+        )
+    if tuple(item.local_sequence for item in audits) != tuple(range(len(policy))):
         raise TrajectoryValidationError("Audit local sequence is not contiguous.")
-    audit_indices = [item.policy_record_index for item in audits]
-    if audit_indices != sorted(set(audit_indices)):
-        raise TrajectoryValidationError("Audit policy correlations are not unique and ordered.")
-    if any(index >= len(policy) for index in audit_indices):
-        raise TrajectoryValidationError("Audit references a missing policy record.")
+    if tuple(item.policy_record_index for item in audits) != tuple(range(len(policy))):
+        raise TrajectoryValidationError(
+            "Audit policy correlations must cover every boundary in order."
+        )
     if any(item.trajectory_id != manifest.trajectory_id for item in audits):
         raise TrajectoryIntegrityError("Audit trajectory identity does not match manifest.")
-    for item in audits:
-        chosen = policy[item.policy_record_index].chosen_action
-        if chosen is None or chosen.candidate_id != item.decision_correlation.candidate_id:
+    if audits[0].decision_correlation.decision_sequence != 0:
+        raise TrajectoryValidationError(
+            "A trajectory audit must begin at decision sequence zero."
+        )
+    for record, item in zip(policy, audits):
+        chosen_id = (
+            None if record.chosen_action is None else record.chosen_action.candidate_id
+        )
+        if chosen_id != item.decision_correlation.candidate_id:
             raise TrajectoryIntegrityError(
                 "Audit decision correlation does not match the chosen policy action."
             )
-    missing_receipts = [index for index in chosen_indices if index not in audit_indices]
-    if manifest.completion is TrajectoryCompletion.INTERRUPTED:
-        if len(missing_receipts) > 1 or (
-            missing_receipts and missing_receipts != [len(policy) - 1]
-        ):
-            raise TrajectoryValidationError(
-                "Only the final interrupted choice may lack a receipt."
-            )
-    elif missing_receipts:
-        raise TrajectoryValidationError("A complete trajectory is missing an action receipt.")
-    if any(index not in chosen_indices for index in audit_indices):
-        raise TrajectoryValidationError("Audit exists without a chosen policy action.")
+        _verify_authoritative_boundary(manifest, record, item.decision_correlation)
+    expected_provenance_hash = _manifest_provenance_hash(manifest)
+    if any(
+        item.manifest_provenance_hash != expected_provenance_hash for item in audits
+    ):
+        raise TrajectoryIntegrityError(
+            "Audit provenance does not match the trajectory manifest."
+        )
 
     for current, following in zip(audits, audits[1:]):
         receipt = current.receipt
+        if receipt is None:
+            raise TrajectoryValidationError(
+                "Every non-final chosen boundary requires a transition receipt."
+            )
+        if receipt.result is not TransitionResult.ACCEPTED:
+            raise TrajectoryValidationError(
+                "A non-accepted receipt cannot be followed by another policy boundary."
+            )
         correlation = following.decision_correlation
-        if receipt.result is TransitionResult.ACCEPTED and (
+        if (
             receipt.next_run_id,
             receipt.next_decision_sequence,
             receipt.next_decision_hash,
@@ -1395,43 +1474,73 @@ def _validate_cross_stream(
         )
     else:
         point = manifest.interruption_point
-        final_index = len(policy) - 1
         final_chosen = final.chosen_action is not None
-        final_audit = next(
-            (item for item in audits if item.policy_record_index == final_index),
-            None,
-        )
+        final_audit = audits[-1]
         if point is InterruptionPoint.BEFORE_CHOICE:
             valid_point = (
                 final.status is DecisionStatus.ACTIONABLE
                 and not final_chosen
-                and final_audit is None
+                and final_audit.receipt is None
             )
         elif point is InterruptionPoint.AWAITING_RECEIPT:
-            valid_point = final_chosen and final_audit is None
+            valid_point = final_chosen and final_audit.receipt is None
         elif point is InterruptionPoint.BEFORE_NEXT_BOUNDARY:
             valid_point = (
                 final_chosen
-                and final_audit is not None
+                and final_audit.receipt is not None
                 and final_audit.receipt.result is TransitionResult.ACCEPTED
             )
         elif point is InterruptionPoint.WAITING:
             valid_point = (
                 final.status is DecisionStatus.WAITING
                 and not final_chosen
-                and final_audit is None
+                and final_audit.receipt is None
             )
         else:
             valid_point = (
                 point is InterruptionPoint.TRANSITION_STOPPED
                 and final_chosen
-                and final_audit is not None
+                and final_audit.receipt is not None
                 and final_audit.receipt.result is not TransitionResult.ACCEPTED
             )
         if not valid_point:
             raise TrajectoryIntegrityError(
                 "Interruption point does not match the finalized record boundary."
             )
+
+
+def _verify_authoritative_boundary(
+    manifest: TrajectoryManifest,
+    policy: PolicyReplayRecord,
+    correlation: DecisionCorrelation,
+) -> None:
+    """Reconstruct the contract decision and verify its canonical identity."""
+
+    try:
+        decision = DecisionState.create(
+            backend_id=manifest.backend_id,
+            backend_version=manifest.backend_version,
+            backend_fingerprint=manifest.backend_fingerprint,
+            content_version=manifest.content_version,
+            content_fingerprint=manifest.content_fingerprint,
+            rules_version=manifest.rules_version,
+            rules_fingerprint=manifest.rules_fingerprint,
+            run_id=correlation.run_id,
+            decision_sequence=correlation.decision_sequence,
+            status=policy.status,
+            phase=policy.phase,
+            observation=policy.observation,
+            candidates=policy.candidates,
+            public_events=policy.public_events,
+        )
+    except ContractValidationError as exc:
+        raise TrajectoryValidationError(
+            "Policy boundary cannot reconstruct an authoritative DecisionState."
+        ) from exc
+    if decision.decision_hash != correlation.decision_hash:
+        raise TrajectoryIntegrityError(
+            "Policy boundary and manifest provenance do not match audit decision identity."
+        )
 
 
 def _stream_file_names(trajectory_id: str) -> dict[StreamRole, str]:

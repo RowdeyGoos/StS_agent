@@ -88,14 +88,14 @@ def test_golden_fixture_outputs_are_byte_deterministic_and_manifest_bound() -> N
         StreamRole.HINDSIGHT_TARGET,
         StreamRole.SYNTHETIC_AUDIT,
     ]
-    assert [item.record_count for item in first.manifest.streams] == [3, 1, 2]
+    assert [item.record_count for item in first.manifest.streams] == [3, 1, 3]
     assert [item.sha256 for item in first.manifest.streams] == [
         "3679d08f05d652d7b62b3baff7c54912e67028e774b001d1eff5552ca53e414c",
         "33f3e1fafdf35bf49d3f39cc1542b8d1712923236bceae9e5c5e90d848a3e92a",
-        "24ab0c312afcff7022cfa3d1c3d74ae0de5a765e1b765b03199c202257e4128f",
+        "540393b3022c81bccb600df3f9a32d0d294e4a1cbca9cef2554a28596a9d5d77",
     ]
     assert sha256(first.manifest_json).hexdigest() == (
-        "6b3c2da3bd5e9abf14faec7385c08891ff2c686377b58265a0503e1d12247aa2"
+        "46612f63fdfc593372c4052ea77cca736e8e6088479a1b27a25c29c874a5c978"
     )
     assert _validate(first) == first
 
@@ -160,11 +160,13 @@ def test_target_is_explicit_hindsight_and_audit_is_synthetic_operational_data() 
         "terminal_policy_record_index": 2,
         "trajectory_id": "fixture-combat-001",
     }
-    assert [item["local_sequence"] for item in audits] == [0, 1]
-    assert [item["policy_record_index"] for item in audits] == [0, 1]
+    assert [item["local_sequence"] for item in audits] == [0, 1, 2]
+    assert [item["policy_record_index"] for item in audits] == [0, 1, 2]
     assert all(item["audit_scope"] == "synthetic_headless" for item in audits)
     assert all("decision_correlation" in item and "receipt" in item for item in audits)
-    assert all(item["receipt"]["result"] == "accepted" for item in audits)
+    assert all(item["receipt"]["result"] == "accepted" for item in audits[:-1])
+    assert audits[-1]["decision_correlation"]["candidate_id"] is None
+    assert audits[-1]["receipt"] is None
 
 
 def test_policy_conversion_is_type_gated_away_from_both_sidecars() -> None:
@@ -276,6 +278,51 @@ def test_cross_stream_correlations_fail_even_if_a_tampered_stream_is_rehashed() 
             audit_raw,
         )
 
+
+def test_rehashed_policy_fact_change_fails_authoritative_decision_reconstruction() -> None:
+    finalized = _record_fixture()
+    records = _jsonl(finalized.policy_replay_jsonl)
+    assert records[0]["observation"]["data"]["player"]["hp"] == 61
+    records[0]["observation"]["data"]["player"]["hp"] = 60
+    policy_raw = b"".join(
+        canonical_json(item).encode("utf-8") + b"\n" for item in records
+    )
+    manifest = _manifest_with_stream(
+        finalized, StreamRole.POLICY_REPLAY, policy_raw
+    )
+
+    with pytest.raises(TrajectoryIntegrityError, match="audit decision identity"):
+        validate_trajectory(
+            manifest,
+            policy_raw,
+            finalized.hindsight_target_jsonl,
+            finalized.synthetic_audit_jsonl,
+        )
+
+
+def test_manifest_backend_fingerprint_change_fails_boundary_reconstruction() -> None:
+    finalized = _record_fixture()
+    manifest = json.loads(finalized.manifest_json)
+    manifest["backend_fingerprint"] = "0" * 64
+
+    with pytest.raises(TrajectoryIntegrityError, match="audit decision identity"):
+        validate_trajectory(
+            canonical_json(manifest),
+            finalized.policy_replay_jsonl,
+            finalized.hindsight_target_jsonl,
+            finalized.synthetic_audit_jsonl,
+        )
+
+    evidence_manifest = json.loads(finalized.manifest_json)
+    evidence_manifest["evidence"][0]["label"] = "combat_v0"
+    with pytest.raises(TrajectoryIntegrityError, match="Audit provenance"):
+        validate_trajectory(
+            canonical_json(evidence_manifest),
+            finalized.policy_replay_jsonl,
+            finalized.hindsight_target_jsonl,
+            finalized.synthetic_audit_jsonl,
+        )
+
     [target] = _jsonl(finalized.hindsight_target_jsonl)
     target["terminal_outcome"] = "defeat"
     target_raw = canonical_json(target).encode("utf-8") + b"\n"
@@ -341,7 +388,11 @@ def test_interruption_before_choice_is_explicit_and_validated() -> None:
 
     assert finalized.manifest.completion is TrajectoryCompletion.INTERRUPTED
     assert finalized.manifest.interruption_point is InterruptionPoint.BEFORE_CHOICE
-    assert finalized.manifest.descriptor(StreamRole.SYNTHETIC_AUDIT).record_count == 0
+    assert finalized.manifest.descriptor(StreamRole.SYNTHETIC_AUDIT).record_count == 1
+    [audit] = _jsonl(finalized.synthetic_audit_jsonl)
+    assert audit["decision_correlation"]["decision_hash"] == decision.decision_hash
+    assert audit["decision_correlation"]["candidate_id"] is None
+    assert audit["receipt"] is None
     [target] = _jsonl(finalized.hindsight_target_jsonl)
     assert target["terminal_outcome"] is None
     assert target["label_timing"] == "hindsight"
@@ -357,6 +408,9 @@ def test_interruption_between_choice_receipt_and_next_boundary_is_detected() -> 
     awaiting.record_boundary(decision, chosen)
     finalized = awaiting.finalize_interrupted()
     assert finalized.manifest.interruption_point is InterruptionPoint.AWAITING_RECEIPT
+    [audit] = _jsonl(finalized.synthetic_audit_jsonl)
+    assert audit["decision_correlation"]["candidate_id"] == chosen
+    assert audit["receipt"] is None
     assert _validate(finalized) == finalized
 
     backend = FixtureBackend()
@@ -370,6 +424,8 @@ def test_interruption_between_choice_receipt_and_next_boundary_is_detected() -> 
     before_next.record_transition(transition)
     finalized = before_next.finalize_interrupted()
     assert finalized.manifest.interruption_point is InterruptionPoint.BEFORE_NEXT_BOUNDARY
+    [audit] = _jsonl(finalized.synthetic_audit_jsonl)
+    assert audit["receipt"]["result"] == "accepted"
     assert _validate(finalized) == finalized
 
 
@@ -381,7 +437,32 @@ def test_unsupported_fixture_has_separate_unavailable_hindsight_target() -> None
     assert target["completion"] == "unsupported"
     assert target["terminal_outcome"] is None
     assert target["terminal_policy_record_index"] is None
-    assert finalized.synthetic_audit_jsonl == b""
+    [audit] = _jsonl(finalized.synthetic_audit_jsonl)
+    assert audit["decision_correlation"]["decision_sequence"] == 0
+    assert audit["decision_correlation"]["candidate_id"] is None
+    assert audit["receipt"] is None
+
+
+def test_rehashed_missing_boundary_correlation_rejects_unsupported_and_interrupted() -> None:
+    unsupported = _record_fixture("unsupported", "missing-unsupported-correlation")
+
+    backend = FixtureBackend()
+    decision = backend.reset("combat")
+    recorder = TrajectoryRecorder("missing-interrupted-correlation", backend.manifest())
+    recorder.record_boundary(decision)
+    interrupted = recorder.finalize_interrupted()
+
+    for finalized in (unsupported, interrupted):
+        manifest = _manifest_with_stream(
+            finalized, StreamRole.SYNTHETIC_AUDIT, b""
+        )
+        with pytest.raises(TrajectoryValidationError, match="Every policy boundary"):
+            validate_trajectory(
+                manifest,
+                finalized.policy_replay_jsonl,
+                finalized.hindsight_target_jsonl,
+                b"",
+            )
 
 
 def test_recorder_rejects_live_or_nonfixture_evidence_and_provenance_mismatch() -> None:
