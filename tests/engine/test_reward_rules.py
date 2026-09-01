@@ -160,10 +160,10 @@ def test_reward_context_version_fingerprint_and_outer_commitment_are_pinned() ->
         public_scope=_scope(decision=4),
     )
 
-    assert REWARD_CONTEXT_VERSION == "reduced_reward_context_v2"
-    assert REWARD_RULES_VERSION == "reduced_reward_rules_v2"
+    assert REWARD_CONTEXT_VERSION == "reduced_reward_context_v3"
+    assert REWARD_RULES_VERSION == "reduced_reward_rules_v3"
     assert REWARD_RULES_FINGERPRINT == (
-        "0a847d2cef6943d30a699b7e9656a767e8c5716ea4c6831f90617381e91948ad"
+        "b1e7351114f5dbe0ffa9840b44fd8949901de5c3bdc0defe8163fbefb2378af3"
     )
     assert world.pending_decision is not None
     assert len(world.pending_decision.decision_kind) == 64
@@ -303,6 +303,95 @@ def test_all_legal_reward_orders_restore_at_every_boundary(action_order: tuple[s
     assert world.gold == 37
     expected_deck_size = 4 if "reward.choose_card" in action_order else 3
     assert len(world.master_deck) == expected_deck_size
+
+
+@pytest.mark.parametrize(
+    ("action_order", "forged_last_action"),
+    (
+        (("reward.claim_gold", "reward.open_card_reward"), "claim_gold"),
+        (("reward.open_card_reward", "reward.claim_gold"), "open_card_reward"),
+        (
+            ("reward.open_card_reward", "reward.choose_card", "reward.claim_gold"),
+            "choose_card",
+        ),
+        (
+            ("reward.open_card_reward", "reward.claim_gold", "reward.choose_card"),
+            "claim_gold",
+        ),
+        (
+            ("reward.open_card_reward", "reward.skip_card", "reward.claim_gold"),
+            "skip_card",
+        ),
+        (
+            ("reward.open_card_reward", "reward.claim_gold", "reward.skip_card"),
+            "claim_gold",
+        ),
+    ),
+)
+def test_cumulative_compatible_receipt_cannot_replace_actual_last_action(
+    action_order: tuple[str, ...],
+    forged_last_action: str,
+) -> None:
+    world = _world(404)
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=6,
+        public_scope=_scope(decision=8),
+    )
+    for kind in action_order:
+        decision = rules.apply(
+            world,
+            _request(decision, lambda item, selected=kind: item.kind.value == selected),
+        ).next_decision
+
+    table = REWARD_TABLES[0]
+    if forged_last_action == "claim_gold":
+        forged_event = PublicEvent(
+            0,
+            PublicEventKind.REWARD_GOLD_CLAIMED,
+            DecisionPhase.REWARD,
+            {"amount": table.gold_amount},
+        )
+    elif forged_last_action == "open_card_reward":
+        forged_event = PublicEvent(
+            0,
+            PublicEventKind.REWARD_CARD_OPENED,
+            DecisionPhase.REWARD,
+            {"offer_count": len(table.card_definition_ids)},
+        )
+    elif forged_last_action == "choose_card":
+        forged_event = PublicEvent(
+            0,
+            PublicEventKind.REWARD_CARD_CHOSEN,
+            DecisionPhase.REWARD,
+            {
+                "card_definition_id": world.master_deck[-1].definition_id,
+                "upgraded": False,
+            },
+        )
+    elif forged_last_action == "skip_card":
+        forged_event = PublicEvent(
+            0,
+            PublicEventKind.REWARD_CARD_SKIPPED,
+            DecisionPhase.REWARD,
+            {},
+        )
+    else:  # pragma: no cover - the parameter table is closed above.
+        raise AssertionError(f"Unsupported test action: {forged_last_action}")
+
+    assert world.pending_decision is not None
+    pending_kind = world.pending_decision.decision_kind
+    _replace_pending_context(
+        world,
+        lambda context: context.__setitem__("public_events", [forged_event.to_dict()]),
+    )
+
+    assert world.pending_decision is not None
+    assert world.pending_decision.decision_kind == pending_kind
+    with pytest.raises(RewardRuleError, match="actual last accepted action"):
+        rules.decision(world)
 
 
 def test_begin_rejects_non_reward_or_pending_world_without_mutation() -> None:
@@ -501,7 +590,7 @@ def test_pending_kind_commitment_and_prefix_tampering_fail_closed() -> None:
         pending.sequence,
         pending.private_context,
     )
-    with pytest.raises(RewardRuleError, match="immutable opening origin"):
+    with pytest.raises(RewardRuleError, match="prefix contradicts its action history"):
         rules.decision(world)
 
     world.pending_decision = PendingDecision(
@@ -510,6 +599,35 @@ def test_pending_kind_commitment_and_prefix_tampering_fail_closed() -> None:
         pending.private_context,
     )
     with pytest.raises(RewardRuleError, match="commitment prefix"):
+        rules.decision(world)
+
+
+def test_outer_commitment_binds_exact_accepted_action_order() -> None:
+    world = _world()
+    rules = _rules()
+    decision = rules.begin(
+        world,
+        reward_table_id="combat_reward_basic",
+        decision_sequence=7,
+        public_scope=_scope(decision=9),
+    )
+    claimed = rules.apply(
+        world,
+        _request(decision, lambda item: item.kind.value == "reward.claim_gold"),
+    )
+    rules.apply(
+        world,
+        _request(claimed.next_decision, lambda item: item.kind.value == "reward.open_card_reward"),
+    )
+    _replace_pending_context(
+        world,
+        lambda context: context.__setitem__(
+            "accepted_actions",
+            ["open_card_reward", "claim_gold"],
+        ),
+    )
+
+    with pytest.raises(RewardRuleError, match="opening commitment"):
         rules.decision(world)
 
 
@@ -644,7 +762,7 @@ def test_tampered_reward_event_payload_and_empty_event_state_fail_closed() -> No
             ],
         ),
     )
-    with pytest.raises(RewardRuleError, match="Gold-claimed"):
+    with pytest.raises(RewardRuleError, match="actual last accepted action"):
         rules.decision(world)
 
     world = _world()
@@ -662,7 +780,7 @@ def test_tampered_reward_event_payload_and_empty_event_state_fail_closed() -> No
         world,
         lambda context: context.__setitem__("public_events", []),
     )
-    with pytest.raises(RewardRuleError, match="no public event"):
+    with pytest.raises(RewardRuleError, match="exactly one last public event"):
         rules.decision(world)
 
 
@@ -690,7 +808,7 @@ def test_forged_gold_flag_and_event_without_gold_mutation_fails_closed() -> None
         ),
     )
 
-    with pytest.raises(RewardRuleError, match="immutable opening origin"):
+    with pytest.raises(RewardRuleError, match="action history does not match derived progress"):
         rules.decision(world)
     assert world.gold == baseline_gold
 
@@ -727,7 +845,7 @@ def test_tampered_proceeded_kind_and_multiple_last_events_fail_closed() -> None:
             [PublicEvent(0, PublicEventKind.REWARD_CARD_SKIPPED, DecisionPhase.REWARD, {}).to_dict()],
         ),
     )
-    with pytest.raises(RewardRuleError, match="Proceeded"):
+    with pytest.raises(RewardRuleError, match="actual last accepted action"):
         rules.decision(world)
 
     world = _world()
@@ -855,6 +973,15 @@ def test_forced_post_mutation_validation_failure_restores_world_exactly(monkeypa
 
     assert world.to_private_dict() == before
     assert observed_mutated_world
+
+    monkeypatch.setattr(WorldState, "validate", original_validate)
+    retried = rules.apply(
+        world,
+        _request(decision, lambda item: item.kind.value == "reward.claim_gold"),
+    )
+    assert retried.result is TransitionResult.ACCEPTED
+    assert retried.public_events[0].event_type is PublicEventKind.REWARD_GOLD_CLAIMED
+    assert world.gold == baseline_gold + REWARD_TABLES[0].gold_amount
 
 
 def test_forced_begin_decision_failure_restores_pending_state(monkeypatch) -> None:

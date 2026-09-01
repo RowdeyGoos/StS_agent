@@ -57,13 +57,13 @@ from game.engine.headless_state import (
 from game.engine.random_service import GameRandomService
 
 
-REWARD_RULES_VERSION = "reduced_reward_rules_v2"
+REWARD_RULES_VERSION = "reduced_reward_rules_v3"
 REWARD_RULES_EVIDENCE = "structural_fixture"
-REWARD_CONTEXT_VERSION = "reduced_reward_context_v2"
+REWARD_CONTEXT_VERSION = "reduced_reward_context_v3"
 _RULE_DESCRIPTOR = {
     "context_version": REWARD_CONTEXT_VERSION,
     "evidence": REWARD_RULES_EVIDENCE,
-    "origin_commitment": "pending_kind_prefix_plus_55_hex_sha256_v1",
+    "origin_commitment": "pending_kind_prefix_plus_55_hex_sha256_v2_with_action_history",
     "offer_draw_order": "one_reward_offer_stream_shuffle_of_declared_table_cards_on_open",
     "reward_tables": "reduced_content_v0",
     "version": REWARD_RULES_VERSION,
@@ -77,6 +77,7 @@ _PROCEEDED_KIND_PREFIX = "reward_p."
 _ORIGIN_COMMITMENT_HEX_LENGTH = 55
 _CONTEXT_FIELDS = frozenset(
     {
+        "accepted_actions",
         "card_claimed",
         "card_opened",
         "card_resolution",
@@ -284,6 +285,7 @@ class RewardRules:
                 raise RewardRuleError("Gold candidate amount does not match its reward table.")
             next_context["gold_claimed"] = True
             world.gold += table.gold_amount
+            action_entry = "claim_gold"
             event = PublicEvent(
                 sequence=0,
                 event_type=PublicEventKind.REWARD_GOLD_CLAIMED,
@@ -301,6 +303,7 @@ class RewardRules:
             next_context["card_opened"] = True
             next_context["card_resolution"] = "pending"
             next_context["offers"] = offers
+            action_entry = "open_card_reward"
             event = PublicEvent(
                 sequence=0,
                 event_type=PublicEventKind.REWARD_CARD_OPENED,
@@ -318,6 +321,7 @@ class RewardRules:
             next_context["card_claimed"] = True
             next_context["card_resolution"] = "chosen"
             next_context["chosen_card_definition_id"] = card_definition_id
+            action_entry = f"choose_card:{card_definition_id}"
             event = PublicEvent(
                 sequence=0,
                 event_type=PublicEventKind.REWARD_CARD_CHOSEN,
@@ -329,6 +333,7 @@ class RewardRules:
                 raise RewardRuleError("Card reward is not currently skippable.")
             next_context["card_claimed"] = True
             next_context["card_resolution"] = "skipped"
+            action_entry = "skip_card"
             event = PublicEvent(
                 sequence=0,
                 event_type=PublicEventKind.REWARD_CARD_SKIPPED,
@@ -338,6 +343,7 @@ class RewardRules:
         elif isinstance(candidate, RewardProceedCandidate):
             if not next_context["gold_claimed"] or not next_context["card_claimed"]:
                 raise RewardRuleError("Reward screen cannot proceed before every reward resolves.")
+            action_entry = "proceed"
             event = PublicEvent(
                 sequence=0,
                 event_type=PublicEventKind.REWARD_PROCEEDED,
@@ -346,6 +352,7 @@ class RewardRules:
             )
         else:
             raise RewardRuleError("Candidate does not belong to the reward rules.")
+        next_context["accepted_actions"].append(action_entry)
         return next_context, event
 
     @staticmethod
@@ -468,13 +475,19 @@ class RewardRules:
         context = self._copy_context(pending.private_context)
         self._table(context["reward_table_id"])
         proceeded = self._validate_pending_commitment(world, pending, context)
-        self._validate_origin_progress(pending, context, proceeded=proceeded)
+        action_history = self._validate_action_history(context, proceeded=proceeded)
+        self._validate_origin_progress(
+            pending,
+            context,
+            proceeded=proceeded,
+            action_history=action_history,
+        )
         self._validate_persistent_session(world, context)
         if proceeded and not (
             context["gold_claimed"] and context["card_claimed"]
         ):
             raise RewardRuleError("Proceeded reward session is incomplete.")
-        self._validate_last_event(context, proceeded=proceeded)
+        self._validate_last_event(context, action_history=action_history)
         return pending, context, proceeded
 
     def _validate_world_for_begin(self, world: WorldState) -> None:
@@ -543,59 +556,60 @@ class RewardRules:
         self,
         context: Mapping[str, Any],
         *,
-        proceeded: bool,
+        action_history: tuple[str, ...],
     ) -> None:
         events = self._events(context["public_events"])
-        if proceeded:
-            if (
-                len(events) != 1
-                or events[0].event_type is not PublicEventKind.REWARD_PROCEEDED
-                or not context["gold_claimed"]
-                or not context["card_opened"]
-                or not context["card_claimed"]
-                or context["card_resolution"] not in {"chosen", "skipped"}
-            ):
-                raise RewardRuleError("Proceeded reward session has an invalid last event.")
-            return
-
-        if not events:
-            if (
-                context["gold_claimed"]
-                or context["card_opened"]
-                or context["card_claimed"]
-                or context["card_resolution"] != "unopened"
-            ):
-                raise RewardRuleError("Only an initial reward session may have no public event.")
+        if not action_history:
+            if events:
+                raise RewardRuleError("Initial reward session cannot contain a public event.")
             return
         if len(events) != 1:
             raise RewardRuleError("Reward session must retain exactly one last public event.")
 
-        event = events[0]
         table = self._table(context["reward_table_id"])
-        if event.event_type is PublicEventKind.REWARD_GOLD_CLAIMED:
-            if not context["gold_claimed"] or event.data["amount"] != table.gold_amount:
-                raise RewardRuleError("Gold-claimed event contradicts the reward session.")
-        elif event.event_type is PublicEventKind.REWARD_CARD_OPENED:
-            if (
-                context["card_resolution"] != "pending"
-                or event.data["offer_count"] != len(table.card_definition_ids)
-            ):
-                raise RewardRuleError("Card-opened event contradicts the reward session.")
-        elif event.event_type is PublicEventKind.REWARD_CARD_CHOSEN:
-            if (
-                context["card_resolution"] != "chosen"
-                or event.data["upgraded"]
-                or event.data["card_definition_id"]
-                != context["chosen_card_definition_id"]
-            ):
-                raise RewardRuleError("Card-chosen event contradicts the reward session.")
-        elif event.event_type is PublicEventKind.REWARD_CARD_SKIPPED:
-            if context["card_resolution"] != "skipped":
-                raise RewardRuleError("Card-skipped event contradicts the reward session.")
-        elif event.event_type is PublicEventKind.REWARD_PROCEEDED:
-            raise RewardRuleError("Reward-proceeded event requires the proceeded pending kind.")
+        last_action = action_history[-1]
+        if last_action == "claim_gold":
+            expected = PublicEvent(
+                0,
+                PublicEventKind.REWARD_GOLD_CLAIMED,
+                DecisionPhase.REWARD,
+                {"amount": table.gold_amount},
+            )
+        elif last_action == "open_card_reward":
+            expected = PublicEvent(
+                0,
+                PublicEventKind.REWARD_CARD_OPENED,
+                DecisionPhase.REWARD,
+                {"offer_count": len(table.card_definition_ids)},
+            )
+        elif last_action.startswith("choose_card:"):
+            expected = PublicEvent(
+                0,
+                PublicEventKind.REWARD_CARD_CHOSEN,
+                DecisionPhase.REWARD,
+                {
+                    "card_definition_id": last_action.split(":", 1)[1],
+                    "upgraded": False,
+                },
+            )
+        elif last_action == "skip_card":
+            expected = PublicEvent(
+                0,
+                PublicEventKind.REWARD_CARD_SKIPPED,
+                DecisionPhase.REWARD,
+                {},
+            )
+        elif last_action == "proceed":
+            expected = PublicEvent(
+                0,
+                PublicEventKind.REWARD_PROCEEDED,
+                DecisionPhase.REWARD,
+                {},
+            )
         else:
-            raise RewardRuleError("Reward session contains an unsupported public event.")
+            raise RewardRuleError("Reward action history has an unsupported last action.")
+        if events[0] != expected:
+            raise RewardRuleError("Reward receipt does not match the actual last accepted action.")
 
     def _validate_persistent_session(
         self,
@@ -676,7 +690,12 @@ class RewardRules:
 
     @staticmethod
     def _origin_commitment(world: WorldState, context: Mapping[str, Any]) -> str:
+        # This in-object commitment detects localized edits against the
+        # existing pending decision.  A coordinated replacement of the whole
+        # PendingDecision, including a recomputed digest, remains outside the
+        # reward-rule trust boundary.
         basis = {
+            "accepted_actions": context["accepted_actions"],
             "context_version": context["context_version"],
             "opening_allocator": context["opening_allocator"],
             "opening_deck": context["opening_deck"],
@@ -689,7 +708,7 @@ class RewardRules:
             "run_id": world.run_id,
         }
         payload = (
-            "reduced_reward_origin.v1\0" + canonical_private_json(basis)
+            "reduced_reward_pending.v2\0" + canonical_private_json(basis)
         ).encode("utf-8")
         return sha256(payload).hexdigest()[:_ORIGIN_COMMITMENT_HEX_LENGTH]
 
@@ -738,16 +757,63 @@ class RewardRules:
             count += 1
         return count
 
+    @staticmethod
+    def _validate_action_history(
+        context: Mapping[str, Any],
+        *,
+        proceeded: bool,
+    ) -> tuple[str, ...]:
+        history = tuple(context["accepted_actions"])
+        normalized: list[str] = []
+        chosen_definition: str | None = None
+        for action in history:
+            if action in {"claim_gold", "open_card_reward", "skip_card", "proceed"}:
+                normalized.append(action)
+            elif action.startswith("choose_card:"):
+                definition = action.split(":", 1)[1]
+                if definition not in REWARDABLE_CARD_DEFINITION_IDS:
+                    raise RewardRuleError("Reward action history has an invalid chosen card.")
+                normalized.append("choose_card")
+                chosen_definition = definition
+            else:
+                raise RewardRuleError("Reward action history contains an invalid action.")
+
+        complete_orders = (
+            ("claim_gold", "open_card_reward", "choose_card", "proceed"),
+            ("claim_gold", "open_card_reward", "skip_card", "proceed"),
+            ("open_card_reward", "claim_gold", "choose_card", "proceed"),
+            ("open_card_reward", "claim_gold", "skip_card", "proceed"),
+            ("open_card_reward", "choose_card", "claim_gold", "proceed"),
+            ("open_card_reward", "skip_card", "claim_gold", "proceed"),
+        )
+        normalized_tuple = tuple(normalized)
+        if not any(
+            normalized_tuple == order[: len(normalized_tuple)]
+            for order in complete_orders
+        ):
+            raise RewardRuleError("Reward action history is not a legal ordering prefix.")
+        if proceeded != (bool(normalized_tuple) and normalized_tuple[-1] == "proceed"):
+            raise RewardRuleError("Reward pending prefix contradicts its action history.")
+        if context["card_resolution"] == "chosen":
+            if chosen_definition != context["chosen_card_definition_id"]:
+                raise RewardRuleError("Chosen card metadata contradicts action history.")
+        elif chosen_definition is not None:
+            raise RewardRuleError("Non-chosen card state contains a choose action.")
+        return history
+
     def _validate_origin_progress(
         self,
         pending: PendingDecision,
         context: Mapping[str, Any],
         *,
         proceeded: bool,
+        action_history: tuple[str, ...],
     ) -> None:
         opening_scope = PublicScope.from_dict(context["opening_public_scope"])
         current_scope = PublicScope.from_dict(context["public_scope"])
         action_count = self._accepted_action_count(context, proceeded=proceeded)
+        if len(action_history) != action_count:
+            raise RewardRuleError("Reward action history does not match derived progress.")
         if pending.sequence != context["opening_sequence"] + action_count:
             raise RewardRuleError("Reward sequence does not match its immutable opening origin.")
         if current_scope.history_ordinal != opening_scope.history_ordinal:
@@ -794,6 +860,7 @@ class RewardRules:
         public_events: tuple[PublicEvent, ...],
     ) -> dict[str, Any]:
         return {
+            "accepted_actions": [],
             "card_claimed": card_claimed,
             "card_opened": card_opened,
             "card_resolution": "unopened",
@@ -817,6 +884,11 @@ class RewardRules:
             raise RewardRuleError("Reward session context has an incompatible schema.")
         if value["context_version"] != REWARD_CONTEXT_VERSION:
             raise RewardRuleError("Reward session context version is incompatible.")
+        accepted_actions = value["accepted_actions"]
+        if not isinstance(accepted_actions, (tuple, list)) or any(
+            not isinstance(action, str) for action in accepted_actions
+        ):
+            raise RewardRuleError("Reward session accepted-action history is invalid.")
         reward_table_id = value["reward_table_id"]
         self._table(reward_table_id)
         flags = ("gold_claimed", "card_opened", "card_claimed")
