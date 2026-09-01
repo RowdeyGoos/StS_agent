@@ -46,18 +46,24 @@ def _world(*, hp: int = 68, gold: int = 99, seed: int = 71) -> WorldState:
     )
 
 
-def _scope(decision: int = 0, option: int = 0) -> PublicScope:
+def _scope(decision: int = 4, option: int = 0) -> PublicScope:
     reveals = {kind.value: 0 for kind in PublicReferenceKind}
     reveals[PublicReferenceKind.OPTION.value] = option
     return PublicScope(history_ordinal=2, decision_ordinal=decision, reveal_ordinals=reveals)
 
 
 def _open_rest(world: WorldState) -> None:
-    open_room(world, RoomKind.REST, decision_sequence=4)
+    open_room(world, RoomKind.REST, decision_sequence=4, public_scope=_scope())
 
 
 def _open_event(world: WorldState, event_id: str = "quiet_cache") -> None:
-    open_room(world, RoomKind.EVENT, event_id=event_id, decision_sequence=4)
+    open_room(
+        world,
+        RoomKind.EVENT,
+        event_id=event_id,
+        decision_sequence=4,
+        public_scope=_scope(),
+    )
 
 
 def test_rest_candidates_are_complete_heal_is_capped_and_then_only_proceed() -> None:
@@ -87,11 +93,11 @@ def test_rest_candidates_are_complete_heal_is_capped_and_then_only_proceed() -> 
     assert result.public_events[0].to_dict() == {
         "sequence": 0, "event_type": "room.rest_healed", "phase": "room", "data": {"amount": 8},
     }
-    assert room_public_observation(world, _scope(decision=1)).data["options"] == ()
-    afterwards = room_candidates(world, _scope(decision=1))
+    assert room_public_observation(world, _scope(decision=5)).data["options"] == ()
+    afterwards = room_candidates(world, _scope(decision=5))
     assert len(afterwards) == 1 and isinstance(afterwards[0], RoomProceedCandidate)
 
-    completed = apply_room_candidate(world, _scope(decision=1), afterwards[0])
+    completed = apply_room_candidate(world, _scope(decision=5), afterwards[0])
     assert completed.completed is True
     assert world.phase is DecisionPhase.MAP and world.pending_decision is None
     assert completed.public_events[0].event_type.value == "room.proceeded"
@@ -126,9 +132,9 @@ def test_whitelisted_safe_event_option_then_proceed(
     result = apply_room_candidate(world, _scope(), candidates[0])
     assert world.current_hp == expected_hp and world.gold == expected_gold
     assert result.public_events[0].data == {"effect": effect, "amount": amount}
-    proceed = room_candidates(world, _scope(decision=1))
+    proceed = room_candidates(world, _scope(decision=5))
     assert len(proceed) == 1 and isinstance(proceed[0], RoomProceedCandidate)
-    assert apply_room_candidate(world, _scope(decision=1), proceed[0]).completed is True
+    assert apply_room_candidate(world, _scope(decision=5), proceed[0]).completed is True
 
 
 def test_full_hp_rest_exposes_only_proceed() -> None:
@@ -148,8 +154,8 @@ def test_invalid_or_stale_candidate_is_atomic_and_does_not_advance_rng() -> None
     before = deepcopy(world.to_private_dict())
     stale = room_candidates(world, _scope())[0]
 
-    with pytest.raises(RoomRuleError, match="not currently legal"):
-        apply_room_candidate(world, _scope(decision=1), stale)
+    with pytest.raises(RoomRuleError, match="does not bind"):
+        apply_room_candidate(world, _scope(decision=5), stale)
     with pytest.raises(RoomRuleError, match="not a room candidate"):
         apply_room_candidate(world, _scope(), object())  # type: ignore[arg-type]
 
@@ -169,7 +175,14 @@ def test_unsupported_content_and_malformed_private_context_fail_closed_without_m
     pending = world.pending_decision
     assert pending is not None
     world.pending_decision = PendingDecision(
-        pending.decision_kind, pending.sequence, {"room_kind": "event", "event_id": "unknown", "state": "ready"}
+        pending.decision_kind,
+        pending.sequence,
+        {
+            "room_kind": "event",
+            "event_id": "unknown",
+            "state": "ready",
+            "public_scope": _scope().to_dict(),
+        },
     )
     with pytest.raises(UnsupportedRoomContentError, match="unsupported event"):
         room_public_observation(world, _scope())
@@ -222,3 +235,61 @@ def test_room_actions_do_not_perturb_other_named_streams() -> None:
     apply_room_candidate(world, _scope(), event)
 
     assert world.rng_stream_counters() == before
+
+
+def test_public_scope_and_candidate_bind_to_the_pending_sequence() -> None:
+    world = _world(hp=70)
+    _open_rest(world)
+    before = deepcopy(world.to_private_dict())
+    current_scope = _scope()
+    candidate = room_candidates(world, current_scope)[0]
+
+    with pytest.raises(RoomRuleError, match="does not bind"):
+        room_candidates(world, _scope(decision=5))
+    with pytest.raises(RoomRuleError, match="does not bind"):
+        open_room(
+            _world(),
+            RoomKind.REST,
+            decision_sequence=4,
+            public_scope=_scope(decision=5),
+        )
+    forged = RoomRestHealCandidate(
+        _scope(decision=5).decision_scope,
+        candidate.option_ref,
+        candidate.heal_amount,
+    )
+    with pytest.raises(RoomRuleError, match="not currently legal"):
+        apply_room_candidate(world, current_scope, forged)
+    assert world.to_private_dict() == before
+
+    apply_room_candidate(world, current_scope, candidate)
+    pending = world.pending_decision
+    assert pending is not None
+    assert pending.sequence == 5
+    assert PublicScope.from_dict(pending.private_context["public_scope"]) == _scope(decision=5)
+    assert len(room_candidates(world, _scope(decision=5))) == 1
+
+
+def test_post_mutation_validation_failure_restores_the_exact_world(monkeypatch: pytest.MonkeyPatch) -> None:
+    world = _world(hp=70)
+    _open_rest(world)
+    before = deepcopy(world.to_private_dict())
+    candidate = room_candidates(world, _scope())[0]
+    original_validate = WorldState.validate
+
+    def reject_resolved_state(self: WorldState) -> None:
+        original_validate(self)
+        pending = self.pending_decision
+        if (
+            self.current_hp == 80
+            and pending is not None
+            and pending.private_context["state"] == "resolved"
+        ):
+            raise RuntimeError("forced post-mutation validation failure")
+
+    monkeypatch.setattr(WorldState, "validate", reject_resolved_state)
+    with pytest.raises(RuntimeError, match="forced post-mutation"):
+        apply_room_candidate(world, _scope(), candidate)
+    monkeypatch.setattr(WorldState, "validate", original_validate)
+
+    assert world.to_private_dict() == before

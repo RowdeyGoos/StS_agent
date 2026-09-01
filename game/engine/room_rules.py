@@ -9,10 +9,10 @@ their respective owners.  The sole public surface is made from the frozen
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from hashlib import sha256
 import json
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping, TypeVar
 
 from game.content.reduced_v0 import REST_HEAL_PARAMETERS, SAFE_EVENT_DEFINITIONS
 from game.contracts.headless_v0 import (
@@ -38,12 +38,14 @@ ROOM_RULES_VERSION = "reduced_room_rules_v0"
 ROOM_RULES_EVIDENCE = "structural_fixture"
 ROOM_DECISION_KIND = "room_action"
 
-_CONTEXT_FIELDS = frozenset({"event_id", "room_kind", "state"})
+_CONTEXT_FIELDS = frozenset({"event_id", "public_scope", "room_kind", "state"})
 _READY = "ready"
 _RESOLVED = "resolved"
 _RULES_DESCRIPTOR = {
     "version": ROOM_RULES_VERSION,
+    "decision_binding": "exact_pending_public_scope_and_sequence_v1",
     "rest": {"heal_amount": REST_HEAL_PARAMETERS.heal_amount, "one_use": True},
+    "resolved_proceed_sequence": "increment_one",
     "safe_events": [item.to_dict() for item in SAFE_EVENT_DEFINITIONS],
     "stochastic_effects": [],
 }
@@ -69,6 +71,7 @@ class RoomTransition:
 
 
 _SAFE_EVENTS_BY_ID = {item.event_id: item for item in SAFE_EVENT_DEFINITIONS}
+T = TypeVar("T")
 
 
 def open_room(
@@ -76,6 +79,7 @@ def open_room(
     room_kind: RoomKind | str,
     *,
     decision_sequence: int,
+    public_scope: PublicScope,
     event_id: str | None = None,
 ) -> None:
     """Open one supported room at an already-entered ``ROOM`` boundary.
@@ -96,6 +100,10 @@ def open_room(
         raise RoomRuleError("A room decision is already pending.")
     if not isinstance(decision_sequence, int) or isinstance(decision_sequence, bool) or decision_sequence < 0:
         raise RoomRuleError("decision_sequence must be a nonnegative integer.")
+    if not isinstance(public_scope, PublicScope):
+        raise TypeError("public_scope must be a PublicScope.")
+    if public_scope.decision_ordinal != decision_sequence:
+        raise RoomRuleError("Room public scope does not bind to decision_sequence.")
 
     if kind is RoomKind.REST:
         if event_id is not None:
@@ -104,13 +112,17 @@ def open_room(
         if not isinstance(event_id, str) or event_id not in _SAFE_EVENTS_BY_ID:
             raise UnsupportedRoomContentError("Event is not in the safe-event allowlist.")
 
-    # All validation precedes this one state assignment.
-    world.pending_decision = PendingDecision(
-        ROOM_DECISION_KIND,
-        decision_sequence,
-        {"room_kind": kind.value, "event_id": event_id, "state": _READY},
+    _mutate_atomically(
+        world,
+        lambda: _set_pending_room_decision(
+            world,
+            decision_sequence,
+            kind.value,
+            event_id,
+            _READY,
+            public_scope,
+        ),
     )
-    world.validate()
 
 
 def room_public_observation(world: WorldState, public_scope: PublicScope) -> PublicObservation:
@@ -119,6 +131,7 @@ def room_public_observation(world: WorldState, public_scope: PublicScope) -> Pub
     context = _room_context(world)
     if not isinstance(public_scope, PublicScope):
         raise TypeError("public_scope must be a PublicScope.")
+    _require_bound_scope(context, public_scope)
     room_kind = RoomKind(context["room_kind"])
     state = context["state"]
     options = _public_options(world, room_kind, context, public_scope, state)
@@ -190,9 +203,7 @@ def apply_room_candidate(
         # Room completion is the local handoff boundary.  The composer decides
         # which map decision follows; it receives a normal MAP phase with no
         # lingering private room configuration.
-        world.pending_decision = None
-        world.phase = DecisionPhase.MAP
-        world.validate()
+        _mutate_atomically(world, lambda: _complete_room(world))
         return RoomTransition(
             completed=True,
             public_events=(
@@ -208,8 +219,10 @@ def apply_room_candidate(
             raise RoomRuleError("Rest healing is unavailable at full HP.")
         # The candidate was validated against the declared content amount.  The
         # emitted amount records the capped persistent delta instead.
-        world.current_hp += applied
-        _mark_resolved(world, context)
+        _mutate_atomically(
+            world,
+            lambda: _resolve_rest_heal(world, context, applied),
+        )
         return RoomTransition(
             completed=False,
             public_events=(
@@ -227,8 +240,10 @@ def apply_room_candidate(
     event = _event_from_context(context)
     effect = RoomEffectKind(event.effect_kind)
     amount = event.amount
-    applied = _apply_event_effect(world, effect, amount)
-    _mark_resolved(world, context)
+    applied = _mutate_atomically(
+        world,
+        lambda: _resolve_event_option(world, context, effect, amount),
+    )
     return RoomTransition(
         completed=False,
         public_events=(
@@ -268,6 +283,10 @@ def _room_context(world: WorldState) -> dict[str, Any]:
     except (TypeError, ValueError) as error:
         raise RoomRuleError("Room decision names an unsupported room kind.") from error
     event_id = context["event_id"]
+    try:
+        PublicScope.from_dict(context["public_scope"])
+    except Exception as error:
+        raise RoomRuleError("Room decision has an invalid public scope binding.") from error
     if room_kind is RoomKind.REST and event_id is not None:
         raise RoomRuleError("Rest decision contains an event identifier.")
     if room_kind is RoomKind.EVENT and (
@@ -275,6 +294,57 @@ def _room_context(world: WorldState) -> dict[str, Any]:
     ):
         raise UnsupportedRoomContentError("Room decision names unsupported event content.")
     return context
+
+
+def _require_bound_scope(context: Mapping[str, Any], public_scope: PublicScope) -> None:
+    expected = PublicScope.from_dict(context["public_scope"])
+    if public_scope != expected:
+        raise RoomRuleError("Public scope does not bind to the pending room decision.")
+
+
+def _set_pending_room_decision(
+    world: WorldState,
+    sequence: int,
+    room_kind: str,
+    event_id: str | None,
+    state: str,
+    public_scope: PublicScope,
+) -> None:
+    world.pending_decision = PendingDecision(
+        ROOM_DECISION_KIND,
+        sequence,
+        {
+            "room_kind": room_kind,
+            "event_id": event_id,
+            "state": state,
+            "public_scope": public_scope.to_dict(),
+        },
+    )
+
+
+def _complete_room(world: WorldState) -> None:
+    world.pending_decision = None
+    world.phase = DecisionPhase.MAP
+
+
+def _resolve_rest_heal(
+    world: WorldState,
+    context: Mapping[str, Any],
+    applied: int,
+) -> None:
+    world.current_hp += applied
+    _mark_resolved(world, context)
+
+
+def _resolve_event_option(
+    world: WorldState,
+    context: Mapping[str, Any],
+    effect: RoomEffectKind,
+    amount: int,
+) -> int:
+    applied = _apply_event_effect(world, effect, amount)
+    _mark_resolved(world, context)
+    return applied
 
 
 def _public_player(world: WorldState) -> dict[str, int]:
@@ -334,12 +404,40 @@ def _event_from_context(context: Mapping[str, Any]):
 def _mark_resolved(world: WorldState, context: Mapping[str, Any]) -> None:
     pending = world.pending_decision
     assert pending is not None  # established by _room_context before mutation
-    world.pending_decision = PendingDecision(
-        ROOM_DECISION_KIND,
-        pending.sequence,
-        {"room_kind": context["room_kind"], "event_id": context["event_id"], "state": _RESOLVED},
+    current_scope = PublicScope.from_dict(context["public_scope"])
+    next_sequence = pending.sequence + 1
+    next_scope = PublicScope(
+        history_ordinal=current_scope.history_ordinal,
+        decision_ordinal=current_scope.decision_ordinal + 1,
+        reveal_ordinals=current_scope.reveal_ordinals,
     )
-    world.validate()
+    _set_pending_room_decision(
+        world,
+        next_sequence,
+        context["room_kind"],
+        context["event_id"],
+        _RESOLVED,
+        next_scope,
+    )
+
+
+def _mutate_atomically(world: WorldState, operation: Callable[[], T]) -> T:
+    """Run a room mutation or restore the exact private world on any failure."""
+
+    before = world.to_private_dict()
+    try:
+        result = operation()
+        world.validate()
+        return result
+    except Exception:
+        _restore_world(world, before)
+        raise
+
+
+def _restore_world(world: WorldState, payload: Mapping[str, Any]) -> None:
+    restored = WorldState.from_private_dict(payload)
+    for field in fields(WorldState):
+        setattr(world, field.name, getattr(restored, field.name))
 
 
 def _apply_event_effect(world: WorldState, effect: RoomEffectKind, amount: int) -> int:
