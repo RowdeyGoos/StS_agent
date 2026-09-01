@@ -26,6 +26,10 @@ from game.engine.headless_state import (
     StateValidationError,
     WorldState,
 )
+from game.engine.random_service import (
+    RANDOM_SERVICE_SCHEMA,
+    RANDOM_SERVICE_SNAPSHOT_VERSION,
+)
 
 
 CONTENT_FINGERPRINT = "a" * 64
@@ -62,7 +66,11 @@ def test_state_schema_stream_map_and_semantic_key_are_explicit() -> None:
         "event_effect": EVENT_EFFECT_STREAM,
         "reward_offer": REWARD_OFFER_STREAM,
     }
-    assert len(WORLD_STATE_FINGERPRINT) == 64
+    assert WORLD_STATE_FINGERPRINT == (
+        "62f27941ece933f760244b5dbbcbbaf6bbc4a7a0f16bfcc428e936aa8bc8b4e3"
+    )
+    assert RANDOM_SERVICE_SCHEMA == "python_mt19937_v1"
+    assert RANDOM_SERVICE_SNAPSHOT_VERSION == 1
     assert len(world.semantic_key()) == 64
     assert world.rng_stream_counters() == {
         "combat_launch": 0,
@@ -111,6 +119,28 @@ def test_allocator_rejects_wrong_namespace_kind_and_unallocated_ids() -> None:
         world.identity_allocator.validate_card_id(future)
     with pytest.raises(StateValidationError, match="already owns"):
         world.identity_allocator.allocate_run_id()
+
+
+def test_invalid_card_and_map_additions_are_atomic_and_preserve_future_ids() -> None:
+    world = _world(seed=818)
+    control = _world(seed=818)
+    before = world.to_private_dict()
+
+    with pytest.raises(StateValidationError, match="definition_id"):
+        world.add_card("Not A Definition")
+    with pytest.raises(StateValidationError, match="upgraded"):
+        world.add_card("iron_wave", upgraded=1)
+    with pytest.raises(StateValidationError, match="definition_id"):
+        world.add_map_node("Not A Definition", NodeKind.EVENT)
+    with pytest.raises(StateValidationError, match="node_kind"):
+        world.add_map_node("floor_04_event", "shop")
+
+    assert world.to_private_dict() == before
+    assert world.rng_stream_counters() == control.rng_stream_counters()
+    assert world.add_card("iron_wave") == control.add_card("iron_wave")
+    assert world.add_map_node("floor_04_event", NodeKind.EVENT) == (
+        control.add_map_node("floor_04_event", NodeKind.EVENT)
+    )
 
 
 def test_world_tracks_private_pending_queue_node_history_and_terminal_result() -> None:
@@ -176,6 +206,33 @@ def test_invalid_combat_launch_request_does_not_advance_rng() -> None:
     assert world.rng.snapshot() == before
 
 
+def test_combat_launch_is_single_issue_and_binds_the_exact_seed_atomically() -> None:
+    world = _world(seed=993)
+    launch = world.create_combat_launch("jaw_worm_v0")
+    issued_state = world.to_private_dict()
+    forged_launch = replace(launch, combat_seed=launch.combat_seed ^ 1)
+    forged_resolution = CombatResolution(
+        run_id=world.run_id,
+        launch_key=forged_launch.semantic_key(),
+        outcome=CombatOutcome.VICTORY,
+        final_hp=60,
+        replay_reference="replay.combat.forged",
+    )
+
+    assert world.active_combat_launch_key == launch.semantic_key()
+    assert world.rng_stream_counters()["combat_launch"] == 1
+    with pytest.raises(StateValidationError, match="already active"):
+        world.create_combat_launch("jaw_worm_v0")
+    with pytest.raises(StateValidationError, match="active issued launch"):
+        world.validate_combat_launch(forged_launch)
+    with pytest.raises(StateValidationError, match="active issued launch"):
+        world.apply_combat_resolution(forged_launch, forged_resolution)
+
+    assert world.to_private_dict() == issued_state
+    assert world.rng_stream_counters()["combat_launch"] == 1
+    world.validate_combat_launch(launch)
+
+
 @pytest.mark.parametrize(
     "mutate,match",
     [
@@ -223,7 +280,10 @@ def test_combat_resolution_round_trip_applies_hp_as_only_persistent_delta() -> N
     assert world.current_hp == 53
     assert before["current_hp"] == 68
     before["current_hp"] = 53
+    assert before["active_combat_launch_key"] == launch.semantic_key()
+    before["active_combat_launch_key"] = None
     assert after == before
+    assert world.active_combat_launch_key is None
 
 
 def test_combat_resolution_rejects_wrong_launch_run_or_hp_atomically() -> None:

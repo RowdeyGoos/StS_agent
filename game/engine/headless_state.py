@@ -21,7 +21,11 @@ from game.contracts.headless_v0 import (
     NodeKind,
     RunOutcome,
 )
-from game.engine.random_service import GameRandomService
+from game.engine.random_service import (
+    RANDOM_SERVICE_SCHEMA,
+    RANDOM_SERVICE_SNAPSHOT_VERSION,
+    GameRandomService,
+)
 
 
 WORLD_STATE_SCHEMA = "reduced_world_state_v0"
@@ -141,7 +145,12 @@ _STATE_SCHEMA_DESCRIPTOR = {
     "combat_handoff_version": COMBAT_HANDOFF_VERSION,
     "rng_stream_map_version": RNG_STREAM_MAP_VERSION,
     "rng_streams": dict(WORLD_RNG_STREAMS),
+    "rng_compatibility": {
+        "schema": RANDOM_SERVICE_SCHEMA,
+        "snapshot_version": RANDOM_SERVICE_SNAPSHOT_VERSION,
+    },
     "fields": (
+        "active_combat_launch_key",
         "automatic_queue",
         "content_fingerprint",
         "contract_fingerprint",
@@ -597,6 +606,7 @@ class WorldState:
     terminal_result: TerminalResult | None
     automatic_queue: tuple[AutomaticTransition, ...]
     rng: GameRandomService
+    active_combat_launch_key: str | None = None
     contract_fingerprint: str = CONTRACT_FINGERPRINT
     schema: str = WORLD_STATE_SCHEMA
     state_version: int = WORLD_STATE_VERSION
@@ -654,6 +664,7 @@ class WorldState:
             terminal_result=None,
             automatic_queue=(),
             rng=rng,
+            active_combat_launch_key=None,
         )
 
     def validate(self) -> None:
@@ -719,8 +730,21 @@ class WorldState:
             raise StateValidationError("Terminal phase and terminal result must match.")
         if any(not isinstance(item, AutomaticTransition) for item in self.automatic_queue):
             raise StateValidationError("world.automatic_queue has an invalid transition.")
+        if self.active_combat_launch_key is not None:
+            _validate_fingerprint(
+                self.active_combat_launch_key,
+                "world.active_combat_launch_key",
+            )
+            if self.phase is not DecisionPhase.COMBAT:
+                raise StateValidationError(
+                    "An active combat launch requires the combat phase."
+                )
 
     def add_card(self, definition_id: str, *, upgraded: bool = False) -> PersistentCardInstance:
+        self.validate()
+        _validate_semantic_id(definition_id, "card.definition_id")
+        if not isinstance(upgraded, bool):
+            raise StateValidationError("card.upgraded must be a boolean.")
         card = PersistentCardInstance(
             self.identity_allocator.allocate_card_id(), definition_id, upgraded
         )
@@ -729,8 +753,14 @@ class WorldState:
         return card
 
     def add_map_node(self, definition_id: str, node_kind: NodeKind) -> MapNodeInstance:
+        self.validate()
+        _validate_semantic_id(definition_id, "map_node.definition_id")
+        try:
+            normalized_node_kind = NodeKind(node_kind)
+        except (TypeError, ValueError) as error:
+            raise StateValidationError("map_node.node_kind is invalid.") from error
         node = MapNodeInstance(
-            self.identity_allocator.allocate_map_id(), definition_id, node_kind
+            self.identity_allocator.allocate_map_id(), definition_id, normalized_node_kind
         )
         self.map_nodes += (node,)
         self.validate()
@@ -753,11 +783,13 @@ class WorldState:
             raise StateValidationError("Combat can only launch from the combat phase.")
         if self.current_hp <= 0:
             raise StateValidationError("Combat cannot launch with zero HP.")
+        if self.active_combat_launch_key is not None:
+            raise StateValidationError("A combat launch is already active.")
         _validate_semantic_id(scenario_id, "combat_launch.scenario_id")
         settings = {} if combat_settings is None else combat_settings
         _freeze_private_json(settings, "combat_launch.combat_settings")
         combat_seed = self.rng.randint(COMBAT_LAUNCH_STREAM, 0, _MAX_COMBAT_SEED)
-        return CombatLaunchSpec(
+        launch = CombatLaunchSpec(
             run_id=self.run_id,
             scenario_id=scenario_id,
             combat_seed=combat_seed,
@@ -766,6 +798,8 @@ class WorldState:
             combat_settings=settings,
             ordered_deck=self.master_deck,
         )
+        self.active_combat_launch_key = launch.semantic_key()
+        return launch
 
     def validate_combat_launch(self, launch: CombatLaunchSpec) -> None:
         if not isinstance(launch, CombatLaunchSpec):
@@ -779,6 +813,10 @@ class WorldState:
             raise StateValidationError("Combat launch HP does not match persistent state.")
         if launch.ordered_deck != self.master_deck:
             raise StateValidationError("Combat launch deck does not match persistent state.")
+        if self.active_combat_launch_key is None:
+            raise StateValidationError("No combat launch is active.")
+        if launch.semantic_key() != self.active_combat_launch_key:
+            raise StateValidationError("Combat launch does not match the active issued launch.")
 
     def apply_combat_resolution(
         self,
@@ -796,11 +834,13 @@ class WorldState:
         if resolution.final_hp > self.max_hp:
             raise StateValidationError("Combat resolution final HP exceeds persistent max HP.")
         self.current_hp = resolution.final_hp
+        self.active_combat_launch_key = None
         self.validate()
 
     def to_private_dict(self) -> dict[str, Any]:
         self.validate()
         return {
+            "active_combat_launch_key": self.active_combat_launch_key,
             "automatic_queue": [item.to_dict() for item in self.automatic_queue],
             "content_fingerprint": self.content_fingerprint,
             "contract_fingerprint": self.contract_fingerprint,
@@ -829,6 +869,7 @@ class WorldState:
     @classmethod
     def from_private_dict(cls, value: Mapping[str, Any]) -> "WorldState":
         fields = {
+            "active_combat_launch_key",
             "automatic_queue",
             "content_fingerprint",
             "contract_fingerprint",
@@ -901,6 +942,7 @@ class WorldState:
             ),
             automatic_queue=tuple(AutomaticTransition.from_dict(item) for item in queue),
             rng=rng,
+            active_combat_launch_key=value["active_combat_launch_key"],
             contract_fingerprint=value["contract_fingerprint"],
             schema=value["schema"],
             state_version=value["state_version"],

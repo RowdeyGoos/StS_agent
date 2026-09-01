@@ -8,14 +8,21 @@ import json
 
 import pytest
 
-from game.contracts.headless_v0 import CONTRACT_FINGERPRINT, NodeKind, PublicObservation
+from game.contracts.headless_v0 import (
+    CONTRACT_FINGERPRINT,
+    CombatOutcome,
+    NodeKind,
+    PublicObservation,
+)
 from game.engine.headless_state import (
     COMBAT_LAUNCH_STREAM,
     EVENT_EFFECT_STREAM,
     REWARD_OFFER_STREAM,
     WORLD_STATE_FINGERPRINT,
     AutomaticTransition,
+    CombatResolution,
     PendingDecision,
+    StateValidationError,
     WorldState,
 )
 from game.engine.snapshots import (
@@ -114,6 +121,33 @@ def test_restored_world_has_exact_rng_and_identity_continuation() -> None:
     assert restored.to_private_dict() == original.to_private_dict()
 
 
+def test_active_combat_launch_binding_restores_for_exact_continuation() -> None:
+    world = _world(seed=661)
+    launch = world.create_combat_launch("jaw_worm_v0")
+    restored = _codec().restore(_codec().capture(world))
+    forged_launch = replace(launch, combat_seed=launch.combat_seed ^ 1)
+
+    assert restored.active_combat_launch_key == launch.semantic_key()
+    assert restored.rng_stream_counters()["combat_launch"] == 1
+    restored.validate_combat_launch(launch)
+    with pytest.raises(StateValidationError, match="active issued launch"):
+        restored.validate_combat_launch(forged_launch)
+    with pytest.raises(StateValidationError, match="already active"):
+        restored.create_combat_launch("jaw_worm_v0")
+
+    resolution = CombatResolution(
+        run_id=restored.run_id,
+        launch_key=launch.semantic_key(),
+        outcome=CombatOutcome.VICTORY,
+        final_hp=64,
+        replay_reference="replay.combat.restored",
+    )
+    restored.apply_combat_resolution(launch, resolution)
+    assert restored.current_hp == 64
+    assert restored.active_combat_launch_key is None
+    assert restored.rng_stream_counters()["combat_launch"] == 1
+
+
 def test_restored_stream_counters_are_exact_and_streams_remain_isolated() -> None:
     baseline = _world(seed=515)
     noisy = _world(seed=515)
@@ -189,6 +223,32 @@ def test_payload_tampering_rejects_by_semantic_key() -> None:
 
     with pytest.raises(SnapshotValidationError, match="semantic key"):
         codec.restore(tampered)
+
+
+@pytest.mark.parametrize(
+    "field,bad_value",
+    [
+        ("content_fingerprint", "c" * 64),
+        ("rules_fingerprint", "d" * 64),
+    ],
+)
+def test_recomputed_semantic_key_cannot_forge_payload_fingerprints(
+    field: str,
+    bad_value: str,
+) -> None:
+    codec = _codec()
+    snapshot = codec.capture(_world())
+    payload = deepcopy(snapshot.to_dict()["payload"])
+    payload[field] = bad_value
+    forged_state = WorldState.from_private_dict(payload)
+    forged = replace(
+        snapshot,
+        payload=payload,
+        semantic_key=forged_state.semantic_key(),
+    )
+
+    with pytest.raises(SnapshotValidationError, match=f"payload {field}"):
+        codec.restore(forged)
 
 
 @pytest.mark.parametrize(

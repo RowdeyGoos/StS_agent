@@ -215,6 +215,16 @@ class WorldSnapshotCodec:
             state = WorldState.from_private_dict(_thaw_private_json(snapshot.payload))
         except StateValidationError as error:
             raise SnapshotValidationError("Snapshot payload is not valid world state.") from error
+        decoded_fingerprints = {
+            "contract_fingerprint": state.contract_fingerprint,
+            "content_fingerprint": state.content_fingerprint,
+            "rules_fingerprint": state.rules_fingerprint,
+        }
+        for name, actual_value in decoded_fingerprints.items():
+            if actual_value != expected[name]:
+                raise SnapshotValidationError(
+                    f"Snapshot payload {name} is incompatible."
+                )
         if state.semantic_key() != snapshot.semantic_key:
             raise SnapshotValidationError("Snapshot semantic key does not match its payload.")
         return state
