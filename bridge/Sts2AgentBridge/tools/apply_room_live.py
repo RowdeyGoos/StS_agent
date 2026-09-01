@@ -291,6 +291,7 @@ def _validate_room(body: bytes) -> dict[str, object]:
             raise ValueError("ready room decision")
 
         validated_candidates: list[dict[str, object]] = []
+        candidate_action_ids: set[str] = set()
         eligible_actions: set[str] = set()
         for expected_index, raw_candidate in enumerate(root["candidates"]):
             candidate = _exact_object(
@@ -312,6 +313,7 @@ def _validate_room(body: bytes) -> dict[str, object]:
                 candidate["candidate_index"] != expected_index
                 or not isinstance(action, str)
                 or not _canonical_action_id(action)
+                or action in candidate_action_ids
                 or kind not in ("rest_heal", "rest_unsupported", "event_option", "proceed")
                 or not _public_string(candidate["stable_id"])
                 or type(candidate["enabled"]) is not bool
@@ -356,6 +358,7 @@ def _validate_room(body: bytes) -> dict[str, object]:
                 raise ValueError("event candidate safety")
             if candidate["is_dangerous"] and candidate["enabled"]:
                 raise ValueError("enabled dangerous candidate")
+            candidate_action_ids.add(action)
             if candidate["enabled"] and candidate["supported"]:
                 eligible_actions.add(action)
             validated_candidates.append(candidate)

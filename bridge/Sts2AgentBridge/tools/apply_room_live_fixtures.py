@@ -506,6 +506,38 @@ def operation() -> dict[str, object]:
     )
     checks.append("dangerous_rest_unsupported_rejected")
 
+    first_proceed = _candidate(
+        0,
+        "proceed",
+        "proceed",
+        enabled=True,
+        supported=True,
+        is_proceed=True,
+    )
+    duplicate_proceed = _candidate(
+        1,
+        "proceed",
+        "proceed",
+        enabled=True,
+        supported=True,
+        is_proceed=True,
+    )
+    _expect_failure(
+        _base_responses()
+        + [
+            _ready(
+                _DECISION_ZERO,
+                "rest_site",
+                "proceed",
+                [first_proceed, duplicate_proceed],
+                [_legal(first_proceed)],
+            )
+        ],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_response_mismatch",
+    )
+    checks.append("duplicate_proceed_action_rejected")
+
     _expect_failure(
         _base_responses() + [decision, _action_body(_DECISION_ZERO, "choose:0", accepted=False)],
         prefix_requests,
