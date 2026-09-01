@@ -123,6 +123,19 @@ def test_allocator_rejects_wrong_namespace_kind_and_unallocated_ids() -> None:
         world.identity_allocator.allocate_run_id()
 
 
+def test_allocator_exposes_card_capacity_without_mutating_state() -> None:
+    world = _world(seed=23)
+    before = world.identity_allocator.to_dict()
+
+    assert world.identity_allocator.can_allocate_card_id() is True
+    assert world.identity_allocator.to_dict() == before
+
+    world.identity_allocator.next_card_ordinal = 100_000_000
+    exhausted = world.identity_allocator.to_dict()
+    assert world.identity_allocator.can_allocate_card_id() is False
+    assert world.identity_allocator.to_dict() == exhausted
+
+
 def test_invalid_card_and_map_additions_are_atomic_and_preserve_future_ids() -> None:
     world = _world(seed=818)
     control = _world(seed=818)

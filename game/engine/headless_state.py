@@ -233,6 +233,12 @@ class StableIdAllocator:
         self._require_run()
         return self._allocate("card", "next_card_ordinal")
 
+    def can_allocate_card_id(self) -> bool:
+        """Return whether one more persistent card identity can be allocated."""
+
+        self._require_run()
+        return self.next_card_ordinal < _IDENTITY_CAPACITY
+
     def allocate_map_id(self) -> str:
         self._require_run()
         return self._allocate("map", "next_map_ordinal")
