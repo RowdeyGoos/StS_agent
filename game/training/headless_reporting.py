@@ -22,10 +22,13 @@ import re
 from typing import Any, Mapping
 
 from game.backends.headless.reduced_run_backend import HeadlessRunConfig
-from game.contracts.headless_v0 import BackendManifest, canonical_json_bytes
+from game.contracts.headless_v0 import BackendManifest, RunOutcome, canonical_json_bytes
 from game.data.headless_trajectory import (
     FinalizedTrajectory,
+    TrajectoryCompletion,
     TrajectoryPaths,
+    decode_hindsight_targets,
+    decode_synthetic_audit,
     load_trajectory,
 )
 from game.training.headless_benchmark import (
@@ -52,6 +55,7 @@ CONFIG_FILE_NAME = "experiment.config.json"
 MANIFEST_FILE_NAME = "experiment.manifest.json"
 REPETITIONS_DIRECTORY = "repetitions"
 _MAX_FILE_BYTES = 1_048_576
+_MAX_HOST_TEXT_BYTES = 256
 _ID = re.compile(r"[a-z][a-z0-9._-]{0,127}\Z")
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
 
@@ -144,10 +148,11 @@ def _parse_canonical(raw: bytes, path: str) -> Mapping[str, Any]:
 def _read_regular(path: Path, limit: int) -> bytes:
     if path.is_symlink() or not path.is_file():
         raise ExperimentIntegrityError(f"{path.name} must be a regular non-symlink file.")
-    size = path.stat().st_size
-    if size > limit:
+    with path.open("rb") as handle:
+        raw = handle.read(limit + 1)
+    if len(raw) > limit:
         raise ExperimentValidationError(f"{path.name} exceeds its byte limit.")
-    return path.read_bytes()
+    return raw
 
 
 def _write_exclusive(path: Path, raw: bytes) -> None:
@@ -249,7 +254,14 @@ def _benchmark_from_dict(value: Any) -> HeadlessBenchmarkConfig:
 
 @dataclass(frozen=True, slots=True)
 class HeadlessExperimentConfig:
-    """The deterministic conditions and exact identity pins for one panel."""
+    """The declared deterministic conditions and exact identity pins for one panel.
+
+    Existing trajectory streams authenticate their own ID, backend pins,
+    completion and public decision/audit facts.  They do not encode scenario
+    settings, game/policy/collector seeds, or transition budget; those remain
+    caller-declared conditions bound by this envelope and its external final
+    manifest anchor, not independently proven producer provenance.
+    """
 
     experiment_id: str
     benchmark: HeadlessBenchmarkConfig
@@ -303,34 +315,57 @@ class EpisodeReport:
     trajectory_id: str
     stop_reason: RolloutStopReason
     transition_count: int
-    initial_snapshot_sha256: str | None
-    final_snapshot_sha256: str | None
+    initial_decision_sha256: str | None
+    final_decision_sha256: str | None
     trajectory_manifest_sha256: str | None
+    trajectory_completion: TrajectoryCompletion | None
+    terminal_outcome: RunOutcome | None
     failure_present: bool
 
     def __post_init__(self) -> None:
         _identifier(self.trajectory_id, "episode.trajectory_id")
         object.__setattr__(self, "stop_reason", RolloutStopReason(self.stop_reason))
         _integer(self.transition_count, "episode.transition_count")
-        for name in ("initial_snapshot_sha256", "final_snapshot_sha256", "trajectory_manifest_sha256"):
+        for name in ("initial_decision_sha256", "final_decision_sha256", "trajectory_manifest_sha256"):
             item = getattr(self, name)
             if item is not None:
                 _digest(item, f"episode.{name}")
+        completion = self.trajectory_completion
+        if completion is not None:
+            try:
+                completion = TrajectoryCompletion(completion)
+            except ValueError as exc:
+                raise ExperimentValidationError("episode.trajectory_completion is invalid.") from exc
+            object.__setattr__(self, "trajectory_completion", completion)
+        outcome = self.terminal_outcome
+        if outcome is not None:
+            try:
+                outcome = RunOutcome(outcome)
+            except ValueError as exc:
+                raise ExperimentValidationError("episode.terminal_outcome is invalid.") from exc
+            object.__setattr__(self, "terminal_outcome", outcome)
         if not isinstance(self.failure_present, bool):
             raise TypeError("episode.failure_present must be boolean.")
-        if self.trajectory_manifest_sha256 is None and self.stop_reason not in {
-            RolloutStopReason.FAILED, RolloutStopReason.INTERRUPTED,
-        }:
-            raise ExperimentValidationError("Only failed or interrupted episodes may lack a trajectory.")
+        if self.trajectory_manifest_sha256 is None:
+            if self.stop_reason not in {RolloutStopReason.FAILED, RolloutStopReason.INTERRUPTED} or not self.failure_present:
+                raise ExperimentValidationError("A no-trajectory episode must be an explicit failed or interrupted result.")
+            if any(item is not None for item in (self.initial_decision_sha256, self.final_decision_sha256, completion, outcome)) or self.transition_count != 0:
+                raise ExperimentValidationError("A no-trajectory episode cannot claim unbound execution facts.")
+        elif completion is None or self.initial_decision_sha256 is None or self.final_decision_sha256 is None:
+            raise ExperimentValidationError("A trajectory report must bind its completion and decision hashes.")
+        elif (completion is TrajectoryCompletion.TERMINAL) != (outcome is not None):
+            raise ExperimentValidationError("Only a terminal trajectory can report a terminal outcome.")
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "failure_present": self.failure_present,
-            "final_snapshot_sha256": self.final_snapshot_sha256,
-            "initial_snapshot_sha256": self.initial_snapshot_sha256,
+            "final_decision_sha256": self.final_decision_sha256,
+            "initial_decision_sha256": self.initial_decision_sha256,
             "stop_reason": self.stop_reason.value,
             "trajectory_id": self.trajectory_id,
+            "trajectory_completion": None if self.trajectory_completion is None else self.trajectory_completion.value,
             "trajectory_manifest_sha256": self.trajectory_manifest_sha256,
+            "terminal_outcome": None if self.terminal_outcome is None else self.terminal_outcome.value,
             "transition_count": self.transition_count,
         }
 
@@ -338,7 +373,7 @@ class EpisodeReport:
     def from_dict(cls, value: Any) -> "EpisodeReport":
         if not isinstance(value, Mapping):
             raise ExperimentValidationError("episode report must be an object.")
-        _exact(value, {"failure_present", "final_snapshot_sha256", "initial_snapshot_sha256", "stop_reason", "trajectory_id", "trajectory_manifest_sha256", "transition_count"}, "episode report")
+        _exact(value, {"failure_present", "final_decision_sha256", "initial_decision_sha256", "stop_reason", "trajectory_id", "trajectory_completion", "trajectory_manifest_sha256", "terminal_outcome", "transition_count"}, "episode report")
         return cls(**value)
 
 
@@ -418,7 +453,9 @@ class NondeterministicMeasurements:
         for name in ("host_os", "host_architecture", "host_cpu_model"):
             item = getattr(self, name)
             if item is not None:
-                _text(item, f"measurement.{name}")
+                text = _text(item, f"measurement.{name}")
+                if len(text.encode("utf-8")) > _MAX_HOST_TEXT_BYTES:
+                    raise ExperimentValidationError(f"measurement.{name} exceeds its byte limit.")
         for name in ("host_logical_cpu_count", "host_memory_bytes"):
             item = getattr(self, name)
             if item is not None:
@@ -538,17 +575,87 @@ def _same_pins(expected: BackendManifest, trajectory: FinalizedTrajectory) -> bo
     )
 
 
+def _trajectory_facts(
+    trajectory: FinalizedTrajectory,
+) -> tuple[TrajectoryCompletion, RunOutcome | None, str, str, int]:
+    """Extract only execution facts already authenticated by sidecar validation."""
+
+    audits = decode_synthetic_audit(trajectory.synthetic_audit_jsonl)
+    targets = decode_hindsight_targets(trajectory.hindsight_target_jsonl)
+    if not audits or len(targets) != 1:
+        raise ExperimentIntegrityError("Finalized trajectory lacks required audit/target facts.")
+    completion = trajectory.manifest.completion
+    target = targets[0]
+    if target.completion is not completion:
+        raise ExperimentIntegrityError("Trajectory target completion does not match its manifest.")
+    transitions = sum(item.receipt is not None for item in audits)
+    return (
+        completion,
+        target.terminal_outcome,
+        audits[0].decision_correlation.decision_hash,
+        audits[-1].decision_correlation.decision_hash,
+        transitions,
+    )
+
+
+def _stop_reason_matches(
+    stop_reason: RolloutStopReason,
+    completion: TrajectoryCompletion,
+    outcome: RunOutcome | None,
+) -> bool:
+    if stop_reason is RolloutStopReason.DEFEAT:
+        return completion is TrajectoryCompletion.TERMINAL and outcome is RunOutcome.DEFEAT
+    if stop_reason is RolloutStopReason.ROUTE_COMPLETE:
+        return completion is TrajectoryCompletion.TERMINAL and outcome is RunOutcome.VICTORY
+    if stop_reason is RolloutStopReason.TERMINAL:
+        return completion is TrajectoryCompletion.TERMINAL
+    if stop_reason is RolloutStopReason.UNSUPPORTED:
+        return completion is TrajectoryCompletion.UNSUPPORTED
+    if stop_reason in {RolloutStopReason.BUDGET_EXHAUSTED, RolloutStopReason.INTERRUPTED}:
+        return completion is TrajectoryCompletion.INTERRUPTED
+    # A failed runner may retain any validated partial/terminal boundary.  The
+    # failure itself remains explicit and is not converted into an outcome.
+    return stop_reason is RolloutStopReason.FAILED
+
+
+def _episode_report_from_result(item: HeadlessRolloutResult) -> EpisodeReport:
+    if not isinstance(item.config, HeadlessRolloutConfig):
+        raise ExperimentValidationError("Received result has no valid rollout configuration.")
+    if not isinstance(item.stop_reason, RolloutStopReason):
+        raise ExperimentValidationError("Received result has an invalid stop reason.")
+    if item.trajectory is None:
+        return EpisodeReport(
+            item.config.trajectory_id,
+            item.stop_reason,
+            item.transition_count,
+            None,
+            None,
+            None,
+            None,
+            None,
+            item.failure is not None,
+        )
+    completion, outcome, initial_hash, final_hash, transition_count = _trajectory_facts(item.trajectory)
+    if item.transition_count != transition_count:
+        raise ExperimentIntegrityError("Result transition count disagrees with trajectory audit receipts.")
+    if not _stop_reason_matches(item.stop_reason, completion, outcome):
+        raise ExperimentIntegrityError("Result stop reason disagrees with finalized trajectory completion.")
+    return EpisodeReport(
+        item.config.trajectory_id,
+        item.stop_reason,
+        item.transition_count,
+        initial_hash,
+        final_hash,
+        item.trajectory.manifest_sha256,
+        completion,
+        outcome,
+        item.failure is not None,
+    )
+
+
 def _report_from_batch(index: int, batch: HeadlessBatchResult) -> RepetitionReport:
     received = tuple(
-        EpisodeReport(
-            trajectory_id=item.config.trajectory_id,
-            stop_reason=item.stop_reason,
-            transition_count=item.transition_count,
-            initial_snapshot_sha256=item.initial_snapshot_sha256,
-            final_snapshot_sha256=item.final_snapshot_sha256,
-            trajectory_manifest_sha256=None if item.trajectory is None else item.trajectory.manifest_sha256,
-            failure_present=item.failure is not None,
-        )
+        _episode_report_from_result(item)
         for item in batch.results
     )
     return RepetitionReport(index, received, batch.pending_trajectory_ids, batch.interrupted)
@@ -578,6 +685,10 @@ def _validate_report_against_config(config: HeadlessExperimentConfig, report: He
             raise ExperimentIntegrityError("Pending episodes are not in configured panel order.")
         if not repetition.interrupted and received != set(expected_by_id):
             raise ExperimentIntegrityError("A completed repetition has missing results.")
+    if any(item.interrupted for item in report.repetitions[:-1]):
+        raise ExperimentIntegrityError("No repetition may start after an interrupted repetition.")
+    if report.repetitions and report.unstarted_repetition_indices and not report.repetitions[-1].interrupted:
+        raise ExperimentIntegrityError("Unstarted repetitions require an interrupted preceding repetition.")
 
 
 def _validate_benchmark_input(config: HeadlessExperimentConfig, result: HeadlessBenchmarkResult) -> HeadlessExperimentReport:
@@ -601,6 +712,12 @@ def _validate_benchmark_input(config: HeadlessExperimentConfig, result: Headless
                 raise ExperimentIntegrityError("Received episode configuration does not match the panel.")
             if item.trajectory is not None and not _same_pins(config.backend_manifest, item.trajectory):
                 raise ExperimentIntegrityError("Trajectory identity pins do not match experiment configuration.")
+            if item.trajectory is not None and item.trajectory.manifest.trajectory_id != item.config.trajectory_id:
+                raise ExperimentIntegrityError("Trajectory identity does not match its configured episode before output creation.")
+            if item.transition_count > item.config.transition_budget:
+                raise ExperimentIntegrityError("Result transition count exceeds its configured budget.")
+            if item.stop_reason is RolloutStopReason.BUDGET_EXHAUSTED and item.transition_count != item.config.transition_budget:
+                raise ExperimentIntegrityError("Budget-exhausted result does not consume its configured budget.")
     return report
 
 
@@ -643,10 +760,14 @@ def write_headless_experiment(
             report.config_sha256, report.repetitions, report.unstarted_repetition_indices,
             NondeterministicMeasurements.from_benchmark(result, host_measurements),
         )
+    config_raw = config.to_bytes()
+    report_raw = report.to_bytes()
+    if len(config_raw) > _MAX_FILE_BYTES or len(report_raw) > _MAX_FILE_BYTES:
+        raise ExperimentValidationError("Experiment config or final manifest exceeds its byte limit.")
     root = preflight_headless_experiment_output(output_root)
     _assert_empty_root(root)
     _under(root, root / CONFIG_FILE_NAME)
-    _write_exclusive(root / CONFIG_FILE_NAME, config.to_bytes())
+    _write_exclusive(root / CONFIG_FILE_NAME, config_raw)
     repetitions_root = root / REPETITIONS_DIRECTORY
     repetitions_root.mkdir(mode=0o700)
     for repetition, batch in zip(report.repetitions, result.batches):
@@ -661,7 +782,7 @@ def write_headless_experiment(
             if episode.trajectory.manifest_sha256 != reports_by_id[episode.config.trajectory_id].trajectory_manifest_sha256:
                 raise ExperimentIntegrityError("Trajectory changed while the experiment was being written.")
     # The manifest is intentionally the final write: no loader admits a partial root.
-    _write_exclusive(root / MANIFEST_FILE_NAME, report.to_bytes())
+    _write_exclusive(root / MANIFEST_FILE_NAME, report_raw)
     return report
 
 
@@ -715,6 +836,23 @@ def load_headless_experiment(
             finalized = load_trajectory(directory, episode.trajectory_id, expected_manifest_sha256=episode.trajectory_manifest_sha256)
             if not _same_pins(config.backend_manifest, finalized):
                 raise ExperimentIntegrityError("Loaded trajectory identity pins do not match experiment configuration.")
+            completion, outcome, initial_hash, final_hash, transition_count = _trajectory_facts(finalized)
+            if (
+                finalized.manifest.trajectory_id != episode.trajectory_id
+                or episode.trajectory_completion is not completion
+                or episode.terminal_outcome is not outcome
+                or episode.initial_decision_sha256 != initial_hash
+                or episode.final_decision_sha256 != final_hash
+                or episode.transition_count != transition_count
+                or not _stop_reason_matches(episode.stop_reason, completion, outcome)
+            ):
+                raise ExperimentIntegrityError("Report episode facts do not match its finalized trajectory.")
+            expected_config = {item.trajectory_id: item for item in config.benchmark.batch.episodes}[episode.trajectory_id]
+            if transition_count > expected_config.transition_budget or (
+                episode.stop_reason is RolloutStopReason.BUDGET_EXHAUSTED
+                and transition_count != expected_config.transition_budget
+            ):
+                raise ExperimentIntegrityError("Loaded trajectory does not satisfy its declared transition budget.")
             trajectories[(repetition.repetition_index, episode.trajectory_id)] = finalized
         actual_files = {item.name for item in directory.iterdir()}
         if actual_files != expected_files:
