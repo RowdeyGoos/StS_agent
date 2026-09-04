@@ -14,10 +14,18 @@ import re
 from pathlib import Path
 from typing import Iterable, Iterator, Sequence
 
-from game.contracts.headless_v0 import DecisionStatus, PolicyView, canonical_json_bytes
+from game.contracts.headless_v0 import (
+    BackendManifest,
+    ComponentEvidence,
+    DecisionStatus,
+    EvidenceLabel,
+    PolicyView,
+    canonical_json_bytes,
+)
 from game.data.headless_trajectory import (
     FinalizedTrajectory,
     PolicyReplayRecord,
+    TrajectoryValidationError,
     decode_policy_replay,
     policy_view_for,
 )
@@ -130,12 +138,45 @@ class ActorSkipCounts:
 
 
 @dataclass(frozen=True, slots=True)
+class AdmittedTrajectoryProvenance:
+    """Immutable provenance retained for every finalized trajectory admitted to a panel."""
+
+    experiment_manifest_sha256: str
+    repetition_index: int
+    trajectory_id: str
+    trajectory_manifest_sha256: str
+    evidence: tuple[ComponentEvidence, ...]
+
+    def __post_init__(self) -> None:
+        for name in ("experiment_manifest_sha256", "trajectory_manifest_sha256"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or _SHA256.fullmatch(value) is None:
+                raise ActorDatasetValidationError(f"{name} must be a lowercase SHA-256 digest.")
+        if (
+            not isinstance(self.repetition_index, int)
+            or isinstance(self.repetition_index, bool)
+            or self.repetition_index < 0
+        ):
+            raise ActorDatasetValidationError("repetition_index must be a nonnegative integer.")
+        if not isinstance(self.trajectory_id, str) or not self.trajectory_id:
+            raise ActorDatasetValidationError("trajectory_id must be nonempty text.")
+        evidence = tuple(self.evidence)
+        if not evidence or any(not isinstance(item, ComponentEvidence) for item in evidence):
+            raise TypeError("evidence must contain ComponentEvidence values.")
+        components = tuple(item.component for item in evidence)
+        if components != tuple(sorted(set(components))):
+            raise ActorDatasetValidationError("evidence components must be unique and sorted.")
+        object.__setattr__(self, "evidence", evidence)
+
+
+@dataclass(frozen=True, slots=True)
 class ActorSplitDataset(Sequence[ActorExample]):
     """Deterministically ordered examples and exclusions for one declared panel."""
 
     split: ActorSplit
     examples: tuple[ActorExample, ...]
     skip_counts: ActorSkipCounts
+    admitted_trajectories: tuple[AdmittedTrajectoryProvenance, ...]
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "split", ActorSplit(self.split))
@@ -147,7 +188,22 @@ class ActorSplitDataset(Sequence[ActorExample]):
             raise ActorDatasetValidationError("Duplicate actor sample identity within a split.")
         if not isinstance(self.skip_counts, ActorSkipCounts):
             raise TypeError("skip_counts must be ActorSkipCounts.")
+        trajectories = tuple(self.admitted_trajectories)
+        if any(not isinstance(item, AdmittedTrajectoryProvenance) for item in trajectories):
+            raise TypeError("admitted_trajectories must contain provenance values.")
+        trajectory_identities = tuple(
+            (
+                item.experiment_manifest_sha256,
+                item.repetition_index,
+                item.trajectory_id,
+                item.trajectory_manifest_sha256,
+            )
+            for item in trajectories
+        )
+        if len(set(trajectory_identities)) != len(trajectory_identities):
+            raise ActorDatasetValidationError("Duplicate admitted trajectory provenance within a split.")
         object.__setattr__(self, "examples", examples)
+        object.__setattr__(self, "admitted_trajectories", trajectories)
 
     def __getitem__(self, index: int | slice) -> ActorExample | tuple[ActorExample, ...]:
         return self.examples[index]
@@ -175,11 +231,23 @@ class ActorDataset:
     def panel(self, split: ActorSplit) -> ActorSplitDataset:
         return self.development if ActorSplit(split) is ActorSplit.DEVELOPMENT else self.held_out
 
+    @property
+    def aggregate_evidence_labels(self) -> tuple[EvidenceLabel, ...]:
+        """Return the sorted unique evidence labels across all admitted trajectories."""
+
+        return tuple(sorted({
+            evidence.label
+            for panel in (self.development, self.held_out)
+            for trajectory in panel.admitted_trajectories
+            for evidence in trajectory.evidence
+        }, key=lambda label: label.value))
+
 
 def load_actor_dataset(
     *,
     development: Iterable[TrustedExperimentSource],
     held_out: Iterable[TrustedExperimentSource],
+    accepted_backend_manifest: BackendManifest,
 ) -> ActorDataset:
     """Load two explicit trusted panels and reject shared canonical episode requests.
 
@@ -189,10 +257,14 @@ def load_actor_dataset(
 
     development_sources = _sources(development, "development")
     held_out_sources = _sources(held_out, "held_out")
+    if not isinstance(accepted_backend_manifest, BackendManifest):
+        raise TypeError("accepted_backend_manifest must be a BackendManifest.")
     development_panel, development_requests = _load_panel(
-        ActorSplit.DEVELOPMENT, development_sources
+        ActorSplit.DEVELOPMENT, development_sources, accepted_backend_manifest
     )
-    held_out_panel, held_out_requests = _load_panel(ActorSplit.HELD_OUT, held_out_sources)
+    held_out_panel, held_out_requests = _load_panel(
+        ActorSplit.HELD_OUT, held_out_sources, accepted_backend_manifest
+    )
     if development_requests & held_out_requests:
         raise ActorDatasetValidationError(
             "Development and held-out panels overlap on a canonical episode request."
@@ -210,9 +282,12 @@ def _sources(
 
 
 def _load_panel(
-    split: ActorSplit, sources: tuple[TrustedExperimentSource, ...]
+    split: ActorSplit,
+    sources: tuple[TrustedExperimentSource, ...],
+    accepted_backend_manifest: BackendManifest,
 ) -> tuple[ActorSplitDataset, set[bytes]]:
     examples: list[ActorExample] = []
+    admitted_trajectories: list[AdmittedTrajectoryProvenance] = []
     request_keys: set[bytes] = set()
     non_actionable = 0
     no_choice = 0
@@ -220,6 +295,7 @@ def _load_panel(
     for source in sources:
         loaded = _trusted_experiment(source)
         config = loaded.config
+        _validate_accepted_pins(accepted_backend_manifest, config.backend_manifest)
         request_by_trajectory_id = {
             episode.trajectory_id: _episode_request_key(config, episode.run_config.to_dict())
             for episode in config.benchmark.batch.episodes
@@ -240,7 +316,21 @@ def _load_panel(
                     raise ActorDatasetValidationError(
                         "Trusted trajectory manifest digest does not match the experiment report."
                     )
-                records = decode_policy_replay(trajectory.policy_replay_jsonl)
+                admitted_trajectories.append(
+                    AdmittedTrajectoryProvenance(
+                        source.expected_manifest_sha256,
+                        repetition.repetition_index,
+                        episode.trajectory_id,
+                        trajectory.manifest_sha256,
+                        trajectory.manifest.evidence,
+                    )
+                )
+                try:
+                    records = decode_policy_replay(trajectory.policy_replay_jsonl)
+                except TrajectoryValidationError as exc:
+                    raise ActorDatasetValidationError(
+                        "Trusted policy replay decoding failed."
+                    ) from exc
                 for ordinal, record in enumerate(records):
                     example, excluded = _actor_example(
                         record,
@@ -264,6 +354,7 @@ def _load_panel(
             split,
             tuple(examples),
             ActorSkipCounts(non_actionable, no_choice),
+            tuple(admitted_trajectories),
         ),
         request_keys,
     )
@@ -274,11 +365,38 @@ def _trusted_experiment(source: TrustedExperimentSource) -> LoadedHeadlessExperi
         loaded = load_headless_experiment(
             source.root, expected_manifest_sha256=source.expected_manifest_sha256
         )
-    except (ExperimentIntegrityError, ExperimentValidationError, OSError) as exc:
+    except (
+        ExperimentIntegrityError,
+        ExperimentValidationError,
+        TrajectoryValidationError,
+        OSError,
+    ) as exc:
         raise ActorDatasetValidationError("Trusted experiment loading failed.") from exc
     if loaded.report.sha256 != source.expected_manifest_sha256:
         raise ActorDatasetValidationError("Trusted experiment manifest digest changed after loading.")
     return loaded
+
+
+def _validate_accepted_pins(
+    accepted: BackendManifest, observed: BackendManifest
+) -> None:
+    """Reject sources outside the caller-declared backend/content/rules/contract pins."""
+
+    pin_fields = (
+        "contract",
+        "contract_fingerprint",
+        "backend_id",
+        "backend_version",
+        "backend_fingerprint",
+        "content_version",
+        "content_fingerprint",
+        "rules_version",
+        "rules_fingerprint",
+    )
+    if any(getattr(accepted, field) != getattr(observed, field) for field in pin_fields):
+        raise ActorDatasetValidationError(
+            "Experiment backend/content/rules/contract pins do not match the accepted manifest."
+        )
 
 
 def _episode_request_key(config: HeadlessExperimentConfig, run_config: dict[str, object]) -> bytes:
