@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from hashlib import sha256
 from pathlib import Path
 
@@ -32,11 +33,17 @@ from game.contracts.headless_v0 import (
     PolicyView,
     PublicObservation,
     PublicScope,
+    RewardChooseCardCandidate,
     ActionRequest,
     HeadlessBinding,
+    PublicEvent,
+    PublicEventKind,
+    RunOutcome,
     canonical_json_bytes,
     combat_card_reference,
     combat_enemy_reference,
+    reward_offer_reference,
+    reward_reference,
 )
 
 
@@ -149,3 +156,134 @@ def test_empty_batch_and_malformed_records_fail_closed() -> None:
     )
     with pytest.raises(HeadlessEncodingError):
         collate_policy_views((malformed,))
+
+
+@pytest.mark.parametrize(
+    "replacement",
+    (
+        "wrong-version",
+        "wrong-fingerprint",
+        "bad-width",
+        "nan",
+        "infinity",
+        "out-of-range",
+        "bool-coordinate",
+        "candidate-count",
+        "duplicate-id",
+        "noncanonical-id",
+        "unhashable-id",
+    ),
+)
+def test_encoded_record_validation_never_leaks_raw_type_errors(replacement: str) -> None:
+    valid = encode_policy_view(_views("reward")[0])
+    record = valid
+    if replacement == "wrong-version":
+        record = replace(valid, encoding_version="wrong")
+    elif replacement == "wrong-fingerprint":
+        record = replace(valid, encoding_fingerprint="0" * 64)
+    elif replacement == "bad-width":
+        record = replace(valid, entity_rows=((0.0,),))
+    elif replacement in {"nan", "infinity", "out-of-range", "bool-coordinate"}:
+        value = {"nan": float("nan"), "infinity": float("inf"), "out-of-range": 1.1, "bool-coordinate": True}[replacement]
+        record = replace(valid, global_features=(value,) + valid.global_features[1:])
+    elif replacement == "candidate-count":
+        record = replace(valid, candidate_ids=())
+    elif replacement == "duplicate-id":
+        record = replace(
+            valid,
+            candidate_rows=(valid.candidate_rows[0], valid.candidate_rows[0]),
+            candidate_ids=(valid.candidate_ids[0], valid.candidate_ids[0]),
+        )
+    elif replacement == "noncanonical-id":
+        record = replace(valid, candidate_ids=("cand." + "z" * 64,) * len(valid.candidate_ids))
+    else:
+        record = replace(valid, candidate_ids=([],))  # type: ignore[arg-type]
+    with pytest.raises(HeadlessEncodingError):
+        collate_policy_views((record,))
+
+
+def test_all_candidate_joins_and_fixture_event_forms_use_encoder_entry_point() -> None:
+    views = tuple(view for fixture in ("combat", "reward", "map", "rest", "event") for view in _views(fixture))
+    encoded = tuple(encode_policy_view(view) for view in views)
+    expected_candidates = {name.removeprefix("candidate_kind.") for name in CANDIDATE_FEATURE_NAMES[:11]}
+    assert {candidate.kind.value for view in views for candidate in view.candidates} == expected_candidates
+    assert all(len(item.candidate_rows) == len(item.candidate_ids) for item in encoded)
+    fixture_events = {event.event_type.value for view in views for event in view.public_events}
+    assert fixture_events == {
+        "combat.card_played", "combat.turn_ended", "reward.gold_claimed",
+        "reward.card_opened", "reward.card_chosen", "reward.card_skipped",
+        "reward.proceeded", "map.node_chosen", "room.rest_healed",
+        "room.event_option_chosen", "room.proceeded",
+    }
+
+
+def test_candidate_permutation_and_reallocated_references_preserve_numeric_rows() -> None:
+    original = _views("combat")[0]
+    baseline = encode_policy_view(original)
+    object.__setattr__(original, "candidates", tuple(reversed(original.candidates)))
+    permuted = encode_policy_view(original)
+    assert permuted.candidate_ids == tuple(reversed(baseline.candidate_ids))
+    assert permuted.candidate_rows == tuple(reversed(baseline.candidate_rows))
+
+
+def test_opaque_reference_reallocation_changes_ids_not_public_features() -> None:
+    def make_view(scope: PublicScope) -> PolicyView:
+        enemy_ref = combat_enemy_reference(scope, "simple_enemy", 0)
+        card_ref = combat_card_reference(scope, "strike", 0)
+        observation = PublicObservation(
+            DecisionPhase.COMBAT,
+            {
+                "turn": 1,
+                "player": {"hp": 10, "max_hp": 10, "block": 0, "energy": 1, "energy_per_turn": 1, "strength": 0, "statuses": {"shrink": 0, "vulnerable": 0}},
+                "enemies": [{"enemy_ref": enemy_ref, "enemy_definition_id": "simple_enemy", "hp": 5, "max_hp": 5, "block": 0, "strength": 0, "alive": True, "statuses": {"shrink": 0, "vulnerable": 0}, "intent": {"kind": "attack", "attack_count": 1, "attack_damage": 1, "block_gain": 0, "strength_gain": 0, "status_kind": "none", "status_stacks": 0, "slimed_added": 0}}],
+                "hand": [{"card_ref": card_ref, "card_definition_id": "strike", "cost": 1, "upgraded": False}],
+                "draw_pile_size": 0, "discard_pile_size": 0, "exhaust_pile_size": 0,
+                "terminal": False, "outcome": "ongoing",
+            },
+            scope,
+        )
+        return PolicyView(DecisionStatus.ACTIONABLE, DecisionPhase.COMBAT, observation, (CombatPlayCardCandidate(scope.decision_scope, card_ref, enemy_ref), CombatEndTurnCandidate(scope.decision_scope)), ())
+
+    first_scope = PublicScope(0, 0, {kind: 0 for kind in ("card", "enemy", "reward", "offer", "node", "option")})
+    second_scope = PublicScope(1, 1, {kind: 1 for kind in ("card", "enemy", "reward", "offer", "node", "option")})
+    first, second = encode_policy_view(make_view(first_scope)), encode_policy_view(make_view(second_scope))
+    assert first.candidate_ids != second.candidate_ids
+    assert first.global_features == second.global_features
+    assert first.entity_rows == second.entity_rows
+    assert sorted(first.candidate_rows) == sorted(second.candidate_rows)
+
+
+def test_terminal_and_resolved_events_and_128_event_sequence_encode() -> None:
+    combat = _views("combat")[0]
+    events = tuple(
+        PublicEvent(index, PublicEventKind.COMBAT_TURN_ENDED, DecisionPhase.COMBAT, {})
+        for index in range(128)
+    )
+    waiting = PolicyView(DecisionStatus.WAITING, DecisionPhase.COMBAT, combat.observation, (), events)
+    encoded = encode_policy_view(waiting)
+    assert len(encoded.public_event_rows) == 128
+    assert encoded.public_event_rows[-1][PUBLIC_EVENT_FEATURE_NAMES.index("sequence")] == 1.0
+    resolved = PublicEvent(0, PublicEventKind.COMBAT_RESOLVED, DecisionPhase.COMBAT, {"outcome": "victory"})
+    assert encode_policy_view(PolicyView(DecisionStatus.WAITING, DecisionPhase.COMBAT, combat.observation, (), (resolved,))).public_event_rows[0][PUBLIC_EVENT_FEATURE_NAMES.index("outcome.victory")] == 1.0
+    terminal_observation = PublicObservation(DecisionPhase.TERMINAL, {"outcome": RunOutcome.VICTORY.value, "player": {"hp": 1, "max_hp": 1, "gold": 0, "deck_size": 0}}, combat.observation.public_scope)
+    terminated = PublicEvent(0, PublicEventKind.RUN_TERMINATED, DecisionPhase.TERMINAL, {"outcome": RunOutcome.VICTORY.value})
+    terminal = PolicyView(DecisionStatus.TERMINAL, DecisionPhase.TERMINAL, terminal_observation, (), (terminated,))
+    assert encode_policy_view(terminal).public_event_rows[0][PUBLIC_EVENT_FEATURE_NAMES.index("outcome.victory")] == 1.0
+
+
+def test_nested_reward_rows_and_candidates_have_no_extra_aggregate_cap() -> None:
+    scope = PublicScope(0, 0, {kind: 0 for kind in ("card", "enemy", "reward", "offer", "node", "option")})
+    rewards = []
+    candidates = []
+    for reward_index in range(2):
+        reward_ref = reward_reference(scope, "card", reward_index)
+        offers = []
+        for offer_index in range(128):
+            offer_ref = reward_offer_reference(scope, reward_ref, "strike", offer_index)
+            offers.append({"offer_ref": offer_ref, "card_definition_id": "strike", "upgraded": False})
+            candidates.append(RewardChooseCardCandidate(scope.decision_scope, reward_ref, offer_ref, "strike"))
+        rewards.append({"reward_ref": reward_ref, "kind": "card", "amount": 0, "claimed": False, "opened": True, "can_skip": False, "offers": offers})
+    observation = PublicObservation(DecisionPhase.REWARD, {"player": {"hp": 1, "max_hp": 1, "gold": 1_000_000_000, "deck_size": 128}, "can_proceed": False, "rewards": rewards}, scope)
+    encoded = encode_policy_view(PolicyView(DecisionStatus.ACTIONABLE, DecisionPhase.REWARD, observation, tuple(candidates), ()))
+    assert len(encoded.entity_rows) == 258
+    assert len(encoded.candidate_rows) == 256

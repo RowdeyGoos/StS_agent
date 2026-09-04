@@ -317,27 +317,36 @@ def _global(view: PolicyView) -> tuple[float, ...]:
 def _events(events: Sequence[PublicEvent]) -> tuple[tuple[float, ...], ...]:
     result: list[tuple[float, ...]] = []
     for event in events:
-        if type(event) is not PublicEvent: raise HeadlessEncodingError("public_events must contain exact PublicEvent values.")
+        if type(event) is not PublicEvent:
+            raise HeadlessEncodingError("public_events must contain exact PublicEvent values.")
         row = [0.0] * 78
         kind, data = event.event_type.value, event.data
         _one_hot(row, _V, "event_kind", kind, _REGISTRIES["public_event_kind"])
         _one_hot(row, _V, "event_phase", event.phase.value, _REGISTRIES["phase"])
         row[_V["sequence"]] = _number(event.sequence, 127, "event.sequence")
         if kind == "combat.card_played":
-            row[_V["has_card_definition"]] = 1.0; _semantic(row, _V, "card_definition", data["card_definition_id"])
+            row[_V["has_card_definition"]] = 1.0
+            _semantic(row, _V, "card_definition", data["card_definition_id"])
             if data["target_enemy_definition_id"] is not None:
-                row[_V["has_target_enemy_definition"]] = 1.0; _semantic(row, _V, "target_enemy_definition", data["target_enemy_definition_id"])
+                row[_V["has_target_enemy_definition"]] = 1.0
+                _semantic(row, _V, "target_enemy_definition", data["target_enemy_definition_id"])
         elif kind in ("combat.resolved", "run.terminated"):
             _one_hot(row, _V, "outcome", data["outcome"], _REGISTRIES["event_outcome"])
         elif kind in ("reward.gold_claimed", "room.rest_healed", "room.event_option_chosen"):
-            row[_V["has_amount"]] = 1.0; row[_V["amount"]] = _number(data["amount"], 1_000_000_000, "event.amount")
-            if kind == "room.event_option_chosen": _one_hot(row, _V, "effect", data["effect"], _REGISTRIES["room_effect_kind"])
+            row[_V["has_amount"]] = 1.0
+            row[_V["amount"]] = _number(data["amount"], 1_000_000_000, "event.amount")
+            if kind == "room.event_option_chosen":
+                _one_hot(row, _V, "effect", data["effect"], _REGISTRIES["room_effect_kind"])
         elif kind == "reward.card_opened":
-            row[_V["has_offer_count"]] = 1.0; row[_V["offer_count"]] = _number(data["offer_count"], 128, "event.offer_count")
+            row[_V["has_offer_count"]] = 1.0
+            row[_V["offer_count"]] = _number(data["offer_count"], 128, "event.offer_count")
         elif kind == "reward.card_chosen":
-            row[_V["has_card_definition"]] = 1.0; _semantic(row, _V, "card_definition", data["card_definition_id"])
-            row[_V["has_upgraded"]] = 1.0; row[_V["upgraded"]] = _boolean(data["upgraded"], "event.upgraded")
-        elif kind == "map.node_chosen": _one_hot(row, _V, "node_kind", data["node_kind"], _REGISTRIES["node_kind"])
+            row[_V["has_card_definition"]] = 1.0
+            _semantic(row, _V, "card_definition", data["card_definition_id"])
+            row[_V["has_upgraded"]] = 1.0
+            row[_V["upgraded"]] = _boolean(data["upgraded"], "event.upgraded")
+        elif kind == "map.node_chosen":
+            _one_hot(row, _V, "node_kind", data["node_kind"], _REGISTRIES["node_kind"])
         result.append(tuple(row))
     return tuple(result)
 
@@ -406,7 +415,18 @@ def _validate_encoded(record: EncodedPolicyView) -> None:
     if record.encoding_version != ENCODING_VERSION or record.encoding_fingerprint != ENCODING_FINGERPRINT: raise HeadlessEncodingError("record schema identity does not match.")
     if type(record.global_features) is not tuple or len(record.global_features) != 47: raise HeadlessEncodingError("global row has an invalid width.")
     _validate_rows((record.global_features,), 47, "global_features"); _validate_rows(record.entity_rows, 90, "entity_rows"); _validate_rows(record.public_event_rows, 78, "public_event_rows"); _validate_rows(record.candidate_rows, 557, "candidate_rows")
-    if type(record.candidate_ids) is not tuple or len(record.candidate_ids) != len(record.candidate_rows) or len(set(record.candidate_ids)) != len(record.candidate_ids) or any(type(value) is not str or not _CANDIDATE_ID.fullmatch(value) for value in record.candidate_ids): raise HeadlessEncodingError("candidate IDs do not align with candidate rows.")
+    if type(record.candidate_ids) is not tuple:
+        raise HeadlessEncodingError("candidate IDs must be a tuple.")
+    if len(record.candidate_ids) != len(record.candidate_rows):
+        raise HeadlessEncodingError("candidate IDs do not align with candidate rows.")
+    if any(
+        type(candidate_id) is not str
+        or _CANDIDATE_ID.fullmatch(candidate_id) is None
+        for candidate_id in record.candidate_ids
+    ):
+        raise HeadlessEncodingError("candidate IDs must be canonical strings.")
+    if len(set(record.candidate_ids)) != len(record.candidate_ids):
+        raise HeadlessEncodingError("candidate IDs must be unique.")
 
 
 def collate_policy_views(views: Sequence[EncodedPolicyView]) -> CollatedPolicyBatch:
