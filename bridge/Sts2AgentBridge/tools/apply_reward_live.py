@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 import probe_live as probe
+from reward_action_diagnostics import RewardActionDiagnostics
 from tool_common import (
     EXIT_INTERNAL,
     EXIT_INVALID_INVOCATION,
@@ -81,6 +82,53 @@ def _read_body(
         if body is not None:
             body.release()
         probe._zero(response)
+
+
+def _read_reward_action_body(
+    credential: bytearray,
+    connector: Callable[[], Any],
+    deadline: float,
+    decision_id: str,
+    action_id: str,
+    action_category: str,
+    diagnostics: RewardActionDiagnostics | None,
+) -> bytes:
+    """Read one action response, optionally classifying it before zeroization."""
+    if diagnostics is None:
+        return _read_body(
+            "reward_action", probe._REWARD_ACTION_ROUTE, credential, connector,
+            deadline, decision_id, action_id,
+        )
+    diagnostics.attempted_exchange(action_category)
+    response: bytearray | None = None
+    body: memoryview | None = None
+    try:
+        try:
+            response = probe._exchange(
+                "reward_action", probe._REWARD_ACTION_ROUTE, credential, connector,
+                deadline, decision_id, action_id,
+            )
+        except ToolFailure as failure:
+            diagnostics.transport_failure(failure.error_code)
+            raise
+        classification = diagnostics.inspect_http_response(response)
+        if classification is not None:
+            diagnostics.http_failure(classification)
+            fail(EXIT_MISMATCH, "reward_action_response_mismatch")
+        try:
+            body = probe._canonical_body(response, "reward_action")
+            return bytes(body)
+        except ToolFailure as failure:
+            if failure.error_code == "reward_action_response_too_large":
+                diagnostics.http_failure("http_response_oversize")
+            else:
+                diagnostics.http_failure()
+            raise
+    finally:
+        if body is not None:
+            body.release()
+        if response is not None:
+            probe._zero(response)
 
 
 def _decode_exact(body: bytes, keys: tuple[str, ...]) -> dict[str, object]:
@@ -437,6 +485,7 @@ def _run_apply_reward(
     credential: bytearray,
     decision_provider: str,
     connector: Callable[[], Any],
+    diagnostics: RewardActionDiagnostics | None = None,
 ) -> dict[str, object]:
     deadline = time.monotonic() + _APPLY_DEADLINE_SECONDS
     try:
@@ -475,18 +524,29 @@ def _run_apply_reward(
             elif action["kind"] == "choose_card":
                 chosen_card = str(state["rewards"][0]["cards"][int(action["card_slot"])])
 
-            action_body = _read_body(
-                "reward_action",
-                probe._REWARD_ACTION_ROUTE,
-                credential,
-                connector,
-                deadline,
-                decision_id,
-                action_id,
+            action_body = _read_reward_action_body(
+                credential, connector, deadline, decision_id, action_id,
+                str(action["kind"]), diagnostics,
             )
-            _validate_action_response(action_body, decision_id, action_id)
-            after = _poll_next(credential, connector, deadline, decision_id)
-            _validate_transition(state, after, action)
+            if diagnostics is not None:
+                diagnostics.inspect_receipt(action_body, decision_id, action_id)
+            try:
+                _validate_action_response(action_body, decision_id, action_id)
+            except RecursionError:
+                # The diagnostic parser treats deeply nested JSON as malformed;
+                # retain the legacy receipt-mismatch result rather than surfacing it.
+                fail(EXIT_MISMATCH, "reward_action_response_mismatch")
+            if diagnostics is not None:
+                diagnostics.accepted_receipt()
+            try:
+                after = _poll_next(credential, connector, deadline, decision_id)
+                _validate_transition(state, after, action)
+            except ToolFailure:
+                if diagnostics is not None:
+                    diagnostics.reconciliation_failure()
+                raise
+            if diagnostics is not None:
+                diagnostics.reconciled_action()
             applied.append(
                 {
                     "action_id": action_id,
