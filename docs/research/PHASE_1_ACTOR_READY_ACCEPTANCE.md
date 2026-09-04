@@ -5,9 +5,9 @@
   `42a3c4e895851188f7179cbc48dcff6ca5974a93`
 - **Active plan:**
   [Phase 1 actor-ready execution](../PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-- **Current state:** `22` and `23` reviewed and integrated locally; the user
+- **Current state:** `22`, `23` and `05` reviewed and integrated locally; the user
   approved continuing the increment after the automatic-review block. Validator
-  and dataset corrections are active; the encoder schema is accepted and frozen.
+  corrections are active; the frozen-schema encoder correction is under review.
   No live campaign.
 
 This is the integration ledger for the elite-continuation and actor-ready
@@ -21,10 +21,10 @@ or append new outcomes to that historical record.
 | --- | --- | --- | --- |
 | `R0I-ELITE-22` | reviewed and integrated | `85fa8ca` | fixture-only; independent join gate pending |
 | `R0I-ELITE-GATE-23` | reviewed and integrated | `8fd4320` | actual-client synthetic gate, both historical controls |
-| `R0I-RUN-ACCEPTANCE-24` | corrections active | — | source `a3244e5`, not accepted |
+| `R0I-RUN-ACCEPTANCE-24` | Sol/xhigh corrections active | — | through source `50ecd3b`, not accepted |
 | `R0I-ELITE-REVIEW-25` | blocked on `22`-`24` | — | planned |
 | `R0I-ELITE-LIVE-26` | blocked on review and aggregate gates | — | planned |
-| `H5-ENCODER-04` | schema accepted; implementation released after this record | — | frozen schema and fingerprint below |
+| `H5-ENCODER-04` | corrected implementation under independent review | — | source `4c62b52`; frozen schema unchanged |
 | `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
 | `H6-CANDIDATE-POLICY-06` | blocked on `H5-ENCODER-04` | — | planned |
 | `H6-BC-SMOKE-07` | blocked on `04`-`06` | — | planned |
@@ -210,6 +210,29 @@ estimated.
   from Terra/high to Sol/high after repeated failed acceptance. Ownership and
   scope are unchanged; an independent Sol/high reviewer remains separate.
   No Ultra worker, live operation or C#/wire/artifact change occurred.
+
+### 2026-09-05 — Source closure audits and encoder correction review
+
+- `24` Sol/high correction `50ecd3bb6fb85b37a2928b477ba0327a78098815`
+  remains unaccepted. Its new actual-client fixtures execute real production
+  clients over fake transport, but independent review still found incomplete
+  nested leaf validation and legitimate fixed production errors omitted from
+  the output allowlist. Coordinator reproduced acceptance of negative final
+  player HP, arbitrary nested card payloads and an unknown map kind.
+- Per Section 8, the same owner received one reasoning-level increase to
+  Sol/xhigh. Independent read-only source audits supplied the finite error-code
+  closure and exact combat/map/reward constraints. The correction must preserve
+  valid producer paths, including stale-rejection rereads that do not append a
+  combat trace and bounded healing before reward readiness. No raw envelope or
+  intermediate state may be invented as evidence of discarded fields.
+- `04` source `fc3743b8da420c2076b7ab22da600db6c6de512c` required a
+  malformed-ID fix and broader contract tests. The same Terra/high task returned
+  `4c62b523b22a4afb5b3b23a35fa5403029623225`, with unchanged frozen schema.
+  It reports 28 focused, 285 adjacent and 90 conformance tests passed. Independent
+  Sol/high review is active; `06` remains gated on acceptance and integration.
+- Dataset `05` is accepted; no dataset correction remains active. No live
+  campaign or retained live data was created. Aggregate worker token telemetry
+  is unavailable; observed app turn durations are not a total execution metric.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
