@@ -205,10 +205,16 @@ def _run_case(
     *,
     expected_screen: str,
     expected_actions: list[tuple[str, str]],
+    expected_context: tuple[str, int] | None = None,
 ) -> None:
     connector = _Connector([_response(value) for value in responses], requests)
     credential = bytearray(_CREDENTIAL)
-    payload = room._run_apply_room(credential, "safe", connector)
+    payload = room._run_apply_room(
+        credential,
+        "safe",
+        connector,
+        expected_context=expected_context,
+    )
     actions = payload.get("actions")
     actual = [] if not isinstance(actions, list) else [
         (str(value.get("action_id")), str(value.get("basis")))
@@ -328,6 +334,7 @@ def _event_handles_indexed_game_proceed_and_rejects_fatal() -> None:
             ("choose:0", "event_first_supported"),
             ("choose:0", "event_first_supported"),
         ],
+        expected_context=("event", 4),
     )
 
 
@@ -335,11 +342,18 @@ def _expect_failure(
     responses: list[bytes],
     requests: list[bytes],
     expected_code: str,
+    *,
+    expected_context: tuple[str, int] | None = None,
 ) -> None:
     connector = _Connector([_response(value) for value in responses], requests)
     credential = bytearray(_CREDENTIAL)
     try:
-        room._run_apply_room(credential, "safe", connector)
+        room._run_apply_room(
+            credential,
+            "safe",
+            connector,
+            expected_context=expected_context,
+        )
     except ToolFailure as failure:
         if failure.exit_code != EXIT_MISMATCH or failure.error_code != expected_code:
             fail(EXIT_MISMATCH, "room_fixture_wrong_rejection")
@@ -369,6 +383,33 @@ def operation() -> dict[str, object]:
 
     event = _candidate(0, "event_option", "EVENT.SAFE", enabled=True, supported=True)
     decision = _ready(_DECISION_ZERO, "event", "choose_option", [event], [_legal(event)])
+    _expect_failure(
+        _base_responses() + [decision],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_expected_context_mismatch",
+        expected_context=("event", 5),
+    )
+    checks.append("same_kind_different_ordinal_rejected_before_post")
+    _expect_failure(
+        _base_responses() + [decision],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_expected_context_mismatch",
+        expected_context=("rest_site", 4),
+    )
+    checks.append("wrong_kind_rejected_before_post")
+    _expect_failure(
+        [],
+        [],
+        "room_expected_context_invalid",
+        expected_context=("unknown", 4),
+    )
+    checks.append("invalid_expected_context_rejected_without_transport")
+    _expect_failure(
+        _base_responses() + [_COMPLETE_REST],
+        _base_requests() + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_not_ready",
+    )
+    checks.append("initial_completion_is_not_readiness")
     prefix_requests = _base_requests() + [
         _get(room._ROOM_DECISION_ROUTE),
         _post(_DECISION_ZERO, "choose:0"),
@@ -389,6 +430,12 @@ def operation() -> dict[str, object]:
         "room_decision_replayed",
     )
     checks.append("decision_replay_rejected")
+    _expect_failure(
+        prefix_responses + [_COMPLETE_REST],
+        prefix_requests + [_get(room._ROOM_DECISION_ROUTE)],
+        "room_completion_mismatch",
+    )
+    checks.append("wrong_post_action_completion_rejected")
     invalid_event_proceed = _candidate(
         0,
         "event_option",

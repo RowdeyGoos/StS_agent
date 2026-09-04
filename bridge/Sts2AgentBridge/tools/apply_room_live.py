@@ -30,6 +30,7 @@ _MAXIMUM_ACCEPTED_ACTIONS = 12
 _MAXIMUM_CANDIDATES = 8
 _MAXIMUM_STABLE_ID_LENGTH = 96
 _LOWER_HEX_CHARACTERS = frozenset("0123456789abcdef")
+_ACTIONABLE_SCREEN_KINDS = frozenset(("rest_site", "event"))
 
 
 def parse_args(arguments: list[str] | None = None) -> tuple[str, int, str]:
@@ -211,6 +212,22 @@ def _exact_object(value: object, keys: tuple[str, ...]) -> dict[str, object]:
 
 def _bounded_ordinal(value: object) -> bool:
     return type(value) is int and 0 <= value <= 999
+
+
+def _validate_expected_context(
+    expected_context: tuple[str, int] | None,
+) -> tuple[str, int] | None:
+    if expected_context is None:
+        return None
+    if (
+        type(expected_context) is not tuple
+        or len(expected_context) != 2
+        or type(expected_context[0]) is not str
+        or expected_context[0] not in _ACTIONABLE_SCREEN_KINDS
+        or not _bounded_ordinal(expected_context[1])
+    ):
+        fail(EXIT_MISMATCH, "room_expected_context_invalid")
+    return expected_context
 
 
 def _public_string(value: object) -> bool:
@@ -461,6 +478,8 @@ def _run_apply_room(
     credential: bytearray,
     decision_provider: str,
     connector: Callable[[], Any],
+    *,
+    expected_context: tuple[str, int] | None = None,
 ) -> dict[str, object]:
     deadline = time.monotonic() + _ROOM_DEADLINE_SECONDS
     route_count = 0
@@ -468,6 +487,7 @@ def _run_apply_room(
     first_screen_kind: str | None = None
     first_room_ordinal: int | None = None
     try:
+        expected = _validate_expected_context(expected_context)
         health = _read_body("health", probe._BASE_ROUTES[0][1], credential, connector, deadline)
         route_count += 1
         with memoryview(health) as body:
@@ -510,6 +530,11 @@ def _run_apply_room(
 
             if len(actions) >= _MAXIMUM_ACCEPTED_ACTIONS:
                 fail(EXIT_MISMATCH, "room_action_limit_reached")
+            if expected is not None and (
+                decision["screen_kind"] != expected[0]
+                or decision["room_ordinal"] != expected[1]
+            ):
+                fail(EXIT_MISMATCH, "room_expected_context_mismatch")
             if first_screen_kind is None:
                 first_screen_kind = str(decision["screen_kind"])
                 first_room_ordinal = int(decision["room_ordinal"])
