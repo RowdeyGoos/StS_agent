@@ -672,3 +672,98 @@ responses, or the optional headless/training increment.
   writes or destructive repository operations. Any later live attempt remains
   coordinator-only and requires the usual exact review, bounds and cleanup;
   this packet's fixture acceptance alone is not live demonstration.
+
+## 12. Approved targeted simplification follow-up
+
+The user's instruction to proceed after the `zhiyue/sts2-rl-agent` comparison
+authorizes the following bounded increment from clean `3e11094`. It reduces
+duplicated Python transport and evaluates compatible lifecycle helpers; it does
+not adopt AutoSlay, Harmony, debug/seed/preference changes, third-party code,
+new gameplay surfaces, or optional headless/training work. Existing live gates
+and standing coordinator-only authorization remain unchanged. This increment's
+acceptance is offline; it does not close the open live composition gate.
+
+### R0I-TRANSPORT-15 — One bounded exchange implementation
+
+- **Allocation:** Terra/high in a persistent project worktree; independent
+  protocol/privacy review before integration.
+- **Objective:** make `probe_live._exchange` and `apply_room_live._exchange`
+  use one socket/send/receive/cleanup implementation, carrying the accepted
+  exceptional-exit buffer cleanup to room calls and preventing further drift.
+- **Available dependencies:** integrated reward diagnostic and cancellation
+  hardening through `b77178f`, room context binding, real-client composition
+  fixtures, and unchanged `live_probe_v0` schema 1.
+- **Exclusive ownership:** `bridge/Sts2AgentBridge/tools/probe_live.py`,
+  `apply_room_live.py`, `probe_live_fixtures.py`, and
+  `apply_room_live_fixtures.py` in the same directory. Prefer a small internal
+  helper in the existing probe module, already consumed by every client; do not
+  introduce a transport framework or additional public API.
+- **Frozen behavior:** existing `_exchange` call signatures, route-specific
+  request builders/allowlists, exact request bytes, connector and clock seams,
+  initial `probe_transport_timeout` versus `room_transport_timeout` codes,
+  subsequent label-specific errors, deadlines, caps, response ownership and
+  exception precedence. No retries, extra exchanges, credential lookup changes,
+  receipt/parser normalization, or changes to phase reconciliation. The only
+  intended correction is wiping room-owned mutable responses on every
+  exceptional exit, including cancellation and exceptional socket close.
+- **Acceptance:** a single receive loop; unchanged ordinary results and fixed
+  errors; empty/oversize/malformed chunks, send/receive/timeout failures,
+  KeyboardInterrupt/SystemExit and close failures close sockets and wipe owned
+  buffers without logging payloads. Successful returned buffers remain intact
+  until caller cleanup. Existing room context/action/replay tests pass.
+- **Required tests:** isolated probe, room, reward diagnostic, reward, map,
+  turn, combat, floor, run, actual-client wire, room-acceptance and gold-adapter
+  fixtures; focused live-parser/differential pytest; compile and diff checks.
+  Coordinator runs the full regression and reviews authored-source bindings.
+- **Forbidden overlap:** all C#, contracts/vectors, package/policy/bootstrap
+  pins, other controllers, `tool_common.py`, headless files, shared docs and
+  packet `17` tests. Propose any needed contract/ownership change before editing.
+
+### R0I-LIFECYCLE-STUDY-16 — Compatible lifecycle reuse decision
+
+- **Allocation:** read-only reviewer; owned files **none**.
+- **Dependencies:** current accepted readers/lifecycle, prior event study and
+  source-referenced `zhiyue` comparison at `1b7e7ce`.
+- **Deliverable:** one bounded recommendation for existing reward/room/map
+  lifecycle handling, distinguishing reusable public helpers from AutoSlay,
+  debug, preference, seed or Harmony-dependent approaches. Do not repeat the
+  completed event study or create a general architecture document.
+- **Acceptance:** source anchors, current-build compatibility evidence or an
+  explicit unknown, preserved public/action/replay boundaries, and the smallest
+  proposed next step. A finding is static-only and does not authorize a C# fix.
+- **Forbidden:** edits, third-party code copying/execution, decompiled-source
+  access, game/profile/save/credential/Cloud access, launch or installation.
+
+### R0I-TRANSPORT-TEST-17 — Independent exchange regression gate
+
+- **Allocation:** Terra/high in a separate persistent project worktree.
+- **Exclusive ownership, new:**
+  `bridge/Sts2AgentBridge/tools/bounded_transport_fixtures.py` and
+  `tests/backends/live/test_bounded_transport_fixtures.py`.
+- **Dependencies:** frozen existing probe/room `_exchange` entry points only;
+  useful test implementation starts before `15`. Final acceptance waits for
+  reviewed integration of `15`, not a guessed private helper interface.
+- **Deliverable:** compact maintained synthetic gate exercising actual probe
+  and room clients through injected connectors/clocks, without reproducing the
+  production transport logic. Pytest must discover and execute the gate.
+- **Acceptance:** exact GET/POST bytes and allowlist rejection; unchanged
+  initial/per-operation timeout/error codes and connection/response bounds;
+  no retry; returned-buffer lifetime versus cancellation/exception zeroization;
+  held request/response canaries; socket closure and body/close exception
+  precedence. Cover both KeyboardInterrupt and SystemExit after partial reads
+  and non-OSError close failures. No real sockets, identity/configuration reads
+  or arbitrary exception/payload output. Report failing-before cases precisely.
+- **Required tests:** isolated new fixture command, its focused pytest entry,
+  existing probe/room/reward diagnostic/wire fixtures, compile and diff checks.
+- **Forbidden overlap:** production files, existing fixtures, all contracts,
+  C#, pins, docs and headless implementation. Return defects to packet `15`.
+
+All implementation workers preserve public contracts, use a focused local
+commit and return outcome, commit/files, commands/results, assumptions, risks,
+model/effort and available aggregate numeric usage/elapsed telemetry (otherwise
+`unavailable`). No prompts, transcripts or hidden reasoning are retained.
+Workers must not operate/install the game or bridge, access real endpoints,
+profiles/saves/credentials, change Cloud, push, or perform destructive Git work.
+The coordinator owns integration, source bindings, documentation and any later
+live campaign. Parsing consolidation and event identity redesign are deferred
+until separately bounded evidence justifies them.
