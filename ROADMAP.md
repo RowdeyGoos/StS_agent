@@ -68,6 +68,10 @@ live acceptance, and the batched controller has unresolved
 `room_interaction_timeout` observations. The Python readiness repair is
 integrated; live tests now isolate a foreground-map/underlying-room mismatch
 and failed completion after both event advancement and rest-site healing.
+The narrow C# repair is now independently reviewed and integrated, with stable
+replay identity and rest-only completion. Its verified installation attempt
+stopped before game launch because the Mac locked; all installed material was
+removed. Live acceptance remains pending an unlocked desktop.
 The headless rollout/throughput consumer is accepted, with bounded local
 measurements and no learned-policy or target-game-parity claim.
 
@@ -80,8 +84,8 @@ These are the highest-value next steps.
 Before expanding the bridge surface, stabilize the existing `R0i` room handoff
 and demonstrate one repeatable multi-floor live sequence using only the already
 implemented combat, reward, map, and supported-room contracts. The
-`run_room_not_ready` handoff failure has a fixture-tested Python repair. Execute
-the user-approved narrow `R0I-ROOM-LIFECYCLE-07` C# repair with independent review;
+`run_room_not_ready` handoff failure has a fixture-tested Python repair. Live-test
+the integrated, independently reviewed `R0I-ROOM-LIFECYCLE-07` C# repair;
 make multi-step event continuation either complete or reject precisely within
 its bound, keep the earlier response
 mismatch explicit, and retain the existing clean teardown and base-game

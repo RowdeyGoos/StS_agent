@@ -57,7 +57,7 @@ their evidence labels.
 | `R0I-RUN-04` readiness repair | `8a6e5c0`, `f7d5b21` → `2b2fd07`, `f74cf26` | Accepted bounded polling of validated inactive completion; only expected-kind ready succeeds; 14 run and 16 room fixtures passed |
 | `H4-LIVE-DIFF-02`, offline portion | `06466e4`, `621c5c3` → `6fbc0ca`, `8fda7da` | Accepted synthetic common-subset comparator and build-safe identity inventory; live portion blocked |
 | `H3-ROLLOUT-03` | `f43cb58`, `b9f3393`, `2040322`, `8bf7ccb` → `d85448b`, `f2b7f7c`, `fdc2c33`, `feda7d6` | Accepted after real-spawn cancellation review and escalation; 280 focused/shared tests and 829 full repository tests passed |
-| `R0I-ROOM-LIFECYCLE-07` | `1a3aebf`, `be6c7a1` → `966b8ba`, `b86d1b4` | Reviewed foreground eligibility and rest-only completion; first candidate rejected for replay regression, correction independently accepted; live acceptance pending |
+| `R0I-ROOM-LIFECYCLE-07` | `1a3aebf`, `be6c7a1` → `966b8ba`, `b86d1b4`; pins `778cadd` | Reviewed foreground eligibility and rest-only completion; first candidate rejected for replay regression, correction independently accepted; live check blocked by locked desktop |
 
 The readiness repair explicitly owns the two run-client files plus the two
 room-client files for this correction; only three of those files changed.
@@ -236,7 +236,7 @@ outcome/evidence defect across consumers, not an escalation for task length.
 Only aggregate telemetry is recorded; no hidden reasoning or task
 transcripts are retained here.
 
-Open items: bounded live acceptance of the reviewed C# repair; separately
+Open items: unlock the desktop for bounded live acceptance of the reviewed C# repair; separately
 authorized retained live differential input. None permits claiming full-game
 fidelity or autonomous-run completion.
 
@@ -288,12 +288,42 @@ All 7 package-negative, 34 manager, 17 runtime, 16 room, 14 run, 14 map, and
 48 authored files remain, with only the two reviewed production C# files
 changed. All other calculated identities remain unchanged. Synthetic comparison
 labels remain 3 passed, 14 divergent, 2 unobserved.
+The new offline manifest SHA-256 is
+`db31414f0046f951ff8b492b3690b5c7ce9e6c9b244462f3ce6fd6cdb7847ad4`.
+The integrated repository passed **829 tests in 35.99 seconds**; compileall
+with a temporary cache and `git diff --check` passed.
 
 A transient inspection-map rejection harness passed independent review and
 9 fully mocked tests, including its bounded 45-second operator handshake,
 single snapshot-bound POST, exact stale/no-mutation receipt, and credential
 buffer clearing. It logs no raw payloads or control identities. Live evidence
 for this second artifact is still pending at this checkpoint.
+
+### Locked-desktop attempt and cleanup
+
+At clean checkout `778cadd1a5e24de1c316a45831ffd1aa4be4f1dc`, the coordinator
+confirmed the game absent/port closed, installed the exact second artifact
+through the supported manager, and verified protected configuration plus the
+unchanged 429 base files and exact two-file overlay. No other live operator
+or campaign was active.
+
+Before any launch or endpoint request, native desktop control reported that
+the Mac was locked and automatic unlock failed. No game launch, gameplay,
+live observation/action, Cloud change, or profile access occurred in this
+attempt. The inspection-map and rest checks were not executed.
+
+The stopped guard passed again. The exact installation and operator files
+were quarantined, base-only verification passed, and the manager purged exactly
+four generated files including the temporary credential. Final state is absent,
+with no game process or bridge listener and zero overlay files. Build outputs
+remain outside the installation. This cleanup removed only generated material;
+it did not touch user saves or base-game files.
+
+A clean base-game launch/quit could not be repeated while the desktop was
+locked. The earlier completed campaign's clean-launch evidence remains valid
+for that earlier checkpoint, not for this unlaunched attempt. Live acceptance
+and the final clean-launch check remain blocked by desktop access, not by
+missing project authorization. No campaign is active.
 
 Environment caveat: an isolated measurement-build SDK startup emitted a
 `CSSM_ModuleLoad` error plus its generic development-certificate setup message.

@@ -41,6 +41,21 @@ The bridge does not contain a learned model, search implementation, simulator,
 or gameplay policy. Those remain host-side replaceable components behind the
 same decision-provider seams.
 
+The user-approved `R0I-ROOM-LIFECYCLE-07` repair is integrated through
+`b86d1b4`, with artifact/policy bindings at `778cadd`. Independent reviewers
+accepted foreground-map action suppression, immediate stale revalidation,
+rest-only completion, and stable bounded room identity across disappearance
+and revisits. All 12 C# groups, 70 surface fixtures, and reproducible packaging
+passed; the integrated repository passed 829 tests in 35.99 seconds. These
+new lifecycle guarantees are fixture-tested, not live-demonstrated yet.
+
+The second artifact was installed and verified, but desktop control reported
+the Mac locked before launch. The game never started in that attempt. The
+overlay and temporary credential were quarantined and purged; final checks
+show no game process/listener and the unchanged 429-file base with no overlay.
+A fresh live check and end-of-campaign clean launch remain pending an unlocked
+desktop; no renewed project-level approval is needed.
+
 ## Parallel headless execution status
 
 The accepted offline stack now includes the canonical `headless_v0` public
@@ -123,7 +138,9 @@ No combat or reward progression was rerun during this campaign.
 
 Every completed campaign in this sequence ended with a normal game exit,
 bridge quarantine/removal, a base-game main-menu relaunch with the listener
-closed, and final cleanup. During the latest campaign Steam Cloud remained at
+closed, and final cleanup. The later locked-desktop installation attempt did
+not launch the game and is not a completed live campaign. During the latest
+completed campaign Steam Cloud remained at
 the previously established disabled setting; it was neither changed nor given
 an idle-state acceptance claim. The final base projection again contained the
 expected `429` base files and no bridge overlay, with no game process or bridge
@@ -142,9 +159,11 @@ narrower:
   the map; two consecutive composed combat completions with intervening
   reward/map handoffs; rest-site destination selection, readiness and healing;
   and clean teardown/base relaunch.
-- **Fixture demonstrated but not yet live accepted:** rest-site completion; a
+- **Fixture demonstrated but not yet live accepted:** foreground-map room-action
+  suppression and stale rejection; correctly bound rest-site completion; a
   complete reconciled room handoff inside the batched runner; multi-step event
-  completion; and the full three-combat-floor cap.
+  completion at the Python-controller seam; and the full three-combat-floor
+  cap. The C# reader deliberately does not infer event-to-map completion.
 - **Observed residuals:** an earlier batched attempt stopped on
   `decision_response_mismatch`; the 2026-09-01 attempt reached a real event
   after two combats but returned `run_room_not_ready`. The accepted Python
@@ -192,8 +211,8 @@ inside one reproducible multi-floor sequence using only already implemented
 combat, reward, map, and supported-room contracts. That target
 should:
 
-1. retain the reviewed Python readiness fix and execute the user-approved
-   `R0I-ROOM-LIFECYCLE-07` foreground-room/map repair; the original
+1. live-test the integrated `R0I-ROOM-LIFECYCLE-07` repair once the desktop is
+   unlocked, retaining the reviewed Python readiness fix; the original
    `R0I-RUN-03/04` C# exclusions remain unchanged;
 2. make multi-step event continuation either complete within its bounded
    contract or fail immediately with a precise supported/unsupported reason;

@@ -86,6 +86,16 @@ decision from the accepted Python preflight. Normal teardown, bridge removal,
 clean base-game launch/quit, and final purge all passed. See the living status
 page and its acceptance record for the exact evidence boundary.
 
+The subsequently approved C# repair is integrated: foreground maps/travel
+suppress room actions, immediate revalidation rejects stale dispatch, and only
+accepted same-room literal rest `proceed` plus a travel-ready map proves
+completion. A bounded numeric identity registry preserves replay identity
+across missing surfaces and revisits. Event-to-map completion remains fail-closed.
+The new artifact passed all repository gates, but its installation attempt
+stopped before launch when the Mac locked. Exact overlay/configuration removal
+and stopped/base-only verification passed; live acceptance and a fresh clean
+launch/quit are pending an unlocked desktop.
+
 ## Prerequisites
 
 - Python 3.10 or newer.
