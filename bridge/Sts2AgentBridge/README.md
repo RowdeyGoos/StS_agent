@@ -70,9 +70,13 @@ The living cross-milestone disposition is maintained in
 summary, bounded live smokes have reached `R0i` and demonstrated menu/Settings,
 combat, granular card/gold rewards, map selection, one direct safe event-to-map
 transition, two consecutive composed combat/reward/map handoffs, and standalone
-rest-site completion with inspection-map stale-action rejection. The full
+rest-site completion with inspection-map stale-action rejection. A later
+campaign also live-demonstrated explicit fresh reward entry through reward
+resolution, one reconciled map selection and terminal combat defeat, with
+truthful partial-prefix accounting. Explicit map entry, the full
 three-combat-floor cap and a reconciled batched room handoff remain unaccepted
-live. The Python preflight now polls validated
+live. The Python
+preflight now polls validated
 inactive `complete` responses within its existing deadline; only a validated
 expected-kind `ready` response succeeds. Cross-kind residue is fixture-tested.
 

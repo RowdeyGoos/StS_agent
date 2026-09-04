@@ -78,12 +78,23 @@ composition remains unobserved rather than failed.
 
 The host-only explicit phase-entry increment is integrated through `5750602`.
 The old invocation and explicit combat entry retain the exact existing success
-JSON;
-reward/map entry records a truthful partial prefix and shares the three-map
-selection cap without phase scanning, fallback or retry. Its independent
-actual-client gate uses literal request bytes and an `8212886` negative control.
-This capability is fixture-tested only and has not yet been exercised in the
-game.
+JSON; reward/map entry records a truthful partial prefix and shares the
+three-map selection cap without phase scanning, fallback or retry. Its
+independent actual-client gate uses literal request bytes and an `8212886`
+negative control.
+
+A bounded campaign from reviewed production source `919abc0` subsequently
+live-demonstrated the explicit fresh reward-entry success path. After a
+standalone setup combat won in 10 rounds with 42 accepted actions, the
+coordinator visibly confirmed an untouched reward and invoked only
+the runner once with `--entry-phase reward` and `--floor-limit 2`. The entry
+invocation reconciled four reward actions, one map selection and 24 actions in
+the next combat before normal defeat. Its sanitized result reported
+`processed_floor_count=1`, `completed_floor_count=0`, and 29 total actions. The
+setup combat is correctly excluded from those totals. This promotes reward
+entry and truthful partial-prefix accounting to live-demonstrated; explicit map
+entry, a complete post-prefix floor, batched room handoff and entry failure/
+uncertainty behavior remain fixture-tested or unobserved.
 
 No live campaign is active.
 
@@ -243,7 +254,7 @@ progression remains `structural_fixture`; no target-game fidelity promotion.
 | `R0f` | One reward decision followed by map arrival | Initial screen-transition timing blocked the first attempt; the narrowed retry passed reward and map checkpoints |
 | `R0g` | Read and apply one legal map destination | Bounded live map observation and destination application passed |
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
-| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner with explicit fresh-phase entry | Repository gates and fixtures passed. Historical campaigns exercised event and rest slices with the recorded fail-closed residuals. The latest campaign live-passed a fresh four-action reward diagnostic and one complete ordinary combat/reward/map floor (21 accepted actions), then stopped at the declared floor limit in the next ordinary combat. Explicit reward/map entry is actual-client fixture-tested but not live-demonstrated. A supported room was not offered, so composed room handoff remains unobserved. |
+| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner with explicit fresh-phase entry | Repository gates and fixtures passed. Historical campaigns exercised event and rest slices with the recorded fail-closed residuals. Later campaigns live-passed a fresh reward diagnostic, one complete ordinary combat/reward/map floor, and explicit reward entry from an untouched reward through map selection to terminal defeat with truthful partial-prefix counts. Explicit map entry and composed room handoff remain unobserved live. |
 
 The earlier 2026-09-04 campaign reproduced the multi-step event timeout and newly
 demonstrated advertised rest-site map selection, successful standalone rest
@@ -280,14 +291,16 @@ narrower:
   teardown/base relaunch; the gold adapter's zero-POST ineligible-prestate
   path; the successful capture-off reward diagnostic path with four attempted,
   accepted/bound and reconciled actions; and a one-floor composed ordinary-
-  combat/reward/map run ending at the next ordinary combat under its floor cap.
+  combat/reward/map run ending at the next ordinary combat under its floor cap;
+  plus explicit fresh reward entry through one reconciled map selection into
+  the next combat, ending on defeat with truthful partial-prefix counts.
 - **Fixture demonstrated but not yet live accepted:** event foreground-map
   suppression; identity-registry behavior across disappearance, A → B → A,
   kind conflict and capacity; other lifecycle races; a complete reconciled room
   handoff inside the batched runner; multi-step event
   completion at the Python-controller seam; the full three-combat-floor cap;
-  explicit fresh reward/map entry, default-combat equivalence, truthful partial
-  prefix accounting and no-fallback behavior;
+  explicit fresh map entry, default-combat equivalence, entry failure and
+  no-fallback behavior, and completed post-prefix floors;
   capture-off transport, HTTP and receipt-failure classifications; and
   exceptional-exit mutable-buffer cleanup.
   The C# reader deliberately does not infer event-to-map completion.
@@ -344,17 +357,17 @@ control path. The recoverable dedicated-profile baseline and its broader
 passivity/rollback claims also remain unresolved; the approved live smokes
 accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 
-The capture-off reward diagnostic is implemented, fixture-reviewed and now
-live-demonstrated at a fresh boundary. The one-floor composed ordinary-combat
-path also passed, but neither result classifies the prior discarded reward
-response or authorizes replay of its uncertain action. The smallest remaining
-live target is one explicitly named fresh reward or map entry. A compatible
-campaign should then seek the existing supported-room handoff when a rest route
-is offered, using only already implemented combat, reward, map and room
-contracts. It should:
+The capture-off reward diagnostic, one-floor composed ordinary-combat path and
+explicit fresh reward entry are now live-demonstrated. None classifies the prior
+discarded reward response or authorizes replay of its uncertain action. The
+smallest remaining live targets are the separate explicit map-entry branch and
+a composed supported-room handoff when a rest route is offered, using only
+already implemented combat, reward, map and room contracts. A compatible
+campaign should:
 
-1. begin only at the declared visibly fresh reward or map phase and verify the
-   partial-prefix result without scanning, fallback, retry or retained raw data;
+1. for the remaining entry branch, begin only at a declared visibly fresh map
+   phase and verify its partial-prefix result without scanning, fallback, retry
+   or retained raw data;
 2. build on the live-accepted standalone rest-site repair to exercise a composed
    combat/rest/combat handoff when supported destinations are available,
    retaining the reviewed Python readiness fix; the original `R0I-RUN-03/04`
@@ -390,10 +403,10 @@ maintained in
   headless panels and capture-off gold adapter are reviewed and integrated.
   The subsequently approved reward diagnostic is fixture-tested and has passed
   one fresh capture-off live boundary. One ordinary combat/reward/map floor is
-  also live-demonstrated. Explicit fresh reward/map entry is independently
-  fixture-tested but awaits its first live check; supported-room composition
-  remains unobserved because no rest route was offered. These results do not
-  authorize retained live data.
+  also live-demonstrated. Explicit fresh reward entry has now passed a bounded
+  live check with truthful partial-prefix accounting through terminal defeat.
+  Explicit map entry and supported-room composition remain unobserved live.
+  These results do not authorize retained live data.
   Exact results are in the
   [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - [`bridge/Sts2AgentBridge/README.md`](../bridge/Sts2AgentBridge/README.md)

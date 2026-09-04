@@ -17,7 +17,13 @@
   live-passed that diagnostic at a fresh reward boundary and passed one composed
   ordinary combat/reward/map floor. No supported rest route was offered, so the
   combat/rest/combat target remains unobserved. Cleanup and clean base launch
-  passed; no retained live data was created.
+  passed; no retained live data was created. The approved explicit phase-entry
+  packets are integrated through `5750602`; a subsequent bounded campaign from
+  reviewed production source `919abc0` live-passed the explicit fresh
+  reward-entry path through one map selection to terminal defeat with truthful
+  partial-prefix counts. Explicit map entry and composed room handoff remain
+  unobserved live. Exact quarantine, clean unmodded launch/quit, purge and final
+  base/listener checks passed.
 - **Execution ledger:** [next-increment acceptance](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - **Relationship:** follows the implemented packets in
   [the existing execution plan](PHASE_1_PARALLEL_EXECUTION_PLAN.md), without
@@ -954,6 +960,15 @@ caps. This plan does not itself create or preserve live authority. No retained
 raw data or journal is created.
 Normal quit, exact quarantine, clean unmodded launch/quit, purge and final
 base/listener checks remain mandatory.
+
+**Disposition:** the offline integration/review gate and the explicit
+reward-entry live gate passed. The campaign began at a visibly fresh reward,
+and the coordinator issued one successful explicit reward-entry invocation; no
+fallback or retry path was exercised. It ended in a reconciled terminal defeat
+with one processed partial prefix and no complete post-prefix floor. Explicit
+map entry, room composition and error-path behavior remain fixture-tested or
+unobserved. Mandatory quarantine, clean-base launch/quit, purge and final
+stopped/listener checks all passed; no live campaign remains active.
 
 Both workers preserve existing public contracts and produce one focused local
 commit unless a correction commit is safer. Their reports must include outcome,

@@ -29,7 +29,7 @@ contracts, integration, pins, artifacts, and all live operation.
 | `R0I-COMPOSE-LIVE-13` | Coordinator | Campaigns closed; rest checks passed; follow-up reward-response failure, full chain open | Sequential live campaign and evidence |
 | `R0I-PHASE-ENTRY-19` | Sol/high | Integrated `72bb8d2` | Run client, unit fixtures and bridge README |
 | `R0I-PHASE-ENTRY-TEST-20` | Terra/high | Integrated `24b6bc6` + `5750602` after review correction | New independent actual-client gate and pytest wrapper |
-| `R0I-PHASE-ENTRY-REVIEW-21` | Sol/high | Offline review accepted; live gate pending | Read-only review and coordinator validation |
+| `R0I-PHASE-ENTRY-REVIEW-21` | Sol/high | Offline review accepted; explicit reward-entry live gate and cleanup passed; map entry unobserved | Read-only review and coordinator validation |
 | `H5-ARTIFACT-01` | Terra/high → Sol/high | Integrated through `df55c93` | New reporting module and tests |
 | `H5-CLI-02` | Terra/medium | Integrated through `6372c36` | New CLI, tests and sample config; explicitly reassigned lazy public exports |
 | `H5-METAMORPHIC-03` | Sol/high | Integrated `b533caa` | New conformance and matched-panel tests |
@@ -783,12 +783,68 @@ gate, 11-check phase-entry gate and 29-check transport gate. Focused
 state-machine join and the corrected actual-client gate with no remaining
 finding.
 
-This evidence is **fixture-tested / actual-client synthetic**. It is not
-live-demonstrated, retained differential evidence or target-game fidelity.
-No game was launched, bridge installed, live endpoint or credential accessed,
-profile/save read, Cloud setting changed, or raw payload retained during this
-automated increment. At the user's request, the live campaign is held at this
-clean gate for a coordinator model switch to Astra. Production used Sol/high;
-the test and correction used Terra/high; review used Sol/high. There was no
-model escalation. Aggregate worker token and elapsed-time telemetry is
-`unavailable` and was not estimated.
+This automated evidence is **fixture-tested / actual-client synthetic**. By
+itself it is not live-demonstrated, retained differential evidence or
+target-game fidelity. No game was launched, bridge installed, live endpoint or
+credential accessed, profile/save read, Cloud setting changed, or raw payload
+retained during the automated increment. Production used Sol/high; the test and
+correction used Terra/high; review used Sol/high. There was no model escalation.
+Aggregate worker token and elapsed-time telemetry is `unavailable` and was not
+estimated. The subsequent reward-entry live gate is recorded separately below.
+
+## Explicit reward-entry live acceptance
+
+The coordinator subsequently ran one bounded Profile 3 campaign from reviewed
+production source `919abc0cfe29ac69ccd1b2ed87d6f6c3c59344fd`. Preflight found
+the repository clean; a temporary independently reviewed capture-off wrapper
+was present only during controller execution and was removed afterward. It did
+not alter the packaged bridge. The campaign used the same reviewed `0.8.0`
+artifact recorded above: DLL
+`a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285`,
+manifest
+`498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971`,
+and canonical ZIP
+`c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595`.
+Package verification, the unchanged 429-file base projection, the exact
+two-file overlay and protected enabled operator configuration all passed before
+the accepted launch.
+
+An initial direct application-bundle launch stopped at Steam initialization
+before reaching a menu or profile. It was quit normally, after which the guard
+confirmed no game process and no listener. Launch through Steam's native
+launcher then visibly reached game `v0.107.1`, dedicated Profile 3, with exactly
+one mod loaded. The authenticated main-menu probe passed all three routes.
+
+A fresh Turn 1 combat was used only to reach a fresh reward boundary. The
+standalone combat controller won in 10 rounds with 42 accepted actions; those
+actions are outside the phase-entry invocation. From the untouched visible
+reward, the coordinator invoked exactly `--entry-phase reward` with
+`--floor-limit 2`. The capture-off summary passed with:
+
+- `entry_phase=reward`;
+- `processed_floor_count=1` and `completed_floor_count=0`;
+- action totals of combat 24, reward 4, map 1, room 0, total 29; and
+- `termination_reason=run_defeat` with terminal combat outcome `defeat`.
+
+The visible game moved from reward through one selected map destination into
+the next combat and ended at the normal defeat screen. These results
+live-demonstrate the explicit fresh reward-entry success path, its reward/map
+composition, terminal-defeat handling and truthful partial-prefix accounting.
+The prefix is not a complete floor, and the configured floor cap was not
+reached. Explicit `--entry-phase map`, a complete post-prefix floor, a composed
+room handoff, and failure/no-fallback/uncertainty/replay behavior remain
+fixture-tested or unobserved; they are not promoted by this campaign.
+
+Only the sanitized fields above were retained. No raw bridge body, credential,
+control identity, profile/save content or differential corpus was retained.
+Steam Cloud was not changed; no independent Cloud-state claim is made.
+
+The run completed its normal post-defeat flow and returned to Profile 3's main
+menu before the modded game quit normally. Post-run overlay, operator and
+stopped-state checks passed; exact quarantine restored the frozen base with
+zero overlay. A clean unmodded Steam launch visibly reached the Profile 3 menu
+without a mod indicator while `sample-base-port-closed` passed. It quit
+normally; purge removed the four generated campaign files. Final checks again
+passed the unchanged 429-file base SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+zero overlay, no game process and no listener. No live campaign is active.
