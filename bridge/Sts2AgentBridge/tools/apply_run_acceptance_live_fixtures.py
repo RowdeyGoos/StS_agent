@@ -123,7 +123,11 @@ def _malformed_and_privacy() -> None:
         lambda value: value.update({"milestone": []}),
         lambda value: value["termination"].update({"reason": []}),
         lambda value: value["floors"][0]["combat"].update({"final_player": {}}),
+        lambda value: value["floors"][0]["combat"]["final_player"].update({"hp": -9}),
         lambda value: value["floors"][0]["combat"]["actions"][0].update({"raw_canary": "CANARY"}),
+        lambda value: value["floors"][0]["reward"]["before"]["rewards"][0].update({"cards": [{"raw_canary": "SYNTHETIC"}]}),
+        lambda value: value["floors"][0]["reward"].update({"claimed_gold": -1}),
+        lambda value: value["floors"][0]["map"]["before"]["candidates"][0].update({"kind": "CANARY"}),
         lambda value: value["providers"].update({"combat": "CANARY"}),
     ):
         malformed = copy.deepcopy(result)
@@ -155,6 +159,26 @@ def _malformed_and_privacy() -> None:
     defeat_after_shop["action_totals"]["combat"] = 1
     defeat_after_shop["action_totals"]["total"] += 1
     _expect_failure(lambda: _summary(defeat_after_shop), "run_acceptance_result_mismatch")
+    leaf_mutations = (
+        (_default_defeat, lambda value: value["terminal_combat"]["final_enemies"][0].update({"hp": -1})),
+        (_default_defeat, lambda value: value["terminal_combat"]["final_enemies"][0].update({"id": {"raw": "CANARY"}})),
+        (_default_defeat, lambda value: value["terminal_combat"]["actions"][0].update({"step": 0})),
+        (_default_defeat, lambda value: value["terminal_combat"]["actions"][0].update({"basis": "CANARY"})),
+        (_default_elite, lambda value: value["floors"][0]["reward"]["before"].update({"decision_id": "CANARY"})),
+        (_default_elite, lambda value: value["floors"][0]["reward"]["after"]["player"].update({"gold": -1})),
+        (_default_elite, lambda value: value["floors"][0]["reward"]["before"]["legal_actions"][0].update({"kind": "CANARY"})),
+        (_default_elite, lambda value: value["floors"][0]["reward"]["applied"][0].update({"decision_revision": -1})),
+        (_default_elite, lambda value: value["floors"][0]["reward"].update({"selected_cards": [{"raw": "CANARY"}]})),
+        (_default_elite, lambda value: value["floors"][0]["map"]["before"]["candidates"][0].update({"col": -1})),
+        (_default_elite, lambda value: value["floors"][0]["map"]["before"]["legal_actions"][0].update({"action_id": "CANARY"})),
+        (_default_elite, lambda value: value["floors"][0]["map"]["applied"].update({"basis": "CANARY"})),
+        (_entry_room_handoff, lambda value: value["room_handoff"]["room"]["actions"][0].update({"basis": "CANARY"})),
+        (_entry_room_handoff, lambda value: value["room_handoff"]["room"]["final"].update({"raw_canary": "CANARY"})),
+    )
+    for factory, mutate in leaf_mutations:
+        malformed = factory()
+        mutate(malformed)
+        _expect_failure(lambda malformed=malformed: _summary(malformed), "run_acceptance_result_mismatch")
 
 
 def _in_process_operation_and_fixed_failures() -> None:
@@ -163,6 +187,14 @@ def _in_process_operation_and_fixed_failures() -> None:
         summary = live.operation()
     if operation.call_count != 1 or summary != _summary(result):
         fail(EXIT_MISMATCH, "run_acceptance_fixture_in_process_operation")
+    for argument_count in (14, 16):
+        arguments = [f"argument-{index}" for index in range(argument_count)]
+        def delegated() -> dict[str, object]:
+            if sys.argv[1:] != arguments:
+                fail(EXIT_MISMATCH, "run_acceptance_fixture_argument_delegation")
+            return result
+        with patch.object(sys, "argv", ["apply_run_acceptance_live.py", *arguments]), patch.object(live.run, "operation", side_effect=delegated):
+            live.operation()
     buffered = copy.deepcopy(result)
     mutable_canary = bytearray(b"RAW-CANARY")
     buffered["fixture_buffer"] = mutable_canary
@@ -172,7 +204,7 @@ def _in_process_operation_and_fixed_failures() -> None:
         fail(EXIT_MISMATCH, "run_acceptance_fixture_buffer_cleanup")
     with patch.object(live.run, "operation", side_effect=RuntimeError("RAW-CANARY")):
         _expect_failure(live.operation, "run_acceptance_callback_failure", EXIT_INTERNAL)
-    for known in ("run_map_result_mismatch", "reward_state_unsupported", "reward_action_response_mismatch", "map_action_transport_failure", "combat_round_limit_reached"):
+    for known in ("run_map_result_mismatch", "reward_state_unsupported", "reward_action_response_mismatch", "map_action_transport_failure", "combat_round_limit_reached", "map_action_stale_decision", "map_action_invalid_action", "map_rate_limited", "map_backend_retryable", "map_backend_fault"):
         with patch.object(live.run, "operation", side_effect=ToolFailure(EXIT_MISMATCH, known)):
             _expect_failure(live.operation, known)
     transcript: list[tuple[bytes | BaseException, bytes]] = []
@@ -188,7 +220,28 @@ def _in_process_operation_and_fixed_failures() -> None:
         _expect_failure(live.operation, "reward_state_unsupported")
     credentials.require_zeroed()
     connector.require_used_clean(5)
+    decision = "f" * 64
+    for response, code in (
+        (elite_wire.map_fixture._action_body(decision, "select:0", "stale_decision"), "map_action_stale_decision"),
+        (elite_wire.map_fixture._action_body(decision, "select:0", "invalid_action"), "map_action_invalid_action"),
+        (TimeoutError("SYNTHETIC-CANARY"), "map_action_transport_failure"),
+    ):
+        receipt_transcript: list[tuple[bytes | BaseException, bytes]] = []
+        entry_wire._base(receipt_transcript)
+        elite_wire._add(receipt_transcript, elite_wire._map_ready(decision, "elite"), entry_wire._GET_MAP)
+        expected = entry_wire._post(entry_wire._MAP_POST, decision, "select:0")
+        receipt_transcript.append((response if isinstance(response, BaseException) else elite_wire._http(response), expected))
+        receipt_connector, receipt_credentials = elite_wire._Connector(receipt_transcript), elite_wire._Credentials()
+        def actual_receipt_failure() -> dict[str, object]:
+            with entry_wire._clock():
+                return elite_wire.run._run_bounded_run(receipt_credentials, receipt_connector, "first-legal", "first-card", "elite", "safe", 3, entry_phase="map")
+        with patch.object(live.run, "operation", side_effect=actual_receipt_failure):
+            _expect_failure(live.operation, code)
+        receipt_credentials.require_zeroed()
+        receipt_connector.require_used_clean(1)
     with patch.object(live.run, "operation", side_effect=ToolFailure(EXIT_MISMATCH, "SYNTHETIC-ARBITRARY-CANARY")):
+        _expect_failure(live.operation, "run_acceptance_callback_failure", EXIT_INTERNAL)
+    with patch.object(live.run, "operation", side_effect=ToolFailure(EXIT_MISMATCH, ["SYNTHETIC-CANARY"])):
         _expect_failure(live.operation, "run_acceptance_callback_failure", EXIT_INTERNAL)
     with patch.object(live.run, "operation", side_effect=KeyboardInterrupt):
         try:

@@ -8,7 +8,9 @@ import time
 from collections.abc import Callable
 
 import apply_room_live as room
+import apply_map_live as map_client
 import apply_reward_live as reward_client
+import probe_live as probe
 from decision_providers import map_provider_names, provider_names
 from tool_common import EXIT_INTERNAL, EXIT_MISMATCH, ToolFailure, fail
 
@@ -290,30 +292,54 @@ _KNOWN_PRODUCTION_FAILURE_CODES = frozenset(
         "invalid_user_profile", "non_absolute_user_profile", "non_canonical_user_profile",
         "unsupported_platform", "effective_uid_mismatch", "user_identity_unavailable",
         "user_profile_mismatch", "unsafe_user_profile", "missing_credential_component",
+        "acl_check_failed", "granting_acl",
         "non_directory_credential_component", "missing_credential_file", "non_regular_credential_file",
         "credential_owner", "credential_directory_mode", "credential_link_count", "credential_file_mode",
         "credential_shape", "credential_read_failed", "changing_credential_file", "safe_open_unsupported",
         "health_response_mismatch", "manifest_response_mismatch", "combat_terminal_response_mismatch",
+        "decision_envelope_mismatch", "decision_identity_mismatch", "decision_player_mismatch",
+        "decision_enemies_mismatch", "decision_hand_mismatch", "decision_legal_actions_mismatch",
+        "decision_provider_result_mismatch",
         "combat_not_ready", "combat_state_unsupported", "combat_already_complete",
         "combat_round_limit_reached", "combat_action_limit_reached", "invalid_provider_selection",
         "post_action_state_unsupported", "post_action_state_timeout", "post_action_round_overshoot",
         "post_rejection_state_unsupported", "post_rejection_state_timeout", "stale_action_retry_limit_reached",
         "terminal_after_rejected_action", "action_rejected_invalid", "bridge_action_limit_reached",
         "round_did_not_advance_once", "round_advanced_without_end_turn", "action_response_mismatch",
+        "no_applicable_play_card", "end_turn_not_selected_within_limit",
         "reward_state_unsupported", "reward_action_response_mismatch", "reward_response_mismatch",
+        "reward_ready_timeout", "map_state_unsupported", "map_ready_timeout",
         "reward_complete_response_mismatch", "reward_provider_no_action", "reward_not_ready",
+        "card_reward_not_skippable",
         "reward_action_budget_exhausted", "post_reward_state_unsupported", "post_reward_state_timeout",
         "reward_decision_not_advanced", "gold_claim_reconciliation_failed", "card_open_reconciliation_failed",
         "card_choice_reconciliation_failed", "card_skip_reconciliation_failed", "reward_proceed_reconciliation_failed",
         "reward_unknown_transition", "reward_revision_mismatch", "map_response_mismatch",
         "map_complete_response_mismatch", "map_action_response_mismatch", "map_not_ready",
+        "map_action_stale_decision", "map_action_invalid_action", "map_action_already_applied",
+        "map_action_action_limit_reached", "map_rate_limited", "map_backend_retryable", "map_backend_fault",
+        "map_action_rate_limited", "map_action_backend_retryable", "map_action_backend_fault",
         "post_map_state_unsupported", "post_map_state_timeout", "map_destination_mismatch",
         "room_response_mismatch", "room_state_unsupported", "room_not_ready", "room_completion_mismatch",
         "room_action_response_mismatch", "room_action_limit_reached", "room_expected_context_mismatch",
         "room_transition_mismatch", "room_decision_replayed", "room_interaction_timeout", "no_safe_room_action",
+        "room_expected_context_invalid", "room_action_stale_decision", "room_action_invalid_action",
+        "room_action_already_applied", "room_action_action_limit_reached",
         "map_action_transport_failure", "reward_action_transport_failure", "room_action_transport_failure",
         "action_transport_failure", "decision_transport_failure", "health_transport_failure",
         "manifest_transport_failure", "reward_transport_failure", "map_transport_failure", "room_transport_failure",
+        "health_transport_timeout", "manifest_transport_timeout", "decision_transport_timeout",
+        "action_transport_timeout", "reward_transport_timeout", "reward_action_transport_timeout",
+        "map_transport_timeout", "map_action_transport_timeout", "room_transport_timeout", "room_action_transport_timeout",
+        "health_transport_mismatch", "manifest_transport_mismatch", "decision_transport_mismatch",
+        "action_transport_mismatch", "reward_transport_mismatch", "reward_action_transport_mismatch",
+        "map_transport_mismatch", "map_action_transport_mismatch", "room_transport_mismatch", "room_action_transport_mismatch",
+        "health_response_too_large", "manifest_response_too_large", "decision_response_too_large",
+        "action_response_too_large", "reward_response_too_large", "reward_action_response_too_large",
+        "map_response_too_large", "map_action_response_too_large", "room_response_too_large", "room_action_response_too_large",
+        "health_empty_response", "manifest_empty_response", "decision_empty_response", "action_empty_response",
+        "reward_empty_response", "reward_action_empty_response", "map_empty_response", "map_action_empty_response",
+        "room_empty_response", "room_action_empty_response",
     )
 )
 
@@ -363,8 +389,11 @@ def _component(value: object, milestone: str) -> dict[str, object]:
     if type(value["decision_provider"]) is not str or not value["decision_provider"]:
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     if milestone == "r0e_complete_combat":
-        initial = _integer(value["initial_round"], 0)
+        initial = _integer(value["initial_round"], 1)
         final = _integer(value["final_round"], initial)
+        player = value["final_player"]
+        enemies = value["final_enemies"]
+        actions = value["actions"]
         if (
             value["outcome"] not in ("victory", "defeat")
             or _integer(value["rounds_observed"], 1, 12) != final - initial + 1
@@ -375,29 +404,60 @@ def _component(value: object, milestone: str) -> dict[str, object]:
             or not isinstance(value["actions"], list)
             or len(value["actions"]) != _integer(value["accepted_action_count"], 1, 48)
             or set(value["final_player"]) != {"hp", "max_hp", "block", "energy"}
-            or any(type(value["final_player"][name]) is not int for name in value["final_player"])
+            or any(not probe._is_bounded_nonnegative_integer(player[name]) for name in player)
+            or player["max_hp"] < 1
+            or player["hp"] > player["max_hp"]
+            or (value["outcome"] == "victory" and (player["hp"] < 1 or enemies))
+            or (value["outcome"] == "defeat" and player["hp"] != 0)
             or any(
                 not isinstance(action, dict)
                 or set(action) != {"step", "round", "action_id", "card_id", "basis", "player_hp_before", "enemy_hp_before", "player_hp_after", "enemy_hp_after"}
-                or type(action["step"]) is not int
-                or type(action["round"]) is not int
-                or type(action["action_id"]) is not str
-                or (action["card_id"] is not None and type(action["card_id"]) is not str)
-                or type(action["basis"]) is not str
-                or any(type(action[name]) is not int for name in ("player_hp_before", "enemy_hp_before", "player_hp_after", "enemy_hp_after"))
-                for action in value["actions"]
+                or action["step"] != index
+                or type(action["round"]) is not int or not initial <= action["round"] <= final
+                or not probe._is_public_string(action["action_id"])
+                or (action["card_id"] is not None and not probe._is_public_string(action["card_id"]))
+                or action["basis"] not in ("first_legal", "no_safe_card", "incoming_attack", "no_visible_attack")
+                or any(not probe._is_bounded_nonnegative_integer(action[name]) for name in ("player_hp_before", "enemy_hp_before", "player_hp_after", "enemy_hp_after"))
+                for index, action in enumerate(actions, 1)
             )
             or any(
                 not isinstance(enemy, dict)
                 or set(enemy) != {"index", "id", "hp", "max_hp", "block", "intents"}
-                or type(enemy["index"]) is not int
-                or type(enemy["id"]) is not str
-                or any(type(enemy[name]) is not int for name in ("hp", "max_hp", "block"))
-                or not isinstance(enemy["intents"], list)
-                or any(type(intent) is not str for intent in enemy["intents"])
-                for enemy in value["final_enemies"]
+                or enemy["index"] != index
+                or not probe._is_public_string(enemy["id"])
+                or any(not probe._is_bounded_nonnegative_integer(enemy[name]) for name in ("hp", "max_hp", "block"))
+                or enemy["max_hp"] < 1 or not 1 <= enemy["hp"] <= enemy["max_hp"]
+                or not isinstance(enemy["intents"], list) or len(enemy["intents"]) > 8
+                or any(not probe._is_public_string(intent) for intent in enemy["intents"])
+                for index, enemy in enumerate(enemies)
             )
+            or len(enemies) > 6
+            or (actions and (actions[-1]["player_hp_after"] != player["hp"] or actions[-1]["enemy_hp_after"] != sum(enemy["hp"] for enemy in enemies)))
+            or any(
+                actions[index - 1]["player_hp_after"] != actions[index]["player_hp_before"]
+                or actions[index - 1]["enemy_hp_after"] != actions[index]["enemy_hp_before"]
+                for index in range(1, len(actions))
+            )
+            or (value["decision_provider"] == "first-legal" and any(action["basis"] != "first_legal" for action in actions))
+            or (value["decision_provider"] == "heuristic" and any(action["basis"] not in ("no_safe_card", "incoming_attack", "no_visible_attack") for action in actions))
         ):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        terminal_body = json.dumps(
+            {
+                "schema_version": 1, "status": "complete", "decision_kind": "combat",
+                "actionable": False, "decision_id": None, "round": final,
+                "player": player, "enemies": enemies, "hand": [], "legal_actions": [],
+                "outcome": value["outcome"],
+            },
+            ensure_ascii=True,
+            separators=(",", ":"),
+        ).encode("ascii")
+        try:
+            with memoryview(terminal_body) as body:
+                terminal = probe._validate_combat_terminal(body)
+        except (ToolFailure, TypeError, ValueError, UnicodeEncodeError):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        if terminal != {"status": "complete", "round": final, "outcome": value["outcome"], "player": player, "enemies": enemies}:
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif milestone == "r0i_reward_resolution":
         applied = value["applied"]
@@ -405,8 +465,7 @@ def _component(value: object, milestone: str) -> dict[str, object]:
         if (
             not isinstance(applied, list)
             or not 1 <= len(applied) <= 17
-            or not isinstance(value["claimed_gold"], int)
-            or type(value["claimed_gold"]) is bool
+            or not probe._is_bounded_nonnegative_integer(value["claimed_gold"])
             or not isinstance(value["selected_cards"], list)
             or not isinstance(value["before"], dict)
             or not isinstance(value["after"], dict)
@@ -414,9 +473,9 @@ def _component(value: object, milestone: str) -> dict[str, object]:
             or any(
                 not isinstance(action, dict)
                 or set(action) != {"action_id", "kind", "decision_revision", "chosen_card"}
-                or type(action["action_id"]) is not str
+                or not probe._is_public_string(action["action_id"])
                 or type(action["kind"]) is not str
-                or type(action["decision_revision"]) is not int
+                or not probe._is_bounded_nonnegative_integer(action["decision_revision"])
                 for action in applied
             )
         ):
@@ -438,17 +497,46 @@ def _component(value: object, milestone: str) -> dict[str, object]:
                 or set(item) != {"action_id", "kind", "reward_slot", "card_slot"}
                 for item in before["legal_actions"]
             )
-            or any(type(card) is not str for card in value["selected_cards"])
+            or any(not probe._is_public_string(card) for card in value["selected_cards"])
             or any(
-                action["kind"] not in ("claim_gold", "open_card_reward", "choose_card", "skip_card", "proceed")
-                or (action["chosen_card"] is not None and type(action["chosen_card"]) is not str)
+                action["kind"] not in ("claim_gold", "open_card", "choose_card", "skip_card", "proceed")
+                or (action["chosen_card"] is not None and not probe._is_public_string(action["chosen_card"]))
+                for action in applied
+            )
+            or value["selected_cards"] != [action["chosen_card"] for action in applied if action["chosen_card"] is not None]
+            or any(
+                (action["kind"] == "claim_gold" and (not action["action_id"].startswith("claim:") or action["chosen_card"] is not None))
+                or (action["kind"] == "open_card" and (not action["action_id"].startswith("open:") or action["chosen_card"] is not None))
+                or (action["kind"] == "choose_card" and (not action["action_id"].startswith("choose:") or action["chosen_card"] is None))
+                or (action["kind"] == "skip_card" and (action["action_id"] != "skip_card" or action["chosen_card"] is not None))
+                or (action["kind"] == "proceed" and (action["action_id"] != "proceed" or action["chosen_card"] is not None))
                 for action in applied
             )
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
-        for player in (before["player"], after["player"]):
-            if not isinstance(player, dict) or set(player) != {"hp", "max_hp", "gold", "deck_count"} or any(type(number) is not int for number in player.values()):
-                fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        try:
+            ready_body = json.dumps({
+                "schema_version": 1, "status": "ready", "decision_kind": "reward", "actionable": True,
+                "decision_id": before["decision_id"], "decision_revision": before["decision_revision"],
+                "screen_kind": before["screen_kind"], "player": before["player"],
+                "rewards": before["rewards"], "legal_actions": before["legal_actions"],
+            }, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+            complete_body = json.dumps({
+                "schema_version": 1, "status": "complete", "decision_kind": "reward", "actionable": False,
+                "decision_id": None, "screen_kind": after["screen_kind"], "player": after["player"],
+                "rewards": [], "legal_actions": [],
+            }, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+            validated_before = reward_client._validate_ready(ready_body)
+            validated_after = reward_client._validate_complete(complete_body)
+        except (ToolFailure, KeyError, TypeError, ValueError, UnicodeEncodeError):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        if (
+            validated_before != before
+            or validated_after != after
+            or after["player"]["gold"] != before["player"]["gold"] + value["claimed_gold"]
+            or any(applied[index]["decision_revision"] != before["decision_revision"] + index for index in range(len(applied)))
+        ):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif milestone == "r0g_map_selection":
         applied, after = value["applied"], value["after"]
         before = value["before"]
@@ -471,6 +559,38 @@ def _component(value: object, milestone: str) -> dict[str, object]:
             or any(not isinstance(item, dict) or set(item) != {"action_id", "kind", "candidate_index"} for item in before["legal_actions"])
             or applied["kind"] != "select_map_node"
             or applied["basis"] not in ("first_reachable", "combat_continuation", "room_coverage", "elite_continuation")
+            or applied["basis"] != {"first": "first_reachable", "combat": "combat_continuation", "coverage": "room_coverage", "elite": "elite_continuation"}.get(value["decision_provider"])
+        ):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        candidates = before["candidates"]
+        legal_actions = before["legal_actions"]
+        try:
+            ready_body = json.dumps({
+                "schema_version": 1, "status": "ready", "decision_kind": "map", "actionable": True,
+                "decision_id": before["decision_id"], "screen_kind": before["screen_kind"],
+                "destination": None, "candidates": before["candidates"], "legal_actions": before["legal_actions"],
+            }, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+            complete_body = json.dumps({
+                "schema_version": 1, "status": "complete", "decision_kind": "map", "actionable": False,
+                "decision_id": None, "screen_kind": after["screen_kind"], "destination": after["destination"],
+                "candidates": [], "legal_actions": [],
+            }, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+            validated_before = map_client._validate_ready(ready_body)
+            validated_after = map_client._validate_complete(complete_body)
+        except (ToolFailure, KeyError, TypeError, ValueError, UnicodeEncodeError):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        if (
+            validated_before != before
+            or validated_after != after
+            or not probe._is_public_string(applied["action_id"])
+            or not all(probe._is_bounded_nonnegative_integer(applied[name]) for name in ("candidate_index", "col", "row"))
+            or applied["candidate_index"] >= len(candidates)
+        ):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        selected = candidates[applied["candidate_index"]]
+        if (
+            applied["action_id"] != f"select:{applied['candidate_index']}"
+            or any(applied[name] != selected[source] for name, source in (("col", "col"), ("row", "row"), ("node_kind", "kind")))
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     else:

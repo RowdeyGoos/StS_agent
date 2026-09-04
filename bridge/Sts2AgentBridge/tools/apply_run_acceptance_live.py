@@ -39,7 +39,10 @@ def _operation() -> dict[str, object]:
         result = run.operation()
         return summarize_run_acceptance_result(result)
     except ToolFailure as failure:
-        if failure.error_code == "run_acceptance_result_mismatch" or failure.error_code in _KNOWN_PRODUCTION_FAILURE_CODES:
+        if type(failure.error_code) is str and (
+            (failure.exit_code == 4 and failure.error_code == "run_acceptance_result_mismatch")
+            or (type(failure.exit_code) is int and failure.exit_code in (2, 3, 4, 5) and failure.error_code in _KNOWN_PRODUCTION_FAILURE_CODES)
+        ):
             raise
         fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
     except KeyboardInterrupt:
