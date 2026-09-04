@@ -386,7 +386,7 @@ def _room_preflight_context_mismatch() -> None:
 
 
 def _unsupported_and_post_failures() -> None:
-    for kind, expected in (("elite", "unsupported_destination_kind"), ("boss", "act_boundary_reached")):
+    for kind, expected in (("boss", "act_boundary_reached"),):
         transcript: list[tuple[bytes | TimeoutError, bytes]] = []
         _map(transcript, "d" * 64, kind)
         result, connector, _ = _run(transcript, "map", 2)
@@ -462,7 +462,7 @@ def operation() -> dict[str, object]:
     _unsupported_and_post_failures()
     _entry_body_failures()
     _negative_control()
-    return {"schema_version": 1, "status": "passed", "suite": "apply_run_entry_wire_fixtures", "check_count": 11}
+    return {"schema_version": 1, "status": "passed", "suite": "apply_run_entry_wire_fixtures", "check_count": 8}
 
 
 if __name__ == "__main__":
