@@ -821,3 +821,145 @@ until separately bounded evidence justifies them.
   Harmony/AutoSlay, wire/vector/schema/policy/package changes, other tests,
   headless sources and shared docs. A real semantic repair requires a later
   source-backed contract packet and bounded live acceptance.
+
+## 13. Approved explicit phase-entry follow-up
+
+The user's subsequent “proceed” authorizes this narrow host-only increment from
+clean `ece2092`. Its purpose is to remove avoidable manual setup when a bounded
+campaign begins at a fresh visible reward or map boundary. It is **not** crash
+recovery, action replay, automatic phase detection, save-game resume or adoption
+of an earlier controller's uncertain mutation.
+
+The bridge has no durable run/incarnation identity, controller lease, commit
+sequence or retry idempotency key. A transparent resumable controller would
+therefore require a new wire contract and retained live journal. Neither is
+authorized here. The lean contract is explicit phase entry: the operator names
+the currently visible phase, and that phase's existing client freshly validates
+its own ready decision before the first POST. Waiting, complete/cached,
+unsupported, malformed or mismatched entry state fails closed without probing a
+different phase. D49 remains controlling: no failure or uncertain request grants
+continuation or retry authority.
+
+### Frozen phase-entry contract
+
+- The existing 14-argument `apply_run_live.py` invocation and its exact success
+  result remain unchanged and mean combat entry.
+- One optional pair, `--entry-phase combat|reward|map`, may be supplied. Explicit
+  `combat` is byte-for-byte equivalent to omission. No auto-detection or fallback
+  is allowed.
+- `reward` entry skips the unobserved combat, directly invokes the existing
+  reward runner, waits for map readiness, and invokes the existing map runner.
+  `map` entry directly invokes the existing map runner. These direct entry
+  runners, not preliminary cross-phase scans, validate fresh readiness.
+- The partial prefix consumes destination slot 1. Every later reconciled map
+  selection, including a post-room map selection, consumes another slot. The
+  invariant is `reconciled map selections <= floor_limit <= 3`. Subsequent
+  complete floors use the existing combat/reward continuity, room context and
+  fail-closed rules.
+- Default/combat output remains the existing `r0i_bounded_run`. Reward/map entry
+  uses `r0i_bounded_run_entry` with the existing providers, limit, floors,
+  readiness, terminal-combat, room-handoff and termination concepts plus:
+  `entry_phase`, `processed_floor_count`, truthful `completed_floor_count`, and
+  `entry_prefix`. The prefix has exactly `floor_number`, `destination_kind`,
+  ordered `observed_phases`, ordered `unavailable_phases`, `combat`, `reward`,
+  `map`, and `readiness`. For reward entry, combat is `null`; for map entry,
+  combat and reward are `null`. No outcome, continuity or action is inferred for
+  an unavailable phase.
+- `floors` contains only fully observed and reconciled combat/reward/map triples,
+  numbered from logical floor 2 after a partial prefix; `readiness` remains
+  one-to-one with those full floors. Prefix readiness stays in
+  `entry_prefix.readiness` with the existing three keys. Direct entry attempts
+  are zero; reward-to-map wait attempts retain their actual count.
+- `processed_floor_count` is exactly the number of accepted-and-reconciled map
+  selections charged to this invocation, including prefix and post-room map
+  selections. `completed_floor_count` counts only entries in `floors`; the
+  partial prefix is never complete. Map and aggregate action totals count each
+  reconciled map selection exactly once and otherwise derive exactly once from
+  successfully completed existing component records. Reward, map and room keep
+  their current reconciliation rules; combat keeps its existing
+  `already_applied` handling without adding any new inference.
+  `termination.after_floor` retains the existing reason-specific semantics with
+  logical numbering that includes prefix slot 1.
+- Existing per-component action, round, deadline, stale/no-mutation retry,
+  destination, room and transport bounds remain unchanged. No new retry exists.
+  Phase-specific explicit rejection/idempotency outcomes retain each current
+  client's behavior; no new cross-phase retry or continuation is added.
+  Ambiguous transport/HTTP/receipt results, cancellation or failed
+  reconciliation stop immediately.
+- This host summary is not a bridge wire DTO, headless state, training encoding,
+  replay record, persisted checkpoint or retained live artifact.
+
+### R0I-PHASE-ENTRY-19 — Implement explicit fresh-boundary entry
+
+- **Allocation/risk:** Sol/high in a persistent project worktree; high-risk
+  mutating orchestration join. No Ultra worker.
+- **Dependencies:** accepted `apply_run_live.py`, granular combat/reward/map/room
+  clients, D47–D50, and live evidence through `ece2092`.
+- **Exclusive ownership:** `bridge/Sts2AgentBridge/tools/apply_run_live.py`,
+  `apply_run_live_fixtures.py`, and `bridge/Sts2AgentBridge/README.md`.
+- **Deliverable:** implement the frozen optional entry phase with the smallest
+  shared state-machine change. Preserve the default path and avoid duplicating
+  granular client transport, parsing, action selection or reconciliation.
+- **Acceptance:** old arguments/default JSON unchanged; explicit combat equals
+  default; reward/map limit-1 prefixes are truthful partial floors with zero
+  calls to unavailable phases; prefix accounting caps reconciled map selections;
+  later ordinary floors retain player continuity; supported-room context binding,
+  second-room/unsupported destinations, defeat and floor-limit outcomes retain
+  current behavior; malformed/non-ready entry fails before POST and never falls
+  back; no accepted action is double-counted; credential cleanup remains exact.
+- **Required validation:** updated run fixtures; all established probe, reward,
+  map, room, combat, floor, run-wire, transport and diagnostic fixtures; focused
+  `tests/backends/live` and `tests/differential`; compile and diff checks. The
+  coordinator runs the full repository suite after integration.
+- **Forbidden overlap:** all C#, wire DTOs/vectors, granular client files,
+  independent packet `20` files, verifier/package/policy pins, headless code and
+  shared decision/status docs. Any necessary contract change stops for
+  coordinator review.
+
+### R0I-PHASE-ENTRY-TEST-20 — Independent actual-client gate
+
+- **Allocation/risk:** Terra/high in a separate persistent project worktree.
+- **Dependencies:** the frozen contract above. Implementation may begin from
+  `ece2092`; final execution waits for reviewed packet `19` integration.
+- **Exclusive ownership, new:**
+  `bridge/Sts2AgentBridge/tools/apply_run_entry_wire_fixtures.py` and
+  `tests/backends/live/test_apply_run_entry_wire_fixtures.py`.
+- **Deliverable:** an independently authored fake connector/clock gate through
+  the actual run and granular client entry points. It must use literal request
+  oracles and must not reproduce or patch around the production state machine.
+- **Acceptance:** exact request order and counts for combat equivalence, reward
+  entry and map entry; prefix budget and action totals; delayed later-combat
+  readiness; supported room binding; defeat; unsupported destinations; waiting,
+  cached/complete, malformed and unsupported entry bodies; rejected/uncertain
+  POST with no retry or later POST; all sockets closed, sent buffers and copied
+  credentials zeroed, bounded canary absence from stdout/stderr. The unchanged
+  base must fail for the missing phase-entry surface, not a harness defect.
+- **Required validation:** isolated fixture and pytest wrapper, updated packet
+  `19` fixtures, existing actual run-wire and bounded transport gates, focused
+  live-parser/differential tests, compile and diff checks.
+- **Forbidden overlap:** all production and existing fixture files, C#, wire,
+  pins, docs, headless code, real sockets, identity/configuration/profile reads.
+  Report production defects to packet `19`; never normalize them in the harness.
+
+### R0I-PHASE-ENTRY-REVIEW-21 — Integration and live gate
+
+An independent Sol/high read-only review must verify default-result identity,
+truthful partial-floor accounting, exact destination/action caps, no fallback,
+no mutation after uncertainty, room context/replay behavior, cleanup and the
+independent negative control. The coordinator then runs all focused and broad
+regressions. Only after acceptance may the coordinator use the user's current
+thread-level standing authorization for one bounded Profile 3 campaign at a
+fresh reward or map boundary, with the existing three-destination and 30-minute
+caps. This plan does not itself create or preserve live authority. No retained
+raw data or journal is created.
+Normal quit, exact quarantine, clean unmodded launch/quit, purge and final
+base/listener checks remain mandatory.
+
+Both workers preserve existing public contracts and produce one focused local
+commit unless a correction commit is safer. Their reports must include outcome,
+commit, files, commands/results, contract assumptions, risks/blockers, model and
+effort, and available aggregate numeric token/elapsed telemetry (`unavailable`
+when absent; never estimated). Workers must not launch or operate the game,
+install the bridge, access endpoints/credentials/profiles/saves, change Steam
+Cloud, push, or perform destructive Git operations. Live work remains
+coordinator-only.
