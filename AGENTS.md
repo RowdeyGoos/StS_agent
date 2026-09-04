@@ -48,17 +48,26 @@ long-term agent architecture, also read:
 6. [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md)
    for the living `R0i` capability, evidence-level, residual, and next-target
    summary
-7. [docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md)
-   for the active live-bridge and headless-environment dependency graph, exact
-   agent ownership, acceptance gates, and handoff format
-8. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
-9. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
+7. [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
+   for the active elite-continuation and actor-ready headless dependency graph,
+   exact ownership, acceptance gates, and stop boundaries, plus its
+   [acceptance ledger](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md)
+8. [docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md) before
+   dispatching implementation or review work
+9. [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md)
+   and its
+   [acceptance ledger](docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md) for
+   the completed predecessor contracts and exact evidence
+10. [docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md)
+   for the completed foundational live/headless packet graph
+11. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
+12. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
    for the staged bridge boundary and live acceptance gates
-10. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
+13. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
    before bridge build, test, package, or verifier work
-11. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
+14. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
     for the exact initial repository artifact and detailed `R0a`/`R0b` results
-12. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
+15. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
     as the preserved first-campaign authorization boundary. It is not standing
     authorization for any new operator-config write, overlay change, launch,
     live probe, teardown, or rollback work
@@ -118,8 +127,14 @@ program decision.
 - `docs/PHASE_1_INTEGRATION_SPIKE.md`: current live/fast-backend evidence plan
 - `docs/PHASE_1_CURRENT_STATUS.md`: living bridge progress, demonstrated versus
   fixture-only evidence, residuals, exclusions, and next bounded target
-- `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`: active live/headless parallel work
-  packets, dependencies, file ownership, acceptance gates, and agent handoffs
+- `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`: active elite-continuation and
+  actor-ready headless packets, dependencies, ownership, gates, and handoff
+- `docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md`: active successor packet,
+  integration, review, evidence, telemetry, and live-cleanup ledger
+- `docs/PHASE_1_NEXT_INCREMENT_PLAN.md`: completed predecessor increment and
+  preserved packet contracts; its research ledger owns exact acceptance results
+- `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`: completed foundational live/headless
+  packet graph and preserved ownership/acceptance contracts
 - `docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md`: preserved pre-implementation
   candidate shortlist and ordered gates
 - `docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`: preserved initial project-owned

@@ -1,5 +1,10 @@
 # Parallel Bridge and Headless Environment Execution Plan
 
+> **Completed foundational plan.** Its accepted packets and contracts are
+> preserved here as history. New implementation is governed by
+> [the actor-ready successor plan](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md) and
+> the living [current status](PHASE_1_CURRENT_STATUS.md).
+
 - **Status date:** 2026-08-31
 - **Live starting point:** `R0i`, bridge `0.8.0`, protocol `live_probe_v0`
 - **Headless starting point:** deterministic legacy `CombatEnv` (`combat_v0`)

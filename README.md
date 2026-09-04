@@ -7,7 +7,9 @@ an experimental deterministic reduced-run headless environment, and an
 authenticated live-game bridge at the bounded `R0i` integration milestone.
 The headless progression rules are structural fixtures, not verified full-game
 rules. The live bridge has verified standalone rest-site completion; multi-step
-event completion and a complete batched room handoff remain unaccepted live.
+event completion, explicit map entry and a complete batched room handoff remain
+unaccepted live. Elite continuation is not yet implemented by the host runner.
+Explicit fresh reward entry has passed a bounded live campaign.
 
 Requires Python 3.10+.
 
@@ -34,7 +36,9 @@ Project and contributor documentation:
 - [docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md](docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md): historical independent hash-bound review of the D1 result and D1B scope
 - [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md): preregistration and evidence plan for choosing the live bridge and fast backend
 - [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md): living account of demonstrated bridge progress, current limitations, and the next bounded target
-- [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md): active parallel increment for reliable room composition, headless experiment tooling, and narrow conformance evidence; reviewed progress is recorded in its acceptance ledger
+- [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md): active elite-continuation and actor-ready headless packet graph
+- [docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md): active integration and evidence ledger for that graph
+- [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md): completed predecessor increment for reliable room composition, headless experiment tooling, and narrow conformance preparation; reviewed results are recorded in its acceptance ledger
 - [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md): preserved pre-implementation candidate shortlist, safety gaps, and ordered experiment gates
 - [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md): preserved initial read-only bridge boundary, staged control design, and gates
 - [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md): implemented `R0i` bridge boundary, contracts, controllers, and reproducible build/package commands

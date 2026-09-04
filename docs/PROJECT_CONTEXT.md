@@ -15,7 +15,8 @@ targets a full Slay the Spire 2 agent under the separate
 
 In parallel, the repository now contains the `R0i` project-owned live bridge.
 That bridge has passed bounded live observation and control smokes through
-combat, rewards, map travel, and one composed floor transition. It is an
+combat, rewards, map travel, standalone rest completion, composed ordinary
+floors, and explicit reward entry. It is an
 integration substrate, not a full-game simulator or learned agent. The current
 evidence boundary and remaining gaps are maintained in
 [PHASE_1_CURRENT_STATUS.md](PHASE_1_CURRENT_STATUS.md).
@@ -582,6 +583,9 @@ only one module and command surface to maintain.
 - See [Phase 1 current status](PHASE_1_CURRENT_STATUS.md) for the living `R0i`
   capability summary, live-versus-fixture evidence, known residuals, and next
   bounded target.
+- See the [active actor-ready execution plan](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
+  for the host-only elite continuation and headless encoder/dataset/policy
+  packet graph.
 - See the [Phase 1 static audit synthesis](PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
   for the preserved pre-implementation candidate shortlist and ordered gates.
 - See the [restricted bridge design](PHASE_1_RESTRICTED_BRIDGE_DESIGN.md) for

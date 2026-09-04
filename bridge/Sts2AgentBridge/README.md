@@ -18,6 +18,12 @@ capped at three completed combats under replaceable host decision providers.
 The runner reconciles a supported room preflight, bounded room interaction,
 return to map, and—when the next destination is an ordinary monster—one next-
 combat continuation. Unsupported or inconsistent handoffs fail closed.
+Although the map surface can advertise `elite`, the current Python runner stops
+there with `unsupported_destination_kind`; elite continuation is the next
+host-only packet in the
+[actor-ready execution plan](../../docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md),
+not a current fixture or live capability. The C# assembly and wire remain
+unchanged by that planned work.
 
 The controlling contract is the accepted
 [Phase 1 BR0 preflight freeze](../../docs/PHASE_1_BR0_PREFLIGHT.md). The broader

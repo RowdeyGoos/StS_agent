@@ -1,9 +1,16 @@
 # Next increment: reliable composition and usable headless experiments
 
+> **Completed predecessor increment.** Accepted implementation and live
+> evidence are closed through `42a3c4e`; exact outcomes remain in the
+> [acceptance ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md). Section 7
+> is promoted, with revised scope, into
+> [the actor-ready successor plan](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md).
+> Historical allocations and open choices below are not the active task graph.
+
 - **Date:** 2026-09-04
 - **Planning baseline:** `57a421440dd1dc6b879f91d42db7a63ac575d359`, on
   `codex/phase1-parallel-integration`; contains planning baseline `d93395c`.
-- **Status:** accepted for execution by the user's subsequent “execute the
+- **Status:** completed for the accepted scope after the user's “execute the
   plan” request. Sections 4–6 offline packets are reviewed and integrated from
   clean `cc2060ce1ffbb615ad5c42faaa621a56bbe5c062`. One bounded coordinator
   campaign passed the rest-context/inspection checks and verified cleanup;
@@ -23,7 +30,7 @@
   reward-entry path through one map selection to terminal defeat with truthful
   partial-prefix counts. Explicit map entry and composed room handoff remain
   unobserved live. Exact quarantine, clean unmodded launch/quit, purge and final
-  base/listener checks passed.
+  base/listener checks passed. The successor plan now owns new work.
 - **Execution ledger:** [next-increment acceptance](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - **Relationship:** follows the implemented packets in
   [the existing execution plan](PHASE_1_PARALLEL_EXECUTION_PLAN.md), without

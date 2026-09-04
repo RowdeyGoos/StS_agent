@@ -53,6 +53,8 @@ The full-game integration track additionally has:
   and a composed live sequence spanning two combat/reward/map handoffs;
 - live-accepted standalone rest-site healing and completion, foreground
   inspection-map action suppression, and stale snapshot rejection;
+- live-accepted explicit fresh reward entry through reward/map composition to
+  terminal combat defeat with truthful partial-prefix accounting;
 - repository and disposable-fixture coverage for a combat/reward/map/room
   controller capped at three combat floors;
 - the accepted `headless_v0` contract, composed deterministic reduced-run
@@ -60,17 +62,20 @@ The full-game integration track additionally has:
   66-test conformance gate;
 - accepted public-only headless smoke choosers, cancellation-safe sequential/
   spawned rollout collection, and a synthetic live-wire versus headless
-  common-subset comparator that preserves divergences; and
+  common-subset comparator that preserves divergences;
+- versioned headless experiment artifacts/CLI and maintained deterministic
+  panel checks; and
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
 unsupported, fully reconciled event handling still needs bounded live
-acceptance, and the batched controller has unresolved
-`decision_response_mismatch`, `run_room_not_ready`, and multi-step
-`room_interaction_timeout` observations. The Python readiness repair is
-integrated. Earlier live tests isolated a foreground-map/underlying-room
-mismatch and failed completion after both event advancement and rest-site
-healing. The independently reviewed narrow C# repair has now passed bounded
+acceptance. Earlier batched campaigns observed `decision_response_mismatch`,
+`run_room_not_ready`, and multi-step `room_interaction_timeout`; the Python
+readiness repair is integrated, while the historical response and event
+observations remain unexplained or unreproduced. Earlier live tests isolated a
+foreground-map/underlying-room mismatch and failed completion after both event
+advancement and rest-site healing. The independently reviewed narrow C# repair
+has now passed bounded
 rest-site live acceptance: inspection-map suppression and stale rejection,
 heal/Proceed completion, and non-actionability after closing the completed map.
 Its broader replay-identity edge cases remain fixture-tested. Normal teardown,
@@ -85,41 +90,36 @@ These are the highest-value next steps.
 
 ### Full-Game Integration Priority
 
-Before expanding the bridge surface, stabilize the existing `R0i` room handoff
-and demonstrate one repeatable multi-floor live sequence using only the already
-implemented combat, reward, map, and supported-room contracts. The
-`run_room_not_ready` handoff failure has a fixture-tested Python repair. Build
-on the live-accepted standalone rest-site slice of `R0I-ROOM-LIFECYCLE-07` to
-exercise a composed combat/rest/combat sequence when supported destinations
-are available. Keep event-to-map completion fail-closed; any event-step
-identity redesign requires a separately approved scope. Keep the earlier
-response mismatch explicit and retain the existing clean teardown and
-base-game relaunch checks.
+Keep the C# bridge and `live_probe_v0` wire frozen while extending the bounded
+Python host through one already advertised destination: treat `elite` as combat
+and reuse the current combat/reward/map clients. Preserve exact caps, replay and
+uncertainty behavior, use an opt-in elite-first provider, and keep boss, shops,
+treasures, relics and potions fail-closed. The live gate should begin at an
+explicit fresh map, seek elite or supported-room composition without farming,
+and retain the existing clean teardown and base-game relaunch checks.
 
 Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
 
-The provisional Python headless environment has reached its accepted composed
-backend, independent-conformance, public-observation smoke-chooser, and bounded
-rollout boundaries. Preserve cancellation-safe partial batches, explicit pending
-episodes, and separate hindsight records. Structural reward/map/room rules
-remain labelled synthetic until named live differential
-cases pass. The completed ordinary bridge campaign did not authorize a retained
-live differential capture and does not imply target-game parity.
+In parallel, turn the accepted headless `PolicyView` and trajectory artifacts
+into a public-only variable-candidate encoder and leakage-safe actor dataset,
+then add one candidate scorer and a tiny deterministic behavior-cloning smoke.
+Preserve cancellation-safe partial batches, explicit pending episodes and
+separate hindsight/audit records. This proves training plumbing only;
+structural reward/map/room rules remain synthetic until named live differential
+cases pass. No retained live corpus is authorized.
 
-The concrete dependency graph, ownership, acceptance, and handoff packets for
-running both tracks with as many independent agents as their dependencies allow
-are in
-[`docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md).
+The active dependency graph, ownership, acceptance and handoff packets for both
+tracks are in
+[`docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md).
 
-The accepted successor increment is in
+The completed predecessor increment is preserved in
 [`docs/PHASE_1_NEXT_INCREMENT_PLAN.md`](docs/PHASE_1_NEXT_INCREMENT_PLAN.md).
 It prioritizes pre-action room-context binding and actual-client composition
 fixtures, headless experiment artifacts/CLI and maintained generated tests,
 and a separate narrow gold-claim conformance path. Event investigation is
-nonblocking for rest composition. Encoder/dataset consumers remain a later
-option; execution does not approve retained live data. Pre-action context binding,
+nonblocking for rest composition. Pre-action context binding,
 actual-client composition fixtures, experiment artifacts/CLI, named evidence,
 the production gold evaluator, offline corpus codec and maintained generated
 tests and the capture-off gold adapter are integrated. A bounded

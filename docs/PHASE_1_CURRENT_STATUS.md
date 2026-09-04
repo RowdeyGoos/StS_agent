@@ -169,7 +169,7 @@ bindings, test results, and campaign evidence are in the
 
 ## Milestone evidence
 
-The accepted next increment adds pre-action room-context binding, real-client
+The completed predecessor increment added pre-action room-context binding, real-client
 synthetic transport composition tests, a reusable capture-off acceptance helper,
 persisted headless experiment artifacts and `sts-headless` run/benchmark/validate,
 maintained generated invariants and serial/spawn panels, named conformance
@@ -360,29 +360,38 @@ accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 The capture-off reward diagnostic, one-floor composed ordinary-combat path and
 explicit fresh reward entry are now live-demonstrated. None classifies the prior
 discarded reward response or authorizes replay of its uncertain action. The
-smallest remaining live targets are the separate explicit map-entry branch and
-a composed supported-room handoff when a rest route is offered, using only
-already implemented combat, reward, map and room contracts. A compatible
-campaign should:
+smallest implementation join is host-only elite continuation: the current
+runner receives the already advertised destination but stops with
+`unsupported_destination_kind`. The active plan treats elite as combat by
+reusing existing Python clients while keeping C#, wire, caps and replay rules
+unchanged. After that join passes independent fixtures and review, the smallest
+live targets are explicit map entry, elite combat when offered, and a composed
+supported-room handoff when a rest route is offered. A compatible campaign
+should:
 
-1. for the remaining entry branch, begin only at a declared visibly fresh map
-   phase and verify its partial-prefix result without scanning, fallback, retry
-   or retained raw data;
-2. build on the live-accepted standalone rest-site repair to exercise a composed
+1. begin only at a declared visibly fresh map phase and verify its partial-
+   prefix result without scanning, fallback, retry or retained raw data;
+2. use the opt-in elite-first provider after its host implementation is
+   accepted; if no elite is offered, record it as unobserved rather than farming
+   runs or broadening control;
+3. require an offered elite to reconcile map selection, fresh combat readiness
+   and one bounded combat result; unsupported post-elite reward content remains
+   a truthful fail-closed boundary;
+4. build on the live-accepted standalone rest-site repair to exercise a composed
    combat/rest/combat handoff when supported destinations are available,
    retaining the reviewed Python readiness fix; the original `R0I-RUN-03/04`
    C# exclusions remain unchanged;
-3. preserve fail-closed multi-step event handling; any event-step identity
+5. preserve fail-closed multi-step event handling; any event-step identity
    redesign requires a separately approved scope;
-4. retain `reward_action_response_mismatch` as a separate historical residual until
-   reproduced or explained;
-5. obtain bounded live evidence for a fully reconciled rest-site or standard-
+6. retain `reward_action_response_mismatch` as a separate historical residual
+   until reproduced or explained;
+7. obtain bounded live evidence for a fully reconciled rest-site or standard-
    event handoff when encountered;
-6. preserve separate combat, reward, map, and room providers so components can
+8. preserve separate combat, reward, map, and room providers so components can
    still be compared independently;
-7. finish with the existing quarantine, clean-base relaunch, and purge checks;
+9. finish with the existing quarantine, clean-base relaunch, and purge checks;
    and
-8. avoid expanding the live bridge into shops, models, search, or broader
+10. avoid expanding the live bridge into shops, models, search, or broader
    control surfaces until the existing slice is repeatable.
 
 Independently of that live target, the provisional headless environment has
@@ -391,14 +400,30 @@ and bounded rollout/throughput gates. None may claim target-game fidelity
 until named live differential cases pass, and the ordinary bridge campaign did
 not authorize creation of a persistent differential-capture artifact.
 
-The dependency-aware worker packets for both the live and headless tracks are
-maintained in
-[`PHASE_1_PARALLEL_EXECUTION_PLAN.md`](PHASE_1_PARALLEL_EXECUTION_PLAN.md).
+The next headless step does not require retained live data: encode the public
+`PolicyView`, load trusted actor examples without target/audit leakage, score
+the variable advertised candidate set, and run one tiny deterministic
+behavior-cloning plumbing smoke. Its evidence remains `combat_v0` or
+`structural_fixture` only where inherited as dataset/component provenance.
+Encoder and model correctness is synthetic structural evidence; dataset/
+cloning artifacts retain every per-component label and their sorted aggregate
+without promotion. None is policy quality or target-game fidelity.
+
+The active dependency-aware worker packets for the host-only elite continuation
+and actor-ready headless path are maintained in
+[`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md).
 
 ## Document map
 
+- [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
+  is the active successor graph. It freezes a C#/wire-neutral elite host path,
+  public headless encoding, trusted actor dataset, variable-candidate scorer,
+  tiny cloning smoke, and one bounded coordinator live gate.
+- Its [acceptance ledger](research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) begins
+  with every successor packet accurately marked ready, blocked or planned and
+  must receive new integration/live results rather than the predecessor ledger.
 - [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) is the
-  accepted active increment. Pre-action context binding, its composed handoff,
+  completed predecessor increment. Pre-action context binding, its composed handoff,
   experiment CLI/artifacts, named evidence/gold evaluator/corpus and generated
   headless panels and capture-off gold adapter are reviewed and integrated.
   The subsequently approved reward diagnostic is fixture-tested and has passed
@@ -409,6 +434,8 @@ maintained in
   These results do not authorize retained live data.
   Exact results are in the
   [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
+- [`PHASE_1_PARALLEL_EXECUTION_PLAN.md`](PHASE_1_PARALLEL_EXECUTION_PLAN.md)
+  preserves the completed foundational bridge/headless packet graph.
 - [`bridge/Sts2AgentBridge/README.md`](../bridge/Sts2AgentBridge/README.md)
   defines the current `R0i` implementation, commands, exact limits, package,
   and operational boundaries.

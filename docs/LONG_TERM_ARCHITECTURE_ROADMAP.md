@@ -20,6 +20,8 @@ Active program artifacts:
 - [`PHASE_1_CURRENT_STATUS.md`](PHASE_1_CURRENT_STATUS.md) records the current
   `R0i` live-bridge capability, evidence levels, exclusions, and next bounded
   target.
+- [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
+  is the active bounded bridge/headless implementation graph.
 - [`MULTI_AGENT_EXECUTION.md`](MULTI_AGENT_EXECUTION.md) defines how parallel
   work is owned, reviewed, integrated, and reported to the user.
 

@@ -1,17 +1,24 @@
 # Codex Session Bootstrap
 
-Read these first:
-
-1. `README.md`
-2. `AGENTS.md`
-3. `DECISIONS.md`
-4. `docs/PROJECT_CONTEXT.md`
-5. `ROADMAP.md`
+Read `AGENTS.md` completely first, then follow its required reading order.
 
 For full-game or bridge work, also read:
 
 - `docs/PHASE_1_CURRENT_STATUS.md`
+- `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`
+- `docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md`
+- `docs/MULTI_AGENT_EXECUTION.md`
+- `docs/PHASE_1_NEXT_INCREMENT_PLAN.md` and its acceptance ledger for the
+  completed predecessor contracts
 - `bridge/Sts2AgentBridge/README.md`
+
+For headless actor packets, inspect the accepted boundaries in:
+
+- `game/contracts/headless_v0.py`
+- `game/backends/headless/reduced_run_backend.py`
+- `game/data/headless_trajectory.py`
+- `game/training/headless_reporting.py`
+- `game/training/headless_rollout.py` when collection changes
 
 Most important code after that:
 
@@ -19,8 +26,9 @@ Most important code after that:
 - `game/simulation/encoding.py`
 - `game/cli/train.py`
 
-The current live integration milestone is `R0i`; it is a bounded external
-bridge/controller substrate, not yet a complete autonomous run.
+The live integration milestone remains `R0i`; the active successor work is a
+host-only elite continuation plus actor-ready headless policy plumbing. It is
+not yet a complete autonomous run or a target-game fidelity claim.
 
 Key invariants:
 

@@ -1359,9 +1359,11 @@ that some provisional contracts or rules may require versioned migration when
 live evidence disagrees. The live bridge remains authoritative for game
 semantics, and only named passing differential cases earn fidelity claims.
 
-`docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md` is the active task graph and ownership
-source. Phase 1 remains open, and this decision grants no installation, launch,
-profile, credential, Cloud, or live-probe authorization.
+`docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md` preserves the completed foundational
+task graph and ownership source. The active successor graph is
+`docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`. Phase 1 remains open, and this
+decision grants no installation, launch, profile, credential, Cloud, or
+live-probe authorization.
 
 ## D45. Accept The Reduced Headless Join With Restore-Time History Replay
 
@@ -1652,5 +1654,85 @@ Explicit entry reduces repeated manual setup at known fresh boundaries without
 claiming crash recovery, automatic continuation or a full autonomous run.
 Independent actual-client fixtures establish default equivalence, request
 order, partial accounting, room-context binding and fail-closed behavior. The
-new entry paths remain fixture-tested until a bounded clean live campaign
-exercises one of them.
+reward-entry path is now live-demonstrated through reward/map composition to
+terminal defeat with truthful partial-prefix accounting. Explicit map entry
+remains fixture-tested and unobserved live.
+
+## D52. Treat Elite As Host-Side Combat Without Expanding The Bridge
+
+### Context
+
+The live map contract already advertises typed `elite` destinations and the
+generic combat endpoint reads and applies combat actions without distinguishing
+ordinary and elite encounters. The bounded Python runner nevertheless stops at
+`elite` as `unsupported_destination_kind`; this prevented the otherwise useful
+room-composition campaign from continuing. Changing the C# bridge or wire would
+add risk without adding information needed for this host transition.
+
+### Decision
+
+- Treat `elite` as combat-like only in the bounded Python host runner, including
+  default, explicit reward/map entry and supported-room post-room paths.
+- Preserve the existing run result schemas, milestone names, three-destination
+  cap, accounting, replay/context checks, uncertainty stops and no-retry rules.
+- Normal/prefix elite combat preserves the pending-monster cap behavior and,
+  below the cap, continues to reward/map after victory. Post-room elite combat
+  preserves the special existing monster handoff: it runs even when its map
+  consumes the final slot, stores `next_combat` under `room_handoff`, and returns
+  before reward.
+- Add an opt-in map provider ordered elite, rest, monster, ancient, then other,
+  while leaving all existing providers exact. Keep `boss` as an act boundary
+  and shops, treasure, relics, potions and otherwise unsupported destinations
+  fail-closed. Existing `unknown` room routing remains unchanged.
+- Reuse the existing combat and reward clients. An unsupported post-elite reward
+  is a truthful stop, not authority to infer, skip or retry it.
+- Require an independent actual-client fixture gate and bounded coordinator
+  live evidence before calling elite continuation live-demonstrated.
+
+### Consequence
+
+The bridge DLL, `live_probe_v0` wire and C# lifecycle remain frozen while one
+already public destination becomes usable by the host. Existing behavior stays
+compatible and elite remains planned/static until the implementation, review
+and applicable live gate in
+`docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md` pass. This decision itself grants
+no install, launch, profile, endpoint or retained-capture authority.
+
+## D53. Encode Headless Decisions As Public Variable Candidate Sets
+
+### Context
+
+The accepted `headless_v0` boundary exposes a validated public `PolicyView`,
+variable typed candidates and separated policy replay, hindsight target and
+audit records. The legacy combat `ObservationEncoder` and fixed global action
+space cannot represent this full-run boundary without coupling training to
+opaque identities or a growing fixed action head.
+
+### Decision
+
+- Introduce a separate versioned `headless_encoding_v1` consumer of
+  `PolicyView`; do not modify `headless_v0` or reuse the legacy combat encoder.
+- Emit fixed global features plus variable public entity, event and candidate
+  rows. Keep candidate IDs only as an out-of-band reversible label mapping.
+- Use public opaque references transiently only for joins. Never encode
+  references, scopes, hashes, control IDs, backend-private state, hindsight,
+  target or audit fields as actor features.
+- Require explicit masks for batch padding and preserve candidate-permutation
+  and valid opaque-reference-reallocation invariance.
+- Score one logit per advertised candidate. Do not add a fixed global action
+  head or value head in this increment.
+- Admit training only through trusted manifest-bound policy replay. The first
+  learner is a tiny deterministic behavior-cloning plumbing smoke over
+  structural data, not a policy-quality or fidelity experiment.
+
+### Consequence
+
+Encoder, dataset and policy work can proceed in parallel with bridge work and
+without retained live data. Encoder/model correctness is synthetic structural
+evidence. Dataset and learner reports preserve each admitted component
+attribution and the sorted aggregate set of `combat_v0` and/or
+`structural_fixture`; they never promote it to a fidelity label. Learned-policy,
+value-learning, PPO/DQN, spawned online rollout and target-game claims remain
+deferred. Schema versioning, information
+boundaries, ownership and acceptance gates are frozen in
+`docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`.
