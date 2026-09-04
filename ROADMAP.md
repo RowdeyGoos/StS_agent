@@ -69,6 +69,8 @@ The full-game integration track additionally has:
   panel checks;
 - a frozen public variable-candidate encoder with out-of-band IDs and explicit
   row masks, independently reviewed for reference/permutation invariance;
+- a small masked candidate scorer with variable/empty view handling and pinned
+  checkpoint payloads;
 - a trusted public actor dataset with explicit accepted pins, separated panels
   and exact component evidence retained outside actor examples; and
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
@@ -109,8 +111,8 @@ Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
 
-In parallel, build one candidate scorer and a tiny deterministic behavior-
-cloning smoke over the accepted public encoder and trusted actor dataset.
+In parallel, complete a tiny deterministic behavior-cloning smoke over the
+accepted public encoder, trusted actor dataset and masked candidate scorer.
 Preserve cancellation-safe partial batches, explicit pending episodes and
 separate hindsight/audit records. This proves training plumbing only;
 structural reward/map/room rules remain synthetic until named live differential

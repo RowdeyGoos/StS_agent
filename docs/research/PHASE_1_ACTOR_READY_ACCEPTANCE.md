@@ -5,9 +5,9 @@
   `42a3c4e895851188f7179cbc48dcff6ca5974a93`
 - **Active plan:**
   [Phase 1 actor-ready execution](../PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-- **Current state:** `22`, `23`, `04` and `05` reviewed and integrated locally; the user
+- **Current state:** `22`, `23`, `04`, `05` and `06` reviewed and integrated locally; the user
   approved continuing the increment after the automatic-review block. Validator
-  corrections are active; the candidate-policy implementation is released.
+  corrections are active; the serialized cloning-smoke implementation is released.
   No live campaign.
 
 This is the integration ledger for the elite-continuation and actor-ready
@@ -26,8 +26,8 @@ or append new outcomes to that historical record.
 | `R0I-ELITE-LIVE-26` | blocked on review and aggregate gates | — | planned |
 | `H5-ENCODER-04` | reviewed and integrated | `23d07d7` | public-only encoding; frozen schema unchanged |
 | `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
-| `H6-CANDIDATE-POLICY-06` | Terra/high implementation active | — | starts from accepted `23d07d7` |
-| `H6-BC-SMOKE-07` | blocked on `04`-`06` | — | planned |
+| `H6-CANDIDATE-POLICY-06` | reviewed and integrated | `436cef7` | synthetic shape, mask, permutation and persistence checks |
+| `H6-BC-SMOKE-07` | Sol/high implementation active | — | starts from accepted `436cef7` |
 
 “Done” means reviewed, integrated and accepted, not merely implemented in a
 worker branch. The coordinator updates the current state, accepted commit,
@@ -257,6 +257,36 @@ estimated.
   `01a06e7b-1412-7691-a7a9-af01f0e7deed` (confirmed active). `07` remains
   gated on reviewed model acceptance.
   No worker escalation for `04`; all evidence remains synthetic structural.
+
+### 2026-09-05 — Candidate-policy acceptance and serialized smoke release
+
+- Independent Sol/high review accepted `06` exact source
+  `c76b2bc4ff7dea4e27ccf2760aafcf21524bcd5f`, integrated as
+  `436cef74048a66ee58fc8f53d40e8ae7e8744ca6`. Coordinator read the full
+  module/test diff and reran model/encoder/dataset/DQN/PPO checks: **74 passed
+  in 2.66 seconds**. Integrated three-packet focused checks: **46 passed in
+  2.34 seconds**. Worker conformance: **90 passed**; compile/diff passed.
+- `HeadlessCandidatePolicy` pools public global/entity/event context and scores
+  each advertised candidate through a shared head. Masked logits/probabilities
+  are zero; empty rows select `None`. IDs remain outside tensor computations.
+  The model has no value head or legacy training/CLI registration.
+- Policy version `headless_candidate_policy_v1`; model fingerprint
+  `aa645dcb765ec55eaa74cffc0c367e12671d159a9f42a71024739c48f3dc43d6`.
+  Default hidden size is 64; default config fingerprint
+  `6ab0c79dc5ff04ca66646dbb870145d3b29983367970a6235ed7fba70f9a2ac2`.
+  Checkpoint payloads pin encoder/model/config and validate exact tensor keys,
+  shapes, dtypes and finite values.
+- Released `07` as persistent Sol/high task
+  `01a06e86-4915-7853-9c49-4f747e895d67`, confirmed active from `436cef7`.
+  It alone owns the new training module and test. Trusted admission, explicit
+  panel pins, deterministic CPU execution and complete component attribution
+  are required before any accepted smoke artifact.
+- `24` corrections `68b460a` and `fea0d0e` still require changes. Its 246
+  live/differential tests and executable fixtures pass, and independent source
+  comparison confirms the exact 192-code closure. Review found remaining
+  impossible run histories, missing combat/reward reconciliation, an exit-code
+  type guard and writable-buffer cleanup gaps. None of these commits is
+  integrated or used live.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:

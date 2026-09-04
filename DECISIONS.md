@@ -1745,3 +1745,31 @@ It deliberately encodes map node fields and summary counts while omitting edge
 connectivity and current-node identity. This bounded actor representation does
 not replace the complete structured `PolicyView`. Candidate joins copy public
 entity fields; public references and row indices remain absent from features.
+
+## D54. Start The Headless Actor With A Small Masked Candidate Scorer
+
+### Context
+
+The accepted public encoding and trusted dataset need a trainable consumer
+whose output follows the variable advertised action set, including empty
+decision views.
+
+### Decision
+
+- Use separate linear/Tanh embeddings for global, entity, event and candidate
+  features. Mean-pool only unmasked entity/event rows, combine them with global
+  context, and apply one shared candidate-conditioned scoring head.
+- Default to hidden size 64. Version and fingerprint the architecture,
+  configuration and accepted encoder independently in checkpoint payloads.
+- Return zero logits/probabilities for padding and `None` for selection from an
+  empty candidate set. Training consumers must mask padding in their loss.
+- Keep this programmatic model separate from legacy agent registration and
+  the existing training CLI. Its first training use remains the bounded CPU
+  cloning smoke in D53.
+
+### Consequence
+
+Candidate permutations change only output order, while valid public-reference
+reallocations cannot change corresponding scores. Unit and persistence checks
+establish structural behavior; they make no policy-quality or game-fidelity
+claim. A value head, online rollout and larger training remain deferred.

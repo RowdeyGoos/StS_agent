@@ -129,7 +129,10 @@ through `23d07d7`, with frozen `headless_encoding_v1` schema, exact candidate
 joins and out-of-band IDs, variable rows and explicit padding masks. Independent
 review confirmed valid reference reallocation and candidate permutation without
 numeric identity leakage. Integrated encoder/dataset/conformance checks pass
-130 tests. The candidate model and training smoke remain in progress.
+130 tests. The small masked candidate scorer is accepted through `436cef7`,
+including variable/empty views, reference/permutation invariance and pinned
+checkpoint payloads. Model/encoder/dataset and adjacent agent checks pass 74
+tests. The serialized deterministic cloning smoke remains in progress.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:
