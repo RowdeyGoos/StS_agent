@@ -217,15 +217,6 @@ def test_all_candidate_joins_and_fixture_event_forms_use_encoder_entry_point() -
     }
 
 
-def test_candidate_permutation_and_reallocated_references_preserve_numeric_rows() -> None:
-    original = _views("combat")[0]
-    baseline = encode_policy_view(original)
-    object.__setattr__(original, "candidates", tuple(reversed(original.candidates)))
-    permuted = encode_policy_view(original)
-    assert permuted.candidate_ids == tuple(reversed(baseline.candidate_ids))
-    assert permuted.candidate_rows == tuple(reversed(baseline.candidate_rows))
-
-
 def test_opaque_reference_reallocation_changes_ids_not_public_features() -> None:
     def make_view(scope: PublicScope) -> PolicyView:
         enemy_ref = combat_enemy_reference(scope, "simple_enemy", 0)
@@ -245,11 +236,27 @@ def test_opaque_reference_reallocation_changes_ids_not_public_features() -> None
         return PolicyView(DecisionStatus.ACTIONABLE, DecisionPhase.COMBAT, observation, (CombatPlayCardCandidate(scope.decision_scope, card_ref, enemy_ref), CombatEndTurnCandidate(scope.decision_scope)), ())
 
     first_scope = PublicScope(0, 0, {kind: 0 for kind in ("card", "enemy", "reward", "offer", "node", "option")})
-    second_scope = PublicScope(1, 1, {kind: 1 for kind in ("card", "enemy", "reward", "offer", "node", "option")})
-    first, second = encode_policy_view(make_view(first_scope)), encode_policy_view(make_view(second_scope))
+    second_scope = PublicScope(2, 2, {kind: 2 for kind in ("card", "enemy", "reward", "offer", "node", "option")})
+    first_view, second_view = make_view(first_scope), make_view(second_scope)
+    first, second = encode_policy_view(first_view), encode_policy_view(second_view)
     assert first.candidate_ids != second.candidate_ids
+    assert [candidate.kind.value for candidate in first_view.candidates] == [
+        "combat.play_card", "combat.end_turn",
+    ]
+    assert [candidate.kind.value for candidate in second_view.candidates] == [
+        "combat.end_turn", "combat.play_card",
+    ]
+    assert first.candidate_ids == tuple(candidate.candidate_id for candidate in first_view.candidates)
+    assert second.candidate_ids == tuple(candidate.candidate_id for candidate in second_view.candidates)
+    assert [CANDIDATE_FEATURE_NAMES[row[:11].index(1.0)] for row in first.candidate_rows] == [
+        "candidate_kind.combat.play_card", "candidate_kind.combat.end_turn",
+    ]
+    assert [CANDIDATE_FEATURE_NAMES[row[:11].index(1.0)] for row in second.candidate_rows] == [
+        "candidate_kind.combat.end_turn", "candidate_kind.combat.play_card",
+    ]
     assert first.global_features == second.global_features
     assert first.entity_rows == second.entity_rows
+    assert first.public_event_rows == second.public_event_rows
     assert sorted(first.candidate_rows) == sorted(second.candidate_rows)
 
 
