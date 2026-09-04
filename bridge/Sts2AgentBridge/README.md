@@ -121,6 +121,25 @@ helper with an explicitly bounded/cooperative acknowledgement hook. Its room
 summary validates complete producer output; its run count summary is deliberately
 labelled `run_result_unvalidated`, not a certificate of full run history.
 
+The maintained `apply_run_acceptance_live.py` entry point now validates both
+complete bounded-run result forms in memory and emits only fixed aggregate
+counts, entry/source milestones, termination and terminal-combat outcome. It
+delegates the existing 14/16 arguments to `apply_run_live.py` in process. It
+checks component fields, provider reconciliation, retained reward facts,
+combat/reward health, destination sequencing, cap/handoff relationships and
+action arithmetic. Malformed results return `run_acceptance_result_mismatch`;
+known production failures pass through a finite allowlist, while unexpected
+callback or cleanup failures return a fixed code. There is no capture flag.
+Independent actual-client fixtures and whole-bridge review are accepted at
+`847882f`; this helper has not yet been exercised live. Its live use remains
+subject to the active coordinator campaign boundary.
+
+Its isolated synthetic gate is:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S /ABS/BRIDGE_ROOT/tools/apply_run_acceptance_live_fixtures.py
+```
+
 An earlier bounded Profile 3 campaign live-passed that helper and the new
 context-bound rest heal/proceed/map completion. The next connected route was an
 elite, so full ordinary-combat continuation and an eligible gold comparison

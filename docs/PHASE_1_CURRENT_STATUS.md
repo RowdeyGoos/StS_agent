@@ -104,8 +104,10 @@ existing combat clients and preserve their different final-slot behavior. The
 opt-in `elite` provider ranks elite, rest, monster and ancient first; old
 providers remain unchanged. Historical negative controls and uncertainty,
 cancellation and cleanup checks pass with synthetic transport. Elite remains
-unobserved live; the maintained acceptance validator and complete bridge join
-review are still being completed.
+unobserved live. The maintained capture-off acceptance validator and independent
+whole-bridge review are accepted through `847882f`; 246 live/differential tests
+pass. The full integrated suite passed 1,100 tests before the bounded live
+campaign.
 
 ## Parallel headless execution status
 

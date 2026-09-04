@@ -100,8 +100,9 @@ These are the highest-value next steps.
 
 Keep the C# bridge and `live_probe_v0` wire frozen. The bounded Python host now
 treats `elite` as combat using the existing clients, with independent fixture
-coverage. Complete the maintained capture-off acceptance validator and aggregate
-join before the bounded live gate. Preserve exact caps, replay and uncertainty
+coverage. The maintained capture-off acceptance validator and independent join
+review are accepted; complete the aggregate suite before the bounded live gate.
+Preserve exact caps, replay and uncertainty
 behavior and keep boss, shops, treasures, relics and potions fail-closed.
 The live gate should begin at an
 explicit fresh map, seek elite or supported-room composition without farming,

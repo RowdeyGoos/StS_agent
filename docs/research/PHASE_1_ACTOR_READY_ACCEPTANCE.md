@@ -5,9 +5,9 @@
   `42a3c4e895851188f7179cbc48dcff6ca5974a93`
 - **Active plan:**
   [Phase 1 actor-ready execution](../PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-- **Current state:** `22`, `23`, `04`, `05` and `06` reviewed and integrated locally; the user
-  approved continuing the increment after the automatic-review block. Validator
-  corrections are active; the serialized cloning-smoke implementation is released.
+- **Current state:** `22`-`25` and headless `04`-`06` reviewed and integrated
+  locally. The full bridge-join suite passed; cloning-smoke corrections are
+  active. The user approved continuing after the automatic-review block.
   No live campaign.
 
 This is the integration ledger for the elite-continuation and actor-ready
@@ -21,13 +21,13 @@ or append new outcomes to that historical record.
 | --- | --- | --- | --- |
 | `R0I-ELITE-22` | reviewed and integrated | `85fa8ca` | fixture-only; independent join gate pending |
 | `R0I-ELITE-GATE-23` | reviewed and integrated | `8fd4320` | actual-client synthetic gate, both historical controls |
-| `R0I-RUN-ACCEPTANCE-24` | Sol/xhigh corrections active | — | through source `50ecd3b`, not accepted |
-| `R0I-ELITE-REVIEW-25` | blocked on `22`-`24` | — | planned |
-| `R0I-ELITE-LIVE-26` | blocked on review and aggregate gates | — | planned |
+| `R0I-RUN-ACCEPTANCE-24` | reviewed and integrated | `847882f` | complete in-memory validation and fixed capture-off output |
+| `R0I-ELITE-REVIEW-25` | accepted | source `6b25ffd` | independent Sol/high whole-bridge review |
+| `R0I-ELITE-LIVE-26` | review and full-suite gates passed | — | authorized campaign next |
 | `H5-ENCODER-04` | reviewed and integrated | `23d07d7` | public-only encoding; frozen schema unchanged |
 | `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
 | `H6-CANDIDATE-POLICY-06` | reviewed and integrated | `436cef7` | synthetic shape, mask, permutation and persistence checks |
-| `H6-BC-SMOKE-07` | Sol/high implementation active | — | starts from accepted `436cef7` |
+| `H6-BC-SMOKE-07` | Sol/high corrections active | — | source `5c28f14` not accepted |
 
 “Done” means reviewed, integrated and accepted, not merely implemented in a
 worker branch. The coordinator updates the current state, accepted commit,
@@ -287,6 +287,40 @@ estimated.
   impossible run histories, missing combat/reward reconciliation, an exit-code
   type guard and writable-buffer cleanup gaps. None of these commits is
   integrated or used live.
+
+### 2026-09-05 — Complete bridge acceptance and smoke review findings
+
+- Independent Sol/high packet `25` approved final `24` source
+  `6b25ffd69e7f585fcf4fe3df2296c6cf2854d379`. All reproduced false
+  acceptances now reject: boolean positions, impossible intermediate/cap
+  destinations, invalid combat/reward health, detached room handoffs, partial
+  or null continuation shapes, wrong continuation floors, wrong retained first
+  card/claim values, and malformed callback exit-code types.
+- The maintained validator preserves genuine bounded healing, stale-terminal
+  rereads, all entry modes, all six termination reasons, room completion and
+  final-slot continuation defeat. It returns the exact ten-field aggregate and
+  passes the independently audited finite 192-code production failure closure.
+  Mutable bytearrays and reachable writable memoryview backing are cleared;
+  unsupported cleanup fails with a fixed code, without claiming successful
+  zeroization. KeyboardInterrupt retains the shared `interrupted` behavior.
+- Integrated sources `a3244e5`, `9772214`, `50ecd3b`, `68b460a`, `fea0d0e`,
+  `6b25ffd` as `2c85aa0`, `afc996e`, `9ef8267`, `93b5294`, `041f885`, and
+  `847882ff4e3a064458c00eb5748eda3fac6bdc5a`. The accepted `22`/`23`
+  producer/gates remain unchanged. No C#/wire/artifact pin change.
+- Coordinator final live/differential rerun: **246 passed in 2.83 seconds**.
+  Independent executable checks: acceptance **3**, room acceptance **7**, entry
+  **8**, elite **8**, all passed; diff/status checks clean. Full integrated
+  repository suite: **1,100 passed in 104.59 seconds** at `847882f` before
+  any campaign begins. Evidence remains `bridge_fixture`.
+- `07` source `5c28f1483ef7e4008dbe3006aee471184b2261db` passes its
+  worker full suite (**1,105 in 104.32 seconds**) and tiny published smoke, but
+  remains unaccepted. Independent core/artifact review found valid float32
+  artifacts fail to load under a caller's float64 default, checkpoint/report
+  policy config is not cross-bound, and imported nested report/evidence
+  consistency is incomplete. The same Sol/high owner is correcting these
+  within its two files. No headless model or encoder contract change is allowed.
+- Model allocation: `24` remains Sol/xhigh after the recorded escalation;
+  `07` remains Sol/high. Aggregate token/elapsed telemetry is unavailable.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
