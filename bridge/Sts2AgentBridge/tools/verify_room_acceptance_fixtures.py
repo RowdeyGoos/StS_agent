@@ -4,12 +4,15 @@ from __future__ import annotations
 import json
 import math
 import inspect
+import io
 from collections.abc import Callable
+from contextlib import ExitStack, redirect_stderr, redirect_stdout
+from unittest.mock import patch
 
 import apply_room_live_fixtures as room_fixture
 import apply_run_live_fixtures as run_fixture
 import verify_room_acceptance as acceptance
-from tool_common import EXIT_INTERNAL, EXIT_MISMATCH, ToolFailure, fail, main
+from tool_common import EXIT_INTERNAL, EXIT_MISMATCH, ToolFailure, fail, main, run_cli
 
 _DECISION = "0" * 64
 
@@ -49,11 +52,35 @@ def _expect(operation: Callable[[], object], exit_code: int, code: str) -> None:
     fail(EXIT_MISMATCH, "acceptance_fixture_unexpected_success")
 
 
+def _cli_output(
+    operation: Callable[[], dict[str, object]],
+    expected_exit: int,
+    expected_payload: dict[str, object],
+) -> None:
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with redirect_stdout(stdout), redirect_stderr(stderr):
+        exit_code = run_cli(operation)
+    if (
+        exit_code != expected_exit
+        or stdout.getvalue() != _encode(expected_payload).decode("ascii") + "\n"
+        or stderr.getvalue() != ""
+    ):
+        fail(EXIT_MISMATCH, "acceptance_fixture_cli_output")
+
+
+def _cli_failure(
+    operation: Callable[[], dict[str, object]],
+    code: str,
+    exit_code: int = EXIT_INTERNAL,
+) -> None:
+    _cli_output(operation, exit_code, {"schema_version": 1, "status": "failed", "code": code})
+
+
 def _verify(
     *,
     original: bytes | None = None,
     inspected: Callable[[], bytes] = _inspection,
-    acknowledgement: Callable[[], object] = lambda: "acknowledged",
+    acknowledgement: Callable[[float], object] = lambda deadline: "acknowledged",
     sender: Callable[[str, str], bytes] = _receipt,
     clock: Callable[[], float] | None = None,
     acknowledgement_seconds: float = 45.0,
@@ -77,7 +104,7 @@ def _bad_original(value: object, expected: str = "original_snapshot_mismatch") -
     attempts: list[tuple[str, str]] = []
     cleaned: list[str] = []
     _expect(
-        lambda: acceptance.verify_inspection_map_rejection(value, _inspection, lambda: "acknowledged", lambda *args: attempts.append(args) or _receipt(*args), cleanup=lambda: cleaned.append("done")),
+        lambda: acceptance.verify_inspection_map_rejection(value, _inspection, lambda deadline: "acknowledged", lambda *args: attempts.append(args) or _receipt(*args), cleanup=lambda: cleaned.append("done")),
         EXIT_MISMATCH, expected,
     )
     if attempts or cleaned != ["done"]:
@@ -104,21 +131,21 @@ def _success_and_snapshots() -> None:
 
 
 def _callbacks_cleanup_and_receipts() -> None:
-    _expect(lambda: _verify(acknowledgement=lambda: "partial")[0], EXIT_MISMATCH, "operator_acknowledgement_invalid")
+    _expect(lambda: _verify(acknowledgement=lambda deadline: "partial")[0], EXIT_MISMATCH, "operator_acknowledgement_invalid")
     clock = _Clock()
-    _expect(lambda: _verify(acknowledgement=lambda: setattr(clock, "now", 46.0) or "acknowledged", clock=clock)[0], EXIT_MISMATCH, "operator_acknowledgement_timeout")
+    _expect(lambda: _verify(acknowledgement=lambda deadline: setattr(clock, "now", 46.0) or "acknowledged", clock=clock)[0], EXIT_MISMATCH, "operator_acknowledgement_timeout")
     clock = _Clock()
     _expect(lambda: _verify(sender=lambda decision, action: setattr(clock, "now", 46.0) or _receipt(decision, action), clock=clock)[0], EXIT_MISMATCH, "operator_acknowledgement_timeout")
-    for seconds in (math.nan, math.inf, -1.0, True):
+    for seconds in (math.nan, math.inf, -math.inf, -1.0, 0, 46, True, None, "45", 10**1000, -(10**1000)):
         _bad_timeout(seconds)
-    _expect(lambda: _verify(acknowledgement=lambda: (_ for _ in ()).throw(ToolFailure(4, "synthetic canary")))[0], EXIT_INTERNAL, "acknowledgement_callback_failure")
+    _expect(lambda: _verify(acknowledgement=lambda deadline: (_ for _ in ()).throw(ToolFailure(4, "synthetic canary")))[0], EXIT_INTERNAL, "acknowledgement_callback_failure")
     _expect(lambda: _verify(sender=lambda *_: (_ for _ in ()).throw(RuntimeError("synthetic")))[0], EXIT_INTERNAL, "stale_action_callback_failure")
     _expect(lambda: _verify(cleanup=lambda: (_ for _ in ()).throw(RuntimeError("synthetic")))[0], EXIT_INTERNAL, "cleanup_callback_failure")
     _expect(lambda: _verify(sender=lambda decision, action: _receipt("1" * 64, action))[0], EXIT_MISMATCH, "stale_receipt_mismatch")
     _expect(lambda: _verify(sender=lambda decision, action: _receipt(decision, "proceed"))[0], EXIT_MISMATCH, "stale_receipt_mismatch")
     _expect(lambda: _verify(sender=lambda *_: _encode({"status": "accepted"}))[0], EXIT_MISMATCH, "stale_receipt_mismatch")
     cleaned: list[str] = []
-    _expect(lambda: acceptance.verify_inspection_map_rejection(_inspection(), _inspection, lambda: "acknowledged", _receipt, cleanup=lambda: cleaned.append("done") or (_ for _ in ()).throw(RuntimeError("synthetic"))), EXIT_MISMATCH, "original_snapshot_not_actionable")
+    _expect(lambda: acceptance.verify_inspection_map_rejection(_inspection(), _inspection, lambda deadline: "acknowledged", _receipt, cleanup=lambda: cleaned.append("done") or (_ for _ in ()).throw(RuntimeError("synthetic"))), EXIT_MISMATCH, "original_snapshot_not_actionable")
     if cleaned != ["done"]:
         fail(EXIT_MISMATCH, "acceptance_fixture_cleanup")
     parameters = inspect.signature(acceptance.verify_inspection_map_rejection).parameters
@@ -129,9 +156,91 @@ def _callbacks_cleanup_and_receipts() -> None:
 def _bad_timeout(seconds: object) -> None:
     attempts: list[tuple[str, str]] = []
     cleaned: list[str] = []
-    _expect(lambda: acceptance.verify_inspection_map_rejection(_original(), _inspection, lambda: "acknowledged", lambda *args: attempts.append(args) or _receipt(*args), acknowledgement_seconds=seconds, cleanup=lambda: cleaned.append("done")), EXIT_INTERNAL, "invalid_acknowledgement_timeout")
+    _cli_failure(lambda: acceptance.verify_inspection_map_rejection(_original(), _inspection, lambda deadline: "acknowledged", lambda *args: attempts.append(args) or _receipt(*args), acknowledgement_seconds=seconds, cleanup=lambda: cleaned.append("done")), "invalid_acknowledgement_timeout")
     if attempts or cleaned != ["done"]:
         fail(EXIT_MISMATCH, "acceptance_fixture_timeout_cleanup")
+
+
+def _numeric_clock_seams() -> None:
+    # Clock reads: initial, pre-ack, post-ack, post-inspection, pre-POST, post-POST.
+    for bad_value in (10**1000, -(10**1000), math.nan, math.inf, -math.inf, True, None, "0"):
+        for bad_index in range(6):
+            clock_reads: list[int] = []
+            attempts: list[tuple[str, str]] = []
+            cleaned: list[str] = []
+
+            def clock() -> object:
+                index = len(clock_reads)
+                clock_reads.append(index)
+                return bad_value if index == bad_index else 0.0
+
+            _cli_failure(
+                lambda: acceptance.verify_inspection_map_rejection(
+                    _original(), _inspection, lambda deadline: "acknowledged",
+                    lambda *args: attempts.append(args) or _receipt(*args),
+                    clock=clock, cleanup=lambda: cleaned.append("done"),
+                ),
+                "clock_callback_failure",
+            )
+            if len(clock_reads) != bad_index + 1 or len(attempts) != int(bad_index == 5) or cleaned != ["done"]:
+                fail(EXIT_MISMATCH, "acceptance_fixture_clock_seam")
+    backwards = iter((1.0, 0.0))
+    _cli_failure(lambda: _verify(clock=lambda: next(backwards))[0], "clock_callback_failure")
+
+
+def _deadline_aware_acknowledgement() -> None:
+    clock = _Clock()
+    clock.now = 7.0
+    received: list[float] = []
+
+    def acknowledge(deadline: float) -> str:
+        if type(deadline) is not float or deadline != 52.0:
+            raise AssertionError("fixture deadline")
+        received.append(deadline)
+        return "acknowledged"
+
+    _verify(clock=clock, acknowledgement=acknowledge)
+    if received != [52.0]:
+        fail(EXIT_MISMATCH, "acceptance_fixture_acknowledgement_deadline")
+
+
+def _callback_output_canaries() -> None:
+    canary = "SYNTHETIC_CREDENTIAL_AND_SOURCE_CANARY"
+    for error_type in (ToolFailure, RuntimeError, OverflowError, SystemExit, KeyboardInterrupt):
+        for keyword, label in (
+            ("clock", "clock"), ("acknowledgement", "acknowledgement"),
+            ("inspected", "inspection_snapshot"), ("sender", "stale_action"),
+            ("cleanup", "cleanup"),
+        ):
+            cleaned: list[str] = []
+
+            def raises(*arguments: object) -> object:
+                if keyword == "cleanup":
+                    cleaned.append("done")
+                if error_type is ToolFailure:
+                    raise ToolFailure(EXIT_MISMATCH, canary)
+                raise error_type(canary)
+
+            options = {keyword: raises}
+            if keyword != "cleanup":
+                options["cleanup"] = lambda: cleaned.append("done")
+            _cli_failure(lambda: _verify(**options)[0], f"{label}_callback_failure")
+            if cleaned != ["done"]:
+                fail(EXIT_MISMATCH, "acceptance_fixture_canary_cleanup")
+
+    def cleanup_failure() -> None:
+        raise RuntimeError(canary)
+
+    _cli_failure(
+        lambda: _verify(acknowledgement_seconds=10**1000, cleanup=cleanup_failure)[0],
+        "invalid_acknowledgement_timeout",
+    )
+    original = json.loads(_original())
+    original["candidates"][0]["stable_id"] = canary
+    _cli_output(
+        lambda: _verify(original=_encode(original))[0], 0,
+        {"schema_version": 1, "status": "passed", "code": "inspection_map_stale_rejection_verified", "acknowledgement_count": 1, "stale_action_attempt_count": 1},
+    )
 
 
 def _real_result_summaries() -> None:
@@ -147,12 +256,42 @@ def _real_result_summaries() -> None:
     connector.assert_cleanup()
     if any(credential) or acceptance.summarize_room_result(room_result) != {"code": "room_result_valid", "accepted_action_count": 2, "route_count": 7}:
         fail(EXIT_MISMATCH, "acceptance_fixture_room_summary")
-    malformed_room = dict(room_result)
-    malformed_room["accepted_action_count"] = True
-    _expect(lambda: acceptance.summarize_room_result(malformed_room), EXIT_MISMATCH, "room_result_mismatch")
-    run_result, _, _ = run_fixture._run_sequence(["shop"], 1)
+    _cli_output(
+        lambda: acceptance.summarize_room_result(room_result), 0,
+        {"code": "room_result_valid", "accepted_action_count": 2, "route_count": 7},
+    )
+    for field in ("schema_version", "room_ordinal", "accepted_action_count", "routes_checked"):
+        for value in (True, float(room_result[field])):
+            malformed_room = dict(room_result)
+            malformed_room[field] = value
+            _cli_failure(lambda: acceptance.summarize_room_result(malformed_room), "room_result_mismatch", EXIT_MISMATCH)
+    for field in ("schema_version", "room_ordinal"):
+        for value in (True, float(room_result["final"][field])):
+            malformed_room = json.loads(_encode(room_result))
+            malformed_room["final"][field] = value
+            _cli_failure(lambda: acceptance.summarize_room_result(malformed_room), "room_result_mismatch", EXIT_MISMATCH)
+    for missing in ("actions", "final"):
+        malformed_room = dict(room_result)
+        del malformed_room[missing]
+        _cli_failure(lambda: acceptance.summarize_room_result(malformed_room), "room_result_mismatch", EXIT_MISMATCH)
+    run_result, _, _ = run_fixture._run_sequence(["rest_site", "monster"], 2)
     if acceptance.summarize_run_result(run_result).get("code") != "run_result_unvalidated":
         fail(EXIT_MISMATCH, "acceptance_fixture_run_summary")
+    _cli_output(
+        lambda: acceptance.summarize_run_result(run_result), 0,
+        {"code": "run_result_unvalidated", "completed_floor_count": 1,
+         "readiness_count": len(run_result["readiness"]), "action_count": 16},
+    )
+    for field in ("schema_version", "completed_floor_count"):
+        for value in (True, float(run_result[field])):
+            malformed_run = dict(run_result)
+            malformed_run[field] = value
+            _cli_failure(lambda: acceptance.summarize_run_result(malformed_run), "run_result_mismatch", EXIT_MISMATCH)
+    for field in ("combat", "reward", "map", "room", "total"):
+        for value in (True, float(run_result["action_totals"][field])):
+            malformed_run = json.loads(_encode(run_result))
+            malformed_run["action_totals"][field] = value
+            _cli_failure(lambda: acceptance.summarize_run_result(malformed_run), "run_result_mismatch", EXIT_MISMATCH)
     partial = {"schema_version": 1, "status": "passed", "milestone": "r0i_bounded_run", "completed_floor_count": 1, "readiness": [], "action_totals": {"combat": 999999, "reward": 0, "map": 0, "room": 0, "total": 999999}}
     if acceptance.summarize_run_result(partial).get("code") != "run_result_unvalidated":
         fail(EXIT_MISMATCH, "acceptance_fixture_partial_run_summary")
@@ -160,10 +299,32 @@ def _real_result_summaries() -> None:
 
 
 def operation() -> dict[str, object]:
-    _success_and_snapshots()
-    _callbacks_cleanup_and_receipts()
-    _real_result_summaries()
-    return {"schema_version": 1, "status": "passed", "suite": "verify_room_acceptance_fixtures", "checks": ["accepted_room_validator_and_no_post_preconditions", "acknowledgement_deadline_and_callback_sanitization", "cleanup_and_credential_canaries", "real_room_and_explicitly_unvalidated_run_summaries"], "check_count": 4}
+    # Replace all production network/identity/configuration entry points before
+    # executing any case, including real client calls with synthetic transport.
+    with ExitStack() as stack:
+        guards = [
+            stack.enter_context(patch.object(room_fixture.probe, name, side_effect=AssertionError("fixture forbidden hook")))
+            for name in ("_literal_loopback_connector", "_require_identity", "_load_fixed_credential")
+        ]
+        guards.append(stack.enter_context(patch.object(room_fixture.probe.socket, "socket", side_effect=AssertionError("fixture forbidden network"))))
+        _success_and_snapshots()
+        _callbacks_cleanup_and_receipts()
+        _numeric_clock_seams()
+        _deadline_aware_acknowledgement()
+        _callback_output_canaries()
+        _real_result_summaries()
+        if any(guard.call_count for guard in guards):
+            fail(EXIT_MISMATCH, "acceptance_fixture_forbidden_hook")
+    checks = [
+        "accepted_room_validator_and_no_post_preconditions",
+        "acknowledgement_deadline_and_callback_sanitization",
+        "finite_numeric_conversion_at_every_clock_seam",
+        "deadline_aware_cooperative_acknowledgement",
+        "stdout_stderr_callback_and_source_canaries",
+        "exact_schema_and_count_types_on_current_room_and_run_outputs",
+        "real_room_and_explicitly_unvalidated_run_summaries",
+    ]
+    return {"schema_version": 1, "status": "passed", "suite": "verify_room_acceptance_fixtures", "checks": checks, "check_count": len(checks)}
 
 
 if __name__ == "__main__":

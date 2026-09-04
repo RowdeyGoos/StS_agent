@@ -76,15 +76,28 @@ def _callback(label: str, operation: Callable[..., object], *arguments: object) 
 
 def _clock_value(clock: Callable[[], float]) -> float:
     value = _callback("clock", clock)
-    if type(value) not in (int, float) or not math.isfinite(float(value)) or value < 0:
+    number = _finite_number(value, "clock_callback_failure")
+    if number < 0:
         fail(EXIT_INTERNAL, "clock_callback_failure")
-    return float(value)
+    return number
+
+
+def _finite_number(value: object, code: str) -> float:
+    if type(value) not in (int, float):
+        fail(EXIT_INTERNAL, code)
+    try:
+        number = float(value)
+    except (OverflowError, TypeError, ValueError):
+        fail(EXIT_INTERNAL, code)
+    if not math.isfinite(number):
+        fail(EXIT_INTERNAL, code)
+    return number
 
 
 def verify_inspection_map_rejection(
     original_snapshot: bytes,
     inspection_snapshot_reader: Callable[[], bytes],
-    acknowledge: Callable[[], object],
+    acknowledge: Callable[[float], object],
     stale_action_sender: Callable[[str, str], bytes],
     *,
     clock: Callable[[], float] = time.monotonic,
@@ -93,22 +106,25 @@ def verify_inspection_map_rejection(
 ) -> dict[str, object]:
     """Verify one original rest-heal action becomes stale after inspection.
 
-    Every injected callback has a fixed sanitized failure code. The original
-    snapshot and receipt are held only in memory and never included in output.
+    Hooks are trusted, bounded, cooperative callbacks: they must return promptly
+    and must not log or retain raw data. ``acknowledge(deadline)`` receives the
+    absolute deadline in the supplied clock's units and must bound any operator
+    wait to it. An immediate acknowledgement after direct UI inspection is also
+    supported. Checks reject late returns but cannot preempt a hanging hook,
+    including cleanup; this function creates no background worker or service.
+
+    Raised callback failures become fixed codes. The original snapshot and
+    receipt are held only in memory and never included in verifier output.
     """
     receipt = bytearray()
     primary_failure = False
     try:
-        if (
-            type(acknowledgement_seconds) not in (int, float)
-            or not math.isfinite(float(acknowledgement_seconds))
-            or acknowledgement_seconds <= 0
-            or acknowledgement_seconds > _MAXIMUM_ACKNOWLEDGEMENT_SECONDS
-        ):
+        timeout = _finite_number(acknowledgement_seconds, "invalid_acknowledgement_timeout")
+        if not 0 < timeout <= _MAXIMUM_ACKNOWLEDGEMENT_SECONDS:
             fail(EXIT_INTERNAL, "invalid_acknowledgement_timeout")
         decision_id, action_id = _original_action(original_snapshot)
         previous_time = _clock_value(clock)
-        deadline = previous_time + float(acknowledgement_seconds)
+        deadline = previous_time + timeout
         if not math.isfinite(deadline):
             fail(EXIT_INTERNAL, "clock_callback_failure")
 
@@ -122,12 +138,13 @@ def verify_inspection_map_rejection(
                 fail(EXIT_MISMATCH, "operator_acknowledgement_timeout")
 
         check_deadline()
-        if _callback("acknowledgement", acknowledge) != _ACKNOWLEDGED:
-            fail(EXIT_MISMATCH, "operator_acknowledgement_invalid")
+        acknowledged = _callback("acknowledgement", acknowledge, deadline)
         check_deadline()
+        if type(acknowledged) is not str or acknowledged != _ACKNOWLEDGED:
+            fail(EXIT_MISMATCH, "operator_acknowledgement_invalid")
         inspected = _callback("inspection_snapshot", inspection_snapshot_reader)
         check_deadline()
-        if inspected == b"":
+        if type(inspected) is bytes and not inspected:
             fail(EXIT_MISMATCH, "inspection_snapshot_eof")
         _require_inspection_suppressed(inspected)
         check_deadline()
@@ -169,7 +186,8 @@ def summarize_room_result(result: object) -> dict[str, object]:
     actions = result["actions"]
     screen_kind = result["screen_kind"]
     if (
-        result["schema_version"] != 1 or result["status"] != "passed"
+        type(result["schema_version"]) is not int
+        or result["schema_version"] != 1 or result["status"] != "passed"
         or result["milestone"] != "r0i_room_interaction" or result["decision_provider"] != "safe"
         or screen_kind not in ("rest_site", "event")
         or type(result["room_ordinal"]) is not int or not 0 <= result["room_ordinal"] <= 999
@@ -211,12 +229,18 @@ def summarize_room_result(result: object) -> dict[str, object]:
 
 
 def summarize_run_result(result: object) -> dict[str, object]:
-    """Produce an explicitly unvalidated aggregate until R0I-COMPOSE-09 lands."""
+    """Summarize accepted R0I-COMPOSE-09 output without validating its history.
+
+    Only the selected schema/count fields are checked. Nested component results
+    and their reconciliation are not validated here, so even complete current
+    client output remains explicitly ``run_result_unvalidated``.
+    """
     if not isinstance(result, dict):
         fail(EXIT_MISMATCH, "run_result_mismatch")
     floor_count, action_totals, readiness = result.get("completed_floor_count"), result.get("action_totals"), result.get("readiness")
     if (
-        result.get("schema_version") != 1 or result.get("status") != "passed"
+        type(result.get("schema_version")) is not int
+        or result.get("schema_version") != 1 or result.get("status") != "passed"
         or result.get("milestone") != "r0i_bounded_run" or type(floor_count) is not int
         or not 0 <= floor_count <= 3 or not isinstance(readiness, list) or not isinstance(action_totals, dict)
     ):
