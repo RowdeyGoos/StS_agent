@@ -7,6 +7,7 @@ or reconstruct a backend, control binding, game RNG, or private world state.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from random import Random
 from typing import Callable
 
@@ -26,6 +27,17 @@ def _candidate_ids(view: PolicyView) -> tuple[str, ...]:
     return tuple(candidate.candidate_id for candidate in view.candidates)
 
 
+@dataclass(frozen=True, slots=True)
+class SeededChooserConfig:
+    """Serializable policy-only configuration for a seeded chooser."""
+
+    policy_seed: int
+
+    def __post_init__(self) -> None:
+        if isinstance(self.policy_seed, bool) or not isinstance(self.policy_seed, int):
+            raise TypeError("policy_seed must be an integer, not bool")
+
+
 class FirstLegalChooser:
     """Choose the first candidate in the contract's canonical ordering."""
 
@@ -36,8 +48,11 @@ class FirstLegalChooser:
 class SeededRandomChooser:
     """Choose uniformly from advertised candidates using a private policy RNG."""
 
-    def __init__(self, seed: int | None = None) -> None:
-        self._rng = Random(seed)
+    def __init__(self, config: SeededChooserConfig) -> None:
+        if not isinstance(config, SeededChooserConfig):
+            raise TypeError("config must be a SeededChooserConfig")
+        self.config = config
+        self._rng = Random(config.policy_seed)
 
     def __call__(self, view: PolicyView) -> str:
         return self._rng.choice(_candidate_ids(view))
@@ -49,7 +64,7 @@ def choose_first_legal(view: PolicyView) -> str:
     return FirstLegalChooser()(view)
 
 
-def choose_seeded_random(view: PolicyView, *, seed: int | None = None) -> str:
+def choose_seeded_random(view: PolicyView, *, config: SeededChooserConfig) -> str:
     """Choose one candidate with a fresh, explicitly configured policy seed.
 
     Repeated calls with this function and the same seed are deterministic.  A
@@ -57,7 +72,7 @@ def choose_seeded_random(view: PolicyView, *, seed: int | None = None) -> str:
     :class:`SeededRandomChooser` instead.
     """
 
-    return SeededRandomChooser(seed)(view)
+    return SeededRandomChooser(config)(view)
 
 
 def _structural_score(view: PolicyView, candidate: TypedCandidate) -> tuple[int, str]:
@@ -124,8 +139,10 @@ def make_first_legal_chooser() -> Callable[[PolicyView], str]:
     return FirstLegalChooser()
 
 
-def make_seeded_random_chooser(seed: int | None = None) -> Callable[[PolicyView], str]:
-    return SeededRandomChooser(seed)
+def make_seeded_random_chooser(
+    config: SeededChooserConfig,
+) -> Callable[[PolicyView], str]:
+    return SeededRandomChooser(config)
 
 
 def make_structural_heuristic() -> Callable[[PolicyView], str]:
