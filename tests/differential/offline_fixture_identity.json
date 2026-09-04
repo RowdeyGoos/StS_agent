@@ -1,0 +1,143 @@
+{
+  "bridge": {
+    "binary_verification": "unobserved; no bridge build or installed binary accessed",
+    "source_canonicalization": "sha256 + two spaces + repository-relative path + LF; sorted by path",
+    "source_file_count": 48,
+    "source_inventory_sha256": "feed6d91adbc5568a48c2ebdd0a1d6f2a904c8c1c35ac1750a6aa4f4e53c4876",
+    "source_scope": "src/**/*.cs, src/**/*.csproj, Directory.Build.props, global.json, Sts2AgentBridge.sln, package/Sts2AgentBridge.json; repository-only",
+    "version": "0.8.0"
+  },
+  "build": {
+    "id": "23811903",
+    "identity_sha256": "a0f7f8f57621122e4c246372115783909f4bb97f4b4eb7e57340428143d4c4cf",
+    "manifest_sha256": "ea9046a6a66e2388be3fb1db4e287e0982ae1b3772bec28546a40ef48c23b470",
+    "release": "v0.107.1"
+  },
+  "evidence": "structural_fixture",
+  "headless": {
+    "backend_fingerprint": "cab0ed8cfe70a6fe3013f366592360ba8570bb362c8d0dffd2156cd8d3d001c3",
+    "backend_version": "reduced_headless_v3",
+    "combat_rules_fingerprint": "9d046f9fa1f1051f465e3a8a8122896e2b55ddd63fe2ddc7e5178b7d7ac1c780",
+    "component_evidence": [
+      {
+        "component": "combat_backend",
+        "fingerprint": "65e8a6d3ee1d815bb0e07c8b104a7e51ecce41514d58e2bc188fb1ed64f8fdfe",
+        "label": "combat_v0",
+        "version": "combat_v0_backend_v1"
+      },
+      {
+        "component": "combat_projection",
+        "fingerprint": "083cdcbf18d4481be689b1e6ea1d9b7d270b2cf9ab92e96a821e971ec018a56a",
+        "label": "combat_v0",
+        "version": "combat_v0_public_projection_v1"
+      },
+      {
+        "component": "combat_rules",
+        "fingerprint": "9d046f9fa1f1051f465e3a8a8122896e2b55ddd63fe2ddc7e5178b7d7ac1c780",
+        "label": "combat_v0",
+        "version": "legacy_combat_v0"
+      },
+      {
+        "component": "composer",
+        "fingerprint": "cab0ed8cfe70a6fe3013f366592360ba8570bb362c8d0dffd2156cd8d3d001c3",
+        "label": "structural_fixture",
+        "version": "reduced_headless_v3"
+      },
+      {
+        "component": "content",
+        "fingerprint": "fe771ea0f82c114d1d6a6389a44b169525c047914d955ce49d6db54e2472230f",
+        "label": "structural_fixture",
+        "version": "reduced_content_v0"
+      },
+      {
+        "component": "map",
+        "fingerprint": "6ab912d069ccb8224c9a9c387946aaf52d1b88b3a6e4924e68d9e280060fba5e",
+        "label": "structural_fixture",
+        "version": "reduced_map_rules_v0"
+      },
+      {
+        "component": "reward",
+        "fingerprint": "c843a1711d22036f0d6b4db25c1b3977cf1d5038dba82ffbf628554f2b9fc327",
+        "label": "structural_fixture",
+        "version": "reduced_reward_rules_v4"
+      },
+      {
+        "component": "room",
+        "fingerprint": "ed97167333934f3e98409d8c4e4cf9393f3b3fcc58ce21f23b54bc72859a94b4",
+        "label": "structural_fixture",
+        "version": "reduced_room_rules_v0"
+      },
+      {
+        "component": "snapshot",
+        "fingerprint": "5f1880a3e22db87fbf8f7dc37c9987db9b48cdc142a760dd2e60a2cded48db4c",
+        "label": "structural_fixture",
+        "version": "reduced_headless_snapshot_v3"
+      },
+      {
+        "component": "state",
+        "fingerprint": "62f27941ece933f760244b5dbbcbbaf6bbc4a7a0f16bfcc428e936aa8bc8b4e3",
+        "label": "structural_fixture",
+        "version": "reduced_world_state_v0"
+      }
+    ],
+    "content_fingerprint": "fe771ea0f82c114d1d6a6389a44b169525c047914d955ce49d6db54e2472230f",
+    "content_version": "reduced_content_v0",
+    "contract": "headless_v0",
+    "contract_fingerprint": "e5ab4c29f0c077178d543b36e24494d3ec8d0d62528f44becf6f13eae7dee1b3",
+    "map_rules_fingerprint": "6ab912d069ccb8224c9a9c387946aaf52d1b88b3a6e4924e68d9e280060fba5e",
+    "reward_rules_fingerprint": "c843a1711d22036f0d6b4db25c1b3977cf1d5038dba82ffbf628554f2b9fc327",
+    "room_rules_fingerprint": "ed97167333934f3e98409d8c4e4cf9393f3b3fcc58ce21f23b54bc72859a94b4",
+    "rules_fingerprint": "71c5859d41a62dcd9013720635f59dab2fbe57198d48c685150e1e5873127c5a",
+    "rules_version": "reduced_headless_rules_v3"
+  },
+  "headless_combat_evidence": "combat_v0",
+  "live_authority": "blocked_pending_separate_capture_request_and_retained_artifact",
+  "live_capture": "unobserved",
+  "schema": "h4_offline_common_subset_fixture_v1",
+  "source_sha256": {
+    "bridge/Sts2AgentBridge/package/Sts2AgentBridge.json": "498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971",
+    "game/backends/headless/combat_candidates.py": "700f23a24c572f03730bb4ffc549b0cedba5c5d9ea720035deb4058908ea0108",
+    "game/backends/headless/combat_projection.py": "37f7baa4fdb710ee62efa41eb4b62d7a216b5a0a33ab32091c5e62c92b6d48d2",
+    "game/backends/headless/combat_v0_backend.py": "01d43b4cb11dcb16baa8b863e78d3c975996d2491eae99f2570665450f030d20",
+    "game/backends/headless/reduced_run_backend.py": "5859b3f0ce4f3542f947cfd41cb8ac6a0be7c0a72957db4f531e8c9bcf31474f",
+    "game/backends/live/r0i_wire.py": "3733748ed4cd1a328c519c2aebed0e646cad35792d1cd18b28fd7c21e4e58fb8",
+    "game/content/reduced_v0.py": "0bb04d19c1f7ab44ab0f7a145c84c9583a409fe6ffa3cccd57f92da73e730086",
+    "game/contracts/headless_v0.py": "bddf54680ce163cfac28442de6f55f52c38b1c9778334dff0298c36526400043",
+    "game/engine/map_rules.py": "9c86d6222829020d449201051d8979c75d1f69a11af7d6dd3472f85cc62a7fe5",
+    "game/engine/reward_rules.py": "2896d098e0a6e4273094766b8b85b657bb539ef9317582cf7c46e0b3bb09f727",
+    "game/engine/room_rules.py": "63153f19d0b0e90c591b1fb966b00e1c736e949eab626112dcdbd083675d0885",
+    "tests/conformance/test_headless_v0_capabilities.py": "85d60dd03e884d482a1f6caa61cf8bc263516999809489484e80ba662270958a",
+    "tests/conformance/test_headless_v0_contract.py": "999f9c9836424ed317f154a9775dba1fd66ce7410691418be028f82dd9b5d1e2",
+    "tests/conformance/test_headless_v0_public_boundary.py": "fa7c88a9edf6d5cfaeda7be07e309526c6f4abeb95d59bfdc07d1595f1e1bf3f",
+    "tests/conformance/test_headless_v0_replay.py": "15613bc818989e16933543b4ac7caaa8ff96adad46362d8a923fcaa2d5943cb3",
+    "tests/differential/common_public_subset.py": "04d53ad8c578ad3e688b5acaaa4675fdb363920150f8d5a5a973271572a0811d",
+    "tests/differential/synthetic_cases.py": "174cef16dc933e89405fc1d6248f40b1ed348d80a522f1abb6425173b2e27de6"
+  },
+  "synthetic_body_inventory_sha256": "2ac6f31a0d2e5485bf8e3f970e7ee9b80973560e8096591327387cbe95d9ed4b",
+  "synthetic_body_sha256": {
+    "combat_defended": "8c29fd638b273828c08bcbdfcd2dced487372452e3eeb09d53e0a0bfe3bf6743",
+    "combat_hp_divergent": "9778b7e635e86c0ee2fe64063193f33f958f8f91c61741638d5d4e6a527e7b1d",
+    "combat_initial": "4e6c584442fcce659d314380a5c3438886247dc546e5a174eb2e0165838060f5",
+    "event_option": "e18d4db9f25d6744a0baea94b93e44a4b8afdacbfb701fbb0867190623aff973",
+    "map_after_room": "f342f8fe2156fe9842f1ad6c20c56aa7b5dfd4cb54e3cf2d508e8f36e52509ea",
+    "map_initial": "0382e22dbdddbeb13d61212a490328615049e190ee3424114990d2552692171c",
+    "rest_heal": "e6dda64cf78f75f1bd66064220feb6dbb5019bc1853dfdae2f71426dec6c5eba",
+    "rest_optional_proceed": "e64208828860f94c69c30480b33eb1cfe84dddfcb9a527f5b0338a8a660c2f02",
+    "rest_proceed": "7ee83d62c406d64d55355e13f8885e793a64c2d539ab799558dabe73c7de8498",
+    "reward_chosen": "d06f365a5764a7ff805240e7ea380667b4d54f1d83b27156f2b9f310c0404f57",
+    "reward_gold": "dd91507ec4504fa9e0f4a46b4d7d3e7f949acff3b667f84f0bb145f567fa85a1",
+    "reward_initial": "186deed13f0ea331b432246478ea723c6844fd934bca1fa06e4a67faccf560f1",
+    "reward_opened": "87b20a8716cf8e3baf71650b0976d68dce34812ecb6a7d67ff56b18709c91c3f",
+    "reward_skipped": "61b1a0796b2f6a2bc873a0c46f938bb60ce4085b4b45987e08093db181e8c7a8"
+  },
+  "wire": {
+    "bridge_version": "0.8.0",
+    "evidence": "bridge_fixture",
+    "protocol": "live_probe_v0",
+    "schema_version": 1,
+    "vector_count": 36,
+    "vector_inventory_sha256": "8dfc1e1e2571e66ea5a9652b1c45a80500209dc1b26b4a6bbfe87a44eb1ea1fe",
+    "wire_schema": "r0i_wire_v0"
+  },
+  "wire_source_evidence": "bridge_fixture"
+}
