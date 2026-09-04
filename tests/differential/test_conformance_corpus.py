@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from hashlib import sha256
 import json
+import os
 from pathlib import Path
+import shutil
+import stat
 
 import pytest
 
@@ -171,3 +174,71 @@ def test_case_and_corpus_ceilings_are_explicit(tmp_path: Path):
     records = [body(record(index)) for index in range(corpus.MAX_CASES + 1)]
     with pytest.raises(corpus.CorpusError, match="invalid_case_count"):
         corpus.write_corpus(tmp_path, "too-many", records, expected_pins=PINS)
+
+
+def test_case_read_is_bounded_before_an_oversized_file_is_materialized(tmp_path: Path):
+    destination, manifest_hash = corpus.write_corpus(tmp_path, "bounded", [body(record())], expected_pins=PINS)
+    with (destination / "case-000000.json").open("ab") as handle:
+        handle.write(b" " * (corpus.MAX_CASE_BYTES + 1))
+    with pytest.raises(corpus.CorpusError, match="corpus_too_large"):
+        corpus.load_corpus(tmp_path, "bounded", expected_manifest_sha256=manifest_hash, expected_pins=PINS)
+
+
+def test_aggregate_ceiling_is_preflighted_for_write_and_mirrored_by_load(tmp_path: Path, monkeypatch):
+    value = record()
+    case_body = body(value)
+    manifest = corpus.CorpusManifest((
+        corpus.CorpusCase(0, "case-000000.json", "synthetic", sha256(case_body.encode("ascii")).hexdigest()),
+    ), sha256(evidence.canonical_json(PINS).encode("ascii")).hexdigest())
+    exact_total = len(case_body.encode("ascii")) + len(evidence.canonical_json(manifest.to_dict()).encode("ascii"))
+    monkeypatch.setattr(corpus, "MAX_CORPUS_BYTES", exact_total)
+    _destination, manifest_hash = corpus.write_corpus(tmp_path, "exact", [case_body], expected_pins=PINS)
+    assert corpus.load_corpus(tmp_path, "exact", expected_manifest_sha256=manifest_hash, expected_pins=PINS)
+    monkeypatch.setattr(corpus, "MAX_CORPUS_BYTES", exact_total - 1)
+    with pytest.raises(corpus.CorpusError, match="corpus_too_large"):
+        corpus.write_corpus(tmp_path, "short", [case_body], expected_pins=PINS)
+
+
+def test_writer_uses_private_permissions_and_no_follow_directory_anchor(tmp_path: Path, monkeypatch):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    original_mkdir = corpus.os.mkdir
+
+    def replace_after_create(name, mode=0o777, *, dir_fd=None):
+        result = original_mkdir(name, mode, dir_fd=dir_fd)
+        if name == "raced":
+            os.rmdir(tmp_path / name)
+            os.symlink(outside, tmp_path / name)
+        return result
+
+    monkeypatch.setattr(corpus.os, "mkdir", replace_after_create)
+    with pytest.raises(corpus.CorpusError, match="corpus_write_failed"):
+        corpus.write_corpus(tmp_path, "raced", [body(record())], expected_pins=PINS)
+    assert list(outside.iterdir()) == []
+    monkeypatch.setattr(corpus.os, "mkdir", original_mkdir)
+    destination, _manifest_hash = corpus.write_corpus(tmp_path, "private", [body(record())], expected_pins=PINS)
+    assert stat.S_IMODE(destination.stat().st_mode) == 0o700
+    assert stat.S_IMODE((destination / "case-000000.json").stat().st_mode) == 0o600
+    assert stat.S_IMODE((destination / "manifest.json").stat().st_mode) == 0o600
+
+
+def test_loader_rejects_a_replaced_corpus_symlink_and_partial_writes_lack_marker(tmp_path: Path, monkeypatch):
+    destination, manifest_hash = corpus.write_corpus(tmp_path, "reload", [body(record())], expected_pins=PINS)
+    outside = tmp_path / "external"
+    outside.mkdir()
+    shutil.rmtree(destination)
+    os.symlink(outside, destination)
+    with pytest.raises(corpus.CorpusError, match="missing_corpus"):
+        corpus.load_corpus(tmp_path, "reload", expected_manifest_sha256=manifest_hash, expected_pins=PINS)
+
+    original_write = corpus._write_exclusive_at
+
+    def fail_second(directory_fd, filename, payload):
+        if filename == "case-000001.json":
+            raise corpus.CorpusError("injected_write_failure")
+        original_write(directory_fd, filename, payload)
+
+    monkeypatch.setattr(corpus, "_write_exclusive_at", fail_second)
+    with pytest.raises(corpus.CorpusError, match="injected_write_failure"):
+        corpus.write_corpus(tmp_path, "interrupted", [body(record(0)), body(record(1))], expected_pins=PINS)
+    assert not (tmp_path / "interrupted" / "manifest.json").exists()

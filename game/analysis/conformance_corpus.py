@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 from typing import Any, Mapping, Sequence
 
 from . import conformance_evidence as evidence
@@ -91,11 +92,25 @@ def _case_filename(ordinal: int) -> str:
     return f"case-{ordinal:06d}.json"
 
 
-def _read_regular(path: Path, maximum: int) -> bytes:
-    _require(path.exists() and path.is_file() and not path.is_symlink(), "invalid_corpus_file")
+def _read_regular_at(directory_fd: int, filename: str, maximum: int) -> bytes:
+    """Read at most ``maximum`` bytes without dereferencing a final symlink."""
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
     try:
-        raw = path.read_bytes()
+        descriptor = os.open(filename, flags, dir_fd=directory_fd)
     except OSError:
+        raise CorpusError("invalid_corpus_file") from None
+    try:
+        _require(stat.S_ISREG(os.fstat(descriptor).st_mode), "invalid_corpus_file")
+        with os.fdopen(descriptor, "rb") as handle:
+            raw = handle.read(maximum + 1)
+    except CorpusError:
+        os.close(descriptor)
+        raise
+    except OSError:
+        try:
+            os.close(descriptor)
+        except OSError:
+            pass
         raise CorpusError("invalid_corpus_file") from None
     _require(len(raw) <= maximum, "corpus_too_large")
     return raw
@@ -109,10 +124,13 @@ def _pairs(pairs: list[tuple[Any, Any]]) -> dict[str, Any]:
     return result
 
 
-def _write_exclusive(path: Path, body: str) -> None:
+def _write_exclusive_at(directory_fd: int, filename: str, body: str) -> None:
+    """Create a private child through an already anchored directory handle."""
     raw = body.encode("ascii")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
     try:
-        with path.open("xb") as handle:
+        descriptor = os.open(filename, flags, 0o600, dir_fd=directory_fd)
+        with os.fdopen(descriptor, "wb") as handle:
             handle.write(raw)
             handle.flush()
             os.fsync(handle.fileno())
@@ -120,6 +138,57 @@ def _write_exclusive(path: Path, body: str) -> None:
         raise CorpusError("output_exists") from None
     except OSError:
         raise CorpusError("corpus_write_failed") from None
+
+
+def _open_new_corpus(root: Path, corpus_name: str) -> tuple[int, int]:
+    """Make and retain a private corpus directory without following replacements."""
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        root_fd = os.open(root, flags)
+        os.mkdir(corpus_name, 0o700, dir_fd=root_fd)
+        corpus_fd = os.open(corpus_name, flags, dir_fd=root_fd)
+    except FileExistsError:
+        try:
+            os.close(root_fd)
+        except (UnboundLocalError, OSError):
+            pass
+        raise CorpusError("output_exists") from None
+    except OSError:
+        try:
+            os.close(root_fd)
+        except (UnboundLocalError, OSError):
+            pass
+        raise CorpusError("corpus_write_failed") from None
+    _require(stat.S_ISDIR(os.fstat(corpus_fd).st_mode), "corpus_write_failed")
+    return root_fd, corpus_fd
+
+
+def _open_existing_corpus(root: Path, corpus_name: str) -> tuple[int, int]:
+    """Open an existing corpus through its trusted parent, never a path race."""
+    flags = os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        root_fd = os.open(root, flags)
+        corpus_fd = os.open(corpus_name, flags, dir_fd=root_fd)
+    except OSError:
+        try:
+            os.close(root_fd)
+        except (UnboundLocalError, OSError):
+            pass
+        raise CorpusError("missing_corpus") from None
+    _require(stat.S_ISDIR(os.fstat(corpus_fd).st_mode), "missing_corpus")
+    return root_fd, corpus_fd
+
+
+def _assert_directory_binding(root_fd: int, corpus_name: str, corpus_fd: int) -> None:
+    """Reject a renamed/replaced destination before admitting its final marker."""
+    try:
+        named = os.stat(corpus_name, dir_fd=root_fd, follow_symlinks=False)
+        opened = os.fstat(corpus_fd)
+    except OSError:
+        raise CorpusError("output_replaced") from None
+    _require(stat.S_ISDIR(named.st_mode)
+             and (named.st_dev, named.st_ino) == (opened.st_dev, opened.st_ino),
+             "output_replaced")
 
 
 def _source_header(body: str | bytes) -> dict[str, Any]:
@@ -234,9 +303,9 @@ class CorpusManifest:
         return cls(tuple(CorpusCase.from_dict(case) for case in value["cases"]), value["pins_sha256"])
 
 
-def _load_manifest(path: Path, expected_manifest_sha256: str) -> CorpusManifest:
+def _load_manifest(corpus_fd: int, expected_manifest_sha256: str) -> CorpusManifest:
     _check_digest(expected_manifest_sha256)
-    raw = _read_regular(path / MANIFEST_FILENAME, MAX_CORPUS_BYTES)
+    raw = _read_regular_at(corpus_fd, MANIFEST_FILENAME, MAX_CORPUS_BYTES)
     _require(_digest(raw) == expected_manifest_sha256, "manifest_hash_mismatch")
     try:
         value = json.loads(raw.decode("ascii"), object_pairs_hook=_pairs,
@@ -250,10 +319,10 @@ def _load_manifest(path: Path, expected_manifest_sha256: str) -> CorpusManifest:
     return manifest
 
 
-def _check_directory_contents(path: Path, manifest: CorpusManifest) -> None:
+def _check_directory_contents(corpus_fd: int, manifest: CorpusManifest) -> None:
     """A complete corpus has exactly its sanitized cases and final marker."""
     try:
-        names = {entry.name for entry in path.iterdir()}
+        names = set(os.listdir(corpus_fd))
     except OSError:
         raise CorpusError("invalid_corpus_file") from None
     expected = {MANIFEST_FILENAME, *(case.filename for case in manifest.cases)}
@@ -295,19 +364,25 @@ def write_corpus(output_root: str | Path, corpus_name: str, record_bodies: Seque
     _require(source_reviews is None or set(source_reviews) == seen_reviews, "unexpected_source_review")
     prepared.sort(key=lambda item: item[0].ordinal)
     manifest = CorpusManifest(tuple(item[0] for item in prepared), _digest(evidence.canonical_json(expected)))
-    destination = _corpus_path(output_root, corpus_name, must_exist=False)
-    try:
-        destination.mkdir()
-    except FileExistsError:
-        raise CorpusError("output_exists") from None
-    except OSError:
-        raise CorpusError("corpus_write_failed") from None
-    for case, document in prepared:
-        _write_exclusive(destination / case.filename, document)
+    root = _output_root(output_root)
+    name = _check_corpus_name(corpus_name)
+    destination = _corpus_path(root, name, must_exist=False)
     manifest_body = _canonical_json(manifest.to_dict())
-    _require(len(manifest_body.encode("ascii")) <= MAX_CORPUS_BYTES, "corpus_too_large")
-    # This is deliberately last: its finalized marker is the completion gate.
-    _write_exclusive(destination / MANIFEST_FILENAME, manifest_body)
+    total_bytes = len(manifest_body.encode("ascii")) + sum(
+        len(document.encode("ascii")) for _case, document in prepared
+    )
+    _require(total_bytes <= MAX_CORPUS_BYTES, "corpus_too_large")
+    root_fd, corpus_fd = _open_new_corpus(root, name)
+    try:
+        for case, document in prepared:
+            _write_exclusive_at(corpus_fd, case.filename, document)
+        # This is deliberately last: its finalized marker is the completion gate.
+        _assert_directory_binding(root_fd, name, corpus_fd)
+        _write_exclusive_at(corpus_fd, MANIFEST_FILENAME, manifest_body)
+        _assert_directory_binding(root_fd, name, corpus_fd)
+    finally:
+        os.close(corpus_fd)
+        os.close(root_fd)
     return destination, _digest(manifest_body)
 
 
@@ -317,31 +392,36 @@ def load_corpus(output_root: str | Path, corpus_name: str, *, expected_manifest_
     """Reload a complete corpus only against caller-anchored identities/reviews."""
     _require(isinstance(expected_pins, Mapping), "invalid_pins")
     _require(source_reviews is None or isinstance(source_reviews, Mapping), "invalid_source_review")
-    corpus = _corpus_path(output_root, corpus_name, must_exist=True)
-    manifest = _load_manifest(corpus, expected_manifest_sha256)
-    _check_directory_contents(corpus, manifest)
-    expected = dict(expected_pins)
-    _require(manifest.pins_sha256 == _digest(evidence.canonical_json(expected)), "changed_pin")
-    total_bytes = len(_canonical_json(manifest.to_dict()).encode("ascii"))
-    seen_reviews: set[int] = set()
-    records: list[evidence.NamedConformanceRecord] = []
-    for case in manifest.cases:
-        path = corpus / case.filename
-        _require(path.parent == corpus, "path_escape")
-        raw = _read_regular(path, MAX_CASE_BYTES)
-        total_bytes += len(raw)
-        _require(total_bytes <= MAX_CORPUS_BYTES, "corpus_too_large")
-        provisional = _source_header(raw)
-        review = _review_for(provisional, source_reviews, seen_reviews=seen_reviews)
-        try:
-            record = evidence.parse_record(raw, expected_pins=expected, source_review=review)
-        except evidence.EvidenceError as error:
-            raise CorpusError(str(error)) from None
-        value = record.to_dict()
-        _require(value["source"]["capture_ordinal"] == case.ordinal
-                 and value["source"]["origin"] == case.origin
-                 and record.sha256 == case.record_sha256, "swapped_case")
-        _require(raw == record.document_json.encode("ascii"), "noncanonical_case")
-        records.append(record)
-    _require(source_reviews is None or set(source_reviews) == seen_reviews, "unexpected_source_review")
-    return tuple(records)
+    root = _output_root(output_root)
+    name = _check_corpus_name(corpus_name)
+    root_fd, corpus_fd = _open_existing_corpus(root, name)
+    try:
+        manifest = _load_manifest(corpus_fd, expected_manifest_sha256)
+        _check_directory_contents(corpus_fd, manifest)
+        expected = dict(expected_pins)
+        _require(manifest.pins_sha256 == _digest(evidence.canonical_json(expected)), "changed_pin")
+        total_bytes = len(_canonical_json(manifest.to_dict()).encode("ascii"))
+        seen_reviews: set[int] = set()
+        records: list[evidence.NamedConformanceRecord] = []
+        for case in manifest.cases:
+            raw = _read_regular_at(corpus_fd, case.filename, MAX_CASE_BYTES)
+            total_bytes += len(raw)
+            _require(total_bytes <= MAX_CORPUS_BYTES, "corpus_too_large")
+            provisional = _source_header(raw)
+            review = _review_for(provisional, source_reviews, seen_reviews=seen_reviews)
+            try:
+                record = evidence.parse_record(raw, expected_pins=expected, source_review=review)
+            except evidence.EvidenceError as error:
+                raise CorpusError(str(error)) from None
+            value = record.to_dict()
+            _require(value["source"]["capture_ordinal"] == case.ordinal
+                     and value["source"]["origin"] == case.origin
+                     and record.sha256 == case.record_sha256, "swapped_case")
+            _require(raw == record.document_json.encode("ascii"), "noncanonical_case")
+            records.append(record)
+        _require(source_reviews is None or set(source_reviews) == seen_reviews, "unexpected_source_review")
+        _assert_directory_binding(root_fd, name, corpus_fd)
+        return tuple(records)
+    finally:
+        os.close(corpus_fd)
+        os.close(root_fd)
