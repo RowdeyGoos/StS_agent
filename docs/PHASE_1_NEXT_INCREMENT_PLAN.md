@@ -767,3 +767,37 @@ profiles/saves/credentials, change Cloud, push, or perform destructive Git work.
 The coordinator owns integration, source bindings, documentation and any later
 live campaign. Parsing consolidation and event identity redesign are deferred
 until separately bounded evidence justifies them.
+
+### R0I-MAP-LIFECYCLE-18 — Characterize map completion at the production seam
+
+- **Allocation:** Terra/high implementation; independent Sol/high review.
+- **Dependencies:** the completed `R0I-LIFECYCLE-STUDY-16` static review and
+  accepted current map reader/action contracts. Independent of packets `15`
+  and `17` because ownership and semantics are disjoint.
+- **Exclusive ownership:**
+  `src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapDecisionReader.cs`, new
+  `tests/Sts2AgentBridge.Tests/Public/MapLifecycleTestSuite.cs`, and the single
+  suite-registration addition in
+  `tests/Sts2AgentBridge.Tests/Program.cs`, all below `bridge/Sts2AgentBridge/`.
+- **Objective:** expose the existing production map completion/readiness
+  predicate through a minimal pure internal test seam and freeze its transition
+  behavior. Do not change that predicate in this packet. In particular,
+  accepted destination plus closed map currently completes independently of
+  `IsTraveling`; characterize this as existing behavior, not a proved defect.
+- **Acceptance:** tests cover no accepted destination plus closed map; accepted
+  destination with open/traveling, closed/traveling, and closed/not-traveling
+  map; missing run/map; inspection reopening; a subsequent destination and
+  changed run identity where expressible without inventing production state.
+  Repeated reads remain passive and do not touch action reservations. The seam
+  receives only already sampled primitive/public candidate inputs and is not
+  added to the wire or policy view. Current behavior, candidates, hashes,
+  action identity, caps and services remain byte/semantically unchanged.
+- **Required gates:** full C# test/build/surface/package/reproducibility gates
+  against the pinned assemblies, plus relevant Python map/run/wire fixtures,
+  compile and diff checks. The coordinator verifies exact artifact/source
+  identity before acceptance; no live claim follows from these tests.
+- **Forbidden:** map action-applier edits, room/reward/controller changes,
+  completion tightening, new game API members, asynchronous wait helpers,
+  Harmony/AutoSlay, wire/vector/schema/policy/package changes, other tests,
+  headless sources and shared docs. A real semantic repair requires a later
+  source-backed contract packet and bounded live acceptance.
