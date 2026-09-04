@@ -129,6 +129,7 @@ def _run_sequence(
     reward_hp: int = 70,
     reward_max_hp: int = 80,
     room_connector: room_fixture._Connector | None = None,
+    entry_phase: str = "combat",
 ) -> tuple[dict[str, object], list[str], CredentialLoader]:
     loader = CredentialLoader()
     calls: list[str] = [] if call_log is None else call_log
@@ -256,6 +257,7 @@ def _run_sequence(
             room_waiter=room_waiter,  # type: ignore[arg-type]
             room_runner=room_runner,  # type: ignore[arg-type]
             next_combat_waiter=next_waiter,  # type: ignore[arg-type]
+            entry_phase=entry_phase,
         )
     except ToolFailure:
         loader.require_zeroed()
@@ -285,17 +287,271 @@ def _run_three_floor_success() -> None:
         "map_wait",
         "map",
     ]
+    expected_payload = {
+        "schema_version": 1,
+        "status": "passed",
+        "milestone": "r0i_bounded_run",
+        "providers": {
+            "combat": "heuristic",
+            "reward": "skip",
+            "map": "first",
+            "room": "safe",
+        },
+        "floor_limit": 3,
+        "completed_floor_count": 3,
+        "action_totals": {
+            "combat": 18,
+            "reward": 3,
+            "map": 3,
+            "room": 0,
+            "total": 24,
+        },
+        "readiness": [
+            {"next_combat_attempts": 0, "reward_attempts": 3, "map_attempts": 4},
+            {"next_combat_attempts": 2, "reward_attempts": 3, "map_attempts": 4},
+            {"next_combat_attempts": 2, "reward_attempts": 3, "map_attempts": 4},
+        ],
+        "floors": [
+            {
+                "floor_number": 1,
+                "destination_kind": "monster",
+                "combat": _combat(actions=5),
+                "reward": _reward(),
+                "map": _map("monster"),
+            },
+            {
+                "floor_number": 2,
+                "destination_kind": "monster",
+                "combat": _combat(actions=6),
+                "reward": _reward(),
+                "map": _map("monster"),
+            },
+            {
+                "floor_number": 3,
+                "destination_kind": "shop",
+                "combat": _combat(actions=7),
+                "reward": _reward(),
+                "map": _map("shop"),
+            },
+        ],
+        "terminal_combat": None,
+        "room_handoff": None,
+        "termination": {
+            "reason": "floor_limit_reached",
+            "after_floor": 3,
+            "destination_kind": "shop",
+        },
+    }
     if (
-        payload.get("milestone") != "r0i_bounded_run"
-        or payload.get("completed_floor_count") != 3
-        or payload.get("termination")
-        != {"reason": "floor_limit_reached", "after_floor": 3, "destination_kind": "shop"}
-        or payload.get("action_totals")
-        != {"combat": 18, "reward": 3, "map": 3, "room": 0, "total": 24}
-        or payload.get("room_handoff") is not None
+        payload != expected_payload
         or calls != expected_calls
     ):
         fail(EXIT_MISMATCH, "run_fixture_three_floor_payload")
+
+
+def _run_combat_entry_equivalence() -> None:
+    omitted, omitted_calls, _ = _run_sequence(["monster", "shop"], 2)
+    explicit, explicit_calls, _ = _run_sequence(
+        ["monster", "shop"],
+        2,
+        entry_phase="combat",
+    )
+    if omitted != explicit or omitted_calls != explicit_calls:
+        fail(EXIT_MISMATCH, "run_fixture_combat_entry_equivalence")
+
+
+def _run_partial_entry_prefixes() -> None:
+    reward, reward_calls, _ = _run_sequence(
+        ["shop"],
+        1,
+        entry_phase="reward",
+    )
+    expected_reward_prefix = {
+        "floor_number": 1,
+        "destination_kind": "shop",
+        "observed_phases": ["reward", "map"],
+        "unavailable_phases": ["combat"],
+        "combat": None,
+        "reward": _reward(),
+        "map": _map("shop"),
+        "readiness": {
+            "next_combat_attempts": 0,
+            "reward_attempts": 0,
+            "map_attempts": 4,
+        },
+    }
+    if (
+        reward.get("milestone") != "r0i_bounded_run_entry"
+        or reward.get("entry_phase") != "reward"
+        or reward.get("processed_floor_count") != 1
+        or reward.get("completed_floor_count") != 0
+        or reward.get("entry_prefix") != expected_reward_prefix
+        or reward.get("floors") != []
+        or reward.get("readiness") != []
+        or reward.get("action_totals")
+        != {"combat": 0, "reward": 1, "map": 1, "room": 0, "total": 2}
+        or reward.get("termination")
+        != {"reason": "floor_limit_reached", "after_floor": 1, "destination_kind": "shop"}
+        or reward_calls != ["reward", "map_wait", "map"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_reward_entry_prefix")
+
+    map_only, map_calls, _ = _run_sequence(
+        ["shop"],
+        1,
+        entry_phase="map",
+    )
+    expected_map_prefix = {
+        "floor_number": 1,
+        "destination_kind": "shop",
+        "observed_phases": ["map"],
+        "unavailable_phases": ["combat", "reward"],
+        "combat": None,
+        "reward": None,
+        "map": _map("shop"),
+        "readiness": {
+            "next_combat_attempts": 0,
+            "reward_attempts": 0,
+            "map_attempts": 0,
+        },
+    }
+    if (
+        map_only.get("entry_phase") != "map"
+        or map_only.get("processed_floor_count") != 1
+        or map_only.get("completed_floor_count") != 0
+        or map_only.get("entry_prefix") != expected_map_prefix
+        or map_only.get("action_totals")
+        != {"combat": 0, "reward": 0, "map": 1, "room": 0, "total": 1}
+        or map_calls != ["map"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_map_entry_prefix")
+
+
+def _run_entry_later_floor_accounting() -> None:
+    payload, calls, _ = _run_sequence(
+        ["monster", "shop"],
+        3,
+        entry_phase="reward",
+    )
+    floors = payload.get("floors")
+    if (
+        payload.get("processed_floor_count") != 2
+        or payload.get("completed_floor_count") != 1
+        or not isinstance(floors, list)
+        or len(floors) != 1
+        or floors[0].get("floor_number") != 2
+        or payload.get("readiness")
+        != [{"next_combat_attempts": 2, "reward_attempts": 3, "map_attempts": 4}]
+        or payload.get("action_totals")
+        != {"combat": 5, "reward": 2, "map": 2, "room": 0, "total": 9}
+        or payload.get("termination")
+        != {
+            "reason": "unsupported_destination_kind",
+            "after_floor": 2,
+            "destination_kind": "shop",
+        }
+        or calls
+        != [
+            "reward",
+            "map_wait",
+            "map",
+            "next_wait",
+            "combat",
+            "reward_wait",
+            "reward",
+            "map_wait",
+            "map",
+        ]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_entry_later_floor")
+
+    capped, capped_calls, _ = _run_sequence(
+        ["monster", "monster", "shop"],
+        3,
+        entry_phase="map",
+    )
+    capped_floors = capped.get("floors")
+    if (
+        capped.get("processed_floor_count") != 3
+        or capped.get("completed_floor_count") != 2
+        or not isinstance(capped_floors, list)
+        or [floor.get("floor_number") for floor in capped_floors] != [2, 3]
+        or capped.get("action_totals")
+        != {"combat": 11, "reward": 2, "map": 3, "room": 0, "total": 16}
+        or capped.get("termination")
+        != {
+            "reason": "floor_limit_reached",
+            "after_floor": 3,
+            "destination_kind": "shop",
+        }
+        or capped_calls.count("map") != 3
+        or capped_calls.count("combat") != 2
+        or capped_calls.count("reward") != 2
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_entry_floor_cap")
+
+
+def _run_entry_room_and_defeat_outcomes() -> None:
+    capped, capped_calls, _ = _run_sequence(
+        ["rest_site"],
+        1,
+        entry_phase="map",
+    )
+    if (
+        capped.get("processed_floor_count") != 1
+        or capped.get("completed_floor_count") != 0
+        or capped.get("termination")
+        != {
+            "reason": "room_handoff_complete",
+            "after_floor": 1,
+            "destination_kind": "rest_site",
+        }
+        or capped.get("action_totals")
+        != {"combat": 0, "reward": 0, "map": 1, "room": 2, "total": 3}
+        or capped_calls != ["map", "room_wait", "room", "map_wait"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_entry_room_cap")
+
+    continued, continued_calls, _ = _run_sequence(
+        ["rest_site", "monster"],
+        2,
+        entry_phase="map",
+    )
+    handoff = _continuation(continued.get("room_handoff"))
+    if (
+        continued.get("processed_floor_count") != 2
+        or continued.get("completed_floor_count") != 0
+        or handoff.get("after_floor") != 1
+        or handoff.get("post_room_map") != _map("monster")
+        or continued.get("termination")
+        != {
+            "reason": "room_continuation_complete",
+            "after_floor": 1,
+            "destination_kind": "monster",
+        }
+        or continued.get("action_totals")
+        != {"combat": 5, "reward": 0, "map": 2, "room": 2, "total": 9}
+        or continued_calls
+        != ["map", "room_wait", "room", "map_wait", "map", "next_wait", "combat"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_entry_room_continuation")
+
+    defeated, defeated_calls, _ = _run_sequence(
+        ["monster"],
+        3,
+        defeat_on_combat=1,
+        entry_phase="map",
+    )
+    if (
+        defeated.get("processed_floor_count") != 1
+        or defeated.get("completed_floor_count") != 0
+        or defeated.get("termination")
+        != {"reason": "run_defeat", "after_floor": 1, "destination_kind": None}
+        or defeated.get("action_totals")
+        != {"combat": 3, "reward": 0, "map": 1, "room": 0, "total": 4}
+        or defeated_calls != ["map", "next_wait", "combat"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_entry_defeat")
 
 
 def _run_unsupported_stops() -> None:
@@ -998,6 +1254,46 @@ def _expect_invocation_failure(arguments: list[str], expected_code: str) -> None
     fail(EXIT_MISMATCH, "run_fixture_invocation_passed")
 
 
+def _run_entry_failure_has_no_fallback() -> None:
+    for entry_phase, expected_call in (("reward", "reward"), ("map", "map")):
+        loader = CredentialLoader()
+        calls: list[str] = []
+        connector = object()
+
+        def reward_runner(*_: object) -> dict[str, object]:
+            calls.append("reward")
+            fail(EXIT_MISMATCH, "run_fixture_entry_not_ready")
+
+        def map_runner(*_: object) -> dict[str, object]:
+            calls.append("map")
+            fail(EXIT_MISMATCH, "run_fixture_entry_not_ready")
+
+        try:
+            run._run_bounded_run(
+                loader,
+                connector,  # type: ignore[arg-type]
+                "heuristic",
+                "skip",
+                "first",
+                "safe",
+                3,
+                reward_runner=reward_runner,  # type: ignore[arg-type]
+                map_runner=map_runner,  # type: ignore[arg-type]
+                entry_phase=entry_phase,
+            )
+        except ToolFailure as failure:
+            if (
+                failure.exit_code != EXIT_MISMATCH
+                or failure.error_code != "run_fixture_entry_not_ready"
+            ):
+                fail(EXIT_MISMATCH, "run_fixture_wrong_entry_failure")
+        else:
+            fail(EXIT_MISMATCH, "run_fixture_entry_failure_passed")
+        loader.require_zeroed()
+        if calls != [expected_call]:
+            fail(EXIT_MISMATCH, "run_fixture_entry_failure_continued")
+
+
 def _run_parse_contract() -> None:
     base = [
         "--user-profile",
@@ -1023,8 +1319,21 @@ def _run_parse_contract() -> None:
         "first",
         "safe",
         3,
+        "combat",
     ):
         fail(EXIT_MISMATCH, "run_fixture_parse")
+    explicit_combat = base + ["--entry-phase", "combat"]
+    if run.parse_args(explicit_combat) != run.parse_args(base):
+        fail(EXIT_MISMATCH, "run_fixture_explicit_combat_parse")
+    for entry_phase in ("reward", "map"):
+        parsed = run.parse_args(base + ["--entry-phase", entry_phase])
+        if parsed[-1] != entry_phase:
+            fail(EXIT_MISMATCH, "run_fixture_entry_phase_parse")
+    _expect_invocation_failure(
+        base + ["--entry-phase", "unknown"],
+        "invalid_entry_phase",
+    )
+    _expect_invocation_failure(base + ["--entry-phase"], "invalid_invocation")
     invalid_limit = list(base)
     invalid_limit[-1] = "4"
     _expect_invocation_failure(invalid_limit, "invalid_floor_limit")
@@ -1038,6 +1347,10 @@ def _run_parse_contract() -> None:
 
 def operation() -> dict[str, object]:
     _run_three_floor_success()
+    _run_combat_entry_equivalence()
+    _run_partial_entry_prefixes()
+    _run_entry_later_floor_accounting()
+    _run_entry_room_and_defeat_outcomes()
     _run_unsupported_stops()
     _run_defeat_stop()
     _run_post_combat_player_transition_contract()
@@ -1051,6 +1364,7 @@ def operation() -> dict[str, object]:
     _run_room_preflight_contract()
     _run_room_preflight_delayed_activation()
     _run_cached_terminal_wait()
+    _run_entry_failure_has_no_fallback()
     _run_parse_contract()
     return {
         "schema_version": 1,
@@ -1058,6 +1372,10 @@ def operation() -> dict[str, object]:
         "suite": "apply_run_live_fixtures",
         "checks": [
             "three_floor_sequence",
+            "combat_entry_equivalence",
+            "reward_and_map_partial_entry_prefixes",
+            "entry_later_floor_accounting",
+            "entry_room_and_defeat_outcomes",
             "unsupported_destination_stops",
             "defeat_stop",
             "bounded_post_combat_player_transition",
@@ -1071,10 +1389,11 @@ def operation() -> dict[str, object]:
             "read_only_room_preflight_contract",
             "delayed_room_preflight_activation",
             "cached_terminal_wait",
+            "entry_failure_no_fallback",
             "provider_and_floor_limit_surface",
             "credential_cleanup",
         ],
-        "check_count": 16,
+        "check_count": 21,
     }
 
 

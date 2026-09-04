@@ -348,7 +348,10 @@ performs the bounded complete-combat loop. `apply_reward_live.py` resolves the
 supported reward choices, `apply_map_live.py` selects one legal map node,
 `apply_room_live.py` handles the separate bounded room slice, and
 `apply_run_live.py` composes combat, reward, map, and supported-room handoffs
-over up to three completed combats for `R0i`. The campaign
+over up to three reconciled map selections for `R0i`. By default it begins at
+combat. An explicit fresh-boundary entry may instead begin at a currently
+visible reward or map decision; this is not recovery, phase detection, or
+continuation after an uncertain request. The campaign
 manager documented later is the only tool allowed to generate, activate,
 quarantine, or purge project-owned live material. None of these tools launches
 the game. Under repository-local authorization alone, do not point them at the
@@ -459,6 +462,33 @@ The batched controller exposes each provider explicitly:
   --room-provider safe \
   --floor-limit 3
 ```
+
+Omission of `--entry-phase` and explicit `--entry-phase combat` have the same
+combat-entry behavior and exact `r0i_bounded_run` success JSON. To start only
+when the named fresh phase is already visible, append exactly one of:
+
+```text
+--entry-phase reward
+--entry-phase map
+```
+
+The selected phase's existing client performs the first validation directly;
+the runner does not scan another phase, auto-detect, fall back, retry, or adopt
+an earlier action. Reward entry runs reward, waits for map readiness, and then
+runs map. Map entry runs map directly. Waiting, cached/complete, unsupported,
+malformed, mismatched, uncertain, or unreconciled entry state stops fail-closed.
+
+Reward/map success uses milestone `r0i_bounded_run_entry`. Its `entry_prefix`
+is logical floor 1 and records exactly the destination, ordered observed and
+unavailable phases, nullable combat/reward/map component records, and the
+existing three readiness counters. Direct entry attempts are zero; only the
+reward-to-map readiness wait records attempts. `floors` contains only complete
+combat/reward/map triples and begins at logical floor 2. Consequently
+`completed_floor_count` excludes the prefix, while `processed_floor_count`
+counts every accepted-and-reconciled map selection, including the prefix and a
+post-room selection. That count never exceeds `floor_limit`, whose maximum
+remains three. Unavailable phases remain `null`; the host summary does not
+infer their outcome, continuity, action, or state.
 
 Replace `501` with the separately established effective UID. Before live
 approval, run only its in-memory disposable fixture suite:
