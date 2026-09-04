@@ -29,10 +29,10 @@ contracts, integration, pins, artifacts, and all live operation.
 | `R0I-COMPOSE-LIVE-13` | Coordinator | Waiting for reviewed 08/09/10/12 and artifact gates | Sequential live campaign and evidence |
 | `H5-ARTIFACT-01` | Terra/high | First candidate rejected; semantic provenance correction active | New reporting module and tests |
 | `H5-CLI-02` | Terra/medium | Waiting for accepted artifact envelope | New CLI, tests and sample config |
-| `H5-METAMORPHIC-03` | Sol/high | Dispatched | New conformance and matched-panel tests |
-| `H4-EVIDENCE-03` | Sol/high | Candidate `905d34e` in independent review | New evidence module/tests and preregistered case spec |
-| `H4-GOLD-04` | Sol/high | Waiting for accepted evidence schema | New gold evaluator and tests |
-| `H4-CORPUS-05` | Terra/high | Waiting for accepted evidence schema; synthetic data only | New corpus codec and tests |
+| `H5-METAMORPHIC-03` | Sol/high | Integrated `b533caa` | New conformance and matched-panel tests |
+| `H4-EVIDENCE-03` | Sol/high | Integrated `ecac394` + `20eeaf7`; contract frozen | New evidence module/tests and preregistered case spec |
+| `H4-GOLD-04` | Sol/high | Dispatched from `20eeaf7` | New gold evaluator and tests |
+| `H4-CORPUS-05` | Terra/high | Dispatched from `20eeaf7`; synthetic data only | New corpus codec and tests |
 | `H4-GOLD-ADAPTER-06` | Terra/high | Waiting for accepted evidence/evaluator | New capture-off gold adapter and fixtures |
 
 Exact owned paths and acceptance gates are defined in the plan and copied into
@@ -113,4 +113,64 @@ Observed task-turn durations: `08` 139195 ms, `09` 173918 ms, first `12` attempt
 These are per-turn elapsed values, not total project time or performance
 benchmarks. Token usage and other unavailable metrics: `unavailable`.
 No unavailable metric is estimated; no prompts, transcripts or hidden reasoning
-are requested or retained for telemetry. No model escalation in this increment.
+are requested or retained for telemetry.
+
+### Evidence and maintained headless tests
+
+- Evidence worker `905d34e` integrated as `ecac394`; a separately reviewed
+  coordinator hardening `20eeaf7` normalizes oversized JSON integer failures
+  without changing the schema/spec. Complete diff review, 206 coordinator
+  differential/wire/reward-rule tests, independent 187 tests and 166 additional
+  synthetic rejection cases passed. Frozen case spec SHA-256:
+  `41ced248e52ca27e42d6318d63568f271edd605be3365afffd92c5e78a896a28`;
+  schema SHA-256:
+  `b797e69c160179795d3ed3cab9c66b0aabc4e4bd535af36c5a9d72349c428380`.
+  Field correctness and temporal correspondence remain evaluator/adapter/review
+  responsibilities. External review objects are trusted assertions, not proof
+  against a dishonest caller. Gold and corpus consumers were released immediately.
+- Metamorphic worker `4a9479c` integrated as `b533caa`. Complete diff and
+  independent review passed; coordinator conformance/panel run: 91 passed in
+  87.20 s. Independent new tests: 25 passed in 70.66 s. These include 24 generated
+  cases and a twelve-episode full serial/spawn × two-collector-seed panel.
+  Runtime is material but bounded; passing demonstrates structural consistency,
+  not target-game fidelity. Unexpected exceptions retain a bounded reproducible
+  prefix, not a generally minimized counterexample.
+- Broad suite after context/evidence integration, before the new metamorphic
+  tests: **910 passed in 37.98 s**.
+
+### Explicit experiment provenance boundary
+
+Existing trajectory streams do not contain independently verifiable scenario,
+settings or game/policy/collector seed declarations. The coordinator approved
+keeping these as exact caller-declared, manifest-bound experiment conditions.
+The envelope must cross-check obtainable trajectory ID/pins/count/decision/
+completion facts and declared budgets; it must not label decision hashes as
+snapshot hashes or claim it can prove a dishonest producer's seed declarations.
+CLI will pass its actual collector configuration directly. No private run-ID
+derivation, producer schema change or live-world reconstruction was authorized.
+
+### Further review and model escalation
+
+- Transcript candidate `39f8737` rejected for a vacuous canary assertion and
+  transport-failure cases bypassing the run orchestrator. Same Terra/high task
+  adds actual captured-output canaries and whole-composition failure tests.
+- `12` correction `35717c2` still accepted boolean/float summary schema versions
+  and leaked numeric overflow exception types; its callback deadline contract
+  also needed to state cooperative versus bounded-hook behavior. Escalated
+  **Terra/high → Sol/high** for these reproduced repeated validation gaps.
+- Artifact correction `dc02394` passed 51 focused/shared tests but still allowed
+  an interrupted episode inside a batch falsely labelled not interrupted,
+  followed by another repetition. Escalated **Terra/high → Sol/high** for this
+  repeated stop-after-interruption mismatch. The declared-config limitation is
+  accepted and is not the reason for escalation.
+
+### Live preparation only
+
+No campaign installed or launched yet. Read-only preflight confirmed game
+absent and port closed (the sandbox initially denied process inspection; the
+supported guard passed with technical escalation). Exact existing package and
+assembly hashes remain those of the preceding accepted artifact. Fresh package
+verification passed two entries; forbidden-surface check passed 11 routes and
+1,063 method bodies. Base verification passed 429 files, zero overlay files,
+SHA-256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Python consumer changes do not silently repin the C# artifact or old inventory.
