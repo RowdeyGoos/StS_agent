@@ -93,7 +93,7 @@ def _fake_clock() -> Any:
 
 
 class _Socket:
-    def __init__(self, response: bytes, expected_request: bytes) -> None:
+    def __init__(self, response: bytes | TimeoutError, expected_request: bytes) -> None:
         self._response = response
         self._expected_request = expected_request
         self._offset = 0
@@ -112,6 +112,8 @@ class _Socket:
     def recv(self, maximum: int) -> bytes:
         if maximum != probe._RECEIVE_CHUNK_BYTES:
             fail(EXIT_MISMATCH, "wire_receive_bound")
+        if isinstance(self._response, TimeoutError):
+            raise self._response
         if self._offset >= len(self._response):
             return b""
         end = min(self._offset + 31, len(self._response))
@@ -124,7 +126,7 @@ class _Socket:
 
 
 class _Connector:
-    def __init__(self, transcript: list[tuple[bytes, bytes]]) -> None:
+    def __init__(self, transcript: list[tuple[bytes | TimeoutError, bytes]]) -> None:
         self._transcript = transcript
         self._offset = 0
         self.sockets: list[_Socket] = []
@@ -147,6 +149,14 @@ class _Connector:
             fail(EXIT_MISMATCH, "wire_request_missing")
         if any(socket.request is not None and any(socket.request) for socket in self.sockets):
             fail(EXIT_MISMATCH, "wire_request_not_zeroed")
+
+    def assert_post_count(self, expected: int) -> None:
+        observed = sum(
+            socket._expected_request.startswith(b"POST ")
+            for socket in self.sockets
+        )
+        if observed != expected:
+            fail(EXIT_MISMATCH, "wire_post_count")
 
 
 class _CredentialLoader:
@@ -253,6 +263,11 @@ def _room_ready(decision_id: str, ordinal: int) -> bytes:
     return room_fixture._ready(decision_id, "rest_site", "choose_option", [heal], [room_fixture._legal(heal)], ordinal=ordinal)
 
 
+def _event_ready(decision_id: str, ordinal: int) -> bytes:
+    safe = room_fixture._candidate(0, "event_option", "EVENT.SAFE", enabled=True, supported=True)
+    return room_fixture._ready(decision_id, "event", "choose_option", [safe], [room_fixture._legal(safe)], ordinal=ordinal)
+
+
 def _room(transcript: list[tuple[bytes, bytes]], ordinal: int) -> None:
     first, second = "7" * 64, "8" * 64
     heal = room_fixture._candidate(0, "rest_heal", "HEAL", enabled=False, supported=True)
@@ -302,6 +317,7 @@ def _run_success() -> None:
     if payload.get("termination", {}).get("reason") != "run_defeat" or payload.get("action_totals") != {"combat": 5, "reward": 2, "map": 2, "room": 2, "total": 11}:
         fail(EXIT_MISMATCH, "wire_success_payload")
     connector.assert_complete()
+    connector.assert_post_count(11)
     loader.assert_zeroed()
 
 
@@ -315,6 +331,7 @@ def _run_defeat_no_followup() -> None:
     if payload.get("termination", {}).get("reason") != "run_defeat":
         fail(EXIT_MISMATCH, "wire_defeat_payload")
     connector.assert_complete()
+    connector.assert_post_count(1)
     loader.assert_zeroed()
 
 
@@ -324,18 +341,23 @@ def _run_rejected_and_uncertain_posts() -> None:
     for response, expected_code in (
         (turn_fixture._action_body(decision_id, "end_turn", accepted=False), "terminal_after_rejected_action"),
         (probe._RETRYABLE_BACKEND_HEADER + probe._RETRYABLE_BACKEND_BODY_PREFIX + b"0" * 32 + probe._RETRYABLE_BACKEND_BODY_SUFFIX, "action_response_mismatch"),
+        (TimeoutError(), "action_transport_failure"),
     ):
-        transcript: list[tuple[bytes, bytes]] = []
+        transcript: list[tuple[bytes | TimeoutError, bytes]] = []
         _add_base(transcript)
         _add(transcript, state, _get(probe._COMBAT_ROUTE[0][1]))
-        transcript.append((_response(response) if response.startswith(b"{") else response, _post(probe._ACTION_ROUTE, decision_id, "end_turn")))
-        if response.startswith(b"{"):
+        if isinstance(response, TimeoutError):
+            transcript.append((response, _post(probe._ACTION_ROUTE, decision_id, "end_turn")))
+        else:
+            transcript.append((_response(response) if response.startswith(b"{") else response, _post(probe._ACTION_ROUTE, decision_id, "end_turn")))
+        if isinstance(response, bytes) and response.startswith(b"{"):
             _add(transcript, combat_fixture._terminal("defeat", 1, hp=0, enemies=[combat_fixture._enemy(43)]), _get(probe._COMBAT_ROUTE[0][1]))
         connector = _Connector(transcript)
         credential = bytearray(_CREDENTIAL)
         with _fake_clock():
             _expect_failure(lambda: combat._run_apply_combat(credential, "first-legal", connector), expected_code)
         connector.assert_complete()
+        connector.assert_post_count(1)
         if any(credential):
             fail(EXIT_MISMATCH, "wire_uncertain_credential")
 
@@ -359,7 +381,35 @@ def _run_run_level_rejections() -> None:
         with _fake_clock():
             _expect_failure(lambda: run._run_bounded_run(loader, connector, "heuristic", "first-card", "first", "safe", 2), code)
         connector.assert_complete()
+        connector.assert_post_count(10)
         loader.assert_zeroed()
+
+
+def _run_context_replacement_before_post() -> None:
+    """The accepted context seal rejects a replacement room before its POST."""
+    transcript: list[tuple[bytes, bytes]] = []
+    _combat_victory(transcript, "a")
+    _add(transcript, _reward_ready("b" * 64, 0, 71, claimable=True), _get(probe._REWARD_ROUTE[0][1]))
+    _reward(transcript)
+    _add(transcript, _map_ready("c" * 64, "rest_site"), _get(map_client._MAP_DECISION_ROUTE))
+    _map(transcript, "d" * 64, "rest_site")
+    _add(transcript, _room_ready("e" * 64, 4), _get(room._ROOM_DECISION_ROUTE))
+    _add_base(transcript)
+    _add(transcript, _event_ready("f" * 64, 5), _get(room._ROOM_DECISION_ROUTE))
+    connector = _Connector(transcript)
+    loader = _CredentialLoader()
+    with _fake_clock():
+        _expect_failure(
+            lambda: run._run_bounded_run(
+                loader, connector, "heuristic", "first-card", "first", "safe", 2
+            ),
+            "room_expected_context_mismatch",
+        )
+    connector.assert_complete()
+    # Four combat, two reward, and one map mutation only; the replacement
+    # room and all later components must be POST-free.
+    connector.assert_post_count(7)
+    loader.assert_zeroed()
 
 
 def operation() -> dict[str, object]:
@@ -367,6 +417,7 @@ def operation() -> dict[str, object]:
     _run_defeat_no_followup()
     _run_rejected_and_uncertain_posts()
     _run_run_level_rejections()
+    _run_context_replacement_before_post()
     result = {
         "schema_version": 1,
         "status": "passed",
@@ -376,11 +427,12 @@ def operation() -> dict[str, object]:
             "actual_client_combat_reward_map_room_run_transcript",
             "delayed_phase_readiness_and_resource_closure",
             "defeat_stops_followup_mutations",
-            "rejected_and_uncertain_post_do_not_retry",
+            "rejected_timeout_and_uncertain_post_do_not_retry",
             "second_room_and_unsupported_destination_fail_closed",
+            "replacement_room_rejected_before_first_post",
             "secret_canary_absent_from_output",
         ],
-        "check_count": 6,
+        "check_count": 7,
     }
     if _CANARY in json.dumps(result, separators=(",", ":")).encode("ascii"):
         fail(EXIT_MISMATCH, "wire_secret_canary_output")
