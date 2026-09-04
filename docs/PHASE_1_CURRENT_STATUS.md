@@ -266,9 +266,13 @@ maintained in
 
 ## Document map
 
-- [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) proposes
-  the next dependency-aware increment; it is not yet an implementation or
-  retained-data authorization and does not change the evidence above.
+- [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) is the
+  accepted active increment. Pre-action context binding, its composed handoff,
+  the named evidence contract and generated headless panels are reviewed and
+  integrated. Remaining consumers and live composition acceptance are pending;
+  this does not authorize retained live data or upgrade the live evidence above.
+  Exact results are in the
+  [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - [`bridge/Sts2AgentBridge/README.md`](../bridge/Sts2AgentBridge/README.md)
   defines the current `R0i` implementation, commands, exact limits, package,
   and operational boundaries.
