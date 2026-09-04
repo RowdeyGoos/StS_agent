@@ -34,6 +34,7 @@ Project and contributor documentation:
 - [docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md](docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md): historical independent hash-bound review of the D1 result and D1B scope
 - [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md): preregistration and evidence plan for choosing the live bridge and fast backend
 - [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md): living account of demonstrated bridge progress, current limitations, and the next bounded target
+- [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md): proposed next parallel increment for reliable room composition, headless experiment tooling, and narrow conformance evidence; not yet implemented
 - [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md): preserved pre-implementation candidate shortlist, safety gaps, and ordered experiment gates
 - [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md): preserved initial read-only bridge boundary, staged control design, and gates
 - [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md): implemented `R0i` bridge boundary, contracts, controllers, and reproducible build/package commands

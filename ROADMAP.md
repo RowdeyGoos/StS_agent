@@ -113,6 +113,15 @@ running both tracks with as many independent agents as their dependencies allow
 are in
 [`docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md).
 
+The proposed successor increment is in
+[`docs/PHASE_1_NEXT_INCREMENT_PLAN.md`](docs/PHASE_1_NEXT_INCREMENT_PLAN.md).
+It prioritizes pre-action room-context binding and actual-client composition
+fixtures, headless experiment artifacts/CLI and maintained generated tests,
+and a separate narrow gold-claim conformance path. Event investigation is
+nonblocking for rest composition. Encoder/dataset consumers remain a later
+option; this planning proposal does not start implementation or approve retained
+live data.
+
 ### 1. Better Evaluation Reporting
 
 Completed foundation:

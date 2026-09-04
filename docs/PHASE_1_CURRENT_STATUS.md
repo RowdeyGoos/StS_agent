@@ -266,6 +266,9 @@ maintained in
 
 ## Document map
 
+- [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) proposes
+  the next dependency-aware increment; it is not yet an implementation or
+  retained-data authorization and does not change the evidence above.
 - [`bridge/Sts2AgentBridge/README.md`](../bridge/Sts2AgentBridge/README.md)
   defines the current `R0i` implementation, commands, exact limits, package,
   and operational boundaries.
