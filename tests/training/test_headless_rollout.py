@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from game.backends.headless.reduced_run_backend import HeadlessRunConfig
+from game.backends.headless.reduced_run_backend import HeadlessRunConfig, ReducedRunBackend
 from game.content.reduced_v0 import CONTENT_FINGERPRINT
 from game.contracts.headless_v0 import DecisionStatus
 from game.data.headless_trajectory import validate_trajectory
@@ -129,3 +129,23 @@ def test_explicit_route_defeat_budget_and_unsupported_stop_reasons() -> None:
         EpisodeResult(EpisodeStopReason.UNSUPPORTED, _decision(0, DecisionStatus.UNSUPPORTED), 0),
         object(),
     ) is RolloutStopReason.UNSUPPORTED
+
+
+def test_backend_failure_returns_a_validated_interrupted_partial_trajectory(monkeypatch) -> None:
+    def interrupted_apply(self, action):
+        raise RuntimeError("synthetic collector interruption")
+
+    monkeypatch.setattr(ReducedRunBackend, "apply", interrupted_apply)
+    result = run_headless_rollout(_config("rollout-failure"))
+
+    assert result.stop_reason is RolloutStopReason.FAILED
+    assert result.failure == "RuntimeError: synthetic collector interruption"
+    assert result.trajectory is not None
+    assert result.trajectory.manifest.completion.value == "interrupted"
+    validate_trajectory(
+        result.trajectory.manifest_json,
+        result.trajectory.policy_replay_jsonl,
+        result.trajectory.hindsight_target_jsonl,
+        result.trajectory.synthetic_audit_jsonl,
+        expected_manifest_sha256=result.trajectory.manifest_sha256,
+    )
