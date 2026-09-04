@@ -22,6 +22,19 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     }
 
+#if STS2_AGENT_BRIDGE_TEST_SEAM
+    private readonly Func<ulong>? _testRoomInstanceId;
+    private readonly Action? _testClick;
+
+    internal PinnedPublicRoomActionApplier(
+        PinnedPublicRoomDecisionReader reader, Func<ulong> roomInstanceId, Action click)
+        : this(reader)
+    {
+        _testRoomInstanceId = roomInstanceId;
+        _testClick = click;
+    }
+#endif
+
     public PublicRoomActionApplyResult Apply(PublicRoomActionRequest request)
     {
         PublicRoomActionApplyOutcome? initialFailure = ReservationFailure(request.DecisionId);
@@ -54,6 +67,12 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
             return Result(PublicRoomActionApplyOutcome.InvalidAction, request);
         }
 
+#if STS2_AGENT_BRIDGE_TEST_SEAM
+        if (_testClick is not null)
+        {
+            return ReserveAndApply(request, snapshot, selected.Value, _testRoomInstanceId!(), _testClick);
+        }
+#endif
         return snapshot.ScreenKind switch
         {
             "rest_site" => ApplyRestSite(request, snapshot, selected.Value),

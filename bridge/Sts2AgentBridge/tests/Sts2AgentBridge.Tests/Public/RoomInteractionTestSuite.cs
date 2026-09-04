@@ -20,6 +20,10 @@ internal static class RoomInteractionTestSuite
         PendingProjectionAndReplayRemainFailClosed();
         UncertainClickRemainsReserved();
         RestContinuationAndEmbeddedCombatStayBound();
+        RoomIdentitySurvivesVisibilityGaps();
+        ReturningRoomCannotReissueAcceptedAction();
+        KnownRoomKindIsImmutable();
+        KnownRoomsSurviveOrdinalExhaustion();
     }
 
     private static void IdentityBindsRoomAndCandidateSafetyState()
@@ -384,6 +388,130 @@ internal static class RoomInteractionTestSuite
         TestAssert.Equal(string.Empty, snapshot.DecisionId, message + " decision identity");
     }
 
+    private static void RoomIdentitySurvivesVisibilityGaps()
+    {
+        foreach (string kind in new[] { "event", "rest_site" })
+        foreach (string gap in new[] { "room", "run", "map" })
+        {
+            var fixture = new LifecycleFixture(kind) { Proceed = kind == "rest_site" };
+            PublicRoomDecisionSnapshot accepted = fixture.Reader.Read();
+            TestAssert.Equal(PublicRoomActionApplyOutcome.Accepted,
+                fixture.Applier.Apply(Request(accepted)).Outcome, "initial action accepted through Apply");
+            PublicRoomSurface original = fixture.Surface;
+            fixture.Surface = gap switch
+            {
+                "room" => original with { RoomInstanceId = null, ScreenKind = "unknown" },
+                "run" => default,
+                _ => original with { MapAvailable = false },
+            };
+            AssertNoCandidates(fixture.Reader.Read(), PublicDecisionStatus.Waiting, "temporary visibility gap");
+            AssertNoCandidates(fixture.Reader.Read(), PublicDecisionStatus.Waiting, "repeated gap allocates nothing");
+            fixture.Surface = original with { MapOpen = true, TravelEnabled = true };
+            AssertNoCandidates(fixture.Reader.Read(), PublicDecisionStatus.Waiting, "gap clears completion evidence");
+            fixture.Surface = original;
+            PublicRoomDecisionSnapshot returned = fixture.Reader.Read();
+            TestAssert.Equal(PublicDecisionStatus.Ready, returned.Status, "unchanged room projection returns");
+            PublicRoomActionApplyResult repeated = fixture.Applier.Apply(Request(returned));
+            TestAssert.Equal(PublicRoomActionApplyOutcome.AlreadyApplied, repeated.Outcome,
+                "returned decision cannot replay accepted action across " + kind + "/" + gap + "; ordinals " +
+                accepted.RoomOrdinal + " -> " + returned.RoomOrdinal + "; clicks " + fixture.ClickCount);
+            TestAssert.Equal(accepted.RoomOrdinal, returned.RoomOrdinal, "visibility gap preserves ordinal");
+            TestAssert.Equal(accepted.DecisionId, returned.DecisionId, "visibility gap preserves decision identity");
+            TestAssert.Equal(1, fixture.ClickCount, "one click across visibility gap");
+        }
+
+        foreach (bool changeRun in new[] { false, true })
+        {
+            var fixture = new LifecycleFixture("event");
+            PublicRoomDecisionSnapshot first = fixture.Reader.Read();
+            fixture.Applier.Apply(Request(first));
+            fixture.Surface = changeRun ? fixture.Surface with { RunInstanceId = 2 }
+                : fixture.Surface with { RoomInstanceId = 2 };
+            PublicRoomDecisionSnapshot next = fixture.Reader.Read();
+            TestAssert.Equal(first.RoomOrdinal + 1, next.RoomOrdinal, "new confirmed identity advances ordinal");
+            TestAssert.False(first.DecisionId == next.DecisionId, "new confirmed identity has distinct decision");
+            TestAssert.Equal(PublicRoomActionApplyOutcome.Accepted,
+                fixture.Applier.Apply(Request(next)).Outcome, "new confirmed room remains actionable");
+            TestAssert.Equal(2, fixture.ClickCount, "one click per confirmed room");
+        }
+    }
+
+    private static void ReturningRoomCannotReissueAcceptedAction()
+    {
+        foreach (string kind in new[] { "event", "rest_site" })
+        {
+            var fixture = new LifecycleFixture(kind) { Proceed = kind == "rest_site" };
+            PublicRoomDecisionSnapshot first = fixture.Reader.Read();
+            fixture.Applier.Apply(Request(first));
+            PublicRoomSurface original = fixture.Surface;
+            fixture.Surface = original with { RoomInstanceId = 2 };
+            PublicRoomDecisionSnapshot second = fixture.Reader.Read();
+            TestAssert.Equal(first.RoomOrdinal + 1, second.RoomOrdinal, "B gets next ordinal");
+            TestAssert.Equal(PublicRoomActionApplyOutcome.Accepted,
+                fixture.Applier.Apply(Request(second)).Outcome, "B action accepted once");
+            fixture.Surface = original with { MapOpen = true, TravelEnabled = true };
+            AssertNoCandidates(fixture.Reader.Read(), PublicDecisionStatus.Waiting,
+                "returning A does not restore prior completion evidence");
+            fixture.Surface = original;
+            PublicRoomDecisionSnapshot returned = fixture.Reader.Read();
+            TestAssert.Equal(first.DecisionId, returned.DecisionId, "A-B-A preserves first A hash");
+            TestAssert.Equal(PublicRoomActionApplyOutcome.AlreadyApplied,
+                fixture.Applier.Apply(Request(returned)).Outcome, "freshly returned A cannot replay");
+            TestAssert.Equal(2, fixture.ClickCount, "exactly one click per distinct room");
+            fixture.Surface = original with { RoomInstanceId = 3 };
+            TestAssert.Equal(2, fixture.Reader.Read().RoomOrdinal, "returning A consumes no ordinal");
+        }
+    }
+
+    private static void KnownRoomKindIsImmutable()
+    {
+        foreach (string kind in new[] { "event", "rest_site" })
+        {
+            var fixture = new LifecycleFixture(kind) { Proceed = kind == "rest_site" };
+            PublicRoomDecisionSnapshot accepted = fixture.Reader.Read();
+            fixture.Applier.Apply(Request(accepted));
+            PublicRoomSurface original = fixture.Surface;
+            int projections = fixture.ProjectionCount;
+            fixture.Surface = original with { ScreenKind = kind == "event" ? "rest_site" : "event" };
+            AssertNoCandidates(fixture.Reader.Read(), PublicDecisionStatus.Unsupported, "known pair kind conflict");
+            TestAssert.Equal(projections, fixture.ProjectionCount, "conflicting kind cannot project controls");
+            fixture.Surface = original;
+            PublicRoomDecisionSnapshot returned = fixture.Reader.Read();
+            TestAssert.Equal(accepted.DecisionId, returned.DecisionId, "kind conflict cannot mint identity");
+            TestAssert.Equal(PublicRoomActionApplyOutcome.AlreadyApplied,
+                fixture.Applier.Apply(Request(returned)).Outcome, "kind conflict cannot bypass replay");
+            TestAssert.Equal(1, fixture.ClickCount, "kind conflict never clicks");
+            fixture.Surface = original with { RoomInstanceId = 2 };
+            TestAssert.Equal(1, fixture.Reader.Read().RoomOrdinal, "kind conflict consumes no ordinal");
+        }
+    }
+
+    private static void KnownRoomsSurviveOrdinalExhaustion()
+    {
+        var fixture = new LifecycleFixture("event");
+        PublicRoomDecisionSnapshot first = fixture.Reader.Read();
+        fixture.Applier.Apply(Request(first));
+        PublicRoomDecisionSnapshot last = first;
+        for (int ordinal = 1; ordinal < 1000; ordinal++)
+        {
+            fixture.Surface = fixture.Surface with { RoomInstanceId = (ulong)ordinal + 1 };
+            last = fixture.Reader.Read();
+            TestAssert.Equal(ordinal, last.RoomOrdinal, "new pairs allocate monotonically up to cap");
+        }
+        fixture.Surface = fixture.Surface with { RoomInstanceId = 1001 };
+        AssertNoCandidates(fixture.Reader.Read(), PublicDecisionStatus.Unsupported, "new pair fails at cap");
+        fixture.Surface = fixture.Surface with { RoomInstanceId = 1 };
+        PublicRoomDecisionSnapshot returned = fixture.Reader.Read();
+        TestAssert.Equal(first.DecisionId, returned.DecisionId, "known pair retains identity at cap");
+        TestAssert.Equal(PublicRoomActionApplyOutcome.AlreadyApplied,
+            fixture.Applier.Apply(Request(returned)).Outcome, "known pair cannot replay at cap");
+        fixture.Surface = fixture.Surface with { RoomInstanceId = 1000 };
+        TestAssert.Equal(last.DecisionId, fixture.Reader.Read().DecisionId, "last known pair recognized at cap");
+        fixture.Surface = fixture.Surface with { RunInstanceId = 2 };
+        AssertNoCandidates(fixture.Reader.Read(), PublicDecisionStatus.Unsupported, "new run cannot reset cap");
+        TestAssert.Equal(1, fixture.ClickCount, "ordinal exhaustion never replays accepted action");
+    }
+
     private static PublicRoomActionRequest Request(PublicRoomDecisionSnapshot snapshot)
     {
         TestAssert.True(PublicRoomActionRequest.TryCreate(snapshot.DecisionId,
@@ -406,7 +534,8 @@ internal static class RoomInteractionTestSuite
         {
             Surface = new PublicRoomSurface(1, 1, kind, true, false, false, false, false);
             Reader = new PinnedPublicRoomDecisionReader(() => Surface, Project);
-            Applier = new PinnedPublicRoomActionApplier(Reader);
+            Applier = new PinnedPublicRoomActionApplier(Reader,
+                () => Surface.RoomInstanceId!.Value, () => ClickCount++);
         }
 
         private PublicRoomDecisionSnapshot Project(int ordinal)

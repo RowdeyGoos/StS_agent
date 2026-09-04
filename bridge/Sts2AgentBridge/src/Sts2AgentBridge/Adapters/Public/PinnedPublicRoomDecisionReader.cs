@@ -288,10 +288,15 @@ internal readonly record struct PublicRoomSurface(
 
 internal sealed class PublicRoomSurfaceLifecycle
 {
+    private readonly record struct RoomIdentity(
+        ulong RunInstanceId, ulong RoomInstanceId, string ScreenKind, int Ordinal);
+
+    // Numeric identities only, with no eviction or reuse during this process.
+    // Completion evidence is deliberately not retained alongside this registry.
+    private readonly List<RoomIdentity> _roomIdentities = new();
     private ulong? _runInstanceId;
     private ulong? _roomInstanceId;
     private string _screenKind = "unknown";
-    private int _nextRoomOrdinal;
     private PublicRoomDecisionSnapshot? _ready;
     private string? _pendingDecisionId;
     private bool _acceptedRestProceed;
@@ -302,6 +307,15 @@ internal sealed class PublicRoomSurfaceLifecycle
     // no candidates, including an inspection map over persistent room nodes.
     internal PublicRoomDecisionSnapshot? Observe(PublicRoomSurface surface)
     {
+        // Absence is not a new incarnation. Keep confirmed identities
+        // so the same room cannot obtain a fresh decision hash after a gap.
+        // Only volatile readiness/completion evidence is invalidated here.
+        if (!surface.RunInstanceId.HasValue || !surface.RoomInstanceId.HasValue ||
+            !surface.MapAvailable)
+        {
+            ClearEvidence();
+            return PublicRoomDecisionSnapshot.Waiting();
+        }
         if (_runInstanceId != surface.RunInstanceId ||
             _roomInstanceId != surface.RoomInstanceId ||
             !string.Equals(_screenKind, surface.ScreenKind, StringComparison.Ordinal))
@@ -310,20 +324,13 @@ internal sealed class PublicRoomSurfaceLifecycle
             _roomInstanceId = surface.RoomInstanceId;
             _screenKind = surface.ScreenKind;
             ClearEvidence();
-            RoomOrdinal = surface.RunInstanceId.HasValue && surface.RoomInstanceId.HasValue &&
-                _nextRoomOrdinal <= 999 ? _nextRoomOrdinal++ : -1;
+            RoomOrdinal = ResolveRoomOrdinal(surface.RunInstanceId.Value,
+                surface.RoomInstanceId.Value, surface.ScreenKind);
         }
 
-        if (!surface.RunInstanceId.HasValue || !surface.RoomInstanceId.HasValue ||
-            !surface.MapAvailable)
-        {
-            ClearEvidence();
-            return PublicRoomDecisionSnapshot.Waiting();
-        }
         if (RoomOrdinal < 0 || surface.Unsupported)
         {
-            _acceptedRestProceed = false;
-            _ready = null;
+            ClearEvidence();
             return PublicRoomDecisionSnapshot.Unsupported(_screenKind, RoomOrdinal);
         }
         if (surface.Traveling)
@@ -344,6 +351,26 @@ internal sealed class PublicRoomSurfaceLifecycle
             return PublicRoomDecisionSnapshot.Waiting();
         }
         return null;
+    }
+
+    private int ResolveRoomOrdinal(ulong runInstanceId, ulong roomInstanceId, string screenKind)
+    {
+        foreach (RoomIdentity identity in _roomIdentities)
+        {
+            if (identity.RunInstanceId == runInstanceId && identity.RoomInstanceId == roomInstanceId)
+            {
+                // A known numeric pair cannot be relabeled to mint a new hash.
+                return string.Equals(identity.ScreenKind, screenKind, StringComparison.Ordinal)
+                    ? identity.Ordinal : -1;
+            }
+        }
+        if (_roomIdentities.Count >= 1000)
+        {
+            return -1;
+        }
+        int ordinal = _roomIdentities.Count;
+        _roomIdentities.Add(new RoomIdentity(runInstanceId, roomInstanceId, screenKind, ordinal));
+        return ordinal;
     }
 
     internal PublicRoomDecisionSnapshot Project(PublicRoomDecisionSnapshot snapshot)
