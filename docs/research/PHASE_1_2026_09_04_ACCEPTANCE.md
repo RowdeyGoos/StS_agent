@@ -56,12 +56,53 @@ their evidence labels.
 | `H3-BASELINE-02` | `8754d12`, `3b613c5` → `2ff9340`, `04c045c` | Accepted public-only first-legal, explicitly seeded random, structural heuristic; 162 focused/shared tests passed |
 | `R0I-RUN-04` readiness repair | `8a6e5c0`, `f7d5b21` → `2b2fd07`, `f74cf26` | Accepted bounded polling of validated inactive completion; only expected-kind ready succeeds; 14 run and 16 room fixtures passed |
 | `H4-LIVE-DIFF-02`, offline portion | `06466e4`, `621c5c3` → `6fbc0ca`, `8fda7da` | Accepted synthetic common-subset comparator and build-safe identity inventory; live portion blocked |
-| `H3-ROLLOUT-03` | `f43cb58`, `b9f3393` | Initial implementation rejected for cancellation/result-loss and missing backend cleanup; corrective review in progress |
+| `H3-ROLLOUT-03` | `f43cb58`, `b9f3393`, `2040322`, `8bf7ccb` → `d85448b`, `f2b7f7c`, `fdc2c33`, `feda7d6` | Accepted after real-spawn cancellation review and escalation; 280 focused/shared tests and 829 full repository tests passed |
 
 The readiness repair explicitly owns the two run-client files plus the two
 room-client files for this correction; only three of those files changed.
 No production C#, wire schema, accepted contract fingerprint, or bridge
-artifact changed in this resumed session.
+artifact changed before the first campaign. The subsequently approved C#
+lifecycle packet is being implemented separately.
+
+## Accepted headless rollout consumer
+
+The accepted collector invokes the generic episode runner, not an independent
+rules loop. Its serializable reduced-backend descriptor and chooser registry
+work in spawned processes. Game seeds, chooser seeds, and collector scheduling
+seeds remain separate. Results preserve component evidence and independent
+replay, hindsight-target, and audit streams. Explicit reasons include defeat,
+route completion, unsupported state, budget exhaustion, interruption, and
+failure; route completion is not a target-game win.
+
+The first implementation lost completed batches on parent interruption and did
+not close its backend. The first correction fixed iteration cancellation but
+still lost received results on SIGINT during join; benchmarks also continued
+repetitions after cancellation. Independent real spawned-process reproductions
+justified escalation to Sol/high. The accepted correction covers collection,
+close, join, and repeated SIGINT during cleanup, restores the caller's signal
+handler, stops benchmark repetitions, and leaves zero workers alive. Received
+results survive; unreceived results are named as pending, never fabricated.
+Forced cancellation cannot recover unpublished state inside a worker.
+
+All 280 focused/shared tests passed in 32.32 seconds; the integrated whole
+repository passed **829 tests in 36.45 seconds**. A nonthrowing sealed backend
+is the supported factory; richer reporting of hypothetical cleanup failures
+remains nonblocking hardening, not an additional backend capability.
+
+Coordinator benchmark at `feda7d6`, Python 3.11.15, Darwin arm64:
+`simple__starter`, structural heuristic, game seed panel `[7, 8]`, policy seed
+11, collector seed 17, transition budget 300 per episode, one repetition.
+Both modes returned two `route_complete` episodes and 57 transitions without
+interruption, retaining `combat_v0`/`structural_fixture` evidence.
+
+| Mode | Seconds | Episodes/s | Transitions/s |
+| --- | ---: | ---: | ---: |
+| Sequential | 0.447908 | 4.465 | 127.258 |
+| Spawned, 2 workers | 0.977980 | 2.045 | 58.283 |
+
+These are single bounded local samples including recording, snapshots, and
+process startup, not pure stepping rates, scaling claims, or performance
+promises. No learned training or large compute campaign was run.
 
 ## Offline differential interpretation
 
@@ -182,7 +223,7 @@ build outputs remain outside the game installation. No live campaign is active.
 | Baseline | Luna / medium | 251.881 + 157.062 |
 | Room preflight repair | Terra / high | 326.959 + 25.832 + 126.150 |
 | Offline differential | Sol / high | 768.128 + 199.347 |
-| Rollout | Terra / high, then Sol / high | 711.178 + 359.654; escalated corrective turn pending |
+| Rollout | Terra / high, then Sol / high | 711.178 + 359.654 + 279.400 |
 
 These are tool-reported wall-clock durations, not active compute time or a cost
 estimate. Aggregate input/output/reasoning token counts and coordinator elapsed
@@ -193,7 +234,6 @@ outcome/evidence defect across consumers, not an escalation for task length.
 Only aggregate telemetry is recorded; no hidden reasoning or task
 transcripts are retained here.
 
-Open items: rollout cancellation/lifecycle correction and final integration;
-approved C# foreground-room/map repair; separately authorized retained live
+Open items: approved C# foreground-room/map repair; separately authorized retained live
 differential input. None permits claiming full-game fidelity or autonomous-run
 completion.

@@ -56,8 +56,9 @@ The full-game integration track additionally has:
 - the accepted `headless_v0` contract, composed deterministic reduced-run
   backend, component-addressable evidence, snapshots/replay, and an independent
   66-test conformance gate;
-- accepted public-only headless smoke choosers and a synthetic live-wire versus
-  headless common-subset comparator that preserves divergences; and
+- accepted public-only headless smoke choosers, cancellation-safe sequential/
+  spawned rollout collection, and a synthetic live-wire versus headless
+  common-subset comparator that preserves divergences; and
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
@@ -67,8 +68,8 @@ live acceptance, and the batched controller has unresolved
 `room_interaction_timeout` observations. The Python readiness repair is
 integrated; live tests now isolate a foreground-map/underlying-room mismatch
 and failed completion after both event advancement and rest-site healing.
-The headless rollout/throughput consumer is undergoing cancellation/lifecycle
-review and is not yet accepted.
+The headless rollout/throughput consumer is accepted, with bounded local
+measurements and no learned-policy or target-game-parity claim.
 
 ## Near-Term Priorities
 
@@ -91,10 +92,10 @@ composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
 
 The provisional Python headless environment has reached its accepted composed
-backend, independent-conformance, and public-observation smoke-chooser
-boundaries. Finish the bounded process-safe rollout and throughput consumer's
-review, including cancellation-safe partial batches and backend cleanup.
-Structural reward/map/room rules remain labelled synthetic until named live differential
+backend, independent-conformance, public-observation smoke-chooser, and bounded
+rollout boundaries. Preserve cancellation-safe partial batches, explicit pending
+episodes, and separate hindsight records. Structural reward/map/room rules
+remain labelled synthetic until named live differential
 cases pass. The completed ordinary bridge campaign did not authorize a retained
 live differential capture and does not imply target-game parity.
 

@@ -1431,3 +1431,38 @@ branch. The accepted fingerprints and current test evidence are recorded in
 training quality, a full-game win contract, or rollout throughput.
 `H3-BASELINE-02` and `H3-ROLLOUT-03` are unblocked but remain unstarted until
 development resumes.
+
+## D46. Keep Headless Collection Cancellable And Differential Claims Narrow
+
+### Context
+
+The resumed 2026-09-04 work added public-only smoke policies, rollout consumers,
+and offline comparisons without changing the accepted headless or wire
+contracts. Independent review found that catching episode failures alone did
+not preserve a batch when cancellation arrived during process cleanup.
+
+### Decision
+
+- collect through the existing generic runner and serializable reduced-backend
+  factory; keep game, chooser, and collector scheduling seeds independent
+- retain received episode results and explicitly identify pending episodes on
+  cancellation; stop subsequent benchmark repetitions and never fabricate
+  unpublished worker results
+- include worker close/join in cancellation recovery, restore signal handlers,
+  and validate with real bounded spawned-process interruption tests
+- keep replay, hindsight targets, audit records, and component evidence separate;
+  reduced `route_complete` is not a target-game win
+- compare only explicitly shared wire/headless public dimensions; preserve
+  divergent and unobserved cases, with no fidelity promotion from synthetic
+  matches or queued receipts
+- bind offline inputs to reviewed authored-source identities, excluding generated
+  build directories before content reads; never automatically bless pin drift
+
+### Consequence
+
+`H3-BASELINE-02`, `H3-ROLLOUT-03`, and the offline portion of
+`H4-LIVE-DIFF-02` are accepted. The two-route local benchmark includes recording
+and startup costs, not a training performance guarantee. Retained live
+differential input remains a separately authorized gate. Exact commits,
+measurements, and evidence limits are recorded in
+`docs/research/PHASE_1_2026_09_04_ACCEPTANCE.md`.

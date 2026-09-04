@@ -49,7 +49,7 @@ world state and snapshots, combat projection/candidates, fixture playback, a
 bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
 deterministic reduced reward/map/room rules, and the composed multi-phase
 `ReducedRunBackend`. The independent `H3-CONFORMANCE-04` gate is integrated;
-the integration branch passes `66` conformance tests and `814` repository
+the integration branch passes `66` conformance tests and `829` repository
 tests.
 
 The progression producers remain deliberately separate from the composed
@@ -81,8 +81,17 @@ full-game win.
 
 `H3-BASELINE-02` is accepted: first-legal, explicitly seeded-random, and a
 non-optimal structural heuristic consume only public policy views and
-advertised candidates. `H3-ROLLOUT-03` is under corrective review for batch
-cancellation and backend lifecycle; its returned commits are not yet accepted.
+advertised candidates. `H3-ROLLOUT-03` is accepted through `feda7d6`: sequential
+and spawned batches use independent game/policy/collector seeds, validated
+separate replay/target/audit streams, explicit stop reasons, and cancellation-
+safe partial results with pending episode IDs. Real spawned SIGINT tests cover
+collection, close, join, and repeated interruption during cleanup. Unpublished
+worker state is not recoverable after forced cancellation.
+
+A bounded local two-seed panel completed two reduced routes in 57 transitions:
+0.448 seconds sequential and 0.978 seconds with two spawned workers, including
+recording/snapshot and spawn overhead. These single-sample local measurements
+are not training-performance promises or target-game wins.
 
 The offline portion of `H4-LIVE-DIFF-02` is integrated. Its 19 synthetic cases
 contain 3 narrow common-subset matches, 14 divergences, and 2 unobserved cases.
@@ -201,8 +210,7 @@ should:
 
 Independently of that live target, the provisional headless environment has
 passed its composed-backend, independent conformance, and public-only baseline
-gates. Bounded rollout/throughput collection is undergoing corrective review.
-None may claim target-game fidelity
+and bounded rollout/throughput gates. None may claim target-game fidelity
 until named live differential cases pass, and the ordinary bridge campaign did
 not authorize creation of a persistent differential-capture artifact.
 
