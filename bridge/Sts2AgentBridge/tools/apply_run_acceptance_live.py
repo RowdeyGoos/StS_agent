@@ -11,24 +11,49 @@ from tool_common import EXIT_INTERNAL, ToolFailure, fail, main
 from verify_room_acceptance import _KNOWN_PRODUCTION_FAILURE_CODES, summarize_run_acceptance_result
 
 
-def _clear_mutable_buffers(value: object, seen: set[int] | None = None) -> None:
-    """Best-effort zeroization for an unexpected mutable nested producer value."""
+def _clear_mutable_buffers(value: object, seen: set[int] | None = None) -> bool:
+    """Zero reachable mutable byte storage without invoking container overrides."""
     if seen is None:
         seen = set()
-    identity = id(value)
-    if identity in seen:
-        return
-    seen.add(identity)
-    if isinstance(value, bytearray):
-        for index in range(len(value)):
-            value[index] = 0
-        return
-    if isinstance(value, dict):
-        for child in value.values():
-            _clear_mutable_buffers(child, seen)
-    elif isinstance(value, (list, tuple)):
-        for child in value:
-            _clear_mutable_buffers(child, seen)
+    pending = [value]
+    try:
+        while pending:
+            current = pending.pop()
+            identity = id(current)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            if isinstance(current, bytearray):
+                length = bytearray.__len__(current)
+                bytearray.__setitem__(current, slice(None), b"\x00" * length)
+                continue
+            if isinstance(current, memoryview):
+                try:
+                    backing = current.obj
+                    readonly = current.readonly
+                except ValueError:
+                    # A released view exposes no reachable storage.
+                    continue
+                pending.append(backing)
+                if readonly or isinstance(backing, bytearray):
+                    continue
+                byte_view: memoryview | None = None
+                try:
+                    byte_view = current.cast("B")
+                    byte_view[:] = b"\x00" * byte_view.nbytes
+                finally:
+                    if byte_view is not None:
+                        byte_view.release()
+                continue
+            if isinstance(current, dict):
+                pending.extend(dict.values(current))
+            elif isinstance(current, list):
+                pending.extend(list.__iter__(current))
+            elif isinstance(current, tuple):
+                pending.extend(tuple.__iter__(current))
+    except BaseException:
+        return False
+    return True
 
 
 def _operation() -> dict[str, object]:
@@ -39,9 +64,19 @@ def _operation() -> dict[str, object]:
         result = run.operation()
         return summarize_run_acceptance_result(result)
     except ToolFailure as failure:
-        if type(failure.error_code) is str and (
-            (failure.exit_code == 4 and failure.error_code == "run_acceptance_result_mismatch")
-            or (type(failure.exit_code) is int and failure.exit_code in (2, 3, 4, 5) and failure.error_code in _KNOWN_PRODUCTION_FAILURE_CODES)
+        if (
+            type(failure.exit_code) is int
+            and type(failure.error_code) is str
+            and (
+                (
+                    failure.exit_code == 4
+                    and failure.error_code == "run_acceptance_result_mismatch"
+                )
+                or (
+                    failure.exit_code in (2, 3, 4, 5)
+                    and failure.error_code in _KNOWN_PRODUCTION_FAILURE_CODES
+                )
+            )
         ):
             raise
         fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
@@ -50,7 +85,9 @@ def _operation() -> dict[str, object]:
     except BaseException:
         fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
     finally:
-        _clear_mutable_buffers(result)
+        cleanup_ok = _clear_mutable_buffers(result)
+        if not cleanup_ok and not isinstance(sys.exc_info()[1], KeyboardInterrupt):
+            fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
 
 
 def operation() -> dict[str, object]:

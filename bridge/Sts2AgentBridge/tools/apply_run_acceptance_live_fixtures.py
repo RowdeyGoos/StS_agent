@@ -6,6 +6,7 @@ import copy
 import io
 import json
 import sys
+from array import array
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
@@ -17,6 +18,20 @@ import apply_run_entry_wire_fixtures as entry_wire
 import apply_run_wire_fixtures as run_wire
 import verify_room_acceptance as acceptance
 from tool_common import EXIT_INTERNAL, EXIT_MISMATCH, ToolFailure, fail, run_cli
+
+
+class _ExplosiveEquality:
+    def __eq__(self, other: object) -> bool:
+        del other
+        raise RuntimeError("RAW-CANARY")
+
+    def __hash__(self) -> int:
+        raise RuntimeError("RAW-CANARY")
+
+
+class _HostileValues(dict[object, object]):
+    def values(self) -> object:
+        raise RuntimeError("RAW-CANARY")
 
 
 def _encoded(value: object) -> str:
@@ -49,6 +64,128 @@ def _default_defeat() -> dict[str, object]:
     entry_wire._combat_defeat(transcript, "a" * 64)
     result, connector, _ = entry_wire._run(transcript, None, 1)
     connector.require_complete(1)
+    return result
+
+
+def _entry_reward() -> dict[str, object]:
+    transcript: list[tuple[bytes | TimeoutError, bytes]] = []
+    entry_wire._reward(transcript)
+    entry_wire._add(transcript, entry_wire.map_client._MAP_WAITING, entry_wire._GET_MAP)
+    entry_wire._add(
+        transcript, entry_wire._map_ready("5" * 64, "shop"), entry_wire._GET_MAP
+    )
+    entry_wire._map(transcript, "6" * 64, "shop")
+    result, connector, _ = entry_wire._run(transcript, "reward", 1)
+    connector.require_complete(3)
+    return result
+
+
+def _reward_complete(gold: int, deck_count: int) -> bytes:
+    reward_fixture = entry_wire.reward_fixture
+    return reward_fixture._body(
+        {
+            "schema_version": 1,
+            "status": "complete",
+            "decision_kind": "reward",
+            "actionable": False,
+            "decision_id": None,
+            "screen_kind": "map",
+            "player": reward_fixture._player(gold, deck_count),
+            "rewards": [],
+            "legal_actions": [],
+        }
+    )
+
+
+def _child_reward_result() -> dict[str, object]:
+    reward_fixture = entry_wire.reward_fixture
+    first_id, second_id = "1" * 64, "2" * 64
+    child = reward_fixture._child(first_id, 1)
+    parent = reward_fixture._parent(second_id, 2, deck_count=11)
+    parent["rewards"] = []
+    parent["legal_actions"] = [parent["legal_actions"][-1]]
+    transcript: list[tuple[bytes | TimeoutError, bytes]] = []
+    entry_wire._base(transcript)
+    entry_wire._add(transcript, reward_fixture._body(child), entry_wire._GET_REWARD)
+    entry_wire._add(
+        transcript,
+        entry_wire._receipt(first_id, "choose:0"),
+        entry_wire._post(entry_wire._REWARD_POST, first_id, "choose:0"),
+    )
+    entry_wire._add(transcript, reward_fixture._body(parent), entry_wire._GET_REWARD)
+    entry_wire._add(
+        transcript,
+        entry_wire._receipt(second_id, "proceed"),
+        entry_wire._post(entry_wire._REWARD_POST, second_id, "proceed"),
+    )
+    entry_wire._add(transcript, _reward_complete(99, 11), entry_wire._GET_REWARD)
+    connector = entry_wire._Connector(transcript)
+    credential = bytearray(entry_wire._CREDENTIAL)
+    with entry_wire._clock():
+        result = entry_wire.reward_client._run_apply_reward(
+            credential, "first-card", connector
+        )
+    connector.require_complete(2)
+    if any(credential):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_child_reward_credential")
+    return result
+
+
+def _card_reward_result() -> dict[str, object]:
+    reward_fixture = entry_wire.reward_fixture
+    ids = [str(index) * 64 for index in range(4)]
+    initial = reward_fixture._parent(ids[0], 0)
+    after_gold = reward_fixture._parent(ids[1], 1, gold=113)
+    after_gold["rewards"] = after_gold["rewards"][1:]
+    for slot, reward in enumerate(after_gold["rewards"]):
+        reward["reward_slot"] = slot
+    after_gold["legal_actions"] = [
+        {
+            "action_id": "open:0",
+            "kind": "open_card",
+            "reward_slot": 0,
+            "card_slot": None,
+        },
+        {
+            "action_id": "proceed",
+            "kind": "proceed",
+            "reward_slot": None,
+            "card_slot": None,
+        },
+    ]
+    child = reward_fixture._child(ids[2], 2, gold=113)
+    after_card = reward_fixture._parent(ids[3], 3, gold=113, deck_count=11)
+    after_card["rewards"] = [after_card["rewards"][-1]]
+    after_card["rewards"][0]["reward_slot"] = 0
+    after_card["legal_actions"] = [after_card["legal_actions"][-1]]
+    states = (initial, after_gold, child, after_card)
+    actions = ("claim:0", "open:0", "choose:0", "proceed")
+    transcript: list[tuple[bytes | TimeoutError, bytes]] = []
+    entry_wire._base(transcript)
+    entry_wire._add(
+        transcript, reward_fixture._body(states[0]), entry_wire._GET_REWARD
+    )
+    for index, action_id in enumerate(actions):
+        entry_wire._add(
+            transcript,
+            entry_wire._receipt(ids[index], action_id),
+            entry_wire._post(entry_wire._REWARD_POST, ids[index], action_id),
+        )
+        next_body = (
+            reward_fixture._body(states[index + 1])
+            if index + 1 < len(states)
+            else _reward_complete(113, 11)
+        )
+        entry_wire._add(transcript, next_body, entry_wire._GET_REWARD)
+    connector = entry_wire._Connector(transcript)
+    credential = bytearray(entry_wire._CREDENTIAL)
+    with entry_wire._clock():
+        result = entry_wire.reward_client._run_apply_reward(
+            credential, "first-card", connector
+        )
+    connector.require_complete(4)
+    if any(credential):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_card_reward_credential")
     return result
 
 
@@ -149,21 +286,84 @@ def _post_room_elite_victory() -> dict[str, object]:
     return result
 
 
+def _post_room_final_slot_defeat() -> dict[str, object]:
+    transcript: list[tuple[bytes | BaseException, bytes]] = []
+    elite_wire._combat_victory(transcript, "6")
+    elite_wire._add_reward_then_map(
+        transcript, "1" * 64, "elite", reward_id="2" * 64, revision=0
+    )
+    elite_wire._add(
+        transcript, elite_wire._next_combat_ready("3" * 64), entry_wire._GET_COMBAT
+    )
+    elite_wire._combat_victory(transcript, "7")
+    elite_wire._add_reward_then_map(
+        transcript, "4" * 64, "rest_site", reward_id="5" * 64, revision=0
+    )
+    elite_wire._add(
+        transcript, entry_wire._room_ready("6" * 64, 4), entry_wire._GET_ROOM
+    )
+    entry_wire._room(transcript, 4)
+    elite_wire._add(
+        transcript, entry_wire._map_complete("rest_site"), entry_wire._GET_MAP
+    )
+    elite_wire._add(transcript, entry_wire.map_client._MAP_WAITING, entry_wire._GET_MAP)
+    elite_wire._add(
+        transcript, elite_wire._map_ready("7" * 64, "elite"), entry_wire._GET_MAP
+    )
+    elite_wire._map(transcript, "7" * 64, "elite")
+    elite_wire._add(
+        transcript, elite_wire._next_combat_ready("8" * 64), entry_wire._GET_COMBAT
+    )
+    elite_wire._combat_defeat(transcript, "9" * 64)
+    result, connector, _ = elite_wire._run(
+        transcript, entry_phase="combat", floor_limit=3
+    )
+    connector.require_used_clean(
+        sum(request.startswith(b"POST ") for _, request in transcript)
+    )
+    return result
+
+
+def _relabel_map_destination(value: dict[str, object], kind: str) -> None:
+    value["before"]["candidates"][0]["kind"] = kind
+    value["applied"]["node_kind"] = kind
+    value["after"]["destination"]["kind"] = kind
+
+
 def _result_contracts() -> None:
     stale_terminal = _stale_terminal_combat()
     acceptance._component(stale_terminal, "r0e_complete_combat")
+    acceptance._component(_child_reward_result(), "r0i_reward_resolution")
+    acceptance._component(_card_reward_result(), "r0i_reward_resolution")
     detached_trace = copy.deepcopy(stale_terminal)
     detached_trace["actions"][0]["player_hp_after"] = 79
     detached_trace["actions"][0]["enemy_hp_before"] = 6_000_000
     acceptance._component(detached_trace, "r0e_complete_combat")
+    elite_result = _default_elite()
+    first_floor = elite_result["floors"][0]
+    if (
+        first_floor["reward"]["before"]["player"]["hp"]
+        <= first_floor["combat"]["final_player"]["hp"]
+    ):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_bounded_healing_missing")
+    entry_results = (
+        (_default_defeat(), "combat"),
+        (_entry_reward(), "reward"),
+        (_entry_map("shop", 1), "map"),
+    )
+    for entry_result, entry_phase in entry_results:
+        if _summary(entry_result)["entry_phase"] != entry_phase:
+            fail(EXIT_MISMATCH, "run_acceptance_fixture_entry_phase")
     results = [
-        (_default_defeat(), "run_defeat"),
+        (entry_results[0][0], "run_defeat"),
         (_entry_map("shop", 1), "floor_limit_reached"),
         (_entry_map("shop", 2), "unsupported_destination_kind"),
         (_entry_map("boss", 2), "act_boundary_reached"),
-        (_default_elite(), "floor_limit_reached"),
+        (entry_results[1][0], "floor_limit_reached"),
+        (elite_result, "floor_limit_reached"),
         (_entry_room_handoff(), "room_handoff_complete"),
         (_post_room_elite_victory(), "room_continuation_complete"),
+        (_post_room_final_slot_defeat(), "run_defeat"),
     ]
     for result, reason in results:
         summary = _summary(result)
@@ -223,7 +423,9 @@ def _malformed_and_privacy() -> None:
     defeat_after_shop["action_totals"]["total"] += 1
     _expect_failure(lambda: _summary(defeat_after_shop), "run_acceptance_result_mismatch")
     leaf_mutations = (
+        (_default_elite, lambda value: value["floors"][0]["combat"]["actions"][0].update({"step": True})),
         (_default_defeat, lambda value: value["terminal_combat"]["final_enemies"][0].update({"hp": -1})),
+        (_default_defeat, lambda value: value["terminal_combat"]["final_enemies"][0].update({"index": False})),
         (_default_defeat, lambda value: value["terminal_combat"]["final_enemies"][0].update({"id": {"raw": "CANARY"}})),
         (_default_defeat, lambda value: value["terminal_combat"]["actions"][0].update({"step": 0})),
         (_default_defeat, lambda value: value["terminal_combat"]["actions"][0].update({"basis": "CANARY"})),
@@ -232,7 +434,10 @@ def _malformed_and_privacy() -> None:
         (_default_elite, lambda value: value["floors"][0]["reward"]["before"]["legal_actions"][0].update({"kind": "CANARY"})),
         (_default_elite, lambda value: value["floors"][0]["reward"]["applied"][0].update({"decision_revision": -1})),
         (_default_elite, lambda value: value["floors"][0]["reward"].update({"selected_cards": [{"raw": "CANARY"}]})),
+        (_default_elite, lambda value: value["floors"][0]["reward"]["before"]["rewards"][0].update({"reward_slot": False})),
         (_default_elite, lambda value: value["floors"][0]["map"]["before"]["candidates"][0].update({"col": -1})),
+        (_default_elite, lambda value: value["floors"][0]["map"]["before"]["candidates"][0].update({"candidate_index": False})),
+        (_default_elite, lambda value: value["floors"][0]["map"]["before"]["legal_actions"][0].update({"candidate_index": False})),
         (_default_elite, lambda value: value["floors"][0]["map"]["before"]["legal_actions"][0].update({"action_id": "CANARY"})),
         (_default_elite, lambda value: value["floors"][0]["map"]["applied"].update({"basis": "CANARY"})),
         (_entry_room_handoff, lambda value: value["room_handoff"]["room"]["actions"][0].update({"basis": "CANARY"})),
@@ -286,6 +491,100 @@ def _malformed_and_privacy() -> None:
         lambda: _summary(wrong_room_phase),
         "run_acceptance_result_mismatch",
     )
+    wrong_first_card = _child_reward_result()
+    wrong_first_card["applied"][0]["chosen_card"] = "BASH"
+    wrong_first_card["selected_cards"][0] = "BASH"
+    _expect_failure(
+        lambda: acceptance._component(
+            wrong_first_card, "r0i_reward_resolution"
+        ),
+        "run_acceptance_result_mismatch",
+    )
+    wrong_sole_claim = _card_reward_result()
+    wrong_sole_claim["claimed_gold"] = 15
+    wrong_sole_claim["after"]["player"]["gold"] = 114
+    _expect_failure(
+        lambda: acceptance._component(
+            wrong_sole_claim, "r0i_reward_resolution"
+        ),
+        "run_acceptance_result_mismatch",
+    )
+    intermediate_noncombat = _default_elite()
+    intermediate_noncombat["floors"][0]["destination_kind"] = "shop"
+    _relabel_map_destination(intermediate_noncombat["floors"][0]["map"], "shop")
+    _expect_failure(
+        lambda: _summary(intermediate_noncombat),
+        "run_acceptance_result_mismatch",
+    )
+    discontinuous_player = _default_elite()
+    discontinuous_player["floors"][0]["reward"]["before"]["player"]["hp"] = 1
+    discontinuous_player["floors"][0]["reward"]["after"]["player"]["hp"] = 1
+    _expect_failure(
+        lambda: _summary(discontinuous_player),
+        "run_acceptance_result_mismatch",
+    )
+    room_at_floor_limit = _default_elite()
+    final_floor = room_at_floor_limit["floors"][-1]
+    final_floor["destination_kind"] = "rest_site"
+    _relabel_map_destination(final_floor["map"], "rest_site")
+    room_at_floor_limit["termination"]["destination_kind"] = "rest_site"
+    _expect_failure(
+        lambda: _summary(room_at_floor_limit),
+        "run_acceptance_result_mismatch",
+    )
+    normal_defeat_at_cap = _default_elite()
+    final_floor = normal_defeat_at_cap["floors"][-1]
+    final_floor["destination_kind"] = "elite"
+    _relabel_map_destination(final_floor["map"], "elite")
+    normal_defeat_at_cap["terminal_combat"] = copy.deepcopy(
+        _default_defeat()["terminal_combat"]
+    )
+    normal_defeat_at_cap["termination"] = {
+        "reason": "run_defeat",
+        "after_floor": 2,
+        "destination_kind": None,
+    }
+    normal_defeat_at_cap["action_totals"]["combat"] += 1
+    normal_defeat_at_cap["action_totals"]["total"] += 1
+    _expect_failure(
+        lambda: _summary(normal_defeat_at_cap),
+        "run_acceptance_result_mismatch",
+    )
+    wrong_room_initiator = _post_room_elite_victory()
+    wrong_room_initiator["floors"][0]["destination_kind"] = "elite"
+    _relabel_map_destination(
+        wrong_room_initiator["floors"][0]["map"], "elite"
+    )
+    _expect_failure(
+        lambda: _summary(wrong_room_initiator),
+        "run_acceptance_result_mismatch",
+    )
+    cap_handoff = copy.deepcopy(_entry_room_handoff()["room_handoff"])
+    continuation_handoff = _post_room_elite_victory()["room_handoff"]
+    optional_names = ("post_room_map", "next_combat_attempts", "next_combat")
+    for mask in range(1, 7):
+        malformed_handoff = copy.deepcopy(cap_handoff)
+        for bit, name in enumerate(optional_names):
+            if mask & (1 << bit):
+                malformed_handoff[name] = copy.deepcopy(continuation_handoff[name])
+        _expect_failure(
+            lambda malformed_handoff=malformed_handoff: acceptance._room_handoff(
+                malformed_handoff
+            ),
+            "run_acceptance_result_mismatch",
+        )
+    null_continuation = copy.deepcopy(cap_handoff)
+    null_continuation.update({name: None for name in optional_names})
+    _expect_failure(
+        lambda: acceptance._room_handoff(null_continuation),
+        "run_acceptance_result_mismatch",
+    )
+    wrong_continuation_floor = _post_room_final_slot_defeat()
+    wrong_continuation_floor["termination"]["after_floor"] = 1
+    _expect_failure(
+        lambda: _summary(wrong_continuation_floor),
+        "run_acceptance_result_mismatch",
+    )
 
 
 def _in_process_operation_and_fixed_failures() -> None:
@@ -328,6 +627,9 @@ def _in_process_operation_and_fixed_failures() -> None:
         (1, known),
         (6, known),
         (EXIT_INTERNAL, "run_acceptance_result_mismatch"),
+        (4.0, "run_acceptance_result_mismatch"),
+        (_ExplosiveEquality(), "run_acceptance_result_mismatch"),
+        (EXIT_MISMATCH, _ExplosiveEquality()),
     ):
         with patch.object(live.run, "operation", side_effect=ToolFailure(exit_code, code)):
             _expect_failure(live.operation, "run_acceptance_callback_failure", EXIT_INTERNAL)
@@ -391,6 +693,82 @@ def _in_process_operation_and_fixed_failures() -> None:
         exit_code = run_cli(live.operation)
     if exit_code != EXIT_INTERNAL or "CANARY" in stdout.getvalue() + stderr.getvalue():
         fail(EXIT_MISMATCH, "run_acceptance_fixture_system_exit_output")
+    view_backing = bytearray(b"RAW-MEMORYVIEW-CANARY")
+    writable_view = memoryview(view_backing)
+    view_result = copy.deepcopy(result)
+    view_result["fixture_view"] = writable_view
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with patch.object(live.run, "operation", return_value=view_result), redirect_stdout(stdout), redirect_stderr(stderr):
+        exit_code = run_cli(live.operation)
+    writable_view.release()
+    if (
+        exit_code != EXIT_MISMATCH
+        or stdout.getvalue()
+        != '{"schema_version":1,"status":"failed","code":"run_acceptance_result_mismatch"}\n'
+        or stderr.getvalue() != ""
+        or any(view_backing)
+        or "CANARY" in stdout.getvalue()
+    ):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_memoryview_cleanup")
+    nested_backing = bytearray(b"RAW-NESTED-CANARY")
+    nested_view = memoryview(nested_backing).toreadonly()
+    cycle: list[object] = []
+    cycle.extend((cycle, nested_view))
+    hostile_result = copy.deepcopy(result)
+    hostile_result["fixture_hostile"] = _HostileValues({"cycle": cycle})
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with patch.object(live.run, "operation", return_value=hostile_result), redirect_stdout(stdout), redirect_stderr(stderr):
+        exit_code = run_cli(live.operation)
+    nested_view.release()
+    if (
+        exit_code != EXIT_MISMATCH
+        or stderr.getvalue() != ""
+        or any(nested_backing)
+        or "CANARY" in stdout.getvalue()
+    ):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_nested_cleanup")
+    released_backing = bytearray(b"RAW-RELEASED-CANARY")
+    released_view = memoryview(released_backing)
+    released_view.release()
+    released_result = copy.deepcopy(result)
+    released_result["fixture_released"] = released_view
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with patch.object(live.run, "operation", return_value=released_result), redirect_stdout(stdout), redirect_stderr(stderr):
+        exit_code = run_cli(live.operation)
+    if (
+        exit_code != EXIT_MISMATCH
+        or stderr.getvalue() != ""
+        or "CANARY" in stdout.getvalue()
+    ):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_released_view")
+    failed_cleanup_view = memoryview(array("B", range(8)))[::2]
+    failed_cleanup_result = copy.deepcopy(result)
+    failed_cleanup_result["fixture_noncontiguous"] = failed_cleanup_view
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with patch.object(live.run, "operation", return_value=failed_cleanup_result), redirect_stdout(stdout), redirect_stderr(stderr):
+        exit_code = run_cli(live.operation)
+    failed_cleanup_view.release()
+    if (
+        exit_code != EXIT_INTERNAL
+        or stdout.getvalue()
+        != '{"schema_version":1,"status":"failed","code":"run_acceptance_callback_failure"}\n'
+        or stderr.getvalue() != ""
+        or "CANARY" in stdout.getvalue()
+    ):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_failed_cleanup")
+    interrupted_view = memoryview(array("B", range(8)))[::2]
+    interrupted_result = copy.deepcopy(result)
+    interrupted_result["fixture_noncontiguous"] = interrupted_view
+    with patch.object(live.run, "operation", return_value=interrupted_result), patch.object(
+        live, "summarize_run_acceptance_result", side_effect=KeyboardInterrupt
+    ):
+        try:
+            live.operation()
+        except KeyboardInterrupt:
+            pass
+        else:
+            fail(EXIT_MISMATCH, "run_acceptance_fixture_cleanup_interrupt")
+    interrupted_view.release()
 
 
 def operation() -> dict[str, object]:
