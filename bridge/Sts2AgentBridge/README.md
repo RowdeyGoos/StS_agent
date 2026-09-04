@@ -482,6 +482,60 @@ enemy actions, false-terminal rejection, and fail-closed
 rejection without reading the real operator path or opening a real network
 connection.
 
+### Capture-off reward diagnostics
+
+`diagnose_reward_live.py` is an explicitly selected diagnostic form of the
+existing bounded reward controller. It **can apply reward actions**; do not run
+it merely to inspect state or retry an uncertain action. Use it only inside a
+coordinator-controlled campaign after the exact artifact and live boundary
+checks pass:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/diagnose_reward_live.py" \
+  --user-profile "/ABS/OS_USER_PROFILE" \
+  --effective-uid 501 \
+  --decision-provider first-card
+```
+
+It uses the ordinary reward controller's providers, deadlines, 17-action cap,
+exact receipt acceptance and post-state reconciliation. It adds no retries or
+network reads. The default reward CLI and its success/error contract remain
+unchanged.
+
+The diagnostic emits one compact schema-version-1 record for success, handled
+failures and keyboard interruption, preserving `ToolFailure` exit codes.
+Output contains only fixed
+status/code, action category, failure stage and classification, three counters,
+and an optional receipt projection. Unlisted source failure codes become the
+fixed code `failure`; exception text is never emitted. The counter invariant is
+`0 <= reconciled <= accepted <= attempted <= 17`:
+
+- `attempted`: action exchanges entered, not proof of delivery or application;
+- `accepted`: receipts passing the original exact acceptance and binding check;
+- `reconciled`: actions whose subsequent state passed reconciliation.
+
+The receipt projection has only validated status/reason/mutation enums and
+nullable decision/action binding-match booleans. These are receipt facts, not
+proof of the actual mutation outcome of an unbound or uncertain request.
+Classifications distinguish canonical 429, retryable 503 and nonretryable 500,
+malformed envelopes, transport failures, rejected/malformed receipts and
+reconciliation failures. No raw bodies, body hashes, control IDs, credentials,
+player scalars or full reward results are emitted, and no capture/output path
+is accepted. The previous campaign's discarded response remains unclassified.
+
+Run the isolated, wholly synthetic CLI/transport acceptance suite without a
+game, operator configuration or socket connection:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/reward_action_diagnostics_fixtures.py"
+```
+
+The diagnostic schema is not a wire, headless-state, training or replay schema.
+See [D49](../../DECISIONS.md#d49-separate-reward-attempts-receipt-acceptance-and-reconciliation)
+and the [acceptance ledger](../../docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md)
+for evidence and exact reviewed source identities. Its fixtures are not live
+demonstration.
+
 ### Runtime process/port guard
 
 `check_live_runtime.py` binds the supplied UID/home to the fixed game

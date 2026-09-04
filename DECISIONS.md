@@ -1540,3 +1540,41 @@ merging their representation or privacy boundaries. The offline corpus codec
 does not grant capture authority. CLI and actual-client fixtures test the joins;
 bounded live acceptance remains separately classified in the next-increment
 ledger. Event-step identity and D47 remain unchanged.
+
+## D49. Separate Reward Attempts, Receipt Acceptance And Reconciliation
+
+### Context
+
+A bounded live reward attempt stopped at `reward_action_response_mismatch`.
+That compatibility code covers both HTTP-envelope failures and non-exact
+receipts. Neither the failed action nor its mutation outcome can be recovered
+from the sanitized result. The user approved a narrow capture-off diagnostic
+follow-up, not a speculative C# repair or retained response capture.
+
+### Decision
+
+- Add an explicitly selected reward diagnostic CLI without changing ordinary
+  controller output, receipt acceptance, timeouts, action caps or retry behavior.
+- Keep three distinct bounded counters: attempted action exchanges, exactly
+  accepted and bound receipts, and fully reconciled actions. An attempted
+  exchange does not establish delivery; receipt acceptance does not establish
+  successful post-state reconciliation.
+- Emit only fixed action categories, stages and classifications, plus strictly
+  validated receipt enums and nullable binding-match facts. No raw bodies,
+  body hashes, control IDs, credentials, exception strings, player scalars or
+  full histories belong in this diagnostic representation.
+- Treat reported receipt mutation state as a receipt fact, not proof of the
+  actual outcome of an unbound or uncertain request. Diagnostic failure never
+  grants retry or continuation authority.
+- Wipe mutable transport buffers on exceptional exits, including cancellation,
+  while preserving successful response ownership and existing exceptions.
+  This is not a claim that Python can erase immutable receive chunks.
+
+### Consequence
+
+The diagnostic record is separate from bridge wire observations, normalized
+public observations, headless state, training encodings and replay records.
+Synthetic transport/CLI fixtures establish its behavior; they do not classify
+the discarded live response or resolve the open composed-run acceptance gate.
+Any later live evidence must identify the reviewed Python sources as well as
+the installed bridge artifact and retain only the approved sanitized facts.

@@ -12,6 +12,8 @@
   the full eligible composition and gold comparison remain unobserved. Event work
   remains investigation-only; retained real data and optional Section 7 remain
   outside this increment. No automatic evidence promotion is authorized.
+  The subsequently approved Section 11 reward diagnostic is reviewed and
+  integrated through `b77178f`; its acceptance is synthetic/fixture-only.
 - **Execution ledger:** [next-increment acceptance](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - **Relationship:** follows the implemented packets in
   [the existing execution plan](PHASE_1_PARALLEL_EXECUTION_PLAN.md), without
@@ -595,8 +597,15 @@ responses, or the optional headless/training increment.
 
 ### R0I-REWARD-DIAG-14 — Capture-off reward failure classification
 
+- **Status:** accepted and integrated through `b77178f` after independent review,
+  16 maintained diagnostic groups, 137 shared bridge fixture checks, 242 focused
+  tests and a 1,050-test repository regression. The diagnostic has not been used
+  live and does not resolve the discarded response's mutation outcome.
 - **Allocation:** Terra/high implementation in one persistent project worktree;
   independent read-only protocol/privacy and counter/fixture review, Sol/high.
+  After the first correction round, review reproduced incomplete cancellation
+  cleanup and missing maintained acceptance cases. The same task is escalated
+  to Sol/high for these concrete defects, not for task duration.
 - **Objective:** distinguish the previously conflated reward action transport,
   HTTP-envelope and receipt failures using only closed, sanitized classifications.
   The previous live cause remains unknown; diagnostics do not retroactively
@@ -607,6 +616,12 @@ responses, or the optional headless/training increment.
   `reward_action_diagnostics_fixtures.py` in the same directory. No other writer
   owns these files. Coordinator owns documentation, contract decisions and
   integration. Additional paths require explicit reassignment.
+  Independent cancellation testing found an inherited partial-response buffer
+  cleanup defect. The coordinator explicitly adds only exceptional-exit
+  zeroization in `probe_live.py::_exchange` to this packet's ownership. Successful
+  response ownership, exception propagation, transport behavior, request bytes,
+  deadlines, retries and wire semantics must remain unchanged. This is a
+  prerequisite of the existing cancellation/privacy gate, not a new capability.
 - **Available dependencies:** accepted reward client, bounded transport and
   strict wire receipt semantics; actual-client synthetic fixtures; prior
   read-only failure review in the next-increment acceptance ledger.
@@ -628,20 +643,23 @@ responses, or the optional headless/training increment.
   server strings, exception text, or full in-memory histories. No capture/output
   directory mode. Diagnostic failure must never authorize retry or continuation.
 - **Acceptance:** actual-client fake-transport cases cover each canonical
-  rejection, wrong bindings, malformed/noncanonical receipts, exact 429 and both
-  known 503 forms, malformed/oversize HTTP and transport send/receive/deadline
-  failures. Compare accepted-receipt vs reconciled-prefix counters on failures
+  rejection, wrong bindings, malformed/noncanonical receipts, exact 429,
+  retryable 503 and nonretryable 500, malformed/oversize HTTP and
+  send/receive/deadline failures. Compare accepted-receipt vs reconciled-prefix
+  counters on failures
   after an accepted response. Exercise whole CLI stdout/stderr, first-receive
   credential/source canary leak mutations, exception redaction, cancellation,
   request/response/credential zeroization and socket closure. Replace identity,
   credential and socket hooks before all fixture CLI execution; no live I/O.
   Preserve existing reward, run, actual-wire and gold-adapter fixture results.
 - **Required commands:** repository Python 3.10+ with `-B -E -s -S` for the new
-  fixture and `apply_reward_live_fixtures.py`, `apply_run_live_fixtures.py`,
-  `apply_run_wire_fixtures.py`, `compare_reward_gold_live_fixtures.py`; relevant
+  fixture and `probe_live_fixtures.py`, `apply_reward_live_fixtures.py`,
+  `apply_run_live_fixtures.py`, `apply_run_wire_fixtures.py`,
+  `compare_reward_gold_live_fixtures.py`; relevant
   `tests/backends/live` and `tests/differential` pytest suites; compile and diff
   checks. Coordinator performs the broader regression before integration.
-- **Forbidden overlapping changes:** `probe_live.py`, `tool_common.py`, all C#,
+- **Forbidden overlapping changes:** `probe_live.py` outside the narrowly
+  reassigned exceptional-exit cleanup, `tool_common.py`, all C#,
   other controller files, wire DTOs/vectors, manifests/pins, shared contracts,
   headless state/rules/content and documentation. Preserve public contracts;
   stop and propose any necessary change to the coordinator.

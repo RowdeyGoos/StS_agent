@@ -478,3 +478,134 @@ implementation commits are unchanged; no target-game fidelity promotion or
 retained corpus admission occurred. No model escalation or new implementation
 worker was used for this follow-up. Aggregate tokens and reviewer elapsed-time
 telemetry are `unavailable`. No remote writes occurred.
+
+## Approved reward-diagnostic implementation
+
+The user's subsequent “yes” approved `R0I-REWARD-DIAG-14`, defined in Section 11
+of the active plan. Scope checkpoint `5d4fea9` follows clean `d958a0a`.
+Implementation was initially assigned to one persistent Terra/high worktree task,
+`01a06d4f-2517-7503-9ab0-e1a28c42198c`, with exclusive ownership of the reward
+client and three new diagnostic/CLI/fixture files. Protocol/privacy and counter/
+fixture design received independent read-only review. No other implementation
+packet, game surface, C# repair or raw retention was added.
+
+The app's task listing initially omitted this running task. Its existing
+worktree and a read-only query of only task identity/model metadata resolved the
+ID; supported task waiting/messaging then confirmed it active. No duplicate task,
+model change to resolve that infrastructure issue, transcript extraction,
+app-state modification or reset was used. A mistaken draft reference to a second
+503 response was corrected: the existing exact envelopes are rate-limited 429,
+retryable backend-unavailable 503 and nonretryable backend-fault 500.
+
+This packet is now reviewed and integrated as recorded below, but not live-tested.
+The previous campaign's failed action and mutation outcome remain unknown.
+
+### First commit review and narrow ownership correction
+
+The worker returned `fc9e44b` after one draft correction round. One independent
+review accepted default compatibility and protocol classification after 13
+additional probes, including eight actual-client default/opt-in transcript
+comparisons. A separate review rejected acceptance: partial HTTP bytes followed
+by cancellation escaped mutable-response zeroization, and the maintained
+22-check suite did not detect disabled HTTP-response wiping. Actual multi-action
+prefixes, the seventeenth-action boundary, CLI no-I/O failures and several
+strict receipt cases also lacked maintained coverage, although 12 independent
+ad hoc semantic cases passed. Those ad hoc results do not replace regression
+tests. That first commit was not integrated by itself.
+
+The same task was escalated from Terra/high to Sol/high for these reproduced
+defects and repeated acceptance gaps. The coordinator explicitly reassigns
+only `probe_live.py::_exchange` exceptional-exit buffer cleanup as a fifth
+owned path. An independent design review requires preservation of successful
+response ownership, existing exception translation/precedence and socket-close
+behavior, including failures raised during cleanup itself. No transport,
+retry, timeout, wire, C#, capability or live authority change is authorized.
+The first implementation turn's reported duration is **622,036 ms**; aggregate
+token usage is `unavailable`.
+
+### Accepted integration and validation
+
+The same worker returned the focused correction `531b887`, without rewriting
+its first commit. The coordinator inspected both complete diffs, confirmed
+exclusive ownership and default-contract compatibility, and integrated them
+without semantic merge changes:
+
+| Worker commit | Integrated commit | Outcome |
+| --- | --- | --- |
+| `fc9e44b5b112102bbf395f03daea858204b41be1` | `6e0cf8fd680d97b4892b1cbe4afc7eb10c76ce33` | Opt-in diagnostic recorder, reward seam and CLI |
+| `531b887f7db1a9c02e231dad49687fecc4b3a29f` | `b77178f39477f0341583672cd834501509cfece0` | Exceptional-exit response cleanup, closed transport codes and maintained acceptance gates |
+
+Only the five explicitly assigned Python tool files changed. Shared contracts,
+ordinary CLI output, byte-exact receipt acceptance, deadlines, caps, replay
+protections, C# sources, wire vectors, fixture identities and headless behavior
+remain unchanged. The integration tree at `b77178f` exactly matches the final
+worker tree; the accompanying coordinator documentation records D49 and the
+new command without changing evidence levels.
+
+Independent protocol/default-compatibility review accepted the opt-in seam.
+Independent cleanup review passed **40** exception combinations and confirmed
+the immutable final source hash. Independent fixture/privacy review accepted
+the final **16 groups**, with additional adversarial checks of response wiping,
+privacy-guard removal, exact request validation, post-acceptance cancellation,
+`SystemExit` propagation, received canaries, cleanup exception precedence and
+unknown-code redaction. No review accessed live data or changed source files.
+
+Coordinator validation:
+
+- Final `reward_action_diagnostics_fixtures.py`: **16 groups passed**, including
+  multiple scenarios per group. These exercise actual client code, full literal
+  request oracles, `2/1/1` and `2/2/1` prefixes, the 17-action cap, strict receipt
+  forms, known 429/503/500 responses, malformed HTTP, partial-buffer failures,
+  cancellation, no-I/O CLI rejection and deliberate privacy/transport mutants.
+- Eleven existing isolated fixture suites passed **137 checks**: probe 26,
+  turn 3, combat 5, floor 6, reward 6, room 21, run 16, actual run-wire 8,
+  room-acceptance helper 7, decision providers 6 and gold adapter 33. Each used
+  the repository interpreter with `-B -E -s -S`; all were rerun on integration.
+- Full repository pytest passed **1,050 tests in 102.41 seconds** on the
+  reviewed worker code. Production hashes were unchanged at final handoff;
+  the final strengthened fixture was separately rerun. The integrated tree
+  was verified equal to the final worker tree.
+- Integrated `tests/backends/live` plus `tests/differential`: **242 passed in
+  1.94 seconds**, with `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=.` and
+  `-p no:cacheprovider`. The worker independently passed the same 242 tests.
+- Integrated `.venv/bin/python -m compileall -q game tests
+  bridge/Sts2AgentBridge/tools` and `git diff --check` passed. Worker validation
+  also checked Python 3.10 grammar and compilation of all five assigned files.
+
+Reviewed Python source identities at `b77178f` (not live payload hashes):
+
+| Tool file | SHA-256 |
+| --- | --- |
+| `apply_reward_live.py` | `502af7e33300ba6f4202817cae644148a2e565cdcf9bbe356d025435310c049b` |
+| `reward_action_diagnostics.py` | `6e71a822dc1f6c1e0e874a553ab248b133121644256474da8243c5dfbfa9c39a` |
+| `diagnose_reward_live.py` | `184d03da75e4d8d4048018955b9d7408a0d2fc1790a79e1a98373e5b495c9cef` |
+| `probe_live.py` | `e550d1d20e48314d9203eee0af892341a6696e5f62ef30f2d5c4de90faa2de65` |
+| `reward_action_diagnostics_fixtures.py` | `b98cd5ffca07ef30a9897b05a254cd2d7fa88ce0f7805a8cd1d91b54eb48ada7` |
+
+The corrective Sol/high turn took **492,557 ms**. Summed implementation-turn
+duration is **1,114,593 ms**, excluding coordinator/reviewer work; aggregate
+token usage and coordinator/reviewer elapsed metrics are `unavailable`. This
+packet used one evidence-based Terra/high → Sol/high escalation and no worker
+Ultra allocation. Telemetry contains only aggregate numbers; no hidden reasoning
+or prompt/transcript extraction was performed.
+
+### Evidence and remaining live gate
+
+`R0I-REWARD-DIAG-14` is **complete as an offline diagnostic packet**. Its tests
+are synthetic/fixture evidence, not live demonstration or differential fidelity.
+The recorder is trusted internal state, not a validator for arbitrary external
+attribute mutation. Mutable-buffer wiping does not claim erasure of immutable
+Python receive chunks. Neither diagnostic classification nor a receipt's
+reported mutation field authorizes replay of an uncertain request.
+
+No game was launched or operated, no bridge was built or installed, and no
+endpoint, credential, profile, save or Cloud setting was accessed during this
+packet. The last actual-game campaign's verified cleanup at 16:38:16 UTC above
+remains the last live cleanup evidence; this offline turn added no installation
+to remove. No push or other remote write occurred.
+
+The smallest next milestone is a separately recorded, bounded coordinator
+campaign using these reviewed diagnostics at a fresh, known reward boundary
+while seeking the already scoped composed rest handoff. It must not retry the
+previous uncertain action, broaden C# behavior, retain raw responses or silently
+promote the open eligible-gold/full-composition gates to passed.

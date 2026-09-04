@@ -166,6 +166,18 @@ open. Cleanup ultimately passed, including clean launch/quit and final base/
 listener checks. The ledger records a quarantine-before-Quit-confirmation
 ordering error, its recovery, and the independent diagnostic review.
 
+The approved `R0I-REWARD-DIAG-14` follow-up adds an explicitly selected,
+capture-off reward diagnostic. It separates transport, exact known HTTP and
+receipt failures without changing default reward acceptance or permitting a
+retry. Attempted exchanges, accepted/bound receipts and reconciled actions are
+counted separately. Synthetic actual-client tests cover strict receipts,
+multi-action failure prefixes, the 17-action cap, whole-CLI privacy and
+cancellation cleanup, including a repaired exceptional-exit mutable-response
+wipe in the shared Python transport. No C#, wire or headless contract changed.
+This diagnostic is fixture-tested, not live-demonstrated; the discarded live
+response and its mutation outcome remain unknown. Exact reviewed commits and
+validation are recorded in the next-increment ledger.
+
 Experiment configuration is caller-declared and hash-bound, not independently
 proved from trajectories. Named evidence/corpus integrity likewise does not
 authenticate source honesty or authorize retained live capture. Reduced
@@ -222,8 +234,10 @@ narrower:
   suppression; identity-registry behavior across disappearance, A → B → A,
   kind conflict and capacity; other lifecycle races; a complete reconciled room
   handoff inside the batched runner; multi-step event
-  completion at the Python-controller seam; and the full three-combat-floor
-  cap. The C# reader deliberately does not infer event-to-map completion.
+  completion at the Python-controller seam; the full three-combat-floor
+  cap; and capture-off reward failure classification, separate attempt/receipt/
+  reconciliation counters and exceptional-exit mutable-buffer cleanup.
+  The C# reader deliberately does not infer event-to-map completion.
 - **Observed residuals:** an earlier batched attempt stopped on
   `decision_response_mismatch`; the 2026-09-01 attempt reached a real event
   after two combats but returned `run_room_not_ready`. The accepted Python
@@ -273,12 +287,13 @@ control path. The recoverable dedicated-profile baseline and its broader
 passivity/rollback claims also remain unresolved; the approved live smokes
 accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 
-The immediate prerequisite is a separately scoped, capture-off reward diagnostic
-that distinguishes fixed failure categories without retaining response bodies
-or control IDs. The smallest useful next live target remains the existing room
-handoff inside one reproducible multi-floor sequence using only already implemented
-combat, reward, map, and supported-room contracts. That target
-should:
+The capture-off reward diagnostic prerequisite is now implemented and
+fixture-reviewed. It distinguishes fixed failure categories without retaining
+response bodies or control IDs, but does not classify the prior failure or
+authorize replay of its uncertain action. The smallest useful next live target
+remains the existing room handoff inside one reproducible multi-floor sequence
+using only already implemented combat, reward, map, and supported-room
+contracts. That target should:
 
 1. build on the live-accepted standalone rest-site repair to exercise a composed
    combat/rest/combat handoff when supported destinations are available,
@@ -313,6 +328,8 @@ maintained in
   accepted active increment. Pre-action context binding, its composed handoff,
   experiment CLI/artifacts, named evidence/gold evaluator/corpus and generated
   headless panels and capture-off gold adapter are reviewed and integrated.
+  The subsequently approved reward diagnostic is fixture-tested; it makes no
+  new live acceptance claim.
   Full live composition remains unobserved after a bounded campaign;
   this does not authorize retained live data or upgrade the live evidence above.
   Exact results are in the
