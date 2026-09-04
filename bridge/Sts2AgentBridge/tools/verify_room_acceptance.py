@@ -8,6 +8,8 @@ import time
 from collections.abc import Callable
 
 import apply_room_live as room
+import apply_reward_live as reward_client
+from decision_providers import map_provider_names, provider_names
 from tool_common import EXIT_INTERNAL, EXIT_MISMATCH, ToolFailure, fail
 
 _ACKNOWLEDGED = "acknowledged"
@@ -284,7 +286,34 @@ _KNOWN_PRODUCTION_FAILURE_CODES = frozenset(
         "run_room_state_unsupported", "run_room_not_ready", "run_room_ready_timeout",
         "run_post_room_map_result_mismatch", "run_post_room_destination_unsupported",
         "run_second_room_destination", "run_next_combat_result_mismatch", "next_combat_state_unsupported",
-        "next_combat_ready_timeout", "internal_failure", "user_profile", "effective_uid",
+        "next_combat_ready_timeout", "internal_failure", "invalid_effective_uid",
+        "invalid_user_profile", "non_absolute_user_profile", "non_canonical_user_profile",
+        "unsupported_platform", "effective_uid_mismatch", "user_identity_unavailable",
+        "user_profile_mismatch", "unsafe_user_profile", "missing_credential_component",
+        "non_directory_credential_component", "missing_credential_file", "non_regular_credential_file",
+        "credential_owner", "credential_directory_mode", "credential_link_count", "credential_file_mode",
+        "credential_shape", "credential_read_failed", "changing_credential_file", "safe_open_unsupported",
+        "health_response_mismatch", "manifest_response_mismatch", "combat_terminal_response_mismatch",
+        "combat_not_ready", "combat_state_unsupported", "combat_already_complete",
+        "combat_round_limit_reached", "combat_action_limit_reached", "invalid_provider_selection",
+        "post_action_state_unsupported", "post_action_state_timeout", "post_action_round_overshoot",
+        "post_rejection_state_unsupported", "post_rejection_state_timeout", "stale_action_retry_limit_reached",
+        "terminal_after_rejected_action", "action_rejected_invalid", "bridge_action_limit_reached",
+        "round_did_not_advance_once", "round_advanced_without_end_turn", "action_response_mismatch",
+        "reward_state_unsupported", "reward_action_response_mismatch", "reward_response_mismatch",
+        "reward_complete_response_mismatch", "reward_provider_no_action", "reward_not_ready",
+        "reward_action_budget_exhausted", "post_reward_state_unsupported", "post_reward_state_timeout",
+        "reward_decision_not_advanced", "gold_claim_reconciliation_failed", "card_open_reconciliation_failed",
+        "card_choice_reconciliation_failed", "card_skip_reconciliation_failed", "reward_proceed_reconciliation_failed",
+        "reward_unknown_transition", "reward_revision_mismatch", "map_response_mismatch",
+        "map_complete_response_mismatch", "map_action_response_mismatch", "map_not_ready",
+        "post_map_state_unsupported", "post_map_state_timeout", "map_destination_mismatch",
+        "room_response_mismatch", "room_state_unsupported", "room_not_ready", "room_completion_mismatch",
+        "room_action_response_mismatch", "room_action_limit_reached", "room_expected_context_mismatch",
+        "room_transition_mismatch", "room_decision_replayed", "room_interaction_timeout", "no_safe_room_action",
+        "map_action_transport_failure", "reward_action_transport_failure", "room_action_transport_failure",
+        "action_transport_failure", "decision_transport_failure", "health_transport_failure",
+        "manifest_transport_failure", "reward_transport_failure", "map_transport_failure", "room_transport_failure",
     )
 )
 
@@ -345,10 +374,34 @@ def _component(value: object, milestone: str) -> dict[str, object]:
             or not isinstance(value["final_enemies"], list)
             or not isinstance(value["actions"], list)
             or len(value["actions"]) != _integer(value["accepted_action_count"], 1, 48)
+            or set(value["final_player"]) != {"hp", "max_hp", "block", "energy"}
+            or any(type(value["final_player"][name]) is not int for name in value["final_player"])
+            or any(
+                not isinstance(action, dict)
+                or set(action) != {"step", "round", "action_id", "card_id", "basis", "player_hp_before", "enemy_hp_before", "player_hp_after", "enemy_hp_after"}
+                or type(action["step"]) is not int
+                or type(action["round"]) is not int
+                or type(action["action_id"]) is not str
+                or (action["card_id"] is not None and type(action["card_id"]) is not str)
+                or type(action["basis"]) is not str
+                or any(type(action[name]) is not int for name in ("player_hp_before", "enemy_hp_before", "player_hp_after", "enemy_hp_after"))
+                for action in value["actions"]
+            )
+            or any(
+                not isinstance(enemy, dict)
+                or set(enemy) != {"index", "id", "hp", "max_hp", "block", "intents"}
+                or type(enemy["index"]) is not int
+                or type(enemy["id"]) is not str
+                or any(type(enemy[name]) is not int for name in ("hp", "max_hp", "block"))
+                or not isinstance(enemy["intents"], list)
+                or any(type(intent) is not str for intent in enemy["intents"])
+                for enemy in value["final_enemies"]
+            )
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif milestone == "r0i_reward_resolution":
         applied = value["applied"]
+        before, after = value["before"], value["after"]
         if (
             not isinstance(applied, list)
             or not 1 <= len(applied) <= 17
@@ -368,14 +421,56 @@ def _component(value: object, milestone: str) -> dict[str, object]:
             )
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        if (
+            set(before) != {"decision_id", "decision_revision", "screen_kind", "player", "rewards", "legal_actions"}
+            or set(after) != {"screen_kind", "player"}
+            or before["screen_kind"] not in ("rewards", "card_reward")
+            or after["screen_kind"] != "map"
+            or not isinstance(before["rewards"], list)
+            or not isinstance(before["legal_actions"], list)
+            or any(
+                not isinstance(item, dict)
+                or set(item) != {"reward_slot", "reward_index", "kind", "successfully_selected", "gold_amount", "cards", "card_selection_can_skip"}
+                for item in before["rewards"]
+            )
+            or any(
+                not isinstance(item, dict)
+                or set(item) != {"action_id", "kind", "reward_slot", "card_slot"}
+                for item in before["legal_actions"]
+            )
+            or any(type(card) is not str for card in value["selected_cards"])
+            or any(
+                action["kind"] not in ("claim_gold", "open_card_reward", "choose_card", "skip_card", "proceed")
+                or (action["chosen_card"] is not None and type(action["chosen_card"]) is not str)
+                for action in applied
+            )
+        ):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        for player in (before["player"], after["player"]):
+            if not isinstance(player, dict) or set(player) != {"hp", "max_hp", "gold", "deck_count"} or any(type(number) is not int for number in player.values()):
+                fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif milestone == "r0g_map_selection":
         applied, after = value["applied"], value["after"]
+        before = value["before"]
         if (
             not isinstance(applied, dict)
             or set(applied) != {"action_id", "kind", "candidate_index", "col", "row", "node_kind", "basis"}
             or not isinstance(value["before"], dict)
             or not isinstance(after, dict)
             or _integer(value["routes_checked"], 5) < 5
+        ):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        if (
+            set(before) != {"decision_id", "screen_kind", "candidates", "legal_actions"}
+            or before["screen_kind"] != "map"
+            or set(after) != {"screen_kind", "destination"}
+            or after["screen_kind"] != "room"
+            or not isinstance(before["candidates"], list)
+            or not isinstance(before["legal_actions"], list)
+            or any(not isinstance(item, dict) or set(item) != {"candidate_index", "col", "row", "kind"} for item in before["candidates"])
+            or any(not isinstance(item, dict) or set(item) != {"action_id", "kind", "candidate_index"} for item in before["legal_actions"])
+            or applied["kind"] != "select_map_node"
+            or applied["basis"] not in ("first_reachable", "combat_continuation", "room_coverage", "elite_continuation")
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     else:
@@ -462,11 +557,17 @@ def _room_handoff(value: object) -> tuple[dict[str, object] | None, int, int, in
     screen = value["expected_screen_kind"]
     if type(kind) is not str or kind not in _DESTINATION_KINDS or screen not in ("rest_site", "event"):
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+    if (kind == "rest_site" and screen != "rest_site") or (kind in ("ancient", "unknown") and screen != "event") or kind not in ("rest_site", "ancient", "unknown"):
+        fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     preflight = _exact_dict(value["preflight"], {"attempts", "screen_kind", "room_ordinal"})
     if _integer(preflight["attempts"], 1) < 1 or preflight["screen_kind"] != screen:
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     _integer(preflight["room_ordinal"], 0, 999)
     room_result = _component(value["room"], "r0i_room_interaction")
+    try:
+        summarize_room_result(room_result)
+    except ToolFailure:
+        fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     room_actions = _component_actions(room_result, "r0i_room_interaction", 12)
     if room_result.get("screen_kind") != screen or room_result.get("room_ordinal") != preflight["room_ordinal"]:
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
@@ -480,6 +581,8 @@ def _room_handoff(value: object) -> tuple[dict[str, object] | None, int, int, in
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
         return value, room_actions, 0, 0, None, None
     post_kind = _destination_from_map(post_map)
+    if post_kind not in ("monster", "elite"):
+        fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     _integer(value.get("next_combat_attempts"), 1)
     continuation = _component(next_combat, "r0e_complete_combat")
     continuation_actions = _component_actions(continuation, "r0e_complete_combat", 48)
@@ -517,7 +620,13 @@ def _summarize_run_acceptance_result(result: object) -> dict[str, object]:
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     floor_limit = _integer(result["floor_limit"], 1, 3)
     providers = _exact_dict(result["providers"], {"combat", "reward", "map", "room"})
-    if any(type(item) is not str or not item for item in providers.values()):
+    if (
+        any(type(item) is not str for item in providers.values())
+        or providers["combat"] not in provider_names()
+        or providers["reward"] not in reward_client._PROVIDERS
+        or providers["map"] not in map_provider_names()
+        or providers["room"] != room._ROOM_PROVIDER
+    ):
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     floors = result["floors"]
     readiness = result["readiness"]
@@ -646,13 +755,13 @@ def _summarize_run_acceptance_result(result: object) -> dict[str, object]:
     elif terminal is not None:
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     if reason == "floor_limit_reached":
-        if destination is None or after_floor != floor_limit or processed != floor_limit or destination != selected_destinations.get(after_floor):
+        if handoff is not None or destination is None or after_floor != floor_limit or processed != floor_limit or destination != selected_destinations.get(after_floor):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif reason == "act_boundary_reached":
-        if destination != "boss" or after_floor != processed or processed >= floor_limit or destination != selected_destinations.get(after_floor):
+        if handoff is not None or terminal is not None or destination != "boss" or after_floor != processed or processed >= floor_limit or destination != selected_destinations.get(after_floor):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif reason == "unsupported_destination_kind":
-        if destination not in ("shop", "treasure") or after_floor != processed or processed >= floor_limit or destination != selected_destinations.get(after_floor):
+        if handoff is not None or terminal is not None or destination not in ("shop", "treasure") or after_floor != processed or processed >= floor_limit or destination != selected_destinations.get(after_floor):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif reason == "room_handoff_complete":
         if (
@@ -661,6 +770,7 @@ def _summarize_run_acceptance_result(result: object) -> dict[str, object]:
             or destination != handoff.get("destination_kind")
             or after_floor != handoff.get("after_floor")
             or after_floor != processed
+            or processed != floor_limit
             or destination != selected_destinations.get(after_floor)
             or (destination == "rest_site" and handoff.get("expected_screen_kind") != "rest_site")
             or (destination in ("ancient", "unknown") and handoff.get("expected_screen_kind") != "event")

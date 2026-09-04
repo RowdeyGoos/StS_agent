@@ -42,7 +42,9 @@ def _operation() -> dict[str, object]:
         if failure.error_code == "run_acceptance_result_mismatch" or failure.error_code in _KNOWN_PRODUCTION_FAILURE_CODES:
             raise
         fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
-    except Exception:
+    except KeyboardInterrupt:
+        raise
+    except BaseException:
         fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
     finally:
         _clear_mutable_buffers(result)
