@@ -740,42 +740,60 @@ def _run_room_preflight_delayed_activation() -> None:
         "choose_option",
         [event],
         [room_fixture._legal(event)],
+        ordinal=4,
     )
-    bodies = [
-        room_fixture._COMPLETE_EVENT,
-        room_fixture._inactive("waiting", "unknown", "unknown", None),
-        ready_event,
-    ]
+    rest_complete = room_fixture._inactive("complete", "rest_site", "complete", 3)
+    waiting = room_fixture._inactive("waiting", "unknown", "unknown", None)
 
-    def body_reader(*_: object) -> bytes:
-        if not bodies:
-            fail(EXIT_MISMATCH, "run_fixture_extra_delayed_room_preflight_read")
-        return bodies.pop(0)
-
-    previous_poll = run._POLL_SECONDS
-    run._POLL_SECONDS = 0.0
-    credential = bytearray(_CREDENTIAL)
-    try:
-        observed = run._wait_for_room_ready(
-            credential,
-            "event",
-            object,  # type: ignore[arg-type]
-            body_reader=body_reader,
+    def assert_preflight(
+        expected_screen_kind: str,
+        values: list[bytes],
+        expected_ordinal: int,
+    ) -> None:
+        route = room_fixture._get(room_fixture.room._ROOM_DECISION_ROUTE)
+        connector = room_fixture._Connector(
+            [room_fixture._response(value) for value in values],
+            [route for _ in values],
         )
-    finally:
-        run._POLL_SECONDS = previous_poll
-        probe._zero(credential)
-    if (
-        observed != {"attempts": 3, "screen_kind": "event", "room_ordinal": 4}
-        or bodies
-    ):
-        fail(EXIT_MISMATCH, "run_fixture_delayed_room_preflight")
+        previous_poll = run._POLL_SECONDS
+        run._POLL_SECONDS = 0.0
+        credential = bytearray(_CREDENTIAL)
+        try:
+            observed = run._wait_for_room_ready(
+                credential,
+                expected_screen_kind,
+                connector,
+            )
+        finally:
+            run._POLL_SECONDS = previous_poll
+            probe._zero(credential)
+        if observed != {
+            "attempts": len(values),
+            "screen_kind": expected_screen_kind,
+            "room_ordinal": expected_ordinal,
+        }:
+            fail(EXIT_MISMATCH, "run_fixture_delayed_room_preflight")
+        connector.assert_cleanup()
 
-    _expect_room_preflight_failure(
-        room_fixture._COMPLETE_REST,
-        "event",
-        "run_room_kind_mismatch",
+    assert_preflight("event", [rest_complete, waiting, ready_event], 4)
+
+    heal = room_fixture._candidate(
+        0,
+        "rest_heal",
+        "HEAL",
+        enabled=True,
+        supported=True,
     )
+    ready_rest = room_fixture._ready(
+        room_fixture._DECISION_ONE,
+        "rest_site",
+        "choose_option",
+        [heal],
+        [room_fixture._legal(heal)],
+        ordinal=8,
+    )
+    event_complete = room_fixture._inactive("complete", "event", "complete", 7)
+    assert_preflight("rest_site", [event_complete, ready_rest], 8)
 
     def complete_reader(*_: object) -> bytes:
         return room_fixture._COMPLETE_EVENT

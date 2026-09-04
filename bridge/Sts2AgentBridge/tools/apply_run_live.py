@@ -146,8 +146,8 @@ def _wait_for_room_ready(
         if status == "unsupported":
             fail(EXIT_MISMATCH, "run_room_state_unsupported")
         if status == "complete":
-            if decision["screen_kind"] != expected_screen_kind:
-                fail(EXIT_MISMATCH, "run_room_kind_mismatch")
+            # A completed decision may be residue from the prior room while map
+            # travel activates the expected room; only a ready body proves it.
             time.sleep(_POLL_SECONDS)
             continue
         if status != "ready":

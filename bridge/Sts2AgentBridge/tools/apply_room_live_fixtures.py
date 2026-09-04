@@ -70,6 +70,8 @@ def _ready(
     phase: str,
     candidates: list[dict[str, object]],
     legal: list[dict[str, object]],
+    *,
+    ordinal: int = 4,
 ) -> bytes:
     return _encode({
         "schema_version": 1,
@@ -79,7 +81,7 @@ def _ready(
         "decision_id": decision_id,
         "screen_kind": screen_kind,
         "phase": phase,
-        "room_ordinal": 4,
+        "room_ordinal": ordinal,
         "candidates": candidates,
         "legal_actions": legal,
     })
