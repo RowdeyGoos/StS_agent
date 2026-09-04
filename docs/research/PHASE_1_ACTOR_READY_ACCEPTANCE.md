@@ -5,9 +5,9 @@
   `42a3c4e895851188f7179cbc48dcff6ca5974a93`
 - **Active plan:**
   [Phase 1 actor-ready execution](../PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-- **Current state:** `22`, `23` and `05` reviewed and integrated locally; the user
+- **Current state:** `22`, `23`, `04` and `05` reviewed and integrated locally; the user
   approved continuing the increment after the automatic-review block. Validator
-  corrections are active; the frozen-schema encoder correction is under review.
+  corrections are active; the candidate-policy implementation is released.
   No live campaign.
 
 This is the integration ledger for the elite-continuation and actor-ready
@@ -24,9 +24,9 @@ or append new outcomes to that historical record.
 | `R0I-RUN-ACCEPTANCE-24` | Sol/xhigh corrections active | — | through source `50ecd3b`, not accepted |
 | `R0I-ELITE-REVIEW-25` | blocked on `22`-`24` | — | planned |
 | `R0I-ELITE-LIVE-26` | blocked on review and aggregate gates | — | planned |
-| `H5-ENCODER-04` | corrected implementation under independent review | — | source `4c62b52`; frozen schema unchanged |
+| `H5-ENCODER-04` | reviewed and integrated | `23d07d7` | public-only encoding; frozen schema unchanged |
 | `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
-| `H6-CANDIDATE-POLICY-06` | blocked on `H5-ENCODER-04` | — | planned |
+| `H6-CANDIDATE-POLICY-06` | Terra/high implementation active | — | starts from accepted `23d07d7` |
 | `H6-BC-SMOKE-07` | blocked on `04`-`06` | — | planned |
 
 “Done” means reviewed, integrated and accepted, not merely implemented in a
@@ -233,6 +233,30 @@ estimated.
 - Dataset `05` is accepted; no dataset correction remains active. No live
   campaign or retained live data was created. Aggregate worker token telemetry
   is unavailable; observed app turn durations are not a total execution metric.
+
+### 2026-09-05 — Encoder acceptance and candidate-policy release
+
+- Accepted `04` at exact source `78c55612cabac86ba306c4b49aa0122b4e09a487`
+  after independent Sol/high full source/schema review. The final focused
+  correction replaces a one-candidate reversal with valid scopes 0 and 2 whose
+  two candidate kinds actually reverse canonical order. Each view preserves its
+  own ID/row alignment; public global/entity/event rows and candidate-row
+  multisets remain invariant.
+- Integrated source `fc3743b` as `39eb7d9`, source `4c62b52` as `4439f9f`,
+  and final test correction `78c5561` as
+  `23d07d7f3485057b625f78a502b48e83fedf15cd`. Only the two owned files changed.
+  Frozen JSON, version and fingerprint remain exact; production file SHA-256 is
+  `114279e3bc0f6a73e26045a19632d6dc694c1e8748d3aed380dce8fb1ea52afc`.
+- Independent focused rerun: **27 passed in 0.60 seconds**. Coordinator final
+  encoder/contracts/headless/trajectory run: **284 passed in 5.90 seconds**.
+  Integration imports resolve from this checkout. Integrated conformance plus
+  encoder/dataset aggregate: **130 passed in 75.04 seconds**.
+- Released `06` as a persistent Terra/high project worktree from the accepted
+  integration branch, with exclusive model/test ownership. It may consume the
+  encoder but cannot alter it. Task ID:
+  `01a06e7b-1412-7691-a7a9-af01f0e7deed` (confirmed active). `07` remains
+  gated on reviewed model acceptance.
+  No worker escalation for `04`; all evidence remains synthetic structural.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:

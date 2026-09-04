@@ -1,6 +1,6 @@
 # Phase 1 Current Integration Status
 
-- **Status date:** 2026-09-04
+- **Status date:** 2026-09-05
 - **Active bridge milestone:** `R0i`
 - **Bridge version:** `0.8.0`
 - **Protocol:** `live_probe_v0`
@@ -124,9 +124,12 @@ contract pins, separates development and held-out requests, and exposes only
 public views, chosen advertised IDs and provenance as actor examples. Exact
 per-trajectory component evidence is retained outside examples, including
 zero-example trajectories, with a sorted aggregate label set. Dataset,
-trajectory and reporting checks pass 66 tests. The exact public encoding schema
-is frozen separately; encoder implementation and its model/training consumers
-remain in progress.
+trajectory and reporting checks pass 66 tests. The public encoder is accepted
+through `23d07d7`, with frozen `headless_encoding_v1` schema, exact candidate
+joins and out-of-band IDs, variable rows and explicit padding masks. Independent
+review confirmed valid reference reallocation and candidate permutation without
+numeric identity leakage. Integrated encoder/dataset/conformance checks pass
+130 tests. The candidate model and training smoke remain in progress.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:

@@ -11,6 +11,8 @@ event completion, explicit map entry and a complete batched room handoff remain
 unaccepted live. Elite continuation is implemented and independently fixture-tested
 by the host runner; it remains unobserved live.
 Explicit fresh reward entry has passed a bounded live campaign.
+The headless actor path has a frozen public variable-candidate encoder and
+trusted actor dataset; the candidate model and training smoke are in progress.
 
 Requires Python 3.10+.
 
