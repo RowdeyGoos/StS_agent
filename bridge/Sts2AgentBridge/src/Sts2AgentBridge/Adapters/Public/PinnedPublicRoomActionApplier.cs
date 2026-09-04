@@ -56,14 +56,15 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
 
         return snapshot.ScreenKind switch
         {
-            "rest_site" => ApplyRestSite(request, selected.Value),
-            "event" => ApplyEvent(request, selected.Value),
+            "rest_site" => ApplyRestSite(request, snapshot, selected.Value),
+            "event" => ApplyEvent(request, snapshot, selected.Value),
             _ => Result(PublicRoomActionApplyOutcome.StaleDecision, request),
         };
     }
 
     private PublicRoomActionApplyResult ApplyRestSite(
         PublicRoomActionRequest request,
+        PublicRoomDecisionSnapshot snapshot,
         PublicRoomCandidate candidate)
     {
         NRestSiteRoom? room = NRun.Instance?.RestSiteRoom;
@@ -79,7 +80,7 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
             {
                 return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
             }
-            return ReserveAndClick(request, proceed);
+            return ReserveAndClick(request, snapshot, candidate, room, proceed);
         }
 
         IReadOnlyList<RestSiteOption>? options = room!.Options;
@@ -98,11 +99,12 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
         {
             return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
         }
-        return ReserveAndClick(request, button);
+        return ReserveAndClick(request, snapshot, candidate, room, button);
     }
 
     private PublicRoomActionApplyResult ApplyEvent(
         PublicRoomActionRequest request,
+        PublicRoomDecisionSnapshot snapshot,
         PublicRoomCandidate candidate)
     {
         NEventRoom? room = NRun.Instance?.EventRoom;
@@ -138,21 +140,40 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
         {
             return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
         }
-        return ReserveAndClick(request, selected);
+        return ReserveAndClick(request, snapshot, candidate, room, selected);
     }
 
     private PublicRoomActionApplyResult ReserveAndClick(
         PublicRoomActionRequest request,
+        PublicRoomDecisionSnapshot snapshot,
+        PublicRoomCandidate candidate,
+        CanvasItem room,
         MegaCrit.Sts2.Core.Nodes.GodotExtensions.NClickableControl control)
     {
+        return ReserveAndApply(request, snapshot, candidate, room.GetInstanceId(), control.ForceClick);
+    }
+
+    internal PublicRoomActionApplyResult ReserveAndApply(
+        PublicRoomActionRequest request,
+        PublicRoomDecisionSnapshot snapshot,
+        PublicRoomCandidate candidate,
+        ulong roomInstanceId,
+        Action click)
+    {
+        // Re-read the active surface and full decision after resolving the
+        // control, immediately before reservation/dispatch on the game thread.
+        if (!_reader.Revalidate(snapshot, roomInstanceId))
+        {
+            return Result(PublicRoomActionApplyOutcome.StaleDecision, request);
+        }
         PublicRoomActionApplyOutcome? failure = Reserve(request.DecisionId, request.ActionId);
         if (failure.HasValue)
         {
             return Result(failure.Value, request);
         }
 
-        control.ForceClick();
-        _reader.RecordAcceptedDecision(request.DecisionId);
+        click();
+        _reader.RecordAcceptedDecision(snapshot, candidate, roomInstanceId);
         return Result(PublicRoomActionApplyOutcome.Accepted, request);
     }
 

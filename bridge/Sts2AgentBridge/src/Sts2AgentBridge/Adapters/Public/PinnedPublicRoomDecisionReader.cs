@@ -14,86 +14,81 @@ namespace Sts2AgentBridge.Adapters.Public;
 
 public sealed class PinnedPublicRoomDecisionReader : IPublicRoomDecisionReader
 {
-    private bool _observedReady;
-    private string _lastScreenKind = "unknown";
-    private int _lastRoomOrdinal = -1;
-    private string? _pendingDecisionId;
-    private ulong? _activeRoomInstanceId;
-    private int _nextRoomOrdinal;
+    private readonly PublicRoomSurfaceLifecycle _lifecycle = new();
+
+#if STS2_AGENT_BRIDGE_TEST_SEAM
+    private readonly Func<PublicRoomSurface>? _testSurface;
+    private readonly Func<int, PublicRoomDecisionSnapshot>? _testProjection;
+
+    public PinnedPublicRoomDecisionReader() { }
+
+    internal PinnedPublicRoomDecisionReader(
+        Func<PublicRoomSurface> surface,
+        Func<int, PublicRoomDecisionSnapshot> projection)
+    {
+        _testSurface = surface;
+        _testProjection = projection;
+    }
+#endif
 
     public PublicRoomDecisionSnapshot Read()
     {
+#if STS2_AGENT_BRIDGE_TEST_SEAM
+        if (_testSurface is not null)
+        {
+            return _lifecycle.Observe(_testSurface()) ??
+                _lifecycle.Project(_testProjection!(_lifecycle.RoomOrdinal));
+        }
+#endif
         NRun? run = NRun.Instance;
         if (run is null || !GodotObject.IsInstanceValid(run))
         {
-            return PublicRoomDecisionSnapshot.Waiting();
+            return _lifecycle.Observe(default)!.Value;
         }
 
         NRestSiteRoom? restSite = run.RestSiteRoom;
         bool hasRestSite = IsVisible(restSite);
         NEventRoom? eventRoom = run.EventRoom;
         bool hasEvent = IsVisible(eventRoom);
-        if (hasRestSite && hasEvent)
+        CanvasItem? activeRoom = hasRestSite ? restSite : hasEvent ? eventRoom : null;
+        var globalUi = run.GlobalUi;
+        var map = globalUi is not null && GodotObject.IsInstanceValid(globalUi)
+            ? globalUi.MapScreen : null;
+        bool mapAvailable = map is not null && GodotObject.IsInstanceValid(map);
+        var surface = new PublicRoomSurface(
+            run.GetInstanceId(),
+            activeRoom?.GetInstanceId(),
+            hasRestSite ? "rest_site" : hasEvent ? "event" : "unknown",
+            mapAvailable,
+            mapAvailable && map!.IsOpen,
+            mapAvailable && map!.IsTravelEnabled,
+            mapAvailable && map!.IsTraveling,
+            (hasRestSite && hasEvent) || HasNestedOverlay(run) ||
+                (hasEvent && eventRoom!.CustomEventNode is not null));
+        PublicRoomDecisionSnapshot? boundary = _lifecycle.Observe(surface);
+        if (boundary.HasValue)
         {
-            return PublicRoomDecisionSnapshot.Unsupported();
-        }
-
-        if (!hasRestSite && !hasEvent)
-        {
-            return _observedReady
-                ? PublicRoomDecisionSnapshot.Complete(_lastScreenKind, _lastRoomOrdinal)
-                : PublicRoomDecisionSnapshot.Waiting();
-        }
-
-        CanvasItem activeRoom = hasRestSite ? restSite! : eventRoom!;
-        int roomOrdinal = ResolveRoomOrdinal(activeRoom);
-        if (roomOrdinal < 0)
-        {
-            return PublicRoomDecisionSnapshot.Unsupported(
-                hasRestSite ? "rest_site" : "event");
-        }
-
-        if (HasNestedOverlay(run))
-        {
-            return PublicRoomDecisionSnapshot.Unsupported(
-                hasRestSite ? "rest_site" : "event",
-                roomOrdinal);
+            return boundary.Value;
         }
 
         PublicRoomDecisionSnapshot snapshot = hasRestSite
-            ? ReadRestSite(restSite!, roomOrdinal)
-            : ReadEvent(eventRoom!, roomOrdinal);
-        if (snapshot.Status != PublicDecisionStatus.Ready)
-        {
-            if (snapshot.Status == PublicDecisionStatus.Unsupported &&
-                _pendingDecisionId is not null &&
-                string.Equals(snapshot.ScreenKind, "rest_site", StringComparison.Ordinal))
-            {
-                return PublicRoomDecisionSnapshot.Waiting();
-            }
-            return snapshot;
-        }
-
-        if (string.Equals(_pendingDecisionId, snapshot.DecisionId, StringComparison.Ordinal))
-        {
-            return PublicRoomDecisionSnapshot.Waiting();
-        }
-
-        _pendingDecisionId = null;
-        _observedReady = true;
-        _lastScreenKind = snapshot.ScreenKind;
-        _lastRoomOrdinal = snapshot.RoomOrdinal;
-        return snapshot;
+            ? ReadRestSite(restSite!, _lifecycle.RoomOrdinal)
+            : ReadEvent(eventRoom!, _lifecycle.RoomOrdinal);
+        return _lifecycle.Project(snapshot);
     }
 
-    public void RecordAcceptedDecision(string decisionId)
+    internal bool Revalidate(PublicRoomDecisionSnapshot expected, ulong roomInstanceId)
     {
-        if (!PublicRoomDecisionIdentity.IsCanonical(decisionId))
-        {
-            throw new ArgumentException("The accepted room decision identity is not canonical.", nameof(decisionId));
-        }
-        _pendingDecisionId = decisionId;
+        PublicRoomDecisionSnapshot current = Read();
+        return current.Status == PublicDecisionStatus.Ready &&
+            string.Equals(current.DecisionId, expected.DecisionId, StringComparison.Ordinal) &&
+            _lifecycle.Matches(expected, roomInstanceId);
     }
+
+    internal void RecordAcceptedDecision(
+        PublicRoomDecisionSnapshot snapshot,
+        PublicRoomCandidate candidate,
+        ulong roomInstanceId) => _lifecycle.RecordAccepted(snapshot, candidate, roomInstanceId);
 
     private static PublicRoomDecisionSnapshot ReadRestSite(
         NRestSiteRoom room,
@@ -273,27 +268,137 @@ public sealed class PinnedPublicRoomDecisionReader : IPublicRoomDecisionReader
     internal static bool IsVisible(CanvasItem? item) =>
         item is not null && GodotObject.IsInstanceValid(item) && item.IsVisibleInTree();
 
-    private int ResolveRoomOrdinal(CanvasItem room)
-    {
-        ulong instanceId = room.GetInstanceId();
-        if (_activeRoomInstanceId == instanceId)
-        {
-            return _lastRoomOrdinal;
-        }
-        if (_nextRoomOrdinal > 999)
-        {
-            return -1;
-        }
-        _activeRoomInstanceId = instanceId;
-        _pendingDecisionId = null;
-        _lastRoomOrdinal = _nextRoomOrdinal;
-        _nextRoomOrdinal++;
-        return _lastRoomOrdinal;
-    }
-
     private static bool HasNestedOverlay(NRun run)
     {
         NOverlayStack? overlays = run.GlobalUi?.Overlays;
         return overlays is not null && GodotObject.IsInstanceValid(overlays) && overlays.ScreenCount > 0;
+    }
+}
+
+// Internal, public-surface evidence only. Instance IDs never enter the wire or hash.
+internal readonly record struct PublicRoomSurface(
+    ulong? RunInstanceId,
+    ulong? RoomInstanceId,
+    string ScreenKind,
+    bool MapAvailable,
+    bool MapOpen,
+    bool TravelEnabled,
+    bool Traveling,
+    bool Unsupported);
+
+internal sealed class PublicRoomSurfaceLifecycle
+{
+    private ulong? _runInstanceId;
+    private ulong? _roomInstanceId;
+    private string _screenKind = "unknown";
+    private int _nextRoomOrdinal;
+    private PublicRoomDecisionSnapshot? _ready;
+    private string? _pendingDecisionId;
+    private bool _acceptedRestProceed;
+
+    internal int RoomOrdinal { get; private set; } = -1;
+
+    // Null means the underlying room may be projected. Every other result has
+    // no candidates, including an inspection map over persistent room nodes.
+    internal PublicRoomDecisionSnapshot? Observe(PublicRoomSurface surface)
+    {
+        if (_runInstanceId != surface.RunInstanceId ||
+            _roomInstanceId != surface.RoomInstanceId ||
+            !string.Equals(_screenKind, surface.ScreenKind, StringComparison.Ordinal))
+        {
+            _runInstanceId = surface.RunInstanceId;
+            _roomInstanceId = surface.RoomInstanceId;
+            _screenKind = surface.ScreenKind;
+            ClearEvidence();
+            RoomOrdinal = surface.RunInstanceId.HasValue && surface.RoomInstanceId.HasValue &&
+                _nextRoomOrdinal <= 999 ? _nextRoomOrdinal++ : -1;
+        }
+
+        if (!surface.RunInstanceId.HasValue || !surface.RoomInstanceId.HasValue ||
+            !surface.MapAvailable)
+        {
+            ClearEvidence();
+            return PublicRoomDecisionSnapshot.Waiting();
+        }
+        if (RoomOrdinal < 0 || surface.Unsupported)
+        {
+            _acceptedRestProceed = false;
+            _ready = null;
+            return PublicRoomDecisionSnapshot.Unsupported(_screenKind, RoomOrdinal);
+        }
+        if (surface.Traveling)
+        {
+            ClearEvidence();
+            return PublicRoomDecisionSnapshot.Waiting();
+        }
+        if (surface.MapOpen)
+        {
+            return _acceptedRestProceed && surface.TravelEnabled
+                ? PublicRoomDecisionSnapshot.Complete(_screenKind, RoomOrdinal)
+                : PublicRoomDecisionSnapshot.Waiting();
+        }
+        // Proceed can take several frames to open the map. Closing that map
+        // does not make its already accepted persistent Proceed button eligible.
+        if (_acceptedRestProceed)
+        {
+            return PublicRoomDecisionSnapshot.Waiting();
+        }
+        return null;
+    }
+
+    internal PublicRoomDecisionSnapshot Project(PublicRoomDecisionSnapshot snapshot)
+    {
+        if (snapshot.Status != PublicDecisionStatus.Ready)
+        {
+            _ready = null;
+            if (snapshot.Status == PublicDecisionStatus.Complete)
+            {
+                // Preserve the existing embedded-combat boundary only after an
+                // accepted action in this very event. Disappearance is no proof.
+                return _screenKind == "event" && _pendingDecisionId is not null
+                    ? snapshot : PublicRoomDecisionSnapshot.Waiting();
+            }
+            return snapshot.Status == PublicDecisionStatus.Unsupported &&
+                _screenKind == "rest_site" && _pendingDecisionId is not null
+                ? PublicRoomDecisionSnapshot.Waiting() : snapshot;
+        }
+        if (string.Equals(_pendingDecisionId, snapshot.DecisionId, StringComparison.Ordinal))
+        {
+            _ready = null;
+            return PublicRoomDecisionSnapshot.Waiting();
+        }
+        _pendingDecisionId = null;
+        _ready = snapshot;
+        return snapshot;
+    }
+
+    internal bool Matches(PublicRoomDecisionSnapshot snapshot, ulong roomInstanceId) =>
+        _roomInstanceId == roomInstanceId && _ready.HasValue &&
+        snapshot.Status == PublicDecisionStatus.Ready &&
+        snapshot.RoomOrdinal == RoomOrdinal && snapshot.ScreenKind == _screenKind &&
+        string.Equals(snapshot.DecisionId, _ready.Value.DecisionId, StringComparison.Ordinal);
+
+    internal void RecordAccepted(
+        PublicRoomDecisionSnapshot snapshot,
+        PublicRoomCandidate candidate,
+        ulong roomInstanceId)
+    {
+        if (!Matches(snapshot, roomInstanceId))
+        {
+            return;
+        }
+        _pendingDecisionId = snapshot.DecisionId;
+        _acceptedRestProceed = snapshot.ScreenKind == "rest_site" &&
+            candidate.Kind == PublicRoomCandidateKind.Proceed && candidate.Enabled &&
+            candidate.Supported && candidate.IsProceed && !candidate.IsDangerous &&
+            candidate.ActionId == PublicRoomActionRequest.ProceedActionId;
+        _ready = null;
+    }
+
+    private void ClearEvidence()
+    {
+        _ready = null;
+        _pendingDecisionId = null;
+        _acceptedRestProceed = false;
     }
 }
