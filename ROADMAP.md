@@ -57,6 +57,8 @@ The full-game integration track additionally has:
   terminal combat defeat with truthful partial-prefix accounting;
 - repository and disposable-fixture coverage for a combat/reward/map/room
   controller capped at three combat floors;
+- implemented host-only elite continuation and an opt-in elite-first provider,
+  with independent actual-client fixture and historical-control coverage;
 - the accepted `headless_v0` contract, composed deterministic reduced-run
   backend, component-addressable evidence, snapshots/replay, and an independent
   66-test conformance gate;
@@ -64,7 +66,9 @@ The full-game integration track additionally has:
   spawned rollout collection, and a synthetic live-wire versus headless
   common-subset comparator that preserves divergences;
 - versioned headless experiment artifacts/CLI and maintained deterministic
-  panel checks; and
+  panel checks;
+- a trusted public actor dataset with explicit accepted pins, separated panels
+  and exact component evidence retained outside actor examples; and
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
@@ -90,11 +94,12 @@ These are the highest-value next steps.
 
 ### Full-Game Integration Priority
 
-Keep the C# bridge and `live_probe_v0` wire frozen while extending the bounded
-Python host through one already advertised destination: treat `elite` as combat
-and reuse the current combat/reward/map clients. Preserve exact caps, replay and
-uncertainty behavior, use an opt-in elite-first provider, and keep boss, shops,
-treasures, relics and potions fail-closed. The live gate should begin at an
+Keep the C# bridge and `live_probe_v0` wire frozen. The bounded Python host now
+treats `elite` as combat using the existing clients, with independent fixture
+coverage. Complete the maintained capture-off acceptance validator and aggregate
+join before the bounded live gate. Preserve exact caps, replay and uncertainty
+behavior and keep boss, shops, treasures, relics and potions fail-closed.
+The live gate should begin at an
 explicit fresh map, seek elite or supported-room composition without farming,
 and retain the existing clean teardown and base-game relaunch checks.
 

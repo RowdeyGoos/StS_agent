@@ -16,14 +16,13 @@ same boundary with granular gold/card reward handling, a separate bounded
 rest-site and standard-event controller, and a combat/reward/map/room runner
 capped at three completed combats under replaceable host decision providers.
 The runner reconciles a supported room preflight, bounded room interaction,
-return to map, and—when the next destination is an ordinary monster—one next-
+return to map, and—when the next destination is a monster or elite—one next-
 combat continuation. Unsupported or inconsistent handoffs fail closed.
-Although the map surface can advertise `elite`, the current Python runner stops
-there with `unsupported_destination_kind`; elite continuation is the next
-host-only packet in the
-[actor-ready execution plan](../../docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md),
-not a current fixture or live capability. The C# assembly and wire remain
-unchanged by that planned work.
+The Python runner now treats advertised `elite` destinations as combat through
+the same clients. Independent actual-client fixtures cover default, prefix and
+post-room continuation, defeat, uncertainty and cleanup; elite remains
+unobserved live. The C# assembly and wire are unchanged. Exact acceptance is in
+the [actor-ready ledger](../../docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md).
 
 The controlling contract is the accepted
 [Phase 1 BR0 preflight freeze](../../docs/PHASE_1_BR0_PREFLIGHT.md). The broader
@@ -472,6 +471,13 @@ The batched controller exposes each provider explicitly:
   --room-provider safe \
   --floor-limit 3
 ```
+
+The opt-in `elite` map provider ranks elite, rest site, monster and ancient,
+then other advertised choices with the existing deterministic tie-break.
+Existing `first`, `combat` and `coverage` providers retain their behavior.
+Normal/prefix selection of the final allowed destination returns before its
+combat. A supported room's post-room selection still runs its one continuation
+combat when that selection consumes the final slot, then returns before reward.
 
 Omission of `--entry-phase` and explicit `--entry-phase combat` have the same
 combat-entry behavior and exact `r0i_bounded_run` success JSON. To start only

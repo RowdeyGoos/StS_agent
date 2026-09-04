@@ -52,6 +52,8 @@ long-term agent architecture, also read:
    for the active elite-continuation and actor-ready headless dependency graph,
    exact ownership, acceptance gates, and stop boundaries, plus its
    [acceptance ledger](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md)
+   and, for actor representation/model work, the frozen
+   [encoding schema](docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json)
 8. [docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md) before
    dispatching implementation or review work
 9. [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md)
@@ -131,6 +133,8 @@ program decision.
   actor-ready headless packets, dependencies, ownership, gates, and handoff
 - `docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md`: active successor packet,
   integration, review, evidence, telemetry, and live-cleanup ledger
+- `docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json`: exact frozen
+  `headless_encoding_v1` API, features, normalization, joins and fingerprint input
 - `docs/PHASE_1_NEXT_INCREMENT_PLAN.md`: completed predecessor increment and
   preserved packet contracts; its research ledger owns exact acceptance results
 - `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`: completed foundational live/headless

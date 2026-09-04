@@ -1693,9 +1693,10 @@ add risk without adding information needed for this host transition.
 
 The bridge DLL, `live_probe_v0` wire and C# lifecycle remain frozen while one
 already public destination becomes usable by the host. Existing behavior stays
-compatible and elite remains planned/static until the implementation, review
-and applicable live gate in
-`docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md` pass. This decision itself grants
+compatible. Elite continuation now has implementation and independent
+actual-client fixture evidence; its live disposition remains unobserved until
+the applicable gate in `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md` passes.
+This decision itself grants
 no install, launch, profile, endpoint or retained-capture authority.
 
 ## D53. Encode Headless Decisions As Public Variable Candidate Sets

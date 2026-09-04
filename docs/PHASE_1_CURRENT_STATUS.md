@@ -98,6 +98,15 @@ uncertainty behavior remain fixture-tested or unobserved.
 
 No live campaign is active.
 
+The host-only elite producer and independent actual-client gate are integrated
+through `8fd4320`. Normal, explicit-prefix and post-room elite paths reuse the
+existing combat clients and preserve their different final-slot behavior. The
+opt-in `elite` provider ranks elite, rest, monster and ancient first; old
+providers remain unchanged. Historical negative controls and uncertainty,
+cancellation and cleanup checks pass with synthetic transport. Elite remains
+unobserved live; the maintained acceptance validator and complete bridge join
+review are still being completed.
+
 ## Parallel headless execution status
 
 The accepted offline stack now includes the canonical `headless_v0` public
@@ -107,7 +116,17 @@ bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
 deterministic reduced reward/map/room rules, and the composed multi-phase
 `ReducedRunBackend`. The independent `H3-CONFORMANCE-04` gate is integrated;
 that checkpoint passed `66` conformance tests and `829` repository tests. The
-latest integrated tree passes `1,052` repository tests.
+actor-ready handoff baseline passed `1,052` repository tests.
+
+The trusted actor dataset is accepted through `1d1f430`. It admits only
+manifest-anchored sources matching explicit accepted backend/content/rules/
+contract pins, separates development and held-out requests, and exposes only
+public views, chosen advertised IDs and provenance as actor examples. Exact
+per-trajectory component evidence is retained outside examples, including
+zero-example trajectories, with a sorted aggregate label set. Dataset,
+trajectory and reporting checks pass 66 tests. The exact public encoding schema
+is frozen separately; encoder implementation and its model/training consumers
+remain in progress.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:
@@ -360,11 +379,9 @@ accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 The capture-off reward diagnostic, one-floor composed ordinary-combat path and
 explicit fresh reward entry are now live-demonstrated. None classifies the prior
 discarded reward response or authorizes replay of its uncertain action. The
-smallest implementation join is host-only elite continuation: the current
-runner receives the already advertised destination but stops with
-`unsupported_destination_kind`. The active plan treats elite as combat by
-reusing existing Python clients while keeping C#, wire, caps and replay rules
-unchanged. After that join passes independent fixtures and review, the smallest
+host-only elite continuation is now implemented with independent actual-client
+fixtures, while C#, wire, caps and replay rules remain unchanged. After the
+maintained capture-off validator and aggregate bridge join pass review, the smallest
 live targets are explicit map entry, elite combat when offered, and a composed
 supported-room handoff when a rest route is offered. A compatible campaign
 should:

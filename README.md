@@ -8,7 +8,8 @@ authenticated live-game bridge at the bounded `R0i` integration milestone.
 The headless progression rules are structural fixtures, not verified full-game
 rules. The live bridge has verified standalone rest-site completion; multi-step
 event completion, explicit map entry and a complete batched room handoff remain
-unaccepted live. Elite continuation is not yet implemented by the host runner.
+unaccepted live. Elite continuation is implemented and independently fixture-tested
+by the host runner; it remains unobserved live.
 Explicit fresh reward entry has passed a bounded live campaign.
 
 Requires Python 3.10+.
@@ -38,6 +39,7 @@ Project and contributor documentation:
 - [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md): living account of demonstrated bridge progress, current limitations, and the next bounded target
 - [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md): active elite-continuation and actor-ready headless packet graph
 - [docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md): active integration and evidence ledger for that graph
+- [docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json](docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json): frozen public feature schema, candidate mapping and normalization for the separate headless actor representation
 - [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md): completed predecessor increment for reliable room composition, headless experiment tooling, and narrow conformance preparation; reviewed results are recorded in its acceptance ledger
 - [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md): preserved pre-implementation candidate shortlist, safety gaps, and ordered experiment gates
 - [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md): preserved initial read-only bridge boundary, staged control design, and gates

@@ -25,7 +25,7 @@ or append new outcomes to that historical record.
 | `R0I-ELITE-REVIEW-25` | blocked on `22`-`24` | — | planned |
 | `R0I-ELITE-LIVE-26` | blocked on review and aggregate gates | — | planned |
 | `H5-ENCODER-04` | schema accepted; implementation released after this record | — | frozen schema and fingerprint below |
-| `H5-DATASET-05` | corrections active after independent review | — | source `39b7c76`, not accepted |
+| `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
 | `H6-CANDIDATE-POLICY-06` | blocked on `H5-ENCODER-04` | — | planned |
 | `H6-BC-SMOKE-07` | blocked on `04`-`06` | — | planned |
 
@@ -184,6 +184,32 @@ estimated.
   exact accepted JSON schema/fingerprint and may edit only its two owned files
   after receiving the committed freeze. Implementation and independent review
   remain required; no headless actor capability is accepted yet.
+
+### 2026-09-04 — Dataset acceptance and validator allocation correction
+
+- Integrated `05` source `39b7c76a70de100cbc5235eec890cb62c9302b70` as
+  `7b8afad3531fc451f5e70ce88a6468600399d415`, followed by correction
+  `4daf16545997a78fac79f7371d8c6a786c037a11` as
+  `1d1f43011293442563667afc38b23283a1475fac` after clean independent
+  Sol/high acceptance and coordinator diff inspection.
+- Coordinator verified worktree imports and reran dataset/trajectory/reporting:
+  **66 passed in 2.70 seconds**. Independent focused rerun: **13 passed in
+  1.13 seconds**. Worker conformance: **90 passed**. Evidence remains
+  `combat_v0`/`structural_fixture`, never live or differential verification.
+- `load_actor_dataset` requires caller-declared `accepted_backend_manifest` and
+  manifest-anchored development/held-out sources. Every source must match the
+  exact backend/content/rules/contract identity. Examples remain only public
+  `PolicyView`, chosen advertised ID and sample provenance. Split-level
+  `admitted_trajectories` retains exact component evidence even for zero-example
+  trajectories; `aggregate_evidence_labels` returns the sorted unique set.
+- `24` correction `97722148d5ba061c2ba4c278b6e1302ff13104cb` remains
+  unaccepted. Independent whole-bridge review reproduced invalid room histories,
+  shallow nested-record validation and loss of legitimate production failures.
+  Its purported actual-client fixture instead manufactured placeholder records.
+- Per active-plan Section 8, coordinator escalated the same visible `24` task
+  from Terra/high to Sol/high after repeated failed acceptance. Ownership and
+  scope are unchanged; an independent Sol/high reviewer remains separate.
+  No Ultra worker, live operation or C#/wire/artifact change occurred.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
