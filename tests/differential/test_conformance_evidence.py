@@ -372,3 +372,12 @@ def test_byte_limit_and_non_json_values():
     for body in (" " * (evidence.MAX_RECORD_BYTES + 1), '{"schema":NaN}', '{"schema":Infinity}', "not json", b"\xff"):
         with pytest.raises(evidence.EvidenceError):
             evidence.parse_record(body, expected_pins=PINS)
+
+
+def test_oversized_json_integer_has_a_fixed_error():
+    # Python 3.11 may reject the integer during decoding; earlier supported
+    # versions reject its invalid schema shape. Neither exposes parser text.
+    body = '{"schema":' + '9' * 5000 + '}'
+    with pytest.raises(evidence.EvidenceError) as error:
+        evidence.parse_record(body, expected_pins=PINS)
+    assert str(error.value) in {"invalid_json", "invalid_record_fields"}

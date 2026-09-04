@@ -147,7 +147,9 @@ def _load(body: str | bytes) -> dict:
         _require(len(raw) <= MAX_RECORD_BYTES, "record_too_large")
         value = json.loads(raw.decode("ascii"), object_pairs_hook=_pairs,
                            parse_constant=lambda _: _require(False, "invalid_json"))
-    except (UnicodeError, json.JSONDecodeError, RecursionError):
+    except EvidenceError:
+        raise
+    except (UnicodeError, ValueError, RecursionError):
         raise EvidenceError("invalid_json") from None
     _require(type(value) is dict, "invalid_record")
     return value
