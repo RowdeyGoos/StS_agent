@@ -188,10 +188,30 @@ class CoverageMapDecisionProvider:
         return _map_selection(selected, candidates, "room_coverage")
 
 
+class EliteMapDecisionProvider:
+    def choose(
+        self,
+        candidates: list[dict[str, object]],
+        actions: list[dict[str, object]],
+    ) -> dict[str, object]:
+        priorities = {
+            "elite": 0,
+            "rest_site": 1,
+            "monster": 2,
+            "ancient": 3,
+        }
+        selected = min(
+            actions,
+            key=lambda action: _rank_map_action(action, candidates, priorities),
+        )
+        return _map_selection(selected, candidates, "elite_continuation")
+
+
 _MAP_PROVIDERS: dict[str, MapDecisionProvider] = {
     "first": FirstMapDecisionProvider(),
     "combat": CombatMapDecisionProvider(),
     "coverage": CoverageMapDecisionProvider(),
+    "elite": EliteMapDecisionProvider(),
 }
 
 

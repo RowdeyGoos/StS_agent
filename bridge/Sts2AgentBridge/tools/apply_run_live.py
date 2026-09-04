@@ -31,6 +31,7 @@ _MAXIMUM_FLOORS = 3
 _NEXT_COMBAT_READY_DEADLINE_SECONDS = 30.0
 _POLL_SECONDS = 0.1
 _ACT_BOUNDARY_KINDS = frozenset(("boss",))
+_COMBAT_DESTINATION_KINDS = frozenset(("monster", "elite"))
 _ROOM_KINDS_BY_DESTINATION = {
     "rest_site": "rest_site",
     "ancient": "event",
@@ -590,7 +591,7 @@ def _run_bounded_run(
                 room_handoff["post_room_map"] = post_room_map
                 if post_room_kind in _ROOM_KINDS_BY_DESTINATION:
                     fail(EXIT_MISMATCH, "run_second_room_destination")
-                if post_room_kind != "monster":
+                if post_room_kind not in _COMBAT_DESTINATION_KINDS:
                     fail(EXIT_MISMATCH, "run_post_room_destination_unsupported")
                 next_combat_attempts = _with_credential(
                     credential_loader,
@@ -645,7 +646,7 @@ def _run_bounded_run(
                         kind,
                     ),
                 )
-            if kind != "monster":
+            if kind not in _COMBAT_DESTINATION_KINDS:
                 reason = (
                     "act_boundary_reached"
                     if kind in _ACT_BOUNDARY_KINDS

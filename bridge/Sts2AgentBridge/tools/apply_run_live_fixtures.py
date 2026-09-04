@@ -130,6 +130,7 @@ def _run_sequence(
     reward_max_hp: int = 80,
     room_connector: room_fixture._Connector | None = None,
     entry_phase: str = "combat",
+    map_provider: str = "first",
 ) -> tuple[dict[str, object], list[str], CredentialLoader]:
     loader = CredentialLoader()
     calls: list[str] = [] if call_log is None else call_log
@@ -177,7 +178,11 @@ def _run_sequence(
 
     def map_runner(credential: bytearray, provider: str, supplied: object) -> dict[str, object]:
         nonlocal map_number
-        if bytes(credential) != _CREDENTIAL or provider != "first" or supplied is not connector:
+        if (
+            bytes(credential) != _CREDENTIAL
+            or provider != map_provider
+            or supplied is not connector
+        ):
             fail(EXIT_MISMATCH, "run_fixture_map_arguments")
         calls.append("map")
         kind = destinations[map_number]
@@ -246,7 +251,7 @@ def _run_sequence(
             connector,  # type: ignore[arg-type]
             "heuristic",
             "skip",
-            "first",
+            map_provider,
             "safe",
             floor_limit,
             combat_runner=combat_runner,  # type: ignore[arg-type]
@@ -589,6 +594,179 @@ def _run_defeat_stop() -> None:
         or calls[-2:] != ["next_wait", "combat"]
     ):
         fail(EXIT_MISMATCH, "run_fixture_defeat_stop")
+
+
+def _run_elite_continuations() -> None:
+    ordinary, ordinary_calls, _ = _run_sequence(
+        ["elite", "shop"],
+        3,
+        map_provider="elite",
+    )
+    ordinary_floors = ordinary.get("floors")
+    if (
+        not isinstance(ordinary_floors, list)
+        or [floor.get("destination_kind") for floor in ordinary_floors]
+        != ["elite", "shop"]
+        or ordinary.get("providers")
+        != {"combat": "heuristic", "reward": "skip", "map": "elite", "room": "safe"}
+        or ordinary.get("action_totals")
+        != {"combat": 11, "reward": 2, "map": 2, "room": 0, "total": 15}
+        or ordinary.get("termination")
+        != {
+            "reason": "unsupported_destination_kind",
+            "after_floor": 2,
+            "destination_kind": "shop",
+        }
+        or ordinary_calls.count("combat") != 2
+        or ordinary_calls.count("reward") != 2
+        or ordinary_calls[5:7] != ["next_wait", "combat"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_elite_ordinary_continuation")
+
+    defeated, defeated_calls, _ = _run_sequence(
+        ["elite"],
+        3,
+        defeat_on_combat=2,
+    )
+    if (
+        defeated.get("completed_floor_count") != 1
+        or defeated.get("termination")
+        != {"reason": "run_defeat", "after_floor": 1, "destination_kind": None}
+        or defeated.get("action_totals")
+        != {"combat": 8, "reward": 1, "map": 1, "room": 0, "total": 10}
+        or defeated_calls[-2:] != ["next_wait", "combat"]
+        or "reward" in defeated_calls[defeated_calls.index("next_wait") :]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_elite_defeat")
+
+    for entry_phase, expected_reward_actions, expected_calls in (
+        (
+            "reward",
+            2,
+            [
+                "reward", "map_wait", "map", "next_wait", "combat",
+                "reward_wait", "reward", "map_wait", "map",
+            ],
+        ),
+        (
+            "map",
+            1,
+            ["map", "next_wait", "combat", "reward_wait", "reward", "map_wait", "map"],
+        ),
+    ):
+        prefixed, prefixed_calls, _ = _run_sequence(
+            ["elite", "shop"],
+            3,
+            entry_phase=entry_phase,
+        )
+        prefixed_floors = prefixed.get("floors")
+        if (
+            prefixed.get("processed_floor_count") != 2
+            or prefixed.get("completed_floor_count") != 1
+            or not isinstance(prefixed_floors, list)
+            or prefixed_floors[0].get("floor_number") != 2
+            or prefixed.get("action_totals")
+            != {
+                "combat": 5,
+                "reward": expected_reward_actions,
+                "map": 2,
+                "room": 0,
+                "total": 7 + expected_reward_actions,
+            }
+            or prefixed.get("termination")
+            != {
+                "reason": "unsupported_destination_kind",
+                "after_floor": 2,
+                "destination_kind": "shop",
+            }
+            or prefixed_calls != expected_calls
+        ):
+            fail(EXIT_MISMATCH, "run_fixture_elite_prefix_continuation")
+
+    post_room, post_room_calls, _ = _run_sequence(["rest_site", "elite"], 2)
+    post_room_handoff = _continuation(post_room.get("room_handoff"))
+    post_room_combat = post_room_handoff.get("next_combat")
+    if (
+        post_room.get("completed_floor_count") != 1
+        or post_room.get("termination")
+        != {
+            "reason": "room_continuation_complete",
+            "after_floor": 1,
+            "destination_kind": "elite",
+        }
+        or post_room_handoff.get("post_room_map") != _map("elite")
+        or not isinstance(post_room_combat, dict)
+        or post_room_combat.get("outcome") != "victory"
+        or post_room.get("terminal_combat") is not None
+        or post_room.get("action_totals")
+        != {"combat": 11, "reward": 1, "map": 2, "room": 2, "total": 16}
+        or post_room_calls[-4:] != ["map_wait", "map", "next_wait", "combat"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_elite_post_room_continuation")
+
+    post_room_defeat, post_room_defeat_calls, _ = _run_sequence(
+        ["rest_site", "elite"],
+        2,
+        defeat_on_combat=2,
+    )
+    defeat_handoff = _continuation(post_room_defeat.get("room_handoff"))
+    if (
+        post_room_defeat.get("termination")
+        != {"reason": "run_defeat", "after_floor": 1, "destination_kind": None}
+        or defeat_handoff.get("next_combat")
+        != post_room_defeat.get("terminal_combat")
+        or post_room_defeat.get("action_totals")
+        != {"combat": 8, "reward": 1, "map": 2, "room": 2, "total": 13}
+        or post_room_defeat_calls[-2:] != ["next_wait", "combat"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_elite_post_room_defeat")
+
+
+def _run_elite_final_slot_behavior() -> None:
+    ordinary, ordinary_calls, _ = _run_sequence(["elite"], 1)
+    if (
+        ordinary.get("termination")
+        != {
+            "reason": "floor_limit_reached",
+            "after_floor": 1,
+            "destination_kind": "elite",
+        }
+        or ordinary.get("action_totals")
+        != {"combat": 5, "reward": 1, "map": 1, "room": 0, "total": 7}
+        or ordinary_calls
+        != ["combat", "reward_wait", "reward", "map_wait", "map"]
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_elite_ordinary_final_slot")
+
+    for entry_phase, expected_calls, expected_reward_actions in (
+        ("reward", ["reward", "map_wait", "map"], 1),
+        ("map", ["map"], 0),
+    ):
+        prefixed, prefixed_calls, _ = _run_sequence(
+            ["elite"],
+            1,
+            entry_phase=entry_phase,
+        )
+        if (
+            prefixed.get("processed_floor_count") != 1
+            or prefixed.get("completed_floor_count") != 0
+            or prefixed.get("termination")
+            != {
+                "reason": "floor_limit_reached",
+                "after_floor": 1,
+                "destination_kind": "elite",
+            }
+            or prefixed.get("action_totals")
+            != {
+                "combat": 0,
+                "reward": expected_reward_actions,
+                "map": 1,
+                "room": 0,
+                "total": expected_reward_actions + 1,
+            }
+            or prefixed_calls != expected_calls
+        ):
+            fail(EXIT_MISMATCH, "run_fixture_elite_prefix_final_slot")
 
 
 def _run_post_combat_player_transition_contract() -> None:
@@ -1329,6 +1507,10 @@ def _run_parse_contract() -> None:
         parsed = run.parse_args(base + ["--entry-phase", entry_phase])
         if parsed[-1] != entry_phase:
             fail(EXIT_MISMATCH, "run_fixture_entry_phase_parse")
+    elite = list(base)
+    elite[9] = "elite"
+    if run.parse_args(elite)[4] != "elite":
+        fail(EXIT_MISMATCH, "run_fixture_elite_provider_parse")
     _expect_invocation_failure(
         base + ["--entry-phase", "unknown"],
         "invalid_entry_phase",
@@ -1353,6 +1535,8 @@ def operation() -> dict[str, object]:
     _run_entry_room_and_defeat_outcomes()
     _run_unsupported_stops()
     _run_defeat_stop()
+    _run_elite_continuations()
+    _run_elite_final_slot_behavior()
     _run_post_combat_player_transition_contract()
     _run_safe_room_handoffs()
     _run_room_continuations()
@@ -1378,6 +1562,8 @@ def operation() -> dict[str, object]:
             "entry_room_and_defeat_outcomes",
             "unsupported_destination_stops",
             "defeat_stop",
+            "elite_ordinary_prefix_and_post_room_continuations",
+            "elite_final_slot_behavior",
             "bounded_post_combat_player_transition",
             "rest_and_event_room_handoffs",
             "rest_and_event_room_continuations",
@@ -1393,7 +1579,7 @@ def operation() -> dict[str, object]:
             "provider_and_floor_limit_surface",
             "credential_cleanup",
         ],
-        "check_count": 21,
+        "check_count": 23,
     }
 
 

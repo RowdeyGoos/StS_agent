@@ -60,8 +60,9 @@ def _priority() -> None:
         _candidate(1, "monster", 2),
         _candidate(2, "ancient", 3),
         _candidate(3, "rest_site", 4),
+        _candidate(4, "elite", 5),
     ]
-    actions = [_action(0), _action(1), _action(2), _action(3)]
+    actions = [_action(0), _action(1), _action(2), _action(3), _action(4)]
     _require_selection(
         get_map_decision_provider("first").choose(candidates, actions),
         actions[0],
@@ -80,6 +81,20 @@ def _priority() -> None:
         candidates[3],
         "room_coverage",
     )
+    _require_selection(
+        get_map_decision_provider("elite").choose(candidates, actions),
+        actions[4],
+        candidates[4],
+        "elite_continuation",
+    )
+
+    without_elite = candidates[:4]
+    _require_selection(
+        get_map_decision_provider("elite").choose(without_elite, actions[:4]),
+        actions[3],
+        candidates[3],
+        "elite_continuation",
+    )
 
     without_rest = candidates[:3]
     _require_selection(
@@ -87,6 +102,12 @@ def _priority() -> None:
         actions[2],
         candidates[2],
         "room_coverage",
+    )
+    _require_selection(
+        get_map_decision_provider("elite").choose(without_rest, actions[:3]),
+        actions[1],
+        candidates[1],
+        "elite_continuation",
     )
 
 
@@ -107,6 +128,12 @@ def _fallback() -> None:
         actions[1],
         candidates[1],
         "room_coverage",
+    )
+    _require_selection(
+        get_map_decision_provider("elite").choose(candidates, actions),
+        actions[1],
+        candidates[1],
+        "elite_continuation",
     )
 
 
@@ -160,6 +187,19 @@ def _deterministic_tie_breaking() -> None:
         tied_actions[1],
         tied_candidates[0],
         "room_coverage",
+    )
+
+    elite_candidates = [
+        _candidate(0, "elite", 1, row=5),
+        _candidate(1, "elite", 9, row=4),
+        _candidate(2, "elite", 2, row=4),
+    ]
+    elite_actions = [_action(2), _action(1), _action(0)]
+    _require_selection(
+        get_map_decision_provider("elite").choose(elite_candidates, elite_actions),
+        elite_actions[0],
+        elite_candidates[2],
+        "elite_continuation",
     )
 
 
@@ -222,7 +262,7 @@ def _combat_followup_safety() -> None:
 
 def operation() -> dict[str, object]:
     checks: list[str] = []
-    if map_provider_names() != frozenset(("first", "combat", "coverage")):
+    if map_provider_names() != frozenset(("first", "combat", "coverage", "elite")):
         fail(EXIT_MISMATCH, "map_provider_fixture_registry")
     checks.append("provider_registry")
     _priority()
