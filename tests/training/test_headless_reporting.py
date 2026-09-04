@@ -7,6 +7,7 @@ from hashlib import sha256
 import json
 
 import pytest
+import game.training.headless_rollout as rollout_module
 
 from game.backends.headless.reduced_run_backend import (
     HeadlessRunConfig,
@@ -30,6 +31,8 @@ from game.training.headless_reporting import (
     write_headless_experiment,
 )
 from game.training.headless_rollout import (
+    BackendFactoryDescriptor,
+    ChooserKind,
     CollectorWorkerConfig,
     HeadlessBatchConfig,
     HeadlessBatchResult,
@@ -288,3 +291,171 @@ def test_writer_bounds_host_measurements_before_creating_output(tmp_path) -> Non
             host_measurements={"host_cpu_model": "x" * 257},
         )
     assert not root.exists()
+
+
+@pytest.mark.parametrize("cause", ("keyboard", "unadvertised", "between_episodes"))
+def test_real_interrupted_panel_preserves_received_pending_and_unstarted(tmp_path, monkeypatch, cause) -> None:
+    config = _config(episodes=3, repetitions=3)
+    if cause == "between_episodes":
+        original_entry = rollout_module._run_batch_entry
+        calls = 0
+
+        def entry(episode):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                raise KeyboardInterrupt("synthetic between-episode cancellation")
+            return original_entry(episode)
+
+        monkeypatch.setattr(rollout_module, "_run_batch_entry", entry)
+    else:
+        def chooser_factory(_config):
+            def choose(_view):
+                if cause == "keyboard":
+                    raise KeyboardInterrupt("synthetic chooser cancellation")
+                return "unadvertised-synthetic-candidate"
+            return choose
+
+        monkeypatch.setattr(rollout_module, "_make_chooser", chooser_factory)
+
+    result = benchmark_headless_rollouts(config.benchmark)
+    assert len(result.batches) == 1
+    batch = result.batches[0]
+    assert batch.interrupted and len(batch.results) == 1
+    received = batch.results[0]
+    assert received.stop_reason is (
+        RolloutStopReason.BUDGET_EXHAUSTED if cause == "between_episodes"
+        else RolloutStopReason.INTERRUPTED
+    )
+    assert (received.failure is not None) == (cause == "keyboard")
+    expected_pending = tuple(
+        item.trajectory_id for item in config.benchmark.batch.episodes
+        if item.trajectory_id != received.config.trajectory_id
+    )
+    assert batch.pending_trajectory_ids == expected_pending
+    root = tmp_path / cause
+    report = write_headless_experiment(root, config, result)
+    loaded = load_headless_experiment(root, expected_manifest_sha256=report.sha256)
+    assert loaded.report == report
+    assert report.repetitions[0].interrupted
+    assert report.repetitions[0].pending_trajectory_ids == expected_pending
+    assert report.unstarted_repetition_indices == (1, 2)
+    assert loaded.trajectories == {(0, received.config.trajectory_id): received.trajectory}
+
+
+@pytest.mark.parametrize("completion", ("terminal", "unsupported"))
+def test_cancellation_after_completed_boundary_preserves_completion_and_stops_benchmark(
+    tmp_path, monkeypatch, completion,
+) -> None:
+    config = _config(repetitions=2)
+    episode = replace(config.benchmark.batch.episodes[0], transition_budget=300)
+    if completion == "unsupported":
+        episode = replace(
+            episode,
+            chooser_kind=ChooserKind.SEEDED_RANDOM,
+            policy_seed=5,
+            run_config=HeadlessRunConfig(
+                "simple__starter", CONTENT_FINGERPRINT, 7,
+                {"event_id": "cool_spring", "combat_settings": {"enemy_max_hp": 1}},
+            ),
+        )
+    config = replace(config, benchmark=replace(
+        config.benchmark, batch=replace(config.benchmark.batch, episodes=(episode,)),
+    ))
+
+    def interrupt_before_finalization(_result, _backend):
+        raise KeyboardInterrupt("synthetic cancellation after completed boundary")
+
+    monkeypatch.setattr(rollout_module, "_stop_reason", interrupt_before_finalization)
+    result = benchmark_headless_rollouts(config.benchmark)
+    assert len(result.batches) == 1 and result.batches[0].interrupted
+    received = result.batches[0].results[0]
+    assert received.stop_reason is RolloutStopReason.INTERRUPTED
+    assert received.failure is not None and received.trajectory is not None
+    assert received.trajectory.manifest.completion.value == completion
+    root = tmp_path / completion
+    report = write_headless_experiment(root, config, result)
+    loaded = load_headless_experiment(root, expected_manifest_sha256=report.sha256)
+    assert loaded.report.repetitions[0].received[0].trajectory_completion.value == completion
+    assert loaded.report.unstarted_repetition_indices == (1,)
+    assert loaded.trajectories[(0, episode.trajectory_id)] == received.trajectory
+
+
+@pytest.mark.parametrize("has_trajectory", (True, False))
+def test_real_failed_episodes_keep_failure_flag_and_allow_later_repetitions(
+    tmp_path, monkeypatch, has_trajectory,
+) -> None:
+    config = _config(repetitions=2)
+
+    def fail(_argument):
+        raise RuntimeError("synthetic producer failure")
+
+    if has_trajectory:
+        monkeypatch.setattr(rollout_module, "_make_chooser", lambda _config: fail)
+    else:
+        monkeypatch.setattr(BackendFactoryDescriptor, "create", fail)
+    result = benchmark_headless_rollouts(config.benchmark)
+    assert len(result.batches) == 2
+    for batch in result.batches:
+        assert not batch.interrupted
+        assert batch.results[0].stop_reason is RolloutStopReason.FAILED
+        assert batch.results[0].failure is not None
+        assert (batch.results[0].trajectory is not None) == has_trajectory
+    root = tmp_path / "failed"
+    report = write_headless_experiment(root, config, result)
+    loaded = load_headless_experiment(root, expected_manifest_sha256=report.sha256)
+    assert loaded.report == report
+    assert not report.unstarted_repetition_indices
+    assert all(rep.received[0].failure_present for rep in report.repetitions)
+    assert len(loaded.trajectories) == (2 if has_trajectory else 0)
+
+
+@pytest.mark.parametrize("mutation", (
+    "interrupted_unflagged", "interrupted_then_started", "failed_without_failure",
+    "failed_without_failure_no_trajectory", "ordinary_with_failure",
+))
+@pytest.mark.parametrize("boundary", ("writer", "loader"))
+def test_inconsistent_episode_flags_and_repetition_order_are_rejected(
+    tmp_path, mutation, boundary,
+) -> None:
+    config = _config(repetitions=2)
+    result = benchmark_headless_rollouts(config.benchmark)
+    root = tmp_path / "invalid"
+    interrupted = mutation.startswith("interrupted")
+    failed = mutation.startswith("failed")
+    reason = (RolloutStopReason.INTERRUPTED if interrupted else
+              RolloutStopReason.FAILED if failed else RolloutStopReason.BUDGET_EXHAUSTED)
+    failure = None if failed else "synthetic failure"
+    batch_interrupted = mutation == "interrupted_then_started"
+    no_trajectory = mutation.endswith("no_trajectory")
+
+    if boundary == "writer":
+        changes = {"stop_reason": reason, "failure": failure}
+        if no_trajectory:
+            changes.update(trajectory=None, transition_count=0)
+        episode = replace(result.batches[0].results[0], **changes)
+        batch = replace(result.batches[0], results=(episode,), interrupted=batch_interrupted)
+        changed_result = replace(result, batches=(batch, result.batches[1]))
+        with pytest.raises(ExperimentValidationError):
+            write_headless_experiment(root, config, changed_result)
+        assert not root.exists()
+    else:
+        write_headless_experiment(root, config, result)
+        path = root / "experiment.manifest.json"
+        value = json.loads(path.read_text(encoding="utf-8"))
+        repetition = value["repetitions"][0]
+        repetition["interrupted"] = batch_interrupted
+        episode = repetition["received"][0]
+        episode.update(stop_reason=reason.value, failure_present=failure is not None)
+        if no_trajectory:
+            episode.update(
+                trajectory_manifest_sha256=None, trajectory_completion=None,
+                terminal_outcome=None, initial_decision_sha256=None,
+                final_decision_sha256=None, transition_count=0,
+            )
+        changed = canonical_json_bytes(value)
+        path.write_bytes(changed)
+        # A fresh external anchor bypasses the byte mismatch to exercise the
+        # semantic validator, including the exact unflagged-interruption repro.
+        with pytest.raises(ExperimentValidationError):
+            load_headless_experiment(root, expected_manifest_sha256=sha256(changed).hexdigest())

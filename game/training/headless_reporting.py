@@ -346,6 +346,12 @@ class EpisodeReport:
             object.__setattr__(self, "terminal_outcome", outcome)
         if not isinstance(self.failure_present, bool):
             raise TypeError("episode.failure_present must be boolean.")
+        if self.stop_reason is RolloutStopReason.FAILED and not self.failure_present:
+            raise ExperimentValidationError("A failed episode must report a failure.")
+        if self.failure_present and self.stop_reason not in {
+            RolloutStopReason.FAILED, RolloutStopReason.INTERRUPTED,
+        }:
+            raise ExperimentValidationError("Only failed or interrupted episodes may report a failure.")
         if self.trajectory_manifest_sha256 is None:
             if self.stop_reason not in {RolloutStopReason.FAILED, RolloutStopReason.INTERRUPTED} or not self.failure_present:
                 raise ExperimentValidationError("A no-trajectory episode must be an explicit failed or interrupted result.")
@@ -399,6 +405,13 @@ class RepetitionReport:
             raise TypeError("interrupted must be boolean.")
         if pending and not self.interrupted:
             raise ExperimentValidationError("Only interrupted repetitions may retain pending episodes.")
+        # Both collector modes stop immediately upon receiving an INTERRUPTED
+        # episode. The converse is not required: cancellation between episodes
+        # or during pool cleanup can interrupt a batch without such a result.
+        if not self.interrupted and any(
+            item.stop_reason is RolloutStopReason.INTERRUPTED for item in received
+        ):
+            raise ExperimentValidationError("An interrupted episode requires an interrupted repetition.")
         object.__setattr__(self, "received", received)
         object.__setattr__(self, "pending_trajectory_ids", pending)
 
@@ -611,11 +624,12 @@ def _stop_reason_matches(
         return completion is TrajectoryCompletion.TERMINAL
     if stop_reason is RolloutStopReason.UNSUPPORTED:
         return completion is TrajectoryCompletion.UNSUPPORTED
-    if stop_reason in {RolloutStopReason.BUDGET_EXHAUSTED, RolloutStopReason.INTERRUPTED}:
+    if stop_reason is RolloutStopReason.BUDGET_EXHAUSTED:
         return completion is TrajectoryCompletion.INTERRUPTED
-    # A failed runner may retain any validated partial/terminal boundary.  The
-    # failure itself remains explicit and is not converted into an outcome.
-    return stop_reason is RolloutStopReason.FAILED
+    # Failure/cancellation can arrive after a terminal or unsupported boundary.
+    # The producer's _partial_trajectory preserves that validated completion;
+    # the collector stop reason still controls whether another batch can run.
+    return stop_reason in {RolloutStopReason.FAILED, RolloutStopReason.INTERRUPTED}
 
 
 def _episode_report_from_result(item: HeadlessRolloutResult) -> EpisodeReport:
@@ -623,6 +637,8 @@ def _episode_report_from_result(item: HeadlessRolloutResult) -> EpisodeReport:
         raise ExperimentValidationError("Received result has no valid rollout configuration.")
     if not isinstance(item.stop_reason, RolloutStopReason):
         raise ExperimentValidationError("Received result has an invalid stop reason.")
+    if item.failure is not None and (not isinstance(item.failure, str) or not item.failure):
+        raise ExperimentValidationError("Received failure must be nonempty text or None.")
     if item.trajectory is None:
         return EpisodeReport(
             item.config.trajectory_id,
