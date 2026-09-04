@@ -128,6 +128,7 @@ def _run_sequence(
     combat_max_hp: int = 80,
     reward_hp: int = 70,
     reward_max_hp: int = 80,
+    room_connector: room_fixture._Connector | None = None,
 ) -> tuple[dict[str, object], list[str], CredentialLoader]:
     loader = CredentialLoader()
     calls: list[str] = [] if call_log is None else call_log
@@ -198,6 +199,8 @@ def _run_sequence(
         )
         if expected_screen != expected_from_destination:
             fail(EXIT_MISMATCH, "run_fixture_room_wait_expectation")
+        if room_connector is not None:
+            return run._wait_for_room_ready(credential, expected_screen, room_connector)
         observed_screen = preflight_screen or expected_from_destination
         return {
             "attempts": 2,
@@ -205,7 +208,13 @@ def _run_sequence(
             "room_ordinal": preflight_ordinal,
         }
 
-    def room_runner(credential: bytearray, provider: str, supplied: object) -> dict[str, object]:
+    def room_runner(
+        credential: bytearray,
+        provider: str,
+        supplied: object,
+        *,
+        expected_context: tuple[str, int] | None = None,
+    ) -> dict[str, object]:
         if (
             bytes(credential) != _CREDENTIAL
             or provider != "safe"
@@ -214,6 +223,13 @@ def _run_sequence(
             fail(EXIT_MISMATCH, "run_fixture_room_arguments")
         calls.append("room")
         selected_destination = destinations[map_number - 1]
+        expected_screen = "rest_site" if selected_destination == "rest_site" else "event"
+        if expected_context != (expected_screen, preflight_ordinal):
+            fail(EXIT_MISMATCH, "run_fixture_room_context_arguments")
+        if room_connector is not None:
+            return run.room_client._run_apply_room(
+                credential, provider, room_connector, expected_context=expected_context,
+            )
         screen_kind = room_screen
         if screen_kind is None:
             screen_kind = "rest_site" if selected_destination == "rest_site" else "event"
@@ -600,6 +616,11 @@ def _expect_room_failure(
             and failure.error_code == expected_code
             and ("room" in calls) is expect_room_call
             and "room_wait" in calls
+            and calls[-1] == ("room" if expect_room_call else "room_wait")
+            and calls.count("map") == 1
+            and calls.count("map_wait") == 1
+            and calls.count("combat") == 1
+            and "next_wait" not in calls
         ):
             return
         fail(EXIT_MISMATCH, "run_fixture_wrong_room_failure")
@@ -631,6 +652,95 @@ def _run_room_fail_closed() -> None:
         room_ordinal=5,
         expect_room_call=True,
     )
+
+
+def _run_room_context_handoff() -> None:
+    def ready(kind: str, ordinal: int) -> bytes:
+        candidate = room_fixture._candidate(
+            0,
+            "rest_heal" if kind == "rest_site" else "event_option",
+            "HEAL" if kind == "rest_site" else "EVENT.SAFE",
+            enabled=True,
+            supported=True,
+        )
+        return room_fixture._ready(
+            room_fixture._DECISION_ZERO,
+            kind,
+            "choose_option",
+            [candidate],
+            [room_fixture._legal(candidate)],
+            ordinal=ordinal,
+        )
+
+    # The preflight and room client use their actual validators and transport
+    # code. All surrounding component callbacks remain the bounded run mocks.
+    for expected_kind, replacement_kind, expected_ordinal, replacement_ordinal in (
+        ("rest_site", "rest_site", 4, 5),
+        ("event", "event", 999, 0),
+        ("rest_site", "event", 4, 4),
+        ("event", "rest_site", 0, 0),
+    ):
+        route = room_fixture._get(run.room_client._ROOM_DECISION_ROUTE)
+        responses = (
+            [ready(expected_kind, expected_ordinal)]
+            + room_fixture._base_responses()
+            + [ready(replacement_kind, replacement_ordinal)]
+        )
+        connector = room_fixture._Connector(
+            [room_fixture._response(body) for body in responses],
+            [route] + room_fixture._base_requests() + [route],
+        )
+        calls: list[str] = []
+        try:
+            _run_sequence(
+                ["rest_site" if expected_kind == "rest_site" else "ancient"],
+                3,
+                preflight_ordinal=expected_ordinal,
+                room_connector=connector,
+                call_log=calls,
+            )
+        except ToolFailure as failure:
+            if (
+                failure.exit_code != EXIT_MISMATCH
+                or failure.error_code != "room_expected_context_mismatch"
+            ):
+                fail(EXIT_MISMATCH, "run_fixture_wrong_context_failure")
+        else:
+            fail(EXIT_MISMATCH, "run_fixture_context_replacement_passed")
+        if calls != [
+            "combat", "reward_wait", "reward", "map_wait", "map", "room_wait", "room",
+        ] or any(not item.expected_request.startswith(b"GET ") for item in connector.sockets):
+            fail(EXIT_MISMATCH, "run_fixture_context_failure_continued")
+        connector.assert_cleanup()
+
+
+def _run_credential_keyword_cleanup() -> None:
+    for exception in (None, RuntimeError, KeyboardInterrupt):
+        loader = CredentialLoader()
+
+        def operation(credential: bytearray, provider: str, *, expected_context: object) -> str:
+            if (
+                bytes(credential) != _CREDENTIAL
+                or provider != "safe"
+                or expected_context != ("rest_site", 4)
+            ):
+                fail(EXIT_MISMATCH, "run_fixture_credential_keyword_arguments")
+            if exception is not None:
+                raise exception()
+            return "passed"
+
+        try:
+            result = run._with_credential(
+                loader, operation, "safe", expected_context=("rest_site", 4),
+            )
+        except (RuntimeError, KeyboardInterrupt) as failure:
+            if type(failure) is not exception:
+                fail(EXIT_MISMATCH, "run_fixture_credential_keyword_exception")
+        else:
+            if exception is not None or result != "passed":
+                fail(EXIT_MISMATCH, "run_fixture_credential_keyword_result")
+        finally:
+            loader.require_zeroed()
 
 
 def _expect_room_preflight_failure(
@@ -936,6 +1046,8 @@ def operation() -> dict[str, object]:
     _run_room_continuation_fail_closed()
     _run_room_continuation_terminal_and_cap()
     _run_room_fail_closed()
+    _run_room_context_handoff()
+    _run_credential_keyword_cleanup()
     _run_room_preflight_contract()
     _run_room_preflight_delayed_activation()
     _run_cached_terminal_wait()
@@ -954,13 +1066,15 @@ def operation() -> dict[str, object]:
             "post_room_unsupported_and_second_room_fail_closed",
             "post_room_cap_and_terminal_combat",
             "room_mismatch_and_unsupported_fail_closed",
+            "preflight_context_replacement_zero_posts",
+            "credential_keyword_and_exception_cleanup",
             "read_only_room_preflight_contract",
             "delayed_room_preflight_activation",
             "cached_terminal_wait",
             "provider_and_floor_limit_surface",
             "credential_cleanup",
         ],
-        "check_count": 14,
+        "check_count": 16,
     }
 
 

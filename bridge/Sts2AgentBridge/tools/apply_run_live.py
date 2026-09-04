@@ -166,10 +166,11 @@ def _with_credential(
     credential_loader: Callable[[], bytearray],
     operation: Callable[..., object],
     *arguments: object,
+    **keyword_arguments: object,
 ) -> object:
     credential = credential_loader()
     try:
-        return operation(credential, *arguments)
+        return operation(credential, *arguments, **keyword_arguments)
     finally:
         probe._zero(credential)
 
@@ -323,7 +324,7 @@ def _run_bounded_run(
     room_waiter: Callable[
         [bytearray, str, Callable[[], Any]], dict[str, object]
     ] = _wait_for_room_ready,
-    room_runner: Callable[[bytearray, str, Callable[[], Any]], dict[str, object]] =
+    room_runner: Callable[..., dict[str, object]] =
         room_client._run_apply_room,
     next_combat_waiter: Callable[[bytearray, str, Callable[[], Any]], int] =
         _wait_for_next_combat_ready,
@@ -433,6 +434,7 @@ def _run_bounded_run(
                     room_runner,
                     room_provider,
                     connector,
+                    expected_context=(expected_room_kind, room_preflight["room_ordinal"]),
                 ),
                 "r0i_room_interaction",
                 "run_room_result_mismatch",
