@@ -178,6 +178,21 @@ This diagnostic is fixture-tested, not live-demonstrated; the discarded live
 response and its mutation outcome remain unknown. Exact reviewed commits and
 validation are recorded in the next-increment ledger.
 
+The targeted transport simplification is also integrated: probe and room
+clients retain their existing entry points and phase behavior but use one
+private bounded socket lifecycle. Room partial responses are now wiped on every
+exceptional exit under the same semantics as probe responses. An independent
+29-check entry-point gate passes on the integrated implementation and fails on
+the preceding implementation at the intended room-cancellation gap. This is
+synthetic bridge-fixture evidence and made no C#, wire, package or live change.
+
+A read-only AutoSlay/helper comparison found no compatible drop-in lifecycle
+replacement: its helpers organize waits but do not supply the missing public
+event-step/exit evidence and would change the synchronous action boundary. A
+follow-up C# map-characterization implementation was deliberately rejected and
+not integrated because it changed native property-read ordering while testing
+only presampled booleans. The existing map reader therefore remains unchanged.
+
 Experiment configuration is caller-declared and hash-bound, not independently
 proved from trajectories. Named evidence/corpus integrity likewise does not
 authenticate source honesty or authorize retained live capture. Reduced

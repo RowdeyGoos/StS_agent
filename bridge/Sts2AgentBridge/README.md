@@ -523,6 +523,15 @@ reconciliation failures. No raw bodies, body hashes, control IDs, credentials,
 player scalars or full reward results are emitted, and no capture/output path
 is accepted. The previous campaign's discarded response remains unclassified.
 
+The host-side probe and room clients now share one private bounded
+send/receive/cleanup implementation while retaining their existing `_exchange`
+entry points, route-specific request builders, exact errors, deadlines, caps and
+no-retry behavior. This removes the duplicated receive loop and carries the
+probe's exceptional-exit mutable-response wiping to room calls. The independent
+`bounded_transport_fixtures.py` gate exercises both actual entry points through
+29 synthetic request, bound, timeout, cancellation and close-precedence cases.
+It is bridge-fixture evidence only; no DLL, package or wire contract changed.
+
 Run the isolated, wholly synthetic CLI/transport acceptance suite without a
 game, operator configuration or socket connection:
 

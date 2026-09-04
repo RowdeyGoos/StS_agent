@@ -685,6 +685,9 @@ acceptance is offline; it does not close the open live composition gate.
 
 ### R0I-TRANSPORT-15 — One bounded exchange implementation
 
+- **Status:** accepted and integrated through `9d7a0ae`; production now has one
+  receive/cleanup loop. The semantic correction is exceptional-exit wiping for
+  room-owned response buffers. All other transport behavior is unchanged.
 - **Allocation:** Terra/high in a persistent project worktree; independent
   protocol/privacy review before integration.
 - **Objective:** make `probe_live._exchange` and `apply_room_live._exchange`
@@ -721,6 +724,9 @@ acceptance is offline; it does not close the open live composition gate.
 
 ### R0I-LIFECYCLE-STUDY-16 — Compatible lifecycle reuse decision
 
+- **Status:** complete, read-only. No verified AutoSlay/WaitHelper drop-in
+  preserves the current synchronous public evidence/action boundary; no C#
+  lifecycle replacement was selected.
 - **Allocation:** read-only reviewer; owned files **none**.
 - **Dependencies:** current accepted readers/lifecycle, prior event study and
   source-referenced `zhiyue` comparison at `1b7e7ce`.
@@ -736,6 +742,9 @@ acceptance is offline; it does not close the open live composition gate.
 
 ### R0I-TRANSPORT-TEST-17 — Independent exchange regression gate
 
+- **Status:** accepted and integrated through `e187dab` after a coordinator-
+  found masked harness correction. Its 29 checks pass on `15` and fail on the
+  preceding room implementation at the intended cancellation-zeroization case.
 - **Allocation:** Terra/high in a separate persistent project worktree.
 - **Exclusive ownership, new:**
   `bridge/Sts2AgentBridge/tools/bounded_transport_fixtures.py` and
@@ -770,6 +779,11 @@ until separately bounded evidence justifies them.
 
 ### R0I-MAP-LIFECYCLE-18 — Characterize map completion at the production seam
 
+- **Status:** implementation commit `889cc5e` was independently rejected and
+  is not integrated. Extracting the predicate changed native property-sampling
+  order while its pure tests did not exercise `Read`; the accepted production
+  reader and artifact therefore remain unchanged. Static findings are retained
+  in the execution ledger for a later real semantic-repair packet.
 - **Allocation:** Terra/high implementation; independent Sol/high review.
 - **Dependencies:** the completed `R0I-LIFECYCLE-STUDY-16` static review and
   accepted current map reader/action contracts. Independent of packets `15`

@@ -609,3 +609,67 @@ campaign using these reviewed diagnostics at a fresh, known reward boundary
 while seeking the already scoped composed rest handoff. It must not retry the
 previous uncertain action, broaden C# behavior, retain raw responses or silently
 promote the open eligible-gold/full-composition gates to passed.
+
+## Targeted transport simplification and lifecycle study
+
+The user accepted a targeted simplification after comparison with
+`zhiyue/sts2-rl-agent`. The coordinator froze packets `R0I-TRANSPORT-15` through
+`R0I-MAP-LIFECYCLE-18` at `134fff3`/`a26db96`. No AutoSlay, Harmony, debug mode,
+third-party source, new game surface or headless/training work was adopted.
+
+`R0I-TRANSPORT-15` worker commits `06496dc` and corrective `1a4e9df` integrated
+as `3c9363d` and `9d7a0ae`. They leave only two production files changed from
+the packet base: `probe_live.py` and `apply_room_live.py`, with 51 insertions and
+66 deletions. Their existing `_exchange` signatures, request builders/routes,
+deadline/error/cap semantics, successful response ownership and retry behavior
+remain unchanged. One private implementation now owns connection, send,
+bounded receive and cleanup. Room partial responses inherit the accepted probe
+zeroization and exceptional-close precedence.
+
+`R0I-TRANSPORT-TEST-17` commits `c7a2f90` and `d907252` integrated as `8824d4f`
+and `e187dab`. Coordinator composition found that the first test commit called a
+nonexistent probe helper after its expected baseline failure; the same task
+corrected the masked harness defect before acceptance. The final independent
+gate uses the actual probe/room entry points, literal request oracles and no real
+I/O. Its 29 checks pass on the integrated implementation; the unchanged base
+fails specifically with `room_keyboard_interrupt_response_not_zeroed`.
+
+Independent protocol/privacy review accepted the aggregate with no blocking
+finding. It verified one receive loop, exact wrapper signatures and bytes,
+connector/clock ordering, fixed failure categories, bounds, no retries, buffer
+ownership/zeroization and primary-versus-close exception precedence. The bound
+tests consume the configured numeric constants rather than separately pinning
+their values; the reviewed production diff establishes those constants did not
+change. Evidence is `bridge_fixture`, not live-observed.
+
+The read-only `R0I-LIFECYCLE-STUDY-16` found no verified compatible AutoSlay or
+WaitHelper replacement. Upstream helpers organize asynchronous waits but their
+callers still choose nonauthoritative map/proceed predicates. Our synchronous
+frame queue and snapshot-bound actions would need a separately designed async
+ownership/cancellation contract. Event-step identity therefore remains governed
+by D47 and fail-closed.
+
+`R0I-MAP-LIFECYCLE-18` produced worker commit `889cc5e` and passed its C# test,
+parity build, package and reproducibility checks, but failed the frozen surface
+source projection as any unpinned C# revision should. Independent review found
+the refactor was not strictly behavior-neutral: it eagerly sampled travel
+properties that the existing closed-map path short-circuits before reading.
+Its pure tests did not exercise the production reader, accepted-destination
+recording or reservations. The commit was rejected and is **not integrated**;
+no policy/package pin changed. Retained static facts only: the map reader stores
+no run identity; a valid closed map plus retained accepted destination completes
+before travel state is considered; missing run/map waits. Direct coverage should
+be bundled with a future justified semantic repair and its artifact/live gates.
+
+Coordinator integration validation passed 190 checks across 13 isolated bridge
+fixture suites and 243 focused live-parser/differential tests. The pre-change
+repository baseline passed 1,050 tests. Final full-regression evidence follows
+the documentation commit. No game was launched, bridge installed, live endpoint
+or credential accessed, profile/save touched, or Cloud setting changed. No live
+campaign was active and no cleanup was required.
+
+No model escalation occurred. Workers used Terra/high. Reported implementation
+turn durations were 309,785 ms for `15`, 356,584 ms for `17`, and 374,353 ms for
+the rejected `18`; aggregate token counts were unavailable. Reviewer and
+coordinator usage metrics were unavailable. No hidden reasoning, prompts or
+transcripts are retained as telemetry.

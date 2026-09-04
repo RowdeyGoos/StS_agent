@@ -1578,3 +1578,39 @@ Synthetic transport/CLI fixtures establish its behavior; they do not classify
 the discarded live response or resolve the open composed-run acceptance gate.
 Any later live evidence must identify the reviewed Python sources as well as
 the installed bridge artifact and retain only the approved sanitized facts.
+
+## D50. Centralize Bounded Host Transport Without Merging Phase Semantics
+
+### Context
+
+The probe and room Python clients independently implemented the same bounded
+socket lifecycle. A cancellation-hardening correction reached the probe copy
+but not the room copy, providing concrete maintenance-drift evidence. Comparison
+with another project also raised whether game-native automation could replace
+the current lifecycle machinery.
+
+### Decision
+
+- Use one private host-side request/send/receive/cleanup implementation for the
+  existing probe and room exchange wrappers. Keep route-specific request
+  construction, strict parsers, action binding and phase reconciliation outside
+  that helper.
+- Preserve wrapper signatures, exact request bytes and allowlists, deadline and
+  size bounds, fixed failure codes, no-retry behavior and caller-owned successful
+  response lifetime.
+- Apply the accepted exceptional-exit mutable-buffer cleanup to room exchanges
+  as well as probe exchanges. Keep immutable receive-chunk limitations explicit.
+- Maintain an independently authored entry-point gate for request bytes, bounds,
+  failure/close precedence and cancellation cleanup, including a negative
+  control against the preceding implementation.
+- Do not adopt AutoSlay, Harmony, generic asynchronous wait helpers or automatic
+  overlay decisions as a simplification. Current evidence does not show that
+  they supply the authoritative event transition identity this bridge needs.
+
+### Consequence
+
+The host clients have one transport lifecycle without combining their wire or
+gameplay semantics. This is fixture evidence only and does not close live room,
+reward or composition gates. Future consolidation must remove demonstrated
+duplication behind accepted interfaces; it must not manufacture a common state
+representation or add another framework merely to reduce line counts.
