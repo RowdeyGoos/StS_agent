@@ -42,16 +42,68 @@ def _http(body: bytes) -> bytes:
     return room_fixture._response(body)
 
 
-def _get(route: str) -> bytes:
-    if route == room_client._ROOM_DECISION_ROUTE:
-        return bytes(room_client._build_get_request(route, bytearray(_CREDENTIAL)))
-    return bytes(probe._build_request(route, bytearray(_CREDENTIAL)))
+_GET_HEALTH = (
+    b"GET /probe/v0/health HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nAccept: application/json\r\nConnection: close\r\n\r\n"
+)
+_GET_MANIFEST = (
+    b"GET /probe/v0/manifest HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nAccept: application/json\r\nConnection: close\r\n\r\n"
+)
+_GET_COMBAT = (
+    b"GET /probe/v0/public/combat-decision HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nAccept: application/json\r\nConnection: close\r\n\r\n"
+)
+_GET_REWARD = (
+    b"GET /probe/v0/public/reward-decision HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nAccept: application/json\r\nConnection: close\r\n\r\n"
+)
+_GET_MAP = (
+    b"GET /probe/v0/public/map-decision HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nAccept: application/json\r\nConnection: close\r\n\r\n"
+)
+_GET_ROOM = (
+    b"GET /probe/v0/public/room-decision HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nAccept: application/json\r\nConnection: close\r\n\r\n"
+)
 
 
-def _post(route: str, decision_id: str, action_id: str) -> bytes:
-    if route == room_client._ROOM_ACTION_ROUTE:
-        return bytes(room_client._build_action_request(bytearray(_CREDENTIAL), decision_id, action_id))
-    return bytes(probe._build_action_request(route, bytearray(_CREDENTIAL), decision_id, action_id))
+def _post(prefix: bytes, decision_id: str, action_id: str) -> bytes:
+    return (
+        prefix
+        + decision_id.encode("ascii")
+        + b"\r\nX-Sts2-Action-Id: "
+        + action_id.encode("ascii")
+        + b"\r\nAccept: application/json\r\nConnection: close\r\n\r\n"
+    )
+
+
+_COMBAT_POST = (
+    b"POST /probe/v0/public/combat-action HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nX-Sts2-Decision-Id: "
+)
+_REWARD_POST = (
+    b"POST /probe/v0/public/reward-action HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nX-Sts2-Decision-Id: "
+)
+_MAP_POST = (
+    b"POST /probe/v0/public/map-action HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nX-Sts2-Decision-Id: "
+)
+_ROOM_POST = (
+    b"POST /probe/v0/public/room-action HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "
+    b"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    b"\r\nX-Sts2-Decision-Id: "
+)
 
 
 def _receipt(decision_id: str, action_id: str) -> bytes:
@@ -154,8 +206,8 @@ def _add(items: list[tuple[bytes | TimeoutError, bytes]], body: bytes, request: 
 
 
 def _base(items: list[tuple[bytes | TimeoutError, bytes]]) -> None:
-    _add(items, turn_fixture._HEALTH, _get(probe._BASE_ROUTES[0][1]))
-    _add(items, probe._MANIFEST_COMPATIBLE, _get(probe._BASE_ROUTES[1][1]))
+    _add(items, turn_fixture._HEALTH, _GET_HEALTH)
+    _add(items, probe._MANIFEST_COMPATIBLE, _GET_MANIFEST)
 
 
 def _map_ready(decision_id: str, kind: str) -> bytes:
@@ -168,10 +220,10 @@ def _map_complete(kind: str) -> bytes:
 
 def _map(items: list[tuple[bytes | TimeoutError, bytes]], decision_id: str, kind: str) -> None:
     _base(items)
-    _add(items, _map_ready(decision_id, kind), _get(map_client._MAP_DECISION_ROUTE))
-    _add(items, map_fixture._action_body(decision_id, "select:0", "accepted"), _post(map_client._MAP_ACTION_ROUTE, decision_id, "select:0"))
-    _add(items, map_client._MAP_WAITING, _get(map_client._MAP_DECISION_ROUTE))
-    _add(items, _map_complete(kind), _get(map_client._MAP_DECISION_ROUTE))
+    _add(items, _map_ready(decision_id, kind), _GET_MAP)
+    _add(items, map_fixture._action_body(decision_id, "select:0", "accepted"), _post(_MAP_POST, decision_id, "select:0"))
+    _add(items, map_client._MAP_WAITING, _GET_MAP)
+    _add(items, _map_complete(kind), _GET_MAP)
 
 
 def _reward_ready(decision_id: str, revision: int, gold: int, claimable: bool) -> bytes:
@@ -192,20 +244,20 @@ def _reward_complete(gold: int) -> bytes:
 def _reward(items: list[tuple[bytes | TimeoutError, bytes]]) -> None:
     first, second = "1" * 64, "2" * 64
     _base(items)
-    _add(items, _reward_ready(first, 0, 71, True), _get(probe._REWARD_ROUTE[0][1]))
-    _add(items, _receipt(first, "claim:0"), _post(probe._REWARD_ACTION_ROUTE, first, "claim:0"))
-    _add(items, _reward_ready(second, 1, 85, False), _get(probe._REWARD_ROUTE[0][1]))
-    _add(items, _receipt(second, "proceed"), _post(probe._REWARD_ACTION_ROUTE, second, "proceed"))
-    _add(items, _reward_complete(85), _get(probe._REWARD_ROUTE[0][1]))
+    _add(items, _reward_ready(first, 0, 71, True), _GET_REWARD)
+    _add(items, _receipt(first, "claim:0"), _post(_REWARD_POST, first, "claim:0"))
+    _add(items, _reward_ready(second, 1, 85, False), _GET_REWARD)
+    _add(items, _receipt(second, "proceed"), _post(_REWARD_POST, second, "proceed"))
+    _add(items, _reward_complete(85), _GET_REWARD)
 
 
 def _combat_defeat(items: list[tuple[bytes | TimeoutError, bytes]], decision_id: str) -> None:
     state = turn_fixture._combat(decision_id, 1, hp=5, block=0, energy=0, enemy_hp=43, hand=[], actions=[turn_fixture._end_turn()])
     _base(items)
-    _add(items, state, _get(probe._COMBAT_ROUTE[0][1]))
-    _add(items, turn_fixture._action_body(decision_id, "end_turn"), _post(probe._ACTION_ROUTE, decision_id, "end_turn"))
-    _add(items, probe._COMBAT_WAITING, _get(probe._COMBAT_ROUTE[0][1]))
-    _add(items, combat_fixture._terminal("defeat", 1, hp=0, enemies=[combat_fixture._enemy(43)]), _get(probe._COMBAT_ROUTE[0][1]))
+    _add(items, state, _GET_COMBAT)
+    _add(items, turn_fixture._action_body(decision_id, "end_turn"), _post(_COMBAT_POST, decision_id, "end_turn"))
+    _add(items, probe._COMBAT_WAITING, _GET_COMBAT)
+    _add(items, combat_fixture._terminal("defeat", 1, hp=0, enemies=[combat_fixture._enemy(43)]), _GET_COMBAT)
 
 
 def _room_ready(decision_id: str, ordinal: int) -> bytes:
@@ -218,11 +270,11 @@ def _room(items: list[tuple[bytes | TimeoutError, bytes]], ordinal: int) -> None
     heal = room_fixture._candidate(0, "rest_heal", "HEAL", enabled=False, supported=True)
     proceed = room_fixture._candidate(1, "proceed", "proceed", enabled=True, supported=True, is_proceed=True)
     _base(items)
-    _add(items, _room_ready(first, ordinal), _get(room_client._ROOM_DECISION_ROUTE))
-    _add(items, room_fixture._action_body(first, "choose:0"), _post(room_client._ROOM_ACTION_ROUTE, first, "choose:0"))
-    _add(items, room_fixture._ready(second, "rest_site", "proceed", [heal, proceed], [room_fixture._legal(proceed)], ordinal=ordinal), _get(room_client._ROOM_DECISION_ROUTE))
-    _add(items, room_fixture._action_body(second, "proceed"), _post(room_client._ROOM_ACTION_ROUTE, second, "proceed"))
-    _add(items, room_fixture._inactive("complete", "rest_site", "complete", ordinal), _get(room_client._ROOM_DECISION_ROUTE))
+    _add(items, _room_ready(first, ordinal), _GET_ROOM)
+    _add(items, room_fixture._action_body(first, "choose:0"), _post(_ROOM_POST, first, "choose:0"))
+    _add(items, room_fixture._ready(second, "rest_site", "proceed", [heal, proceed], [room_fixture._legal(proceed)], ordinal=ordinal), _GET_ROOM)
+    _add(items, room_fixture._action_body(second, "proceed"), _post(_ROOM_POST, second, "proceed"))
+    _add(items, room_fixture._inactive("complete", "rest_site", "complete", ordinal), _GET_ROOM)
 
 
 def _expect(operation: Callable[[], object], code: str) -> None:
@@ -265,8 +317,8 @@ def _combat_equivalence_and_defeat() -> None:
 def _reward_and_map_prefixes() -> None:
     reward_transcript: list[tuple[bytes | TimeoutError, bytes]] = []
     _reward(reward_transcript)
-    _add(reward_transcript, map_client._MAP_WAITING, _get(map_client._MAP_DECISION_ROUTE))
-    _add(reward_transcript, _map_ready("5" * 64, "shop"), _get(map_client._MAP_DECISION_ROUTE))
+    _add(reward_transcript, map_client._MAP_WAITING, _GET_MAP)
+    _add(reward_transcript, _map_ready("5" * 64, "shop"), _GET_MAP)
     _map(reward_transcript, "6" * 64, "shop")
     reward_result, reward_connector, _ = _run(reward_transcript, "reward", 1)
     if reward_result.get("entry_prefix", {}).get("readiness") != {"next_combat_attempts": 0, "reward_attempts": 0, "map_attempts": 2} or reward_result.get("action_totals") != {"combat": 0, "reward": 2, "map": 1, "room": 0, "total": 3}:
@@ -284,10 +336,10 @@ def _reward_and_map_prefixes() -> None:
 def _later_combat_and_room_binding() -> None:
     transcript: list[tuple[bytes | TimeoutError, bytes]] = []
     _map(transcript, "8" * 64, "monster")
-    _add(transcript, probe._COMBAT_WAITING, _get(probe._COMBAT_ROUTE[0][1]))
-    _add(transcript, probe._COMBAT_WAITING, _get(probe._COMBAT_ROUTE[0][1]))
+    _add(transcript, probe._COMBAT_WAITING, _GET_COMBAT)
+    _add(transcript, probe._COMBAT_WAITING, _GET_COMBAT)
     ready = turn_fixture._combat("9" * 64, 1, hp=5, block=0, energy=0, enemy_hp=43, hand=[], actions=[turn_fixture._end_turn()])
-    _add(transcript, ready, _get(probe._COMBAT_ROUTE[0][1]))
+    _add(transcript, ready, _GET_COMBAT)
     _combat_defeat(transcript, "a" * 64)
     result, connector, _ = _run(transcript, "map", 2)
     if result.get("termination", {}).get("reason") != "run_defeat" or connector.index != len(transcript):
@@ -296,16 +348,41 @@ def _later_combat_and_room_binding() -> None:
 
     room_transcript: list[tuple[bytes | TimeoutError, bytes]] = []
     _map(room_transcript, "b" * 64, "rest_site")
-    _add(room_transcript, _room_ready("c" * 64, 4), _get(room_client._ROOM_DECISION_ROUTE))
+    _add(room_transcript, _room_ready("c" * 64, 4), _GET_ROOM)
     _room(room_transcript, 4)
-    _add(room_transcript, _map_complete("rest_site"), _get(map_client._MAP_DECISION_ROUTE))
-    _add(room_transcript, map_client._MAP_WAITING, _get(map_client._MAP_DECISION_ROUTE))
-    _add(room_transcript, _map_ready("d" * 64, "monster"), _get(map_client._MAP_DECISION_ROUTE))
+    _add(room_transcript, _map_complete("rest_site"), _GET_MAP)
+    _add(room_transcript, map_client._MAP_WAITING, _GET_MAP)
+    _add(room_transcript, _map_ready("d" * 64, "monster"), _GET_MAP)
     room_result, room_connector, _ = _run(room_transcript, "map", 1)
     handoff = room_result.get("room_handoff")
     if not isinstance(handoff, dict) or handoff.get("preflight") != {"attempts": 1, "screen_kind": "rest_site", "room_ordinal": 4}:
         fail(EXIT_MISMATCH, "entry_wire_room_context")
     room_connector.require_complete(3)
+
+
+def _room_preflight_context_mismatch() -> None:
+    transcript: list[tuple[bytes | TimeoutError, bytes]] = []
+    _map(transcript, "f" * 64, "rest_site")
+    _add(transcript, _room_ready("a" * 64, 4), _GET_ROOM)
+    _base(transcript)
+    _add(transcript, _room_ready("b" * 64, 5), _GET_ROOM)
+    connector, credentials = _Connector(transcript), _Credentials()
+    with _clock():
+        _expect(
+            lambda: run._run_bounded_run(
+                credentials,
+                connector,
+                "first-legal",
+                "first-card",
+                "first",
+                "safe",
+                1,
+                entry_phase="map",
+            ),
+            "room_expected_context_mismatch",
+        )
+    credentials.require_zeroed()
+    connector.require_complete(1)
 
 
 def _unsupported_and_post_failures() -> None:
@@ -321,8 +398,8 @@ def _unsupported_and_post_failures() -> None:
     for response, expected in ((map_fixture._action_body(decision, "select:0", "stale_decision"), "map_action_stale_decision"), (TimeoutError(_CANARY.decode("ascii")), "map_action_transport_failure")):
         transcript = []
         _base(transcript)
-        _add(transcript, _map_ready(decision, "monster"), _get(map_client._MAP_DECISION_ROUTE))
-        transcript.append((response if isinstance(response, TimeoutError) else _http(response), _post(map_client._MAP_ACTION_ROUTE, decision, "select:0")))
+        _add(transcript, _map_ready(decision, "monster"), _GET_MAP)
+        transcript.append((response if isinstance(response, TimeoutError) else _http(response), _post(_MAP_POST, decision, "select:0")))
         connector, credentials = _Connector(transcript), _Credentials()
         with _clock():
             _expect(lambda: run._run_bounded_run(credentials, connector, "first-legal", "first-card", "first", "safe", 2, entry_phase="map"), expected)
@@ -335,8 +412,8 @@ def _entry_body_failures() -> None:
     for phase, body, expected in cases:
         transcript: list[tuple[bytes | TimeoutError, bytes]] = []
         _base(transcript)
-        route = probe._REWARD_ROUTE[0][1] if phase == "reward" else map_client._MAP_DECISION_ROUTE
-        _add(transcript, body + (_CANARY if body == b"{}" else b""), _get(route))
+        request = _GET_REWARD if phase == "reward" else _GET_MAP
+        _add(transcript, body + (_CANARY if body == b"{}" else b""), request)
         connector, credentials = _Connector(transcript), _Credentials()
         with _clock():
             _expect(lambda: run._run_bounded_run(credentials, connector, "first-legal", "first-card", "first", "safe", 1, entry_phase=phase), expected)
@@ -381,10 +458,11 @@ def operation() -> dict[str, object]:
     _combat_equivalence_and_defeat()
     _reward_and_map_prefixes()
     _later_combat_and_room_binding()
+    _room_preflight_context_mismatch()
     _unsupported_and_post_failures()
     _entry_body_failures()
     _negative_control()
-    return {"schema_version": 1, "status": "passed", "suite": "apply_run_entry_wire_fixtures", "check_count": 10}
+    return {"schema_version": 1, "status": "passed", "suite": "apply_run_entry_wire_fixtures", "check_count": 11}
 
 
 if __name__ == "__main__":
