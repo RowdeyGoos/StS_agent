@@ -3,6 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import json
+import os
+import signal
+import subprocess
+import sys
+
+import pytest
 
 from game.backends.headless.reduced_run_backend import HeadlessRunConfig, ReducedRunBackend
 from game.content.reduced_v0 import CONTENT_FINGERPRINT
@@ -299,3 +306,103 @@ def test_process_collection_interrupt_terminates_and_joins_without_missing_fabri
     assert pool.terminated is True
     assert pool.joined is True
     assert pool.closed is False
+
+
+@pytest.mark.parametrize("interrupt_stage", ("iteration", "close", "join"))
+def test_real_spawn_sigint_preserves_results_through_cleanup(interrupt_stage) -> None:
+    # Isolate real SIGINT from pytest. A process-group watchdog also kills any
+    # pool descendants if recovery hangs, so a failed test cannot leak workers.
+    script = r'''
+import json
+import multiprocessing
+import os
+import signal
+import sys
+import game.training.headless_rollout as rollout
+from game.content.reduced_v0 import CONTENT_FINGERPRINT
+from game.data.headless_trajectory import validate_trajectory
+
+stage = sys.argv[1]
+context = multiprocessing.get_context("spawn")
+original_handler = signal.getsignal(signal.SIGINT)
+events = []
+
+class InterruptingPool:
+    def __init__(self):
+        self.pool = context.Pool(processes=1)
+        self.fired = False
+
+    def interrupt(self, where):
+        if stage == where and not self.fired:
+            self.fired = True
+            os.kill(os.getpid(), signal.SIGINT)
+
+    def imap_unordered(self, function, entries):
+        for item in self.pool.imap_unordered(function, entries):
+            yield item
+            self.interrupt("iteration")
+
+    def close(self):
+        self.interrupt("close")
+        self.pool.close()
+
+    def join(self):
+        self.interrupt("join")
+        self.pool.join()
+        events.append("joined")
+
+    def terminate(self):
+        events.append("terminated")
+        # A second SIGINT during cancellation cleanup must not abort reaping.
+        os.kill(os.getpid(), signal.SIGINT)
+        self.pool.terminate()
+
+pool = InterruptingPool()
+class Context:
+    def Pool(self, *, processes):
+        return pool
+
+rollout.get_context = lambda method: Context()
+try:
+    episodes = tuple(rollout.HeadlessRolloutConfig(
+        "sigint-" + str(i),
+        rollout.HeadlessRunConfig("simple__starter", CONTENT_FINGERPRINT, i, {}),
+        0,
+    ) for i in range(2))
+    result = rollout.run_headless_batch(rollout.HeadlessBatchConfig(episodes), process_safe=True)
+    assert result.interrupted
+    assert len(result.results) == (1 if stage == "iteration" else 2)
+    assert len(result.pending_trajectory_ids) == (1 if stage == "iteration" else 0)
+    for item in result.results:
+        trace = item.trajectory
+        validate_trajectory(trace.manifest_json, trace.policy_replay_jsonl,
+            trace.hindsight_target_jsonl, trace.synthetic_audit_jsonl,
+            expected_manifest_sha256=trace.manifest_sha256)
+    assert events == ["terminated", "joined"]
+    assert signal.getsignal(signal.SIGINT) == original_handler
+    assert multiprocessing.active_children() == []
+    print(json.dumps({"received": len(result.results), "pending": len(result.pending_trajectory_ids)}))
+finally:
+    # Cleanup also runs against the unfixed implementation during reproduction.
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    pool.pool.terminate()
+    pool.pool.join()
+'''
+    process = subprocess.Popen(
+        [sys.executable, "-c", script, interrupt_stage],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+    try:
+        stdout, stderr = process.communicate(timeout=25)
+    except subprocess.TimeoutExpired:
+        os.killpg(process.pid, signal.SIGKILL)
+        process.communicate()
+        pytest.fail("SIGINT cleanup exceeded the 25-second process-group watchdog")
+    assert process.returncode == 0, stderr
+    assert json.loads(stdout) == {
+        "received": 1 if interrupt_stage == "iteration" else 2,
+        "pending": 1 if interrupt_stage == "iteration" else 0,
+    }

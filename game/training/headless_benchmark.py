@@ -41,6 +41,22 @@ class HeadlessBenchmarkResult:
     transitions_per_second: float
     batches: tuple[HeadlessBatchResult, ...]
 
+    @property
+    def interrupted(self) -> bool:
+        return any(batch.interrupted for batch in self.batches)
+
+    @property
+    def attempted_repetitions(self) -> int:
+        return len(self.batches)
+
+    @property
+    def completed_repetitions(self) -> int:
+        return sum(not batch.interrupted for batch in self.batches)
+
+    @property
+    def unstarted_repetitions(self) -> int:
+        return self.conditions.repetitions - self.attempted_repetitions
+
 
 def benchmark_headless_rollouts(config: HeadlessBenchmarkConfig) -> HeadlessBenchmarkResult:
     """Measure exactly the supplied local workload with a monotonic clock."""
@@ -48,10 +64,13 @@ def benchmark_headless_rollouts(config: HeadlessBenchmarkConfig) -> HeadlessBenc
     if not isinstance(config, HeadlessBenchmarkConfig):
         raise TypeError("config must be a HeadlessBenchmarkConfig.")
     started = perf_counter()
-    batches = tuple(
-        run_headless_batch(config.batch, process_safe=config.process_safe)
-        for _ in range(config.repetitions)
-    )
+    collected = []
+    for _ in range(config.repetitions):
+        batch = run_headless_batch(config.batch, process_safe=config.process_safe)
+        collected.append(batch)
+        if batch.interrupted:
+            break
+    batches = tuple(collected)
     elapsed = perf_counter() - started
     episodes = sum(len(batch.results) for batch in batches)
     transitions = sum(batch.transition_count for batch in batches)

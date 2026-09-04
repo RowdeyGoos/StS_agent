@@ -13,6 +13,8 @@ from enum import Enum
 from hashlib import sha256
 from multiprocessing import get_context
 from random import Random
+import signal
+from threading import current_thread, main_thread
 from typing import Any, Callable, Mapping, Protocol
 
 from game.agents.headless_baselines import (
@@ -435,6 +437,25 @@ def _batch_result(
     )
 
 
+def _terminate_and_join(pool: Any) -> None:
+    """Reap cancelled workers without a second SIGINT aborting cleanup.
+
+    Signal handlers can only be installed on the main thread, which is also
+    where Python delivers SIGINT. Restore the caller's handler after reaping.
+    """
+
+    main = current_thread() is main_thread()
+    previous_handler = signal.getsignal(signal.SIGINT) if main else None
+    if main:
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+    try:
+        pool.terminate()
+        pool.join()
+    finally:
+        if main:
+            signal.signal(signal.SIGINT, previous_handler)
+
+
 def run_headless_batch(
     config: HeadlessBatchConfig, *, process_safe: bool = False
 ) -> HeadlessBatchResult:
@@ -455,13 +476,16 @@ def run_headless_batch(
                 completed[index] = result
                 if result.stop_reason is RolloutStopReason.INTERRUPTED:
                     raise KeyboardInterrupt
+            # Cancellation remains recoverable through graceful cleanup, even
+            # after every expected episode result has already been received.
+            pool.close()
+            pool.join()
         except KeyboardInterrupt:
             cancelled = True
-            pool.terminate()
-        else:
-            pool.close()
-        finally:
-            pool.join()
+            _terminate_and_join(pool)
+        except BaseException:
+            _terminate_and_join(pool)
+            raise
         return _batch_result(
             config,
             completed,
