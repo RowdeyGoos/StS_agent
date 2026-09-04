@@ -8,7 +8,7 @@ sys.dont_write_bytecode = True
 
 import apply_run_live as run
 from tool_common import EXIT_INTERNAL, ToolFailure, fail, main
-from verify_room_acceptance import summarize_run_acceptance_result
+from verify_room_acceptance import _KNOWN_PRODUCTION_FAILURE_CODES, summarize_run_acceptance_result
 
 
 def _clear_mutable_buffers(value: object, seen: set[int] | None = None) -> None:
@@ -38,9 +38,11 @@ def _operation() -> dict[str, object]:
     try:
         result = run.operation()
         return summarize_run_acceptance_result(result)
-    except ToolFailure:
-        raise
-    except BaseException:
+    except ToolFailure as failure:
+        if failure.error_code == "run_acceptance_result_mismatch" or failure.error_code in _KNOWN_PRODUCTION_FAILURE_CODES:
+            raise
+        fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
+    except Exception:
         fail(EXIT_INTERNAL, "run_acceptance_callback_failure")
     finally:
         _clear_mutable_buffers(result)
