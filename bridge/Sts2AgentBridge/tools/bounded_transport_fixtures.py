@@ -164,14 +164,6 @@ def _room_post(connector: _Connector) -> bytearray:
     )
 
 
-def _probe_body(connector: _Connector) -> bytes:
-    return probe._read_body("probe", "/probe/v0/health", bytearray(_CREDENTIAL), connector, 10.0)
-
-
-def _room_body(connector: _Connector) -> bytes:
-    return room._read_body("room", room._ROOM_DECISION_ROUTE, bytearray(_CREDENTIAL), connector, 10.0)
-
-
 def _success_case(call: Callable[[_Connector], bytearray], expected_request: bytes) -> None:
     connector = _Connector(_Socket([b"response", b""]))
     with _clock():
@@ -262,7 +254,7 @@ def _exceptional_cleanup() -> None:
 
 
 def _close_precedence() -> None:
-    for label, call, request in (("probe", _probe_body, _GET_HEALTH), ("room", _room_body, _GET_ROOM)):
+    for label, call, request in (("probe", _probe_get, _GET_HEALTH), ("room", _room_get, _GET_ROOM)):
         connector = _Connector(_Socket([b"partial", b""], close_error=RuntimeError("synthetic")))
         with _record_zeroes() as zeroes, _clock():
             try:
