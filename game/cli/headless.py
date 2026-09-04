@@ -11,6 +11,8 @@ from collections import Counter
 import json
 from json import JSONDecodeError
 from pathlib import Path
+import re
+import stat
 import sys
 from typing import Any, Mapping, Sequence
 
@@ -34,6 +36,7 @@ from game.training.headless_rollout import (
 
 
 _MAX_CONFIG_BYTES = 1_048_576
+_EXPERIMENT_ID = re.compile(r"[a-z][a-z0-9._-]{0,127}\Z")
 _CONFIG_FIELDS = frozenset({
     "episodes", "experiment_id", "output_root", "process_safe", "repetitions",
     "worker_count", "worker_seed",
@@ -48,7 +51,14 @@ def _read_json_object(path: Path) -> Mapping[str, Any]:
     """Read a small duplicate-key-free configuration object."""
 
     try:
-        raw = path.read_bytes()
+        metadata = path.lstat()
+    except OSError as exc:
+        raise ValueError(f"Cannot read configuration: {exc}") from exc
+    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
+        raise ValueError("Configuration must be a regular non-symlink file.")
+    try:
+        with path.open("rb") as handle:
+            raw = handle.read(_MAX_CONFIG_BYTES + 1)
     except OSError as exc:
         raise ValueError(f"Cannot read configuration: {exc}") from exc
     if len(raw) > _MAX_CONFIG_BYTES:
@@ -102,6 +112,8 @@ def _parse_panel(value: Mapping[str, Any], output_root_override: str | None) -> 
 
     _exact_fields(value, _CONFIG_FIELDS, "configuration")
     experiment_id = _text(value["experiment_id"], "experiment_id")
+    if _EXPERIMENT_ID.fullmatch(experiment_id) is None:
+        raise ValueError("experiment_id has an invalid identifier.")
     output_text = output_root_override if output_root_override is not None else _text(value["output_root"], "output_root")
     output_root = Path(output_text)
     if not output_text.strip():
@@ -128,6 +140,9 @@ def _parse_panel(value: Mapping[str, Any], output_root_override: str | None) -> 
             raise ValueError(f"episodes[{index}].settings must be an object.")
         try:
             chooser_kind = ChooserKind(raw_episode["chooser_kind"])
+            trajectory_id = _text(raw_episode["trajectory_id"], f"episodes[{index}].trajectory_id")
+            if _EXPERIMENT_ID.fullmatch(trajectory_id) is None:
+                raise ValueError("trajectory_id has an invalid identifier.")
             run_config = HeadlessRunConfig(
                 _text(raw_episode["scenario_id"], f"episodes[{index}].scenario_id"),
                 # The accepted backend validates this declared pin during reset.
@@ -137,7 +152,7 @@ def _parse_panel(value: Mapping[str, Any], output_root_override: str | None) -> 
                 dict(settings),
             )
             episodes.append(HeadlessRolloutConfig(
-                _text(raw_episode["trajectory_id"], f"episodes[{index}].trajectory_id"),
+                trajectory_id,
                 run_config,
                 _integer(raw_episode["transition_budget"], f"episodes[{index}].transition_budget", maximum=300),
                 chooser_kind=chooser_kind,
