@@ -61,6 +61,7 @@ class RolloutBackend(Protocol):
     def observe(self) -> DecisionState: ...
     def apply(self, action: Any) -> Transition: ...
     def snapshot(self) -> Mapping[str, Any]: ...
+    def close(self) -> None: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -174,11 +175,28 @@ class HeadlessRolloutResult:
 
 @dataclass(frozen=True, slots=True)
 class HeadlessBatchResult:
-    """Structured, order-stable results even when a worker episode fails."""
+    """Order-stable completed results plus an explicit cancellation remainder."""
 
     results: tuple[HeadlessRolloutResult, ...]
     process_safe: bool
     worker: CollectorWorkerConfig
+    interrupted: bool = False
+    pending_trajectory_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.interrupted, bool):
+            raise TypeError("interrupted must be a boolean.")
+        pending = tuple(self.pending_trajectory_ids)
+        if any(not isinstance(item, str) for item in pending):
+            raise TypeError("pending_trajectory_ids must contain strings.")
+        if pending and not self.interrupted:
+            raise ValueError("Only an interrupted batch can retain pending episodes.")
+        completed = tuple(item.config.trajectory_id for item in self.results)
+        if len(set(completed)) != len(completed):
+            raise ValueError("Batch results must not duplicate a trajectory ID.")
+        if set(completed) & set(pending):
+            raise ValueError("Completed and pending trajectory IDs must be disjoint.")
+        object.__setattr__(self, "pending_trajectory_ids", pending)
 
     @property
     def transition_count(self) -> int:
@@ -269,6 +287,61 @@ def _stop_reason(result: EpisodeResult, backend: RolloutBackend) -> RolloutStopR
     return RolloutStopReason.INTERRUPTED
 
 
+def _partial_trajectory(adapter: _RecordingBackend) -> FinalizedTrajectory | None:
+    """Safely retain an available authoritative boundary after cancellation."""
+
+    decision = adapter.current
+    if decision is None:
+        return None
+    _ensure_final_boundary(adapter.recorder, decision)
+    try:
+        if decision.status in {DecisionStatus.TERMINAL, DecisionStatus.UNSUPPORTED}:
+            return adapter.recorder.finalize()
+        return adapter.recorder.finalize_interrupted()
+    except TrajectoryValidationError:
+        return None
+
+
+def _interrupted_result(
+    config: HeadlessRolloutConfig,
+    backend: RolloutBackend | None,
+    adapter: _RecordingBackend | None,
+    interruption: BaseException,
+) -> HeadlessRolloutResult:
+    """Report a cancellation separately from an ordinary backend failure."""
+
+    decision = None if adapter is None else adapter.current
+    return HeadlessRolloutResult(
+        config,
+        RolloutStopReason.INTERRUPTED,
+        0 if adapter is None else adapter.transition_count,
+        None if decision is None else decision.to_json(),
+        None if adapter is None else adapter.initial_snapshot_sha256,
+        None if backend is None else _snapshot_digest(backend),
+        None if adapter is None else _partial_trajectory(adapter),
+        failure=f"{type(interruption).__name__}: {interruption}",
+    )
+
+
+def _failed_result(
+    config: HeadlessRolloutConfig,
+    backend: RolloutBackend | None,
+    adapter: _RecordingBackend | None,
+    failure: BaseException,
+) -> HeadlessRolloutResult:
+    decision = None if adapter is None else adapter.current
+    return HeadlessRolloutResult(
+        config,
+        RolloutStopReason.FAILED,
+        0 if adapter is None else adapter.transition_count,
+        None if decision is None else decision.to_json(),
+        None if adapter is None else adapter.initial_snapshot_sha256,
+        None if backend is None else _snapshot_digest(backend),
+        None if adapter is None else _partial_trajectory(adapter),
+        failure=f"{type(failure).__name__}: {failure}",
+    )
+
+
 def run_headless_rollout(config: HeadlessRolloutConfig) -> HeadlessRolloutResult:
     """Run one bounded reduced episode through the generic runner.
 
@@ -281,7 +354,7 @@ def run_headless_rollout(config: HeadlessRolloutConfig) -> HeadlessRolloutResult
         raise TypeError("config must be a HeadlessRolloutConfig.")
     backend: RolloutBackend | None = None
     adapter: _RecordingBackend | None = None
-    initial_digest: str | None = None
+    output: HeadlessRolloutResult | None = None
     try:
         backend = config.factory.create()
         recorder = TrajectoryRecorder(config.trajectory_id, backend.manifest())
@@ -293,7 +366,6 @@ def run_headless_rollout(config: HeadlessRolloutConfig) -> HeadlessRolloutResult
             chooser,
             transition_budget=config.transition_budget,
         )
-        initial_digest = adapter.initial_snapshot_sha256
         _ensure_final_boundary(recorder, result.final_decision)
         reason = _stop_reason(result, backend)
         trajectory = (
@@ -307,33 +379,60 @@ def run_headless_rollout(config: HeadlessRolloutConfig) -> HeadlessRolloutResult
             }
             else recorder.finalize_interrupted()
         )
-        return HeadlessRolloutResult(
+        output = HeadlessRolloutResult(
             config, reason, result.transition_count, result.final_decision.to_json(),
-            initial_digest, _snapshot_digest(backend), trajectory,
+            adapter.initial_snapshot_sha256, _snapshot_digest(backend), trajectory,
         )
+    except KeyboardInterrupt as interruption:
+        output = _interrupted_result(config, backend, adapter, interruption)
     except BaseException as exc:
-        decision = None if adapter is None else adapter.current
-        trajectory = None
-        if adapter is not None and decision is not None:
-            _ensure_final_boundary(adapter.recorder, decision)
+        output = _failed_result(config, backend, adapter, exc)
+    finally:
+        if backend is not None:
             try:
-                trajectory = adapter.recorder.finalize_interrupted()
-            except TrajectoryValidationError:
-                pass
-        return HeadlessRolloutResult(
-            config,
-            RolloutStopReason.FAILED,
-            0 if adapter is None else adapter.transition_count,
-            None if decision is None else decision.to_json(), initial_digest,
-            None if backend is None else _snapshot_digest(backend), trajectory,
-            failure=f"{type(exc).__name__}: {exc}",
-        )
+                backend.close()
+            except Exception as close_error:
+                if output is None:
+                    output = _failed_result(config, backend, adapter, close_error)
+    assert output is not None
+    return output
 
 
 def _run_batch_entry(config: HeadlessRolloutConfig) -> HeadlessRolloutResult:
     """Top-level spawn target; do not close over collector state."""
 
     return run_headless_rollout(config)
+
+
+def _run_indexed_batch_entry(
+    entry: tuple[int, HeadlessRolloutConfig],
+) -> tuple[int, HeadlessRolloutResult]:
+    """Top-level indexed target so completed spawned work can be retained."""
+
+    index, config = entry
+    return index, _run_batch_entry(config)
+
+
+def _batch_result(
+    config: HeadlessBatchConfig,
+    completed: Mapping[int, HeadlessRolloutResult],
+    *,
+    process_safe: bool,
+    interrupted: bool,
+) -> HeadlessBatchResult:
+    results = tuple(completed[index] for index in sorted(completed))
+    pending = tuple(
+        episode.trajectory_id
+        for index, episode in enumerate(config.episodes)
+        if index not in completed
+    )
+    return HeadlessBatchResult(
+        results,
+        process_safe,
+        config.worker,
+        interrupted=interrupted,
+        pending_trajectory_ids=pending,
+    )
 
 
 def run_headless_batch(
@@ -345,18 +444,42 @@ def run_headless_batch(
         raise TypeError("config must be a HeadlessBatchConfig.")
     indices = list(range(len(config.episodes)))
     Random(config.worker.worker_seed).shuffle(indices)
-    scheduled = [config.episodes[index] for index in indices]
+    scheduled = [(index, config.episodes[index]) for index in indices]
+    completed: dict[int, HeadlessRolloutResult] = {}
     if process_safe:
         context = get_context("spawn")
-        with context.Pool(processes=config.worker.worker_count) as pool:
-            collected = pool.map(_run_batch_entry, scheduled)
-    else:
-        collected = [_run_batch_entry(item) for item in scheduled]
-    ordered: list[HeadlessRolloutResult | None] = [None] * len(config.episodes)
-    for index, item in zip(indices, collected):
-        ordered[index] = item
-    return HeadlessBatchResult(
-        tuple(item for item in ordered if item is not None),
-        process_safe,
-        config.worker,
-    )
+        pool = context.Pool(processes=config.worker.worker_count)
+        cancelled = False
+        try:
+            for index, result in pool.imap_unordered(_run_indexed_batch_entry, scheduled):
+                completed[index] = result
+                if result.stop_reason is RolloutStopReason.INTERRUPTED:
+                    raise KeyboardInterrupt
+        except KeyboardInterrupt:
+            cancelled = True
+            pool.terminate()
+        else:
+            pool.close()
+        finally:
+            pool.join()
+        return _batch_result(
+            config,
+            completed,
+            process_safe=True,
+            interrupted=cancelled,
+        )
+
+    try:
+        for index, episode in scheduled:
+            result = _run_batch_entry(episode)
+            completed[index] = result
+            if result.stop_reason is RolloutStopReason.INTERRUPTED:
+                raise KeyboardInterrupt
+    except KeyboardInterrupt:
+        return _batch_result(
+            config,
+            completed,
+            process_safe=False,
+            interrupted=True,
+        )
+    return _batch_result(config, completed, process_safe=False, interrupted=False)
