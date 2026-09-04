@@ -51,6 +51,8 @@ The full-game integration track additionally has:
   rooms;
 - a verified live complete-combat loop, one direct safe event-to-map action,
   and a composed live sequence spanning two combat/reward/map handoffs;
+- live-accepted standalone rest-site healing and completion, foreground
+  inspection-map action suppression, and stale snapshot rejection;
 - repository and disposable-fixture coverage for a combat/reward/map/room
   controller capped at three combat floors;
 - the accepted `headless_v0` contract, composed deterministic reduced-run
@@ -62,16 +64,18 @@ The full-game integration track additionally has:
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
-unsupported, rest-site and fully reconciled event handling still need bounded
-live acceptance, and the batched controller has unresolved
+unsupported, fully reconciled event handling still needs bounded live
+acceptance, and the batched controller has unresolved
 `decision_response_mismatch`, `run_room_not_ready`, and multi-step
 `room_interaction_timeout` observations. The Python readiness repair is
-integrated; live tests now isolate a foreground-map/underlying-room mismatch
-and failed completion after both event advancement and rest-site healing.
-The narrow C# repair is now independently reviewed and integrated, with stable
-replay identity and rest-only completion. Its verified installation attempt
-stopped before game launch because the Mac locked; all installed material was
-removed. Live acceptance remains pending an unlocked desktop.
+integrated. Earlier live tests isolated a foreground-map/underlying-room
+mismatch and failed completion after both event advancement and rest-site
+healing. The independently reviewed narrow C# repair has now passed bounded
+rest-site live acceptance: inspection-map suppression and stale rejection,
+heal/Proceed completion, and non-actionability after closing the completed map.
+Its broader replay-identity edge cases remain fixture-tested. Normal teardown,
+clean base-game launch/quit, and final purge passed. Multi-step event completion
+and a full batched room handoff remain unaccepted live.
 The headless rollout/throughput consumer is accepted, with bounded local
 measurements and no learned-policy or target-game-parity claim.
 
@@ -84,12 +88,13 @@ These are the highest-value next steps.
 Before expanding the bridge surface, stabilize the existing `R0i` room handoff
 and demonstrate one repeatable multi-floor live sequence using only the already
 implemented combat, reward, map, and supported-room contracts. The
-`run_room_not_ready` handoff failure has a fixture-tested Python repair. Live-test
-the integrated, independently reviewed `R0I-ROOM-LIFECYCLE-07` C# repair;
-make multi-step event continuation either complete or reject precisely within
-its bound, keep the earlier response
-mismatch explicit, and retain the existing clean teardown and base-game
-relaunch checks.
+`run_room_not_ready` handoff failure has a fixture-tested Python repair. Build
+on the live-accepted standalone rest-site slice of `R0I-ROOM-LIFECYCLE-07` to
+exercise a composed combat/rest/combat sequence when supported destinations
+are available. Keep event-to-map completion fail-closed; any event-step
+identity redesign requires a separately approved scope. Keep the earlier
+response mismatch explicit and retain the existing clean teardown and
+base-game relaunch checks.
 
 Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,

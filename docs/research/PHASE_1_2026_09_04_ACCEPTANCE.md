@@ -57,7 +57,7 @@ their evidence labels.
 | `R0I-RUN-04` readiness repair | `8a6e5c0`, `f7d5b21` → `2b2fd07`, `f74cf26` | Accepted bounded polling of validated inactive completion; only expected-kind ready succeeds; 14 run and 16 room fixtures passed |
 | `H4-LIVE-DIFF-02`, offline portion | `06466e4`, `621c5c3` → `6fbc0ca`, `8fda7da` | Accepted synthetic common-subset comparator and build-safe identity inventory; live portion blocked |
 | `H3-ROLLOUT-03` | `f43cb58`, `b9f3393`, `2040322`, `8bf7ccb` → `d85448b`, `f2b7f7c`, `fdc2c33`, `feda7d6` | Accepted after real-spawn cancellation review and escalation; 280 focused/shared tests and 829 full repository tests passed |
-| `R0I-ROOM-LIFECYCLE-07` | `1a3aebf`, `be6c7a1` → `966b8ba`, `b86d1b4`; pins `778cadd` | Reviewed foreground eligibility and rest-only completion; first candidate rejected for replay regression, correction independently accepted; live check blocked by locked desktop |
+| `R0I-ROOM-LIFECYCLE-07` | `1a3aebf`, `be6c7a1` → `966b8ba`, `b86d1b4`; pins `778cadd` | First candidate rejected for replay regression; correction independently accepted. Resumed campaign live-accepted rest inspection suppression, stale rejection, and standalone completion; cleanup passed. Wider registry/event cases remain fixture-only |
 
 The readiness repair explicitly owns the two run-client files plus the two
 room-client files for this correction; only three of those files changed.
@@ -184,8 +184,9 @@ No further bridge action was attempted after the rest timeout. No full batched
 combat-room-combat acceptance was obtained in this campaign. Prior combat and
 reward evidence is preserved, not attributed to this launch.
 
-The reader checks underlying room visibility and the general overlay stack,
-but not the separate foreground map screen. The action applier rereads that
+At this earlier campaign's artifact, the reader checks underlying room
+visibility and the general overlay stack, but not the separate foreground map
+screen. The action applier rereads that
 same projection, so foreground action eligibility also needs review. The stale
 advertisement is proven; application of a behind-map action is not.
 
@@ -236,9 +237,11 @@ outcome/evidence defect across consumers, not an escalation for task length.
 Only aggregate telemetry is recorded; no hidden reasoning or task
 transcripts are retained here.
 
-Open items: unlock the desktop for bounded live acceptance of the reviewed C# repair; separately
-authorized retained live differential input. None permits claiming full-game
-fidelity or autonomous-run completion.
+Current open items: separately authorized retained live differential input;
+broader composed-room live coverage; separately scoped event-step work if
+needed. The resumed campaign below closes the narrow rest-site repair's live
+gate, not these broader items. None permits claiming full-game fidelity or
+autonomous-run completion.
 
 ## Reviewed C# lifecycle repair and second artifact
 
@@ -297,7 +300,7 @@ A transient inspection-map rejection harness passed independent review and
 9 fully mocked tests, including its bounded 45-second operator handshake,
 single snapshot-bound POST, exact stale/no-mutation receipt, and credential
 buffer clearing. It logs no raw payloads or control identities. Live evidence
-for this second artifact is still pending at this checkpoint.
+for this second artifact was still pending at this pre-live checkpoint.
 
 ### Locked-desktop attempt and cleanup
 
@@ -322,8 +325,8 @@ it did not touch user saves or base-game files.
 A clean base-game launch/quit could not be repeated while the desktop was
 locked. The earlier completed campaign's clean-launch evidence remains valid
 for that earlier checkpoint, not for this unlaunched attempt. Live acceptance
-and the final clean-launch check remain blocked by desktop access, not by
-missing project authorization. No campaign is active.
+and the final clean-launch check were blocked at that checkpoint by desktop
+access, not by missing project authorization. No campaign remained active.
 
 Environment caveat: an isolated measurement-build SDK startup emitted a
 `CSSM_ModuleLoad` error plus its generic development-certificate setup message.
@@ -331,3 +334,113 @@ Whether a certificate was installed was not investigated; no intentional
 keychain action occurred. Subsequent SDK invocations explicitly disabled
 development-certificate generation. This is not evidence of a game/profile
 mutation or a verified keychain state.
+
+## Resumed live acceptance on the unlocked desktop
+
+The user confirmed desktop access. The coordinator resumed from clean
+`3679f8bbd66ec91e96e98240888500ef305a2a57`, still containing `d93395c`, with
+no new production changes. No other live operator or campaign was active.
+The exact second artifact above was rehashed and its canonical two-entry
+package passed verification. A fresh forbidden-surface metadata check against
+current source passed all 11 routes and 1,063 method bodies; the prior full
+70-fixture negative gate remains the accepted catalog result.
+
+The stopped guard passed before installation. The supported manager installed
+the exact artifact, protected operator configuration passed, and verification
+matched all 429 base files plus exactly two overlay files. Native launch
+visibly selected Profile 3 and loaded one mod; the authenticated main-menu
+probe passed all three routes. Only the coordinator operated the game and
+resumed the existing dedicated run through normal UI interaction.
+
+| Check | Sanitized result | Evidence |
+| --- | --- | --- |
+| Inspection map over an unspent rest site | Room projection `waiting`, zero candidates and zero legal actions | Live-demonstrated rest-site foreground suppression |
+| One original snapshot-bound heal request while that map remained foreground | Exact `stale_decision` rejection; receipt reported `mutation_state: none`; no retry | Live-demonstrated stale rejection, not a global no-mutation claim |
+| Close inspection map | Healing remained available | Live UI confirmation supporting the negative guard check |
+| Standalone rest preflight | Expected rest-site ready in one attempt | Live-demonstrated readiness, not delayed cross-kind polling |
+| Bounded safe rest controller | `passed`, `rest_site`, two accepted actions: heal and literal Proceed | Live-demonstrated standalone rest completion |
+| Validated room observation with completed map open | `complete`, `rest_site`, zero candidates | Live-demonstrated completion projection |
+| Close completed map | Native Proceed persisted, but room projection was `waiting`/`unknown` with zero candidates; no further POST | Live-demonstrated non-actionable post-completion projection |
+
+The reviewed transient inspection harness was unchanged (SHA-256
+`6f6a4da1cfe2217128b01efc95f066c7d4134c48c2d18409e08f67209af7149d`).
+It retained the original validated request in memory for its bounded operator
+handshake and submitted it only once. Raw bridge payloads, credentials,
+control identities, and profile-derived content were not logged or retained
+as evidence. The temporary credential file was removed during final purge.
+This campaign did not create a retained differential corpus.
+
+No combat, reward, event, or map-travel progression was rerun. The accepted
+result is the narrow rest-site lifecycle slice, not a reconciled batched room
+handoff or the full three-combat-floor cap. Event foreground suppression,
+identity-registry disappearance/revisit/kind/capacity cases, and other lifecycle
+races remain fixture-only. Event-to-map completion remains deliberately
+fail-closed; no event-step identity redesign was performed. Independent
+read-only review accepted this evidence classification without a blocking
+finding.
+
+### Final teardown and clean-launch verification
+
+Normal Save and Quit reached the Profile 3 menu, followed by normal game quit.
+The stopped guard passed, and the post-campaign overlay still matched the
+unchanged 429-file base and exact two installed files. Exact quarantine passed;
+base-only verification then found zero overlay files.
+
+A clean base-game launch reached the visibly unmodded Profile 3 main menu.
+The runtime guard observed the game running with the bridge port closed.
+Normal quit passed the stopped guard with three process samples and two port
+samples. The manager purged exactly four generated files, including the
+temporary credential, and returned absent campaign state. Final base-only
+verification passed all 429 files with zero overlay files. No game process,
+bridge listener, or installed bridge artifact remained active. Reproducible
+build outputs remain outside the game installation; only generated campaign
+material was removed.
+
+There was no crash, direct profile/save filesystem access, other-profile use,
+multiplayer, or Steam Cloud change. No unexpectedly enabled/syncing Cloud state
+was observed; no fresh Cloud-setting, idle-state, or general passivity claim is
+made. Healing and ordinary save/quit were authorized normal in-game mutations.
+No live campaign is active.
+
+## Parallel validation during the resumed campaign
+
+Two independent read-only checks ran alongside coordinator-only live work at
+`3679f8b`. Neither changed files, operated the game, or captured live data.
+
+- **Broader headless reproducibility panel:** 12 episodes per mode, sequential
+  versus two spawned workers, compared the complete `EpisodeResult` without
+  excluding fields: configuration, final decisions, initial/final snapshot
+  digests, manifests, and all record streams. Both starter scenarios
+  (`simple__starter`, `nibbit__starter`), all three public-only choosers,
+  game seeds 7/8, policy seeds 5/11/19, and collector seeds 17 versus 999 were
+  exercised under a 300-transition maximum. Controls covered zero/one budget,
+  low-HP defeat, and a known unsupported event. All 12 pairs matched exactly.
+  Each mode produced 343 transitions, eight `route_complete`, two
+  `budget_exhausted`, one `defeat`, and one `unsupported` outcome.
+- **Record and process checks:** across both modes, 710 policy records,
+  24 hindsight targets, and 710 audit records independently validated with
+  cross-stream bindings and rejection of sidecars as policy input. Choices
+  were advertised; budget/unsupported targets did not invent terminal outcomes.
+  Evidence stayed `combat_v0`/`structural_fixture`. Global RNG state and the
+  caller's SIGINT handler were unchanged, with zero surviving workers.
+- **Plan/dependency audit and differential regression:** complete plan, status,
+  and ledger review found no ready independent implementation packet or
+  concrete missing offline acceptance case within current scope. All 63
+  differential tests passed in 1.26 seconds against current pins. The corpus
+  remains synthetic: 19 cases, three passed comparisons, 14 divergent
+  comparisons, and two unobserved cases; none is live captured or
+  `differential_verified`.
+
+The headless panel reported 5.224 seconds aggregate validation elapsed time;
+it was not a throughput benchmark while the game was running. Token counts,
+cost, and unreported task elapsed metrics are unavailable, not estimated.
+No new implementation task or model escalation was needed. Remaining parallel
+fidelity work needs separately authorized retained live differential input;
+event-step redesign, new content, and new training work would require a
+deliberate scope decision. Broader composed live checks remain coordinator-only.
+
+Final coordinator validation after campaign cleanup passed **829 repository
+tests in 37.01 seconds**, compileall using a temporary cache, and
+`git diff --check`. Independent review of the complete five-file documentation
+diff passed the live/historical/fixture claim boundary; only documentation
+changed during this resumed campaign.

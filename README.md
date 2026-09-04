@@ -6,7 +6,8 @@ foundations: a compact combat simulator for reinforcement-learning research,
 an experimental deterministic reduced-run headless environment, and an
 authenticated live-game bridge at the bounded `R0i` integration milestone.
 The headless progression rules are structural fixtures, not verified full-game
-rules; the live bridge still has unresolved room-completion boundaries.
+rules. The live bridge has verified standalone rest-site completion; multi-step
+event completion and a complete batched room handoff remain unaccepted live.
 
 Requires Python 3.10+.
 

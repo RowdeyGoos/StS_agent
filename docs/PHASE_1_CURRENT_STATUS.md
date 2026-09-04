@@ -46,15 +46,23 @@ The user-approved `R0I-ROOM-LIFECYCLE-07` repair is integrated through
 accepted foreground-map action suppression, immediate stale revalidation,
 rest-only completion, and stable bounded room identity across disappearance
 and revisits. All 12 C# groups, 70 surface fixtures, and reproducible packaging
-passed; the integrated repository passed 829 tests in 35.99 seconds. These
-new lifecycle guarantees are fixture-tested, not live-demonstrated yet.
+passed; the final post-campaign repository rerun passed 829 tests in 37.01 seconds.
 
-The second artifact was installed and verified, but desktop control reported
-the Mac locked before launch. The game never started in that attempt. The
-overlay and temporary credential were quarantined and purged; final checks
-show no game process/listener and the unchanged 429-file base with no overlay.
-A fresh live check and end-of-campaign clean launch remain pending an unlocked
-desktop; no renewed project-level approval is needed.
+The resumed campaign at clean source `3679f8b` live-accepted the bounded
+rest-site slice. An inspection map suppressed all room candidates/legal actions;
+one original snapshot-bound heal request was rejected as stale with no mutation
+reported. After closing the map, the bounded controller accepted heal and
+literal Proceed and returned passed, with a complete rest-site projection.
+Closing the completed map left the room projection non-actionable despite the
+persistent native Proceed control. Event suppression, broader replay-identity
+cases, and other lifecycle races remain fixture-tested, not live-demonstrated.
+
+The earlier locked-desktop attempt was cleaned up without launching the game.
+The subsequent successful campaign ended with normal quit, exact quarantine,
+a clean unmodded base-game launch/quit with the bridge port closed, and purge
+of four generated files including the temporary credential. Final checks show
+no game process/listener and the unchanged 429-file base with no overlay.
+No live campaign is active.
 
 ## Parallel headless execution status
 
@@ -108,6 +116,15 @@ A bounded local two-seed panel completed two reduced routes in 57 transitions:
 recording/snapshot and spawn overhead. These single-sample local measurements
 are not training-performance promises or target-game wins.
 
+A further independent panel compared 12 episodes per mode across both starter
+scenarios, all three choosers, multiple game/policy seeds, and budget, defeat,
+and unsupported-state controls. Sequential and two-worker spawned results
+matched exactly, including complete record streams and snapshot digests. Each
+mode produced 343 transitions: eight reduced route completions, two budget
+stops, one defeat, and one unsupported stop. No worker survived cleanup.
+This is synthetic reproducibility evidence, not target-game parity or a
+performance measurement.
+
 The offline portion of `H4-LIVE-DIFF-02` is integrated. Its 19 synthetic cases
 contain 3 narrow common-subset matches, 14 divergences, and 2 unobserved cases.
 No case is live captured or `differential_verified`. Room/map matches do not
@@ -130,21 +147,23 @@ bindings, test results, and campaign evidence are in the
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
 | `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner | Repository gates and fixtures passed. The 2026-09-01 campaign live-demonstrated menu, Settings, combat, one safe event-to-map action, legal map selection, two completed combats, and their reward/map handoffs. The composed room handoff stopped fail-closed at `run_room_not_ready`; a narrowed multi-step event attempt then applied one action but ended at `room_interaction_timeout` |
 
-The 2026-09-04 campaign reproduced the multi-step event timeout and newly
+The earlier 2026-09-04 campaign reproduced the multi-step event timeout and newly
 demonstrated advertised rest-site map selection, successful standalone rest
 preflight, healing, and map opening. Both standalone room controllers still
 returned `room_interaction_timeout`; neither is a passed room-completion case.
-No combat or reward progression was rerun during this campaign.
+No combat or reward progression was rerun during that campaign. The later
+repair campaign passed standalone rest-site completion and the negative
+inspection-map/stale-action check. It did not rerun combat, rewards, map travel,
+or event progression and did not accept a batched room handoff.
 
 Every completed campaign in this sequence ended with a normal game exit,
 bridge quarantine/removal, a base-game main-menu relaunch with the listener
-closed, and final cleanup. The later locked-desktop installation attempt did
-not launch the game and is not a completed live campaign. During the latest
-completed campaign Steam Cloud remained at
-the previously established disabled setting; it was neither changed nor given
-an idle-state acceptance claim. The final base projection again contained the
-expected `429` base files and no bridge overlay, with no game process or bridge
-listener. These results are bounded point observations, not proof that ordinary
+closed, and final cleanup. The intervening locked-desktop installation attempt
+did not launch the game and is not a completed live campaign. Steam Cloud was
+not changed and no unexpectedly enabled/syncing state was observed; no fresh
+Cloud-setting or idle-state acceptance claim is made. The final base projection
+again contained the expected `429` base files and no bridge overlay, with no
+game process or bridge listener. These results are bounded point observations, not proof that ordinary
 Steam or game launches never touch profile, preference, save, or Cloud state.
 
 ## Evidence levels inside R0i
@@ -157,11 +176,15 @@ narrower:
   action and completion loops; gold and card-reward progression; card choice;
   card skip; legal map selection; a direct safe standard-event action reaching
   the map; two consecutive composed combat completions with intervening
-  reward/map handoffs; rest-site destination selection, readiness and healing;
-  and clean teardown/base relaunch.
-- **Fixture demonstrated but not yet live accepted:** foreground-map room-action
-  suppression and stale rejection; correctly bound rest-site completion; a
-  complete reconciled room handoff inside the batched runner; multi-step event
+  reward/map handoffs; rest-site destination selection, readiness, healing and
+  standalone completion; rest-site inspection-map suppression and stale snapshot
+  rejection; non-actionability after closing the completed rest map; and clean
+  teardown/base relaunch. Historical combat/reward/event evidence belongs to its
+  earlier campaigns, not the newest artifact's rest-only live check.
+- **Fixture demonstrated but not yet live accepted:** event foreground-map
+  suppression; identity-registry behavior across disappearance, A → B → A,
+  kind conflict and capacity; other lifecycle races; a complete reconciled room
+  handoff inside the batched runner; multi-step event
   completion at the Python-controller seam; and the full three-combat-floor
   cap. The C# reader deliberately does not infer event-to-map completion.
 - **Observed residuals:** an earlier batched attempt stopped on
@@ -169,13 +192,16 @@ narrower:
   after two combats but returned `run_room_not_ready`. The accepted Python
   repair now polls validated inactive completion without treating it as ready;
   its delayed cross-kind behavior is fixture-tested, not reproduced live.
-  On 2026-09-04 the multi-step event again timed out after visible advancement.
-  A later rest interaction healed and opened the map but also timed out.
+  In the earlier 2026-09-04 campaign the multi-step event again timed out after
+  visible advancement. A later rest interaction in that campaign healed and
+  opened the map but also timed out.
   Under the foreground map, room responses exposed one stale event candidate
   or remained `waiting` for rest. Closing the map revealed the persistent
   underlying rest room. This demonstrates a foreground-map/room-lifetime
   mismatch, not the exact event-step pending-identity root cause. No behind-map
-  action was attempted. Normal UI recovery and complete cleanup passed.
+  action was attempted in that earlier campaign. The subsequent narrow repair
+  passed the standalone rest completion and deliberately rejected one stale
+  behind-map request. Event completion and the batched handoff remain open.
 
 ## Current exclusions
 
@@ -211,11 +237,12 @@ inside one reproducible multi-floor sequence using only already implemented
 combat, reward, map, and supported-room contracts. That target
 should:
 
-1. live-test the integrated `R0I-ROOM-LIFECYCLE-07` repair once the desktop is
-   unlocked, retaining the reviewed Python readiness fix; the original
-   `R0I-RUN-03/04` C# exclusions remain unchanged;
-2. make multi-step event continuation either complete within its bounded
-   contract or fail immediately with a precise supported/unsupported reason;
+1. build on the live-accepted standalone rest-site repair to exercise a composed
+   combat/rest/combat handoff when supported destinations are available,
+   retaining the reviewed Python readiness fix; the original `R0I-RUN-03/04`
+   C# exclusions remain unchanged;
+2. preserve fail-closed multi-step event handling; any event-step identity
+   redesign requires a separately approved scope;
 3. retain `decision_response_mismatch` as a separate historical residual until
    reproduced or explained;
 4. obtain bounded live evidence for a fully reconciled rest-site or standard-

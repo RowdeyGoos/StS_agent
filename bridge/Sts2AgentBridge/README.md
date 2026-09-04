@@ -69,19 +69,21 @@ The living cross-milestone disposition is maintained in
 [`docs/PHASE_1_CURRENT_STATUS.md`](../../docs/PHASE_1_CURRENT_STATUS.md). In
 summary, bounded live smokes have reached `R0i` and demonstrated menu/Settings,
 combat, granular card/gold rewards, map selection, one direct safe event-to-map
-transition, and two consecutive composed combat/reward/map handoffs. The full
-three-combat-floor cap, rest-site completion, and a reconciled batched room
-handoff remain unaccepted live. The Python preflight now polls validated
+transition, two consecutive composed combat/reward/map handoffs, and standalone
+rest-site completion with inspection-map stale-action rejection. The full
+three-combat-floor cap and a reconciled batched room handoff remain unaccepted
+live. The Python preflight now polls validated
 inactive `complete` responses within its existing deadline; only a validated
 expected-kind `ready` response succeeds. Cross-kind residue is fixture-tested.
 
-On 2026-09-04, bounded live testing reproduced multi-step event timeout and
+The earlier 2026-09-04 campaign reproduced multi-step event timeout and
 demonstrated rest-site map selection, preflight, healing, and map opening, but
 rest completion also timed out. Underlying room controls can persist while the
 map is foreground; room observations then remained ready for the prior event
-or waiting for rest. No behind-map action was attempted. Do not interpret map
-opening alone as completed room acceptance, reset replay guards, or retry an
-ambiguous action. A scoped C# lifecycle/foreground-surface repair is a separate
+or waiting for rest. No behind-map action was attempted in that campaign. Do
+not interpret map opening alone as completed room acceptance, reset replay
+guards, or retry an ambiguous action. A scoped C# lifecycle/foreground-surface
+repair is a separate
 decision from the accepted Python preflight. Normal teardown, bridge removal,
 clean base-game launch/quit, and final purge all passed. See the living status
 page and its acceptance record for the exact evidence boundary.
@@ -91,10 +93,15 @@ suppress room actions, immediate revalidation rejects stale dispatch, and only
 accepted same-room literal rest `proceed` plus a travel-ready map proves
 completion. A bounded numeric identity registry preserves replay identity
 across missing surfaces and revisits. Event-to-map completion remains fail-closed.
-The new artifact passed all repository gates, but its installation attempt
-stopped before launch when the Mac locked. Exact overlay/configuration removal
-and stopped/base-only verification passed; live acceptance and a fresh clean
-launch/quit are pending an unlocked desktop.
+The new artifact passed all repository gates. After an unlaunched locked-desktop
+attempt was fully cleaned up, the resumed campaign live-accepted the rest-site
+slice: an inspection map suppressed candidates and one original snapshot-bound
+action was rejected as stale with no mutation reported; heal and literal Proceed
+then completed through the bounded controller. Closing the completed map left
+the room projection non-actionable. Event suppression and the wider identity-
+registry cases remain fixture-only; multi-step event completion and a complete
+batched room handoff were not demonstrated. Normal quit, exact removal, clean
+base-game launch/quit with the bridge port closed, and final purge all passed.
 
 ## Prerequisites
 
