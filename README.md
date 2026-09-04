@@ -1,10 +1,12 @@
 # StS Agent
 
 Research project for a functional, eventually near-optimal Slay the Spire 2
-agent. The repository currently contains two complementary executable
-foundations: a compact combat simulator for reinforcement-learning research and
-an authenticated live-game bridge, currently at the bounded `R0i` integration
-milestone.
+agent. The repository currently contains complementary executable
+foundations: a compact combat simulator for reinforcement-learning research,
+an experimental deterministic reduced-run headless environment, and an
+authenticated live-game bridge at the bounded `R0i` integration milestone.
+The headless progression rules are structural fixtures, not verified full-game
+rules; the live bridge still has unresolved room-completion boundaries.
 
 Requires Python 3.10+.
 

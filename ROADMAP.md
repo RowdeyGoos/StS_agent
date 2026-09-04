@@ -55,15 +55,20 @@ The full-game integration track additionally has:
   controller capped at three combat floors;
 - the accepted `headless_v0` contract, composed deterministic reduced-run
   backend, component-addressable evidence, snapshots/replay, and an independent
-  66-test conformance gate; and
+  66-test conformance gate;
+- accepted public-only headless smoke choosers and a synthetic live-wire versus
+  headless common-subset comparator that preserves divergences; and
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
 unsupported, rest-site and fully reconciled event handling still need bounded
 live acceptance, and the batched controller has unresolved
 `decision_response_mismatch`, `run_room_not_ready`, and multi-step
-`room_interaction_timeout` observations. The headless stack still lacks its
-backend-neutral smoke choosers and rollout/throughput consumer.
+`room_interaction_timeout` observations. The Python readiness repair is
+integrated; live tests now isolate a foreground-map/underlying-room mismatch
+and failed completion after both event advancement and rest-site healing.
+The headless rollout/throughput consumer is undergoing cancellation/lifecycle
+review and is not yet accepted.
 
 ## Near-Term Priorities
 
@@ -73,9 +78,11 @@ These are the highest-value next steps.
 
 Before expanding the bridge surface, stabilize the existing `R0i` room handoff
 and demonstrate one repeatable multi-floor live sequence using only the already
-implemented combat, reward, map, and supported-room contracts. Minimize the
-`run_room_not_ready` handoff failure, make multi-step event continuation either
-complete or reject precisely within its bound, keep the earlier response
+implemented combat, reward, map, and supported-room contracts. The
+`run_room_not_ready` handoff failure has a fixture-tested Python repair. Execute
+the user-approved narrow `R0I-ROOM-LIFECYCLE-07` C# repair with independent review;
+make multi-step event continuation either complete or reject precisely within
+its bound, keep the earlier response
 mismatch explicit, and retain the existing clean teardown and base-game
 relaunch checks.
 
@@ -84,10 +91,10 @@ composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
 
 The provisional Python headless environment has reached its accepted composed
-backend and independent-conformance boundary. When work resumes, add only the
-public-observation smoke choosers, then the bounded process-safe rollout and
-throughput consumer already defined in the execution plan. Structural
-reward/map/room rules remain labelled synthetic until named live differential
+backend, independent-conformance, and public-observation smoke-chooser
+boundaries. Finish the bounded process-safe rollout and throughput consumer's
+review, including cancellation-safe partial batches and backend cleanup.
+Structural reward/map/room rules remain labelled synthetic until named live differential
 cases pass. The completed ordinary bridge campaign did not authorize a retained
 live differential capture and does not imply target-game parity.
 

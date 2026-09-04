@@ -1,6 +1,6 @@
 # Phase 1 Current Integration Status
 
-- **Status date:** 2026-09-01
+- **Status date:** 2026-09-04
 - **Active bridge milestone:** `R0i`
 - **Bridge version:** `0.8.0`
 - **Protocol:** `live_probe_v0`
@@ -49,7 +49,7 @@ world state and snapshots, combat projection/candidates, fixture playback, a
 bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
 deterministic reduced reward/map/room rules, and the composed multi-phase
 `ReducedRunBackend`. The independent `H3-CONFORMANCE-04` gate is integrated;
-the integration branch passes `66` conformance tests and `740` repository
+the integration branch passes `66` conformance tests and `814` repository
 tests.
 
 The progression producers remain deliberately separate from the composed
@@ -79,9 +79,18 @@ reduced terminal public outcome `victory` means only that the structural route
 completed; the authoritative non-policy reason is `route_complete`, not a
 full-game win.
 
-`H3-BASELINE-02` and `H3-ROLLOUT-03` remain unstarted. Therefore there is no
-accepted backend-neutral smoke-policy package, process-batch collector, or
-rollout throughput claim yet.
+`H3-BASELINE-02` is accepted: first-legal, explicitly seeded-random, and a
+non-optimal structural heuristic consume only public policy views and
+advertised candidates. `H3-ROLLOUT-03` is under corrective review for batch
+cancellation and backend lifecycle; its returned commits are not yet accepted.
+
+The offline portion of `H4-LIVE-DIFF-02` is integrated. Its 19 synthetic cases
+contain 3 narrow common-subset matches, 14 divergences, and 2 unobserved cases.
+No case is live captured or `differential_verified`. Room/map matches do not
+prove effect amounts or entity/destination identity. A separately authorized
+retained live input remains required. The exact reviewed commits, identity
+bindings, test results, and campaign evidence are in the
+[2026-09-04 acceptance record](research/PHASE_1_2026_09_04_ACCEPTANCE.md).
 
 ## Milestone evidence
 
@@ -96,6 +105,12 @@ rollout throughput claim yet.
 | `R0g` | Read and apply one legal map destination | Bounded live map observation and destination application passed |
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
 | `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner | Repository gates and fixtures passed. The 2026-09-01 campaign live-demonstrated menu, Settings, combat, one safe event-to-map action, legal map selection, two completed combats, and their reward/map handoffs. The composed room handoff stopped fail-closed at `run_room_not_ready`; a narrowed multi-step event attempt then applied one action but ended at `room_interaction_timeout` |
+
+The 2026-09-04 campaign reproduced the multi-step event timeout and newly
+demonstrated advertised rest-site map selection, successful standalone rest
+preflight, healing, and map opening. Both standalone room controllers still
+returned `room_interaction_timeout`; neither is a passed room-completion case.
+No combat or reward progression was rerun during this campaign.
 
 Every completed campaign in this sequence ended with a normal game exit,
 bridge quarantine/removal, a base-game main-menu relaunch with the listener
@@ -116,16 +131,23 @@ narrower:
   action and completion loops; gold and card-reward progression; card choice;
   card skip; legal map selection; a direct safe standard-event action reaching
   the map; two consecutive composed combat completions with intervening
-  reward/map handoffs; and clean teardown/base relaunch.
-- **Fixture demonstrated but not yet live accepted:** rest-site handling; a
+  reward/map handoffs; rest-site destination selection, readiness and healing;
+  and clean teardown/base relaunch.
+- **Fixture demonstrated but not yet live accepted:** rest-site completion; a
   complete reconciled room handoff inside the batched runner; multi-step event
   completion; and the full three-combat-floor cap.
 - **Observed residuals:** an earlier batched attempt stopped on
-  `decision_response_mismatch`; the latest reached a real event after two
-  combats but returned `run_room_not_ready`. A standalone safe-room retry
-  applied the first action of the multi-step event and then returned
-  `room_interaction_timeout`. Normal UI recovery completed the event without
-  broadening bridge authority. These are live failures, not passed room cases.
+  `decision_response_mismatch`; the 2026-09-01 attempt reached a real event
+  after two combats but returned `run_room_not_ready`. The accepted Python
+  repair now polls validated inactive completion without treating it as ready;
+  its delayed cross-kind behavior is fixture-tested, not reproduced live.
+  On 2026-09-04 the multi-step event again timed out after visible advancement.
+  A later rest interaction healed and opened the map but also timed out.
+  Under the foreground map, room responses exposed one stale event candidate
+  or remained `waiting` for rest. Closing the map revealed the persistent
+  underlying rest room. This demonstrates a foreground-map/room-lifetime
+  mismatch, not the exact event-step pending-identity root cause. No behind-map
+  action was attempted. Normal UI recovery and complete cleanup passed.
 
 ## Current exclusions
 
@@ -161,8 +183,9 @@ inside one reproducible multi-floor sequence using only already implemented
 combat, reward, map, and supported-room contracts. That target
 should:
 
-1. minimize the `run_room_not_ready` readiness race or classification mismatch
-   without adding privileged state;
+1. retain the reviewed Python readiness fix and execute the user-approved
+   `R0I-ROOM-LIFECYCLE-07` foreground-room/map repair; the original
+   `R0I-RUN-03/04` C# exclusions remain unchanged;
 2. make multi-step event continuation either complete within its bounded
    contract or fail immediately with a precise supported/unsupported reason;
 3. retain `decision_response_mismatch` as a separate historical residual until
@@ -177,9 +200,9 @@ should:
    control surfaces until the existing slice is repeatable.
 
 Independently of that live target, the provisional headless environment has
-passed its composed-backend and independent conformance gates. When development
-resumes, the next unstarted consumers are the public-only smoke baselines and
-then bounded rollout/throughput collection. None may claim target-game fidelity
+passed its composed-backend, independent conformance, and public-only baseline
+gates. Bounded rollout/throughput collection is undergoing corrective review.
+None may claim target-game fidelity
 until named live differential cases pass, and the ordinary bridge campaign did
 not authorize creation of a persistent differential-capture artifact.
 

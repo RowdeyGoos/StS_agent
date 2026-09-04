@@ -133,6 +133,7 @@ allocation optimizes accepted-result cost rather than price per request alone.
 | `R0I-RUN-04` | `gpt-5.6-terra` | `high` | medium | Narrow continuation over the accepted `R0I-RUN-03` seam |
 | `R0I-ROUTE-05` | `gpt-5.6-luna` | `medium` | low | Isolated deterministic ranking and tie-break fixtures |
 | `R0I-VECTORS-06` | `gpt-5.6-terra` | `medium` | medium-low | Exact but mechanical encoder/receipt binding with byte tests |
+| `R0I-ROOM-LIFECYCLE-07` | `gpt-5.6-sol` | `high` | high | User-approved foreground eligibility/completion repair after live failures |
 | `H0-CONTRACT-01` | `gpt-5.6-sol` | `high` | high | Highest-fan-out shared contract and canonical binding semantics |
 | `H0-RNG-02` | `gpt-5.6-terra` | `high` | medium | Subtle determinism/snapshot work contained by exact property tests |
 | `H0-SCENARIOS-03` | `gpt-5.6-luna` | `medium` | low | Closed adapter and validation over existing factory APIs |
@@ -551,6 +552,62 @@ already visible in the graph.
 - **Risk:** medium.
 - **Approval:** synthetic public data only.
 - **Handoff:** commit, vector hashes, tests, missing shapes.
+
+### `R0I-ROOM-LIFECYCLE-07` — Bind room actions and completion to the active surface
+
+- **Authorization:** Added 2026-09-04 after the user explicitly approved the
+  narrow C# room/map lifecycle repair, unchanged replay protections, independent
+  review, and another bounded coordinator-only live check. This does not remove
+  the C# exclusions from `R0I-RUN-03/04` or authorize unrelated event-identity
+  redesign.
+- **Outcome:** Do not advertise or apply underlying room actions while the map
+  is foreground; recognize only correctly bound room-to-map completion despite
+  persistent underlying room nodes.
+- **Inputs:** accepted bridge `0.8.0`, Python preflight `f74cf26`, and sanitized
+  2026-09-04 live observations in the acceptance record.
+- **Dependencies:** hard on the accepted existing room/map readers/appliers and
+  the integrated Python readiness repair. Independent of headless rollout work.
+- **In scope:** Public active-surface eligibility, immediate action revalidation,
+  bounded same-room accepted-action/completion bookkeeping, and pure synthetic
+  lifecycle seams/tests. Prefer already allowlisted public map state. Map-open
+  alone must not prove completion; distinguish inspection-only opening from
+  completed-room travel readiness and bind it to the observed/accepted room.
+- **Out of scope:** New wire fields/statuses, changed decision hashing, resetting
+  replay history, retrying uncertain POSTs, event-step generation redesign,
+  shops/potions/route planning, profiles/saves/Cloud, or worker live use.
+- **Owned files:**
+  `src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomDecisionReader.cs`,
+  `src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomActionApplier.cs`, optional
+  new `src/Sts2AgentBridge/Adapters/Public/PublicRoomSurfaceLifecycle.cs`, and
+  `tests/Sts2AgentBridge.Tests/Public/RoomInteractionTestSuite.cs`, all under
+  `bridge/Sts2AgentBridge/`.
+- **Forbidden overlap:** All other bridge files, public wire models/encoders,
+  golden vectors, verifier policy/implementation, package version/identity,
+  deployment manager, Python controllers, headless files, and shared docs.
+  A required additional public member, wire change, or owned-file expansion
+  requires a coordinator proposal before implementation.
+- **Contract:** Existing `live_probe_v0` schema 1 and byte encoders unchanged;
+  candidate/decision/replay identity and all action caps remain unchanged.
+  Internal lifecycle evidence is not added to policy or wire payloads. The
+  coordinator reviews the completion predicate before acceptance; if available
+  public state cannot distinguish inspection from exit, preserve fail-closed
+  behavior and report that limitation rather than inventing evidence.
+- **Acceptance:** Foreground map plus persistent rest/event nodes yields no room
+  candidates or clicks; stale request revalidation prevents behind-map actions;
+  inspection-only map before/after a non-exit action cannot complete a room;
+  accepted supported exit with travel-ready map completes only its bound room;
+  map open/close/travel transitions, wrong/new room, nested/custom content,
+  pending unchanged projection, replay and action caps retain fail-closed tests.
+  Existing C# contract tests and surface gate pass. Any live claim additionally
+  requires a newly reproduced/package-verified artifact, bounded coordinator
+  verification, and full clean teardown.
+- **Docs/package ownership:** Coordinator records the predicate decision,
+  artifact identity, any explicit verifier-policy proposal, deployment pins,
+  and sanitized evidence. Workers must not update pins to bypass a failed gate.
+- **Risk:** High action-semantics and completion-evidence risk.
+- **Handoff:** Focused commit, exact predicate/truth table, tests and failing-
+  before cases, contract delta (expected none), unsupported residuals, aggregate
+  usage. Worker must not launch/install/access real credentials or profiles.
 
 ## 7. Immediate headless root packets
 

@@ -1,0 +1,199 @@
+# Phase 1 — 2026-09-04 integration and bounded live acceptance
+
+## Scope and starting state
+
+Development resumed under the user's coordinator authorization, including
+ordinary bounded live bridge verification on dedicated Profile 3. No remote
+writes, direct profile/save access, Steam Cloud changes, or retained live
+payload corpus were authorized or performed. The separately scoped retained
+input for `H4-LIVE-DIFF-02` remains unapproved.
+
+The clean local starting point was `1424ecd7b590f063156f6fed607e157c37f2c4a7`
+on `codex/phase1-parallel-integration`, containing planning baseline `d93395c`.
+The existing user checkout and worktrees were preserved. Implementation used
+four persistent project worktree tasks; independent read-only reviewers
+checked the high-risk joins. No implementation worker operated the game.
+
+## Packet ledger
+
+Earlier accepted packets remain in the verified starting baseline. This table
+lists their initial integrated commit and significant final hardening anchor;
+intermediate corrective commits remain in local history. It does not upgrade
+their evidence labels.
+
+| Packet | Integrated anchors | Disposition |
+| --- | --- | --- |
+| `R0I-DIAG-01` | `1cf8aa4` | Fixture-tested failure classification |
+| `R0I-MAP-02` | `7589c3b`, `813bd4a` | Fixture-tested map transport and bounded retry |
+| `R0I-RUN-03` | `b0824f9`, `cb14cf5` | Fixture-tested one-room handoff; live completion remains open |
+| `R0I-RUN-04` | `a607677` | Fixture-tested post-room ordinary-combat continuation |
+| `R0I-ROUTE-05` | `71807a6` | Deterministic supported-room coverage ranking |
+| `R0I-VECTORS-06` | `73283b1` | Canonical synthetic wire vectors |
+| `H0-CONTRACT-01` | `33bfcba` through `de402a3` | Accepted canonical `headless_v0` |
+| `H0-RNG-02` | `4febddb` | Synthetic named RNG and snapshot service |
+| `H0-SCENARIOS-03` | `1763d3c`, `fec8bae` | Serializable `combat_v0` scenario definitions |
+| `H0-CHARACTERIZE-04` | `c79c51c` | Legacy combat characterization |
+| `H0-BOUNDARY-REVIEW-05` | no write commit | Read-only boundary review; current conformance is the executable gate |
+| `H1-STATE-01` | `dcbaaf2` through `d9d96a5`, `c41654b` | Synthetic private state/snapshots |
+| `H1-PROJECTION-02` | `6a98718` | Public combat projection |
+| `H1-CANDIDATES-03` | `22f314f` | Advertised combat candidate mapping |
+| `H1-FIXTURE-04` | `facaa63` through `2789325` | Frozen fixture playback, not a rules simulator |
+| `H1-RUNNER-05` | `c0e9de0` | Bounded backend-neutral episode loop |
+| `H1-TRACE-06` | `aabc32c` through `2702987` | Bound, separate replay/target/audit streams |
+| `H1-CONTENT-07` | `a3cf8ec` | Reduced structural content |
+| `H2-COMBAT-BACKEND-01` | `95b6144`, `fde922e` | Accepted legacy combat adapter, `combat_v0` evidence |
+| `H2-REWARD-02` | `b8c766a` through `027b588` | Synthetic transactional reward progression |
+| `H2-MAP-03` | `11e72bf` through `c2d2a38` | Synthetic deterministic map progression |
+| `H2-ROOM-04` | `c3125cc` through `c19fc1e` | Synthetic room effects/progression |
+| `H3-REDUCED-BACKEND-01` | `1a0ea8f` through `e853d98` | Composed reduced run with restore-time history validation |
+| `H3-CONFORMANCE-04` | `16575c4`, `3a12af7` | Independent 66-test conformance gate |
+| `H4-LIVE-WIRE-01` | `324bd76`, `b08205d` | Strict separate live-wire parser; not a `GameBackend` |
+
+### Work in this resumed session
+
+| Packet | Worker commits → integrated commits | Review and evidence |
+| --- | --- | --- |
+| `H3-BASELINE-02` | `8754d12`, `3b613c5` → `2ff9340`, `04c045c` | Accepted public-only first-legal, explicitly seeded random, structural heuristic; 162 focused/shared tests passed |
+| `R0I-RUN-04` readiness repair | `8a6e5c0`, `f7d5b21` → `2b2fd07`, `f74cf26` | Accepted bounded polling of validated inactive completion; only expected-kind ready succeeds; 14 run and 16 room fixtures passed |
+| `H4-LIVE-DIFF-02`, offline portion | `06466e4`, `621c5c3` → `6fbc0ca`, `8fda7da` | Accepted synthetic common-subset comparator and build-safe identity inventory; live portion blocked |
+| `H3-ROLLOUT-03` | `f43cb58`, `b9f3393` | Initial implementation rejected for cancellation/result-loss and missing backend cleanup; corrective review in progress |
+
+The readiness repair explicitly owns the two run-client files plus the two
+room-client files for this correction; only three of those files changed.
+No production C#, wire schema, accepted contract fingerprint, or bridge
+artifact changed in this resumed session.
+
+## Offline differential interpretation
+
+The 19 project-authored cases yield **3 passed, 14 divergent, 2 unobserved**.
+All remain `structural_fixture` comparisons with `live_capture=unobserved`.
+The passes establish only selected common vitals/category matches; room/map
+passes do not establish healing effects, entity identity, or destination
+identity. Missing fields and post-states remain unobserved. Queued receipts
+never prove a post-state. Diagnostics retain field paths/reasons, not values.
+
+Identity checks bind declared game/wire/headless inputs, an explicit bridge
+source inventory, synthetic bodies, and selected source files. The initial
+whole-repository run exposed generated `obj` C# files contaminating that
+inventory: **751 passed, 56 identity-gate errors**. Independent review proved
+all other identities unchanged. The corrective commit excludes exact `bin` and
+`obj` directory components before content reads, preserves the reviewed
+**48-file** digest, and adds seven disposable ignore/drift tests. It does not
+repin generated output as authored source. The rebuilt root then passed
+**814 repository tests** in **87.90 seconds**.
+
+The corrected offline manifest SHA-256 is
+`ffdec1b4fe2454176dc6e0bc9179f2f197573dd07ecf3afdfc6aaa09c04694e7`.
+The bridge-source inventory SHA-256 remains
+`feed6d91adbc5568a48c2ebdd0a1d6f2a904c8c1c35ac1750a6aa4f4e53c4876`.
+
+## Exact bridge artifact and preflight
+
+Campaign source checkout: `6fbc0ca249b700bda131b5f19cc582c9aa18de59`;
+the production C# is unchanged from the accepted `4a8a0b3` artifact source.
+Pinned target: `v0.107.1`, Steam build `23811903`, macOS arm64.
+The isolated official .NET SDK `9.0.303` archive was SHA-512 verified and its
+executable reproduced the prior pinned identity. No base-game file was edited.
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `Sts2AgentBridge.dll` | `befe5a90d538032d7a89ec5075b5259b95bb6d8b20bfa75a3e00dca509dcdbbc` |
+| Loader manifest | `498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971` |
+| `Sts2AgentBridge-0.8.0.zip` | `7f4194ece6bda1e7f2979f4a1b0aebb8bcae88c127af66bcf69a7e4325dc6dd0` |
+
+Acceptance before live launch:
+
+- two independent builds reproduced identical DLL/manifest/ZIP;
+- all 12 C# test groups passed; the synthetic loopback suite required the
+  environment's technical sandbox permission, not a code repair;
+- full final surface gate passed **70 fixtures**;
+- package negative fixtures **7**, campaign lifecycle fixtures **34**, runtime
+  fixtures **17**, and all eight focused controller/probe fixture suites passed;
+- protected operator configuration and exact two-file overlay verified;
+- clean base projection verified **429 files**, SHA-256
+  `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+
+An earlier surface invocation failed because the coordinator moved the verified
+artifact before that invocation's final source-negative test. It was discarded
+as failed, not called a pass; a fresh complete gate ran against the stable final
+artifact location. One base-verifier invocation rejected a relative manifest
+argument before inspection; the corrected absolute invocation passed.
+
+## Sanitized live campaign result
+
+Only the coordinator operated the game. Profile 3 was visibly selected before
+resuming its existing run. The campaign retained no raw response log,
+credential, control identity, profile-content artifact, or differential corpus.
+Steam Cloud was not changed; its previously established disabled state was not
+given a fresh idle/synchronization claim. No other profile or multiplayer was
+used. There was no crash.
+
+| Check | Observed result | Evidence |
+| --- | --- | --- |
+| Authenticated main menu and Settings | Both passed, three routes each; no settings changed | Live-demonstrated |
+| Existing multi-step standard event | Controller caused visible advancement, then `room_interaction_timeout`; normal UI Exit Baths → Proceed recovered to map | Live failure; completion not accepted |
+| Room endpoint while map was visible after UI recovery | Still reported ready/event with one candidate | Live-demonstrated stale underlying-room projection |
+| Coverage map provider | Selected advertised `rest_site` destination and reconciled arrival | Live-demonstrated |
+| Reviewed rest readiness preflight | Expected-kind ready in one attempt | Live-demonstrated standalone check; does not prove the delayed-completion race live |
+| Bounded rest interaction | Healing occurred and map opened, but controller timed out; room endpoint reported waiting/unknown with zero candidates | Live-demonstrated action effect, failed completion reconciliation |
+| Underlying rest room | Closing map revealed the room and its Proceed control still present | Live UI observation supporting overlay/room-lifetime investigation |
+
+No further bridge action was attempted after the rest timeout. No full batched
+combat-room-combat acceptance was obtained in this campaign. Prior combat and
+reward evidence is preserved, not attributed to this launch.
+
+The reader checks underlying room visibility and the general overlay stack,
+but not the separate foreground map screen. The action applier rereads that
+same projection, so foreground action eligibility also needs review. The stale
+advertisement is proven; application of a behind-map action is not.
+
+Content-derived room IDs and pending-ID suppression remain possible causes of
+the event-step timeout, not a proven root cause. The waiting response's empty
+candidates are a fail-closed projection, not proof that the underlying room has
+no options. A future completion predicate must distinguish inspection-only map
+opening from a correctly bound completed room; map visibility alone is not
+sufficient. Do not reset replay protection, retry ambiguous POSTs, or promote
+a timeout to success.
+
+`R0I-RUN-03/04` explicitly exclude C# changes. After this campaign, the user
+approved a separate narrow `R0I-ROOM-LIFECYCLE-07` foreground-room/map repair,
+with replay protections unchanged, independent review, and another bounded
+live check. Event-step identity redesign remains outside that new packet.
+
+## Teardown acceptance
+
+Normal Save and Quit returned to the Profile 3 menu; the game then quit normally.
+The runtime guard observed the process absent and port closed. The post-campaign
+overlay verifier still matched all 429 base files and the exact two overlay
+files. The manager quarantined the exact installation and temporary operator
+files; base-only verification passed with zero overlay files.
+
+A clean unmodded base-game launch reached the Profile 3 main menu. The runtime
+guard observed the game running with the bridge port closed. Normal quit then
+passed the stopped guard. The manager purged exactly **four generated files**,
+including the temporary credential. Final base verification again passed with
+429 files and no overlay. Installed campaign state is absent; reproducible
+build outputs remain outside the game installation. No live campaign is active.
+
+## Execution telemetry and open work
+
+| Task | Allocation | Observed task-turn elapsed seconds |
+| --- | --- | --- |
+| Baseline | Luna / medium | 251.881 + 157.062 |
+| Room preflight repair | Terra / high | 326.959 + 25.832 + 126.150 |
+| Offline differential | Sol / high | 768.128 + 199.347 |
+| Rollout | Terra / high, then Sol / high | 711.178 + 359.654; escalated corrective turn pending |
+
+These are tool-reported wall-clock durations, not active compute time or a cost
+estimate. Aggregate input/output/reasoning token counts and coordinator elapsed
+usage are unavailable. Rollout escalated after independent real-spawn SIGINT
+tests proved the same cancellation acceptance failure persisted at cleanup,
+and benchmark repetitions continued after cancellation. This was an
+outcome/evidence defect across consumers, not an escalation for task length.
+Only aggregate telemetry is recorded; no hidden reasoning or task
+transcripts are retained here.
+
+Open items: rollout cancellation/lifecycle correction and final integration;
+approved C# foreground-room/map repair; separately authorized retained live
+differential input. None permits claiming full-game fidelity or autonomous-run
+completion.

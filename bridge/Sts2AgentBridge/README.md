@@ -70,11 +70,21 @@ The living cross-milestone disposition is maintained in
 summary, bounded live smokes have reached `R0i` and demonstrated menu/Settings,
 combat, granular card/gold rewards, map selection, one direct safe event-to-map
 transition, and two consecutive composed combat/reward/map handoffs. The full
-three-combat-floor cap, rest-site handling, and a reconciled batched room
-handoff remain unaccepted live. The latest composed attempt stopped fail-closed
-at `run_room_not_ready`; a narrowed multi-step event attempt applied one action
-and then stopped at `room_interaction_timeout`. See the living status page for
-the evidence classification and cleanup result.
+three-combat-floor cap, rest-site completion, and a reconciled batched room
+handoff remain unaccepted live. The Python preflight now polls validated
+inactive `complete` responses within its existing deadline; only a validated
+expected-kind `ready` response succeeds. Cross-kind residue is fixture-tested.
+
+On 2026-09-04, bounded live testing reproduced multi-step event timeout and
+demonstrated rest-site map selection, preflight, healing, and map opening, but
+rest completion also timed out. Underlying room controls can persist while the
+map is foreground; room observations then remained ready for the prior event
+or waiting for rest. No behind-map action was attempted. Do not interpret map
+opening alone as completed room acceptance, reset replay guards, or retry an
+ambiguous action. A scoped C# lifecycle/foreground-surface repair is a separate
+decision from the accepted Python preflight. Normal teardown, bridge removal,
+clean base-game launch/quit, and final purge all passed. See the living status
+page and its acceptance record for the exact evidence boundary.
 
 ## Prerequisites
 
