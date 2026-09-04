@@ -584,3 +584,73 @@ headless reviewer identified repeated benchmark trajectory IDs; the envelope
 now explicitly separates repetition directories and identities. Review also
 clarified worktree interpreter provenance, valid reference-permutation testing,
 the synthetic gold scaffold, and separate offline/live completion gates.
+
+## 11. Approved narrow reward-diagnostic follow-up
+
+After the documented campaign at `300d230` stopped with
+`reward_action_response_mismatch`, the user explicitly approved this diagnostic
+packet with “yes”. Starting checkpoint: clean `d958a0a` on the integration branch.
+This is not approval for a C# repair, a broader bridge surface, retained raw
+responses, or the optional headless/training increment.
+
+### R0I-REWARD-DIAG-14 — Capture-off reward failure classification
+
+- **Allocation:** Terra/high implementation in one persistent project worktree;
+  independent read-only protocol/privacy and counter/fixture review, Sol/high.
+- **Objective:** distinguish the previously conflated reward action transport,
+  HTTP-envelope and receipt failures using only closed, sanitized classifications.
+  The previous live cause remains unknown; diagnostics do not retroactively
+  classify it or convert a failed request into success.
+- **Ownership transfer:** this packet exclusively owns
+  `bridge/Sts2AgentBridge/tools/apply_reward_live.py`, plus new
+  `reward_action_diagnostics.py`, `diagnose_reward_live.py`, and
+  `reward_action_diagnostics_fixtures.py` in the same directory. No other writer
+  owns these files. Coordinator owns documentation, contract decisions and
+  integration. Additional paths require explicit reassignment.
+- **Available dependencies:** accepted reward client, bounded transport and
+  strict wire receipt semantics; actual-client synthetic fixtures; prior
+  read-only failure review in the next-increment acceptance ledger.
+- **Deliverables:** an explicit opt-in reward-only diagnostic seam and thin
+  capture-off reward CLI. Default CLI output, success dictionaries, error codes/exit codes,
+  receipt acceptance, decision/reconciliation checks, timeouts and action caps
+  remain compatible. The opt-in diagnostic output must remain useful on a
+  failure without outputting the full reward result or changing global CLI
+  error handling. A shared diagnostic shape is reviewed before final acceptance.
+- **Allowed facts:** fixed action category and failure stage; bounded counts of
+  attempted action exchanges, exactly accepted receipts, and fully reconciled
+  actions; exact known HTTP/error classification; strictly validated receipt
+  status/reason/mutation enums and binding-match booleans or explicit unknowns.
+  An attempted exchange does not prove delivery. Always preserve
+  `0 <= reconciled <= accepted <= attempted <= 17`. Reported receipt fields do
+  not prove mutation outcome for an unbound or uncertain request.
+- **Forbidden facts:** raw response/request bodies, body hashes, decision/action/
+  correlation IDs, reward/card/player/profile/seed data, credentials, arbitrary
+  server strings, exception text, or full in-memory histories. No capture/output
+  directory mode. Diagnostic failure must never authorize retry or continuation.
+- **Acceptance:** actual-client fake-transport cases cover each canonical
+  rejection, wrong bindings, malformed/noncanonical receipts, exact 429 and both
+  known 503 forms, malformed/oversize HTTP and transport send/receive/deadline
+  failures. Compare accepted-receipt vs reconciled-prefix counters on failures
+  after an accepted response. Exercise whole CLI stdout/stderr, first-receive
+  credential/source canary leak mutations, exception redaction, cancellation,
+  request/response/credential zeroization and socket closure. Replace identity,
+  credential and socket hooks before all fixture CLI execution; no live I/O.
+  Preserve existing reward, run, actual-wire and gold-adapter fixture results.
+- **Required commands:** repository Python 3.10+ with `-B -E -s -S` for the new
+  fixture and `apply_reward_live_fixtures.py`, `apply_run_live_fixtures.py`,
+  `apply_run_wire_fixtures.py`, `compare_reward_gold_live_fixtures.py`; relevant
+  `tests/backends/live` and `tests/differential` pytest suites; compile and diff
+  checks. Coordinator performs the broader regression before integration.
+- **Forbidden overlapping changes:** `probe_live.py`, `tool_common.py`, all C#,
+  other controller files, wire DTOs/vectors, manifests/pins, shared contracts,
+  headless state/rules/content and documentation. Preserve public contracts;
+  stop and propose any necessary change to the coordinator.
+- **Handoff:** one focused local commit; outcome, exact commit/files, tests and
+  results, assumptions, risks/blockers, model/effort and available aggregate
+  numeric token/elapsed telemetry. Unavailable metrics are `unavailable`, never
+  estimated. No prompts, transcripts or hidden reasoning retained.
+- **Authority:** worker must not launch/operate the game, install the bridge,
+  access endpoints/credentials/profiles/saves, or change Steam Cloud. No remote
+  writes or destructive repository operations. Any later live attempt remains
+  coordinator-only and requires the usual exact review, bounds and cleanup;
+  this packet's fixture acceptance alone is not live demonstration.
