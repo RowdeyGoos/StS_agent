@@ -7,6 +7,8 @@
   plan” request. Sections 4–6 offline packets are reviewed and integrated from
   clean `cc2060ce1ffbb615ad5c42faaa621a56bbe5c062`. One bounded coordinator
   campaign passed the rest-context/inspection checks and verified cleanup;
+  a follow-up at clean `300d230` exercised zero-POST ineligible gold handling
+  but stopped on an unclassified reward response failure. Final cleanup passed;
   the full eligible composition and gold comparison remain unobserved. Event work
   remains investigation-only; retained real data and optional Section 7 remain
   outside this increment. No automatic evidence promotion is authorized.

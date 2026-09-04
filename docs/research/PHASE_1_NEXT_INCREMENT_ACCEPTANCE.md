@@ -26,14 +26,14 @@ contracts, integration, pins, artifacts, and all live operation.
 | `R0I-WIRE-INTEGRATION-10` | Terra/high → Sol/high | Integrated through `ab4ff5d` | New actual-client transcript fixture |
 | `R0I-EVENT-STUDY-11` | Sol/high | Complete; retain D47 | No write ownership |
 | `R0I-ACCEPTANCE-TOOLS-12` | Terra/high → Sol/high | Integrated through `de01074` | New acceptance tool and fixtures |
-| `R0I-COMPOSE-LIVE-13` | Coordinator | Bounded campaign closed; full chain unobserved, rest checks passed | Sequential live campaign and evidence |
+| `R0I-COMPOSE-LIVE-13` | Coordinator | Campaigns closed; rest checks passed; follow-up reward-response failure, full chain open | Sequential live campaign and evidence |
 | `H5-ARTIFACT-01` | Terra/high → Sol/high | Integrated through `df55c93` | New reporting module and tests |
 | `H5-CLI-02` | Terra/medium | Integrated through `6372c36` | New CLI, tests and sample config; explicitly reassigned lazy public exports |
 | `H5-METAMORPHIC-03` | Sol/high | Integrated `b533caa` | New conformance and matched-panel tests |
 | `H4-EVIDENCE-03` | Sol/high | Integrated `ecac394` + `20eeaf7`; contract frozen | New evidence module/tests and preregistered case spec |
 | `H4-GOLD-04` | Sol/high | Integrated `6927878` | New gold evaluator and tests |
 | `H4-CORPUS-05` | Terra/high | Integrated through `951da15` | New corpus codec and tests; synthetic data only |
-| `H4-GOLD-ADAPTER-06` | Terra/high → Sol/high | Integrated through `f95aa85`; live unobserved | New capture-off gold adapter and fixtures |
+| `H4-GOLD-ADAPTER-06` | Terra/high → Sol/high | Integrated through `f95aa85`; zero-POST ineligibility live-observed, eligible comparison unobserved | New capture-off gold adapter and fixtures |
 
 Exact owned paths and acceptance gates are defined in the plan and copied into
 the implementation prompts. No overlapping production ownership was assigned.
@@ -349,3 +349,132 @@ Final compileall/diff checks and independent documentation consistency review
 passed. A final stopped guard again reported no game process and no accepting
 bridge port (three process samples, two port samples). The integration worktree
 is clean after committing this acceptance update; no push or pull request.
+
+## Follow-up campaign after the user's “continue” request
+
+### Frozen setup and offline review
+
+- Starting source: clean `300d230d5441c9e690e13bf3d56810258d43ccd5` on the
+  same integration branch. No production implementation changed during this
+  campaign. Existing implementation packet commits above remain unchanged.
+- Exactly one coordinator operated the game. Two independent read-only
+  reviewers checked the join; subsequent failure analysis also ran in parallel.
+  No worker used live endpoints, installed files, or accessed profiles.
+- Reused the unchanged reviewed DLL
+  `a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285`
+  (202,240 bytes), manifest
+  `498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971`
+  (323 bytes), and canonical ZIP
+  `c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595`
+  (202,879 bytes). Fresh package, forbidden-surface (11 routes/1,063 methods),
+  config, base and overlay checks passed. One verifier invocation initially
+  rejected a relative manifest argument before verification; the absolute-path
+  invocation passed before launch.
+- Disposable capture-off join `combined_sanitized.py` SHA-256
+  `acd39c86ef1de33a3ae06d36f170bbe214332c59298dc90741a7817283926a1e`,
+  importing the previously reviewed `run_sanitized.py`
+  `56f355d9eecb844fffc3a6484fbfac67e17d30d9997f75e949349d1153c763af`.
+  Its initial syntax error was caught before any operation, corrected, then
+  the exact final source received two independent passing reviews.
+- The join uses the existing reward-ready callback, latches one gold attempt
+  before invocation, obtains fresh credentials for ordinary reward handling,
+  and leaves original controller counts/history unchanged. Only known zero-POST
+  ineligibility or one bound claim with five passing fields permits continuation.
+  Uncertain, rejected, divergent or cancelled claims stop. Adapter claims are
+  reported separately, never fabricated into the reward controller's history.
+- Frozen invocation: repository Python 3.11 with `-B -E -s -S`, fixed OS
+  identity/UID 501, providers `heuristic`, `first-card`, `coverage`, `safe`,
+  and `--floor-limit 2`. One setup UI destination plus at most two controller
+  destinations fits the total three-destination allowance. Existing combat/
+  action caps and a coordinator-enforced 30-minute gameplay ceiling remained.
+- Offline checks: 8 run wire fixture groups and 33 gold adapter checks;
+  7 coordinator synthetic join cases; two independent sets of 8 mocked join/
+  operation cases. These cover one-attempt behavior, eligible/ineligible paths,
+  uncertain/rejected/divergent stop, credential freshness/zeroing, socket closure,
+  canaries and cap enforcement. Full regression: **1,050 passed in 163.27 s**.
+  These are fixture/synthetic results, not successful live composition.
+
+### Live result and claim boundary
+
+Steam launch began at 16:30:57 UTC on 2026-09-04. The menu visibly showed
+Profile 3, Ironclad A0 was chosen through normal single-player setup, and exactly
+one mod was loaded. Authenticated main-menu health/manifest/screen checks passed
+(three routes). Steam Cloud settings were not accessed or changed; no unexpected
+enabled/syncing state was observed.
+
+The prior dedicated test run was ended through the normal Abandon Run UI,
+which records a loss; one fresh run was started. Its initial choice/reward was
+handled normally, then one ordinary-combat map destination was selected in UI.
+No other profile or save filesystem was accessed. No restart farming occurred.
+The public route did not offer the required rest sequence inside the total
+three-destination allowance.
+
+The reviewed wrapper reached the first post-combat reward. The gold adapter
+returned the fixed `reward_gold_claim_v1` summary with
+`unaligned` / `unsupported_gold_amount`, correspondence `uncertain`, all five
+verdicts `unobserved` / `not_compared`, the fixed omissions and `not_admitted`.
+It issued **zero gold-claim POSTs**. This live-demonstrates only its conservative
+prestate-ineligibility path, not an eligible effect comparison. Adapter source
+identity was
+`d952b4891362936e0a25daa4c12154c8c4ef18405becf6e40d3db5d447d4c64a`;
+the emitted fixed spec/parser/contract/rule/content identities matched the
+reviewed pins. No observed gold amount, player scalar, reward identity, raw
+body, receipt/control ID, raw-body hash or named record was retained.
+
+Ordinary reward resolution then stopped with `reward_action_response_mismatch`
+(exit 4). The returned run summary was not available, so action totals and the
+accepted reward prefix are **unavailable**, not estimated. No mutation was
+retried and no further gameplay followed. There was one setup UI destination
+and zero controller destinations; no rest handoff or next combat occurred.
+The post-stop UI showed a completed-combat background and Proceed without the
+reward modal. This does **not** prove accepted Proceed, complete reward handling
+or absence of mutation from the failed request.
+
+Two independent read-only investigations found that the same error covers
+noncanonical/non-200 HTTP envelopes and any non-exact accepted/applied receipt,
+including canonical rejected receipts. Final Proceed is only a hypothesis;
+the discarded response cannot establish the action, rejection reason, HTTP
+category or mutation outcome. One reviewer passed 9 actual-client synthetic
+cases; another passed 6. Canonical rejections, 429/503 and malformed accepted
+responses reproduce the code; accepted Proceed followed by waiting instead
+reaches a separate post-state timeout. Failure cases did not retry and preserved
+credential/request zeroing and socket closure. No C# repair is justified by
+these facts alone. A narrow fixed-classification diagnostic packet was proposed
+to the user; it is not implemented or silently added to the completed scope.
+
+### Cleanup and ordering deviation
+
+Normal Save and Quit returned to the modded Profile 3 menu. The coordinator
+clicked Quit but initially missed its confirmation dialog. A stopped guard
+reported `game_still_running`; nevertheless the next already-sequenced manager
+call quarantined the exact overlay/configuration successfully. A second guard
+still reported the game running. **This was a coordinator cleanup-order error,
+not a passed stopped-before-quarantine gate.** No further gameplay or bridge
+actions were attempted. The visible Quit dialog was then confirmed normally,
+and `wait-stopped` passed with no process/listener (three process/two port
+samples). Future cleanup calls must be gated on the observed successful stop
+result, not merely sequenced after the check.
+
+The base verifier then passed with 429 unchanged files, zero overlay and SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+A clean Steam launch visibly reached the unmodded Profile 3 menu; the bridge
+port was closed while the game ran. Quit and its confirmation completed
+normally, then the stopped guard passed. The exact quarantined campaign was
+purged: four generated bridge/manifest/configuration/credential files removed,
+campaign state absent. No save or base-game file was removed; the bridge can
+be rebuilt from source, and its purged credential is not retained.
+
+At **16:38:16 UTC**, final base verification again passed (429 files/zero overlay,
+same hash), and the final guard again found no game process or accepting bridge
+port. The campaign is closed and cleanup verified, with the ordering deviation
+explicitly preserved. Gameplay stopped well inside the 30-minute ceiling.
+
+### Disposition
+
+Full live composition and eligible gold comparison remain **open/unobserved**.
+The ineligible gold guard was live-observed; ordinary reward response handling
+has a newly observed, unclassified failure. Headless evidence and all accepted
+implementation commits are unchanged; no target-game fidelity promotion or
+retained corpus admission occurred. No model escalation or new implementation
+worker was used for this follow-up. Aggregate tokens and reviewer elapsed-time
+telemetry are `unavailable`. No remote writes occurred.

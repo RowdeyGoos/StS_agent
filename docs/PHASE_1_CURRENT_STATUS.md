@@ -144,7 +144,7 @@ The capture-off gold adapter is also reviewed and integrated. Exact commits,
 review corrections and evidence are in the
 [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 
-The latest bounded Profile 3 campaign repeated inspection-map suppression and
+The preceding bounded Profile 3 campaign repeated inspection-map suppression and
 one stale/no-mutation rejection, then live-demonstrated the new expected-context
 rest handoff with two accepted actions (heal/proceed) and completed map return.
 Its route led to an elite, so the full combat/rest/ordinary-combat composition
@@ -152,6 +152,19 @@ and narrow gold comparison remain **unobserved**, not passed. No destination was
 selected or new run started. Normal quit, exact removal, clean base-game menu
 launch/quit, closed listener, four-file purge and unchanged 429-file base with
 zero overlay passed. No live campaign is active.
+
+A follow-up at clean `300d230` started one normal Ironclad A0 Profile 3 run
+and reached the first post-combat reward. The capture-off gold adapter
+live-demonstrated its ineligible-prestate path: `unsupported_gold_amount`, zero
+claim POSTs, five unobserved fields and no admission. Ordinary reward resolution
+then stopped at `reward_action_response_mismatch`, with no retry or further
+gameplay. That code conflates receipt rejection and HTTP/backend failures;
+the failed action and mutation outcome remain unclassified. Modal disappearance
+does not prove accepted Proceed or completed reward handling. One setup UI
+destination and no controller destinations were used; full composition remains
+open. Cleanup ultimately passed, including clean launch/quit and final base/
+listener checks. The ledger records a quarantine-before-Quit-confirmation
+ordering error, its recovery, and the independent diagnostic review.
 
 Experiment configuration is caller-declared and hash-bound, not independently
 proved from trajectories. Named evidence/corpus integrity likewise does not
@@ -202,8 +215,9 @@ narrower:
   reward/map handoffs; rest-site destination selection, readiness, healing and
   standalone completion; rest-site inspection-map suppression and stale snapshot
   rejection; non-actionability after closing the completed rest map; and clean
-  teardown/base relaunch. Historical combat/reward/event evidence belongs to its
-  earlier campaigns, not the newest artifact's rest-only live check.
+  teardown/base relaunch; and the gold adapter's zero-POST ineligible-prestate
+  path. Historical successful reward/event evidence belongs to earlier campaigns;
+  the newest reward attempt did not complete acceptance.
 - **Fixture demonstrated but not yet live accepted:** event foreground-map
   suppression; identity-registry behavior across disappearance, A → B → A,
   kind conflict and capacity; other lifecycle races; a complete reconciled room
@@ -225,6 +239,10 @@ narrower:
   action was attempted in that earlier campaign. The subsequent narrow repair
   passed the standalone rest completion and deliberately rejected one stale
   behind-map request. Event completion and the batched handoff remain open.
+  The follow-up ordinary reward attempt stopped at
+  `reward_action_response_mismatch`; independent synthetic review confirms that
+  this fixed code cannot distinguish rejected receipts from HTTP/backend
+  failures. No C# repair or success inference is justified by that code alone.
 
 ## Current exclusions
 
@@ -255,8 +273,10 @@ control path. The recoverable dedicated-profile baseline and its broader
 passivity/rollback claims also remain unresolved; the approved live smokes
 accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 
-The smallest useful next live target is to stabilize the existing room handoff
-inside one reproducible multi-floor sequence using only already implemented
+The immediate prerequisite is a separately scoped, capture-off reward diagnostic
+that distinguishes fixed failure categories without retaining response bodies
+or control IDs. The smallest useful next live target remains the existing room
+handoff inside one reproducible multi-floor sequence using only already implemented
 combat, reward, map, and supported-room contracts. That target
 should:
 

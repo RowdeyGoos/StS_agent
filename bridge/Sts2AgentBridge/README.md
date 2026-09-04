@@ -112,9 +112,9 @@ helper with an explicitly bounded/cooperative acknowledgement hook. Its room
 summary validates complete producer output; its run count summary is deliberately
 labelled `run_result_unvalidated`, not a certificate of full run history.
 
-A further bounded Profile 3 campaign live-passed that helper and the new
+An earlier bounded Profile 3 campaign live-passed that helper and the new
 context-bound rest heal/proceed/map completion. The next connected route was an
-elite, so full ordinary-combat continuation and the gold-conformance adapter
+elite, so full ordinary-combat continuation and an eligible gold comparison
 remain unobserved. No map destination was selected. Exact cleanup and another
 clean base-game launch/quit passed. See the
 [next-increment ledger](../../docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
@@ -129,6 +129,16 @@ scalar differences are preserved as divergent findings, not normalized away.
 Its 33 mocked checks include whole-CLI stdout/stderr capture, deliberate leak
 mutations, receipt/transport failures, cancellation and cleanup. It has **not**
 been exercised on an eligible live gold boundary.
+
+The follow-up campaign at clean `300d230` exercised the adapter's
+`unsupported_gold_amount` path live: zero claim POSTs, all five findings
+unobserved, no admission. The ordinary reward controller subsequently stopped
+at `reward_action_response_mismatch`, with no retry. This code covers both
+receipt mismatch/rejection and HTTP/backend failure; neither the failed action
+nor its mutation outcome was retained. The vanished modal does not prove
+accepted Proceed. Full composed acceptance remains open. Final cleanup, clean
+base-game launch/quit, zero installed overlay and closed listener passed; the
+ledger also records recovery from premature quarantine before Quit confirmation.
 
 Use a Python 3.10+ interpreter for this package-backed tool. Its isolated fixture
 command requires no optional RL packages or editable installation:
