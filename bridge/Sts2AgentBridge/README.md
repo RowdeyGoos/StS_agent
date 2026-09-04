@@ -119,6 +119,33 @@ remain unobserved. No map destination was selected. Exact cleanup and another
 clean base-game launch/quit passed. See the
 [next-increment ledger](../../docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 
+`compare_reward_gold_live.py` is a separate capture-off, one-claim gold
+comparison consumer. It uses the canonical production-rule evaluator and
+returns only fixed field verdicts, eligibility/correspondence, omissions and
+reviewed code/spec identities. It cannot retain a named case or grant fidelity
+admission. Unexpected reward-list changes, removed/reindexed selected rewards,
+unstable post-state and uncertain correspondence remain unobserved; player
+scalar differences are preserved as divergent findings, not normalized away.
+Its 33 mocked checks include whole-CLI stdout/stderr capture, deliberate leak
+mutations, receipt/transport failures, cancellation and cleanup. It has **not**
+been exercised on an eligible live gold boundary.
+
+Use a Python 3.10+ interpreter for this package-backed tool. Its isolated fixture
+command requires no optional RL packages or editable installation:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/compare_reward_gold_live_fixtures.py"
+```
+
+The corresponding live form is `compare_reward_gold_live.py --transient-check
+--user-profile /ABS/OS_USER_PROFILE --effective-uid 501`, under coordinator
+campaign authority with the same exact installed artifact checks. Do not invoke
+it merely to inspect state: an eligible boundary permits one claim POST.
+There is no capture/output-directory switch. The existing `game.analysis`
+namespace can attempt optional imports in a normal interpreter; `-S` isolation
+passes without those packages. This is not the stricter no-import-attempt
+guarantee tested for `sts-headless --help`.
+
 ## Prerequisites
 
 - Python 3.10 or newer.

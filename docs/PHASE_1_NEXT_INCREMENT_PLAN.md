@@ -4,8 +4,10 @@
 - **Planning baseline:** `57a421440dd1dc6b879f91d42db7a63ac575d359`, on
   `codex/phase1-parallel-integration`; contains planning baseline `d93395c`.
 - **Status:** accepted for execution by the user's subsequent “execute the
-  plan” request. Sections 4–6 offline packets and bounded coordinator acceptance
-  are active from clean `cc2060ce1ffbb615ad5c42faaa621a56bbe5c062`. Event work
+  plan” request. Sections 4–6 offline packets are reviewed and integrated from
+  clean `cc2060ce1ffbb615ad5c42faaa621a56bbe5c062`. One bounded coordinator
+  campaign passed the rest-context/inspection checks and verified cleanup;
+  the full eligible composition and gold comparison remain unobserved. Event work
   remains investigation-only; retained real data and optional Section 7 remain
   outside this increment. No automatic evidence promotion is authorized.
 - **Execution ledger:** [next-increment acceptance](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
@@ -553,6 +555,12 @@ independent replay/admission. Do not hold completed offline work open merely
 to obscure that separate gate, or declare H4 live work complete without it.
 
 Decisions for the next execution request:
+
+The original planning choices below are preserved historically. Execution
+accepted Sections 4–6, completed their offline implementation and conformance
+preparation, and retained the event/data/optional-work boundaries. The next
+small milestone is the still-open eligible live composition and transient gold
+check; it is not a new retained dataset or broader content/training scope.
 
 1. Accept the recommended first-increment scope (Sections 4–6 offline packets
    plus bounded coordinator acceptance), or select a smaller subset.

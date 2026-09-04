@@ -140,7 +140,7 @@ synthetic transport composition tests, a reusable capture-off acceptance helper,
 persisted headless experiment artifacts and `sts-headless` run/benchmark/validate,
 maintained generated invariants and serial/spawn panels, named conformance
 evidence, a production-rule gold evaluator and a bounded offline corpus codec.
-The gold adapter's final privacy-fixture review is still active. Exact commits,
+The capture-off gold adapter is also reviewed and integrated. Exact commits,
 review corrections and evidence are in the
 [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 
@@ -292,8 +292,8 @@ maintained in
 - [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) is the
   accepted active increment. Pre-action context binding, its composed handoff,
   experiment CLI/artifacts, named evidence/gold evaluator/corpus and generated
-  headless panels are reviewed and integrated. Final gold-adapter review is
-  pending; full live composition remains unobserved after a bounded campaign;
+  headless panels and capture-off gold adapter are reviewed and integrated.
+  Full live composition remains unobserved after a bounded campaign;
   this does not authorize retained live data or upgrade the live evidence above.
   Exact results are in the
   [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).

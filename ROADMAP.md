@@ -122,7 +122,7 @@ nonblocking for rest composition. Encoder/dataset consumers remain a later
 option; execution does not approve retained live data. Pre-action context binding,
 actual-client composition fixtures, experiment artifacts/CLI, named evidence,
 the production gold evaluator, offline corpus codec and maintained generated
-tests are integrated. The capture-off gold adapter is in final review. A bounded
+tests and the capture-off gold adapter are integrated. A bounded
 campaign passed context-bound rest completion and inspection-map stale rejection;
 the full chain remains unobserved because the route led to an elite. Cleanup
 and a clean base-game launch/quit passed. Event-step identity stays fail-closed.

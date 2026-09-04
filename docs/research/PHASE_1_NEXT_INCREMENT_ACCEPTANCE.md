@@ -33,7 +33,7 @@ contracts, integration, pins, artifacts, and all live operation.
 | `H4-EVIDENCE-03` | Sol/high | Integrated `ecac394` + `20eeaf7`; contract frozen | New evidence module/tests and preregistered case spec |
 | `H4-GOLD-04` | Sol/high | Integrated `6927878` | New gold evaluator and tests |
 | `H4-CORPUS-05` | Terra/high | Integrated through `951da15` | New corpus codec and tests; synthetic data only |
-| `H4-GOLD-ADAPTER-06` | Terra/high → Sol/high | Final privacy-fixture correction/review | New capture-off gold adapter and fixtures |
+| `H4-GOLD-ADAPTER-06` | Terra/high → Sol/high | Integrated through `f95aa85`; live unobserved | New capture-off gold adapter and fixtures |
 
 Exact owned paths and acceptance gates are defined in the plan and copied into
 the implementation prompts. No overlapping production ownership was assigned.
@@ -298,3 +298,54 @@ Unavailable aggregate tokens/totals remain `unavailable`.
 Post-corpus/CLI integration full repository regression: **1,050 passed in
 104.59 s**. Coordinator documentation/entry-point diff received independent
 read-only review with no blocking findings.
+
+### Final adapter acceptance
+
+Worker chain `41f9fba`, `619c1f2`, `422ecf0` integrated as `c3cc554`, `b5913be`,
+`f95aa85` after complete diff/ownership review. Final independent review passed
+33 maintained checks, four separately injected first-receive leak mutations and
+two transport-cleanup probes with real sockets blocked. Coordinator: **267
+differential/reward/wire tests passed in 2.38 s**, plus 33 isolated fixture checks
+from outside the repository using Python 3.11 with `-B -E -s -S` and no editable
+installation/PYTHONPATH dependency. Final observed Sol task-turn duration:
+177588 ms; tokens remain `unavailable`.
+
+One eligible claim at most, exact receipt binding, fresh/stable post observations,
+strict unrelated-reward preservation, cancellation and no mutation retries are
+covered by mocked tests. Removed/reindexed selected rewards conservatively remain
+unobserved. The full named proposal never leaves the adapter; only the narrowed
+fixed verdict/identity projection is emitted. No eligible live invocation was
+performed and no corpus admission or fidelity promotion occurred.
+
+A stronger diagnostic forbidding *any attempt* to import optional RL modules
+found an existing eager `game.analysis` namespace import. That is distinct from
+the packet's no-optional-dependency requirement: isolated `-S` execution passes
+all 33 checks with those packages unavailable. No unplanned analysis-namespace
+refactor was added. The headless CLI's stricter no-import-attempt test passes.
+
+The other twelve bridge fixture suites passed **122 named checks**. Together
+with the gold adapter this is **155 checks across thirteen fixture suites**,
+not live evidence. Compileall and diff whitespace checks passed.
+
+### Milestone disposition
+
+- Offline implementation and conformance-preparation milestones: reviewed and
+  integrated. All eleven implementation workers returned accepted local commits;
+  the event study is complete without production changes.
+- Live composition acceptance remains **open/unobserved**, not complete. The
+  bounded campaign produced the narrower rest/inspection evidence and verified
+  cleanup; it did not offer the required ordinary-combat route. Gold live
+  comparison is also unobserved.
+- Event-to-map completion/root-cause investigation, target-game fidelity,
+  retained live-case admission, optional encoder/dataset work, content expansion
+  and training remain outside completed claims. Original synthetic comparator
+  results remain 3 matches, 14 divergences and 2 unobserved cases.
+- No remote writes occurred. The smallest next milestone is one eligible
+  bounded live composition with a capture-off gold check when offered. Retained
+  sanitized data still needs its separate exact authorization.
+
+Final post-adapter repository regression: **1,050 passed in 99.81 s**.
+Final compileall/diff checks and independent documentation consistency review
+passed. A final stopped guard again reported no game process and no accepting
+bridge port (three process samples, two port samples). The integration worktree
+is clean after committing this acceptance update; no push or pull request.

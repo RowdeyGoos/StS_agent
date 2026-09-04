@@ -82,6 +82,8 @@ pending episodes and unstarted repetitions after cancellation. They do not prove
 target-game fidelity or independently authenticate producer seed declarations.
 The smoke config deliberately stops at a small transition budget; it is not a
 training run. Help and pure headless use do not import Torch or Gymnasium.
+The current CLI input hardening and cancellation tests target POSIX systems
+(macOS/Linux); Windows operation has not been validated.
 
 ## Run
 
