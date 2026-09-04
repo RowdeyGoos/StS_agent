@@ -11,7 +11,7 @@ import apply_room_live as room
 import apply_map_live as map_client
 import apply_reward_live as reward_client
 import probe_live as probe
-from decision_providers import map_provider_names, provider_names
+from decision_providers import get_map_decision_provider, map_provider_names, provider_names
 from tool_common import EXIT_INTERNAL, EXIT_MISMATCH, ToolFailure, fail
 
 _ACKNOWLEDGED = "acknowledged"
@@ -210,16 +210,33 @@ def summarize_room_result(result: object) -> dict[str, object]:
             not isinstance(decision_id, str) or not room._canonical_decision_id(decision_id)
             or decision_id in seen or not isinstance(action_id, str)
             or not room._canonical_action_id(action_id)
+            or (
+                action_id != "proceed"
+                and (
+                    not action_id.startswith("choose:")
+                    or not action_id[7:].isdigit()
+                    or not 0 <= int(action_id[7:]) <= 7
+                )
+            )
             or phase not in ("choose_option", "proceed", "choose_or_proceed")
         ):
             fail(EXIT_MISMATCH, "room_result_mismatch")
         seen.add(decision_id)
         valid = (
-            basis == "rest_heal" and screen_kind == "rest_site" and action_id != "proceed" and phase in ("choose_option", "choose_or_proceed")
+            basis == "rest_heal"
+            and screen_kind == "rest_site"
+            and action_id != "proceed"
+            and phase in ("choose_option", "choose_or_proceed")
         ) or (
-            basis == "proceed" and screen_kind == "rest_site" and action_id == "proceed" and phase in ("proceed", "choose_or_proceed")
+            basis == "proceed"
+            and screen_kind == "rest_site"
+            and action_id == "proceed"
+            and phase == "proceed"
         ) or (
-            basis == "event_first_supported" and screen_kind == "event" and action_id != "proceed" and phase in ("choose_option", "choose_or_proceed")
+            basis == "event_first_supported"
+            and screen_kind == "event"
+            and action_id != "proceed"
+            and phase == "choose_option"
         )
         if not valid:
             fail(EXIT_MISMATCH, "room_result_mismatch")
@@ -289,10 +306,10 @@ _KNOWN_PRODUCTION_FAILURE_CODES = frozenset(
         "run_post_room_map_result_mismatch", "run_post_room_destination_unsupported",
         "run_second_room_destination", "run_next_combat_result_mismatch", "next_combat_state_unsupported",
         "next_combat_ready_timeout", "internal_failure", "invalid_effective_uid",
-        "invalid_user_profile", "non_absolute_user_profile", "non_canonical_user_profile",
+        "non_absolute_user_profile", "non_canonical_user_profile",
         "unsupported_platform", "effective_uid_mismatch", "user_identity_unavailable",
         "user_profile_mismatch", "unsafe_user_profile", "missing_credential_component",
-        "acl_check_failed", "granting_acl",
+        "acl_check_failed", "granting_acl", "missing_path_component", "symlink_path_component",
         "non_directory_credential_component", "missing_credential_file", "non_regular_credential_file",
         "credential_owner", "credential_directory_mode", "credential_link_count", "credential_file_mode",
         "credential_shape", "credential_read_failed", "changing_credential_file", "safe_open_unsupported",
@@ -306,7 +323,6 @@ _KNOWN_PRODUCTION_FAILURE_CODES = frozenset(
         "post_rejection_state_unsupported", "post_rejection_state_timeout", "stale_action_retry_limit_reached",
         "terminal_after_rejected_action", "action_rejected_invalid", "bridge_action_limit_reached",
         "round_did_not_advance_once", "round_advanced_without_end_turn", "action_response_mismatch",
-        "no_applicable_play_card", "end_turn_not_selected_within_limit",
         "reward_state_unsupported", "reward_action_response_mismatch", "reward_response_mismatch",
         "reward_ready_timeout", "map_state_unsupported", "map_ready_timeout",
         "reward_complete_response_mismatch", "reward_provider_no_action", "reward_not_ready",
@@ -340,7 +356,31 @@ _KNOWN_PRODUCTION_FAILURE_CODES = frozenset(
         "health_empty_response", "manifest_empty_response", "decision_empty_response", "action_empty_response",
         "reward_empty_response", "reward_action_empty_response", "map_empty_response", "map_action_empty_response",
         "room_empty_response", "room_action_empty_response",
+        "decision_response_mismatch", "probe_transport_timeout",
+        "health_rate_limited", "health_backend_retryable", "health_backend_fault",
+        "manifest_rate_limited", "manifest_backend_retryable", "manifest_backend_fault",
     )
+)
+_KNOWN_PRODUCTION_FAILURE_CODES |= frozenset(
+    f"{label}_{suffix}"
+    for label in (
+        "health", "manifest", "decision", "action", "reward", "reward_action",
+        "map", "map_action", "room", "room_action",
+    )
+    for suffix in (
+        "transport_timeout", "transport_mismatch", "response_too_large",
+        "empty_response", "transport_failure", "response_mismatch",
+    )
+)
+_KNOWN_PRODUCTION_FAILURE_CODES |= frozenset(
+    f"{label}_{suffix}"
+    for label in ("health", "manifest", "map", "map_action")
+    for suffix in ("rate_limited", "backend_retryable", "backend_fault")
+)
+_KNOWN_PRODUCTION_FAILURE_CODES |= frozenset(
+    f"{label}_{reason}"
+    for label in ("map_action", "room_action")
+    for reason in ("stale_decision", "invalid_action", "already_applied", "action_limit_reached")
 )
 
 
@@ -389,8 +429,8 @@ def _component(value: object, milestone: str) -> dict[str, object]:
     if type(value["decision_provider"]) is not str or not value["decision_provider"]:
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     if milestone == "r0e_complete_combat":
-        initial = _integer(value["initial_round"], 1)
-        final = _integer(value["final_round"], initial)
+        initial = _integer(value["initial_round"], 1, 1_000_000)
+        final = _integer(value["final_round"], initial, 1_000_000)
         player = value["final_player"]
         enemies = value["final_enemies"]
         actions = value["actions"]
@@ -413,11 +453,17 @@ def _component(value: object, milestone: str) -> dict[str, object]:
                 not isinstance(action, dict)
                 or set(action) != {"step", "round", "action_id", "card_id", "basis", "player_hp_before", "enemy_hp_before", "player_hp_after", "enemy_hp_after"}
                 or action["step"] != index
-                or type(action["round"]) is not int or not initial <= action["round"] <= final
+                or type(action["round"]) is not int
+                or not 1 <= action["round"] - initial + 1 <= 12
+                or action["round"] > 1_000_000
                 or not probe._is_public_string(action["action_id"])
                 or (action["card_id"] is not None and not probe._is_public_string(action["card_id"]))
                 or action["basis"] not in ("first_legal", "no_safe_card", "incoming_attack", "no_visible_attack")
-                or any(not probe._is_bounded_nonnegative_integer(action[name]) for name in ("player_hp_before", "enemy_hp_before", "player_hp_after", "enemy_hp_after"))
+                or any(not probe._is_bounded_nonnegative_integer(action[name]) for name in ("player_hp_before", "player_hp_after"))
+                or any(
+                    type(action[name]) is not int or not 0 <= action[name] <= 6_000_000
+                    for name in ("enemy_hp_before", "enemy_hp_after")
+                )
                 for index, action in enumerate(actions, 1)
             )
             or any(
@@ -432,16 +478,41 @@ def _component(value: object, milestone: str) -> dict[str, object]:
                 for index, enemy in enumerate(enemies)
             )
             or len(enemies) > 6
-            or (actions and (actions[-1]["player_hp_after"] != player["hp"] or actions[-1]["enemy_hp_after"] != sum(enemy["hp"] for enemy in enemies)))
-            or any(
-                actions[index - 1]["player_hp_after"] != actions[index]["player_hp_before"]
-                or actions[index - 1]["enemy_hp_after"] != actions[index]["enemy_hp_before"]
-                for index in range(1, len(actions))
+            or value["decision_provider"] not in provider_names()
+            or (
+                value["decision_provider"] == "first-legal"
+                and any(action["basis"] != "first_legal" for action in actions)
             )
-            or (value["decision_provider"] == "first-legal" and any(action["basis"] != "first_legal" for action in actions))
-            or (value["decision_provider"] == "heuristic" and any(action["basis"] not in ("no_safe_card", "incoming_attack", "no_visible_attack") for action in actions))
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        for action in actions:
+            parts = action["action_id"].split(":")
+            if action["action_id"] == "end_turn":
+                valid_action_id = (
+                    action["card_id"] is None
+                    and (
+                        value["decision_provider"] != "heuristic"
+                        or action["basis"] == "no_safe_card"
+                    )
+                )
+            else:
+                valid_action_id = (
+                    len(parts) in (2, 3)
+                    and parts[0] == "play"
+                    and len(parts[1]) == 1
+                    and parts[1] in "0123456789"
+                    and (
+                        len(parts) == 2
+                        or (len(parts[2]) == 1 and parts[2] in "012345")
+                    )
+                    and action["card_id"] is not None
+                    and (
+                        value["decision_provider"] != "heuristic"
+                        or action["basis"] in ("incoming_attack", "no_visible_attack")
+                    )
+                )
+            if not valid_action_id:
+                fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
         terminal_body = json.dumps(
             {
                 "schema_version": 1, "status": "complete", "decision_kind": "combat",
@@ -457,13 +528,18 @@ def _component(value: object, milestone: str) -> dict[str, object]:
                 terminal = probe._validate_combat_terminal(body)
         except (ToolFailure, TypeError, ValueError, UnicodeEncodeError):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
-        if terminal != {"status": "complete", "round": final, "outcome": value["outcome"], "player": player, "enemies": enemies}:
+        expected_terminal = {
+            "status": "complete", "round": final, "outcome": value["outcome"],
+            "player": player, "enemies": enemies,
+        }
+        if terminal != expected_terminal:
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     elif milestone == "r0i_reward_resolution":
         applied = value["applied"]
         before, after = value["before"], value["after"]
         if (
-            not isinstance(applied, list)
+            value["decision_provider"] not in reward_client._PROVIDERS
+            or not isinstance(applied, list)
             or not 1 <= len(applied) <= 17
             or not probe._is_bounded_nonnegative_integer(value["claimed_gold"])
             or not isinstance(value["selected_cards"], list)
@@ -535,13 +611,61 @@ def _component(value: object, milestone: str) -> dict[str, object]:
             or validated_after != after
             or after["player"]["gold"] != before["player"]["gold"] + value["claimed_gold"]
             or any(applied[index]["decision_revision"] != before["decision_revision"] + index for index in range(len(applied)))
+            or after["player"]["hp"] != before["player"]["hp"]
+            or after["player"]["max_hp"] != before["player"]["max_hp"]
+            or after["player"]["deck_count"] != before["player"]["deck_count"] + len(value["selected_cards"])
+            or applied[-1]["kind"] != "proceed"
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        try:
+            expected_first = reward_client._choose_action(before, str(value["decision_provider"]))
+        except (ToolFailure, IndexError, KeyError, TypeError, ValueError):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        if (
+            applied[0]["action_id"] != expected_first["action_id"]
+            or applied[0]["kind"] != expected_first["kind"]
+        ):
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+        child_phase = before["screen_kind"] == "card_reward"
+        child_kind = "choose_card" if value["decision_provider"] == "first-card" else "skip_card"
+        for index, action in enumerate(applied):
+            kind = action["kind"]
+            action_id = action["action_id"]
+            if kind in ("claim_gold", "open_card"):
+                parts = action_id.split(":")
+                valid_grammar = (
+                    not child_phase
+                    and len(parts) == 2
+                    and parts[0] == ("claim" if kind == "claim_gold" else "open")
+                    and len(parts[1]) == 1
+                    and parts[1] in "01234567"
+                )
+            elif kind in ("choose_card", "skip_card"):
+                parts = action_id.split(":")
+                valid_grammar = child_phase and kind == child_kind and (
+                    (kind == "skip_card" and action_id == "skip_card")
+                    or (
+                        kind == "choose_card"
+                        and len(parts) == 2
+                        and parts[0] == "choose"
+                        and len(parts[1]) == 1
+                        and parts[1] in "01234"
+                    )
+                )
+            else:
+                valid_grammar = not child_phase and kind == "proceed" and action_id == "proceed"
+            if not valid_grammar or (kind == "proceed") != (index == len(applied) - 1):
+                fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
+            if kind == "open_card":
+                child_phase = True
+            elif kind in ("choose_card", "skip_card"):
+                child_phase = False
     elif milestone == "r0g_map_selection":
         applied, after = value["applied"], value["after"]
         before = value["before"]
         if (
-            not isinstance(applied, dict)
+            value["decision_provider"] not in map_provider_names()
+            or not isinstance(applied, dict)
             or set(applied) != {"action_id", "kind", "candidate_index", "col", "row", "node_kind", "basis"}
             or not isinstance(value["before"], dict)
             or not isinstance(after, dict)
@@ -588,8 +712,12 @@ def _component(value: object, milestone: str) -> dict[str, object]:
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
         selected = candidates[applied["candidate_index"]]
+        expected_selection = get_map_decision_provider(
+            str(value["decision_provider"])
+        ).choose(candidates, legal_actions)
         if (
-            applied["action_id"] != f"select:{applied['candidate_index']}"
+            applied != expected_selection
+            or applied["action_id"] != f"select:{applied['candidate_index']}"
             or any(applied[name] != selected[source] for name, source in (("col", "col"), ("row", "row"), ("node_kind", "kind")))
         ):
             fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")

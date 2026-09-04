@@ -9,6 +9,8 @@ import sys
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
+import apply_combat_live as combat_client
+import apply_combat_live_fixtures as combat_fixture
 import apply_run_acceptance_live as live
 import apply_run_elite_wire_fixtures as elite_wire
 import apply_run_entry_wire_fixtures as entry_wire
@@ -47,6 +49,61 @@ def _default_defeat() -> dict[str, object]:
     entry_wire._combat_defeat(transcript, "a" * 64)
     result, connector, _ = entry_wire._run(transcript, None, 1)
     connector.require_complete(1)
+    return result
+
+
+def _stale_terminal_combat() -> dict[str, object]:
+    turn = combat_fixture.turn_fixture
+    probe = combat_fixture.probe
+    first_id, stale_id = "6" * 64, "7" * 64
+    before = turn._combat(
+        first_id,
+        1,
+        hp=80,
+        block=0,
+        energy=1,
+        enemy_hp=6,
+        hand=[
+            turn._card(
+                0, "STRIKE_IRONCLAD", "attack", "1", "anyenemy", True
+            )
+        ],
+        actions=[turn._play(0, 0), turn._end_turn()],
+    )
+    resolving = turn._combat(
+        stale_id,
+        1,
+        hp=80,
+        block=0,
+        energy=0,
+        enemy_hp=0,
+        hand=[],
+        actions=[turn._end_turn()],
+    )
+    requests = [
+        turn._get(probe._BASE_ROUTES[0][1]),
+        turn._get(probe._BASE_ROUTES[1][1]),
+        turn._get(probe._COMBAT_ROUTE[0][1]),
+        turn._post(first_id, "play:0:0"),
+        turn._get(probe._COMBAT_ROUTE[0][1]),
+        turn._post(stale_id, "end_turn"),
+        turn._get(probe._COMBAT_ROUTE[0][1]),
+    ]
+    responses = [
+        turn._response(combat_fixture._HEALTH),
+        turn._response(probe._MANIFEST_COMPATIBLE),
+        turn._response(before),
+        turn._response(turn._action_body(first_id, "play:0:0")),
+        turn._response(resolving),
+        turn._response(turn._action_body(stale_id, "end_turn", accepted=False)),
+        turn._response(combat_fixture._terminal("victory", 1, hp=80, enemies=[])),
+    ]
+    connector = turn._Connector(responses, requests)
+    credential = bytearray(combat_fixture._CREDENTIAL)
+    result = combat_client._run_apply_combat(credential, "heuristic", connector)
+    connector.assert_cleanup()
+    if any(credential):
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_stale_credential")
     return result
 
 
@@ -93,6 +150,12 @@ def _post_room_elite_victory() -> dict[str, object]:
 
 
 def _result_contracts() -> None:
+    stale_terminal = _stale_terminal_combat()
+    acceptance._component(stale_terminal, "r0e_complete_combat")
+    detached_trace = copy.deepcopy(stale_terminal)
+    detached_trace["actions"][0]["player_hp_after"] = 79
+    detached_trace["actions"][0]["enemy_hp_before"] = 6_000_000
+    acceptance._component(detached_trace, "r0e_complete_combat")
     results = [
         (_default_defeat(), "run_defeat"),
         (_entry_map("shop", 1), "floor_limit_reached"),
@@ -179,6 +242,50 @@ def _malformed_and_privacy() -> None:
         malformed = factory()
         mutate(malformed)
         _expect_failure(lambda malformed=malformed: _summary(malformed), "run_acceptance_result_mismatch")
+    for mutate in (
+        lambda value: value.update({"decision_provider": "CANARY"}),
+        lambda value: value["actions"][0].update({"action_id": "play:00:0"}),
+        lambda value: value["actions"][0].update({"basis": "no_safe_card"}),
+        lambda value: value["actions"][0].update({"enemy_hp_before": 6_000_001}),
+    ):
+        malformed_combat = _stale_terminal_combat()
+        mutate(malformed_combat)
+        _expect_failure(
+            lambda malformed_combat=malformed_combat: acceptance._component(
+                malformed_combat, "r0e_complete_combat"
+            ),
+            "run_acceptance_result_mismatch",
+        )
+    malformed_reward = copy.deepcopy(result["floors"][0]["reward"])
+    malformed_reward["applied"][-1].update(
+        {"action_id": "claim:0", "kind": "claim_gold"}
+    )
+    _expect_failure(
+        lambda: acceptance._component(malformed_reward, "r0i_reward_resolution"),
+        "run_acceptance_result_mismatch",
+    )
+    wrong_map_choice = copy.deepcopy(result["floors"][0]["map"])
+    wrong_map_choice["before"]["candidates"][0]["kind"] = "monster"
+    wrong_map_choice["before"]["candidates"].append(
+        {"candidate_index": 1, "col": 3, "row": 3, "kind": "elite"}
+    )
+    wrong_map_choice["before"]["legal_actions"].append(
+        {"action_id": "select:1", "kind": "select_map_node", "candidate_index": 1}
+    )
+    wrong_map_choice["applied"]["node_kind"] = "monster"
+    wrong_map_choice["after"]["destination"]["kind"] = "monster"
+    _expect_failure(
+        lambda: acceptance._component(wrong_map_choice, "r0g_map_selection"),
+        "run_acceptance_result_mismatch",
+    )
+    wrong_room_phase = _entry_room_handoff()
+    wrong_room_phase["room_handoff"]["room"]["actions"][-1][
+        "phase"
+    ] = "choose_or_proceed"
+    _expect_failure(
+        lambda: _summary(wrong_room_phase),
+        "run_acceptance_result_mismatch",
+    )
 
 
 def _in_process_operation_and_fixed_failures() -> None:
@@ -204,9 +311,26 @@ def _in_process_operation_and_fixed_failures() -> None:
         fail(EXIT_MISMATCH, "run_acceptance_fixture_buffer_cleanup")
     with patch.object(live.run, "operation", side_effect=RuntimeError("RAW-CANARY")):
         _expect_failure(live.operation, "run_acceptance_callback_failure", EXIT_INTERNAL)
-    for known in ("run_map_result_mismatch", "reward_state_unsupported", "reward_action_response_mismatch", "map_action_transport_failure", "combat_round_limit_reached", "map_action_stale_decision", "map_action_invalid_action", "map_rate_limited", "map_backend_retryable", "map_backend_fault"):
-        with patch.object(live.run, "operation", side_effect=ToolFailure(EXIT_MISMATCH, known)):
+    if len(acceptance._KNOWN_PRODUCTION_FAILURE_CODES) != 192:
+        fail(EXIT_MISMATCH, "run_acceptance_fixture_failure_code_closure")
+    for known in acceptance._KNOWN_PRODUCTION_FAILURE_CODES:
+        with patch.object(
+            live.run,
+            "operation",
+            side_effect=ToolFailure(EXIT_MISMATCH, known),
+        ):
             _expect_failure(live.operation, known)
+    known = "run_map_result_mismatch"
+    for exit_code in (2, 3, 5):
+        with patch.object(live.run, "operation", side_effect=ToolFailure(exit_code, known)):
+            _expect_failure(live.operation, known, exit_code)
+    for exit_code, code in (
+        (1, known),
+        (6, known),
+        (EXIT_INTERNAL, "run_acceptance_result_mismatch"),
+    ):
+        with patch.object(live.run, "operation", side_effect=ToolFailure(exit_code, code)):
+            _expect_failure(live.operation, "run_acceptance_callback_failure", EXIT_INTERNAL)
     transcript: list[tuple[bytes | BaseException, bytes]] = []
     elite_wire._map(transcript, "e" * 64, "elite")
     elite_wire._add(transcript, elite_wire._next_combat_ready("0" * 64), entry_wire._GET_COMBAT)
