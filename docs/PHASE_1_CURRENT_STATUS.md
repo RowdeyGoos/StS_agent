@@ -62,6 +62,19 @@ The subsequent successful campaign ended with normal quit, exact quarantine,
 a clean unmodded base-game launch/quit with the bridge port closed, and purge
 of four generated files including the temporary credential. Final checks show
 no game process/listener and the unchanged 429-file base with no overlay.
+
+The latest bounded campaign at source `bbada1a` used the exact reviewed `0.8.0`
+artifact and consolidated host transport. Its authenticated main-menu probe
+passed all three routes. At a fresh reward boundary the capture-off diagnostic
+reported four attempted, accepted and reconciled actions with an applied,
+decision-bound receipt, then the visible game reached the map. Standalone live
+controllers subsequently completed a six-round three-enemy combat, resolved its
+reward and selected the next destination. A one-floor composed run starting at
+the next ready combat then passed with 16 combat actions, four reward actions
+and one map action, reached another ordinary combat, and stopped at its declared
+floor limit. No supported rest destination was offered, so combat/rest/combat
+composition remains unobserved rather than failed.
+
 No live campaign is active.
 
 ## Parallel headless execution status
@@ -73,7 +86,7 @@ bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
 deterministic reduced reward/map/room rules, and the composed multi-phase
 `ReducedRunBackend`. The independent `H3-CONFORMANCE-04` gate is integrated;
 that checkpoint passed `66` conformance tests and `829` repository tests. The
-latest broader increment passes `1,050` repository tests.
+latest broader increment passes `1,051` repository tests.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:
@@ -174,9 +187,11 @@ counted separately. Synthetic actual-client tests cover strict receipts,
 multi-action failure prefixes, the 17-action cap, whole-CLI privacy and
 cancellation cleanup, including a repaired exceptional-exit mutable-response
 wipe in the shared Python transport. No C#, wire or headless contract changed.
-This diagnostic is fixture-tested, not live-demonstrated; the discarded live
-response and its mutation outcome remain unknown. Exact reviewed commits and
-validation are recorded in the next-increment ledger.
+Failure classifications and exceptional-exit behavior remain fixture-tested.
+The later campaign live-demonstrated only the successful four-action
+attempt/receipt/reconciliation path; the discarded historical response and its
+mutation outcome remain unknown. Exact reviewed commits and validation are
+recorded in the next-increment ledger.
 
 The targeted transport simplification is also integrated: probe and room
 clients retain their existing entry points and phase behavior but use one
@@ -193,6 +208,16 @@ follow-up C# map-characterization implementation was deliberately rejected and
 not integrated because it changed native property-read ordering while testing
 only presampled booleans. The existing map reader therefore remains unchanged.
 
+The following bounded campaign live-exercised the integrated host transport and
+closed the fresh reward-diagnostic and one-floor ordinary-combat composition
+checks. The diagnostic separated four attempts, four exact accepted/bound
+receipts and four reconciliations; the composed floor reported 21 accepted
+actions and `floor_limit_reached` after selecting the next ordinary combat.
+Starting the combat-oriented run command while the foreground was still a map
+failed closed at `combat_not_ready` before a controller mutation; starting it
+at a visibly ready combat passed. No raw responses, credentials or retained
+profile-derived records were produced.
+
 Experiment configuration is caller-declared and hash-bound, not independently
 proved from trajectories. Named evidence/corpus integrity likewise does not
 authenticate source honesty or authorize retained live capture. Reduced
@@ -208,7 +233,7 @@ progression remains `structural_fixture`; no target-game fidelity promotion.
 | `R0f` | One reward decision followed by map arrival | Initial screen-transition timing blocked the first attempt; the narrowed retry passed reward and map checkpoints |
 | `R0g` | Read and apply one legal map destination | Bounded live map observation and destination application passed |
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
-| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner | Repository gates and fixtures passed. The 2026-09-01 campaign live-demonstrated menu, Settings, combat, one safe event-to-map action, legal map selection, two completed combats, and their reward/map handoffs. The composed room handoff stopped fail-closed at `run_room_not_ready`; a narrowed multi-step event attempt then applied one action but ended at `room_interaction_timeout` |
+| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner | Repository gates and fixtures passed. Historical campaigns exercised event and rest slices with the recorded fail-closed residuals. The latest campaign live-passed a fresh four-action reward diagnostic and one complete ordinary combat/reward/map floor (21 accepted actions), then stopped at the declared floor limit in the next ordinary combat. A supported room was not offered, so composed room handoff remains unobserved. |
 
 The earlier 2026-09-04 campaign reproduced the multi-step event timeout and newly
 demonstrated advertised rest-site map selection, successful standalone rest
@@ -242,16 +267,17 @@ narrower:
   reward/map handoffs; rest-site destination selection, readiness, healing and
   standalone completion; rest-site inspection-map suppression and stale snapshot
   rejection; non-actionability after closing the completed rest map; and clean
-  teardown/base relaunch; and the gold adapter's zero-POST ineligible-prestate
-  path. Historical successful reward/event evidence belongs to earlier campaigns;
-  the newest reward attempt did not complete acceptance.
+  teardown/base relaunch; the gold adapter's zero-POST ineligible-prestate
+  path; the successful capture-off reward diagnostic path with four attempted,
+  accepted/bound and reconciled actions; and a one-floor composed ordinary-
+  combat/reward/map run ending at the next ordinary combat under its floor cap.
 - **Fixture demonstrated but not yet live accepted:** event foreground-map
   suppression; identity-registry behavior across disappearance, A → B → A,
   kind conflict and capacity; other lifecycle races; a complete reconciled room
   handoff inside the batched runner; multi-step event
-  completion at the Python-controller seam; the full three-combat-floor
-  cap; and capture-off reward failure classification, separate attempt/receipt/
-  reconciliation counters and exceptional-exit mutable-buffer cleanup.
+  completion at the Python-controller seam; the full three-combat-floor cap;
+  capture-off transport, HTTP and receipt-failure classifications; and
+  exceptional-exit mutable-buffer cleanup.
   The C# reader deliberately does not infer event-to-map completion.
 - **Observed residuals:** an earlier batched attempt stopped on
   `decision_response_mismatch`; the 2026-09-01 attempt reached a real event
@@ -268,10 +294,12 @@ narrower:
   action was attempted in that earlier campaign. The subsequent narrow repair
   passed the standalone rest completion and deliberately rejected one stale
   behind-map request. Event completion and the batched handoff remain open.
-  The follow-up ordinary reward attempt stopped at
+  The historical ordinary reward attempt stopped at
   `reward_action_response_mismatch`; independent synthetic review confirms that
   this fixed code cannot distinguish rejected receipts from HTTP/backend
-  failures. No C# repair or success inference is justified by that code alone.
+  failures. The later fresh diagnostic passed but cannot retroactively classify
+  that discarded response. No C# repair or success inference is justified by
+  the historical code alone.
 
 ## Current exclusions
 
@@ -302,13 +330,13 @@ control path. The recoverable dedicated-profile baseline and its broader
 passivity/rollback claims also remain unresolved; the approved live smokes
 accepted a narrower ordinary-game-I/O risk instead of closing those gates.
 
-The capture-off reward diagnostic prerequisite is now implemented and
-fixture-reviewed. It distinguishes fixed failure categories without retaining
-response bodies or control IDs, but does not classify the prior failure or
-authorize replay of its uncertain action. The smallest useful next live target
-remains the existing room handoff inside one reproducible multi-floor sequence
-using only already implemented combat, reward, map, and supported-room
-contracts. That target should:
+The capture-off reward diagnostic is implemented, fixture-reviewed and now
+live-demonstrated at a fresh boundary. The one-floor composed ordinary-combat
+path also passed, but neither result classifies the prior discarded reward
+response or authorizes replay of its uncertain action. The smallest remaining
+live target is the existing supported-room handoff when a rest route is offered,
+using only already implemented combat, reward, map and room contracts. It
+should:
 
 1. build on the live-accepted standalone rest-site repair to exercise a composed
    combat/rest/combat handoff when supported destinations are available,
@@ -316,7 +344,7 @@ contracts. That target should:
    C# exclusions remain unchanged;
 2. preserve fail-closed multi-step event handling; any event-step identity
    redesign requires a separately approved scope;
-3. retain `decision_response_mismatch` as a separate historical residual until
+3. retain `reward_action_response_mismatch` as a separate historical residual until
    reproduced or explained;
 4. obtain bounded live evidence for a fully reconciled rest-site or standard-
    event handoff when encountered;
@@ -343,10 +371,10 @@ maintained in
   accepted active increment. Pre-action context binding, its composed handoff,
   experiment CLI/artifacts, named evidence/gold evaluator/corpus and generated
   headless panels and capture-off gold adapter are reviewed and integrated.
-  The subsequently approved reward diagnostic is fixture-tested; it makes no
-  new live acceptance claim.
-  Full live composition remains unobserved after a bounded campaign;
-  this does not authorize retained live data or upgrade the live evidence above.
+  The subsequently approved reward diagnostic is fixture-tested and has passed
+  one fresh capture-off live boundary. One ordinary combat/reward/map floor is
+  also live-demonstrated; supported-room composition remains unobserved because
+  no rest route was offered. These results do not authorize retained live data.
   Exact results are in the
   [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - [`bridge/Sts2AgentBridge/README.md`](../bridge/Sts2AgentBridge/README.md)

@@ -673,3 +673,69 @@ turn durations were 309,785 ms for `15`, 356,584 ms for `17`, and 374,353 ms for
 the rejected `18`; aggregate token counts were unavailable. Reviewer and
 coordinator usage metrics were unavailable. No hidden reasoning, prompts or
 transcripts are retained as telemetry.
+
+## Bounded reward and ordinary-floor live campaign
+
+The coordinator ran one bounded Profile 3 campaign at integrated source
+`bbada1ac147d66f73f6f0ae8ea3a858a1ecee931`. The exact installed `0.8.0`
+artifact identities were:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `Sts2AgentBridge.dll` | `a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285` |
+| `Sts2AgentBridge.json` | `498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971` |
+| `Sts2AgentBridge-0.8.0.zip` | `c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595` |
+
+The reviewed host sources used by the campaign were `probe_live.py`
+`5accc6da`, `apply_room_live.py` `e0bcacb8`, `apply_reward_live.py`
+`502af7e3`, `diagnose_reward_live.py` `184d03da`, and `apply_run_live.py`
+`eec89d24`. Raw-response logging and retained capture remained disabled.
+
+### Sanitized acceptance results
+
+- The exact game process and bridge listener were running, Profile 3 was
+  visibly selected, and all three authenticated main-menu probe routes passed.
+- At a fresh visible reward boundary, `diagnose_reward_live.py` passed with
+  action category `proceed`: four exchanges attempted, four exact receipts
+  accepted/bound, four actions reconciled, and the final receipt reported
+  accepted/applied. The visible game advanced to the map.
+- One legal map selection passed and reached an ordinary three-enemy combat.
+  The standalone combat controller won in six rounds with 26 accepted actions.
+- The following reward controller accepted four actions, claimed 13 gold,
+  selected one offered card and reached the map; one further legal destination
+  selection reached an ordinary combat.
+- From that visibly ready combat, the composed runner passed one complete floor:
+  16 combat actions, four reward actions, one map action, zero room actions and
+  21 total. It reconciled victory, reward resolution and the next legal map
+  destination, reached another ordinary combat, and stopped with
+  `floor_limit_reached` as configured.
+- An earlier invocation of the combat-oriented runner while the foreground was
+  still a map failed closed at `combat_not_ready`; no controller destination or
+  combat action was applied by that invocation. It is an entry-state mismatch,
+  not a failed ready-combat composition result.
+- The campaign used three controller destinations, the declared bound. No rest
+  destination was offered, so combat/rest/combat and composed room handoff are
+  `unobserved`, not failed or passed.
+
+This promotes the fresh reward diagnostic and one ordinary
+combat/reward/map/next-combat floor to **live-demonstrated**. Transport and
+buffer-cleanup edge cases remain fixture evidence; this campaign did not force
+an exceptional transport path. The historical discarded reward response
+remains unclassified. No payload, credential, control ID, profile/save content
+or differential corpus was retained.
+
+### Teardown
+
+The run was saved through the game UI and the modded game quit normally. The
+runtime guard confirmed both process and listener stopped before the exact
+installed state was quarantined. Base verification then passed with 429 files,
+base SHA-256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`
+and zero overlay files. A clean unmodded Steam launch visibly reached the
+Profile 3 base menu without the mod indicator while `sample-base-port-closed`
+passed. It quit normally; the exact quarantine was purged (four generated files).
+Final base and stopped guards passed with zero overlay, no game process and no
+listener. Steam Cloud was not changed and no unexpected sync state was observed.
+
+No worker model escalation occurred in this campaign; live operation was
+coordinator-only. Aggregate live token and elapsed-time telemetry is
+`unavailable`.

@@ -13,7 +13,11 @@
   remains investigation-only; retained real data and optional Section 7 remain
   outside this increment. No automatic evidence promotion is authorized.
   The subsequently approved Section 11 reward diagnostic is reviewed and
-  integrated through `b77178f`; its acceptance is synthetic/fixture-only.
+  integrated through `b77178f`. A later bounded campaign at `bbada1a`
+  live-passed that diagnostic at a fresh reward boundary and passed one composed
+  ordinary combat/reward/map floor. No supported rest route was offered, so the
+  combat/rest/combat target remains unobserved. Cleanup and clean base launch
+  passed; no retained live data was created.
 - **Execution ledger:** [next-increment acceptance](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - **Relationship:** follows the implemented packets in
   [the existing execution plan](PHASE_1_PARALLEL_EXECUTION_PLAN.md), without
@@ -599,8 +603,10 @@ responses, or the optional headless/training increment.
 
 - **Status:** accepted and integrated through `b77178f` after independent review,
   16 maintained diagnostic groups, 137 shared bridge fixture checks, 242 focused
-  tests and a 1,050-test repository regression. The diagnostic has not been used
-  live and does not resolve the discarded response's mutation outcome.
+  tests and a 1,050-test repository regression. It had not been used live at
+  packet acceptance; the later `bbada1a` campaign passed its successful
+  four-action path. It does not resolve the discarded response's mutation
+  outcome or live-demonstrate its failure classifications.
 - **Allocation:** Terra/high implementation in one persistent project worktree;
   independent read-only protocol/privacy and counter/fixture review, Sol/high.
   After the first correction round, review reproduced incomplete cancellation

@@ -1578,6 +1578,9 @@ Synthetic transport/CLI fixtures establish its behavior; they do not classify
 the discarded live response or resolve the open composed-run acceptance gate.
 Any later live evidence must identify the reviewed Python sources as well as
 the installed bridge artifact and retain only the approved sanitized facts.
+The later `bbada1a` campaign satisfied that boundary for one fresh reward: all
+four attempts had accepted/bound receipts and reconciled before map arrival.
+It does not retroactively classify the discarded earlier response.
 
 ## D50. Centralize Bounded Host Transport Without Merging Phase Semantics
 
@@ -1614,3 +1617,6 @@ gameplay semantics. This is fixture evidence only and does not close live room,
 reward or composition gates. Future consolidation must remove demonstrated
 duplication behind accepted interfaces; it must not manufacture a common state
 representation or add another framework merely to reduce line counts.
+The later `bbada1a` campaign separately live-exercised the consolidated host
+path during a fresh reward diagnostic and one composed ordinary floor; room
+transport edge cases and exceptional-exit cleanup remain fixture evidence.
