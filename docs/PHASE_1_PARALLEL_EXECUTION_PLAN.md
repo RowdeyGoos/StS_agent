@@ -592,6 +592,14 @@ already visible in the graph.
   coordinator reviews the completion predicate before acceptance; if available
   public state cannot distinguish inspection from exit, preserve fail-closed
   behavior and report that limitation rather than inventing evidence.
+- **Reviewed predicate:** Map completion is rest-only: accepted literal rest
+  `proceed` in the same current run/room, map open and travel-enabled, not
+  traveling, without nested/custom/ambiguous content. Event-to-map completion
+  remains fail-closed. Internal identity bookkeeping retains at most 1,000
+  numeric run/room pairs with immutable first kind/ordinal and no eviction,
+  reset, or Godot-node retention. Absence and revisits clear volatile completion
+  evidence without minting a new identity for an already accepted action;
+  known pairs remain recognizable at capacity and conflicting kinds fail closed.
 - **Acceptance:** Foreground map plus persistent rest/event nodes yields no room
   candidates or clicks; stale request revalidation prevents behind-map actions;
   inspection-only map before/after a non-exit action cannot complete a room;

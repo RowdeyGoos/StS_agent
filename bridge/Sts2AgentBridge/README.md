@@ -222,7 +222,7 @@ build/package steps:
 ```bash
 python3 "/ABS/BRIDGE_ROOT/tools/verify_package.py" \
   --package "/ABS/DISPOSABLE_PACKAGE_OUTPUT/Sts2AgentBridge-0.8.0.zip" \
-  --expected-dll-sha256 befe5a90d538032d7a89ec5075b5259b95bb6d8b20bfa75a3e00dca509dcdbbc \
+  --expected-dll-sha256 a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285 \
   --expected-manifest-sha256 498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971
 ```
 
@@ -260,13 +260,14 @@ verified DLL, manifest, and canonical ZIP.
 
 The install-free `R0i` candidate currently binds these exact outputs:
 
-- DLL: `befe5a90d538032d7a89ec5075b5259b95bb6d8b20bfa75a3e00dca509dcdbbc`;
+- DLL: `a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285`;
 - manifest: `498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971`;
-- canonical ZIP: `7f4194ece6bda1e7f2979f4a1b0aebb8bcae88c127af66bcf69a7e4325dc6dd0`.
+- canonical ZIP: `c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595`.
 
 See the
-[implementation evidence](../../docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
-for the full gate record and the discarded earlier candidate.
+[2026-09-04 acceptance record](../../docs/research/PHASE_1_2026_09_04_ACCEPTANCE.md)
+for the reviewed lifecycle repair and its exact gates. Earlier candidates remain
+in the historical implementation evidence and are not the current package.
 
 ## Operational-boundary tools reserved for an approved checkpoint
 

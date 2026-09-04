@@ -11,7 +11,7 @@ input for `H4-LIVE-DIFF-02` remains unapproved.
 The clean local starting point was `1424ecd7b590f063156f6fed607e157c37f2c4a7`
 on `codex/phase1-parallel-integration`, containing planning baseline `d93395c`.
 The existing user checkout and worktrees were preserved. Implementation used
-four persistent project worktree tasks; independent read-only reviewers
+five persistent project worktree tasks; independent read-only reviewers
 checked the high-risk joins. No implementation worker operated the game.
 
 ## Packet ledger
@@ -57,12 +57,13 @@ their evidence labels.
 | `R0I-RUN-04` readiness repair | `8a6e5c0`, `f7d5b21` → `2b2fd07`, `f74cf26` | Accepted bounded polling of validated inactive completion; only expected-kind ready succeeds; 14 run and 16 room fixtures passed |
 | `H4-LIVE-DIFF-02`, offline portion | `06466e4`, `621c5c3` → `6fbc0ca`, `8fda7da` | Accepted synthetic common-subset comparator and build-safe identity inventory; live portion blocked |
 | `H3-ROLLOUT-03` | `f43cb58`, `b9f3393`, `2040322`, `8bf7ccb` → `d85448b`, `f2b7f7c`, `fdc2c33`, `feda7d6` | Accepted after real-spawn cancellation review and escalation; 280 focused/shared tests and 829 full repository tests passed |
+| `R0I-ROOM-LIFECYCLE-07` | `1a3aebf`, `be6c7a1` → `966b8ba`, `b86d1b4` | Reviewed foreground eligibility and rest-only completion; first candidate rejected for replay regression, correction independently accepted; live acceptance pending |
 
 The readiness repair explicitly owns the two run-client files plus the two
 room-client files for this correction; only three of those files changed.
 No production C#, wire schema, accepted contract fingerprint, or bridge
 artifact changed before the first campaign. The subsequently approved C#
-lifecycle packet is being implemented separately.
+lifecycle packet was reviewed separately as recorded below.
 
 ## Accepted headless rollout consumer
 
@@ -224,6 +225,7 @@ build outputs remain outside the game installation. No live campaign is active.
 | Room preflight repair | Terra / high | 326.959 + 25.832 + 126.150 |
 | Offline differential | Sol / high | 768.128 + 199.347 |
 | Rollout | Terra / high, then Sol / high | 711.178 + 359.654 + 279.400 |
+| Room lifecycle | Sol / high | 834.211 + 470.202 |
 
 These are tool-reported wall-clock durations, not active compute time or a cost
 estimate. Aggregate input/output/reasoning token counts and coordinator elapsed
@@ -234,6 +236,68 @@ outcome/evidence defect across consumers, not an escalation for task length.
 Only aggregate telemetry is recorded; no hidden reasoning or task
 transcripts are retained here.
 
-Open items: approved C# foreground-room/map repair; separately authorized retained live
-differential input. None permits claiming full-game fidelity or autonomous-run
-completion.
+Open items: bounded live acceptance of the reviewed C# repair; separately
+authorized retained live differential input. None permits claiming full-game
+fidelity or autonomous-run completion.
+
+## Reviewed C# lifecycle repair and second artifact
+
+Two independent read-only reviewers rejected the initial `1a3aebf` candidate:
+a missing room sample could allocate a fresh ordinal on return, bypassing the
+existing replay dictionary through a new hash. The worker reproduced this with
+public `Apply`: unchanged event projection, ordinal 0 → 1, and two clicks.
+The coordinator approved a bounded identity registry, and both reviewers
+accepted corrective `be6c7a1` after fresh-returned-request regression coverage.
+
+At most 1,000 numeric run/room pairs retain immutable first kind/ordinal without
+eviction or reset. Known returns work at capacity; new pairs and conflicting
+kinds fail closed. Missing/unsupported/travel/changed-current-room samples clear
+volatile completion evidence, not replay identity. The same guarantee covers
+A → B → A. An unchanged accepted projection may later be advertised ready but
+still rejects application; automatic event continuation is not claimed.
+
+The accepted completion predicate is deliberately rest-only: accepted literal
+rest `proceed` in the same current run/room, map open and travel-enabled, not
+traveling, and no unsupported content/overlay. Foreground map suppresses all
+room candidates and immediate pre-dispatch revalidation prevents stale clicks.
+Inspection alone never proves completion. Event-to-map remains fail-closed;
+embedded-combat completion requires an accepted same-event action. Wire schemas,
+hash algorithm, encoders, reservations, and action caps are unchanged.
+
+Coordinator validation of the immutable corrected source passed all 12 C#
+groups and the full 70-fixture surface gate. The only policy changes are these
+independently reproduced release fingerprints (source count remains 43):
+
+- source projection: `62a8e459a21540214d3e840cda1014388124be88205bd5d5cfe5fa5606b3381a`;
+- normalized assembly structure: `bd182eb0e5eb802f3341a4d39c420d2535ef95d55d6f57ed22549c86a0bb5570`.
+
+No game/API, reflection, route, filesystem, or networking allowance widened.
+The expected unchanged-policy rejection was `release_source_projection`, not
+a waived failure. Two independent builds reproduced identical outputs:
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| DLL | 202240 | `a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285` |
+| Loader manifest | 323 | `498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971` |
+| ZIP | 202879 | `c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595` |
+
+All 7 package-negative, 34 manager, 17 runtime, 16 room, 14 run, 14 map, and
+18 Python wire tests passed. The offline inventory deliberately changes only
+`bridge.source_inventory_sha256` to
+`a0ca37bb2d0ad36fcb68eafe5163ac8174074b0e6f861c69c2ac357873f75f2a`;
+48 authored files remain, with only the two reviewed production C# files
+changed. All other calculated identities remain unchanged. Synthetic comparison
+labels remain 3 passed, 14 divergent, 2 unobserved.
+
+A transient inspection-map rejection harness passed independent review and
+9 fully mocked tests, including its bounded 45-second operator handshake,
+single snapshot-bound POST, exact stale/no-mutation receipt, and credential
+buffer clearing. It logs no raw payloads or control identities. Live evidence
+for this second artifact is still pending at this checkpoint.
+
+Environment caveat: an isolated measurement-build SDK startup emitted a
+`CSSM_ModuleLoad` error plus its generic development-certificate setup message.
+Whether a certificate was installed was not investigated; no intentional
+keychain action occurred. Subsequent SDK invocations explicitly disabled
+development-certificate generation. This is not evidence of a game/profile
+mutation or a verified keychain state.

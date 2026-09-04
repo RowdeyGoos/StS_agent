@@ -1466,3 +1466,38 @@ and startup costs, not a training performance guarantee. Retained live
 differential input remains a separately authorized gate. Exact commits,
 measurements, and evidence limits are recorded in
 `docs/research/PHASE_1_2026_09_04_ACCEPTANCE.md`.
+
+## D47. Separate Room Identity From Foreground And Completion Evidence
+
+### Context
+
+The 2026-09-04 live campaign found persistent underlying room controls behind
+the foreground map and failed rest completion reconciliation. The user approved
+a narrow C# lifecycle repair. Independent review rejected its first candidate:
+temporarily hiding a room could allocate another ordinal on return, changing
+the decision hash and bypassing an intact replay dictionary.
+
+### Decision
+
+- Suppress room candidates and immediately revalidate before dispatch when the
+  map is foreground or traveling; do not consume action budget on stale input.
+- Recognize map completion only after an accepted literal rest `proceed`, bound
+  to the same current run/room, with an open, travel-enabled, nontraveling map
+  and no unsupported overlay/content evidence. Inspection alone is insufficient.
+- Retain at most 1,000 numeric run/room identity pairs with immutable first kind
+  and ordinal, no eviction/reset, and no Godot-object retention. Known pairs
+  retain their identity at capacity; new pairs and conflicting kinds fail closed.
+- Clear volatile readiness/completion evidence independently of that registry.
+  Disappearance and A → B → A returns must not make an accepted action new again.
+- Keep wire encoders, decision hashing, action reservations/caps, and event-step
+  identity unchanged. Event-to-map completion stays fail-closed; existing
+  embedded-combat completion additionally requires an accepted same-event action.
+
+### Consequence
+
+Fresh-returned-snapshot tests must prove rejection through public `Apply`, not
+merely resubmit an old ID. After evidence loss, an unchanged previously accepted
+projection can be advertised ready but still rejects application; this does
+not imply automatic continuation. Source/assembly fingerprints require deliberate
+review, not broader verifier allowances. Artifact and live acceptance are recorded
+separately in the 2026-09-04 acceptance record.

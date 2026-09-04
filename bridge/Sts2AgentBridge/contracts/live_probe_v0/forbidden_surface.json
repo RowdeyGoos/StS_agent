@@ -371,8 +371,8 @@
   "release_structure": {
     "source_root_relative_path": "src/Sts2AgentBridge",
     "source_file_count": 43,
-    "source_projection_sha256": "f0b8e1f0fb40d6609a95cf7fb6896121fa64bce4ca14a9b4f1fcc52b086df78c",
-    "assembly_structure_sha256": "df9ad3fcada7dc8cbf7026cd27fb2fc090a26932d55a9c385682391d4216eaff"
+    "source_projection_sha256": "62a8e459a21540214d3e840cda1014388124be88205bd5d5cfe5fa5606b3381a",
+    "assembly_structure_sha256": "bd182eb0e5eb802f3341a4d39c420d2535ef95d55d6f57ed22549c86a0bb5570"
   },
   "network": {
     "namespace_family": "System.Net",
