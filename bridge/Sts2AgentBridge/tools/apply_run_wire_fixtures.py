@@ -297,15 +297,24 @@ def _require_redacted_output(stdout: str, stderr: str) -> None:
         fail(EXIT_MISMATCH, "wire_secret_output")
 
 
-def _assert_captured_cli_redaction(run_suite: Callable[[], dict[str, object]]) -> None:
-    """Exercise real clients under ``run_cli`` and inspect its complete output."""
+def _assert_captured_cli_redaction(
+    run_suite: Callable[[], dict[str, object]],
+) -> dict[str, object]:
+    """Capture one real-client execution and return that execution's result."""
+    result: dict[str, object] | None = None
+
+    def retain_result() -> dict[str, object]:
+        nonlocal result
+        result = run_suite()
+        return result
+
     stdout = StringIO()
     stderr = StringIO()
     with redirect_stdout(stdout), redirect_stderr(stderr):
-        exit_code = run_cli(run_suite)
-    if exit_code != 0 or stderr.getvalue() != "":
-        fail(EXIT_MISMATCH, "wire_cli_execution")
+        exit_code = run_cli(retain_result)
     _require_redacted_output(stdout.getvalue(), stderr.getvalue())
+    if exit_code != 0 or stderr.getvalue() != "" or result is None:
+        fail(EXIT_MISMATCH, "wire_cli_execution")
 
     emitted = StringIO()
     with redirect_stdout(emitted):
@@ -316,7 +325,7 @@ def _assert_captured_cli_redaction(run_suite: Callable[[], dict[str, object]]) -
         _require_redacted_output(emitted.getvalue(), "")
     except ToolFailure as failure:
         if failure.exit_code == EXIT_MISMATCH and failure.error_code == "wire_secret_output":
-            return
+            return result
         raise
     fail(EXIT_MISMATCH, "wire_canary_mutation_accepted")
 
@@ -473,10 +482,51 @@ def _suite_result() -> dict[str, object]:
 
 
 def operation() -> dict[str, object]:
-    result = _suite_result()
-    _assert_captured_cli_redaction(_suite_result)
+    return _assert_captured_cli_redaction(_suite_result)
+
+
+def _assert_first_recv_mutations_rejected() -> None:
+    """A leak occurring only on the first recv must fail through operation()."""
+    for secret in (_CANARY, _CREDENTIAL):
+        for stream_name in ("stdout", "stderr"):
+            original_recv = _Socket.recv
+            emitted = False
+
+            def leaking_recv(socket: _Socket, maximum: int) -> bytes:
+                nonlocal emitted
+                if not emitted:
+                    emitted = True
+                    print(secret.decode("ascii"), file=getattr(sys, stream_name))
+                return original_recv(socket, maximum)
+
+            stdout = StringIO()
+            stderr = StringIO()
+            _Socket.recv = leaking_recv
+            try:
+                # This outer capture contains a leak if operation regresses;
+                # it is checked as well as the expected sanitized failure.
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    exit_code = run_cli(operation)
+            finally:
+                _Socket.recv = original_recv
+            _require_redacted_output(stdout.getvalue(), stderr.getvalue())
+            expected = {"schema_version": 1, "status": "failed", "code": "wire_secret_output"}
+            if (
+                not emitted
+                or exit_code != EXIT_MISMATCH
+                or stderr.getvalue() != ""
+                or stdout.getvalue() != json.dumps(expected, separators=(",", ":")) + "\n"
+            ):
+                fail(EXIT_MISMATCH, "wire_first_recv_mutation_accepted")
+
+
+def _checked_operation() -> dict[str, object]:
+    result = operation()
+    _assert_first_recv_mutations_rejected()
+    result["checks"].append("first_recv_stdout_stderr_secret_mutations_rejected")
+    result["check_count"] += 1
     return result
 
 
 if __name__ == "__main__":
-    main(operation)
+    main(_checked_operation)
