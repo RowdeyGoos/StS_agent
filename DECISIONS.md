@@ -1736,3 +1736,11 @@ value-learning, PPO/DQN, spawned online rollout and target-game claims remain
 deferred. Schema versioning, information
 boundaries, ownership and acceptance gates are frozen in
 `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`.
+
+The exact `headless_encoding_v1` schema is frozen in
+[`docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json`](docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json),
+with acceptance hashes recorded before implementation in the successor ledger.
+It deliberately encodes map node fields and summary counts while omitting edge
+connectivity and current-node identity. This bounded actor representation does
+not replace the complete structured `PolicyView`. Candidate joins copy public
+entity fields; public references and row indices remain absent from features.

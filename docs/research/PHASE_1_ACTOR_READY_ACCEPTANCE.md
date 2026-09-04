@@ -5,8 +5,10 @@
   `42a3c4e895851188f7179cbc48dcff6ca5974a93`
 - **Active plan:**
   [Phase 1 actor-ready execution](../PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-- **Current state:** execution started from clean local handoff `cd3e3eb`;
-  initial implementation tasks dispatched, with no successor commit accepted yet.
+- **Current state:** `22` and `23` reviewed and integrated locally; the user
+  approved continuing the increment after the automatic-review block. Validator
+  and dataset corrections are active; the encoder schema is accepted and frozen.
+  No live campaign.
 
 This is the integration ledger for the elite-continuation and actor-ready
 headless successor increment. It begins after the completed
@@ -17,13 +19,13 @@ or append new outcomes to that historical record.
 
 | Packet | Current state | Accepted commit | Evidence |
 | --- | --- | --- | --- |
-| `R0I-ELITE-22` | dispatched | — | pending |
-| `R0I-ELITE-GATE-23` | blocked on `22` | — | planned |
-| `R0I-RUN-ACCEPTANCE-24` | dispatched | — | pending |
+| `R0I-ELITE-22` | reviewed and integrated | `85fa8ca` | fixture-only; independent join gate pending |
+| `R0I-ELITE-GATE-23` | reviewed and integrated | `8fd4320` | actual-client synthetic gate, both historical controls |
+| `R0I-RUN-ACCEPTANCE-24` | corrections active | — | source `a3244e5`, not accepted |
 | `R0I-ELITE-REVIEW-25` | blocked on `22`-`24` | — | planned |
 | `R0I-ELITE-LIVE-26` | blocked on review and aggregate gates | — | planned |
-| `H5-ENCODER-04` | dispatched, read-only schema proposal | — | pending |
-| `H5-DATASET-05` | dispatched | — | pending |
+| `H5-ENCODER-04` | schema accepted; implementation released after this record | — | frozen schema and fingerprint below |
+| `H5-DATASET-05` | corrections active after independent review | — | source `39b7c76`, not accepted |
 | `H6-CANDIDATE-POLICY-06` | blocked on `H5-ENCODER-04` | — | planned |
 | `H6-BC-SMOKE-07` | blocked on `04`-`06` | — | planned |
 
@@ -93,6 +95,95 @@ estimated.
   `01a06e4e-382b-7de1-8b39-08e7a3b6c6c9`. All four were confirmed active
   through compact task snapshots. The app listing lagged task creation;
   read-only task-index metadata resolved the IDs without reading transcripts.
+
+### 2026-09-04 — Elite producer integration and review findings
+
+- Reviewed all four owned-file diffs of `22` source
+  `7c942db4b5fa53433c7a20f94581dd642e67f61f` and integrated as
+  `85fa8ca8d2a6b8359652ba2de88b5651ec419314`. Production changes are the two
+  frozen destination predicates and the opt-in `elite` provider. No C#/wire,
+  granular client, artifact pin or output-schema change.
+- Coordinator reran isolated run fixtures (**23 checks**) and provider fixtures
+  (**6 checks**). Worker reported 68 adjacent fixture checks, 243 focused tests,
+  and 1,051 full-suite passes with the one known packet-23-owned obsolete
+  entry-wire assertion failing. This is not a passing aggregate bridge gate.
+- Dispatched `23` as visible task
+  `01a06e57-032d-73b3-925e-af127f0eee86`, Terra/high, from the reviewed local
+  integration branch. Elite remains fixture-only.
+- `24` source `a3244e5a9871e301bf8bcd4dbf7a99b740c26a1b` is not accepted.
+  Read-only coordinator repros confirmed that mismatched termination
+  destinations and unknown nested fields pass, a list-valued milestone raises
+  `TypeError`, and arbitrary synthetic `ToolFailure` text reaches CLI output.
+  Independent Sol/high review also found impossible producer histories accepted.
+- Automatic approval review rejected the correction dispatch because trusted
+  implementation authorization could not be established from quoted history.
+  The rejected dispatch was not retried or bypassed. User confirmation is
+  required before redispatching these corrections; no live work has begun.
+- `04` remains read-only and unfrozen. Independent Sol/high review found the
+  event width must be 78, normalization and inactive-category rules need exact
+  definitions, and map-form coverage and the canonical payload require a
+  complete disposition. A revised proposal has arrived but is not accepted;
+  no encoder edit authority has been granted.
+- `05` source `39b7c76a70de100cbc5235eec890cb62c9302b70` requires changes
+  after independent Sol/high provenance/leakage review: retain exact admitted
+  per-trajectory component evidence outside actor examples, and require
+  caller-declared accepted pins across all sources and splits. Eligibility,
+  sample identity, deterministic order and split-overlap identity were sound.
+  Reviewer reran 7 focused tests (passed); worker reported 53
+  trajectory/reporting and 90 conformance tests passed. It is not integrated.
+- Assigned worker models remain as planned; no model escalation. Aggregate
+  numeric token/elapsed telemetry remains unavailable.
+
+### 2026-09-04 — Authorized continuation and independent elite gate
+
+- The user replied **proceed** to dispatching the reviewed validator/dataset
+  corrections and continuing the increment. Both correction requests were
+  successfully delivered to their existing Terra/high tasks, with unchanged
+  ownership and no live authority delegated.
+- Independent Sol/high review approved `23` source
+  `a3910ac242931549bbed3ad6bd824316b6bc6a83`; coordinator read its complete
+  diff and reran the isolated elite gate (**8 checks**, passed). Integrated as
+  `8fd4320fa9d4a790fdb0676f79bb268600c9bcb7`.
+- Reviewer independently passed entry and elite gates (**8 checks each**).
+  Worker reported run **23**, run-wire **8**, transport **29**, and focused
+  live/differential **245 tests** passed. The entry suite count now names its
+  eight top-level check groups; only its obsolete elite-negative case changed.
+- Actual production clients run over literal fake transport. The original
+  `8212886` entry control remains intact; the new exact `42a3c4e` control stops
+  before the queued elite combat while integrated production continues.
+  Uncertainty/cancellation cases verify no later request, closed sockets and
+  zeroed mutable sent/credential buffers. This is `bridge_fixture` evidence.
+- No C#/wire/artifact pin or production output-schema change; full bridge join
+  acceptance and live work still await corrected `24` and aggregate review.
+
+### 2026-09-04 — H5 encoding schema freeze before implementation
+
+- Accepted exact proposal:
+  [PHASE_1_HEADLESS_ENCODING_SCHEMA.json](PHASE_1_HEADLESS_ENCODING_SCHEMA.json).
+  File SHA-256:
+  `1b1daa78066e9c3911eea4d673c39d5d13e1182fcd82a979fa3a2cf8a35f3e67`.
+- Exported version is `headless_encoding_v1`; encoding fingerprint:
+  `3eee27f82ad803d1d47ac5d2ac6ba6fcce2d236f977fde589fe6ee38a9608fa1`.
+  It is SHA-256 of UTF-8 `headless_encoding_v1.schema.v1`, one zero byte,
+  and `headless_v0.canonical_json_bytes` of the complete parsed proposal.
+- Ordered row dimensions are global **47**, entity **90**, public event **78**,
+  candidate **557**. The JSON contains every expanded feature name, exact
+  registry/API/source/normalization rule, absence convention, join, batch order,
+  empty shape, validation rule and fingerprint input. Candidate IDs remain
+  canonical out-of-band strings with no numeric/categorical identity feature.
+- Independent Sol/high review approved all boundaries, dimensions, registries,
+  joins and reallocation rules subject to exact global-source, batch-order,
+  canonical-ID and canonicalization clarifications. The coordinator applied
+  those corrections and checked the final hash and dimensions before release.
+- The map representation deliberately retains public node fields plus current
+  node nullness, edge count and visited count. It omits current-node identity
+  and edge connectivity; it is a bounded lossy actor representation, not a
+  reversible structured observation. No additional opaque-reference join is
+  introduced outside candidate resolution.
+- Earlier worker proposal fingerprints are not accepted. `04` must export the
+  exact accepted JSON schema/fingerprint and may edit only its two owned files
+  after receiving the committed freeze. Implementation and independent review
+  remain required; no headless actor capability is accepted yet.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
