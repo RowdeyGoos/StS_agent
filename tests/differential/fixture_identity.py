@@ -37,23 +37,33 @@ SOURCE_PATHS = (
 )
 
 
+def bridge_source_inventory(repository_root: Path) -> tuple[int, str]:
+    """Hash authored bridge inputs, excluding generated directory components."""
+    bridge_root = repository_root / "bridge/Sts2AgentBridge"
+    source_root = bridge_root / "src"
+    source_paths = (
+        path for pattern in ("*.cs", "*.csproj") for path in source_root.rglob(pattern)
+        if not {"bin", "obj"}.intersection(path.relative_to(source_root).parts[:-1])
+    )
+    bridge_paths = sorted(
+        list(source_paths)
+        + [bridge_root / path for path in ("Directory.Build.props", "global.json", "Sts2AgentBridge.sln", "package/Sts2AgentBridge.json")],
+        key=lambda path: path.relative_to(repository_root).as_posix(),
+    )
+    bridge_records = "".join(
+        sha256(path.read_bytes()).hexdigest() + "  " + path.relative_to(repository_root).as_posix() + "\n"
+        for path in bridge_paths
+    ).encode("ascii")
+    return len(bridge_paths), sha256(bridge_records).hexdigest()
+
+
 def current_identities():
     build_path = "manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json"
     build = json.loads((ROOT / build_path).read_text())
     vector_path = ROOT / "bridge/Sts2AgentBridge/contracts/live_probe_v0/vectors"
     r0i_wire.verify_accepted_vector_inventory(vector_path)
     manifest = reduced_run_backend.ReducedRunBackend().manifest()
-    bridge_root = ROOT / "bridge/Sts2AgentBridge"
-    bridge_paths = sorted(
-        list((bridge_root / "src").rglob("*.cs"))
-        + list((bridge_root / "src").rglob("*.csproj"))
-        + [bridge_root / path for path in ("Directory.Build.props", "global.json", "Sts2AgentBridge.sln", "package/Sts2AgentBridge.json")],
-        key=lambda path: path.relative_to(ROOT).as_posix(),
-    )
-    bridge_records = "".join(
-        sha256(path.read_bytes()).hexdigest() + "  " + path.relative_to(ROOT).as_posix() + "\n"
-        for path in bridge_paths
-    ).encode("ascii")
+    bridge_count, bridge_digest = bridge_source_inventory(ROOT)
     body_hashes = {name: sha256(body).hexdigest() for name, body in sorted(fixture_bodies().items())}
     return {
         "schema": "h4_offline_common_subset_fixture_v1",
@@ -69,10 +79,10 @@ def current_identities():
         "wire": asdict(r0i_wire.PARSER_MANIFEST),
         "bridge": {
             "version": r0i_wire.BRIDGE_VERSION,
-            "source_scope": "src/**/*.cs, src/**/*.csproj, Directory.Build.props, global.json, Sts2AgentBridge.sln, package/Sts2AgentBridge.json; repository-only",
+            "source_scope": "src/**/*.cs and src/**/*.csproj excluding bin/obj directory components; Directory.Build.props, global.json, Sts2AgentBridge.sln, package/Sts2AgentBridge.json; repository-only",
             "source_canonicalization": "sha256 + two spaces + repository-relative path + LF; sorted by path",
-            "source_file_count": len(bridge_paths),
-            "source_inventory_sha256": sha256(bridge_records).hexdigest(),
+            "source_file_count": bridge_count,
+            "source_inventory_sha256": bridge_digest,
             "binary_verification": "unobserved; no bridge build or installed binary accessed",
         },
         "headless": {

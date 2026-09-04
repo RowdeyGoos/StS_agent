@@ -4,7 +4,7 @@
     "source_canonicalization": "sha256 + two spaces + repository-relative path + LF; sorted by path",
     "source_file_count": 48,
     "source_inventory_sha256": "feed6d91adbc5568a48c2ebdd0a1d6f2a904c8c1c35ac1750a6aa4f4e53c4876",
-    "source_scope": "src/**/*.cs, src/**/*.csproj, Directory.Build.props, global.json, Sts2AgentBridge.sln, package/Sts2AgentBridge.json; repository-only",
+    "source_scope": "src/**/*.cs and src/**/*.csproj excluding bin/obj directory components; Directory.Build.props, global.json, Sts2AgentBridge.sln, package/Sts2AgentBridge.json; repository-only",
     "version": "0.8.0"
   },
   "build": {

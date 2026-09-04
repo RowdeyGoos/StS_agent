@@ -3,8 +3,10 @@
 from collections import Counter
 from dataclasses import asdict, replace
 import json
+from pathlib import Path
 
 import pytest
+import fixture_identity
 
 from game.backends.live import r0i_wire as wire
 from game.contracts.headless_v0 import ContractValidationError, PublicObservation
@@ -229,6 +231,60 @@ def test_inactive_and_endpoint_complete_are_not_synthesized_headless_boundaries(
 def test_identity_drift_fails_closed(section, key):
     expected = json.loads(IDENTITY_PATH.read_text())
     expected[section][key] = True if key == "schema_version" else "changed"
+    with pytest.raises(ValueError, match="identity mismatch"):
+        verify_identities(expected)
+
+
+@pytest.fixture
+def disposable_bridge_inventory(tmp_path, monkeypatch):
+    bridge_root = tmp_path / "bridge/Sts2AgentBridge"
+    for relative in (
+        "src/Project/Authored.cs", "src/Project/Project.csproj",
+        "Directory.Build.props", "global.json", "Sts2AgentBridge.sln",
+        "package/Sts2AgentBridge.json",
+    ):
+        path = bridge_root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("synthetic authored input\n")
+    inventory = fixture_identity.bridge_source_inventory
+    monkeypatch.setattr(fixture_identity, "bridge_source_inventory", lambda _: inventory(tmp_path))
+    return bridge_root, current_identities()
+
+
+def test_generated_bin_obj_inputs_are_ignored_before_reading(disposable_bridge_inventory, monkeypatch):
+    bridge_root, expected = disposable_bridge_inventory
+    generated = set()
+    for relative in (
+        "src/obj/Generated.cs", "src/bin/Generated.csproj",
+        "src/Project/obj/Release/net9.0/AssemblyInfo.cs",
+        "src/Project/bin/Debug/net9.0/Generated.cs",
+        "src/Project/obj/Generated.csproj", "src/Project/bin/Generated.csproj",
+    ):
+        path = bridge_root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("synthetic generated input\n")
+        generated.add(path)
+    read_bytes = Path.read_bytes
+
+    def forbid_generated_reads(path):
+        assert path not in generated, "generated input must be filtered before reading"
+        return read_bytes(path)
+
+    monkeypatch.setattr(Path, "read_bytes", forbid_generated_reads)
+    verify_identities(expected)
+    assert current_identities()["bridge"]["source_file_count"] == 6
+
+
+@pytest.mark.parametrize("relative", [
+    "src/Project/Authored.cs", "src/Project/Project.csproj",
+    "src/Project/New.cs", "src/Project/New.csproj",
+    "src/Project/binary/Authored.cs", "src/Project/objectives/Authored.cs",
+])
+def test_authored_source_changes_and_additions_still_reject(disposable_bridge_inventory, relative):
+    bridge_root, expected = disposable_bridge_inventory
+    path = bridge_root / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("changed synthetic authored input\n")
     with pytest.raises(ValueError, match="identity mismatch"):
         verify_identities(expected)
 
