@@ -10,7 +10,8 @@ from __future__ import annotations
 import json
 import sys
 from collections.abc import Callable
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
+from io import StringIO
 from typing import Any
 
 sys.dont_write_bytecode = True
@@ -26,7 +27,7 @@ import apply_room_live_fixtures as room_fixture
 import apply_run_live as run
 import apply_turn_live_fixtures as turn_fixture
 import probe_live as probe
-from tool_common import EXIT_MISMATCH, ToolFailure, fail, main
+from tool_common import EXIT_MISMATCH, ToolFailure, fail, main, run_cli
 
 
 _CREDENTIAL = b"0123456789abcdef" * 4
@@ -290,6 +291,36 @@ def _expect_failure(operation: Callable[[], object], code: str) -> None:
     fail(EXIT_MISMATCH, "wire_failure_accepted")
 
 
+def _require_redacted_output(stdout: str, stderr: str) -> None:
+    combined = (stdout + stderr).encode("ascii", "strict")
+    if _CANARY in combined or _CREDENTIAL in combined:
+        fail(EXIT_MISMATCH, "wire_secret_output")
+
+
+def _assert_captured_cli_redaction(run_suite: Callable[[], dict[str, object]]) -> None:
+    """Exercise real clients under ``run_cli`` and inspect its complete output."""
+    stdout = StringIO()
+    stderr = StringIO()
+    with redirect_stdout(stdout), redirect_stderr(stderr):
+        exit_code = run_cli(run_suite)
+    if exit_code != 0 or stderr.getvalue() != "":
+        fail(EXIT_MISMATCH, "wire_cli_execution")
+    _require_redacted_output(stdout.getvalue(), stderr.getvalue())
+
+    emitted = StringIO()
+    with redirect_stdout(emitted):
+        mutation_exit = run_cli(lambda: {"canary": _CANARY.decode("ascii")})
+    if mutation_exit != 0:
+        fail(EXIT_MISMATCH, "wire_canary_mutation_cli")
+    try:
+        _require_redacted_output(emitted.getvalue(), "")
+    except ToolFailure as failure:
+        if failure.exit_code == EXIT_MISMATCH and failure.error_code == "wire_secret_output":
+            return
+        raise
+    fail(EXIT_MISMATCH, "wire_canary_mutation_accepted")
+
+
 def _run_success() -> None:
     transcript: list[tuple[bytes, bytes]] = []
     _combat_victory(transcript, "a")
@@ -340,8 +371,8 @@ def _run_rejected_and_uncertain_posts() -> None:
     state = turn_fixture._combat(decision_id, 1, hp=5, block=0, energy=0, enemy_hp=43, hand=[], actions=[turn_fixture._end_turn()])
     for response, expected_code in (
         (turn_fixture._action_body(decision_id, "end_turn", accepted=False), "terminal_after_rejected_action"),
-        (probe._RETRYABLE_BACKEND_HEADER + probe._RETRYABLE_BACKEND_BODY_PREFIX + b"0" * 32 + probe._RETRYABLE_BACKEND_BODY_SUFFIX, "action_response_mismatch"),
-        (TimeoutError(), "action_transport_failure"),
+        (probe._RETRYABLE_BACKEND_HEADER + probe._RETRYABLE_BACKEND_BODY_PREFIX + b"0" * 32 + probe._RETRYABLE_BACKEND_BODY_SUFFIX + _CANARY, "action_response_mismatch"),
+        (TimeoutError(_CANARY.decode("ascii")), "action_transport_failure"),
     ):
         transcript: list[tuple[bytes | TimeoutError, bytes]] = []
         _add_base(transcript)
@@ -353,13 +384,17 @@ def _run_rejected_and_uncertain_posts() -> None:
         if isinstance(response, bytes) and response.startswith(b"{"):
             _add(transcript, combat_fixture._terminal("defeat", 1, hp=0, enemies=[combat_fixture._enemy(43)]), _get(probe._COMBAT_ROUTE[0][1]))
         connector = _Connector(transcript)
-        credential = bytearray(_CREDENTIAL)
+        loader = _CredentialLoader()
         with _fake_clock():
-            _expect_failure(lambda: combat._run_apply_combat(credential, "first-legal", connector), expected_code)
+            _expect_failure(
+                lambda: run._run_bounded_run(
+                    loader, connector, "first-legal", "first-card", "first", "safe", 1
+                ),
+                expected_code,
+            )
         connector.assert_complete()
         connector.assert_post_count(1)
-        if any(credential):
-            fail(EXIT_MISMATCH, "wire_uncertain_credential")
+        loader.assert_zeroed()
 
 
 def _run_run_level_rejections() -> None:
@@ -412,7 +447,7 @@ def _run_context_replacement_before_post() -> None:
     loader.assert_zeroed()
 
 
-def operation() -> dict[str, object]:
+def _suite_result() -> dict[str, object]:
     _run_success()
     _run_defeat_no_followup()
     _run_rejected_and_uncertain_posts()
@@ -434,8 +469,12 @@ def operation() -> dict[str, object]:
         ],
         "check_count": 7,
     }
-    if _CANARY in json.dumps(result, separators=(",", ":")).encode("ascii"):
-        fail(EXIT_MISMATCH, "wire_secret_canary_output")
+    return result
+
+
+def operation() -> dict[str, object]:
+    result = _suite_result()
+    _assert_captured_cli_redaction(_suite_result)
     return result
 
 
