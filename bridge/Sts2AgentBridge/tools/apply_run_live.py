@@ -145,6 +145,11 @@ def _wait_for_room_ready(
             continue
         if status == "unsupported":
             fail(EXIT_MISMATCH, "run_room_state_unsupported")
+        if status == "complete":
+            if decision["screen_kind"] != expected_screen_kind:
+                fail(EXIT_MISMATCH, "run_room_kind_mismatch")
+            time.sleep(_POLL_SECONDS)
+            continue
         if status != "ready":
             fail(EXIT_MISMATCH, "run_room_not_ready")
         if decision["screen_kind"] != expected_screen_kind:

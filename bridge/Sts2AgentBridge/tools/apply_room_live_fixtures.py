@@ -306,12 +306,14 @@ def _event_handles_indexed_game_proceed_and_rejects_fatal() -> None:
         _get(room._ROOM_DECISION_ROUTE),
         _post(_DECISION_ZERO, "choose:0"),
         _get(room._ROOM_DECISION_ROUTE),
+        _get(room._ROOM_DECISION_ROUTE),
         _post(_DECISION_ONE, "choose:0"),
         _get(room._ROOM_DECISION_ROUTE),
     ]
     responses = _base_responses() + [
         decision,
         _action_body(_DECISION_ZERO, "choose:0"),
+        _inactive("waiting", "unknown", "unknown", None),
         proceed_decision,
         _action_body(_DECISION_ONE, "choose:0"),
         _COMPLETE_EVENT,

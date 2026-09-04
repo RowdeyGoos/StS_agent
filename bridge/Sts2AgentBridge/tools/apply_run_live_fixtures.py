@@ -724,11 +724,81 @@ def _run_room_preflight_contract() -> None:
         "event",
         "run_room_state_unsupported",
     )
+
+
+def _run_room_preflight_delayed_activation() -> None:
+    event = room_fixture._candidate(
+        0,
+        "event_option",
+        "EVENT.SAFE",
+        enabled=True,
+        supported=True,
+    )
+    ready_event = room_fixture._ready(
+        room_fixture._DECISION_ZERO,
+        "event",
+        "choose_option",
+        [event],
+        [room_fixture._legal(event)],
+    )
+    bodies = [
+        room_fixture._COMPLETE_EVENT,
+        room_fixture._inactive("waiting", "unknown", "unknown", None),
+        ready_event,
+    ]
+
+    def body_reader(*_: object) -> bytes:
+        if not bodies:
+            fail(EXIT_MISMATCH, "run_fixture_extra_delayed_room_preflight_read")
+        return bodies.pop(0)
+
+    previous_poll = run._POLL_SECONDS
+    run._POLL_SECONDS = 0.0
+    credential = bytearray(_CREDENTIAL)
+    try:
+        observed = run._wait_for_room_ready(
+            credential,
+            "event",
+            object,  # type: ignore[arg-type]
+            body_reader=body_reader,
+        )
+    finally:
+        run._POLL_SECONDS = previous_poll
+        probe._zero(credential)
+    if (
+        observed != {"attempts": 3, "screen_kind": "event", "room_ordinal": 4}
+        or bodies
+    ):
+        fail(EXIT_MISMATCH, "run_fixture_delayed_room_preflight")
+
     _expect_room_preflight_failure(
         room_fixture._COMPLETE_REST,
-        "rest_site",
-        "run_room_not_ready",
+        "event",
+        "run_room_kind_mismatch",
     )
+
+    def complete_reader(*_: object) -> bytes:
+        return room_fixture._COMPLETE_EVENT
+
+    monotonic_values = iter((0.0, 0.0, run.room_client._ROOM_DEADLINE_SECONDS + 1.0))
+    previous_monotonic = run.time.monotonic
+    run.time.monotonic = lambda: next(monotonic_values)
+    timeout_credential = bytearray(_CREDENTIAL)
+    try:
+        run._wait_for_room_ready(
+            timeout_credential,
+            "event",
+            object,  # type: ignore[arg-type]
+            body_reader=complete_reader,
+        )
+    except ToolFailure as failure:
+        if failure.exit_code != EXIT_MISMATCH or failure.error_code != "run_room_ready_timeout":
+            fail(EXIT_MISMATCH, "run_fixture_wrong_delayed_room_timeout")
+    else:
+        fail(EXIT_MISMATCH, "run_fixture_delayed_room_timeout_passed")
+    finally:
+        run.time.monotonic = previous_monotonic
+        probe._zero(timeout_credential)
 
 
 def _run_cached_terminal_wait() -> None:
@@ -849,6 +919,7 @@ def operation() -> dict[str, object]:
     _run_room_continuation_terminal_and_cap()
     _run_room_fail_closed()
     _run_room_preflight_contract()
+    _run_room_preflight_delayed_activation()
     _run_cached_terminal_wait()
     _run_parse_contract()
     return {
@@ -866,11 +937,12 @@ def operation() -> dict[str, object]:
             "post_room_cap_and_terminal_combat",
             "room_mismatch_and_unsupported_fail_closed",
             "read_only_room_preflight_contract",
+            "delayed_room_preflight_activation",
             "cached_terminal_wait",
             "provider_and_floor_limit_surface",
             "credential_cleanup",
         ],
-        "check_count": 13,
+        "check_count": 14,
     }
 
 
