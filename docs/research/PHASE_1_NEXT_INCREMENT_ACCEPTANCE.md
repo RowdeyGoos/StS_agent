@@ -22,18 +22,18 @@ contracts, integration, pins, artifacts, and all live operation.
 | Packet | Allocation | Current state | Ownership |
 | --- | --- | --- | --- |
 | `R0I-ROOM-CONTEXT-08` | Terra/high | Integrated `9a03c06` | Room client and its fixture file |
-| `R0I-COMPOSE-09` | Sol/high | Integrated `cb3b08a`; transcript join pending | Run client and its fixture file |
-| `R0I-WIRE-INTEGRATION-10` | Terra/high | Dispatched baseline transcript; final context cases depend on 09 | New actual-client transcript fixture |
+| `R0I-COMPOSE-09` | Sol/high | Integrated `cb3b08a`; transcript join accepted | Run client and its fixture file |
+| `R0I-WIRE-INTEGRATION-10` | Terra/high → Sol/high | Integrated through `ab4ff5d` | New actual-client transcript fixture |
 | `R0I-EVENT-STUDY-11` | Sol/high | Complete; retain D47 | No write ownership |
-| `R0I-ACCEPTANCE-TOOLS-12` | Terra/high | First candidate rejected; focused correction active | New acceptance tool and fixtures |
-| `R0I-COMPOSE-LIVE-13` | Coordinator | Waiting for reviewed 08/09/10/12 and artifact gates | Sequential live campaign and evidence |
-| `H5-ARTIFACT-01` | Terra/high | First candidate rejected; semantic provenance correction active | New reporting module and tests |
-| `H5-CLI-02` | Terra/medium | Waiting for accepted artifact envelope | New CLI, tests and sample config |
+| `R0I-ACCEPTANCE-TOOLS-12` | Terra/high → Sol/high | Integrated through `de01074` | New acceptance tool and fixtures |
+| `R0I-COMPOSE-LIVE-13` | Coordinator | Campaign active; gates passed | Sequential live campaign and evidence |
+| `H5-ARTIFACT-01` | Terra/high → Sol/high | Integrated through `df55c93` | New reporting module and tests |
+| `H5-CLI-02` | Terra/medium | Candidate in correction/review | New CLI, tests and sample config; explicitly reassigned lazy public exports |
 | `H5-METAMORPHIC-03` | Sol/high | Integrated `b533caa` | New conformance and matched-panel tests |
 | `H4-EVIDENCE-03` | Sol/high | Integrated `ecac394` + `20eeaf7`; contract frozen | New evidence module/tests and preregistered case spec |
-| `H4-GOLD-04` | Sol/high | Dispatched from `20eeaf7` | New gold evaluator and tests |
-| `H4-CORPUS-05` | Terra/high | Dispatched from `20eeaf7`; synthetic data only | New corpus codec and tests |
-| `H4-GOLD-ADAPTER-06` | Terra/high | Waiting for accepted evidence/evaluator | New capture-off gold adapter and fixtures |
+| `H4-GOLD-04` | Sol/high | Integrated `6927878` | New gold evaluator and tests |
+| `H4-CORPUS-05` | Terra/high | Filesystem corrections reviewed; timeout-test correction pending | New corpus codec and tests; synthetic data only |
+| `H4-GOLD-ADAPTER-06` | Terra/high | Candidate in privacy/action correction/review | New capture-off gold adapter and fixtures |
 
 Exact owned paths and acceptance gates are defined in the plan and copied into
 the implementation prompts. No overlapping production ownership was assigned.
@@ -174,3 +174,62 @@ verification passed two entries; forbidden-surface check passed 11 routes and
 1,063 method bodies. Base verification passed 429 files, zero overlay files,
 SHA-256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 Python consumer changes do not silently repin the C# artifact or old inventory.
+
+### Accepted second integration wave
+
+- Acceptance tool chain `09ceefe`, `35717c2`, `4e34ce7` integrated through
+  `de01074`. Complete diff and independent review passed; coordinator seven
+  acceptance, 21 room and 16 run fixture groups passed. Acknowledgement hooks
+  are explicitly cooperative and must bound their own waits. The room summary
+  validates its complete producer structure; run aggregates deliberately say
+  `run_result_unvalidated` and do not certify history.
+- Transcript chain `0f006ef`, `39f8737`, `ad59031`, `cf0d04c` integrated through
+  `ab4ff5d`. Eight transcript, 16 run, 21 room and 18 wire parser tests passed.
+  Final independent review passed real-orchestrator failures, the single
+  captured suite execution and four maintained one-shot leakage mutations.
+  A third escalation, **Terra/high → Sol/high**, followed a repeated canary
+  coverage gap; length of work was not the reason.
+- Artifact chain `f70e658`, `dc02394`, `5728075` integrated through `df55c93`.
+  Complete diff and independent review passed: 68 coordinator tests plus eight
+  independent adversarial cases, including interruption after a completed
+  collector boundary. Caller-declared config trust remains explicit.
+- Gold evaluator `51fb215` integrated as `6927878`. Complete diff and independent
+  review passed; 267 coordinator regressions and 249 independent tests plus 135
+  synthetic probes passed. The five named field findings use production gold
+  rules with pre-only scaffolding, not post-observation reconstruction. This is
+  synthetic/fixture evidence, not a live match or retained admission.
+- Broad repository regression after artifact/gold/metamorphic integration:
+  **1,023 passed in 109.38 s**. No throughput claim is made.
+- CLI and capture-off gold adapter were dispatched immediately from `6927878`.
+  CLI review requires bounded input reads, all identifier checks before backend
+  creation, actual received-result interruption evidence and seed-preserving
+  serial/spawn comparison. To meet help-without-optional-imports, coordinator
+  explicitly reassigned `game/__init__.py` and new `tests/test_lazy_public_api.py`
+  to that worker, preserving all canonical public symbols. Entry points/docs
+  remain coordinator-owned.
+- Corpus review rejected unbounded reads and symlink/directory races. Corrections
+  anchor directory descriptors, use exclusive private writes, bound reads and
+  preflight aggregate bytes. A final FIFO fix rejects special files without
+  blocking; its subprocess test needs separate startup/operation deadlines.
+- Gold adapter's first candidate `41f9fba` is rejected pending a fixed-verdict
+  output projection and actual captured-output canary tests. The evaluator's
+  full sanitized record is still too much data for this capture-off CLI.
+
+Additional observed task-turn durations (ms): acceptance corrections 282959 and
+205943; transcript join/corrections 95505, 70504 and 151098; artifact final
+154858; metamorphic 471392; gold 338572; corpus 250586, 155935 and 34847;
+CLI initial 311405; adapter initial 431835. Unavailable totals/tokens remain
+`unavailable`; these are not benchmark timings.
+
+### Current bounded live campaign
+
+Installed the exact previously verified artifact at 16:00:43 UTC on 2026-09-04,
+from integration source state `ab4ff5d`. DLL SHA-256
+`a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285`;
+package SHA-256 `c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595`.
+Fresh stopped guard, configuration shape/hash, 429-file base identity and
+two-file overlay verification passed. Direct UI showed Profile 3 and one mod;
+authenticated menu probe passed three routes. No Cloud setting was changed.
+Gameplay is capped at 30 minutes with at most three accepted destinations;
+no route farming. Resumed rest is available for the inspection-map check.
+Campaign outcome and mandatory teardown/clean-base evidence are pending.
