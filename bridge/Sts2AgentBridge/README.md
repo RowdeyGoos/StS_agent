@@ -502,6 +502,7 @@ approval, run only its in-memory disposable fixture suite:
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_room_live_fixtures.py"
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_run_live_fixtures.py"
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_run_wire_fixtures.py"
+/usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_run_entry_wire_fixtures.py"
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/verify_room_acceptance_fixtures.py"
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/decision_providers_fixtures.py"
 ```

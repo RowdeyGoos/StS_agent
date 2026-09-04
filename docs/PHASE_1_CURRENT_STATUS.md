@@ -34,8 +34,9 @@ bridge and external bounded controllers. Together they can:
 - represent bounded rest-site and safe standard-event choices through a
   separate room controller; and
 - compose combat, reward, map, and supported-room controllers into an external
-  controller capped at three combat floors, with explicit fail-closed handoff
-  and reconciliation checks.
+  controller capped at three reconciled map selections, with explicit
+  fail-closed handoff and reconciliation checks. The default starts at combat;
+  an explicitly named fresh reward or map boundary can be used instead.
 
 The bridge does not contain a learned model, search implementation, simulator,
 or gameplay policy. Those remain host-side replaceable components behind the
@@ -75,6 +76,15 @@ and one map action, reached another ordinary combat, and stopped at its declared
 floor limit. No supported rest destination was offered, so combat/rest/combat
 composition remains unobserved rather than failed.
 
+The host-only explicit phase-entry increment is integrated through `5750602`.
+The old invocation and explicit combat entry retain the exact existing success
+JSON;
+reward/map entry records a truthful partial prefix and shares the three-map
+selection cap without phase scanning, fallback or retry. Its independent
+actual-client gate uses literal request bytes and an `8212886` negative control.
+This capability is fixture-tested only and has not yet been exercised in the
+game.
+
 No live campaign is active.
 
 ## Parallel headless execution status
@@ -86,7 +96,7 @@ bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
 deterministic reduced reward/map/room rules, and the composed multi-phase
 `ReducedRunBackend`. The independent `H3-CONFORMANCE-04` gate is integrated;
 that checkpoint passed `66` conformance tests and `829` repository tests. The
-latest broader increment passes `1,051` repository tests.
+latest integrated tree passes `1,052` repository tests.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:
@@ -233,7 +243,7 @@ progression remains `structural_fixture`; no target-game fidelity promotion.
 | `R0f` | One reward decision followed by map arrival | Initial screen-transition timing blocked the first attempt; the narrowed retry passed reward and map checkpoints |
 | `R0g` | Read and apply one legal map destination | Bounded live map observation and destination application passed |
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
-| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner | Repository gates and fixtures passed. Historical campaigns exercised event and rest slices with the recorded fail-closed residuals. The latest campaign live-passed a fresh four-action reward diagnostic and one complete ordinary combat/reward/map floor (21 accepted actions), then stopped at the declared floor limit in the next ordinary combat. A supported room was not offered, so composed room handoff remains unobserved. |
+| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner with explicit fresh-phase entry | Repository gates and fixtures passed. Historical campaigns exercised event and rest slices with the recorded fail-closed residuals. The latest campaign live-passed a fresh four-action reward diagnostic and one complete ordinary combat/reward/map floor (21 accepted actions), then stopped at the declared floor limit in the next ordinary combat. Explicit reward/map entry is actual-client fixture-tested but not live-demonstrated. A supported room was not offered, so composed room handoff remains unobserved. |
 
 The earlier 2026-09-04 campaign reproduced the multi-step event timeout and newly
 demonstrated advertised rest-site map selection, successful standalone rest
@@ -276,6 +286,8 @@ narrower:
   kind conflict and capacity; other lifecycle races; a complete reconciled room
   handoff inside the batched runner; multi-step event
   completion at the Python-controller seam; the full three-combat-floor cap;
+  explicit fresh reward/map entry, default-combat equivalence, truthful partial
+  prefix accounting and no-fallback behavior;
   capture-off transport, HTTP and receipt-failure classifications; and
   exceptional-exit mutable-buffer cleanup.
   The C# reader deliberately does not infer event-to-map completion.
@@ -310,6 +322,8 @@ The present bridge intentionally does not support:
 - custom, nested, dangerous, or otherwise unrecognized event interactions;
 - full-map route planning;
 - a complete autonomous run;
+- transparent crash recovery, automatic phase detection, or continuation from
+  an uncertain earlier action;
 - in-process policy inference, model training, or search;
 - profile, save, progress, history, preference, replay, seed, or multiplayer
   identity access;
@@ -334,25 +348,28 @@ The capture-off reward diagnostic is implemented, fixture-reviewed and now
 live-demonstrated at a fresh boundary. The one-floor composed ordinary-combat
 path also passed, but neither result classifies the prior discarded reward
 response or authorizes replay of its uncertain action. The smallest remaining
-live target is the existing supported-room handoff when a rest route is offered,
-using only already implemented combat, reward, map and room contracts. It
-should:
+live target is one explicitly named fresh reward or map entry. A compatible
+campaign should then seek the existing supported-room handoff when a rest route
+is offered, using only already implemented combat, reward, map and room
+contracts. It should:
 
-1. build on the live-accepted standalone rest-site repair to exercise a composed
+1. begin only at the declared visibly fresh reward or map phase and verify the
+   partial-prefix result without scanning, fallback, retry or retained raw data;
+2. build on the live-accepted standalone rest-site repair to exercise a composed
    combat/rest/combat handoff when supported destinations are available,
    retaining the reviewed Python readiness fix; the original `R0I-RUN-03/04`
    C# exclusions remain unchanged;
-2. preserve fail-closed multi-step event handling; any event-step identity
+3. preserve fail-closed multi-step event handling; any event-step identity
    redesign requires a separately approved scope;
-3. retain `reward_action_response_mismatch` as a separate historical residual until
+4. retain `reward_action_response_mismatch` as a separate historical residual until
    reproduced or explained;
-4. obtain bounded live evidence for a fully reconciled rest-site or standard-
+5. obtain bounded live evidence for a fully reconciled rest-site or standard-
    event handoff when encountered;
-5. preserve separate combat, reward, map, and room providers so components can
+6. preserve separate combat, reward, map, and room providers so components can
    still be compared independently;
-6. finish with the existing quarantine, clean-base relaunch, and purge checks;
+7. finish with the existing quarantine, clean-base relaunch, and purge checks;
    and
-7. avoid expanding the live bridge into shops, models, search, or broader
+8. avoid expanding the live bridge into shops, models, search, or broader
    control surfaces until the existing slice is repeatable.
 
 Independently of that live target, the provisional headless environment has
@@ -373,8 +390,10 @@ maintained in
   headless panels and capture-off gold adapter are reviewed and integrated.
   The subsequently approved reward diagnostic is fixture-tested and has passed
   one fresh capture-off live boundary. One ordinary combat/reward/map floor is
-  also live-demonstrated; supported-room composition remains unobserved because
-  no rest route was offered. These results do not authorize retained live data.
+  also live-demonstrated. Explicit fresh reward/map entry is independently
+  fixture-tested but awaits its first live check; supported-room composition
+  remains unobserved because no rest route was offered. These results do not
+  authorize retained live data.
   Exact results are in the
   [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - [`bridge/Sts2AgentBridge/README.md`](../bridge/Sts2AgentBridge/README.md)

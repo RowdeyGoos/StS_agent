@@ -1620,3 +1620,37 @@ representation or add another framework merely to reduce line counts.
 The later `bbada1a` campaign separately live-exercised the consolidated host
 path during a fresh reward diagnostic and one composed ordinary floor; room
 transport edge cases and exceptional-exit cleanup remain fixture evidence.
+
+## D51. Keep Bounded Run Entry Explicit Rather Than Resumable
+
+### Context
+
+The combat-oriented bounded runner previously required a fresh combat even when
+an authorized campaign was already at a fresh visible reward or map boundary.
+The bridge has no durable run incarnation, controller lease, commit sequence or
+retry idempotency key. Transparent recovery would therefore require a new wire
+contract and retained live journal, not a host-only convenience flag.
+
+### Decision
+
+- Preserve the existing 14-argument combat entry and exact
+  `r0i_bounded_run` success JSON. Add only explicit `--entry-phase
+  combat|reward|map`, with explicit combat equivalent to omission.
+- Let the named existing component client freshly validate only its own visible
+  phase. Do not scan, auto-detect, fall back, retry, or adopt an earlier
+  controller's uncertain action.
+- Represent reward/map entry as a truthful partial prefix. Charge the prefix
+  and every later reconciled map selection, including a post-room selection,
+  against the unchanged maximum of three.
+- Keep the resulting `r0i_bounded_run_entry` host summary separate from bridge
+  wire DTOs, normalized observations, headless state, training encodings,
+  replay records and persisted checkpoints.
+
+### Consequence
+
+Explicit entry reduces repeated manual setup at known fresh boundaries without
+claiming crash recovery, automatic continuation or a full autonomous run.
+Independent actual-client fixtures establish default equivalence, request
+order, partial accounting, room-context binding and fail-closed behavior. The
+new entry paths remain fixture-tested until a bounded clean live campaign
+exercises one of them.

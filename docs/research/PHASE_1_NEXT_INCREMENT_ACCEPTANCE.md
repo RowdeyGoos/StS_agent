@@ -27,6 +27,9 @@ contracts, integration, pins, artifacts, and all live operation.
 | `R0I-EVENT-STUDY-11` | Sol/high | Complete; retain D47 | No write ownership |
 | `R0I-ACCEPTANCE-TOOLS-12` | Terra/high → Sol/high | Integrated through `de01074` | New acceptance tool and fixtures |
 | `R0I-COMPOSE-LIVE-13` | Coordinator | Campaigns closed; rest checks passed; follow-up reward-response failure, full chain open | Sequential live campaign and evidence |
+| `R0I-PHASE-ENTRY-19` | Sol/high | Integrated `72bb8d2` | Run client, unit fixtures and bridge README |
+| `R0I-PHASE-ENTRY-TEST-20` | Terra/high | Integrated `24b6bc6` + `5750602` after review correction | New independent actual-client gate and pytest wrapper |
+| `R0I-PHASE-ENTRY-REVIEW-21` | Sol/high | Offline review accepted; live gate pending | Read-only review and coordinator validation |
 | `H5-ARTIFACT-01` | Terra/high → Sol/high | Integrated through `df55c93` | New reporting module and tests |
 | `H5-CLI-02` | Terra/medium | Integrated through `6372c36` | New CLI, tests and sample config; explicitly reassigned lazy public exports |
 | `H5-METAMORPHIC-03` | Sol/high | Integrated `b533caa` | New conformance and matched-panel tests |
@@ -739,3 +742,53 @@ listener. Steam Cloud was not changed and no unexpected sync state was observed.
 No worker model escalation occurred in this campaign; live operation was
 coordinator-only. Aggregate live token and elapsed-time telemetry is
 `unavailable`.
+
+## Explicit fresh phase-entry automated acceptance
+
+The coordinator froze the host-only phase-entry contract in `8212886`. It
+deliberately adds explicit fresh-boundary entry rather than recovery: omitted or
+explicit combat retains the existing behavior and exact `r0i_bounded_run`
+success record; `--entry-phase reward|map` invokes only the named existing
+component client and emits a truthful partial prefix under the unchanged cap of
+three reconciled map selections. It performs no phase scan, fallback, new retry,
+uncertain-action adoption, retained journal, wire change or C# change.
+
+`R0I-PHASE-ENTRY-19` worker commit `9afbdbc` integrated as `72bb8d2` after a
+complete-diff Sol/high review. The implementation stays within the run client,
+its unit fixtures and the bridge README. Existing granular transport, parsing,
+selection, reconciliation, room-context and replay behavior is reused rather
+than copied. The original 14-argument result remains exact; prefix phases,
+logical numbering, readiness placement, completed/processed counts, action
+totals, post-room map charges, defeat and unsupported destinations passed their
+focused cases.
+
+`R0I-PHASE-ENTRY-TEST-20` first produced `f2c6e94`, integrated as `24b6bc6`.
+Independent review rejected that revision because its expected HTTP requests
+used production request builders and its matching room transcript could not
+prove the expected-context argument was supplied. Corrective worker commit
+`994c207`, integrated as `5750602`, replaced those oracles with independently
+assembled literal request bytes and added an ordinal-mismatch case that rejects
+with `room_expected_context_mismatch` before any room POST. The final 11-check
+gate verifies exact request order and counts, socket closure, sent-buffer and
+credential zeroing, no fallback or later mutation after rejection/uncertainty,
+bounded canary absence, and the intended negative control: unchanged `8212886`
+fails specifically because `entry_phase` is absent.
+
+Coordinator validation on the integrated tree passed all 15 relevant bridge
+fixture suites, including the 21-check run fixtures, 8-check existing run-wire
+gate, 11-check phase-entry gate and 29-check transport gate. Focused
+`tests/backends/live` plus `tests/differential` passed **244 tests**. Compileall,
+`git diff --check`, and the full repository suite passed **1,052 tests in
+103.10 seconds**. Independent Sol/high review accepted both the production
+state-machine join and the corrected actual-client gate with no remaining
+finding.
+
+This evidence is **fixture-tested / actual-client synthetic**. It is not
+live-demonstrated, retained differential evidence or target-game fidelity.
+No game was launched, bridge installed, live endpoint or credential accessed,
+profile/save read, Cloud setting changed, or raw payload retained during this
+automated increment. At the user's request, the live campaign is held at this
+clean gate for a coordinator model switch to Astra. Production used Sol/high;
+the test and correction used Terra/high; review used Sol/high. There was no
+model escalation. Aggregate worker token and elapsed-time telemetry is
+`unavailable` and was not estimated.
