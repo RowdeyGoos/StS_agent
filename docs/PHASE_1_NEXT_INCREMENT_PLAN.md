@@ -1,11 +1,14 @@
-# Proposed next increment: reliable composition and usable headless experiments
+# Next increment: reliable composition and usable headless experiments
 
 - **Date:** 2026-09-04
 - **Planning baseline:** `57a421440dd1dc6b879f91d42db7a63ac575d359`, on
   `codex/phase1-parallel-integration`; contains planning baseline `d93395c`.
-- **Status:** proposed for implementation, not started. The current user
-  request authorizes planning. This document does not itself approve new code,
-  event semantics, retained live data, or evidence promotion.
+- **Status:** accepted for execution by the user's subsequent “execute the
+  plan” request. Sections 4–6 offline packets and bounded coordinator acceptance
+  are active from clean `cc2060ce1ffbb615ad5c42faaa621a56bbe5c062`. Event work
+  remains investigation-only; retained real data and optional Section 7 remain
+  outside this increment. No automatic evidence promotion is authorized.
+- **Execution ledger:** [next-increment acceptance](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
 - **Relationship:** follows the implemented packets in
   [the existing execution plan](PHASE_1_PARALLEL_EXECUTION_PLAN.md), without
   reopening their accepted scope or declaring Phase 1 complete.
