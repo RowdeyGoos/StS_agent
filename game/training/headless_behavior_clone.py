@@ -41,6 +41,7 @@ from game.agents.headless_encoding import (
 )
 from game.contracts.headless_v0 import (
     BackendManifest,
+    ComponentEvidence,
     ContractValidationError,
     EvidenceLabel,
     canonical_json_bytes,
@@ -261,13 +262,16 @@ def _deterministic_torch(seed: int) -> Iterator[None]:
 
 @contextmanager
 def _preserve_torch_rng() -> Iterator[None]:
-    """Prevent model construction during checkpoint loading from consuming RNG."""
+    """Construct CPU checkpoints in float32 without leaking caller Torch state."""
 
     previous_rng = torch.random.get_rng_state().clone()
+    previous_dtype = torch.get_default_dtype()
     try:
+        torch.set_default_dtype(torch.float32)
         yield
     finally:
         torch.random.set_rng_state(previous_rng)
+        torch.set_default_dtype(previous_dtype)
 
 
 def _provenance_dict(value: Any) -> dict[str, Any]:
@@ -594,6 +598,259 @@ def _exact(value: Mapping[str, Any], fields: set[str], path: str) -> None:
         raise BehaviorCloneError(f"{path} fields are not exact.")
 
 
+def _report_integer(value: Any, path: str, *, minimum: int = 0) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
+        raise BehaviorCloneError(f"{path} must be an integer >= {minimum}.")
+    return value
+
+
+def _report_digest(value: Any, path: str) -> str:
+    if not isinstance(value, str) or _HASH.fullmatch(value) is None:
+        raise BehaviorCloneError(f"{path} must be a lowercase SHA-256 digest.")
+    return value
+
+
+def _validate_report_environment(value: Any) -> None:
+    if not isinstance(value, Mapping):
+        raise BehaviorCloneError("report environment must be an object.")
+    fields = {
+        "byteorder",
+        "deterministic_algorithms",
+        "deterministic_warn_only",
+        "device",
+        "dtype",
+        "machine",
+        "operating_system",
+        "operating_system_release",
+        "process_count",
+        "python_implementation",
+        "python_version",
+        "torch_thread_count",
+        "torch_version",
+    }
+    _exact(value, fields, "report environment")
+    if (
+        value["byteorder"] not in {"little", "big"}
+        or value["deterministic_algorithms"] is not True
+        or value["deterministic_warn_only"] is not False
+        or value["device"] != "cpu"
+        or value["dtype"] != "float32"
+        or value["process_count"] != 1
+        or value["torch_thread_count"] != 1
+    ):
+        raise BehaviorCloneError("report environment deterministic facts are invalid.")
+    for name in (
+        "machine",
+        "operating_system",
+        "operating_system_release",
+        "python_implementation",
+        "python_version",
+        "torch_version",
+    ):
+        item = value[name]
+        if not isinstance(item, str) or not item or len(item.encode("utf-8")) > 256:
+            raise BehaviorCloneError(f"report environment {name} is invalid.")
+
+
+def _validate_report_metrics(value: Any, path: str, example_count: int) -> None:
+    if not isinstance(value, Mapping):
+        raise BehaviorCloneError(f"{path} must be an object.")
+    _exact(value, {"accuracy_correct", "accuracy_total", "loss_nano"}, path)
+    correct = _report_integer(value["accuracy_correct"], f"{path}.accuracy_correct")
+    total = _report_integer(value["accuracy_total"], f"{path}.accuracy_total", minimum=1)
+    _report_integer(value["loss_nano"], f"{path}.loss_nano")
+    if total != example_count or correct > total:
+        raise BehaviorCloneError(f"{path} does not match its panel example count.")
+
+
+def _validate_report_skip_counts(value: Any, path: str) -> None:
+    if not isinstance(value, Mapping):
+        raise BehaviorCloneError(f"{path} must be an object.")
+    _exact(
+        value,
+        {"actionable_without_choice_records", "non_actionable_records", "total"},
+        path,
+    )
+    without_choice = _report_integer(
+        value["actionable_without_choice_records"],
+        f"{path}.actionable_without_choice_records",
+    )
+    non_actionable = _report_integer(
+        value["non_actionable_records"], f"{path}.non_actionable_records"
+    )
+    total = _report_integer(value["total"], f"{path}.total")
+    if total != without_choice + non_actionable:
+        raise BehaviorCloneError(f"{path}.total is inconsistent.")
+
+
+def _validate_report_trajectory(
+    value: Any,
+    *,
+    path: str,
+    source_digests: set[str],
+) -> tuple[tuple[str, int, str, str], set[str]]:
+    if not isinstance(value, Mapping):
+        raise BehaviorCloneError(f"{path} must be an object.")
+    _exact(
+        value,
+        {
+            "evidence",
+            "experiment_manifest_sha256",
+            "repetition_index",
+            "trajectory_id",
+            "trajectory_manifest_sha256",
+        },
+        path,
+    )
+    experiment_sha = _report_digest(
+        value["experiment_manifest_sha256"],
+        f"{path}.experiment_manifest_sha256",
+    )
+    if experiment_sha not in source_digests:
+        raise BehaviorCloneError(f"{path} does not belong to a declared source.")
+    repetition_index = _report_integer(
+        value["repetition_index"], f"{path}.repetition_index"
+    )
+    trajectory_id = value["trajectory_id"]
+    if (
+        not isinstance(trajectory_id, str)
+        or not trajectory_id
+        or len(trajectory_id.encode("utf-8")) > 128
+    ):
+        raise BehaviorCloneError(f"{path}.trajectory_id is invalid.")
+    trajectory_sha = _report_digest(
+        value["trajectory_manifest_sha256"],
+        f"{path}.trajectory_manifest_sha256",
+    )
+    raw_evidence = value["evidence"]
+    if not isinstance(raw_evidence, list) or not raw_evidence:
+        raise BehaviorCloneError(f"{path}.evidence must be a nonempty array.")
+    try:
+        evidence = tuple(ComponentEvidence.from_dict(item) for item in raw_evidence)
+    except (ContractValidationError, TypeError, ValueError) as exc:
+        raise BehaviorCloneError(f"{path}.evidence is invalid.") from exc
+    components = tuple(item.component for item in evidence)
+    if components != tuple(sorted(set(components))):
+        raise BehaviorCloneError(f"{path}.evidence components are not unique and sorted.")
+    allowed = {EvidenceLabel.COMBAT_V0, EvidenceLabel.STRUCTURAL_FIXTURE}
+    if any(item.label not in allowed for item in evidence):
+        raise BehaviorCloneError(f"{path}.evidence contains an unaccepted label.")
+    return (
+        (experiment_sha, repetition_index, trajectory_id, trajectory_sha),
+        {item.label.value for item in evidence},
+    )
+
+
+def _validate_report_panel(
+    value: Any, *, path: str
+) -> tuple[int, set[tuple[str, int, str, str]], set[str]]:
+    if not isinstance(value, Mapping):
+        raise BehaviorCloneError(f"{path} must be an object.")
+    _exact(
+        value,
+        {
+            "admitted_trajectories",
+            "example_count",
+            "metrics",
+            "skip_counts",
+            "source_manifest_sha256",
+        },
+        path,
+    )
+    source_values = value["source_manifest_sha256"]
+    if (
+        not isinstance(source_values, list)
+        or not 1 <= len(source_values) <= _MAX_SOURCES_PER_PANEL
+    ):
+        raise BehaviorCloneError(f"{path}.source_manifest_sha256 is invalid.")
+    sources = {
+        _report_digest(item, f"{path}.source_manifest_sha256")
+        for item in source_values
+    }
+    if len(sources) != len(source_values):
+        raise BehaviorCloneError(f"{path} source manifests must be unique.")
+    example_count = _report_integer(
+        value["example_count"], f"{path}.example_count", minimum=1
+    )
+    if example_count > _MAX_EXAMPLES_PER_PANEL:
+        raise BehaviorCloneError(f"{path}.example_count exceeds the smoke bound.")
+    _validate_report_metrics(value["metrics"], f"{path}.metrics", example_count)
+    _validate_report_skip_counts(value["skip_counts"], f"{path}.skip_counts")
+    trajectories = value["admitted_trajectories"]
+    if (
+        not isinstance(trajectories, list)
+        or not trajectories
+        or len(trajectories) > _MAX_TRAJECTORIES_PER_PANEL
+    ):
+        raise BehaviorCloneError(f"{path}.admitted_trajectories is invalid.")
+    identities: set[tuple[str, int, str, str]] = set()
+    labels: set[str] = set()
+    for index, item in enumerate(trajectories):
+        identity, item_labels = _validate_report_trajectory(
+            item,
+            path=f"{path}.admitted_trajectories[{index}]",
+            source_digests=sources,
+        )
+        if identity in identities:
+            raise BehaviorCloneError(f"{path} duplicates admitted trajectory identity.")
+        identities.add(identity)
+        labels.update(item_labels)
+    return example_count, identities, labels
+
+
+def _validate_report_nested(value: Mapping[str, Any], config: BehaviorCloneConfig) -> None:
+    _validate_report_environment(value["environment"])
+    panels = value["panels"]
+    if not isinstance(panels, Mapping):
+        raise BehaviorCloneError("report panels must be an object.")
+    _exact(panels, {"development", "held_out"}, "report panels")
+    development_count, development_trajectories, development_labels = (
+        _validate_report_panel(
+            panels["development"], path="report panels.development"
+        )
+    )
+    _, held_out_trajectories, held_out_labels = _validate_report_panel(
+        panels["held_out"], path="report panels.held_out"
+    )
+    if development_trajectories & held_out_trajectories:
+        raise BehaviorCloneError("report panels share admitted trajectory identity.")
+    labels = value["aggregate_evidence_labels"]
+    expected_labels = sorted(development_labels | held_out_labels)
+    if labels != expected_labels:
+        raise BehaviorCloneError(
+            "report aggregate evidence labels do not equal admitted evidence."
+        )
+    training = value["training_result"]
+    if not isinstance(training, Mapping):
+        raise BehaviorCloneError("report training_result must be an object.")
+    _exact(
+        training,
+        {
+            "finite_gradients",
+            "optimizer_update_count",
+            "training_example_visits",
+        },
+        "report training_result",
+    )
+    if training["finite_gradients"] is not True:
+        raise BehaviorCloneError("report must retain finite-gradient acceptance.")
+    updates = _report_integer(
+        training["optimizer_update_count"],
+        "report training_result.optimizer_update_count",
+        minimum=1,
+    )
+    visits = _report_integer(
+        training["training_example_visits"],
+        "report training_result.training_example_visits",
+        minimum=1,
+    )
+    expected_updates = config.epochs * (
+        (development_count + config.batch_size - 1) // config.batch_size
+    )
+    if updates != expected_updates or visits != development_count * config.epochs:
+        raise BehaviorCloneError("report training arithmetic is inconsistent.")
+
+
 def _parse_report(raw: bytes) -> dict[str, Any]:
     if type(raw) is not bytes or len(raw) > _MAX_REPORT_BYTES:
         raise BehaviorCloneError("behavior-clone report exceeds its byte limit.")
@@ -691,6 +948,7 @@ def _parse_report(raw: bytes) -> dict[str, Any]:
         or any(label not in allowed_labels for label in labels)
     ):
         raise BehaviorCloneError("report aggregate evidence labels are invalid.")
+    _validate_report_nested(value, config)
     return value
 
 
@@ -705,7 +963,8 @@ def _verify_artifact_values(
     _assert_frozen_dependencies()
     report_sha = sha256(report_bytes).hexdigest()
     if (
-        _HASH.fullmatch(expected_report_sha256) is None
+        not isinstance(expected_report_sha256, str)
+        or _HASH.fullmatch(expected_report_sha256) is None
         or not hmac.compare_digest(report_sha, expected_report_sha256)
     ):
         raise BehaviorCloneError("behavior-clone report digest does not match its anchor.")
@@ -740,6 +999,17 @@ def _verify_artifact_values(
         raise BehaviorCloneError("candidate-policy checkpoint validation failed.") from exc
     state_sha = _state_dict_sha256(policy.state_dict())
     pins = report["pins"]
+    policy_consistency = {
+        "policy_version": pins["policy_version"],
+        "encoding_version": pins["encoding_version"],
+        "encoding_fingerprint": pins["encoding_fingerprint"],
+        "model_fingerprint": pins["model_fingerprint"],
+        "config_fingerprint": pins["candidate_policy_config_fingerprint"],
+    }
+    if any(policy_payload[name] != value for name, value in policy_consistency.items()):
+        raise BehaviorCloneError(
+            "report/checkpoint candidate-policy provenance is inconsistent."
+        )
     consistency = {
         "report_sha256": report_sha,
         "data_fingerprint": pins["data_fingerprint"],
@@ -753,7 +1023,8 @@ def _verify_artifact_values(
         raise BehaviorCloneError("report/checkpoint tensor identity is inconsistent.")
     checkpoint_sha = _checkpoint_digest(checkpoint_payload)
     if (
-        _HASH.fullmatch(expected_checkpoint_sha256) is None
+        not isinstance(expected_checkpoint_sha256, str)
+        or _HASH.fullmatch(expected_checkpoint_sha256) is None
         or checkpoint_payload["checkpoint_sha256"] != checkpoint_sha
         or not hmac.compare_digest(checkpoint_sha, expected_checkpoint_sha256)
     ):

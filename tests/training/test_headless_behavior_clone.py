@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+from hashlib import sha256
 import json
 from pathlib import Path
 
@@ -11,6 +13,7 @@ import torch
 from game.agents.headless_candidate_policy import (
     MODEL_FINGERPRINT,
     CandidatePolicyConfig,
+    HeadlessCandidatePolicy,
     config_fingerprint as candidate_config_fingerprint,
 )
 from game.agents.headless_encoding import ENCODING_FINGERPRINT
@@ -30,7 +33,10 @@ from game.training.headless_behavior_clone import (
     BehaviorCloneCancelled,
     BehaviorCloneConfig,
     BehaviorCloneError,
+    _checkpoint_digest,
     _masked_loss,
+    _state_dict_sha256,
+    _verify_artifact_values,
     load_behavior_clone_artifact,
     train_headless_behavior_clone,
 )
@@ -136,6 +142,20 @@ def _assert_torch_globals_equal(expected) -> None:
     )
 
 
+def _verify_reanchored(report, checkpoint):
+    report_bytes = canonical_json_bytes(report)
+    report_sha = sha256(report_bytes).hexdigest()
+    changed = deepcopy(checkpoint)
+    changed["report_sha256"] = report_sha
+    changed["checkpoint_sha256"] = _checkpoint_digest(changed)
+    return _verify_artifact_values(
+        report_bytes,
+        changed,
+        expected_report_sha256=report_sha,
+        expected_checkpoint_sha256=changed["checkpoint_sha256"],
+    )
+
+
 def test_real_trusted_panels_are_byte_and_tensor_deterministic_with_exact_provenance(
     tmp_path,
 ) -> None:
@@ -230,6 +250,98 @@ def test_publication_round_trip_requires_complete_anchored_pair(tmp_path) -> Non
         )
 
 
+def test_float64_caller_can_train_and_load_without_global_state_leaks(tmp_path) -> None:
+    development, held_out, manifest = _panels(tmp_path)
+    output_root = tmp_path / "float64-caller"
+    original_dtype = torch.get_default_dtype()
+    try:
+        torch.set_default_dtype(torch.float64)
+        before = _torch_globals()
+        artifact = train_headless_behavior_clone(
+            development=(development,),
+            held_out=(held_out,),
+            accepted_backend_manifest=manifest,
+            output_root=output_root,
+        )
+        _assert_torch_globals_equal(before)
+
+        returned_policy = artifact.load_policy()
+        assert all(
+            parameter.device.type == "cpu" and parameter.dtype == torch.float32
+            for parameter in returned_policy.parameters()
+        )
+        _assert_torch_globals_equal(before)
+
+        loaded = load_behavior_clone_artifact(
+            output_root,
+            expected_report_sha256=artifact.report_sha256,
+            expected_checkpoint_sha256=artifact.checkpoint_sha256,
+        )
+        published_policy = loaded.load_policy()
+        assert all(
+            parameter.device.type == "cpu" and parameter.dtype == torch.float32
+            for parameter in published_policy.parameters()
+        )
+        _assert_torch_globals_equal(before)
+
+        malformed = deepcopy(artifact.checkpoint_payload)
+        malformed["policy"]["encoding_fingerprint"] = "0" * 64
+        with pytest.raises(BehaviorCloneError):
+            _verify_artifact_values(
+                artifact.report_bytes,
+                malformed,
+                expected_report_sha256=artifact.report_sha256,
+                expected_checkpoint_sha256=artifact.checkpoint_sha256,
+            )
+        _assert_torch_globals_equal(before)
+    finally:
+        torch.set_default_dtype(original_dtype)
+
+
+def test_reanchored_pair_rejects_changed_policy_config_and_nested_report_facts(
+    tmp_path,
+) -> None:
+    development, held_out, manifest = _panels(tmp_path)
+    artifact = train_headless_behavior_clone(
+        development=(development,),
+        held_out=(held_out,),
+        accepted_backend_manifest=manifest,
+    )
+
+    changed_checkpoint = deepcopy(artifact.checkpoint_payload)
+    alternate = HeadlessCandidatePolicy(CandidatePolicyConfig(hidden_size=32))
+    alternate_payload = alternate.checkpoint_payload()
+    alternate_payload["state_dict"] = {
+        name: value.detach().cpu().clone()
+        for name, value in alternate_payload["state_dict"].items()
+    }
+    changed_checkpoint["policy"] = alternate_payload
+    changed_state_sha = _state_dict_sha256(alternate_payload["state_dict"])
+    changed_checkpoint["state_dict_sha256"] = changed_state_sha
+    changed_report = artifact.report_dict()
+    changed_report["pins"]["state_dict_sha256"] = changed_state_sha
+    with pytest.raises(BehaviorCloneError, match="candidate-policy provenance"):
+        _verify_reanchored(changed_report, changed_checkpoint)
+
+    mutations = []
+    aggregate_subset = artifact.report_dict()
+    aggregate_subset["aggregate_evidence_labels"] = ["combat_v0"]
+    mutations.append((aggregate_subset, "admitted evidence"))
+    unknown_environment = artifact.report_dict()
+    unknown_environment["environment"]["unknown"] = "unaccepted"
+    mutations.append((unknown_environment, "environment"))
+    wrong_source = artifact.report_dict()
+    wrong_source["panels"]["development"]["source_manifest_sha256"] = ["0" * 64]
+    mutations.append((wrong_source, "declared source"))
+    wrong_updates = artifact.report_dict()
+    wrong_updates["training_result"]["optimizer_update_count"] += 1
+    mutations.append((wrong_updates, "training arithmetic"))
+
+    for changed_report, message in mutations:
+        with pytest.raises(BehaviorCloneError, match=message):
+            _verify_reanchored(changed_report, artifact.checkpoint_payload)
+
+
 def test_report_checkpoint_and_dependency_pin_inconsistency_rejects(tmp_path) -> None:
     development, held_out, manifest = _panels(tmp_path)
     output_root = tmp_path / "tamper-smoke"
@@ -245,8 +357,6 @@ def test_report_checkpoint_and_dependency_pin_inconsistency_rejects(tmp_path) ->
     changed_report = canonical_json_bytes(report)
     (output_root / REPORT_FILE_NAME).write_bytes(changed_report)
     marker = json.loads((output_root / ACCEPTANCE_FILE_NAME).read_text(encoding="utf-8"))
-    from hashlib import sha256
-
     marker["report_sha256"] = sha256(changed_report).hexdigest()
     (output_root / ACCEPTANCE_FILE_NAME).write_bytes(canonical_json_bytes(marker))
     with pytest.raises(BehaviorCloneError, match="dependency pins"):
