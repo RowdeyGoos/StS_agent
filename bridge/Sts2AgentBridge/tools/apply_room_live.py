@@ -114,53 +114,20 @@ def _exchange(
     decision_id: str | None = None,
     action_id: str | None = None,
 ) -> bytearray:
-    client: Any | None = None
-    request = bytearray()
-    response = bytearray()
-    try:
-        if time.monotonic() >= deadline:
-            fail(EXIT_MISMATCH, "room_transport_timeout")
-        client = connector()
-        connection_deadline = min(
-            deadline,
-            time.monotonic() + probe._CONNECTION_DEADLINE_SECONDS,
-        )
+    def request_builder() -> bytearray:
         if decision_id is None and action_id is None:
-            request = _build_get_request(route, credential)
-        elif decision_id is not None and action_id is not None and route == _ROOM_ACTION_ROUTE:
-            request = _build_action_request(credential, decision_id, action_id)
-        else:
-            fail(EXIT_INTERNAL, "internal_failure")
-        probe._set_bounded_timeout(client, connection_deadline, label)
-        client.sendall(request)
-        while True:
-            probe._set_bounded_timeout(client, connection_deadline, label)
-            chunk = client.recv(probe._RECEIVE_CHUNK_BYTES)
-            if not isinstance(chunk, (bytes, bytearray, memoryview)):
-                fail(EXIT_MISMATCH, f"{label}_transport_mismatch")
-            if not chunk:
-                break
-            if len(chunk) > probe._RECEIVE_CHUNK_BYTES:
-                fail(EXIT_MISMATCH, f"{label}_transport_mismatch")
-            if len(response) + len(chunk) > probe._MAXIMUM_RESPONSE_BYTES:
-                fail(EXIT_MISMATCH, f"{label}_response_too_large")
-            response.extend(chunk)
-        if not response:
-            fail(EXIT_MISMATCH, f"{label}_empty_response")
-        return response
-    except ToolFailure:
-        probe._zero(response)
-        raise
-    except (OSError, TimeoutError):
-        probe._zero(response)
-        fail(EXIT_MISMATCH, f"{label}_transport_failure")
-    finally:
-        probe._zero(request)
-        if client is not None:
-            try:
-                client.close()
-            except OSError:
-                pass
+            return _build_get_request(route, credential)
+        if decision_id is not None and action_id is not None and route == _ROOM_ACTION_ROUTE:
+            return _build_action_request(credential, decision_id, action_id)
+        fail(EXIT_INTERNAL, "internal_failure")
+
+    return probe._exchange_request(
+        label,
+        request_builder,
+        connector,
+        deadline,
+        "room_transport_timeout",
+    )
 
 
 def _read_body(

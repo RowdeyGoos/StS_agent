@@ -131,6 +131,82 @@ class _FixtureConnector:
                     fail(EXIT_MISMATCH, "probe_fixture_request_not_zeroed")
 
 
+class _ExceptionalSocket:
+    def __init__(
+        self,
+        interruption: BaseException,
+        close_failure: BaseException | None = None,
+    ) -> None:
+        self._interruption = interruption
+        self._close_failure = close_failure
+        self._read_once = False
+        self.closed = False
+        self.request_buffers: list[bytearray] = []
+
+    def settimeout(self, value: float) -> None:
+        if value <= 0 or value > probe._SOCKET_OPERATION_TIMEOUT_SECONDS:
+            fail(EXIT_MISMATCH, "probe_fixture_timeout_bound")
+
+    def sendall(self, request: bytearray) -> None:
+        self.request_buffers.append(request)
+
+    def recv(self, maximum: int) -> bytes:
+        if maximum != probe._RECEIVE_CHUNK_BYTES:
+            fail(EXIT_MISMATCH, "probe_fixture_receive_bound")
+        if not self._read_once:
+            self._read_once = True
+            return b"partial"
+        raise self._interruption
+
+    def close(self) -> None:
+        self.closed = True
+        if self._close_failure is not None:
+            raise self._close_failure
+
+
+def _expect_exceptional_exchange_cleanup(
+    interruption: BaseException,
+    *,
+    close_failure: BaseException | None = None,
+) -> None:
+    fixture_socket = _ExceptionalSocket(interruption, close_failure)
+    saw_partial_response = False
+    original_zero = probe._zero
+
+    def tracked_zero(buffer: bytearray) -> None:
+        nonlocal saw_partial_response
+        if bytes(buffer) == b"partial":
+            saw_partial_response = True
+        original_zero(buffer)
+
+    probe._zero = tracked_zero
+    try:
+        try:
+            probe._exchange(
+                "health",
+                "/probe/v0/health",
+                bytearray(_FIXTURE_CREDENTIAL),
+                lambda: fixture_socket,
+                probe.time.monotonic() + 1.0,
+            )
+        except BaseException as failure:
+            expected = close_failure if close_failure is not None else interruption
+            if type(failure) is not type(expected):
+                fail(EXIT_MISMATCH, "probe_fixture_exception_precedence")
+        else:
+            fail(EXIT_MISMATCH, "probe_fixture_exceptional_exchange_passed")
+    finally:
+        probe._zero = original_zero
+
+    if (
+        not saw_partial_response
+        or not fixture_socket.closed
+        or not fixture_socket.request_buffers
+        or any(any(request) for request in fixture_socket.request_buffers)
+    ):
+        fail(EXIT_MISMATCH, "probe_fixture_exceptional_exchange_cleanup")
+
+
 def _responses(screen: bytes) -> list[bytes]:
     return [
         _response(_FIXTURE_HEALTH),
@@ -322,6 +398,14 @@ def operation() -> dict[str, object]:
     checks.append("success_settings")
     _run_combat_success()
     checks.append("success_combat_recommendation")
+
+    _expect_exceptional_exchange_cleanup(KeyboardInterrupt())
+    _expect_exceptional_exchange_cleanup(SystemExit())
+    _expect_exceptional_exchange_cleanup(
+        KeyboardInterrupt(),
+        close_failure=RuntimeError("fixture close failure"),
+    )
+    checks.append("exceptional_exchange_cleanup_and_close_precedence")
 
     combat_summary = _validated_combat(_FIXTURE_COMBAT)
     expected_combat_summary = {

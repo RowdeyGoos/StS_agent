@@ -520,39 +520,28 @@ def _set_bounded_timeout(client: Any, deadline: float, label: str) -> None:
     client.settimeout(min(remaining, _SOCKET_OPERATION_TIMEOUT_SECONDS))
 
 
-def _exchange(
+def _exchange_request(
     label: str,
-    route: str,
-    credential: bytearray,
+    request_builder: Callable[[], bytearray],
     connector: Callable[[], Any],
-    probe_deadline: float,
-    decision_id: str | None = None,
-    action_id: str | None = None,
+    deadline: float,
+    initial_timeout_code: str,
 ) -> bytearray:
+    """Send one bounded request and return its still caller-owned response."""
     client: Any | None = None
     request = bytearray()
     response = bytearray()
     try:
-        if time.monotonic() >= probe_deadline:
-            fail(EXIT_MISMATCH, "probe_transport_timeout")
+        if time.monotonic() >= deadline:
+            fail(EXIT_MISMATCH, initial_timeout_code)
         client = connector()
         connection_deadline = min(
-            probe_deadline,
+            deadline,
             time.monotonic() + _CONNECTION_DEADLINE_SECONDS,
         )
-        if decision_id is None and action_id is None:
-            request = _build_request(route, credential)
-        elif (
-            decision_id is not None
-            and action_id is not None
-            and route in (_ACTION_ROUTE, _REWARD_ACTION_ROUTE, _MAP_ACTION_ROUTE)
-        ):
-            request = _build_action_request(route, credential, decision_id, action_id)
-        else:
-            fail(EXIT_INTERNAL, "internal_failure")
+        request = request_builder()
         _set_bounded_timeout(client, connection_deadline, label)
         client.sendall(request)
-
         while True:
             _set_bounded_timeout(client, connection_deadline, label)
             chunk = client.recv(_RECEIVE_CHUNK_BYTES)
@@ -592,6 +581,35 @@ def _exchange(
             # A cleanup exception cancels even an otherwise successful return.
             _zero(response)
             raise
+
+
+def _exchange(
+    label: str,
+    route: str,
+    credential: bytearray,
+    connector: Callable[[], Any],
+    probe_deadline: float,
+    decision_id: str | None = None,
+    action_id: str | None = None,
+) -> bytearray:
+    def request_builder() -> bytearray:
+        if decision_id is None and action_id is None:
+            return _build_request(route, credential)
+        if (
+            decision_id is not None
+            and action_id is not None
+            and route in (_ACTION_ROUTE, _REWARD_ACTION_ROUTE, _MAP_ACTION_ROUTE)
+        ):
+            return _build_action_request(route, credential, decision_id, action_id)
+        fail(EXIT_INTERNAL, "internal_failure")
+
+    return _exchange_request(
+        label,
+        request_builder,
+        connector,
+        probe_deadline,
+        "probe_transport_timeout",
+    )
 
 
 def _canonical_body(response: bytearray, label: str) -> memoryview:
