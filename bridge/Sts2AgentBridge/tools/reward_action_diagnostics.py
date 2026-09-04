@@ -11,6 +11,11 @@ _ACTION_KINDS = frozenset(("claim_gold", "open_card", "choose_card", "skip_card"
 _CODES = frozenset(("none", "failure", "interrupted", "internal_failure", "invalid_invocation", "invalid_decision_provider", "invalid_effective_uid", "non_absolute_user_profile", "non_canonical_user_profile", "unsafe_identity", "credential_read_failed", "credential_shape", "health_response_mismatch", "manifest_response_mismatch", "reward_not_ready", "reward_response_mismatch", "reward_action_response_mismatch", "reward_action_budget_exhausted", "post_reward_state_timeout", "post_reward_state_unsupported", "reward_decision_not_advanced", "gold_claim_reconciliation_failed", "card_open_reconciliation_failed", "card_choice_reconciliation_failed", "card_skip_reconciliation_failed", "reward_proceed_reconciliation_failed", "reward_revision_mismatch"))
 _STAGES = frozenset(("none", "pre_action", "transport", "http_envelope", "receipt", "reconciliation", "internal", "interrupted"))
 _CLASSIFICATIONS = frozenset(("none", "action_not_attempted", "transport_deadline", "transport_failure", "transport_receive_mismatch", "transport_empty_response", "transport_other", "http_response_oversize", "http_malformed_envelope", "http_429_rate_limited", "http_503_retryable_backend", "http_500_backend_fault", "receipt_malformed", "receipt_rejected", "receipt_not_exactly_accepted", "reconciliation_failed", "internal_failure", "interrupted"))
+_CODES = _CODES | frozenset((
+    "probe_transport_timeout", "reward_action_transport_timeout",
+    "reward_action_transport_failure", "reward_action_transport_mismatch",
+    "reward_action_empty_response", "reward_action_response_too_large",
+))
 
 
 class RewardActionDiagnostics:

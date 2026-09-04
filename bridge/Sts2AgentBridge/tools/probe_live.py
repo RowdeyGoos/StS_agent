@@ -575,13 +575,23 @@ def _exchange(
     except (OSError, TimeoutError):
         _zero(response)
         fail(EXIT_MISMATCH, f"{label}_transport_failure")
+    except BaseException:
+        # Until the caller receives this buffer, every exceptional exit owns
+        # its cleanup, including cancellation and unexpected adapter errors.
+        _zero(response)
+        raise
     finally:
-        _zero(request)
-        if client is not None:
-            try:
-                client.close()
-            except OSError:
-                pass
+        try:
+            _zero(request)
+            if client is not None:
+                try:
+                    client.close()
+                except OSError:
+                    pass
+        except BaseException:
+            # A cleanup exception cancels even an otherwise successful return.
+            _zero(response)
+            raise
 
 
 def _canonical_body(response: bytearray, label: str) -> memoryview:
