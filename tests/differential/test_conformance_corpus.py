@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import stat
 import subprocess
 import sys
@@ -186,7 +187,8 @@ def test_case_read_is_bounded_before_an_oversized_file_is_materialized(tmp_path:
         corpus.load_corpus(tmp_path, "bounded", expected_manifest_sha256=manifest_hash, expected_pins=PINS)
 
 
-@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="named pipes are unavailable on this platform")
+@pytest.mark.skipif(not hasattr(os, "mkfifo") or not hasattr(signal, "setitimer"),
+                    reason="named pipes or POSIX operation timers are unavailable")
 def test_writerless_fifo_case_rejects_in_a_bounded_subprocess(tmp_path: Path):
     destination, manifest_hash = corpus.write_corpus(tmp_path, "fifo", [body(record())], expected_pins=PINS)
     case_path = destination / "case-000000.json"
@@ -195,18 +197,27 @@ def test_writerless_fifo_case_rejects_in_a_bounded_subprocess(tmp_path: Path):
     script = """
 from game.analysis import conformance_corpus as corpus
 from game.analysis import conformance_evidence as evidence
+import signal
 import sys
+def timed_out(_signum, _frame):
+    raise TimeoutError("operation_timeout")
+signal.signal(signal.SIGALRM, timed_out)
+signal.setitimer(signal.ITIMER_REAL, 2.0)
 try:
     corpus.load_corpus(sys.argv[1], "fifo", expected_manifest_sha256=sys.argv[2],
                        expected_pins=evidence.pins_for_harness("a" * 64))
 except corpus.CorpusError as error:
+    signal.setitimer(signal.ITIMER_REAL, 0)
     print(error)
     raise SystemExit(0)
+except TimeoutError:
+    print("operation_timeout")
+    raise SystemExit(2)
 raise SystemExit(1)
 """
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path), manifest_hash],
-        check=False, capture_output=True, text=True, timeout=2,
+        check=False, capture_output=True, text=True, timeout=10,
     )
     assert result.returncode == 0
     assert result.stdout.strip() == "invalid_corpus_file"
