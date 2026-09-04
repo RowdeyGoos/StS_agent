@@ -663,8 +663,8 @@ be bundled with a future justified semantic repair and its artifact/live gates.
 
 Coordinator integration validation passed 190 checks across 13 isolated bridge
 fixture suites and 243 focused live-parser/differential tests. The pre-change
-repository baseline passed 1,050 tests. Final full-regression evidence follows
-the documentation commit. No game was launched, bridge installed, live endpoint
+repository baseline passed 1,050 tests. The final integrated tree passed 1,051
+tests in 100.92 seconds. No game was launched, bridge installed, live endpoint
 or credential accessed, profile/save touched, or Cloud setting changed. No live
 campaign was active and no cleanup was required.
 
