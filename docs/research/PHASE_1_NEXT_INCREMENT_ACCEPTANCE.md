@@ -26,14 +26,14 @@ contracts, integration, pins, artifacts, and all live operation.
 | `R0I-WIRE-INTEGRATION-10` | Terra/high → Sol/high | Integrated through `ab4ff5d` | New actual-client transcript fixture |
 | `R0I-EVENT-STUDY-11` | Sol/high | Complete; retain D47 | No write ownership |
 | `R0I-ACCEPTANCE-TOOLS-12` | Terra/high → Sol/high | Integrated through `de01074` | New acceptance tool and fixtures |
-| `R0I-COMPOSE-LIVE-13` | Coordinator | Campaign active; gates passed | Sequential live campaign and evidence |
+| `R0I-COMPOSE-LIVE-13` | Coordinator | Bounded campaign closed; full chain unobserved, rest checks passed | Sequential live campaign and evidence |
 | `H5-ARTIFACT-01` | Terra/high → Sol/high | Integrated through `df55c93` | New reporting module and tests |
-| `H5-CLI-02` | Terra/medium | Candidate in correction/review | New CLI, tests and sample config; explicitly reassigned lazy public exports |
+| `H5-CLI-02` | Terra/medium | Integrated through `6372c36` | New CLI, tests and sample config; explicitly reassigned lazy public exports |
 | `H5-METAMORPHIC-03` | Sol/high | Integrated `b533caa` | New conformance and matched-panel tests |
 | `H4-EVIDENCE-03` | Sol/high | Integrated `ecac394` + `20eeaf7`; contract frozen | New evidence module/tests and preregistered case spec |
 | `H4-GOLD-04` | Sol/high | Integrated `6927878` | New gold evaluator and tests |
-| `H4-CORPUS-05` | Terra/high | Filesystem corrections reviewed; timeout-test correction pending | New corpus codec and tests; synthetic data only |
-| `H4-GOLD-ADAPTER-06` | Terra/high | Candidate in privacy/action correction/review | New capture-off gold adapter and fixtures |
+| `H4-CORPUS-05` | Terra/high | Integrated through `951da15` | New corpus codec and tests; synthetic data only |
+| `H4-GOLD-ADAPTER-06` | Terra/high → Sol/high | Final privacy-fixture correction/review | New capture-off gold adapter and fixtures |
 
 Exact owned paths and acceptance gates are defined in the plan and copied into
 the implementation prompts. No overlapping production ownership was assigned.
@@ -232,4 +232,69 @@ two-file overlay verification passed. Direct UI showed Profile 3 and one mod;
 authenticated menu probe passed three routes. No Cloud setting was changed.
 Gameplay is capped at 30 minutes with at most three accepted destinations;
 no route farming. Resumed rest is available for the inspection-map check.
-Campaign outcome and mandatory teardown/clean-base evidence are pending.
+Campaign ended at 16:10:08 UTC, including cleanup, within its 30-minute ceiling.
+
+- **Live-demonstrated:** inspection-map room suppression and exactly one stale
+  action rejection with `mutation_state=none`; helper returned
+  `inspection_map_stale_rejection_verified`. Closing the inspection map left
+  the original rest choice available. A separate expected-context-bound rest
+  controller then completed heal and literal proceed, returning
+  `expected_context_rest_complete` / `room_result_valid`, two accepted actions
+  and 21 checked routes. Direct UI confirmed the completed foreground map.
+- **Unobserved:** the full combat → reward → map → rest → map → ordinary-combat
+  composition. The resumed rest's next connected destination was an elite, not
+  the required ordinary combat. No destination was selected, no run was farmed
+  or restarted, and no combat/reward or gold-conformance case was attempted.
+  This does not promote the full `13` chain or gold adapter to live-demonstrated.
+- The coordinator wrappers were independently reviewed by exact source hashes
+  using only mocked checks: inspection
+  `fe094ff1925f5c291c59865043bcbdab0fdc9c8c5f37e5dd723203343a5edd71`
+  (seven cases) and expected-context rest
+  `d8c24f77bbc561835a9e48ed4d6096fa638b3603638bc6ae364f4d14e8e393a6`
+  (six cases). A run-summary wrapper was reviewed but never invoked live.
+  Original snapshots, bindings and receipts stayed in process memory; only
+  fixed codes/counts were emitted. No raw dataset or player scalars retained.
+- **Cleanup passed:** normal save/quit and game exit, stopped process/port guard,
+  exact quarantine, 429-file base verification with zero overlay, clean base-game
+  Profile 3 menu launch with no mod indicator and port closed, normal quit,
+  stopped guard, purge of four campaign-generated files including credential,
+  and final unchanged base/zero-overlay verification. No game/listener or
+  installed bridge remains active. Build/package outputs are preserved.
+- Steam Cloud was not changed; no unexpected enabled/syncing state was observed.
+  No fresh Cloud-idle or settings-inspection claim is made. Only normal Profile 3
+  in-game mutations occurred; no direct profile/save filesystem access.
+
+### Offline consumer integration and final corrections
+
+- Corpus worker chain `f8bb0b1`, `8f0299e`, `dadc25d`, `bf7b3b7` integrated as
+  `0bb636e`, `ad8600a`, `5186955`, `951da15`. Full diff/ownership and independent
+  review passed, including real synthetic directory/symlink/FIFO races.
+  Coordinator differential/wire/reward regression: **225 passed in 12.64 s**.
+  Independent focused: 19 passed; the FIFO operation rejects promptly after
+  separate bounded startup. An initial two-second whole-process test timed out
+  during imports, then was corrected to distinguish startup and operation.
+- CLI worker chain `d60e292`, `1752518`, `f8a060d` integrated as `9759eae`,
+  `9ff66a1`, `6372c36`. Full diff and independent review passed. Coordinator
+  CLI/API/reporting/rollout/benchmark: **50 passed in 8.75 s**. Independent eight
+  CLI/API tests pass; all 95 public symbols/order/provider identities are unchanged.
+  The initial reader race was fixed with a no-follow/nonblocking opened descriptor,
+  regular-file validation and bounded reads. Received-result SIGINT, trusted reload,
+  pending/unstarted distinctions and zero remaining workers passed.
+- Coordinator registered `sts-headless` and installed the editable project using
+  no dependencies/build isolation/network resolution. Installed help, sample
+  `run`, `benchmark` and trusted-hash `validate` passed. Both small samples truthfully
+  reported one budget-exhausted episode, no pending or unstarted work; these are
+  smoke tests, not throughput measurements.
+- Adapter correction `619c1f2` fixed the production output/post-shape/cancellation
+  findings but repeated the uncaptured-execution canary gap. Independent first-recv
+  leakage still escaped while fixtures passed. Fourth escalation:
+  **Terra/high → Sol/high**, for this reproduced privacy-test defect. Maintained
+  receipt/POST-failure zeroization/closure cases are also required before acceptance.
+
+Additional observed task-turn durations (ms): corpus timeout-test correction
+42966; CLI corrections 202967 and 68896; adapter first correction 386424.
+Unavailable aggregate tokens/totals remain `unavailable`.
+
+Post-corpus/CLI integration full repository regression: **1,050 passed in
+104.59 s**. Coordinator documentation/entry-point diff received independent
+read-only review with no blocking findings.

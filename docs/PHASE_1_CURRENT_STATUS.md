@@ -72,8 +72,8 @@ world state and snapshots, combat projection/candidates, fixture playback, a
 bounded episode runner, immutable trajectory records, the `combat_v0` adapter,
 deterministic reduced reward/map/room rules, and the composed multi-phase
 `ReducedRunBackend`. The independent `H3-CONFORMANCE-04` gate is integrated;
-the integration branch passes `66` conformance tests and `829` repository
-tests.
+that checkpoint passed `66` conformance tests and `829` repository tests. The
+latest broader increment passes `1,050` repository tests.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:
@@ -134,6 +134,29 @@ bindings, test results, and campaign evidence are in the
 [2026-09-04 acceptance record](research/PHASE_1_2026_09_04_ACCEPTANCE.md).
 
 ## Milestone evidence
+
+The accepted next increment adds pre-action room-context binding, real-client
+synthetic transport composition tests, a reusable capture-off acceptance helper,
+persisted headless experiment artifacts and `sts-headless` run/benchmark/validate,
+maintained generated invariants and serial/spawn panels, named conformance
+evidence, a production-rule gold evaluator and a bounded offline corpus codec.
+The gold adapter's final privacy-fixture review is still active. Exact commits,
+review corrections and evidence are in the
+[next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
+
+The latest bounded Profile 3 campaign repeated inspection-map suppression and
+one stale/no-mutation rejection, then live-demonstrated the new expected-context
+rest handoff with two accepted actions (heal/proceed) and completed map return.
+Its route led to an elite, so the full combat/rest/ordinary-combat composition
+and narrow gold comparison remain **unobserved**, not passed. No destination was
+selected or new run started. Normal quit, exact removal, clean base-game menu
+launch/quit, closed listener, four-file purge and unchanged 429-file base with
+zero overlay passed. No live campaign is active.
+
+Experiment configuration is caller-declared and hash-bound, not independently
+proved from trajectories. Named evidence/corpus integrity likewise does not
+authenticate source honesty or authorize retained live capture. Reduced
+progression remains `structural_fixture`; no target-game fidelity promotion.
 
 | Milestone | Capability added | Evidence disposition |
 | --- | --- | --- |
@@ -268,8 +291,9 @@ maintained in
 
 - [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) is the
   accepted active increment. Pre-action context binding, its composed handoff,
-  the named evidence contract and generated headless panels are reviewed and
-  integrated. Remaining consumers and live composition acceptance are pending;
+  experiment CLI/artifacts, named evidence/gold evaluator/corpus and generated
+  headless panels are reviewed and integrated. Final gold-adapter review is
+  pending; full live composition remains unobserved after a bounded campaign;
   this does not authorize retained live data or upgrade the live evidence above.
   Exact results are in the
   [next-increment ledger](research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).

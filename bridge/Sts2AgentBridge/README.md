@@ -103,6 +103,22 @@ registry cases remain fixture-only; multi-step event completion and a complete
 batched room handoff were not demonstrated. Normal quit, exact removal, clean
 base-game launch/quit with the bridge port closed, and final purge all passed.
 
+The next-increment Python join now carries `(screen_kind, room_ordinal)` from
+run preflight into the room client and checks every ready decision before POST.
+The real-client wire transcript covers the positive handoff, room replacement,
+transport failures and captured-output privacy checks without live I/O.
+`verify_room_acceptance.py` provides a one-shot inspection-map stale-rejection
+helper with an explicitly bounded/cooperative acknowledgement hook. Its room
+summary validates complete producer output; its run count summary is deliberately
+labelled `run_result_unvalidated`, not a certificate of full run history.
+
+A further bounded Profile 3 campaign live-passed that helper and the new
+context-bound rest heal/proceed/map completion. The next connected route was an
+elite, so full ordinary-combat continuation and the gold-conformance adapter
+remain unobserved. No map destination was selected. Exact cleanup and another
+clean base-game launch/quit passed. See the
+[next-increment ledger](../../docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md).
+
 ## Prerequisites
 
 - Python 3.10 or newer.
@@ -418,6 +434,8 @@ approval, run only its in-memory disposable fixture suite:
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_reward_live_fixtures.py"
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_room_live_fixtures.py"
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_run_live_fixtures.py"
+/usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/apply_run_wire_fixtures.py"
+/usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/verify_room_acceptance_fixtures.py"
 /usr/bin/python3 -B -E -s -S "/ABS/BRIDGE_ROOT/tools/decision_providers_fixtures.py"
 ```
 

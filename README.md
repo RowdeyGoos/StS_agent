@@ -63,6 +63,26 @@ pip install -e .
 
 If you only want the pure-Python simulator without optional RL tooling, `pip install -e .` is enough. Installing `requirements.txt` enables the Gymnasium wrapper, neural training with PyTorch, and Optuna-based sweeps.
 
+## Reduced headless experiments
+
+The reduced backend has a separate, dependency-light experiment command:
+
+```bash
+sts-headless --help
+sts-headless run --config configs/headless_smoke.json --output-root runs/headless-smoke
+sts-headless benchmark --config configs/headless_smoke.json --output-root runs/headless-benchmark
+sts-headless validate --output-root runs/headless-smoke --manifest-sha256 "<reported-manifest-sha256>"
+```
+
+Use a new output directory for each invocation; existing paths are rejected.
+`run` requires one repetition; `benchmark` uses the repetition count in the
+configuration. Keep the printed manifest hash separately for validation.
+Artifacts bind declared scenario/settings/seeds and retain received trajectories,
+pending episodes and unstarted repetitions after cancellation. They do not prove
+target-game fidelity or independently authenticate producer seed declarations.
+The smoke config deliberately stops at a small transition budget; it is not a
+training run. Help and pure headless use do not import Torch or Gymnasium.
+
 ## Run
 
 ```bash

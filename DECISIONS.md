@@ -1501,3 +1501,42 @@ projection can be advertised ready but still rejects application; this does
 not imply automatic continuation. Source/assembly fingerprints require deliberate
 review, not broader verifier allowances. Artifact and live acceptance are recorded
 separately in the 2026-09-04 acceptance record.
+
+## D48. Keep Experiment Provenance, Named Evidence And Transient Checks Distinct
+
+### Context
+
+The next increment adds headless experiment artifacts and narrow gold-transfer
+conformance consumers without changing the accepted environment or live wire
+contracts. Review exposed two important trust limits: trajectories cannot prove
+caller-declared seeds, and even a sanitized named evidence record contains more
+state than a capture-off live check should emit.
+
+### Decision
+
+- Bind exact declared experiment configuration to finalized manifests and
+  validate observable trajectory IDs, pins, counts, decisions, completion and
+  budget facts. Do not claim to independently prove scenario/seed declarations
+  absent from the trajectory producer contract.
+- Preserve received, pending and unstarted work distinctly on cancellation;
+  stop later repetitions and never synthesize lost worker results.
+- Freeze named-conformance evidence separately from wire observations,
+  headless private state, training encodings and replay streams. Evaluate the
+  preregistered gold transfer using production rules and pre-only scaffolding.
+- Keep external source/admission reviews explicit trusted assertions. Hashes
+  detect inconsistency; they do not authenticate a dishonest producer. Synthetic
+  matches never promote an entire backend to `differential_verified`.
+- A capture-off live adapter may emit fixed findings, eligibility, omissions
+  and reviewed code/spec identities only. Its full named record stays transient;
+  retained live cases require separate authorization and admission.
+- Resolve the existing 95 package-level public symbols lazily from their same
+  canonical providers, preserving names/order/identity while avoiding optional
+  Torch/Gymnasium imports for lightweight headless commands.
+
+### Consequence
+
+Experiment, evidence and corpus consumers can evolve independently without
+merging their representation or privacy boundaries. The offline corpus codec
+does not grant capture authority. CLI and actual-client fixtures test the joins;
+bounded live acceptance remains separately classified in the next-increment
+ledger. Event-step identity and D47 remain unchanged.

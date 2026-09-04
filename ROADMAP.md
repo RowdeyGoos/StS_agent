@@ -120,8 +120,12 @@ fixtures, headless experiment artifacts/CLI and maintained generated tests,
 and a separate narrow gold-claim conformance path. Event investigation is
 nonblocking for rest composition. Encoder/dataset consumers remain a later
 option; execution does not approve retained live data. Pre-action context binding,
-the named evidence contract and maintained generated tests are integrated;
-experiment tooling and remaining composition/conformance consumers are active.
+actual-client composition fixtures, experiment artifacts/CLI, named evidence,
+the production gold evaluator, offline corpus codec and maintained generated
+tests are integrated. The capture-off gold adapter is in final review. A bounded
+campaign passed context-bound rest completion and inspection-map stale rejection;
+the full chain remains unobserved because the route led to an elite. Cleanup
+and a clean base-game launch/quit passed. Event-step identity stays fail-closed.
 See the [execution ledger](docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md)
 for exact commits, reviews, residuals and evidence levels.
 
