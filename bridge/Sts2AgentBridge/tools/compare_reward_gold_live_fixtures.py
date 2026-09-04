@@ -6,13 +6,15 @@ from __future__ import annotations
 import json
 import sys
 from collections.abc import Callable
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
 
 sys.dont_write_bytecode = True
 
 import compare_reward_gold_live as adapter
 import probe_live as probe
 from game.analysis import conformance_evidence as evidence
-from tool_common import EXIT_INVALID_INVOCATION, EXIT_MISMATCH, ToolFailure, fail, main
+from tool_common import EXIT_INVALID_INVOCATION, EXIT_MISMATCH, ToolFailure, fail, main, run_cli
 
 
 _PRE_ID, _POST_ID = "a" * 64, "b" * 64
@@ -39,15 +41,19 @@ def _manifest() -> bytes:
 
 def _decision(identity: str, revision: int, *, selected: bool = False, hp: int = 47,
               gold: int = 19, deck_count: int = 7, amount: int = 25,
-              duplicate_gold: bool = False, extra_change: bool = False) -> bytes:
+              duplicate_gold: bool = False, extra_change: bool = False,
+              extra_claimed_gold: bool = False, card_name: str = "CARD") -> bytes:
     rewards = [
         {"reward_slot": 0, "reward_index": 3, "kind": "gold", "successfully_selected": selected,
          "gold_amount": amount, "cards": [], "card_selection_can_skip": False},
         {"reward_slot": 1, "reward_index": 4, "kind": "card", "successfully_selected": False,
-         "gold_amount": None, "cards": ["CARD"], "card_selection_can_skip": True},
+         "gold_amount": None, "cards": [card_name], "card_selection_can_skip": True},
     ]
     if duplicate_gold:
         rewards.append({"reward_slot": 2, "reward_index": 5, "kind": "gold", "successfully_selected": False,
+                        "gold_amount": 35, "cards": [], "card_selection_can_skip": False})
+    if extra_claimed_gold:
+        rewards.append({"reward_slot": 2, "reward_index": 5, "kind": "gold", "successfully_selected": True,
                         "gold_amount": 35, "cards": [], "card_selection_can_skip": False})
     if extra_change:
         rewards[1]["cards"] = ["OTHER"]
@@ -102,11 +108,28 @@ def _expect_failure(call: Callable[[], object], code: str) -> None:
     fail(EXIT_MISMATCH, "gold_adapter_wrong_failure")
 
 
+def _capture_cli(operation: Callable[[], dict]) -> tuple[int, str, str]:
+    stdout, stderr = StringIO(), StringIO()
+    with redirect_stdout(stdout), redirect_stderr(stderr):
+        exit_code = run_cli(operation)
+    return exit_code, stdout.getvalue(), stderr.getvalue()
+
+
+def _contains_forbidden_key(value: object, forbidden: set[str]) -> bool:
+    if isinstance(value, dict):
+        return any(key in forbidden or _contains_forbidden_key(item, forbidden)
+                   for key, item in value.items())
+    if isinstance(value, list):
+        return any(_contains_forbidden_key(item, forbidden) for item in value)
+    return False
+
+
 def operation() -> dict[str, object]:
-    base = [_health(), _manifest(), _decision(_PRE_ID, 7), _receipt(),
-            _decision(_POST_ID, 8, selected=True, gold=44), _decision(_POST_ID, 8, selected=True, gold=44)]
+    base = [_health(), _manifest(), _decision(_PRE_ID, 7, card_name=_SECRET), _receipt(),
+            _decision(_POST_ID, 8, selected=True, gold=44, card_name=_SECRET),
+            _decision(_POST_ID, 8, selected=True, gold=44, card_name=_SECRET)]
     result, sent, sockets = _run(base)
-    if result["correspondence"] != "bound_one_claim" or {item["outcome"] for item in result["findings"]} != {"passed"}:
+    if result["correspondence"] != "bound_one_claim" or {item["outcome"] for item in result["verdicts"]} != {"passed"}:
         fail(EXIT_MISMATCH, "gold_adapter_positive")
     if sum(request.startswith(b"POST ") for request in sent) != 1:
         fail(EXIT_MISMATCH, "gold_adapter_post_count")
@@ -116,6 +139,36 @@ def operation() -> dict[str, object]:
         fail(EXIT_MISMATCH, "gold_adapter_resource_closure")
     if _SECRET in evidence.canonical_json(result):
         fail(EXIT_MISMATCH, "gold_adapter_secret_output")
+    if set(result) != {"schema", "case_id", "artifact", "eligibility", "correspondence", "verdicts", "omissions", "admission"}:
+        fail(EXIT_MISMATCH, "gold_adapter_output_shape")
+    forbidden = ("boundaries", "selection", "source", "capture_ordinal", "broader_comparison", "findings")
+    if _contains_forbidden_key(result, set(forbidden)):
+        fail(EXIT_MISMATCH, "gold_adapter_output_leak")
+    original_operation = adapter._operation
+    try:
+        adapter._operation = lambda: result
+        cli_exit, cli_stdout, cli_stderr = _capture_cli(adapter.operation)
+    finally:
+        adapter._operation = original_operation
+    if cli_exit != 0 or _SECRET in cli_stdout or _SECRET in cli_stderr:
+        fail(EXIT_MISMATCH, "gold_adapter_cli_secret_output")
+    original_projection = adapter._public_result
+    try:
+        adapter._public_result = lambda proposal: {**proposal, "transport_secret": _SECRET}
+        _, leaked_stdout, leaked_stderr = _capture_cli(
+            lambda: _run([_health(), _manifest(), _decision(_PRE_ID, 7, card_name=_SECRET), _receipt(),
+                           _decision(_POST_ID, 8, selected=True, gold=44, card_name=_SECRET),
+                           _decision(_POST_ID, 8, selected=True, gold=44, card_name=_SECRET)])[0]
+        )
+    finally:
+        adapter._public_result = original_projection
+    if _SECRET not in leaked_stdout or _SECRET in leaked_stderr:
+        fail(EXIT_MISMATCH, "gold_adapter_privacy_mutation_not_detected")
+    error_exit, error_stdout, error_stderr = _capture_cli(
+        lambda: _run([_health(), _manifest(), _http(b'{"detail":"SECRET_TRANSPORT_ERROR_CANARY"}')])[0]
+    )
+    if error_exit != EXIT_MISMATCH or _SECRET in error_stdout or _SECRET in error_stderr:
+        fail(EXIT_MISMATCH, "gold_adapter_error_secret_output")
 
     delayed, delayed_sent, _ = _run([_health(), _manifest(), _decision(_PRE_ID, 7), _receipt(),
                                      _decision(_PRE_ID, 7), _decision(_POST_ID, 8, selected=True, gold=44),
@@ -124,10 +177,10 @@ def operation() -> dict[str, object]:
         fail(EXIT_MISMATCH, "gold_adapter_fresh_post")
 
     invalid, invalid_sent, _ = _run([_health(), _manifest(), _decision(_PRE_ID, 7, amount=24)])
-    if invalid["alignment"]["status"] != "unaligned" or any(request.startswith(b"POST ") for request in invalid_sent):
+    if invalid["eligibility"]["status"] != "unaligned" or any(request.startswith(b"POST ") for request in invalid_sent):
         fail(EXIT_MISMATCH, "gold_adapter_ineligible_post")
     duplicate, duplicate_sent, _ = _run([_health(), _manifest(), _decision(_PRE_ID, 7, duplicate_gold=True)])
-    if duplicate["alignment"]["code"] != "ambiguous_or_absent_gold" or any(request.startswith(b"POST ") for request in duplicate_sent):
+    if duplicate["eligibility"]["code"] != "ambiguous_or_absent_gold" or any(request.startswith(b"POST ") for request in duplicate_sent):
         fail(EXIT_MISMATCH, "gold_adapter_duplicate_post")
 
     missing, missing_sent, _ = _run([_health(), _manifest(), _decision(_PRE_ID, 7), _receipt(),
@@ -139,11 +192,18 @@ def operation() -> dict[str, object]:
                              _decision(_POST_ID, 8, selected=True, gold=44, extra_change=True)])
     if uncertain["correspondence"] != "intervening_action":
         fail(EXIT_MISMATCH, "gold_adapter_unrelated_change")
+    for post in (
+        _decision(_POST_ID, 8, selected=True, gold=44, amount=35),
+        _decision(_POST_ID, 8, selected=True, gold=44, extra_claimed_gold=True),
+    ):
+        rejected, _, _ = _run([_health(), _manifest(), _decision(_PRE_ID, 7), _receipt(), post, post])
+        if rejected["correspondence"] == "bound_one_claim":
+            fail(EXIT_MISMATCH, "gold_adapter_post_projection")
 
     divergent, _, _ = _run([_health(), _manifest(), _decision(_PRE_ID, 7), _receipt(),
                              _decision(_POST_ID, 8, selected=True, hp=46, gold=44),
                              _decision(_POST_ID, 8, selected=True, hp=46, gold=44)])
-    if {item["field"] for item in divergent["findings"] if item["outcome"] == "divergent"} != {"hp_preserved"}:
+    if {item["field"] for item in divergent["verdicts"] if item["outcome"] == "divergent"} != {"hp_preserved"}:
         fail(EXIT_MISMATCH, "gold_adapter_divergent_scalar")
 
     cancel_calls = iter((False, False, True))
@@ -151,6 +211,13 @@ def operation() -> dict[str, object]:
                                                    cancelled=lambda: next(cancel_calls, True))
     if cancelled["correspondence"] != "cancelled" or sum(request.startswith(b"POST ") for request in cancel_sent) != 1 or not all(item.closed for item in cancel_sockets):
         fail(EXIT_MISMATCH, "gold_adapter_cancellation")
+    final_cancel_calls = iter((False, False, False, False, True))
+    final_cancel, _, _ = _run([_health(), _manifest(), _decision(_PRE_ID, 7), _receipt(),
+                               _decision(_POST_ID, 8, selected=True, gold=44),
+                               _decision(_POST_ID, 8, selected=True, gold=44)],
+                              cancelled=lambda: next(final_cancel_calls, True))
+    if final_cancel["correspondence"] != "cancelled":
+        fail(EXIT_MISMATCH, "gold_adapter_final_cancellation")
     _expect_failure(lambda: _run([_health(), _manifest(), _decision(_PRE_ID, 7), _receipt(), _http(b"{}")]), "gold_wire_decision_mismatch")
     original_deadline = adapter._DEADLINE_SECONDS
     try:
@@ -165,7 +232,7 @@ def operation() -> dict[str, object]:
             if error.exit_code == EXIT_INVALID_INVOCATION:
                 continue
         fail(EXIT_MISMATCH, "gold_adapter_invocation")
-    return {"status": "passed", "fixture": "compare_reward_gold_live", "checks": 13}
+    return {"status": "passed", "fixture": "compare_reward_gold_live", "checks": 19}
 
 
 if __name__ == "__main__":

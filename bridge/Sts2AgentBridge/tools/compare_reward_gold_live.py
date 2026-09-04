@@ -2,9 +2,12 @@
 """One transient, bounded gold-claim comparison through the R0i reward client.
 
 This tool deliberately keeps every wire body, control binding, receipt, and
-credential in memory.  It has no capture or retention mode.  The only returned
-value is the allowlisted proposal produced by ``reward_gold_conformance``;
-that proposal remains unreviewed evidence.
+credential in memory.  It has no capture or retention mode.  The canonical
+evaluator proposal remains in memory; the returned value is a smaller fixed
+allowlist that cannot expose observed player, reward, selection, or boundary
+scalars.
+
+Requires Python 3.10+ (the repository-supported interpreter floor).
 """
 
 from __future__ import annotations
@@ -41,6 +44,21 @@ from tool_common import (
 _DEADLINE_SECONDS = 10.0
 _POLL_SECONDS = 0.1
 _HARNESS_SHA256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+_OUTPUT_SCHEMA = "transient_reward_gold_check_v1"
+_ARTIFACT_PIN_KEYS = (
+    "harness_sha256",
+    "case_spec_sha256",
+    "schema_sha256",
+    "build_identity_sha256",
+    "build_manifest_sha256",
+    "bridge_source_sha256",
+    "parser_source_sha256",
+    "wire_vectors_sha256",
+    "headless_contract_sha256",
+    "rules_sha256",
+    "rules_source_sha256",
+    "content_sha256",
+)
 
 
 def parse_args(arguments: list[str] | None = None) -> tuple[str, int]:
@@ -133,15 +151,20 @@ def _post_preserves_unrelated_reward_data(pre: wire.RewardDecision, post: wire.R
     after_rewards = list(post.fields["rewards"])
     if type(slot) is not int or not 0 <= slot < len(before_rewards):
         return False
-    before_selected = before_rewards[slot]
-    after_selected = next((item for item in after_rewards if item["reward_index"] == before_selected["reward_index"]), None)
-    if after_selected is None or after_selected["kind"] != "gold" or after_selected["successfully_selected"] is not True:
+    # The reviewed bridge reader republishes the parent list and suppresses
+    # only the selected reward's action.  Do not guess about a UI-removal or
+    # reindex variant: such a post remains unobserved until that exact bridge
+    # shape is independently reviewed.
+    if len(after_rewards) != len(before_rewards):
         return False
-    for item in before_rewards:
-        if item["reward_index"] == before_selected["reward_index"]:
-            continue
-        matching = [candidate for candidate in after_rewards if candidate["reward_index"] == item["reward_index"]]
-        if len(matching) != 1 or matching[0] != item:
+    for index, item in enumerate(before_rewards):
+        observed = after_rewards[index]
+        if index == slot:
+            expected = dict(item)
+            expected["successfully_selected"] = True
+            if observed != expected:
+                return False
+        elif observed != item:
             return False
     before_other = [item for item in pre.fields["legal_actions"] if item["action_id"] != selected_action_id]
     if list(post.fields["legal_actions"]) != before_other:
@@ -154,6 +177,35 @@ def _cancelled(cancel: Callable[[], bool]) -> bool:
     if type(value) is not bool:
         fail(EXIT_INTERNAL, "invalid_cancellation_callback")
     return value
+
+
+def _public_result(proposal: dict[str, Any]) -> dict[str, Any]:
+    """Project an in-memory named record to the transient output allowlist.
+
+    This is intentionally not a serializable named-conformance record.  In
+    particular, it excludes boundaries, selection, capture ordinal, source,
+    broader findings, and every observed scalar.  The artifact pins describe
+    fixed reviewed code/spec identities rather than transport data.
+    """
+    pins = proposal["pins"]
+    return {
+        "schema": _OUTPUT_SCHEMA,
+        "case_id": proposal["case_id"],
+        "artifact": {key: pins[key] for key in _ARTIFACT_PIN_KEYS},
+        "eligibility": dict(proposal["alignment"]),
+        "correspondence": proposal["correspondence"],
+        "verdicts": [
+            {"field": finding["field"], "outcome": finding["outcome"], "code": finding["code"]}
+            for finding in proposal["findings"]
+        ],
+        "omissions": list(proposal["omissions"]),
+        "admission": "not_admitted",
+    }
+
+
+def _evaluate_transient(**kwargs: Any) -> dict[str, Any]:
+    """Keep the full evaluator record local and return only its safe summary."""
+    return _public_result(gold.evaluate_reward_gold(**kwargs))
 
 
 def _read_ready_post(
@@ -194,7 +246,7 @@ def run_transient_gold_comparison(
     cancelled: Callable[[], bool] = lambda: False,
     harness_sha256: str = _HARNESS_SHA256,
 ) -> dict[str, Any]:
-    """Perform at most one eligible claim and return a sanitized proposal.
+    """Perform at most one eligible claim and return a fixed safe summary.
 
     A caller must supply the existing bounded connector and credential.  The
     function never retries a POST.  It may make bounded GETs only to discover a
@@ -208,9 +260,9 @@ def run_transient_gold_comparison(
     window = gold.ClaimWindow()
     try:
         if _cancelled(cancelled):
-            return gold.evaluate_reward_gold(pre=None, selected_action_id=None, receipt=None, post=None,
-                                             harness_sha256=harness_sha256,
-                                             window=gold.ClaimWindow(cancelled=True), origin="transient_live")
+            return _evaluate_transient(pre=None, selected_action_id=None, receipt=None, post=None,
+                                       harness_sha256=harness_sha256,
+                                       window=gold.ClaimWindow(cancelled=True), origin="transient_live")
         # These reuse the existing authenticated HTTP client and do not expose
         # their values in the proposal.
         health = _read("health", probe._BASE_ROUTES[0][1], credential, connector, deadline)
@@ -223,15 +275,15 @@ def run_transient_gold_comparison(
         pre_body = _read("reward", probe._REWARD_ROUTE[0][1], credential, connector, deadline)
         pre = _reward_decision(pre_body)
         if pre.status != "ready" or pre.binding is None:
-            return gold.evaluate_reward_gold(pre=pre, selected_action_id=None, receipt=None, post=None,
-                                             harness_sha256=harness_sha256, window=window, origin="transient_live")
+            return _evaluate_transient(pre=pre, selected_action_id=None, receipt=None, post=None,
+                                       harness_sha256=harness_sha256, window=window, origin="transient_live")
         action_id = _claim_action(pre)
         eligibility = gold.reward_gold_eligibility(pre, action_id)
         if action_id is None or eligibility["alignment"]["status"] != "eligible" or _cancelled(cancelled):
             cancelled_window = gold.ClaimWindow(cancelled=True) if _cancelled(cancelled) else window
-            return gold.evaluate_reward_gold(pre=pre, selected_action_id=action_id, receipt=None, post=None,
-                                             harness_sha256=harness_sha256, window=cancelled_window,
-                                             origin="transient_live")
+            return _evaluate_transient(pre=pre, selected_action_id=action_id, receipt=None, post=None,
+                                       harness_sha256=harness_sha256, window=cancelled_window,
+                                       origin="transient_live")
 
         receipt_body = _read("reward_action", probe._REWARD_ACTION_ROUTE, credential, connector, deadline,
                              pre.binding.decision_id, action_id)
@@ -239,6 +291,10 @@ def run_transient_gold_comparison(
         post_candidate, stable_candidate, was_cancelled = _read_ready_post(
             credential, connector, deadline, cancelled, pre.binding)
         if was_cancelled:
+            window = gold.ClaimWindow(pre.binding, None, 1, False, False, False, False, True)
+        elif _cancelled(cancelled):
+            # Cancellation remains authoritative through the final stable read;
+            # do not certify a bound claim after the caller has withdrawn it.
             window = gold.ClaimWindow(pre.binding, None, 1, False, False, False, False, True)
         elif (post_candidate is not None and stable_candidate is not None
               and post_candidate == stable_candidate
@@ -253,8 +309,8 @@ def run_transient_gold_comparison(
             post = post_candidate
             window = gold.ClaimWindow(pre.binding, None if post is None else post.binding, 1,
                                       post is not None, False, False, True, False)
-        return gold.evaluate_reward_gold(pre=pre, selected_action_id=action_id, receipt=receipt, post=post,
-                                         harness_sha256=harness_sha256, window=window, origin="transient_live")
+        return _evaluate_transient(pre=pre, selected_action_id=action_id, receipt=receipt, post=post,
+                                   harness_sha256=harness_sha256, window=window, origin="transient_live")
     finally:
         probe._zero(credential)
 
