@@ -8,6 +8,8 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import subprocess
+import sys
 
 import pytest
 
@@ -182,6 +184,32 @@ def test_case_read_is_bounded_before_an_oversized_file_is_materialized(tmp_path:
         handle.write(b" " * (corpus.MAX_CASE_BYTES + 1))
     with pytest.raises(corpus.CorpusError, match="corpus_too_large"):
         corpus.load_corpus(tmp_path, "bounded", expected_manifest_sha256=manifest_hash, expected_pins=PINS)
+
+
+@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="named pipes are unavailable on this platform")
+def test_writerless_fifo_case_rejects_in_a_bounded_subprocess(tmp_path: Path):
+    destination, manifest_hash = corpus.write_corpus(tmp_path, "fifo", [body(record())], expected_pins=PINS)
+    case_path = destination / "case-000000.json"
+    case_path.unlink()
+    os.mkfifo(case_path, 0o600)
+    script = """
+from game.analysis import conformance_corpus as corpus
+from game.analysis import conformance_evidence as evidence
+import sys
+try:
+    corpus.load_corpus(sys.argv[1], "fifo", expected_manifest_sha256=sys.argv[2],
+                       expected_pins=evidence.pins_for_harness("a" * 64))
+except corpus.CorpusError as error:
+    print(error)
+    raise SystemExit(0)
+raise SystemExit(1)
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(tmp_path), manifest_hash],
+        check=False, capture_output=True, text=True, timeout=2,
+    )
+    assert result.returncode == 0
+    assert result.stdout.strip() == "invalid_corpus_file"
 
 
 def test_aggregate_ceiling_is_preflighted_for_write_and_mirrored_by_load(tmp_path: Path, monkeypatch):

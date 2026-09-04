@@ -94,7 +94,7 @@ def _case_filename(ordinal: int) -> str:
 
 def _read_regular_at(directory_fd: int, filename: str, maximum: int) -> bytes:
     """Read at most ``maximum`` bytes without dereferencing a final symlink."""
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0)
     try:
         descriptor = os.open(filename, flags, dir_fd=directory_fd)
     except OSError:
