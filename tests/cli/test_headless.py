@@ -151,7 +151,9 @@ def test_invalid_config_and_output_collision_precede_backend_construction(
     assert calls == 0
 
 
-def test_configuration_reader_is_bounded_and_rejects_nonregular_inputs(tmp_path: Path) -> None:
+def test_configuration_reader_is_bounded_and_rejects_nonregular_inputs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
     oversized = tmp_path / "oversized.json"
     oversized.write_bytes(b"x" * (headless._MAX_CONFIG_BYTES + 1))
     with pytest.raises(ValueError, match="byte limit"):
@@ -160,6 +162,21 @@ def test_configuration_reader_is_bounded_and_rejects_nonregular_inputs(tmp_path:
     os.mkfifo(fifo)
     with pytest.raises(ValueError, match="regular"):
         headless._read_json_object(fifo)
+    external = tmp_path / "external.json"
+    external.write_text('{"unexpected":"external"}', encoding="utf-8")
+    raced = tmp_path / "raced.json"
+    raced.write_text("{}", encoding="utf-8")
+    original_open = os.open
+
+    def replace_with_symlink(path: str | bytes | os.PathLike[str], flags: int, *args: object) -> int:
+        if Path(path) == raced:
+            raced.unlink()
+            raced.symlink_to(external)
+        return original_open(path, flags, *args)
+
+    monkeypatch.setattr(headless.os, "open", replace_with_symlink)
+    with pytest.raises(ValueError, match="regular"):
+        headless._read_json_object(raced)
 
 
 def test_sigint_writes_received_and_pending_artifacts_without_lingering_cli_processes(tmp_path: Path) -> None:

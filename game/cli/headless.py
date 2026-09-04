@@ -10,6 +10,7 @@ import argparse
 from collections import Counter
 import json
 from json import JSONDecodeError
+import os
 from pathlib import Path
 import re
 import stat
@@ -51,16 +52,23 @@ def _read_json_object(path: Path) -> Mapping[str, Any]:
     """Read a small duplicate-key-free configuration object."""
 
     try:
-        metadata = path.lstat()
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+        )
     except OSError as exc:
-        raise ValueError(f"Cannot read configuration: {exc}") from exc
-    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
-        raise ValueError("Configuration must be a regular non-symlink file.")
+        raise ValueError("Configuration must be a regular non-symlink file.") from exc
     try:
-        with path.open("rb") as handle:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise ValueError("Configuration must be a regular non-symlink file.")
+        with os.fdopen(descriptor, "rb") as handle:
+            descriptor = -1
             raw = handle.read(_MAX_CONFIG_BYTES + 1)
     except OSError as exc:
         raise ValueError(f"Cannot read configuration: {exc}") from exc
+    finally:
+        if descriptor != -1:
+            os.close(descriptor)
     if len(raw) > _MAX_CONFIG_BYTES:
         raise ValueError("Configuration exceeds its byte limit.")
 
