@@ -131,14 +131,20 @@ action arithmetic. Malformed results return `run_acceptance_result_mismatch`;
 known production failures pass through a finite allowlist, while unexpected
 callback or cleanup failures return a fixed code. There is no capture flag.
 Independent actual-client fixtures and whole-bridge review are accepted at
-`847882f`; this helper has not yet been exercised live. The first authorized
+`847882f`. The first authorized
 attempt stopped before installation when Steam inspection stalled beyond the
 30-minute campaign limit. The base remained unchanged with zero overlay and
 no game process or bridge listener. A bounded infrastructure retry opened Steam
 but repeatedly failed screen capture (`-3811`), including after session reset.
-Cloud/Profile 3 inspection remains blocked before installation or game launch;
-final base/runtime checks pass. See the actor-ready ledger for the exact
-desktop-access blocker and unchanged bounded resume scope.
+Game-window capture subsequently worked after a manual launch, and Profile 3
+was visibly confirmed. The helper was then invoked **once** from a fresh map
+with first-legal/first-card/elite/safe providers and floor limit three. It
+returned only `room_interaction_timeout` (exit 4), with **no accepted run
+summary**. Exact phase/action counts and a successful map/elite/room chain are
+not certified. No retry occurred. Normal quit, exact quarantine, clean unmodded
+launch/quit, four-file purge and final unchanged-base/zero-overlay/process/
+listener checks all passed. The campaign ended within 30 minutes; no campaign
+is active. See the actor-ready ledger for its exact result and evidence limits.
 
 Its isolated synthetic gate is:
 

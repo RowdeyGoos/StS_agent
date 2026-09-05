@@ -7,12 +7,14 @@
   [Phase 1 actor-ready execution](../PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
 - **Current state:** `22`-`25` and headless `04`-`07` reviewed and integrated
   locally through `7a34785`; final combined suite **1,108 passed**. Packet `26`
-  stopped before installation after a Steam inspection call exceeded the
-  30-minute campaign limit. No game action or new live gameplay evidence;
-  post-attempt base/runtime checks passed. A bounded infrastructure retry opened
-  Steam but repeatedly failed screen capture, including after session reset.
-  Packet `26` is blocked on desktop access before installation or game launch.
-  The overall increment remains incomplete only at this live gate.
+  was executed after game-window capture worked and Profile 3 was confirmed.
+  The single capture-off controller invocation returned
+  `room_interaction_timeout` (exit 4), with no accepted run summary. Normal quit,
+  exact quarantine, clean unmodded launch/quit and final purge all passed.
+  Final verification at **2026-09-05 09:46:42 UTC** confirms the unchanged
+  429-file base, zero overlay, no game process and no bridge listener. The
+  attempt lasted **16 minutes 23 seconds**, including cleanup. No campaign is
+  active. The bounded campaign is finished; its live acceptance gate did not pass.
 
 This is the integration ledger for the elite-continuation and actor-ready
 headless successor increment. It begins after the completed
@@ -27,7 +29,7 @@ or append new outcomes to that historical record.
 | `R0I-ELITE-GATE-23` | reviewed and integrated | `8fd4320` | actual-client synthetic gate, both historical controls |
 | `R0I-RUN-ACCEPTANCE-24` | reviewed and integrated | `847882f` | complete in-memory validation and fixed capture-off output |
 | `R0I-ELITE-REVIEW-25` | accepted | source `6b25ffd` | independent Sol/high whole-bridge review |
-| `R0I-ELITE-LIVE-26` | blocked before installation; incomplete | — | Steam open; repeated capture error -3811; no install or game/controller action |
+| `R0I-ELITE-LIVE-26` | campaign finished; live gate not passed | — | room_interaction_timeout; no accepted summary; exact cleanup and clean launch/quit passed |
 | `H5-ENCODER-04` | reviewed and integrated | `23d07d7` | public-only encoding; frozen schema unchanged |
 | `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
 | `H6-CANDIDATE-POLICY-06` | reviewed and integrated | `436cef7` | synthetic shape, mask, permutation and persistence checks |
@@ -475,6 +477,111 @@ estimated.
   cleanup remain controlling. No code correction or new capability proposal
   is justified by this infrastructure failure.
 
+### 2026-09-05 — Game capture restored and campaign installed
+
+- The user manually launched the game after browser automation rejected the
+  `steam://` launch URL. The coordinator did not circumvent that browser
+  restriction. Game accessibility and an actual screenshot succeeded; the
+  main menu visibly showed **Profile 3** and **v0.107.1**. Steam-window capture
+  remained the earlier blocker, not a demonstrated game-capture failure.
+- At **09:30:19 UTC**, resumed the same authorized bounded campaign. Normally
+  quit the unmodded menu and confirmed its Yes dialog; the app reported quit.
+  `require-stopped` then passed with no process/listener. Base verification
+  passed the unchanged **429-file** projection with **zero overlay**, and
+  package verification accepted the pinned bridge `0.8.0` two-entry artifact.
+- The supported campaign manager installed the reviewed two-file overlay and
+  transient operator configuration. Exact installation state SHA-256 for
+  subsequent quarantine:
+  `c012d6cdde84ccd2486e0157c439580f694772498c2531b56eecfc116603bb61`.
+  Operator configuration verification passed its pinned hash and credential
+  shape without exposing the credential. Overlay verification passed with
+  the same **429-file** base projection and **two overlay files**.
+- At this installation stage, manual game launch and fresh Profile 3
+  inspection were pending because the browser tool rejects the Steam protocol
+  URL. No controller had run. The **10:00:19 UTC** deadline included exact
+  quarantine/purge and clean unmodded launch/quit. Subsequent results and final
+  cleanup are recorded below. Profile/save filesystem access and retained
+  transition capture remained excluded.
+
+### 2026-09-05 — One-shot live failure and exact quarantine
+
+- The user launched the installed game manually. Capture showed **Profile 3**,
+  the pinned version, and **one loaded mod**. `require-running` passed. Started
+  one standard Ironclad run without Ascension and resolved only the opening
+  setup through normal UI before reaching one visibly fresh map.
+- During opening setup, one native click attempt returned `noWindowsAvailable`.
+  The process check still passed and a fresh screenshot showed the unchanged
+  available opening choice; refreshing the accessibility window restored UI
+  access. The next selection visibly completed. This transient UI lookup
+  failure preceded controller entry; no bridge request was retried.
+- Invoked `apply_run_acceptance_live.py` **exactly once**, with
+  `--combat-provider first-legal --reward-provider first-card
+  --map-provider elite --room-provider safe --floor-limit 3 --entry-phase map`
+  and the existing required transient user-profile/UID flags. No manual
+  gameplay action occurred after controller entry, no raw logging/capture was
+  enabled, and no response/transition dataset was retained.
+- The process returned exit **4** and only this fixed failure record:
+
+  ```json
+  {"schema_version":1,"status":"failed","code":"room_interaction_timeout"}
+  ```
+
+  There is **no accepted run summary**. Exact accepted action/floor counts,
+  map reconciliation, a complete map-entry chain, elite combat and supported
+  room handoff cannot be certified from this result. Do not reconstruct
+  discarded records from the cleanup screen or promote a phase to accepted
+  live evidence. The room-interaction timeout is live-observed; its precise
+  root cause and substeps remain unclassified. No controller retry or second
+  run occurred.
+- Cleanup used normal Save and Quit to return to the menu, then Quit and its
+  Yes confirmation. At **09:41:58 UTC**, `require-stopped` passed with no game
+  process/listener (**3 process and 2 port samples**). Only then did the
+  supported manager quarantine the exact installed state.
+- Exact quarantine state SHA-256 for final purge:
+  `c8a3b92dfcd00f28ad978e961713e4ede7ee3f8bb173a360bda45a5f6ea88b61`.
+  Base verification passed with **429 files**, the unchanged
+  `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`
+  projection and **zero overlay**. At this stage the clean unmodded launch,
+  closed-port check, normal quit and final purge remained pending; their
+  completion is recorded below.
+
+### 2026-09-05 — Final clean launch, purge and campaign closure
+
+- The user manually launched the quarantined base game. A fresh native
+  screenshot showed the **Profile 3** main menu with the pinned version and
+  no modded indicator. `sample-base-port-closed` passed while the game was
+  running: **one process sample**, **one port sample**, bridge port closed.
+- The coordinator used normal Quit and the visible Yes confirmation. The
+  game reported quit, then `require-stopped` passed with **three process** and
+  **two port samples**. Only then did the supported manager purge the exact
+  quarantine state. Purge passed with phase **`absent`** and
+  **`generated_files_removed=4`**, including the transient credential.
+- Final stopped/base checks passed at **09:46:42 UTC**: **429 base files**,
+  projection
+  `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+  **zero overlay**, **no game process**, **no accepting bridge port**. From
+  the **09:30:19 UTC** start, the resumed campaign took **983 seconds**
+  (**16 minutes 23 seconds**), including both manual launches and final cleanup.
+- The campaign is closed with a truthful failed live gate. The maintained
+  wrapper's fixed `room_interaction_timeout` failure path was observed live;
+  successful explicit map entry, elite combat and a composed supported-room
+  handoff remain unaccepted/unobserved at their required evidence level.
+  No accepted aggregate exists, so no exact action/floor/terminal outcome is
+  inferred from the cleanup UI. There was one bounded run and no controller
+  retry, action adoption, phase scan or retained differential corpus.
+- Normal game Save and Quit was used; no coordinator profile/save filesystem
+  read, edit, copy, restore or parse occurred. Ordinary game/Steam profile or
+  Cloud effects are not certified absent. No Cloud setting was changed and
+  no unexpected enabled/syncing state was observed. Steam remains open; the
+  game and bridge are stopped and all campaign-generated files are removed.
+- There are no new implementation changes: the prior **1,108-test** integrated
+  result at `7a34785` remains the code-validation result. This continuation
+  updates evidence/status documentation only. No further test run is claimed.
+  The next bounded investigation concerns the room-completion timeout; the
+  discarded response cannot establish its root cause or select a new C#
+  capability. Any further live run needs its own bounded authorization because
+  the opening task's one game run has now been exercised.
+
 ### Handoff state
 
 - Local branch: `codex/phase1-actor-ready-integration`; accepted implementation
@@ -483,10 +590,12 @@ estimated.
   original `cd3e3ebb97594067d3693dc30d725152dda4dcf9` handoff; no remote
   fetch, push, PR, merge or destructive Git operation occurred.
 - Implementation, independent reviews, final regression and headless smoke
-  are complete. Only packet `26`'s bounded live gameplay gate remains open,
-  blocked by repeated desktop screen-capture failure before installation.
-  Keep this active plan until that disposition is resolved; no successor
-  implementation scope is selected from an unobserved route.
+  are complete. Packet `26` returned a live room-interaction timeout from its
+  single invocation and produced no accepted summary. All cleanup gates passed;
+  no live campaign remains active. The live acceptance gate remains open, so
+  the overall increment is not marked fully accepted. Keep this active plan
+  until that disposition is resolved; no successor implementation scope is
+  selected from discarded or unobserved route details.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:

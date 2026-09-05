@@ -11,6 +11,8 @@ event completion, explicit map entry and a complete batched room handoff remain
 unaccepted live. Elite continuation is implemented and independently fixture-tested
 by the host runner; it remains unobserved live.
 Explicit fresh reward entry has passed a bounded live campaign.
+The latest capture-off map-entry run stopped with `room_interaction_timeout`
+and no accepted run summary; exact cleanup and clean unmodded relaunch passed.
 The headless actor path has a frozen public variable-candidate encoder, trusted
 actor dataset, masked candidate scorer and accepted deterministic CPU cloning
 smoke. This proves training and artifact plumbing on structural data only.

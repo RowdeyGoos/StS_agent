@@ -108,12 +108,16 @@ review and aggregate bridge suite are accepted. The first campaign attempt
 stopped during read-only Steam inspection after that tool stalled beyond the
 30-minute limit, before installation or launch. The bounded infrastructure
 retry opened Steam but repeatedly failed screen capture (`-3811`), including
-after automation-session reset. Restore usable desktop inspection before
-resuming the same authorized game run; explicit map entry and elite
-continuation remain unobserved. Final base/runtime checks pass with zero overlay.
+after automation-session reset. Game capture subsequently worked after manual
+launch. The one authorized capture-off run from a fresh map returned
+`room_interaction_timeout` with no accepted summary; no complete map/elite/room
+chain is certified. Exact quarantine, clean unmodded launch/quit, four-file
+purge and final base/runtime checks passed within the 30-minute limit.
+Investigate the room-completion timeout within a separately bounded scope;
+discarded responses do not establish its root cause or authorize a retry.
 Preserve exact caps, replay and uncertainty
 behavior and keep boss, shops, treasures, relics and potions fail-closed.
-The live gate should begin at an
+Any subsequently authorized live gate should begin at an
 explicit fresh map, seek elite or supported-room composition without farming,
 and retain the existing clean teardown and base-game relaunch checks.
 

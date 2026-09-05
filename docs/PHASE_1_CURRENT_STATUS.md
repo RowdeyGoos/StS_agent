@@ -96,7 +96,7 @@ entry and truthful partial-prefix accounting to live-demonstrated; explicit map
 entry, a complete post-prefix floor, batched room handoff and entry failure/
 uncertainty behavior remain fixture-tested or unobserved.
 
-No live campaign is active.
+No live campaign is active; the successor result and completed cleanup are below.
 
 The host-only elite producer and independent actual-client gate are integrated
 through `8fd4320`. Normal, explicit-prefix and post-room elite paths reuse the
@@ -113,11 +113,21 @@ or operator configuration was installed, no game launched, and no controller
 invoked. Post-attempt checks confirm the unchanged 429-file base, zero overlay,
 no game process and no accepting bridge port. A bounded infrastructure retry
 opened Steam but repeatedly failed screen capture with macOS error `-3811`,
-including after resetting the automation session. Packet `26` is blocked on
-desktop access before installation: Cloud status and Profile 3 remain
-unverified. Steam is open; final base/runtime checks still pass. There is no
-new live gameplay evidence and no campaign-created overlay/configuration to
-remove. Resume the same authorized bounded run once desktop inspection works.
+including after resetting the automation session. The user subsequently
+launched the game manually: game-window capture succeeded and Profile 3 was
+visibly confirmed. After normal quit and fresh passing stopped/base/package
+checks, the reviewed overlay and transient operator configuration were installed
+and verified. Packet `26` then invoked the capture-off runner once from a
+visibly fresh map; it returned `room_interaction_timeout` with no accepted run
+summary. No phase/action totals or completed map/elite/room chain are certified.
+Normal quit, exact quarantine, clean unmodded launch/quit with the bridge port
+closed, and the four-file purge all passed. Final checks at **2026-09-05
+09:46:42 UTC** confirm the unchanged 429-file base with zero overlay, no game
+process and no bridge listener. The resumed campaign finished in **16 minutes
+23 seconds**, including cleanup. The live gate did not pass; its fixed timeout
+is observed, while successful map entry, elite combat and composed room
+handoff remain unaccepted at their required evidence level. See the actor-ready
+ledger for the exact failure and cleanup binding.
 
 ## Parallel headless execution status
 
@@ -409,10 +419,12 @@ discarded reward response or authorizes replay of its uncertain action. The
 host-only elite continuation is now implemented with independent actual-client
 fixtures, while C#, wire, caps and replay rules remain unchanged. The
 maintained capture-off validator, independent review and aggregate bridge join
-have passed. The smallest remaining
-live targets are explicit map entry, elite combat when offered, and a composed
-supported-room handoff when a rest route is offered. A compatible campaign
-should:
+have passed. The one authorized successor run from a fresh map returned
+`room_interaction_timeout`, and cleanup is complete. The smallest next
+investigation concerns that room-completion timeout without reconstructing
+discarded responses or retrying the uncertain action. Successful explicit map
+entry, elite combat and composed supported-room handoff remain live targets;
+any further campaign needs separate bounded authority and should:
 
 1. begin only at a declared visibly fresh map phase and verify its partial-
    prefix result without scanning, fallback, retry or retained raw data;
