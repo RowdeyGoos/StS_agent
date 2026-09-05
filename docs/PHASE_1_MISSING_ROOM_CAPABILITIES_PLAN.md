@@ -212,3 +212,11 @@ it permits no game execution, installation or broader static discovery.
 Implementation and final review are tracked in the
 [missing-room acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
 No user game setup is required until a later concrete live successor is ready.
+
+The isolated item implementation subsequently passed all ten pure-core fixture
+groups, independent aggregate review, the coordinator's fresh offline checker,
+eleven mock-only runner boundary checks and bit-identical assembly comparison
+across two fresh builds. Existing regression passed 1,112 tests and old 0.8.0
+source identity is unchanged. The successor remains unselected: native adapter
+evidence is compilation only, and routing/wire/host/package/live composition is
+the next item dependency. See the acceptance ledger for exact hashes and limits.

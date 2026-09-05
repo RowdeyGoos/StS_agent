@@ -135,8 +135,13 @@ choice under the current frozen scope. Do not use another generic map route as e
 
 The user selected parallel repository work on shops, item rewards and event
 continuation. The [missing-room capability plan](docs/PHASE_1_MISSING_ROOM_CAPABILITIES_PLAN.md)
-defines isolated proposals, acceptance specifications and a shared-contract
-review gate before production implementation.
+defines isolated proposals and shared-contract gates. Bounded static inspection
+is reviewed, and the first isolated item-collection component is implemented:
+ten synthetic core groups pass, its native adapter compiles against the pinned
+game, and fresh builds reproduce. It remains unselected by the live bridge.
+Next is reviewed item routing/wire/host/package composition; shop dispatch/close/
+leave seams and generic event progression still need their named static gates.
+Exact results are in the [missing-room acceptance ledger](docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
 
 Supported user-initiated launch remains available; the restricted browser
 Steam-URI route is not bypassed. Normal quit, exact quarantine/purge and final

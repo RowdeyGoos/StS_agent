@@ -540,8 +540,10 @@ is now independently reviewed: full-belt potion claims need exact inventory
 verification, event final-page state differs from exit, and shop close/leave
 are separate actions. Generic event progression and exact shop dispatch seams
 remain unresolved. The [item V1 contract](PHASE_1_ITEM_V1_CONTRACT.md) is frozen
-for one isolated direct collection and is being implemented under a separate
-successor tree with pure synthetic tests and a compile-only native adapter.
+for one isolated direct collection and is implemented in a separate successor
+tree. Ten pure-core test groups pass, independent review is complete, and two
+fresh builds reproduce the core/test/native assemblies. The native adapter
+compiled against the pinned game but has not executed.
 The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records its
 state. Existing live capabilities, 0.8.0 source/artifact and operational limits
 remain unchanged; there is no new live item capability or campaign.

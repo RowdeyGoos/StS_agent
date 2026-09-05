@@ -3,6 +3,26 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
+## Later continuation status — 2026-09-05
+
+Continue in the same 23cf checkout and integration branch. The historical
+handoff below is preserved; current truth is in
+[current status](PHASE_1_CURRENT_STATUS.md) and the
+[missing-room acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
+All three shop/item/event proposals were recovered and reviewed. Static API
+facts and a frozen one-action item contract are committed at `96969c0`; the
+isolated item core/native adapter now pass independent review, ten synthetic
+fixture groups and a compile-only reproducibility gate. Existing 1,112-test
+regression and old 0.8.0 source identity pass. No new live route or package is
+selected. The next dependency is reviewed item routing/wire/host/package
+composition; shop control connections and event progression remain separate
+gates. Do not repeat the stopped event choice or reclassify the old timeout.
+
+The user renewed authority for bounded development and campaigns when needed,
+and waived repeated unmodded launch checks; preserve the normal exact cleanup
+requirements and report that check as waived. No campaign is active. No game
+setup is needed for the next repository integration gate.
+
 ## Start from the integration checkout
 
 - Repository: `StS_agent`.
