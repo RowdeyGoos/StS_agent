@@ -109,3 +109,9 @@ see the [release acceptance](research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md).
 Implementation, fixtures and packaging are accepted. Bounded shop/event live
 acceptance is the remaining gate; that ledger owns campaign state and setup.
 The six predecessor source inventories remain immutable.
+
+The first exact user-prepared shop campaign returned unsupported_state before
+any action; cleanup completed by 2026-09-05 22:00:06 UTC. The release ledger
+records source-reviewed candidate failure branches and the proposed narrow
+read-only diagnostic gate. No failed predicate is identified yet, no live shop
+capability is accepted, and no campaign or game setup remains active.

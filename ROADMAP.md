@@ -435,7 +435,8 @@ When making a major architectural choice while doing that work, also update [DEC
 Shop and event functional implementations now have reviewed cores/native
 adapters and actual cross-language fixtures, including one frozen item child.
 The single combined runtime/bootstrap/package now passes independent full
-release acceptance. The next gate is bounded live shop/event testing with a
-user-prepared exact screen. See the
+release acceptance. The first live shop attempt rejected the intended screen before any action;
+cleanup passed. A narrow native-read diagnostic is next, followed by renewed
+shop/event live acceptance. See the
 [release ledger](docs/research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md).
 Rest-site card upgrades remain unsupported; no upgrade scope was added.

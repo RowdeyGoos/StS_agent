@@ -204,6 +204,65 @@ two accepted overlay files. No client invocation or game action has occurred.
 The user was asked to launch manually on Profile 3, continue Ironclad Ascension 0
 and stop at a fresh merchant inventory with at least one affordable ordinary
 card visible, without buying, closing or leaving. Campaign cleanup must finish
-by 22:22:50 UTC. This campaign is active and awaiting exact screen setup; the
-previous closed campaign states are never reused. Record the one-shot outcome
-and exact cleanup below before declaring this campaign closed.
+by 22:22:50 UTC. At that point the campaign was active and awaiting exact screen setup. It is
+now closed as recorded below; none of its historical states may be reused.
+
+## Live shop rejection and completed cleanup — 2026-09-05 22:00:06 UTC
+
+The user confirmed ready. Supported game capture showed the requested merchant
+inventory with affordable ordinary cards and no visible popup. The coordinator
+invoked the fixed client exactly once at 21:56:50 UTC using installed state
+e1dc76fd5345378671fd9ee5fc893defa520e85a7922483585dae46427c814b5,
+release ee7998b with documentation head 15711c5. The accepted bounded summary was:
+
+```json
+{"schema_version":1,"status":"failed","flow_kind":"shop","attempted":0,"accepted":0,"reconciled":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"option_transitions_observed":0,"code":"unsupported_state"}
+```
+
+The client received a decoded unsupported observation before any POST; no
+purchase, close or leave was attempted by the controller. A subsequent supported
+screenshot showed the inventory and visible counters unchanged. No second
+invocation or uncertain action retry occurred. This demonstrates a live native
+observation rejection on the intended setup, not successful shop control. The
+shop and event modules remain fixture-tested; neither gains live acceptance.
+The combined bootstrap/listener/wire did run far enough to return this valid
+unsupported response. This result does not resolve the historical timeout.
+
+For cleanup, supported UI Escape closed the inventory, another Escape opened
+pause, Save and Quit returned to the main menu, and Quit/Yes exited. These were
+coordinator cleanup inputs, not reconciled controller actions. Stopped/closed
+verification passed. Code-first quarantine passed with state SHA256
+33f54996ebb8a179915c0737aa396c9cdcb758b8da304cf835e5713b15ca878a;
+exact purge removed four generated files. Final unchanged base 429/zero overlay,
+stopped/closed (3 process, 2 port samples), and seven fixed absence checks passed
+by 22:00:06 UTC, within the 30-minute bound. The repeated unmodded relaunch was
+waived. No campaign remains active and no current state hash may be invoked.
+
+A separate read-only source review mapped the failure boundary. In
+room_flows_v1/host/room_flow_host.py, attempted increments only immediately before
+a POST; unsupported_state comes from a decoded unsupported body. A failed
+TryContext alone yields Missing/waiting, while a valid ready shop always exposes
+inventory:close even with no affordable cards. Those alternatives do not explain
+this result. Remaining first-read failures are native Unsupported/getter errors
+or core TryProject rejection.
+
+The largest untested boundary is native offer projection: every enumerated slot
+must supply valid entry/hitbox, each visible offer needs a canonical rendered
+price label, stocked cards need the expected creation result, and all emitted
+bindings must satisfy uniqueness and key/shape checks. Other candidates are
+logical overlay/map flags and Back-control readiness, deck/model identity, or
+CurrentRoom/native getter failure after context construction. Pure module tests
+exercise authored captures, not this adapter's live scene traversal. These are
+ranked hypotheses, not an identified or fixed cause. The prior pinned static
+result establishes the rendered cost label as a MegaLabel inheriting Label;
+there is no evidence for changing it to RichTextLabel.
+
+Next gate: a narrow, separately reviewed read-only shop diagnostic that records
+only an enumerated first-failure stage/reason from already-authorized reads,
+plus bounded counts if needed. No target-authored text, keys, prices, object
+identities, exception strings, raw payloads or retained live corpus. It should
+perform one observation, expose no gameplay action route, preserve recorder-off
+behavior, and pass fixture/release review before a fresh campaign. This is a
+proposal, not an implemented or selected new live surface. Do not weaken any
+shop predicate merely to make the current screen pass. Existing package, source
+freezes, gameplay contracts and prior live item/rest evidence remain unchanged.

@@ -13,15 +13,18 @@ historical continuation below. The single combined room_release_v1 runtime,
 bootstrap and canonical package now pass independent review and two identical
 complete offline acceptance runs. Read the
 [release ledger](research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) for exact frozen
-identities and current campaign state. Live shop/event acceptance is the next
-gate; the user is available for the first shop test. Install while closed, then
-request the exact shop inventory described in that ledger.
+identities and current campaign state. The first live shop attempt exposed a native observation rejection before any
+action; exact cleanup is complete. The release ledger owns the next diagnostic
+gate and the distinction between fixture and live evidence.
 
-Current operational state: fresh shop campaign installed at 21:52:50 UTC on
-corrective release ee7998b; base 429 plus exact two-file overlay verification
-passed. Awaiting the user-prepared shop inventory; no live client/action yet.
-The release ledger owns the installed state hash and cleanup deadline
-22:22:50 UTC. Do not reinstall or reuse an older campaign state.
+Current operational state: no campaign remains active. The first actual shop
+client invocation on corrective release ee7998b returned unsupported_state with
+0 attempted/accepted/reconciled actions on the requested visible inventory.
+Normal UI quit, exact quarantine/purge, base 429/zero overlay, stopped/closed and
+seven absence checks completed by 2026-09-05 22:00:06 UTC. The release ledger
+records the exact result and closed states. Next is a narrowly reviewed native
+shop read diagnostic; no game setup is currently needed. Do not reinstall,
+retry the historical client or weaken predicates from the screenshot alone.
 
 ## Later continuation status — 2026-09-05
 
