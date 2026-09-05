@@ -704,6 +704,39 @@ estimated.
   bounded by the user's exclusions and the existing campaign caps, not by an
   inferred need to ask for the same permission again.
 
+### 2026-09-05 — Room-stage diagnostic contract freeze
+
+- The user requested further development and renewed the same authorization
+  after the focused timeout diagnosis. The coordinator selected the previously
+  proposed host-only capture-off stage diagnostic. This adds a separate opt-in
+  diagnostic aggregate while preserving existing command outputs, C# bridge,
+  wire, package, controller, cap and no-retry semantics. Profile/save access,
+  Cloud changes, retained live corpus, remote Git and broader control remain
+  excluded. No new live campaign has begun.
+- Baseline: clean `135bc1fd562b68e0cc5351b7084ceb0d49364d8f`, existing
+  `23cf` integration checkout and branch. The full baseline suite passed
+  **1,109 tests**; no accepted prior packet is redispatched.
+- Exact accepted contract:
+  [PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md](../PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md),
+  SHA-256 `e2ef8788118962f73eb53d02f44c13b14f526e1cd7460a0e67e539879364cba1`.
+  Independent Sol/high `RD-REVIEW` accepted this hash before implementation.
+  Review fixed unknown-error handling to existing `internal_failure`, exact
+  count/category invariants, and precedence of unsafe state/cleanup over all
+  outputs. No production change is accepted merely by this contract freeze.
+- Exclusive ownership follows the plan: `RD-IMPLEMENT` owns the room/run
+  instrumentation, primitive diagnostic, new CLI and unit fixture/wrapper;
+  `RD-GATE` owns only the new independent actual-client fixture/wrapper;
+  `RD-REVIEW` is read-only; coordinator owns shared documentation, integration
+  and every live operation. Implementation and review use Sol/high. The shared
+  checkout has disjoint writable boundaries.
+- The diagnostic stores only the final fixed host stage, last validated public
+  status/kind category, bounded attempted/accepted receipt counts, last fixed
+  action categories and confirmed-completion boolean. It retains no body,
+  identity, arbitrary text, timing or action history. A new timeout can then
+  distinguish pre-action waiting, post-heal/Proceed/event waiting and unaccepted
+  exchange stages; indistinguishable C# waiting reasons and the discarded
+  historical failure remain outside the claim.
+
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
 
