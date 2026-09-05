@@ -580,6 +580,32 @@ results and the corrected setup instruction. Existing live capabilities,
 or full-run claim follows. Shop dispatch/back/FTUE seams and parent event/child
 lifecycle remain separate development gates.
 
+## Shop and event implementation successor
+
+The new [room-flow implementation](PHASE_1_SHOP_EVENT_IMPLEMENTATION_PLAN.md)
+now has actual shop/event cores and pinned native adapters, a real item-child
+broker, shared wire service and strict Python hosts. Module and integration
+reviews and the fresh aggregate source-snapshot gate are accepted in the
+[acceptance ledger](research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md).
+Shop fixtures cover zero/one ordinary-card purchase, inventory close and room
+leave. Event fixtures cover bounded structural continuation, one real frozen
+item child and explicit final Proceed/map handoff. Ordinary event option
+effects remain dispatch-only with separately observed transitions.
+
+The pure suites pass broker 575 assertions, shop 13 groups, event 36 groups,
+wire 16 assertions and actual C#-to-Python 192 checks. Both native adapters compile
+against the pinned game references and have independent source review.
+The existing regression passes 1154 tests in the sandbox; its one ephemeral
+loopback fixture was denied socket binding and passed unchanged in an
+authorized focused rerun, covering all 1155 existing tests.
+
+A combined runtime/bootstrap/package and live shop/event acceptance are next.
+This functional packet adds no live route to the installed bridge. The prior
+potion/relic campaigns remain the latest live item evidence; no campaign is
+active and no game setup is currently required. Rest healing and map return
+are supported/live-demonstrated; selecting/upgrading a card at a rest site is
+still unsupported.
+
 ## Document map
 
 - [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)

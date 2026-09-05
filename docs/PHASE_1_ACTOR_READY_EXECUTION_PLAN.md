@@ -1,5 +1,10 @@
 # Phase 1 actor-ready and elite-continuation execution plan
 
+The later shop/event functional successor is tracked in the
+[room-flow implementation plan](PHASE_1_SHOP_EVENT_IMPLEMENTATION_PLAN.md) and
+[acceptance ledger](research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md).
+The actor-ready packet contracts and historical evidence below remain preserved.
+
 - **Date:** 2026-09-04
 - **Verified parent baseline:** clean `42a3c4e895851188f7179cbc48dcff6ca5974a93`
   on `codex/phase1-parallel-integration`; the handoff commit containing this

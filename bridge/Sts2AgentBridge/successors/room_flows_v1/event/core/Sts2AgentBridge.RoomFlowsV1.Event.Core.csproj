@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.RoomFlowsV1.Event.Core</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.RoomFlowsV1.Event</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="EventV1Contracts.cs" />
+    <Compile Include="EventV1CanonicalEncoder.cs" />
+    <Compile Include="EventV1Session.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../common/Sts2AgentBridge.RoomFlowsV1.Common.csproj" />
+  </ItemGroup>
+</Project>

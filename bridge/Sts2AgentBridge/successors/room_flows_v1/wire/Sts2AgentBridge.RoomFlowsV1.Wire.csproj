@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Library</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+<ItemGroup><Compile Include="RoomFlowWireService.cs" /><Compile Include="RoomFlowWireCodec.cs" /></ItemGroup>
+<ItemGroup><ProjectReference Include="../broker/Sts2AgentBridge.RoomFlowsV1.Broker.csproj" /><ProjectReference Include="../shop/core/Sts2AgentBridge.RoomFlowsV1.Shop.Core.csproj" /><ProjectReference Include="../event/core/Sts2AgentBridge.RoomFlowsV1.Event.Core.csproj" /></ItemGroup>
+</Project>

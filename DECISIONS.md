@@ -2023,3 +2023,24 @@ without changing those accepted semantics or the existing 0.8.0 artifact.
 
 The [release plan](docs/PHASE_1_ITEM_V1_RELEASE_PLAN.md) freezes this scope.
 Readiness does not establish live collection, event completion or shop support.
+
+## D62. Integrate Bounded Shop And Event Flows Through One Functional Successor
+
+**Date:** 2026-09-05
+
+Implement both room controllers in room_flows_v1 with separate native adapters
+and shared typed receipts, explicit wire schemas and one host deadline. Reuse
+the actual frozen item service/session and host for one controller-owned event
+child. Preserve every predecessor byte and build one later combined runtime
+and release instead of duplicating the item release stack per room feature.
+
+Event stale identity includes rendered text; continuation identity excludes
+text and uses raw eligible options before lifetime reservation filtering.
+Ordinary choices are dispatch receipts with observed transitions, not claims
+that their effects or rewards were reconciled. Exact final Proceed and its
+action-bound map state establish exit. Shop purchase, inventory close and leave
+are separate correlated actions.
+
+The [functional contract](docs/PHASE_1_ROOM_FLOWS_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md) distinguish
+implemented/fixture-tested code, native compilation, packaging and live evidence.

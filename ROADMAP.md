@@ -429,3 +429,12 @@ Update `ROADMAP.md` when:
 - a previously “later” item becomes immediate
 
 When making a major architectural choice while doing that work, also update [DECISIONS.md](DECISIONS.md).
+
+## Current room-control increment
+
+Shop and event functional implementations now have reviewed cores/native
+adapters and actual cross-language fixtures, including one frozen item child.
+The next integration gate is one combined runtime/bootstrap/package and then
+bounded live shop/event acceptance. See the
+[room-flow ledger](docs/research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md).
+Rest-site card upgrades remain unsupported; no upgrade scope was added.

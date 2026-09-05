@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.RoomFlowsV1.Shop.Core</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.RoomFlowsV1.Shop</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ShopV1Contracts.cs" />
+    <Compile Include="ShopV1CanonicalEncoder.cs" />
+    <Compile Include="ShopV1Session.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../common/Sts2AgentBridge.RoomFlowsV1.Common.csproj" />
+  </ItemGroup>
+</Project>

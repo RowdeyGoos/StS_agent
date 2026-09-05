@@ -765,3 +765,10 @@ Independent review accepted the six-document campaign continuation, including
 its exact single-action claim, corrected setup and cleanup limits. All74
 relative documentation links and git diff whitespace checks passed. Only the
 six named documentation files changed; no implementation test rerun was needed.
+
+## Later shop/event implementation
+
+The subsequent actual shop/event cores, native adapters, real item-child broker,
+wire and host implementation is recorded in the separate
+[room-flow acceptance ledger](PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md).
+The item source inventories and live evidence above remain unchanged.

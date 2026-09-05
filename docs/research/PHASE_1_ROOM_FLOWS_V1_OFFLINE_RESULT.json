@@ -1,0 +1,62 @@
+{
+  "frozen_source_inventories": {
+    "item_bootstrap_v1": "a07c2fc58dad78655629f7cd1686a6b9ad108e996e728e80cf2f999733ab602e",
+    "item_release_v1": "c84bc80197c3b948971f4c1c70eb7def95be71eab903c0d278dcc3c318e1d0b0",
+    "item_transport_v1": "53c605d4512e3e14addd0ab1506d8fc59b0b21f5838f24dca752de3356c44770",
+    "item_v1": "3b37c6646fce5ad076703829ffd91f8a4d03e51083431727b517b51af8ce9a99",
+    "item_wire_v1": "4769c86b2270df0e540c8eb48f535847dc4848dd6b4fe4017b9214459d38bfa7"
+  },
+  "live_enabled": false,
+  "native": {
+    "event": {
+      "assembly_sha256": "851b28c40b46870df2cb5c0748194815ae125e3e83fa50f86f951369db864c4c",
+      "compiled": true,
+      "executed": false
+    },
+    "shop": {
+      "assembly_sha256": "75d0f069e533d5187c0db93837345d492cd7fd400a982b68d12dd48f36e1f296",
+      "compiled": true,
+      "executed": false
+    }
+  },
+  "native_assemblies_executed": false,
+  "old_bridge_file_count": 48,
+  "old_bridge_inventory_sha256": "a0ca37bb2d0ad36fcb68eafe5163ac8174074b0e6f861c69c2ac357873f75f2a",
+  "pinned_reference_count": 2,
+  "schema_version": 1,
+  "source_inventory_sha256": "96c47beadd96acb1a886748fad5691efca754f83dc1f26064707804a8a178bae",
+  "status": "passed",
+  "suite": "room_flows_v1_offline",
+  "synthetic": {
+    "broker": {
+      "check_count": 575,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_broker"
+    },
+    "cross_language": {
+      "check_count": 192,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_cross_language"
+    },
+    "event": {
+      "check_count": 36,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_event"
+    },
+    "shop": {
+      "check_count": 13,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_shop"
+    },
+    "wire": {
+      "check_count": 16,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_wire"
+    }
+  }
+}

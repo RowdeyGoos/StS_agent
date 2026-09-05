@@ -3,6 +3,15 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
+## Current shop/event development
+
+Actual shop/event modules, native adapters, shared wire/hosts and the real item
+child broker are implemented and independently reviewed in room_flows_v1.
+Read the [functional acceptance ledger](research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md)
+and [implementation plan](PHASE_1_SHOP_EVENT_IMPLEMENTATION_PLAN.md) before the
+historical continuation below. Combined runtime/package and live acceptance
+remain the next gate; no game setup is currently needed.
+
 ## Later continuation status — 2026-09-05
 
 Continue in the same 23cf checkout and integration branch. The historical
