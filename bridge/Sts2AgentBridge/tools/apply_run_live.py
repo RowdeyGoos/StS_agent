@@ -403,6 +403,7 @@ def _run_bounded_run(
     next_combat_waiter: Callable[[bytearray, str, Callable[[], Any]], int] =
         _wait_for_next_combat_ready,
     entry_phase: str = "combat",
+    room_diagnostics: object = None,
 ) -> dict[str, object]:
     if type(floor_limit) is not int or not 1 <= floor_limit <= _MAXIMUM_FLOORS:
         fail(EXIT_INTERNAL, "internal_failure")
@@ -527,16 +528,21 @@ def _run_bounded_run(
                     fail(EXIT_MISMATCH, "run_room_preflight_mismatch")
                 if room_preflight.get("screen_kind") != expected_room_kind:
                     fail(EXIT_MISMATCH, "run_room_kind_mismatch")
+                room_arguments = {
+                    "expected_context": (
+                        expected_room_kind,
+                        room_preflight["room_ordinal"],
+                    )
+                }
+                if room_diagnostics is not None:
+                    room_arguments["diagnostics"] = room_diagnostics
                 room = _require_component(
                     _with_credential(
                         credential_loader,
                         room_runner,
                         room_provider,
                         connector,
-                        expected_context=(
-                            expected_room_kind,
-                            room_preflight["room_ordinal"],
-                        ),
+                        **room_arguments,
                     ),
                     "r0i_room_interaction",
                     "run_room_result_mismatch",
@@ -731,7 +737,7 @@ def _run_bounded_run(
         floor_number += 1
 
 
-def _operation() -> dict[str, object]:
+def _operation(*, room_diagnostics: object = None) -> dict[str, object]:
     (
         profile_value,
         supplied_uid,
@@ -748,6 +754,17 @@ def _operation() -> dict[str, object]:
     def credential_loader() -> bytearray:
         return probe._load_fixed_credential(user_profile, uid)
 
+    if room_diagnostics is None:
+        return _run_bounded_run(
+            credential_loader,
+            probe._literal_loopback_connector,
+            combat_provider,
+            reward_provider,
+            map_provider,
+            room_provider,
+            floor_limit,
+            entry_phase=entry_phase,
+        )
     return _run_bounded_run(
         credential_loader,
         probe._literal_loopback_connector,
@@ -757,6 +774,7 @@ def _operation() -> dict[str, object]:
         room_provider,
         floor_limit,
         entry_phase=entry_phase,
+        room_diagnostics=room_diagnostics,
     )
 
 

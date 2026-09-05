@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 import probe_live as probe
+from room_stage_diagnostics import RoomStageDiagnostics
 from tool_common import (
     EXIT_INTERNAL,
     EXIT_INVALID_INVOCATION,
@@ -447,6 +448,7 @@ def _run_apply_room(
     connector: Callable[[], Any],
     *,
     expected_context: tuple[str, int] | None = None,
+    diagnostics: RoomStageDiagnostics | None = None,
 ) -> dict[str, object]:
     deadline = time.monotonic() + _ROOM_DEADLINE_SECONDS
     route_count = 0
@@ -454,22 +456,39 @@ def _run_apply_room(
     first_screen_kind: str | None = None
     first_room_ordinal: int | None = None
     try:
+        if diagnostics is not None:
+            diagnostics.enter_context_validation()
         expected = _validate_expected_context(expected_context)
+        if diagnostics is not None:
+            diagnostics.begin_health_read()
         health = _read_body("health", probe._BASE_ROUTES[0][1], credential, connector, deadline)
         route_count += 1
         with memoryview(health) as body:
             probe._validate_health(body)
+        if diagnostics is not None:
+            diagnostics.begin_manifest_read()
         manifest = _read_body("manifest", probe._BASE_ROUTES[1][1], credential, connector, deadline)
         route_count += 1
         with memoryview(manifest) as body:
             probe._validate_manifest(body)
 
         while time.monotonic() < deadline:
+            if diagnostics is not None:
+                diagnostics.begin_room_read()
             room_body = _read_body("room", _ROOM_DECISION_ROUTE, credential, connector, deadline)
             route_count += 1
+            if diagnostics is not None:
+                diagnostics.begin_room_validation()
             decision = _validate_room(room_body)
             status = decision["status"]
+            if diagnostics is not None:
+                diagnostics.validated_observation(
+                    status,
+                    decision["screen_kind"] if status == "ready" else "none",
+                )
             if status == "waiting":
+                if diagnostics is not None:
+                    diagnostics.mark_room_waiting()
                 time.sleep(_POLL_SECONDS)
                 continue
             if status == "unsupported":
@@ -482,6 +501,8 @@ def _run_apply_room(
                     or decision["room_ordinal"] != first_room_ordinal
                 ):
                     fail(EXIT_MISMATCH, "room_completion_mismatch")
+                if diagnostics is not None:
+                    diagnostics.mark_complete()
                 return {
                     "schema_version": 1,
                     "status": "passed",
@@ -516,6 +537,16 @@ def _run_apply_room(
                 fail(EXIT_MISMATCH, "room_decision_replayed")
             recommendation = _select_action(decision)
             action_id = str(recommendation["action_id"])
+            if diagnostics is not None:
+                basis = recommendation["basis"]
+                category = {
+                    "rest_heal": "rest_heal",
+                    "proceed": "rest_proceed",
+                    "event_first_supported": "event_choice",
+                }.get(basis)
+                if category is None:
+                    fail(EXIT_INTERNAL, "internal_failure")
+                diagnostics.begin_action_exchange(category)
             action_body = _read_body(
                 "room_action",
                 _ROOM_ACTION_ROUTE,
@@ -526,7 +557,12 @@ def _run_apply_room(
                 action_id,
             )
             route_count += 1
+            if diagnostics is not None:
+                diagnostics.begin_action_receipt()
             _validate_action_response(action_body, decision_id, action_id)
+            if diagnostics is not None:
+                diagnostics.accept_receipt()
+                diagnostics.mark_post_action()
             actions.append({
                 "decision_id": decision_id,
                 "action_id": action_id,
