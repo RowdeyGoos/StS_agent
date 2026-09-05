@@ -553,8 +553,17 @@ with one action attempt and no retry. The subsequent
 11 C# groups, 16 Python tests and 15 actual synthetic socket cases pass; two
 fresh builds match, and full regression is 1,155 tests. It adds exact injected
 byte-configuration activation and an owned-thread queue, with no game bootstrap
-or operator-filesystem loader. Next is secure operator-file binding and pinned
-Godot/bootstrap/surface/package gates before a concrete campaign.
+or operator-filesystem loader.
+The subsequent [secure operator/bootstrap packet](PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md)
+is now accepted as an install-free candidate: 13 actual-backend operator groups,
+24 synthetic lifecycle groups and 24 independent checker boundary cases pass.
+Two fresh source-snapshot builds produce the same single candidate DLL. It
+adds descriptor-bound operator loading and first-frame runtime creation with
+truthful shutdown, but its production entrypoint and game adapter have not run.
+Preserve its fourth frozen successor inventory. Next is the new whole-assembly
+surface policy/negative fixtures, canonical release package and item-aware
+operator/client/install/cleanup gates before a live campaign. No game setup
+is needed yet.
 The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records its
 state. Existing live capabilities, 0.8.0 source/artifact and operational limits
 remain unchanged; there is no new live item capability or campaign.

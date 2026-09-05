@@ -22,10 +22,14 @@ is selected. The subsequent
 [transport/frame packet](PHASE_1_ITEM_V1_TRANSPORT_PLAN.md) is accepted with
 11 C# groups, 16 Python tests, 15 actual synthetic socket cases and two matching
 fresh builds; full regression is now 1,155 tests. Preserve its third frozen
-successor source inventory too. Next is secure operator-file binding plus
-pinned Godot frame/bootstrap/surface/package and campaign gates. Exact byte
-config and owned-thread queue are implemented, but no filesystem loader or
-Godot attachment exists yet. Never inherit enabled r0a config/credentials or
+successor source inventory too. The fourth
+[secure operator/bootstrap packet](PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md) now passes
+independent review, 13 operator groups, 24 lifecycle groups and 24 checker
+boundary cases. Two fresh builds match the single install-free candidate DLL.
+Its 20-input inventory is frozen; preserve every byte. The next gate is the new
+whole-assembly surface policy/negative fixtures, canonical release package and
+item-aware operator/client/install/cleanup tools before campaign preflight.
+No production entrypoint or native adapter has executed. Never inherit enabled r0a config/credentials or
 describe a post-submission failure as retryable/no mutation. Shop control connections and
 event progression remain separate gates. Do not repeat the stopped event choice
 or reclassify the old timeout.

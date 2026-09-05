@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.ItemV1.Operator.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.ItemBootstrapV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>$(DefineConstants);ITEM_BOOTSTRAP_TEST_SEAM</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../operator/DarwinReadOnly.cs" Link="operator/DarwinReadOnly.cs" />
+    <Compile Include="../operator/ItemOperatorConfiguration.cs" Link="operator/ItemOperatorConfiguration.cs" />
+    <Compile Include="../operator/ItemOperatorFiles.cs" Link="operator/ItemOperatorFiles.cs" />
+    <Compile Include="../operator/ItemPinnedFileIdentity.cs" Link="operator/ItemPinnedFileIdentity.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

@@ -265,3 +265,21 @@ surface/package composition, then concrete campaign preflight. This packet
 executes no native/game code and enables no installed live capability. Do not
 ask the user to navigate to a reward screen before those dependencies are ready.
 The acceptance ledger records exact evidence, identities and limitations.
+
+
+### 2026-09-05 — Secure operator and bootstrap candidate accepted
+
+The subsequent [secure operator/bootstrap packet](PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md)
+is now accepted as an install-free candidate: 13 actual-backend operator groups,
+24 synthetic lifecycle groups and 24 independent checker boundary cases pass.
+Two fresh source-snapshot builds produce the same single candidate DLL. It
+adds descriptor-bound operator loading and first-frame runtime creation with
+truthful shutdown, but its production entrypoint and game adapter have not run.
+Preserve its fourth frozen successor inventory. Next is the new whole-assembly
+surface policy/negative fixtures, canonical release package and item-aware
+operator/client/install/cleanup gates before a live campaign. No game setup
+is needed yet.
+
+The exact identities, evidence and remaining operational boundaries are in the
+[acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md). No live item
+capability, parent event completion or shop control is promoted.

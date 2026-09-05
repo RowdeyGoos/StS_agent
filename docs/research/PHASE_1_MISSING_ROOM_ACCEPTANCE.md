@@ -357,3 +357,136 @@ unsupported; the historical timeout is unclassified. No campaign ran or remains
 active. Previous cleanup and the user's repeated-unmodded-launch waiver remain
 unchanged. No profile/save/Cloud access, retained live corpus, remote Git or
 model escalation occurred.
+
+### 2026-09-05 — Secure operator and first-frame bootstrap candidate accepted
+
+The [bootstrap contract](../PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md) was independently
+frozen at semantic SHA-256
+`77c2f48e8851548dd1212fa93ab2d9a205f38ea78a2db71380cf19b0904b5d0a`
+from baseline `2301e23`. Its sibling `successors/item_bootstrap_v1` is now
+reviewed and accepted as an **install-free candidate**. It is not a release
+package or live item result. The old 48-file bridge and all three previous
+successor inventories remain byte-identical.
+
+The operator lane replaced path-check/reopen assumptions with a fixed
+descriptor-relative macOS arm64 boundary. It validates the effective account,
+bounded home lookup, directory ownership/modes, deny-only ACLs, regular
+single-link files, bounded mutable reads, descriptor/name identity and stable
+metadata. Missing, disabled or invalid config stops before credential, build,
+Godot or runtime access. The only operator names are
+`Library/Application Support/Sts2AgentBridge/item_v1/{config.json,credential.hex}`
+below the OS-account home; this production scope was **not accessed** by the
+gate. Test roots were separate fresh direct children of physical /private/tmp.
+
+The new pinned-file helper accepts only the two already frozen DLL
+basename/size/hash tuples. The compile-only build wrapper supplies the
+corresponding loaded assembly Location. This checks the current file identity,
+not the already mapped memory image. Its production guard and account-home
+lookup did not execute in this packet. Local SDK headers and disposable C and
+managed ABI probes informed the exact read-only libSystem signature/layout
+contract; those preliminary probes were owner-reported and removed. Final
+actual-backend fixtures were subsequently executed independently.
+
+The bootstrap lane owns exactly one activation. It loads/validates config and
+credential, binds the build, attaches a stored ProcessFrame callback, and
+creates the frozen runtime on the first actual frame. A monotonic five-second
+deadline rejects late activation; timer scheduling is not claimed to zero bytes
+at an exact wall-clock instant. One startup participant spans factory/Create/
+Start, publishes the runtime before Start, and prevents stop from losing it.
+Stop retains incomplete runtime, timer and attachment ownership; only an owner
+frame can detach Godot. ProcessExit is a new bounded stop hook, not evidence of
+hot unload. First-frame affinity is synthetic/compile-only until a live gate.
+
+Independent review corrected stop/expiry during timer disposal, failed timer
+ownership, retry after a thrown stop call, a flaky thread-pool identity
+assumption, and uncertain frame attachment. Native wrappers now retain
+resources across owner-allocation/Connect/Dispose failures. Operator review
+removed a production-compiled synthetic-root helper and added a real
+nonblocking FIFO case. Test-only FIFO creation uses the independently accepted
+`/usr/bin/mkfifo -m 600` clarification under the exact disposable fixture root;
+ACL setup and FIFO setup both have bounded process wait/cleanup. No production
+write primitive was added.
+
+Final evidence:
+
+- **13 operator groups** execute the actual backend on disposable files:
+  native layout, exact config/credential and zero ownership, deny/allow ACLs,
+  nonblocking FIFO rejection, symlink/mode/owner/link/type/size guards,
+  descriptor replacement, metadata/read changes, bounded EINTR, close/free
+  faults, passwd pointer/UTF-8/NUL bounds and streaming identity fixtures.
+- **24 lifecycle groups** execute the actual pure coordinator through fake
+  frames/runtime: exact startup order, owner-thread checks, deadline/stop races,
+  one factory/Start, false join/deferred cleanup, thrown stop retry, timer
+  failures, uncertain attachment and truthful detach.
+- **24 independent checker cases** call the actual validators with in-memory
+  or disposable mutations. Pure target references, project/package/analyzer/
+  import/target/exec additions, absolute/duplicate compile entries, version
+  overrides, missing/extra production source/reference, copied dependencies,
+  altered helper bytes and helper symlinks all reject as expected.
+- Two fresh verified-source gates pass using SDK9.0.303, offline NuGet sources
+  and auditing disabled, isolated build state and compile-only pinned target
+  copies. Pure project structure, dependency manifests and framework-only
+  assembly references are checked before test execution.
+
+The first coordinator candidate gate in
+`/private/tmp/item-bootstrap-coordinator-a` reached metadata inspection and
+failed: the initial inspector incorrectly rejected the two internal
+`ItemTransportRuntime.StartForTests` overloads that remain in frozen source.
+The fix explicitly counts their exact instance/internal/bool signatures and
+preserves their bytes. Test AssemblyInfo/friend access is excluded. Candidate
+metadata does **not** prove these internals, or the inherited endpoint predicate,
+unreachable; the future whole-assembly owning-callsite policy must do that.
+
+Final coordinator gate `/private/tmp/item-bootstrap-coordinator-a2` and
+independent gate `/private/tmp/item-bootstrap-independent-b` have byte-identical
+result.json and all four DLLs. The checker verifies 20 new inputs, exact 13
+frozen production source links and 11 new production sources. It compiles one
+`Sts2AgentBridgeItemV1.dll`, version1.0.0, with no sibling runtime DLLs.
+Metadata validates one public static initializer, fixed assembly/file/
+informational versions, 13 exact read-only libSystem imports, the two inherited
+transport test methods and only GodotSharp/sts2 nonframework references. It
+reads PE metadata without loading the candidate or game.
+
+| Input or assembly | SHA-256 |
+| --- | --- |
+| Twenty-input canonical inventory | `a07c2fc58dad78655629f7cd1686a6b9ad108e996e728e80cf2f999733ab602e` |
+| source_identity.json | `77aa278f7c7c2cba2523c5c4d474fb2f45eb76dfa3d1faa7feb914a96e4c47ab` |
+| Candidate | `09ea93cd86a4ca502c27357171f7a7efdaf2bcf91a0a3fcffec96ef79745b9f6` |
+| Operator.Tests | `f95cccc3dd1349d9e74c48bb70322df874f83ce21f1a437043a5ffd9d68ceec1` |
+| Bootstrap.Tests | `ffac291e97e9c22f7cb1135a9a779b512cc0b8e671f90a9944bb5fde14463cb2` |
+| CandidateInspection | `b046a7fd71ef3e5af81ce22ecea701057e5d36821bf4835e03a17c314630d83e` |
+
+Final coordinator checks independently compared all four DLLs and result.json,
+verified all 20 current source inputs, confirmed both synthetic fixture roots
+absent, and passed checker syntax, diff whitespace and 87 local document links.
+
+The latest full Python regression remains the prior **1,155 passing tests**;
+this packet changes no Python host, simulator or test semantics and does not
+claim a new full-suite run. Its new checker passes syntax validation and the
+24 independent actual-function boundary cases.
+
+Reproduce with Python3.10+, the known SDK, the two explicit pinned compile
+references and a new physical scratch root:
+
+```bash
+/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python -B -I -S \
+  bridge/Sts2AgentBridge/successors/item_bootstrap_v1/check.py \
+  --dotnet /private/tmp/sts-sdk-resume.6AJGPQ/sdk/dotnet \
+  --game-data-dir "/Users/rowdeygoos/Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64" \
+  --scratch /private/tmp/item-bootstrap-review-001
+```
+
+Next is the new default-deny whole-assembly source/member/IL/callsite policy and
+negative fixtures, followed by canonical package/reproducibility and
+item-aware operator/client/install/quarantine/purge tooling. The old r0a
+manager/credential reader cannot be reused unchanged. A live preflight follows
+those gates; only then request the exact fresh untouched item-only reward on
+Profile3, with an empty potion slot if collecting a potion. No game setup is
+needed yet.
+
+No campaign ran or remains active. There was no game/production entrypoint
+execution, socket, real operator tree access, profile/save/Cloud operation,
+retained live corpus or remote Git operation. The latest completed live cleanup
+and the repeated-unmodded-launch waiver are unchanged. Shop control connections
+and generic event progression remain separate gates; the stopped event choice
+and historical timeout are not reclassified.

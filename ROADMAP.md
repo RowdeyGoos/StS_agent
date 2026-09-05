@@ -142,8 +142,11 @@ game, and fresh builds reproduce. It remains unselected by the live bridge.
 The isolated wire and programmatic host are also reviewed: 9 C# groups, 27 host
 tests and 17 actual cross-language cases pass, with two matching source-snapshot
 builds. The transport and owned-thread queue now also pass review, 11 C# groups,
-16 Python tests and 15 actual synthetic socket cases. Next is secure operator-file
-binding and pinned Godot/bootstrap/surface/package and campaign gates. Shop
+16 Python tests and 15 actual synthetic socket cases. The secure operator and
+first-frame bootstrap candidate now passes 13 operator groups, 24 lifecycle
+groups, 24 checker boundary cases and two matching fresh builds. Next is the
+new whole-assembly surface policy, canonical package and item-aware operational
+tooling before a live campaign. The game attachment remains compile-only. Shop
 dispatch/close/leave seams and generic event progression still need their named
 static gates.
 Exact results are in the [missing-room acceptance ledger](docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).

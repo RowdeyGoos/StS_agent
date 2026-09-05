@@ -1958,3 +1958,39 @@ The item controller now has a tested transport and frame-queue boundary without
 activating a live game capability. The next composition gate attaches it to the
 pinned game and secure operator configuration before a concrete campaign. The
 exact scope is [the transport plan](docs/PHASE_1_ITEM_V1_TRANSPORT_PLAN.md).
+
+## D60. Bind Operator Files Before First-Frame Item Activation
+
+### Context
+
+The frozen item core, wire and transport require a concrete game bootstrap.
+The old configuration loader checks paths separately from opening them and
+does not establish complete runtime ownership, hard-link or ACL facts.
+Initializer thread affinity and successful teardown also cannot be assumed.
+
+### Decision
+
+- Add a separate read-only macOS descriptor backend for the fixed item operator
+  unit. Pin the native ABI and exact libSystem imports; reject unsafe ownership,
+  links, modes, granting ACLs, changed identities and malformed bounded bytes.
+  No old enabled config or credential can activate this candidate.
+- Preserve all existing source inventories and compose them through explicit
+  source links into one separate candidate assembly.
+- Read config, verify the two pinned file identities, and read the credential
+  before attaching the frame callback. Create the runtime on the first actual
+  frame, with a monotonic activation deadline and one startup participant.
+- Retain incomplete timer/runtime/attachment ownership. Stop network work before
+  frame detachment, and never disconnect Godot from ProcessExit or a timer.
+  A missing response or incomplete join does not permit a new runtime or action.
+- Verify actual filesystem primitives only on disposable synthetic files.
+  Compile the native bootstrap without executing it, and distinguish basic
+  candidate metadata from the future default-deny whole-assembly release gate.
+
+### Consequence
+
+The repository has a reproducible single-assembly candidate with tested
+operator and lifecycle boundaries. Mapped-image identity, actual Godot frame
+behavior and live item collection remain unproven. Surface policy, packaging
+and item-aware operational tooling are the next gates; the user need not set
+up the game until those are complete. The exact contract is the
+[bootstrap plan](docs/PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md).
