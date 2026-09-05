@@ -140,3 +140,50 @@ claims and lane boundaries otherwise passed review. All 16 relative source
 links resolve; the local commit and amended diff pass whitespace checks.
 The 30 acceptance cases are specifications, not executed tests. Production,
 wire, artifacts and live capability remain unchanged; no game action occurred.
+
+### 2026-09-05 — Event and item proposals recovered and reviewed
+
+The coordinator checked the other two worktrees after the user's follow-up.
+Both were clean and contained a completed sole-document commit:
+
+- `MR-EVENT-03`, source `4295251c809122473be99b4b76999fb2c5d0f318`,
+  locally integrated as `bdbce8f`:
+  [event proposal](research/PHASE_1_EVENT_CONTINUATION_PROPOSAL.md).
+- `MR-LOOT-02`, source `c583d24df7aa109d07e66671a26c8c03b5f21b1f`,
+  locally integrated as `3e0e0e6`:
+  [item proposal](research/PHASE_1_ITEM_REWARD_CAPABILITY_PROPOSAL.md).
+
+Independent review of each proposal required coordinator amendments. The event
+proposal now describes current D47 map/absence/identity behavior accurately and
+requires authoritative parent-progression evidence before a new step identity
+can renew an old option. Child completion and repeated matching reads alone are
+insufficient. Existing changed-projection hashes remain available, while a
+returning reserved projection cannot evade replay rejection. It separates the
+producer reservation budget from host receipt counts, intentional transient
+public text from forbidden/persisted output, and a proposed typed combat
+handoff from the existing combat client.
+
+The item proposal now installs pending facts with reservation before dispatch,
+suppresses fresh actions while pending, separates producer budgets from host
+counts, and requires exact inventory invariants. Same-ID replacement needs an
+independent public witness; final-result correlation remains a blocking shared
+contract decision. Player-visible information is distinguished from merely
+CLR-public members. Failure-output changes require an explicit successor
+contract. Six additional specifications cover pending races, replay, inventory,
+same-ID replacement, correlation and private-identity leakage.
+
+All three proposals are now **reviewed design input, still proposed and
+unfrozen**. The event document has 38 specified cases and 11 resolving relative
+links; the item document has 45 specified cases and 18 resolving relative links.
+These are documentation/link/uniqueness checks, not executable or live evidence.
+No production tests were rerun for these docs-only integrations. Production,
+wire, package pins and the last live cleanup state remain unchanged.
+
+The next dependency is one bounded static-source scope resolving exact item
+controls/inventory and event text/progression/exit members, plus shop access and
+purchase/leave facts. Shared routing, result correlation, parent/child ownership
+and protocol/output versions must be frozen before production consumers begin.
+The proposed first item slice is direct relic collection and potion collection
+into an empty slot; event-to-item continuation depends on that reviewed child
+component. No current game setup or additional live action is required for this
+proposal handoff.

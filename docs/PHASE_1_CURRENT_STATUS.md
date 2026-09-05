@@ -534,9 +534,12 @@ The user has now selected parallel repository development toward unsupported
 shops, item rewards and event continuation. The
 [missing-room capability plan](PHASE_1_MISSING_ROOM_CAPABILITIES_PLAN.md) assigns
 three isolated proposal tasks and the coordinator's shared-contract ownership.
-Their first deliverables are source-backed contracts and synthetic acceptance
-specifications; implementation depends on review and freeze. Existing live
-capabilities and operational limits remain unchanged.
+All three proposals have been recovered, independently reviewed, corrected and
+integrated as design input. They remain proposed and unfrozen: exact target-API
+facts and shared routing, lineage, result-correlation and version decisions
+precede production implementation. Their synthetic acceptance specifications
+are not executed tests. Existing live capabilities and operational limits
+remain unchanged.
 
 ## Document map
 

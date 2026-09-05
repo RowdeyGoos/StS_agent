@@ -3,7 +3,7 @@
 - **Task:** `MR-LOOT-02`
 - **Date:** 2026-09-05
 - **Proposal baseline:** `68c8b50eed05d5442c66cc55f9ec9cf0513c7009`
-- **Status:** implementation-ready logical contract and synthetic acceptance
+- **Status:** coordinator-review proposed input and synthetic acceptance
   specification, pending target-API discovery and coordinator contract freeze
 - **Current contracts preserved:** bridge `0.8.0`, `live_probe_v0`, `headless_v0`,
   D47 room lifecycle, and every accepted default/provider
@@ -77,8 +77,9 @@ one shared interface.
 
 4. Reward actions are snapshot-bound, checked against advertised action IDs,
    immediately reread before dispatch, reserved before the click/signal, bounded
-   to 17 actions per session and three sessions per process, and reconciled by a
-   later read. One accepted decision ID cannot be reserved twice
+   to 17 reserved dispatches per session and three sessions per process, and
+   reconciled by a later read. A reserved decision ID cannot be reserved twice;
+   post-reservation dispatch faults still consume the producer budget
    ([applier](../../bridge/Sts2AgentBridge/src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardActionApplier.cs#L26-L90),
    [session](../../bridge/Sts2AgentBridge/src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs#L262-L399)).
 
@@ -158,6 +159,12 @@ must establish all of the following from the pinned build without executing it:
    list/slot changes and any offer-selected flag; and
 10. enough overlay ownership/top-surface information to reject an unrelated or
     racing modal without enumerating or interpreting private UI state.
+
+For every emitted item key, owned count, capacity and slot order, this packet
+must separately establish actor-public visibility: the fact must be visible to
+a normal player or derived solely from such public state through an approved
+mapping. A CLR-public member alone does not establish that information boundary.
+Private/native instance identities and undisplayed state remain excluded.
 
 If any fact is absent, the corresponding action stays unadvertised. Missing
 static evidence is not replaced by a guessed fixture.
@@ -246,6 +253,10 @@ Proposed action grammar:
 | `replace:<potion_slot>` | `potion_replace` | Give up the exact currently owned potion in this slot and accept the one exact offered potion. |
 | `decline_offer` | `potion_replace` | Keep every owned potion slot unchanged and decline the offered potion through a distinct proven child control. |
 
+Replacement of a slot already containing the offered public item ID is
+non-legal unless a separately reviewed exact public mutation witness can prove
+that replacement. An unchanged slot-ID projection alone cannot reconcile it.
+
 `replace:<slot>` is not discard, potion use, or decline. `decline_offer` is not
 replacement with a null slot. `skip:<offer_slot>` is not enclosing reward/event/
 shop completion. No generic `proceed`, `close`, `discard`, `use`, `buy`, or
@@ -277,14 +288,16 @@ first screen kind)` tuples assigns ordinals. A known tuple never receives a new
 ordinal after disappearance or A → B → A. A relabeled tuple, exhausted registry,
 duplicate control, order ambiguity or unknown top surface fails closed.
 
-Proposed execution bounds are eight accepted item actions per acquired surface,
-three acquired item surfaces and 24 accepted item actions per process, a
+Proposed producer bounds are eight reserved dispatches per acquired surface,
+three acquired item surfaces and 24 reserved dispatches per process, a
 30-second absolute host deadline including health/manifest reads and every item
 poll/action, 0.1-second polling, eight offers, eight potion slots, 1,000 retained
 surface identities and the existing 4,096-byte response ceiling. These are
 safety choices for the current three-destination program, not target-game facts.
 The coordinator may lower them during freeze; increasing them requires a new
-review. A rejected or pre-dispatch stale request does not consume action budget.
+review. A rejected or stale request before reservation consumes no producer
+budget; a post-reservation dispatch fault or lost response retains the consumed
+entry. Host attempted, accepted-receipt and reconciled counts are separate.
 
 The applier follows this order:
 
@@ -293,11 +306,19 @@ The applier follows this order:
 3. require the requested action in `legal_actions`;
 4. resolve and revalidate the exact current top surface, offer/control, item ID,
    inventory capacity/slots, visibility and enablement;
-5. reserve the decision ID and budget before dispatch;
+5. build the exact pending baseline, then atomically under the session gate
+   reserve the decision ID, consume producer budget and install pending facts;
 6. dispatch exactly once; and
-7. return a bound receipt without claiming effect reconciliation.
+7. return an accepted bound receipt only if dispatch returns normally, without
+   claiming effect reconciliation.
 
-If dispatch throws after reservation, the ID remains burned. If the response is
+While pending, reads may observe state for reconciliation but expose no legal
+action or fresh actionable ID, even if a passive revision, inventory, overlay
+or A -> B -> A presentation changes. Pending ends only in correlated item-local
+resolution or a fail-closed stop, never by clearing it to mint another decision.
+
+If dispatch throws after reservation, the ID, budget and pending facts remain
+intact and the outcome is backend/uncertain. If the response is
 lost, malformed, unbound, timed out or interrupted, the host stops and does not
 retry, reread to adopt the mutation, or continue a parent. Passive diagnosis
 would require a separately approved contract.
@@ -312,15 +333,18 @@ requires one of these exact postconditions:
   one, and the same offer is publicly resolved by the established offer-local
   predicate.
 - **Potion collect:** capacity is unchanged; exactly one previously empty slot
-  becomes the offered potion ID; every previously occupied slot is unchanged;
-  and the offer-local resolved predicate passes.
-- **Direct skip:** all observed potion slots and offered-item owned counts remain
-  unchanged, and the exact offer-local skipped predicate passes.
+  becomes the offered potion ID; slot count/order and every other slot,
+  including other empty slots, are unchanged; and the offer-local resolved
+  predicate passes.
+- **Direct skip:** observed capacity, slot count/order, every potion slot and
+  offered-item owned counts remain unchanged, and the exact offer-local skipped
+  predicate passes.
 - **Potion replace:** capacity and slot count are unchanged; the requested slot
   changes from its exact prior potion ID to the offered potion ID; every other
   slot is unchanged; and the child resolution predicate passes.
-- **Potion decline:** every potion slot is byte-for-byte equal to the before
-  projection, and the child decline predicate passes.
+- **Potion decline:** capacity, slot count/order and every potion slot are
+  byte-for-byte equal to the before projection, and the child decline predicate
+  passes.
 
 HP, max HP, gold and deck count are not asserted unchanged because repository
 evidence does not establish item acquisition side effects. Conversely, screen
@@ -339,7 +363,15 @@ replaced_potion_slot: int or null
 replaced_potion_id: exact prior public ID or null
 ```
 
-This record proves only the named item-local transition. It contains no
+This record is incomplete until coordinator freeze defines exact correlation
+back to the accepted decision/action, offer slot and acquired surface/lease
+lifetime, together with the required before/after evidence. A null ready
+`decision_id` in `resolved` is not that correlation. The host must not accept an
+uncorrelated terminal record or adopt another action's result; exact field
+spelling and canonical validation are shared blocking decisions.
+
+Once that correlation and the postcondition are validated, the record proves
+only the named item-local transition. It contains no
 `parent_complete`, `room_complete`, `payment_complete`, `reward_complete`, map,
 floor, or run field. A fresh parent read owns all subsequent claims.
 
@@ -357,10 +389,17 @@ Count one native mutation under exactly one component:
   duplicate the other's count; and
 - releasing an item lease or rereading a parent costs no action.
 
-An accepted item receipt increments attempted/accepted accounting once even if
-reconciliation later fails. It increments reconciled accounting only after the
-item postcondition. Parent success accounting remains absent until the parent
-owner independently validates it.
+The host increments attempted once on entry into an action exchange, accepted
+only after exact accepted-receipt validation, and reconciled only after the
+correlated item postcondition. Receipt acceptance does not increment attempted
+again. A lost receipt leaves acceptance unproved even when the producer consumed
+a reservation; later state cannot retroactively establish receipt acceptance.
+Parent success accounting remains absent until the parent validates it.
+
+Failure output is also a shared freeze decision. Partial-prefix counters may be
+emitted only if a versioned successor expressly admits them; otherwise emit only
+the selected fixed failure contract and retain no partial result. This proposal
+does not add counters or fields to existing accepted run/diagnostic schemas.
 
 ### 3.7 Mixed and unknown surfaces
 
@@ -448,9 +487,9 @@ would be clearer but is a coordinator-owned successor-contract decision.
 - The shop lane owns inventory pricing, availability, debit, purchase identity,
   payment/acquisition ordering and atomic-purchase behavior. It hands off only a
   genuine post-purchase item child.
-- `apply_run_live.py` and run acceptance must add an item count only after the
-  item component is independently accepted. They may not count the handoff or
-  same native mutation twice.
+- Run integration may expose item counts only after independent item acceptance
+  and an explicit versioned output-contract freeze. Existing accepted run and
+  diagnostic schemas remain exact. Never count a handoff or native mutation twice.
 - `headless_v0`, its encoding, candidates, trajectories, datasets and policies
   remain unchanged. A later headless successor requires separately sourced game
   semantics and a new conformance decision.
@@ -508,18 +547,29 @@ member.
 | ID | Synthetic setup | Required result |
 | --- | --- | --- |
 | `ITEM-REJECT-01` | Canonical `stale_decision`, `invalid_action`, `already_applied`, or `action_limit_reached` | Exact rejected receipt, mutation none, no reconciliation/parent continuation, no retry. |
-| `ITEM-DUPLICATE-01` | Same accepted decision POSTed twice | First dispatches once; second is `already_applied`; accepted/item totals remain one. |
+| `ITEM-DUPLICATE-01` | Same accepted decision POSTed twice by the synthetic harness | First dispatches once; second is `already_applied`; producer reservations and accepted/item totals remain one. If the harness enters two host exchanges, attempted is two; production never retries. |
 | `ITEM-REPLAY-01` | Accepted surface disappears and later returns unchanged | Registry and accepted-ID history prevent replay; no second click or ordinal reset. |
 | `ITEM-REPLAY-02` | A → B → A surfaces or same numeric pair with conflicting kind | Original A remains reserved; conflict fails closed; capacity exhaustion cannot mint a fresh identity. |
 | `ITEM-UNCERTAIN-01` | Request fully sent, receipt lost/timeout/connection reset | Attempted may be 1; accepted/reconciled remain unproved; stop with no GET, retry, adoption or parent continuation. |
 | `ITEM-UNCERTAIN-02` | Malformed/unbound accepted receipt | Receipt rejected; actual effect unknown; no retry or state-based retroactive acceptance. |
 | `ITEM-RECONCILE-01` | Accepted receipt but item count/slots unchanged, overchanged, reordered, or wrong item acquired | Reconciliation failure; accepted 1, reconciled 0; no item/parent success. |
 | `ITEM-RECONCILE-02` | Accepted receipt then only child disappearance | Waiting until bounded deadline, then failure; disappearance is not resolution. |
-| `ITEM-BUDGET-01` | Accepted-action/surface/process ceiling reached | Further actions reject before click. Rejected/stale preflight does not consume budget. |
+| `ITEM-BUDGET-01` | Producer reserved-dispatch/surface/process ceiling reached, including post-reservation faults | Further actions reject before click. Pre-reservation stale/rejected requests consume no budget; consumed slots survive faults/lost receipts and do not imply host receipt acceptance. |
 | `ITEM-DEADLINE-01` | Resolution arrives one millisecond before the 30-second deadline, and separately at/after it | Before-deadline case may pass exact reconciliation; boundary/late case stops once with timeout and no retry or parent continuation. |
 | `ITEM-CANCEL-01` | Cancellation before send, during send/receive, and after accepted receipt | Stop once; close every socket; zero credential and reachable mutable request/response buffers; no retry or later parent action. |
 | `ITEM-CLEANUP-01` | Close/cleanup callback fails after another outcome | Fixed cleanup/internal failure takes declared precedence; no arbitrary exception text, raw body, IDs or player/item history emitted. |
-| `ITEM-ACCOUNT-01` | Parent and item summaries joined after an item reconciliation failure | Attempted/accepted/reconciled item counters remain distinct; total equals component sums; handoff is never counted; parent completion false/unavailable. |
+| `ITEM-ACCOUNT-01` | Parent and item accounting joined after item reconciliation failure | Internal attempted/accepted/reconciled counts remain distinct and total equals component sums; handoff counts zero. Emit partial-prefix fields only under an explicit successor output contract; otherwise fixed failure only, with no partial result. |
+
+### 5.5 Review-required correlation and race cases
+
+| ID | Synthetic setup | Required result |
+| --- | --- | --- |
+| `ITEM-PENDING-01` | Reentrant read during dispatch, followed by mutation and a thrown dispatch exception | Pending baseline, reservation and producer-budget entry exist before dispatch. The read advertises no action; all three remain after the exception; no host accepted receipt is invented. |
+| `ITEM-REPLAY-03` | Pending action followed by passive inventory/overlay revision A -> B -> A | No fresh actionable ID or second dispatch until the original pending action is correlated and resolved; contradiction fails closed without clearing reservation. |
+| `ITEM-INVENTORY-01` | Collect with multiple empty slots; separately change a second empty slot, capacity, length or order during collect/skip/decline | Exactly one previously empty slot may fill on collect; every required unchanged field remains exact. Every extra change rejects reconciliation. |
+| `ITEM-SAMEID-01` | Offered potion ID equals the occupied replacement slot's public ID | Replacement is non-legal without a separately accepted public mutation witness; unchanged IDs alone never prove replacement. |
+| `ITEM-CORRELATE-01` | Correct item outcome paired with another decision/action, offer slot, surface or lease lifetime | Host rejects the terminal result; no item or parent success, retry or result adoption. |
+| `ITEM-INFO-02` | Change private/native model-instance identity or undisplayed sibling state while keeping all admitted visible facts equal | Public projection and decision hash remain equal; no private identity or hidden fact becomes a field, policy feature or substitute reconciliation witness. |
 
 ## 6. Dependency-ordered implementation plan
 

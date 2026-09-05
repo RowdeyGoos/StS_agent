@@ -33,8 +33,10 @@ program, a safety proof, or a promise about the next screen.
 
 The first implementation slice should remain deliberately asymmetric:
 
-- changed visible option projections and an explicitly completed child may
-  create a new event step;
+- changed visible option projections may retain the existing different-hash
+  behavior, but only an authoritative parent-progression witness may create a
+  new step ordinal or make a previously reserved projection actionable again;
+- an explicitly completed child permits parent revalidation, not step advancement;
 - an unchanged projection after an accepted action remains non-actionable
   waiting;
 - an allowlisted typed item child is delegated to the future loot controller;
@@ -107,11 +109,14 @@ provides these protections:
 
 - the current full decision and room instance are revalidated immediately
   before reservation and click;
-- one accepted action is reserved per decision ID;
-- stale or invalid input does not consume the 12-action process budget;
+- one dispatch is reserved per decision ID;
+- stale or invalid input before reservation does not consume the 12-entry
+  producer reservation budget;
 - a reserved decision cannot be used again; and
-- reservation occurs before click, so an exception or lost response after
-  reservation stays uncertain and cannot be retried.
+- reservation and producer-budget consumption occur before click, so an
+  exception or lost response after reservation stays uncertain, retains the
+  consumed slot, and cannot be retried. Host attempted and exact accepted-receipt
+  counts remain separate from that producer budget.
 
 An exact accepted receipt is recorded by the Python controller only after the
 strict receipt body matches the submitted decision/action pair. It still does
@@ -125,8 +130,11 @@ The current lifecycle in
 has a stable bounded registry of numeric run/room pairs and volatile evidence
 for the most recent ready/accepted decision.
 
-- A missing run/room, traveling state, or foreground map clears volatile
-  evidence and yields `waiting`.
+- A missing run/room/map-availability or traveling state clears volatile
+  readiness/pending evidence and yields `waiting`, while preserving the identity
+  registry and the separate applier's replay reservations.
+- A foreground map yields event `waiting` without clearing volatile evidence;
+  accepted rest Proceed may instead yield complete under its existing predicate.
 - Any nonempty overlay stack, simultaneous visible rest/event rooms, or custom
   event node yields `unsupported` before standard-event projection.
 - An unchanged projection after an accepted action yields `waiting`.
@@ -135,6 +143,9 @@ for the most recent ready/accepted decision.
 - Visible `EmbeddedCombatRoom` can yield `complete` only while an accepted
   same-event pending decision still exists.
 - Event-to-map completion is deliberately unavailable.
+- A new run/room pair normally receives a new bounded identity. Relabeling an
+  already-known numeric pair or exceeding the 1,000-identity cap is unsupported;
+  a controller's active-context checks are a separate boundary.
 
 D47 and the production-backed event study record these behaviors in
 [`DECISIONS.md`](../../DECISIONS.md#d47-separate-room-identity-from-foreground-and-completion-evidence)
@@ -193,8 +204,9 @@ surface without live execution:
    rather than merely being globally foreground;
 4. the exact fact, if any, that distinguishes event exit to map from inspection
    map opening and binds the exit to the accepted current-event action;
-5. the exact fact, if any, that distinguishes a new logical event step when the
-   rendered candidate projection is unchanged; and
+5. the exact authoritative parent-progression fact, if any, that proves a new
+   logical event step and binds it to the accepted parent action, whether the
+   rendered candidate projection changes or repeats; and
 6. after an embedded combat or item child resolves, whether the same
    `NEventRoom` resumes, is replaced, disappears, or exposes an explicit parent
    continuation signal.
@@ -252,30 +264,30 @@ it must not be smuggled into this observation change.
 
 ### 5.1 Parent and step identity
 
-Keep the current run/room registry and add an event-local monotonic
-`event_step_ordinal`, bounded to the existing 12 accepted room actions. The
-ordinal is operational lifecycle state; whether it appears on the wire is a
-shared coordinator decision. It must be included in the successor event
-decision identity so A -> B -> A cannot collide with the original A.
+Keep the current run/room registry. Add an event-local monotonic
+`event_step_ordinal` only after static discovery establishes an authoritative
+parent-progression witness and coordinator review freezes how it binds to the
+accepted parent lineage. Its bound and wire presence are coordinator decisions;
+advancement cannot bypass the existing 12-entry producer reservation cap.
 
-The ordinal may advance only from public history after the current step has an
-exact accepted/bound receipt:
+An ordinal may advance only after an exact accepted/bound parent receipt and
+that independently established progression witness. A completed child permits
+parent revalidation only; it does not itself establish a new logical step or
+renew permission to select an identical option. Two matching reads may stabilize
+a projection after the witness, but cannot substitute for it. If used, both
+reads must agree on parent, ordered keys/text/flags, legal actions and foreground
+classification, with no intervening action.
 
-- two consecutive validated reads of a different current option projection;
-  or
-- exact completion of an allowlisted child followed by two consecutive
-  validated reads of the same bound parent event, even if its visible options
-  equal the pre-child projection.
+Without that witness, preserve the existing projection/replay rule: a genuinely
+changed projection may have its ordinary different hash, but A -> B -> A reuses
+A's reserved identity and is rejected. An unchanged accepted projection,
+including one returning after a completed child, remains `accepted_waiting`.
+Do not add a revision merely because a presentation changed or a child closed.
 
-The two-read rule is proposed to prevent a one-read animation/reorder race from
-minting a step. Both reads must agree on parent identity, ordered candidate
-keys/text/flags, legal actions, and foreground classification. No action occurs
-between them.
-
-An accepted action followed by an unchanged projection remains
-`accepted_waiting`; it does not create a new decision. This deliberately leaves
-identical no-child consecutive steps unsupported unless the missing static fact
-in Section 3 supplies an authoritative step marker.
+Only the reviewed witness permits an A0 -> B1 -> A2 sequence with a fresh step
+identity; old A0 remains permanently reserved. Static absence of that witness
+leaves logical-step advancement unavailable, rather than replacing it with a
+poll-count or presentation-stability heuristic.
 
 ### 5.2 State machine
 
@@ -285,16 +297,20 @@ in Section 3 supplies an authoritative step marker.
 | `accepted_waiting(step)` | No candidates; no retry. | Exact accepted/bound receipt for that step. |
 | `child_handoff(step, kind)` | No event candidate; route one typed child. | Same parent, accepted step, and allowlisted foreground child classification. |
 | `child_active(step, kind)` | Parent remains suspended. | Child controller owns its own observations/actions/receipts. |
-| `resume_pending(step)` | No candidate while parent is revalidated twice. | Exact child completion plus same bound parent visibility. |
-| `ready(step+1)` | Fresh identity even if visible options repeat. | Stable changed projection or completed-child resume. |
+| `resume_pending(step)` | No candidate while parent is revalidated. | Exact child completion permits a same-parent check only. |
+| `ready(step+1)` | Fresh identity even if visible options repeat. | Authoritative progression witness bound to the accepted parent lineage; stable reads alone are insufficient. |
 | `exit_pending(step)` | No candidate. | Accepted step plus authoritative event-exit evidence. |
 | `map_handoff` | Parent may be called complete; map owns the next decision. | Bound exit evidence **and** fresh actionable/travel-ready map, not map visibility alone. |
 | `combat_handoff` | Parent suspended; existing combat controller owns the child. | Accepted same-event step and visible bound `EmbeddedCombatRoom`. |
 | `unsupported` | Stop immediately. | Unknown/custom/nested/racy/malformed state or exhausted bound. |
 
-Disappearance does not reset the parent or any reservation. A changed run,
-room, immutable kind, or exhausted 1,000-identity registry fails closed as it
-does under D47.
+The successor may retain its bound parent across a specifically reviewed typed
+handoff. An unknown gap does not authorize resumption or erase replay
+reservations. The underlying D47 registry can allocate a new run/room pair;
+that does not transfer an active controller to the new parent. Active-context
+mismatch, a known pair's kind conflict, or exhausted identity registry stops the
+continuation. Typed parent retention is a proposed successor behavior, not a
+claim that current D47 retains all volatile evidence across disappearance.
 
 ### 5.3 Typed child handoff
 
@@ -319,8 +335,8 @@ completed; defeat may terminate the run under existing combat truth. After
 victory, the event parent must be observed again for resumed choices or a
 separately proved exit.
 
-Child completion can justify a resume boundary; it cannot by itself prove
-parent completion. A child appearing without an accepted bound parent action,
+Child completion permits parent revalidation; it cannot by itself prove step
+advancement or parent completion. A child appearing without an accepted bound parent action,
 or with an unknown parent, is unsupported and never adopted.
 
 ### 5.4 Receipt and action accounting
@@ -390,20 +406,20 @@ It is not passing runtime, target-game, or live evidence.
 | E02 | Repeat the same passive read. | Byte-identical canonical body and identity; no lifecycle advancement. |
 | E03 | First button lethal/locked/disabled, second eligible. | Existing `safe` selects the second indexed action; no text/value interpretation. |
 | E04 | Nonlethal but harmful-looking rendered text. | Candidate may remain legal under current safety rule; fixture explicitly proves no value/effect claim. |
-| E05 | Accepted A, stable B, accepted B, stable A. | Step ordinals and IDs are A0/B1/A2; old A0 remains already applied; only A2 may apply. |
+| E05 | Accepted A -> B -> A, separately without and with a statically established progression witness bound to each accepted parent action. | Without the witness, returning A retains its reserved hash and rejects replay. With the reviewed witness, A0/B1/A2 are distinct steps; old A0 stays reserved. |
 | E06 | Accepted A followed by unchanged A until deadline. | `accepted_waiting`; no second POST, no new ID, no inferred completion. |
-| E07 | Accepted A followed by one transient B read then A. | Two-read gate does not mint B; stays waiting. |
-| E08 | Accepted A followed by stable reordered/changed candidates. | New step only after two matching reads; old action is stale; revalidation uses exact new order/text/flags. |
+| E07 | Accepted A followed by one transient B read then A, without a progression witness. | B may expose its ordinary different hash while current; no step ordinal is minted. Returning A retains its reservation and is waiting/replay-rejected. Every action still requires immediate revalidation. |
+| E08 | Accepted A followed by stable reordered/changed candidates without a progression witness. | Matching reads do not advance a step ordinal. Existing changed-projection hashing and immediate revalidation remain; returning to A cannot evade its reservation. |
 | E09 | Candidate text/key/enabled/danger changes between selection and dispatch. | Immediate revalidation rejects stale; no click or budget consumption. |
 | E10 | Foreground map or traveling state appears before dispatch. | Stale/no click; no event completion. |
 | E11 | Unsupported overlay appears before dispatch. | Stale/no click; later observation unsupported; reservation behavior remains exact. |
 | E12 | Allowlisted item child appears after accepted/bound parent action. | One typed handoff, no additional event POST, parent suspended; item semantics delegated. |
 | E13 | Item child appears without accepted parent action or for another parent. | Unsupported; no child adoption or action. |
-| E14 | Item child completes and identical parent choices return. | Child completion alone is not parent completion; two stable same-parent reads create the next step. |
+| E14 | Item child completes and identical parent choices return, without and with an independent progression witness. | Without the witness, remain accepted-waiting with no renewed action. With a reviewed bound witness, a new step may become ready; neither case infers parent completion from the child. |
 | E15 | Item child completion is followed by a map with no authoritative event-exit fact. | Remain waiting/unsupported; never report event complete. |
 | E16 | Visible bound embedded combat after accepted event action. | Typed combat handoff; no event completion and no double-counted handoff action. |
 | E17 | Embedded combat without accepted same-event action. | Unsupported/waiting under the frozen rule; do not adopt combat as this parent. |
-| E18 | Combat child wins and parent resumes choices. | Combat counts once in combat; event action once in room/event; parent produces a fresh step only after revalidation. |
+| E18 | Combat child wins and parent resumes choices. | Count combat and parent actions once in their own categories. Revalidate the parent; a fresh step ordinal additionally requires its bound progression witness. |
 | E19 | Combat child resolves then map appears. | Combat resolution does not prove event completion; require separate bound exit evidence. |
 | E20 | Accepted exit action plus authoritative same-parent exit fact plus fresh travel-ready map. | Exactly one `map_handoff`; parent complete only after both facts; no extra action count. |
 | E21 | Inspection map opens/closes before or after a non-exit action. | Never completes parent; replay reservation survives. |
@@ -415,13 +431,13 @@ It is not passing runtime, target-game, or live evidence.
 | E27 | Empty, invalid, non-display-control, over-256-byte, or unreadable rendered text. | Projection unsupported; no truncation, key fallback, or action. |
 | E28 | Non-ASCII rendered text at/under the byte bound. | Canonical UTF-8 round trip and hash stability; ASCII key remains unchanged. |
 | E29 | Duplicate/missing/unknown JSON fields, invalid UTF-8, noncanonical order, or mismatched step/handoff linkage. | Strict parser/encoder rejection; no action. |
-| E30 | More than eight candidates, 13th accepted room action, new 1,001st identity, or response over 4096 bytes. | Existing applicable bound fails closed; known retained identities remain valid for replay rejection. |
-| E31 | Parent disappears and returns; A -> B -> A; run/room/kind changes. | Disappearance never resets reservation; same parent uses monotonic step; replacement/kind conflict is stale or unsupported. |
+| E30 | More than eight candidates, 13th producer reservation, new 1,001st identity, or response over 4096 bytes. | Existing applicable bound fails closed; known retained identities remain valid for replay rejection. |
+| E31 | Parent disappears and returns; A -> B -> A; run/room/kind changes. | Preserve replay reservations. D47 may allocate a new pair but active continuation never adopts it; known-pair relabeling fails. Same-parent ordinal advancement requires its bound progression witness. |
 | E32 | Child controller rejects, times out, is cancelled, or has uncertain receipt. | Whole interaction stops; parent is not resumed automatically; no later POST. |
 | E33 | Child completes but parent validation fails or another parent appears. | Child result cannot complete or transfer to the wrong parent; stop before event/map action. |
-| E34 | Full event -> item child -> resumed event -> combat child -> resumed event -> explicit map exit. | Exact request order; each accepted parent/child action counted once; handoffs counted zero; no phase scan or fallback. |
+| E34 | Full event -> item child -> resumed event -> combat child -> resumed event -> explicit map exit, with reviewed progression and exit witnesses at the required boundaries. | Exact request order; each accepted parent/child action counted once; handoffs counted zero; missing witnesses prevent advancement; no phase scan or fallback. |
 | E35 | Cancellation or exception at every read, parse, receipt, handoff, and resume boundary. | Sockets close; mutable request/response/credential buffers are zeroed; fixed sanitized output only. |
-| E36 | Secret/canary in target exception, text source, malformed child, or transport buffer. | No canary/raw body/engine identity appears in output, diagnostics, or fixture artifacts. |
+| E36 | Separate valid player-visible rendered-text fixture from canaries in private fields, hidden sibling text, exception details, malformed child content and discarded buffers. | Valid rendered text appears in the transient successor decision/wire and hash. Forbidden fields never enter that projection. Fixed errors/diagnostics and persisted artifacts omit rendered text and raw bodies unless an explicit output contract admits them. |
 | E37 | Process/controller restart after accepted or uncertain action. | No transparent recovery, journal adoption, or retry; explicit fresh entry remains required. |
 | E38 | Existing `live_probe_v0`/0.8.0 vectors and default room/run fixtures. | Remain byte- and behavior-exact on the compatibility path. |
 
@@ -441,8 +457,9 @@ the lifecycle in a second model.
    `MR-LOOT-02` and `MR-SHOP-01`; choose shared lineage, handoff, uncertainty,
    accounting, status, version, and artifact semantics. Record an exact hash
    before production or consumer fixtures encode the result.
-3. **Observation producer.** Add bounded rendered text and event-step identity
-   behind the successor contract. Preserve current protocol/version unchanged.
+3. **Observation producer.** Add bounded rendered text behind the successor
+   contract; add event-step identity only if its progression witness passed the
+   static and freeze gates. Preserve current protocol/version unchanged.
 4. **Independent observation gate.** Verify strict UTF-8/bounds, passive reads,
    public-information scope, hash stability, immediate revalidation, malformed
    input, and compatibility negative control.
@@ -466,14 +483,19 @@ the lifecycle in a second model.
 If static discovery finds rendered text and a typed item-child classifier but
 no event-exit marker, implement only:
 
-> bounded rendered option text + step ordinal for changed/resumed projections
-> + one item-child handoff/resume + existing embedded-combat handoff, with
-> event-to-map still fail-closed.
+> bounded rendered option text + one item-child handoff and parent revalidation
+> + a new typed embedded-combat handoff using the existing combat client,
+> with event-to-map still fail-closed.
+
+Enable a new step ordinal only if a separate authoritative parent-progression
+witness is established. Without it, changed projections retain the existing
+hash/replay behavior and identical resumed choices remain accepted-waiting.
 
 This slice addresses the observed class of unsupported child surface without
 inventing parent completion. If the item classifier is absent, reduce further
-to rendered text plus changed-projection A -> B -> A continuation; do not
-pretend that generic overlay suppression is item support.
+to rendered text with existing changed-projection and A -> B -> A replay
+rejection behavior; do not infer logical progress or pretend that generic
+overlay suppression is item support.
 
 ## 9. Fresh UI state for a later live test
 
