@@ -1,6 +1,7 @@
 # Phase 1 Current Integration Status
 
 - **Status date:** 2026-09-05
+- **Fresh-session handoff:** [Astra handoff](PHASE_1_ASTRA_HANDOFF.md)
 - **Active bridge milestone:** `R0i`
 - **Bridge version:** `0.8.0`
 - **Protocol:** `live_probe_v0`

@@ -584,6 +584,11 @@ estimated.
 
 ### Handoff state
 
+- Fresh-session operational/source handoff:
+  [PHASE_1_ASTRA_HANDOFF.md](../PHASE_1_ASTRA_HANDOFF.md). Prepared at the
+  user's request without creating a new session. Read-only rechecks at
+  **2026-09-05 10:14:48 UTC** again passed the stopped process/listener guard,
+  unchanged 429-file zero-overlay base and pinned two-entry package.
 - Local branch: `codex/phase1-actor-ready-integration`; accepted implementation
   head: `7a347853dcd4ada4b8f60a8c7f110546bce995a9`. Documentation records
   this result in a subsequent coordinator commit. Local `main` remains the

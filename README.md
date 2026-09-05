@@ -42,6 +42,7 @@ Project and contributor documentation:
 - [docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md](docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md): historical independent hash-bound review of the D1 result and D1B scope
 - [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md): preregistration and evidence plan for choosing the live bridge and fast backend
 - [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md): living account of demonstrated bridge progress, current limitations, and the next bounded target
+- [docs/PHASE_1_ASTRA_HANDOFF.md](docs/PHASE_1_ASTRA_HANDOFF.md): fresh-session handoff for the accepted local integration branch, distinct capture/controller failures, completed cleanup and remaining live gate
 - [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md): active elite-continuation and actor-ready headless packet graph
 - [docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md): active integration and evidence ledger for that graph
 - [docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json](docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json): frozen public feature schema, candidate mapping and normalization for the separate headless actor representation
