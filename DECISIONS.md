@@ -1884,3 +1884,40 @@ A future live successor still requires explicit routing/version/surface/package
 composition and campaign gates. The exact bounded contract is
 [PHASE_1_ITEM_V1_CONTRACT.md](docs/PHASE_1_ITEM_V1_CONTRACT.md); static findings
 and subsequent executable evidence remain separately labeled.
+
+
+## D58. Correlate Item Dispatch And Collection Across A Separate Wire Boundary
+
+### Context
+
+The accepted item core proves one retained item-local effect. A host must
+validate its serialized observations and distinguish dispatch from acquisition
+without opening a second action session or changing the frozen live protocol.
+A future frame queue can time out after claiming work while mutation continues.
+
+### Decision
+
+- Add a sibling `item_probe_v1` application service and strict programmatic
+  Python controller; preserve every byte of the accepted core/native tree and
+  old 0.8.0 artifact inputs.
+- One service owns one core/session through runtime teardown and reserves one
+  syntactically valid POST before core access. A controller cannot reset it.
+- Use bounded canonical explicit JSON, independent host digest validation and
+  exact accepted-receipt/resolved-result correlation. A receipt alone is never
+  a collection success; failures and lost responses never permit retry.
+- Share one deadline/read budget across observation, dispatch and reconciliation.
+  Keep owned response buffers mutable and zero them on every exit.
+- Verify actual C# core-produced bytes through the real host in synthetic
+  fixtures, separately from native and live evidence. Add no listener, config,
+  bootstrap or package until their separate composition gates are reviewed.
+- A future runtime uses distinct default-disabled config and credential scope;
+  it never inherits enabled r0a state. Treat every post-submission transport
+  failure as terminal unknown mutation, including queue-claim timeouts.
+
+### Consequence
+
+The isolated item protocol and controller can be tested and reproduced without
+activating a live capability. Transport/frame-thread integration and pinned
+bootstrap/surface/package/campaign remain explicit dependencies. Parent event
+progression and shop controls are not implied by an item collection result.
+The exact contract is [the item wire plan](docs/PHASE_1_ITEM_V1_WIRE_PLAN.md).

@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "evidence": "synthetic_core_wire",
+  "cases": {
+    "potion_success": [
+      {
+        "request": {
+          "method": "GET",
+          "route": "/probe/item-v1/public/item-decision",
+          "decision_id": null,
+          "action_id": null
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"ready\",\"decision_id\":\"7af3c96c4ab53a46987d7e56c0e785701e8e7836dd27f806db3872517cf571ae\",\"offers\":[{\"index\":3,\"kind\":\"potion\",\"key\":\"Potion_Synthetic\",\"enabled\":true}],\"potion_slots\":[\"Potion_Held\",null],\"legal_actions\":[\"collect:3\"]}"
+      },
+      {
+        "request": {
+          "method": "POST",
+          "route": "/probe/item-v1/public/item-action",
+          "decision_id": "7af3c96c4ab53a46987d7e56c0e785701e8e7836dd27f806db3872517cf571ae",
+          "action_id": "collect:3"
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"accepted\",\"decision_id\":\"7af3c96c4ab53a46987d7e56c0e785701e8e7836dd27f806db3872517cf571ae\",\"action_id\":\"collect:3\"}"
+      },
+      {
+        "request": {
+          "method": "GET",
+          "route": "/probe/item-v1/public/item-decision",
+          "decision_id": null,
+          "action_id": null
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"resolved\",\"decision_id\":\"7af3c96c4ab53a46987d7e56c0e785701e8e7836dd27f806db3872517cf571ae\",\"action_id\":\"collect:3\",\"offer_index\":3,\"kind\":\"potion\",\"key\":\"Potion_Synthetic\",\"result\":\"collected\"}"
+      }
+    ],
+    "relic_success": [
+      {
+        "request": {
+          "method": "GET",
+          "route": "/probe/item-v1/public/item-decision",
+          "decision_id": null,
+          "action_id": null
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"ready\",\"decision_id\":\"c855d14f439504c0afe189c40186bd686dca0800a9a560b2a9db1d535e4ef379\",\"offers\":[{\"index\":7,\"kind\":\"relic\",\"key\":\"Relic_Synthetic\",\"enabled\":true}],\"potion_slots\":[\"Potion_Held\",null],\"legal_actions\":[\"collect:7\"]}"
+      },
+      {
+        "request": {
+          "method": "POST",
+          "route": "/probe/item-v1/public/item-action",
+          "decision_id": "c855d14f439504c0afe189c40186bd686dca0800a9a560b2a9db1d535e4ef379",
+          "action_id": "collect:7"
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"accepted\",\"decision_id\":\"c855d14f439504c0afe189c40186bd686dca0800a9a560b2a9db1d535e4ef379\",\"action_id\":\"collect:7\"}"
+      },
+      {
+        "request": {
+          "method": "GET",
+          "route": "/probe/item-v1/public/item-decision",
+          "decision_id": null,
+          "action_id": null
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"resolved\",\"decision_id\":\"c855d14f439504c0afe189c40186bd686dca0800a9a560b2a9db1d535e4ef379\",\"action_id\":\"collect:7\",\"offer_index\":7,\"kind\":\"relic\",\"key\":\"Relic_Synthetic\",\"result\":\"collected\"}"
+      }
+    ],
+    "bounds_ready": [
+      {
+        "request": {
+          "method": "GET",
+          "route": "/probe/item-v1/public/item-decision",
+          "decision_id": null,
+          "action_id": null
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"ready\",\"decision_id\":\"fc7667af5b3b0eace8567c3f507200320c46b747deece587ba69906b166d6280\",\"offers\":[{\"index\":248,\"kind\":\"relic\",\"key\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"enabled\":true},{\"index\":249,\"kind\":\"relic\",\"key\":\"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"enabled\":true},{\"index\":250,\"kind\":\"relic\",\"key\":\"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC\",\"enabled\":true},{\"index\":251,\"kind\":\"relic\",\"key\":\"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\",\"enabled\":true},{\"index\":252,\"kind\":\"relic\",\"key\":\"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\",\"enabled\":true},{\"index\":253,\"kind\":\"relic\",\"key\":\"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\",\"enabled\":true},{\"index\":254,\"kind\":\"relic\",\"key\":\"GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\",\"enabled\":true},{\"index\":255,\"kind\":\"relic\",\"key\":\"HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH\",\"enabled\":true}],\"potion_slots\":[\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\",\"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\",\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg\",\"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\"],\"legal_actions\":[\"collect:248\",\"collect:249\",\"collect:250\",\"collect:251\",\"collect:252\",\"collect:253\",\"collect:254\",\"collect:255\"]}"
+      },
+      {
+        "request": {
+          "method": "POST",
+          "route": "/probe/item-v1/public/item-action",
+          "decision_id": "fc7667af5b3b0eace8567c3f507200320c46b747deece587ba69906b166d6280",
+          "action_id": "collect:248"
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"accepted\",\"decision_id\":\"fc7667af5b3b0eace8567c3f507200320c46b747deece587ba69906b166d6280\",\"action_id\":\"collect:248\"}"
+      },
+      {
+        "request": {
+          "method": "GET",
+          "route": "/probe/item-v1/public/item-decision",
+          "decision_id": null,
+          "action_id": null
+        },
+        "body": "{\"schema_version\":1,\"protocol\":\"item_probe_v1\",\"version\":\"item_v1\",\"session_nonce\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"surface_ordinal\":1,\"status\":\"resolved\",\"decision_id\":\"fc7667af5b3b0eace8567c3f507200320c46b747deece587ba69906b166d6280\",\"action_id\":\"collect:248\",\"offer_index\":248,\"kind\":\"relic\",\"key\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"result\":\"collected\"}"
+      }
+    ]
+  }
+}

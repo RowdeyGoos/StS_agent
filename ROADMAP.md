@@ -139,8 +139,12 @@ defines isolated proposals and shared-contract gates. Bounded static inspection
 is reviewed, and the first isolated item-collection component is implemented:
 ten synthetic core groups pass, its native adapter compiles against the pinned
 game, and fresh builds reproduce. It remains unselected by the live bridge.
-Next is reviewed item routing/wire/host/package composition; shop dispatch/close/
-leave seams and generic event progression still need their named static gates.
+The isolated wire and programmatic host are also reviewed: 9 C# groups, 27 host
+tests and 17 actual cross-language cases pass, with two matching source-snapshot
+builds. Next is separate default-disabled transport/configuration and frame-thread
+composition, then pinned bootstrap/surface/package and campaign gates. Shop
+dispatch/close/leave seams and generic event progression still need their named
+static gates.
 Exact results are in the [missing-room acceptance ledger](docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
 
 Supported user-initiated launch remains available; the restricted browser

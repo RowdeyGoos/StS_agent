@@ -220,3 +220,25 @@ across two fresh builds. Existing regression passed 1,112 tests and old 0.8.0
 source identity is unchanged. The successor remains unselected: native adapter
 evidence is compilation only, and routing/wire/host/package/live composition is
 the next item dependency. See the acceptance ledger for exact hashes and limits.
+
+
+### 2026-09-05 — Item wire and programmatic host accepted
+
+The [wire/host packet](PHASE_1_ITEM_V1_WIRE_PLAN.md) was independently frozen
+and implemented in sibling `successors/item_wire_v1`, preserving the complete
+accepted item tree and old 0.8.0 identities. The C# lane owns the explicit
+protocol producer and bounded fixture endpoint; the Python lane owns the strict
+controller; the coordinator owns the verified-source checker and literal
+synthetic vectors. Independent reviews corrected the read-budget, no-retry,
+reentrant receipt and fixture cleanup boundaries before acceptance.
+
+The final gate passes 9 producer groups, 27 host tests and 17 cross-language
+cases using actual core-produced bytes. Two fresh source-copy builds match;
+full regression passes 1,139 tests. This is offline integration evidence only.
+The next dependency is separate default-disabled authenticated transport/config
+and frame-thread composition, then pinned bootstrap/surface/package and campaign
+gates. A queue timeout after submission may follow mutation and cannot authorize
+a retry. The old enabled configuration/credential scope cannot activate the
+successor. No current game setup is needed; shop actions and parent event
+progression remain separate unselected capabilities. Exact identities and
+reproduction steps are in the acceptance ledger.

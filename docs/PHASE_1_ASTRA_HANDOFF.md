@@ -13,10 +13,17 @@ All three shop/item/event proposals were recovered and reviewed. Static API
 facts and a frozen one-action item contract are committed at `96969c0`; the
 isolated item core/native adapter now pass independent review, ten synthetic
 fixture groups and a compile-only reproducibility gate. Existing 1,112-test
-regression and old 0.8.0 source identity pass. No new live route or package is
-selected. The next dependency is reviewed item routing/wire/host/package
-composition; shop control connections and event progression remain separate
-gates. Do not repeat the stopped event choice or reclassify the old timeout.
+regression and old 0.8.0 source identity pass. The subsequent isolated
+[wire/host packet](PHASE_1_ITEM_V1_WIRE_PLAN.md) is now accepted: 9 C# groups,
+27 host tests and 17 actual cross-language cases pass; two fresh source-snapshot
+builds match. Full regression is 1,139 passing tests. Both successor trees have
+frozen source inventories; preserve every byte. No new live route or package
+is selected. Next is a separate default-disabled authenticated transport/config
+and frame-thread composition contract, then pinned bootstrap/surface/package
+and campaign gates. Never inherit enabled r0a config/credentials or describe a
+post-submission failure as retryable/no mutation. Shop control connections and
+event progression remain separate gates. Do not repeat the stopped event choice
+or reclassify the old timeout.
 
 The user renewed authority for bounded development and campaigns when needed,
 and waived repeated unmodded launch checks; preserve the normal exact cleanup

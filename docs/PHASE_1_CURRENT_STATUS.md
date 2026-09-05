@@ -544,6 +544,13 @@ for one isolated direct collection and is implemented in a separate successor
 tree. Ten pure-core test groups pass, independent review is complete, and two
 fresh builds reproduce the core/test/native assemblies. The native adapter
 compiled against the pinned game but has not executed.
+The isolated [wire/host packet](PHASE_1_ITEM_V1_WIRE_PLAN.md) is also accepted:
+9 producer groups, 27 host tests and 17 real C#-to-Python synthetic cases pass;
+two verified source-snapshot builds match. Full regression passes 1,139 tests.
+The service reports collection only after exact receipt and result correlation,
+with one action attempt and no retry. The next item dependency is separate
+transport/configuration/frame-thread composition and pinned bootstrap/surface/
+package gates before a concrete campaign.
 The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records its
 state. Existing live capabilities, 0.8.0 source/artifact and operational limits
 remain unchanged; there is no new live item capability or campaign.
