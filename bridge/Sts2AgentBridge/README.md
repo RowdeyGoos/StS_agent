@@ -725,6 +725,19 @@ full room-result verifier plus matching complete/count/kind facts; its internal
 acceptance summary is discarded. No route/poll count, partial result or new
 capture path is emitted. Default room and run commands remain unchanged.
 
+A user-prepared fresh event has now exercised this command live: one entered
+`event_choice` exchange and accepted receipt, followed by
+`room_state_unsupported` at `room_validation`; completion stayed false. A visible
+loot overlay was consistent with the generic nested-overlay guard, but the
+aggregate does not identify that cause. No collect/skip or retry followed.
+The direct fixture now has 11 grouped categories, including that authored
+accepted-event/unsupported boundary.
+
+Event observation reads option-button indices, public text keys and flags. It
+does not expose full option descriptions or structured costs/effects. The
+`safe` event selector chooses the first eligible non-lethal option and does not
+predict or guarantee that its resulting surface is supported.
+
 The direct wrapper preserves the room parser's exact `invalid_decision_provider`
 /exit-2 pair locally; all other failures follow the frozen run-diagnostic helper.
 Unknown errors, cancellation, unsafe-state/cleanup precedence and non-retaining

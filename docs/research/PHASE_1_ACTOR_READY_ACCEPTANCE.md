@@ -1003,6 +1003,98 @@ unchanged pinned bridge, then asking the user to prepare the exact untouched
 event. The user may continue the latest successfully accepted run to that new
 room; no uncertain prior action or failed historical run is resumed.
 
+### 2026-09-05 — Targeted event diagnostic observed unsupported continuation
+
+- Campaign began **12:12:36 UTC** and ended **12:20:50 UTC**, **8 minutes
+  14 seconds** including cleanup. Source
+  `9d69df135b7dd15918617e413ac91d2786738ea5`, documentation `eab65d6`.
+  Fresh stopped/closed checks passed (3 process/2 port samples); base verification
+  passed unchanged 429 files/zero overlay and the pinned two-entry package passed.
+- Exact installation passed with state SHA-256
+  `c6fdfa719f8ca6d182fe82112b01a7b71fb011f949db7cd47ee99dfefaeee31e`.
+  Post-install overlay verification passed unchanged base/two overlay files;
+  fixed operator configuration and credential shape passed without disclosure.
+- The user launched manually, continued the latest successfully accepted Profile
+  3 Ironclad Ascension 0 run and prepared a fresh question-mark event. The user
+  confirmed the choices were untouched. Supported UI inspection showed a normal
+  event with two visible options and one loaded mod. User navigation was outside
+  direct-controller evidence; no previous uncertain room action was resumed.
+- At **12:17:17 UTC**, the coordinator invoked `diagnose_room_live.py` exactly
+  once with the existing six arguments and `--decision-provider safe`. It returned
+  exit **4** with the following exact retained fixed aggregate:
+
+```json
+{"schema_version":1,"status":"failed","milestone":"r0i_room_diagnostic","code":"room_state_unsupported","room":{"stage":"room_validation","last_observation_status":"unsupported","last_ready_kind":"event","action_exchange_attempt_count":1,"accepted_receipt_count":1,"last_attempted_action":"event_choice","last_accepted_action":"event_choice","completion_confirmed":false}}
+```
+
+- This is live evidence of a validated ready event, exactly one entered event
+  exchange and exact accepted receipt, followed by a validated unsupported room
+  response. The client stopped immediately on that response. It did not confirm
+  room completion. No partial room/run result, raw payload, choice identity,
+  content key, player scalar, poll count or transition corpus was retained.
+- A separate read-only UI check for cleanup showed a potion-loot overlay. The
+  source's generic nested-overlay guard is consistent with that observation,
+  but the fixed diagnostic does **not** identify the unsupported guard's cause,
+  prove selected option identity/effect or establish a safe collect/skip control.
+  No loot was collected or skipped, no action was retried, and no additional
+  diagnostic or campaign was run. The historical `room_interaction_timeout`
+  remains unclassified; this invocation instead returned an explicit unsupported
+  state after one accepted receipt.
+- Normal Save and Quit, menu Quit and confirmation passed, followed by stopped/
+  closed verification. Exact quarantine passed with state SHA-256
+  `7ee34ceb6b88f9b3a88bac0a8bcab192ce4c07aafbb9523f235ea940db810069`.
+  Exact purge removed four generated files and reported phase absent. Final
+  stopped/closed checks passed (3 process/2 port samples); final base verification
+  passed unchanged 429-file hash
+  `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`
+  with zero overlay. The repeated unmodded launch/quit check was waived by the
+  user, not performed or claimed as passed. No campaign remains active.
+- No profile/save filesystem access, Cloud change, retained live corpus, remote
+  Git operation or broader capability change occurred. The supplied browser URI
+  restriction was not bypassed; supported user-initiated launch and game capture
+  worked. Steam capture's earlier `-3811` result remains independent.
+
+### 2026-09-05 — Accepted-event/unsupported regression and source disposition
+
+- Independent Sol/high read-only review confirmed the diagnostic record's
+  consistency. `apply_room_live` copies validated status, retains last ready
+  kind across non-ready observations, increments accepted only after the exact
+  receipt validator and rejects unsupported immediately. A last ready kind of
+  event is historical category evidence, not an assertion about the hidden
+  unsupported surface.
+- `PinnedPublicRoomDecisionReader` marks a surface unsupported before event
+  projection for a valid nonempty overlay stack, simultaneous room surfaces or
+  custom event node. Ordinal/identity problems and event candidate validation
+  can also yield unsupported. Existing C# fixtures cover generic unsupported
+  surfaces, overlay rejection at immediate revalidation and replay reservation
+  after invalidation. No new C# defect or justified control expansion was found.
+- `DR-UNSUPPORTED` added only an authored literal actual-client regression and
+  updated its wrapper, committed at
+  `83b92901be2e9c0aa1cbcd97850994e66b1bad9b`. The new group supplies canonical
+  event-ready, exact accepted indexed-choice receipt and canonical unsupported
+  bodies from existing fixture/schema helpers. It does not reconstruct the
+  discarded live payload. It expects the exact five-key failure above, exactly
+  one POST, transcript exhaustion/no extra request, closed sockets and zeroed
+  request/response/credential buffers.
+- Independent review accepted the case and source limits. The direct fixture
+  now passes **11 grouped categories**. Worker focused validation passed **22
+  tests**; coordinator final direct gate passed 11 and four direct/stage/timeout/
+  composed-wire wrappers passed **4 tests in 0.33 seconds**. `git diff --check`
+  passed. Final fixture SHA-256:
+  `e2d9c77bb02afde06171c0a24acd293601283ac0e288e5431d8a4f0f88aa47ce`;
+  wrapper SHA-256:
+  `a48b248d2bd013fa320110d6c3d9f218ceddbfac9503aaa88ffdfdaae17f964e`.
+  Production remains the reviewed `9d69df1` identities; its full suite passed
+  **1,112 tests**. The subsequent change is test-only and the affected gates were
+  rerun. No full-suite rerun is claimed after this final fixture-only addition.
+- Current event observation exposes indexed action IDs, bounded public text
+  keys and enabled/supported/proceed/danger flags from event-button objects.
+  It does not expose full rendered descriptions or structured costs/effects.
+  The `safe` provider selects the first eligible non-lethal event option; its
+  name does not imply semantic value judgment or supported follow-up screens.
+  A consequence model or explicit event-to-reward handoff is a separate future
+  contract/capability decision. Neither was added under the frozen scope.
+
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
 

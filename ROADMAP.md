@@ -125,7 +125,13 @@ C# and wire contract. A subsequent live diagnostic passed explicit fresh map
 entry with three destinations and two completed floors, but never entered the
 room client. The user selected a targeted question-mark event test and offered
 to prepare a fresh event with its choices untouched. The direct-room adapter is now implemented and independently accepted with
-1,112 tests passing; exercise that exact state once. Do not use another generic map route as evidence for the room issue.
+1,112 tests passing. That exact state was tested once: one accepted event
+receipt followed by explicit `room_state_unsupported`, without room completion.
+The matching literal regression passes. Current event fields identify choices
+and immediate lethal risk, but do not model costs/effects or supported follow-up
+screens. Any consequence model or room-to-reward handoff is a separate scoped
+contract decision; do not broaden potion/reward controls or replay the stopped
+choice under the current frozen scope. Do not use another generic map route as evidence for the room issue.
 
 Supported user-initiated launch remains available; the restricted browser
 Steam-URI route is not bypassed. Normal quit, exact quarantine/purge and final

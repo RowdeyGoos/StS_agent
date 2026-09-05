@@ -170,15 +170,25 @@ or establish elite/room composition. The user requested a targeted fresh
 question-mark event with choices untouched and offered to prepare that state.
 The separate direct-room diagnostic adapter is accepted at `9d69df1`, with
 independent actual-client review and **1,112 tests passing in 106.24 seconds**.
-Its next gate is the exact user-prepared live event.
+The user-prepared live event was then tested once: one event exchange and
+receipt were accepted, followed by `room_state_unsupported`, with no room
+completion. The fixed stage/count failure is now live-observed. A visible loot
+overlay was consistent with the existing generic overlay guard, but the
+aggregate does not identify a specific unsupported cause. No collect/skip or
+retry was attempted. The matching authored actual-client regression passes;
+the historical room timeout remains unclassified.
 
 Cleanup ended at **2026-09-05 11:53:03 UTC**, **15 minutes 9 seconds** after
 preflight began. Normal quit, exact quarantine/four-file purge and final base/
 stopped/closed checks passed. The user explicitly waived the repeated unmodded
 launch/quit check; that check is omitted, not passed. No campaign remains
+active at that checkpoint. The later targeted event campaign completed cleanup
+at **12:20:50 UTC**, **8 minutes 14 seconds** after its fresh preflight. Normal
+quit, exact four-file quarantine/purge, stopped/closed and unchanged-base checks
+passed; the repeated unmodded launch/quit remained waived. No campaign remains
 active. Supported user-initiated launch worked; the restricted browser URI route
 was not bypassed. Steam capture error `-3811` remains separate from the controller
-timeout. See the actor-ready ledger for the exact result and cleanup binding.
+timeout. See the actor-ready ledger for exact results and cleanup bindings.
 
 ## Parallel headless execution status
 
@@ -479,13 +489,15 @@ floors, but reported the room client was not entered. The user selected a direct
 untouched-event test to address the room issue and offered to prepare the exact
 state. The [direct-room adapter plan](PHASE_1_DIRECT_ROOM_DIAGNOSTIC_PLAN.md)
 is implemented and independently accepted at `9d69df1`; its direct event
-fixture passes and the full suite passes 1,112 tests. The next live invocation
-starts at the exact user-prepared event.
+fixture passes and the full suite passes 1,112 tests. The user-prepared event
+has now yielded one accepted event receipt followed by explicit unsupported
+state. The new 11-category direct fixture includes that boundary. This does not
+close room completion or classify the previous timeout.
 
-The current target is Profile 3, Ironclad, Ascension 0, inside a fresh event
+The tested entry boundary was Profile 3, Ironclad, Ascension 0, inside a fresh event
 reached through a question-mark node, with choices visible and untouched. The
-user may prepare that state after the pinned bridge is staged. The direct
-room client will run once under its existing 30-second/12-action limits. It adds
+user prepared that state after the pinned bridge was staged. The direct
+room client ran once under its existing 30-second/12-action limits. It adds
 no map, combat or reward continuation. The 30-minute total campaign, capture-off,
 no-retry and no profile/save-filesystem/Cloud/corpus/remote-Git boundaries remain.
 Supported user-initiated launch is available; the restricted browser Steam-URI
