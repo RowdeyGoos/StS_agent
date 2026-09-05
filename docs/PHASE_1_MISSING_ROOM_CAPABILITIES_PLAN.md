@@ -113,3 +113,30 @@ before dispatching production writers and independent fixture reviewers. A
 proposal commit alone neither enables a capability nor establishes live or
 differential evidence. Existing accepted behavior and frozen contracts remain
 unchanged until a reviewed successor explicitly replaces the affected boundary.
+
+## Proposal handoffs
+
+### 2026-09-05 — Shop proposal recovered and reviewed
+
+The user reported that the shop task completed its proposal but failed to
+convey the handoff. The coordinator recovered it directly from the clean
+`codex/mr-shop-01` worktree at local source commit
+`e3dc78fd493a4b3a1aa678e9d851faf8e992c23f`; no work was lost. Its sole new
+[shop proposal](research/PHASE_1_SHOP_CAPABILITY_PROPOSAL.md) was integrated as
+`46ba208`, then amended by the coordinator following independent review.
+
+The proposal is accepted as **reviewed design input, still proposed and
+unfrozen**. Its first candidate slice is passive visible-shop observation, one
+affordable ordinary-card purchase and explicit leave. Relic/potion purchases
+and card removal remain later slices. Exact target members, passive access,
+transaction ordering, stock disposition, leave evidence and shared handoff/
+version/output decisions still require the declared static and contract gates.
+
+Independent review required pending facts and reservation before dispatch,
+separate producer reservation and host receipt/reconciliation counts, exact
+post-purchase slot evidence rather than revision alone, and conditional future
+partial-prefix output. The coordinator applied these corrections. The source
+claims and lane boundaries otherwise passed review. All 16 relative source
+links resolve; the local commit and amended diff pass whitespace checks.
+The 30 acceptance cases are specifications, not executed tests. Production,
+wire, artifacts and live capability remain unchanged; no game action occurred.

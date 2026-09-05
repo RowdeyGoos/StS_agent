@@ -5,7 +5,7 @@
 - **Baseline:** `68c8b50eed05d5442c66cc55f9ec9cf0513c7009`
 - **Current bridge:** `live_probe_v0`, bridge `0.8.0`, milestone `R0i`
 - **Evidence level:** repository source and checked-in sanitized static research only
-- **Status:** implementation-ready design input; every new contract below is
+- **Status:** coordinator-review design input; every new contract below is
   **proposed and unfrozen**
 
 This document owns merchant transactions and the proposed shop-to-host handoff.
@@ -283,16 +283,27 @@ Apply order is mandatory:
 5. immediately re-read the top surface and full projection;
 6. require same run/shop incarnation, phase, decision ID, slot facts, and no
    overlay/map/travel conflict;
-7. reserve the decision and charge exactly one shop action-budget entry;
-8. dispatch once; and
-9. record a pending semantic mutation before publishing another ready state.
+7. build the pending baseline facts, then atomically under the session gate
+   reserve the decision, consume one producer reservation-budget entry, and
+   install the pending mutation;
+8. dispatch exactly once; and
+9. return `accepted` only if dispatch returns normally. Keep the pending state
+   until independent reconciliation; never publish another ready mutation while
+   that state is unresolved.
 
-Stale and invalid requests do not consume the accepted-action budget. Once
-reserved, a duplicate request is `already_applied` even if the screen has since
-changed. Exceptions after reservation are uncertain and never release the
-reservation or permit automatic retry.
+Stale and invalid requests before reservation consume no producer reservation
+budget. Once reserved, a duplicate request is `already_applied` even if the
+screen has since changed. Exceptions after reservation leave both the
+reservation and pending facts intact and yield backend/uncertain handling;
+there is no automatic retry or release of the consumed budget entry.
 
-The first implementation should cap accepted shop actions independently. A
+The producer's reserved-dispatch budget is separate from host counters. The
+host increments `attempted` on entering an action exchange, `accepted_receipt`
+only after validating the exact accepted receipt, and `reconciled` only after
+exact later state evidence. A lost response consumes a producer reservation
+when dispatch was reserved, but cannot increment the host's accepted count.
+
+The first implementation should cap reserved shop dispatches independently. A
 proposed cap is 12 per process and 12 candidates per decision, with exact body
 size still bounded by `LiveProbeLimits.MaximumResponseBodyBytes`. These values
 are design bounds, not target-game inventory claims. The static packet must
@@ -314,8 +325,10 @@ A direct card purchase reconciles only when all of these are observed together:
 - the selected card key's copy count is exactly `before_copies + 1`;
 - unrelated public player invariants selected by contract review have not
   contradicted the purchase; and
-- the same sold slot is absent/disabled or the shop projection otherwise has a
-  coherent next revision.
+- the same slot has the exact post-purchase disposition established by Gate A
+  (such as sold/disabled, removed, or a specifically verified replacement).
+  A changed revision alone is insufficient. Until that disposition is known,
+  acquisition reconciliation remains waiting/unsupported.
 
 While only debit or only acquisition is visible, return `waiting` with zero
 legal actions. If the other half appears before the fixed host deadline,
@@ -426,10 +439,12 @@ the child must not add another copy of the initiating purchase to shop or total
 action counts. An accepted child result cannot mark the parent shop action
 reconciled, the shop complete, or the room/floor complete.
 
-The host must return a truthful partial prefix on failure. It does not adopt an
-earlier uncertain shop action, phase-scan, reopen a shop, or route-explore. Exact
-run-summary field/version impact is a coordinator-owned shared-contract
-decision. Until resolved, do not add shop counters to existing accepted run
+Failure output remains a coordinator-owned shared-contract decision. If a
+versioned successor explicitly admits partial-prefix fields, they must be
+truthful; otherwise emit only the selected fixed failure contract and retain
+no partial result. The host does not adopt an earlier uncertain shop action,
+phase-scan, reopen a shop, or route-explore. Until exact run-summary fields and
+version impact are resolved, do not add shop counters to existing accepted run
 schemas or overload `room_action_count`.
 
 ## 5. Shared questions for coordinator freeze
