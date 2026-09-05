@@ -130,6 +130,20 @@ is observed, while successful map entry, elite combat and composed room
 handoff remain unaccepted at their required evidence level. See the actor-ready
 ledger for the exact failure and cleanup binding.
 
+The fresh-session follow-up again returned Steam capture error `-3811`;
+application inventory showed the game stopped and no new campaign began.
+Independent repository/fixture diagnosis established that the room timeout can
+occur before any room action or after accepted choices/Proceed while completion
+remains unproved. Its one deadline includes health/manifest and every room
+step. The frozen waiting projection contains no cause or room identity.
+Event-to-map waiting is an explicit D47 limitation, while accepted same-room
+rest Proceed can complete through a travel-ready map. No new production defect
+or live root cause was established. The follow-up closes missing synthetic
+timeout coverage without changing controller, C#, wire or acceptance semantics.
+The independent 13-case gate passed review; the full repository suite passed
+**1,109 tests in 105.46 seconds**. Exact validation is recorded in the
+actor-ready ledger.
+
 ## Parallel headless execution status
 
 The accepted offline stack now includes the canonical `headless_v0` public
@@ -421,11 +435,16 @@ host-only elite continuation is now implemented with independent actual-client
 fixtures, while C#, wire, caps and replay rules remain unchanged. The
 maintained capture-off validator, independent review and aggregate bridge join
 have passed. The one authorized successor run from a fresh map returned
-`room_interaction_timeout`, and cleanup is complete. The smallest next
-investigation concerns that room-completion timeout without reconstructing
-discarded responses or retrying the uncertain action. Successful explicit map
-entry, elite combat and composed supported-room handoff remain live targets;
-any further campaign needs separate bounded authority and should:
+`room_interaction_timeout`, and cleanup is complete. The focused fixture
+diagnosis confirms that this code alone cannot identify the waiting stage or
+select a repair. A future investigation of a repeated timeout needs a separately
+reviewed capture-off stage diagnostic; no such output-contract extension is
+implemented or accepted here. Successful explicit map entry, elite combat and
+composed supported-room handoff remain live targets. The user renewed bounded
+campaign authority in the fresh session; no further run was needed for the
+repository diagnosis. Any campaign under that authority must retain the existing
+Profile 3-only, 30-minute total, three-destination, capture-off and cleanup
+boundaries and should:
 
 1. begin only at a declared visibly fresh map phase and verify its partial-
    prefix result without scanning, fallback, retry or retained raw data;
@@ -478,8 +497,9 @@ and actor-ready headless path are maintained in
   public headless encoding, trusted actor dataset, variable-candidate scorer,
   tiny cloning smoke, and one bounded coordinator live gate.
 - Its [acceptance ledger](research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) records
-  accepted implementation packets, reviews, exact test results and the stopped
-  pre-install live attempt. Packet `26` remains incomplete; new outcomes belong
+  accepted implementation packets, reviews, exact test results, the failed
+  live campaign with completed cleanup, and the fresh-session timeout fixture
+  diagnosis. Packet `26`'s live acceptance gate remains open; new outcomes belong
   there rather than in the predecessor ledger.
 - [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) is the
   completed predecessor increment. Pre-action context binding, its composed handoff,

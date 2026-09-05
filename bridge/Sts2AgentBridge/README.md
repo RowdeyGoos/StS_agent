@@ -152,6 +152,19 @@ Its isolated synthetic gate is:
 /ABS/PYTHON_3_10_PLUS -B -E -s -S /ABS/BRIDGE_ROOT/tools/apply_run_acceptance_live_fixtures.py
 ```
 
+The separate offline room-timeout gate exercises the actual Python room
+client through synthetic sockets and a deterministic clock. It covers the
+shared deadline before and after accepted room actions, delayed completion,
+replay/identity guards and fixed acceptance-wrapper failure propagation. A
+`room_interaction_timeout` does not identify which action or waiting stage was
+reached. The canonical waiting body contains no such reason, and D47 still
+withholds event-to-map completion. These fixtures neither reconstruct a live
+run nor change the production deadline or completion rules:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S /ABS/BRIDGE_ROOT/tools/apply_room_timeout_fixtures.py
+```
+
 An earlier bounded Profile 3 campaign live-passed the separate
 `verify_room_acceptance.py` helper and the new
 context-bound rest heal/proceed/map completion. The next connected route was an

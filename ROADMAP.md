@@ -113,8 +113,16 @@ launch. The one authorized capture-off run from a fresh map returned
 `room_interaction_timeout` with no accepted summary; no complete map/elite/room
 chain is certified. Exact quarantine, clean unmodded launch/quit, four-file
 purge and final base/runtime checks passed within the 30-minute limit.
-Investigate the room-completion timeout within a separately bounded scope;
-discarded responses do not establish its root cause or authorize a retry.
+Fresh-session Steam capture still fails with `-3811`. Focused repository and
+actual-client fixture diagnosis shows that `room_interaction_timeout` can occur
+before any room action or after accepted choices/Proceed; the shared deadline
+and generic waiting body do not identify the stage. No production defect or
+justified timeout increase was established. Preserve the new timeout regression
+gate. Before selecting a repair from another live failure, review a narrow
+capture-off stage diagnostic separately from the frozen output contracts.
+The user renewed bounded live authority when needed, but this diagnosis required
+no new campaign. Discarded responses cannot establish the prior root cause or
+justify replaying its uncertain action.
 Preserve exact caps, replay and uncertainty
 behavior and keep boss, shops, treasures, relics and potions fail-closed.
 Any subsequently authorized live gate should begin at an

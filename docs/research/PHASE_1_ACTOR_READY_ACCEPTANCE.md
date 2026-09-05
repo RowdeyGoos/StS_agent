@@ -15,6 +15,10 @@
   429-file base, zero overlay, no game process and no bridge listener. The
   attempt lasted **16 minutes 23 seconds**, including cleanup. No campaign is
   active. The bounded campaign is finished; its live acceptance gate did not pass.
+- **Fresh-session diagnosis:** Steam capture still returns `-3811`; no new
+  campaign began. The reviewed 13-case timeout fixture gate and its pytest
+  wrapper are accepted; the full repository suite now passes **1,109 tests**.
+  Production behavior and the historical live root-cause uncertainty are unchanged.
 
 This is the integration ledger for the elite-continuation and actor-ready
 headless successor increment. It begins after the completed
@@ -601,6 +605,104 @@ estimated.
   the overall increment is not marked fully accepted. Keep this active plan
   until that disposition is resolved; no successor implementation scope is
   selected from discarded or unobserved route details.
+
+### 2026-09-05 — Fresh-session Steam check and focused timeout diagnosis
+
+- Resumed the exact clean integration checkout at
+  `2c6d5ecf3809e83ac3ea8c8e53bc5de7ef27b87e` on
+  `codex/phase1-actor-ready-integration`. No diagnosis used older local `main`.
+  The user renewed authority for bounded live campaigns when needed and
+  supplied the same Steam launch URI. This investigation remained offline
+  after the requested Steam capture check; no new campaign began.
+- Fresh supported computer-use inventory showed Steam running and the game
+  not running. Name lookup did not bind the running Steam client; its shared
+  bundle ID was ambiguous. Selecting the exact running client path returned
+  ScreenCaptureKit **`-3811`** again. This is a fresh-session desktop result,
+  independent of the historical controller timeout. No game launch, browser
+  launch attempt, profile/save access, Cloud change, installation, credential
+  access, endpoint request or cleanup operation occurred.
+- `DIAG-A` independently audited the room reader/applier and host loop;
+  `DIAG-B` independently audited standalone and run/entry/elite fixtures and
+  acceptance propagation. Both were read-only. Existing standalone gates
+  passed: room **21**, run **23**, run-wire **8**, entry-wire **8**, elite-wire
+  **8**, room-acceptance verifier **7**, run-acceptance wrapper **3** checks.
+- The production room deadline starts before health/manifest and is shared
+  across all room actions and waiting polls. The only
+  `room_interaction_timeout` branch is outer-loop expiration. A canonical
+  waiting body intentionally contains no room kind, ordinal, decision identity
+  or reason. The fixed failure therefore proves neither a room action nor a
+  particular completion stage. See
+  [host loop](../../bridge/Sts2AgentBridge/tools/apply_room_live.py) and
+  [run preflight/handoff](../../bridge/Sts2AgentBridge/tools/apply_run_live.py).
+- Disposable actual-client synthetic checks produced the same exit **4** /
+  `room_interaction_timeout` with zero room POSTs, after accepted event choice,
+  after accepted rest heal, after accepted literal rest Proceed, and when
+  setup-close overhead exhausted the budget before any room GET. Delayed
+  completion before the deadline passed; waiting reaching the deadline
+  stopped. Repeated IDs and wrong room identities still returned their
+  distinct replay/transition/completion errors. Credentials and sent mutable
+  requests were zeroed and sockets closed. These are authored counterexamples,
+  not reconstructions of any live run.
+- The existing C# lifecycle deliberately requires accepted same-room literal
+  rest Proceed before a travel-ready map proves completion. Indexed event
+  choices followed by a map remain waiting; the existing C# test explicitly
+  asserts this. Event embedded-combat completion is a separate supported
+  predicate. The Python event-success fixture supplies a complete body and
+  proves host consumption, not event-to-map production. D47 remains unchanged.
+- No new production defect or justified timeout increase was established.
+  Existing fixtures did not exercise the production room-interaction deadline.
+  The bounded follow-up owns only a new independent timeout fixture gate and
+  pytest wrapper; coordinator owns this ledger, current status, roadmap and
+  the bridge guide. Production Python, C#, wire/output schemas, package pins,
+  replay/uncertainty behavior and all accepted headless work remain frozen.
+  The historical live failure's exact substeps and root cause remain unknown.
+- `DIAG-C` added
+  [apply_room_timeout_fixtures.py](../../bridge/Sts2AgentBridge/tools/apply_room_timeout_fixtures.py)
+  and its
+  [pytest wrapper](../../tests/backends/live/test_apply_room_timeout_fixtures.py).
+  The **13** maintained checks cover zero-action waiting; waiting after heal,
+  literal rest Proceed and two indexed event choices; heal/Proceed/completion
+  one millisecond before the deadline; replay and wrong-ordinal ready/complete
+  guards; separate preflight and transport errors; setup consumption of the
+  shared deadline; and a real composed map-to-room timeout through the
+  acceptance CLI. No room producer outcome or `ToolFailure` is substituted.
+  Only the outer `run.operation` entry is substituted, invoking the real
+  bounded-run function with declared arguments and synthetic credential/transport
+  inputs; this case does not exercise argument parsing or real configuration I/O.
+- The expected requests are independently authored literal wire bytes. Exact
+  request consumption rejects an extra connection or POST; every opened socket
+  must close, and credentials/sent mutable requests must be zeroed. The composed
+  case invokes the acceptance wrapper once and emits exactly the existing
+  exit-4 failure JSON, without an accepted run summary. This does not claim
+  complete erasure of Python's immutable receive chunks.
+- `DIAG-C` implementation and independent `DIAG-D` review used **Sol/high**.
+  Review passed after the positive rest case included accepted literal Proceed
+  and the room-action request oracle used a literal route. Coordinator reviewed
+  both new files and the complete documentation diff. Aggregate worker token and
+  elapsed telemetry are **unavailable**. Fixture SHA-256:
+  `6073fe2b4f271842aa85895b74962e7850db0c96bead024a2d765fcbf043db68`;
+  pytest wrapper SHA-256:
+  `ef277c2e5038bfba40ace44106d5a94ecce29b9085974e980b75b5c612f72c1b`.
+- Isolated new gate passed **13 checks**; its pytest wrapper passed **1 test**;
+  the new/transport/entry-wire/elite-wire/run-acceptance wrappers passed **5
+  tests in 0.91 seconds**. Eight adjacent standalone gates passed: room **21**,
+  run **23**, run-wire **8**, entry-wire **8**, elite-wire **8**, transport
+  **29**, room verifier **7**, run acceptance **3**. Game and controller imports
+  were verified to originate in this integration checkout. Compilation of
+  `game`, `tests` and the new fixture passed with bytecode directed to a
+  disposable temporary directory; `git diff --check` passed.
+- Coordinator aggregate validation passed **1,109 tests in 105.46 seconds**
+  (**1 minute 45 seconds**) using
+  `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. <accepted-venv-python> -m pytest -q
+  -p no:cacheprovider` from the integration checkout. This includes the new
+  maintained fixture wrapper; the accepted prior implementation is unchanged.
+- Evidence remains **synthetic / bridge_fixture**. No C# execution, artifact
+  rebuild, new game observation, retained corpus or new completion capability
+  is claimed. A proposed capture-off stage diagnostic is the next review target
+  for classifying any new timeout; its separate output contract is not accepted
+  or implemented in this fixture-only change. The renewed live authority remains
+  bounded by the user's exclusions and the existing campaign caps, not by an
+  inferred need to ask for the same permission again.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
