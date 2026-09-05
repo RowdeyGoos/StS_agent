@@ -144,6 +144,29 @@ The independent 13-case gate passed review; the full repository suite passed
 **1,109 tests in 105.46 seconds**. Exact validation is recorded in the
 actor-ready ledger.
 
+The renewed development step adds a separately selected capture-off
+`diagnose_run_room_live.py` command under the
+[frozen room-stage contract](PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md). Independent
+review accepted the primitive recorder, optional room/run propagation and exact
+sanitized output. The final host stage, last validated public status/kind,
+bounded exchange-attempt and accepted-receipt counts, last action categories,
+and same-room completion flag classify a new failure without retaining live
+bodies or identities. Success alone includes the unchanged strictly validated
+run acceptance aggregate. Defaults, C#, wire, package, deadlines, caps, request
+order and replay/completion rules remain unchanged.
+
+The six-group unit gate and independent 25-case actual-client gate pass,
+including exact success parity, cancellation/cleanup precedence and mutations
+of requests, receipt accounting and output suppression. Integrated source
+`dc8e666` passed the final full repository suite: **1,111 tests in 104.17
+seconds**. This remains **bridge_fixture** evidence. The diagnostic has not
+been exercised in a new live campaign and cannot classify the discarded run. The pinned package passed
+an offline verification; no install, credential access or live endpoint request
+occurred. The browser automation route for the supplied Steam URI remains
+restricted and was not bypassed. Supported user-initiated launch worked
+previously and remains available for a fresh campaign after preflight. Steam
+capture error `-3811` remains separate from the controller timeout.
+
 ## Parallel headless execution status
 
 The accepted offline stack now includes the canonical `headless_v0` public
@@ -437,14 +460,16 @@ maintained capture-off validator, independent review and aggregate bridge join
 have passed. The one authorized successor run from a fresh map returned
 `room_interaction_timeout`, and cleanup is complete. The focused fixture
 diagnosis confirms that this code alone cannot identify the waiting stage or
-select a repair. A future investigation of a repeated timeout needs a separately
-reviewed capture-off stage diagnostic; no such output-contract extension is
-implemented or accepted here. Successful explicit map entry, elite combat and
-composed supported-room handoff remain live targets. The user renewed bounded
-campaign authority in the fresh session; no further run was needed for the
-repository diagnosis. Any campaign under that authority must retain the existing
-Profile 3-only, 30-minute total, three-destination, capture-off and cleanup
-boundaries and should:
+select a repair. The separately reviewed capture-off room-stage diagnostic is
+now implemented and fixture-accepted. Its next evidence gate is one fresh
+bounded campaign with supported user-initiated launch after preflight; the
+browser Steam URI route has a recorded policy rejection and must not be
+bypassed. Successful
+explicit map entry, elite combat and composed supported-room handoff remain
+live targets. The user renewed bounded campaign authority; the diagnostic
+implementation required no new campaign. Any campaign under that authority must
+retain the existing Profile 3-only, 30-minute total, three-destination,
+capture-off and cleanup boundaries and should:
 
 1. begin only at a declared visibly fresh map phase and verify its partial-
    prefix result without scanning, fallback, retry or retained raw data;

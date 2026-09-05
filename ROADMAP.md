@@ -117,11 +117,15 @@ Fresh-session Steam capture still fails with `-3811`. Focused repository and
 actual-client fixture diagnosis shows that `room_interaction_timeout` can occur
 before any room action or after accepted choices/Proceed; the shared deadline
 and generic waiting body do not identify the stage. No production defect or
-justified timeout increase was established. Preserve the new timeout regression
-gate. Before selecting a repair from another live failure, review a narrow
-capture-off stage diagnostic separately from the frozen output contracts.
-The user renewed bounded live authority when needed, but this diagnosis required
-no new campaign. Discarded responses cannot establish the prior root cause or
+justified timeout increase was established. The timeout regression gate remains
+accepted. A separate opt-in room-stage diagnostic is now implemented and
+independently reviewed, with fixed bounded stage/count output, strict acceptance
+parity and cleanup/privacy gates. It preserves every existing controller output,
+C# and wire contract. The next evidence target is one fresh capture-off campaign
+using that diagnostic with supported user-initiated launch after preflight;
+the browser's recorded Steam-URI policy rejection is not bypassed. The user renewed bounded live
+authority, but implementation required no new campaign. Evidence remains
+`bridge_fixture`; discarded responses cannot establish the prior root cause or
 justify replaying its uncertain action.
 Preserve exact caps, replay and uncertainty
 behavior and keep boss, shops, treasures, relics and potions fail-closed.

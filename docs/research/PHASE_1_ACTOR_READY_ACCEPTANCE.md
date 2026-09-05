@@ -737,6 +737,120 @@ estimated.
   exchange stages; indistinguishable C# waiting reasons and the discarded
   historical failure remain outside the claim.
 
+### 2026-09-05 — Room-stage diagnostic integration accepted
+
+- Contract freeze commit: `198fbea`; reviewed implementation integration:
+  `dc8e66663d6ed8d7d9cee3b9d12f6e708f48ced4`. The exact plan hash remains
+  `e2ef8788118962f73eb53d02f44c13b14f526e1cd7460a0e67e539879364cba1`.
+  `RD-IMPLEMENT` and `RD-GATE` delivered their disjoint owned files without
+  worker commits; coordinator reviewed and committed the joined eight-file
+  change. The earlier accepted work and user changes were preserved.
+- Independent Sol/high `RD-REVIEW` accepted the final eight source identities
+  below. Coordinator corrections preserved later wrong-kind ready observations
+  alongside earlier action facts, required exact primitive types in every
+  emitted summary field, guarded recorder construction inside output
+  suppression, and added an explicit output-suppression mutant. A transient
+  fixture expectation from the superseded draft was withdrawn; final output
+  uses the existing `internal_failure`, as required by the frozen plan.
+- The new `RoomStageDiagnostics` stores only the fixed primitive stage/status/
+  kind, attempted and accepted counts, last action categories and completion
+  boolean. Optional keyword-only seams instrument the existing room controller
+  and propagate only when explicitly selected by `diagnose_run_room_live.py`.
+  With no recorder, substituted room callbacks receive their original keywords.
+  Existing request/check ordering, deadlines, caps, credentials, transport,
+  receipt/completion/replay rules and default outputs remain unchanged. No C#,
+  wire, package, headless, encoder, dataset or training contract changed.
+- The diagnostic CLI delegates the existing 14/16 arguments, invokes the
+  bounded-run producer once, suppresses nested stdout/stderr through a
+  non-retaining sink, and emits only the frozen six-key record. Success requires
+  the existing strict run acceptance aggregate plus diagnostic consistency.
+  Failure emits no partial run acceptance. Unknown codes/exceptions are fixed
+  `internal_failure`; cancellation is `interrupted`. Unsafe diagnostic state or
+  cleanup overrides every outcome with `internal_failure`, both records null
+  and exit 5. No body, identity, arbitrary text, timing or action history enters
+  the diagnostic and no capture path or extra request is added.
+- The unit gate passed **6 grouped checks**. The independent actual-client gate
+  passed **25 cases**: map preflight versus room entry; setup deadline and
+  zero-action waiting; accepted heal, literal Proceed and indexed event waiting;
+  malformed/rejected/unbound receipts; transport, replay, context and completion
+  errors; cancellation before acceptance and during a later read; exact success
+  parity with/without a room; and four request/count/category/output mutations.
+  The disabled-output-suppression mutant is rejected by the fixture's independent
+  privacy oracle. Literal expected requests bound connection/POST counts and
+  verify closure and zeroed mutable request/response/credential buffers.
+- The independent gate invokes the real CLI argument parser and composed run,
+  map and room clients. Only OS identity, credential loading, connector and clock
+  are substituted with synthetic values; no real configuration or network is
+  accessed. The production room timeout and receipt validators execute normally.
+  Unit fixtures also use substituted producers for isolated wrapper faults;
+  those do not stand in for the actual-client timeout evidence.
+- Independent final review additionally passed **15 disposable probes** for
+  cleanup precedence over cancellation/primary failures, hostile primitive
+  types and noisy constructor interruption. Existing standalone gates passed:
+  timeout **13**, room **21**, run **23**, run-wire **8**, entry-wire **8**,
+  elite-wire **8**, transport **29**, room acceptance **7**, run acceptance **3**.
+  Final new pytest wrappers passed **2 tests in 0.18 seconds** during review;
+  the implementation/gate worker join passed **7 wrappers in 1.12 seconds**.
+- Coordinator final aggregate on the final joined files passed **1,111 tests
+  in 104.17 seconds** (**1 minute 44 seconds**) using
+  `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. <accepted-venv-python> -m pytest -q
+  -p no:cacheprovider` from the selected `23cf` checkout. An earlier aggregate
+  on identical production before the final output-mutation fixture passed
+  **1,111 in 105.18 seconds**; the final result supersedes that binding.
+  Python **3.11.15** module origins for game, room/run clients, new CLI and
+  recorder were verified inside this integration checkout. Standalone gates
+  also passed under isolated system Python **3.9.6**. Compilation of `game`,
+  `tests` and changed/new tools passed with temporary bytecode removed;
+  `git diff --check` passed.
+- All implementation and independent review used **Sol/high**; no model
+  escalation. Aggregate worker token/elapsed telemetry is **unavailable**.
+  Evidence remains **bridge_fixture**, not live demonstration. The diagnostic
+  cannot distinguish C# reasons sharing canonical waiting and does not
+  reclassify the discarded timeout, prove receipt effects, repair D47's
+  event-to-map limitation or justify an uncertain-action retry.
+
+Exact accepted SHA-256 identities (tool files are under
+`bridge/Sts2AgentBridge/tools`):
+
+| File | SHA-256 |
+| --- | --- |
+| `apply_room_live.py` | `14b0644ad84f848d298ccf56dfbbb6262596571ec3545fd47be638d66fda6741` |
+| `apply_run_live.py` | `34aab25b904e97fcecc1b03e9dd978d058a5e9673d9706040147d55d24ffb3c9` |
+| `room_stage_diagnostics.py` | `d93e7f0b21fc38ced1ff708efc941b11a30bf097626f57493d2dc38ddc242b4f` |
+| `diagnose_run_room_live.py` | `1e218aa3a8bdd19984f0da453b5dbbece4842afb2b09ce58c20f6a9bfdfcbc9f` |
+| `room_stage_diagnostics_fixtures.py` | `a86059b771bddc132b816e058c49c1463de514bb0bd14129b7ebe4c05da6ceca` |
+| `diagnose_run_room_wire_fixtures.py` | `6a3a5ab3ce28e6232c3a93c8df65cfbdd84da77cfd07b83a06fb6e8b9724450e` |
+| `tests/backends/live/test_room_stage_diagnostics_fixtures.py` | `293f2deb62bf8a1a38d2e839b60eb610ac25fd162bb0173ab9fb8b4ce4c7b392` |
+| `tests/backends/live/test_diagnose_run_room_wire_fixtures.py` | `ebd2434e119353ac47912e418fa357f3386e64cd739c1c60294e678b5406f9e2` |
+
+### 2026-09-05 — Diagnostic live gate remains unstarted
+
+- Renewed bounded live authority remains available. The only operational check
+  in this development step was offline verification of the existing package in
+  `/private/tmp/sts-room-registry-repro-out.6XEHPp`. It passed with two entries,
+  DLL hash `a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285`,
+  loader manifest hash
+  `498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971`,
+  and package hash
+  `c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595`.
+- The fresh-session Steam capture failure `-3811` and the handoff's browser
+  policy rejection of `steam://rungameid/2868840` remain separate infrastructure
+  evidence. No repeat through another browser, shell or indirect route was
+  attempted. Supported user-initiated launch worked previously; the user has
+  confirmed availability for manual launches after preflight and during cleanup.
+  The browser route restriction does not prohibit that supported path and is
+  neither missing campaign authority nor evidence of a controller repair.
+- No new campaign, installation, operator credential access, endpoint request,
+  profile/save filesystem access, Cloud change, retained live corpus, remote
+  Git operation or broader capability change occurred. The previous campaign's
+  complete cleanup remains the last verified live state; this step does not
+  claim a fresh runtime/base-install verification or new cleanup results.
+- Next gate: one fresh capture-off diagnostic run under the frozen Profile
+  3-only, 30-minute total including cleanup, three-destination, first-legal/
+  first-card/elite/safe, explicit fresh-map limits. Perform fresh runtime/base/
+  package gates and the exact manager quarantine, clean unmodded launch/quit and
+  purge. Stop on uncertainty; never resume or retry the prior uncertain action.
+
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
 

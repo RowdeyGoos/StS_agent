@@ -1808,3 +1808,44 @@ declared runtime environment. Regenerating source experiments can change their
 operational metadata and manifest hashes. Tiny imitation metrics establish
 training plumbing only; online inference, value learning, larger training and
 target-game policy claims remain deferred.
+
+## D56. Keep Room-Stage Diagnostics Separate From Run Acceptance
+
+### Context
+
+A live room-interaction timeout produced no accepted summary. Independent
+actual-client fixtures proved that the same fixed code can occur before any
+room action, after accepted choices or Proceed, or after setup consumes the
+shared deadline. The waiting wire intentionally contains no reason or room
+identity. The user selected the proposed capture-off host-stage diagnostic as
+the next development step.
+
+### Decision
+
+- Add one explicitly selected Python diagnostic entry point around the existing
+  bounded run, with the same arguments, providers, deadlines and action caps.
+  Preserve all existing commands, result schemas, C# capabilities and wire.
+- Record only a final fixed host stage, last validated status/kind category,
+  bounded exchange-attempt and exact accepted-receipt counts, last fixed action
+  categories and confirmed room completion. Store no identifiers, raw bodies,
+  timing, poll counts, action histories or profile/save values.
+- Update the stage before each request and after each validation boundary.
+  An attempted exchange does not prove delivery; a receipt does not prove
+  room completion. Existing same-room checks alone confirm completion.
+- Publish an existing strictly validated run acceptance aggregate only on
+  success and only when it agrees with the diagnostic. Failure has no partial
+  acceptance summary. Invalid diagnostic state or cleanup overrides every
+  outcome with the existing fixed internal failure and null records.
+- Suppress incidental nested output with a non-retaining sink, preserve
+  exceptional-exit cleanup, and stop on the first uncertainty. Diagnostics add
+  no request, retry, phase scan, fallback or action adoption.
+
+### Consequence
+
+The separate diagnostic can identify the host stage of a new failure without
+reclassifying a discarded run or forming a live transition corpus. It cannot
+distinguish the C# causes behind the same waiting projection. D47's event-to-map
+limitation remains unchanged. The exact accepted scope is frozen in
+[`docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md`](docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md);
+implementation, fixture, review and any later live evidence are recorded in the
+actor-ready ledger with separate acceptance states.

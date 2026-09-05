@@ -637,6 +637,62 @@ and the [acceptance ledger](../../docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANC
 for evidence and exact reviewed source identities. Its fixtures are not live
 demonstration.
 
+### Capture-off run/room diagnostics
+
+`diagnose_run_room_live.py` executes the existing bounded run once and emits a
+separate fixed room-stage diagnostic. It applies the same game actions as the
+run controller and uses its exact 14/16 arguments. Within an authorized campaign,
+a visibly fresh map entry uses:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/diagnose_run_room_live.py" \
+  --user-profile "/ABS/OS_USER_PROFILE" --effective-uid 501 \
+  --combat-provider first-legal --reward-provider first-card \
+  --map-provider elite --room-provider safe --floor-limit 3 --entry-phase map
+```
+
+The top-level record contains exactly `schema_version`, `status`, `milestone`,
+`code`, `room` and `run_acceptance`. The room record contains the final host
+stage, last successfully validated observation status and ready room kind,
+exchange-attempt and accepted-receipt counts, last fixed action categories, and
+confirmed-completion boolean. Counts are bounded by the existing 12-action cap.
+Entering an exchange does not prove delivery or application; acceptance requires
+the original exact receipt validator, and completion requires the original
+same-room checks. The last ready kind survives waiting and may change on a
+later validated wrong-kind body before the existing mismatch rejection.
+
+For example, a timeout at `room_waiting` with zero attempts differs from waiting
+after an accepted `rest_heal`, `rest_proceed` or `event_choice`. A timeout at
+`manifest_read` may mean setup consumed the shared deadline before any room
+read. A failure at `action_exchange` may have an unaccepted attempt. These are
+host-stage facts; they do not identify the C# reason behind canonical waiting.
+
+Success includes the unchanged strictly validated run acceptance aggregate only
+when its room action count agrees with the diagnostic. Failure always has
+`run_acceptance=null`. Unknown exceptions use existing `internal_failure`;
+cancellation uses `interrupted`. Unsafe diagnostic state or result cleanup
+supersedes either outcome with `internal_failure` and both records null.
+Nested output is discarded through a non-retaining sink. No raw responses,
+identifiers, arbitrary text, timing, poll count, action history or capture path
+are retained. Existing CLI outputs, wire, package, deadlines, providers, request
+order, replay rules and completion semantics remain unchanged.
+
+Run the synthetic gates without game or operator access:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/room_stage_diagnostics_fixtures.py"
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/diagnose_run_room_wire_fixtures.py"
+```
+
+The unit gate has six grouped checks. The independent 25-case gate exercises
+literal actual-client requests, failure stages, receipt accounting, cancellation,
+cleanup, exact acceptance parity with and without a room, and deliberate request,
+count, category and output-suppression mutations. Evidence is `bridge_fixture`;
+no new live room completion or historical timeout root cause is claimed. See
+[D56](../../DECISIONS.md#d56-keep-room-stage-diagnostics-separate-from-run-acceptance),
+the [frozen diagnostic plan](../../docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md),
+and the [actor-ready ledger](../../docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md).
+
 ### Runtime process/port guard
 
 `check_live_runtime.py` binds the supplied UID/home to the fixed game
