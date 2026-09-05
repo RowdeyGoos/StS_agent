@@ -163,6 +163,36 @@ def _waiting_cases() -> None:
     )
 
 
+def _unsupported_after_accepted_event() -> None:
+    decision = wire._IDS[4]
+    unsupported = wire._room_inactive(
+        "unsupported",
+        screen_kind="event",
+        ordinal=wire._ROOM_ORDINAL,
+    )
+    _execute(
+        wire._base()
+        + [
+            wire._exchange(wire._GET_ROOM, _event_ready(decision)),
+            _event_action(decision),
+            wire._exchange(wire._GET_ROOM, unsupported),
+        ],
+        _failed(
+            "room_state_unsupported",
+            _record(
+                "room_validation",
+                "unsupported",
+                "event",
+                1,
+                1,
+                "event_choice",
+                "event_choice",
+            ),
+        ),
+        posts=1,
+    )
+
+
 def _receipt_failures() -> None:
     decision = wire._IDS[4]
     prefix = wire._base() + [wire._exchange(wire._GET_ROOM, _event_ready(decision))]
@@ -626,6 +656,7 @@ def _disabled_sink_is_detected() -> None:
 
 def operation() -> dict[str, object]:
     _waiting_cases()
+    _unsupported_after_accepted_event()
     _receipt_failures()
     _success_and_discarded_summary()
     _legacy_operation_parity()
@@ -639,7 +670,7 @@ def operation() -> dict[str, object]:
         "schema_version": 1,
         "status": "passed",
         "suite": "diagnose_room_live_fixtures",
-        "check_count": 10,
+        "check_count": 11,
     }
 
 

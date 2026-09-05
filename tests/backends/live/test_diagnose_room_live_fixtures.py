@@ -19,5 +19,5 @@ def test_diagnose_room_live_fixture_gate() -> None:
     assert completed.stderr == ""
     assert completed.stdout == (
         '{"schema_version":1,"status":"passed","suite":"diagnose_room_live_fixtures",'
-        '"check_count":10}\n'
+        '"check_count":11}\n'
     )
