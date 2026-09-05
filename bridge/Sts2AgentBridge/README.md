@@ -37,12 +37,18 @@ Its secure operator loader passes 13 fixture groups and its first-frame
 lifecycle passes 24, with two byte-identical source-snapshot builds. The
 [item release](../../docs/PHASE_1_ITEM_V1_RELEASE_PLAN.md) now has an accepted
 whole-assembly policy, canonical two-entry package and item-aware fixed client,
-transactional installer and cleanup tools. A user-confirmed fresh potion-only
-reward now live-passes exactly one attempted/accepted/reconciled collection,
-with complete cleanup. Relic collection and parent room completion remain
-unpromoted. The existing 0.8.0 instructions below
-cannot install or activate it. Exact candidate hashes and reproduction
+transactional installer and cleanup tools. Separate user-confirmed potion-only
+and relic-only Loot rewards now each live-pass exactly one
+attempted/accepted/reconciled collection, with complete cleanup. Parent room
+completion and relic hook fidelity remain unpromoted. The existing 0.8.0
+instructions below cannot install or activate it. Exact candidate hashes and reproduction
 commands are in the [acceptance ledger](../../docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
+
+For a live item test, prepare the separate **Loot!** reward list after combat
+(an elite fight can supply a relic). Leave only untouched potion/relic rows;
+collect gold and handle card rewards manually first. A potion needs an empty
+slot. The chest **What’s Inside?** screen, Neow’s starting choices and shop
+inventory are different surfaces and are not supported by this adapter.
 
 ## Scope and non-goals
 

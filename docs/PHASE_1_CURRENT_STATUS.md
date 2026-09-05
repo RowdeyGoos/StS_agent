@@ -565,16 +565,20 @@ Preserve its fourth frozen successor inventory. The fifth
 [release packet](PHASE_1_ITEM_V1_RELEASE_PLAN.md) is independently accepted with an
 exact reproduced package: 31 verifier, 10 production-CLI, 11 client, 5 package, 38 campaign
 manager and 17 runtime groups. Full regression remains 1155 passing tests.
-Its exact two-entry package contains the unchanged candidate. The bounded
-campaign now live-passes one potion collection with exactly one
-attempted, accepted and reconciled action, and matching visible slot change.
-Normal quit, exact quarantine/purge and unchanged 429-file base/stopped/closed
-checks passed by 2026-09-05 18:34:28 UTC. No campaign remains active. Relic
-collection remains fixture-only; parent room completion and shops are not promoted.
-The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records its
-state. Existing live capabilities, 0.8.0 source/artifact and operational limits
-remain unchanged. The new evidence is restricted to one isolated potion collection;
-no full-room or full-run claim follows.
+Its exact two-entry package contains the unchanged candidate. Separate bounded
+campaigns now live-pass one potion and one relic collection, each with exactly
+one attempted, accepted and reconciled action and matching visible inventory
+change. Normal quit, exact quarantine/purge and unchanged 429-file
+base/stopped/closed checks passed for both, most recently 2026-09-05 18:54:42 UTC.
+No campaign remains active. The relic path proves exact reward-local
+claimed-model reconciliation; relic hooks and parent room completion are not
+promoted. The supported surface is the separate combat Loot reward list;
+the chest “What’s Inside?” screen, Neow choices and shops remain unsupported.
+The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records the
+results and the corrected setup instruction. Existing live capabilities,
+0.8.0 source/artifact and operational limits remain unchanged. No full-room
+or full-run claim follows. Shop dispatch/back/FTUE seams and parent event/child
+lifecycle remain separate development gates.
 
 ## Document map
 

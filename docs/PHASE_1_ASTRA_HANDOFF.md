@@ -31,10 +31,10 @@ Its 20-input inventory is frozen; preserve every byte. The fifth
 31 verifier, 10 production-CLI, 11 client, 5 package, 38 manager and
 17 runtime groups. The 26-input source inventory and exact canonical package
 are recorded in the ledger. Independent reproduction and operational preflight
-passed; the successful potion result and completed cleanup are below. The release ledger records a
+passed; the successful potion/relic results and completed cleanup are below. The release ledger records a
 minimal base-checker startup fix and its replacement source freeze.
-The production entrypoint and native adapter have now executed in the single
-accepted potion campaign; broader behavior is not promoted. Never inherit
+The production entrypoint and native adapter have now executed in separate
+accepted potion and relic campaigns; broader behavior is not promoted. Never inherit
 enabled r0a config/credentials or
 describe a post-submission failure as retryable/no mutation. Shop control connections and
 event progression remain separate gates. Do not repeat the stopped event choice
@@ -46,9 +46,33 @@ requirements and report that check as waived. The item campaign at release
 commit `9f807af` live-passed exactly one potion collection (attempted1/accepted1/
 reconciled1), with matching visible slot change. Normal quit, code-first
 quarantine, exact four-file purge, clean 429-file base, stopped game/closed port
-and absence checks all passed by 2026-09-05 18:34:28 UTC. No campaign remains
-active. Do not invoke the old client/state or retry that item. Relic collection
-is the next bounded live evidence target; shop/event scope remains separate.
+and absence checks all passed by 2026-09-05 18:34:28 UTC. That campaign is closed;
+do not invoke its historical client/state again. The subsequent relic campaign
+is recorded below. Shop/event scope remains separate.
+
+## Relic campaign closed — 2026-09-05 18:54:42 UTC
+
+The user requested the next live test on unchanged release `9f807af`,
+documentation head `2958b6e`. Fresh source/package/base 429, conflict-absence,
+stopped/closed and exact overlay gates passed. Campaign start 18:43:01 UTC;
+installed state SHA256
+`6051b0f37d9a1fc1958df2c42fb45e70aa6e9a07d0588820b0051041828aa40d`.
+The initial chest “What’s Inside?” setup was the coordinator’s wrong suggestion;
+no host/action was sent. The user then prepared an elite-fight Loot reward list
+with only an untouched relic row. Exactly one fixed client invocation passed:
+attempted 1 / accepted 1 / reconciled 1, item_kind relic, with matching visible relic-bar
+addition. This is reward-local acquisition, not parent room completion.
+
+Normal quit, stopped/closed, code-first quarantine and exact four-file purge
+passed. Quarantined state SHA256
+`23f7619600af5717c687472feebad27a113fef26179719e1017434fb28bedb39`.
+Final base 429/zero-overlay/stopped/closed and six fixed absence checks passed
+by 18:54:42 UTC, within the 30-minute bound. Extra unmodded relaunch was waived.
+No campaign remains active; do not invoke either historical client/state again.
+The bridge guide now specifies the combat Loot popup and excludes the chest,
+Neow and shop screens. Both selected item kinds have one live result each;
+shop dispatch/back/FTUE seams and parent event/child lifecycle remain the next
+separate development gates. No frozen source or package changed.
 
 ## Start from the integration checkout
 

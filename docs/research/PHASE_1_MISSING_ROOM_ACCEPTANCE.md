@@ -681,3 +681,87 @@ No campaign remains active. Release code is committed at `9f807af`; only this
 sanitized evidence/status continuation follows. Next bounded live evidence is
 one fresh relic collection under a separately opened campaign. Shop dispatch
 and generic event progression remain their own unresolved implementation gates.
+
+
+### Fresh relic campaign installed — 2026-09-05 18:43:01 UTC
+
+The user requested the next live test. The exact unchanged release and all four
+frozen predecessors passed external source pinning; canonical published package
+bytes passed. The clean base 429 projection and five fixed conflict-absence
+checks passed. The sandboxed process check returned process_check_failed;
+the same fixed read-only check with process access passed stopped/closed.
+No operational write or live call occurred before that successful check.
+
+A fresh campaign installed with `mods_parent_created=true` and state SHA256
+`6051b0f37d9a1fc1958df2c42fb45e70aa6e9a07d0588820b0051041828aa40d`.
+Overlay verification passed the unchanged base and exactly two reviewed files.
+The user was prompted to launch through Steam on Profile3, reach a fresh Loot
+popup and leave only an untouched relic offer. No live client/GET/POST yet.
+The maximum 30-minute campaign includes cleanup and ends by 19:13:01 UTC;
+begin teardown by 19:08 UTC if setup is unavailable. Prior potion state/action
+are not reused. No retained live corpus; extra unmodded relaunch remains waived.
+
+
+At 18:48 UTC the user reported opening a chest. Automatic review initially
+rejected app attachment because getApp can launch a stopped app. The fixed
+read-only require-running check then passed, and attachment/capture succeeded;
+no launch was performed. Supported capture showed the separate chest
+“What’s Inside?” screen with a floating relic, not the requested Loot reward
+list. The coordinator’s initial suggestion that a chest was ideal was wrong
+for the frozen NRewardsScreen-only adapter. No client/GET/POST/action was sent.
+The coordinator corrected the setup to an elite-fight Loot popup containing
+only an untouched relic row, and requested fresh user confirmation. The campaign
+clock and single-invocation limit remain unchanged.
+
+
+### Relic campaign passed and closed — 2026-09-05 18:54:42 UTC
+
+The user confirmed the corrected setup. Supported game capture showed the
+separate Loot popup after an elite fight, containing exactly one untouched
+relic reward row, with no gold/card/potion rows or map/card-selection overlay.
+User setup was on the requested Profile3. The externally recorded 26-input
+release manifest and every declared source passed pinning again; the fixed
+game process was running, the unchanged base 429 plus exact two-file overlay
+passed, and a single bounded TCP-only probe accepted on 43117 without HTTP.
+
+The coordinator invoked the fixed client exactly once against installed state
+`6051b0f37d9a1fc1958df2c42fb45e70aa6e9a07d0588820b0051041828aa40d`.
+It exited 0 with this accepted bounded summary:
+
+```json
+{"schema_version":1,"status":"passed","milestone":"item_v1_collection","item_kind":"relic","attempted":1,"accepted":1,"reconciled":1}
+```
+
+Post-result supported capture showed the offered relic icon newly present in
+the relic bar and the Loot popup gone. No second action, skip or Proceed was
+sent. This demonstrates one direct relic collection through the released
+bootstrap/endpoint/client and exact reward-local claimed-model reconciliation.
+The screenshot supplies the separate visible inventory confirmation; the
+protocol does not assert relic-count change or hook fidelity. Parent room
+completion, treasure-chest collection, shop controls and event progression
+remain unpromoted. The historical timeout remains unclassified. No raw body,
+nonce, decision, item key, trajectory, screenshot file or live corpus was retained.
+
+Normal UI quit returned App quit; joint stopped/closed verification passed.
+Code-first quarantine passed with successor state SHA256
+`23f7619600af5717c687472feebad27a113fef26179719e1017434fb28bedb39`.
+Exact purge passed with phase absent and four generated files removed. Final
+checks passed: 429 unchanged base files, SHA256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+zero overlay, game stopped, port not accepting, and all six fixed
+operator/old-new overlay/old-new state/newly-owned mods paths absent.
+Cleanup completed 18:54:42 UTC, 11 minutes 41 seconds after campaign start and
+before the 19:13:01 deadline. The repeated unmodded relaunch remained waived;
+it was not performed or counted as passed. No campaign remains active.
+
+Release implementation remains unchanged at `9f807af`; 1155 Python tests are the
+previous validated code baseline, not a new test run for this documentation-only
+continuation. Both selected item kinds now have one accepted live collection
+each in separate fully closed campaigns. The next development gate is the
+reviewed shop dispatch/back/FTUE seam and parent event/child lifecycle work;
+no further item test or new capability follows automatically from this result.
+
+Independent review accepted the six-document campaign continuation, including
+its exact single-action claim, corrected setup and cleanup limits. All74
+relative documentation links and git diff whitespace checks passed. Only the
+six named documentation files changed; no implementation test rerun was needed.

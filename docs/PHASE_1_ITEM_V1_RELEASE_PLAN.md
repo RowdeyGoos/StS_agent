@@ -1,7 +1,7 @@
 # Item V1 release and live-readiness plan
 
 - Date: 2026-09-05; baseline c5d6ab9 in the selected 23cf integration checkout.
-- State: implemented, independently accepted and source-frozen; one live potion collection passed and cleanup completed.
+- State: implemented, independently accepted and source-frozen; separate live potion and relic collections passed and cleanup completed.
 - Outcome: finish the bounded item release, operational tools and preflight so a fresh item reward can be tested.
 
 The user's standing authorization for bounded live campaigns persists. This plan adds no game capability: one first-legal item action through the frozen host, with no retry or adoption after uncertainty. Preserve every byte of old 0.8.0 and all four frozen successor trees. No profile/save filesystem access, Cloud change, target method discovery, retained live corpus, remote Git, old uncertain-action replay or browser-policy bypass. User-assisted launch remains available. The repeated unmodded launch/quit check is waived by the user; never report it as passed.
@@ -77,4 +77,12 @@ Independent review accepted semantic SHA256 9d7d25840fb8910448bd0f8215f4eabdc081
 
 The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records the final 26-input inventory, exact policy and package, independent reproduction, 31 verifier/10 CLI/11 client/5 package/38 manager/17 runtime checks, 1155 Python regression tests and the independently reviewed two-file preflight startup correction. All four predecessor trees remain frozen. The release is ready for the bounded live campaign; no live collection result follows from these gates.
 
-The bounded campaign subsequently passed exactly one potion collection and fully cleaned up by2026-09-05 18:34:28 UTC; the ledger records the sanitized summary and exact cleanup. The release readiness gates alone did not establish that live result. Relic collection and parent room completion remain unpromoted.
+The bounded campaign subsequently passed exactly one potion collection and fully cleaned up by2026-09-05 18:34:28 UTC; the ledger records the sanitized summary and exact cleanup. The release readiness gates alone did not establish that live result. At that point, relic collection and parent room completion remained unpromoted.
+
+A second bounded campaign passed exactly one relic collection and fully cleaned
+up by 2026-09-05 18:54:42 UTC. Both selected item kinds now have one accepted live
+result each; source/package identities remain unchanged. The initial chest
+setup suggestion was corrected before any client call: use the separate Loot
+reward list after an elite fight, not the chest “What’s Inside?” screen. The
+ledger records the single invocation, exact reward-local result, visible relic
+addition and cleanup. Parent room completion and other screens remain unpromoted.

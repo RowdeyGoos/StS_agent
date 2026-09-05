@@ -147,11 +147,11 @@ first-frame bootstrap candidate now passes 13 operator groups, 24 lifecycle
 groups, 24 checker boundary cases and two matching fresh builds. The
 [release packet](docs/PHASE_1_ITEM_V1_RELEASE_PLAN.md) now has an independently
 reviewed whole-assembly policy, exact reproduced package, fixed client and
-transactional campaign tools. One live potion collection now passes with exact
-receipt/reconciliation and complete cleanup. Next bounded live evidence is a
-fresh relic collection; broader room behavior remains unproven. Shop
-dispatch/close/leave seams and generic event progression still need their named
-static gates.
+transactional campaign tools. Separate live potion and relic collections now
+each pass with exact receipt/reconciliation and complete cleanup. Broader room
+behavior remains unproven. Next development is the named shop dispatch/back/FTUE
+static gate and reviewed parent event/child lifecycle contract; chest collection
+is also outside the current Loot-screen adapter.
 Exact results are in the [missing-room acceptance ledger](docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
 
 Supported user-initiated launch remains available; the restricted browser
