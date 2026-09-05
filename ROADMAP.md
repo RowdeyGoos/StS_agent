@@ -434,7 +434,8 @@ When making a major architectural choice while doing that work, also update [DEC
 
 Shop and event functional implementations now have reviewed cores/native
 adapters and actual cross-language fixtures, including one frozen item child.
-The next integration gate is one combined runtime/bootstrap/package and then
-bounded live shop/event acceptance. See the
-[room-flow ledger](docs/research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md).
+The single combined runtime/bootstrap/package now passes independent full
+release acceptance. The next gate is bounded live shop/event testing with a
+user-prepared exact screen. See the
+[release ledger](docs/research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md).
 Rest-site card upgrades remain unsupported; no upgrade scope was added.

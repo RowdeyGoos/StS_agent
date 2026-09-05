@@ -599,12 +599,19 @@ The existing regression passes 1154 tests in the sandbox; its one ephemeral
 loopback fixture was denied socket binding and passed unchanged in an
 authorized focused rerun, covering all 1155 existing tests.
 
-A combined runtime/bootstrap/package and live shop/event acceptance are next.
-This functional packet adds no live route to the installed bridge. The prior
-potion/relic campaigns remain the latest live item evidence; no campaign is
-active and no game setup is currently required. Rest healing and map return
-are supported/live-demonstrated; selecting/upgrading a card at a rest site is
-still unsupported.
+The combined room_release_v1 runtime, secure bootstrap, selected-flow client,
+whole-assembly verifier, canonical package and campaign/cleanup tools are now
+independently accepted. Two fresh aggregate runs produced identical results and
+four identical production DLLs. The
+[release ledger](research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) records the
+51-input freeze, exact package and complete fixture evidence. All six predecessor
+trees and the old bridge remain byte-exact.
+
+Live shop/event acceptance is next. The user is available for the first shop
+campaign; installation must occur while closed before the exact shop setup.
+The release ledger owns its current state. Prior potion/relic campaigns remain
+the latest live item evidence. Rest healing and map return are live-demonstrated;
+selecting/upgrading a card at a rest site remains unsupported.
 
 ## Document map
 

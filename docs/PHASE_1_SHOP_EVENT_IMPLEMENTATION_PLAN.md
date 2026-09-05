@@ -99,3 +99,13 @@ After the event subtree was accepted and frozen, its writer took only the
 coordinator-delegated room_flows_v1/check.py task. Shared docs, manifest freeze
 and aggregate acceptance remain coordinator-owned. See the
 [functional acceptance ledger](research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md).
+
+## Combined release accepted — 2026-09-05
+
+The subsequent room_release_v1 tree now supplies the single reviewed runtime,
+secure bootstrap, production assembly, verifier, package and transactional
+operations for both frozen room modules. Two fresh aggregate runs agree exactly;
+see the [release acceptance](research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md).
+Implementation, fixtures and packaging are accepted. Bounded shop/event live
+acceptance is the remaining gate; that ledger owns campaign state and setup.
+The six predecessor source inventories remain immutable.

@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridgeRoomFlowsV1</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.RoomReleaseV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../item_v1/core/ItemV1CanonicalEncoder.cs" Link="item_v1/core/ItemV1CanonicalEncoder.cs" />
+    <Compile Include="../../item_v1/core/ItemV1Contracts.cs" Link="item_v1/core/ItemV1Contracts.cs" />
+    <Compile Include="../../item_v1/core/ItemV1Session.cs" Link="item_v1/core/ItemV1Session.cs" />
+    <Compile Include="../../item_wire_v1/producer/ItemWireV1Codec.cs" Link="item_wire_v1/producer/ItemWireV1Codec.cs" />
+    <Compile Include="../../item_wire_v1/producer/ItemWireV1Protocol.cs" Link="item_wire_v1/producer/ItemWireV1Protocol.cs" />
+    <Compile Include="../../item_wire_v1/producer/ItemWireV1Service.cs" Link="item_wire_v1/producer/ItemWireV1Service.cs" />
+    <Compile Include="../../room_flows_v1/common/EventItemChildContracts.cs" Link="room_flows_v1/common/EventItemChildContracts.cs" />
+    <Compile Include="../../room_flows_v1/common/RoomFlowContracts.cs" Link="room_flows_v1/common/RoomFlowContracts.cs" />
+    <Compile Include="../../room_flows_v1/broker/FrozenEventItemChildBroker.cs" Link="room_flows_v1/broker/FrozenEventItemChildBroker.cs" />
+    <Compile Include="../../room_flows_v1/shop/core/ShopV1CanonicalEncoder.cs" Link="room_flows_v1/shop/core/ShopV1CanonicalEncoder.cs" />
+    <Compile Include="../../room_flows_v1/shop/core/ShopV1Contracts.cs" Link="room_flows_v1/shop/core/ShopV1Contracts.cs" />
+    <Compile Include="../../room_flows_v1/shop/core/ShopV1Session.cs" Link="room_flows_v1/shop/core/ShopV1Session.cs" />
+    <Compile Include="../../room_flows_v1/shop/native/PinnedShopV1NativeAdapter.cs" Link="room_flows_v1/shop/native/PinnedShopV1NativeAdapter.cs" />
+    <Compile Include="../../room_flows_v1/event/core/EventV1CanonicalEncoder.cs" Link="room_flows_v1/event/core/EventV1CanonicalEncoder.cs" />
+    <Compile Include="../../room_flows_v1/event/core/EventV1Contracts.cs" Link="room_flows_v1/event/core/EventV1Contracts.cs" />
+    <Compile Include="../../room_flows_v1/event/core/EventV1Session.cs" Link="room_flows_v1/event/core/EventV1Session.cs" />
+    <Compile Include="../../room_flows_v1/event/native/PinnedEventV1NativeAdapter.cs" Link="room_flows_v1/event/native/PinnedEventV1NativeAdapter.cs" />
+    <Compile Include="../../room_flows_v1/wire/RoomFlowWireCodec.cs" Link="room_flows_v1/wire/RoomFlowWireCodec.cs" />
+    <Compile Include="../../room_flows_v1/wire/RoomFlowWireService.cs" Link="room_flows_v1/wire/RoomFlowWireService.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" Link="item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" Link="item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/DarwinReadOnly.cs" Link="item_bootstrap_v1/operator/DarwinReadOnly.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" Link="item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" Link="item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" />
+    <Compile Include="../../item_bootstrap_v1/native/PinnedItemBuildGuard.cs" Link="item_bootstrap_v1/native/PinnedItemBuildGuard.cs" />
+    <Compile Include="../runtime/OwnedByteFrameQueue.cs" Link="room_release_v1/runtime/OwnedByteFrameQueue.cs" />
+    <Compile Include="../runtime/RoomFlowTransportConfiguration.cs" Link="room_release_v1/runtime/RoomFlowTransportConfiguration.cs" />
+    <Compile Include="../runtime/RoomFlowTransportContracts.cs" Link="room_release_v1/runtime/RoomFlowTransportContracts.cs" />
+    <Compile Include="../runtime/RoomFlowTransportProtocol.cs" Link="room_release_v1/runtime/RoomFlowTransportProtocol.cs" />
+    <Compile Include="../runtime/RoomFlowTransportRuntime.cs" Link="room_release_v1/runtime/RoomFlowTransportRuntime.cs" />
+    <Compile Include="../operator/RoomFlowOperatorFiles.cs" Link="room_release_v1/operator/RoomFlowOperatorFiles.cs" />
+    <Compile Include="../lifecycle/RoomFlowBootstrapLifecycle.cs" Link="room_release_v1/lifecycle/RoomFlowBootstrapLifecycle.cs" />
+    <Compile Include="../native/ProductionRoomFlowRuntimeFactory.cs" Link="room_release_v1/native/ProductionRoomFlowRuntimeFactory.cs" />
+    <Compile Include="../native/RoomFlowBootstrapHost.cs" Link="room_release_v1/native/RoomFlowBootstrapHost.cs" />
+    <Compile Include="../native/RoomFlowBootstrapSupport.cs" Link="room_release_v1/native/RoomFlowBootstrapSupport.cs" />
+    <Compile Include="../native/RoomFlowGodotFrameConnector.cs" Link="room_release_v1/native/RoomFlowGodotFrameConnector.cs" />
+    <Compile Include="../native/RoomFlowModEntry.cs" Link="room_release_v1/native/RoomFlowModEntry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidatePinnedGameData" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))" Text="STS2GameDataDir must be absolute." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')" Text="Pinned sts2.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
+  </Target>
+</Project>

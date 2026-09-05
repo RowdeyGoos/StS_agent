@@ -9,8 +9,13 @@ Actual shop/event modules, native adapters, shared wire/hosts and the real item
 child broker are implemented and independently reviewed in room_flows_v1.
 Read the [functional acceptance ledger](research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md)
 and [implementation plan](PHASE_1_SHOP_EVENT_IMPLEMENTATION_PLAN.md) before the
-historical continuation below. Combined runtime/package and live acceptance
-remain the next gate; no game setup is currently needed.
+historical continuation below. The single combined room_release_v1 runtime,
+bootstrap and canonical package now pass independent review and two identical
+complete offline acceptance runs. Read the
+[release ledger](research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) for exact frozen
+identities and current campaign state. Live shop/event acceptance is the next
+gate; the user is available for the first shop test. Install while closed, then
+request the exact shop inventory described in that ledger.
 
 ## Later continuation status — 2026-09-05
 

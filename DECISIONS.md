@@ -2044,3 +2044,25 @@ are separate correlated actions.
 The [functional contract](docs/PHASE_1_ROOM_FLOWS_V1_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md) distinguish
 implemented/fixture-tested code, native compilation, packaging and live evidence.
+
+## D63. Release Shop And Event Flows With One Protected Selection
+
+**Date:** 2026-09-05
+
+Compose the frozen room modules into one explicit single-assembly release.
+Select shop or event only through exact protected configuration, bind that
+selection and its hash into immutable campaign state, and derive the client
+flow from validated installed state. One release and cleanup path serves both.
+
+Stop and join transport before disposing the service on its owner frame, then
+detach Godot. Off-thread shutdown cannot claim completed native disposal.
+Publish terminal responses before exposing terminal shutdown, and preserve
+attempt reservations through rate, queue and delivery failures. Pace parent and
+item-child requests together within their existing deadlines.
+
+Freeze and independently verify the complete production source/metadata/IL
+policy, reproduce exact package bytes and run full synthetic installation and
+cleanup before live readiness. Preserve every predecessor tree. The
+[release contract](docs/PHASE_1_ROOM_RELEASE_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) distinguish
+release readiness from the separate live shop and event gates.
