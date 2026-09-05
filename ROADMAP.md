@@ -138,7 +138,7 @@ continuation. The [missing-room capability plan](docs/PHASE_1_MISSING_ROOM_CAPAB
 defines isolated proposals and shared-contract gates. Bounded static inspection
 is reviewed, and the first isolated item-collection component is implemented:
 ten synthetic core groups pass, its native adapter compiles against the pinned
-game, and fresh builds reproduce. It remains unselected by the live bridge.
+game, and fresh builds reproduce. It stays outside the existing 0.8.0 bridge.
 The isolated wire and programmatic host are also reviewed: 9 C# groups, 27 host
 tests and 17 actual cross-language cases pass, with two matching source-snapshot
 builds. The transport and owned-thread queue now also pass review, 11 C# groups,
@@ -147,8 +147,9 @@ first-frame bootstrap candidate now passes 13 operator groups, 24 lifecycle
 groups, 24 checker boundary cases and two matching fresh builds. The
 [release packet](docs/PHASE_1_ITEM_V1_RELEASE_PLAN.md) now has an independently
 reviewed whole-assembly policy, exact reproduced package, fixed client and
-transactional campaign tools. Operational preflight passes; next is one live
-collection from a user-confirmed fresh untouched item-only reward. The game attachment remains compile-only. Shop
+transactional campaign tools. One live potion collection now passes with exact
+receipt/reconciliation and complete cleanup. Next bounded live evidence is a
+fresh relic collection; broader room behavior remains unproven. Shop
 dispatch/close/leave seams and generic event progression still need their named
 static gates.
 Exact results are in the [missing-room acceptance ledger](docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).

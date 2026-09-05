@@ -1,7 +1,7 @@
 # Missing-room capability acceptance
 
 - Date: 2026-09-05; selected checkout 23cf, branch `codex/phase1-actor-ready-integration`.
-- Previous live cleanup remains complete (2026-09-05 12:20:50 UTC). No campaign is active.
+- Latest item campaign passed one potion collection and fully cleaned up at 2026-09-05 18:34:28 UTC. No campaign remains active.
 - User requested parallel shop/item/event development and instructed the coordinator to proceed.
 
 | Packet | State | Evidence and boundary |
@@ -15,7 +15,7 @@
 | Shop actions / event progression | Unfrozen | Shop signal/back/FTUE seams and generic lineage-bound event progression remain explicit missing facts. |
 | MR-ITEM-BOOTSTRAP-V1 | Accepted install-free candidate | Fourth frozen tree; 13 operator, 24 lifecycle and 24 independent checker cases; identical candidate builds. |
 | MR-ITEM-RELEASE-V1 | Accepted release; operational preflight passed | New verifier/policy, canonical package, fixed client and transactional operations; exact evidence below. |
-| Live successor | Ready for the bounded fresh-item campaign | One fresh untouched item-only reward, one frozen controller invocation, exact campaign cleanup. |
+| Live successor | Potion collection live-demonstrated; cleanup complete | Exactly one attempted/accepted/reconciled potion collection, with matching visible slot change. Relic collection remains fixture-only; room completion and shops are not promoted. |
 
 ## Initial static validation
 
@@ -609,3 +609,75 @@ access then worked. A separate Steam capture attempt still returned `-3811`;
 this is not evidence about the historical controller timeout. Manual game launch
 and actual game capture remain the selected route. No campaign action has yet
 been attempted.
+
+
+### Item campaign opened — 2026-09-05 18:20:49 UTC
+
+Release commit `9f807af` is locally committed and clean. Before installation,
+the user opened the unmodded game; supported game capture worked and showed a
+Steam initialization error. The visible Quit control closed the game normally,
+then fresh stopped/closed checks passed. This happened before installing the
+item bridge and is separate from either item control or the historical timeout.
+
+Campaign `ITEM-V1-COLLECTION-SMOKE-V1` installed successfully with
+`mods_parent_created=true`, state predecessor SHA256
+`c7a80bf0a0cd79445bebd4ab70555d8bbdadf19fe82e1bf675949a66288a183e`.
+Post-install verification passed the unchanged 429-file base and exactly two
+reviewed overlay files. The user was prompted to launch via Steam Library Play
+and show Profile3 with a fresh untouched item-only reward and empty potion slot.
+No live client/GET/POST has run. The maximum 30-minute campaign includes cleanup:
+finish by 18:50:49 UTC, begin teardown early enough to meet it. No retained live
+corpus is authorized; the repeated unmodded relaunch remains waived.
+
+
+The first user-ready screen at approximately 18:25 UTC was Neow's starting
+blessing choice, not a Rewards popup. Supported game capture succeeded. The
+fixed game process check passed, and a separate bounded TCP-only 43117 probe
+accepted without sending HTTP/credentials. No host/controller invocation or
+item action was made. The user was given corrected concrete setup instructions:
+only unclaimed potion/relic reward rows in the separate Rewards popup, with an
+empty potion slot and other reward rows handled manually first.
+
+
+### Item campaign passed and closed — 2026-09-05 18:34:28 UTC
+
+The user confirmed the corrected setup. Supported game capture showed a fresh
+Loot popup containing exactly one unclaimed potion reward, with three empty
+potion slots and no other reward rows, map or card-selection overlay. User setup
+was on the requested Profile3. The coordinator verified the externally pinned
+26-input release manifest again, then invoked the fixed client exactly once
+against installed state predecessor
+`c7a80bf0a0cd79445bebd4ab70555d8bbdadf19fe82e1bf675949a66288a183e`.
+
+The client exited0 with this accepted bounded summary:
+
+```json
+{"schema_version":1,"status":"passed","milestone":"item_v1_collection","item_kind":"potion","attempted":1,"accepted":1,"reconciled":1}
+```
+
+Post-result supported capture showed the potion occupying the first previously
+empty slot and the Loot overlay gone. No second action, skip or Proceed was
+sent. The visible Proceed control is not a room-completion acceptance result.
+This promotes the bounded potion-collection path to live-demonstrated: actual
+bootstrap, fixed endpoint/client, advertised first-legal dispatch and item-local
+reconciliation. The internal timing/race/failure variants and relic
+collection still have synthetic evidence only. There was no retained raw
+response, nonce, decision, item-key, trajectory, screenshot file or live corpus.
+The historical room timeout and Steam `-3811` capture issue remain separate.
+
+Normal UI quit returned App quit. Joint stopped/closed verification passed.
+Code-first quarantine passed, with successor state SHA256
+`13a88605df1c39a68c37173468e10ef2872e2291fc32d47cc21a8e4bc2b3612a`.
+Exact purge passed with phase absent and four generated files removed. Final
+checks passed: 429 unchanged base files, SHA256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+zero overlay, game process stopped, port not accepting, and all six fixed
+operator/old-new overlay/old-new state/newly-owned mods paths absent.
+Cleanup completed 18:34:28 UTC, 13 minutes 39 seconds after campaign start and
+before the 18:50:49 deadline. The repeated unmodded relaunch was waived by the
+user and was not performed or counted as passed.
+
+No campaign remains active. Release code is committed at `9f807af`; only this
+sanitized evidence/status continuation follows. Next bounded live evidence is
+one fresh relic collection under a separately opened campaign. Shop dispatch
+and generic event progression remain their own unresolved implementation gates.

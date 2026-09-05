@@ -543,7 +543,7 @@ remain unresolved. The [item V1 contract](PHASE_1_ITEM_V1_CONTRACT.md) is frozen
 for one isolated direct collection and is implemented in a separate successor
 tree. Ten pure-core test groups pass, independent review is complete, and two
 fresh builds reproduce the core/test/native assemblies. The native adapter
-compiled against the pinned game but has not executed.
+was compile-only at that stage.
 The isolated [wire/host packet](PHASE_1_ITEM_V1_WIRE_PLAN.md) is also accepted:
 9 producer groups, 27 host tests and 17 real C#-to-Python synthetic cases pass;
 two verified source-snapshot builds match. Full regression passes 1,139 tests.
@@ -559,16 +559,22 @@ is now accepted as an install-free candidate: 13 actual-backend operator groups,
 24 synthetic lifecycle groups and 24 independent checker boundary cases pass.
 Two fresh source-snapshot builds produce the same single candidate DLL. It
 adds descriptor-bound operator loading and first-frame runtime creation with
-truthful shutdown, but its production entrypoint and game adapter have not run.
+truthful shutdown; at that stage its production entrypoint and game adapter
+were still unexecuted.
 Preserve its fourth frozen successor inventory. The fifth
-[release packet](PHASE_1_ITEM_V1_RELEASE_PLAN.md) is now independently accepted with an exact reproduced package:
- 31 verifier, 10 production-CLI, 11 client, 5 package, 38 campaign
+[release packet](PHASE_1_ITEM_V1_RELEASE_PLAN.md) is independently accepted with an
+exact reproduced package: 31 verifier, 10 production-CLI, 11 client, 5 package, 38 campaign
 manager and 17 runtime groups. Full regression remains 1155 passing tests.
-Its exact two-entry package contains the unchanged candidate. The fixed-path operational preflight passes; the next step is a
-fresh untouched item-only reward test; there is still no live collection result.
+Its exact two-entry package contains the unchanged candidate. The bounded
+campaign now live-passes one potion collection with exactly one
+attempted, accepted and reconciled action, and matching visible slot change.
+Normal quit, exact quarantine/purge and unchanged 429-file base/stopped/closed
+checks passed by 2026-09-05 18:34:28 UTC. No campaign remains active. Relic
+collection remains fixture-only; parent room completion and shops are not promoted.
 The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records its
 state. Existing live capabilities, 0.8.0 source/artifact and operational limits
-remain unchanged; there is no new live item capability or campaign.
+remain unchanged. The new evidence is restricted to one isolated potion collection;
+no full-room or full-run claim follows.
 
 ## Document map
 

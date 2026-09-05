@@ -17,8 +17,8 @@ regression and old 0.8.0 source identity pass. The subsequent isolated
 [wire/host packet](PHASE_1_ITEM_V1_WIRE_PLAN.md) is now accepted: 9 C# groups,
 27 host tests and 17 actual cross-language cases pass; two fresh source-snapshot
 builds match. Full regression is 1,139 passing tests. Both successor trees have
-frozen source inventories; preserve every byte. No new live route or package
-is selected. The subsequent
+frozen source inventories; preserve every byte. At that stage no new live
+route or package was selected. The subsequent
 [transport/frame packet](PHASE_1_ITEM_V1_TRANSPORT_PLAN.md) is accepted with
 11 C# groups, 16 Python tests, 15 actual synthetic socket cases and two matching
 fresh builds; full regression is now 1,155 tests. Preserve its third frozen
@@ -27,21 +27,28 @@ successor source inventory too. The fourth
 independent review, 13 operator groups, 24 lifecycle groups and 24 checker
 boundary cases. Two fresh builds match the single install-free candidate DLL.
 Its 20-input inventory is frozen; preserve every byte. The fifth
-[release packet](PHASE_1_ITEM_V1_RELEASE_PLAN.md) is now independently accepted:
- 31 verifier, 10 production-CLI, 11 client, 5 package, 38 manager and
+[release packet](PHASE_1_ITEM_V1_RELEASE_PLAN.md) is independently accepted:
+31 verifier, 10 production-CLI, 11 client, 5 package, 38 manager and
 17 runtime groups. The 26-input source inventory and exact canonical package
-are recorded in the ledger. Independent reproduction and fixed-path operational preflight pass. Next is a
-user-confirmed fresh untouched item-only reward. The release ledger records a
+are recorded in the ledger. Independent reproduction and operational preflight
+passed; the successful potion result and completed cleanup are below. The release ledger records a
 minimal base-checker startup fix and its replacement source freeze.
-No production entrypoint or native adapter has executed. Never inherit enabled r0a config/credentials or
+The production entrypoint and native adapter have now executed in the single
+accepted potion campaign; broader behavior is not promoted. Never inherit
+enabled r0a config/credentials or
 describe a post-submission failure as retryable/no mutation. Shop control connections and
 event progression remain separate gates. Do not repeat the stopped event choice
 or reclassify the old timeout.
 
 The user renewed authority for bounded development and campaigns when needed,
 and waived repeated unmodded launch checks; preserve the normal exact cleanup
-requirements and report that check as waived. No campaign is active. The user is available for the fresh item-only reward setup once the exact
-bridge is installed. Read the latest campaign disposition before any action.
+requirements and report that check as waived. The item campaign at release
+commit `9f807af` live-passed exactly one potion collection (attempted1/accepted1/
+reconciled1), with matching visible slot change. Normal quit, code-first
+quarantine, exact four-file purge, clean 429-file base, stopped game/closed port
+and absence checks all passed by 2026-09-05 18:34:28 UTC. No campaign remains
+active. Do not invoke the old client/state or retry that item. Relic collection
+is the next bounded live evidence target; shop/event scope remains separate.
 
 ## Start from the integration checkout
 
