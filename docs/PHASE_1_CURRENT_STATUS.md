@@ -530,6 +530,14 @@ The active dependency-aware worker packets for the host-only elite continuation
 and actor-ready headless path are maintained in
 [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md).
 
+The user has now selected parallel repository development toward unsupported
+shops, item rewards and event continuation. The
+[missing-room capability plan](PHASE_1_MISSING_ROOM_CAPABILITIES_PLAN.md) assigns
+three isolated proposal tasks and the coordinator's shared-contract ownership.
+Their first deliverables are source-backed contracts and synthetic acceptance
+specifications; implementation depends on review and freeze. Existing live
+capabilities and operational limits remain unchanged.
+
 ## Document map
 
 - [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)

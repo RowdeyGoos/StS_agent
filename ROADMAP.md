@@ -133,6 +133,11 @@ screens. Any consequence model or room-to-reward handoff is a separate scoped
 contract decision; do not broaden potion/reward controls or replay the stopped
 choice under the current frozen scope. Do not use another generic map route as evidence for the room issue.
 
+The user selected parallel repository work on shops, item rewards and event
+continuation. The [missing-room capability plan](docs/PHASE_1_MISSING_ROOM_CAPABILITIES_PLAN.md)
+defines isolated proposals, acceptance specifications and a shared-contract
+review gate before production implementation.
+
 Supported user-initiated launch remains available; the restricted browser
 Steam-URI route is not bypassed. Normal quit, exact quarantine/purge and final
 stopped/closed/base checks remain required. At the user's direction, repeated
