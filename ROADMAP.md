@@ -106,9 +106,11 @@ treats `elite` as combat using the existing clients, with independent fixture
 coverage. The maintained capture-off acceptance validator and independent join
 review and aggregate bridge suite are accepted. The first campaign attempt
 stopped during read-only Steam inspection after that tool stalled beyond the
-30-minute limit, before installation or launch. The plan permits an
-infrastructure retry under the opening task authority because no game run
-began; explicit map entry and elite continuation remain unobserved.
+30-minute limit, before installation or launch. The bounded infrastructure
+retry opened Steam but repeatedly failed screen capture (`-3811`), including
+after automation-session reset. Restore usable desktop inspection before
+resuming the same authorized game run; explicit map entry and elite
+continuation remain unobserved. Final base/runtime checks pass with zero overlay.
 Preserve exact caps, replay and uncertainty
 behavior and keep boss, shops, treasures, relics and potions fail-closed.
 The live gate should begin at an

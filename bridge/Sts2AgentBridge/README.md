@@ -134,9 +134,11 @@ Independent actual-client fixtures and whole-bridge review are accepted at
 `847882f`; this helper has not yet been exercised live. The first authorized
 attempt stopped before installation when Steam inspection stalled beyond the
 30-minute campaign limit. The base remained unchanged with zero overlay and
-no game process or bridge listener. The plan permits an infrastructure retry
-under the opening task authority because no game run began; see the actor-ready
-ledger for its exact disposition.
+no game process or bridge listener. A bounded infrastructure retry opened Steam
+but repeatedly failed screen capture (`-3811`), including after session reset.
+Cloud/Profile 3 inspection remains blocked before installation or game launch;
+final base/runtime checks pass. See the actor-ready ledger for the exact
+desktop-access blocker and unchanged bounded resume scope.
 
 Its isolated synthetic gate is:
 

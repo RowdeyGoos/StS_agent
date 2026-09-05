@@ -111,9 +111,13 @@ campaign attempt stopped during read-only Steam inspection: the tool stalled
 beyond the 30-minute limit and returned that Steam was not running. No overlay
 or operator configuration was installed, no game launched, and no controller
 invoked. Post-attempt checks confirm the unchanged 429-file base, zero overlay,
-no game process and no accepting bridge port. No game run began, so the plan
-permits an infrastructure retry under the existing opening task authority.
-There is no new live gameplay evidence.
+no game process and no accepting bridge port. A bounded infrastructure retry
+opened Steam but repeatedly failed screen capture with macOS error `-3811`,
+including after resetting the automation session. Packet `26` is blocked on
+desktop access before installation: Cloud status and Profile 3 remain
+unverified. Steam is open; final base/runtime checks still pass. There is no
+new live gameplay evidence and no campaign-created overlay/configuration to
+remove. Resume the same authorized bounded run once desktop inspection works.
 
 ## Parallel headless execution status
 

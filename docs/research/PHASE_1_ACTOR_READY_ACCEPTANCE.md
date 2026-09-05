@@ -9,9 +9,10 @@
   locally through `7a34785`; final combined suite **1,108 passed**. Packet `26`
   stopped before installation after a Steam inspection call exceeded the
   30-minute campaign limit. No game action or new live gameplay evidence;
-  post-attempt base/runtime checks passed. No game run began; the plan permits
-  an infrastructure retry under the existing opening task authority. The overall
-  increment remains incomplete only at this live gate.
+  post-attempt base/runtime checks passed. A bounded infrastructure retry opened
+  Steam but repeatedly failed screen capture, including after session reset.
+  Packet `26` is blocked on desktop access before installation or game launch.
+  The overall increment remains incomplete only at this live gate.
 
 This is the integration ledger for the elite-continuation and actor-ready
 headless successor increment. It begins after the completed
@@ -26,7 +27,7 @@ or append new outcomes to that historical record.
 | `R0I-ELITE-GATE-23` | reviewed and integrated | `8fd4320` | actual-client synthetic gate, both historical controls |
 | `R0I-RUN-ACCEPTANCE-24` | reviewed and integrated | `847882f` | complete in-memory validation and fixed capture-off output |
 | `R0I-ELITE-REVIEW-25` | accepted | source `6b25ffd` | independent Sol/high whole-bridge review |
-| `R0I-ELITE-LIVE-26` | pre-install attempt stopped; incomplete | — | Steam inspection exceeded campaign limit; zero mutation; bounded infrastructure retry permitted |
+| `R0I-ELITE-LIVE-26` | blocked before installation; incomplete | — | Steam open; repeated capture error -3811; no install or game/controller action |
 | `H5-ENCODER-04` | reviewed and integrated | `23d07d7` | public-only encoding; frozen schema unchanged |
 | `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
 | `H6-CANDIDATE-POLICY-06` | reviewed and integrated | `436cef7` | synthetic shape, mask, permutation and persistence checks |
@@ -415,9 +416,9 @@ estimated.
   packet `26`'s 30-minute total campaign limit. The coordinator stopped the
   attempt without restarting the timer or launching the game. This is a
   desktop-tool/preflight failure, not a bridge response or gameplay failure.
-- **Zero** installs, operator-config writes, launches, controller invocations,
+- **Zero** installs, operator-config writes, game launches, controller invocations,
   selected destinations or game actions occurred. No Profile 3 or Cloud state
-  was observed, so neither is certified by this attempt. No profile/save
+  was observed, so neither is certified by this attempt. No coordinator profile/save
   filesystem access, endpoint request, credential, raw response, capture or
   retained transition corpus was involved.
 - Post-attempt `require-stopped` passed again: **3 process samples**, **2 port
@@ -442,6 +443,38 @@ estimated.
   fresh 30-minute attempt limit. No game-action retry, broader run, profile
   filesystem operation or retained corpus is approved by this record.
 
+### 2026-09-05 — Bounded infrastructure retry and desktop-access blocker
+
+- The retry began at **09:16:57 UTC**, under the existing opening task's
+  still-unexecuted bounded game-run authority and Section 8's infrastructure
+  retry allowance. Steam was opened through the normal application launcher.
+  Native application inventory confirmed its running client; the duplicate
+  launcher/client bundle identifier was resolved using the exact client path
+  returned by the computer-use tool. No game was launched.
+- Steam inspection then failed repeatedly with ScreenCaptureKit error
+  **`-3811`**, reported as audio/video capture failure. A fresh automation
+  session returned the same error. No Steam window or usable accessibility
+  binding was obtained, so neither Cloud status nor Profile 3 could be
+  verified. The coordinator stopped before installing the overlay or operator
+  configuration. This is a desktop-access blocker, not a game-content or
+  bridge-response failure; another authorization request would not fix it.
+- Final checks at **09:18:29 UTC** passed: no game process, no accepting bridge
+  port (**3 process and 2 port samples**), **429** base files with the same
+  `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`
+  projection and **zero overlay**. A subsequent read-only capture retry after
+  session reset also failed and made no game/bridge change.
+- Steam remains open. Both preflight attempts created **zero** bridge/operator
+  files, launched **zero** game runs and issued **zero** endpoint/controller
+  actions. There is nothing from these attempts to quarantine or purge, and
+  no unmodded game launch/quit is claimed. No coordinator profile/save
+  filesystem access occurred; no credential, response, capture or transition
+  dataset was retained. Steam's opaque profile/Cloud effects remain unobserved.
+- Resume only after desktop inspection works, rechecking the stopped/base/
+  package gates and visible Cloud/Profile 3 boundary. The same one game run,
+  30-minute attempt cap, three-destination limit, capture-off providers and
+  cleanup remain controlling. No code correction or new capability proposal
+  is justified by this infrastructure failure.
+
 ### Handoff state
 
 - Local branch: `codex/phase1-actor-ready-integration`; accepted implementation
@@ -450,7 +483,8 @@ estimated.
   original `cd3e3ebb97594067d3693dc30d725152dda4dcf9` handoff; no remote
   fetch, push, PR, merge or destructive Git operation occurred.
 - Implementation, independent reviews, final regression and headless smoke
-  are complete. Only packet `26`'s bounded live gameplay gate remains open.
+  are complete. Only packet `26`'s bounded live gameplay gate remains open,
+  blocked by repeated desktop screen-capture failure before installation.
   Keep this active plan until that disposition is resolved; no successor
   implementation scope is selected from an unobserved route.
 
