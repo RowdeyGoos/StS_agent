@@ -40,7 +40,8 @@ Both fresh physical gates passed: coordinator
 [result files](PHASE_1_ROOM_RELEASE_V1_OFFLINE_RESULT.json) are byte-identical.
 Each gate copies verified sources, runs the actual fixtures and builds the
 production candidate twice from independent paths; all four DLLs are identical.
-The final 51-input manifest was not changed after these gates.
+The original 51-input manifest at b7fc404 matched these gates; the later
+operational correction and replacement freeze are recorded below.
 
 | Gate | Passed evidence |
 | --- | --- |
@@ -125,3 +126,67 @@ controller timeout and fixture findings. No profile/save filesystem access,
 Cloud change, retained live corpus, remote Git operation or broader capability
 change occurred. Shop relic/potion/removal/restock and rest-site upgrades remain
 unsupported; existing rest healing evidence is unchanged.
+
+## Prelaunch shop installation closed — 2026-09-05 21:47:07 UTC
+
+Release commit b7fc404 passed fresh stopped/closed, base 429/zero-overlay and
+seven fixed conflict-absence checks. Installation selecting shop passed at
+21:45:24 UTC with state SHA256
+66983dd0a323b84d36ef417bc5a0f5bb1444f9b488064bf2449d4bc51e055ab3.
+The read-only post-install overlay check stopped with manifest_not_canonical.
+The copied operations/tool_common.py still expected the old item release name
+and description, although the accepted package and manager pinned the correct
+room release bytes. This exposed a missing aggregate test of the actual overlay
+checker. The game was never launched; no live client or game action was
+attempted. This is an operational validation defect, not a gameplay result.
+
+The coordinator kept the game closed, reconfirmed stopped/closed, quarantined
+code first with state SHA256
+95e4fddb578499a432788dd59b0739e285e0f1d9eb1cc6d4c0a7739d5be24622,
+and purged exactly four generated files. Final checks passed unchanged base 429,
+zero overlay, stopped/closed (3 process and 2 port samples) and seven fixed
+absence checks by 21:47:07 UTC. No campaign remains active. No unmodded relaunch
+was needed; that check remains waived. Neither historical state may be reused.
+
+The bounded correction aligns only those two manifest literals to the unchanged
+canonical package and adds actual synthetic base/overlay checker coverage.
+The production DLL, manifest, ZIP, policy, gameplay/runtime behavior, release
+contract and all six predecessor trees remain unchanged. Replacement source
+acceptance must pass before another installation or live setup request.
+
+## Operational correction accepted — 2026-09-05
+
+B implemented the two-literal correction and a new seven-check fixture. R and
+the coordinator independently accepted the diff. The fixture binds the actual
+accepted DLL through package.canonical_files, requires the exact public manifest,
+and executes the real clean-install operation against disposable base and
+overlay trees. It rejects package-manifest, installed-overlay, base-projection
+and target-manifest mutations. No real installation is touched by these tests.
+
+The corrected aggregate runs this fixture after the fresh candidate/package.
+Coordinator /private/tmp/room-release-corrected-check-a and independent
+/private/tmp/room-release-corrected-independent-a both passed; their exact
+[corrected result JSON](PHASE_1_ROOM_RELEASE_V1_CORRECTED_OFFLINE_RESULT.json)
+is byte-identical. All previous counts remain unchanged, with clean_install 7
+added. Both production builds in each run reproduce the unchanged DLL. No
+candidate or target assembly was executed. No additional full regression was
+necessary for these operational-only changes.
+
+This replaces only the new room_release_v1 source freeze from b7fc404. All six
+predecessors, release contract, runtime/production source projection, verifier
+policy, DLL, manifest and ZIP retain their recorded identities. The existing
+published package was read-only verified; it was not republished or modified.
+
+| Corrected source identity | SHA256 |
+| --- | --- |
+| Source manifest, 52 inputs | d567c8e91e45fd2bcff2cd446f85d3d7faef3baf2b22b6f7b75ba2490d360957 |
+| Source inventory | 1fde216af25f0a94c16e13b869216d7990c862d7ba19d2246060e1f36bfabf4b |
+| Aggregate checker | abf81f9b968f3eb1f68e41ffbb3479a0a07d7a98251fe1250f440adf53dd194d |
+| Corrected common operations | ff1a284ae1f2e5d84e89ee50dfaed970b903a64d9cf79d03b597401c0ae83fa3 |
+| New actual installation-check fixture | 1f23875a68a913b82fbedac30db9d75c4ebe7c39d3e8e3fd8dcaedab1a31bff7 |
+| Both corrected result JSON files | d164ef8a3232f7488269adf11a51533c3c440fedb25d5b416e982f089ad12cb0 |
+
+Fresh real base verification still passes 429 files/zero overlay, and the game
+remains stopped with the port closed. Release readiness is restored; live shop
+and event behavior remains untested by this release. The next installation uses
+fresh state/credentials under the user's standing authority and availability.

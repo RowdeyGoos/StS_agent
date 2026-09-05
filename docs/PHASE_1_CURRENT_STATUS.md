@@ -604,7 +604,7 @@ whole-assembly verifier, canonical package and campaign/cleanup tools are now
 independently accepted. Two fresh aggregate runs produced identical results and
 four identical production DLLs. The
 [release ledger](research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) records the
-51-input freeze, exact package and complete fixture evidence. All six predecessor
+corrected 52-input freeze, exact package and complete fixture evidence. All six predecessor
 trees and the old bridge remain byte-exact.
 
 Live shop/event acceptance is next. The user is available for the first shop

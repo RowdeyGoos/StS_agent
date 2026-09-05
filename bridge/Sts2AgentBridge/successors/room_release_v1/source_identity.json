@@ -13,7 +13,7 @@
     },
     {
       "path": "check.py",
-      "sha256": "8c8baffeb8b359e8f95612499c54dd2c9f2c619a55ed853db75e0f4544c5b28e"
+      "sha256": "abf81f9b968f3eb1f68e41ffbb3479a0a07d7a98251fe1250f440adf53dd194d"
     },
     {
       "path": "checker_tests/test_project_boundary.py",
@@ -85,11 +85,15 @@
     },
     {
       "path": "operations/tool_common.py",
-      "sha256": "6ef1328bec0a46dda09a9051443af66cab238475d0ad6a9053b7a4a2048e7152"
+      "sha256": "ff1a284ae1f2e5d84e89ee50dfaed970b903a64d9cf79d03b597401c0ae83fa3"
     },
     {
       "path": "operations/verify_clean_install.py",
       "sha256": "3788ea295cf4864a44d7c8d66540868aa2dbdd22f563638ef07dcc0e174d36c3"
+    },
+    {
+      "path": "operations/verify_clean_install_fixtures.py",
+      "sha256": "1f23875a68a913b82fbedac30db9d75c4ebe7c39d3e8e3fd8dcaedab1a31bff7"
     },
     {
       "path": "operator/RoomFlowOperatorFiles.cs",

@@ -29,9 +29,9 @@ ZIP_EXTERNAL_ATTR = (stat.S_IFREG | 0o644) << 16
 CANONICAL_MANIFEST = (
     b'{\n'
     b'  "id": "Sts2AgentBridgeRoomFlowsV1",\n'
-    b'  "name": "STS2 Agent Bridge Item V1",\n'
+    b'  "name": "STS2 Agent Bridge Room Flows V1",\n'
     b'  "author": "StS Agent Project",\n'
-    b'  "description": "Restricted one-action item collection bridge for StS agent research",\n'
+    b'  "description": "Restricted shop and event flow bridge for StS agent research",\n'
     b'  "version": "1.0.0",\n'
     b'  "has_pck": false,\n'
     b'  "has_dll": true,\n'

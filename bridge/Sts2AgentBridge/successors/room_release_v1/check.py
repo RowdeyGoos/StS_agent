@@ -280,6 +280,8 @@ def main():
     summaries["verifier_cli"]=release.verify_cli_negatives(dotnet,verifier,candidate,source,policy,args.scratch,own,env)
     summaries["verifier_cli"]["suite"]="room_release_cli"
     summaries["package"]=passed(run([sys.executable,"-B","-I","-S",str(own/"package/package_fixtures.py"),str(candidate)],own,env,unittest=True),"room_release_package",5)
+    summaries["clean_install"]=passed(run([sys.executable,"-B","-I","-S",str(own/"operations/verify_clean_install_fixtures.py"),
+        "--candidate",str(candidate)],own,env),"verify_clean_install_fixtures",7)
     # Frozen capability fixtures are repeated on this same verified snapshot.
     for relative,key,suite,count in (
         ("shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj","shop","room_flows_v1_shop",13),

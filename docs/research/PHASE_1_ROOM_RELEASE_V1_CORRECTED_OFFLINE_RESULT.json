@@ -1,0 +1,145 @@
+{
+  "candidate": {
+    "bytes": 177152,
+    "deterministic_build_count": 2,
+    "executed": false,
+    "sha256": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f"
+  },
+  "frozen_source_inventories": {
+    "item_bootstrap_v1": "a07c2fc58dad78655629f7cd1686a6b9ad108e996e728e80cf2f999733ab602e",
+    "item_release_v1": "c84bc80197c3b948971f4c1c70eb7def95be71eab903c0d278dcc3c318e1d0b0",
+    "item_transport_v1": "53c605d4512e3e14addd0ab1506d8fc59b0b21f5838f24dca752de3356c44770",
+    "item_v1": "3b37c6646fce5ad076703829ffd91f8a4d03e51083431727b517b51af8ce9a99",
+    "item_wire_v1": "4769c86b2270df0e540c8eb48f535847dc4848dd6b4fe4017b9214459d38bfa7",
+    "room_flows_v1": "96c47beadd96acb1a886748fad5691efca754f83dc1f26064707804a8a178bae"
+  },
+  "live_campaign_started": false,
+  "old_bridge_file_count": 48,
+  "old_bridge_inventory_sha256": "a0ca37bb2d0ad36fcb68eafe5163ac8174074b0e6f861c69c2ac357873f75f2a",
+  "pinned_reference_count": 2,
+  "schema_version": 1,
+  "source_inventory_sha256": "1fde216af25f0a94c16e13b869216d7990c862d7ba19d2246060e1f36bfabf4b",
+  "status": "passed",
+  "suite": "room_release_v1_offline",
+  "synthetic": {
+    "bootstrap": {
+      "check_count": 12,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_bootstrap"
+    },
+    "broker": {
+      "check_count": 575,
+      "schema_version": 1,
+      "status": "passed"
+    },
+    "campaign_manager": {
+      "check_count": 39,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "manage_live_campaign_fixtures"
+    },
+    "clean_install": {
+      "check_count": 7,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "verify_clean_install_fixtures"
+    },
+    "client": {
+      "check_count": 13,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_release_client"
+    },
+    "event": {
+      "check_count": 36,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_event"
+    },
+    "frozen_cross_language": {
+      "check_count": 192,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_cross_language"
+    },
+    "operator": {
+      "check_count": 5,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_operator"
+    },
+    "package": {
+      "check_count": 5,
+      "mutation_cases": 9,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_release_package"
+    },
+    "project_boundary": {
+      "candidate_executed": false,
+      "check_count": 15,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_release_project_boundary"
+    },
+    "python_transport": {
+      "check_count": 8,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_release_transport"
+    },
+    "runtime": {
+      "check_count": 1254,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flow_transport"
+    },
+    "runtime_operations": {
+      "check_count": 17,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "check_live_runtime_fixtures"
+    },
+    "shop": {
+      "check_count": 13,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_shop"
+    },
+    "socket_composition": {
+      "check_count": 87,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_release_socket_composition"
+    },
+    "surface": {
+      "assembly_sha256": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+      "checked_method_bodies": 931,
+      "metadata_projection_sha256": "e34f6970dbd85f1ca370404d7f7390d4b1ad9b7af323b295de8102152c091d7a",
+      "schema_version": 1,
+      "source_projection_sha256": "b042b1a91852dd35533df5d7818a0dfd57b7dc857e461df3b9bc5a9136e35a09",
+      "status": "passed",
+      "suite": "room_flows_v1_release_surface"
+    },
+    "verifier_cli": {
+      "check_count": 10,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_release_cli"
+    },
+    "verifier_mutations": {
+      "check_count": 35,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_v1_release_verifier"
+    },
+    "wire": {
+      "check_count": 16,
+      "schema_version": 1,
+      "status": "passed",
+      "suite": "room_flows_wire"
+    }
+  },
+  "target_assemblies_executed": false
+}
