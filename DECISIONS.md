@@ -1849,3 +1849,38 @@ limitation remains unchanged. The exact accepted scope is frozen in
 [`docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md`](docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md);
 implementation, fixture, review and any later live evidence are recorded in the
 actor-ready ledger with separate acceptance states.
+
+## D57. Isolate New Item Collection From The Frozen Live Artifact
+
+### Context
+
+A fresh standard-event choice received an accepted dispatch receipt before an
+unsupported-state stop. A separate cleanup observation showed an item reward
+overlay, consistent with a missing capability but not proof of the diagnostic
+cause. Static inspection shows that item
+collection is asynchronous, reward windows can close automatically, and a full
+potion belt can mark an offer claimed without adding a potion. The existing
+0.8.0 source inventory hashes all C#/project files under its src tree.
+
+### Decision
+
+- Develop the first item capability under a separate unselected successor tree,
+  with its own source identity, pure-core synthetic tests and compile-only
+  native adapter. Preserve old source, protocol, outputs, package and bootstrap.
+- Bound the first component invocation to one dispatch on one item-only reward
+  screen. Install retained evidence and reservation before the ordinary native
+  button click; correlate dispatch receipt separately from item reconciliation.
+- Require exact retained claimed/selected facts, and for potions an exact
+  copied empty-slot-to-offered-model transition with all other slots unchanged.
+  Reject full inventory and unsupported outcomes without retry.
+- Reconcile retained model facts before foreground classification, so automatic
+  overlay closure cannot discard the witness. Item resolution never certifies
+  parent event progression or completion.
+
+### Consequence
+
+The component can be verified without changing the accepted live artifact.
+A future live successor still requires explicit routing/version/surface/package
+composition and campaign gates. The exact bounded contract is
+[PHASE_1_ITEM_V1_CONTRACT.md](docs/PHASE_1_ITEM_V1_CONTRACT.md); static findings
+and subsequent executable evidence remain separately labeled.

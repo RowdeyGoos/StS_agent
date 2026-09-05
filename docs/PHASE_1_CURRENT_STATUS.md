@@ -535,11 +535,16 @@ shops, item rewards and event continuation. The
 [missing-room capability plan](PHASE_1_MISSING_ROOM_CAPABILITIES_PLAN.md) assigns
 three isolated proposal tasks and the coordinator's shared-contract ownership.
 All three proposals have been recovered, independently reviewed, corrected and
-integrated as design input. They remain proposed and unfrozen: exact target-API
-facts and shared routing, lineage, result-correlation and version decisions
-precede production implementation. Their synthetic acceptance specifications
-are not executed tests. Existing live capabilities and operational limits
-remain unchanged.
+integrated as design input. The [bounded static API result](research/PHASE_1_MISSING_ROOM_API_RESULT.md)
+is now independently reviewed: full-belt potion claims need exact inventory
+verification, event final-page state differs from exit, and shop close/leave
+are separate actions. Generic event progression and exact shop dispatch seams
+remain unresolved. The [item V1 contract](PHASE_1_ITEM_V1_CONTRACT.md) is frozen
+for one isolated direct collection and is being implemented under a separate
+successor tree with pure synthetic tests and a compile-only native adapter.
+The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records its
+state. Existing live capabilities, 0.8.0 source/artifact and operational limits
+remain unchanged; there is no new live item capability or campaign.
 
 ## Document map
 

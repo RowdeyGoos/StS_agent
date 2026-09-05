@@ -15,32 +15,74 @@ bridge build, install, game launch, live read, live mutation, schema change, or
 production implementation. A synthetic matrix below is an acceptance
 specification, not passing fixture, runtime, live, or differential evidence.
 
+## Static target-build addendum — 2026-09-05
+
+The coordinator's bounded metadata/IL packet resolves part of the original
+research list without selecting a production contract. Its exact selectors and
+per-output SHA-256 values are preserved in
+[`PHASE_1_MISSING_ROOM_API_SELECTION.json`](PHASE_1_MISSING_ROOM_API_SELECTION.json):
+
+- `NMerchantInventory.GetAllSlots()` supplies native slot enumeration order:
+  card slots, relic-container children, potion-container children, then the
+  removal node. This is not proof of screen-geometry order, visibility, or
+  enabled state.
+- Public `MerchantEntry.Cost` is the value rendered into the native cost label.
+  While the current room is a `MerchantRoom`, it includes
+  `Hook.ModifyMerchantPrice`; the backing `_cost` is not the public displayed
+  price. `EnoughGold` is exactly `Cost <= Player.Gold`.
+- An ordinary card purchase awaits successful `CardPileCmd.Add` before it
+  awaits `PlayerCmd.LoseGold`. Potion purchase likewise awaits successful
+  procurement before debit. Debit-first is not a valid ordinary-card target
+  sequence. Relic ordering remains unestablished.
+- After a successful purchase wrapper, a hook may repopulate the same entry;
+  otherwise the entry is cleared. Replacement stock, including a coincidentally
+  identical public key and price, is therefore possible.
+- Opening merchant inventory disables the room Proceed control. Inventory Close
+  sets `IsOpen=false` and emits `InventoryClosed`; it does not leave the room.
+  The separate room Proceed handler may open the map. A controller must model
+  inventory close and room leave as distinct accepted actions.
+
+The final static selection does not establish the slot Hitbox-to-selection
+signal path, the BackButton delegate-to-Close path, the InventoryClosed
+reactivation callback, or the `MerchantFtueCheck` branch that may intercept room
+Proceed. Those controls remain visible candidates but unsupported until a
+future separately scoped static gate establishes their exact native dispatch.
+No further target inspection is part of this proposal. Every contract below
+remains proposed and unfrozen.
+
 ## 1. Outcome and recommended first slice
 
-The smallest useful shop slice should be:
+The smallest useful future shop slice should be:
 
-1. passively observe one already-open ordinary merchant screen;
-2. expose every bounded visible stock slot with public slot identity, kind,
-   public model key where established, displayed price, affordability, native
-   enabled state, and bridge support state;
-3. permit a snapshot-bound purchase only for an ordinary card whose acquisition
-   can be reconciled from the already-used public deck/card surface;
-4. permit the explicit visible leave control; and
-5. return to the host only after the same-shop transaction or leave action is
-   reconciled.
+1. passively observe one already-open ordinary merchant inventory;
+2. expose every bounded visible stock slot in native slot enumeration order,
+   with public slot identity, kind, public model key where established,
+   displayed dynamic price, affordability, native enabled state, and bridge
+   support state;
+3. permit a snapshot-bound purchase only for an ordinary card whose exact
+   acquisition-then-debit sequence can be reconciled from public player state;
+4. close the inventory through its explicit native Back control as a separate
+   accepted action;
+5. permit room leave only afterward through the explicit room Proceed control;
+   and
+6. return to the host only after the same-shop transaction, inventory close,
+   and room leave are separately reconciled.
 
 Relic and potion stock remains visible but not legal in the first slice. Card
 removal is represented in the proposed state machine but remains non-legal
 until a bounded target-build static member audit establishes open/select/
-confirm/cancel behavior. This is still useful: it lets a controller inspect a
-shop, buy an affordable card, decline everything else, and leave without
-silently treating unsupported stock as absent.
+confirm/cancel behavior. The purchase, inventory-close, and leave controls also
+remain non-legal until the unresolved native-dispatch gates in the dated
+addendum are satisfied. Once those gates pass, the slice lets a controller
+inspect a shop, buy an affordable card, close the inventory, and leave without
+silently treating unsupported stock as absent or collapsing two controls into
+one action.
 
-The first slice deliberately does not assume that debit and acquisition are one
-atomic game API. After an accepted purchase dispatch, the shop producer enters
-one pending transaction and advertises no further mutation until it observes
-both the exact debit and the exact acquisition. One-sided or contradictory
-effects stop fail-closed and never authorize a retry.
+Card purchase is non-atomic but ordered on the selected target: acquisition is
+awaited before debit. After an accepted purchase dispatch, the shop producer
+enters one pending transaction and advertises no further mutation. An observed
+acquisition without debit is pending until the fixed deadline; debit without
+that acquisition is contradictory. Neither case authorizes a retry.
 
 ## 2. Evidence classification
 
@@ -113,13 +155,13 @@ effects stop fail-closed and never authorize a retry.
   precedent and explicitly reports full-potion-belt failures without feedback.
   It is not an STS2 API or semantic authority.
 
-### 2.3 Precise unknowns and required static facts
+### 2.3 Pre-packet unknowns and remaining static gates
 
-No checked-in project source establishes the following facts for the pinned
-game. They must be answered by a separately reviewed, build-only/static member
-packet before production code is assigned. If any cannot be established, the
-corresponding candidate stays visible-but-unsupported or the whole projection
-fails closed.
+The list below records the questions that preceded the dated static addendum.
+That addendum resolves public price, native slot enumeration, ordinary-card and
+potion ordering, conditional restock, and the inventory-close/room-leave split.
+Any unresolved control path stays visible-but-unsupported or makes the whole
+projection fail closed.
 
 1. The exact ordinary merchant node/screen type, how to prove it is the visible
    top interactive surface, and the non-mutating accessor for an already-open
@@ -146,7 +188,7 @@ fails closed.
    both payment and acquisition are externally observable.
 
 The checked-in research links exact upstream files that may be audited in a
-future approved source packet. This task did not fetch, clone, rebuild, or read
+future approved source packet. The original proposal task did not fetch, clone, rebuild, or read
 the installed game or those remote repositories.
 
 ## 3. Proposed public shop contract (unfrozen)
@@ -181,8 +223,9 @@ PublicShopDecisionSnapshot
   status: waiting | unsupported | ready | complete
   decision_id: canonical SHA-256 for ready, otherwise absent
   screen_kind: shop | unknown
-  phase: browse | removal_select | removal_confirm | child_waiting |
-         transaction_waiting | unsupported | complete | unknown
+  phase: inventory_browse | room_ready_to_leave | removal_select |
+         removal_confirm | child_waiting | transaction_waiting |
+         unsupported | complete | unknown
   shop_ordinal: bounded process-local public ordinal
   decision_revision: nonnegative bounded revision within this shop incarnation
   player: { gold, deck_count, potion_count?, potion_capacity? }
@@ -202,8 +245,8 @@ PublicShopCandidate
   action_id: bounded semantic action bound to this projection
   kind: purchase_card | purchase_relic | purchase_potion |
         open_card_removal | remove_card | confirm_card_removal |
-        cancel_card_removal | leave
-  public_slot_id: visible presentation slot, not an engine instance ID
+        cancel_card_removal | close_inventory | leave
+  public_slot_id: native stock-enumeration or explicit control slot, not an engine instance ID
   item_key: public model key when applicable, otherwise absent
   price: displayed nonnegative integer when the action charges gold,
          otherwise absent
@@ -221,15 +264,17 @@ remains in `candidates` so policy code cannot mistake omission for absence.
 
 Proposed action IDs encode the semantic category and `public_slot_id`, for
 example `buy:card:0`, `removal:open`, `remove:visible:3`, `removal:confirm`,
-`removal:cancel`, and `leave`. Exact grammar and lengths are coordinator-owned.
+`removal:cancel`, `inventory:close`, and `leave`. Exact grammar and lengths are
+coordinator-owned.
 The action request also carries the canonical `decision_id`; it never accepts a
 bare list index or private object/instance ID.
 
 ### 3.3 Public slot and duplicate identity
 
-A stock slot is the visible presentation position (`card:0`, `card:1`,
-`relic:0`, `potion:0`, `service:removal`, `leave`), scoped by
-`shop_ordinal` and the complete decision hash. `item_key` describes what is in
+A stock slot is a visible position in the native slot enumeration
+(`card:0`, `card:1`, `relic:0`, `potion:0`, `service:removal`). Separate
+explicit control slots identify inventory Back and room Proceed. Every slot is
+scoped by `shop_ordinal` and the complete decision hash. `item_key` describes what is in
 that slot but is not unique. Two copies of the same card or potion therefore
 remain two candidates even if model key and price are equal.
 
@@ -252,11 +297,12 @@ produce the same hash.
 
 | Phase | Candidate | Proposed legality |
 | --- | --- | --- |
-| `browse` | affordable direct card purchase | legal in first slice when enabled |
-| `browse` | relic purchase | visible, unsupported in first slice |
-| `browse` | potion purchase | visible, unsupported until shared item-capacity/child contract freezes |
-| `browse` | removal service open | visible, unsupported in first slice; later legal only when exact price/enabled behavior is established |
-| `browse` | leave | legal in first slice when the exact visible leave control is enabled |
+| `inventory_browse` | affordable direct card purchase | first-slice candidate; legal only after exact slot-dispatch and enabled-state gates pass |
+| `inventory_browse` | relic purchase | visible, unsupported in first slice |
+| `inventory_browse` | potion purchase | visible, unsupported until shared item-capacity/child contract freezes |
+| `inventory_browse` | removal service open | visible, unsupported in first slice; later legal only when exact price/enabled behavior is established |
+| `inventory_browse` | close inventory | first-slice candidate; legal only after BackButton-to-Close dispatch is established and no transaction is pending |
+| `room_ready_to_leave` | leave | first-slice candidate; legal only after inventory close reconciles and FTUE-safe Proceed dispatch is established |
 | `removal_select` | visible deck card | later legal; duplicate cards use visible slot plus model key |
 | `removal_select` | cancel | later legal only when a visible native cancel exists |
 | `removal_confirm` | confirm | later legal only when a selected card and visible native confirm exist and exact total price is affordable |
@@ -264,7 +310,13 @@ produce the same hash.
 | `transaction_waiting` / `child_waiting` | any | none |
 
 The producer fails closed rather than synthesizing `skip`, `cancel`, `confirm`,
-or leave from screen disappearance, keyboard conventions, or upstream prose.
+inventory close, or leave from screen disappearance, keyboard conventions, or
+upstream prose.
+
+The final selected packet exposes `NMerchantSlot.Hitbox` but does not prove the
+signal chain from that control to `OnSelected`. It likewise does not prove the
+BackButton delegate or FTUE-safe Proceed behavior. Candidate visibility is not
+legal dispatch; each unresolved candidate remains unsupported.
 
 ### 3.5 Apply, receipt, reservation, and revalidation
 
@@ -312,11 +364,13 @@ show that an ordinary supported shop fits; a valid larger surface is
 revisions, retained reservation keys, model-key length, and removal-card visible
 slots. Exact constants require contract review and vector-size proof.
 
-### 3.6 Purchase reconciliation without atomicity assumptions
+### 3.6 Ordered, non-atomic purchase reconciliation
 
 Before a direct card purchase, retain only the minimum private pending facts:
-same shop/control binding, public slot, card key, displayed price, player gold,
-deck count, and copies of that card. Do not assume which effect happens first.
+same shop/control binding, native slot-enumeration position, card key, displayed
+public `Cost`, player gold, deck count, and copies of that card. The selected
+target awaits card acquisition before debit, but dispatch return still proves
+neither effect.
 
 A direct card purchase reconciles only when all of these are observed together:
 
@@ -325,23 +379,26 @@ A direct card purchase reconciles only when all of these are observed together:
 - the selected card key's copy count is exactly `before_copies + 1`;
 - unrelated public player invariants selected by contract review have not
   contradicted the purchase; and
-- the same slot has the exact post-purchase disposition established by Gate A
-  (such as sold/disabled, removed, or a specifically verified replacement).
-  A changed revision alone is insufficient. Until that disposition is known,
-  acquisition reconciliation remains waiting/unsupported.
+- the same slot has one exact target-supported post-purchase disposition: the
+  entry is cleared/unstocked, or the hook has repopulated it with a revalidated
+  replacement. A replacement may have the same public key and price, so changed
+  public content is not required and a changed revision alone is insufficient.
 
-While only debit or only acquisition is visible, return `waiting` with zero
-legal actions. If the other half appears before the fixed host deadline,
-reconcile once. If the deadline expires, the surface changes incompatibly, the
-debit is wrong, the wrong item appears, or both sides cannot be correlated,
-stop with a fixed uncertainty/reconciliation failure. Never click again, refund,
-infer rollback, or call the accepted receipt an applied purchase.
+Acquisition without debit is `transaction_waiting` with zero legal actions. If
+the exact debit appears before the fixed deadline, reconcile once. Debit without
+the exact acquisition is a fixed contradiction for an ordinary card, because
+the selected implementation cannot produce that order. A failed acquisition
+must produce neither debit nor success. On timeout, incompatible surface,
+wrong debit, wrong card key, or contradictory delta, stop with a fixed
+uncertainty/reconciliation failure. Never click again, refund, infer rollback,
+or call the accepted receipt an applied purchase.
 
-Relic purchase later needs an independently established ownership delta for the
-specific public relic key. Potion purchase later consumes the frozen generic
-item acquisition/overflow contract from `MR-LOOT-02`. If a purchase opens an
-item/overflow child, the shop transaction remains pending across the handoff.
-Child resolution alone cannot prove payment or parent completion.
+Relic purchase remains unsupported because its debit/acquisition order was not
+selected. Potion purchase also has established acquisition-then-debit order,
+but it remains unsupported until the generic item-capacity and overflow-child
+contract from `MR-LOOT-02` freezes. If a future purchase opens an item child,
+the shop transaction remains pending across the handoff. Child resolution alone
+cannot prove payment or parent completion.
 
 ### 3.7 Card-removal lifecycle (later slice)
 
@@ -349,11 +406,11 @@ The proposed later lifecycle is intentionally tolerant of multiple UI stages
 but not of ambiguous semantics:
 
 ```text
-browse --open_card_removal--> removal_select
+inventory_browse --open_card_removal--> removal_select
 removal_select --remove_card--> removal_confirm   (only if target has confirm)
-removal_select --cancel_card_removal--> browse
-removal_confirm --confirm_card_removal--> transaction_waiting --> browse
-removal_confirm --cancel_card_removal--> removal_select or browse
+removal_select --cancel_card_removal--> inventory_browse
+removal_confirm --confirm_card_removal--> transaction_waiting --> inventory_browse
+removal_confirm --cancel_card_removal--> removal_select or inventory_browse
 ```
 
 Opening reconciles only when the exact removal child is visibly interactive and
@@ -386,26 +443,37 @@ item contract freezes:
   child returns a terminal result and acquisition is reconciled; and
 - child abandonment or uncertainty leaves the parent transaction unresolved.
 
-Whether an accepted purchase debits before the child, after the child, or only
-on child confirmation is a blocking target fact. The contract must observe and
-accept the actual established ordering without exposing a second purchase or
-double-counting the original action.
+The selected potion path procures successfully before debit, but full-capacity
+and child-confirmation semantics remain blocking item-contract facts. The parent
+must preserve that established outer ordering without exposing a second
+purchase or double-counting the original action.
 
-### 3.9 Leave and completion
+### 3.9 Inventory close, leave, and completion
 
-An accepted leave dispatch is not completion. Proposed completion requires:
+Inventory close is its own proposed action. It may reconcile only after an
+accepted `close_inventory` bound to the exact open inventory, `IsOpen` becomes
+false, the merchant room remains current, no transaction is pending, and the
+room-level controls return to the established state. It does not complete the
+shop or open the map.
 
-- an accepted `leave` bound to this exact shop incarnation;
+Only a fresh `room_ready_to_leave` decision may advertise `leave`. An accepted
+leave dispatch is not completion. Proposed completion requires:
+
+- a separately accepted and reconciled inventory close when the inventory was
+  previously open;
+- an accepted `leave` bound to this exact shop incarnation and room Proceed;
 - the shop and every shop-owned child are no longer interactive;
 - no purchase or removal transaction is pending or uncertain;
 - the same run exposes the authoritative post-shop travel surface established
   by the static packet (preferably open, travel-enabled, nontraveling map); and
 - no unsupported foreground overlay contradicts the transition.
 
-Passive screen disappearance, a manually opened map, child completion, or a
-new unrelated room is not sufficient. If the static packet cannot establish
-authoritative leave completion, the first slice may observe and purchase but
-must stop after accepted leave as unreconciled rather than claim shop/room
+The selected Proceed handler can return early through `MerchantFtueCheck`, so
+leave remains unsupported until a future gate rules out or explicitly models
+that interception. Passive screen disappearance, an inventory close, a manually
+opened map, child completion, or a new unrelated room is not sufficient. If the
+native close or leave path remains unestablished, the first slice may observe
+stock but must stop before that unsupported action rather than claim shop/room
 completion.
 
 ## 4. Proposed host controller and parent handoff
@@ -416,10 +484,13 @@ have strict shop parsing, a separate provider, one fixed deadline, an accepted
 shop-action cap, no retry, and distinct attempted/accepted/reconciled counts.
 
 The first deterministic provider can be `first-card`: rank legal affordable
-card purchases by the advertised candidate order, purchase at most one card,
-then leave. A separate `leave` provider buys nothing. This is fixture behavior,
-not a gameplay-quality claim. The host never computes affordability or legality
-independently; it consumes `legal_actions`.
+card purchases by native slot enumeration order, purchase at most one card,
+then consume a separately advertised `close_inventory`, and only then consume a
+fresh `leave`. A separate `leave` provider may close an already-open inventory
+before leaving but buys nothing. This is fixture behavior, not a gameplay-quality
+claim. The host never computes affordability or legality independently; it
+consumes `legal_actions`. Until all three dispatch gates freeze, these providers
+remain specifications and cannot run a mutating shop controller.
 
 The proposed run handoff is:
 
@@ -468,10 +539,10 @@ These choices affect `MR-LOOT-02` and/or `MR-EVENT-03` and are not decided here:
    their own evidence.
 5. **Capacity/public inventory:** one shared optional shape for potion slots,
    capacity, and full-state; absence is unknown, never zero or empty.
-6. **Debit/acquisition ordering:** whether the shared item handoff represents
-   pre-debit, post-debit, or either ordering and which component owns the pending
-   deadline. Recommendation: shop owns the single outer deadline and payment
-   correlation; item child owns only its advertised choice lifecycle.
+6. **Debit/acquisition ordering:** ordinary card and potion paths acquire
+   before debit on the selected target; relic and removal ordering remain open.
+   Recommendation: shop owns the single outer deadline and payment correlation;
+   item child owns only its advertised choice lifecycle.
 7. **Abandonment:** exact result when a child is canceled versus disappears,
    becomes unsupported, or times out. Recommendation: only an explicitly
    advertised cancel with unchanged parent invariants is reconciled cancellation;
@@ -489,13 +560,14 @@ dispatch counts, state-machine output, and cleanup. Passing them would be
 | --- | --- | --- |
 | `SHOP-PASSIVE-01` | Repeated decision reads while a ready shop is already open | Byte-identical ready body; zero open/populate/click calls; no gold, stock, deck, relic, potion, overlay, map, or revision mutation. |
 | `SHOP-PASSIVE-02` | Read from menu, combat, map, event, reward, transition, or hidden shop | `waiting`/typed unsupported as contracted, empty candidates/actions, zero UI mutation. |
-| `SHOP-VISIBLE-03` | Mixed card/relic/potion stock plus removal and leave | Every visible bounded slot appears once in presentation order with exact kind/key/price/affordable/enabled/supported; first-slice legal actions contain only eligible cards and leave. |
+| `SHOP-VISIBLE-03` | Mixed card/relic/potion stock plus removal while inventory is open | Every visible bounded stock slot appears once in native enumeration order with exact kind/key/dynamic price/affordable/enabled/supported; room leave is absent while inventory is open. |
 | `SHOP-AFFORD-04` | Prices below, equal to, and above current gold; native-disabled slot | Arithmetic affordability is exact; equality is affordable; disabled/unsupported candidates are not legal. |
 | `SHOP-DUP-05` | Two visible cards with the same key and equal price | Distinct public slot/action IDs; selecting the second resolves/clicks only the second control; key-only targeting is rejected. |
 | `SHOP-BUY-06` | Legal card purchase; acquisition appears before debit | One dispatch/accepted receipt; waiting with no actions after the first half; one reconciliation only after exact debit; next decision revision is coherent. |
-| `SHOP-BUY-07` | Legal card purchase; debit appears before acquisition | Symmetric to `06`; no atomic-order assumption and no second dispatch. |
-| `SHOP-BUY-08` | Debit and acquisition appear in one observation | One accepted and one reconciled shop action; exact deck/model/gold deltas; sold slot coherently absent/disabled. |
-| `SHOP-LEAVE-09` | Legal leave reaches authoritative fresh map | One dispatch; completion only after same-shop accepted leave and contracted map evidence; no pending transaction. |
+| `SHOP-BUY-07` | Accepted ordinary-card dispatch; debit appears without acquisition | Fixed contradiction, zero reconciliation and no second dispatch; target ordering is never treated as symmetric. |
+| `SHOP-BUY-08` | Acquisition and debit are both visible in one observation | One accepted and one reconciled shop action; exact deck/model/gold deltas; slot is coherently cleared or revalidated as conditional replacement stock. |
+| `SHOP-CLOSE-09A` | After purchase reconciliation, inventory Back closes inventory | One separately reserved/accepted close; `IsOpen=false`, same merchant room, no map open, fresh room-ready decision; zero leave count. |
+| `SHOP-LEAVE-09` | Fresh room-ready leave reaches authoritative map without FTUE interception | One separately reserved/accepted leave; completion only after contracted same-run map evidence and no pending transaction. |
 | `SHOP-STALE-10` | Price, gold, enabled state, stock key, or affordability changes between read and apply | Immediate full revalidation rejects stale; zero reservation, click, debit, acquisition, and action-budget use. |
 | `SHOP-REORDER-11` | Stock slots reorder between read and apply | Old decision and slot action are stale; no fallback by key/index and no click. Fresh decision reflects new order/hash. |
 | `SHOP-SOLD-12` | Requested slot disappears or becomes sold/disabled before apply | Stale with zero mutation/budget; never selects the item now occupying the old index. |
@@ -513,7 +585,7 @@ dispatch counts, state-machine output, and cleanup. Passing them would be
 | `SHOP-BOUNDS-24` | Exactly every frozen max, then max+1 candidate/session/revision/reservation/body | Boundary value is accepted and canonical; overflow yields unsupported/fixed rejection without truncation, partial body, mutation, or unbounded retention. |
 | `SHOP-REPLAY-25` | Ready A -> overlay/waiting -> same A; shop A -> B -> A; accepted A -> disappearance -> A | Public ordinal/decision rules do not mint a replayable purchase. Previously accepted A remains reserved; new shop incarnation is distinct and bounded. |
 | `SHOP-READ-RACE-26` | Concurrent reads during apply and two concurrent apply requests | Reads are passive; the gate admits at most one reservation/dispatch; loser is stale/already applied, never a second click. |
-| `SHOP-HANDOFF-27` | Map -> shop -> purchase -> child -> leave -> map | One map-enter action, one purchase action, each child action once, one leave; child return adds zero; parent completion waits for purchase and leave reconciliation. |
+| `SHOP-HANDOFF-27` | Map -> shop -> purchase -> child -> inventory close -> leave -> map | One map-enter action, one purchase action, each child action once, one inventory-close action, and one leave; child return adds zero; parent completion waits for purchase, close, and leave reconciliation. |
 | `SHOP-HOST-28` | Waiting, unsupported, malformed, rejected, uncertain, timeout, cancellation at each host stage | Stop at first failure, no phase scan/fallback/retry; exact attempted/accepted/reconciled inequalities; no partial success promoted. |
 | `SHOP-CLEAN-29` | Success and every exceptional exit with canaries in request/response/exception objects | Every socket closes; mutable sent/credential/response buffers are zeroed under established limits; no canary/raw body/control/native identity appears in output. |
 | `SHOP-COMPAT-30` | Existing `0.8.0` vectors, routes, room/reward clients, providers, and run outputs against proposed-source negative control and integrated source | Old artifacts remain byte-exact until an explicit versioned successor; new behavior appears only in successor vectors/provider and cannot alter accepted defaults. |
@@ -570,10 +642,12 @@ Shared contract/integration-owner files, not implicitly owned by the producer:
 - contract, transport, artifact-binding and public test-suite registries under
   `bridge/Sts2AgentBridge/tests/Sts2AgentBridge.Tests/`
 
-Acceptance: passive browse, duplicate/stale/reordered stock, one direct card
-purchase in either effect order, leave, reservation/replay, bounds, malformed,
-overlay race and negative-control cases pass. Relic, potion, and removal
-candidates are visible but never legal.
+Acceptance: passive inventory browse, duplicate/stale/reordered native slots,
+one direct card purchase in acquisition-then-debit order, separately reconciled
+inventory close and room leave, reservation/replay, bounds, malformed, overlay
+race and negative-control cases pass. This gate cannot start until the native
+slot, BackButton, InventoryClosed, and FTUE/Proceed dispatch gaps are resolved.
+Relic, potion, and removal candidates are visible but never legal.
 
 ### Gate D — independent actual-client/transport gate
 
@@ -630,18 +704,22 @@ after a coordinator-approved overlay is staged:
 > selected shop map node; the merchant inventory is fully visible and untouched;
 > no item/removal child or other overlay is open; at least one ordinary card is
 > visibly enabled and priced at or below the displayed current gold; and the
-> native leave control is visible and enabled.
+> native inventory Back control is visible and enabled.
 
 The coordinator must visually confirm those public conditions without opening
-the shop through a bridge read. Invoke the maintained shop controller once with
-the reviewed one-card provider. The success target is one reconciled direct card
-purchase, one reconciled leave, and a fresh travel-ready map under the frozen
-parent handoff. If no affordable card is present, a leave-only case may test
-passivity/completion but must not count as purchase acceptance; do not farm a
-run. If a relic/potion/removal child appears, stock changes unexpectedly, or any
-receipt/effect is uncertain, stop without retry.
+the shop through a bridge read. No live campaign may begin until the native
+purchase, inventory-close, and FTUE-safe room-leave dispatch gates are frozen.
+Then invoke the maintained shop controller once with the reviewed one-card
+provider. The success target is one reconciled direct card purchase, one
+separately reconciled inventory close, one reconciled room leave, and a fresh
+travel-ready map under the frozen parent handoff. If no affordable card is
+present, a close-then-leave case may test passivity/completion but must not count
+as purchase acceptance; do not farm a run. If a relic/potion/removal child
+appears, stock changes unexpectedly, or any receipt/effect is uncertain, stop
+without retry.
 
-Any future campaign retains the existing explicit user approval, pinned build,
+Any future campaign must stay within the user’s standing authorization and pass
+the concrete coordinator gate, including the pinned build,
 exact package/config/credential, Profile 3, capture-off/no-retention, fixed
 deadline/action cap, normal quit, exact quarantine/purge, stopped/closed/base
 verification, no Cloud/profile/save access, and no remote Git boundaries. The
@@ -660,8 +738,9 @@ not passed. None of those operations is authorized by this proposal.
   provider, export, dependency, or shared documentation is changed here.
 - `live_probe_v0`, bridge `0.8.0`, `headless_v0`, D47, and every accepted default
   remain exact today.
-- This proposal does not prove that the named target APIs exist, that reads are
-  passive, that a transaction works, or that a shop can be completed live.
+- The dated packet proves only the named metadata/IL facts above. It does not
+  prove read passivity, the unresolved native dispatch chains, a working
+  transaction, or live shop completion.
 
 The coordinator should freeze only the first slice after the static member and
 shared-contract gates. Everything else remains a named, bounded later packet.

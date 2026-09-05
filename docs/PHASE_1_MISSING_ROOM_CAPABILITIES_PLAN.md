@@ -187,3 +187,28 @@ The proposed first item slice is direct relic collection and potion collection
 into an empty slot; event-to-item continuation depends on that reviewed child
 component. No current game setup or additional live action is required for this
 proposal handoff.
+
+### 2026-09-05 — Static facts accepted; isolated item contract frozen
+
+The coordinator completed the [bounded API scope](PHASE_1_MISSING_ROOM_API_SCOPE.md)
+against the pinned immutable images. The [sanitized result](research/PHASE_1_MISSING_ROOM_API_RESULT.md)
+and [exact selections](research/PHASE_1_MISSING_ROOM_API_SELECTION.json) cover
+47 types and 102 actual method bodies, with independent item/event/shop reviews.
+No game code executed. The shop proposal now reflects acquisition before debit,
+conditional restock, and separate inventory-close and room-leave actions. Exact
+shop dispatch/back/FTUE control connections remain unfrozen static gates. Event
+final-page state and actual exit are distinct; generic lineage-safe progression
+was not found. These findings supersede broader assumptions in the proposals.
+
+The [item V1 contract](PHASE_1_ITEM_V1_CONTRACT.md) is independently frozen for
+one direct collection with exact retained result correlation. Its separate
+`bridge/Sts2AgentBridge/successors/item_v1` tree is the sole implementation
+owner's write boundary; the old src tree, artifact and live routes remain frozen.
+Pure-core in-memory tests and a compile-only native adapter are authorized
+under this repository gate. This replaces the earlier worker prohibition on
+compiling against immutable game references for this exact item packet only;
+it permits no game execution, installation or broader static discovery.
+
+Implementation and final review are tracked in the
+[missing-room acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
+No user game setup is required until a later concrete live successor is ready.
