@@ -13,9 +13,11 @@
 | MR-ITEM-WIRE-V1 | Accepted offline integration | Frozen service/host protocol; 9 producer groups, 27 host tests and 17 actual cross-language cases; two source-snapshot builds match; no listener/bootstrap/live package. |
 | MR-ITEM-TRANSPORT-V1 | Accepted synthetic socket integration | Exact byte-config activation, fixed-loopback HTTP connector/runtime and owned-thread queue; 11 C# groups, 16 Python tests and 15 actual socket cases; no Godot/bootstrap/filesystem loader/package. |
 | Shop actions / event progression | Unfrozen | Shop signal/back/FTUE seams and generic lineage-bound event progression remain explicit missing facts. |
-| Live successor | Unselected | Requires complete routing/version/surface/package/reproducibility and concrete campaign gates. |
+| MR-ITEM-BOOTSTRAP-V1 | Accepted install-free candidate | Fourth frozen tree; 13 operator, 24 lifecycle and 24 independent checker cases; identical candidate builds. |
+| MR-ITEM-RELEASE-V1 | Accepted release; operational preflight passed | New verifier/policy, canonical package, fixed client and transactional operations; exact evidence below. |
+| Live successor | Ready for the bounded fresh-item campaign | One fresh untouched item-only reward, one frozen controller invocation, exact campaign cleanup. |
 
-## Current validation
+## Initial static validation
 
 Static item/event/shop findings are in [the result](PHASE_1_MISSING_ROOM_API_RESULT.md)
 and [exact selection record](PHASE_1_MISSING_ROOM_API_SELECTION.json). The
@@ -490,3 +492,120 @@ retained live corpus or remote Git operation. The latest completed live cleanup
 and the repeated-unmodded-launch waiver are unchanged. Shop control connections
 and generic event progression remain separate gates; the stopped event choice
 and historical timeout are not reclassified.
+
+
+### 2026-09-05 — Item release integration
+
+The [release contract](../PHASE_1_ITEM_V1_RELEASE_PLAN.md) was independently
+accepted at semantic SHA256
+`9d7d25840fb8910448bd0f8215f4eabdc081c8151a96eb3649f4db3025103b34`.
+Implementation is confined to the fifth sibling `successors/item_release_v1`.
+All four predecessor source inventories and old48 remain exact; no game
+semantics, action count, routes or uncertainty policy changed.
+
+The 26 authored inputs have inventory SHA256
+`c84bc80197c3b948971f4c1c70eb7def95be71eab903c0d278dcc3c318e1d0b0`.
+The source manifest SHA256 is
+`036e090daa509dfdf9f2eac7f8ab4d5b42a16aca08cecfe28a349402ef2af1a7`;
+checker SHA256
+`26ff95959d506a3a3d7ea52f7a75efe6e2046661cc1692c05184339f909eeadd`.
+Preserve every authored byte after final acceptance. These externally recorded
+identities bind operational invocation; the client's own manifest check is a
+source drift check, not an independent trust root.
+
+The final independently reviewed policy is 517659 bytes, SHA256
+`56a5e3487254caa24234fb2ecc3ea03b3149ea33750d0a090d2effc044b8f73f`.
+It binds the 24 candidate sources at projection
+`131404a87a94800c1e9dbda3ef936abf44452befb5f41643b8b392cf6909ba88`,
+3600 inventory rows, all 460 method bodies, metadata/raw PE sections,
+properties/events/type specifications, references/definitions/attributes,
+13 exact native imports, two item routes and the exact inherited test-method
+incoming-reference closure. Metadata projection:
+`b788963fd45b46eb74578f8a648c75956da3b55be2bac4b2807afc3b4a1748dd`.
+The production verifier accepts only this frozen policy and the exact candidate;
+policy extraction and synthetic overrides are confined to the test assembly.
+
+Final coordinator gate `/private/tmp/item-release-coordinator-a3` passed from a new
+verified source snapshot, isolated SDK9.0.303 restore/build and the two known
+compile references. It never loaded target assemblies or executed the candidate.
+Actual checks passed:
+
+- 31 verifier groups, including PE native flags, IL opcode/member reference,
+  inherited test-call/delegate/token exposure mutations and production CLI
+  rejection; source-link fixtures copy the complete expected closure first.
+- 10 additional production verifier CLI negatives: modified policy, appended or
+  malformed candidate, forbidden mode, relative path, leaf/ancestor links, and
+  changed/missing/linked source.
+- 11 client groups, including actual manager-to-reader composition, actual
+  descriptor ACL checks on disposable files, combined interrupt/close faults,
+  exact byte transfer/zeroing, and ephemeral-loopback frozen-controller success
+  and uncertain POST response with exactly one POST and no retry.
+- 5 package groups, including 9 byte/inventory mutation cases and actual
+  canonical publication, pre-existing output refusal, unsafe links/nonregular
+  files and changed input rejection.
+- 38 transactional manager groups preserving all accepted install/quarantine/
+  purge checkpoints, plus item identity, metadata-only client validation,
+  bounded deny-only ACL and late legacy-conflict rejection without reading or
+  deleting foreign sentinels.
+- 17 runtime groups using synthetic process facts and disposable ephemeral
+  loopback, with bounded joint stopped/process/port checks.
+
+Independent coordinator-checker validation also passed 18 cases (2 positives,
+13 project mutations and 3 source snapshot/link mutations); it was bound to
+pre-final checker `106880f3...` and did not execute builds or game inputs.
+Final aggregate checking additionally binds exact summary catalogs, package
+identities and the test project's explicit startup object.
+
+Full Python regression passed **1155 tests in 102.95 seconds**. The first run
+reported package fixture argument errors because a standalone artifact runner
+was accidentally collected by pytest, and two loopback permission failures
+under the filesystem/network sandbox. Dedicated runners now use explicit
+fixture filenames and execute in the release checker; the final full regression
+used the already authorized synthetic-loopback execution boundary and passed.
+No game failure was inferred from those environment/harness errors.
+
+An earlier aggregate at `/private/tmp/item-release-coordinator-a` passed but
+used the weaker source-link fixture; the final A2 gate supersedes it after that
+fixture was corrected. The preliminary 3373-row policy `91df36ef...` was replaced
+before final acceptance by the explicit property/event/type-specification
+projection. Neither draft is release authority.
+
+Canonical artifacts (unchanged candidate from the bootstrap packet):
+
+| Artifact | Bytes | SHA256 |
+| --- | ---: | --- |
+| Sts2AgentBridgeItemV1.dll | 95232 | `09ea93cd86a4ca502c27357171f7a7efdaf2bcf91a0a3fcffec96ef79745b9f6` |
+| Sts2AgentBridgeItemV1.json | 340 | `03163de389a7212c39f18c54ace292b8b105e3c7396bf08c871203f6c33978d4` |
+| Sts2AgentBridgeItemV1-1.0.0.zip | 95936 | `349c24fa02da4a11e19fa4dd6a08100b805d9c5dbe84b89cd4e3de120a412beb` |
+
+No live installation or action occurred in the release gate. The accepted independent reproduction and operational preflight
+are recorded below; next is the authorized fresh-item campaign. Live collection and parent room completion remain unproven.
+
+
+Independent final release review accepted A2 and fresh
+`/private/tmp/item-release-independent-b2`: result.json, complete artifact/bin
+and release directories match byte-for-byte. The verifier DLL is
+`932046eaa1fd31cf084c67e914acf6a1af5210d65da25539d573fe36b56b7e72`;
+verifier tests DLL is
+`821a3c2a537f295776619fa2f8ff44975dbe4a0ea4c216089732c8ccbb5a3589`.
+The metadata inventory has 3600 sorted rows, 3593 unique; decoded rows can
+coincide without their raw metadata/table/section binding being lost.
+
+First read-only live preflight found a missing `import sys` in the copied base
+checker before target reads. No installation or action occurred. The two-file
+correction adds that import and an actual isolated `--help` startup check to
+the aggregate gate. Independent review accepted the exact diff and executed
+that startup check. Final A3 passes all existing counts plus that check, with
+all DLL/package identities unchanged. Only these two authored input hashes
+changed from A2/B2; the replacement current manifest/inventory above is the
+accepted live-preflight binding. No fourth/predecessor input changed.
+
+Operational preflight then passed: game stopped/43117 closed, five fixed old/new
+operator/overlay/campaign paths absent, and clean 429-file base projection with
+zero overlay. The three exact release artifacts were published successfully
+under `/private/tmp/sts-item-v1-release`, without installation. Supported desktop
+access initially reported a locked Mac; the user returned available and desktop
+access then worked. A separate Steam capture attempt still returned `-3811`;
+this is not evidence about the historical controller timeout. Manual game launch
+and actual game capture remain the selected route. No campaign action has yet
+been attempted.

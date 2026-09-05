@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "component": "item_release_v1",
+  "contract_sha256": "9d7d25840fb8910448bd0f8215f4eabdc081c8151a96eb3649f4db3025103b34",
+  "files": [
+    {
+      "path": "Directory.Build.props",
+      "sha256": "10632427d5838775750de04857ff20a968a427bde0310fffa5a3fa38ec881cf6"
+    },
+    {
+      "path": "check.py",
+      "sha256": "26ff95959d506a3a3d7ea52f7a75efe6e2046661cc1692c05184339f909eeadd"
+    },
+    {
+      "path": "client/run_live.py",
+      "sha256": "87d02feef4cfb75f1cf1e68373b19172bdea1f2e9574f21dec8981a7fede5d45"
+    },
+    {
+      "path": "client/secure_operator.py",
+      "sha256": "b29f5d8d9d451da271fbf214768fa0fb9c7b4e1b1efbe4294971dec69738e0d2"
+    },
+    {
+      "path": "client_tests/client_fixtures.py",
+      "sha256": "b4d58cd3d27fbfe10aaf574591d035e7b2afe1bada3d87c64068360182c986d1"
+    },
+    {
+      "path": "operations/check_live_runtime.py",
+      "sha256": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683"
+    },
+    {
+      "path": "operations/check_live_runtime_fixtures.py",
+      "sha256": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2"
+    },
+    {
+      "path": "operations/manage_live_campaign.py",
+      "sha256": "891ed2a816556dda68e775377c8cd343983d476943ded772706989bf0277a468"
+    },
+    {
+      "path": "operations/manage_live_campaign_fixtures.py",
+      "sha256": "3906d61b8b340c28a8dff590428e9b60a5ac34445eaebb2996027ee4b115aa59"
+    },
+    {
+      "path": "operations/tool_common.py",
+      "sha256": "5766449c284acc729adcd1d457e0ceb2259d93fc7adb81fba5255e076733573a"
+    },
+    {
+      "path": "operations/verify_clean_install.py",
+      "sha256": "14c4dc5533f7e02ca31aae9ca8d2a68cfbdf797097c47ff1384e726e2f388fbc"
+    },
+    {
+      "path": "package/package_fixtures.py",
+      "sha256": "8a49c177e3696db4c13f45e8b1004963c4a13349a3d4f6bef7af99256ad567a2"
+    },
+    {
+      "path": "package/release_package.py",
+      "sha256": "b8c9de511ac58034f2170f4978ce6dee4d848f453433bd8d1f42785403a158b7"
+    },
+    {
+      "path": "policy/item_release_policy.json",
+      "sha256": "56a5e3487254caa24234fb2ecc3ea03b3149ea33750d0a090d2effc044b8f73f"
+    },
+    {
+      "path": "verifier/IlDecoder.cs",
+      "sha256": "58a15d83f6b97916ab5f63b2b765f29cd8d46e380d5a270bf8c91dd333d25933"
+    },
+    {
+      "path": "verifier/ItemReleasePolicy.cs",
+      "sha256": "d879c78b3e4b7d58c519588cfcbb66b5082f059194294d8742daa722c8b5c04c"
+    },
+    {
+      "path": "verifier/ItemReleaseProjection.cs",
+      "sha256": "99e70361ec20dfee5d7893d6c53dfa6b6df164b1b0de6a4229fd1f0d71efbeea"
+    },
+    {
+      "path": "verifier/ItemReleaseVerifier.cs",
+      "sha256": "793c26ec25a7f8e222a711bb909839043afb61d138ff432405ff2703ee994c4c"
+    },
+    {
+      "path": "verifier/MetadataNames.cs",
+      "sha256": "f7b481088f436e9ada05fc269101cd98b05326122798ff6043eeab8286517d23"
+    },
+    {
+      "path": "verifier/Program.cs",
+      "sha256": "e118a673bb5bb03e1bc33f5083d433a7b5061529aef7e107e12573add99ab71b"
+    },
+    {
+      "path": "verifier/SafeFiles.cs",
+      "sha256": "6cbfff2388ae82d6d7f223c977f4f953c85be66698099ca70c8502c06f512dd3"
+    },
+    {
+      "path": "verifier/Sts2AgentBridge.ItemV1.Release.Verifier.csproj",
+      "sha256": "711b8fcc0ba931ebcf3f8eb8c9bc4f0dec221a0982a61876294f4e8b48f80e96"
+    },
+    {
+      "path": "verifier/VerificationException.cs",
+      "sha256": "bd094ecc857795235cab8a8ba5e9a488d734413f831703ec696b22f70d3e8b1d"
+    },
+    {
+      "path": "verifier_tests/PeMutations.cs",
+      "sha256": "49fece58bbc55d820fb54126aaf0aba0246caea8f0d0b7237e555fe94d4a00d8"
+    },
+    {
+      "path": "verifier_tests/Program.cs",
+      "sha256": "7486a8e0c79ed040003c9dec9ab99483c63ca4d433088bb23b5ad7f2a1682716"
+    },
+    {
+      "path": "verifier_tests/Sts2AgentBridge.ItemV1.Release.Verifier.Tests.csproj",
+      "sha256": "7b8a33f197c72054e484005873dea832c454bad968f58e1362d56e1143e78401"
+    }
+  ]
+}

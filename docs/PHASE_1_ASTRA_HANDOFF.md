@@ -26,9 +26,13 @@ successor source inventory too. The fourth
 [secure operator/bootstrap packet](PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md) now passes
 independent review, 13 operator groups, 24 lifecycle groups and 24 checker
 boundary cases. Two fresh builds match the single install-free candidate DLL.
-Its 20-input inventory is frozen; preserve every byte. The next gate is the new
-whole-assembly surface policy/negative fixtures, canonical release package and
-item-aware operator/client/install/cleanup tools before campaign preflight.
+Its 20-input inventory is frozen; preserve every byte. The fifth
+[release packet](PHASE_1_ITEM_V1_RELEASE_PLAN.md) is now independently accepted:
+ 31 verifier, 10 production-CLI, 11 client, 5 package, 38 manager and
+17 runtime groups. The 26-input source inventory and exact canonical package
+are recorded in the ledger. Independent reproduction and fixed-path operational preflight pass. Next is a
+user-confirmed fresh untouched item-only reward. The release ledger records a
+minimal base-checker startup fix and its replacement source freeze.
 No production entrypoint or native adapter has executed. Never inherit enabled r0a config/credentials or
 describe a post-submission failure as retryable/no mutation. Shop control connections and
 event progression remain separate gates. Do not repeat the stopped event choice
@@ -36,8 +40,8 @@ or reclassify the old timeout.
 
 The user renewed authority for bounded development and campaigns when needed,
 and waived repeated unmodded launch checks; preserve the normal exact cleanup
-requirements and report that check as waived. No campaign is active. No game
-setup is needed for the next repository integration gate.
+requirements and report that check as waived. No campaign is active. The user is available for the fresh item-only reward setup once the exact
+bridge is installed. Read the latest campaign disposition before any action.
 
 ## Start from the integration checkout
 

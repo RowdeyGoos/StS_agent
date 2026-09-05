@@ -144,9 +144,11 @@ tests and 17 actual cross-language cases pass, with two matching source-snapshot
 builds. The transport and owned-thread queue now also pass review, 11 C# groups,
 16 Python tests and 15 actual synthetic socket cases. The secure operator and
 first-frame bootstrap candidate now passes 13 operator groups, 24 lifecycle
-groups, 24 checker boundary cases and two matching fresh builds. Next is the
-new whole-assembly surface policy, canonical package and item-aware operational
-tooling before a live campaign. The game attachment remains compile-only. Shop
+groups, 24 checker boundary cases and two matching fresh builds. The
+[release packet](docs/PHASE_1_ITEM_V1_RELEASE_PLAN.md) now has an independently
+reviewed whole-assembly policy, exact reproduced package, fixed client and
+transactional campaign tools. Operational preflight passes; next is one live
+collection from a user-confirmed fresh untouched item-only reward. The game attachment remains compile-only. Shop
 dispatch/close/leave seams and generic event progression still need their named
 static gates.
 Exact results are in the [missing-room acceptance ledger](docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).

@@ -1994,3 +1994,32 @@ behavior and live item collection remain unproven. Surface policy, packaging
 and item-aware operational tooling are the next gates; the user need not set
 up the game until those are complete. The exact contract is the
 [bootstrap plan](docs/PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md).
+
+## D61. Release The Item Candidate With Separate Campaign Ownership
+
+**Date:** 2026-09-05
+
+The four accepted item successor trees already define collection, wire,
+transport and bootstrap behavior. Live readiness needs one reviewed release
+without changing those accepted semantics or the existing 0.8.0 artifact.
+
+- Pin the separately named single DLL and canonical two-entry package to exact
+  bytes. Verify the complete metadata and method-body projection, exact native
+  imports and absence of production references to inherited internal test seams.
+- Keep release verification and synthetic mutation tests outside the shipped
+  assembly. The production verifier checks an independently frozen policy;
+  it cannot learn or update one from an arbitrary candidate.
+- Use a separate fixed item campaign identity and require the operator parent
+  absent before transactionally installing a fresh credential/config and code.
+  Preserve exclusive publication, predecessor-bound state transitions and
+  code-first quarantine with exact owned-file purge.
+- The fixed-path live client validates installed state, securely reads and
+  transfers the credential once, then invokes the frozen item controller once.
+  An uncertain result never permits another attempt or adoption.
+- Combine repository evidence with fresh live preflight and a user-confirmed
+  untouched item-only reward. The user's standing bounded campaign authority
+  applies; normal cleanup remains required and the repeated unmodded relaunch
+  remains explicitly waived.
+
+The [release plan](docs/PHASE_1_ITEM_V1_RELEASE_PLAN.md) freezes this scope.
+Readiness does not establish live collection, event completion or shop support.

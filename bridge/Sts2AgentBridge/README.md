@@ -29,15 +29,17 @@ The controlling contract is the accepted
 boundary and rationale are in the
 [restricted bridge design](../../docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md).
 
-## Isolated item candidate
+## Separate item release
 
 The separately scoped [item bootstrap candidate](../../docs/PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md)
 now compiles as one `Sts2AgentBridgeItemV1.dll` from four frozen successor trees.
 Its secure operator loader passes 13 fixture groups and its first-frame
-lifecycle passes 24, with two byte-identical source-snapshot builds. It is
-install-free: the new whole-assembly surface gate, release package and
-item-aware operational tools remain pending. The existing 0.8.0 instructions
-below cannot install or activate it. Exact candidate hashes and reproduction
+lifecycle passes 24, with two byte-identical source-snapshot builds. The
+[item release](../../docs/PHASE_1_ITEM_V1_RELEASE_PLAN.md) now has an accepted
+whole-assembly policy, canonical two-entry package and item-aware fixed client,
+transactional installer and cleanup tools. The user-confirmed fresh item
+campaign remains the live evidence gate. The existing 0.8.0 instructions below
+cannot install or activate it. Exact candidate hashes and reproduction
 commands are in the [acceptance ledger](../../docs/research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md).
 
 ## Scope and non-goals

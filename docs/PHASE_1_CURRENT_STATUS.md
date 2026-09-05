@@ -560,10 +560,12 @@ is now accepted as an install-free candidate: 13 actual-backend operator groups,
 Two fresh source-snapshot builds produce the same single candidate DLL. It
 adds descriptor-bound operator loading and first-frame runtime creation with
 truthful shutdown, but its production entrypoint and game adapter have not run.
-Preserve its fourth frozen successor inventory. Next is the new whole-assembly
-surface policy/negative fixtures, canonical release package and item-aware
-operator/client/install/cleanup gates before a live campaign. No game setup
-is needed yet.
+Preserve its fourth frozen successor inventory. The fifth
+[release packet](PHASE_1_ITEM_V1_RELEASE_PLAN.md) is now independently accepted with an exact reproduced package:
+ 31 verifier, 10 production-CLI, 11 client, 5 package, 38 campaign
+manager and 17 runtime groups. Full regression remains 1155 passing tests.
+Its exact two-entry package contains the unchanged candidate. The fixed-path operational preflight passes; the next step is a
+fresh untouched item-only reward test; there is still no live collection result.
 The [acceptance ledger](research/PHASE_1_MISSING_ROOM_ACCEPTANCE.md) records its
 state. Existing live capabilities, 0.8.0 source/artifact and operational limits
 remain unchanged; there is no new live item capability or campaign.
