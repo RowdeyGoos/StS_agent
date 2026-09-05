@@ -851,6 +851,96 @@ Exact accepted SHA-256 identities (tool files are under
   package gates and the exact manager quarantine, clean unmodded launch/quit and
   purge. Stop on uncertainty; never resume or retry the prior uncertain action.
 
+### 2026-09-05 — Fresh map diagnostic passed; room not entered
+
+- Source `dc8e66663d6ed8d7d9cee3b9d12f6e708f48ced4`, documentation checkpoint
+  `9673102`. The user confirmed availability for supported manual launches.
+  Campaign began **11:37:54 UTC** and ended **11:53:03 UTC**, **15 minutes
+  9 seconds** including cleanup under the user-revised procedure below.
+- Initial read-only preflight found the game running at the Profile 3 main
+  menu. Supported game capture worked. Normal Quit and its confirmation were
+  followed by a passed stopped/closed guard (3 process, 2 port samples).
+  The first base-verifier invocation rejected a relative target-manifest path;
+  the corrected absolute-path read-only invocation passed before installation.
+  Fresh base verification bound 429 files to
+  `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`
+  with zero overlay. The pinned two-entry package again passed all recorded
+  DLL/manifest/package identities.
+- Exact manager installation passed, bound to state SHA-256
+  `911fa9043e9c65c4d1db6731125c7732f51e487858ef84d735ca212a491895b3`.
+  Overlay verification passed with the same 429-file base and two overlay
+  files. Fixed operator configuration verification passed without disclosing
+  credentials. User-initiated launch succeeded; the game visibly showed Profile
+  3 and exactly one loaded mod. No browser-route workaround was used.
+- Normal game UI abandoned the previous run and prepared a fresh Standard
+  Ironclad Ascension 0 run through the opening choice to an untouched visible
+  map. No previous uncertain action was retried or its discarded data recovered.
+  At **11:46:10 UTC**, the coordinator invoked `diagnose_run_room_live.py` once
+  with the frozen first-legal/first-card/elite/safe providers, floor limit 3 and
+  explicit map entry. No UI gameplay action occurred during controller execution.
+- The command returned exit **0** by **11:47:30 UTC**. Its exact retained fixed
+  diagnostic and accepted aggregate were:
+
+```json
+{"schema_version":1,"status":"passed","milestone":"r0i_run_room_diagnostic","code":"none","room":{"stage":"not_entered","last_observation_status":"none","last_ready_kind":"none","action_exchange_attempt_count":0,"accepted_receipt_count":0,"last_attempted_action":"none","last_accepted_action":"none","completion_confirmed":false},"run_acceptance":{"schema_version":1,"status":"passed","milestone":"r0i_bounded_run_acceptance","source_milestone":"r0i_bounded_run_entry","entry_phase":"map","processed_floor_count":3,"completed_floor_count":2,"action_totals":{"combat":43,"reward":8,"map":3,"room":0,"total":54},"termination":{"reason":"floor_limit_reached","after_floor":3,"destination_kind":"monster"},"terminal_combat_outcome":null}}
+```
+
+- This is new live evidence for explicit fresh map entry and the diagnostic's
+  successful no-room path: three destinations selected, two completed floors,
+  43 combat, 8 reward and 3 map actions. The room client was **not entered**.
+  No room completion, room-failure classification, offered-elite reconciliation
+  or whole-run success is claimed. The historical timeout remains unexplained.
+  The user correctly identified that this route did not test the room issue and
+  requested a targeted untouched question-mark event instead of another generic
+  route, offering to prepare that exact visible state.
+- Normal Save and Quit to menu, normal Quit confirmation and stopped/closed
+  checks passed. Exact quarantine passed with state SHA-256
+  `b01579613c8542e5a286b6effb467cdc474a2ebdb923050f5ea29f894d3a6151`;
+  base verification again passed with zero overlay.
+- **User-directed cleanup change:** after quarantine the user explicitly said
+  repeated unmodded cleanup launches are unnecessary. The coordinator omitted
+  that launch/quit check for this campaign and future repeated checks under this
+  instruction. It is **waived, not passed**. Normal quit, exact quarantine/purge
+  and stopped/base verification remain in scope. The original full cleanup
+  checklist is not claimed as executed.
+- Purge removed exactly four generated files and reported campaign phase absent.
+  Final base verification passed the unchanged 429-file hash with zero overlay;
+  final stopped/closed verification passed with 3 process and 2 port samples.
+  No campaign remains active. No profile/save filesystem access, Cloud change,
+  retained live corpus, remote Git or broader capability change occurred. Only
+  the approved final diagnostic/acceptance aggregate is retained.
+- Next target is the user-prepared fresh event with visible choices untouched.
+  The current run diagnostic cannot enter directly at a room, so the separate
+  [direct-room adapter contract](../PHASE_1_DIRECT_ROOM_DIAGNOSTIC_PLAN.md) is
+  under review. No extra campaign or uncertain room action is implied by this
+  successful map-only evidence.
+
+### 2026-09-05 — Direct room diagnostic contract frozen
+
+- The user requested a focused question-mark event test and a precise visible
+  preparation state, offering to navigate there. Coordinator specified Profile
+  3, Ironclad, Ascension 0, inside a fresh question-mark event with choice buttons
+  visible and no choice selected. The game remains stopped and the previous
+  campaign fully purged while the small direct-entry adapter is developed.
+- Independent Sol/high `DR-REVIEW` accepted
+  [PHASE_1_DIRECT_ROOM_DIAGNOSTIC_PLAN.md](../PHASE_1_DIRECT_ROOM_DIAGNOSTIC_PLAN.md)
+  at exact SHA-256
+  `e7d65581bb4bbc9d6fd2d8c04af15b852f38031b370f6409af89dbe1e965dc69`.
+  Review specified the exact room-parser `invalid_decision_provider`/exit 2
+  pair as a local pass-through; the shared frozen failure allowlist is unchanged.
+- `DR-IMPLEMENT` owns only room private-operation propagation, the new separate
+  direct CLI, its literal actual-client fixture and pytest wrapper. Recorder,
+  run diagnostic and all other accepted contracts stay frozen. `DR-REVIEW` is
+  independent/read-only; coordinator owns docs, integration and live operations.
+  No implementation was authorized before this exact contract acceptance.
+- The direct CLI executes the existing 30-second/12-action room controller once,
+  validates its full success through the existing room verifier, and emits only
+  the five fixed top-level keys plus the frozen room-stage record. No map,
+  reward or combat continuation is introduced. The user-prepared event is the
+  explicit entry boundary. Cleanup follows the user's revised instruction:
+  normal quit, exact quarantine/purge, stopped/closed and base verification;
+  repeated unmodded launch/quit is waived, not claimed as passed.
+
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
 

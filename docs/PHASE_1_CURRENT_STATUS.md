@@ -159,13 +159,24 @@ The six-group unit gate and independent 25-case actual-client gate pass,
 including exact success parity, cancellation/cleanup precedence and mutations
 of requests, receipt accounting and output suppression. Integrated source
 `dc8e666` passed the final full repository suite: **1,111 tests in 104.17
-seconds**. This remains **bridge_fixture** evidence. The diagnostic has not
-been exercised in a new live campaign and cannot classify the discarded run. The pinned package passed
-an offline verification; no install, credential access or live endpoint request
-occurred. The browser automation route for the supplied Steam URI remains
-restricted and was not bypassed. Supported user-initiated launch worked
-previously and remains available for a fresh campaign after preflight. Steam
-capture error `-3811` remains separate from the controller timeout.
+seconds**. The room-failure stage evidence remains **bridge_fixture**.
+
+The subsequent user-assisted campaign live-passed the diagnostic from a fresh
+map: three selected destinations, two completed floors and 54 actions (43
+combat, 8 reward, 3 map). Its exact record reported `room.stage=not_entered` and
+zero room actions. This closes the explicit fresh-map entry live gate and the
+diagnostic's no-room success path; it does not test the unresolved room failure
+or establish elite/room composition. The user requested a targeted fresh
+question-mark event with choices untouched and offered to prepare that state.
+A separate direct-room diagnostic adapter is the next bounded repository gate.
+
+Cleanup ended at **2026-09-05 11:53:03 UTC**, **15 minutes 9 seconds** after
+preflight began. Normal quit, exact quarantine/four-file purge and final base/
+stopped/closed checks passed. The user explicitly waived the repeated unmodded
+launch/quit check; that check is omitted, not passed. No campaign remains
+active. Supported user-initiated launch worked; the restricted browser URI route
+was not bypassed. Steam capture error `-3811` remains separate from the controller
+timeout. See the actor-ready ledger for the exact result and cleanup binding.
 
 ## Parallel headless execution status
 
@@ -348,7 +359,7 @@ progression remains `structural_fixture`; no target-game fidelity promotion.
 | `R0f` | One reward decision followed by map arrival | Initial screen-transition timing blocked the first attempt; the narrowed retry passed reward and map checkpoints |
 | `R0g` | Read and apply one legal map destination | Bounded live map observation and destination application passed |
 | `R0h` | Compose combat victory, reward handling, and map travel into one floor | Bounded live floor transition reached the next room and clean teardown passed |
-| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner with explicit fresh-phase entry | Repository gates and fixtures passed. Historical campaigns exercised event and rest slices with the recorded fail-closed residuals. Later campaigns live-passed a fresh reward diagnostic, one complete ordinary combat/reward/map floor, and explicit reward entry from an untouched reward through map selection to terminal defeat with truthful partial-prefix counts. Explicit map entry and composed room handoff remain unobserved live. |
+| `R0i` | Granular reward handling, a separate supported-room controller, and a capped combat/reward/map/room runner with explicit fresh-phase entry | Repository gates and fixtures passed. Historical campaigns exercised event and rest slices with the recorded fail-closed residuals. Later campaigns live-passed a fresh reward diagnostic, one complete ordinary combat/reward/map floor, and explicit reward entry from an untouched reward through map selection to terminal defeat with truthful partial-prefix counts. Explicit fresh map entry subsequently live-passed; composed room handoff remains unobserved live. |
 
 The earlier 2026-09-04 campaign reproduced the multi-step event timeout and newly
 demonstrated advertised rest-site map selection, successful standalone rest
