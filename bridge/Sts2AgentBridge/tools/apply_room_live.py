@@ -574,13 +574,22 @@ def _run_apply_room(
         probe._zero(credential)
 
 
-def _operation() -> dict[str, object]:
+def _operation(*, diagnostics: RoomStageDiagnostics | None = None) -> dict[str, object]:
     user_profile_value, supplied_uid, provider = parse_args()
     user_profile: Path = absolute_path(user_profile_value, "user_profile")
     uid = probe._require_identity(user_profile, supplied_uid)
     credential = probe._load_fixed_credential(user_profile, uid)
     try:
-        return _run_apply_room(credential, provider, probe._literal_loopback_connector)
+        if diagnostics is None:
+            return _run_apply_room(
+                credential, provider, probe._literal_loopback_connector
+            )
+        return _run_apply_room(
+            credential,
+            provider,
+            probe._literal_loopback_connector,
+            diagnostics=diagnostics,
+        )
     finally:
         probe._zero(credential)
 
