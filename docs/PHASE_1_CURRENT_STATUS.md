@@ -607,8 +607,10 @@ four identical production DLLs. The
 corrected 52-input freeze, exact package and complete fixture evidence. All six predecessor
 trees and the old bridge remain byte-exact.
 
-Live shop/event acceptance is next. The user is available for the first shop
-campaign; installation must occur while closed before the exact shop setup.
+Live shop/event acceptance is next. The fresh shop campaign was installed at 21:52:50 UTC after closed-game
+preflight; exact two-file overlay verification passed. It is awaiting the user
+at the requested merchant inventory, with no client/action yet and cleanup due
+by 22:22:50 UTC.
 The release ledger owns its current state. Prior potion/relic campaigns remain
 the latest live item evidence. Rest healing and map return are live-demonstrated;
 selecting/upgrading a card at a rest site remains unsupported.

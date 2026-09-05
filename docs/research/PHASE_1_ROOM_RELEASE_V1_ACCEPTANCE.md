@@ -190,3 +190,20 @@ Fresh real base verification still passes 429 files/zero overlay, and the game
 remains stopped with the port closed. Release readiness is restored; live shop
 and event behavior remains untested by this release. The next installation uses
 fresh state/credentials under the user's standing authority and availability.
+
+## Fresh shop campaign installed — 2026-09-05 21:52:50 UTC
+
+Corrective release head ee7998b. The user remains available and kept the game
+closed. Fresh stopped/closed preflight passed immediately before installation;
+the manager repeated exact conflict-absence and publication guards. Fresh shop
+installation passed with state SHA256
+e1dc76fd5345378671fd9ee5fc893defa520e85a7922483585dae46427c814b5.
+The corrected post-install overlay check passed unchanged base 429 and exactly
+two accepted overlay files. No client invocation or game action has occurred.
+
+The user was asked to launch manually on Profile 3, continue Ironclad Ascension 0
+and stop at a fresh merchant inventory with at least one affordable ordinary
+card visible, without buying, closing or leaving. Campaign cleanup must finish
+by 22:22:50 UTC. This campaign is active and awaiting exact screen setup; the
+previous closed campaign states are never reused. Record the one-shot outcome
+and exact cleanup below before declaring this campaign closed.

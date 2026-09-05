@@ -17,6 +17,12 @@ identities and current campaign state. Live shop/event acceptance is the next
 gate; the user is available for the first shop test. Install while closed, then
 request the exact shop inventory described in that ledger.
 
+Current operational state: fresh shop campaign installed at 21:52:50 UTC on
+corrective release ee7998b; base 429 plus exact two-file overlay verification
+passed. Awaiting the user-prepared shop inventory; no live client/action yet.
+The release ledger owns the installed state hash and cleanup deadline
+22:22:50 UTC. Do not reinstall or reuse an older campaign state.
+
 ## Later continuation status — 2026-09-05
 
 Continue in the same 23cf checkout and integration branch. The historical
