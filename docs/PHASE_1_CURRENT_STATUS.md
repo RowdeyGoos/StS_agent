@@ -168,7 +168,9 @@ zero room actions. This closes the explicit fresh-map entry live gate and the
 diagnostic's no-room success path; it does not test the unresolved room failure
 or establish elite/room composition. The user requested a targeted fresh
 question-mark event with choices untouched and offered to prepare that state.
-A separate direct-room diagnostic adapter is the next bounded repository gate.
+The separate direct-room diagnostic adapter is accepted at `9d69df1`, with
+independent actual-client review and **1,112 tests passing in 106.24 seconds**.
+Its next gate is the exact user-prepared live event.
 
 Cleanup ended at **2026-09-05 11:53:03 UTC**, **15 minutes 9 seconds** after
 preflight began. Normal quit, exact quarantine/four-file purge and final base/
@@ -471,41 +473,31 @@ maintained capture-off validator, independent review and aggregate bridge join
 have passed. The one authorized successor run from a fresh map returned
 `room_interaction_timeout`, and cleanup is complete. The focused fixture
 diagnosis confirms that this code alone cannot identify the waiting stage or
-select a repair. The separately reviewed capture-off room-stage diagnostic is
-now implemented and fixture-accepted. Its next evidence gate is one fresh
-bounded campaign with supported user-initiated launch after preflight; the
-browser Steam URI route has a recorded policy rejection and must not be
-bypassed. Successful
-explicit map entry, elite combat and composed supported-room handoff remain
-live targets. The user renewed bounded campaign authority; the diagnostic
-implementation required no new campaign. Any campaign under that authority must
-retain the existing Profile 3-only, 30-minute total, three-destination,
-capture-off and cleanup boundaries and should:
+select a repair. The separately reviewed capture-off room-stage diagnostic
+subsequently live-passed fresh map entry, three destinations and two completed
+floors, but reported the room client was not entered. The user selected a direct
+untouched-event test to address the room issue and offered to prepare the exact
+state. The [direct-room adapter plan](PHASE_1_DIRECT_ROOM_DIAGNOSTIC_PLAN.md)
+is implemented and independently accepted at `9d69df1`; its direct event
+fixture passes and the full suite passes 1,112 tests. The next live invocation
+starts at the exact user-prepared event.
 
-1. begin only at a declared visibly fresh map phase and verify its partial-
-   prefix result without scanning, fallback, retry or retained raw data;
-2. use the accepted opt-in elite-first provider; if no elite is offered,
-   record it as unobserved rather than farming
-   runs or broadening control;
-3. require an offered elite to reconcile map selection, fresh combat readiness
-   and one bounded combat result; unsupported post-elite reward content remains
-   a truthful fail-closed boundary;
-4. build on the live-accepted standalone rest-site repair to exercise a composed
-   combat/rest/combat handoff when supported destinations are available,
-   retaining the reviewed Python readiness fix; the original `R0I-RUN-03/04`
-   C# exclusions remain unchanged;
-5. preserve fail-closed multi-step event handling; any event-step identity
-   redesign requires a separately approved scope;
-6. retain `reward_action_response_mismatch` as a separate historical residual
-   until reproduced or explained;
-7. obtain bounded live evidence for a fully reconciled rest-site or standard-
-   event handoff when encountered;
-8. preserve separate combat, reward, map, and room providers so components can
-   still be compared independently;
-9. finish with the existing quarantine, clean-base relaunch, and purge checks;
-   and
-10. avoid expanding the live bridge into shops, models, search, or broader
-   control surfaces until the existing slice is repeatable.
+The current target is Profile 3, Ironclad, Ascension 0, inside a fresh event
+reached through a question-mark node, with choices visible and untouched. The
+user may prepare that state after the pinned bridge is staged. The direct
+room client will run once under its existing 30-second/12-action limits. It adds
+no map, combat or reward continuation. The 30-minute total campaign, capture-off,
+no-retry and no profile/save-filesystem/Cloud/corpus/remote-Git boundaries remain.
+Supported user-initiated launch is available; the restricted browser Steam-URI
+route is not bypassed.
+
+Normal quit, exact quarantine/purge and stopped/closed/base verification remain
+required. The user explicitly waived repeated unmodded launch/quit checks; those
+are omitted and recorded as waived, not passed. Full elite/combat and composed
+room-handoff evidence remain future bounded targets. Keep the event identity and
+completion exclusions, the historical reward mismatch residual, separate
+providers and unsupported shops/content boundaries intact. No discarded response
+or prior uncertain action is adopted to manufacture evidence.
 
 Independently of that live target, the provisional headless environment has
 passed its composed-backend, independent conformance, and public-only baseline

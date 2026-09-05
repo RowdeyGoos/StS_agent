@@ -121,17 +121,20 @@ justified timeout increase was established. The timeout regression gate remains
 accepted. A separate opt-in room-stage diagnostic is now implemented and
 independently reviewed, with fixed bounded stage/count output, strict acceptance
 parity and cleanup/privacy gates. It preserves every existing controller output,
-C# and wire contract. The next evidence target is one fresh capture-off campaign
-using that diagnostic with supported user-initiated launch after preflight;
-the browser's recorded Steam-URI policy rejection is not bypassed. The user renewed bounded live
-authority, but implementation required no new campaign. Evidence remains
-`bridge_fixture`; discarded responses cannot establish the prior root cause or
-justify replaying its uncertain action.
-Preserve exact caps, replay and uncertainty
-behavior and keep boss, shops, treasures, relics and potions fail-closed.
-Any subsequently authorized live gate should begin at an
-explicit fresh map, seek elite or supported-room composition without farming,
-and retain the existing clean teardown and base-game relaunch checks.
+C# and wire contract. A subsequent live diagnostic passed explicit fresh map
+entry with three destinations and two completed floors, but never entered the
+room client. The user selected a targeted question-mark event test and offered
+to prepare a fresh event with its choices untouched. The direct-room adapter is now implemented and independently accepted with
+1,112 tests passing; exercise that exact state once. Do not use another generic map route as evidence for the room issue.
+
+Supported user-initiated launch remains available; the restricted browser
+Steam-URI route is not bypassed. Normal quit, exact quarantine/purge and final
+stopped/closed/base checks remain required. At the user's direction, repeated
+unmodded launch/quit checks are waived and must not be claimed as passed.
+Preserve exact room caps, replay and uncertainty behavior. The historical timeout
+and elite/composed-room evidence remain open; keep boss, shops, treasures,
+relics and potions fail-closed. Discarded responses cannot establish the prior
+root cause or justify replaying its uncertain action.
 
 Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,

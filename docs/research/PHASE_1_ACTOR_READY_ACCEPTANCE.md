@@ -941,6 +941,68 @@ Exact accepted SHA-256 identities (tool files are under
   normal quit, exact quarantine/purge, stopped/closed and base verification;
   repeated unmodded launch/quit is waived, not claimed as passed.
 
+### 2026-09-05 — Direct room adapter accepted
+
+- Integrated source: `9d69df135b7dd15918617e413ac91d2786738ea5`, following
+  exact contract freeze `96a4099` / plan SHA-256
+  `e7d65581bb4bbc9d6fd2d8c04af15b852f38031b370f6409af89dbe1e965dc69`.
+  `DR-IMPLEMENT` owned four files; independent Sol/high `DR-REVIEW` and
+  `DR-GATE` accepted the final source and actual-client evidence. Coordinator
+  reviewed source, hashes and documentation and performed local integration.
+- The separate `diagnose_room_live.py` invokes the existing room producer once
+  through the new optional private-operation seam. The five-key fixed output
+  retains the exact shared room-stage record. Success requires the existing
+  room verifier and complete/count/kind consistency; its route-count aggregate
+  is discarded. Existing room/run defaults, shared recorder/helper, C#, wire,
+  package, 30-second room deadline and 12-action cap remain unchanged.
+- Review fixed repeated reads of hostile exception properties: capture both
+  original attributes once, preserve the exact local room-parser exception,
+  and delegate a plain copied `ToolFailure` to the frozen helper. Regressions
+  cover direct and fallback changing getters, throwing getters and untyped
+  objects without string coercion. Unknown values retain fixed internal failure.
+- The direct fixture passed **10 grouped categories**, using the real CLI,
+  argument parser, room private operation and literal room transport. OS identity,
+  credential loading, connector and clock are synthetic. An event with blocked
+  first candidate and supported second candidate yields exact indexed choice,
+  accepted receipt and subsequent waiting until the production room deadline.
+  This is genuine host timeout execution, not a substituted room outcome.
+- Additional categories cover zero-action waiting, transport/malformed/unbound
+  receipts, strict complete success, discarded summary, default operation and
+  actual legacy CLI parity, argument rejection before I/O, cancellation,
+  unknown/noisy exceptions, state/cleanup precedence, count mismatch and a
+  disabled-output-suppression mutation. Literal requests, exact transcript
+  exhaustion, POST counts, socket closure and mutable request/response/credential
+  zeroing are verified. Both independent reviewers accepted these limits.
+- Standalone gates passed: direct **10**, room-stage **6**, run-room wire **25**,
+  timeout **13**, transport **29**, room acceptance **7**, run acceptance **3**,
+  default room **21**, run **23**, run-wire **8**. Six focused pytest wrappers
+  passed; final direct gate passed again under isolated system Python **3.9.6**.
+- Coordinator full regression on final production passed **1,112 tests in
+  106.24 seconds** (**1 minute 46 seconds**) using the accepted venv and
+  `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. ... -m pytest -q -p no:cacheprovider`
+  from `23cf`. A final fixture-only no-coercion assertion was added during that
+  run; the final hash-bound direct gate was independently and coordinator-rerun
+  afterward. The earlier **1,112 / 106.99 seconds** run preceded the fallback
+  correction and is not the final source binding. All four files compiled in
+  memory, import origins resolve to `23cf`, and `git diff --check` passed.
+- All worker implementation/review dispatch used Sol/high. Aggregate worker
+  runtime/token/elapsed telemetry remains unavailable. Evidence for this direct
+  entry is still **bridge_fixture** until the user-prepared live event is tested.
+  No game campaign was active during this implementation, and no frozen run
+  diagnostic, headless, training or package work was reopened.
+
+| File | Exact SHA-256 |
+| --- | --- |
+| `tools/apply_room_live.py` | `8de105233d9705d552c220dee5489a5b196faf1b4a36624188cd00f3fbf15359` |
+| `tools/diagnose_room_live.py` | `9f4a20934a090314422635545d08b28e3f6851aa1e30ba01a9ce421698a0bb1a` |
+| `tools/diagnose_room_live_fixtures.py` | `75d6f5d8e6d940a9c262c183b4335d44c6a8e00f46bd0e075f5590323bec2aec` |
+| `tests/backends/live/test_diagnose_room_live_fixtures.py` | `b683290ad167652038005fdac8319f764cc970d3c917d4c8b286c7ceb0a01d7d` |
+
+Tool paths are under `bridge/Sts2AgentBridge`. The next operation is staging the
+unchanged pinned bridge, then asking the user to prepare the exact untouched
+event. The user may continue the latest successfully accepted run to that new
+room; no uncertain prior action or failed historical run is resumed.
+
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:
 

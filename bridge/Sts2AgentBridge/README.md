@@ -146,6 +146,15 @@ launch/quit, four-file purge and final unchanged-base/zero-overlay/process/
 listener checks all passed. The campaign ended within 30 minutes; no campaign
 is active. See the actor-ready ledger for its exact result and evidence limits.
 
+A later capture-off `diagnose_run_room_live.py` campaign passed explicit fresh
+map entry: three destinations, two completed floors and 54 actions. Its room
+record was `not_entered` with zero room actions, so it did not test the unresolved
+room timeout. The user selected a fresh untouched question-mark event as the
+next direct target. Normal quit, quarantine/four-file purge and stopped/base
+checks passed; the user explicitly waived the repeated unmodded launch/quit
+check. Future repeated cleanup uses that revised procedure, recording the
+omitted check as waived. Exact evidence is in the actor-ready ledger.
+
 Its isolated synthetic gate is:
 
 ```bash
@@ -692,6 +701,51 @@ no new live room completion or historical timeout root cause is claimed. See
 [D56](../../DECISIONS.md#d56-keep-room-stage-diagnostics-separate-from-run-acceptance),
 the [frozen diagnostic plan](../../docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md),
 and the [actor-ready ledger](../../docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md).
+
+### Direct untouched-room diagnostics
+
+`diagnose_room_live.py` enters the existing room controller directly, with no
+map, combat or reward continuation. Its intended targeted setup is Profile 3,
+Ironclad, Ascension 0, inside a fresh event reached through a question-mark node,
+with choices visible and no choice selected. The user may navigate to this exact
+state after campaign staging; that navigation is outside controller evidence.
+Verify that the question-mark node actually became an event before invoking:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/diagnose_room_live.py" \
+  --user-profile "/ABS/OS_USER_PROFILE" --effective-uid 501 \
+  --decision-provider safe
+```
+
+This applies room choices once under the existing 30-second deadline and
+12-action cap. It emits exactly `schema_version`, `status`, `milestone`, `code`
+and `room`, with milestone `r0i_room_diagnostic`. The room record is identical
+to the run diagnostic's fixed stage/count record. Success requires the existing
+full room-result verifier plus matching complete/count/kind facts; its internal
+acceptance summary is discarded. No route/poll count, partial result or new
+capture path is emitted. Default room and run commands remain unchanged.
+
+The direct wrapper preserves the room parser's exact `invalid_decision_provider`
+/exit-2 pair locally; all other failures follow the frozen run-diagnostic helper.
+Unknown errors, cancellation, unsafe-state/cleanup precedence and non-retaining
+output suppression retain the same strict behavior. Stop when the controller
+returns; do not manually continue or retry an uncertain action.
+
+The synthetic direct gate exercises the actual CLI/room client with literal
+transport fixtures, including accepted-event waiting, zero-action waiting,
+receipt failures, strict completion, default parity, argument rejection,
+cancellation, hostile exceptions, cleanup precedence and an output-sink mutation:
+
+```bash
+/ABS/PYTHON_3_10_PLUS -B -E -s -S "/ABS/BRIDGE_ROOT/tools/diagnose_room_live_fixtures.py"
+```
+
+See the [direct-room contract](../../docs/PHASE_1_DIRECT_ROOM_DIAGNOSTIC_PLAN.md)
+and [actor-ready ledger](../../docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md)
+for exact acceptance and any later live result. The user's current cleanup
+instruction keeps normal quit, exact quarantine/purge and stopped/closed/base
+verification, while waiving repeated unmodded launch/quit checks. Record the
+waiver explicitly; do not claim that omitted check passed.
 
 ### Runtime process/port guard
 
