@@ -12,7 +12,8 @@ unaccepted live. Elite continuation is implemented and independently fixture-tes
 by the host runner; it remains unobserved live.
 Explicit fresh reward entry has passed a bounded live campaign.
 The headless actor path has a frozen public variable-candidate encoder, trusted
-actor dataset and masked candidate scorer; the training smoke is in progress.
+actor dataset, masked candidate scorer and accepted deterministic CPU cloning
+smoke. This proves training and artifact plumbing on structural data only.
 
 Requires Python 3.10+.
 
@@ -92,6 +93,21 @@ The smoke config deliberately stops at a small transition budget; it is not a
 training run. Help and pure headless use do not import Torch or Gymnasium.
 The current CLI input hardening and cancellation tests target POSIX systems
 (macOS/Linux); Windows operation has not been validated.
+
+The separate programmatic actor path uses
+`game.agents.headless_encoding`, `game.data.headless_policy_dataset`,
+`game.agents.headless_candidate_policy` and
+`game.training.headless_behavior_clone`. Call `train_headless_behavior_clone`
+with explicitly separated, manifest-anchored structural-heuristic development
+and held-out sources, an accepted backend manifest and a `BehaviorCloneConfig`.
+An optional new `output_root` publishes a canonical report, CPU checkpoint and
+completion marker. Keep the returned report and logical checkpoint SHA-256
+anchors separately; `load_behavior_clone_artifact` requires both. Cancellation
+does not publish an accepted artifact. The tiny smoke reports finite held-out
+loss and imitation accuracy while retaining all component evidence, including
+zero-example trajectories. It does not register a policy in `sts-train` or
+establish policy strength. Exact validation and fingerprints are in the
+[actor-ready ledger](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md).
 
 ## Run
 

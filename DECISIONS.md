@@ -1773,3 +1773,38 @@ Candidate permutations change only output order, while valid public-reference
 reallocations cannot change corresponding scores. Unit and persistence checks
 establish structural behavior; they make no policy-quality or game-fidelity
 claim. A value head, online rollout and larger training remain deferred.
+
+## D55. Keep The First Headless Cloning Run Deterministic And Bounded
+
+### Context
+
+The encoder, trusted actor dataset and candidate scorer need a reproducible
+training and artifact join before any larger experiment is useful.
+
+### Decision
+
+- Expose a programmatic structural-heuristic cloning function, separate from
+  legacy agent registration and `sts-train`. Require explicit trusted
+  development/held-out sources and an accepted backend manifest.
+- Use the frozen hidden-size-64 scorer, CPU float32, one process/thread,
+  deterministic algorithms and sequential SGD batches without shuffling.
+  Default to seed 0, two epochs, batch size 16 and learning rate 0.01; keep
+  explicit small-run bounds. Mask candidate padding before cross entropy.
+- Restore caller Torch RNG, dtype, thread and deterministic settings after
+  training, including failures. Checkpoint loading temporarily constructs in
+  float32 and restores the caller's RNG and dtype.
+- Bind the canonical report and checkpoint to data, backend, encoding, model
+  and training identities. Retain all admitted component evidence, including
+  zero-example trajectories, and its exact sorted label union. Validate nested
+  counts, metrics, source membership and report/checkpoint consistency.
+- Publish only a complete report/checkpoint pair with its final acceptance
+  marker. Cancellation removes partial publication; callers keep both returned
+  report and logical checkpoint hash anchors for loading.
+
+### Consequence
+
+Identical anchored inputs reproduce report bytes and tensor values within the
+declared runtime environment. Regenerating source experiments can change their
+operational metadata and manifest hashes. Tiny imitation metrics establish
+training plumbing only; online inference, value learning, larger training and
+target-game policy claims remain deferred.

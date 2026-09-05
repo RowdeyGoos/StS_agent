@@ -5,10 +5,13 @@
   `42a3c4e895851188f7179cbc48dcff6ca5974a93`
 - **Active plan:**
   [Phase 1 actor-ready execution](../PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-- **Current state:** `22`-`25` and headless `04`-`06` reviewed and integrated
-  locally. The full bridge-join suite passed; cloning-smoke corrections are
-  active. The user approved continuing after the automatic-review block.
-  No live campaign.
+- **Current state:** `22`-`25` and headless `04`-`07` reviewed and integrated
+  locally through `7a34785`; final combined suite **1,108 passed**. Packet `26`
+  stopped before installation after a Steam inspection call exceeded the
+  30-minute campaign limit. No game action or new live gameplay evidence;
+  post-attempt base/runtime checks passed. No game run began; the plan permits
+  an infrastructure retry under the existing opening task authority. The overall
+  increment remains incomplete only at this live gate.
 
 This is the integration ledger for the elite-continuation and actor-ready
 headless successor increment. It begins after the completed
@@ -19,15 +22,15 @@ or append new outcomes to that historical record.
 
 | Packet | Current state | Accepted commit | Evidence |
 | --- | --- | --- | --- |
-| `R0I-ELITE-22` | reviewed and integrated | `85fa8ca` | fixture-only; independent join gate pending |
+| `R0I-ELITE-22` | reviewed and integrated | `85fa8ca` | fixture-only; independent join gate accepted |
 | `R0I-ELITE-GATE-23` | reviewed and integrated | `8fd4320` | actual-client synthetic gate, both historical controls |
 | `R0I-RUN-ACCEPTANCE-24` | reviewed and integrated | `847882f` | complete in-memory validation and fixed capture-off output |
 | `R0I-ELITE-REVIEW-25` | accepted | source `6b25ffd` | independent Sol/high whole-bridge review |
-| `R0I-ELITE-LIVE-26` | review and full-suite gates passed | — | authorized campaign next |
+| `R0I-ELITE-LIVE-26` | pre-install attempt stopped; incomplete | — | Steam inspection exceeded campaign limit; zero mutation; bounded infrastructure retry permitted |
 | `H5-ENCODER-04` | reviewed and integrated | `23d07d7` | public-only encoding; frozen schema unchanged |
 | `H5-DATASET-05` | reviewed and integrated | `1d1f430` | trusted policy examples and exact evidence provenance |
 | `H6-CANDIDATE-POLICY-06` | reviewed and integrated | `436cef7` | synthetic shape, mask, permutation and persistence checks |
-| `H6-BC-SMOKE-07` | Sol/high corrections active | — | source `5c28f14` not accepted |
+| `H6-BC-SMOKE-07` | reviewed and integrated | `7a34785` | deterministic CPU structural imitation and anchored publication/load |
 
 “Done” means reviewed, integrated and accepted, not merely implemented in a
 worker branch. The coordinator updates the current state, accepted commit,
@@ -321,6 +324,135 @@ estimated.
   within its two files. No headless model or encoder contract change is allowed.
 - Model allocation: `24` remains Sol/xhigh after the recorded escalation;
   `07` remains Sol/high. Aggregate token/elapsed telemetry is unavailable.
+
+### 2026-09-05 — Cloning-smoke acceptance and final headless join
+
+- Accepted `07` source `5c28f1483ef7e4008dbe3006aee471184b2261db` plus
+  correction `322cdc37c6e1f191852becd2c9830a3da333ede5`, integrated as
+  `343dd95` and `7a347853dcd4ada4b8f60a8c7f110546bce995a9`.
+  The coordinator inspected the complete initial implementation and correction.
+  Both independent Sol/high reviewers approved the exact corrected source;
+  their separate focused reruns passed **8 tests in 1.63 and 1.64 seconds**.
+- Caller float64 defaults now permit both artifact loader paths to construct
+  CPU float32 policies while restoring RNG/dtype on success and failure.
+  Checkpoint policy/config/encoding/model pins are cross-bound to the report.
+  Exact nested report fields, source/trajectory membership, evidence union,
+  metrics, skip counts and update arithmetic reject internally inconsistent
+  re-anchored artifacts. No absent example data is invented, and the loader
+  does not claim to recompute the data fingerprint from an abbreviated report.
+- Worker correction gates: all four actor suites **54 passed in 3.38 seconds**;
+  trajectory/reporting/CLI-artifact/rollout **72 in 8.45 seconds**;
+  conformance **90 in 74.06 seconds**; worker full suite **1,107 in 104.41
+  seconds**. Coordinator final combined bridge/headless suite at `7a34785`:
+  `PYTHONPATH=. <accepted-venv>/bin/python -m pytest -q` — **1,108 passed in
+  105.86 seconds**. This is the final integrated count; the worker's dependency
+  checkout did not contain packet `24`. Compilation and diff
+  validation passed. Imports resolved from the integration worktree.
+- The coordinator also ran the real reduced backend and trusted experiment
+  writer/loader to build tiny structural-heuristic panels in a disposable
+  directory: development seeds 7/9 (budgets 3/0), held-out seed 8 (budget 3),
+  one collector worker, one repetition. Training seed **37**, epochs **2**,
+  batch size **2**, learning rate **0.01** produced **4 optimizer updates**
+  and **6 example visits**, with finite gradients. There were **3 development**
+  and **3 held-out examples**. Both panels matched **3/3** heuristic choices;
+  each `loss_nano` was **1,128,239,314** (loss **1.128239314**).
+- Development retained **2 admitted trajectories**, including the zero-example
+  trajectory, and skipped **2 actionable-without-choice** records; held-out
+  skipped **1**. Both non-actionable skip counts were zero. Exact aggregate
+  evidence was **`[combat_v0, structural_fixture]`**, retaining every component
+  attribution. These metrics establish plumbing only, not generalization,
+  policy strength, target-game parity or differential verification.
+- The published report/checkpoint/marker round trip returned a CPU float32
+  policy under an active caller float64 default. Caller RNG, dtype, thread and
+  deterministic settings were restored. A second train on the same anchored
+  inputs produced identical report bytes and logical checkpoint identity;
+  the focused test additionally compares every checkpoint tensor directly.
+  The disposable artifacts were removed normally; no live data was involved.
+- Runtime: CPython **3.11.15**, Torch **2.13.0**, Darwin **25.6.0**, arm64,
+  little-endian, CPU float32, one process/thread, deterministic algorithms on
+  and warn-only off. Determinism is scoped to this declared environment and
+  the same manifest-anchored inputs. Regenerating source experiments may change
+  their operational metadata and hashes.
+- Exact coordinator smoke identities:
+  - report SHA-256:
+    `6f815415e016d328beec475f0cf7fcb3067c6829c09dd40718ad17e837ebd0c2`;
+  - logical checkpoint SHA-256:
+    `f9c0a7e44c8e17a4fa41acb03d4335f0f299a89135bc6c145b442ab4a2386cc0`;
+  - tensor-state SHA-256:
+    `d48b4f9ab0b051c808ad386c764ef75fa48da4b0eda201d28f33e9792b8da592`;
+  - data fingerprint:
+    `4d8db5789e385368a88e9ec268770fdd08f3b349c25ebfcc36187d64818f5387`;
+  - training config fingerprint:
+    `7e2fc0b8c2313aabbf2d6778509287ecb730d3dbaa2178a2dc882a5e338be7d9`;
+  - `headless_behavior_clone_v1` training fingerprint:
+    `806ed381c2178b45be1eb4a0f956e2e100b3c8f0594a82415256339dcc224b6f`.
+- The frozen encoder/model/config fingerprints and report representation did
+  not change during correction. D55 records the accepted bounded training and
+  artifact choices. No legacy agent/CLI, rules/content, C#, wire or artifact
+  pin was changed. `07` stayed Sol/high; aggregate worker token and elapsed
+  telemetry are **unavailable**, not inferred from individual tool timings.
+- Persistent visible `07` task:
+  `01a06e86-4915-7853-9c49-4f747e895d67`. All implementation packets are
+  accepted; no worker correction remains pending.
+
+### 2026-09-05 — Packet 26 pre-install campaign stop
+
+- Bridge prerequisites passed at clean `7edc3ed`, including independent review
+  and the **1,100-test** bridge join. The coordinator began the authorized
+  attempt at **2026-09-04 22:47:40 UTC**. The initial runtime command returned
+  `process_check_failed` under the sandbox; the same read-only check with
+  approved process access passed: no game process or accepting bridge port.
+- `verify_package.py` accepted the exact two-entry bridge `0.8.0` artifact:
+  DLL `a586aa99b9deeeb04b22596340dcccd0c6894b59db27625dfa1a1a8c2508c285`,
+  loader `498e815fc742e85112e43823b3b2e291e60efe03353a22e263d316e6fb67b971`,
+  package `c97f3a0cd094523c769065fc921c3758569575c8dd5e754c5d2597ab7ee5a595`.
+  `verify_clean_install.py --mode base` passed with **429 files**, projection
+  `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+  and **zero overlay**.
+- The read-only native `getApp("Steam")` call stalled for **36,887.8567
+  seconds** (tool-reported elapsed time) before returning that Steam was not
+  running. On return, the clock read **2026-09-05 09:07:13 UTC**. This exceeded
+  packet `26`'s 30-minute total campaign limit. The coordinator stopped the
+  attempt without restarting the timer or launching the game. This is a
+  desktop-tool/preflight failure, not a bridge response or gameplay failure.
+- **Zero** installs, operator-config writes, launches, controller invocations,
+  selected destinations or game actions occurred. No Profile 3 or Cloud state
+  was observed, so neither is certified by this attempt. No profile/save
+  filesystem access, endpoint request, credential, raw response, capture or
+  retained transition corpus was involved.
+- Post-attempt `require-stopped` passed again: **3 process samples**, **2 port
+  samples**, no game process, no accepting bridge port. The base verifier again
+  passed the same **429-file projection** with **zero overlay**. There was no
+  campaign-created installation or configuration to quarantine/purge and no
+  clean unmodded launch/quit to claim. Earlier campaigns' cleanup evidence is
+  unchanged and is not reused as a launch result for this attempt.
+- Packet `26` remains **incomplete**. Explicit map entry, elite combat and
+  supported-room composition remain **unobserved live**. No acceptance summary
+  was produced, and this infrastructure result does not select a new game
+  content capability or establish a gameplay residual.
+- The concrete remaining action is the still-unexecuted game run in the same
+  packet: at most **30 minutes**, **three selected destinations**, **Profile 3**
+  only, fresh map entry with first-legal/first-card/elite/safe providers and
+  capture off, with the same stopped/base/package gates and exact supported
+  cleanup. Section 8 permits transient infrastructure retries without
+  escalation; the opening task still authorizes one bounded game run, which
+  has not begun. Independent review corrected the coordinator's initial
+  interpretation that the plan explicitly required renewal after this
+  pre-install stall. Retry the preflight under that existing authority with a
+  fresh 30-minute attempt limit. No game-action retry, broader run, profile
+  filesystem operation or retained corpus is approved by this record.
+
+### Handoff state
+
+- Local branch: `codex/phase1-actor-ready-integration`; accepted implementation
+  head: `7a347853dcd4ada4b8f60a8c7f110546bce995a9`. Documentation records
+  this result in a subsequent coordinator commit. Local `main` remains the
+  original `cd3e3ebb97594067d3693dc30d725152dda4dcf9` handoff; no remote
+  fetch, push, PR, merge or destructive Git operation occurred.
+- Implementation, independent reviews, final regression and headless smoke
+  are complete. Only packet `26`'s bounded live gameplay gate remains open.
+  Keep this active plan until that disposition is resolved; no successor
+  implementation scope is selected from an unobserved route.
 
 Add one dated subsection per reviewed integration wave and, if executed, one
 separate coordinator live-campaign subsection. Each entry records:

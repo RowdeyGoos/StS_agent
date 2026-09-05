@@ -131,8 +131,12 @@ action arithmetic. Malformed results return `run_acceptance_result_mismatch`;
 known production failures pass through a finite allowlist, while unexpected
 callback or cleanup failures return a fixed code. There is no capture flag.
 Independent actual-client fixtures and whole-bridge review are accepted at
-`847882f`; this helper has not yet been exercised live. Its live use remains
-subject to the active coordinator campaign boundary.
+`847882f`; this helper has not yet been exercised live. The first authorized
+attempt stopped before installation when Steam inspection stalled beyond the
+30-minute campaign limit. The base remained unchanged with zero overlay and
+no game process or bridge listener. The plan permits an infrastructure retry
+under the opening task authority because no game run began; see the actor-ready
+ledger for its exact disposition.
 
 Its isolated synthetic gate is:
 
@@ -140,7 +144,8 @@ Its isolated synthetic gate is:
 /ABS/PYTHON_3_10_PLUS -B -E -s -S /ABS/BRIDGE_ROOT/tools/apply_run_acceptance_live_fixtures.py
 ```
 
-An earlier bounded Profile 3 campaign live-passed that helper and the new
+An earlier bounded Profile 3 campaign live-passed the separate
+`verify_room_acceptance.py` helper and the new
 context-bound rest heal/proceed/map completion. The next connected route was an
 elite, so full ordinary-combat continuation and an eligible gold comparison
 remain unobserved. No map destination was selected. Exact cleanup and another

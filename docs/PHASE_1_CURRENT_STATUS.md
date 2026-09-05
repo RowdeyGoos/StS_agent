@@ -106,8 +106,14 @@ providers remain unchanged. Historical negative controls and uncertainty,
 cancellation and cleanup checks pass with synthetic transport. Elite remains
 unobserved live. The maintained capture-off acceptance validator and independent
 whole-bridge review are accepted through `847882f`; 246 live/differential tests
-pass. The full integrated suite passed 1,100 tests before the bounded live
-campaign.
+pass. The full integrated bridge suite passed 1,100 tests. The authorized
+campaign attempt stopped during read-only Steam inspection: the tool stalled
+beyond the 30-minute limit and returned that Steam was not running. No overlay
+or operator configuration was installed, no game launched, and no controller
+invoked. Post-attempt checks confirm the unchanged 429-file base, zero overlay,
+no game process and no accepting bridge port. No game run began, so the plan
+permits an infrastructure retry under the existing opening task authority.
+There is no new live gameplay evidence.
 
 ## Parallel headless execution status
 
@@ -134,7 +140,16 @@ numeric identity leakage. Integrated encoder/dataset/conformance checks pass
 130 tests. The small masked candidate scorer is accepted through `436cef7`,
 including variable/empty views, reference/permutation invariance and pinned
 checkpoint payloads. Model/encoder/dataset and adjacent agent checks pass 74
-tests. The serialized deterministic cloning smoke remains in progress.
+tests. The serialized deterministic cloning smoke is accepted through
+`7a34785`, including independent core and artifact review. The coordinator's
+published CPU smoke performed four updates over three development examples,
+with three held-out examples; both panels matched 3/3 heuristic choices with
+finite loss 1.128239314. Repeated training on the same anchored inputs produced
+identical reports and checkpoint tensors, and loading restored caller RNG and
+float64 defaults. Exact component evidence includes zero-example trajectories.
+These tiny structural metrics prove plumbing only, not policy strength.
+The final combined repository suite passed **1,108 tests in 105.86 seconds**
+at `7a34785`; compilation and diff checks also passed.
 
 The progression producers remain deliberately separate from the composed
 backend boundary:
@@ -388,16 +403,17 @@ The capture-off reward diagnostic, one-floor composed ordinary-combat path and
 explicit fresh reward entry are now live-demonstrated. None classifies the prior
 discarded reward response or authorizes replay of its uncertain action. The
 host-only elite continuation is now implemented with independent actual-client
-fixtures, while C#, wire, caps and replay rules remain unchanged. After the
-maintained capture-off validator and aggregate bridge join pass review, the smallest
+fixtures, while C#, wire, caps and replay rules remain unchanged. The
+maintained capture-off validator, independent review and aggregate bridge join
+have passed. The smallest remaining
 live targets are explicit map entry, elite combat when offered, and a composed
 supported-room handoff when a rest route is offered. A compatible campaign
 should:
 
 1. begin only at a declared visibly fresh map phase and verify its partial-
    prefix result without scanning, fallback, retry or retained raw data;
-2. use the opt-in elite-first provider after its host implementation is
-   accepted; if no elite is offered, record it as unobserved rather than farming
+2. use the accepted opt-in elite-first provider; if no elite is offered,
+   record it as unobserved rather than farming
    runs or broadening control;
 3. require an offered elite to reconcile map selection, fresh combat readiness
    and one bounded combat result; unsupported post-elite reward content remains
@@ -425,10 +441,10 @@ and bounded rollout/throughput gates. None may claim target-game fidelity
 until named live differential cases pass, and the ordinary bridge campaign did
 not authorize creation of a persistent differential-capture artifact.
 
-The next headless step does not require retained live data: encode the public
-`PolicyView`, load trusted actor examples without target/audit leakage, score
-the variable advertised candidate set, and run one tiny deterministic
-behavior-cloning plumbing smoke. Its evidence remains `combat_v0` or
+The selected headless step is complete without retained live data: the public
+`PolicyView` encoder, trusted actor examples without target/audit leakage,
+variable advertised-candidate scorer and tiny deterministic behavior-cloning
+smoke are reviewed and integrated. Their evidence remains `combat_v0` or
 `structural_fixture` only where inherited as dataset/component provenance.
 Encoder and model correctness is synthetic structural evidence; dataset/
 cloning artifacts retain every per-component label and their sorted aggregate
@@ -444,9 +460,10 @@ and actor-ready headless path are maintained in
   is the active successor graph. It freezes a C#/wire-neutral elite host path,
   public headless encoding, trusted actor dataset, variable-candidate scorer,
   tiny cloning smoke, and one bounded coordinator live gate.
-- Its [acceptance ledger](research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) begins
-  with every successor packet accurately marked ready, blocked or planned and
-  must receive new integration/live results rather than the predecessor ledger.
+- Its [acceptance ledger](research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) records
+  accepted implementation packets, reviews, exact test results and the stopped
+  pre-install live attempt. Packet `26` remains incomplete; new outcomes belong
+  there rather than in the predecessor ledger.
 - [`PHASE_1_NEXT_INCREMENT_PLAN.md`](PHASE_1_NEXT_INCREMENT_PLAN.md) is the
   completed predecessor increment. Pre-action context binding, its composed handoff,
   experiment CLI/artifacts, named evidence/gold evaluator/corpus and generated

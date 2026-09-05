@@ -72,7 +72,10 @@ The full-game integration track additionally has:
 - a small masked candidate scorer with variable/empty view handling and pinned
   checkpoint payloads;
 - a trusted public actor dataset with explicit accepted pins, separated panels
-  and exact component evidence retained outside actor examples; and
+  and exact component evidence retained outside actor examples;
+- an accepted deterministic CPU behavior-cloning smoke with trusted structural
+  panels, masked loss, provenance-bound report/checkpoint and safe cancellation;
+  and
 - repeated normal teardown, bridge removal, and clean base-game relaunches.
 
 This is not yet a complete autonomous run. Shops and potion decisions remain
@@ -101,7 +104,11 @@ These are the highest-value next steps.
 Keep the C# bridge and `live_probe_v0` wire frozen. The bounded Python host now
 treats `elite` as combat using the existing clients, with independent fixture
 coverage. The maintained capture-off acceptance validator and independent join
-review are accepted; complete the aggregate suite before the bounded live gate.
+review and aggregate bridge suite are accepted. The first campaign attempt
+stopped during read-only Steam inspection after that tool stalled beyond the
+30-minute limit, before installation or launch. The plan permits an
+infrastructure retry under the opening task authority because no game run
+began; explicit map entry and elite continuation remain unobserved.
 Preserve exact caps, replay and uncertainty
 behavior and keep boss, shops, treasures, relics and potions fail-closed.
 The live gate should begin at an
@@ -112,10 +119,11 @@ Keep models and search outside the bridge and postpone shop support until this
 composition is reliable. This preserves easy comparison among heuristic,
 policy-only, and future planner-enhanced providers.
 
-In parallel, complete a tiny deterministic behavior-cloning smoke over the
-accepted public encoder, trusted actor dataset and masked candidate scorer.
-Preserve cancellation-safe partial batches, explicit pending episodes and
-separate hindsight/audit records. This proves training plumbing only;
+The tiny deterministic behavior-cloning smoke over the public encoder, trusted
+actor dataset and masked candidate scorer is reviewed and integrated. It
+preserves cancellation-safe publication, explicit skips and separate
+hindsight/audit records. Its accepted structural metrics and reproducible
+checkpoint/report round trip prove training plumbing only;
 structural reward/map/room rules remain synthetic until named live differential
 cases pass. No retained live corpus is authorized.
 
