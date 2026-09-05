@@ -18,10 +18,15 @@ regression and old 0.8.0 source identity pass. The subsequent isolated
 27 host tests and 17 actual cross-language cases pass; two fresh source-snapshot
 builds match. Full regression is 1,139 passing tests. Both successor trees have
 frozen source inventories; preserve every byte. No new live route or package
-is selected. Next is a separate default-disabled authenticated transport/config
-and frame-thread composition contract, then pinned bootstrap/surface/package
-and campaign gates. Never inherit enabled r0a config/credentials or describe a
-post-submission failure as retryable/no mutation. Shop control connections and
+is selected. The subsequent
+[transport/frame packet](PHASE_1_ITEM_V1_TRANSPORT_PLAN.md) is accepted with
+11 C# groups, 16 Python tests, 15 actual synthetic socket cases and two matching
+fresh builds; full regression is now 1,155 tests. Preserve its third frozen
+successor source inventory too. Next is secure operator-file binding plus
+pinned Godot frame/bootstrap/surface/package and campaign gates. Exact byte
+config and owned-thread queue are implemented, but no filesystem loader or
+Godot attachment exists yet. Never inherit enabled r0a config/credentials or
+describe a post-submission failure as retryable/no mutation. Shop control connections and
 event progression remain separate gates. Do not repeat the stopped event choice
 or reclassify the old timeout.
 

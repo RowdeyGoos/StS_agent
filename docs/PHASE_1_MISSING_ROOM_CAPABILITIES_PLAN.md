@@ -242,3 +242,26 @@ a retry. The old enabled configuration/credential scope cannot activate the
 successor. No current game setup is needed; shop actions and parent event
 progression remain separate unselected capabilities. Exact identities and
 reproduction steps are in the acceptance ledger.
+
+
+### 2026-09-05 — Item transport and owned-thread queue accepted
+
+The [transport/frame contract](PHASE_1_ITEM_V1_TRANSPORT_PLAN.md) froze a third
+isolated successor tree, preserving the accepted core/wire and old bridge.
+The C# lane implemented exact byte-configuration activation, authenticated
+fixed-loopback HTTP and an owned-thread queue; the Python lane implemented
+the programmatic socket connector. The coordinator joined both over real
+synthetic ephemeral sockets and froze all source/build identities.
+
+Independent review and two fresh source-snapshot gates passed 11 C# groups,
+16 Python transport tests and 15 actual socket cases; full regression passes
+1,155 tests. Timeout-before-claim, detached late results, one-POST reservation,
+startup/Stop races and truthful deferred cleanup are covered. The initial
+wildcard negative-test setup was corrected before final acceptance; final
+sockets use literal ephemeral loopback only, with no production-port connection.
+
+Next is secure operator-filesystem binding and pinned Godot frame/bootstrap/
+surface/package composition, then concrete campaign preflight. This packet
+executes no native/game code and enables no installed live capability. Do not
+ask the user to navigate to a reward screen before those dependencies are ready.
+The acceptance ledger records exact evidence, identities and limitations.

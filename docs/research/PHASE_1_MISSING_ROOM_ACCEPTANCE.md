@@ -11,6 +11,7 @@
 | MR-ITEM-V1 contract | Frozen | Independent acceptance of semantic body `f955712311994dba6055dd473b8200dc6ca122dddcfb0baf223c0f7312b76869`; precise pre-dispatch binding, retained item-local reconciliation, one reservation, permanent failures, explicit read cap. |
 | MR-ITEM-V1 implementation | Accepted for isolated integration | Ten pure-core fixture groups pass; independent aggregate review accepted the source-bound tree; two fresh builds match; native adapter compile-only; no old artifact or live route change. |
 | MR-ITEM-WIRE-V1 | Accepted offline integration | Frozen service/host protocol; 9 producer groups, 27 host tests and 17 actual cross-language cases; two source-snapshot builds match; no listener/bootstrap/live package. |
+| MR-ITEM-TRANSPORT-V1 | Accepted synthetic socket integration | Exact byte-config activation, fixed-loopback HTTP connector/runtime and owned-thread queue; 11 C# groups, 16 Python tests and 15 actual socket cases; no Godot/bootstrap/filesystem loader/package. |
 | Shop actions / event progression | Unfrozen | Shop signal/back/FTUE seams and generic lineage-bound event progression remain explicit missing facts. |
 | Live successor | Unselected | Requires complete routing/version/surface/package/reproducibility and concrete campaign gates. |
 
@@ -113,9 +114,10 @@ an existing directory). For example, from the selected integration checkout:
 ### Remaining gates
 
 Item V1 is unselected and cannot be reached through the current live bridge.
-The service/wire/programmatic-host gate is now complete below. A live successor
-still needs reviewed authenticated transport, configuration, frame dispatch,
-bootstrap/surface/package gates and a concrete campaign. Full potion inventory, item replacement
+The service/wire/programmatic-host and synthetic transport/frame-queue gates
+are complete below. A live successor still needs secure operator-file binding,
+Godot frame/bootstrap and pinned surface/package gates, followed by a concrete
+campaign. Full potion inventory, item replacement
 or skip, mixed gold/card reward screens, parent event continuation/completion,
 and shop mutations remain unsupported. The historical room timeout is still
 unclassified; this packet makes no causal claim about it. Normal cleanup and
@@ -229,3 +231,129 @@ unsupported. The historical timeout is unclassified. No game setup was needed,
 no campaign ran, and the last cleanup and user waiver remain unchanged. No
 profile/save/Cloud access, retained live corpus, remote Git or model escalation
 occurred.
+
+
+## 2026-09-05 — MR-ITEM-TRANSPORT-V1 accepted synthetic socket integration
+
+The user requested continued development and notification when an exact live
+setup is needed. The coordinator froze
+[the transport/frame packet](../PHASE_1_ITEM_V1_TRANSPORT_PLAN.md) at semantic
+SHA-256 `df21fad6f407bbf95a367b5678db53ef9127efd643cc3816458d91f700e35479`,
+based on `dcfb580`. The commit containing this record owns the integration.
+The new implementation is isolated in
+[`successors/item_transport_v1`](../../bridge/Sts2AgentBridge/successors/item_transport_v1).
+The existing item core, wire tree and old bridge inventories remain exact.
+
+The C# runtime accepts an exact distinct configuration document and injected
+credential bytes, creates one service/session, and marshals every service call
+through a bounded queue onto its creator thread. Missing/disabled/invalid
+configuration creates no runtime and does not call the credential reader.
+This is a byte-configuration gate, not a filesystem loader. Production Start
+has only the fixed literal loopback endpoint; it is not connected to any game
+bootstrap or installed package. The Python programmatic connector invokes the
+unchanged item controller over strict authenticated HTTP and never discovers
+configuration, credentials or endpoints itself.
+
+The request is sent once and half-closed; the server requires EOF before it
+parses/authenticates/queues, so delayed trailing bytes cannot slip past request
+validation. One valid authenticated POST reserves the runtime attempt before
+rate limiting and queue admission. A post-submission failure makes the runtime
+terminal, cancels unclaimed work and permits no retry or result adoption.
+Claimed work can settle after timeout/Stop; its detached result is zeroed. The
+queue retains capacity for cancelled entries until retirement. Shutdown waits
+at most two seconds and reports incomplete cleanup truthfully, with final
+resource disposal deferred until every participant settles.
+
+Independent contract, Python, C# and aggregate reviews are complete. Review
+corrected and tested the request EOF witness, POST/rate-limit ordering,
+credential/error/cancellation cleanup, stalled-queue tombstone capacity,
+callback lock ordering, startup/Stop participation, unexpected accept failure,
+truthful deferred cleanup and harness cleanup after kill/close errors. Three
+coordinator mock-only probes verified every child-handle cleanup attempt,
+preserved the original failure and zeroed the publication buffer without
+launching a process or opening a socket.
+
+An early negative C# fixture incorrectly bound `IPAddress.Any` on an ephemeral
+port. The coordinator stopped further execution of that draft and replaced the
+setup with an unbound loopback listener plus a pure endpoint predicate. This
+was a test-boundary mistake, not an accepted capability. All subsequent final
+fixtures bound only literal `127.0.0.1` ephemeral listeners; the test seam also
+rejects the production port. No game/native code or live action was involved.
+No claim is made about unmeasured connections during the initial brief bind.
+
+Final focused evidence:
+
+- **11 C# runtime groups** execute the actual runtime/service/core with fake
+  adapters: config/factory, strict parser, owned-thread invocation, reservation,
+  pre-claim timeout, late claimed-result zeroing, request half-close and trailing
+  rejection, terminal cancellation, startup/Stop races, accept failure,
+  incomplete/deferred join and idempotent shutdown.
+- **16 Python transport tests** exercise fake sockets and an actual ephemeral
+  listener: exact requests, one send/half-close/close, fixed endpoint, framing
+  and size limits, every socket/deadline/close fault, lost POST, internal-error
+  distinction and buffer/cancellation cleanup.
+- **15 actual C#-to-Python socket cases** across eight item scenarios cover
+  potion/relic/delayed/closed-overlay/maximum-size success, full belt, stale state,
+  uncertain dispatch, wrong credentials, Origin, delayed trailing input, lost
+  receipt, mutated headers, malformed item bodies and a second controller's
+  refusal to adopt a resolved result. Every case verifies stopped cleanup;
+  production-port test connections are **zero**.
+
+The exact checker passed in two fresh source-snapshot builds, coordinator
+`/private/tmp/item-transport-coordinator-a2` and independent
+`/private/tmp/item-transport-independent-b`. It verifies all 17 new source
+inputs, the 10 core and 14 wire inputs, the old 48-file inventory and two exact
+copied authentication/rate-limit kernels. It pins SDK 9.0.303, clears NuGet
+sources and auditing, uses single-node isolated builds and validates only Core,
+Wire, Transport and Transport.Tests dependencies before execution. Python runs
+without site imports and asserts every connector/host/cross-gate module origin
+inside the verified snapshot. Both runs passed the exact 11/16/15 result with
+`game_inputs:none` and `live_enabled:false`. The coordinator's first sandboxed
+run and the initial independent-b run stopped at ephemeral-bind permission
+errors; neither is a passed gate. The independent reviewer removed that failed
+scratch directory and recreated independent-b for the successful exact run.
+Both successful fresh a2/b runs used narrowly scoped local-loopback sandbox
+permission.
+
+| Input or assembly | SHA-256 |
+| --- | --- |
+| Seventeen-input canonical source inventory | `53c605d4512e3e14addd0ab1506d8fc59b0b21f5838f24dca752de3356c44770` |
+| source_identity.json | `e8cb05876cba695d8b4d22d5e12e597a4ea4d2fa7d525a160c9ccb223b91fe57` |
+| Transport | `4c3d4c69981c7cca997bcf7e8aa46d3d74094c226469d53bb7bcc9f567900527` |
+| Transport.Tests | `8f61bfe5494d356cadb644f54f5e43c2077734b85108958086f1568e580df1fb` |
+
+All four assemblies match byte-for-byte between these two builds. Rebuilt Core
+and Wire retain the prior source-snapshot gate's `c959b997...` and `bb22f7bc...`
+hashes respectively; no historical artifact is replaced. Every new authored
+file hash is in the source manifest.
+
+The first full Python run stopped during collection because the new tests
+needed their exact sibling source root on the import path. A test-only bootstrap
+fixed this; the lane owner then ran the requested full repository command from
+23cf and obtained **1,155 passed in 107.66 seconds** (the prior 1,139 plus 16
+transport tests). The C# and socket gates are separate counts. Python compileall
+passed with bytecode redirected to scratch. Subsequent C#/checker changes were
+covered by the final source-bound gates; Python production/tests did not change
+after the full passing regression.
+
+Reproduce from the selected checkout with Python 3.10+, an approved SDK and a
+new physical scratch directory, allowing only the synthetic loopback binds:
+
+```bash
+/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python -B -I -S \
+  bridge/Sts2AgentBridge/successors/item_transport_v1/check.py \
+  --dotnet /private/tmp/sts-sdk-resume.6AJGPQ/sdk/dotnet \
+  --scratch /private/tmp/item-transport-review-001
+```
+
+This is **synthetic transport/frame integration evidence**, not game-thread or
+live item evidence. The next gate binds secure operator files and the pinned
+Godot frame/bootstrap/surface into a separate package, with build/version and
+cleanup verification before a concrete campaign. No user game setup is needed
+until those dependencies are ready. The user will then receive the exact fresh
+untouched item-only reward screen and empty-potion-slot requirements. Shops,
+item replacement/skip, mixed rewards and parent event progression remain
+unsupported; the historical timeout is unclassified. No campaign ran or remains
+active. Previous cleanup and the user's repeated-unmodded-launch waiver remain
+unchanged. No profile/save/Cloud access, retained live corpus, remote Git or
+model escalation occurred.

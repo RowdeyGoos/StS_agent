@@ -1921,3 +1921,40 @@ activating a live capability. Transport/frame-thread integration and pinned
 bootstrap/surface/package/campaign remain explicit dependencies. Parent event
 progression and shop controls are not implied by an item collection result.
 The exact contract is [the item wire plan](docs/PHASE_1_ITEM_V1_WIRE_PLAN.md).
+
+
+## D59. Own Transport Attempts And Late Frame Results Explicitly
+
+### Context
+
+The item core and wire distinguish dispatch from collection. Transport can
+lose a response or time out after frame work has begun, so cancelling a network
+wait cannot imply that no item was collected. Startup and teardown also race
+with queued and claimed work.
+
+### Decision
+
+- Add a separate exact byte-configuration and authenticated fixed-loopback
+  transport/runtime, with no filesystem discovery or game bootstrap in this
+  packet. The existing port enforces mutual exclusion with the old listener;
+  distinct schema and credential scope prevent inherited r0a activation.
+- Require request half-close and EOF before validation/authentication/queueing,
+  then reserve one valid authenticated POST before rate and queue admission.
+  Transport failures close silently, remain terminal and never reconstruct or
+  retry an application response.
+- Marshal the frozen service to the runtime creator's thread. Keep queue
+  capacity until cancelled entries retire; a claimed result detached by timeout
+  is zeroed by its producer rather than published later.
+- Count startup, accept-loop, worker and claimed-work participation during
+  teardown. A false bounded join preserves in-use resources; final completion
+  disposes and zeroes them before reporting stopped.
+- Preserve all previous source identities. Verify the new layer with actual
+  synthetic loopback sockets and explicit module/dependency origins, separately
+  from secure operator files, pinned Godot/bootstrap/package and live evidence.
+
+### Consequence
+
+The item controller now has a tested transport and frame-queue boundary without
+activating a live game capability. The next composition gate attaches it to the
+pinned game and secure operator configuration before a concrete campaign. The
+exact scope is [the transport plan](docs/PHASE_1_ITEM_V1_TRANSPORT_PLAN.md).
