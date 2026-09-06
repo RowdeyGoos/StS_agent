@@ -20,6 +20,13 @@ their authorization scope.
 
 ## Active card-selection development — 2026-09-06
 
+**Current live checkpoint:** corrective source `c29a85d` is installed for one
+new Smith test. Post-install base429/exact2 overlay passed. User is preparing a
+different untouched rest site; no client has run in this campaign. The
+[completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
+owns the installed-state hash and required cleanup. This active checkpoint
+supersedes historical no-campaign statements below.
+
 The user selected event card addition/removal/upgrade/transform support and
 rest-site card upgrading, explicitly including multiple-card event selections
 and exactly one card for ordinary rest upgrades. Development is isolated in

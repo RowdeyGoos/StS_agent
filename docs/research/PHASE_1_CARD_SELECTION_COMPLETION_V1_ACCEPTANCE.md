@@ -122,3 +122,29 @@ map or popup. The earlier rest site and action are not eligible for retry.
 One fixed client invocation only; preserve the exact sanitized result. Normal
 quit, quarantine, exact purge and clean verification remain required. Repeated
 unmodded relaunch remains waived. No new campaign is active at publication.
+
+
+## Current live checkpoint — installed, awaiting fresh rest setup
+
+Source commit `c29a85d` was clean before installation. Fresh source41,
+all eleven predecessor inventories, old48, contract and three published artifacts
+passed verification. Require-stopped passed with game false/port false; base
+verification passed429 files, zero overlay and unchanged projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+One read-only base preflight first rejected a relative manifest argument before
+install-tree access; the corrected absolute argument passed. No live action was
+attempted by preflight.
+
+Installation started after14:51:39 UTC on2026-09-06. Campaign
+`CARD-SELECTION-COMPLETION-V1-SMOKE-V1` is installed with protected flow Smith;
+mods_parent_created=true. Installed-state SHA256:
+`ba13d29ebbbc4931d30b4fd90376ec1eaa19ff40b77aa24112f85c0f80d73d29`.
+Post-install overlay verification passed unchangedbase429 and exactly2 overlay
+files. No live client has been invoked in this campaign.
+
+The user is asked to launch manually onProfile3, continueIroncladA0 and reach a
+different untouched ordinary rest site, with initialRest/Smith visible and no
+map, popup or selector. Verify supported UI before the one fixed client call.
+The previous rest site is unsuitable for retry. Campaign is active awaiting this
+setup; teardown is still required afterward. Keep the user waiver of repeated
+unmodded relaunch. No other boundaries changed.
