@@ -8,6 +8,16 @@ research priorities below coexist with the active full-game integration track;
 the latter's authoritative progress summary is
 [`docs/PHASE_1_CURRENT_STATUS.md`](docs/PHASE_1_CURRENT_STATUS.md).
 
+## Active integration priority
+
+Extend event card selection and ordinary rest-site upgrading through the isolated
+`card_selection_v1` successor. Events need explicit multi-card counts; ordinary
+rest upgrades select one. Finish reviewed parent/selector/controller composition,
+then production transport/release verification and separate live Cheese add-two
+and Smith upgrade-one tests. Extend native removal/transform and other event
+callers only with their exact cardinality, preview and effect witnesses.
+See the [card-selection acceptance ledger](docs/research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md).
+
 ## Current Position
 
 The project currently has:

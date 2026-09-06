@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.CardSelectionV1.Core</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.CardSelectionV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CardSelectionV1Contracts.cs" />
+    <Compile Include="CardSelectionV1Session.cs" />
+  </ItemGroup>
+</Project>

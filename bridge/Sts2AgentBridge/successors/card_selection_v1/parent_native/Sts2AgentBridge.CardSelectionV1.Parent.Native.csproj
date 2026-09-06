@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <AssemblyName>Sts2AgentBridge.CardSelectionV1.Parent.Native</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.CardSelectionV1.ParentNative</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Private>false</Private>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CardSelectionParentV1NativeRules.cs" />
+    <Compile Include="PinnedCardSelectionParentV1NativeAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+    <ProjectReference Include="../native/Sts2AgentBridge.CardSelectionV1.Native.csproj" />
+    <ProjectReference Include="../parents/Sts2AgentBridge.CardSelectionV1.Parents.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

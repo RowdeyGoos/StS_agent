@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.CardSelectionV1.Native.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.CardSelectionV1.Native.Tests</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../native/CardSelectionV1NativeRules.cs" Link="CardSelectionV1NativeRules.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+  </ItemGroup>
+</Project>

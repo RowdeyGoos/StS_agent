@@ -3,6 +3,33 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
+## Active card-selection development — 2026-09-06
+
+The user selected event card addition/removal/upgrade/transform support and
+rest-site card upgrading, explicitly including multiple-card event selections
+and exactly one card for ordinary rest upgrades. Development is isolated in
+`card_selection_v1`; the nine accepted predecessors and old 0.8.0 sources remain
+byte-exact. Read the [contract](PHASE_1_CARD_SELECTION_V1_CONTRACT.md),
+[static evidence](research/PHASE_1_CARD_SELECTION_STATIC_RESULT.md) and
+[acceptance ledger](research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md).
+
+The shared pure core models all four operations with explicit minimum/maximum
+counts, per-selection receipts, preview/confirmation modes, complete candidate
+and deck witnesses, and exact effect reconciliation. Initial native entries are
+Room Full of Cheese/Gorge (add exactly two of eight) and ordinary SmithCount=1
+(upgrade exactly one). Native other-event removal/transform/multi-card upgrade,
+scrolling and partial visible domains remain unsupported pending exact callsite
+and effect proof. This does not change the currently accepted live package.
+
+The functional component passed independent source review and its aggregate
+gate, including actual C#/Python composition and two identical clean builds of
+each native adapter. Its 40-file source inventory is frozen. Repository
+regression passed 1,192 tests in 107.55 seconds. The separately isolated
+[release composition](PHASE_1_CARD_SELECTION_RELEASE_V1_CONTRACT.md) is the next
+step toward live testing. No new campaign has started and no game setup is needed
+yet; the prior event cleanup remains complete. Do not reuse closed campaign state
+or retry any historical uncertain action. Steam capture remains a separate issue.
+
 ## Current event continuation live pass — 2026-09-06
 
 The fresh event-selected test passed on untouched Dense Vegetation using the

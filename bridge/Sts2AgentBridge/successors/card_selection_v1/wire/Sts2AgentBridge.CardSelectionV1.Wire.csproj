@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.CardSelectionV1.Wire</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.CardSelectionV1.Wire</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CardSelectionV1WireProtocol.cs" />
+    <Compile Include="CardSelectionV1WireCodec.cs" />
+    <Compile Include="CardSelectionV1WireService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+    <ProjectReference Include="../parents/Sts2AgentBridge.CardSelectionV1.Parents.csproj" />
+  </ItemGroup>
+</Project>

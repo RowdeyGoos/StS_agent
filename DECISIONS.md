@@ -2114,3 +2114,28 @@ one source input is replaced. This changes no event/item/native/runtime capabili
 or public wire contract. See the
 [repair contract](docs/PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md).
+
+## Parent-bound card selection with explicit cardinality
+
+**Date:** 2026-09-06
+
+Use one pure card-selection engine for event add/remove/upgrade/transform and
+ordinary rest smithing. Events may select several cards; cardinality and native
+commit mode come from the exact public parent callsite, while ordinary rest
+smithing requires exactly one card. Selecting a card, completing the selection
+task, finishing the card effect and returning through the parent to the map are
+separate transitions with correlated receipts.
+
+Require a complete candidate domain and full deck projection before and after
+the effect. Preserve individual card references for duplicate definitions.
+Transforms additionally require native result-bound replacement witnesses;
+never infer replacements from deck count or RNG. Unknown callers, partial pages
+and unsupported selector modes stay unsupported.
+
+Implement this as an isolated successor so accepted live shop/event/item paths
+and old 0.8.0 remain unchanged. Initial native policies are Cheese/Gorge add-two
+and ordinary Smith upgrade-one; shared fixtures for other operations do not
+claim those native policies are available. The
+[card-selection contract](docs/PHASE_1_CARD_SELECTION_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md) own
+reviewed interfaces, evidence and the later live release gate.

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <AssemblyName>Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.CardSelectionV1.ParentNativeAdapterTests</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="TargetStubs.cs" />
+    <Compile Include="ChildNativeStub.cs" />
+    <Compile Include="../parent_native/CardSelectionParentV1NativeRules.cs" Link="ParentNative/CardSelectionParentV1NativeRules.cs" />
+    <Compile Include="../parent_native/PinnedCardSelectionParentV1NativeAdapter.cs" Link="ParentNative/PinnedCardSelectionParentV1NativeAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+    <ProjectReference Include="../parents/Sts2AgentBridge.CardSelectionV1.Parents.csproj" />
+  </ItemGroup>
+</Project>
