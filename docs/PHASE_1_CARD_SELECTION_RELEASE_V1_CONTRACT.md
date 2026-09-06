@@ -3,8 +3,8 @@
 - Date: 2026-09-06
 - State: proposed for independent review; implementation is not authorized by
   this draft until the coordinator records the exact accepted SHA256
-- Baseline: selected `23cf` integration checkout; exact commit and final card
-  component source manifest are pending the coordinator's aggregate card gate
+- Baseline: selected `23cf` integration checkout, implementation commit `8fc1db7`;
+  the accepted card component identity is recorded below
 - Outcome: compose the frozen card-selection component into one independently
   verified, authenticated loopback release for bounded Cheese and Smith live
   campaigns
@@ -29,12 +29,15 @@ actions.
 
 ## Frozen dependency and identity gate
 
-The hard dependency is the final accepted `card_selection_v1` source manifest.
-Its manifest SHA256, inventory projection, and exact file hashes are deliberately
-**pending** until the coordinator's aggregate gate and independent review finish.
-Implementation packets must bind that final manifest before compiling or
-copying any card component source. Current working hashes are evidence for
-review only and are not approved identities in this contract.
+The hard dependency is the accepted `card_selection_v1` component at `8fc1db7`:
+
+- contract SHA256 `af8125ba2dd7bd8d7df85144f5a275d20a347ca7d4fe5bd5e666e53b3f57186c`;
+- source manifest SHA256 `ca4e18dbb66520481881ea86a91925162593f8496c7abccc061a31f1c319a0ac`;
+- 40-file inventory SHA256 `51135dfb6749d58b897bb4670ffa709ca5b756873464c9e045f2ba80f87bfc64`.
+
+The aggregate gate and independent review passed. Implementation packets must
+verify this manifest and every file before compiling or copying card sources.
+No card component source may change during release composition.
 
 The release's candidate DLL, source projection, metadata projection, policy,
 manifest, ZIP, package root inventory, and successor source manifest are also
@@ -187,10 +190,18 @@ The only service routes are the frozen component strings:
 
 The outer socket protocol deliberately retains the accepted room transport's
 bounded EOF/half-close request form. It accepts one exact ASCII HTTP/1.1 request
-head only. Common headers are fixed Host `127.0.0.1:43117`, Bearer credential,
-JSON Accept, and `Connection: close`, in exact order. GET has no decision or
-action. POST has exactly one 64-lower-hex decision header and one canonical
-action header. Parent actions are `begin` or `proceed`; child actions are
+head of at most 1024 bytes, with CRLF after every line and in this exact order:
+
+1. `<method> <frozen-route> HTTP/1.1`;
+2. `Host: 127.0.0.1:43117`;
+3. `Authorization: Bearer <64lowerhex>`;
+4. `Accept: application/json`;
+5. for POST only, `X-Sts2-Decision-Id: <64lowerhex>`;
+6. for POST only, `X-Sts2-Action-Id: <canonical-action>`;
+7. `Connection: close`;
+8. an empty line, followed immediately by request-direction EOF/half-close.
+
+GET has no decision or action headers. POST has exactly the two listed headers. Parent actions are `begin` or `proceed`; child actions are
 `select:<0..63>` without leading zero, `preview`, or `confirm`. Duplicate,
 reordered, extra, folded, non-ASCII, body-bearing, unterminated, or trailing
 request bytes are rejected by silent close.
@@ -213,9 +224,15 @@ exact service bytes. This adapter does not define a second gameplay protocol.
 
 Every response is exactly `HTTP/1.1 200 OK` with canonical content type,
 decimal Content-Length, `no-store`, `nosniff`, and close headers. All four route
-bodies are bounded to 65536 bytes. Only an actual frozen service body can be
-returned as 200. Parser, authentication, reservation, queue, classifier, or
-transport failures close silently; they do not synthesize a wire response.
+bodies are bounded to 65536 bytes. Only an actual frozen service body with a valid internal status/body pair can
+be returned. Internal `CardSelectionV1WireResponse.StatusCode` must be 200 for
+validated module values, 400 only for the exact `invalid_request` error, or 500
+only for the exact `internal_failure` error. The outer transport deliberately
+wraps those two legitimate fixed error bodies as HTTP 200 so the frozen host can
+read the fixed error code, then stops terminally. Every other internal
+status/body pair closes silently and terminally. Parser, authentication,
+reservation, queue, classifier, or transport failures also close silently; they
+do not synthesize a wire response.
 
 ## Budgets, reservation, and uncertainty
 
@@ -238,7 +255,9 @@ controller deadline. A backwards, non-finite, or invalid clock fails closed.
 GET reserves its count before queue submission. POST validates canonical
 route/decision/action, rejects every duplicate route/decision/action identity,
 and reserves both identity and route budget before the authenticated bucket and
-before frame submission. Reservation is permanent. A competing authenticated
+before frame submission. The permanent identity is the exact tuple
+`(route, decision_id, action_id)`. The frozen service separately enforces decision
+correlation and the host enforces global accepted-decision non-reuse. Reservation is permanent. A competing authenticated
 request requests terminal stop; it cannot invoke the service or replay later.
 Timeout after claim, callback fault, invalid service body, serializer failure,
 lost receipt, partial/failed response write, or any exception after POST
@@ -253,15 +272,17 @@ dispose the service while `Handle` is active.
 ## Exact route-aware terminal table
 
 Classification parses canonical JSON and exact ordered envelope fields. It
-checks schema, kind, version, nonce, ordinal, route, status, and the configured
-parent policy pair. It never searches raw text or event/card keys.
+checks schema, kind, version, nonce, ordinal, route, internal status/body pair,
+and the configured parent policy pair. Observations and resolved values use
+`status`; POST receipts and failures use `outcome` and have no `status` property.
+Fixed errors use `status=error`. It never searches raw text or event/card keys.
 
 | Route | Allowed nonterminal service values | Terminal service values |
 | --- | --- | --- |
 | parent GET | `parent_observation` `ready` or `waiting` | `parent_observation` `unsupported`; `parent_resolved` `resolved`; fixed error |
-| parent POST | `parent_receipt` `accepted` | `parent_failure` `rejected`, `unsupported`, or `uncertain`; fixed error |
+| parent POST | `parent_receipt` `outcome=accepted` | `parent_failure` `outcome=rejected`, `unsupported`, or `uncertain`; fixed error |
 | child GET | `child_observation` `ready` or `waiting`; `child_resolved` `resolved` | `child_observation` `unsupported`; fixed error |
-| child POST | `child_receipt` `accepted` | `child_failure` `rejected`, `unsupported`, or `uncertain`; fixed error |
+| child POST | `child_receipt` `outcome=accepted` | `child_failure` `outcome=rejected`, `unsupported`, or `uncertain`; fixed error |
 
 Child resolution is not parent terminal. The controller must return to parent
 GET, obtain the separately correlated `proceed`, and finish only at exact parent
@@ -400,7 +421,20 @@ conservative rollback. No arm/disarm, repair, recovery, adoption, overwrite,
 co-installation, profile/save access, or generic path/port option is added.
 
 Install requires the stopped game, closed port 43117, exact clean base, absent
-new overlay/state/operator wrapper, and absence of conflicting bridge objects.
+new overlay/state/operator wrapper, and absence of this closed conflict set:
+
+| Application Support state directory | Game mods overlay directory |
+| --- | --- |
+| `Sts2AgentBridgeCampaign-r0i-batched-bridge-smoke-v1` | `Sts2AgentBridge` |
+| `Sts2AgentBridgeCampaign-item-v1-collection-smoke-v1` | `Sts2AgentBridgeItemV1` |
+| `Sts2AgentBridgeCampaign-room-flows-v1-smoke-v1` | `Sts2AgentBridgeRoomFlowsV1` |
+| `Sts2AgentBridgeCampaign-shop-diagnostic-v1-smoke-v1` | `Sts2AgentBridgeShopDiagnosticV1` |
+| `Sts2AgentBridgeCampaign-shop-map-permission-v1-smoke-v1` | `Sts2AgentBridgeRoomFlowsV1` (same fixed leaf) |
+
+Absence of the whole `Application Support/Sts2AgentBridge` operator parent also
+covers all predecessor operator leaves. These checks reject and preserve any
+existing object at the fixed path; they do not discover through wildcards,
+inspect arbitrary foreign contents, or mutate predecessor objects.
 It writes the selected exact config and fresh credential transactionally, then
 publishes verified code last. Runtime checks remain require-running,
 require-stopped, and sample-base-port-closed; port state alone never proves code

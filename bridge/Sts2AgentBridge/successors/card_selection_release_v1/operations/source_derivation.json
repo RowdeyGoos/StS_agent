@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "source": "room_release_v1/operations/manage_live_campaign.py",
+      "source_sha256": "97c33e6321025f0b3d788f1abad9c5c669a04fca1c5eb9f62846c78fe97f586e",
+      "target": "operations/manage_live_campaign.py",
+      "replacements": [
+        {
+          "old": "ROOM-FLOWS-V1-SMOKE-V1",
+          "new": "CARD-SELECTION-V1-SMOKE-V1",
+          "count": 1
+        },
+        {
+          "old": "room-flows-v1-smoke-v1",
+          "new": "card-selection-v1-smoke-v1",
+          "count": 1
+        },
+        {
+          "old": "sts-room-flows-v1-release",
+          "new": "sts-card-selection-v1-release",
+          "count": 1
+        },
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeCardSelectionV1",
+          "count": 11
+        },
+        {
+          "old": "room_flows_v1",
+          "new": "card_selection_v1",
+          "count": 12
+        },
+        {
+          "old": "\"shop\"",
+          "new": "\"cheese\"",
+          "count": 4
+        },
+        {
+          "old": "\"event\"",
+          "new": "\"smith\"",
+          "count": 4
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "PENDING_REPRODUCIBLE_DLL_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "PENDING_CANONICAL_MANIFEST_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "PENDING_CANONICAL_ZIP_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "177152",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "177900",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "344",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "ITEM_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeItemV1\"",
+          "new": "ITEM_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeItemV1\"\nROOM_STATE_ROOT_NAME = \"Sts2AgentBridgeCampaign-room-flows-v1-smoke-v1\"\nROOM_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeRoomFlowsV1\"\nDIAGNOSTIC_STATE_ROOT_NAME = \"Sts2AgentBridgeCampaign-shop-diagnostic-v1-smoke-v1\"\nDIAGNOSTIC_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeShopDiagnosticV1\"\nSHOP_MAP_STATE_ROOT_NAME = \"Sts2AgentBridgeCampaign-shop-map-permission-v1-smoke-v1\"",
+          "count": 1
+        },
+        {
+          "old": "    _require_absent(layout.application_support / ITEM_STATE_ROOT_NAME)",
+          "new": "    _require_absent(layout.application_support / ITEM_STATE_ROOT_NAME)\n    _require_absent(layout.application_support / ROOM_STATE_ROOT_NAME)\n    _require_absent(layout.application_support / DIAGNOSTIC_STATE_ROOT_NAME)\n    _require_absent(layout.application_support / SHOP_MAP_STATE_ROOT_NAME)",
+          "count": 2
+        },
+        {
+          "old": "        _require_absent(layout.mods_parent / ITEM_OVERLAY_ROOT_NAME)",
+          "new": "        _require_absent(layout.mods_parent / ITEM_OVERLAY_ROOT_NAME)\n        _require_absent(layout.mods_parent / ROOM_OVERLAY_ROOT_NAME)\n        _require_absent(layout.mods_parent / DIAGNOSTIC_OVERLAY_ROOT_NAME)",
+          "count": 2
+        },
+        {
+          "old": "-1,\n        \"PENDING_REPRODUCIBLE_DLL_IDENTITY\"",
+          "new": "202240,\n        \"61e5617a744587479ef7f9346b8f5d7f9356f695b536d333beff046bd367689b\"",
+          "count": 1
+        },
+        {
+          "old": "-1,\n        \"PENDING_CANONICAL_MANIFEST_IDENTITY\"",
+          "new": "370,\n        \"a1995763b15143a87bb4effc42fdb55ebeb818fed2dce543fea2be51db50ffb2\"",
+          "count": 1
+        },
+        {
+          "old": "-1,\n        \"PENDING_CANONICAL_ZIP_IDENTITY\"",
+          "new": "203046,\n        \"f1cb2208b9a3d13b3f660ce1c716b0e75f5713de24a4ecd42e244145c02ae27f\"",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/manage_live_campaign_fixtures.py",
+      "source_sha256": "900fc0659dfbe096d34cfdd491b2a21ea6fc9b416bebb9c89c4b942c582df1ac",
+      "target": "operations/manage_live_campaign_fixtures.py",
+      "replacements": [
+        {
+          "old": "ROOM-FLOWS-V1-SMOKE-V1",
+          "new": "CARD-SELECTION-V1-SMOKE-V1",
+          "count": 1
+        },
+        {
+          "old": "room-flows-v1-smoke-v1",
+          "new": "card-selection-v1-smoke-v1",
+          "count": 1
+        },
+        {
+          "old": "sts-room-flows-v1-release",
+          "new": "sts-card-selection-v1-release",
+          "count": 1
+        },
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeCardSelectionV1",
+          "count": 8
+        },
+        {
+          "old": "room_flows_v1",
+          "new": "card_selection_v1",
+          "count": 7
+        },
+        {
+          "old": "\"shop\"",
+          "new": "\"cheese\"",
+          "count": 9
+        },
+        {
+          "old": "\"event\"",
+          "new": "\"smith\"",
+          "count": 9
+        },
+        {
+          "old": "febe931cbb5b2864744d27858e93e2a809b30ba58e121e47071b6040c0bca55c",
+          "new": "56d2698f87dc4b82e61d3a0eca57ea524c6c3397a0cc082f1500b42a00bccec6",
+          "count": 1
+        },
+        {
+          "old": "22533f994afda1a269c0583dc13c3ca1cfc9b53c35eb30d299b1cef4293bb36f",
+          "new": "c78c22d0f4732e89a35bd0a34024cb31daf8a4bbca815157ac4b7a266171d93f",
+          "count": 1
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "PENDING_REPRODUCIBLE_DLL_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "PENDING_CANONICAL_MANIFEST_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "PENDING_CANONICAL_ZIP_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "177152",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "177900",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "344",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "-1,\n        \"PENDING_REPRODUCIBLE_DLL_IDENTITY\"",
+          "new": "202240,\n        \"61e5617a744587479ef7f9346b8f5d7f9356f695b536d333beff046bd367689b\"",
+          "count": 1
+        },
+        {
+          "old": "-1,\n        \"PENDING_CANONICAL_MANIFEST_IDENTITY\"",
+          "new": "370,\n        \"a1995763b15143a87bb4effc42fdb55ebeb818fed2dce543fea2be51db50ffb2\"",
+          "count": 1
+        },
+        {
+          "old": "-1,\n        \"PENDING_CANONICAL_ZIP_IDENTITY\"",
+          "new": "203046,\n        \"f1cb2208b9a3d13b3f660ce1c716b0e75f5713de24a4ecd42e244145c02ae27f\"",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/tool_common.py",
+      "source_sha256": "ff1a284ae1f2e5d84e89ee50dfaed970b903a64d9cf79d03b597401c0ae83fa3",
+      "target": "operations/tool_common.py",
+      "replacements": [
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeCardSelectionV1",
+          "count": 5
+        },
+        {
+          "old": "STS2 Agent Bridge Room Flows V1",
+          "new": "STS2 Agent Bridge Card Selection V1",
+          "count": 1
+        },
+        {
+          "old": "Restricted shop and event flow bridge for StS agent research",
+          "new": "Restricted event card selection and rest upgrade bridge for StS agent research",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/verify_clean_install.py",
+      "source_sha256": "3788ea295cf4864a44d7c8d66540868aa2dbdd22f563638ef07dcc0e174d36c3",
+      "target": "operations/verify_clean_install.py",
+      "replacements": [
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeCardSelectionV1",
+          "count": 5
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "PENDING_REPRODUCIBLE_DLL_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "PENDING_CANONICAL_MANIFEST_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "PENDING_CANONICAL_ZIP_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "177152",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "177900",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "344",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "OVERLAY_DLL_SIZE = -1\nOVERLAY_DLL_SHA256 = \"PENDING_REPRODUCIBLE_DLL_IDENTITY\"",
+          "new": "OVERLAY_DLL_SIZE = 202240\nOVERLAY_DLL_SHA256 = \"61e5617a744587479ef7f9346b8f5d7f9356f695b536d333beff046bd367689b\"",
+          "count": 1
+        },
+        {
+          "old": "OVERLAY_MANIFEST_SIZE = -1\nOVERLAY_MANIFEST_SHA256 = \"PENDING_CANONICAL_MANIFEST_IDENTITY\"",
+          "new": "OVERLAY_MANIFEST_SIZE = 370\nOVERLAY_MANIFEST_SHA256 = \"a1995763b15143a87bb4effc42fdb55ebeb818fed2dce543fea2be51db50ffb2\"",
+          "count": 1
+        },
+        {
+          "old": "PACKAGE_SIZE = -1\nPACKAGE_SHA256 = \"PENDING_CANONICAL_ZIP_IDENTITY\"",
+          "new": "PACKAGE_SIZE = 203046\nPACKAGE_SHA256 = \"f1cb2208b9a3d13b3f660ce1c716b0e75f5713de24a4ecd42e244145c02ae27f\"",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/verify_clean_install_fixtures.py",
+      "source_sha256": "1f23875a68a913b82fbedac30db9d75c4ebe7c39d3e8e3fd8dcaedab1a31bff7",
+      "target": "operations/verify_clean_install_fixtures.py",
+      "replacements": [
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeCardSelectionV1",
+          "count": 6
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "PENDING_CANONICAL_MANIFEST_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "344",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "PENDING_CANONICAL_MANIFEST_IDENTITY",
+          "new": "a1995763b15143a87bb4effc42fdb55ebeb818fed2dce543fea2be51db50ffb2",
+          "count": 1
+        },
+        {
+          "old": "len(release_manifest) == -1",
+          "new": "len(release_manifest) == 370",
+          "count": 1
+        },
+        {
+          "old": "mutated.index(b\"Room Flows V1\")",
+          "new": "mutated.index(b\"Card Selection V1\")",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/check_live_runtime.py",
+      "source_sha256": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683",
+      "target": "operations/check_live_runtime.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/operations/check_live_runtime_fixtures.py",
+      "source_sha256": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2",
+      "target": "operations/check_live_runtime_fixtures.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/package/release_package.py",
+      "source_sha256": "0be3fd626adf1786bbb6284b8e480ce503531c1e1559211f05df8a44c2dcc30c",
+      "target": "package/release_package.py",
+      "replacements": [
+        {
+          "old": "sts-room-flows-v1-release",
+          "new": "sts-card-selection-v1-release",
+          "count": 1
+        },
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeCardSelectionV1",
+          "count": 5
+        },
+        {
+          "old": "STS2 Agent Bridge Room Flows V1",
+          "new": "STS2 Agent Bridge Card Selection V1",
+          "count": 1
+        },
+        {
+          "old": "Restricted shop and event flow bridge for StS agent research",
+          "new": "Restricted event card selection and rest upgrade bridge for StS agent research",
+          "count": 1
+        },
+        {
+          "old": "Room Flows V1 package",
+          "new": "Card Selection V1 package",
+          "count": 1
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "PENDING_REPRODUCIBLE_DLL_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "PENDING_CANONICAL_MANIFEST_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "PENDING_CANONICAL_ZIP_IDENTITY",
+          "count": 1
+        },
+        {
+          "old": "177152",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "177900",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "344",
+          "new": "-1",
+          "count": 1
+        },
+        {
+          "old": "(-1, \"PENDING_REPRODUCIBLE_DLL_IDENTITY\")",
+          "new": "(202240, \"61e5617a744587479ef7f9346b8f5d7f9356f695b536d333beff046bd367689b\")",
+          "count": 1
+        },
+        {
+          "old": "(-1, \"PENDING_CANONICAL_MANIFEST_IDENTITY\")",
+          "new": "(370, \"a1995763b15143a87bb4effc42fdb55ebeb818fed2dce543fea2be51db50ffb2\")",
+          "count": 1
+        },
+        {
+          "old": "(-1, \"PENDING_CANONICAL_ZIP_IDENTITY\")",
+          "new": "(203046, \"f1cb2208b9a3d13b3f660ce1c716b0e75f5713de24a4ecd42e244145c02ae27f\")",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/package/package_fixtures.py",
+      "source_sha256": "ff2ffbdf8e6d14d1f915dd837741bfeb72060854b1f9ae2cb3622fe64510db55",
+      "target": "package/package_fixtures.py",
+      "replacements": [
+        {
+          "old": "room_release_package",
+          "new": "card_selection_release_package",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/client/secure_operator.py",
+      "source_sha256": "bf561e81d45d8035f98eadf8a45cba5251844f9e4d45ee715c7b27b0b48e6204",
+      "target": "client/secure_operator.py",
+      "replacements": [
+        {
+          "old": "room_flows_v1",
+          "new": "card_selection_v1",
+          "count": 3
+        },
+        {
+          "old": "\"shop\"",
+          "new": "\"cheese\"",
+          "count": 2
+        },
+        {
+          "old": "\"event\"",
+          "new": "\"smith\"",
+          "count": 2
+        },
+        {
+          "old": "fixed room operator tree",
+          "new": "fixed card-selection operator tree",
+          "count": 1
+        },
+        {
+          "old": "retained room directory",
+          "new": "retained card-selection directory",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/client/run_live.py",
+      "source_sha256": "b76fe2d51743e270385f074eb4be91b17f1dbfd9664c19b94bd2231b741a26f6",
+      "target": "client/run_live.py",
+      "replacements": [
+        {
+          "old": "FROZEN = {\n    'room_flows_v1': '91f5750b70a7b3c735f487a0e5d3d0315b6c6b32593b6fe452845745e506b213',\n    'item_release_v1': '036e090daa509dfdf9f2eac7f8ab4d5b42a16aca08cecfe28a349402ef2af1a7',\n    'item_bootstrap_v1': '77aa278f7c7c2cba2523c5c4d474fb2f45eb76dfa3d1faa7feb914a96e4c47ab',\n    'item_transport_v1': 'e8cb05876cba695d8b4d22d5e12e597a4ea4d2fa7d525a160c9ccb223b91fe57',\n    'item_wire_v1': 'c930337e74b4eed9f41ba00e804a950a7334a33a96ded7531361312bf5115c10',\n    'item_v1': '435219714fa6e667738685f9909396839c46c21612a50bc84a0fc58e584c938a',\n}",
+          "new": "FROZEN = {'item_v1': '435219714fa6e667738685f9909396839c46c21612a50bc84a0fc58e584c938a', 'item_wire_v1': 'c930337e74b4eed9f41ba00e804a950a7334a33a96ded7531361312bf5115c10', 'item_transport_v1': 'e8cb05876cba695d8b4d22d5e12e597a4ea4d2fa7d525a160c9ccb223b91fe57', 'item_bootstrap_v1': '77aa278f7c7c2cba2523c5c4d474fb2f45eb76dfa3d1faa7feb914a96e4c47ab', 'item_release_v1': '036e090daa509dfdf9f2eac7f8ab4d5b42a16aca08cecfe28a349402ef2af1a7', 'room_flows_v1': '91f5750b70a7b3c735f487a0e5d3d0315b6c6b32593b6fe452845745e506b213', 'room_release_v1': 'd567c8e91e45fd2bcff2cd446f85d3d7faef3baf2b22b6f7b75ba2490d360957', 'shop_diagnostic_v1': '3e396cd76438a0c8bb3dec77fd510c7ece0b115404a014c482d5ace4de95577f', 'shop_map_permission_v1': '14b94d4e0877743e3719ee7904875606fc5a0ae99eccbc4cfebee6bfc0f9f03a', 'card_selection_v1': 'ca4e18dbb66520481881ea86a91925162593f8496c7abccc061a31f1c319a0ac'}",
+          "count": 1
+        },
+        {
+          "old": "CONTRACT = 'f5c0f76a302b78ae30994a96288dd9a70310af908dd63dfc1cef0cf7e566df21'",
+          "new": "CONTRACT = '0d66520d5f7f14a78f9d6e3b35fd4438f7811661a5e8a399b33920da4f2fd0f6'",
+          "count": 1
+        },
+        {
+          "old": "(*FROZEN, 'room_release_v1')",
+          "new": "(*FROZEN, 'card_selection_release_v1')",
+          "count": 1
+        },
+        {
+          "old": "component == 'room_release_v1'",
+          "new": "component == 'card_selection_release_v1'",
+          "count": 1
+        },
+        {
+          "old": "room_client_preflight_failed",
+          "new": "card_selection_client_preflight_failed",
+          "count": 1
+        },
+        {
+          "old": "from room_transport import run_authenticated_flow",
+          "new": "from card_selection_transport import run_authenticated_card_selection",
+          "count": 1
+        },
+        {
+          "old": "run_authenticated_flow,",
+          "new": "run_authenticated_card_selection,",
+          "count": 1
+        },
+        {
+          "old": "selected room controller",
+          "new": "selected card controller",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/client_tests/client_fixtures.py",
+      "source_sha256": "df28f15964f77ed01a389bd0a32ec1b0fd601579c58f6ac4ac9f85ca98dd134d",
+      "target": "client_tests/client_fixtures.py",
+      "replacements": [
+        {
+          "old": "room_flows_v1",
+          "new": "card_selection_v1",
+          "count": 2
+        },
+        {
+          "old": "\"shop\"",
+          "new": "\"cheese\"",
+          "count": 13
+        },
+        {
+          "old": "\"event\"",
+          "new": "\"smith\"",
+          "count": 10
+        },
+        {
+          "old": "'shop'",
+          "new": "'cheese'",
+          "count": 1
+        },
+        {
+          "old": "import room_transport as transport",
+          "new": "import card_selection_transport as transport",
+          "count": 1
+        },
+        {
+          "old": "from test_room_transport import room_frames, http",
+          "new": "from test_card_selection_transport import frames as frozen_frames, http\n\ndef room_frames(selection):\n    return frozen_frames.cheese_script() if selection == \"cheese\" else frozen_frames.smith_script()",
+          "count": 1
+        },
+        {
+          "old": "room_client_preflight_failed",
+          "new": "card_selection_client_preflight_failed",
+          "count": 1
+        },
+        {
+          "old": "posts=3 if flow == \"cheese\" else 2",
+          "new": "posts=4",
+          "count": 1
+        },
+        {
+          "old": "'suite':'room_release_client'",
+          "new": "'suite':'card_selection_release_client'",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "shop_map_permission_v1/operations/verify_source_derivation.py",
+      "source_sha256": "d55c0e0caed23945e3d7e2e19a8c83362c2499c9b8756a06d249b77994c3f936",
+      "target": "operations/verify_source_derivation.py",
+      "replacements": [
+        {
+          "old": "shop repair specialization",
+          "new": "card-selection specialization",
+          "count": 1
+        },
+        {
+          "old": "shop_map_permission_operations_derivation",
+          "new": "card_selection_release_operations_derivation",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

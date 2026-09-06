@@ -24,11 +24,18 @@ and effect proof. This does not change the currently accepted live package.
 The functional component passed independent source review and its aggregate
 gate, including actual C#/Python composition and two identical clean builds of
 each native adapter. Its 40-file source inventory is frozen. Repository
-regression passed 1,192 tests in 107.55 seconds. The separately isolated
-[release composition](PHASE_1_CARD_SELECTION_RELEASE_V1_CONTRACT.md) is the next
-step toward live testing. No new campaign has started and no game setup is needed
-yet; the prior event cleanup remains complete. Do not reuse closed campaign state
-or retry any historical uncertain action. Steam capture remains a separate issue.
+regression for the functional component passed 1,192 tests. The separately
+isolated [release composition](PHASE_1_CARD_SELECTION_RELEASE_V1_CONTRACT.md)
+is now independently accepted, frozen and published for live testing. Four
+production builds match; full repository regression passes 1,206 tests in
+106.62 seconds. The complete aggregate passed, including 57 verifier mutations,
+3 actual runtime/host socket scenarios and all packaging/operations checks.
+Read its [ledger](research/PHASE_1_CARD_SELECTION_RELEASE_V1_ACCEPTANCE.md) for
+exact identities and the untouched Smith setup. The first live test is ready
+pending user availability and installation; keep the game closed until installed.
+No new campaign has started; the clean base and stopped/closed checks pass.
+Do not reuse closed campaign state or retry a historical uncertain action.
+Fresh Steam capture still returns `-3811`, separately from controller behavior.
 
 ## Current event continuation live pass — 2026-09-06
 
