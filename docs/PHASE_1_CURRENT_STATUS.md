@@ -46,9 +46,11 @@ production builds match; full repository regression passes 1,206 tests in
 106.62 seconds. The complete aggregate passed, including 57 verifier mutations,
 3 actual runtime/host socket scenarios and all packaging/operations checks.
 Read its [ledger](research/PHASE_1_CARD_SELECTION_RELEASE_V1_ACCEPTANCE.md) for
-exact identities and the untouched Smith setup. The first live test is ready
-pending user availability and installation; keep the game closed until installed.
-No new campaign has started; the clean base and stopped/closed checks pass.
+exact identities and the untouched Smith setup. The first Smith live campaign is installed after fresh clean-base and
+stopped/closed checks; exact overlay verification passed. It is awaiting the
+user's untouched rest-site Smith/Upgrade screen. No client has run or gameplay
+action been attempted. Read the ledger's active state before proceeding;
+cleanup remains outstanding.
 Do not reuse closed campaign state or retry a historical uncertain action.
 Fresh Steam capture still returns `-3811`, separately from controller behavior.
 

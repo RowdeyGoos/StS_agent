@@ -20,8 +20,10 @@ other native event callers, scrolling and incomplete visible candidate domains
 remain unsupported. The host selects first legal cards for conformance, without
 a strategic policy.
 
-No card-selection campaign has started. No overlay or operator unit has been
-installed. The previous Dense Vegetation campaign and its cleanup remain closed.
+The first Smith campaign is now installed and awaiting the user's untouched
+rest-site screen. No client has been invoked and no gameplay action has been
+attempted. Its active state is recorded below. The previous Dense Vegetation
+campaign and its cleanup remain closed.
 No historical uncertain action or closed state may be retried or adopted. No
 profile/save filesystem, Steam Cloud, retained live corpus, target execution
 during verification, remote Git or unrelated capabilities were used.
@@ -160,3 +162,32 @@ complete cleanup of Smith first. Any uncertain result ends that invocation
 without retry. Normal quit, code-first quarantine, exact owned purge and clean
 base/stopped checks remain mandatory. The user's waiver of repetitive unmodded
 relaunch checks remains in effect.
+
+## Smith live campaign 1 — installed, awaiting user setup
+
+The user explicitly requested live testing on 2026-09-06. The clean integration
+source is `2739a326ce0c6f5f2c8f679dad2ee65ce667322e`. Fresh validation passed
+all eleven successor source manifests, the exact three published artifacts,
+game-stopped/port-closed checks and the unchanged base429/zero-overlay check.
+
+Installation began after 14:11:55 UTC and returned passed for
+`CARD-SELECTION-V1-SMOKE-V1`, protected selection `smith`. The manager created
+the mods parent and published the exact overlay last. Active installed state
+SHA256 is `a4f1eec0fa0974058707bf7802f0d9a604de5b3a4be749c22a30242f671c4b2a`.
+Post-install verification passed unchanged base429 and exactly two overlay
+files against the accepted canonical package. Credentials were neither emitted
+nor inspected outside the reviewed manager. No game launch or client invocation
+was performed by the coordinator.
+
+The user was asked to launch manually on Profile3, continue Ironclad A0 and
+reach an ordinary rest site with Smith/Upgrade visible and untouched, without a
+card selector, map or popup. The next action is supported UI confirmation of that
+exact initial parent, then require-running and one fixed client invocation using
+the active state above. No readiness GET or preliminary gameplay request should
+consume the fresh parent session. Record only the fixed sanitized summary.
+
+This campaign is active and cleanup is outstanding. After the single invocation
+or an aborted setup, quit normally, wait for stopped/closed, quarantine using
+this installed state, then purge using the newly returned quarantine state.
+Verify clean base429/zero-overlay/stopped/closed and the fixed absences. The
+unmodded relaunch remains waived. Never reuse this state after cleanup.
