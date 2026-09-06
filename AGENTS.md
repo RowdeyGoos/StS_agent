@@ -11,6 +11,19 @@ Use it for:
 
 Do not treat this file as the full project description. For that, follow the reading order below.
 
+## Current event-work entry point
+
+For event coverage or a session handoff, begin with
+[the Astra handoff](docs/PHASE_1_ASTRA_HANDOFF.md),
+[current status](docs/PHASE_1_CURRENT_STATUS.md) and
+[generic event handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md), then
+follow the reading order below. The active integration checkout is the existing
+23cf worktree named in the handoff; local main is older. Shared event/card
+mechanisms exist, but native card support is gated by exact caller entries.
+The user's next priority is generic interaction discovery/admission, not another
+named-event implementation queue. Preserve accepted frozen contracts and source;
+a changed discovery/admission contract belongs in a reviewed successor.
+
 ## Read This First
 
 When starting a fresh session, read in this order:
@@ -49,7 +62,7 @@ long-term agent architecture, also read:
    for the living `R0i` capability, evidence-level, residual, and next-target
    summary
 7. [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-   for the active elite-continuation and actor-ready headless dependency graph,
+   for the preserved elite-continuation and actor-ready headless dependency graph,
    exact ownership, acceptance gates, and stop boundaries, plus its
    [acceptance ledger](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md)
    and, for actor representation/model work, the frozen
@@ -129,9 +142,9 @@ program decision.
 - `docs/PHASE_1_INTEGRATION_SPIKE.md`: current live/fast-backend evidence plan
 - `docs/PHASE_1_CURRENT_STATUS.md`: living bridge progress, demonstrated versus
   fixture-only evidence, residuals, exclusions, and next bounded target
-- `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`: active elite-continuation and
+- `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`: preserved elite-continuation and
   actor-ready headless packets, dependencies, ownership, gates, and handoff
-- `docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md`: active successor packet,
+- `docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md`: preserved successor packet,
   integration, review, evidence, telemetry, and live-cleanup ledger
 - `docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json`: exact frozen
   `headless_encoding_v1` API, features, normalization, joins and fingerprint input
@@ -151,6 +164,8 @@ program decision.
   first live smoke, teardown, rollback, privacy, and claim boundary; historical,
   not reusable authorization
 - `docs/MULTI_AGENT_EXECUTION.md`: parallel-development operating model
+- `docs/PHASE_1_ASTRA_HANDOFF.md`: current integration checkout, evidence, user direction and operational state
+- `docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md`: active generic discovery/admission design and acceptance criteria; not an implemented contract
 - `.codex`: ultra-short bootstrap note for fresh Codex sessions
 
 ## Core Working Assumptions

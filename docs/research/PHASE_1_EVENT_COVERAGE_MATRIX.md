@@ -12,6 +12,15 @@ Vegetation ordinary continuation and Room Full of Cheese/Gorge add-two. Their
 remaining branches stay open. The new shared orchestrator has separate functional
 fixtures; predecessor live results do not automatically prove its composition live.
 
+## Current interpretation and priority
+
+At `b2ae0dd`, card mechanics and event flow are reusable, but native event card
+support still requires one of three exact caller entries. This matrix records
+coverage evidence; it is not intended to become the production event allowlist.
+The next priority is [generic interaction discovery](../PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md).
+Use events to test shared families, including identities absent from a named
+catalog. Dedicated handlers remain appropriate for different custom surfaces.
+
 ## Interaction families and next work
 
 | Family | Current evidence | Next required work |
@@ -26,10 +35,11 @@ fixtures; predecessor live results do not automatically prove its composition li
 | Embedded event combat | Metadata/shared API facts only | Combat handoff, event resumption and exact ownership |
 | Custom/ancient layouts | One custom node and two derived layouts inventoried | Exact caller/layout connections and action semantics |
 
-Prioritize event card removal, transformation and upgrading, then other add/count
-variants. Each new caller uses shared selection mechanics while retaining its
-own proven option binding, operation, limits, confirmation mode and effect.
-No event is enabled merely because its name suggests one of these operations.
+Prioritize authoritative discovery/admission for shared card interactions, then
+extend operation/count/confirmation families. Preserve exact parent ownership,
+candidate identity and effects while avoiding a new event-name row for each
+standard interaction. Unknown semantics remain unsupported. Per-type results
+below are tests and evidence, not claims of automatic or all-branch support.
 
 ## Per-type branch evidence
 

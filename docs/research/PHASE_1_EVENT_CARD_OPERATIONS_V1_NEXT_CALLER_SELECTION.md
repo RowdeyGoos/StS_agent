@@ -1,7 +1,8 @@
-# Phase 1 event-card next caller selection
+# Phase 1 event-card candidate caller selection
 
 - Date: 2026-09-06
-- Status: proposed future row; absent from the frozen three-row component
+- Status: retained future candidate; not the active implementation priority;
+  absent from the frozen three-row component
 - Selected caller: `BrainLeech.ShareKnowledge()`
 - Proposed policy ID: `brain_share_knowledge_add_one`
 - Exact event option key:
@@ -11,10 +12,18 @@
 - Brain/Zen follow-up result SHA-256:
   `8fd76338f6b6eb64aa1063fa24b5cf77fd66fbaeec062af234bea09186e7cfe9`
 
+## Current priority clarification
+
+The user subsequently clarified that generic interaction discovery should be the
+next development focus. This named-row proposal is retained as evidence and a
+representative add-one test case. It is not an assignment to implement Brain
+before that shared design. Follow the
+[generic handler plan](../PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md); the remaining
+policy/admission details below describe this candidate's semantics only.
+
 ## Selected policy
 
-The smallest useful next production row is Brain Leech's Share Knowledge
-choice. Its immutable policy is:
+The proposed Brain Leech Share Knowledge candidate has the following policy:
 
 - exact runtime event type `MegaCrit.Sts2.Core.Models.Events.BrainLeech`;
 - exact stable event identity admitted by the event parent;

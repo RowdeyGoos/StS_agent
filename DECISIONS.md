@@ -2181,3 +2181,27 @@ before the event parent resumes. The first selected new callers upgrade one card
 in Aroma of Chaos and Sapphire Seed; shared multi-card fixtures do not enable
 other native callers. See the [event-card contract](docs/PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md)
 and [caller selection](docs/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_CALLER_SELECTION.md).
+
+
+## 2026-09-06 — Prioritize generic event interaction discovery
+
+After the user questioned the event-by-event work, we clarified that current
+code combines reusable event/card mechanics with exact event/key registrations.
+The latest native additions were individual Aroma and Sapphire connections.
+Calling that automatic all-event support would be inaccurate.
+
+Prioritize authoritative interaction discovery and shared admission by interaction
+family. Event identities remain necessary for ownership and evidence, but a new
+standard event using a supported interaction should not require a semantic
+allowlist entry. Use named events as representative/held-out tests; retain dedicated
+adapters for genuinely different custom screens. Brain/Zen caller research remains
+useful evidence, not the default next implementation queue.
+
+This changes development priority, not frozen contracts. The existing pre-dispatch
+operation/count/domain requirement cannot be retroactively satisfied from a later
+selector. Design a reviewed successor that obtains authoritative facts at the
+appropriate boundary, accounts for parent effects before child creation, and
+preserves reference identity, receipts, bounds, exact effects and no uncertain
+retries. Availability of a suitable shared API or integration point is still an
+open design question. See the [generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
+and [current handoff](docs/PHASE_1_ASTRA_HANDOFF.md).

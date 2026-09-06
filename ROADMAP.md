@@ -23,17 +23,21 @@ candidate and frozen aggregates pass (675 checks across 19 suites). Its 66-file
 identity is frozen and functional acceptance is recorded in the [event-card ledger](docs/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_ACCEPTANCE.md).
 It does not yet have release or live evidence.
 
-Next, implement Brain Leech/Share Knowledge add-one using its proven dynamic
-generation count and complete generated-card domain. Finish Zen Weaver's exact
-removal argument bindings, then connect removal and transformation, other
-card-add/count variants, embedded combat, custom screens and repeated choices.
-Preserve explicit multi-card event counts and ordinary rest upgrades of exactly
-one card. The reviewed census and coverage matrix enumerate 68 event types;
-runtime eligibility and complete branch coverage remain open.
+The user clarified the next priority: make shared handlers obtain authoritative
+interaction rules without adding each standard event to a named allowlist.
+The existing code has generic mechanics with three exact native event entries;
+it does not yet provide automatic all-event support. Read the
+[generic event handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) before
+implementation. Resolve discovery, pre-dispatch/child-creation timing, ownership,
+counts and effect witnesses in a successor contract, then expand by interaction
+family. Brain/Zen research becomes representative test evidence, rather than the
+next two implementation packets. Custom screens and event combat may still need
+dedicated handlers. Preserve multi-card event counts and exactly-one ordinary
+Smith upgrading. The 68-type census is not a complete reachable-event proof.
 
 Smith upgrade-one and user-prepared Cheese add-two already pass live testing in
-their predecessor release; both campaigns are fully cleaned. The thirteen
-accepted predecessors remain frozen. See the
+their predecessor release; both campaigns are fully cleaned. All fourteen
+accepted successor trees remain frozen. See the
 [event coverage plan](docs/PHASE_1_EVENT_COVERAGE_PLAN.md),
 [coverage matrix](docs/research/PHASE_1_EVENT_COVERAGE_MATRIX.md) and
 [orchestrator ledger](docs/research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).

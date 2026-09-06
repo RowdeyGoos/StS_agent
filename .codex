@@ -4,6 +4,8 @@ Read `AGENTS.md` completely first, then follow its required reading order.
 
 For full-game or bridge work, also read:
 
+- `docs/PHASE_1_ASTRA_HANDOFF.md` for the active 23cf checkout; local main is older
+- `docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md` for the clarified event priority
 - `docs/PHASE_1_CURRENT_STATUS.md`
 - `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`
 - `docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md`
@@ -26,9 +28,13 @@ Most important code after that:
 - `game/simulation/encoding.py`
 - `game/cli/train.py`
 
-The live integration milestone remains `R0i`; the active successor work is a
-host-only elite continuation plus actor-ready headless policy plumbing. It is
-not yet a complete autonomous run or a target-game fidelity claim.
+The live integration milestone remains `R0i`. Elite/headless actor packets are
+completed predecessor work. The latest event-card functional checkpoint is
+`b2ae0dd`: generic mechanics plus three exact native event rows, not automatic
+all-event support. Next is authoritative generic interaction discovery/admission
+in a reviewed successor; do not default to adding Brain/Zen rows. Fourteen
+successor trees are frozen. No new event-card release or live setup is ready.
+A complete autonomous run and target-game fidelity remain unclaimed.
 
 Key invariants:
 

@@ -470,3 +470,18 @@ Root's frozen aggregate passed at `/private/tmp/event-card-operations-root-froze
 Functional development of this component is accepted. It implements the shared event-card domain/capability contract and exactly the preserved Cheese row plus Aroma/Maintain Control and Sapphire/Eat upgrade-one. Repository regression covers all 1,301 collected cases across the full run and one unchanged sandbox-only localhost fixture rerun, as recorded above. No release listener/package/installation or live campaign was created, and no all-event or new live coverage claim is made.
 
 Next concrete development is the separately proposed Brain/Share Knowledge generated add-one row, then Zen removal after exact argument/key binding and transformation after authoritative replacement mapping. The accepted component remains immutable; the future-row proposal does not enable a row. The complete Brain/Zen metadata result is independently reviewed with the Zen argument-order uncertainty explicitly preserved.
+
+## Post-acceptance user clarification — generic discovery priority
+
+After commit `b2ae0dd`, the user clarified that the intended all-event system
+should handle supported interactions without registering each event separately.
+The coordinator acknowledged that the completed work mixed generic mechanics
+with individual native connections, and that the exact caller allowlist remains
+a limitation. No accepted source, contract, result or evidence is changed.
+
+The [generic event handler plan](../PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
+supersedes this ledger's former next-Brain/then-Zen implementation priority.
+Those proposals remain retained evidence and candidate tests. Next is discovery/
+admission contract design and shared family support in a successor, preserving
+pre-dispatch accounting and authoritative identities. This is a documentation
+handoff, not a new implementation, static invocation, release or live campaign.

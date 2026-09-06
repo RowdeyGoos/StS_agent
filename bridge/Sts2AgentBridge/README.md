@@ -1,5 +1,23 @@
 # STS2 Agent Bridge (`R0i`)
 
+## Current successor work — 2026-09-06
+
+The original 0.8.0 guide below describes its own bounded component. Current
+shop/item/event/card successor capabilities and live evidence are tracked in
+[the living status](../../docs/PHASE_1_CURRENT_STATUS.md), not inferred from the
+original scope exclusions below. Fourteen successor source trees are frozen.
+`event_card_operations_v1` adds shared domain/selection validation plus exact
+Cheese, Aroma and Sapphire event-card rows; its functional gate passes 675 checks
+across 19 suites. It has no installable release or new live evidence.
+
+The next priority is [generic event interaction discovery](../../docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md).
+Current native card support still requires named caller registration. Preserve
+all frozen code and follow the [Astra handoff](../../docs/PHASE_1_ASTRA_HANDOFF.md)
+for the active checkout, evidence and next design work. Do not use original or
+predecessor installation commands to activate the new functional component.
+
+## Original component overview
+
 This directory contains the first deliberately restricted, project-owned live
 integration slice for the Slay the Spire 2 agent. `R0a` proved the loader and
 public-screen path, `R0b` exposed one real combat decision, `R0c` added one

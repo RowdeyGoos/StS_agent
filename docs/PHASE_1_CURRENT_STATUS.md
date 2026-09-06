@@ -18,7 +18,22 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
-## Active event coverage development — 2026-09-06
+## Current priority: generic interaction discovery — 2026-09-06
+
+Latest accepted implementation: `b2ae0dd6577e7d44c208252f816e2266391c2ea5`.
+The user clarified that all-event support means shared handlers that work from
+authoritative interaction rules, without registering each standard event by
+name. Current code has reusable flow/card mechanics plus a closed native caller
+allowlist; it does not automatically discover arbitrary event card interactions.
+
+The next task is the [generic event handler plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md):
+audit where operation, counts, candidates and completion ownership can be
+obtained, resolve the pre-dispatch versus child-creation contract, and implement
+a reviewed successor. Brain/Zen are useful test/evidence cases, not the default
+next event-by-event implementation queue. Preserve all fourteen frozen successor
+trees. New functionality and live readiness remain separate claims.
+
+## Accepted event coverage increments — 2026-09-06
 
 The user selected broader event support. The isolated `event_orchestrator_v1`
 functional increment now passes independent source review, its candidate gate
@@ -33,9 +48,9 @@ for exact identities, evidence and acceptance.
 The reviewed metadata census established 68 concrete event types, including
 ancient/deprecated types, without establishing runtime eligibility. The
 [coverage matrix](research/PHASE_1_EVENT_COVERAGE_MATRIX.md) keeps every type's
-remaining branches explicit; no type has complete all-branch evidence. Next work
-is exact event callers for removal, transformation, upgrading and other add/count
-variants, followed by custom screens, embedded combat and repeated choices. The
+remaining branches explicit; no type has complete all-branch evidence. The
+current expansion priority is generic interaction discovery/admission, followed
+by shared family support and explicit custom/combat handling. The
 [event coverage plan](PHASE_1_EVENT_COVERAGE_PLAN.md) owns that sequence.
 All twelve predecessors and old48 remain byte-exact. This functional component
 has no installable release or live evidence; earlier Smith/Cheese/Dense Vegetation
@@ -71,10 +86,11 @@ across the full run and focused rerun. No live bridge was contacted.
 The positive static scan found 31 selector calls and 45 effect calls. A further
 bounded, successfully captured metadata inspection establishes Brain Leech's
 card-generation count key and Zen Weaver's two awaited removal callbacks.
-Their production selection and native implementation remain open. Transformation,
+Their native connections remain absent; their named-row proposals are retained
+research under the new generic priority. Transformation,
 multiple-card upgrading, optional/scrolling selectors, custom screens and event
-combat remain explicit gaps. All thirteen accepted components and original48
-remain preserved. No campaign is active and no game setup is needed. See the
+combat remain explicit gaps. All fourteen frozen successor components and
+original48 remain preserved. No campaign is active and no game setup is needed. See the
 [event-card contract](PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md) and
 [active ledger](research/PHASE_1_EVENT_CARD_OPERATIONS_V1_ACCEPTANCE.md).
 
@@ -86,7 +102,8 @@ handoff. Normal quit, quarantine, exact purge, unchanged base429/zero overlay,
 stopped/closed and fixed absences passed by15:09:18 UTC. No campaign remains
 active. The [completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
 records exact evidence and closed states. Smith upgrade-one and Cheese add-two
-are live-demonstrated; other native event card operations remain unsupported.
+are live-demonstrated. Aroma/Sapphire now have offline native evidence above;
+other native event card operations remain unsupported.
 This test starts at the user-prepared event and proves no natural discovery.
 
 **Current live result:** the corrective Smith test passed on a fresh rest site:

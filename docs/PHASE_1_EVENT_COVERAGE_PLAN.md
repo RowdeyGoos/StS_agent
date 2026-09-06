@@ -1,15 +1,26 @@
 # Event coverage development plan
 
-Selected 2026-09-06 by the user after live Smith upgrade-one and user-prepared
-Room Full of Cheese add-two passed and both campaigns were fully cleaned.
-Baseline: `7e57bb6` in the existing 23cf integration checkout. All twelve accepted
-successors and the original bridge remain byte-exact. No campaign is active.
+Selected 2026-09-06; priority clarified after implementation commit `b2ae0dd`.
+The original baseline was `7e57bb6`; the two completed increments below are
+preserved. Fourteen successor trees and the original bridge are now frozen.
+No campaign was left active; this plan update performed no new live check.
+
+## Current direction
+
+The user wants shared handlers that support standard interactions without a
+new event-name connection for each event. The current implementation combines
+reusable mechanisms with a closed caller allowlist. The next task is
+[generic interaction discovery and admission](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md),
+not adding Brain/Zen rows as the main expansion strategy. Events primarily supply
+representative and held-out tests; custom interactions can need dedicated adapters.
+The completed exact rows below remain accepted evidence, not proof that this
+generic discovery already exists.
 
 ## Objective and coverage accounting
 
-Support the pinned build's events through reusable interaction handlers and
-small explicit event connections. "All events" is the program objective, not
-current evidence. Establish a finite event inventory and record each event's
+Support the pinned build's events through reusable interaction handlers driven
+by authoritative interaction descriptions. "All events" is the program objective,
+not current evidence. Establish a finite event inventory and record each event's
 branches and interaction families with separate implemented, fixture-tested and
 live-demonstrated states. An unclassified event or branch is an open gap; the
 existence of a shared selector class does not establish its caller's rules.
@@ -66,8 +77,9 @@ final aggregate passes 675 checks across 19 suites. The
 records completed functional acceptance. No installable release or live
 campaign is implied.
 
-The next concrete caller is Brain Leech/Share Knowledge add-one. Its generated
-choice count comes from the exact `FromCardChoiceCount` dynamic value, captured
+Retained research includes Brain Leech/Share Knowledge add-one; this is a
+candidate generic-handler test case, not the next named implementation task.
+Its generated choice count comes from the exact `FromCardChoiceCount` dynamic value, captured
 before dispatch; complete generated originals are retained once at admission.
 Zen Weaver removal requires the remaining exact argument-to-field bindings;
 its outer callbacks now have a proven awaited completion witness. Reuse the
@@ -78,20 +90,18 @@ stay separate from ordinary Smith's proven exactly-one upgrade.
 
 ## Coverage expansion
 
-In parallel, inspect only bounded pinned-build event metadata and explicitly
-selected method bodies after recording the finite selection. Use the established
-metadata/IL inspector without executing target assemblies. First determine event
-classes and interaction families; then select concrete caller evidence for card
-remove/transform/upgrade/add variants, optional or multiple selections, rewards,
-embedded combat and custom event screens. Event names and localized prompts do
-not establish numeric rules or exact effects.
+Follow the [generic plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) for the active
+sequence and acceptance criteria. First identify which facts the current catalog
+supplies and which can be obtained from an authoritative shared interaction
+boundary. Do not infer rules from names, labels, screen shape or observed effects.
 
-Add callers by interaction family, retaining exact option/controller and effect
-bindings. A coverage row can advance only when its required branches, counts,
-confirmation modes, complete candidate domain and completion witness are known.
-Repeated-choice loops, multiple reward episodes, scrolling, custom screens and
-combat handoff remain explicit gaps until their own semantics and tests pass.
-Do not hide these gaps behind an "ordinary event" classification.
+Design and review a new contract before changing the pre-dispatch binding rule.
+Then exercise actual native/core/wire/host flow for multiple event identities
+without adding named rows, and extend by supported interaction family. Keep
+unsupported optional/scrolling/custom/combat/repeated-choice behavior explicit.
+Separate generic mechanism evidence, event-branch tests, release and live results.
+Use bounded retained/static evidence and independent reviews; do not reconstruct
+discarded live output or silently broaden observation capabilities.
 
 ## Preserved boundaries
 

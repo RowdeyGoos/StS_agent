@@ -6,13 +6,15 @@ foundations: a compact combat simulator for reinforcement-learning research,
 an experimental deterministic reduced-run headless environment, and an
 authenticated live-game bridge at the bounded `R0i` integration milestone.
 The headless progression rules are structural fixtures, not verified full-game
-rules. The live bridge has verified standalone rest-site completion; multi-step
-event completion, explicit map entry and a complete batched room handoff remain
-unaccepted live. Elite continuation is implemented and independently fixture-tested
-by the host runner; it remains unobserved live.
-Explicit fresh reward entry has passed a bounded live campaign.
-The latest capture-off map-entry run stopped with `room_interaction_timeout`
-and no accepted run summary; exact cleanup and clean unmodded relaunch passed.
+rules. Bounded predecessor releases have live evidence for ordinary event
+continuation, one shop card purchase, item acquisition, Smith upgrade-one and
+Cheese add-two. Shared event/card orchestration and two additional event upgrades
+are functionally tested but not packaged or live-tested. Native event card support
+still uses an exact caller allowlist; automatic all-event handling is not yet
+implemented. The active priority is [generic interaction discovery](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md).
+Elite continuation remains fixture-tested and unobserved live. The historical
+capture-off map-entry timeout had no accepted summary; its cleanup passed.
+Read [current status](docs/PHASE_1_CURRENT_STATUS.md) for evidence boundaries.
 The headless actor path has a frozen public variable-candidate encoder, trusted
 actor dataset, masked candidate scorer and accepted deterministic CPU cloning
 smoke. This proves training and artifact plumbing on structural data only.
@@ -42,9 +44,10 @@ Project and contributor documentation:
 - [docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md](docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md): historical independent hash-bound review of the D1 result and D1B scope
 - [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md): preregistration and evidence plan for choosing the live bridge and fast backend
 - [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md): living account of demonstrated bridge progress, current limitations, and the next bounded target
-- [docs/PHASE_1_ASTRA_HANDOFF.md](docs/PHASE_1_ASTRA_HANDOFF.md): fresh-session handoff for the accepted local integration branch, distinct capture/controller failures, completed cleanup and remaining live gate
-- [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md): active elite-continuation and actor-ready headless packet graph
-- [docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md): active integration and evidence ledger for that graph
+- [docs/PHASE_1_ASTRA_HANDOFF.md](docs/PHASE_1_ASTRA_HANDOFF.md): current checkout, accepted progress, generic-versus-named limitation, next direction and operational boundaries
+- [docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md): next generic interaction discovery/admission design and acceptance criteria
+- [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md): preserved elite-continuation and actor-ready headless packet graph
+- [docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md): completed integration and evidence ledger for that graph
 - [docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json](docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json): frozen public feature schema, candidate mapping and normalization for the separate headless actor representation
 - [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md): completed predecessor increment for reliable room composition, headless experiment tooling, and narrow conformance preparation; reviewed results are recorded in its acceptance ledger
 - [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md): preserved pre-implementation candidate shortlist, safety gaps, and ordered experiment gates

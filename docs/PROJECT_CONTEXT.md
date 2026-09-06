@@ -19,7 +19,12 @@ combat, rewards, map travel, standalone rest completion, composed ordinary
 floors, and explicit reward entry. It is an
 integration substrate, not a full-game simulator or learned agent. The current
 evidence boundary and remaining gaps are maintained in
-[PHASE_1_CURRENT_STATUS.md](PHASE_1_CURRENT_STATUS.md).
+[PHASE_1_CURRENT_STATUS.md](PHASE_1_CURRENT_STATUS.md). Event flow and card
+selection now have shared functional implementations, but native event card
+support still requires exact named caller entries. The next integration priority
+is [generic interaction discovery/admission](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md),
+not another event-by-event queue. This does not change the combat simulator or
+claim target-game parity.
 
 The current codebase already supports:
 
