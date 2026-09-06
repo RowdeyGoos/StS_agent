@@ -20,10 +20,11 @@ other native event callers, scrolling and incomplete visible candidate domains
 remain unsupported. The host selects first legal cards for conformance, without
 a strategic policy.
 
-The first Smith campaign is now installed and awaiting the user's untouched
-rest-site screen. No client has been invoked and no gameplay action has been
-attempted. Its active state is recorded below. The previous Dense Vegetation
-campaign and its cleanup remain closed.
+The first Smith campaign ended with `unsupported_state` during child
+reconciliation after one accepted/reconciled parent action and two accepted
+child actions, only one reconciled. It did not establish an upgrade or map
+handoff. Cleanup fully passed by 14:19:58 UTC; no campaign remains active. The
+previous Dense Vegetation campaign and its cleanup remain closed.
 No historical uncertain action or closed state may be retried or adopted. No
 profile/save filesystem, Steam Cloud, retained live corpus, target execution
 during verification, remote Git or unrelated capabilities were used.
@@ -163,7 +164,7 @@ without retry. Normal quit, code-first quarantine, exact owned purge and clean
 base/stopped checks remain mandatory. The user's waiver of repetitive unmodded
 relaunch checks remains in effect.
 
-## Smith live campaign 1 — installed, awaiting user setup
+## Smith live campaign 1 — stopped during child reconciliation; cleanup complete
 
 The user explicitly requested live testing on 2026-09-06. The clean integration
 source is `2739a326ce0c6f5f2c8f679dad2ee65ce667322e`. Fresh validation passed
@@ -172,8 +173,8 @@ game-stopped/port-closed checks and the unchanged base429/zero-overlay check.
 
 Installation began after 14:11:55 UTC and returned passed for
 `CARD-SELECTION-V1-SMOKE-V1`, protected selection `smith`. The manager created
-the mods parent and published the exact overlay last. Active installed state
-SHA256 is `a4f1eec0fa0974058707bf7802f0d9a604de5b3a4be749c22a30242f671c4b2a`.
+the mods parent and published the exact overlay last. Closed installed state
+SHA256 was `a4f1eec0fa0974058707bf7802f0d9a604de5b3a4be749c22a30242f671c4b2a`.
 Post-install verification passed unchanged base429 and exactly two overlay
 files against the accepted canonical package. Credentials were neither emitted
 nor inspected outside the reviewed manager. No game launch or client invocation
@@ -186,8 +187,34 @@ exact initial parent, then require-running and one fixed client invocation using
 the active state above. No readiness GET or preliminary gameplay request should
 consume the fresh parent session. Record only the fixed sanitized summary.
 
-This campaign is active and cleanup is outstanding. After the single invocation
-or an aborted setup, quit normally, wait for stopped/closed, quarantine using
-this installed state, then purge using the newly returned quarantine state.
-Verify clean base429/zero-overlay/stopped/closed and the fixed absences. The
-unmodded relaunch remains waived. Never reuse this state after cleanup.
+The user confirmed ready. Supported game capture showed initial Rest and Smith
+choices with no selector, map or popup. The exact running-game preflight passed.
+At 14:18:09 UTC the coordinator invoked the fixed client once with the installed
+state. It returned exit4 and only this sanitized summary:
+
+```json
+{"schema_version":1,"status":"failed","code":"unsupported_state","parent_attempted":1,"parent_accepted":1,"parent_reconciled":1,"child_attempted":2,"child_accepted":2,"child_reconciled":1}
+```
+
+The parent begin received an accepted receipt and later child admission. Two
+child actions received accepted receipts; only the first was validated in the
+monotonic history prefix. No child-resolved result, parent Proceed or map
+handoff was validated. A subsequent supported screenshot showed the rest room
+with Proceed visible and the card selector closed. That visible state does not
+prove the selected card's final upgrade or identify the exact rejection. No
+live response was retained or reconstructed; no uncertain action was retried.
+
+Normal UI Cmd-Q reported App quit. The stopped/closed check passed before exact
+code-first quarantine, which returned state SHA256
+`6ea33cda08176022b12444e89f387882afc48cdeb98efac065dd70f2711bce04`.
+Exact purge passed and removed four generated files. Final checks passed the
+unchanged base429, zero overlay, stopped process, closed port, seven fixed
+campaign/operator absences and absence of the created mods parent by
+**2026-09-06 14:19:58 UTC**. Unmodded relaunch was waived, not performed or
+claimed. Both recorded state hashes are closed and must never be reused.
+
+R independently accepted these prefix/effect/cleanup claim boundaries. A and B
+are tracing post-action native/core predicates and fixture coverage using only
+repository sources and previously approved static evidence. The cause remains
+unidentified; no live diagnostic or second campaign has started. Preserve all
+eleven frozen successor inventories and the exact published package.

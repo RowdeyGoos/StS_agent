@@ -46,11 +46,13 @@ production builds match; full repository regression passes 1,206 tests in
 106.62 seconds. The complete aggregate passed, including 57 verifier mutations,
 3 actual runtime/host socket scenarios and all packaging/operations checks.
 Read its [ledger](research/PHASE_1_CARD_SELECTION_RELEASE_V1_ACCEPTANCE.md) for
-exact identities and the untouched Smith setup. The first Smith live campaign is installed after fresh clean-base and
-stopped/closed checks; exact overlay verification passed. It is awaiting the
-user's untouched rest-site Smith/Upgrade screen. No client has run or gameplay
-action been attempted. Read the ledger's active state before proceeding;
-cleanup remains outstanding.
+exact identities and the untouched Smith setup. The first Smith live test returned `unsupported_state` during child
+reconciliation: parent counts1/1/1, child2/2/1. Rest Proceed was subsequently
+visible, but no upgrade, child completion or map handoff is accepted as proven.
+Normal quit/quarantine/purge and clean base429/zero-overlay/stopped/closed checks
+passed by 14:19:58 UTC; no campaign remains active. The next task is focused
+repository/fixture diagnosis, with all eleven successor trees frozen and no
+retry of the uncertain action or closed states.
 Do not reuse closed campaign state or retry a historical uncertain action.
 Fresh Steam capture still returns `-3811`, separately from controller behavior.
 
