@@ -16,8 +16,9 @@ rest upgrades select one. Parent/selector/controller composition and the
 production release are independently accepted and frozen. The first Smith live
 attempt stopped during reconciliation and was fully cleaned. Its focused native
 completion repair is independently accepted and published. The fresh corrective
-Smith test now live-passes one upgrade and Proceed/map handoff, with complete
-cleanup. Test Cheese add-two separately next. Extend native removal/transform and other event
+Smith test live-passes one upgrade and Proceed/map handoff. The separate
+user-prepared Cheese test also passes exactly two card additions and map handoff;
+both campaigns are fully cleaned. Broaden native event caller coverage next. Extend native removal/transform and other event
 callers only with their exact cardinality, preview and effect witnesses.
 See the [card-selection acceptance ledger](docs/research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md).
 

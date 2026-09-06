@@ -198,7 +198,7 @@ chosen card or promote any other event or rest operation. R also accepted the
 closed cleanup disposition above.
 
 
-## Current Cheese live checkpoint — installed, awaiting initial event choices
+## Historical Cheese checkpoint — installed before the completed test
 
 After the completed Smith cleanup, the user explicitly requested the two-card
 event test. R independently accepted the bounded setup under the preserved
@@ -231,3 +231,55 @@ without invocation. Normal quit, stopped/closed, code-first quarantine, exact
 purge and clean base verification remain mandatory; unmodded relaunch remains
 waived. This installed checkpoint supersedes the earlier no-active-campaign
 statement for the completed Smith test.
+
+
+## Cheese add-two live pass and complete cleanup — 2026-09-06
+
+The user asked for the event identifier to prepare the encounter manually using
+the console, then confirmed ready. The coordinator did not operate the console
+or observe its command. Supported UI capture showed Room Full of Cheese initial
+choices, including untouched Gorge (choose2 of8 Common cards), with no console,
+map, popup or card selector. Evidence begins at this user-prepared event; it does
+not establish natural encounter discovery or how the user prepared it.
+
+The exact game-process check passed. At15:06:41 UTC the fixed completion client
+ran exactly once with installed-state SHA256
+`2892969e66158b2d5dca640c86cf5431809f0be72689a2e4b6d1fb86a0a969c5`.
+It exited0 with this complete sanitized summary:
+
+```json
+{"schema_version":1,"status":"passed","parent_attempted":2,"parent_accepted":2,"parent_reconciled":2,"child_attempted":2,"child_accepted":2,"child_reconciled":2}
+```
+
+The fixed success predicates establish one Cheese/Gorge add-two workflow:
+exactly two admitted cards selected and reconciled, their add effect completed,
+and explicit parent Proceed reached the bound map. Post-test supported UI
+capture corroborated map visibility. R independently reviewed and accepted this
+narrow live claim. It does not promote other events, removal/transform/multi-card
+upgrading, scrolling, partial candidate domains or natural encounter discovery.
+No card keys, raw responses or screenshots were retained as a corpus. There was
+no retry, extra authenticated read or further coordinator gameplay action.
+
+Normal supported CUA Cmd-Q returned App quit, and wait-stopped passed with
+process false/port false. Code-first quarantine passed with state SHA256
+`e13a9dee868e5f35564b69c2a945a13cd5d978c4b67e4909338ab5a4e9f68284`.
+Exact purge removed4 generated files and the owned created directories.
+Final cleanup completed by15:09:18 UTC:
+
+- Base429 SHA256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`, overlay0.
+- Game stopped, fixed bridge port closed.
+- Eight fixed campaign/operator paths absent; created mods parent absent.
+- Repeated unmodded relaunch remained waived, not executed or claimed passed.
+
+The Cheese and Smith campaigns are both fully closed. All installed/quarantined
+state hashes are historical and must never be reused. No campaign remains
+active. All twelve accepted successor components and old48 remain byte-exact;
+no implementation changed during this test. Existing1206-test regression and
+the accepted complete offline aggregate remain applicable without a redundant
+rerun for documentation-only changes.
+
+Both initial native card-selection targets are now live-demonstrated: ordinary
+Smith upgrade-one and user-prepared Cheese add-two. Remaining native callers
+for other events and operations require exact caller, count, preview and effect
+bindings plus independent validation; the broader pure core is not general
+live event support.

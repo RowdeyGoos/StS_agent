@@ -20,12 +20,14 @@ their authorization scope.
 
 ## Active card-selection development — 2026-09-06
 
-**Active Cheese test:** the unchanged reviewed package is installed with the
-Cheese configuration and fresh state. User setup is pending at Room Full of
-Cheese's initial untouched choices; no client has run in this campaign. The
-[completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
-owns the new installed-state hash and required cleanup. The prior Smith campaign
-is fully closed. Other native event card operations remain unsupported.
+**Current Cheese result:** the user-prepared Room Full of Cheese/Gorge test
+passed: parent2/2/2 and child2/2/2, exactly two cards added and explicit Proceed/map
+handoff. Normal quit, quarantine, exact purge, unchanged base429/zero overlay,
+stopped/closed and fixed absences passed by15:09:18 UTC. No campaign remains
+active. The [completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
+records exact evidence and closed states. Smith upgrade-one and Cheese add-two
+are live-demonstrated; other native event card operations remain unsupported.
+This test starts at the user-prepared event and proves no natural discovery.
 
 **Current live result:** the corrective Smith test passed on a fresh rest site:
 parent2/2/2 and child2/2/2, including one upgrade effect and Proceed/map handoff.
@@ -33,7 +35,7 @@ Normal quit, quarantine, exact purge, unchanged base429/zero overlay, stopped/cl
 and fixed absences passed by14:57:35 UTC. That Smith campaign is closed. The
 [completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
 records the exact result and closed states. Ordinary single-card Smith upgrading
-is live-demonstrated; Cheese exact-two remains awaiting a separate live test.
+is live-demonstrated; the subsequent Cheese exact-two live pass is above.
 
 The user selected event card addition/removal/upgrade/transform support and
 rest-site card upgrading, explicitly including multiple-card event selections
@@ -76,8 +78,9 @@ repository regression passes1206 tests in107.35 seconds. Read the
 for exact identities and current campaign state. The fresh corrective Smith test
 now passes with all four actions reconciled and visible map handoff. Its complete
 cleanup is recorded above. The earlier uncertain action was never retried.
-All twelve accepted successor trees and old48 remain byte-exact. Next is a
-separate Cheese exact-two card-add live test.
+All twelve accepted successor trees and old48 remain byte-exact. The separate
+Cheese exact-two card-add live test also passes and is fully cleaned. Remaining
+work is native support for other event callers and card operations.
 Do not reuse closed campaign state or retry a historical uncertain action.
 Fresh Steam capture still returns `-3811`, separately from controller behavior.
 
