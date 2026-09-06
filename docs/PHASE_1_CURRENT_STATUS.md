@@ -615,13 +615,14 @@ passes independent review and two identical complete offline release runs.
 Its 63-file freeze, four matching production builds, one-GET/no-action boundary
 and exact package are recorded in the
 [diagnostic acceptance ledger](research/PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md).
-The next live step is one first-failure observation at the merchant inventory;
-it has not run yet. The previous campaign's normal quit, exact quarantine/purge,
-base429/zero-overlay/stopped/closed and absence checks completed by
-2026-09-05 22:00:06 UTC. The new diagnostic campaign was installed and overlay-
-verified at 2026-09-06 09:49:48 UTC after renewed availability and fresh preflight.
-It is active and awaiting untouched merchant-inventory setup; no client has run.
-Cleanup deadline: 10:19:48 UTC. Exact state is in the diagnostic ledger.
+The single live diagnostic passed at 2026-09-06 09:54:54 UTC with shop_status
+unsupported, stage core_context and reason map_travel_enabled on the intended
+untouched merchant inventory. No action route or gameplay action was involved.
+This localizes the first rejection; later predicates and shop control remain
+unproven. Normal quit, exact quarantine/purge, base429/zero-overlay/stopped/closed
+and fixed absences passed by 09:57:53 UTC. No campaign remains active. Next is
+pinned-static interpretation of that map flag and a bounded predicate repair;
+exact evidence and closed states are in the diagnostic ledger.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing
 and map return are live-demonstrated; rest-site card upgrades remain unsupported.
 

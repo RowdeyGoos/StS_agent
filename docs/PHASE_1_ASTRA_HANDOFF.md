@@ -10,11 +10,13 @@ and [selected contract](PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md) first. The passi
 shop_diagnostic_v1 successor is implemented, independently reviewed, frozen and
 published after two identical complete offline gates/four matching production
 builds. Preserve its 63 files and all seven predecessors. It exposes one GET and
-no gameplay action; no shop repair or live success is claimed. The user confirmed
-availability with the game closed. Fresh preflight, installation and exact
-overlay verification passed at 2026-09-06 09:49:48 UTC. The diagnostic campaign is
-active, awaiting untouched merchant-inventory setup; no client has run. Installed
-state is recorded in the ledger. Cleanup deadline: 10:19:48 UTC.
+no gameplay action; no shop repair or live success is claimed. The single
+live diagnostic returned unsupported/core_context/map_travel_enabled on the
+user-confirmed untouched merchant inventory at 2026-09-06 09:54:54 UTC. Normal
+quit, code-first quarantine, exact purge, base429/zero-overlay/stopped/closed and
+fixed absences passed by 09:57:53 UTC. No campaign remains active. The ledger
+records the accepted diagnostic and closed state hashes; never invoke them again.
+Next is pinned-static diagnosis of the map flag and a bounded shop repair.
 The earlier zero-action shop state and historical uncertain actions must never
 be retried. This ledger supersedes the proposed-only diagnostic wording below.
 

@@ -155,3 +155,44 @@ No client invocation or gameplay action has occurred. The user was asked to
 launch manually on Profile3, continue Ironclad Ascension0 and open the merchant
 inventory, leaving offers untouched with no popup. The campaign is active and
 awaiting that exact screen. Cleanup must finish by 10:19:48 UTC.
+
+## Live first-failure result and completed cleanup — 2026-09-06 09:57:53 UTC
+
+The user confirmed the merchant inventory visible and untouched. Supported game
+capture showed the intended inventory, affordable ordinary cards and no popup.
+At 09:54:54 UTC, the fixed client ran exactly once against the fresh installed
+state above on release b26ba1b (documentation head 8b466da). It returned exit0:
+
+```json
+{"schema_version":1,"status":"passed","shop_status":"unsupported","stage":"core_context","reason":"map_travel_enabled"}
+```
+
+This is accepted live diagnostic evidence: the initial projector reached the
+MapTravelEnabled predicate and rejected it. Earlier native/context, gold/deck/
+offer-count, room visibility, foreground and MapOpen checks passed for this
+observation. Subsequent predicates were not reached; this does not prove the
+remaining shop projection or any purchase/close/leave action. The passive
+assembly exposes no action route; no gameplay action was attempted by the
+diagnostic. A second supported screenshot showed unchanged inventory/counters.
+No retry or reconstruction of discarded bytes occurred. The result localizes
+the current shop rejection; it does not retroactively classify the historical
+room_interaction_timeout or by itself establish the meaning of the native flag.
+
+Supported cleanup UI closed the inventory with Escape, opened pause, used Save
+and Quit, then main-menu Quit/Yes. Those are coordinator cleanup inputs, not
+controller acceptance. Game exit and closed port were verified before code-first
+quarantine. Quarantine state SHA256:
+`65d16d7451243442a1ea921546349a567d29966f894f90f76fecadc7700b9150`.
+Exact purge removed four generated files. Final unchanged base429/zero-overlay,
+stopped/closed (3 process and 2 port samples) and six fixed absence checks all
+passed by 09:57:53 UTC, 8 minutes 5 seconds after installation. The absence checks
+cover the entire protected operator parent, four old/current campaign roots and
+the created mods parent; their child configs/overlays are consequently absent.
+The repeated unmodded relaunch remains waived. No campaign is active, and no
+historical installed/quarantine state may be invoked again.
+
+Next is focused repository/pinned-static analysis of IsTravelEnabled semantics
+and the smallest appropriate shop predicate repair. Preserve actual MapOpen,
+MapTraveling, foreground, stale binding and correlated leave protections. Do not
+just suppress the observed flag or claim other predicates pass without evidence.
+All eight source trees and prior gameplay contracts remain frozen.
