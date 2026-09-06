@@ -2,19 +2,25 @@
 
 Selected 2026-09-06; priority clarified after implementation commit `b2ae0dd`.
 The original baseline was `7e57bb6`; the two completed increments below are
-preserved. Fourteen successor trees and the original bridge are now frozen.
+preserved. The generic discovery increment below brings the total to fifteen
+frozen successor trees plus the original bridge.
 No campaign was left active; this plan update performed no new live check.
 
 ## Current direction
 
 The user wants shared handlers that support standard interactions without a
-new event-name connection for each event. The current implementation combines
-reusable mechanisms with a closed caller allowlist. The next task is
-[generic interaction discovery and admission](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md),
-not adding Brain/Zen rows as the main expansion strategy. Events primarily supply
-representative and held-out tests; custom interactions can need dedicated adapters.
-The completed exact rows below remain accepted evidence, not proof that this
-generic discovery already exists.
+new event-name connection for each event. `generic_event_v1` implements the first
+native family: standard upgrade-one through shared request/screen creation and
+exact asynchronous ownership, composed through the production native adapter,
+card session, wire and Python provider. The
+[generic ledger](research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md) records its
+independent review, inert tests, frozen identity and reproducible compilation.
+It has no installable release or live validation.
+
+Extend [generic interaction discovery and admission](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
+to additional count/operation families. Events primarily supply representative
+and held-out tests; custom interactions can need dedicated adapters. The completed
+exact rows below remain evidence for their own predecessor components.
 
 ## Objective and coverage accounting
 

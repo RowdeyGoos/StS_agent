@@ -1,15 +1,31 @@
 # Astra handoff — generic event support
 
-Updated 2026-09-06 at the user's request. This replaces the chronological handoff;
-historical attempts and cleanup remain in their linked acceptance ledgers and
-Git history. No new task, live campaign or game inspection was started for this
-documentation update.
+Updated 2026-09-06 after implementing the requested generic handler. Historical
+attempts and cleanup remain in their linked acceptance ledgers and Git history.
+This update includes offline implementation and validation; no live campaign
+was started.
+
+## Current implementation update
+
+The requested handler is implemented in
+`bridge/Sts2AgentBridge/successors/generic_event_v1`. Read its
+[contract](PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md) first.
+It discovers standard upgrade-one interactions across unregistered event types
+using scoped shared-call instrumentation, retaining pre-dispatch context/deck
+and exact request/selector/parent completion. It is a functional successor;
+no release, installation or live campaign was created. The historical frozen
+implementation identities below remain valid for their own components.
+
+The scope remains explicit: generic single-upgrade native support, bounded
+ordinary pages and Proceed; other count/operation/custom families still need
+shared authoritative boundaries. The same23cf worktree remains authoritative.
 
 ## Start here
 
 - Use `/Users/rowdeygoos/.codex/worktrees/23cf/StS_agent`.
 - Branch: `codex/phase1-actor-ready-integration`.
-- Latest accepted implementation: `b2ae0dd6577e7d44c208252f816e2266391c2ea5`
+- Frozen predecessor implementation: `b2ae0dd6577e7d44c208252f816e2266391c2ea5`
   (`Add shared event card policies and two native upgrade flows`). Documentation
   updates follow this commit. Verify current HEAD and user changes before work.
 - The saved checkout `/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent` is older
@@ -39,28 +55,30 @@ not development that adds one event-name connection at a time. We acknowledged
 that the latest implementation worked on both reusable mechanics and individual
 event connections, and that its native card support still requires registration.
 
-Current code is not an automatically discovering all-event handler. The next
-priority is authoritative generic interaction discovery/admission and its shared
-contract, with events used as representative tests. Brain Leech/Zen Weaver
+The new successor discovers one standard interaction family automatically. The
+next priority is extending authoritative discovery/admission to additional
+interaction families, with events used as representative tests. Brain Leech/Zen Weaver
 research remains useful, but adding those named rows is no longer the default
 next assignment. Dedicated handlers may still be needed for custom interactions.
 
 The existing frozen contract binds operation/count/domain before the parent
 choice. Discovering a selector afterward cannot silently replace that contract.
-The new design must resolve this timing/ownership issue explicitly and preserve
-truthful accounting for effects of an already-dispatched parent action. Read the
-[generic plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) before implementation.
+The new successor resolves this timing/ownership issue with two-stage admission
+and truthful accounting for effects of an already-dispatched parent action. Read
+its contract and the [generic plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) before
+extending it.
 
 ## What is implemented and what is demonstrated
 
 | Capability | Current evidence and limits |
 | --- | --- |
-| Shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
+| Generic discovery successor | Shared upgrade command/screen discovery without event-name registrations; production native/hook-to-Python inert fixtures; no release or live evidence |
+| Preserved shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
 | Shared card mechanics | Add/remove/upgrade/transform, explicit min/max, confirmation, reference identity and exact effects; generic fixtures are not native all-event support |
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
 | New Aroma/Sapphire paths | Actual native/controller fixtures and reproducible compile-only builds; no installable release or live evidence |
 | Previous live paths | Ordinary Smith upgrade-one, Cheese add-two, Dense Vegetation continuation, one shop card purchase/close/map, and bounded potion/relic acquisition in predecessor releases |
-| Not implemented generically | Automatic card-interaction discovery, native arbitrary removal/transform/multi-upgrade, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
+| Not implemented generically | Add/remove/transform/multi-upgrade discovery, item children, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
 
 Events may require multiple cards; ordinary rest-site Smith upgrades exactly one.
 Do not collapse these requirements. No event has complete all-branch evidence;
@@ -69,6 +87,14 @@ proving runtime eligibility. Previous live results do not automatically validate
 newly composed releases. Strategic event choice and natural discovery are separate.
 
 ## Verification and frozen artifacts
+
+`generic_event_v1` is functionally accepted and frozen: 200 native assertions,
+34 wire checks, 33 host tests and 20 integration checks, including four through
+production native hooks to Python. Independent review and candidate/frozen
+aggregate gates passed; four native builds matched byte for byte. Exact source,
+contract, dependency and result identities are retained in the
+[generic acceptance ledger](research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md).
+The real EventSynchronizer dispatch lifecycle remains a live-validation gate.
 
 `event_card_operations_v1` is functionally accepted and frozen:
 
@@ -86,14 +112,14 @@ newly composed releases. Strategic event choice and natural discovery are separa
   failure; the unchanged inert fixture passed separately with local permission.
   All 1,301 collected cases passed across those two runs, not one clean full run.
 
-Preserve this component and its thirteen predecessors: fourteen frozen successor
-trees total, plus the original 48-file bridge boundary. Do not edit frozen README,
+Preserve this component and its thirteen predecessors, plus `generic_event_v1`:
+fifteen frozen successor trees total, plus the original 48-file bridge boundary. Do not edit frozen README,
 source identity, contracts, API/schema or derivation files to implement the new
 direction. Use a reviewed successor. Temporary outputs may disappear; the ledger
 and repository identities are the retained reference, not permission to reconstruct
 missing outputs or execute historical commands.
 
-## Code map for the next session
+## Preserved predecessor code map
 
 Under `bridge/Sts2AgentBridge/successors/event_card_operations_v1/`:
 
@@ -107,22 +133,22 @@ Under `bridge/Sts2AgentBridge/successors/event_card_operations_v1/`:
 - `native_tests/`, `native_card_tests/`, `integration_tests/`: actual-source
   composition and cross-language tests, useful successor controls.
 
-Reuse the actual frozen card session in `card_selection_v1` and child brokers in
-`event_orchestrator_v1`; see the new component's derivation manifest for precise
-links. The [Brain/Zen result](research/PHASE_1_EVENT_CARD_FOLLOWUP_RESULT.md) and
+The new generic successor source-links the actual frozen card session and
+preserves its own explicit derivation/reuse manifest. The predecessor
+`event_orchestrator_v1` brokers remain useful reference for other families. The [Brain/Zen result](research/PHASE_1_EVENT_CARD_FOLLOWUP_RESULT.md) and
 [preview result](research/PHASE_1_EVENT_CARD_PREVIEW_RESULT.md) preserve remaining
 static questions. Do not rerun their closed inspection invocations by default.
 
 ## Operational state and user preferences
 
 No campaign was left active and no cleanup was pending at the last recorded
-closure. This documentation task performed no fresh game/process/install check;
+closure. This implementation performed no fresh game/process/install check;
 verify current state before a later live operation. The latest development was
 offline only. No game setup is needed for the next architecture work.
 
 The user has authorized continued event development, parallel work where useful,
 and bounded live campaigns when needed; that explicit session authority persists.
-This documentation request starts none. Prepare a concrete campaign scope and
+This implementation starts none. Prepare a concrete campaign scope and
 pass the appropriate release/preflight gates before using that authority; do not
 inherit closed state or treat it as permission for unrelated capabilities. Ask
 for additional authorization only if an actual new scope requires it. Give the
@@ -131,7 +157,7 @@ prepare the intended interaction.
 Profile 3 is the established live test profile. The user waived repeated unmodded
 launch checks; retain other required quit/quarantine/purge/base/closed checks.
 Use the appropriate current release's tools and ledger, not historical state
-hashes or credentials. No new event-card release exists yet.
+hashes or credentials. No new event-card or generic-event release exists yet.
 
 Use supported computer-use tools. The user offered
 `steam://rungameid/2868840`, but the browser route was previously rejected by its
@@ -154,7 +180,7 @@ preserve user changes. Do not fetch, push, reset or merge older main for this ta
 - Pinned game: v0.107.1 / Steam build23811903 / macOS arm64; reference manifest
   `manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json`.
 - The accepted offline checker is
-  `bridge/Sts2AgentBridge/successors/event_card_operations_v1/check.py`; read its
+  `bridge/Sts2AgentBridge/successors/generic_event_v1/check.py`; read its
   CLI and use a fresh `/private/tmp` scratch directory. It builds snapshots,
   verifies the two compile-only reference hashes and never executes target code.
 - Coordinate a single SDK build lane across parallel agents; use offline package

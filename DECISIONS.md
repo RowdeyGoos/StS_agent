@@ -2205,3 +2205,24 @@ preserves reference identity, receipts, bounds, exact effects and no uncertain
 retries. Availability of a suitable shared API or integration point is still an
 open design question. See the [generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
 and [current handoff](docs/PHASE_1_ASTRA_HANDOFF.md).
+
+## 2026-09-06 — Discover event upgrades at owned interaction creation
+
+Use two-stage admission in the new `generic_event_v1` successor. Reserve exact
+parent context and the complete deck before choosing an option; obtain operation,
+preferences, original candidates and tasks from shared upgrade-command and screen
+creation calls under that option's asynchronous invocation. Event names remain
+ownership/diagnostic identity, never a semantic admission catalog.
+
+A narrowly scoped, exclusive Harmony lease observes three public calls and
+preserves original execution. Successful selection is not effect completion:
+require exact request/selector originals, the awaited option task and the frozen
+card session's deck reconciliation. Stops after parent dispatch retain attempts
+and accepted receipts and leave unverified effects explicit. Unsupported families
+stop without retry. The first family is standard upgrade-one; multi-card and
+other operations need their own shared authoritative boundaries, not named rows.
+
+The fourteen predecessors remain frozen. This functional component does not
+broaden an existing release or install new instrumentation into the game. See the
+[new contract](docs/PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md).

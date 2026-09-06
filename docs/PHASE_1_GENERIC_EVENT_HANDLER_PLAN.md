@@ -5,6 +5,18 @@ support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
 accepted component, source identity, protocol or live release.
 
+## Implementation checkpoint
+
+`generic_event_v1` implements the first complete standard interaction path:
+upgrade-one discovery through owned event/request/screen-creation calls, actual
+native card control, frozen reconciliation and a bounded C#-to-Python controller.
+It requires no event-name registration. The
+[successor contract](PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) explicitly resolves
+the two-stage timing conflict; the
+[ledger](research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md) records validation.
+The remaining family/count/custom gaps below stay open; this checkpoint does
+not mean every event or branch is supported or a live release is ready.
+
 ## What the user means
 
 Build a controller that handles the interactions an event presents, so another

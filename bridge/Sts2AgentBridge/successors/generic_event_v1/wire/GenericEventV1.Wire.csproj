@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.GenericEventV1.Wire</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GenericEventV1WireService.cs" />
+    <Compile Include="GenericEventV1WireCodec.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireCodec.cs" Link="frozen/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireProtocol.cs" Link="frozen/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../../card_selection_v1/parents/CardSelectionParentV1Contracts.cs" Link="frozen/CardSelectionParentV1Contracts.cs" />
+    <ProjectReference Include="../core/GenericEventV1.Core.csproj" />
+  </ItemGroup>
+</Project>

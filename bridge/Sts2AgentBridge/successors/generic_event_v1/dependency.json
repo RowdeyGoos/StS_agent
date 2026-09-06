@@ -1,0 +1,11 @@
+{
+  "name": "Lib.Harmony",
+  "version": "2.4.2",
+  "source": "https://api.nuget.org/v3-flatcontainer/lib.harmony/2.4.2/lib.harmony.2.4.2.nupkg",
+  "package_sha256": "d64592e53090464559fce48612c9ca7c8dc73113841376b7aa3455f46fc5d579",
+  "member": "lib/net9.0/0Harmony.dll",
+  "assembly_bytes": 2330624,
+  "assembly_sha256": "a849b726e1f9248d71aabbed8114deaf79beb7acc25e8344ff92a27ad8ac87ab",
+  "license": "MIT",
+  "source_commit": "a264a1bf1ce689e4589e8dcc54b1e2818602a90a"
+}

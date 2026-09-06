@@ -18,11 +18,13 @@ For event coverage or a session handoff, begin with
 [current status](docs/PHASE_1_CURRENT_STATUS.md) and
 [generic event handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md), then
 follow the reading order below. The active integration checkout is the existing
-23cf worktree named in the handoff; local main is older. Shared event/card
-mechanisms exist, but native card support is gated by exact caller entries.
-The user's next priority is generic interaction discovery/admission, not another
-named-event implementation queue. Preserve accepted frozen contracts and source;
-a changed discovery/admission contract belongs in a reviewed successor.
+23cf worktree named in the handoff; local main is older. The new
+[generic successor contract](docs/PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md) describe
+shared upgrade-one discovery without named caller entries. Other interaction
+families remain open. Expand by authoritative shared family, using event names
+as tests. Preserve all fifteen frozen successor trees, their contracts and
+identities, plus the original bridge; new behavior belongs in a reviewed successor.
 
 ## Read This First
 

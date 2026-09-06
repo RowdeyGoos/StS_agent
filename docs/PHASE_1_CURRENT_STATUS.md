@@ -18,15 +18,32 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
-## Current priority: generic interaction discovery — 2026-09-06
+## Generic discovery implementation — 2026-09-06
 
-Latest accepted implementation: `b2ae0dd6577e7d44c208252f816e2266391c2ea5`.
+The new `generic_event_v1` successor implements two-stage discovery for standard
+upgrade-one event interactions without an event-type/key catalog. It captures
+rules and original candidates at shared command/creation calls under the exact
+reserved asynchronous parent action, then reuses the frozen card session. Its
+bounded parent, wire and Python provider compose through explicit Proceed/map.
+The [new acceptance ledger](research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md)
+records the final functional gate and evidence boundaries.
+
+This is generic support for one interaction family, not automatic all-event
+coverage. Multi-card upgrades, add/remove/transform, item children and custom/
+combat/optional/scrolling interactions remain unsupported in this successor.
+Existing frozen capabilities are unchanged. No installable generic release or
+new live campaign exists. Continue by authoritative shared interaction family,
+using held-out event identities as tests.
+
+## Previous priority: generic interaction discovery — 2026-09-06
+
+Predecessor implementation: `b2ae0dd6577e7d44c208252f816e2266391c2ea5`.
 The user clarified that all-event support means shared handlers that work from
 authoritative interaction rules, without registering each standard event by
 name. Current code has reusable flow/card mechanics plus a closed native caller
-allowlist; it does not automatically discover arbitrary event card interactions.
+allowlist; that predecessor does not discover arbitrary event card interactions.
 
-The next task is the [generic event handler plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md):
+That milestone led to the [generic event handler plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md):
 audit where operation, counts, candidates and completion ownership can be
 obtained, resolve the pre-dispatch versus child-creation contract, and implement
 a reviewed successor. Brain/Zen are useful test/evidence cases, not the default

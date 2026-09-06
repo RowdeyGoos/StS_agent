@@ -10,6 +10,16 @@ the latter's authoritative progress summary is
 
 ## Active integration priority
 
+`generic_event_v1` now implements the first native interaction-discovery family:
+standard upgrade-one events with no event-name registration, exact asynchronous
+ownership, frozen card reconciliation and a bounded host/provider flow. See the
+[generic acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md)
+for validation and release limits. Next extend authoritative shared creation and
+effect boundaries to more count/operation families; keep unavailable families
+explicit and prepare release composition separately.
+
+### Preserved predecessor milestones
+
 The shared `event_orchestrator_v1` functional increment is implemented, reviewed
 and frozen. It composes ordinary choices, item rewards and Cheese card selection
 under one parent with sequential children and an explicit decision provider.

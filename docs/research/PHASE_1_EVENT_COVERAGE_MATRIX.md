@@ -12,7 +12,18 @@ Vegetation ordinary continuation and Room Full of Cheese/Gorge add-two. Their
 remaining branches stay open. The new shared orchestrator has separate functional
 fixtures; predecessor live results do not automatically prove its composition live.
 
-## Current interpretation and priority
+## Generic family implementation
+
+`generic_event_v1` adds native discovery of standard upgrade-one interactions
+without production event/key registrations. Actual hooked native fixtures include
+multiple event subclasses and a held-out identity, with exact creation arguments,
+originals and asynchronous completion. Its combined native-to-Python fixtures
+exercise the full production path. See the
+[generic ledger](PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md) for exact acceptance.
+This adds generic family evidence, not live evidence or complete named-event
+branches. Larger counts and other operation/custom families remain open.
+
+## Preserved interpretation and priority
 
 At `b2ae0dd`, card mechanics and event flow are reusable, but native event card
 support still requires one of three exact caller entries. This matrix records
@@ -28,7 +39,7 @@ catalog. Dedicated handlers remain appropriate for different custom surfaces.
 | Ordinary option pages and Proceed | Generic native control; one Dense Vegetation path live | Classify remaining branches and test longer live chains |
 | Item reward child | Frozen item handler; sequential composition in fixtures | Event-specific live composition and broader reward forms |
 | Add cards | Cheese/Gorge exact two-of-eight native/live; shared composition in fixtures | Other callers, domains and cardinalities |
-| Upgrade cards | Rest Smith exact-one native/live; Aroma/Maintain Control and Sapphire/Eat exact-one native fixtures and target compile | Release/live composition for new paths; other callers and multiple cards |
+| Upgrade cards | Generic upgrade-one shared discovery with native-to-Python inert fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Validate real synchronizer context in a prepared release; multiple-card discovery and reconciliation |
 | Remove cards | Generic pure card core and shared selector facts | Exact event callers, selection rules and removal effect witnesses |
 | Transform cards | Generic pure card core and shared selector facts | Exact callers, replacement/preview rules and result witnesses |
 | Optional selection and repeated choices | Explicitly unsupported by this increment | New reviewed bounds/confirmation and loop identity policies |
