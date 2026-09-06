@@ -628,8 +628,9 @@ must change in a new derived sibling. Preserve leave reconciliation and event
 behavior. The isolated shop_map_permission_v1 repair is now implemented with
 independently accepted core, real-host and runtime fixtures. Both complete
 offline gates pass with identical results/four matching production builds and
-1179 repository tests pass. Its45-file source freeze is accepted; publication
-is next. The
+1179 repository tests pass. Its45-file source freeze and package are accepted
+and published. The user-confirmed fresh shop campaign is installed awaiting
+merchant setup; no controller invocation has occurred. The
 [repair ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) owns its
 current evidence. Diagnostic evidence and closed states remain in their ledger.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing

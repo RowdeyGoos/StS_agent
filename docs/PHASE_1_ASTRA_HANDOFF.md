@@ -10,8 +10,10 @@ shop_map_permission_v1 sibling. Read its
 [contract](PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
 [acceptance ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) first.
 Both complete offline acceptance runs pass with byte-identical results and
-four matching production builds. The45-file freeze is accepted; publication is
-the next step. No new campaign is active. Preserve all eight predecessors and
+four matching production builds. The45-file freeze is accepted and published. A fresh shop campaign is installed
+with state d6270de4e4af13851fb5256bc319d78ed18056394b41775daa710d27b13bc0df,
+awaiting user setup. Use10:32:59UTC as the conservative30-minute start.
+No controller invocation has occurred. See the ledger for mandatory cleanup. Preserve all eight predecessors and
 historical closed states; no live shop-control success is claimed.
 
 ## Current accepted diagnostic — 2026-09-06

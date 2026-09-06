@@ -9,9 +9,9 @@ SHA256 `b9551348a73bd4ff54433dc9693cbed3ae841bb98bdc3f4763e22f1bcac613db`.
 ## Current disposition
 
 Implementation, independent review and two complete offline acceptance runs are
-accepted. The45-file source freeze is final; local artifact publication is the
-next step. No new campaign has started; diagnostic cleanup remains the latest
-operational result.
+accepted. The45-file source freeze is final. The three exact artifacts are published
+and the user-confirmed bounded shop campaign is installed; see its live state
+below.
 No live shop purchase/close/leave success is claimed.
 
 ## Scope and independent ownership
@@ -104,3 +104,31 @@ a disposable scratch location. No test was skipped or failed in that full run.
 `git diff --check` passed. Source and fixture evidence does not establish live
 shop control. The prior diagnostic made no gameplay action and its saved shop
 remains suitable for a fresh, separately state-bound controller invocation.
+
+
+## Fresh shop campaign installed — 2026-09-06
+
+Implementation commit `df98e7078662ea9e01bc64bcecf0f0f7a71f3a8c` was clean at
+publication. Exactly3 canonical artifacts were exclusively published and read
+back at the distinct artifact root; all9 source components verified.
+The user confirmed available now with the game closed. Fresh preflight passed
+stopped/closed (3 process/2 port samples), unchanged base429/zero-overlay and
+source/package identities. The first base-verifier invocation rejected a
+relative target-manifest argument before access; the corrected absolute argument
+passed. This was read-only invocation correction, not a live action retry.
+
+The shop-selected manager installation passed, creating the mods parent, with
+state SHA256
+`d6270de4e4af13851fb5256bc319d78ed18056394b41775daa710d27b13bc0df`.
+Clock sampled immediately before the installation call:10:32:59UTC; overlay
+verification completed at10:33:37UTC. Use10:32:59UTC conservatively for the
+30-minute campaign bound. Overlay2 matched exact candidate+manifest with
+unchanged base429. Installation used only the reviewed protected configuration,
+fresh credential, campaign state and two overlay files.
+
+Current state: installed, awaiting user-prepared untouched Profile3 merchant
+inventory. No controller invocation has occurred. The fixed client must run
+exactly once with the installed-state hash above after supported UI verification.
+Then quit normally, verify stopped/closed, quarantine code first, exact4-file
+purge, base429/zero-overlay and fixed absences. Repeated unmodded relaunch remains
+waived. No profile/save filesystem access, Cloud change or retained live corpus.
