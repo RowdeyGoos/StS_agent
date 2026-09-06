@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridgeCardSelectionV1</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.CardSelectionReleaseV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Contracts.cs" Link="card_selection_v1/core/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Session.cs" Link="card_selection_v1/core/CardSelectionV1Session.cs" />
+    <Compile Include="../../card_selection_v1/parents/CardSelectionParentV1Contracts.cs" Link="card_selection_v1/parents/CardSelectionParentV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/parents/CardSelectionParentV1Session.cs" Link="card_selection_v1/parents/CardSelectionParentV1Session.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="card_selection_v1/native/CardSelectionV1NativeRules.cs" />
+    <Compile Include="../native/PinnedCardSelectionV1NativeAdapter.cs" Link="card_selection_v1/native/PinnedCardSelectionV1NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/parent_native/CardSelectionParentV1NativeRules.cs" Link="card_selection_v1/parent_native/CardSelectionParentV1NativeRules.cs" />
+    <Compile Include="../../card_selection_v1/parent_native/PinnedCardSelectionParentV1NativeAdapter.cs" Link="card_selection_v1/parent_native/PinnedCardSelectionParentV1NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireProtocol.cs" Link="card_selection_v1/wire/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireCodec.cs" Link="card_selection_v1/wire/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireService.cs" Link="card_selection_v1/wire/CardSelectionV1WireService.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" Link="item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" Link="item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/DarwinReadOnly.cs" Link="item_bootstrap_v1/operator/DarwinReadOnly.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" Link="item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" Link="item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" />
+    <Compile Include="../../item_bootstrap_v1/native/PinnedItemBuildGuard.cs" Link="item_bootstrap_v1/native/PinnedItemBuildGuard.cs" />
+    <Compile Include="../../card_selection_release_v1/runtime/OwnedByteFrameQueue.cs" Link="card_selection_release_v1/runtime/OwnedByteFrameQueue.cs" />
+    <Compile Include="../../card_selection_release_v1/runtime/CardSelectionTransportConfiguration.cs" Link="card_selection_release_v1/runtime/CardSelectionTransportConfiguration.cs" />
+    <Compile Include="../../card_selection_release_v1/runtime/CardSelectionTransportContracts.cs" Link="card_selection_release_v1/runtime/CardSelectionTransportContracts.cs" />
+    <Compile Include="../../card_selection_release_v1/runtime/CardSelectionTransportProtocol.cs" Link="card_selection_release_v1/runtime/CardSelectionTransportProtocol.cs" />
+    <Compile Include="../../card_selection_release_v1/runtime/CardSelectionTransportRuntime.cs" Link="card_selection_release_v1/runtime/CardSelectionTransportRuntime.cs" />
+    <Compile Include="../../card_selection_release_v1/operator/CardSelectionOperatorFiles.cs" Link="card_selection_release_v1/operator/CardSelectionOperatorFiles.cs" />
+    <Compile Include="../../card_selection_release_v1/lifecycle/CardSelectionBootstrapLifecycle.cs" Link="card_selection_release_v1/lifecycle/CardSelectionBootstrapLifecycle.cs" />
+    <Compile Include="../../card_selection_release_v1/native/ConfiguredCardSelectionParentV1NativeAdapter.cs" Link="card_selection_release_v1/native/ConfiguredCardSelectionParentV1NativeAdapter.cs" />
+    <Compile Include="../../card_selection_release_v1/native/ProductionCardSelectionRuntimeFactory.cs" Link="card_selection_release_v1/native/ProductionCardSelectionRuntimeFactory.cs" />
+    <Compile Include="../../card_selection_release_v1/native/CardSelectionBootstrapHost.cs" Link="card_selection_release_v1/native/CardSelectionBootstrapHost.cs" />
+    <Compile Include="../../card_selection_release_v1/native/CardSelectionBootstrapSupport.cs" Link="card_selection_release_v1/native/CardSelectionBootstrapSupport.cs" />
+    <Compile Include="../../card_selection_release_v1/native/CardSelectionGodotFrameConnector.cs" Link="card_selection_release_v1/native/CardSelectionGodotFrameConnector.cs" />
+    <Compile Include="../../card_selection_release_v1/native/CardSelectionModEntry.cs" Link="card_selection_release_v1/native/CardSelectionModEntry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidatePinnedGameData" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))" Text="STS2GameDataDir must be absolute." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')" Text="Pinned sts2.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
+  </Target>
+</Project>

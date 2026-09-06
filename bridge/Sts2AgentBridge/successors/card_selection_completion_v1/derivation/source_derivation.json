@@ -1,0 +1,19 @@
+{
+  "derived_path": "bridge/Sts2AgentBridge/successors/card_selection_completion_v1/native/PinnedCardSelectionV1NativeAdapter.cs",
+  "derived_sha256": "fe9c49f8f29e71247cf7d5ddab47b24a44e922c599f72c7a08c6b34ef8fa5798",
+  "original_path": "bridge/Sts2AgentBridge/successors/card_selection_v1/native/PinnedCardSelectionV1NativeAdapter.cs",
+  "original_sha256": "bdf25e398b9ff2e589db17eee066a38c7fe347a5e0282d2b0f8a1bddc4158290",
+  "replacements": [
+    {
+      "count": 1,
+      "new": "        if (selectorClosed)\n        {\n            phase = CardSelectionV1Phase.Submitted;\n            previewIdentity = null;\n            previewOriginals = Array.Empty<object>();\n            confirmControl = null;\n        }\n",
+      "old": "        if (selectorClosed)\n        {\n            phase = CardSelectionV1Phase.Submitted;\n        }\n"
+    },
+    {
+      "count": 1,
+      "new": "            if (_taskState != CardSelectionV1TaskState.Incomplete)\n            {\n                phase = CardSelectionV1Phase.Transient;\n                previewOpen = _cachedPreviewOpen;\n            }\n",
+      "old": "            if (_taskState != CardSelectionV1TaskState.Incomplete)\n            {\n                phase = CardSelectionV1Phase.Submitted;\n                previewOpen = _cachedPreviewOpen;\n            }\n"
+    }
+  ],
+  "schema_version": 1
+}

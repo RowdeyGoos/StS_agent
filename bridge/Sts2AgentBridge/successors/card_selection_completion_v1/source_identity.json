@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "component": "card_selection_completion_v1",
+  "contract_sha256": "bc9626a765bf0e50fd8b39813131931905a2cf01adcf5e297ee6d3ce05c295c8",
+  "files": [
+    {
+      "path": "Directory.Build.props",
+      "sha256": "2b05edd4dbb4532b1e884c6267bf56c732b49415dc43a23245b3d0c3cc30265f"
+    },
+    {
+      "path": "README.md",
+      "sha256": "8188bd48c47df66172819747f710bca11fc0bc3fefc38146b6255eeab6c40303"
+    },
+    {
+      "path": "check.py",
+      "sha256": "9756019716ebad482276aa5564d6a844b07769de4ac67f501db61c30d9303419"
+    },
+    {
+      "path": "checker_tests/test_card_selection_completion_project_boundary.py",
+      "sha256": "5ee1572d04a5c59db1f6dae46d17eb86c732ce5f0e1c18782a04802359dd4b47"
+    },
+    {
+      "path": "client/run_live.py",
+      "sha256": "2626d73353f40548ea6969cbc7e72463db60e8feb808b252aa4552a48615041c"
+    },
+    {
+      "path": "client/secure_operator.py",
+      "sha256": "c2b4f8d15770f15a74756be709ca47dae434df217142d62988e3f1945f043e75"
+    },
+    {
+      "path": "client_tests/client_fixtures.py",
+      "sha256": "5f45c34ecafbe6860927ae3c5a6c27f0e5d1bca920522e6b91f40fc31569cc6b"
+    },
+    {
+      "path": "derivation/check_derivation.py",
+      "sha256": "893be4b682716cd3ebe53b4f476eb7ae83d5ba1acb3dfdc7fe3b4c6dab85593c"
+    },
+    {
+      "path": "derivation/source_derivation.json",
+      "sha256": "1153a08fffdc73f0d460827936cc340ff6b241c554f463630f3f920f941ba137"
+    },
+    {
+      "path": "freeze_sources.py",
+      "sha256": "a4ae9b6199380ed85836e16890b0f912db141d65719d19ec05a90dc607cede87"
+    },
+    {
+      "path": "native/PinnedCardSelectionV1NativeAdapter.cs",
+      "sha256": "fe9c49f8f29e71247cf7d5ddab47b24a44e922c599f72c7a08c6b34ef8fa5798"
+    },
+    {
+      "path": "native_tests/Program.cs",
+      "sha256": "1422caf53f0a49c22a4bbcfd70c261137a455dfe209db54e2a8688192d87db58"
+    },
+    {
+      "path": "native_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj",
+      "sha256": "03012fc94306901ff60383591df255c0e13d3255c72d7b415c6b1407c2028621"
+    },
+    {
+      "path": "native_tests/Sts2AgentBridge.CardSelectionCompletionV1.OriginalControl.Tests.csproj",
+      "sha256": "0b613f4d6e7656f0dbc3e654d7416ff9a83482a79d8c17052900f70ecd00f8b3"
+    },
+    {
+      "path": "native_tests/TargetStubs.cs",
+      "sha256": "70741ed9013935390f2a01477a2ef54a630ec979e7e31fa5560913c896ca82d3"
+    },
+    {
+      "path": "operations/check_live_runtime.py",
+      "sha256": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683"
+    },
+    {
+      "path": "operations/check_live_runtime_fixtures.py",
+      "sha256": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2"
+    },
+    {
+      "path": "operations/manage_live_campaign.py",
+      "sha256": "d1734bc33581160b56f40f239cadd9ffb7bd9950cbfe680e0f05bf77b31bc3ae"
+    },
+    {
+      "path": "operations/manage_live_campaign_fixtures.py",
+      "sha256": "13db9617dda0d16961d8ef09d7d60d92046a07b7ac7b8b74c27f348b2e8cf05e"
+    },
+    {
+      "path": "operations/predecessor_conflict_fixtures.py",
+      "sha256": "9b1e36791485feafd47eb2867ef0eed9d0a06ae7c9c4e9c1defb5ac4d6f60424"
+    },
+    {
+      "path": "operations/source_derivation.json",
+      "sha256": "e34947bda22cca7c8f42959c9652bb1ab4bac9e29c9d34db57203f8081039b64"
+    },
+    {
+      "path": "operations/tool_common.py",
+      "sha256": "fd703f21e95cc89d93120d58a42cbfda9d02051b5567e448ee773ce3d9cdd0a6"
+    },
+    {
+      "path": "operations/verify_clean_install.py",
+      "sha256": "e0123778c5afcfd4a154310f08f5616ec4b2391c8f564207b8805d18cde6b312"
+    },
+    {
+      "path": "operations/verify_clean_install_fixtures.py",
+      "sha256": "a12cc73977f876cdec1861996c35dea338357320c70d59ff94c25256fe63babc"
+    },
+    {
+      "path": "operations/verify_source_derivation.py",
+      "sha256": "28206acf2cd8e14088fbd9761f4474afb47f0bbf6f570b6c32badddc9629ed9e"
+    },
+    {
+      "path": "package/package_fixtures.py",
+      "sha256": "4c69dab84342f54bfe790f78a1a75b2f45015ac74a2acfd6a6f91bead37dd94e"
+    },
+    {
+      "path": "package/release_package.py",
+      "sha256": "d87a696e279a355452bc64c728ebb3bfbc37af99db4721dcfbf1fae68211c62c"
+    },
+    {
+      "path": "policy/card_selection_release_policy.json",
+      "sha256": "32cb075e1c1264db880dde763b49fac41c1d24f38052d27843b41ecd78033b2b"
+    },
+    {
+      "path": "production/Sts2AgentBridgeCardSelectionV1.csproj",
+      "sha256": "06aae55108b9753c96e3bbc43eb1f3f0d0146118b81dc797bb57b708cdbfb6f6"
+    },
+    {
+      "path": "verifier/CardSelectionReleasePolicy.cs",
+      "sha256": "62619496617a89f379b3ce1a0a2985c7c4df64f074e92ea287aabcbb5f46835d"
+    },
+    {
+      "path": "verifier/CardSelectionReleaseProjection.cs",
+      "sha256": "dde8a442efb726f46ae970182611e274d90480c51aad29f4a9f7819c6c18c090"
+    },
+    {
+      "path": "verifier/CardSelectionReleaseVerifier.cs",
+      "sha256": "ea4fc577bdac057926d14f814c49b37f846fe578c2f17d30234c6fbc0fb956cb"
+    },
+    {
+      "path": "verifier/IlDecoder.cs",
+      "sha256": "a7e5744b741f785c570c9be7f9eb9f62d1e02ec111d7cc650f0a6ea613467101"
+    },
+    {
+      "path": "verifier/MetadataNames.cs",
+      "sha256": "ad698727b0dd7c58d9372e06d1dc2b880b211c15aa4f20947a4769ee0e22cdac"
+    },
+    {
+      "path": "verifier/Program.cs",
+      "sha256": "1d1bdcc6a0679c56cbea63b5a7ae48700ad7ff829fef0e830871e2a9f26bde1e"
+    },
+    {
+      "path": "verifier/SafeFiles.cs",
+      "sha256": "d8917636163c0239e1f5516c749478e8005210c0aedd1031f2c4c8ad0044778d"
+    },
+    {
+      "path": "verifier/Sts2AgentBridge.CardSelectionV1.Release.Verifier.csproj",
+      "sha256": "8cf03fbe317261efe72e4ab66b83536a28cfd595559cb99603f71f95be6c7628"
+    },
+    {
+      "path": "verifier/VerificationException.cs",
+      "sha256": "fc3b7e0b9596a2514eb106829fccdb744e741c01f02612704a550048a535ddd8"
+    },
+    {
+      "path": "verifier_tests/PeMutations.cs",
+      "sha256": "54491681c22cf186c9c6a00686e57e3f7df3e5409b76dc4e6824028400ba7a4b"
+    },
+    {
+      "path": "verifier_tests/Program.cs",
+      "sha256": "a238f996f1b0c3e88103c24e5b69098631698e78e004dd35959527cfaa86bac9"
+    },
+    {
+      "path": "verifier_tests/Sts2AgentBridge.CardSelectionV1.Release.Verifier.Tests.csproj",
+      "sha256": "18b35efb2974fc288915b6c96ac312c8d05ad385e7acf2cf0b53c47547ffef26"
+    }
+  ]
+}

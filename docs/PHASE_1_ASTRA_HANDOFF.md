@@ -35,9 +35,17 @@ exact identities and the untouched Smith setup. The first Smith live test return
 reconciliation: parent counts1/1/1, child2/2/1. Rest Proceed was subsequently
 visible, but no upgrade, child completion or map handoff is accepted as proven.
 Normal quit/quarantine/purge and clean base429/zero-overlay/stopped/closed checks
-passed by 14:19:58 UTC; no campaign remains active. The next task is focused
-repository/fixture diagnosis, with all eleven successor trees frozen and no
-retry of the uncertain action or closed states.
+passed by 14:19:58 UTC; that campaign is closed. Focused diagnosis proved two
+native projection mismatches against the unchanged core. The isolated
+[completion repair](PHASE_1_CARD_SELECTION_COMPLETION_V1_CONTRACT.md) is now
+independently accepted, frozen (41 files) and published. Its actual-adapter/core
+fixtures pass87 checks and frozen-original controls reproduce both rejections.
+The complete offline aggregate passes, four production builds match, and full
+repository regression passes1206 tests in107.35 seconds. Read the
+[completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
+for exact identities and current campaign state. Next is one fresh Smith test
+at a different untouched rest site; the earlier uncertain action is never retried.
+All eleven predecessor trees and old48 remain byte-exact.
 Do not reuse closed campaign state or retry a historical uncertain action.
 Fresh Steam capture still returns `-3811`, separately from controller behavior.
 
