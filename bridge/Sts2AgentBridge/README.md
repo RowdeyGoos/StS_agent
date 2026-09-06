@@ -883,3 +883,10 @@ authoritative:
 A nonzero result is fail-closed. Do not reinterpret it as a partial pass, and
 do not widen a path, disable a check, repair live state, or substitute an
 unreviewed artifact to make the command pass.
+
+
+The corrective [shop map permission release](successors/shop_map_permission_v1/README.md)
+is independently accepted offline. It replaces exactly three pre-leave shop
+permission checks while preserving leave/event behavior and all eight earlier
+successors. Its [acceptance ledger](../../docs/research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md)
+owns exact source/package identities and the pending live-control evidence.

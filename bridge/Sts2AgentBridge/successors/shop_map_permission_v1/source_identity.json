@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "component": "shop_map_permission_v1",
+  "contract_sha256": "b9551348a73bd4ff54433dc9693cbed3ae841bb98bdc3f4763e22f1bcac613db",
+  "files": [
+    {
+      "path": "Directory.Build.props",
+      "sha256": "eb591e37d383c21589516f048c797967dbf8d2aa18e642904f44965ea9c5a0eb"
+    },
+    {
+      "path": "README.md",
+      "sha256": "c5cbdc393e58d1d0f088c1c32bced9df896892d139fb1a1a131fd2c59e25918c"
+    },
+    {
+      "path": "check.py",
+      "sha256": "d0771649b46ef995babe3b3acee713457bcdc27b74317f050cb1e9734adac7db"
+    },
+    {
+      "path": "checker_tests/test_shop_map_project_boundary.py",
+      "sha256": "ae5f03c11ff9da2b528c97a63e3f3fc273baed0b24afae95d535ab0388d2a15b"
+    },
+    {
+      "path": "client/run_live.py",
+      "sha256": "c4f11d11fef3156599d8c68a4d138acd45bac645cab47f6678ab26e638598738"
+    },
+    {
+      "path": "client/secure_operator.py",
+      "sha256": "bf561e81d45d8035f98eadf8a45cba5251844f9e4d45ee715c7b27b0b48e6204"
+    },
+    {
+      "path": "client_tests/client_fixtures.py",
+      "sha256": "3fd1820c0699f75af4ef1d6552023d538302671fcb042f66f31bc3129ad812d7"
+    },
+    {
+      "path": "core/ShopV1Session.cs",
+      "sha256": "4a361e4dbba3fcf961d893407b4b3e6d14235e1dbcaddfcc9434d1fff317ed35"
+    },
+    {
+      "path": "core/Sts2AgentBridge.ShopMapPermissionV1.Core.csproj",
+      "sha256": "6110c99a3e98c7a34be88b13e6a985b5cc339bc6160d04eef21ad9392fb460f1"
+    },
+    {
+      "path": "core_tests/Program.cs",
+      "sha256": "f67d4fadfabd66fdc80ca29baa9efa1f5eeba3be132a2db775b6d18c747ea360"
+    },
+    {
+      "path": "core_tests/Sts2AgentBridge.ShopMapPermissionV1.Core.Tests.csproj",
+      "sha256": "bee3806135e25345deb240e80414b93560a2fb5a78f7a447287e75d3bd762510"
+    },
+    {
+      "path": "derivation/check_derivation.py",
+      "sha256": "68c336787456fabf274415ccddeb83db6f8c1bb124ff505c02f00e391df8bab0"
+    },
+    {
+      "path": "derivation/derivation_manifest.json",
+      "sha256": "50b0e9521349a44789f81ed88213c6c9ad638ef5b95165d0384cc713f252669c"
+    },
+    {
+      "path": "integration/Program.cs",
+      "sha256": "d64e4dcfdde80d52193adc6a5f7d7862ef47edcdb15330ffc4b3c5115128d98a"
+    },
+    {
+      "path": "integration/Sts2AgentBridge.ShopMapPermissionV1.Integration.csproj",
+      "sha256": "af5c89a4afff4c3bd630b18c43a92b29b064789acc4581c688fd2a7e252d8eab"
+    },
+    {
+      "path": "integration/test_shop_map_cross_language.py",
+      "sha256": "c4275a41919e8df7e16f52c09de34c5bbaacbdc52ff10bf6a534882159458855"
+    },
+    {
+      "path": "integration/verify_fixture_derivation.py",
+      "sha256": "75f3d805821c38bc42323931e2641da84817511b1a8cec3d3934eae20a331b46"
+    },
+    {
+      "path": "operations/check_live_runtime.py",
+      "sha256": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683"
+    },
+    {
+      "path": "operations/check_live_runtime_fixtures.py",
+      "sha256": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2"
+    },
+    {
+      "path": "operations/manage_live_campaign.py",
+      "sha256": "7b1454b9eaabb2dfccffc721add2ccc419047a4277fd637203f4ab43d6350af5"
+    },
+    {
+      "path": "operations/manage_live_campaign_fixtures.py",
+      "sha256": "fd029f7623ade234665fe544004a45d774685418804597c771c1a41ae0076f7d"
+    },
+    {
+      "path": "operations/predecessor_conflict_fixtures.py",
+      "sha256": "d5a5315590fe651fca96d4e937731a67d858df29f365be61f78bce0569e53f0c"
+    },
+    {
+      "path": "operations/source_derivation.json",
+      "sha256": "ca5d38deda1f4bb206ac5972e20424adb1798f92b3f1484e6dbbc099d4ffa8f6"
+    },
+    {
+      "path": "operations/tool_common.py",
+      "sha256": "ff1a284ae1f2e5d84e89ee50dfaed970b903a64d9cf79d03b597401c0ae83fa3"
+    },
+    {
+      "path": "operations/verify_clean_install.py",
+      "sha256": "caef5b2b461d21886995d2a96f312b09e487f27c7c82a3b396fa02dba9caca70"
+    },
+    {
+      "path": "operations/verify_clean_install_fixtures.py",
+      "sha256": "1f23875a68a913b82fbedac30db9d75c4ebe7c39d3e8e3fd8dcaedab1a31bff7"
+    },
+    {
+      "path": "operations/verify_source_derivation.py",
+      "sha256": "d55c0e0caed23945e3d7e2e19a8c83362c2499c9b8756a06d249b77994c3f936"
+    },
+    {
+      "path": "package/package_fixtures.py",
+      "sha256": "ff2ffbdf8e6d14d1f915dd837741bfeb72060854b1f9ae2cb3622fe64510db55"
+    },
+    {
+      "path": "package/release_package.py",
+      "sha256": "1ed92fd878c28c0aef0da2e78c8864e568beb81d5ac64f3d34bcc02a5386f287"
+    },
+    {
+      "path": "policy/room_release_policy.json",
+      "sha256": "7efaceafc547b59170ca1c083cec34b4af1120d9857e8333b31e34ac87968a72"
+    },
+    {
+      "path": "production/Sts2AgentBridgeRoomFlowsV1.csproj",
+      "sha256": "baa478725b553b76572a42a778ed447bf9f74d1ce3610e0cf247a302529385ca"
+    },
+    {
+      "path": "runtime_tests/Sts2AgentBridge.ShopMapPermissionV1.Transport.Tests.csproj",
+      "sha256": "f9e91656c887293fcfa566f4bb67baf636104e865507c09f85aa480abf2e95b7"
+    },
+    {
+      "path": "runtime_tests/test_shop_map_socket_composition.py",
+      "sha256": "5344b24eb2159817289e650642902994fbc993f9884b8dccdb05ed1e72452b43"
+    },
+    {
+      "path": "transport/room_transport.py",
+      "sha256": "8fac5b1a9656a970f07d761617ed7e9fbe305f472c4e06e7e500ee33d90c8843"
+    },
+    {
+      "path": "transport_tests/test_shop_map_transport.py",
+      "sha256": "37c17df2eb91926f5adf279bafa911d3647e80ffd62d649d074ad11ac95fde55"
+    },
+    {
+      "path": "verifier/Program.cs",
+      "sha256": "6ebf575e69b5ff654cdff0d0979fbd9cfb2134cec0de373c56703c3a2e2fc015"
+    },
+    {
+      "path": "verifier/ShopMapPermissionReleasePolicy.cs",
+      "sha256": "c7df1f8071619ee3d9224dffc2585ef82edeb6d069f16b425e656002ee94bd0c"
+    },
+    {
+      "path": "verifier/ShopMapPermissionReleaseProjection.cs",
+      "sha256": "5e062ce4e07fe63bea1ee3e7807ada7189c6bd6ae047e59c844e7cffa054d36c"
+    },
+    {
+      "path": "verifier/ShopMapPermissionReleaseVerifier.cs",
+      "sha256": "8e666748f59973e11cc32157d091dea89f2f7f3532bde3c4748a7d2cb7bbe4b0"
+    },
+    {
+      "path": "verifier/Sts2AgentBridge.ShopMapPermissionV1.Release.Verifier.csproj",
+      "sha256": "68871b216a54f12cbecd4f150507559a50cab60bd70ba6dc80ca45fbc61c190d"
+    },
+    {
+      "path": "verifier_tests/CorrectivePolicyDelta.cs",
+      "sha256": "3ec25b191b0df02346817993f11e848b4701ed7b5c48b0bb04f56a9f58c3e68c"
+    },
+    {
+      "path": "verifier_tests/PeMutations.cs",
+      "sha256": "cc102cc36d3566f47afd167ffe50241fcaa13c246dead3e62dbb2889bc292571"
+    },
+    {
+      "path": "verifier_tests/Program.cs",
+      "sha256": "a6db7a6e83471c8ab857660db00c5dd263fe40dbcedbf1e5783282a5fec9b07f"
+    },
+    {
+      "path": "verifier_tests/Sts2AgentBridge.ShopMapPermissionV1.Release.Verifier.Tests.csproj",
+      "sha256": "6edd23b80738196210c72af6f6cbb007432363cf3c0fbefab6e0b4401b45d1a1"
+    },
+    {
+      "path": "wire/Sts2AgentBridge.ShopMapPermissionV1.Wire.csproj",
+      "sha256": "e4fe3d6a322a1143a84c3ebbbe063aee2a5da1d92a23aa6058962c9f5af3941b"
+    }
+  ]
+}

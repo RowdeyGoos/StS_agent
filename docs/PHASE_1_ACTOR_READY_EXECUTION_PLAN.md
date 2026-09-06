@@ -3,6 +3,9 @@
 The later shop/event functional successor is tracked in the
 [room-flow implementation plan](PHASE_1_SHOP_EVENT_IMPLEMENTATION_PLAN.md) and
 [acceptance ledger](research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md).
+The selected follow-up corrective shop release is tracked by its
+[three-predicate contract](PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md).
 The actor-ready packet contracts and historical evidence below remain preserved.
 
 - **Date:** 2026-09-04

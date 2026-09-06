@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "source": "room_release_v1/operations/manage_live_campaign.py",
+      "source_sha256": "97c33e6321025f0b3d788f1abad9c5c669a04fca1c5eb9f62846c78fe97f586e",
+      "target": "operations/manage_live_campaign.py",
+      "replacements": [
+        {
+          "old": "ROOM-FLOWS-V1-SMOKE-V1",
+          "new": "SHOP-MAP-PERMISSION-V1-SMOKE-V1",
+          "count": 1
+        },
+        {
+          "old": "room-flows-v1-smoke-v1",
+          "new": "shop-map-permission-v1-smoke-v1",
+          "count": 1
+        },
+        {
+          "old": "sts-room-flows-v1-release",
+          "new": "sts-shop-map-permission-v1-release",
+          "count": 1
+        },
+        {
+          "old": "ITEM_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeItemV1\"",
+          "new": "ITEM_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeItemV1\"\nROOM_STATE_ROOT_NAME = \"Sts2AgentBridgeCampaign-room-flows-v1-smoke-v1\"\nDIAGNOSTIC_STATE_ROOT_NAME = \"Sts2AgentBridgeCampaign-shop-diagnostic-v1-smoke-v1\"\nDIAGNOSTIC_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeShopDiagnosticV1\"",
+          "count": 1
+        },
+        {
+          "old": "    _require_absent(layout.application_support / ITEM_STATE_ROOT_NAME)",
+          "new": "    _require_absent(layout.application_support / ITEM_STATE_ROOT_NAME)\n    _require_absent(layout.application_support / ROOM_STATE_ROOT_NAME)\n    _require_absent(layout.application_support / DIAGNOSTIC_STATE_ROOT_NAME)",
+          "count": 2
+        },
+        {
+          "old": "        _require_absent(layout.mods_parent / ITEM_OVERLAY_ROOT_NAME)",
+          "new": "        _require_absent(layout.mods_parent / ITEM_OVERLAY_ROOT_NAME)\n        _require_absent(layout.mods_parent / DIAGNOSTIC_OVERLAY_ROOT_NAME)",
+          "count": 2
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "79ceb1fb76629b5c6b231d504d30cca632d7c982cfa1ae4589744547e6c59c8c",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "094b62b9f7311f3c897b1532cba6836b9f844135294d48b7ad52c2dace802873",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/manage_live_campaign_fixtures.py",
+      "source_sha256": "900fc0659dfbe096d34cfdd491b2a21ea6fc9b416bebb9c89c4b942c582df1ac",
+      "target": "operations/manage_live_campaign_fixtures.py",
+      "replacements": [
+        {
+          "old": "ROOM-FLOWS-V1-SMOKE-V1",
+          "new": "SHOP-MAP-PERMISSION-V1-SMOKE-V1",
+          "count": 1
+        },
+        {
+          "old": "room-flows-v1-smoke-v1",
+          "new": "shop-map-permission-v1-smoke-v1",
+          "count": 1
+        },
+        {
+          "old": "sts-room-flows-v1-release",
+          "new": "sts-shop-map-permission-v1-release",
+          "count": 1
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "79ceb1fb76629b5c6b231d504d30cca632d7c982cfa1ae4589744547e6c59c8c",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "094b62b9f7311f3c897b1532cba6836b9f844135294d48b7ad52c2dace802873",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/tool_common.py",
+      "source_sha256": "ff1a284ae1f2e5d84e89ee50dfaed970b903a64d9cf79d03b597401c0ae83fa3",
+      "target": "operations/tool_common.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/operations/verify_clean_install.py",
+      "source_sha256": "3788ea295cf4864a44d7c8d66540868aa2dbdd22f563638ef07dcc0e174d36c3",
+      "target": "operations/verify_clean_install.py",
+      "replacements": [
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "79ceb1fb76629b5c6b231d504d30cca632d7c982cfa1ae4589744547e6c59c8c",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "094b62b9f7311f3c897b1532cba6836b9f844135294d48b7ad52c2dace802873",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/verify_clean_install_fixtures.py",
+      "source_sha256": "1f23875a68a913b82fbedac30db9d75c4ebe7c39d3e8e3fd8dcaedab1a31bff7",
+      "target": "operations/verify_clean_install_fixtures.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/operations/check_live_runtime.py",
+      "source_sha256": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683",
+      "target": "operations/check_live_runtime.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/operations/check_live_runtime_fixtures.py",
+      "source_sha256": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2",
+      "target": "operations/check_live_runtime_fixtures.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/client/secure_operator.py",
+      "source_sha256": "bf561e81d45d8035f98eadf8a45cba5251844f9e4d45ee715c7b27b0b48e6204",
+      "target": "client/secure_operator.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/transport/room_transport.py",
+      "source_sha256": "8fac5b1a9656a970f07d761617ed7e9fbe305f472c4e06e7e500ee33d90c8843",
+      "target": "transport/room_transport.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/client_tests/client_fixtures.py",
+      "source_sha256": "df28f15964f77ed01a389bd0a32ec1b0fd601579c58f6ac4ac9f85ca98dd134d",
+      "target": "client_tests/client_fixtures.py",
+      "replacements": [
+        {
+          "old": "from test_room_transport import room_frames, http",
+          "new": "from test_shop_map_transport import room_frames, http",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/transport_tests/test_room_transport.py",
+      "source_sha256": "37c17df2eb91926f5adf279bafa911d3647e80ffd62d649d074ad11ac95fde55",
+      "target": "transport_tests/test_shop_map_transport.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/package/package_fixtures.py",
+      "source_sha256": "ff2ffbdf8e6d14d1f915dd837741bfeb72060854b1f9ae2cb3622fe64510db55",
+      "target": "package/package_fixtures.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/package/release_package.py",
+      "source_sha256": "0be3fd626adf1786bbb6284b8e480ce503531c1e1559211f05df8a44c2dcc30c",
+      "target": "package/release_package.py",
+      "replacements": [
+        {
+          "old": "sts-room-flows-v1-release",
+          "new": "sts-shop-map-permission-v1-release",
+          "count": 1
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "79ceb1fb76629b5c6b231d504d30cca632d7c982cfa1ae4589744547e6c59c8c",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "094b62b9f7311f3c897b1532cba6836b9f844135294d48b7ad52c2dace802873",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/client/run_live.py",
+      "source_sha256": "b76fe2d51743e270385f074eb4be91b17f1dbfd9664c19b94bd2231b741a26f6",
+      "target": "client/run_live.py",
+      "replacements": [
+        {
+          "old": "CONTRACT = 'f5c0f76a302b78ae30994a96288dd9a70310af908dd63dfc1cef0cf7e566df21'",
+          "new": "CONTRACT = 'b9551348a73bd4ff54433dc9693cbed3ae841bb98bdc3f4763e22f1bcac613db'",
+          "count": 1
+        },
+        {
+          "old": "FROZEN = {",
+          "new": "FROZEN = {\n    'room_release_v1': 'd567c8e91e45fd2bcff2cd446f85d3d7faef3baf2b22b6f7b75ba2490d360957',\n    'shop_diagnostic_v1': '3e396cd76438a0c8bb3dec77fd510c7ece0b115404a014c482d5ace4de95577f',",
+          "count": 1
+        },
+        {
+          "old": "(*FROZEN, 'room_release_v1')",
+          "new": "(*FROZEN, 'shop_map_permission_v1')",
+          "count": 1
+        },
+        {
+          "old": "component == 'room_release_v1'",
+          "new": "component == 'shop_map_permission_v1'",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "shop_diagnostic_v1/operations/verify_source_derivation.py",
+      "source_sha256": "ae8fdd00b217f3d74d970609f2570fb095ff5634235f80add08f80e453df72e2",
+      "target": "operations/verify_source_derivation.py",
+      "replacements": [
+        {
+          "old": "diagnostic specialization",
+          "new": "shop repair specialization",
+          "count": 1
+        },
+        {
+          "old": "shop_diagnostic_operations_derivation",
+          "new": "shop_map_permission_operations_derivation",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

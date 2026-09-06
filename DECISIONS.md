@@ -2093,3 +2093,24 @@ content, keys, prices, identities or exception text are retained or returned.
 The [diagnostic contract](docs/PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md) owns the
 selected boundary. Diagnostic completion is not shop-control acceptance, and a
 fresh diagnostic cannot reconstruct or reclassify the historical timeout.
+
+
+## Preserve shop travel permission during pre-leave processing
+
+**Date:** 2026-09-06
+
+The accepted passive diagnostic identified MapTravelEnabled as the first shop
+projection rejection. Pinned static evidence shows merchant initialization
+intentionally enables it while the map is closed. Remove that rejection from
+exactly initial/pre-Apply projection, purchase reconciliation and inventory-close
+reconciliation in a derived sibling. Preserve MapOpen/MapTraveling checks and all
+other source bytes. Leave reconciliation remains unchanged because normal
+Proceed opens the map synchronously; an unchanged closed+enabled state can be
+interception and must not adopt a later opening.
+
+The same loader identity/manifest and37-source production composition are retained
+as a hash-bound corrective package with a distinct artifact/campaign root. Only
+one source input is replaced. This changes no event/item/native/runtime capability
+or public wire contract. See the
+[repair contract](docs/PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md).

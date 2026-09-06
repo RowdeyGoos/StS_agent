@@ -1109,3 +1109,14 @@ separate coordinator live-campaign subsection. Each entry records:
 
 Never store raw bridge payloads or a full transition/capture artifact in this
 ledger.
+
+
+### 2026-09-06 — Corrective shop map-permission release
+
+The later shop corrective sibling is independently accepted offline under its
+[exact contract](../PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md). The
+[repair ledger](PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) owns exact evidence:
+45 frozen source files, only three shop predicates changed, unchanged leave/event
+behavior, two identical full acceptance runs/four matching production builds,
+and1179 passing repository tests. All eight earlier successor inventories and
+old48 are preserved. No new live campaign or shop-control success is claimed.

@@ -3,6 +3,17 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
+## Current shop repair — 2026-09-06
+
+The exact three-predicate shop repair is implemented in the isolated
+shop_map_permission_v1 sibling. Read its
+[contract](PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) first.
+Both complete offline acceptance runs pass with byte-identical results and
+four matching production builds. The45-file freeze is accepted; publication is
+the next step. No new campaign is active. Preserve all eight predecessors and
+historical closed states; no live shop-control success is claimed.
+
 ## Current accepted diagnostic — 2026-09-06
 
 Read the [shop diagnostic acceptance ledger](research/PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md)
@@ -20,7 +31,7 @@ The [pinned-static diagnosis](research/PHASE_1_SHOP_MAP_FLAG_DIAGNOSIS.md) is no
 accepted: merchant initialization enables travel permission by design. The next
 repair removes that flag from exactly three shop pre-leave predicates in a new
 derived sibling; preserve leave reconciliation and event behavior unchanged.
-That repair is not implemented yet.
+That repair is implemented in the current sibling above; the earlier diagnostic remains frozen.
 The earlier zero-action shop state and historical uncertain actions must never
 be retried. This ledger supersedes the proposed-only diagnostic wording below.
 
