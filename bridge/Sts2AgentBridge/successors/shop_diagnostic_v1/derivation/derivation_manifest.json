@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "original_native": {
+      "path": "bridge/Sts2AgentBridge/successors/room_flows_v1/shop/native/PinnedShopV1NativeAdapter.cs",
+      "sha256": "0198e8bb9f3fe89f25b8fb197b11cf2e2cdf0ae31829c20efd6dfa41c946d9b4",
+      "selected_methods": [
+        "CaptureSurface",
+        "TryContext",
+        "TryForeground",
+        "TryControls",
+        "Control",
+        "TryOffers",
+        "TryCopyDeck",
+        "TryPrice",
+        "ShopContext"
+      ]
+    },
+    "original_core": {
+      "path": "bridge/Sts2AgentBridge/successors/room_flows_v1/shop/core/ShopV1Session.cs",
+      "sha256": "8b11fd5f570a7ef8c8536386defe509c61c77ccd4de03e64bc61685c87b6863e",
+      "selected_methods": [
+        "ObserveReadySurface",
+        "TryProject",
+        "BindOrMatch",
+        "ValidContext",
+        "ValidDeck",
+        "ContainsIdentity",
+        "ValidEnabledControl",
+        "KindName"
+      ]
+    },
+    "derived_reader": {
+      "path": "bridge/Sts2AgentBridge/successors/shop_diagnostic_v1/reader/ShopDiagnosticNativeAdapter.cs",
+      "sha256": "7eb956df09712f916b147796f4a074e5f9c1bd000e944d51b8714902cec53277"
+    },
+    "derived_projector": {
+      "path": "bridge/Sts2AgentBridge/successors/shop_diagnostic_v1/core/ShopDiagnosticProjector.cs",
+      "sha256": "952b68af97b7997ea35ff1425f343b02b968053a6363e797f5f6759c399c55e9"
+    }
+  },
+  "readiness_substitutions": [
+    {
+      "fact": "back_action_ready",
+      "original": "back = Control(backNode, backNode.ForceClick);",
+      "derived": "back = Control(backNode, actionReady: true);"
+    },
+    {
+      "fact": "merchant_action_absent",
+      "original": "merchant = Control(merchantNode, null);",
+      "derived": "merchant = Control(merchantNode, actionReady: false);"
+    },
+    {
+      "fact": "proceed_action_ready",
+      "original": "proceed = Control(proceedNode, proceedNode.ForceClick);",
+      "derived": "proceed = Control(proceedNode, actionReady: true);"
+    },
+    {
+      "fact": "card_purchase_action_ready",
+      "original": "dispatch = new PinnedPurchaseDispatch(cardEntry, cardSlot);",
+      "derived": "purchaseActionReady = true;"
+    }
+  ],
+  "production_omissions": [
+    "CapturePending",
+    "TryFindPurchaseTarget",
+    "PinnedPurchaseDispatch",
+    "ForceClick",
+    "_GuiInput",
+    "MegaInput",
+    "PurchaseCompleted",
+    "InputEventAction",
+    "Apply(",
+    "BuildPending",
+    "Reconcile"
+  ],
+  "ordered_groups": [
+    {
+      "name": "original_capture",
+      "source": "original_native",
+      "anchors": [
+        "TryContext(out",
+        "!ReferenceEquals(context!.Player.RunState.CurrentRoom, context.RoomModel)",
+        "TryCopyDeck(context.Player",
+        "TryControls(context",
+        "TryForeground(context",
+        "context.InventoryNode.IsOpen",
+        "TryOffers(context.InventoryNode",
+        "context.RoomNode.IsVisibleInTree()",
+        "context.InventoryNode.IsVisibleInTree(), context.InventoryNode.IsOpen",
+        "context.Map.IsOpen, context.Map.IsTravelEnabled",
+        "context.Map.IsTraveling, context.Player.Gold"
+      ]
+    },
+    {
+      "name": "original_context",
+      "source": "original_native",
+      "anchors": [
+        "NRun? run = NRun.Instance; NMerchantRoom? room = NMerchantRoom.Instance;",
+        "!GodotObject.IsInstanceValid(run)",
+        "!GodotObject.IsInstanceValid(room)",
+        "!ReferenceEquals(NMerchantRoom.Instance, room)",
+        "var globalUi = run.GlobalUi; NMapScreen? map = globalUi?.MapScreen; NMerchantInventory? inventoryNode = room.Inventory; var roomModel = room.Room; MerchantInventory? inventoryModel = inventoryNode?.Inventory; Player? player = inventoryModel?.Player;",
+        "!ReferenceEquals(roomModel.GetLocalInventory(), inventoryModel)"
+      ]
+    },
+    {
+      "name": "original_controls",
+      "source": "original_native",
+      "anchors": [
+        "GetNodeOrNull<NBackButton>(\"%BackButton\")",
+        "context.RoomNode.MerchantButton",
+        "context.RoomNode.ProceedButton",
+        "!GodotObject.IsInstanceValid(backNode)",
+        "!GodotObject.IsInstanceValid(merchantNode)",
+        "!GodotObject.IsInstanceValid(proceedNode)",
+        "control.IsVisibleInTree()",
+        "control.IsEnabled"
+      ]
+    },
+    {
+      "name": "original_offers",
+      "source": "original_native",
+      "anchors": [
+        "foreach (NMerchantSlot? slot in inventory.GetAllSlots())",
+        "slot.Hitbox",
+        "slot.Entry",
+        "!GodotObject.IsInstanceValid(hitbox)",
+        "slot.IsVisibleInTree() && hitbox.IsVisibleInTree()",
+        "cardEntry.IsStocked",
+        "cardEntry.CreationResult?.Card",
+        "card.Id.Entry",
+        "slot.GetNodeOrNull(\"%CostLabel\")",
+        "label.Text",
+        "hitbox.IsEnabled"
+      ]
+    },
+    {
+      "name": "original_deck",
+      "source": "original_native",
+      "anchors": [
+        "var cards = player.Deck.Cards;",
+        "int count = cards.Count;",
+        "cards[index]",
+        "card.Id.Entry",
+        "cards.Count == count"
+      ]
+    },
+    {
+      "name": "derived_capture",
+      "source": "derived_reader",
+      "anchors": [
+        "TryContext(recorder",
+        "!ReferenceEquals(context!.Player.RunState.CurrentRoom, context.RoomModel)",
+        "TryCopyDeck(context.Player",
+        "TryControls(context",
+        "TryForeground(context",
+        "context.InventoryNode.IsOpen",
+        "TryOffers(context.InventoryNode",
+        "context.RoomNode.IsVisibleInTree()",
+        "context.InventoryNode.IsVisibleInTree(), context.InventoryNode.IsOpen",
+        "context.Map.IsOpen, context.Map.IsTravelEnabled",
+        "context.Map.IsTraveling, context.Player.Gold"
+      ]
+    },
+    {
+      "name": "derived_context",
+      "source": "derived_reader",
+      "anchors": [
+        "NRun? run = NRun.Instance; NMerchantRoom? room = NMerchantRoom.Instance;",
+        "!GodotObject.IsInstanceValid(run)",
+        "!GodotObject.IsInstanceValid(room)",
+        "!ReferenceEquals(NMerchantRoom.Instance, room)",
+        "var globalUi = run.GlobalUi; NMapScreen? map = globalUi?.MapScreen; NMerchantInventory? inventoryNode = room.Inventory; var roomModel = room.Room; MerchantInventory? inventoryModel = inventoryNode?.Inventory; Player? player = inventoryModel?.Player;",
+        "!ReferenceEquals(roomModel.GetLocalInventory(), inventoryModel)"
+      ]
+    },
+    {
+      "name": "derived_controls",
+      "source": "derived_reader",
+      "anchors": [
+        "GetNodeOrNull<NBackButton>(\"%BackButton\")",
+        "context.RoomNode.MerchantButton",
+        "context.RoomNode.ProceedButton",
+        "!GodotObject.IsInstanceValid(backNode)",
+        "!GodotObject.IsInstanceValid(merchantNode)",
+        "!GodotObject.IsInstanceValid(proceedNode)",
+        "control.IsVisibleInTree()",
+        "control.IsEnabled"
+      ]
+    },
+    {
+      "name": "derived_offers",
+      "source": "derived_reader",
+      "anchors": [
+        "foreach (NMerchantSlot? slot in inventory.GetAllSlots())",
+        "slot.Hitbox",
+        "slot.Entry",
+        "!GodotObject.IsInstanceValid(hitbox)",
+        "slot.IsVisibleInTree() && hitbox.IsVisibleInTree()",
+        "cardEntry.IsStocked",
+        "cardEntry.CreationResult?.Card",
+        "card.Id.Entry",
+        "slot.GetNodeOrNull(\"%CostLabel\")",
+        "label.Text",
+        "hitbox.IsEnabled"
+      ]
+    },
+    {
+      "name": "derived_deck",
+      "source": "derived_reader",
+      "anchors": [
+        "var cards = player.Deck.Cards;",
+        "int count = cards.Count;",
+        "cards[index]",
+        "card.Id.Entry",
+        "cards.Count != count"
+      ]
+    },
+    {
+      "name": "original_core_project",
+      "source": "original_core",
+      "anchors": [
+        "capture.Status != ShopV1SurfaceStatus.Available",
+        "!ValidContext(capture)",
+        "capture.Gold < 0",
+        "capture.Deck.Count > ShopV1Constants.MaximumDeckCards",
+        "capture.Offers.Count > ShopV1Constants.MaximumOffers",
+        "!capture.RoomVisible",
+        "capture.ForegroundBlocked",
+        "capture.MapOpen",
+        "capture.MapTravelEnabled",
+        "capture.MapTraveling",
+        "!BindOrMatch(capture, bind)",
+        "!ValidDeck(capture.Deck)",
+        "foreach (ShopV1NativeOffer offer in capture.Offers)",
+        "offer.Slot is < 0 or >= ShopV1Constants.MaximumOffers",
+        "previous is not null && offer.Slot <= previous.Slot",
+        "!slots.Add(offer.Slot)",
+        "!RoomFlowIdentity.IsStableKey(offer.StableKey)",
+        "offer.DisplayedPrice < 0",
+        "!offer.Visible",
+        "offer.SlotIdentity is null",
+        "!slotRefs.Add(offer.SlotIdentity)",
+        "offer.Kind == ShopV1OfferKind.Card",
+        "offer.OfferedModelIdentity is null || offer.PurchaseDispatch is null",
+        "ContainsIdentity(capture.Deck, offer.OfferedModelIdentity)",
+        "offer.OfferedModelIdentity is not null || offer.PurchaseDispatch is not null",
+        "string kind = KindName(offer.Kind);",
+        "!capture.InventoryOpen",
+        "!capture.InventoryVisible",
+        "!ValidEnabledControl(capture.BackControl, requireDispatch: true)"
+      ]
+    },
+    {
+      "name": "derived_core_project",
+      "source": "derived_projector",
+      "anchors": [
+        "capture.Status != ShopDiagnosticSurfaceStatus.Available",
+        "!ValidContext(capture)",
+        "capture.Gold < 0",
+        "capture.Deck.Count > MaximumDeckCards",
+        "capture.Offers.Count > MaximumOffers",
+        "!capture.RoomVisible",
+        "capture.ForegroundBlocked",
+        "capture.MapOpen",
+        "capture.MapTravelEnabled",
+        "capture.MapTraveling",
+        "!capture.InventoryOpen",
+        "!ValidDeck(capture.Deck)",
+        "foreach (ShopDiagnosticOffer offer in capture.Offers)",
+        "offer.Slot is < 0 or >= MaximumOffers",
+        "previous is not null && offer.Slot <= previous.Slot",
+        "!slots.Add(offer.Slot)",
+        "!IsStableKey(offer.StableKey)",
+        "offer.DisplayedPrice < 0",
+        "!offer.Visible",
+        "offer.SlotIdentity is null",
+        "!slotRefs.Add(offer.SlotIdentity)",
+        "offer.Kind == ShopDiagnosticOfferKind.Card",
+        "offer.OfferedModelIdentity is null || !offer.PurchaseActionReady",
+        "ContainsIdentity(capture.Deck, offer.OfferedModelIdentity)",
+        "offer.OfferedModelIdentity is not null || offer.PurchaseActionReady",
+        "ValidateKind(offer.Kind);",
+        "!capture.InventoryOpen",
+        "!capture.InventoryVisible",
+        "!ValidControl(capture.BackControl, requireAction: true)"
+      ]
+    }
+  ]
+}

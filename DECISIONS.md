@@ -2066,3 +2066,30 @@ cleanup before live readiness. Preserve every predecessor tree. The
 [release contract](docs/PHASE_1_ROOM_RELEASE_V1_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) distinguish
 release readiness from the separate live shop and event gates.
+
+## D64. Diagnose The First Shop Rejection With A Passive Successor
+
+**Date:** 2026-09-06
+
+The first live merchant-inventory attempt returned unsupported before any
+controller action. Preserve that result and every accepted source tree. Select
+one separately reviewed diagnostic observation to identify the first rejected
+native or initial projection predicate before choosing a repair.
+
+Derive a passive reader/projector from the frozen shop source, preserving read
+order and first-read behavior. Keep the full action session, purchase dispatch,
+pending reconciliation and input methods out of the production assembly.
+Replace only action-wiring presence with checked readiness facts. Test actual
+native-reader source against stubs and compare pure results with the actual
+frozen session using inert test dispatches. Bind original/derived source hashes,
+ordered predicates and explicit omissions in a checked derivation manifest.
+
+Expose one authenticated GET returning only fixed status/stage/reason enums.
+Reserve at most one owner-frame observation per fresh credential; every delivery
+outcome ends the runtime. Preserve network-stop, owner-disposal and detach order,
+secure operator reads, exclusive campaign state and exact cleanup. No counts,
+content, keys, prices, identities or exception text are retained or returned.
+
+The [diagnostic contract](docs/PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md) owns the
+selected boundary. Diagnostic completion is not shop-control acceptance, and a
+fresh diagnostic cannot reconstruct or reclassify the historical timeout.

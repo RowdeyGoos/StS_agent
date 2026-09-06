@@ -3,6 +3,19 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
+## Current accepted diagnostic — 2026-09-06
+
+Read the [shop diagnostic acceptance ledger](research/PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md)
+and [selected contract](PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md) first. The passive
+shop_diagnostic_v1 successor is implemented, independently reviewed, frozen and
+published after two identical complete offline gates/four matching production
+builds. Preserve its 63 files and all seven predecessors. It exposes one GET and
+no gameplay action; no shop repair or live success is claimed. The user was asked
+for live availability with the game closed. No diagnostic campaign has started;
+exact fresh preflight/installation and merchant-inventory setup come next.
+The earlier zero-action shop state and historical uncertain actions must never
+be retried. This ledger supersedes the proposed-only diagnostic wording below.
+
 ## Current shop/event development
 
 Actual shop/event modules, native adapters, shared wire/hosts and the real item

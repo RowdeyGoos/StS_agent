@@ -1,0 +1,363 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "source": "item_release_v1/operations/manage_live_campaign.py",
+      "source_sha256": "891ed2a816556dda68e775377c8cd343983d476943ded772706989bf0277a468",
+      "target": "operations/manage_live_campaign.py",
+      "replacements": [
+        {
+          "old": "ITEM-V1-COLLECTION-SMOKE-V1",
+          "new": "SHOP-DIAGNOSTIC-V1-SMOKE-V1",
+          "count": 1
+        },
+        {
+          "old": "item-v1-collection-smoke-v1",
+          "new": "shop-diagnostic-v1-smoke-v1",
+          "count": 1
+        },
+        {
+          "old": "Sts2AgentBridgeItemV1",
+          "new": "Sts2AgentBridgeShopDiagnosticV1",
+          "count": 11
+        },
+        {
+          "old": "sts-item-v1-release",
+          "new": "sts-shop-diagnostic-v1-release",
+          "count": 1
+        },
+        {
+          "old": "item_probe_v1_transport_config_v1",
+          "new": "shop_diagnostic_v1_transport_config_v1",
+          "count": 1
+        },
+        {
+          "old": "\"item_v1\"",
+          "new": "\"shop_diagnostic_v1\"",
+          "count": 10
+        },
+        {
+          "old": "240f57a37801fd13dedb4cc823163a50a9745fc8053f23318614d995749570b8",
+          "new": "02962b9519c77959461b1cafb4dd40c1432309072a8fa03d8480c41059d8eece",
+          "count": 1
+        },
+        {
+          "old": "LEGACY_OVERLAY_ROOT_NAME = \"Sts2AgentBridge\"",
+          "new": "LEGACY_OVERLAY_ROOT_NAME = \"Sts2AgentBridge\"\nITEM_STATE_ROOT_NAME = \"Sts2AgentBridgeCampaign-item-v1-collection-smoke-v1\"\nROOM_STATE_ROOT_NAME = \"Sts2AgentBridgeCampaign-room-flows-v1-smoke-v1\"\nITEM_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeItemV1\"\nROOM_OVERLAY_ROOT_NAME = \"Sts2AgentBridgeRoomFlowsV1\"",
+          "count": 1
+        },
+        {
+          "old": "    _require_absent(layout.application_support / LEGACY_STATE_ROOT_NAME)",
+          "new": "    _require_absent(layout.application_support / LEGACY_STATE_ROOT_NAME)\n    _require_absent(layout.application_support / ITEM_STATE_ROOT_NAME)\n    _require_absent(layout.application_support / ROOM_STATE_ROOT_NAME)",
+          "count": 2
+        },
+        {
+          "old": "        _require_absent(layout.mods_parent / LEGACY_OVERLAY_ROOT_NAME)",
+          "new": "        _require_absent(layout.mods_parent / LEGACY_OVERLAY_ROOT_NAME)\n        _require_absent(layout.mods_parent / ITEM_OVERLAY_ROOT_NAME)\n        _require_absent(layout.mods_parent / ROOM_OVERLAY_ROOT_NAME)",
+          "count": 2
+        },
+        {
+          "old": "95_232",
+          "new": "83_968",
+          "count": 1
+        },
+        {
+          "old": "09ea93cd86a4ca502c27357171f7a7efdaf2bcf91a0a3fcffec96ef79745b9f6",
+          "new": "c4151b5277715e605417e064bd249d7d8ad9bc0a9d2d0be6408a56be2b65771b",
+          "count": 1
+        },
+        {
+          "old": "340",
+          "new": "353",
+          "count": 1
+        },
+        {
+          "old": "03163de389a7212c39f18c54ace292b8b105e3c7396bf08c871203f6c33978d4",
+          "new": "3c6d1ae87fd339868c3cc52a5fa8115968402aa8a6c981fa8d64a5c7a909946d",
+          "count": 1
+        },
+        {
+          "old": "95_936",
+          "new": "84_765",
+          "count": 1
+        },
+        {
+          "old": "349c24fa02da4a11e19fa4dd6a08100b805d9c5dbe84b89cd4e3de120a412beb",
+          "new": "e249e180f88937ade8d64428b5708f6080749f754e100408ea902afb6a2454e0",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "item_release_v1/operations/manage_live_campaign_fixtures.py",
+      "source_sha256": "3906d61b8b340c28a8dff590428e9b60a5ac34445eaebb2996027ee4b115aa59",
+      "target": "operations/manage_live_campaign_fixtures.py",
+      "replacements": [
+        {
+          "old": "ITEM-V1-COLLECTION-SMOKE-V1",
+          "new": "SHOP-DIAGNOSTIC-V1-SMOKE-V1",
+          "count": 1
+        },
+        {
+          "old": "item-v1-collection-smoke-v1",
+          "new": "shop-diagnostic-v1-smoke-v1",
+          "count": 1
+        },
+        {
+          "old": "Sts2AgentBridgeItemV1",
+          "new": "Sts2AgentBridgeShopDiagnosticV1",
+          "count": 8
+        },
+        {
+          "old": "sts-item-v1-release",
+          "new": "sts-shop-diagnostic-v1-release",
+          "count": 1
+        },
+        {
+          "old": "\"item_v1\"",
+          "new": "\"shop_diagnostic_v1\"",
+          "count": 5
+        },
+        {
+          "old": "240f57a37801fd13dedb4cc823163a50a9745fc8053f23318614d995749570b8",
+          "new": "02962b9519c77959461b1cafb4dd40c1432309072a8fa03d8480c41059d8eece",
+          "count": 2
+        },
+        {
+          "old": "len(manager.CONFIG_BYTES) != 139",
+          "new": "len(manager.CONFIG_BYTES) != 144",
+          "count": 1
+        },
+        {
+          "old": "95_232",
+          "new": "83_968",
+          "count": 1
+        },
+        {
+          "old": "09ea93cd86a4ca502c27357171f7a7efdaf2bcf91a0a3fcffec96ef79745b9f6",
+          "new": "c4151b5277715e605417e064bd249d7d8ad9bc0a9d2d0be6408a56be2b65771b",
+          "count": 1
+        },
+        {
+          "old": "340",
+          "new": "353",
+          "count": 1
+        },
+        {
+          "old": "03163de389a7212c39f18c54ace292b8b105e3c7396bf08c871203f6c33978d4",
+          "new": "3c6d1ae87fd339868c3cc52a5fa8115968402aa8a6c981fa8d64a5c7a909946d",
+          "count": 1
+        },
+        {
+          "old": "95_936",
+          "new": "84_765",
+          "count": 1
+        },
+        {
+          "old": "349c24fa02da4a11e19fa4dd6a08100b805d9c5dbe84b89cd4e3de120a412beb",
+          "new": "e249e180f88937ade8d64428b5708f6080749f754e100408ea902afb6a2454e0",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "item_release_v1/client/secure_operator.py",
+      "source_sha256": "b29f5d8d9d451da271fbf214768fa0fb9c7b4e1b1efbe4294971dec69738e0d2",
+      "target": "client/secure_operator.py",
+      "replacements": [
+        {
+          "old": "item_probe_v1_transport_config_v1",
+          "new": "shop_diagnostic_v1_transport_config_v1",
+          "count": 1
+        },
+        {
+          "old": "'item_v1'",
+          "new": "'shop_diagnostic_v1'",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/tool_common.py",
+      "source_sha256": "ff1a284ae1f2e5d84e89ee50dfaed970b903a64d9cf79d03b597401c0ae83fa3",
+      "target": "operations/tool_common.py",
+      "replacements": [
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeShopDiagnosticV1",
+          "count": 5
+        },
+        {
+          "old": "STS2 Agent Bridge Room Flows V1",
+          "new": "STS2 Agent Bridge Shop Diagnostic V1",
+          "count": 1
+        },
+        {
+          "old": "Restricted shop and event flow bridge for StS agent research",
+          "new": "Restricted read-only shop diagnostic for StS agent research",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/verify_clean_install.py",
+      "source_sha256": "3788ea295cf4864a44d7c8d66540868aa2dbdd22f563638ef07dcc0e174d36c3",
+      "target": "operations/verify_clean_install.py",
+      "replacements": [
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeShopDiagnosticV1",
+          "count": 5
+        },
+        {
+          "old": "177152",
+          "new": "83968",
+          "count": 1
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "c4151b5277715e605417e064bd249d7d8ad9bc0a9d2d0be6408a56be2b65771b",
+          "count": 1
+        },
+        {
+          "old": "344",
+          "new": "353",
+          "count": 1
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "3c6d1ae87fd339868c3cc52a5fa8115968402aa8a6c981fa8d64a5c7a909946d",
+          "count": 1
+        },
+        {
+          "old": "177900",
+          "new": "84765",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "e249e180f88937ade8d64428b5708f6080749f754e100408ea902afb6a2454e0",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/operations/check_live_runtime.py",
+      "source_sha256": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683",
+      "target": "operations/check_live_runtime.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/operations/check_live_runtime_fixtures.py",
+      "source_sha256": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2",
+      "target": "operations/check_live_runtime_fixtures.py",
+      "replacements": []
+    },
+    {
+      "source": "room_release_v1/operations/verify_clean_install_fixtures.py",
+      "source_sha256": "1f23875a68a913b82fbedac30db9d75c4ebe7c39d3e8e3fd8dcaedab1a31bff7",
+      "target": "operations/verify_clean_install_fixtures.py",
+      "replacements": [
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeShopDiagnosticV1",
+          "count": 6
+        },
+        {
+          "old": "room_release_package",
+          "new": "shop_diagnostic_package",
+          "count": 1
+        },
+        {
+          "old": "room-release",
+          "new": "shop-diagnostic",
+          "count": 8
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "3c6d1ae87fd339868c3cc52a5fa8115968402aa8a6c981fa8d64a5c7a909946d",
+          "count": 1
+        },
+        {
+          "old": "len(release_manifest) == 344",
+          "new": "len(release_manifest) == 353",
+          "count": 1
+        },
+        {
+          "old": "b\"Room Flows V1\"",
+          "new": "b\"Shop Diagnostic V1\"",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/package/release_package.py",
+      "source_sha256": "0be3fd626adf1786bbb6284b8e480ce503531c1e1559211f05df8a44c2dcc30c",
+      "target": "package/release_package.py",
+      "replacements": [
+        {
+          "old": "Sts2AgentBridgeRoomFlowsV1",
+          "new": "Sts2AgentBridgeShopDiagnosticV1",
+          "count": 5
+        },
+        {
+          "old": "STS2 Agent Bridge Room Flows V1",
+          "new": "STS2 Agent Bridge Shop Diagnostic V1",
+          "count": 1
+        },
+        {
+          "old": "Restricted shop and event flow bridge for StS agent research",
+          "new": "Restricted read-only shop diagnostic for StS agent research",
+          "count": 1
+        },
+        {
+          "old": "sts-room-flows-v1-release",
+          "new": "sts-shop-diagnostic-v1-release",
+          "count": 1
+        },
+        {
+          "old": "177152",
+          "new": "83968",
+          "count": 1
+        },
+        {
+          "old": "60db75fa1c50c46bc2a6426b269a9aa5aebca9211a136de79f801ec1cdfa5a6f",
+          "new": "c4151b5277715e605417e064bd249d7d8ad9bc0a9d2d0be6408a56be2b65771b",
+          "count": 1
+        },
+        {
+          "old": "344",
+          "new": "353",
+          "count": 1
+        },
+        {
+          "old": "9b361b08e3e99de5322d24811c24497c37662ded1c9e5623a2b4e9cc9ab38812",
+          "new": "3c6d1ae87fd339868c3cc52a5fa8115968402aa8a6c981fa8d64a5c7a909946d",
+          "count": 1
+        },
+        {
+          "old": "177900",
+          "new": "84765",
+          "count": 1
+        },
+        {
+          "old": "ee030cad1bb019b1793f04a6faaf94caa65b821d4c349fecd83ba668f61c4819",
+          "new": "e249e180f88937ade8d64428b5708f6080749f754e100408ea902afb6a2454e0",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "source": "room_release_v1/package/package_fixtures.py",
+      "source_sha256": "ff2ffbdf8e6d14d1f915dd837741bfeb72060854b1f9ae2cb3622fe64510db55",
+      "target": "package/package_fixtures.py",
+      "replacements": [
+        {
+          "old": "room_release_package",
+          "new": "shop_diagnostic_package",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

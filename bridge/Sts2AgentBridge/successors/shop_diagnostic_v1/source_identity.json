@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "component": "shop_diagnostic_v1",
+  "contract_sha256": "4919241452060ba9cb452683f29dc518c9455860b5bfa5eb0ffe0460ff01c68a",
+  "files": [
+    {
+      "path": "Directory.Build.props",
+      "sha256": "eb591e37d383c21589516f048c797967dbf8d2aa18e642904f44965ea9c5a0eb"
+    },
+    {
+      "path": "README.md",
+      "sha256": "0bfb7707141e19c7dfada5a85650be7c99d482da43fea47751bb3c95c7107cb2"
+    },
+    {
+      "path": "check.py",
+      "sha256": "39d89a48d9098e293be4d89eaab1d551ed091a07b593a3d0cda4bb5699251d45"
+    },
+    {
+      "path": "checker_tests/test_shop_diagnostic_project_boundary.py",
+      "sha256": "9869fd6d6d85e25debdeba5205216b7584652b7c9a17da1fd98b1c40a7428bad"
+    },
+    {
+      "path": "client/run_live.py",
+      "sha256": "b74fc4b3e84be7faf3d9ced673576fed5d271c275b372c981296aad114e75953"
+    },
+    {
+      "path": "client/secure_operator.py",
+      "sha256": "6d48ac0bd2d526ed61d3d742027c1bd2f6423032d320b2962326d56cc0e68a59"
+    },
+    {
+      "path": "client_tests/client_fixtures.py",
+      "sha256": "ebd26cafb35b08001bbdc74ffe59def49cb88a00217ff63f4638171042e9cc16"
+    },
+    {
+      "path": "core/ShopDiagnosticCodec.cs",
+      "sha256": "39e585f2986094a7a5ba4151d6718385e54858e5ef003691c30b738617394440"
+    },
+    {
+      "path": "core/ShopDiagnosticContracts.cs",
+      "sha256": "2125d227d9f631d9d9647a857a830277be618db0e3d2279c4df4ab8b9db9a091"
+    },
+    {
+      "path": "core/ShopDiagnosticProjector.cs",
+      "sha256": "952b68af97b7997ea35ff1425f343b02b968053a6363e797f5f6759c399c55e9"
+    },
+    {
+      "path": "core/ShopDiagnosticRecorder.cs",
+      "sha256": "0116383e0194eb16fed4aa395e047dd8d041e8fbd7de3b15dc9a2301c251b6b6"
+    },
+    {
+      "path": "core/ShopDiagnosticService.cs",
+      "sha256": "6c9c8910e68d90dd76e970fc5e878db8508a2d18a9b62d3a7c0f0c79875686cc"
+    },
+    {
+      "path": "core/Sts2AgentBridge.ShopDiagnosticV1.Core.csproj",
+      "sha256": "d02423544b60db0db089e85c3ed3f8b5b9ef8f036cbd68594272aa4ea695a6c1"
+    },
+    {
+      "path": "core/diagnostic_values.json",
+      "sha256": "678cf0b23d32434b0565ce4947808cf0d2fe69b191755a05f50714527e883bda"
+    },
+    {
+      "path": "derivation/check_derivation.py",
+      "sha256": "9131deb0ae3d91c61a24d04e94ba6a7ea57bfc84e6c76b894b9025faac24ec8d"
+    },
+    {
+      "path": "derivation/derivation_manifest.json",
+      "sha256": "374caf02420a1fb08e1d79509216479eb5535d5229a54fa60b2e89ad2c7e4045"
+    },
+    {
+      "path": "integration/test_shop_diagnostic_socket_composition.py",
+      "sha256": "6e039ea7164582ec6f0806b4c68e0910e584fcda087f1710acb1acf19ea346e0"
+    },
+    {
+      "path": "lifecycle_tests/Program.cs",
+      "sha256": "c47d078edc851ec5699116efa3ccea19735eaa87084a626b02157ae2c538bd60"
+    },
+    {
+      "path": "lifecycle_tests/Sts2AgentBridge.ShopDiagnosticV1.Bootstrap.Tests.csproj",
+      "sha256": "6d3db698080f66daca494b01a93ca6a4e852dd0ba9ba43ed3a82db24157cbf12"
+    },
+    {
+      "path": "native/ProductionShopDiagnosticRuntimeFactory.cs",
+      "sha256": "df2f0136d09d86c2e752f130899d8a92359a2e3429d600a0f61ae9a22f065146"
+    },
+    {
+      "path": "native/ShopDiagnosticBootstrapHost.cs",
+      "sha256": "a9575a9d85e6096a66a30b639d8c8e0d69b0d3ce5039d1b77539a7a03129fae7"
+    },
+    {
+      "path": "native/ShopDiagnosticModEntry.cs",
+      "sha256": "754136435cb7d8581db4950922a59a3e393210250157aa12c40222328de39e8b"
+    },
+    {
+      "path": "operations/check_live_runtime.py",
+      "sha256": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683"
+    },
+    {
+      "path": "operations/check_live_runtime_fixtures.py",
+      "sha256": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2"
+    },
+    {
+      "path": "operations/manage_live_campaign.py",
+      "sha256": "1b2806cac59b832052bc3237ef6232e60805078fed9ed36397bcbe4f1c6d5a73"
+    },
+    {
+      "path": "operations/manage_live_campaign_fixtures.py",
+      "sha256": "627a38882e751b9936d9f7c4a1fe82175afef0c6c582a1b9a3911b4afd83268d"
+    },
+    {
+      "path": "operations/predecessor_conflict_fixtures.py",
+      "sha256": "959cbd76f0bec6e35428864cb267758f385ccd9472af23bc2e732549f5263401"
+    },
+    {
+      "path": "operations/source_derivation.json",
+      "sha256": "c7669f36f221597c23391a8487c21d4d5ff45e35b25be843dd4ce25cf8dda3fc"
+    },
+    {
+      "path": "operations/tool_common.py",
+      "sha256": "47f70fc777480dc65810beaaf0344bb85b67769b9f4fc9b2155afde6985006a6"
+    },
+    {
+      "path": "operations/verify_clean_install.py",
+      "sha256": "1dbd436c8ed75fd4482a6b2d7dcb19bb23787ce27a39b3f5d388594364e47da5"
+    },
+    {
+      "path": "operations/verify_clean_install_fixtures.py",
+      "sha256": "2ace34b270a461c8f703efe0e64f9ee7745e0578c6aef55d90b0badbc9556ffc"
+    },
+    {
+      "path": "operations/verify_source_derivation.py",
+      "sha256": "ae8fdd00b217f3d74d970609f2570fb095ff5634235f80add08f80e453df72e2"
+    },
+    {
+      "path": "operator/ShopDiagnosticOperatorFiles.cs",
+      "sha256": "a7dad5dc3d99b275d7bfb47b37410e81a4d053b09bcf4d32b8f30083e8f2e4ce"
+    },
+    {
+      "path": "operator_tests/Program.cs",
+      "sha256": "ea6890c3b56cf81b217bc4d3b561f22b0ee28b92d0047464c2d464f8c1b9d30c"
+    },
+    {
+      "path": "operator_tests/Sts2AgentBridge.ShopDiagnosticV1.Operator.Tests.csproj",
+      "sha256": "d4c914262458d2bd6aa966dc6bac4600464a1055ad61ba44fdce399e0f67674f"
+    },
+    {
+      "path": "package/package_fixtures.py",
+      "sha256": "b76b2a3d2df205caab47e65708387a78505e4582ac94375c10796a6a6c905015"
+    },
+    {
+      "path": "package/release_package.py",
+      "sha256": "d2f01d6d43d6af93c7180ee8a0e2710dc9ed1c13e9af2348d218e0b7522eaa7b"
+    },
+    {
+      "path": "policy/shop_diagnostic_policy.json",
+      "sha256": "38e169931014710a47d0a60b0b4346b644111189dfd42210a0a16fc854ae9c34"
+    },
+    {
+      "path": "production/Sts2AgentBridgeShopDiagnosticV1.csproj",
+      "sha256": "e384e9929024d07a6853969cc10ef13bba78a7e95b7e07b07eed56836890cfe6"
+    },
+    {
+      "path": "reader/ShopDiagnosticNativeAdapter.cs",
+      "sha256": "7eb956df09712f916b147796f4a074e5f9c1bd000e944d51b8714902cec53277"
+    },
+    {
+      "path": "reader/Sts2AgentBridge.ShopDiagnosticV1.Reader.csproj",
+      "sha256": "95557d76d21ade83d0a00a5b86ad9eac26274d27e95b9f7aeac506033a37d92a"
+    },
+    {
+      "path": "reader_tests/Program.cs",
+      "sha256": "2d7b7df7e4182bb2cd9e081a76a6b82c7c84deaca0b729d3b5e6d77064276bc8"
+    },
+    {
+      "path": "reader_tests/Sts2AgentBridge.ShopDiagnosticV1.Reader.Tests.csproj",
+      "sha256": "b121135a48a6aa459d5c25a794fe0487bd34ccd8c9e9e544476366e789e45796"
+    },
+    {
+      "path": "reader_tests/Stubs.cs",
+      "sha256": "2ec5c0043aa5191724923d6a610228442e93497a5ed581b590937f86e804f848"
+    },
+    {
+      "path": "runtime/OwnedByteFrameQueue.cs",
+      "sha256": "103e1f974c79bb098bbc693e0ba7d0d139d2a40387fc62904070f6974b065e1c"
+    },
+    {
+      "path": "runtime/ShopDiagnosticTransportConfiguration.cs",
+      "sha256": "509db773cfed525ba1d772ba7a5b600688c1c41b6b313f502b918db9b47a3171"
+    },
+    {
+      "path": "runtime/ShopDiagnosticTransportProtocol.cs",
+      "sha256": "0085403988d47acde51707626969d5fa5d3ea25529f77c2b8a786b56faa1fe0a"
+    },
+    {
+      "path": "runtime/ShopDiagnosticTransportRuntime.cs",
+      "sha256": "c5dfdb9cc2774effe264bfb786c7b84e9f378c967d85a5ef78fe402a1292e365"
+    },
+    {
+      "path": "runtime/Sts2AgentBridge.ShopDiagnosticV1.Transport.csproj",
+      "sha256": "90214fe092d1bb7e00ac68b2fe12a26c638b44524c9c77462f03a32a0a5b06de"
+    },
+    {
+      "path": "runtime_tests/Program.cs",
+      "sha256": "3afe4f8c96fea86320ef7f83568cc1457201d23688fac702d0c1a332bc7ea527"
+    },
+    {
+      "path": "runtime_tests/Sts2AgentBridge.ShopDiagnosticV1.Transport.Tests.csproj",
+      "sha256": "9c33caa5867633db4388af8f42ea087807f712f21c7d7edf2bf38e4de4e230f0"
+    },
+    {
+      "path": "shared/IShopDiagnosticService.cs",
+      "sha256": "3f28b0d84e3a353bb12d332f3adff0b04eb099b777c909174fe1255721fefb6e"
+    },
+    {
+      "path": "transport/diagnostic_transport.py",
+      "sha256": "4a3b0a8bc433a0710b5a4f995814092e5d79b76bc14830dcb872b2e7156dbf9f"
+    },
+    {
+      "path": "transport/diagnostic_values.py",
+      "sha256": "6c30c59a9a90ef1181622324e5a5d447d6d7a12990d6a400e85a963e69c534f7"
+    },
+    {
+      "path": "transport_tests/test_diagnostic_transport.py",
+      "sha256": "b32202de96d1f81f628c84a03faa6e6c1fb56d09881051010a84b8b7715e270f"
+    },
+    {
+      "path": "verifier/Program.cs",
+      "sha256": "dd515ff56dbb12d17ebfda1b2dd84bab1c1e6ed45ae7124a4822e1d45281257f"
+    },
+    {
+      "path": "verifier/ShopDiagnosticReleasePolicy.cs",
+      "sha256": "e8305ac756b2d753448472e824e23c0d45933b31d4e61f0dc0bcdba07697e8a1"
+    },
+    {
+      "path": "verifier/ShopDiagnosticReleaseProjection.cs",
+      "sha256": "df6ab6db27e7d5086a0f4e247a93cc9236cabb9fe54a6506c4b914ab83036026"
+    },
+    {
+      "path": "verifier/ShopDiagnosticReleaseVerifier.cs",
+      "sha256": "8e566ba08f933cafca6ff4514ec2b2abf0029a3e53e474b21fc90ded6e8197ba"
+    },
+    {
+      "path": "verifier/Sts2AgentBridge.ShopDiagnosticV1.Release.Verifier.csproj",
+      "sha256": "22ff1ce6b931fa4165c934f938609847cf96699f5a2cde3dd8c7497f588497bb"
+    },
+    {
+      "path": "verifier_tests/PeMutations.cs",
+      "sha256": "1aab2a3fca5712da998c5643d5c518fb614dd7ede211504acd871d5065417241"
+    },
+    {
+      "path": "verifier_tests/Program.cs",
+      "sha256": "e551bda5f6c163451df7d3bc9cfcb136a4e2703323372370ab92aeb5f934da01"
+    },
+    {
+      "path": "verifier_tests/Sts2AgentBridge.ShopDiagnosticV1.Release.Verifier.Tests.csproj",
+      "sha256": "b1d93630dd9a7a04e07b9e6570c53debb294f7a99d6484be34a60529230ad871"
+    }
+  ]
+}

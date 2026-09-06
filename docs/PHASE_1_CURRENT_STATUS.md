@@ -1,6 +1,6 @@
 # Phase 1 Current Integration Status
 
-- **Status date:** 2026-09-05
+- **Status date:** 2026-09-06
 - **Fresh-session handoff:** [Astra handoff](PHASE_1_ASTRA_HANDOFF.md)
 - **Active bridge milestone:** `R0i`
 - **Bridge version:** `0.8.0`
@@ -610,11 +610,16 @@ trees and the old bridge remain byte-exact.
 The first live shop test reached the user-prepared merchant inventory but
 returned unsupported_state before any action (0 attempted/accepted/reconciled).
 The native rejection branch remains unidentified; pure captures do not execute
-the live scene adapter. Next is a narrow reviewed read-only diagnostic, not a
-weakened predicate or repeat invocation. Normal UI quit, exact quarantine/purge,
-base 429/zero-overlay, stopped/closed and seven absence checks passed by
-2026-09-05 22:00:06 UTC. No campaign remains active and no setup is needed now.
-The release ledger records the exact outcome and closed state identities.
+the live scene adapter. The separate passive shop_diagnostic_v1 successor now
+passes independent review and two identical complete offline release runs.
+Its 63-file freeze, four matching production builds, one-GET/no-action boundary
+and exact package are recorded in the
+[diagnostic acceptance ledger](research/PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md).
+The next live step is one first-failure observation at the merchant inventory;
+it has not run yet. The previous campaign's normal quit, exact quarantine/purge,
+base429/zero-overlay/stopped/closed and absence checks completed by
+2026-09-05 22:00:06 UTC. No campaign remains active. The diagnostic package is
+ready; keep the game closed until fresh installation and explicit setup.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing
 and map return are live-demonstrated; rest-site card upgrades remain unsupported.
 

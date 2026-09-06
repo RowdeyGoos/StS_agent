@@ -115,3 +115,13 @@ any action; cleanup completed by 2026-09-05 22:00:06 UTC. The release ledger
 records source-reviewed candidate failure branches and the proposed narrow
 read-only diagnostic gate. No failed predicate is identified yet, no live shop
 capability is accepted, and no campaign or game setup remains active.
+
+## Passive diagnostic release accepted — 2026-09-06
+
+The selected [shop diagnostic contract](PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md)
+now has an implemented and independently accepted passive reader/runtime/client
+and canonical package. Two full offline gates agree and all four final builds
+match. The [diagnostic ledger](research/PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md)
+owns exact identities and the next one-observation live campaign. The first
+failed shop predicate remains unresolved until that result; neither shop nor
+event live acceptance is promoted. All seven predecessor trees remain frozen.

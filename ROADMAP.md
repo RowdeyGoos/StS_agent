@@ -436,7 +436,9 @@ Shop and event functional implementations now have reviewed cores/native
 adapters and actual cross-language fixtures, including one frozen item child.
 The single combined runtime/bootstrap/package now passes independent full
 release acceptance. The first live shop attempt rejected the intended screen before any action;
-cleanup passed. A narrow native-read diagnostic is next, followed by renewed
-shop/event live acceptance. See the
-[release ledger](docs/research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md).
+cleanup passed. The passive native-read diagnostic is now implemented,
+independently reviewed and packaged after two identical offline gates. One live
+shop observation is next, followed by a focused repair selected from its result
+and renewed shop/event live acceptance. See the
+[diagnostic ledger](docs/research/PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md).
 Rest-site card upgrades remain unsupported; no upgrade scope was added.

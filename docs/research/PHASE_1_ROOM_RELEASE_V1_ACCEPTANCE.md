@@ -266,3 +266,14 @@ behavior, and pass fixture/release review before a fresh campaign. This is a
 proposal, not an implemented or selected new live surface. Do not weaken any
 shop predicate merely to make the current screen pass. Existing package, source
 freezes, gameplay contracts and prior live item/rest evidence remain unchanged.
+
+## Passive successor accepted offline — 2026-09-06
+
+The user selected the subsequent read-only diagnostic. Its final contract omits
+counts entirely and uses only fixed first-failure enums. The separate
+shop_diagnostic_v1 source/production assembly, one-GET runtime/client and package
+are implemented and independently accepted after two identical full offline
+gates. See the [diagnostic ledger](PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md) for
+exact frozen identities and current live readiness. This preserves the original
+room release bytes and zero-action result. No failed predicate is identified,
+shop repair is claimed or historical campaign state reused by offline acceptance.

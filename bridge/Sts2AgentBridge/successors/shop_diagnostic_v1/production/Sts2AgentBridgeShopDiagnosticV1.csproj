@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridgeShopDiagnosticV1</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.ShopDiagnosticV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../shared/IShopDiagnosticService.cs" Link="shop_diagnostic_v1/shared/IShopDiagnosticService.cs" />
+    <Compile Include="../core/ShopDiagnosticContracts.cs" Link="shop_diagnostic_v1/core/ShopDiagnosticContracts.cs" />
+    <Compile Include="../core/ShopDiagnosticRecorder.cs" Link="shop_diagnostic_v1/core/ShopDiagnosticRecorder.cs" />
+    <Compile Include="../core/ShopDiagnosticProjector.cs" Link="shop_diagnostic_v1/core/ShopDiagnosticProjector.cs" />
+    <Compile Include="../core/ShopDiagnosticCodec.cs" Link="shop_diagnostic_v1/core/ShopDiagnosticCodec.cs" />
+    <Compile Include="../core/ShopDiagnosticService.cs" Link="shop_diagnostic_v1/core/ShopDiagnosticService.cs" />
+    <Compile Include="../reader/ShopDiagnosticNativeAdapter.cs" Link="shop_diagnostic_v1/reader/ShopDiagnosticNativeAdapter.cs" />
+    <Compile Include="../runtime/ShopDiagnosticTransportConfiguration.cs" Link="shop_diagnostic_v1/runtime/ShopDiagnosticTransportConfiguration.cs" />
+    <Compile Include="../runtime/ShopDiagnosticTransportProtocol.cs" Link="shop_diagnostic_v1/runtime/ShopDiagnosticTransportProtocol.cs" />
+    <Compile Include="../runtime/OwnedByteFrameQueue.cs" Link="shop_diagnostic_v1/runtime/OwnedByteFrameQueue.cs" />
+    <Compile Include="../runtime/ShopDiagnosticTransportRuntime.cs" Link="shop_diagnostic_v1/runtime/ShopDiagnosticTransportRuntime.cs" />
+    <Compile Include="../operator/ShopDiagnosticOperatorFiles.cs" Link="shop_diagnostic_v1/operator/ShopDiagnosticOperatorFiles.cs" />
+    <Compile Include="../native/ShopDiagnosticBootstrapHost.cs" Link="shop_diagnostic_v1/native/ShopDiagnosticBootstrapHost.cs" />
+    <Compile Include="../native/ProductionShopDiagnosticRuntimeFactory.cs" Link="shop_diagnostic_v1/native/ProductionShopDiagnosticRuntimeFactory.cs" />
+    <Compile Include="../native/ShopDiagnosticModEntry.cs" Link="shop_diagnostic_v1/native/ShopDiagnosticModEntry.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" Link="item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" Link="item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/DarwinReadOnly.cs" Link="item_bootstrap_v1/operator/DarwinReadOnly.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" Link="item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" Link="item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" />
+    <Compile Include="../../item_bootstrap_v1/native/PinnedItemBuildGuard.cs" Link="item_bootstrap_v1/native/PinnedItemBuildGuard.cs" />
+    <Compile Include="../../room_release_v1/lifecycle/RoomFlowBootstrapLifecycle.cs" Link="room_release_v1/lifecycle/RoomFlowBootstrapLifecycle.cs" />
+    <Compile Include="../../room_release_v1/native/RoomFlowBootstrapSupport.cs" Link="room_release_v1/native/RoomFlowBootstrapSupport.cs" />
+    <Compile Include="../../room_release_v1/native/RoomFlowGodotFrameConnector.cs" Link="room_release_v1/native/RoomFlowGodotFrameConnector.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidatePinnedGameData" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))" Text="STS2GameDataDir must be absolute." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')" Text="Pinned sts2.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
+  </Target>
+</Project>

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.ShopDiagnosticV1.Reader</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.ShopDiagnosticV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <Target Name="ValidatePinnedGameData" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))" Text="STS2GameDataDir must be absolute." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')" Text="Pinned sts2.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
+  </Target>
+  <ItemGroup>
+    <Compile Include="ShopDiagnosticNativeAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.ShopDiagnosticV1.Core.csproj" />
+    <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

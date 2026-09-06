@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.ShopDiagnosticV1.Reader.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.ShopDiagnosticV1.Tests</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>$(DefineConstants);SHOP_DIAGNOSTIC_TEST_SEAM</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Stubs.cs" />
+    <Compile Include="../reader/ShopDiagnosticNativeAdapter.cs" Link="reader/ShopDiagnosticNativeAdapter.cs" />
+    <Compile Include="../../room_flows_v1/shop/native/PinnedShopV1NativeAdapter.cs" Link="reference/PinnedShopV1NativeAdapter.cs" />
+    <EmbeddedResource Include="../core/diagnostic_values.json" Link="diagnostic_values.json" LogicalName="diagnostic_values.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.ShopDiagnosticV1.Core.csproj" />
+    <ProjectReference Include="../../room_flows_v1/shop/core/Sts2AgentBridge.RoomFlowsV1.Shop.Core.csproj" />
+  </ItemGroup>
+</Project>
