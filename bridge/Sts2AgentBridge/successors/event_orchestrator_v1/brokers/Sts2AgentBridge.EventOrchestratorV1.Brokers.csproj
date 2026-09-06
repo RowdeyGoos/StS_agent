@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.EventOrchestratorV1.Brokers</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.EventOrchestratorV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="EventOrchestratorV1ChildBrokers.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.EventOrchestratorV1.Core.csproj" />
+    <ProjectReference Include="../../item_v1/core/Sts2AgentBridge.ItemV1.Core.csproj" />
+    <ProjectReference Include="../../card_selection_v1/core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -3,6 +3,30 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
+## Active event coverage development — 2026-09-06
+
+The user selected broader event support. The isolated `event_orchestrator_v1`
+functional increment now passes independent source review, its candidate gate
+and its frozen aggregate. Its 40-file source identity is frozen. One parent
+composes ordinary options, exact item rewards and Cheese card selection through
+the actual frozen child controllers, with sequential episodes and an immutable
+decision-provider API. Repository regression passes 1,243 tests; the aggregate
+reports 244 checks across 12 suites and matching native builds. Read the
+[orchestrator ledger](research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md)
+for exact identities, evidence and acceptance.
+
+The reviewed metadata census established 68 concrete event types, including
+ancient/deprecated types, without establishing runtime eligibility. The
+[coverage matrix](research/PHASE_1_EVENT_COVERAGE_MATRIX.md) keeps every type's
+remaining branches explicit; no type has complete all-branch evidence. Next work
+is exact event callers for removal, transformation, upgrading and other add/count
+variants, followed by custom screens, embedded combat and repeated choices. The
+[event coverage plan](PHASE_1_EVENT_COVERAGE_PLAN.md) owns that sequence.
+All twelve predecessors and old48 remain byte-exact. This functional component
+has no installable release or live evidence; earlier Smith/Cheese/Dense Vegetation
+live results belong to their predecessor releases. No campaign is active and no
+game setup is needed for the next repository work.
+
 ## Active card-selection development — 2026-09-06
 
 **Current Cheese result:** the user-prepared Room Full of Cheese/Gorge test

@@ -10,17 +10,24 @@ the latter's authoritative progress summary is
 
 ## Active integration priority
 
-Extend event card selection and ordinary rest-site upgrading through the isolated
-`card_selection_v1` successor. Events need explicit multi-card counts; ordinary
-rest upgrades select one. Parent/selector/controller composition and the
-production release are independently accepted and frozen. The first Smith live
-attempt stopped during reconciliation and was fully cleaned. Its focused native
-completion repair is independently accepted and published. The fresh corrective
-Smith test live-passes one upgrade and Proceed/map handoff. The separate
-user-prepared Cheese test also passes exactly two card additions and map handoff;
-both campaigns are fully cleaned. Broaden native event caller coverage next. Extend native removal/transform and other event
-callers only with their exact cardinality, preview and effect witnesses.
-See the [card-selection acceptance ledger](docs/research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md).
+The shared `event_orchestrator_v1` functional increment is implemented, reviewed
+and frozen. It composes ordinary choices, item rewards and Cheese card selection
+under one parent with sequential children and an explicit decision provider.
+Repository regression passes 1,243 tests and its complete offline aggregate
+passes, including reproducible native builds. It is not yet an installable release.
+
+Next, connect exact event callers for removal, transformation, upgrading and
+other card-add/count variants, then embedded combat, custom screens and repeated
+choices. Preserve explicit multi-card event counts and ordinary rest upgrades of
+exactly one card. The reviewed census and coverage matrix enumerate 68 event types;
+runtime eligibility and complete branch coverage remain open.
+
+Smith upgrade-one and user-prepared Cheese add-two already pass live testing in
+their predecessor release; both campaigns are fully cleaned. All twelve accepted
+predecessors remain frozen. See the
+[event coverage plan](docs/PHASE_1_EVENT_COVERAGE_PLAN.md),
+[coverage matrix](docs/research/PHASE_1_EVENT_COVERAGE_MATRIX.md) and
+[orchestrator ledger](docs/research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).
 
 ## Current Position
 

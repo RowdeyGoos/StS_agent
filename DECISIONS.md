@@ -2139,3 +2139,25 @@ claim those native policies are available. The
 [card-selection contract](docs/PHASE_1_CARD_SELECTION_V1_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md) own
 reviewed interfaces, evidence and the later live release gate.
+
+
+## 2026-09-06 — Shared event orchestration with explicit child capabilities
+
+Develop event coverage around one parent controller and reusable typed handlers
+for item rewards and card selection. The parent alone chooses event options and
+Proceed. Each child is bound to the exact accepted option, a pre-dispatch policy,
+its foreground screen and a monotonic episode ordinal; unknown interactions
+remain unsupported. This avoids duplicating whole event controllers while
+preserving authoritative counts, confirmation rules and exact effect witnesses.
+
+Separate action selection through an immutable public decision-provider API.
+Fixtures explicitly select a deterministic first-legal provider; strategic option
+valuation is a later concern. Track event classes and branches through a finite
+pinned-build coverage census rather than treating shared UI classes as proof
+that every event is supported. The first integrated successor connects existing
+ordinary choices, item rewards and Cheese card selection; other native callers
+and custom/combat interactions remain explicit gaps.
+
+See the [coverage plan](docs/PHASE_1_EVENT_COVERAGE_PLAN.md),
+[functional contract](docs/PHASE_1_EVENT_ORCHESTRATOR_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).

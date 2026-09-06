@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.EventOrchestratorV1.Broker.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.EventOrchestratorV1.BrokerTests</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup><Compile Include="Program.cs" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.EventOrchestratorV1.Core.csproj" />
+    <ProjectReference Include="../brokers/Sts2AgentBridge.EventOrchestratorV1.Brokers.csproj" />
+  </ItemGroup>
+</Project>

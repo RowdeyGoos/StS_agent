@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.EventOrchestratorV1.Native.Factory.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.EventOrchestratorV1.NativeTests</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <StartupObject>Sts2AgentBridge.Successors.EventOrchestratorV1.NativeTests.FactoryProgram</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="FactoryProgram.cs" /><Compile Include="TargetStubs.cs" /><Compile Include="CardNativeStub.cs" />
+    <Compile Include="../native/PinnedEventOrchestratorV1NativeAdapter.cs" Link="native/PinnedEventOrchestratorV1NativeAdapter.cs" />
+    <Compile Include="../native/ProductionEventOrchestratorV1ChildFactories.cs" Link="native/ProductionEventOrchestratorV1ChildFactories.cs" />
+    <Compile Include="../native/BoundEventItemV1NativeAdapter.cs" Link="native/BoundEventItemV1NativeAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.EventOrchestratorV1.Core.csproj" />
+    <ProjectReference Include="../brokers/Sts2AgentBridge.EventOrchestratorV1.Brokers.csproj" />
+    <ProjectReference Include="../../item_v1/core/Sts2AgentBridge.ItemV1.Core.csproj" />
+    <ProjectReference Include="../../card_selection_v1/core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+    <ProjectReference Include="../../room_flows_v1/common/Sts2AgentBridge.RoomFlowsV1.Common.csproj" />
+  </ItemGroup>
+</Project>
