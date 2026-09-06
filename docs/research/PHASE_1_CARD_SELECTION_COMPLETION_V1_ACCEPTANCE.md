@@ -124,7 +124,7 @@ quit, quarantine, exact purge and clean verification remain required. Repeated
 unmodded relaunch remains waived. No new campaign is active at publication.
 
 
-## Current live checkpoint — installed, awaiting fresh rest setup
+## Historical live checkpoint — installed before the completed test
 
 Source commit `c29a85d` was clean before installation. Fresh source41,
 all eleven predecessor inventories, old48, contract and three published artifacts
@@ -148,3 +148,51 @@ map, popup or selector. Verify supported UI before the one fixed client call.
 The previous rest site is unsuitable for retry. Campaign is active awaiting this
 setup; teardown is still required afterward. Keep the user waiver of repeated
 unmodded relaunch. No other boundaries changed.
+
+
+## Smith live pass and complete cleanup — 2026-09-06
+
+The user confirmed the requested different, untouched rest site was ready.
+Supported CUA capture showed initial Rest and Smith choices with no map, popup
+or card selector. The exact game-process check passed. At14:55:50 UTC, the
+coordinator invoked the fixed completion client exactly once against installed
+state `ba13d29ebbbc4931d30b4fd90376ec1eaa19ff40b77aa24112f85c0f80d73d29`.
+It exited0 with this complete sanitized summary:
+
+```json
+{"schema_version":1,"status":"passed","parent_attempted":2,"parent_accepted":2,"parent_reconciled":2,"child_attempted":2,"child_accepted":2,"child_reconciled":2}
+```
+
+The accepted success path reconciled Smith entry, two child decisions, the exact
+single-card upgrade effect, parent Proceed and map handoff.
+Post-test supported UI capture showed the map. This establishes the bounded
+ordinary Smith upgrade-one flow live. It does not promote Cheese add-two,
+general event removal/transform/multi-card upgrading, scrolling, partial candidate
+domains or broader rest modifiers. No selected card identity or raw live response
+was retained. There was no retry, extra authenticated read or further gameplay.
+The previous partial attempt remains recorded separately and is not reclassified.
+
+Normal supported CUA Cmd-Q returned App quit. Wait-stopped confirmed process false
+and port false. Code-first quarantine passed with state SHA256
+`5f88f1e4692d1fde5beda978f84af258e04ada9c52f234be6a71784423dd8f5c`.
+Exact purge removed4 generated files and the owned created directories.
+Final checks completed by14:57:35 UTC:
+
+- Base429 SHA256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`, overlay0.
+- Game stopped and fixed bridge port closed.
+- Eight fixed campaign/operator paths absent and created mods parent absent.
+- Repeated unmodded relaunch remains waived by the user.
+
+This campaign is fully cleaned and closed. Both state hashes are historical
+only and must never be reused. No campaign remains active. The twelve accepted
+successor components and old48 source bytes remain frozen; no implementation
+change was required during this live pass. The existing1206-test regression and
+accepted offline aggregate remain applicable. Next live target is the separate
+Cheese exact-two card-add flow, requiring its own reviewed campaign setup.
+
+
+R independently reviewed the fixed client's success predicates and accepted the
+narrow live claim: exact Smith upgrade-one admission and child effect/completion,
+then correlated parent Proceed and map exit. The summary does not identify the
+chosen card or promote any other event or rest operation. R also accepted the
+closed cleanup disposition above.

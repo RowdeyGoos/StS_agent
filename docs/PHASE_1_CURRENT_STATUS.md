@@ -20,12 +20,13 @@ their authorization scope.
 
 ## Active card-selection development — 2026-09-06
 
-**Current live checkpoint:** corrective source `c29a85d` is installed for one
-new Smith test. Post-install base429/exact2 overlay passed. User is preparing a
-different untouched rest site; no client has run in this campaign. The
+**Current live result:** the corrective Smith test passed on a fresh rest site:
+parent2/2/2 and child2/2/2, including one upgrade effect and Proceed/map handoff.
+Normal quit, quarantine, exact purge, unchanged base429/zero overlay, stopped/closed
+and fixed absences passed by14:57:35 UTC. No campaign remains active. The
 [completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
-owns the installed-state hash and required cleanup. This active checkpoint
-supersedes historical no-campaign statements below.
+records the exact result and closed states. Ordinary single-card Smith upgrading
+is live-demonstrated; Cheese exact-two remains awaiting a separate live test.
 
 The user selected event card addition/removal/upgrade/transform support and
 rest-site card upgrading, explicitly including multiple-card event selections
@@ -65,9 +66,11 @@ fixtures pass87 checks and frozen-original controls reproduce both rejections.
 The complete offline aggregate passes, four production builds match, and full
 repository regression passes1206 tests in107.35 seconds. Read the
 [completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
-for exact identities and current campaign state. Next is one fresh Smith test
-at a different untouched rest site; the earlier uncertain action is never retried.
-All eleven predecessor trees and old48 remain byte-exact.
+for exact identities and current campaign state. The fresh corrective Smith test
+now passes with all four actions reconciled and visible map handoff. Its complete
+cleanup is recorded above. The earlier uncertain action was never retried.
+All twelve accepted successor trees and old48 remain byte-exact. Next is a
+separate Cheese exact-two card-add live test.
 Do not reuse closed campaign state or retry a historical uncertain action.
 Fresh Steam capture still returns `-3811`, separately from controller behavior.
 

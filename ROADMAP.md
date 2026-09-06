@@ -15,8 +15,9 @@ Extend event card selection and ordinary rest-site upgrading through the isolate
 rest upgrades select one. Parent/selector/controller composition and the
 production release are independently accepted and frozen. The first Smith live
 attempt stopped during reconciliation and was fully cleaned. Its focused native
-completion repair is independently accepted and published; test it at another
-untouched rest site, followed separately by Cheese add-two. Extend native removal/transform and other event
+completion repair is independently accepted and published. The fresh corrective
+Smith test now live-passes one upgrade and Proceed/map handoff, with complete
+cleanup. Test Cheese add-two separately next. Extend native removal/transform and other event
 callers only with their exact cardinality, preview and effect witnesses.
 See the [card-selection acceptance ledger](docs/research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md).
 
