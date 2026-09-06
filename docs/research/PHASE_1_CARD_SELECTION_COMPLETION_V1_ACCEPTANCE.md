@@ -196,3 +196,38 @@ narrow live claim: exact Smith upgrade-one admission and child effect/completion
 then correlated parent Proceed and map exit. The summary does not identify the
 chosen card or promote any other event or rest operation. R also accepted the
 closed cleanup disposition above.
+
+
+## Current Cheese live checkpoint — installed, awaiting initial event choices
+
+After the completed Smith cleanup, the user explicitly requested the two-card
+event test. R independently accepted the bounded setup under the preserved
+release contract's separate Cheese/Smith campaign boundary. The unchanged
+accepted completion package retains both flow configurations; no source,
+contract, artifact or capability was changed. Source commit before installation:
+`e82570d`. Closed Smith state hashes are not reused.
+
+Fresh preflight passed source41/all eleven predecessors/old48/contract/package3,
+base429 with unchanged SHA256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+zero overlay, stopped game/closed port, eight fixed campaign/operator absences
+and created mods parent absent.
+
+Installation started after15:01:20 UTC on2026-09-06 using the existing fixed
+campaign ID `CARD-SELECTION-COMPLETION-V1-SMOKE-V1`, fresh protected flow Cheese,
+fresh credential and a new installed state. mods_parent_created=true.
+Installed-state SHA256:
+`2892969e66158b2d5dca640c86cf5431809f0be72689a2e4b6d1fb86a0a969c5`.
+Post-install verification passed unchanged base429 and exactly2 overlay files.
+No client has been invoked in this new campaign.
+
+The user is asked to launch manually onProfile3 IroncladA0 and reach Room Full of
+Cheese at its initial choices, with Gorge untouched and no card selector, map or
+popup. The user was explicitly told this event test supports only Cheese add-two;
+the variable-count pure core does not imply other native event support. Verify
+supported UI before invoking the fixed client exactly once with the new state
+hash. If the required event cannot be prepared, close and clean this campaign
+without invocation. Normal quit, stopped/closed, code-first quarantine, exact
+purge and clean base verification remain mandatory; unmodded relaunch remains
+waived. This installed checkpoint supersedes the earlier no-active-campaign
+statement for the completed Smith test.

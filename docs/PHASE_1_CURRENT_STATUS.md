@@ -20,10 +20,17 @@ their authorization scope.
 
 ## Active card-selection development — 2026-09-06
 
+**Active Cheese test:** the unchanged reviewed package is installed with the
+Cheese configuration and fresh state. User setup is pending at Room Full of
+Cheese's initial untouched choices; no client has run in this campaign. The
+[completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
+owns the new installed-state hash and required cleanup. The prior Smith campaign
+is fully closed. Other native event card operations remain unsupported.
+
 **Current live result:** the corrective Smith test passed on a fresh rest site:
 parent2/2/2 and child2/2/2, including one upgrade effect and Proceed/map handoff.
 Normal quit, quarantine, exact purge, unchanged base429/zero overlay, stopped/closed
-and fixed absences passed by14:57:35 UTC. No campaign remains active. The
+and fixed absences passed by14:57:35 UTC. That Smith campaign is closed. The
 [completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
 records the exact result and closed states. Ordinary single-card Smith upgrading
 is live-demonstrated; Cheese exact-two remains awaiting a separate live test.
