@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "name": "aggregate_checker",
+  "original_path": "bridge/Sts2AgentBridge/successors/event_orchestrator_v1/check.py",
+  "original_sha256": "22400db95f7f9fbae1f133ce6f8e55ab54ad423c6fbe6f9167017907764aa197",
+  "derived_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/check.py",
+  "derived_sha256": "20de6604f790feca0e3651735d785aa30c523dcc72a4a831f72e962e624b81e7",
+  "edits": [
+    {
+      "offset": 320,
+      "old": "COMPONENT = 'event_orchestrator_v1'\nCONTRACT = 'da7cdbf6efcb6f2786e59a64a0b0d9ed7f9b355cd966f8a73b61d385987c543d'\nPREVIOUS_CHECK = '9756019716ebad482276aa5564d6a844b07769de4ac67f501db61c30d9303419'\nCOMPLETION_MANIFEST = 'c31cb310fd4a72cad84aa23acddca18a7c0ff665b081b4b045dabaac87c9d74b'\nCOMPLETION_INVENTORY = '92cbd6071d5ed39c1de8e36dbdb7c8f9af8379da5d4d4fa48397837389f05dab'\nAPI = '37f37caecb1a439761112b38a36229a25c29a2a674236978ae5f0bbde80b5fb1'\nSCHEMA = 'e4da960bf0525b93d1526e01f44c01c190efe408c31b86e865e3082d21c4e399'\n",
+      "new": "COMPONENT = 'event_card_operations_v1'\nCONTRACT = 'be480799460c5a5799bd9785d21f1c41d6467c912876cd456b271999408dac6e'\nPREVIOUS_CHECK = '22400db95f7f9fbae1f133ce6f8e55ab54ad423c6fbe6f9167017907764aa197'\nORCHESTRATOR_MANIFEST = '70136652a0ba6977061f25c4ab31f91c771b2831461b0b83c3788d66ccbdc1c8'\nORCHESTRATOR_INVENTORY = 'd5dbc6ab497ab06d9fd9de3a06e17bde6f0a46207389cb6a4543c34ce3d646e1'\nAPI = '9275a7773f5685e06546300e0e3c8ca4b4651e16d96c75a259c51fde8873b956'\nSCHEMA = '22c563ac03aff7ef522ba2f56e09fb22ea586a44beebd491381130c3d7884eec'\n"
+    },
+    {
+      "offset": 921,
+      "old": "# Filled only after project closure and implementation review; empty is fail-closed.\n",
+      "new": ""
+    },
+    {
+      "offset": 1041,
+      "old": "    'broker_tests/Sts2AgentBridge.EventOrchestratorV1.Broker.Tests.csproj': 'd51c3f18c244a7de92bafe656b774bf17c1b246be041ecf7126bf40007118263',\n    'brokers/Sts2AgentBridge.EventOrchestratorV1.Brokers.csproj': 'c290d607e683c8bec688c13c7a3d9226dd143a59f7a419cadccf0f7eb00a9b6a',\n    'core/Sts2AgentBridge.EventOrchestratorV1.Core.csproj': '5cacc5fa7a979ca2009c78bd2eefc404e3f06cacfa34f26c6faec0e2f5f7e550',\n    'core_tests/Sts2AgentBridge.EventOrchestratorV1.Core.Tests.csproj': '2815f99100b3dbf0dbfeda1bf7c6284e3fce127d226bd19f09ecf6fa458f7f76',\n    'integration/Sts2AgentBridge.EventOrchestratorV1.Integration.csproj': 'cb5a918a8ffaa0ec9f67828626df59fbc6382877ccd175fe7cfda12890bac120',\n    'native/Sts2AgentBridge.EventOrchestratorV1.Native.csproj': '9ba8807a3791d0e7a237c799d8514f84a37e350b69c7905a0dd1b71ec9c2164c',\n    'native_tests/Sts2AgentBridge.EventOrchestratorV1.Native.Factory.Tests.csproj': '534bacad16b53dc32742bb03bfbdcc02f085b91f10daaa72cf4d552096abdfaa',\n    'native_tests/Sts2AgentBridge.EventOrchestratorV1.Native.Tests.csproj': '43b2762c7abd5c02b3674816afb7a78443faac208716a9799708c379e4212011',\n    'wire/Sts2AgentBridge.EventOrchestratorV1.Wire.csproj': 'a4a6336e3366b3da287495e6435f0b46dadd0e3f0d6dcfa823e40cbc3de51fc2',\n    'wire_tests/Sts2AgentBridge.EventOrchestratorV1.Wire.Tests.csproj': '8840675ae51f9b69aa6fd7681ff1a64ec832cb03f5bfc1d2f9ca7615b6e0d6df',\n",
+      "new": "    'broker_tests/Sts2AgentBridge.EventCardOperationsV1.Broker.Tests.csproj': '57177cd9230928c058e789d59c12d81dcf3c944400480af78b57682318aba489',\n    'core/Sts2AgentBridge.EventCardOperationsV1.Core.csproj': '71dea1ca202cd7b7c6edcf0236e571505557068523241eeedbe9426312e01f76',\n    'core_tests/Sts2AgentBridge.EventCardOperationsV1.Core.Tests.csproj': '60c4b48ae0f15d4eec090e95ceb4cdb6266f858268a415acad8a2864534cb1aa',\n    'integration/Sts2AgentBridge.EventCardOperationsV1.Integration.csproj': '7723d67efe257016f5b54998d1cf7f2197fc60bf917df4b00a05bd2a298b4b7e',\n    'native/Sts2AgentBridge.EventCardOperationsV1.Native.csproj': '1394a47a4e5d78ecd522b515f3e6b048f97a74ddb322073cca1ddd950427ffb7',\n    'native_card_tests/Sts2AgentBridge.EventCardOperationsV1.NativeCard.Tests.csproj': '8ded98124b4bd216d97505be469e4256ee80379a0a69ff90c4fb35f622c29d0e',\n    'native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Composition.Tests.csproj': '57eef08d451a560eaf08daba970e0e8e090bc977b7df70c0d06f5a3032c5e927',\n    'native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Factory.Tests.csproj': '98ee40c1ee7c5c12afc4e0f478ac4804cd67fc0e75fd7235c842dd82b4034017',\n    'native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Tests.csproj': '160a483c4dbf0861d8de7d9459abe3ff2373fb3e3c88b54528317344bf7f6ff6',\n    'wire/Sts2AgentBridge.EventCardOperationsV1.Wire.csproj': 'f1bf5c2949de064b10fcdc403f67d0baf06667b673243e0a4304c20159f58cd2',\n    'wire_tests/Sts2AgentBridge.EventCardOperationsV1.Wire.Tests.csproj': 'cf4220cf43e820481ef101dd50c4a4febfbc96872cc94a29aef9c836a9d6037d',\n"
+    },
+    {
+      "offset": 3509,
+      "old": "",
+      "new": "    ('event_card_operations_v1/core_tests/Sts2AgentBridge.EventCardOperationsV1.Core.Tests.csproj', 'event_card_operations_v1_core', 19),\n    ('event_card_operations_v1/broker_tests/Sts2AgentBridge.EventCardOperationsV1.Broker.Tests.csproj', 'event_card_operations_v1_brokers', 12),\n    ('event_card_operations_v1/wire_tests/Sts2AgentBridge.EventCardOperationsV1.Wire.Tests.csproj', 'event_card_operations_v1_wire', 51),\n    ('event_card_operations_v1/native_card_tests/Sts2AgentBridge.EventCardOperationsV1.NativeCard.Tests.csproj', 'event_card_operations_v1_native_card', 11),\n    ('event_card_operations_v1/native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Tests.csproj', 'event_card_operations_v1_native', 14),\n    ('event_card_operations_v1/native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Factory.Tests.csproj', 'event_card_operations_v1_native_factories', 4),\n    ('event_card_operations_v1/native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Composition.Tests.csproj', 'event_card_operations_v1_native_composition', 2),\n"
+    },
+    {
+      "offset": 3511,
+      "old": "NATIVE_PROJECTS: tuple[str, ...] = ('native/Sts2AgentBridge.EventOrchestratorV1.Native.csproj',)\nBUILD_ONLY_PROJECTS: tuple[str, ...] = ('integration/Sts2AgentBridge.EventOrchestratorV1.Integration.csproj',)\nPYTHON_TESTS: tuple[tuple[str, str, int], ...] = (('host_tests/test_event_host.py', 'event_orchestrator_v1_host', 37),)\nJSON_TESTS = (('checker_tests/test_event_orchestrator_project_boundary.py', 'event_orchestrator_v1_project_boundary', 22),)\nINTEGRATION_SCRIPT = 'integration_tests/test_event_orchestrator_integration.py'\nINTEGRATION_SUITE = 'event_orchestrator_v1_integration'\n",
+      "new": "NATIVE_PROJECTS: tuple[str, ...] = ('native/Sts2AgentBridge.EventCardOperationsV1.Native.csproj',)\nBUILD_ONLY_PROJECTS: tuple[str, ...] = (\n    'wire/Sts2AgentBridge.EventCardOperationsV1.Wire.csproj',\n    'integration/Sts2AgentBridge.EventCardOperationsV1.Integration.csproj',\n)\nPYTHON_TESTS: tuple[tuple[str, str, int], ...] = (('host_tests/test_event_card_operations_host.py', 'event_card_operations_v1_host', 58),)\nJSON_TESTS = (('checker_tests/test_event_card_project_boundary.py', 'event_card_operations_v1_project_boundary', 25),)\nINTEGRATION_SCRIPT = 'integration_tests/test_event_card_operations_integration.py'\nINTEGRATION_SUITE = 'event_card_operations_v1_integration'\n"
+    },
+    {
+      "offset": 4174,
+      "old": "DERIVATION_SUITE = 'event_orchestrator_v1_native_derivation'\nDERIVATION_COUNT = 10\n",
+      "new": "DERIVATION_SUITE = 'event_card_operations_v1_derivation'\nDERIVATION_COUNT = 304\n"
+    },
+    {
+      "offset": 4303,
+      "old": "",
+      "new": "AUTHORITY_FILES = {\n    'docs/PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md': CONTRACT,\n    'docs/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_CALLER_SELECTION.md':\n        'e34a7190409c99ffed1693cd4af8c6ae37f50932b1c93be093927ae4188cf492',\n}\n"
+    },
+    {
+      "offset": 4460,
+      "old": "    path = ROOT.parent / 'card_selection_completion_v1/check.py'\n",
+      "new": "    path = ROOT.parent / 'event_orchestrator_v1/check.py'\n"
+    },
+    {
+      "offset": 4745,
+      "old": "    previous = types.ModuleType('verified_completion_checker')\n",
+      "new": "    previous = types.ModuleType('verified_orchestrator_checker')\n"
+    },
+    {
+      "offset": 4904,
+      "old": "    _, helper, boot, components, inventories = previous.frozen_sources()\n    components['card_selection_completion_v1'], inventories['card_selection_completion_v1'] = helper.source_snapshot(\n        ROOT.parent / 'card_selection_completion_v1', 'card_selection_completion_v1', previous.CONTRACT,\n        COMPLETION_MANIFEST, COMPLETION_INVENTORY)\n",
+      "new": "    runner, helper, boot, components, inventories = previous.frozen_sources()\n    components['event_orchestrator_v1'], inventories['event_orchestrator_v1'] = helper.source_snapshot(\n        ROOT.parent / 'event_orchestrator_v1', 'event_orchestrator_v1', previous.CONTRACT,\n        ORCHESTRATOR_MANIFEST, ORCHESTRATOR_INVENTORY)\n"
+    },
+    {
+      "offset": 5300,
+      "old": "    if len(components) != 12:\n",
+      "new": "    if len(components) != 13:\n"
+    },
+    {
+      "offset": 5364,
+      "old": "    return previous, helper, boot, components, inventories\n",
+      "new": "    return runner, helper, boot, components, inventories\n"
+    },
+    {
+      "offset": 6670,
+      "old": "",
+      "new": "\n\ndef authority_sources(helper):\n    result = {}\n    for name, digest in AUTHORITY_FILES.items():\n        path = ROOT.parents[3] / name\n        helper.reject_links(path)\n        if path.stat().st_size > 65536:\n            fail('authority_size')\n        data = helper.read_regular(path)\n        if sha(data) != digest:\n            fail('authority_identity')\n        result[name] = data\n    return result\n"
+    },
+    {
+      "offset": 11506,
+      "old": "",
+      "new": "    authorities = authority_sources(helper)\n    if set(all_inputs).intersection(authorities):\n        fail('authority_input_collision')\n    all_inputs.update(authorities)\n"
+    },
+    {
+      "offset": 15300,
+      "old": "        assemblies['event_orchestrator_v1_integration'] = build(COMPONENT + '/' + relative)\n",
+      "new": "        assemblies[INTEGRATION_SUITE] = build(COMPONENT + '/' + relative)\n"
+    },
+    {
+      "offset": 16014,
+      "old": "        '--fixture', str(assemblies['event_orchestrator_v1_integration']), '--host', str(own / 'host/event_orchestrator_host.py')], own, env), INTEGRATION_SUITE, INTEGRATION_COUNT)\n",
+      "new": "        '--fixture', str(assemblies[INTEGRATION_SUITE]), '--host', str(own / 'host/event_orchestrator_host.py')], own, env), INTEGRATION_SUITE, INTEGRATION_COUNT)\n"
+    },
+    {
+      "offset": 16915,
+      "old": "    result = {'schema_version': 1, 'status': 'passed', 'suite': 'event_orchestrator_v1_offline',\n",
+      "new": "    result = {'schema_version': 1, 'status': 'passed', 'suite': 'event_card_operations_v1_offline',\n"
+    },
+    {
+      "offset": 17100,
+      "old": "",
+      "new": "              'authority_document_sha256': AUTHORITY_FILES,\n"
+    }
+  ]
+}

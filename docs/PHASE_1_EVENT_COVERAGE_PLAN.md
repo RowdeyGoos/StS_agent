@@ -54,6 +54,28 @@ release requires its own complete composition, reproducibility, verifier,
 package, operational and live gates. Functional acceptance alone is never
 reported as live readiness.
 
+## Second integrated increment — event card bindings
+
+`event_card_operations_v1` adds exact pre-dispatch operation/count/domain rules,
+closed unsupported-card classification and shared card-child reconciliation.
+The initial new native paths are Aroma of Chaos/Maintain Control and Sapphire
+Seed/Eat, both upgrade-one. Their complete native parent/child/Proceed fixtures
+and compile-only game-reference builds pass. The 66-file identity is frozen and the
+final aggregate passes 675 checks across 19 suites. The
+[event-card ledger](research/PHASE_1_EVENT_CARD_OPERATIONS_V1_ACCEPTANCE.md)
+records completed functional acceptance. No installable release or live
+campaign is implied.
+
+The next concrete caller is Brain Leech/Share Knowledge add-one. Its generated
+choice count comes from the exact `FromCardChoiceCount` dynamic value, captured
+before dispatch; complete generated originals are retained once at admission.
+Zen Weaver removal requires the remaining exact argument-to-field bindings;
+its outer callbacks now have a proven awaited completion witness. Reuse the
+shared native selector strategies, retaining card references through cleared
+preview highlights. Transformations need authoritative original/replacement
+mapping, and multi-upgrade preview originals remain unresolved. These gaps
+stay separate from ordinary Smith's proven exactly-one upgrade.
+
 ## Coverage expansion
 
 In parallel, inspect only bounded pinned-build event metadata and explicitly

@@ -16,15 +16,24 @@ under one parent with sequential children and an explicit decision provider.
 Repository regression passes 1,243 tests and its complete offline aggregate
 passes, including reproducible native builds. It is not yet an installable release.
 
-Next, connect exact event callers for removal, transformation, upgrading and
-other card-add/count variants, then embedded combat, custom screens and repeated
-choices. Preserve explicit multi-card event counts and ordinary rest upgrades of
-exactly one card. The reviewed census and coverage matrix enumerate 68 event types;
+The next `event_card_operations_v1` functional component adds pre-dispatch card
+domain binding and two exact event upgrades: Aroma of Chaos/Maintain Control and
+Sapphire Seed/Eat. Native/controller composition, independent review and the
+candidate and frozen aggregates pass (675 checks across 19 suites). Its 66-file
+identity is frozen and functional acceptance is recorded in the [event-card ledger](docs/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_ACCEPTANCE.md).
+It does not yet have release or live evidence.
+
+Next, implement Brain Leech/Share Knowledge add-one using its proven dynamic
+generation count and complete generated-card domain. Finish Zen Weaver's exact
+removal argument bindings, then connect removal and transformation, other
+card-add/count variants, embedded combat, custom screens and repeated choices.
+Preserve explicit multi-card event counts and ordinary rest upgrades of exactly
+one card. The reviewed census and coverage matrix enumerate 68 event types;
 runtime eligibility and complete branch coverage remain open.
 
 Smith upgrade-one and user-prepared Cheese add-two already pass live testing in
-their predecessor release; both campaigns are fully cleaned. All twelve accepted
-predecessors remain frozen. See the
+their predecessor release; both campaigns are fully cleaned. The thirteen
+accepted predecessors remain frozen. See the
 [event coverage plan](docs/PHASE_1_EVENT_COVERAGE_PLAN.md),
 [coverage matrix](docs/research/PHASE_1_EVENT_COVERAGE_MATRIX.md) and
 [orchestrator ledger](docs/research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).

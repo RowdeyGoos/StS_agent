@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "suite": "event_card_operations_v1_derivation",
+  "derived_records": [
+    {
+      "name": "core_contracts",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/core_contracts.json",
+      "record_sha256": "abe30fbc1bc0b6a08443189c01ca3f844a52ed34fac3c93f044e19469e790f63"
+    },
+    {
+      "name": "core_encoder",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/core_encoder.json",
+      "record_sha256": "53994072d202123430635db9aa2ff7402d32e4ea715b86491986a83ad14171f7"
+    },
+    {
+      "name": "core_session",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/core_session.json",
+      "record_sha256": "058656c104d83a4a9eb575567dcdc667b681b943badc25e2e0cf585b64aaf9fc"
+    },
+    {
+      "name": "wire_codec",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/wire_codec.json",
+      "record_sha256": "dbd60f5352543bff65d5d47a9f5f5baa24e813065a86a9edddd0ca9206adfd8e"
+    },
+    {
+      "name": "wire_service",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/wire_service.json",
+      "record_sha256": "8c8de90b5b8607f21f256c35d8d250b03ec5b96413eb7fde10782ea49938fc4b"
+    },
+    {
+      "name": "wire_validation",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/wire_validation.json",
+      "record_sha256": "f7058b94beee738f173c442c07087974b305ea84d6b4fe1ac5d6b58f5d6e817e"
+    },
+    {
+      "name": "host",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/host.json",
+      "record_sha256": "ff22bcc33e3ba4a34af92f7285f3d1f80b628cf82dad850e95835905b4967d98"
+    },
+    {
+      "name": "core_tests",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/core_tests.json",
+      "record_sha256": "e4e62ccd17581de44bed65c4e39a6526e6060cdc0ac2e6b79f70cd3d6c44bbdd"
+    },
+    {
+      "name": "broker_tests",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/broker_tests.json",
+      "record_sha256": "515ce2fbf65145ce5cfdc1d2f049803515da35215318d6586681dabf65b5170a"
+    },
+    {
+      "name": "wire_tests",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/wire_tests.json",
+      "record_sha256": "2fc9847c1129194bd821ec2bdca16214f940fff64a5e78df2bddef926c8d8b54"
+    },
+    {
+      "name": "host_tests",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/host_tests.json",
+      "record_sha256": "2d76e2dce1d2e5722d8130604b934aecb9cde887ec6c9097747fcb99a5bd4529"
+    },
+    {
+      "name": "aggregate_checker",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/aggregate_checker.json",
+      "record_sha256": "b12182f9150bd7e4028120d04265f439dd2e71fd938b9ed9e10ad1568f1f1ba3"
+    },
+    {
+      "name": "project_boundary_tests",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/project_boundary_tests.json",
+      "record_sha256": "ee84848bdca0a0099eaa263f9043b4c7f48da869f4fd3884cbb71c9d6dd2e912"
+    },
+    {
+      "name": "native_parent",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/native_parent.json",
+      "record_sha256": "6734d2b94e7ac189dadc575ebbb940b7ec4c17a4dfdd2e3a91a2babbf3684ce1"
+    },
+    {
+      "name": "native_factories",
+      "record_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/derivation/records/native_factories.json",
+      "record_sha256": "c0e470679dcf0ac4076096b5ca3d131e2b3acb1858df20d23dede6fa5cc35851"
+    }
+  ],
+  "identical_copies": [
+    {
+      "name": "freeze_sources_helper",
+      "original_path": "bridge/Sts2AgentBridge/successors/event_orchestrator_v1/freeze_sources.py",
+      "linked_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/freeze_sources.py",
+      "sha256": "52a86ef8014960ef39fb7f1eacb869db1933146e05bf622c7a6e4ec3e3e856c3"
+    }
+  ],
+  "direct_inputs": [
+    {
+      "name": "event_child_brokers",
+      "path": "bridge/Sts2AgentBridge/successors/event_orchestrator_v1/brokers/EventOrchestratorV1ChildBrokers.cs",
+      "sha256": "ad2490408e6b55d0f3c36ed996a61d41933b41340fb4bea14e74099c561ab7b5"
+    },
+    {
+      "name": "item_contracts",
+      "path": "bridge/Sts2AgentBridge/successors/item_v1/core/ItemV1Contracts.cs",
+      "sha256": "28348350f2a170522e3589c676a9599c2c1243118e412c493634a639b801f8ba"
+    },
+    {
+      "name": "item_encoder",
+      "path": "bridge/Sts2AgentBridge/successors/item_v1/core/ItemV1CanonicalEncoder.cs",
+      "sha256": "d8837666bfe34337eb0f954976256363bab826f6f87bc2310a0a83258c74cbc9"
+    },
+    {
+      "name": "item_session",
+      "path": "bridge/Sts2AgentBridge/successors/item_v1/core/ItemV1Session.cs",
+      "sha256": "cf5e8f693cec6b1d0362558249ff75dcec7dc19f7029a0e9ac3c09e4b625f410"
+    },
+    {
+      "name": "card_contracts",
+      "path": "bridge/Sts2AgentBridge/successors/card_selection_v1/core/CardSelectionV1Contracts.cs",
+      "sha256": "e7c221ec1c5390d9a21c6097d3d41b78ee06ee722d5447a7fc5a54146ff9df06"
+    },
+    {
+      "name": "card_session",
+      "path": "bridge/Sts2AgentBridge/successors/card_selection_v1/core/CardSelectionV1Session.cs",
+      "sha256": "6621da8f4fc9e83d3ffd566005e639a86cf9e531475b982d90718b30c6be353e"
+    },
+    {
+      "name": "room_flow_contracts",
+      "path": "bridge/Sts2AgentBridge/successors/room_flows_v1/common/RoomFlowContracts.cs",
+      "sha256": "c332b416919a41c7b61507045edd42fb0d9a1b36996d43e91f724d6016f837b6"
+    },
+    {
+      "name": "item_wire_protocol",
+      "path": "bridge/Sts2AgentBridge/successors/item_wire_v1/producer/ItemWireV1Protocol.cs",
+      "sha256": "03244253e0c697aa3cce4054b283af260fc7627b17199161c10c37f1bb90869a"
+    },
+    {
+      "name": "item_wire_codec",
+      "path": "bridge/Sts2AgentBridge/successors/item_wire_v1/producer/ItemWireV1Codec.cs",
+      "sha256": "82d21d5fc41d2e1f9ae77aed0958f63e53f9bc4a984edfe365d88e854b1232d8"
+    },
+    {
+      "name": "card_wire_protocol",
+      "path": "bridge/Sts2AgentBridge/successors/card_selection_v1/wire/CardSelectionV1WireProtocol.cs",
+      "sha256": "b31a4f265ee246299683460bb36ea84ffdec458909bec4db5cba049f6aecf716"
+    },
+    {
+      "name": "card_wire_codec",
+      "path": "bridge/Sts2AgentBridge/successors/card_selection_v1/wire/CardSelectionV1WireCodec.cs",
+      "sha256": "9f2ccbab2ead265315f06b187854c30f4f3da9b8f173aded6998db22741b5442"
+    },
+    {
+      "name": "card_parent_contracts",
+      "path": "bridge/Sts2AgentBridge/successors/card_selection_v1/parents/CardSelectionParentV1Contracts.cs",
+      "sha256": "60d2e207dc029700a4ea22edc85408740a821ee077e35d7904129c1a902579a7"
+    }
+  ],
+  "authored_outputs": [
+    {
+      "name": "policy_catalog",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/core/EventCardOperationsV1PolicyCatalog.cs",
+      "sha256": "fd7221993c97eef8284e1f45347d21cfdf6997fb165269cf970ac3f7f788dba6"
+    },
+    {
+      "name": "generic_wire_validation_tests",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/wire_tests/GenericValidation.cs",
+      "sha256": "c4a1235f94e8905f3e6305378169b2dff06bf180ebe368ef69779562915c48a9"
+    },
+    {
+      "name": "directory_build_properties",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/Directory.Build.props",
+      "sha256": "2b05edd4dbb4532b1e884c6267bf56c732b49415dc43a23245b3d0c3cc30265f"
+    },
+    {
+      "name": "core_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/core/Sts2AgentBridge.EventCardOperationsV1.Core.csproj",
+      "sha256": "71dea1ca202cd7b7c6edcf0236e571505557068523241eeedbe9426312e01f76"
+    },
+    {
+      "name": "core_tests_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/core_tests/Sts2AgentBridge.EventCardOperationsV1.Core.Tests.csproj",
+      "sha256": "60c4b48ae0f15d4eec090e95ceb4cdb6266f858268a415acad8a2864534cb1aa"
+    },
+    {
+      "name": "broker_tests_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/broker_tests/Sts2AgentBridge.EventCardOperationsV1.Broker.Tests.csproj",
+      "sha256": "57177cd9230928c058e789d59c12d81dcf3c944400480af78b57682318aba489"
+    },
+    {
+      "name": "wire_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/wire/Sts2AgentBridge.EventCardOperationsV1.Wire.csproj",
+      "sha256": "f1bf5c2949de064b10fcdc403f67d0baf06667b673243e0a4304c20159f58cd2"
+    },
+    {
+      "name": "wire_tests_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/wire_tests/Sts2AgentBridge.EventCardOperationsV1.Wire.Tests.csproj",
+      "sha256": "cf4220cf43e820481ef101dd50c4a4febfbc96872cc94a29aef9c836a9d6037d"
+    },
+    {
+      "name": "integration_host",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/integration/EventCardOperationsV1IntegrationHost.cs",
+      "sha256": "acdb1acbb10e8811fa8889824fd959421fd575fe256968ac2803adefa89ac637"
+    },
+    {
+      "name": "integration_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/integration/Sts2AgentBridge.EventCardOperationsV1.Integration.csproj",
+      "sha256": "7723d67efe257016f5b54998d1cf7f2197fc60bf917df4b00a05bd2a298b4b7e"
+    },
+    {
+      "name": "integration_tests",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/integration_tests/test_event_card_operations_integration.py",
+      "sha256": "f3e69d7b77935c78352483109c63b600f9a311b187b1eae854d4cd606a0a16be"
+    },
+    {
+      "name": "event_card_operation_binding",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native/EventCardOperationBinding.cs",
+      "sha256": "be11d569e22971c8bc23e354c8d5bc4d330bf113c07238c44841f84d8f858927"
+    },
+    {
+      "name": "event_card_selection_native_adapter",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native/EventCardSelectionV1NativeAdapter.cs",
+      "sha256": "44e70a71432d83956a62c1ef49bd3fb1a0d85c1d012a8c61539a559639a74fa4"
+    },
+    {
+      "name": "native_card_tests",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_card_tests/Program.cs",
+      "sha256": "76f9524bf48b94a0d2434f98de5cb3e15b8f5ec398eeb0e42817bb548443cbc2"
+    },
+    {
+      "name": "native_card_test_stubs",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_card_tests/TargetStubs.cs",
+      "sha256": "f6b652a49bd8823f576a79a3eea29563bdda4c45ee417d2647d69a60c08821d2"
+    },
+    {
+      "name": "native_card_test_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_card_tests/Sts2AgentBridge.EventCardOperationsV1.NativeCard.Tests.csproj",
+      "sha256": "8ded98124b4bd216d97505be469e4256ee80379a0a69ff90c4fb35f622c29d0e"
+    },
+    {
+      "name": "native_registry",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native/EventCardOperationNativeRegistry.cs",
+      "sha256": "e8dd7237d90c8157c4b2d420aaa3594990e86ca4660cc83cdee4e3d1007f3334"
+    },
+    {
+      "name": "native_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native/Sts2AgentBridge.EventCardOperationsV1.Native.csproj",
+      "sha256": "1394a47a4e5d78ecd522b515f3e6b048f97a74ddb322073cca1ddd950427ffb7"
+    },
+    {
+      "name": "native_parent_tests",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/Program.cs",
+      "sha256": "9f9e8ff273e417af2dfafe17e2e82c88e098c0f3c4ed41a0d2009fa5fc3a6cd3"
+    },
+    {
+      "name": "native_parent_test_stubs",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/TargetStubs.cs",
+      "sha256": "4437990dc1874d1b1c9997fa55e74aa88352098fac4b9bfd3b6b72ef834099bb"
+    },
+    {
+      "name": "native_parent_test_card_stub",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/CardNativeStub.cs",
+      "sha256": "bd24bb54374a27d395f207ce33256f9b39a8f25a4310f9e2ed08b24cbc49a0bc"
+    },
+    {
+      "name": "native_parent_test_binding_stub",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/EventCardOperationBindingStub.cs",
+      "sha256": "0fed47dc73391ffff47f312a1753fde76c83959c6065a2eca26c2ff0b4ff8de0"
+    },
+    {
+      "name": "native_parent_test_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Tests.csproj",
+      "sha256": "160a483c4dbf0861d8de7d9459abe3ff2373fb3e3c88b54528317344bf7f6ff6"
+    },
+    {
+      "name": "native_factory_tests",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/FactoryProgram.cs",
+      "sha256": "a46a83428dfae8c82c6c47d0eb5d53fdfd3da3097ca88e148bba9ec3339bdf3a"
+    },
+    {
+      "name": "native_factory_test_builder_stub",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/FactoryBuilderStub.cs",
+      "sha256": "cf5c5fa98a27bbd724f2015133c561cef8186cf00632c5e71adef0044e6fb334"
+    },
+    {
+      "name": "native_factory_test_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Factory.Tests.csproj",
+      "sha256": "98ee40c1ee7c5c12afc4e0f478ac4804cd67fc0e75fd7235c842dd82b4034017"
+    },
+    {
+      "name": "native_composition_tests",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/CompositionProgram.cs",
+      "sha256": "fb881d22253c434ad9bd15ab5ad76a6c6256faf35feec7554bb8582b1031f42e"
+    },
+    {
+      "name": "native_composition_target_stubs",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/CompositionTargetStubs.cs",
+      "sha256": "d06944e9d73563deeaafc5d12620ca09d338cf22b366d75bee4dc155afd06598"
+    },
+    {
+      "name": "native_composition_legacy_stubs",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/CompositionLegacyStubs.cs",
+      "sha256": "cb8ca49c6c3a6d9ef60d79f3c44b4e8a86adb89459087d71468535ba79752df4"
+    },
+    {
+      "name": "native_composition_test_project",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native_tests/Sts2AgentBridge.EventCardOperationsV1.Native.Composition.Tests.csproj",
+      "sha256": "57eef08d451a560eaf08daba970e0e8e090bc977b7df70c0d06f5a3032c5e927"
+    }
+  ],
+  "external_authorities": [
+    {
+      "name": "accepted_contract",
+      "path": "docs/PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md",
+      "sha256": "be480799460c5a5799bd9785d21f1c41d6467c912876cd456b271999408dac6e",
+      "authority": "independently accepted structural contract"
+    },
+    {
+      "name": "accepted_wire_schema",
+      "path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/wire/wire_schema.json",
+      "sha256": "22c563ac03aff7ef522ba2f56e09fb22ea586a44beebd491381130c3d7884eec",
+      "authority": "separately reviewed canonical wire schema"
+    },
+    {
+      "name": "accepted_caller_selection",
+      "path": "docs/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_CALLER_SELECTION.md",
+      "sha256": "e34a7190409c99ffed1693cd4af8c6ae37f50932b1c93be093927ae4188cf492",
+      "authority": "independently accepted exact native caller selection"
+    }
+  ],
+  "pending": []
+}

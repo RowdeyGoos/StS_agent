@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "protocol": "event_card_operations_v1",
+  "routes": {
+    "GET": "/probe/event-card-operations-v1/public/decision",
+    "POST": "/probe/event-card-operations-v1/public/action"
+  },
+  "limits": {
+    "request_bytes": 4096,
+    "response_bytes": 65536,
+    "json_depth": 12,
+    "parent_actions": 12,
+    "child_episodes": 4,
+    "total_actions": 52,
+    "reads": 2048,
+    "host_seconds": 30
+  },
+  "envelope_keys": [
+    "schema_version",
+    "protocol",
+    "session_nonce",
+    "child",
+    "payload"
+  ],
+  "child_keys": [
+    "kind",
+    "child_ordinal",
+    "parent_decision_id",
+    "parent_action_id"
+  ],
+  "child_kind": [
+    "item",
+    "card_selection"
+  ],
+  "child_rule": "null for parent or fixed wire error; otherwise exact current broker kind, ordinal1..4 and accepted parent receipt IDs. Nonce is32lowerhex, decisions64lowerhex, parent action choose:0..7.",
+  "request_keys": [
+    "decision_id",
+    "action_id",
+    "child"
+  ],
+  "request_rule": "GET requires no body. POST contains exactly these keys; child null for parent or exact last published child correlation. Duplicate/unknown keys, wrong stage/kind/ordinal/receipt and unpublished actions reject before dispatch and terminalize the service.",
+  "parent_observation_keys": [
+    "schema_version",
+    "kind",
+    "version",
+    "session_nonce",
+    "parent_ordinal",
+    "status",
+    "phase",
+    "decision_id",
+    "candidates",
+    "legal_actions",
+    "child",
+    "prior_result"
+  ],
+  "parent_observation_kind": "parent_observation",
+  "parent_version": "event_card_operations_v1",
+  "parent_ordinal": 1,
+  "status_phase_pairs": {
+    "ready": [
+      "choose_option",
+      "proceed"
+    ],
+    "waiting": [
+      "waiting"
+    ],
+    "unsupported": [
+      "unsupported"
+    ]
+  },
+  "parent_candidate_keys": [
+    "candidate_index",
+    "action_id",
+    "stable_id",
+    "rendered_text",
+    "enabled",
+    "is_dangerous",
+    "is_proceed",
+    "child_policy",
+    "child_domain_count"
+  ],
+  "prior_result_keys": [
+    "decision_id",
+    "action_id",
+    "result",
+    "child"
+  ],
+  "prior_result_rule": "Always present; null initially, otherwise exact last accepted parent receipt. option_transition has null child; child_completed has the completed exact child envelope; map_handoff has null child. The same prior_result may repeat until another accepted parent action.",
+  "prior_result_kinds": [
+    "option_transition",
+    "child_completed",
+    "map_handoff"
+  ],
+  "parent_resolved_keys": [
+    "schema_version",
+    "kind",
+    "version",
+    "session_nonce",
+    "parent_ordinal",
+    "status",
+    "phase",
+    "decision_id",
+    "action_id",
+    "result",
+    "prior_result"
+  ],
+  "parent_resolved_values": {
+    "kind": "parent_resolved",
+    "status": "resolved",
+    "phase": "complete",
+    "result": "map_handoff"
+  },
+  "parent_receipt_keys": [
+    "schema_version",
+    "kind",
+    "version",
+    "session_nonce",
+    "parent_ordinal",
+    "status",
+    "decision_id",
+    "action_id"
+  ],
+  "parent_receipt_values": {
+    "kind": "parent_receipt",
+    "status": "accepted"
+  },
+  "parent_failure_keys": [
+    "schema_version",
+    "kind",
+    "version",
+    "session_nonce",
+    "parent_ordinal",
+    "status",
+    "code"
+  ],
+  "parent_failure_values": {
+    "kind": "parent_failure",
+    "status": "failed"
+  },
+  "wire_error_keys": [
+    "schema_version",
+    "kind",
+    "status",
+    "code"
+  ],
+  "wire_error_values": {
+    "kind": "error",
+    "status": "error"
+  },
+  "wire_error_codes": [
+    "invalid_request",
+    "internal_failure",
+    "unsupported"
+  ],
+  "child_payloads": {
+    "item": "Inner payload object and field order byte-equivalent to the frozen item_probe_v1/item_v1 codec for actual ItemV1Session values; the enclosing response envelope is new.",
+    "card_selection": "Inner payload object and field order byte-equivalent to the frozen card_selection_v1 child codec for actual CardSelectionV1Session values; no card parent controller; the enclosing response envelope is new."
+  },
+  "child_read_rule": "When no active child is latched, Parent.Read may admit one; require exact ActiveChild/correlation and emit its first typed payload. While a child is active, read and emit that broker directly without Parent.Read. Latch resolved_payload_emitted only after successfully encoding and returning the first validated resolved child payload. On a subsequent GET only, call Parent.Read to consume/dispose that child and resume the parent. Failed encoding is terminal. A request cannot choose/create a child; stale envelope, kind, ordinal, receipt and broker identities reject.",
+  "provider_rule": "run_event(request, *, provider, clock, sleep) requires provider(DecisionView) -> actionID; DecisionView has kind, deeply immutable payload and immutable child correlation. Invoke once per decision, validate exact legal membership and same overall deadline before POST. Controller reentry terminal. Explicit first_legal provider is available for fixtures.",
+  "summary_fields": [
+    "schema_version",
+    "status",
+    "parent_attempted",
+    "parent_accepted",
+    "option_transitions_observed",
+    "parent_exits_reconciled",
+    "child_episodes_started",
+    "child_episodes_completed",
+    "item_episodes_completed",
+    "card_episodes_completed",
+    "child_attempted",
+    "child_accepted",
+    "child_reconciled"
+  ],
+  "summary_failure_extra": "code",
+  "host_failure_codes": [
+    "unsupported_state",
+    "invalid_response",
+    "invalid_provider",
+    "provider_failed",
+    "reentrant_provider",
+    "deadline_exceeded",
+    "read_limit",
+    "action_limit",
+    "transport_failure",
+    "internal_failure"
+  ],
+  "retention": "Only fixed sanitized summary fields retained. Option text, card identifiers, wire bodies and provider decisions remain transient; mutable transport buffers cleared in finally.",
+  "parent_failure_codes": [
+    "rejected",
+    "uncertain",
+    "unsupported"
+  ],
+  "parent_failure_rule": "Outer child must be null; status failed; code from the closed parent_failure_codes set only.",
+  "internal_parent_child_signal": "Parent status=child/phase=child is internal admission only and must never be serialized as an external parent payload.",
+  "provider_kinds": [
+    "parent",
+    "item",
+    "card_selection"
+  ],
+  "provider_correlation_rule": "DecisionView child is null iff kind=parent; otherwise its kind equals the exact active envelope child kind.",
+  "reserved_child_policies": [
+    "",
+    "item_reward",
+    "unsupported_card"
+  ],
+  "child_policy_rule": "Proceed uses empty policy and domain0. Ordinary item uses item_reward and domain0. Known unsupported card uses unsupported_card and domain0, preserves the native enabled fact and is absent from legal_actions. Every supported card policy must be an exact immutable compiled catalog entry for the candidate stable_id, with child_domain_count1..64 inside its proven domain bounds; unknown policy IDs reject. Separate accepted caller-selection evidence owns the closed production catalog.",
+  "candidate_digest_rule": "Append child_domain_count as one unsigned big-endian32 integer immediately after child_policy in both canonical structural and full decision projections. Policy and concrete pre-dispatch domain cannot change under an accepted action.",
+  "card_validation_rule": "Retain the catalog definition and concrete domain of the accepted parent action before child admission. Every ready child must match its exact operation/min/max/commit and candidate count; candidate identity remains immutable. Selected slots equal accepted select receipts. Preview and confirmation legality follows the frozen card core, including automatic single selection preview. Resolved operation and selected originals/count equal the accepted selection history; preview/confirm receipts do not count as selected cards. No phase/action/history regression or retry.",
+  "catalog_rule": "Production catalog has only reviewed rows. Generic inert fixtures may provide internal synthetic definitions through a test-only constructor; the public service and run_event entry points use the production catalog. No runtime file, route, provider output or environment variable can extend it."
+}

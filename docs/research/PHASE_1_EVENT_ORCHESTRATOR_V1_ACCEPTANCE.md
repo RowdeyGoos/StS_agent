@@ -86,7 +86,7 @@ missing/duplicate delivery, stale lineage and provider failures.
 Reviewed host SHA256:
 `2ed7e2b1db36af371c02dfa9643bb28ba26da344bc83838899ed006baed234dc`.
 Reviewed codec SHA256:
-`e7500d42e46a3e5948d59d7b759e05ffdd7acd21fbb2af6daa4d63ed385abc0`.
+`e7500d42e46a3e5948d59d7b759e05ffdd7acd21fbb2af6daa4d63ed385abc0b`.
 Reviewed service SHA256:
 `ac20a721a44ab6d7c58ec371d01366b6245814b118a9b4577240e0c02b0045e6`.
 

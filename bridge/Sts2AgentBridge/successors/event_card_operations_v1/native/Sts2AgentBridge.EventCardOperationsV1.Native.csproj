@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.EventCardOperationsV1.Native</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.EventOrchestratorV1.Native</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="PinnedEventOrchestratorV1NativeAdapter.cs" />
+    <Compile Include="ProductionEventOrchestratorV1ChildFactories.cs" />
+    <Compile Include="EventCardOperationNativeRegistry.cs" />
+    <Compile Include="EventCardOperationBinding.cs" />
+    <Compile Include="EventCardSelectionV1NativeAdapter.cs" />
+    <Compile Include="../../event_orchestrator_v1/brokers/EventOrchestratorV1ChildBrokers.cs" Link="brokers/EventOrchestratorV1ChildBrokers.cs" />
+    <Compile Include="../../event_orchestrator_v1/native/BoundEventItemV1NativeAdapter.cs" Link="native/BoundEventItemV1NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="card_selection_v1/native/CardSelectionV1NativeRules.cs" />
+    <Compile Include="../../card_selection_completion_v1/native/PinnedCardSelectionV1NativeAdapter.cs" Link="card_selection_completion_v1/native/PinnedCardSelectionV1NativeAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.EventCardOperationsV1.Core.csproj" />
+    <ProjectReference Include="../../item_v1/core/Sts2AgentBridge.ItemV1.Core.csproj" />
+    <ProjectReference Include="../../card_selection_v1/core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+    <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="ValidatePinnedGameData" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))" Text="STS2GameDataDir must be absolute." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')" Text="Pinned sts2.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
+  </Target>
+</Project>

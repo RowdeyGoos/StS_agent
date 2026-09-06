@@ -2161,3 +2161,23 @@ and custom/combat interactions remain explicit gaps.
 See the [coverage plan](docs/PHASE_1_EVENT_COVERAGE_PLAN.md),
 [functional contract](docs/PHASE_1_EVENT_ORCHESTRATOR_V1_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).
+
+
+## 2026-09-06 — Bind event card domains before dispatch
+
+A supported event card option must bind its exact operation, count limits and
+candidate-domain rule before the event choice is dispatched. Existing-deck
+operations retain the complete baseline and eligible original references;
+generated-card operations must first bind the proven generation arguments and
+count, then retain the complete generated originals at first selector admission.
+The public candidate count participates in decision identity. A selector cannot
+retroactively supply missing caller rules.
+
+Keep positive but unsupported card choices visible as observations with no legal
+action or factory. An incompletely classified positive card event fails closed
+before dispatch. Reuse the frozen card session for selection, preview and exact
+effect reconciliation; require the caller-specific post-effect completion witness
+before the event parent resumes. The first selected new callers upgrade one card
+in Aroma of Chaos and Sapphire Seed; shared multi-card fixtures do not enable
+other native callers. See the [event-card contract](docs/PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md)
+and [caller selection](docs/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_CALLER_SELECTION.md).

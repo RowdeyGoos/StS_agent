@@ -19,7 +19,7 @@ fixtures; predecessor live results do not automatically prove its composition li
 | Ordinary option pages and Proceed | Generic native control; one Dense Vegetation path live | Classify remaining branches and test longer live chains |
 | Item reward child | Frozen item handler; sequential composition in fixtures | Event-specific live composition and broader reward forms |
 | Add cards | Cheese/Gorge exact two-of-eight native/live; shared composition in fixtures | Other callers, domains and cardinalities |
-| Upgrade cards | Rest Smith exact-one native/live; generic pure card core | Event upgrade caller and effect bindings, including multiple cards |
+| Upgrade cards | Rest Smith exact-one native/live; Aroma/Maintain Control and Sapphire/Eat exact-one native fixtures and target compile | Release/live composition for new paths; other callers and multiple cards |
 | Remove cards | Generic pure card core and shared selector facts | Exact event callers, selection rules and removal effect witnesses |
 | Transform cards | Generic pure card core and shared selector facts | Exact callers, replacement/preview rules and result witnesses |
 | Optional selection and repeated choices | Explicitly unsupported by this increment | New reviewed bounds/confirmation and loop identity policies |
@@ -41,7 +41,7 @@ runtime, but does not advance this evidence row to full coverage.
 | --- | --- | --- |
 | `AbyssalBaths` | None recorded per type | Unclassified |
 | `Amalgamator` | None recorded per type | Unclassified |
-| `AromaOfChaos` | None recorded per type | Unclassified |
+| `AromaOfChaos` | MAINTAIN_CONTROL → upgrade one → Proceed/map, native fixtures; no new live evidence | LET_GO transformation unsupported; no all-branch claim |
 | `BattlewornDummy` | None recorded per type | Unclassified |
 | `BrainLeech` | None recorded per type | Unclassified |
 | `Bugslayer` | None recorded per type | Unclassified |
@@ -77,7 +77,7 @@ runtime, but does not advance this evidence row to full coverage.
 | `RelicTrader` | None recorded per type | Unclassified |
 | `RoomFullOfCheese` | GORGE → add exactly two of eight → Proceed/map, live | Unclassified |
 | `RoundTeaParty` | None recorded per type | Unclassified |
-| `SapphireSeed` | None recorded per type | Unclassified |
+| `SapphireSeed` | EAT → upgrade one → Proceed/map, native fixtures; no new live evidence | PLANT enchantment unsupported; no all-branch claim |
 | `SelfHelpBook` | None recorded per type | Unclassified |
 | `SlipperyBridge` | None recorded per type | Unclassified |
 | `SpiralingWhirlpool` | None recorded per type | Unclassified |

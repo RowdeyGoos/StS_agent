@@ -42,6 +42,42 @@ has no installable release or live evidence; earlier Smith/Cheese/Dense Vegetati
 live results belong to their predecessor releases. No campaign is active and no
 game setup is needed for the next repository work.
 
+The next isolated component, `event_card_operations_v1`, now implements two
+additional exact event paths: Aroma of Chaos/Maintain Control and Sapphire
+Seed/Eat, each upgrading one chosen card from a complete eligible domain of
+2..64 cards. The same event parent and frozen card controller handle selection,
+preview/confirmation, the exact upgrade effect and final Proceed. Independent
+native review and compile-only validation against the pinned game APIs pass.
+Actual native composition exercises both complete paths, delayed selector
+readiness, replacement screens and changed option keys. These paths have no
+release or live evidence yet. Their 66-file source identity is frozen, and the
+final aggregate passes 675 checks across 19 suites with four matching native
+builds across the candidate and frozen gates. Functional acceptance is complete.
+
+The shared contract binds operation, selection bounds and expected candidate
+count before choosing an option. Known unsupported card options stay observable
+but are never legal actions. Focused checks pass: core19, actual frozen-session
+brokers12, wire51, host58, native-card11, native-parent14, factories4 and full
+native composition2. Actual C# service-to-Python provider integration passes
+nine scenarios, including four sequential children and mixed ordinary/item/card
+flow. Synthetic add-three, remove-two, upgrade-two and transform-two descriptors
+exercise shared semantics without enabling those game callers.
+
+The repository regression completed with 1,300 passes and one sandbox-only
+localhost socket-bind failure; that unchanged inert socket fixture then passed
+with the required local permission. Thus all 1,301 collected checks passed
+across the full run and focused rerun. No live bridge was contacted.
+
+The positive static scan found 31 selector calls and 45 effect calls. A further
+bounded, successfully captured metadata inspection establishes Brain Leech's
+card-generation count key and Zen Weaver's two awaited removal callbacks.
+Their production selection and native implementation remain open. Transformation,
+multiple-card upgrading, optional/scrolling selectors, custom screens and event
+combat remain explicit gaps. All thirteen accepted components and original48
+remain preserved. No campaign is active and no game setup is needed. See the
+[event-card contract](PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md) and
+[active ledger](research/PHASE_1_EVENT_CARD_OPERATIONS_V1_ACCEPTANCE.md).
+
 ## Active card-selection development — 2026-09-06
 
 **Current Cheese result:** the user-prepared Room Full of Cheese/Gorge test

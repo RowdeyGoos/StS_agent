@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "name": "native_factories",
+  "original_path": "bridge/Sts2AgentBridge/successors/event_orchestrator_v1/native/ProductionEventOrchestratorV1ChildFactories.cs",
+  "original_sha256": "c388a2794c8b9c2d6337b0eced3144e6719cb89975767d81b5375464fac4767e",
+  "derived_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1/native/ProductionEventOrchestratorV1ChildFactories.cs",
+  "derived_sha256": "38d3114e21f6ebd0702c350d11b6f03c8310d6d64d8b87c7bbcc456ad75f1bf9",
+  "edits": [
+    {
+      "offset": 1282,
+      "old": "",
+      "new": ", option, button);\n\n    public IEventOrchestratorV1ChildFactory CreateEventCard(\n        EventOrchestratorV1ChildPolicy policy,\n        PinnedEventOrchestratorV1NativeAdapter.BoundEvent bound,\n        EventCardOperationBinding binding,\n        EventOption option,\n        NEventOptionButton button) =>\n        new EventCardFactory(policy, bound, binding"
+    },
+    {
+      "offset": 5965,
+      "old": "",
+      "new": "\n    private sealed class EventCardFactory : FactoryBase\n    {\n        private readonly EventCardOperationBinding _binding;\n\n        internal EventCardFactory(\n            EventOrchestratorV1ChildPolicy policy,\n            PinnedEventOrchestratorV1NativeAdapter.BoundEvent bound,\n            EventCardOperationBinding binding,\n            EventOption option,\n            NEventOptionButton button)\n            : base(policy, bound, option, button) =>\n            _binding = binding ?? throw new ArgumentNullException(nameof(binding));\n\n        public override IEventOrchestratorV1ChildBroker Create(\n            EventOrchestratorV1AcceptedContext accepted,\n            EventOrchestratorV1ChildCorrelation correlation,\n            object exactForegroundIdentity)\n        {\n            if (Policy.PolicyKind != EventOrchestratorV1ChildPolicyKind.EventCardSelection ||\n                correlation.Kind != EventOrchestratorV1ChildKind.CardSelection ||\n                exactForegroundIdentity is not NDeckUpgradeSelectScreen screen ||\n                screen.GetType() != typeof(NDeckUpgradeSelectScreen) ||\n                !ReferenceEquals(_binding.Policy, Policy) ||\n                !ReferenceEquals(_binding.EventModel, Bound.Event) ||\n                !ReferenceEquals(_binding.Option, Option) ||\n                !ReferenceEquals(_binding.Controller, Button) ||\n                !EventCardGuard(accepted, screen))\n                throw new InvalidOperationException(\"Event card child binding changed.\");\n\n            var context = new CardSelectionV1ParentContext(\n                correlation.ParentReceipt.SessionNonce,\n                CardSelectionV1ParentKind.Event,\n                correlation.ParentReceipt.DecisionId,\n                correlation.ParentReceipt.ActionId,\n                correlation,\n                Bound.Run,\n                Bound.Player,\n                Bound.Room,\n                Bound.Map,\n                Option,\n                Button,\n                Policy.CardOperation,\n                Policy.MinSelect,\n                Policy.MaxSelect,\n                Policy.CardCommitMode,\n                Policy.ExpectedDomainCount);\n            var adapter = new EventCardSelectionV1NativeAdapter(\n                _binding, context, screen);\n            try\n            {\n                return new EventOrchestratorV1CardChildBroker(\n                    correlation, accepted, screen, adapter, EventCardGuard);\n            "
+    },
+    {
+      "offset": 5967,
+      "old": "",
+      "new": "            catch\n            {\n                adapter.Dispose();\n                throw;\n            }\n        }\n\n        private bool EventCardGuard(\n            EventOrchestratorV1AcceptedContext accepted,\n            object exactForegroundIdentity) =>\n            _binding.MatchesChildBinding() &&\n            Guard(accepted, exactForegroundIdentity);\n    }\n}\n"
+    }
+  ]
+}
