@@ -3,18 +3,23 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
-## Current event test — 2026-09-06
+## Current event continuation live pass — 2026-09-06
 
-The user requested live event continuation testing. A fresh event-selected
-installation of the unchanged accepted package is active, awaiting initial
-untouched event choices. Read the
-[event test ledger](research/PHASE_1_EVENT_CONTINUATION_LIVE_ACCEPTANCE.md) first.
-Installed state14608a272faccd29a12ba852e38b62bb19cbc413f0250a3754f2ddb8072a78d8;
-conservative start10:46:34UTC,30-minute bound. No client invocation has occurred.
-Use this fresh state only, invoke once after supported UI validation, then normal
-quit/code-first quarantine/exact purge/base429/zero-overlay/stopped/closed/fixed
-absence checks. All nine source trees remain frozen. Older inactive-state
-statements below describe their completed campaigns.
+The fresh event-selected test passed on untouched Dense Vegetation using the
+unchanged accepted package. Read the
+[event ledger](research/PHASE_1_EVENT_CONTINUATION_LIVE_ACCEPTANCE.md) first.
+The fixed client ran once: 2 parent attempts/accepts,1 option-screen transition,
+1 correlated final Proceed/map handoff; child counts all 0. This establishes one
+ordinary choice→follow-up→Proceed→map. Longer ordinary-choice chains and the
+event item-child path remain unobserved live. Room Full of Cheese was screened
+out before invocation because its top option opens unsupported card selection.
+
+Normal quit, code-first quarantine, exact four-file purge, unchanged base429 with
+zero overlay, stopped/closed and seven fixed absences passed by 11:06:16UTC.
+No campaign remains active. The event installed/quarantined state hashes are
+closed and must never be reused. All nine source trees remain frozen and the
+exact accepted package is preserved. No code changes were required for this
+live-only event test; prior 1,179 passing tests remain release evidence.
 
 ## Current accepted shop repair and live result — 2026-09-06
 
@@ -33,8 +38,9 @@ further gameplay action occurred. Normal quit, code-first quarantine, exact
 four-file purge, base429/zero-overlay/stopped/closed and seven fixed absences
 passed by 10:38:10UTC. No campaign remains active. Preserve all eight predecessor
 trees plus this newly frozen ninth tree. Closed state hashes belong only in the
-ledger and must never be reused. Event continuation remains offline-accepted,
-unobserved live; rest-site card upgrading remains unsupported. The historical
+ledger and must never be reused. At that shop checkpoint, event continuation
+was still unobserved live; the subsequent event result is above. Rest-site
+card upgrading remains unsupported. The historical
 room timeout and separate Steam capture failure remain unreclassified.
 
 ## Current accepted diagnostic — 2026-09-06

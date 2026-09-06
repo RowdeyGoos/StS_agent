@@ -891,3 +891,9 @@ permission checks while preserving leave/event behavior and all eight earlier
 successors. Its [acceptance ledger](../../docs/research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md)
 owns exact source/package identities and the accepted single-card shop live
 test:3 actions attempted/accepted/reconciled, followed by complete cleanup.
+
+The same accepted package subsequently passed a fresh event-selected test on
+Dense Vegetation: ordinary choice→follow-up→Proceed→map, 2 parent accepts and 1
+correlated final handoff. Event item rewards and longer choice chains remain
+unobserved live. See the [event ledger](../../docs/research/PHASE_1_EVENT_CONTINUATION_LIVE_ACCEPTANCE.md)
+for exact counters and completed cleanup; no campaign remains active.

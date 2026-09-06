@@ -634,13 +634,17 @@ map. Normal quit, quarantine, exact 4-file purge, unchanged base429/zero-overlay
 stopped/closed and seven fixed absences completed by 10:38:10UTC. No campaign
 remains active. The [repair ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md)
 owns exact identities, summary and cleanup evidence. This promotes only that
-ordinary-card shop path; event continuation remains accepted offline and
-unobserved live. Historical diagnostic and closed states remain preserved.
-The user has now selected a separate fresh event-continuation campaign using the
-unchanged accepted package in event mode. Installation/overlay preflight passed;
-initial untouched event setup is pending, with no client invocation yet. The
+ordinary-card shop path; the subsequent bounded event result is below.
+Historical diagnostic and closed states remain preserved.
+The subsequent fresh event-continuation campaign passed on Dense Vegetation:
+one ordinary choice, one observed follow-up transition, final Proceed and map
+handoff. The fixed client returned 2 attempted/accepted parent clicks,1 reconciled
+final handoff and no child actions. Longer ordinary-choice chains and event item
+children remain unobserved live. Normal quit/quarantine/exact purge and final
+base429/zero-overlay/stopped/closed/seven absences passed by 11:06:16UTC. No
+campaign remains active. The
 [event test ledger](research/PHASE_1_EVENT_CONTINUATION_LIVE_ACCEPTANCE.md) owns
-its active state and30-minute cleanup bound.
+its exact bounded result, visible corroboration and complete cleanup.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing
 and map return are live-demonstrated; rest-site card upgrades remain unsupported.
 

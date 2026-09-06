@@ -1132,3 +1132,16 @@ and event counts are0. Normal quit and exact quarantine/purge passed, followed
 by base429/zero-overlay/stopped/closed and seven fixed absences by 10:38:10UTC.
 No campaign remains active. Event continuation was not tested and broader shop
 states remain unobserved. No retained corpus/profile access/Cloud/remote action.
+
+
+### 2026-09-06 — Dense Vegetation event continuation live pass
+
+The unchanged accepted RoomFlows package was freshly installed in protected
+event mode at the user's request. The [event ledger](PHASE_1_EVENT_CONTINUATION_LIVE_ACCEPTANCE.md)
+records 2 parent attempts/accepts,1 observed option transition and 1 final
+Proceed/map reconciliation, with child counts 0. Ordinary choice effects are
+still dispatch-only; visible +65 gold/-8HP is corroboration, not a new protocol
+claim. Longer ordinary-choice chains and event item children remain unobserved.
+Normal quit, code-first quarantine, exact four-file purge, unchanged base429/zero
+overlay/stopped/closed/seven fixed absences passed by 11:06:16UTC. No campaign
+remains active; source and offline release evidence remain unchanged.
