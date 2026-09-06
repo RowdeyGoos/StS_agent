@@ -609,8 +609,8 @@ trees and the old bridge remain byte-exact.
 
 The first live shop test reached the user-prepared merchant inventory but
 returned unsupported_state before any action (0 attempted/accepted/reconciled).
-The native rejection branch remains unidentified; pure captures do not execute
-the live scene adapter. The separate passive shop_diagnostic_v1 successor now
+The native rejection branch was unidentified at that point; pure captures do
+not execute the live scene adapter. The separate passive shop_diagnostic_v1 successor now
 passes independent review and two identical complete offline release runs.
 Its 63-file freeze, four matching production builds, one-GET/no-action boundary
 and exact package are recorded in the
@@ -625,14 +625,17 @@ the bounded shop repair identified by the independently accepted
 [static diagnosis](research/PHASE_1_SHOP_MAP_FLAG_DIAGNOSIS.md): merchant startup
 enables travel permission by design, so exactly three pre-leave shop predicates
 must change in a new derived sibling. Preserve leave reconciliation and event
-behavior. The isolated shop_map_permission_v1 repair is now implemented with
-independently accepted core, real-host and runtime fixtures. Both complete
-offline gates pass with identical results/four matching production builds and
-1179 repository tests pass. Its45-file source freeze and package are accepted
-and published. The user-confirmed fresh shop campaign is installed awaiting
-merchant setup; no controller invocation has occurred. The
-[repair ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) owns its
-current evidence. Diagnostic evidence and closed states remain in their ledger.
+behavior. The isolated shop_map_permission_v1 repair is now independently
+accepted, with two identical complete offline runs/four matching production
+builds and 1179 passing repository tests. The 45-file freeze and exact package are
+published. The single fresh live shop test passed 3 attempted/accepted/reconciled
+actions: one 25-gold ordinary-card purchase, inventory close and room leave to the
+map. Normal quit, quarantine, exact 4-file purge, unchanged base429/zero-overlay,
+stopped/closed and seven fixed absences completed by 10:38:10UTC. No campaign
+remains active. The [repair ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md)
+owns exact identities, summary and cleanup evidence. This promotes only that
+ordinary-card shop path; event continuation remains accepted offline and
+unobserved live. Historical diagnostic and closed states remain preserved.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing
 and map return are live-demonstrated; rest-site card upgrades remain unsupported.
 

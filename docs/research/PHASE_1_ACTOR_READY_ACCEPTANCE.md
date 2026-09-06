@@ -1118,5 +1118,17 @@ The later shop corrective sibling is independently accepted offline under its
 [repair ledger](PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) owns exact evidence:
 45 frozen source files, only three shop predicates changed, unchanged leave/event
 behavior, two identical full acceptance runs/four matching production builds,
-and1179 passing repository tests. All eight earlier successor inventories and
-old48 are preserved. No new live campaign or shop-control success is claimed.
+and 1179 passing repository tests. All eight earlier successor inventories and
+old48 are preserved. At that offline checkpoint, no new live campaign had
+started and no shop-control success was claimed.
+
+
+### 2026-09-06 — Corrective ordinary-card shop live test
+
+The [repair ledger](PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) records the
+single accepted fixed-client summary: shop 3 attempted/accepted/reconciled,
+one 25-gold ordinary-card purchase, inventory close and map return. All child
+and event counts are0. Normal quit and exact quarantine/purge passed, followed
+by base429/zero-overlay/stopped/closed and seven fixed absences by 10:38:10UTC.
+No campaign remains active. Event continuation was not tested and broader shop
+states remain unobserved. No retained corpus/profile access/Cloud/remote action.

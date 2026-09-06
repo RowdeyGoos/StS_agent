@@ -3,18 +3,26 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
-## Current shop repair — 2026-09-06
+## Current accepted shop repair and live result — 2026-09-06
 
-The exact three-predicate shop repair is implemented in the isolated
-shop_map_permission_v1 sibling. Read its
+The exact three-predicate shop repair is accepted in the isolated
+shop_map_permission_v1 sibling at implementation commit
+`df98e7078662ea9e01bc64bcecf0f0f7a71f3a8c`. Read its
 [contract](PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
 [acceptance ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md) first.
-Both complete offline acceptance runs pass with byte-identical results and
-four matching production builds. The45-file freeze is accepted and published. A fresh shop campaign is installed
-with state d6270de4e4af13851fb5256bc319d78ed18056394b41775daa710d27b13bc0df,
-awaiting user setup. Use10:32:59UTC as the conservative30-minute start.
-No controller invocation has occurred. See the ledger for mandatory cleanup. Preserve all eight predecessors and
-historical closed states; no live shop-control success is claimed.
+Both complete offline gates returned identical results with four matching
+production builds; 1179 repository tests pass. The 45-file freeze and exact
+three-artifact package are published at the distinct repair artifact root.
+
+The single fresh live shop test passed:3 attempted/accepted/reconciled actions,
+one 25-gold ordinary-card purchase, inventory close and map return. No retries or
+further gameplay action occurred. Normal quit, code-first quarantine, exact
+four-file purge, base429/zero-overlay/stopped/closed and seven fixed absences
+passed by 10:38:10UTC. No campaign remains active. Preserve all eight predecessor
+trees plus this newly frozen ninth tree. Closed state hashes belong only in the
+ledger and must never be reused. Event continuation remains offline-accepted,
+unobserved live; rest-site card upgrading remains unsupported. The historical
+room timeout and separate Steam capture failure remain unreclassified.
 
 ## Current accepted diagnostic — 2026-09-06
 

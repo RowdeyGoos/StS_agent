@@ -8,11 +8,11 @@ SHA256 `b9551348a73bd4ff54433dc9693cbed3ae841bb98bdc3f4763e22f1bcac613db`.
 
 ## Current disposition
 
-Implementation, independent review and two complete offline acceptance runs are
-accepted. The45-file source freeze is final. The three exact artifacts are published
-and the user-confirmed bounded shop campaign is installed; see its live state
-below.
-No live shop purchase/close/leave success is claimed.
+Implementation, independent review, two complete offline acceptance runs and
+one bounded live shop test are accepted. The controller completed one ordinary
+card purchase, inventory close and room leave:3 attempted,3 accepted and3
+reconciled actions. Normal cleanup fully passed by 10:38:10UTC. No campaign
+remains active. Event continuation and broader shop behavior are not promoted.
 
 ## Scope and independent ownership
 
@@ -49,7 +49,7 @@ Root manager39, conflict-preservation7, client13, operational derivation15,
 canonical package5 with9 mutation cases, and actual synthetic base/overlay7 pass.
 The first sandbox client run was denied ephemeral socket binding; its unchanged
 rerun with offline loopback authority passed. No live endpoint was contacted.
-The gameplay tests/ subset passed1112 tests in107.82s. Full repository regression
+The gameplay tests/ subset passed 1112 tests in 107.82s. Full repository regression
 and final reproducibility/verification are recorded below when completed.
 
 ## Candidate identity
@@ -98,7 +98,7 @@ operational derivation15; predecessor conflicts7; whole-assembly mutations40
 mutations; actual synthetic overlay7; frozen shop13/event36/broker575;
 actual repaired wire16 and C#-to-Python host192. All passed in both runs.
 
-Full repository regression passed1179 tests in105.83s with synthetic localhost
+Full repository regression passed 1179 tests in 105.83s with synthetic localhost
 socket permission. Python compileall game/tests passed with bytecode confined to
 a disposable scratch location. No test was skipped or failed in that full run.
 `git diff --check` passed. Source and fixture evidence does not establish live
@@ -121,14 +121,62 @@ The shop-selected manager installation passed, creating the mods parent, with
 state SHA256
 `d6270de4e4af13851fb5256bc319d78ed18056394b41775daa710d27b13bc0df`.
 Clock sampled immediately before the installation call:10:32:59UTC; overlay
-verification completed at10:33:37UTC. Use10:32:59UTC conservatively for the
+verification completed at 10:33:37UTC. Use10:32:59UTC conservatively for the
 30-minute campaign bound. Overlay2 matched exact candidate+manifest with
 unchanged base429. Installation used only the reviewed protected configuration,
 fresh credential, campaign state and two overlay files.
 
-Current state: installed, awaiting user-prepared untouched Profile3 merchant
-inventory. No controller invocation has occurred. The fixed client must run
+State at installation: installed, awaiting user-prepared untouched Profile3
+merchant inventory. No controller invocation had occurred at that point. The fixed client must run
 exactly once with the installed-state hash above after supported UI verification.
-Then quit normally, verify stopped/closed, quarantine code first, exact4-file
+Then quit normally, verify stopped/closed, quarantine code first, exact 4-file
 purge, base429/zero-overlay and fixed absences. Repeated unmodded relaunch remains
 waived. No profile/save filesystem access, Cloud change or retained live corpus.
+
+
+## Live shop control accepted and cleanup complete — 2026-09-06
+
+The user confirmed the requested merchant inventory was visible and untouched.
+Supported game capture showed an affordable ordinary card and no popup. Fresh
+require-running verification passed. At 10:35:15UTC (clock before invocation),
+the fixed client was invoked exactly once with the new installed-state hash.
+It returned exit0 and this accepted bounded summary:
+
+```json
+{"schema_version":1,"status":"passed","flow_kind":"shop","attempted":3,"accepted":3,"reconciled":3,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"option_transitions_observed":0}
+```
+
+All three selected operations completed: one ordinary-card purchase, inventory
+close and room leave. Supported post-test capture showed the map open, gold
+141→116 and deck count13→14, with HP80/80 unchanged. This independently agrees
+with the 25-gold single-card purchase and map handoff. No subsequent map
+selection, second purchase, item action or event option was invoked. No raw
+bridge payload, live trace, screenshot file or save/profile data was retained.
+
+Normal UI cleanup closed the map, opened pause, selected Save and Quit, then
+Quit and confirmation. The main menu visibly identified Profile3. The tool
+reported App quit; require-stopped/closed validation passed before quarantine.
+Code-first quarantine passed with state SHA256
+`aef51af8c911abdfa69beaa8474838b7c8324842dc8982ae1d1e5897aaa2d3c2`.
+The fixed purge removed exactly 4 generated files and reported phase absent.
+Final base verification passed 429 files and unchanged hash
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+with zero overlay. Final stopped/closed passed 3 process/2 port samples. Seven
+fixed absence checks passed: the protected operator parent, five old/current
+campaign roots and the created mods parent. All completed by 10:38:10UTC,
+5m11s from the conservative pre-install clock, within the 30-minute bound.
+Repeated unmodded relaunch was user-waived and was neither performed nor
+claimed. No campaign remains active; never reuse either historical state hash.
+
+Claim: this exact pinned-build, Profile3 ordinary-card shop path is
+live-demonstrated. Zero-purchase, other stock types, FTUE interception and
+broader shop states retain their fixture/unobserved classifications. Event
+continuation is implemented and accepted offline but was not exercised by this
+shop campaign. Rest-site card upgrading remains unsupported. Steam capture's
+previous-3811 failure and the historical room_interaction_timeout are separate;
+this result does not reclassify either. No profile/save filesystem access,
+Steam Cloud change, remote Git operation or broader capability change occurred.
+
+Independent live-result review accepted the bounded3/3/3 claim and complete
+cleanup. The predecessor offline checkpoint was explicitly marked historical to
+avoid contradicting the new accepted live result.

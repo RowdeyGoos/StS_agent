@@ -889,4 +889,5 @@ The corrective [shop map permission release](successors/shop_map_permission_v1/R
 is independently accepted offline. It replaces exactly three pre-leave shop
 permission checks while preserving leave/event behavior and all eight earlier
 successors. Its [acceptance ledger](../../docs/research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md)
-owns exact source/package identities and the pending live-control evidence.
+owns exact source/package identities and the accepted single-card shop live
+test:3 actions attempted/accepted/reconciled, followed by complete cleanup.
