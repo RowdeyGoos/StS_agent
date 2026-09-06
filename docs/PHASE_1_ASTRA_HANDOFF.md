@@ -3,6 +3,19 @@
 Prepared 2026-09-05 at the user's request. The user will create the new session;
 no new task, session or agent was created for this handoff.
 
+## Current event test — 2026-09-06
+
+The user requested live event continuation testing. A fresh event-selected
+installation of the unchanged accepted package is active, awaiting initial
+untouched event choices. Read the
+[event test ledger](research/PHASE_1_EVENT_CONTINUATION_LIVE_ACCEPTANCE.md) first.
+Installed state14608a272faccd29a12ba852e38b62bb19cbc413f0250a3754f2ddb8072a78d8;
+conservative start10:46:34UTC,30-minute bound. No client invocation has occurred.
+Use this fresh state only, invoke once after supported UI validation, then normal
+quit/code-first quarantine/exact purge/base429/zero-overlay/stopped/closed/fixed
+absence checks. All nine source trees remain frozen. Older inactive-state
+statements below describe their completed campaigns.
+
 ## Current accepted shop repair and live result — 2026-09-06
 
 The exact three-predicate shop repair is accepted in the isolated

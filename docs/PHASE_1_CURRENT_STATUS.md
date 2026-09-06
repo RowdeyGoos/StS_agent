@@ -636,6 +636,11 @@ remains active. The [repair ledger](research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCE
 owns exact identities, summary and cleanup evidence. This promotes only that
 ordinary-card shop path; event continuation remains accepted offline and
 unobserved live. Historical diagnostic and closed states remain preserved.
+The user has now selected a separate fresh event-continuation campaign using the
+unchanged accepted package in event mode. Installation/overlay preflight passed;
+initial untouched event setup is pending, with no client invocation yet. The
+[event test ledger](research/PHASE_1_EVENT_CONTINUATION_LIVE_ACCEPTANCE.md) owns
+its active state and30-minute cleanup bound.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing
 and map return are live-demonstrated; rest-site card upgrades remain unsupported.
 
