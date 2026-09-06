@@ -618,8 +618,10 @@ and exact package are recorded in the
 The next live step is one first-failure observation at the merchant inventory;
 it has not run yet. The previous campaign's normal quit, exact quarantine/purge,
 base429/zero-overlay/stopped/closed and absence checks completed by
-2026-09-05 22:00:06 UTC. No campaign remains active. The diagnostic package is
-ready; keep the game closed until fresh installation and explicit setup.
+2026-09-05 22:00:06 UTC. The new diagnostic campaign was installed and overlay-
+verified at 2026-09-06 09:49:48 UTC after renewed availability and fresh preflight.
+It is active and awaiting untouched merchant-inventory setup; no client has run.
+Cleanup deadline: 10:19:48 UTC. Exact state is in the diagnostic ledger.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing
 and map return are live-demonstrated; rest-site card upgrades remain unsupported.
 

@@ -10,9 +10,11 @@ and [selected contract](PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md) first. The passi
 shop_diagnostic_v1 successor is implemented, independently reviewed, frozen and
 published after two identical complete offline gates/four matching production
 builds. Preserve its 63 files and all seven predecessors. It exposes one GET and
-no gameplay action; no shop repair or live success is claimed. The user was asked
-for live availability with the game closed. No diagnostic campaign has started;
-exact fresh preflight/installation and merchant-inventory setup come next.
+no gameplay action; no shop repair or live success is claimed. The user confirmed
+availability with the game closed. Fresh preflight, installation and exact
+overlay verification passed at 2026-09-06 09:49:48 UTC. The diagnostic campaign is
+active, awaiting untouched merchant-inventory setup; no client has run. Installed
+state is recorded in the ledger. Cleanup deadline: 10:19:48 UTC.
 The earlier zero-action shop state and historical uncertain actions must never
 be retried. This ledger supersedes the proposed-only diagnostic wording below.
 

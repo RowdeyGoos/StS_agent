@@ -139,3 +139,19 @@ stopped/closed verification, code-first quarantine, exact four-file purge and
 base429/zero-overlay/fixed-absence verification within 30 minutes. The repeated
 unmodded relaunch remains waived. No profile/save filesystem access, Cloud
 change, retained live corpus, remote Git or broader capability is authorized.
+
+## Fresh diagnostic campaign installed — 2026-09-06 09:49:48 UTC
+
+Release commit `b26ba1bbbdce987618cb55ce01ae9cb74f7d5547`. The user confirmed
+available now with the game closed. Fresh source (8 components), three published
+artifacts, clean base429, stopped/closed and exact manager conflict guards passed.
+Steam capture independently still returned -3811; Finder screenshot capture
+worked. No Steam settings or Cloud changes were made.
+
+Installation passed with fresh state SHA256
+`4e4168f8a3a1991c95fc04801bb9be1350869c41f4d6e671db549451cd477d9d`.
+The post-install checker passed base429 with exactly two accepted overlay files.
+No client invocation or gameplay action has occurred. The user was asked to
+launch manually on Profile3, continue Ironclad Ascension0 and open the merchant
+inventory, leaving offers untouched with no popup. The campaign is active and
+awaiting that exact screen. Cleanup must finish by 10:19:48 UTC.
