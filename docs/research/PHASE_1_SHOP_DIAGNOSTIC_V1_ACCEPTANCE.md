@@ -196,3 +196,14 @@ and the smallest appropriate shop predicate repair. Preserve actual MapOpen,
 MapTraveling, foreground, stale binding and correlated leave protections. Do not
 just suppress the observed flag or claim other predicates pass without evidence.
 All eight source trees and prior gameplay contracts remain frozen.
+
+## Pinned-static diagnosis accepted — 2026-09-06
+
+The subsequent [map-flag diagnosis](PHASE_1_SHOP_MAP_FLAG_DIAGNOSIS.md) confirms
+that merchant initialization deliberately enables travel permission and
+inventory open/close does not clear it. The live flag is expected shop behavior.
+Two reviewers agree on a new derived shop core removing that flag from exactly
+three pre-leave predicates; preserve native reads, MapOpen/MapTraveling and
+all other guards, and keep leave reconciliation and event behavior unchanged.
+The diagnosis records ten reverified existing static hashes and the necessary
+positive/negative fixtures. The repair itself is not implemented or live-tested.

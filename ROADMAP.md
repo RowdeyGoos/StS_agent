@@ -439,7 +439,8 @@ release acceptance. The first live shop attempt rejected the intended screen bef
 cleanup passed. The passive native-read diagnostic is now implemented,
 independently reviewed and packaged after two identical offline gates. Its single live
 observation identified the map_travel_enabled rejection and cleanup passed.
-Next is pinned-static interpretation of the flag and a focused shop repair,
-followed by renewed shop/event live acceptance. See the
+Static review confirms the flag is normal merchant behavior. Next is the
+three-predicate shop repair with unchanged leave/event protections, followed by
+renewed shop/event live acceptance. See the
 [diagnostic ledger](docs/research/PHASE_1_SHOP_DIAGNOSTIC_V1_ACCEPTANCE.md).
 Rest-site card upgrades remain unsupported; no upgrade scope was added.

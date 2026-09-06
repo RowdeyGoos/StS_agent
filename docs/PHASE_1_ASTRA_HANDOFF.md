@@ -16,7 +16,11 @@ user-confirmed untouched merchant inventory at 2026-09-06 09:54:54 UTC. Normal
 quit, code-first quarantine, exact purge, base429/zero-overlay/stopped/closed and
 fixed absences passed by 09:57:53 UTC. No campaign remains active. The ledger
 records the accepted diagnostic and closed state hashes; never invoke them again.
-Next is pinned-static diagnosis of the map flag and a bounded shop repair.
+The [pinned-static diagnosis](research/PHASE_1_SHOP_MAP_FLAG_DIAGNOSIS.md) is now
+accepted: merchant initialization enables travel permission by design. The next
+repair removes that flag from exactly three shop pre-leave predicates in a new
+derived sibling; preserve leave reconciliation and event behavior unchanged.
+That repair is not implemented yet.
 The earlier zero-action shop state and historical uncertain actions must never
 be retried. This ledger supersedes the proposed-only diagnostic wording below.
 

@@ -621,8 +621,12 @@ untouched merchant inventory. No action route or gameplay action was involved.
 This localizes the first rejection; later predicates and shop control remain
 unproven. Normal quit, exact quarantine/purge, base429/zero-overlay/stopped/closed
 and fixed absences passed by 09:57:53 UTC. No campaign remains active. Next is
-pinned-static interpretation of that map flag and a bounded predicate repair;
-exact evidence and closed states are in the diagnostic ledger.
+the bounded shop repair identified by the independently accepted
+[static diagnosis](research/PHASE_1_SHOP_MAP_FLAG_DIAGNOSIS.md): merchant startup
+enables travel permission by design, so exactly three pre-leave shop predicates
+must change in a new derived sibling. Preserve leave reconciliation and event
+behavior. The repair is not implemented; evidence and closed campaign states
+are in the diagnostic ledger.
 Prior potion/relic campaigns remain the latest live item evidence. Rest healing
 and map return are live-demonstrated; rest-site card upgrades remain unsupported.
 
