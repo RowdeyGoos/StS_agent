@@ -5,30 +5,32 @@ attempts and cleanup remain in their linked acceptance ledgers and Git history.
 The first live failure exposed a verified option-button lifetime mismatch.
 The lifecycle correction and v2 release are accepted. Its live test progressed
 beyond the immediate stop but exhausted pending reads before child admission;
-full owned cleanup passed. The diagnostic v3 release is now accepted, frozen and
-installed for the next fresh manual-launch campaign.
+full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
+the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current diagnostic release — read first
+## Current diagnostic result — read first
 
-`generic_event_release_v3` is accepted and frozen as successor21 and is installed
-awaiting manual launch. Read its [contract](PHASE_1_GENERIC_EVENT_RELEASE_V3_CONTRACT.md)
-and [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md) first.
-It adds finite reason codes to existing native checks and carries their cached
-history through the exact HTTP response header into last_response_diagnostic.
-It preserves gameplay predicates, frozen core/wire/host, hooks and lifecycle
-binding. Both complete aggregates passed, including instrumented745 assertions,
-168 diagnostic assertions,373 runtime assertions,17 transport tests,15 socket
-scenarios and73 binary verifier checks. The74-file source manifest is frozen.
+`generic_event_release_v3` is accepted and frozen as successor21. Read its
+[contract](PHASE_1_GENERIC_EVENT_RELEASE_V3_CONTRACT.md) and
+[ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md) first. Both full
+offline aggregates passed, including instrumented745 assertions,168 diagnostic
+assertions,373 runtime assertions,17 transport tests,15 socket scenarios and73
+binary verifier checks. The74-file source manifest remains frozen.
 
-Current campaign GENERIC-EVENT-V3-SMOKE-V1, installed state SHA256:
-`c3e2d3f1990e9e1c7210d70de0213db03ad44aceb706e5ec2dd44f4bac27de6f`.
-Game stopped,port closed,429 base files unchanged,2 exact overlay files and protected
-metadata verified. No live invocation yet. Tell user to launch manually and prepare
-fresh Profile3,single-player,Room Full of Cheese initial options,Gorge untouched,
-no selector/console/map/popup. Verify visible state before exactly one v3 client
-invocation, then normal quit and this release's stopped/quarantine/purge/base checks.
-The v2 blocking predicate is still unknown; fixed diagnostics are fixture-proven,
-not a demonstrated in-game repair. Both prior generic campaigns remain closed.
+Its one fresh live invocation accepted Gorge/opened the chooser, then stopped
+after258reads with prepare_candidates, zero child episodes/actions and unverified
+effects. The last completed capture reached offered-card validation; the exact
+nested reference/identity/coherence/highlight/initial-state predicate is unknown.
+Do not infer geometry, which is evaluated later, or treat this as proof of the
+historical v2 cause. No retry or manual selection occurred.
+
+Normal quit, stopped/closed, code-first quarantine, exact purge and429-file clean
+base checks passed. GENERIC-EVENT-V3-SMOKE-V1 is closed, as are v1/v2. No campaign,
+overlay, credential or cleanup remains. All state identities in the ledger are
+historical and must not be reused. Keep the game closed. Next inspect/reproduce
+TryCreateBindings and its candidate-capture/initial-state subchecks in a reviewed
+successor; add finer bounded diagnostics only if static evidence and inert tests
+cannot establish the mismatch. Do not relax identity/ownership to proceed.
 
 ## Preserved v2 implementation and live result
 
@@ -203,11 +205,12 @@ static questions. Do not rerun their closed inspection invocations by default.
 
 ## Operational state and user preferences
 
-GENERIC-EVENT-V3-SMOKE-V1 is installed and awaiting manual launch as described above.
-No live invocation has occurred; current cleanup is pending after the new campaign.
-V1 and v2 completed failed invocations and full owned cleanup. Their old state
-identities are historical and must not be reused. Preserve all21 frozen successors.
-Use the v3 ledger and tools for the next bounded invocation and cleanup.
+GENERIC-EVENT-V3-SMOKE-V1 completed one failed invocation with prepare_candidates
+and full owned cleanup. Game stopped,port closed,base verified,overlay absent.
+No active campaign or credential remains. All three generic campaign identities
+are historical and must not be reused. Preserve all21 frozen successors.
+Next diagnose the candidate-binding/initial-candidate-state subchecks offline;
+no new game setup is needed until a separately gated fresh release is ready.
 
 The user has authorized continued event development, parallel work where useful,
 and bounded live campaigns when needed; that explicit session authority persists.
@@ -220,7 +223,7 @@ prepare the intended interaction.
 Profile 3 is the established live test profile. The user waived repeated unmodded
 launch checks; retain other required quit/quarantine/purge/base/closed checks.
 Use the appropriate current release's tools and ledger, not historical state
-hashes or credentials. The v3 diagnostic release is installed awaiting its first invocation; named
+hashes or credentials. The v3 diagnostic release has completed its single invocation and cleanup; named
 event-card functional components remain separate.
 
 Use supported computer-use tools. The user offered

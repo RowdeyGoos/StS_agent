@@ -18,10 +18,12 @@ See the [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) for
 validation and limits. Continue by shared families, including transformation,
 multi-upgrade and item children. The button-lifetime mismatch is corrected. V2 progressed beyond the immediate
 live stop but exhausted pending reads before child admission; cleanup passed.
-The bounded diagnostic release v3 now passes complete offline and independent
-release gates and is installed for a fresh live test. Next collect exactly one
-current campaign result to identify the blocking gate, then complete owned cleanup
-and reproduce any measured mismatch before repair. See the
+The bounded diagnostic release v3 passed its release gates and one live test
+identified prepare_candidates as the last waiting stage before the read budget.
+No child actions occurred; full cleanup passed. Next inspect/reproduce candidate
+reference binding and initial candidate-state checks in a reviewed successor;
+use finer diagnostics only if static evidence and inert fixtures cannot establish
+the mismatch. See the
 [v3 release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md).
 
 ### Preserved predecessor milestones

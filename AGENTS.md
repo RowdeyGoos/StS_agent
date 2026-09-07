@@ -27,17 +27,17 @@ families remain open. Expand by authoritative shared family, using event names
 as tests. Preserve all seventeen frozen successor trees, their contracts and
 identities, plus the original bridge; new behavior belongs in a reviewed successor.
 
-For the current live test, read the
+For the latest generic event evidence, read the
 [generic release v3 diagnostic contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V3_CONTRACT.md)
 and [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md).
-The release is accepted and frozen as successor21 and installed awaiting manual
-launch at fresh Profile3 Cheese initial options, Gorge untouched. It reports
-finite last-capture diagnostics without changing gameplay predicates or frozen
-core/wire/host semantics. The v2 timeout cause is still unknown; only fixtures
-have distinguished pending binding and selector preparation. Preserve all21
-source identities. Use only v3 tools and its ledger's current installed state for
-one invocation and subsequent cleanup. Both prior failed campaigns were purged;
-their state identities are historical and must not be reused.
+The release is accepted and frozen as successor21. Its one live invocation stopped
+after258reads with prepare_candidates, zero child episodes/actions and unverified
+effects. Normal quit, exact owned teardown and429-file base/stopped checks passed.
+No campaign or cleanup remains. Next inspect and reproduce the candidate-binding/
+initial-candidate-state subchecks in a reviewed successor. The precise nested
+predicate is still unknown; do not assume geometry or relax identity rules.
+Preserve all21 source identities. All three generic campaigns are closed and
+purged; their state identities must not be reused. No game setup is needed now.
 
 ## Read This First
 

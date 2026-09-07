@@ -1,9 +1,10 @@
 # Generic event release v3 diagnostic acceptance
 
 2026-09-07. Accepted and installed on authoritative23cf, baseline8274e30. The user
-authorized continued work after the v2 timeout and completed cleanup. Current
-campaign GENERIC-EVENT-V3-SMOKE-V1 awaits manual launch; the game is stopped and
-no live invocation has occurred. The final section owns current state and cleanup.
+authorized continued work after the v2 timeout and completed cleanup. Campaign
+GENERIC-EVENT-V3-SMOKE-V1 completed one failed live invocation with a bounded
+prepare_candidates diagnostic and full owned cleanup. The final section owns
+the current closed state; all installed-state statements are historical.
 
 ## Reviewed contract and ownership
 
@@ -159,3 +160,48 @@ or successful child/effect claim is made by this diagnostic release.
 Cleanup remains pending after the fresh campaign: normal quit, stopped/closed,
 this release's code-first quarantine and exact purge using current state lineage,
 then clean base and stopped/closed checks. Repeated unmodded launch is waived.
+
+
+## First v3 live invocation and complete cleanup — 2026-09-07
+
+The user reported ready. Supported computer-use observation verified the fresh
+Room Full of Cheese initial choices, Gorge untouched, with no selector/console/
+map/popup. The running-game check passed. Exactly one current-client invocation
+used the installed state identity above and exited4 with the bounded summary:
+
+```json
+{"schema_version":1,"status":"failed","parent_attempted":1,"parent_accepted":1,"parent_reconciled":0,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":1,"reads":258,"effects":"unverified","code":"unsupported_state","last_response_diagnostic":"prepare_candidates"}
+```
+
+UI observation showed the eight-card chooser with a choose-two prompt and no
+selected cards. No live response corpus, card identifiers, raw bridge observations,
+retry, second invocation or manual selection was retained or performed.
+
+The last completed native capture reached the reward adapter's TryCreateBindings
+stage and did not establish child readiness. Its prior binding/context, exact
+overlay, deck/offers, foreground, grid and holder checks reached that stage.
+The frozen core eventually stopped at its pending-read budget and retained the
+last capture diagnostic. This is the measured v3 blocking stage, not proof of
+which nested check failed or what caused the historical v2 stop. Candidate
+preparation still includes offered-model reference membership/uniqueness, card/
+hitbox/highlight/material identity, stable keys, snapshot coherence, highlight
+settling and initial visibility/enabled/selection checks. Geometry is evaluated
+later and is not established passing or failing by this result. No child actions
+or successful effects are demonstrated.
+
+Normal Cmd-Q closed the game. The wait-stopped check passed (three process samples,
+two port samples). Code-first quarantine passed with state SHA256
+`ef54e41172876f0e880de945d7694073ca2c3260d2e021c0b664a2d3a92ecd37`.
+Exact purge passed with phase absent and four generated files removed. Final
+base verification passed429files,zero overlays,projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`;
+final require-stopped passed with three process and two port samples. Repeated
+unmodded launch remained waived. No profile/save/Cloud work or unrelated changes.
+
+No campaign, credential, overlay or cleanup remains active. Both installed and
+quarantine identities in this ledger are historical and must not be reused.
+Next inspect/reproduce the candidate-binding and candidate-state subchecks in a
+reviewed successor; narrow diagnostics only if retained static evidence and
+inert fixtures cannot establish the mismatch. Do not relax identity or ownership
+rules based on this stage code, and do not replay the closed campaign. Keep the
+game closed until a separately gated fresh release is ready.

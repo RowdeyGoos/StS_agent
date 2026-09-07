@@ -18,25 +18,23 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
-## Diagnostic release installed — 2026-09-07
+## Diagnostic live result and completed cleanup — 2026-09-07
 
-`generic_event_release_v3` is accepted and frozen as successor21. It adds finite
-last-capture reason codes at existing native gates, carried with the same response
-through an exact HTTP header into a bounded summary. Frozen gameplay core/wire/host,
-hooks, lifecycle binding and all admission/effect predicates are preserved.
-Instrumented745 native assertions,168 diagnostic assertions,373 runtime assertions,
-17 transport tests,15 socket scenarios and73 verifier checks passed, followed by
-complete candidate and frozen aggregates. All20 predecessors remain unchanged.
+`generic_event_release_v3` is accepted and frozen as successor21. Both complete
+offline aggregates and independent source/binary reviews passed. Its one fresh
+Cheese invocation accepted Gorge and opened the chooser, then stopped after258
+reads with last_response_diagnostic prepare_candidates. Parent attempts/accepts1,
+reconciled0,child episodes/actions0,effects unverified. The diagnostic identifies
+the offered-card preparation stage, not its precise failing nested predicate.
+Geometry is checked later and is not resolved by this result.
 
-Fresh installation and post-install checks passed:429 base files unchanged,
-exactly2 owned overlay files, game stopped, port closed and protected metadata
-verified without credential access. Await manual launch at fresh Profile3 Cheese
-initial options, Gorge untouched; verify visible state then invoke the current
-client exactly once. The [v3 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md)
-owns the installed state identity and cleanup sequence. The prior v2 waiting
-predicate is still unknown; diagnostic fixture success is not a live repair.
-Cleanup is pending after this new campaign. Historical closed-state statements
-below do not describe the currently installed v3 release.
+Normal quit, stopped/closed, code-first quarantine, exact four-file purge and429-file
+clean base verification passed. No campaign, overlay, credential or cleanup
+remains. The [v3 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md)
+owns the exact result and historical state identities. Next inspect/reproduce the
+candidate-binding and initial candidate-state subchecks in a reviewed successor;
+preserve all21 frozen identities and do not weaken ownership checks or retry a
+closed campaign. Keep the game closed; no new setup is needed.
 
 ## Corrected generic release live result and cleanup — 2026-09-07
 
