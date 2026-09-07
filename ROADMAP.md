@@ -16,10 +16,10 @@ max or manual confirmation at min..max. Native request/creation facts, exact
 asynchronous ownership and original-card reconciliation replace event-name rules.
 See the [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) for
 validation and limits. Continue by shared families, including transformation,
-multi-upgrade and item children. The accepted generic release opened the Cheese chooser live, then stopped before
-child admission. Full cleanup passed. Diagnose the capture/admission/construction
-boundary with bounded reason codes and inert fixtures before a fresh live test. See the
-[release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
+multi-upgrade and item children. The button-lifetime mismatch is corrected and validated offline. The fresh v2
+release is installed; next verify generic child admission and exact effects live
+from a fresh initial Cheese event, then complete owned cleanup. See the
+[v2 release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md).
 
 ### Preserved predecessor milestones
 

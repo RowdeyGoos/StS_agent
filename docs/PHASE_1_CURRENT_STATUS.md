@@ -18,6 +18,23 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
+## Corrected generic release installed — 2026-09-07
+
+The accepted lifecycle correction separates disposable option buttons from retained
+parent receipts. Retained game metadata and original-source regression establish
+the mismatch;745 corrected native assertions and73 integration cases including23
+native-to-Python paths passed. `generic_event_lifecycle_v1` is frozen as successor19.
+
+`generic_event_release_v2` packages the exact four corrected native sources with
+unchanged v3 wire and authenticated owner-frame transport. Independent production
+review,63 verifier checks and candidate/frozen aggregate gates passed. The release
+is successor20 and is installed for GENERIC-EVENT-V2-SMOKE-V1. Post-install base,
+overlay,protected metadata and stopped/closed checks passed. Await manual launch
+and a fresh initial Profile3 Cheese event; no v2 client invocation or live success
+exists. Cleanup follows the bounded campaign. The
+[v2 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md) owns current
+state and overrides the historical no-active-campaign statements below.
+
 ## Generic release live attempt and cleanup — 2026-09-07
 
 `generic_event_release_v1` is accepted and frozen as the eighteenth successor.

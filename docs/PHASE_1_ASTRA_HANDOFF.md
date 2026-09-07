@@ -2,22 +2,30 @@
 
 Updated 2026-09-07 after extending the requested generic handler. Historical
 attempts and cleanup remain in their linked acceptance ledgers and Git history.
-The generic release passed offline validation; its first live attempt stopped
-before card-child admission. Normal quit and full owned cleanup passed.
+The first live failure exposed a verified option-button lifetime mismatch.
+The lifecycle correction and fresh v2 release are accepted; v2 is installed
+awaiting manual launch and a fresh initial Cheese event.
 
 ## Current implementation update
 
-`generic_event_release_v1` is the accepted, frozen installable composition of v3.
-Read its [contract](PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
-[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md) first.
-The first live invocation accepted Gorge and visibly opened the eight-card
-chooser, then stopped with unsupported_state on its second read: one parent
-attempt/accept, zero reconciliation, zero child episodes/actions, effects unverified.
-No retry occurred. Normal quit, code-first quarantine, exact purge, base verification
-and stopped/closed checks passed. No campaign is active and no game setup is needed.
-Next diagnose the capture/admission/child-construction boundary in a reviewed
-successor with bounded reason codes; the current result does not identify a cause.
-Actual EventSynchronizer ownership loss remains a hypothesis, not a finding.
+`generic_event_release_v2` is accepted and frozen as the twentieth successor.
+Read its [contract](PHASE_1_GENERIC_EVENT_RELEASE_V2_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md) first.
+It packages the accepted [lifecycle correction](PHASE_1_GENERIC_EVENT_LIFECYCLE_V1_CONTRACT.md):
+the game frees option buttons after ordinary choices, so strict button authority
+ends at predispatch reservation and the reference becomes an opaque receipt.
+Original-source fixtures reproduce the unsupported read;745 corrected native
+assertions and73 cross-language cases (23 native) passed, preserving all550 old
+assertions. Release verification,63 verifier checks and frozen aggregate passed.
+
+The exact v2 package is installed, base unchanged, game stopped and port closed.
+Next: manual launch,Profile3,single-player,fresh Room Full of Cheese initial
+choices,Gorge untouched,no selector/console/map/popup. Verify visible initial state
+before one v2 client invocation. Current state identity and cleanup are in the
+v2 ledger. The earlier open chooser cannot be adopted. No v2 live result exists;
+actual EventSynchronizer context and successful generic effects remain live gates.
+The prior v1 attempt accepted Gorge/opened the chooser then stopped; its cleanup
+is complete and its immutable evidence remains in its own ledger.
 
 `generic_event_v3` extends shared discovery to reward-card additions1..8 with
 variable limits, preserving upgrade-one and removal1..8. Read its
@@ -88,7 +96,7 @@ extending it.
 
 | Capability | Current evidence and limits |
 | --- | --- |
-| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; accepted release; live parent dispatch passed, child admission failed |
+| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; lifecycle mismatch corrected offline; v2 installed, live success pending |
 | Preserved shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
 | Shared card mechanics | Add/remove/upgrade/transform, explicit min/max, confirmation, reference identity and exact effects; generic fixtures are not native all-event support |
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
@@ -141,7 +149,8 @@ The real EventSynchronizer dispatch lifecycle remains a live-validation gate.
   All 1,301 collected cases passed across those two runs, not one clean full run.
 
 Preserve this component and its thirteen predecessors, plus `generic_event_v1`, `generic_event_v2` and `generic_event_v3`:
-seventeen frozen successor trees total, plus the original 48-file bridge boundary. Do not edit frozen README,
+seventeen historical functional successors at that checkpoint; lifecycle and both
+release successors bring the current total to twenty, plus the original48-file bridge boundary. Do not edit frozen README,
 source identity, contracts, API/schema or derivation files to implement the new
 direction. Use a reviewed successor. Temporary outputs may disappear; the ledger
 and repository identities are the retained reference, not permission to reconstruct
@@ -169,11 +178,11 @@ static questions. Do not rerun their closed inspection invocations by default.
 
 ## Operational state and user preferences
 
-GENERIC-EVENT-V1-SMOKE-V1 completed one failed controller invocation and full
-owned cleanup. The game is stopped, port closed, base verified and overlay absent.
-No credential or active campaign remains. Do not reuse historical state hashes
-or invoke the frozen client again. Diagnose offline before preparing another
-reviewed successor and fresh bounded campaign.
+GENERIC-EVENT-V2-SMOKE-V1 is installed awaiting manual launch and a fresh initial
+Cheese event. Post-install base/overlay, stopped/closed and protected metadata
+checks passed. No v2 client invocation has occurred; cleanup is pending after the
+bounded campaign. Use the v2 ledger's current state hash and v2 operational tools.
+The prior v1 campaign is absent and must not be reused.
 
 The user has authorized continued event development, parallel work where useful,
 and bounded live campaigns when needed; that explicit session authority persists.
@@ -186,7 +195,7 @@ prepare the intended interaction.
 Profile 3 is the established live test profile. The user waived repeated unmodded
 launch checks; retain other required quit/quarantine/purge/base/closed checks.
 Use the appropriate current release's tools and ledger, not historical state
-hashes or credentials. The generic event release is cleaned up; named event-card
+hashes or credentials. The v2 generic event release is installed; named event-card
 functional components remain separate.
 
 Use supported computer-use tools. The user offered
