@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><AssemblyName>GenericEventReleaseV4.Preserved.Tests</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems><StartupObject>Program</StartupObject></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Session.cs" />
+    <Compile Include="../../card_selection_v1/parents/CardSelectionParentV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../generic_event_v3/core/GenericEventV3Contracts.cs" />
+    <Compile Include="../../generic_event_v3/core/GenericEventV3NativeContracts.cs" />
+    <Compile Include="../../generic_event_v3/core/GenericEventV3Session.cs" />
+    <Compile Include="../../generic_event_v3/wire/GenericEventV3WireService.cs" />
+    <Compile Include="../../generic_event_v3/wire/GenericEventV3WireCodec.cs" />
+    <Compile Include="../../generic_event_lifecycle_v1/native/GenericEventV3Binding.cs" />
+    <Compile Include="TargetStubs.cs" />
+    <Compile Include="../../generic_event_v3/native/GenericEventV3Hooks.cs" />
+    <Compile Include="../native/GenericEventV3CardAdapter.cs" />
+    <Compile Include="../native/GenericEventV3RemovalAdapter.cs" />
+    <Compile Include="../native/GenericEventV3RewardAdapter.cs" />
+    <Compile Include="../native/PinnedGenericEventV3NativeAdapter.cs" />
+    <Compile Include="../runtime/GenericEventDiagnosticCode.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="DiagnosticFixture.cs" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

@@ -1,6 +1,6 @@
 # Phase 1 Current Integration Status
 
-- **Status date:** 2026-09-07
+- **Status date:** 2026-09-08
 - **Fresh-session handoff:** [Astra handoff](PHASE_1_ASTRA_HANDOFF.md)
 - **Active bridge milestone:** `R0i`
 - **Bridge version:** `0.8.0`
@@ -18,7 +18,26 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
-## Diagnostic live result and completed cleanup — 2026-09-07
+## Current candidate diagnostic release — 2026-09-08
+
+`generic_event_release_v4` is accepted and frozen as successor22. It appends41
+finite reward candidate failure codes while preserving all prior gameplay checks.
+All41 codes passed focused tests;14 comparisons against frozen v3 matched getter
+order/counts, candidate identities and original outcomes. Full candidate/frozen
+aggregates and independent source/binary review passed. The examined native holder
+refresh retains the original model; it does not justify weakening identity checks.
+
+A fresh v4 campaign is installed after stopped/closed and exact429-file base
+checks. Protected metadata and overlay verification passed. Next the user launches
+manually: Profile3, single-player, fresh Room Full of Cheese initial choices,
+Gorge untouched, no selector/console/map/popup. Verify visible state, then exactly
+one v4 client invocation with the current installed-state hash from the
+[v4 acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md).
+No live result is claimed yet. Preserve all22 frozen successors; no closed v1/v2/v3
+campaign or historical state identity may be reused. After the invocation, normal
+quit, stopped/closed, quarantine, exact purge and clean base remain required.
+
+## Preserved v3 diagnostic result and completed cleanup — 2026-09-07
 
 `generic_event_release_v3` is accepted and frozen as successor21. Both complete
 offline aggregates and independent source/binary reviews passed. Its one fresh

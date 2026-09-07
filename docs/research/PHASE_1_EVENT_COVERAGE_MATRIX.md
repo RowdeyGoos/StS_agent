@@ -12,6 +12,17 @@ Vegetation ordinary continuation and Room Full of Cheese/Gorge add-two. Their
 remaining branches stay open. The new shared orchestrator has separate functional
 fixtures; predecessor live results do not automatically prove its composition live.
 
+## Current validation checkpoint — 2026-09-08
+
+The generic handler's v3 live test opened the reward chooser but stopped at
+candidate preparation before any child action; cleanup passed. V4 adds41 finite
+candidate diagnostics, preserving admission and game-state reads. All41 leaf
+fixtures and14 comparisons with frozen v3 pass, as do the full release gates.
+This adds diagnostic evidence, not named-event or complete-branch coverage.
+The fresh installed v4 campaign awaits manual setup; the
+[v4 ledger](PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md) owns exact
+identities, launch instructions and required post-test cleanup.
+
 ## Generic reward-addition family — 2026-09-07
 
 `generic_event_v3` adds shared reward offers with exact selected-original additions,

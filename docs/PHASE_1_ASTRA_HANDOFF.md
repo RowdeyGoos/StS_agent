@@ -1,6 +1,6 @@
 # Astra handoff — generic event support
 
-Updated 2026-09-07 after extending the requested generic handler. Historical
+Updated 2026-09-08 after extending the requested generic handler. Historical
 attempts and cleanup remain in their linked acceptance ledgers and Git history.
 The first live failure exposed a verified option-button lifetime mismatch.
 The lifecycle correction and v2 release are accepted. Its live test progressed
@@ -8,7 +8,26 @@ beyond the immediate stop but exhausted pending reads before child admission;
 full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
 the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current diagnostic result — read first
+## Current candidate diagnostic release — 2026-09-08
+
+`generic_event_release_v4` is accepted and frozen as successor22. It appends41
+finite reward candidate failure codes while preserving all prior gameplay checks.
+All41 codes passed focused tests;14 comparisons against frozen v3 matched getter
+order/counts, candidate identities and original outcomes. Full candidate/frozen
+aggregates and independent source/binary review passed. The examined native holder
+refresh retains the original model; it does not justify weakening identity checks.
+
+A fresh v4 campaign is installed after stopped/closed and exact429-file base
+checks. Protected metadata and overlay verification passed. Next the user launches
+manually: Profile3, single-player, fresh Room Full of Cheese initial choices,
+Gorge untouched, no selector/console/map/popup. Verify visible state, then exactly
+one v4 client invocation with the current installed-state hash from the
+[v4 acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md).
+No live result is claimed yet. Preserve all22 frozen successors; no closed v1/v2/v3
+campaign or historical state identity may be reused. After the invocation, normal
+quit, stopped/closed, quarantine, exact purge and clean base remain required.
+
+## Preserved v3 diagnostic result
 
 `generic_event_release_v3` is accepted and frozen as successor21. Read its
 [contract](PHASE_1_GENERIC_EVENT_RELEASE_V3_CONTRACT.md) and
@@ -26,7 +45,7 @@ historical v2 cause. No retry or manual selection occurred.
 
 Normal quit, stopped/closed, code-first quarantine, exact purge and429-file clean
 base checks passed. GENERIC-EVENT-V3-SMOKE-V1 is closed, as are v1/v2. No campaign,
-overlay, credential or cleanup remains. All state identities in the ledger are
+overlay, credential or cleanup remains. All v3 state identities in the ledger are
 historical and must not be reused. Keep the game closed. Next inspect/reproduce
 TryCreateBindings and its candidate-capture/initial-state subchecks in a reviewed
 successor; add finer bounded diagnostics only if static evidence and inert tests
@@ -208,7 +227,7 @@ static questions. Do not rerun their closed inspection invocations by default.
 GENERIC-EVENT-V3-SMOKE-V1 completed one failed invocation with prepare_candidates
 and full owned cleanup. Game stopped,port closed,base verified,overlay absent.
 No active campaign or credential remains. All three generic campaign identities
-are historical and must not be reused. Preserve all21 frozen successors.
+are historical and must not be reused. Preserve all22 frozen successors.
 Next diagnose the candidate-binding/initial-candidate-state subchecks offline;
 no new game setup is needed until a separately gated fresh release is ready.
 

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "proposal_not_authorized_for_execution",
+  "target_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "requests": [
+    {
+      "type": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NCardHolder",
+      "method": "ReassignToCard",
+      "signature": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NCardHolder.ReassignToCard(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Cards.PileType,MegaCrit.Sts2.Core.Entities.Creatures.Creature,MegaCrit.Sts2.Core.Entities.UI.ModelVisibility)",
+      "returns": "System.Void"
+    },
+    {
+      "type": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NCardHolder",
+      "method": "_Ready",
+      "signature": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NCardHolder._Ready()",
+      "returns": "System.Void"
+    },
+    {
+      "type": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NCardHolder",
+      "method": "ConnectSignals",
+      "signature": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NCardHolder.ConnectSignals()",
+      "returns": "System.Void"
+    },
+    {
+      "type": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder",
+      "method": "OnCardReassigned",
+      "signature": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder.OnCardReassigned()",
+      "returns": "System.Void"
+    },
+    {
+      "type": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder",
+      "method": "SetCard",
+      "signature": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder.SetCard(MegaCrit.Sts2.Core.Nodes.Cards.NCard)",
+      "returns": "System.Void"
+    },
+    {
+      "type": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder",
+      "method": "_Ready",
+      "signature": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder._Ready()",
+      "returns": "System.Void"
+    },
+    {
+      "type": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder",
+      "method": "Create",
+      "signature": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder.Create(MegaCrit.Sts2.Core.Nodes.Cards.NCard)",
+      "returns": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NGridCardHolder"
+    }
+  ]
+}

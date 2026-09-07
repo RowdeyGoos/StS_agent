@@ -5,6 +5,17 @@ support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
 accepted component, source identity, protocol or live release.
 
+## Current validation checkpoint — 2026-09-08
+
+The generic handler's v3 live test opened the reward chooser but stopped at
+candidate preparation before any child action; cleanup passed. V4 adds41 finite
+candidate diagnostics, preserving admission and game-state reads. All41 leaf
+fixtures and14 comparisons with frozen v3 pass, as do the full release gates.
+This adds diagnostic evidence, not named-event or complete-branch coverage.
+The fresh installed v4 campaign awaits manual setup; the
+[v4 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md) owns exact
+identities, launch instructions and required post-test cleanup.
+
 ## Reward-addition checkpoint — 2026-09-07
 
 `generic_event_v3` adds shared reward requests followed by exact selected-original
@@ -15,7 +26,8 @@ requires exact request/selector sets and parent success before completion. Read
 its [contract](PHASE_1_GENERIC_EVENT_V3_CONTRACT.md) and
 [ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md). Extend remaining shared
 families, including transformation, multi-upgrade and item children; optional,
-scrolling and custom/combat interactions remain gaps. Release/live gates stay open.
+scrolling and custom/combat interactions remain gaps. V4 release gates passed;
+generic child live validation remains open.
 
 ## Removal and variable-count checkpoint — 2026-09-07
 

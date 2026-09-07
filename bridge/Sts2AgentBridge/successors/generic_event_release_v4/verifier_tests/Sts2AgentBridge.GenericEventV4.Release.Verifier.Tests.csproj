@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.GenericEventV4.Release.Verifier.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.GenericEventReleaseV4.Tests</RootNamespace>
+    <StartupObject>Program</StartupObject>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../verifier/GenericEventDiagnosticSurface.cs" />
+    <Compile Include="../verifier/VerificationException.cs" Link="verifier/VerificationException.cs" />
+    <Compile Include="../verifier/SafeFiles.cs" Link="verifier/SafeFiles.cs" />
+    <Compile Include="../verifier/MetadataNames.cs" Link="verifier/MetadataNames.cs" />
+    <Compile Include="../verifier/IlDecoder.cs" Link="verifier/IlDecoder.cs" />
+    <Compile Include="../verifier/GenericEventReleasePolicy.cs" Link="verifier/GenericEventReleasePolicy.cs" />
+    <Compile Include="../verifier/GenericEventReleaseProjection.cs" Link="verifier/GenericEventReleaseProjection.cs" />
+    <Compile Include="../verifier/GenericEventReleaseVerifier.cs" Link="verifier/GenericEventReleaseVerifier.cs" />
+    <Compile Include="../verifier/Program.cs" Link="verifier/Program.cs" />
+    <Compile Include="PeMutations.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>
