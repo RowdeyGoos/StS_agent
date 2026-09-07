@@ -2278,3 +2278,19 @@ before hook creation. Failed hook construction and unpatch exceptions retain
 owner-frame cleanup for retry; stop transport before removing native hooks.
 See the [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
+
+## 2026-09-07 — Separate event action receipts from disposable option buttons
+
+The game removes and queues ordinary event option buttons for freeing before
+executing the chosen option. The generic handler's predispatch reservation must
+validate the live button, but ongoing hook and child ownership must not depend
+on that presentation node staying alive. Retain its managed reference solely as
+an opaque receipt after dispatch. Validate the logical option/key, scoped callback
+and request/creation tasks, run/player/room/layout and complete card effects.
+
+The lifecycle successor source-replaces the binding and three native card adapters
+without changing core/wire semantics, adding named-event rules or accepting a
+scope-less callback. Retained target metadata and an original-source regression
+establish the defect; a later live result is still needed to establish that it
+was the only obstacle in the observed campaign. See the
+[lifecycle contract](docs/PHASE_1_GENERIC_EVENT_LIFECYCLE_V1_CONTRACT.md).

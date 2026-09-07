@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventLifecycleV1.Native</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GenericEventV3RewardAdapter.cs" />
+    <Compile Include="GenericEventV3RemovalAdapter.cs" />
+    <Compile Include="GenericEventV3Binding.cs" />
+    <Compile Include="GenericEventV3CardAdapter.cs" />
+    <Compile Include="../../generic_event_v3/native/GenericEventV3Hooks.cs" />
+    <Compile Include="../../generic_event_v3/native/PinnedGenericEventV3NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
+    <ProjectReference Include="../../generic_event_v3/core/GenericEventV3.Core.csproj" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>false</Private></Reference>
+    <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>
