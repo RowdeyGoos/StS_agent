@@ -1,0 +1,428 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Sts2AgentBridge.Successors.CardSelectionV1;
+using Sts2AgentBridge.Successors.GenericEventV3;
+
+internal static class GenericEventV3WireTests
+{
+    private const string Nonce = "0123456789abcdef0123456789abcdef";
+    private static readonly string ParentId = new('a', 64), ChildId = new('b', 64);
+    private static int _checks;
+    private static void Check(bool value, string label) { if (!value) throw new Exception(label); }
+    private static void Case(string name, Action action)
+    { try { action(); _checks++; } catch (Exception e) { throw new Exception(name, e); } }
+    private static JsonElement Decode(byte[] b)
+    { using var d = JsonDocument.Parse(b); var value = d.RootElement.Clone(); Array.Clear(b); return value; }
+    private static JsonElement Read(GenericEventV3WireService s) => Decode(s.Handle("GET", GenericEventV3WireService.DecisionRoute, null));
+    private static JsonElement Post(GenericEventV3WireService s, byte[] body) => Decode(s.Handle("POST", GenericEventV3WireService.ActionRoute, body));
+    private static byte[] Request(string decision = "", string action = "choose:0", int ordinal = 0,
+        string? parentDecision = null, string? parentAction = null) => GenericEventV3WireCodec.Request(
+            decision == "" ? ParentId : decision, action, ordinal, parentDecision, parentAction);
+    private static void Error(JsonElement value, string code) => Check(value.GetProperty("kind").GetString() == "error" &&
+        value.GetProperty("payload").GetProperty("code").GetString() == code, "expected error " + code);
+    private static void Child(FakeSession f, GenericEventV3WireService s)
+    {
+        Check(Read(s).GetProperty("kind").GetString() == "decision", "parent ready");
+        Check(Post(s, Request()).GetProperty("payload").GetProperty("outcome").GetString() == "accepted", "accepted parent");
+        f.HasChild = true;
+    }
+    private static int Main()
+    {
+        foreach (string stable in new[] { "UNRELATED_FOREST.OPT", "UNRELATED_LIBRARY.OPT", "HELD_OUT_991.NO_CATALOG" })
+            Case("unregistered " + stable, () => {
+                using var f = new FakeSession { Stable = stable }; using var s = new GenericEventV3WireService(Nonce, f);
+                var p = Read(s).GetProperty("parent");
+                Check(p.GetProperty("candidates")[0].GetProperty("stable_id").GetString() == stable, "stable identity preserved");
+                Check(p.GetProperty("candidates")[0].GetProperty("discovery").GetString() == "deferred", "deferred discovery");
+                Check(Post(s, Request()).GetProperty("kind").GetString() == "action" && f.ParentApplies == 1, "dispatch exactly once");
+            });
+        var malformed = new[] {
+            "{}", "null", "[]", "{", "{\"decision_id\":\"" + ParentId + "\",\"action_id\":\"choose:0\",\"child\":null,\"operation\":\"upgrade\"}",
+            "{\"decision_id\":\"" + ParentId + "\",\"decision_id\":\"" + ParentId + "\",\"action_id\":\"choose:0\",\"child\":null}",
+            "{\"action_id\":\"choose:0\",\"decision_id\":\"" + ParentId + "\",\"child\":null}",
+            "{\"decision_id\":\"" + ParentId + "\",\"action_id\":\"choose:0\",\"child\":null} ",
+        };
+        foreach (string input in malformed)
+            Case("malformed request", () => {
+                using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+                Read(s); Error(Post(s, Encoding.UTF8.GetBytes(input)), "invalid_request");
+                Error(Post(s, Request()), "invalid_request"); Check(f.ParentApplies == 0, "no dispatch or retry");
+            });
+        Case("stale decision", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); Error(Post(s, Request(new string('f', 64))), "internal_failure");
+            Check(f.ParentApplies == 0, "stale undispatched");
+        });
+        Case("uncertain no retry", () => {
+            using var f = new FakeSession { Uncertain = true }; using var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); var r = Post(s, Request());
+            Check(r.GetProperty("payload").GetProperty("outcome").GetString() == "uncertain", "uncertain receipt delivered");
+            Error(Post(s, Request()), "unsupported"); Error(Read(s), "unsupported");
+            Check(f.ParentApplies == 1, "uncertain one attempt");
+        });
+        Case("throw after mutation no retry", () => {
+            using var f = new FakeSession { Throw = true }; using var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); Error(Post(s, Request()), "internal_failure"); Error(Read(s), "internal_failure");
+            Check(f.ParentApplies == 1, "one side effect");
+        });
+        Case("delayed child admission", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); Post(s, Request());
+            for (int i = 0; i < 3; i++) Check(Read(s).GetProperty("parent").GetProperty("status").GetString() == "waiting", "waiting");
+            f.HasChild = true;
+            Check(Read(s).GetProperty("payload").GetProperty("status").GetString() == "ready", "delayed child");
+            Check(f.ParentApplies == 1, "one parent dispatch");
+        });
+        foreach (string mutation in new[] { "lineage", "ordinal", "operation", "count", "mode", "domain" })
+            Case("bad descriptor " + mutation, () => {
+                using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+                Child(f, s); f.Mutation = mutation; Error(Read(s), "internal_failure");
+                Check(f.ChildReads == 0 && f.ChildApplies == 0, "descriptor rejected before child");
+            });
+        foreach (string mutation in new[] { "domain_changed", "key_changed" })
+            Case("descriptor stable " + mutation, () => {
+                using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+                Child(f, s); Read(s); f.Mutation = mutation; Error(Read(s), "internal_failure");
+                Check(f.ChildApplies == 0, "tamper no child action");
+            });
+        Case("wrong action lineage", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Child(f, s); Read(s);
+            Error(Post(s, Request(ChildId, "select:0", 1, new string('f', 64), "choose:0")), "invalid_request");
+            Check(f.ChildApplies == 0, "wrong lineage no dispatch");
+        });
+        Case("client supplied descriptor", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Child(f, s); Read(s);
+            string input = Encoding.UTF8.GetString(Request(ChildId, "select:0", 1, ParentId, "choose:0"));
+            input = input[..^2] + ",\"domain_count\":3}}";
+            Error(Post(s, Encoding.UTF8.GetBytes(input)), "invalid_request");
+            Check(f.ChildApplies == 0, "client descriptor no dispatch");
+        });
+        Case("child receipt replay", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Child(f, s); Read(s); var request = Request(ChildId, "select:0", 1, ParentId, "choose:0");
+            Check(Post(s, request).GetProperty("kind").GetString() == "action", "child accepted");
+            Error(Post(s, request), "internal_failure"); Check(f.ChildApplies == 1, "one child dispatch");
+        });
+        Case("counter regression", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); Post(s, Request()); Read(s); f.Regress = true;
+            Error(Read(s), "internal_failure");
+        });
+        Case("read budget", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); Post(s, Request());
+            for (int i = 1; i < 2048; i++) Check(Read(s).GetProperty("kind").GetString() == "decision", "bounded read");
+            Error(Read(s), "invalid_request"); Check(f.Reads == 2048, "no excess session read");
+        });
+        Case("route isolation", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Error(Decode(s.Handle("GET", "/probe/event-orchestrator-v1/public/decision", null)), "invalid_request");
+            Check(f.Reads == 0, "old route isolated");
+        });
+        Case("cross-thread request", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            var response = Task.Run(() => Read(s)).GetAwaiter().GetResult();
+            Error(response, "internal_failure");
+            Check(f.Reads == 0 && f.ParentApplies == 0, "foreign thread never calls session");
+            Error(Read(s), "internal_failure");
+        });
+        Case("reentrant read", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            f.OnRead = () => Error(Read(s), "internal_failure");
+            Error(Read(s), "internal_failure"); Error(Read(s), "internal_failure");
+            Check(f.Reads == 1 && f.ParentApplies == 0, "nested read suppressed");
+        });
+        Case("reentrant apply", () => {
+            using var f = new FakeSession(); using var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); f.OnApply = () => Error(Post(s, Request()), "internal_failure");
+            Error(Post(s, Request()), "internal_failure"); Error(Post(s, Request()), "internal_failure");
+            Check(f.ParentApplies == 1, "reentrant mutation dispatched once");
+        });
+        Case("disposed handler", () => {
+            var f = new FakeSession(); var s = new GenericEventV3WireService(Nonce, f);
+            Read(s); s.Dispose();
+            Error(Read(s), "unsupported"); Error(Post(s, Request()), "unsupported");
+            s.Dispose(); Check(f.Reads == 1 && f.ParentApplies == 0 && f.Disposals == 1, "disposed owner untouched");
+        });
+        Case("cleanup failure preserves retry", () => {
+            var f = new FakeSession { ThrowFirstDispose = true }; var s = new GenericEventV3WireService(Nonce, f);
+            bool threw = false;
+            try { s.Dispose(); } catch (InvalidOperationException) { threw = true; }
+            Check(threw && f.Disposals == 1, "initial cleanup failure visible");
+            Error(Read(s), "unsupported"); Check(f.Reads == 0, "failed cleanup stays terminal");
+            s.Dispose(); s.Dispose(); Check(f.Disposals == 2, "cleanup retried and then idempotent");
+        });
+        foreach (var config in new[] {
+            (Min: 2, Max: 2, Domain: 5, Actions: new[] { "select:3", "select:1", "confirm" }),
+            (Min: 1, Max: 3, Domain: 5, Actions: new[] { "select:3", "preview", "confirm" }),
+            (Min: 1, Max: 3, Domain: 5, Actions: new[] { "select:3", "select:1", "preview", "confirm" }),
+            (Min: 1, Max: 3, Domain: 5, Actions: new[] { "select:3", "select:1", "select:0", "confirm" }),
+            (Min: 8, Max: 8, Domain: 9, Actions: Enumerable.Range(0, 8).Reverse().Select(i => "select:" + i).Append("confirm").ToArray()),
+        })
+            Case("removal selection set and variable preview", () => {
+                using var f = new FakeSession { Family = "remove", Min = config.Min, Max = config.Max, Domain = config.Domain };
+                using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+                foreach (string action in config.Actions) Play(s, action);
+                var done = Read(s).GetProperty("payload");
+                Check(done.GetProperty("kind").GetString() == "child_resolved", "removal resolved");
+                var slots = done.GetProperty("selected_cards").EnumerateArray().Select(c => c.GetProperty("slot").GetInt32()).ToArray();
+                Check(slots.Order().SequenceEqual(config.Actions.Where(a => a.StartsWith("select:", StringComparison.Ordinal)).Select(a => int.Parse(a[7..])).Order()), "slot membership independent of receipt order");
+                Check(f.ChildApplies == config.Actions.Length, "native action count");
+            });
+        foreach (var config in new[] {
+            (Family: "remove", Min: 0, Max: 1, Domain: 3),
+            (Family: "remove", Min: -1, Max: 1, Domain: 3),
+            (Family: "remove", Min: 3, Max: 2, Domain: 5),
+            (Family: "remove", Min: 1, Max: 9, Domain: 10),
+            (Family: "remove", Min: 2, Max: 2, Domain: 2),
+            (Family: "remove", Min: 1, Max: 2, Domain: 1),
+            (Family: "remove", Min: 1, Max: 2, Domain: 65),
+            (Family: "upgrade", Min: 1, Max: 2, Domain: 3),
+            (Family: "add", Min: 1, Max: 1, Domain: 3),
+            (Family: "transform", Min: 1, Max: 1, Domain: 3),
+        })
+            Case("unsupported family descriptor", () => {
+                using var f = new FakeSession { Family = config.Family, Min = config.Min, Max = config.Max, Domain = config.Domain };
+                using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+                Error(Read(s), "internal_failure"); Check(f.ChildReads == 0, "invalid descriptor before child read");
+            });
+        foreach (string mutation in new[] { "payload_family", "payload_min", "payload_max" })
+            Case("payload descriptor disagreement", () => {
+                using var f = new FakeSession { Family = "remove", Min = 1, Max = 3, Domain = 5, Mutation = mutation };
+                using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+                Error(Read(s), "internal_failure"); Check(f.ChildApplies == 0, "disagreement not actionable");
+            });
+        foreach (string mutation in new[] { "resolved_duplicate", "resolved_wrong_slot", "resolved_family" })
+            Case("resolved exact removal membership", () => {
+                using var f = new FakeSession { Family = "remove", Min = 2, Max = 2, Domain = 5 };
+                using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+                Play(s, "select:3"); Play(s, "select:1"); Play(s, "confirm");
+                f.Mutation = mutation; Error(Read(s), "internal_failure");
+                Check(f.ChildApplies == 3, "no retry on wrong resolved membership");
+            });
+        Case("admitted removal counts cannot change", () => {
+            using var f = new FakeSession { Family = "remove", Min = 1, Max = 3, Domain = 5 };
+            using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+            Read(s); f.Max = 4; Error(Read(s), "internal_failure");
+            Check(f.ChildApplies == 0, "valid but changed descriptor rejected");
+        });
+        foreach (string mutation in new[] { "selected_mismatch", "selection_lost", "hidden_history", "preview_below_min" })
+            Case("ready selection and history exactness", () => {
+                using var f = new FakeSession { Family = "remove", Min = 2, Max = 3, Domain = 5 };
+                using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+                Play(s, "select:3"); f.Mutation = mutation;
+                Error(Read(s), "internal_failure"); Check(f.ChildApplies == 1, "bad ready never actionable");
+            });
+        Case("confirmation requires witnessed preview", () => {
+            using var f = new FakeSession { Family = "remove", Min = 2, Max = 2, Domain = 5 };
+            using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+            Play(s, "select:3"); Play(s, "select:1"); f.Mutation = "missing_preview";
+            Error(Read(s), "internal_failure"); Check(f.ChildApplies == 2, "unwitnessed confirmation never dispatched");
+        });
+        Case("preview cannot reopen selection", () => {
+            using var f = new FakeSession { Family = "remove", Min = 1, Max = 3, Domain = 5 };
+            using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+            Play(s, "select:3"); Play(s, "preview"); Read(s); f.Mutation = "reopen_selecting";
+            Error(Read(s), "internal_failure"); Check(f.ChildApplies == 2, "reopened selection terminal");
+        });
+        Case("uncertain child no retry", () => {
+            using var f = new FakeSession { Family = "remove", Min = 2, Max = 2, Domain = 5, UncertainChild = true };
+            using var s = new GenericEventV3WireService(Nonce, f); Child(f, s); Read(s);
+            var receipt = Post(s, Request(ChildId, "select:3", 1, ParentId, "choose:0"));
+            Check(receipt.GetProperty("payload").GetProperty("outcome").GetString() == "uncertain", "uncertain child preserved");
+            Error(Post(s, Request(ChildId, "select:3", 1, ParentId, "choose:0")), "unsupported");
+            Check(f.ChildApplies == 1, "uncertain child side effect exactly once");
+        });
+        foreach (string mutation in new[] { "preview_below_count", "selected_legal", "flags_mismatch" })
+            Case("child advertisements cannot authorize invalid mutation", () => {
+                using var f = new FakeSession { Family = "remove", Min = 2, Max = 3, Domain = 5 };
+                using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+                Play(s, "select:3"); f.Mutation = mutation; Error(Read(s), "internal_failure");
+                Check(f.ChildApplies == 1, "invalid advertisement stopped before second mutation");
+            });
+        foreach (string mutation in new[] { "duplicate_legal", "hidden_candidate" })
+            Case("initial child legal list validation", () => {
+                using var f = new FakeSession { Family = "remove", Min = 2, Max = 3, Domain = 5, Mutation = mutation };
+                using var s = new GenericEventV3WireService(Nonce, f); Child(f, s);
+                Error(Read(s), "internal_failure"); Check(f.ChildApplies == 0, "malformed initial legal list no dispatch");
+            });
+        foreach (string stable in new[] { "OPTION\u0000", "OPTION\n", "OPTION_é" })
+            Case("parent stable key is printable ASCII", () => {
+                using var f = new FakeSession { Stable = stable }; using var s = new GenericEventV3WireService(Nonce, f);
+                Error(Read(s), "internal_failure"); Check(f.ParentApplies == 0, "bad key no parent dispatch");
+            });
+        foreach (string rendered in new[] { "Visible\u0000text", string.Concat(Enumerable.Repeat("🙂", 300)) })
+            Case("parent text controls and UTF8 byte ceiling", () => {
+                using var f = new FakeSession { Rendered = rendered }; using var s = new GenericEventV3WireService(Nonce, f);
+                Error(Read(s), "internal_failure"); Check(f.ParentApplies == 0, "bad text no parent dispatch");
+            });
+        foreach (var config in new[] {
+            (Mode: "auto_at_max", Min: 2, Max: 2, Domain: 5, Actions: new[] { "select:3", "select:1" }),
+            (Mode: "auto_at_max", Min: 1, Max: 3, Domain: 5, Actions: new[] { "select:3", "select:1", "select:0" }),
+            (Mode: "explicit_confirm", Min: 2, Max: 2, Domain: 5, Actions: new[] { "select:3", "select:1", "confirm" }),
+            (Mode: "explicit_confirm", Min: 1, Max: 3, Domain: 5, Actions: new[] { "select:3", "confirm" }),
+            (Mode: "explicit_confirm", Min: 1, Max: 3, Domain: 5, Actions: new[] { "select:3", "select:1", "select:0", "confirm" }),
+            (Mode: "auto_at_max", Min: 8, Max: 8, Domain: 9, Actions: Enumerable.Range(1, 8).Reverse().Select(i => "select:" + i).ToArray()),
+            (Mode: "explicit_confirm", Min: 8, Max: 8, Domain: 9, Actions: Enumerable.Range(1, 8).Reverse().Select(i => "select:" + i).Append("confirm").ToArray()),
+        })
+            Case("reward terminal mode and selected history", () => {
+                using var f = new FakeSession { Family = "add", Mode = config.Mode, Min = config.Min, Max = config.Max, Domain = config.Domain };
+                using var service = new GenericEventV3WireService(Nonce, f); Child(f, service);
+                foreach (string action in config.Actions) Play(service, action);
+                var result = Read(service).GetProperty("payload");
+                Check(result.GetProperty("kind").GetString() == "child_resolved", "reward resolved without preview");
+                var history = result.GetProperty("prior_results").EnumerateArray().ToArray();
+                Check(history.Length == config.Actions.Length && history[^1].GetProperty("result").GetString() == (config.Mode == "auto_at_max" ? "selected" : "committed"), "terminal history mode");
+                Check(f.ChildApplies == config.Actions.Length, "one dispatch per accepted reward action");
+            });
+        foreach (var config in new[] {
+            (Family: "add", Mode: "preview_confirm", Min: 1, Max: 2, Domain: 5),
+            (Family: "remove", Mode: "auto_at_max", Min: 1, Max: 2, Domain: 5),
+            (Family: "upgrade", Mode: "explicit_confirm", Min: 1, Max: 1, Domain: 5),
+            (Family: "add", Mode: "explicit_confirm", Min: 0, Max: 2, Domain: 5),
+            (Family: "add", Mode: "auto_at_max", Min: 1, Max: 9, Domain: 10),
+            (Family: "add", Mode: "auto_at_max", Min: 2, Max: 2, Domain: 2),
+        })
+            Case("unsupported reward family mode combination", () => {
+                using var f = new FakeSession { Family = config.Family, Mode = config.Mode, Min = config.Min, Max = config.Max, Domain = config.Domain };
+                using var service = new GenericEventV3WireService(Nonce, f); Child(f, service);
+                Error(Read(service), "internal_failure"); Check(f.ChildApplies == 0, "bad reward admission no dispatch");
+            });
+        foreach (var config in new[] {
+            (Mode: "auto_at_max", Mutation: "forbidden_confirm"),
+            (Mode: "auto_at_max", Mutation: "forbidden_preview"),
+            (Mode: "explicit_confirm", Mutation: "forbidden_preview"),
+            (Mode: "explicit_confirm", Mutation: "payload_mode"),
+        })
+            Case("reward terminal controls before publication", () => {
+                using var f = new FakeSession { Family = "add", Mode = config.Mode, Min = 1, Max = 3, Domain = 5 };
+                using var service = new GenericEventV3WireService(Nonce, f); Child(f, service);
+                Play(service, "select:3"); f.Mutation = config.Mutation;
+                Error(Read(service), "internal_failure"); Check(f.ChildApplies == 1, "forbidden reward control undispatched");
+            });
+        foreach (string mode in new[] { "auto_at_max", "explicit_confirm" })
+            Case("early reward completion cannot certify effects", () => {
+                using var f = new FakeSession { Family = "add", Mode = mode, Min = 1, Max = 3, Domain = 5 };
+                using var service = new GenericEventV3WireService(Nonce, f); Child(f, service);
+                Play(service, "select:3"); f.Mutation = "early_resolved";
+                Error(Read(service), "internal_failure"); Check(f.ChildApplies == 1, "missing terminal witness no retry");
+            });
+        foreach (string mutation in new[] { "resolved_empty", "resolved_duplicate", "resolved_wrong_slot" })
+            Case("reward resolved exact selected originals", () => {
+                using var f = new FakeSession { Family = "add", Mode = "auto_at_max", Min = 2, Max = 2, Domain = 5 };
+                using var service = new GenericEventV3WireService(Nonce, f); Child(f, service);
+                Play(service, "select:3"); Play(service, "select:1"); f.Mutation = mutation;
+                Error(Read(service), "internal_failure"); Check(f.ChildApplies == 2, "bad auto result cannot retry");
+            });
+        Console.WriteLine(JsonSerializer.Serialize(new { schema_version = 1, status = "passed", suite = "generic_event_v3_wire", check_count = _checks }));
+        return 0;
+    }
+
+    private static void Play(GenericEventV3WireService service, string action)
+    {
+        var value = Read(service); var child = value.GetProperty("child");
+        var payload = value.GetProperty("payload");
+        Check(payload.GetProperty("legal_actions").EnumerateArray().Any(a => a.GetString() == action), "advertised action " + action);
+        var receipt = Post(service, Request(payload.GetProperty("decision_id").GetString()!, action,
+            child.GetProperty("ordinal").GetInt32(), child.GetProperty("parent_decision_id").GetString(),
+            child.GetProperty("parent_action_id").GetString()));
+        Check(receipt.GetProperty("kind").GetString() == "action" && receipt.GetProperty("payload").GetProperty("outcome").GetString() == "accepted", "accepted child " + action);
+    }
+
+    private sealed class FakeSession : IGenericEventV3Session
+    {
+        internal string Stable = "UNREGISTERED.OPTION", Rendered = "A presented option", Mutation = "", Family = "upgrade", Mode = "preview_confirm";
+        internal int Min = 1, Max = 1, Domain = 3;
+        private readonly HashSet<int> _selected = new();
+        private readonly List<CardSelectionV1ActionResult> _history = new();
+        private bool _preview, _resolved;
+        internal bool HasChild, Uncertain, Throw, Regress, ThrowFirstDispose, UncertainChild;
+        internal Action? OnRead, OnApply;
+        internal int Disposals;
+        internal int ParentApplies, ChildApplies, ChildReads, Reads;
+        public GenericEventV3Observation Read()
+        {
+            Reads++; OnRead?.Invoke();
+            bool initial = ParentApplies == 0;
+            int count = Regress ? 0 : ParentApplies;
+            GenericEventV3Child? child = !HasChild ? null : new(
+                Mutation == "ordinal" ? 2 : 1, Mutation == "lineage" ? new string('f', 64) : ParentId,
+                "choose:0", Mutation == "operation" ? "transform" : Family, Min,
+                Mutation == "count" ? 2 : Max, Mutation == "mode" ? "auto_at_max" : Mode,
+                Mutation == "domain" ? 1 : Mutation == "domain_changed" ? 4 : Domain);
+            return new(Nonce, initial ? "ready" : HasChild ? "child" : "waiting",
+                initial ? "choose_option" : HasChild ? "child" : "waiting", initial ? ParentId : "",
+                initial ? new[] { new GenericEventV3Candidate(0, "choose:0", Stable, Rendered, true, false, false) } : Array.Empty<GenericEventV3Candidate>(),
+                initial ? new[] { "choose:0" } : Array.Empty<string>(), child,
+                Array.Empty<GenericEventV3PriorResult>(), count, count, 0, HasChild ? 1 : 0,
+                ChildApplies, ChildApplies, _history.Count, initial ? "none_attempted" : "unverified");
+        }
+        public GenericEventV3ApplyResult Apply(string? decisionId, string? actionId)
+        {
+            ParentApplies++; OnApply?.Invoke();
+            if (Throw) throw new InvalidOperationException("After side effect");
+            return new(Nonce, decisionId!, actionId!, Uncertain ? "uncertain" : "accepted");
+        }
+        public ICardSelectionV1ReadValue ReadChild(string? parentDecisionId, string? parentActionId, int childOrdinal)
+        {
+            ChildReads++;
+            int[] slots = Mutation == "selected_mismatch" ? new[] { 0 } : Mutation == "selection_lost" ? Array.Empty<int>() : _selected.Order().ToArray();
+            bool publishedPreview = Mutation == "preview_below_min" || (_preview && Mutation is not "missing_preview" and not "reopen_selecting");
+            var candidates = Enumerable.Range(0, Domain).Select(i => new CardSelectionV1Candidate(i,
+                Mutation == "key_changed" ? "Changed_" + i : "Card_" + i, 0,
+                Mutation != "hidden_candidate" || i != 0, true,
+                Mutation == "flags_mismatch" ? !slots.Contains(i) : slots.Contains(i))).ToArray();
+            if (_resolved || (Mutation == "early_resolved" && _selected.Count > 0))
+            {
+                var selected = candidates.Where(c => _selected.Contains(c.Slot)).ToList();
+                if (Mutation == "resolved_empty") selected.Clear();
+                if (Mutation == "resolved_duplicate") selected.Add(selected[0]);
+                if (Mutation == "resolved_wrong_slot") selected[0] = candidates.First(c => !_selected.Contains(c.Slot));
+                return new CardSelectionV1ResolvedResult(Nonce,
+                    Mutation == "resolved_family" ? "transform" : Family, selected, _history);
+            }
+            var legal = _preview ? new List<string> { "confirm" } :
+                Enumerable.Range(0, Domain).Where(i => !_selected.Contains(i) && _selected.Count < Max)
+                    .Select(i => "select:" + i).ToList();
+            if (!_preview && _selected.Count >= Min && Mode == "preview_confirm") legal.Add("preview");
+            if (!_preview && _selected.Count >= Min && Mode == "explicit_confirm") legal.Add("confirm");
+            if (Mutation == "forbidden_confirm") legal.Add("confirm");
+            if (Mutation == "forbidden_preview") legal.Add("preview");
+            if (Mutation == "preview_below_count") legal.Add("preview");
+            if (Mutation == "duplicate_legal") legal.Add(legal[0]);
+            if (Mutation == "selected_legal") legal.Add("select:3");
+            string decision = ChildApplies == 0 ? ChildId : new string('b', 62) + ChildApplies.ToString("x2");
+            return new CardSelectionV1Observation(Nonce, "ready", publishedPreview ? "preview" : "selecting",
+                Mutation == "payload_family" ? "transform" : Family, Mutation == "payload_mode" ? "preview_confirm" : Mode,
+                Mutation == "payload_min" ? Min + 1 : Min, Mutation == "payload_max" ? Max + 1 : Max,
+                decision, candidates, slots, legal, Mutation == "hidden_history" ? Array.Empty<CardSelectionV1ActionResult>() : _history);
+        }
+        public ICardSelectionV1ApplyValue ApplyChild(string? parentDecisionId, string? parentActionId, int childOrdinal, string? decisionId, string? actionId)
+        {
+            ChildApplies++;
+            string result;
+            if (actionId!.StartsWith("select:", StringComparison.Ordinal))
+            {
+                _selected.Add(int.Parse(actionId[7..])); result = "selected";
+                if (Family == "remove" && _selected.Count == Max) _preview = true;
+                if (Family == "add" && Mode == "auto_at_max" && _selected.Count == Max) _resolved = true;
+            }
+            else if (actionId == "preview") { _preview = true; result = "previewed"; }
+            else { _resolved = true; result = "committed"; }
+            if (UncertainChild) return new CardSelectionV1ApplyFailure(Nonce, "uncertain");
+            _history.Add(new CardSelectionV1ActionResult(decisionId!, actionId!, result));
+            return new CardSelectionV1DispatchReceipt(Nonce, decisionId!, actionId!);
+        }
+        public void Dispose()
+        {
+            Disposals++;
+            if (ThrowFirstDispose && Disposals == 1) throw new InvalidOperationException("First cleanup failure.");
+        }
+    }
+}

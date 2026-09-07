@@ -5,6 +5,18 @@ support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
 accepted component, source identity, protocol or live release.
 
+## Reward-addition checkpoint — 2026-09-07
+
+`generic_event_v3` adds shared reward requests followed by exact selected-original
+additions, without event-name rules. Both automatic-at-max and explicit-confirm
+modes support1..8 cards and variable limits. It binds effective result cards before
+child actions, tolerates native sorting and monotonic partial additions, and
+requires exact request/selector sets and parent success before completion. Read
+its [contract](PHASE_1_GENERIC_EVENT_V3_CONTRACT.md) and
+[ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md). Extend remaining shared
+families, including transformation, multi-upgrade and item children; optional,
+scrolling and custom/combat interactions remain gaps. Release/live gates stay open.
+
 ## Removal and variable-count checkpoint — 2026-09-07
 
 `generic_event_v2` retains upgrade-one and extends shared discovery to removal

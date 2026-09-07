@@ -2242,3 +2242,25 @@ foreign preview membership. All fifteen predecessors remain unchanged. This adds
 functional family support; actual EventSynchronizer context preservation, release
 composition and live testing remain separate. See the
 [v2 contract](docs/PHASE_1_GENERIC_EVENT_V2_CONTRACT.md).
+
+## 2026-09-07 — Discover reward offers and preserve native confirmation modes
+
+The v3 successor observes shared reward requests and the exact CardCreationResult
+creation overload. Bind the request list, result entries and effective Card
+references to the reserved player/run and complete baseline deck. These are off-
+deck offer originals; the two-stage contract does not claim predispatch generation
+inputs or global novelty. Native sorting may change slots, so preserve a bijection
+and compare selected membership independently of receipt order.
+
+Expose automatic-at-max and explicit-confirm as distinct native admissions.
+Automatic completion ends with the final select; manual completion requires Confirm
+at min..max. Both support1..8 cards with variable limits, without preview. Require
+exact selector/request result sets, awaited parent success and the actual frozen
+card session's add-only reconciliation, allowing monotonic partial additions.
+A successful selection alone is insufficient. This bounded card-effect witness
+does not certify every Add hook/animation or unrelated effects.
+
+Preserve all sixteen predecessors and their contracts. Generic upgrade/removal
+continue unchanged; event names supply test coverage, never admission semantics.
+Release composition and real EventSynchronizer context preservation remain separate
+live gates. See the [v3 contract](docs/PHASE_1_GENERIC_EVENT_V3_CONTRACT.md).

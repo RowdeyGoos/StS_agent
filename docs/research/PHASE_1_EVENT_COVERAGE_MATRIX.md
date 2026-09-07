@@ -12,6 +12,17 @@ Vegetation ordinary continuation and Room Full of Cheese/Gorge add-two. Their
 remaining branches stay open. The new shared orchestrator has separate functional
 fixtures; predecessor live results do not automatically prove its composition live.
 
+## Generic reward-addition family — 2026-09-07
+
+`generic_event_v3` adds shared reward offers with exact selected-original additions,
+counts1..8 and variable limits in automatic-at-max or explicit-confirm mode.
+Production native-to-Python fixtures use unrelated/held-out event subclasses and
+cover sorted offers and partial additions for each family. Separate shared-core
+integrations cover mixed upgrade/remove/add episodes; a native mixed-family
+lifetime has not been tested.
+See the [v3 ledger](PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) for exact evidence.
+These are family fixtures; no named event gains complete-branch or live coverage.
+
 ## Generic removal family — 2026-09-07
 
 `generic_event_v2` adds shared native removal1..8 with variable limits, explicit

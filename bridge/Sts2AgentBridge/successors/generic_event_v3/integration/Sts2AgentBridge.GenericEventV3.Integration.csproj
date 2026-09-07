@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.GenericEventV3.Integration</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GenericEventV3IntegrationHost.cs" />
+    <Compile Include="../core/GenericEventV3Contracts.cs" />
+    <Compile Include="../core/GenericEventV3NativeContracts.cs" />
+    <Compile Include="../core/GenericEventV3Session.cs" />
+    <Compile Include="../wire/GenericEventV3WireCodec.cs" />
+    <Compile Include="../wire/GenericEventV3WireService.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Session.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireProtocol.cs" Link="Frozen/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireCodec.cs" Link="Frozen/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../card_selection_v1/parents/CardSelectionParentV1Contracts.cs" Link="Frozen/CardSelectionParentV1Contracts.cs" />
+  </ItemGroup>
+</Project>

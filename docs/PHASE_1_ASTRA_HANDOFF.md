@@ -7,21 +7,23 @@ was started.
 
 ## Current implementation update
 
-`generic_event_v2` extends shared discovery from upgrade-one to standard deck
-removal with1..8 selected cards and variable min/max. Read its
-[contract](PHASE_1_GENERIC_EVENT_V2_CONTRACT.md),
-[component guide](../bridge/Sts2AgentBridge/successors/generic_event_v2/README.md)
-and [acceptance ledger](research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) first.
-It obtains operation/counts/originals from owned shared request/creation calls,
-passes an immutable admission through the parent, and controls actual original-
-reference previews before exact task/deck reconciliation. Event names are tests,
-not admission rows. Frozen upgrade-one behavior is retained in this successor.
+`generic_event_v3` extends shared discovery to reward-card additions1..8 with
+variable limits, preserving upgrade-one and removal1..8. Read its
+[contract](PHASE_1_GENERIC_EVENT_V3_CONTRACT.md),
+[component guide](../bridge/Sts2AgentBridge/successors/generic_event_v3/README.md)
+and [acceptance ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) first.
+Owned request/creation calls establish exact offers and an immutable admission.
+Reward modes are automatic submission at max or manual confirmation at min..max;
+upgrade/removal retain their previews. Exact task sets, parent success and the
+frozen card session reconcile the selected originals. Native sorting and monotonic
+partial additions are supported. Event names are tests, never admission rows.
 
-The scope remains bounded: upgrade-one and removal1..8, ordinary pages and
-Proceed. Generated adds, transform, multi-upgrade, optional/scroll/custom/combat
-families remain open. The new instrumentation has no installable release or
-live validation. Actual EventSynchronizer context preservation is still a live
-gate. The same23cf worktree and integration branch remain authoritative.
+The scope remains bounded: these card families, ordinary pages and Proceed.
+Transform, multi-upgrade, item children, optional/scroll/custom/combat families
+remain open. Reward completion does not certify all Add hooks/animations or
+unrelated effects. The instrumentation has no installable release or live
+validation. Actual EventSynchronizer context preservation is still a live gate.
+The same23cf worktree and integration branch remain authoritative.
 
 ## Start here
 
@@ -57,7 +59,7 @@ not development that adds one event-name connection at a time. We acknowledged
 that the latest implementation worked on both reusable mechanics and individual
 event connections, and that its native card support still requires registration.
 
-The new successor discovers upgrade-one and variable-count removal automatically. The
+The new successor discovers upgrade-one, variable-count removal and reward additions automatically. The
 next priority is extending authoritative discovery/admission to additional
 interaction families, with events used as representative tests. Brain Leech/Zen Weaver
 research remains useful, but adding those named rows is no longer the default
@@ -74,13 +76,13 @@ extending it.
 
 | Capability | Current evidence and limits |
 | --- | --- |
-| Generic discovery successor | Shared upgrade-one and removal1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; no release or live evidence |
+| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; no release or live evidence |
 | Preserved shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
 | Shared card mechanics | Add/remove/upgrade/transform, explicit min/max, confirmation, reference identity and exact effects; generic fixtures are not native all-event support |
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
 | New Aroma/Sapphire paths | Actual native/controller fixtures and reproducible compile-only builds; no installable release or live evidence |
 | Previous live paths | Ordinary Smith upgrade-one, Cheese add-two, Dense Vegetation continuation, one shop card purchase/close/map, and bounded potion/relic acquisition in predecessor releases |
-| Not implemented generically | Add/transform/multi-upgrade discovery, item children, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
+| Not implemented generically | Transform/multi-upgrade discovery, item children, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
 
 Events may require multiple cards; ordinary rest-site Smith upgrades exactly one.
 Do not collapse these requirements. No event has complete all-branch evidence;
@@ -89,6 +91,12 @@ proving runtime eligibility. Previous live results do not automatically validate
 newly composed releases. Strategic event choice and natural discovery are separate.
 
 ## Verification and frozen artifacts
+
+`generic_event_v3` is functionally accepted with independent source review,
+production-native integrations, pinned compile-only native builds and a frozen
+aggregate. Exact counts and identities are recorded in the
+[v3 ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md). All sixteen predecessor
+identities remain unchanged. This gate does not provide release or live evidence.
 
 `generic_event_v2` is functionally accepted:545 focused checks, including11
 production-native integrations, independent source review and exact pinned
@@ -120,8 +128,8 @@ The real EventSynchronizer dispatch lifecycle remains a live-validation gate.
   failure; the unchanged inert fixture passed separately with local permission.
   All 1,301 collected cases passed across those two runs, not one clean full run.
 
-Preserve this component and its thirteen predecessors, plus `generic_event_v1` and `generic_event_v2`:
-sixteen frozen successor trees total, plus the original 48-file bridge boundary. Do not edit frozen README,
+Preserve this component and its thirteen predecessors, plus `generic_event_v1`, `generic_event_v2` and `generic_event_v3`:
+seventeen frozen successor trees total, plus the original 48-file bridge boundary. Do not edit frozen README,
 source identity, contracts, API/schema or derivation files to implement the new
 direction. Use a reviewed successor. Temporary outputs may disappear; the ledger
 and repository identities are the retained reference, not permission to reconstruct
@@ -188,7 +196,7 @@ preserve user changes. Do not fetch, push, reset or merge older main for this ta
 - Pinned game: v0.107.1 / Steam build23811903 / macOS arm64; reference manifest
   `manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json`.
 - The accepted offline checker is
-  `bridge/Sts2AgentBridge/successors/generic_event_v2/check.py`; read its
+  `bridge/Sts2AgentBridge/successors/generic_event_v3/check.py`; read its
   CLI and use a fresh `/private/tmp` scratch directory. It builds snapshots,
   verifies the two compile-only reference hashes and never executes target code.
 - Coordinate a single SDK build lane across parallel agents; use offline package

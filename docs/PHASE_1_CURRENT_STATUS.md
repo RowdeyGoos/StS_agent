@@ -18,6 +18,21 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
+## Generic reward additions — 2026-09-07
+
+`generic_event_v3` adds shared reward-offer discovery and exact selected-original
+additions1..8, preserving upgrade-one and variable-count removal. Automatic mode
+submits at max; manual mode confirms at min..max. Offers bind exact result entries
+and effective card references, with native sorting supported. The actual frozen
+card session verifies selected originals were added while baseline cards retain
+identity, order, key and level. This does not certify all Add hooks/animations or
+unrelated HP/gold effects. See the [v3 ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md).
+
+There are seventeen frozen successors including v3. Transformation, multi-upgrade,
+optional/scrolling selectors, item children and custom/combat families remain open.
+No installable generic release or live campaign exists. The earlier checkpoints
+below retain their own narrower evidence boundaries.
+
 ## Generic removal and variable counts — 2026-09-07
 
 `generic_event_v2` preserves generic upgrade-one and adds shared deck removal

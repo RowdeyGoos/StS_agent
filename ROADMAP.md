@@ -10,13 +10,14 @@ the latter's authoritative progress summary is
 
 ## Active integration priority
 
-`generic_event_v2` now handles shared upgrade-one and deck removal with1..8
-selections and variable min/max. Both use authoritative native creation facts,
-exact asynchronous ownership and original references without event-name rows.
-See the [v2 ledger](docs/research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) for
-validation and limits. Continue by shared operation/count families, including
-generated adds, transformation and multi-upgrade. Prepare release composition
-and verify real EventSynchronizer context before claiming live generic support.
+`generic_event_v3` handles shared upgrade-one, removal1..8 and reward-card
+addition1..8 with variable limits. Reward offers support automatic submission at
+max or manual confirmation at min..max. Native request/creation facts, exact
+asynchronous ownership and original-card reconciliation replace event-name rules.
+See the [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) for
+validation and limits. Continue by shared families, including transformation,
+multi-upgrade and item children. Prepare release composition and verify real
+EventSynchronizer context before claiming live generic support.
 
 ### Preserved predecessor milestones
 

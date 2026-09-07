@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV3.Core</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GenericEventV3Contracts.cs" />
+    <Compile Include="GenericEventV3NativeContracts.cs" />
+    <Compile Include="GenericEventV3Session.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Contracts.cs" Link="Frozen/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Session.cs" Link="Frozen/CardSelectionV1Session.cs" />
+  </ItemGroup>
+</Project>
