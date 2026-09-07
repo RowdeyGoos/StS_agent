@@ -5,9 +5,32 @@ attempts and cleanup remain in their linked acceptance ledgers and Git history.
 The first live failure exposed a verified option-button lifetime mismatch.
 The lifecycle correction and v2 release are accepted. Its live test progressed
 beyond the immediate stop but exhausted pending reads before child admission;
-full owned cleanup passed.
+full owned cleanup passed. The diagnostic v3 release is now accepted, frozen and
+installed for the next fresh manual-launch campaign.
 
-## Current implementation update
+## Current diagnostic release — read first
+
+`generic_event_release_v3` is accepted and frozen as successor21 and is installed
+awaiting manual launch. Read its [contract](PHASE_1_GENERIC_EVENT_RELEASE_V3_CONTRACT.md)
+and [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md) first.
+It adds finite reason codes to existing native checks and carries their cached
+history through the exact HTTP response header into last_response_diagnostic.
+It preserves gameplay predicates, frozen core/wire/host, hooks and lifecycle
+binding. Both complete aggregates passed, including instrumented745 assertions,
+168 diagnostic assertions,373 runtime assertions,17 transport tests,15 socket
+scenarios and73 binary verifier checks. The74-file source manifest is frozen.
+
+Current campaign GENERIC-EVENT-V3-SMOKE-V1, installed state SHA256:
+`c3e2d3f1990e9e1c7210d70de0213db03ad44aceb706e5ec2dd44f4bac27de6f`.
+Game stopped,port closed,429 base files unchanged,2 exact overlay files and protected
+metadata verified. No live invocation yet. Tell user to launch manually and prepare
+fresh Profile3,single-player,Room Full of Cheese initial options,Gorge untouched,
+no selector/console/map/popup. Verify visible state before exactly one v3 client
+invocation, then normal quit and this release's stopped/quarantine/purge/base checks.
+The v2 blocking predicate is still unknown; fixed diagnostics are fixture-proven,
+not a demonstrated in-game repair. Both prior generic campaigns remain closed.
+
+## Preserved v2 implementation and live result
 
 `generic_event_release_v2` is accepted and frozen as the twentieth successor.
 Read its [contract](PHASE_1_GENERIC_EVENT_RELEASE_V2_CONTRACT.md) and
@@ -151,7 +174,8 @@ The real EventSynchronizer dispatch lifecycle remains a live-validation gate.
 
 Preserve this component and its thirteen predecessors, plus `generic_event_v1`, `generic_event_v2` and `generic_event_v3`:
 seventeen historical functional successors at that checkpoint; lifecycle and both
-release successors bring the current total to twenty, plus the original48-file bridge boundary. Do not edit frozen README,
+release successors brought that total to twenty; diagnostic release v3 brings the
+current total to21, plus the original48-file bridge boundary. Do not edit frozen README,
 source identity, contracts, API/schema or derivation files to implement the new
 direction. Use a reviewed successor. Temporary outputs may disappear; the ledger
 and repository identities are the retained reference, not permission to reconstruct
@@ -179,11 +203,11 @@ static questions. Do not rerun their closed inspection invocations by default.
 
 ## Operational state and user preferences
 
-GENERIC-EVENT-V2-SMOKE-V1 completed one failed invocation and full owned cleanup.
-Game stopped,port closed,base verified,overlay absent. No active campaign or
-credential remains. Both old state identities are historical and must not be reused.
-Diagnose pending binding versus surface readiness offline and add bounded fixed
-reason codes in a reviewed successor before another fresh release/campaign.
+GENERIC-EVENT-V3-SMOKE-V1 is installed and awaiting manual launch as described above.
+No live invocation has occurred; current cleanup is pending after the new campaign.
+V1 and v2 completed failed invocations and full owned cleanup. Their old state
+identities are historical and must not be reused. Preserve all21 frozen successors.
+Use the v3 ledger and tools for the next bounded invocation and cleanup.
 
 The user has authorized continued event development, parallel work where useful,
 and bounded live campaigns when needed; that explicit session authority persists.
@@ -196,8 +220,8 @@ prepare the intended interaction.
 Profile 3 is the established live test profile. The user waived repeated unmodded
 launch checks; retain other required quit/quarantine/purge/base/closed checks.
 Use the appropriate current release's tools and ledger, not historical state
-hashes or credentials. The v2 generic event release is cleaned up; named event-card
-functional components remain separate.
+hashes or credentials. The v3 diagnostic release is installed awaiting its first invocation; named
+event-card functional components remain separate.
 
 Use supported computer-use tools. The user offered
 `steam://rungameid/2868840`, but the browser route was previously rejected by its

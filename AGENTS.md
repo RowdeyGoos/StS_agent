@@ -28,16 +28,16 @@ as tests. Preserve all seventeen frozen successor trees, their contracts and
 identities, plus the original bridge; new behavior belongs in a reviewed successor.
 
 For the current live test, read the
-[generic release v2 contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V2_CONTRACT.md) and
-[v2 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md).
-The accepted release is the twentieth frozen successor. Its live attempt waited
-through258reads then stopped before child admission; full cleanup passed. Diagnose
-pending binding versus surface readiness with bounded reason codes before another
-fresh campaign. It includes the accepted
-[lifecycle correction](docs/PHASE_1_GENERIC_EVENT_LIFECYCLE_V1_CONTRACT.md), the
-nineteenth successor. Preserve all twenty source identities and use only the v2
-ledger's evidence and cleanup tools. Both failed campaigns were purged; their
-state identities are historical and must not be reused.
+[generic release v3 diagnostic contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V3_CONTRACT.md)
+and [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md).
+The release is accepted and frozen as successor21 and installed awaiting manual
+launch at fresh Profile3 Cheese initial options, Gorge untouched. It reports
+finite last-capture diagnostics without changing gameplay predicates or frozen
+core/wire/host semantics. The v2 timeout cause is still unknown; only fixtures
+have distinguished pending binding and selector preparation. Preserve all21
+source identities. Use only v3 tools and its ledger's current installed state for
+one invocation and subsequent cleanup. Both prior failed campaigns were purged;
+their state identities are historical and must not be reused.
 
 ## Read This First
 

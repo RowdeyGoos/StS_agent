@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.GenericEventV3.Transport</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.GenericEventReleaseV3</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" Link="kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" Link="kernel/MonotonicTokenBucket.cs" />
+    <Compile Include="OwnedByteFrameQueue.cs" />
+    <Compile Include="GenericEventTransportConfiguration.cs" />
+    <Compile Include="GenericEventTransportContracts.cs" />
+    <Compile Include="GenericEventDiagnosticCode.cs" />
+    <Compile Include="GenericEventDiagnosticCodec.cs" />
+    <Compile Include="GenericEventTransportProtocol.cs" />
+    <Compile Include="GenericEventTransportRuntime.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../generic_event_v3/wire/GenericEventV3.Wire.csproj" />
+  </ItemGroup>
+</Project>
