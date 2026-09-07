@@ -2,7 +2,8 @@
 
 Current generic-event live testing uses the separately frozen
 [generic event release](successors/generic_event_release_v1/README.md), now
-validated and installed awaiting manual launch. Its
+validated with one live attempt that stopped before child admission and full
+cleanup completed. Its
 [acceptance ledger](../../docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md)
 owns current state and cleanup. Earlier bridge releases below retain their own
 historical evidence and contracts.

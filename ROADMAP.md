@@ -16,9 +16,9 @@ max or manual confirmation at min..max. Native request/creation facts, exact
 asynchronous ownership and original-card reconciliation replace event-name rules.
 See the [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) for
 validation and limits. Continue by shared families, including transformation,
-multi-upgrade and item children. The accepted generic release is now installed for a bounded live test. Verify
-real EventSynchronizer context and exact generic card effects, then clean up the
-owned campaign before claiming live support. See the
+multi-upgrade and item children. The accepted generic release opened the Cheese chooser live, then stopped before
+child admission. Full cleanup passed. Diagnose the capture/admission/construction
+boundary with bounded reason codes and inert fixtures before a fresh live test. See the
 [release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
 
 ### Preserved predecessor milestones

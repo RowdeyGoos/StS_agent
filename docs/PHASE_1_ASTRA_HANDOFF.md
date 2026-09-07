@@ -2,22 +2,22 @@
 
 Updated 2026-09-07 after extending the requested generic handler. Historical
 attempts and cleanup remain in their linked acceptance ledgers and Git history.
-The generic release is validated and installed for the user-authorized live test.
-No game launch or controller invocation has occurred.
+The generic release passed offline validation; its first live attempt stopped
+before card-child admission. Normal quit and full owned cleanup passed.
 
 ## Current implementation update
 
 `generic_event_release_v1` is the accepted, frozen installable composition of v3.
 Read its [contract](PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
 [acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md) first.
-Offline lifecycle/native/socket/production verification and reproducibility gates
-passed. The exact package is installed; the game is stopped, port closed, base
-unchanged and installed metadata verified. The next step is manual game launch:
-Profile3, single-player, Room Full of Cheese initial choices, Gorge untouched,
-no selector/console/map/popup. Verify the visible initial state before one client
-invocation. Current state identity and later cleanup belong to the release ledger.
-Actual EventSynchronizer ownership and generic gameplay success remain live gates.
-
+The first live invocation accepted Gorge and visibly opened the eight-card
+chooser, then stopped with unsupported_state on its second read: one parent
+attempt/accept, zero reconciliation, zero child episodes/actions, effects unverified.
+No retry occurred. Normal quit, code-first quarantine, exact purge, base verification
+and stopped/closed checks passed. No campaign is active and no game setup is needed.
+Next diagnose the capture/admission/child-construction boundary in a reviewed
+successor with bounded reason codes; the current result does not identify a cause.
+Actual EventSynchronizer ownership loss remains a hypothesis, not a finding.
 
 `generic_event_v3` extends shared discovery to reward-card additions1..8 with
 variable limits, preserving upgrade-one and removal1..8. Read its
@@ -88,7 +88,7 @@ extending it.
 
 | Capability | Current evidence and limits |
 | --- | --- |
-| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; accepted release installed, live result pending |
+| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; accepted release; live parent dispatch passed, child admission failed |
 | Preserved shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
 | Shared card mechanics | Add/remove/upgrade/transform, explicit min/max, confirmation, reference identity and exact effects; generic fixtures are not native all-event support |
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
@@ -169,11 +169,11 @@ static questions. Do not rerun their closed inspection invocations by default.
 
 ## Operational state and user preferences
 
-GENERIC-EVENT-V1-SMOKE-V1 is installed and awaits manual launch and the initial
-Cheese event. Post-install base/overlay, stopped/closed and protected metadata
-checks passed. No controller invocation has occurred. Preserve installed ownership;
-cleanup is pending after the bounded campaign. Use the new release ledger for the
-current installed state hash and quarantine/purge sequence.
+GENERIC-EVENT-V1-SMOKE-V1 completed one failed controller invocation and full
+owned cleanup. The game is stopped, port closed, base verified and overlay absent.
+No credential or active campaign remains. Do not reuse historical state hashes
+or invoke the frozen client again. Diagnose offline before preparing another
+reviewed successor and fresh bounded campaign.
 
 The user has authorized continued event development, parallel work where useful,
 and bounded live campaigns when needed; that explicit session authority persists.
@@ -186,7 +186,7 @@ prepare the intended interaction.
 Profile 3 is the established live test profile. The user waived repeated unmodded
 launch checks; retain other required quit/quarantine/purge/base/closed checks.
 Use the appropriate current release's tools and ledger, not historical state
-hashes or credentials. The generic event release is installed; named event-card
+hashes or credentials. The generic event release is cleaned up; named event-card
 functional components remain separate.
 
 Use supported computer-use tools. The user offered

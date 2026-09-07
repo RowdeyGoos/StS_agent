@@ -30,8 +30,9 @@ identities, plus the original bridge; new behavior belongs in a reviewed success
 For the current live test, read the
 [generic release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
 [release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
-The accepted release is the eighteenth frozen successor and is installed awaiting
-manual launch; use its current state identity and cleanup tools. Preserve its
+The accepted release is the eighteenth frozen successor. Its first live attempt
+stopped before child admission; full cleanup passed. Diagnose offline before a
+fresh reviewed campaign; do not reuse historical state hashes. Preserve its
 61-file source identity as well as all seventeen predecessors.
 
 ## Read This First

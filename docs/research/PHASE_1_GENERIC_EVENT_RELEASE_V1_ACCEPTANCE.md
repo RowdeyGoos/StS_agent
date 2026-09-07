@@ -105,3 +105,40 @@ profile/save/Cloud access occurred. The bridge is now installed awaiting manual
 launch and the user-prepared initial Cheese event described in the contract.
 Live success remains unproven. Cleanup is pending the campaign, using this
 release's quarantine/purge tools and current state hash, never predecessor tools.
+
+## First live attempt and completed cleanup — 2026-09-07
+
+The user reported ready after the requested manual launch/setup. Supported
+computer-use observation verified Room Full of Cheese at its initial choices,
+Gorge visible and untouched, no selector/console/map/popup. The running-game
+preflight passed. Exactly one frozen client invocation used the installed state
+identity above; it exited4 with this sanitized result:
+
+```json
+{"schema_version":1,"status":"failed","parent_attempted":1,"parent_accepted":1,"parent_reconciled":0,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":1,"reads":2,"effects":"unverified","code":"unsupported_state"}
+```
+
+Post-invocation UI observation showed the eight-card chooser open, with its
+choose-two prompt and no selected cards. No second client invocation, retry,
+manual selection or raw bridge-observation capture occurred. The result proves
+installed startup, authenticated transport and accepted parent dispatch reaching
+the chooser; it does not prove child admission, card effects, parent reconciliation
+or map handoff. Actual failure cause remains unknown. The second read stopped
+before a child episode was established. Native capture/admission rejection or
+child construction are investigation targets; EventSynchronizer ownership loss
+is a hypothesis, not an established diagnosis. A reviewed successor should expose
+bounded fixed reason codes and reproduce this boundary with inert fixtures before
+another live test. Preserve the accepted release and all predecessors.
+
+Normal Cmd-Q quit succeeded; the UI tool reported the app quit. The independent
+wait-stopped check passed with port closed. Code-first quarantine passed with
+state SHA256
+`3197c37c2c1347fbe2aba95d396ae05992a7634515412adb1e38d116dfc5c905`.
+Exact owned purge passed,phase absent,4generated files removed. Final base check
+passed:429files,projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+zero overlays. Final require-stopped passed with3process/2port samples. No active
+campaign or cleanup remains; historical state hashes above must not be reused.
+No profile/save filesystem or Cloud access occurred. The game may have saved its
+normal test progression; no save restoration was attempted. Repeated unmodded
+launch remains waived. Temporary release artifacts remain available for audit.
