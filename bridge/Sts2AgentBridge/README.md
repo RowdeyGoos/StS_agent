@@ -1,5 +1,13 @@
 # STS2 Agent Bridge (`R0i`)
 
+Current generic-event live testing uses the separately frozen
+[generic event release](successors/generic_event_release_v1/README.md), now
+validated and installed awaiting manual launch. Its
+[acceptance ledger](../../docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md)
+owns current state and cleanup. Earlier bridge releases below retain their own
+historical evidence and contracts.
+
+
 ## Current successor work — 2026-09-06
 
 The original 0.8.0 guide below describes its own bounded component. Current

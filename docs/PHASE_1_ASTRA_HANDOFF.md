@@ -2,10 +2,22 @@
 
 Updated 2026-09-07 after extending the requested generic handler. Historical
 attempts and cleanup remain in their linked acceptance ledgers and Git history.
-This update includes offline implementation and validation; no live campaign
-was started.
+The generic release is validated and installed for the user-authorized live test.
+No game launch or controller invocation has occurred.
 
 ## Current implementation update
+
+`generic_event_release_v1` is the accepted, frozen installable composition of v3.
+Read its [contract](PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md) first.
+Offline lifecycle/native/socket/production verification and reproducibility gates
+passed. The exact package is installed; the game is stopped, port closed, base
+unchanged and installed metadata verified. The next step is manual game launch:
+Profile3, single-player, Room Full of Cheese initial choices, Gorge untouched,
+no selector/console/map/popup. Verify the visible initial state before one client
+invocation. Current state identity and later cleanup belong to the release ledger.
+Actual EventSynchronizer ownership and generic gameplay success remain live gates.
+
 
 `generic_event_v3` extends shared discovery to reward-card additions1..8 with
 variable limits, preserving upgrade-one and removal1..8. Read its
@@ -21,8 +33,8 @@ partial additions are supported. Event names are tests, never admission rows.
 The scope remains bounded: these card families, ordinary pages and Proceed.
 Transform, multi-upgrade, item children, optional/scroll/custom/combat families
 remain open. Reward completion does not certify all Add hooks/animations or
-unrelated effects. The instrumentation has no installable release or live
-validation. Actual EventSynchronizer context preservation is still a live gate.
+unrelated effects. The new release composes this instrumentation; live
+validation remains pending. Actual EventSynchronizer context preservation is still a live gate.
 The same23cf worktree and integration branch remain authoritative.
 
 ## Start here
@@ -76,7 +88,7 @@ extending it.
 
 | Capability | Current evidence and limits |
 | --- | --- |
-| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; no release or live evidence |
+| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; accepted release installed, live result pending |
 | Preserved shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
 | Shared card mechanics | Add/remove/upgrade/transform, explicit min/max, confirmation, reference identity and exact effects; generic fixtures are not native all-event support |
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
@@ -157,14 +169,15 @@ static questions. Do not rerun their closed inspection invocations by default.
 
 ## Operational state and user preferences
 
-No campaign was left active and no cleanup was pending at the last recorded
-closure. This implementation performed no fresh game/process/install check;
-verify current state before a later live operation. The latest development was
-offline only. No game setup is needed for the next architecture work.
+GENERIC-EVENT-V1-SMOKE-V1 is installed and awaits manual launch and the initial
+Cheese event. Post-install base/overlay, stopped/closed and protected metadata
+checks passed. No controller invocation has occurred. Preserve installed ownership;
+cleanup is pending after the bounded campaign. Use the new release ledger for the
+current installed state hash and quarantine/purge sequence.
 
 The user has authorized continued event development, parallel work where useful,
 and bounded live campaigns when needed; that explicit session authority persists.
-This implementation starts none. Prepare a concrete campaign scope and
+The release contract supplies the current bounded campaign scope. Continue to
 pass the appropriate release/preflight gates before using that authority; do not
 inherit closed state or treat it as permission for unrelated capabilities. Ask
 for additional authorization only if an actual new scope requires it. Give the
@@ -173,7 +186,8 @@ prepare the intended interaction.
 Profile 3 is the established live test profile. The user waived repeated unmodded
 launch checks; retain other required quit/quarantine/purge/base/closed checks.
 Use the appropriate current release's tools and ledger, not historical state
-hashes or credentials. No new event-card or generic-event release exists yet.
+hashes or credentials. The generic event release is installed; named event-card
+functional components remain separate.
 
 Use supported computer-use tools. The user offered
 `steam://rungameid/2868840`, but the browser route was previously rejected by its

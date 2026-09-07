@@ -18,6 +18,20 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
+## Generic release installed — 2026-09-07
+
+`generic_event_release_v1` is accepted and frozen as the eighteenth successor.
+It composes the actual v3 generic card families through authenticated loopback
+transport and a Godot owner-frame lifecycle, with pinned game-Harmony binding
+and retained cleanup on failure. The complete offline and independent verifier
+gates passed; production builds are byte-identical. The exact package is installed
+for GENERIC-EVENT-V1-SMOKE-V1. Post-install base/overlay, stopped/closed and client
+metadata checks passed. Await manual launch and initial Profile3 Cheese setup;
+no controller invocation or new live result exists. Cleanup follows the bounded
+campaign. See the [release ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md)
+for identities, counts and current operational state. Earlier no-release/no-active-
+campaign statements below are historical and superseded by this entry.
+
 ## Generic reward additions — 2026-09-07
 
 `generic_event_v3` adds shared reward-offer discovery and exact selected-original

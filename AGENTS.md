@@ -27,6 +27,13 @@ families remain open. Expand by authoritative shared family, using event names
 as tests. Preserve all seventeen frozen successor trees, their contracts and
 identities, plus the original bridge; new behavior belongs in a reviewed successor.
 
+For the current live test, read the
+[generic release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
+[release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
+The accepted release is the eighteenth frozen successor and is installed awaiting
+manual launch; use its current state identity and cleanup tools. Preserve its
+61-file source identity as well as all seventeen predecessors.
+
 ## Read This First
 
 When starting a fresh session, read in this order:

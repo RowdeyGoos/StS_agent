@@ -2264,3 +2264,17 @@ Preserve all sixteen predecessors and their contracts. Generic upgrade/removal
 continue unchanged; event names supply test coverage, never admission semantics.
 Release composition and real EventSynchronizer context preservation remain separate
 live gates. See the [v3 contract](docs/PHASE_1_GENERIC_EVENT_V3_CONTRACT.md).
+
+## 2026-09-07 — Compose generic discovery with the game-owned Harmony binding
+
+The generic event release links the frozen v3 parent/card/wire/native semantics
+into authenticated loopback transport and a Godot owner-frame lifecycle. Child
+lineage crosses the transport unchanged; only parent map handoff completes the
+campaign. The first-legal controller is a conformance policy, not strategic play.
+
+Reference the pinned game-owned Harmony library instead of embedding a second
+copy. Verify actual loaded path, hash, assembly identity, MVID and load context
+before hook creation. Failed hook construction and unpatch exceptions retain
+owner-frame cleanup for retry; stop transport before removing native hooks.
+See the [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
