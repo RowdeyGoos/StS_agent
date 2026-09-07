@@ -2,8 +2,8 @@
 
 Current generic-event live testing uses the separately frozen
 [generic event release v2](successors/generic_event_release_v2/README.md), with the
-validated option-button lifecycle correction and fresh installation awaiting
-manual launch. Its
+validated option-button lifecycle correction. Its live test exhausted pending
+reads before child admission; full cleanup passed. Its
 [acceptance ledger](../../docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md)
 owns current state and cleanup. Earlier bridge releases below retain their own
 historical evidence and contracts.

@@ -3,8 +3,9 @@
 Updated 2026-09-07 after extending the requested generic handler. Historical
 attempts and cleanup remain in their linked acceptance ledgers and Git history.
 The first live failure exposed a verified option-button lifetime mismatch.
-The lifecycle correction and fresh v2 release are accepted; v2 is installed
-awaiting manual launch and a fresh initial Cheese event.
+The lifecycle correction and v2 release are accepted. Its live test progressed
+beyond the immediate stop but exhausted pending reads before child admission;
+full owned cleanup passed.
 
 ## Current implementation update
 
@@ -18,14 +19,14 @@ Original-source fixtures reproduce the unsupported read;745 corrected native
 assertions and73 cross-language cases (23 native) passed, preserving all550 old
 assertions. Release verification,63 verifier checks and frozen aggregate passed.
 
-The exact v2 package is installed, base unchanged, game stopped and port closed.
-Next: manual launch,Profile3,single-player,fresh Room Full of Cheese initial
-choices,Gorge untouched,no selector/console/map/popup. Verify visible initial state
-before one v2 client invocation. Current state identity and cleanup are in the
-v2 ledger. The earlier open chooser cannot be adopted. No v2 live result exists;
-actual EventSynchronizer context and successful generic effects remain live gates.
-The prior v1 attempt accepted Gorge/opened the chooser then stopped; its cleanup
-is complete and its immutable evidence remains in its own ledger.
+The v2 live invocation accepted Gorge/opened the chooser, then stopped after258
+reads with zero child episodes/actions and unverified effects. V1 stopped on read2.
+The specific waiting predicate remains unknown; binding/task readiness and selector
+preparation must be distinguished with bounded fixed reason codes before another
+live campaign. Do not infer geometry or async ownership as the measured cause.
+Normal quit,code-first quarantine,exact purge,429-file base and stopped/closed
+checks passed. No campaign is active and no game setup is needed. The v2 ledger
+owns the exact result and cleanup; neither campaign may be retried or adopted.
 
 `generic_event_v3` extends shared discovery to reward-card additions1..8 with
 variable limits, preserving upgrade-one and removal1..8. Read its
@@ -96,7 +97,7 @@ extending it.
 
 | Capability | Current evidence and limits |
 | --- | --- |
-| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; lifecycle mismatch corrected offline; v2 installed, live success pending |
+| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; lifecycle mismatch corrected; v2 live waits then stops before child admission |
 | Preserved shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
 | Shared card mechanics | Add/remove/upgrade/transform, explicit min/max, confirmation, reference identity and exact effects; generic fixtures are not native all-event support |
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
@@ -178,11 +179,11 @@ static questions. Do not rerun their closed inspection invocations by default.
 
 ## Operational state and user preferences
 
-GENERIC-EVENT-V2-SMOKE-V1 is installed awaiting manual launch and a fresh initial
-Cheese event. Post-install base/overlay, stopped/closed and protected metadata
-checks passed. No v2 client invocation has occurred; cleanup is pending after the
-bounded campaign. Use the v2 ledger's current state hash and v2 operational tools.
-The prior v1 campaign is absent and must not be reused.
+GENERIC-EVENT-V2-SMOKE-V1 completed one failed invocation and full owned cleanup.
+Game stopped,port closed,base verified,overlay absent. No active campaign or
+credential remains. Both old state identities are historical and must not be reused.
+Diagnose pending binding versus surface readiness offline and add bounded fixed
+reason codes in a reviewed successor before another fresh release/campaign.
 
 The user has authorized continued event development, parallel work where useful,
 and bounded live campaigns when needed; that explicit session authority persists.
@@ -195,7 +196,7 @@ prepare the intended interaction.
 Profile 3 is the established live test profile. The user waived repeated unmodded
 launch checks; retain other required quit/quarantine/purge/base/closed checks.
 Use the appropriate current release's tools and ledger, not historical state
-hashes or credentials. The v2 generic event release is installed; named event-card
+hashes or credentials. The v2 generic event release is cleaned up; named event-card
 functional components remain separate.
 
 Use supported computer-use tools. The user offered

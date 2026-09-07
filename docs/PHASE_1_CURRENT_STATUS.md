@@ -18,22 +18,24 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
-## Corrected generic release installed — 2026-09-07
+## Corrected generic release live result and cleanup — 2026-09-07
 
 The accepted lifecycle correction separates disposable option buttons from retained
-parent receipts. Retained game metadata and original-source regression establish
-the mismatch;745 corrected native assertions and73 integration cases including23
-native-to-Python paths passed. `generic_event_lifecycle_v1` is frozen as successor19.
+parent receipts; the original-source reproduction and745 native assertions passed.
+`generic_event_lifecycle_v1` and `generic_event_release_v2` are frozen successors19/20.
+V2 passed its release gates and was tested once live on fresh Cheese choices.
+It accepted Gorge and opened the chooser, then exhausted pending reads:258reads,
+1parent attempt/accept,0reconciled,0child episodes/actions,effects unverified,
+unsupported_state. V1 had stopped on read2; the earlier immediate failure no longer
+occurred, but no successful child or effects are demonstrated.
 
-`generic_event_release_v2` packages the exact four corrected native sources with
-unchanged v3 wire and authenticated owner-frame transport. Independent production
-review,63 verifier checks and candidate/frozen aggregate gates passed. The release
-is successor20 and is installed for GENERIC-EVENT-V2-SMOKE-V1. Post-install base,
-overlay,protected metadata and stopped/closed checks passed. Await manual launch
-and a fresh initial Profile3 Cheese event; no v2 client invocation or live success
-exists. Cleanup follows the bounded campaign. The
-[v2 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md) owns current
-state and overrides the historical no-active-campaign statements below.
+The precise waiting predicate remains unknown. Add bounded fixed reason codes to
+distinguish pending binding/task readiness from selector preparation in a reviewed
+successor; reproduce identified mismatches before a fresh live test. Normal quit,
+code-first quarantine,exact purge,429-file base and stopped/closed checks passed.
+No campaign or cleanup remains. See the
+[v2 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md). Historical
+installation statements below are superseded; no game setup is needed now.
 
 ## Generic release live attempt and cleanup — 2026-09-07
 

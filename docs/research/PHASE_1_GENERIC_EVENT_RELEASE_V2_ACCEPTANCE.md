@@ -110,3 +110,41 @@ proven offline; its effect on the original live failure remains a live gate.
 Cleanup is pending after the campaign: normal quit, stopped/closed, this release's
 code-first quarantine and exact purge using current state lineage, then clean base.
 Never use predecessor tools, hashes or credentials. Repeated unmodded launch waived.
+
+## First v2 live attempt and completed cleanup — 2026-09-07
+
+The user reported ready. Supported computer-use observation verified fresh initial
+Room Full of Cheese choices with Gorge untouched and no selector/console/map/popup.
+The running-game check passed. Exactly one v2 client invocation used the installed
+state identity above; it exited4 with this sanitized result:
+
+```json
+{"schema_version":1,"status":"failed","parent_attempted":1,"parent_accepted":1,"parent_reconciled":0,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":1,"reads":258,"effects":"unverified","code":"unsupported_state"}
+```
+
+UI observation during the invocation showed the eight-card chooser open with the
+choose-two prompt and no selected cards. No second invocation, manual selection,
+retry or raw bridge-response capture occurred. This differs from v1's immediate
+unsupported second read: v2 waited through the parent pending-read allowance
+(MaximumPendingReads256) before stopping. No child episode was established.
+This is evidence of progress beyond the earlier immediate stop, not successful
+child admission, card effects or event completion. The specific waiting predicate
+was not reported. Incomplete captured binding/task readiness and native selector
+surface readiness remain candidates; grid geometry is only a hypothesis.
+
+Next increment should expose bounded fixed diagnostic reason codes for pending
+binding versus selector preparation before another test, and reproduce any
+identified mismatch with inert fixtures. Do not relax checks, extend the wait
+budget without evidence, retry the closed client, or infer the reason solely from
+the visually open chooser. Preserve all twenty accepted source identities.
+
+Normal Cmd-Q quit succeeded (UI tool reported app quit). Wait-stopped/closed passed.
+Code-first quarantine passed with state SHA256
+`fa3acf00a2af9bab81adc4cc89776d424cf4e1ee454d0830baa3e40319c64ec0`.
+Exact owned purge passed,phase absent,4generated files removed. Final base check
+passed429files,zero overlays,projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Final require-stopped passed with3process/2port samples. No active campaign or
+cleanup remains. Do not reuse historical state hashes. No profile/save filesystem
+or Cloud access occurred; no normal game-save progression was restored. Repeated
+unmodded launch remains waived. Temporary release artifacts remain for audit.

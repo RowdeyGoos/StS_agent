@@ -30,11 +30,14 @@ identities, plus the original bridge; new behavior belongs in a reviewed success
 For the current live test, read the
 [generic release v2 contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V2_CONTRACT.md) and
 [v2 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md).
-The accepted release is the twentieth frozen successor and is installed awaiting
-manual launch and a fresh initial Cheese event. It includes the accepted
+The accepted release is the twentieth frozen successor. Its live attempt waited
+through258reads then stopped before child admission; full cleanup passed. Diagnose
+pending binding versus surface readiness with bounded reason codes before another
+fresh campaign. It includes the accepted
 [lifecycle correction](docs/PHASE_1_GENERIC_EVENT_LIFECYCLE_V1_CONTRACT.md), the
 nineteenth successor. Preserve all twenty source identities and use only the v2
-ledger's current state and cleanup tools. The prior failed campaign was purged.
+ledger's evidence and cleanup tools. Both failed campaigns were purged; their
+state identities are historical and must not be reused.
 
 ## Read This First
 
