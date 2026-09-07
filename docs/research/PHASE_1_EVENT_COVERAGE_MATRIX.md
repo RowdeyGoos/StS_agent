@@ -12,6 +12,15 @@ Vegetation ordinary continuation and Room Full of Cheese/Gorge add-two. Their
 remaining branches stay open. The new shared orchestrator has separate functional
 fixtures; predecessor live results do not automatically prove its composition live.
 
+## Generic removal family — 2026-09-07
+
+`generic_event_v2` adds shared native removal1..8 with variable limits, explicit
+preview below max and automatic preview at max. Actual preview-original mapping
+is established by a bounded metadata check; inert native-to-Python fixtures use
+unrelated and held-out event subclasses. The exact
+[v2 evidence](PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) does not establish live
+eligibility or complete branches for named events.
+
 ## Generic family implementation
 
 `generic_event_v1` adds native discovery of standard upgrade-one interactions
@@ -40,7 +49,7 @@ catalog. Dedicated handlers remain appropriate for different custom surfaces.
 | Item reward child | Frozen item handler; sequential composition in fixtures | Event-specific live composition and broader reward forms |
 | Add cards | Cheese/Gorge exact two-of-eight native/live; shared composition in fixtures | Other callers, domains and cardinalities |
 | Upgrade cards | Generic upgrade-one shared discovery with native-to-Python inert fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Validate real synchronizer context in a prepared release; multiple-card discovery and reconciliation |
-| Remove cards | Generic pure card core and shared selector facts | Exact event callers, selection rules and removal effect witnesses |
+| Remove cards | Generic native discovery, variable1..8 preview confirmation and exact remaining-deck reconciliation in inert fixtures | Prepared release and live validation; optional/scrolling variants |
 | Transform cards | Generic pure card core and shared selector facts | Exact callers, replacement/preview rules and result witnesses |
 | Optional selection and repeated choices | Explicitly unsupported by this increment | New reviewed bounds/confirmation and loop identity policies |
 | Embedded event combat | Metadata/shared API facts only | Combat handoff, event resumption and exact ownership |

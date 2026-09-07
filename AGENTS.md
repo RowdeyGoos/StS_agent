@@ -19,11 +19,12 @@ For event coverage or a session handoff, begin with
 [generic event handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md), then
 follow the reading order below. The active integration checkout is the existing
 23cf worktree named in the handoff; local main is older. The new
-[generic successor contract](docs/PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) and
-[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md) describe
-shared upgrade-one discovery without named caller entries. Other interaction
+[generic successor contract](docs/PHASE_1_GENERIC_EVENT_V2_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) describe
+shared upgrade-one and removal discovery with variable counts and no named
+caller entries. Other interaction
 families remain open. Expand by authoritative shared family, using event names
-as tests. Preserve all fifteen frozen successor trees, their contracts and
+as tests. Preserve all sixteen frozen successor trees, their contracts and
 identities, plus the original bridge; new behavior belongs in a reviewed successor.
 
 ## Read This First

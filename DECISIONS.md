@@ -2226,3 +2226,19 @@ The fourteen predecessors remain frozen. This functional component does not
 broaden an existing release or install new instrumentation into the game. See the
 [new contract](docs/PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md).
+
+## 2026-09-07 — Carry native admissions through variable event selections
+
+The v2 successor passes an immutable native operation/count/mode/domain admission
+through the parent into exact child creation. Standard removal supports1..8 cards
+and variable limits using shared command/creation hooks, with no event-name rules.
+Native preview holders preserve original-card references; membership remains exact
+when preview clears grid highlights. The frozen card session still owns selection
+and deck-effect reconciliation. Click order and result-set order are independent.
+
+Keep hook callbacks on their owner thread before reading Godot context, snapshot
+task results within admitted max+1, and stop before confirmation on incomplete or
+foreign preview membership. All fifteen predecessors remain unchanged. This adds
+functional family support; actual EventSynchronizer context preservation, release
+composition and live testing remain separate. See the
+[v2 contract](docs/PHASE_1_GENERIC_EVENT_V2_CONTRACT.md).

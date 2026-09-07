@@ -5,6 +5,16 @@ support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
 accepted component, source identity, protocol or live release.
 
+## Removal and variable-count checkpoint — 2026-09-07
+
+`generic_event_v2` retains upgrade-one and extends shared discovery to removal
+with1..8 cards and variable limits. It replaces the parent's hardcoded child
+semantics with an immutable native admission and verifies actual removal-preview
+originals, task sets and remaining-deck identity. See its
+[contract](PHASE_1_GENERIC_EVENT_V2_CONTRACT.md) and
+[ledger](research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md). Expand by remaining
+shared families; packaging and live validation remain separate work.
+
 ## Implementation checkpoint
 
 `generic_event_v1` implements the first complete standard interaction path:

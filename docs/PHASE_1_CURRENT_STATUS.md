@@ -1,6 +1,6 @@
 # Phase 1 Current Integration Status
 
-- **Status date:** 2026-09-06
+- **Status date:** 2026-09-07
 - **Fresh-session handoff:** [Astra handoff](PHASE_1_ASTRA_HANDOFF.md)
 - **Active bridge milestone:** `R0i`
 - **Bridge version:** `0.8.0`
@@ -17,6 +17,22 @@ game, and what remains open. Exact requests, approvals, manifests, and
 historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
+
+## Generic removal and variable counts — 2026-09-07
+
+`generic_event_v2` preserves generic upgrade-one and adds shared deck removal
+with1..8 selections and variable limits, without event-name registration. Native
+creation supplies an immutable operation/count/mode/domain description. Actual
+preview holders supply exact original references even after native highlights
+clear; request/selector/parent tasks and the frozen card session establish exact
+completion. Reverse selection order, explicit preview below max and automatic
+preview at max are supported. See the
+[v2 ledger](research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) for exact evidence.
+
+There are sixteen frozen successors including v2. Generated adds, transform,
+multi-upgrade, optional/scrolling and custom/combat families remain open. Release
+composition and real EventSynchronizer lifecycle validation are separate gates.
+The earlier checkpoints below preserve their own narrower evidence boundaries.
 
 ## Generic discovery implementation — 2026-09-06
 

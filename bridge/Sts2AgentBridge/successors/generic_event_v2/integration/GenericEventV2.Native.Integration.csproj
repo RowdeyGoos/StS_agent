@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>GenericEventV2.Native.Integration</AssemblyName>
+    <StartupObject>GenericEventV2NativeIntegrationHost</StartupObject>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GenericEventV2NativeIntegrationHost.cs" />
+    <Compile Include="../native_tests/Program.cs" Link="Inert/Program.cs" />
+    <Compile Include="../native_tests/TargetStubs.cs" Link="Inert/TargetStubs.cs" />
+    <Compile Include="../native/GenericEventV2Binding.cs" Link="Actual/GenericEventV2Binding.cs" />
+    <Compile Include="../native/GenericEventV2CardAdapter.cs" Link="Actual/GenericEventV2CardAdapter.cs" />
+    <Compile Include="../native/GenericEventV2RemovalAdapter.cs" Link="Actual/GenericEventV2RemovalAdapter.cs" />
+    <Compile Include="../native/GenericEventV2Hooks.cs" Link="Actual/GenericEventV2Hooks.cs" />
+    <Compile Include="../native/PinnedGenericEventV2NativeAdapter.cs" Link="Actual/PinnedGenericEventV2NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
+    <ProjectReference Include="../core/GenericEventV2.Core.csproj" />
+    <ProjectReference Include="../wire/GenericEventV2.Wire.csproj" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

@@ -10,13 +10,13 @@ the latter's authoritative progress summary is
 
 ## Active integration priority
 
-`generic_event_v1` now implements the first native interaction-discovery family:
-standard upgrade-one events with no event-name registration, exact asynchronous
-ownership, frozen card reconciliation and a bounded host/provider flow. See the
-[generic acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md)
-for validation and release limits. Next extend authoritative shared creation and
-effect boundaries to more count/operation families; keep unavailable families
-explicit and prepare release composition separately.
+`generic_event_v2` now handles shared upgrade-one and deck removal with1..8
+selections and variable min/max. Both use authoritative native creation facts,
+exact asynchronous ownership and original references without event-name rows.
+See the [v2 ledger](docs/research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) for
+validation and limits. Continue by shared operation/count families, including
+generated adds, transformation and multi-upgrade. Prepare release composition
+and verify real EventSynchronizer context before claiming live generic support.
 
 ### Preserved predecessor milestones
 

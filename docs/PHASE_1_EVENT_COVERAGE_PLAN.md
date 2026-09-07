@@ -2,11 +2,17 @@
 
 Selected 2026-09-06; priority clarified after implementation commit `b2ae0dd`.
 The original baseline was `7e57bb6`; the two completed increments below are
-preserved. The generic discovery increment below brings the total to fifteen
+preserved. The generic discovery increment below brings the total to sixteen
 frozen successor trees plus the original bridge.
 No campaign was left active; this plan update performed no new live check.
 
 ## Current direction
+
+The current `generic_event_v2` successor extends shared discovery to standard
+removal with1..8 cards and variable counts, preserving upgrade-one. Read the
+[v2 contract](PHASE_1_GENERIC_EVENT_V2_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) before
+extending it. Release composition and live validation remain open.
 
 The user wants shared handlers that support standard interactions without a
 new event-name connection for each event. `generic_event_v1` implements the first

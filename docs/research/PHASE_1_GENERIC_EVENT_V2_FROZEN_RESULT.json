@@ -1,0 +1,42 @@
+{
+  "contract_sha256": "7e651227deef02dbec967c84ce95eddc4ac75008ba18d5749bdb6944ac4bcea2",
+  "frozen_predecessor_count": 15,
+  "frozen_source_inventories": {
+    "card_selection_completion_v1": "92cbd6071d5ed39c1de8e36dbdb7c8f9af8379da5d4d4fa48397837389f05dab",
+    "card_selection_release_v1": "39fd9535446de173af6d065d7d70e2a5f010923ad2a356363b04e133d73d62fe",
+    "card_selection_v1": "51135dfb6749d58b897bb4670ffa709ca5b756873464c9e045f2ba80f87bfc64",
+    "event_card_operations_v1": "97735acc3534bbe1841032dd10a361567b3b6f90e008992b2ab2fd3718fd7967",
+    "event_orchestrator_v1": "d5dbc6ab497ab06d9fd9de3a06e17bde6f0a46207389cb6a4543c34ce3d646e1",
+    "generic_event_v1": "1771c317901b99447ed5314c054e6d4abccde597652da28d322ff49211958f36",
+    "item_bootstrap_v1": "a07c2fc58dad78655629f7cd1686a6b9ad108e996e728e80cf2f999733ab602e",
+    "item_release_v1": "c84bc80197c3b948971f4c1c70eb7def95be71eab903c0d278dcc3c318e1d0b0",
+    "item_transport_v1": "53c605d4512e3e14addd0ab1506d8fc59b0b21f5838f24dca752de3356c44770",
+    "item_v1": "3b37c6646fce5ad076703829ffd91f8a4d03e51083431727b517b51af8ce9a99",
+    "item_wire_v1": "4769c86b2270df0e540c8eb48f535847dc4848dd6b4fe4017b9214459d38bfa7",
+    "room_flows_v1": "96c47beadd96acb1a886748fad5691efca754f83dc1f26064707804a8a178bae",
+    "room_release_v1": "1fde216af25f0a94c16e13b869216d7990c862d7ba19d2246060e1f36bfabf4b",
+    "shop_diagnostic_v1": "17a0cd65e0a521e6e682d18c01be9e9c972f60cff5cb1e622ee1ead14266a697",
+    "shop_map_permission_v1": "801977238c91238c5cc33106fe205152557bb0d5238121779f7809b114dbf9ae"
+  },
+  "harmony_assembly_sha256": "a849b726e1f9248d71aabbed8114deaf79beb7acc25e8344ff92a27ad8ac87ab",
+  "live_campaign_started": false,
+  "native_compilation": {
+    "native/GenericEventV2.Native.csproj": {
+      "bytes": 54272,
+      "executed": false,
+      "sha256": "784f7623ffad1221ceff56d9c29f80558ec541a9c2887ffbbd13cba26b345502"
+    }
+  },
+  "release_ready": false,
+  "schema_version": 1,
+  "source_inventory_sha256": "9edaac1a72a61d86ff6c9d38cebcd28117f1825c033f2cccd63c8919cc5947ab",
+  "status": "passed",
+  "target_assemblies_executed": false,
+  "tests": {
+    "native_tests/GenericEventV2.Native.Tests.csproj": "generic native checks: 375",
+    "test_generic_event_host.py": ".................................\n----------------------------------------------------------------------\nRan 33 tests in 0.134s\n\nOK",
+    "test_generic_event_integration.py": "{\"schema_version\":1,\"status\":\"passed\",\"suite\":\"generic_event_v2_integration\",\"check_count\":45,\"production_native_checks\":11}",
+    "test_generic_event_removal_host.py": "...................\n----------------------------------------------------------------------\nRan 19 tests in 0.104s\n\nOK",
+    "wire_tests/Sts2AgentBridge.GenericEventV2.WireTests.csproj": "{\"schema_version\":1,\"status\":\"passed\",\"suite\":\"generic_event_v2_wire\",\"check_count\":73}"
+  }
+}
