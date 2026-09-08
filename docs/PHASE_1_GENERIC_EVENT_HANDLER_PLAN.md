@@ -1,6 +1,29 @@
 # Generic event handler: next development direction
 
-## Direct card 16 test — v10 installed, awaiting user start
+## Card 16 live selection succeeded — v10 campaign closed
+
+2026-09-08. After user readiness, UI showed untouched Aroma of Chaos choices
+and deck20 in the same window setup. Exactly one frozen v10 client invocation
+selected Let Go, directly dispatched native holder slot15 (card16), passed the
+exact-original preview check, confirmed the transformation and reached the map.
+Result: resolved, two parent and two child actions attempted/accepted/reconciled,
+one completed card child, six reads, map_ready. The final UI showed the map.
+
+This demonstrates direct off-screen card selection in the user's controlled
+setup without scrolling or any geometry proof. The earlier boundary checks were
+unnecessary for this test. It does not establish every possible selector's
+behavior. The generic effects field remains unverified; the specific selection,
+preview and card-child completion are supported by the bound adapter checks.
+
+Normal quit, stopped/closed checks, owned quarantine and four-file purge passed.
+Final verification: 429 unchanged base files, zero overlays, no running game or
+bridge. No campaign remains installed; all 32 successors remain frozen. Next
+development can use this evidence to remove the fixed-card test restriction in
+a successor and expose all eligible native holders. No further live setup is
+needed now. See the [v10 acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
+All earlier installed-readiness and boundary-proof proposals below are historical.
+
+## Historical checkpoint: v10 installed readiness
 
 2026-09-08. V10 will directly select the sixteenth native grid holder (slot15)
 and check that the preview contains that exact card. The user explicitly

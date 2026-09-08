@@ -77,3 +77,38 @@ success requires the preview to identify the exact original card, independently
 of any later completion failure. After the test, normal quit and stopped checks,
 quarantine using this fresh installed hash, purge using the returned quarantine
 hash, and unchanged-base/zero-overlay checks close this owned campaign.
+
+
+## Live result: direct card16 selection passed; campaign closed
+
+2026-09-08. User replied ready. Initial UI showed Aroma of Chaos, untouched
+Let Go/Maintain Control, deck20 and no console/popups. Require-running passed.
+Exactly one frozen client invocation used the installed hash above. Sanitized
+result `/private/tmp/generic-release-v10-live-result.json`, SHA256
+`b0b2594eb15b015192da249fe1d9f79f827a0089ea492a0488291f053d39b406`:
+
+```json
+{"schema_version":1,"status":"resolved","parent_attempted":2,"parent_accepted":2,"parent_reconciled":2,"child_episodes":1,"child_attempted":2,"child_accepted":2,"child_reconciled":2,"total_attempted":4,"reads":6,"effects":"unverified","completed_card_children":1,"completed_item_children":0,"code":null,"last_response_diagnostic":"map_ready"}
+```
+
+Slot15 is the only selectable action and is checked again at dispatch. The
+accepted confirmation requires exact-original preview identity. One completed
+card child and map_ready, corroborated by the final map UI, demonstrate this
+direct card16 selection and completion. No scroll or geometric boundary check
+ran; the off-screen premise is the user's controlled setup. The generic effects
+field remains unverified and is not a claim of comprehensive event-effect
+verification. No retries or manual event completion occurred.
+
+Normal UI quit and wait-stopped passed. Quarantine passed using installed hash
+`d2c1267bcdc7f4a0754c4e595dee23bb0ccadaa4326f9b78087b876e9ed6f8ad`;
+new quarantined hash
+`b13a46f6a1e805e4cca6afb249bdef8bd2e8b485ac8f8bc06dcc36338f6d2842`.
+Purge with that hash passed, removing exactly four generated files. Final base
+verification passed: 429 files, unchanged SHA256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`,
+zero overlays. Final require-stopped passed with game absent and port closed.
+Evidence: `/private/tmp/generic-release-v10-quarantine-result.json`,
+`/private/tmp/generic-release-v10-purge-result.json`,
+`/private/tmp/generic-release-v10-final-base.json`,
+`/private/tmp/generic-release-v10-final-runtime.json`. Campaign closed; all
+readiness instructions and hashes above are historical, not reusable.
