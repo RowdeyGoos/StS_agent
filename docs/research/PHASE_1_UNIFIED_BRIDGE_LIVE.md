@@ -1,7 +1,7 @@
 # Unified bridge live test
 
-Status: corrected release installed and awaiting manual restart, 2026-09-08.
-The first attempt is closed after a combat connection failure.
+Status: representative module smoke complete; all three installations cleaned up,
+2026-09-08. This was an assisted capability test, not an autonomous full run.
 The user requested preparation for a bounded live test of the current modules.
 Game launch remains manual; use the established Profile 3 test setup.
 
@@ -71,31 +71,130 @@ its same-identity recovery finding was resolved. The final release gate passed a
 67 check groups in **140.794 s**, with one reproducibility pair and package/cleanup
 checks. No additional module behavior was claimed from these offline results.
 
-- Current [accepted release](../../bridge/Sts2AgentBridge/releases/current/bridge.json)
+- Accepted corrected live release, retained in Git at `f86a0dd`,
   SHA-256: `ea3fbbb1e5fb4744681f73f070a937d8f3e1119bc6c9e42ad0417b85e85d4150`.
 - DLL: 752128 bytes, SHA-256
   `15f3bff3468b77919f6db0aa95cc1d12160bbcef9a73a4baf48794bb7f3bf470`.
 - Package: `/private/tmp/sts-unified-bridge-release/Sts2AgentBridgeUnified-1.0.0.zip`,
   SHA-256 `2ce3d6f1d01242a33639193a7aab6f30a9c6f3fb3ad308ef94152f993153cc57`.
-- New campaign phase: `installed`, `UNIFIED-BRIDGE-V1`; mods parent created.
-- **Current owned state SHA-256:**
+- Second campaign phase: now purged, `UNIFIED-BRIDGE-V1`; mods parent created.
+- Historical second installed state SHA-256:
   `57171eadb44d439a939715c47cc037a4fc96e3f4482d503b3990965e8937a5d8`.
 
 Stopped-game/closed-listener checks passed before installation. The corrected
 overlay contains exactly its two expected files, and all 429 base files retain
 the projection above. The client ownership/configuration preflight passed without
-reading credential contents. This installation has not yet received a live request.
-Preserve its source/package bindings until exact cleanup finishes. After normal
-quit and stopped/closed checks, use the current state hash for quarantine, then
-the returned hash for purge; verify unchanged base files afterward.
+reading credential contents.
 
-## Remaining coverage
+## Second live attempt
 
-The user has been asked to manually relaunch with mods enabled, select Profile 3
-and pause at the main menu. Use observed convenient setups for combat completion,
-rewards, item collection, shop/rest,
-standalone card selection and generic event children, including actual transitions
-between modules. Preserve bounded failure counts during the next controller run.
-One representative case per module is sufficient; complete-run victory and
-all-branch coverage are separate evidence targets. Current commands are in the
+After manual readiness, exact process and authenticated health/manifest/main-menu
+checks passed. Profile 3 was visible. UI Continue resumed the controlled run.
+
+| Module/path | Observed result |
+| --- | --- |
+| Combat | Victory in five rounds: 22 attempted, 20 accepted, 20 reconciled, two safe stale rejections recovered. Neow's Fury opened an optional in-combat chooser; UI selected the displayed Strike and confirmed it. Combat therefore required that one assisted child step. Final HP 77/80. |
+| Rewards | Passed: claim 12 gold, open card reward, choose one card, Proceed; verified map. |
+| Map | Passed: one legal merchant destination, one reconciled action and 10 route checks. |
+| Shop | Initial controller stopped before sending its purchase. The client grammar rejected `buy:card:0`; reproduced directly in `build_request`, which runs before socket connection. UI gold/deck/inventory remained unchanged. A temporary client candidate added only the bounded shop action forms; the same installed native module then passed purchase, inventory close and leave, all three attempted/accepted/reconciled. UI gold 111→62 and deck 12→13, map visible. |
+| Standalone cards | Console UI `room RestSite` prepared visible Rest/Smith options. Parent capture returned `unsupported_state` before any parent/child attempt. The listener closed. No Smith/card completion in this attempt; native-entry success is recorded below. |
+
+The shop client candidate is `/private/tmp/sts_unified_wire_candidate.py`, used by
+`/private/tmp/sts_unified_feature_smoke.py`. Its only wire change admits
+`buy:card:0`–`buy:card:31` and `inventory:close` on the existing room action route.
+Installed release sources stayed unchanged for owned cleanup. These candidate
+bytes were integrated into the maintained client after final cleanup.
+
+Card source inspection rules out the 13-card domain size and the unified Smith
+policy selection as explanations. Initial native capture rejects an open/traveling
+map, enabled map travel or another overlay before binding Smith. Console room
+entry from the map is a possible setup mismatch; the exact native predicate was
+not captured, so this remains unresolved rather than a proved card defect.
+
+Normal quit and stopped/closed checks passed. Quarantine state was
+`e0c0155023cf6ebeace8b9deaed07d1051155515d541ea0b34f2ddd6c2b7c3a1`;
+purge removed four generated files and returned `absent`. Final base verification
+found the same 429 files/projection and zero overlays.
+
+## Third installation
+
+Reused the exact corrected DLL, package and accepted release above; no source
+change or new build. Installation passed with a fresh credential and created mods
+parent. Overlay verification passed: 429 unchanged base files and exactly two
+expected overlay files.
+
+- Phase: now purged, campaign `UNIFIED-BRIDGE-V1`.
+- Historical third installed state SHA-256:
+  `7b5ab97532ca7c95c3aacf35e5fcd0517c8e80ce0a32de254751ce5b8a8eeb75`.
+
+## Third live attempt and final cleanup
+
+Exact running-process and authenticated health/manifest checks passed after the
+user's manual readiness. UI confirmed Profile 3; Continue returned to the saved
+merchant entry. No profile/save filesystem data was inspected.
+
+Controlled UI setup used the game's console. One command lost its first characters
+while the console was opening and returned an unknown-command error; typing after
+the console gained focus succeeded. `room Treasure` exposed the chest-specific
+relic UI, which is outside the standalone item's `NRewardsScreen` surface; it was
+finished through UI and was not counted as bridge item evidence.
+
+Console `travel` enabled a short route to a visible rest node. Clicking the node
+used the game's native map transition. **The unchanged card module then passed**:
+two parent and two child actions, all attempted/accepted/reconciled; Smith opened
+the selector, upgraded one card and returned to the map. This establishes a
+working native-entry setup without weakening the map/overlay guard. The earlier
+console-created rest rejection was setup-sensitive; the exact rejected flag was
+not observed.
+
+A native map transition preceded the remaining event fixtures. `event POTION_COURIER`
+and UI Ransack exposed exactly one Radiant Tincture reward. **Standalone items
+passed**: one attempted, accepted and reconciled potion collection; UI showed the
+potion in the first slot and the event's Proceed control.
+
+With no active bridge module or open map, `event AROMA_OF_CHAOS` prepared Let Go/
+Maintain Control. **Generic event orchestration resolved** through Let Go with
+two parent and two child actions, all accepted/reconciled, six reads and one
+completed card child. UI confirmed return to the map. The final host summary's
+`effects` value was `unverified`; retain this distinction from its completed-child
+and route-reconciliation counters. This case does not establish arbitrary selector
+support or a full-run outcome.
+
+Post-event health passed on the same listener. The original public screen probe
+returned `status: unsupported`, `screen_kind: unknown` for the console-created
+event/map state. It did not become a successful core-observation handoff merely
+because the map was visibly open. No further gameplay actions were issued.
+
+Normal quit and stopped/closed checks passed (three process samples, two port
+samples). Quarantine state:
+`0292384cc5d4d9300b91431e2ee943bd2ede0bb5a52bca8d0b3f1334f7734911`.
+Purge removed four generated files and returned `absent`; final base verification
+passed with 429 unchanged files, the recorded projection and zero overlays.
+All state hashes in this ledger are now historical. No credential or installed
+bridge remains to reuse.
+
+## Integrated fixes and remaining limits
+
+The stale-decision correction is committed in `f86a0dd`. After final owned cleanup,
+the maintained shared client was made byte-for-byte identical to the successful
+shop candidate. Focused request-boundary tests and the actual shared socket's
+shop POST passed, followed by one independent review with no remaining blockers.
+The current release record binds the final maintained source; prior live evidence
+continues to identify the exact DLL and temporary client used at execution time.
+
+Final [release record](../../bridge/Sts2AgentBridge/releases/current/bridge.json)
+SHA-256: `c87183edbba11116ead11d5089903c001fae15f5c231ce7402e5e0f3904e3b9b`.
+Its 67-group gate passed in 141.796 s. Final package bytes exactly match the live-
+tested corrected package, and the maintained wire client exactly matches the
+successful temporary candidate. No further installation or launch was needed.
+
+Each production capability module has a representative live path: core combat/
+reward/map, shop room flow, standalone card/rest flow, standalone items, and generic
+event/card-child orchestration. The smoke spans three process starts, with native
+and console/UI setup as specified above. It is not one uninterrupted autonomous run.
+
+Remaining gaps are the in-combat optional chooser, the generic summary's final
+effect-verification distinction, and legacy public-screen coverage after controlled
+event entry. Other branches, multi-item sets, arbitrary selectors and full-run
+victory remain separate targets. Current commands are in the
 [bridge guide](../../bridge/Sts2AgentBridge/README.md).

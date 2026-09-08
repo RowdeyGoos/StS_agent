@@ -9,6 +9,22 @@ from run_live import core_summary
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_shop_actions_match_the_existing_room_protocol(self):
+        token = bytearray(b'a' * 64)
+        route = '/probe/room-flows-v1/public/action'
+        def request(action, path=route):
+            return build_request('POST', path, bytearray(json.dumps({
+                'decision_id': 'b' * 64, 'action_id': action}).encode()), token)
+        for action in ('buy:card:0', 'buy:card:9', 'buy:card:10', 'buy:card:31', 'inventory:close', 'leave'):
+            self.assertIn(('X-Sts2-Action-Id: ' + action + '\r\n').encode(), request(action))
+        for action in ('buy:card:32', 'buy:card:00', 'buy:relic:0', 'inventory:open', 'buy:card:0\r\nOrigin: evil'):
+            with self.assertRaises(ValueError):
+                request(action)
+        for path in ('/probe/v0/public/combat-action', '/probe/item-v1/public/item-action',
+                     '/card-selection-v1/parent/action'):
+            with self.assertRaises(ValueError):
+                request('buy:card:0', path)
+
     def test_core_outcome_reporting(self):
         for response in ({'status': 'rejected', 'reason': 'stale_decision'},
                          {'code': 'capability_busy'}, {'code': 'bridge_stopped'},

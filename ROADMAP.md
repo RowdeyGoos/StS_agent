@@ -6,10 +6,12 @@ process. Completed packets and old campaign instructions are historical referenc
 
 ## Immediate priorities
 
-1. **Exercise one useful handoff through the unified bridge.** All supported
-   capabilities now share one host and package. Offline checks cover ownership,
-   clean handoff, terminal failures and client compatibility. A bounded live
-   transition between supported capabilities is the next integration evidence.
+1. **Close the concrete gaps from the unified module smoke.** Representative
+   module paths now have live results. Neow's Fury's optional combat chooser
+   required UI assistance; legacy screen observation after controlled event entry
+   was unsupported. Clarify the generic final effect summary's narrower meaning.
+   Use the [live record](docs/research/PHASE_1_UNIFIED_BRIDGE_LIVE.md) to choose one
+   next behavior; do not rerun every module for an isolated correction.
 2. **Use the generalized transformation path in useful play.** All eligible,
    allocated holders now use direct input, with identity/preview/completion
    checks. The [generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)

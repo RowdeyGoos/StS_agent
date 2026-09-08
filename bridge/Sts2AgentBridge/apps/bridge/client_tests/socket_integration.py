@@ -28,7 +28,11 @@ def main():
         for route in ['/probe/generic-event-v7/public/decision', '/card-selection-v1/parent',
                       '/probe/room-flows-v1/public/decision', '/probe/item-v1/public/item-decision']:
             assert json.loads(client.exchange('GET', route))['status'] == 'ready'
-            assert json.loads(client.exchange('GET', route))['status'] == 'resolved'
+            if route == '/probe/room-flows-v1/public/decision':
+                purchase = bytearray(json.dumps({'decision_id': 'c' * 64, 'action_id': 'buy:card:0'}).encode())
+                assert json.loads(client.exchange('POST', '/probe/room-flows-v1/public/action', purchase))['status'] == 'resolved'
+            else:
+                assert json.loads(client.exchange('GET', route))['status'] == 'resolved'
         assert json.loads(client.exchange('GET', '/probe/v0/public/map-decision'))['status'] == 'waiting'
         # Reuse the actual base-controller exchange helper, including SHUT_WR.
         def build():

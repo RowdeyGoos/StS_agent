@@ -142,10 +142,12 @@ operational command with `--mode quarantine`, then `--mode purge`, each with
 source/package bindings until its installed campaign is closed. Cleanup verifies
 exact ownership, state lineage and unchanged base files.
 
-The unified bridge has demonstrated its live handshake and one map transition.
-The first combat attempt exposed a corrected stale-rejection bug; combat completion
-and combined feature handoffs are still pending. It is not a complete autonomous-run controller. The latest
-real-game direct-input evidence remains the earlier controlled V10 card16 result.
+The unified bridge has a [representative live module smoke](../../docs/research/PHASE_1_UNIFIED_BRIDGE_LIVE.md):
+combat/rewards/map/shop, Smith/card selection, singleton potion collection and a
+generic transformation event. Combat needed one UI-assisted chooser; console/UI
+fixtures supplied later setups. The generic final effect summary and legacy
+screen coverage retain documented limits. This is not an autonomous full-run result.
+The earlier controlled V10 card16 result remains the specific off-screen evidence.
 
 ## Historical references
 

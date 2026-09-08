@@ -9,12 +9,14 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The first unified module smoke passed the live handshake and one map transition,
-then stopped on a combat connection failure. Normal quit, exact owned cleanup and
-unchanged base verification passed. The stale-rejection shutdown regression is
-fixed; the accepted corrected package is installed and awaits manual restart.
+The unified module smoke is complete and all three installations are cleaned up.
+Representative paths covered combat (one UI-assisted chooser), rewards, map, shop,
+Smith/card selection, a singleton potion and a generic event/card child. Two real
+integration bugs were corrected: safe stale combat rejections stopped the host,
+and the shared client rejected valid shop action names. A console-created Smith
+setup was rejected; native map entry passed with unchanged card code.
 The [active live record](research/PHASE_1_UNIFIED_BRIDGE_LIVE.md) owns the exact
-artifact/state identities, next action and cleanup handoff.
+artifact/state identities, bounded results, assistance and cleanup evidence.
 
 The preceding successful feature campaign is release v10, implementation `6978943`,
 successful result and cleanup `dc5dbfc`. It selected native holder slot15
@@ -52,7 +54,8 @@ The current production artifact is **Sts2AgentBridgeUnified 1.0.0**. It combines
 core combat/reward/map/rest, item collection, room flows, card selection and
 generic events in one mod, listener and owner-frame queue. Native modules are
 created lazily and remain exclusive through reconciliation and successful cleanup.
-A failed/uncertain action or failed disposal stops the shared host. Clean completion
+A failed/uncertain mutation or failed disposal stops the shared host. Confirmed
+no-mutation stale rejections allow a fresh decision. Clean completion
 allows the next capability without replacing or restarting the mod.
 
 The canonical transformation adapter now offers all eligible allocated holders
@@ -62,8 +65,11 @@ Direct-input fixtures exercise different slots and invalid/deferred targets.
 The [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md)
 records offline native/host regressions, shared socket handoff and failure cases,
 actual Python clients, reproducible packaging and owned cleanup fixtures.
-The first unified package demonstrated its handshake and map transition as recorded
-above; combat completion and combined feature handoffs remain pending.
+The unified package demonstrated the representative paths above. The successful
+shop client correction is now in the maintained source. Generic orchestration
+resolved with one completed card child, but its final `effects` summary remained
+`unverified`; the legacy public-screen probe reported unsupported/unknown after
+that controlled event/map setup. These limits remain explicit in the live record.
 
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused
@@ -73,10 +79,11 @@ identities remain in [release history](../bridge/Sts2AgentBridge/releases/histor
 
 ## Next bounded target
 
-Exercise one useful transition between supported capabilities through the unified
-host in a requested live session. The direct-input generalization is already
-implemented offline; a further native test should exercise a different advertised
-target or another actual gap. Do not repeat V7/V8/V9 geometry admission work:
+Close an actual smoke-test gap: the optional in-combat card chooser or legacy
+public-screen coverage after generic event entry. Clarify the generic summary's
+final effect-verification distinction before broadening its claim. Reuse the
+completed module evidence; a further native test should answer a different question.
+Do not repeat V7/V8/V9 geometry admission work:
 those attempts stopped before input, and V10 answered the direct-selection question.
 The [generic plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) distinguishes implemented
 behavior from remaining native coverage.
