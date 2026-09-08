@@ -184,3 +184,15 @@ operator state or cleanup remains. Installed/quarantine hashes above are histori
 and must not be reused. No automatic launch,force kill,new target inspection,
 profile/save filesystem or Cloud work occurred. All frozen source identities remain
 unchanged; the existing offline evidence is preserved without redundant reruns.
+
+
+## Fresh Potion Courier instance — 2026-09-08
+
+The user authorized a separate exploratory Potion Courier → Ransack test after
+being told reward-screen behavior remains unconfirmed. The unchanged frozen
+package is freshly installed with a new credential/state; the earlier Cheese
+instance remains closed. See [active ledger](PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
+for authorization, exact identities, passed pre/post-install checks and cleanup.
+Current installed hash:
+`36db173d95bd97704415f33195b61af6d36d51cda5595e4376bbd1fe8d186d08`.
+Awaiting manual setup; no new live invocation has occurred.

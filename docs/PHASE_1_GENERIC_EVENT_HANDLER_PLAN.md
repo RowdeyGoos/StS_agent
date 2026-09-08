@@ -1,5 +1,21 @@
 # Generic event handler: next development direction
 
+## Active Potion Courier test — installed, awaiting manual setup
+
+2026-09-08. A fresh installation of unchanged generic releasev6 is verified for
+the user-authorized exploratory Potion Courier → Ransack test. The prior Cheese
+instance remains closed. New installed-state SHA256:
+`36db173d95bd97704415f33195b61af6d36d51cda5595e4376bbd1fe8d186d08`.
+Frozen sources, unchanged429-file base, exact2-file overlay, protected metadata
+and stopped/closed checks pass. No client invocation or credential-content read.
+Manual Profile3/single-player setup: fresh Potion Courier initial choices,
+Ransack second, at least one empty potion slot; leave options untouched and close
+console/popups. Wait for user readiness, verify UI and require-running, then one
+frozen invocation. Reward-screen behavior remains unconfirmed; only a completed
+item child plus map handoff passes the intended gate. Read the [active test ledger](research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
+for exact invocation, new-instance authorization and required cleanup. Older
+closed-campaign/no-setup statements below describe preserved earlier checkpoints.
+
 Updated 2026-09-06 after the user clarified the intended meaning of all-event
 support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
