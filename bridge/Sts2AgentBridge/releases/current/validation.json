@@ -1,24 +1,25 @@
 {
-  "change": "Resolve optional, fixed and variable public discard/exhaust choices and resume bounded combat with separate failure accounting",
+  "change": "Compose bounded combat, gold/card rewards and map readiness with preserved stage results and paced shared-client requests",
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
     "combat_choice_live_tested": false,
+    "combat_reward_map_live_tested": false,
     "event_map_live_tested": false,
-    "generic_event_optional_selection_supported": false,
     "live_campaign_started": false,
-    "target_game_executed": false
+    "target_game_executed": false,
+    "unsupported_item_rewards_collected": false
   },
   "evidence_reused": {
+    "native_binary_and_package_identical_to_prior_release": true,
     "prior_live_evidence": "../../../../docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md",
-    "prior_release_manifest_sha256": "d6b752bb95901f3933c9b6f271c1f5d86bcc4ca8aa47243d6a022e6cb2e67c97",
-    "prior_release_source_commit": "c91cfac",
-    "scope": "Prior live observations retained as historical context; no new native or full-run live result inferred. Existing codecs, client transport and unchanged regression fixtures reused."
+    "prior_release_manifest_sha256": "c671a56ef350edeb81327c833e15bcddcade96437c64987b1fe1510cce3e89fe",
+    "prior_release_source_commit": "0512f0969a12d5192e3042a5e1cf0dc4cac43464",
+    "scope": "Unchanged native adapters and package bytes; existing combat, reward-transition and map codecs reused. Their retained live observations remain historical context, not a new live composition result."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "correction": "Final automatic selection remains pending until exact task result and overlay closure; native clickability and deferred input checked against pinned IL",
-    "focused_native_assertions": 250,
+    "scope": "Reward ownership, effect/counter accounting, stage isolation, uncertain receipt handling, pacing deadlines and cleanup",
     "status": "passed"
   },
   "package": {
@@ -35,31 +36,31 @@
       "bfb70a5edd38b1f9bcf8254e5fea117c6d9bf5ef3988431d2077436aca710955"
     ]
   },
-  "package_directory": "/private/tmp/sts-bridge-fj63vzfr/package",
+  "package_directory": "/private/tmp/sts-bridge-xbmz0bxz/package",
   "production": {
     "bytes": 787968,
     "sha256": "0d46b60cec0acf676fa797b50827ee10a6e92c269289acab84c153068b602559"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "c671a56ef350edeb81327c833e15bcddcade96437c64987b1fe1510cce3e89fe",
+  "release_manifest_sha256": "584c35c54b7d56f06604009c3bbdc3ba7cfd134f538a00ae06f7cfb5e0d6dcdf",
   "schema_version": 1,
-  "source_base_commit": "c91cfac",
-  "source_commit": "0512f0969a12d5192e3042a5e1cf0dc4cac43464",
-  "source_inventory_sha256": "098e77d12f6c14baf552052a15d2ed49a450bf5fa32e9a0a69c7f745f76366df",
+  "source_base_commit": "45fdfa2",
+  "source_commit": "6f45ac0fdace9746e0d871e594a1e2adbd6d759e",
+  "source_inventory_sha256": "2d30f7bef5b81d17bc427382f9f02e4c36619342cdb33d25813f79b664238334",
   "source_state": "Committed source verified against the exact release inventory",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Implementation and review elapsed times were not captured; no user setup wait or live test occurred.",
+  "timing_limits": "Implementation and review elapsed times were not captured; no user setup wait or live testing occurred.",
   "validation": {
-    "check_groups": 70,
-    "client_unit_tests": 17,
-    "combat_host_unit_tests": 6,
-    "combat_native_to_host_scenarios": 3,
-    "focused_cards_check_groups": 20,
-    "focused_cards_seconds": 12.159,
-    "native_choice_assertions": 250,
-    "release_gate_seconds": 131.102,
-    "scratch": "/private/tmp/sts-bridge-fj63vzfr",
-    "shared_client_socket": "passed: play, choice, resumed combat, terminal victory; separate parent and child counts"
+    "check_groups": 71,
+    "client_unit_tests": 30,
+    "focused_host_check_groups": 10,
+    "focused_host_seconds": 9.295,
+    "release_gate_seconds": 137.663,
+    "reward_and_composition_unit_tests": 10,
+    "reward_codec": "passed",
+    "scratch": "/private/tmp/sts-bridge-xbmz0bxz",
+    "shared_client_socket": "passed: combat chooser, victory, gold claim, first-card or skip-card, Proceed and actionable map; both policies",
+    "transport_pacing_unit_tests": 3
   }
 }
