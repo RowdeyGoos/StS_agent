@@ -14,7 +14,9 @@ Independent review and candidate/frozen gates pass:1,343 native assertions,
 107 wire cases,86 host tests and96 integrations,36 with actual native adapters.
 See the [v4 ledger](research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md). All24 successors remain frozen.
 This is functional evidence; it adds no named event or multi-upgrade live coverage.
-Transformation requires authoritative replacement and deck-order evidence next;
+The [transformation capture](research/PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md) now proves
+remove-before-insert intermediate states and post-generation replacement substitution.
+A new reconciliation path and authoritative final mapping are required next;
 variable upgrade minima, item/optional/scrolling/custom/combat families remain open.
 All campaigns are closed and no new game setup is needed.
 

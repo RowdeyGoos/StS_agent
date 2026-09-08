@@ -31,7 +31,10 @@ Continued development now follows the independently accepted
 multi-upgrade1..8 and cumulative completed-child evidence. Both full offline gates
 passed; exact evidence lives in that ledger. Preserve all24 frozen successors and
 original bridge; new behavior belongs in a reviewed successor. Continued work now
-investigates transformation mapping and ordering. No new live setup is needed
+uses the [transformation discovery](docs/research/PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md):
+native remove-before-insert awaits contradict the frozen positional core, and final
+replacement witnesses must account for substitution hooks. Read its native findings
+before designing a new transform reconciliation path. No new live setup is needed
 during functional development. Expand by authoritative shared interaction
 family, using event identities as tests instead of adding event-name allowlists.
 

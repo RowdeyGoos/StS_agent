@@ -29,10 +29,16 @@ and has no multi-upgrade live claim.
 
 All24 successors and the original bridge remain frozen. All generic live
 campaigns are closed; no installed overlay, credential or cleanup remains.
-No game setup is needed. Continued development now investigates authoritative
-transformation replacements and deck ordering under the new bounded
-[static scope](research/PHASE_1_GENERIC_TRANSFORM_SCOPE.md). Variable upgrade
-minima, item/optional/scrolling and custom/combat families remain open.
+No game setup is needed. The next transformation discovery passed its reviewed
+single metadata capture: nine bodies, two types and1,395 instructions. It proves
+all-original removal followed by per-card insertion/awaits and a hook that may
+substitute the generated replacement. Multi-transform therefore needs a new
+reconciliation path; the frozen constant-length positional validator is insufficient.
+Read the [discovery ledger](research/PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md) and
+[native findings](research/PHASE_1_GENERIC_TRANSFORM_NATIVE_EVIDENCE.md) before
+selecting that contract. Native transform implementation, final mapping witnesses,
+remaining ordering facts, variable upgrade minima and item/optional/scrolling/custom/
+combat families remain open.
 
 ## Preserved v5 live completion and clean teardown — 2026-09-08
 

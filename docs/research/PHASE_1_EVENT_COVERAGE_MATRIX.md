@@ -21,7 +21,9 @@ Independent review and candidate/frozen gates pass:1,343 native assertions,
 107 wire cases,86 host tests and96 integrations,36 with actual native adapters.
 See the [v4 ledger](PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md). All24 successors remain frozen.
 This is functional evidence; it adds no named event or multi-upgrade live coverage.
-Transformation requires authoritative replacement and deck-order evidence next;
+The [transformation capture](PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md) now proves
+remove-before-insert intermediate states and post-generation replacement substitution.
+A new reconciliation path and authoritative final mapping are required next;
 variable upgrade minima, item/optional/scrolling/custom/combat families remain open.
 All campaigns are closed and no new game setup is needed.
 
@@ -112,7 +114,7 @@ catalog. Dedicated handlers remain appropriate for different custom surfaces.
 | Add cards | Cheese/Gorge exact two-of-eight native/live and generic release v5 live; other shared compositions in fixtures | Other callers, domains and cardinalities |
 | Upgrade cards | Generic fixed-count1..8 discovery, exact preview mapping and native-to-Python fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Prepared release and live multi-upgrade validation; variable minima and scrolling |
 | Remove cards | Generic native discovery, variable1..8 preview confirmation and exact remaining-deck reconciliation in inert fixtures | Prepared release and live validation; optional/scrolling variants |
-| Transform cards | Frozen core fixtures and retained shared selector facts | Authoritative replacement/preview mapping, command completion and deck-order compatibility |
+| Transform cards | Frozen core fixtures; reviewed native request/preview/command metadata | New effect reconciliation for remove-before-insert states, final post-hook mapping and remaining ordering facts; no native adapter yet |
 | Optional selection and repeated choices | Explicitly unsupported by this increment | New reviewed bounds/confirmation and loop identity policies |
 | Embedded event combat | Metadata/shared API facts only | Combat handoff, event resumption and exact ownership |
 | Custom/ancient layouts | One custom node and two derived layouts inventoried | Exact caller/layout connections and action semantics |

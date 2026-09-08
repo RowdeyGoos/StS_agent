@@ -22,8 +22,11 @@ and [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) fo
 implementation and validation status. Native preview mappings come from scoped
 original/clone observations, never card names or apparent similarity.
 
-Continue by shared interaction family: transformation needs authoritative
-original-to-replacement mapping and compatible deck-order semantics; item children,
+Continue by shared interaction family. The accepted
+[transformation capture](docs/research/PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md)
+proves remove-before-insert awaits and possible replacement substitution. Build a
+new reconciliation path after binding final replacements and the remaining native
+ordering facts; preserve the frozen positional validator for prior components. Item children,
 optional/scrolling selectors and custom/combat interactions remain open. Complete
 functional integration before release/live validation. Event identities are
 representative and held-out tests, not a production allowlist. All prior campaigns
