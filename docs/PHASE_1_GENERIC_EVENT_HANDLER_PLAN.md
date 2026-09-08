@@ -5,39 +5,44 @@ support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
 accepted component, source identity, protocol or live release.
 
-## Current generic release v6 — ready for manual live setup, 2026-09-08
+## Current generic release v6 — live continuation passed, campaign closed
 
-`generic_event_release_v6` is accepted and frozen as successor27. It packages the
-entire frozen G6 gameplay closure unchanged: upgrade/removal/reward-card,
-fixed multi-upgrade, transformation and singleton direct potion/relic children.
-Both full gates pass, including the complete G6 regression suite,843 runtime
-assertions,30 socket/client scenarios and128 binary-verifier checks. The56-source
-production DLL is379392 bytes, SHA256
+2026-09-08. The user confirmed ready and root performed exactly one Search test.
+CUA showed fresh Room Full of Cheese initial choices, HP62/80, Search cost14,
+empty potion slots and no selector/console/popup. Require-running passed. The
+frozen client resolved after2 parent actions and4 reads, ending at map_ready.
+Post-test UI showed HP48/80, an additional cheese relic icon and the map.
+
+This demonstrates Search→Proceed/map continuation in the G6 release. It does
+**not** validate generic item selection: child_episodes,child actions and both
+completion counters were zero; effects remained unverified. The desired item
+child acceptance gate is still unmet. No child reward surface was exposed to the
+controller in this invocation. The exact native reward-grant mechanism was not
+inspected and is not established by this result. No retry or extra gameplay action
+was attempted.
+
+Normal UI quit,stopped/closed,code-first quarantine,exact four-file purge,429-file
+clean-base verification and final stopped/closed checks all passed. The campaign
+is closed; no installed overlay,credential or cleanup remains. Historical installed
+and quarantine state hashes in the ledger must not be reused. No game setup is
+needed now.
+
+`generic_event_release_v6` remains frozen as successor27, source-linking the full
+G6 gameplay closure unchanged. Both full offline gates and independent reviews
+pass: complete G6 regressions,843 runtime assertions,30 socket/client scenarios,
+128 verifier checks,56 production sources. The379392-byte DLL SHA256 is
 `96723ba26f9f64a74cd0f1d8ae4217191a13410c5629a1feedc26a44f3890c2f`.
 All26 predecessors and the original bridge remain unchanged.
 
-The fresh GENERIC-EVENT-V6-SMOKE-V1 package is installed after stopped/closed and
-429-file clean-base checks. Post-install exact overlay and protected metadata
-checks pass without credential-content reads. Game remains stopped; no automatic
-launch or client invocation occurred. Current installed state SHA256:
-`def7e9ae464f16918b6eb28b936a43f95e80fd9aba51f843fb73342448d167d0`.
-
-The user may now manually launch Profile3,single-player,fresh Room Full of Cheese
-initial choices. Require HP above Search's currently displayed damage cost (base14)
-and an empty potion slot; close the console and all popups. Leave both choices
-untouched. The fixed client requires exactly two initial options and legal choose:1
-(Search), then uses first_legal. Search's ordinary singleton reward compatibility
-remains unproved; one fail-closed live attempt will test it. Do not adopt an open
-reward/selector. After user readiness, verify UI and require-running, then invoke
-this release's client exactly once with the fresh state hash above. Never reuse
-historical states or retry an uncertain dispatch. Normal quit and exact owned
-cleanup remain required after the campaign.
-
-Read the [release contract](PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
-[ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md) for exact frozen
-identities, source provenance, test results and campaign operation sequence.
+Next, inspect retained event evidence to identify a parent choice demonstrably
+opening an ordinary singleton reward screen before preparing another live test.
+Visible relic gain alone is insufficient for selecting an item-handler fixture.
+Any fresh campaign requires its own reviewed setup and identities; this closed
+campaign supplies no reusable state or retry. Read the
+[release contract](PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md).
 No live item/transform or complete-run claim is made. The functional acceptance
-snapshots below preserve the state before this installable release.
+snapshots below remain historical.
 
 ## Preserved generic v6 functional acceptance — 2026-09-08
 

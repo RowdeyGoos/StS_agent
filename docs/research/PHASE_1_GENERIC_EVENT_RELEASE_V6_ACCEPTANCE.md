@@ -1,8 +1,8 @@
 # Generic event release v6 acceptance
 
-2026-09-08. Offline release accepted and freshly installed for the user-requested
-live test after frozen G6 commit3c28b8d. No automatic game launch or live client
-invocation has occurred. All26 predecessor components remain frozen.
+2026-09-08. Offline release accepted; one user-requested live Search invocation
+completed and its campaign is closed. Parent continuation passed, but no item child
+was exposed, so live item acceptance remains unmet. All26 predecessors stay frozen.
 
 ## Accepted scope
 
@@ -110,7 +110,7 @@ The new component has65 inventoried files plus source_identity.json,63 exact
 derivations and52 reused C#/Python sources. All26 predecessor inventories and
 the original bridge remain unchanged.
 
-## Fresh installation and next live step
+## Preserved installation and pre-live instructions
 
 After both gates and independent review, root published the exact canonical
 three-file artifact directory. Fresh require-stopped passed (3 process samples,
@@ -140,3 +140,47 @@ clean base and final stopped/closed checks. Use each newly returned state hash f
 its next cleanup action; the installed hash is not a later quarantine hash.
 Repeated unmodded launch remains waived. No profile/save/Cloud work is authorized
 or performed by this campaign.
+
+
+## One live invocation and completed cleanup — 2026-09-08
+
+After the user's ready message, CUA verified initial Room Full of Cheese choices:
+HP62/80, Search cost14 and the offered Chosen Cheese text, empty potion slots,
+deck15, no console,selector or popup. User readiness supplied the requested
+Profile3/single-player setup; the in-event screen alone does not independently
+identify the profile. Require-running passed with one exact process sample.
+This mode reports process state, not a listener probe (port_samples0); successful
+client exchanges provide the subsequent transport evidence.
+
+Exactly one frozen client invocation returned exit0 and the following bounded
+summary. No uncertain POST was retried and no extra gameplay actions were taken.
+
+```json
+{"schema_version":1,"status":"resolved","parent_attempted":2,"parent_accepted":2,"parent_reconciled":2,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":2,"reads":4,"effects":"unverified","completed_card_children":0,"completed_item_children":0,"code":null,"last_response_diagnostic":"map_ready"}
+```
+
+CUA then showed the map, HP48/80, an additional cheese relic icon, and unchanged
+visible deck15. Thus the release completed Search and Proceed/map. No item child
+or collection action was exposed to this controller: child_episodes0,
+child_attempted0 and completed_item_children0. The singleton item acceptance gate
+therefore remains unmet despite the overall resolved status. Effects is unverified;
+UI observation does not substitute for the item engine's reward-local witnesses.
+This does not establish the exact underlying Search grant implementation or prove
+a generic item-hook defect. The retained Search body was not inspected. Next test
+selection should require evidence of an ordinary singleton reward screen rather
+than infer that surface from visible relic gain alone.
+
+Root requested normal UI quit via Command-Q; CUA reported App quit. The subsequent
+wait-stopped passed (3 process samples,2 closed-port samples). Code-first owned
+quarantine passed using the exact installed state, returning quarantine state:
+`85d27c79f2e74f377b45d5924238046fadcb0808592c0b89c1a57f92d149f6e6`.
+Purge used that fresh hash and passed: phase absent,4 generated files removed.
+Clean-base verification passed429files,overlay_count0,projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Final require-stopped passed (3 process samples,2 closed-port samples).
+
+Campaign GENERIC-EVENT-V6-SMOKE-V1 is closed. No installed overlay,credential,
+operator state or cleanup remains. Installed/quarantine hashes above are historical
+and must not be reused. No automatic launch,force kill,new target inspection,
+profile/save filesystem or Cloud work occurred. All frozen source identities remain
+unchanged; the existing offline evidence is preserved without redundant reruns.

@@ -16,14 +16,16 @@ for live testing. Both full gates and independent reviews pass: all G6 regressio
 successors are frozen. See the [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md)
 and [ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md).
 
-The fresh package is installed and awaiting manual Profile3/single-player/Room
-Full of Cheese setup, with Search untouched and HP above its displayed damage.
-One bounded Search attempt will test whether that event branch exposes the owned
-singleton reward family; compatibility is not assumed. Complete owned cleanup
-afterward. No live item/transform claim is made yet. Continue later by shared
-interaction family: multiple-offer items, optional/scrolling selectors, variable
-upgrade/transform minima and custom/combat interactions remain open. Event names
-remain representative test data rather than production admission rules.
+The single Search test resolved through Proceed/map (2 parent actions,4 reads),
+with visible HP loss and a new cheese relic icon. It exposed no item child, so
+item selection remains live-unvalidated. All owned cleanup passed; no overlay,
+credential or game setup remains. First identify a representative event choice
+whose retained evidence demonstrates an ordinary singleton reward screen before
+preparing another live test. Visible relic gain alone is insufficient evidence.
+
+Continue later by shared interaction family: multiple-offer items, optional/
+scrolling selectors, variable upgrade/transform minima and custom/combat
+interactions remain open. Event names remain test data rather than admission rules.
 
 ### Preserved predecessor milestones
 
