@@ -1,21 +1,54 @@
 # Astra handoff — generic event support
 
+## Off-screen test v8 installed — awaiting manual readiness
+
+2026-09-08. The requested test is prepared and installed as successor30 after
+independent review, candidate and source-frozen aggregate gates. All30 successors
+and the original bridge remain frozen. The test composition retains G7 protocol
+and all gameplay except one derived transform adapter: only a holder/card/hitbox
+proved fully below an inherited clipping region can be selected, with a fresh
+proof before _GuiInput and exact preview/transformation completion checks.
+This is a test-only eligibility restriction, not general scrolling support.
+
+Native probe89, runtime855, verifier156 and50 socket scenarios pass, together
+with complete frozen G7 regressions and release/cleanup gates. Six production
+builds are byte-identical. The owned overlay and protected metadata are verified;
+429 original game files are unchanged. No live client has run and the coordinator
+has not launched the game. See the [contract](PHASE_1_GENERIC_EVENT_RELEASE_V8_CONTRACT.md)
+and [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V8_ACCEPTANCE.md) for exact
+source/artifact identities, current installed state and cleanup instructions.
+
+Manual setup: Profile3, single-player, same resolution/window as the last test,
+ordinary20-card deck, fresh Aroma of Chaos initial Let Go/Maintain Control choices
+untouched, console/popups closed. Await user readiness, verify UI/running state,
+then one frozen v8 invocation. Do not adopt the earlier selector or reuse a spent
+campaign hash. Twenty cards targets a fully clipped fourth row; runtime geometry
+and complete holder coverage still decide admission. The older ten-card suggestion
+below does not apply to this experiment. Earlier closed/uninstalled entries below
+are historical checkpoints. Live off-screen success and campaign cleanup remain
+pending for this installed instance.
+
 ## Aroma live test stopped before card selection — campaign closed
 
 2026-09-08. One frozen releasev7 invocation accepted Let Go and opened the
 transformation selector,then stopped at prepare_geometry:1 parent attempted/
 accepted,0 reconciled,258 reads,0 child episodes/actions/completions. CUA showed
 15 cards in5 columns with a clipped third row and scroll bar. No card was selected
-or transformed. This is consistent with unsupported scrolling; exact live geometry
-values were not captured,so the precise failing predicate remains unproved.
+or transformed. This is consistent with the bridge full-layout fit restriction;
+exact live geometry values were not captured, so the precise failing predicate
+remains unproved.
 
 Normal quit,stopped/closed checks,code-first quarantine,exact4-file purge and final
 429-file clean-base/0-overlay verification passed. All live instances are closed;
 no credential,overlay or cleanup remains. State hashes in the [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md)
 are historical. No game setup is needed until a fresh test instance is prepared.
-Next test setup should explicitly require a fresh ordinary deck of at most10
-cards,not the existing15-card run; this avoids the observed clipped third row but
-is not a guarantee of geometry acceptance. Do not retry the spent invocation.
+The earlier at-most-ten-card suggestion stays within frozen admission; it is not
+a native card-count limit. [Retained-code verification](research/PHASE_1_CARD_SELECTION_OFFSCREEN_VERIFICATION.md)
+finds no viewport gate in the inspected holder-to-selection input path. Clipped
+but allocated holders differ from cards outside the grid's allocated rows. The
+next development candidate is complete stable-holder admission without requiring
+all cards to fit; incomplete holder coverage still needs scrolling/rebinding work.
+Off-screen selection remains unproved live. Do not retry the spent invocation.
 
 Releasev7 and all28 predecessors remain frozen; complete offline gates,42 socket
 scenarios and6 matching production builds remain accepted. No successful fixed

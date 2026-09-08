@@ -1,5 +1,33 @@
 # Generic event handler: next development direction
 
+## Off-screen test v8 installed — awaiting manual readiness
+
+2026-09-08. The requested test is prepared and installed as successor30 after
+independent review, candidate and source-frozen aggregate gates. All30 successors
+and the original bridge remain frozen. The test composition retains G7 protocol
+and all gameplay except one derived transform adapter: only a holder/card/hitbox
+proved fully below an inherited clipping region can be selected, with a fresh
+proof before _GuiInput and exact preview/transformation completion checks.
+This is a test-only eligibility restriction, not general scrolling support.
+
+Native probe89, runtime855, verifier156 and50 socket scenarios pass, together
+with complete frozen G7 regressions and release/cleanup gates. Six production
+builds are byte-identical. The owned overlay and protected metadata are verified;
+429 original game files are unchanged. No live client has run and the coordinator
+has not launched the game. See the [contract](PHASE_1_GENERIC_EVENT_RELEASE_V8_CONTRACT.md)
+and [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V8_ACCEPTANCE.md) for exact
+source/artifact identities, current installed state and cleanup instructions.
+
+Manual setup: Profile3, single-player, same resolution/window as the last test,
+ordinary20-card deck, fresh Aroma of Chaos initial Let Go/Maintain Control choices
+untouched, console/popups closed. Await user readiness, verify UI/running state,
+then one frozen v8 invocation. Do not adopt the earlier selector or reuse a spent
+campaign hash. Twenty cards targets a fully clipped fourth row; runtime geometry
+and complete holder coverage still decide admission. The older ten-card suggestion
+below does not apply to this experiment. Earlier closed/uninstalled entries below
+are historical checkpoints. Live off-screen success and campaign cleanup remain
+pending for this installed instance.
+
 ## Aroma live test stopped before card selection — campaign closed
 
 2026-09-08. One frozen releasev7 invocation accepted Let Go and opened the
