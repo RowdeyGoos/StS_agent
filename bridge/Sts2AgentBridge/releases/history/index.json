@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "releases": [
+    {
+      "component": "card_selection_completion_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/card_selection_completion_v1",
+      "source_manifest_sha256": "c31cb310fd4a72cad84aa23acddca18a7c0ff665b081b4b045dabaac87c9d74b",
+      "contract_sha256": "bc9626a765bf0e50fd8b39813131931905a2cf01adcf5e297ee6d3ce05c295c8"
+    },
+    {
+      "component": "card_selection_release_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/card_selection_release_v1",
+      "source_manifest_sha256": "67cb5073c9a39542677a806064d829a8595331f39665fc6a7bfa7ba71666f16c",
+      "contract_sha256": "0d66520d5f7f14a78f9d6e3b35fd4438f7811661a5e8a399b33920da4f2fd0f6"
+    },
+    {
+      "component": "card_selection_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/card_selection_v1",
+      "source_manifest_sha256": "ca4e18dbb66520481881ea86a91925162593f8496c7abccc061a31f1c319a0ac",
+      "contract_sha256": "af8125ba2dd7bd8d7df85144f5a275d20a347ca7d4fe5bd5e666e53b3f57186c"
+    },
+    {
+      "component": "event_card_operations_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/event_card_operations_v1",
+      "source_manifest_sha256": "8e5d4ef4701929f2543a09ac41875c4479b59bf98e37286685cc86cbb5df053d",
+      "contract_sha256": "be480799460c5a5799bd9785d21f1c41d6467c912876cd456b271999408dac6e"
+    },
+    {
+      "component": "event_orchestrator_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/event_orchestrator_v1",
+      "source_manifest_sha256": "70136652a0ba6977061f25c4ab31f91c771b2831461b0b83c3788d66ccbdc1c8",
+      "contract_sha256": "da7cdbf6efcb6f2786e59a64a0b0d9ed7f9b355cd966f8a73b61d385987c543d"
+    },
+    {
+      "component": "generic_event_lifecycle_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_lifecycle_v1",
+      "source_manifest_sha256": "d0664467deb86dd678904d3a81cd9213762b3e1f65d24dc8a720aaf6ff739d77",
+      "inventory_sha256": "cba71478439c0a7c7c99196c8e0794bebe1b0a80407f30088352c3baab7e4ec3",
+      "contract_sha256": "009a8b51536b690027c759135f91b299603eee9a4208e2ecf2ed64c1eedfe10b"
+    },
+    {
+      "component": "generic_event_release_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v1",
+      "source_manifest_sha256": "82202f06bfc0f12abcf6aa44bde435e95bb157e830e3365b6e3d094e72b7d282",
+      "inventory_sha256": "cc3f4bc96d873b76f6835025d6c8bd81d1f55166b8b859cfed046e8eb163e207",
+      "contract_sha256": "092736202c19ca667ee8e8227dcd169afc27be2ae7bec5941970031ab878e445"
+    },
+    {
+      "component": "generic_event_release_v10",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v10",
+      "source_manifest_sha256": "e3d541f4be1b550666cc5bc80efcf36c7973a50899ea211e4089cc18260e1431",
+      "inventory_sha256": "8f2c017a7acaabd3aa7d9ae1013e844007f22feabc8b9d593dd890fde4d2b2b8",
+      "contract_sha256": "52b03ae2926c8eba66da0ec93bd43da126850060f2f1558f47667163045bc5cd"
+    },
+    {
+      "component": "generic_event_release_v2",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v2",
+      "source_manifest_sha256": "69b513a698564dd2e2312a3270035792cd248fd6fe6ce30ac6c30a5472eb756a",
+      "inventory_sha256": "57649f846f76a835325d19d448b55e2fa1d7d7ce907c5b8f5efee0110e09b15e",
+      "contract_sha256": "f783b0b7fcd014fe6ba4c8f356a17fbcbb753ca0ec35a3d5cfafa1539b663b83"
+    },
+    {
+      "component": "generic_event_release_v3",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v3",
+      "source_manifest_sha256": "e16ddced1379e250ed8c40e8cf0807fad0556850f41738a85cd4b16c872edbfb",
+      "inventory_sha256": "ae2467e5f838e2d503bb881a258fa246a200227171653f8137fe2d170a00203d",
+      "contract_sha256": "446dc46b1f43ff91834d83e488d1988371183473b477ec86f64002faed6eb4d1"
+    },
+    {
+      "component": "generic_event_release_v4",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v4",
+      "source_manifest_sha256": "33c07bef9d61c5bcef595d995a7c3986dcb51c34b55af9b38fa33218d46e0613",
+      "inventory_sha256": "07cbec259e8d2e2a9b2509a51ec38071fe6cb6bc93a0cfdca2691f8e006be847",
+      "contract_sha256": "7fd403d817b770078425409f3aeed91b01b45d2bfd7c22163e5d5f4a3fc6b787"
+    },
+    {
+      "component": "generic_event_release_v5",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v5",
+      "source_manifest_sha256": "dd0be8c5222ff27a10f179becb053d8c6218fd9ec2e9abb6f7b765002069f99e",
+      "inventory_sha256": "adade4736245aa9e61efdd8f926b5e4b9a209697bfc1dcf1009a3fb4b0c6d2fc",
+      "contract_sha256": "9d82284abe3b35d861a2355259c5d88320e62aec523fc73989214bd1c79f4eb8"
+    },
+    {
+      "component": "generic_event_release_v6",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v6",
+      "source_manifest_sha256": "6430fed7761f5336ff61bc92b91229d6b75567175ce149d6834cbcf4e118ade5",
+      "inventory_sha256": "cde4b3a0edae8ee38801aa5b74f089ec1da782dbfd387d5e751edebe5ca5137a",
+      "contract_sha256": "d23e886df85e88ac3fce3f19fb35199580c54825edb066afba52ff0355f074ed"
+    },
+    {
+      "component": "generic_event_release_v7",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v7",
+      "source_manifest_sha256": "a937d52c5803e1275f13f45307f7c8477cb7209115d477d30845bc015c23ede5",
+      "inventory_sha256": "071fca6e4badb7a1f09948f780817cb904cff1c4a460707e3c8bf1942c186363",
+      "contract_sha256": "be7accd099024241400d26e691a3e1cf533d975087846db895e4b90c1c0e30a8"
+    },
+    {
+      "component": "generic_event_release_v8",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v8",
+      "source_manifest_sha256": "3854ed2a09d664a29bed8b079e831cb2db96d2cc5e7aee79e400d201b310a52b",
+      "inventory_sha256": "860b8b1062a4668e4ae5df70399a88e2c770606794148a933149b0316700e377",
+      "contract_sha256": "ae6af92e4de9d6c676ce65455baca2572a03137fa5a0b8b27c7d2803f059f7d3"
+    },
+    {
+      "component": "generic_event_release_v9",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_release_v9",
+      "source_manifest_sha256": "53a6cc7186f13f12cb3a9f4d0437c85be99ed600b0162deca31f2deee8aebb2d",
+      "inventory_sha256": "733316f29243300256be3fe1bc60330900a5f4d3048078d11480eeb1aeffcaa0",
+      "contract_sha256": "c74fb8dc3229c8f9b9e3153909b6416b85202bda6fd1d098bc716672d8c8a2ea"
+    },
+    {
+      "component": "generic_event_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_v1",
+      "source_manifest_sha256": "93bb01fcbad636647994e2ad3459aec260a98d971e1f4be102157273b9f6a2f4",
+      "inventory_sha256": "1771c317901b99447ed5314c054e6d4abccde597652da28d322ff49211958f36",
+      "contract_sha256": "8cc1c1c9fd4ae6d8e4a12fab5dccd33f4c8ffb79648c28eada833dc1c1b7e9f4"
+    },
+    {
+      "component": "generic_event_v2",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_v2",
+      "source_manifest_sha256": "dbbd8cb5d80f54040967b4b2dc27c70a2b031e5bb1077ae86362c80182e59db1",
+      "inventory_sha256": "9edaac1a72a61d86ff6c9d38cebcd28117f1825c033f2cccd63c8919cc5947ab",
+      "contract_sha256": "7e651227deef02dbec967c84ce95eddc4ac75008ba18d5749bdb6944ac4bcea2"
+    },
+    {
+      "component": "generic_event_v3",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_v3",
+      "source_manifest_sha256": "2a025c42f235985e7f22168e2e88f284aaec33876d91d098ebb8e24301f68025",
+      "inventory_sha256": "5a2a75b7967f56b19d95b574599206c24ec74e4715de7eac380558d0687cd671",
+      "contract_sha256": "e7b940653dcfb48383ea2f08c312b97f48a24e323fdc540b45071dedc1ebd194"
+    },
+    {
+      "component": "generic_event_v4",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_v4",
+      "source_manifest_sha256": "1d4353589427a868d418fd7bdcc163106745784ab6ad64d8bfbb4265209d1b6d",
+      "inventory_sha256": "0edb1e07892d8099a52464b4ccb1d1b155dcfd95d8ea6ff99cab4efb238af441",
+      "contract_sha256": "c8c920769ce80246e3925722716e8b522360d6033b788092f77bbaa36e47a14b"
+    },
+    {
+      "component": "generic_event_v5",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_v5",
+      "source_manifest_sha256": "9bc1ad289ecc9f25931e7666f428c6d6c1890e8665123ed7aeb83ef3de2475a5",
+      "inventory_sha256": "6eef170b1ca9c1986d0c97496493dfd4071491dd3607d91f21a0cce339d320a3",
+      "contract_sha256": "3c85df4d39bf8ffe6c64889e47dec2a73e0746848b8d66789351ab57974412ca"
+    },
+    {
+      "component": "generic_event_v6",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_v6",
+      "source_manifest_sha256": "d6cc289c5722ff3f4c4501f728718a9562ebe60f2ef24eb79df0f185c0d064b8",
+      "inventory_sha256": "042fd7a640980db8e971de022a5653f22942d9a86a288a2f83783c4581cf29bb",
+      "contract_sha256": "fa2a970c7a0a446d0993691bf9d1296f9ef846fd40befd0ed1019ab827147552"
+    },
+    {
+      "component": "generic_event_v7",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/generic_event_v7",
+      "source_manifest_sha256": "83d2d6f21223de32370205198838d80282c48718ed7cb23b656449de845876d4",
+      "inventory_sha256": "1f263d7916cb9bb2cd973cce2e72eb4e21ba04e92ff3554ae7e1e0ca490d66df",
+      "contract_sha256": "60bd29a66716db4fb229f69499406c1545b974dc7d861658063b60375c226527"
+    },
+    {
+      "component": "item_bootstrap_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/item_bootstrap_v1",
+      "source_manifest_sha256": "77aa278f7c7c2cba2523c5c4d474fb2f45eb76dfa3d1faa7feb914a96e4c47ab",
+      "contract_sha256": "77c2f48e8851548dd1212fa93ab2d9a205f38ea78a2db71380cf19b0904b5d0a"
+    },
+    {
+      "component": "item_release_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/item_release_v1",
+      "source_manifest_sha256": "036e090daa509dfdf9f2eac7f8ab4d5b42a16aca08cecfe28a349402ef2af1a7",
+      "contract_sha256": "9d7d25840fb8910448bd0f8215f4eabdc081c8151a96eb3649f4db3025103b34"
+    },
+    {
+      "component": "item_transport_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/item_transport_v1",
+      "source_manifest_sha256": "e8cb05876cba695d8b4d22d5e12e597a4ea4d2fa7d525a160c9ccb223b91fe57",
+      "contract_sha256": "df21fad6f407bbf95a367b5678db53ef9127efd643cc3816458d91f700e35479"
+    },
+    {
+      "component": "item_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/item_v1",
+      "source_manifest_sha256": "435219714fa6e667738685f9909396839c46c21612a50bc84a0fc58e584c938a",
+      "contract_sha256": "f955712311994dba6055dd473b8200dc6ca122dddcfb0baf223c0f7312b76869"
+    },
+    {
+      "component": "item_wire_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/item_wire_v1",
+      "source_manifest_sha256": "c930337e74b4eed9f41ba00e804a950a7334a33a96ded7531361312bf5115c10",
+      "contract_sha256": "e138680c587914bc0ded9734bdd48cbcbb7b55354117c407953b12cf6edd1df1"
+    },
+    {
+      "component": "room_flows_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/room_flows_v1",
+      "source_manifest_sha256": "91f5750b70a7b3c735f487a0e5d3d0315b6c6b32593b6fe452845745e506b213",
+      "contract_sha256": "67c5221f0db9625c9b0c67539dc64899849bfc55780495fa2f8681f4b44f5416"
+    },
+    {
+      "component": "room_release_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/room_release_v1",
+      "source_manifest_sha256": "d567c8e91e45fd2bcff2cd446f85d3d7faef3baf2b22b6f7b75ba2490d360957",
+      "contract_sha256": "f5c0f76a302b78ae30994a96288dd9a70310af908dd63dfc1cef0cf7e566df21"
+    },
+    {
+      "component": "shop_diagnostic_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/shop_diagnostic_v1",
+      "source_manifest_sha256": "3e396cd76438a0c8bb3dec77fd510c7ece0b115404a014c482d5ace4de95577f",
+      "contract_sha256": "4919241452060ba9cb452683f29dc518c9455860b5bfa5eb0ffe0460ff01c68a"
+    },
+    {
+      "component": "shop_map_permission_v1",
+      "git_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+      "source_path": "bridge/Sts2AgentBridge/successors/shop_map_permission_v1",
+      "source_manifest_sha256": "14b94d4e0877743e3719ee7904875606fc5a0ae99eccbc4cfebee6bfc0f9f03a",
+      "contract_sha256": "b9551348a73bd4ff54433dc9693cbed3ae841bb98bdc3f4763e22f1bcac613db"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Core</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GenericEventV7ChildSession.cs" />
+    <Compile Include="GenericEventV7ItemChildSession.cs" />
+    <Compile Include="GenericEventV5ChildSession.cs" Link="Frozen/GenericEventV5ChildSession.cs" />
+    <Compile Include="../../items/core/ItemV1Contracts.cs" Link="Frozen/ItemV1Contracts.cs" />
+    <Compile Include="../../items/core/ItemV1CanonicalEncoder.cs" Link="Frozen/ItemV1CanonicalEncoder.cs" />
+    <Compile Include="../../items/core/ItemV1Session.cs" Link="Frozen/ItemV1Session.cs" />
+    <Compile Include="../transform_core/CardTransformV2NativeContracts.cs" />
+    <Compile Include="../transform_core/CardTransformV2Session.cs" />
+    <Compile Include="../transform_core/CardTransformV2Journal.cs" />
+
+    <Compile Include="GenericEventV7Contracts.cs" />
+    <Compile Include="GenericEventV7NativeContracts.cs" />
+    <Compile Include="GenericEventV7Session.cs" />
+    <Compile Include="../../cards/core/CardSelectionV1Contracts.cs" Link="Frozen/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../cards/core/CardSelectionV1Session.cs" Link="Frozen/CardSelectionV1Session.cs" />
+  </ItemGroup>
+</Project>

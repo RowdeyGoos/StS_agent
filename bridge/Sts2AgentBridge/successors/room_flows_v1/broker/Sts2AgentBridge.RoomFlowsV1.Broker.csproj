@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Library</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
-  <ItemGroup><Compile Include="FrozenEventItemChildBroker.cs" /></ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="../common/Sts2AgentBridge.RoomFlowsV1.Common.csproj" />
-    <ProjectReference Include="../../item_wire_v1/producer/Sts2AgentBridge.ItemV1.Wire.csproj" />
-  </ItemGroup>
-</Project>

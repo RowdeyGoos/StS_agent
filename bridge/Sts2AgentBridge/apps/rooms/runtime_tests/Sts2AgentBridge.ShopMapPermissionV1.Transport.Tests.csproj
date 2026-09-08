@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.ShopMapPermissionV1.Transport.Tests</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.RoomReleaseV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>$(DefineConstants);ROOM_RELEASE_TEST_SEAM</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" Link="Program.cs" />
+    <Compile Include="../runtime/RoomFlowTransportContracts.cs" Link="runtime/RoomFlowTransportContracts.cs" />
+    <Compile Include="../runtime/RoomFlowTransportConfiguration.cs" Link="runtime/RoomFlowTransportConfiguration.cs" />
+    <Compile Include="../runtime/RoomFlowTransportProtocol.cs" Link="runtime/RoomFlowTransportProtocol.cs" />
+    <Compile Include="../runtime/OwnedByteFrameQueue.cs" Link="runtime/OwnedByteFrameQueue.cs" />
+    <Compile Include="../runtime/RoomFlowTransportRuntime.cs" Link="runtime/RoomFlowTransportRuntime.cs" />
+    <Compile Include="../../../components/item_transport/runtime/kernel/FixedTimeAuthenticator.cs" Link="kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../../components/item_transport/runtime/kernel/MonotonicTokenBucket.cs" Link="kernel/MonotonicTokenBucket.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../wire/Sts2AgentBridge.ShopMapPermissionV1.Wire.csproj" />
+  </ItemGroup>
+</Project>

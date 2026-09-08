@@ -1,0 +1,56 @@
+{
+  "baseline_commit": "4f0c9ed912b533da17e431bc2ff59a63b06b2aae",
+  "purpose": "source consolidation; no gameplay changes",
+  "removed_snapshot_files": 1579,
+  "retired_source_directories": 32,
+  "schema_version": 1,
+  "status": "passed",
+  "targets": {
+    "cards": {
+      "production": {
+        "bytes": 202240,
+        "sha256": "045761621a3eb1f170ffa5d28e556bfb35664ea1cc81e2f63d0bc98018fef07d"
+      },
+      "production_matches_accepted_artifact": true,
+      "release_manifest": "cards.json",
+      "release_manifest_sha256": "36fd0e9e179f49705109ff96414e0b8d9a08a6064d8c9c4252d21e7ff676ecaa"
+    },
+    "events": {
+      "production": {
+        "bytes": 385024,
+        "sha256": "cf8c0023386609dcf8dcd802ddf4f8ce50e3323575b6455cc3301b2653f14272"
+      },
+      "production_matches_accepted_artifact": true,
+      "release_manifest": "events.json",
+      "release_manifest_sha256": "c3bc1e28f814a8e08667337e9cf90400f2e17c8c157cb23dcf8571cdf451ae14"
+    },
+    "items": {
+      "production": {
+        "bytes": 95232,
+        "sha256": "09ea93cd86a4ca502c27357171f7a7efdaf2bcf91a0a3fcffec96ef79745b9f6"
+      },
+      "production_matches_accepted_artifact": true,
+      "release_manifest": "items.json",
+      "release_manifest_sha256": "9decad7b0cc2df4ff94e7d3150afad9a1f94ca236d54550acc53fe662df43ef2"
+    },
+    "rooms": {
+      "production": {
+        "bytes": 177152,
+        "sha256": "79ceb1fb76629b5c6b231d504d30cca632d7c982cfa1ae4589744547e6c59c8c"
+      },
+      "production_matches_accepted_artifact": true,
+      "release_manifest": "rooms.json",
+      "release_manifest_sha256": "8b5acbfe1c9e26550532e49a2a42d945c0b0986e9da4a51c019a846850f73371"
+    }
+  },
+  "validation": {
+    "actual_current_client_preflights": 4,
+    "check_groups": 150,
+    "credential_reads": 0,
+    "independent_semantic_review": "no remaining blocking findings",
+    "live_campaign_started": false,
+    "reused_unchanged_csharp_groups": 90,
+    "source_projects": 72,
+    "target_game_executed": false
+  }
+}

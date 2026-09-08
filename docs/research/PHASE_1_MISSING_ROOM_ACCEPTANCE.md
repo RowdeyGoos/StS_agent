@@ -36,7 +36,7 @@ Item executable results and independent implementation review are complete below
 
 ## MR-ITEM-V1 executable and integration result
 
-Implemented only under [`successors/item_v1`](../../bridge/Sts2AgentBridge/successors/item_v1).
+Implemented only under [`successors/item_v1`](https://github.com/RowdeyGoos/StS_agent/tree/4f0c9ed912b533da17e431bc2ff59a63b06b2aae/bridge/Sts2AgentBridge/successors/item_v1).
 The pure core owns immutable public observations, canonical snapshot hashes,
 exact native-index action mapping, immediate public/reference revalidation,
 one reservation installed before dispatch, and retained reward-local
@@ -132,7 +132,7 @@ The user requested continued development and testing. The coordinator froze
 [the wire/host packet](../PHASE_1_ITEM_V1_WIRE_PLAN.md) at semantic SHA-256
 `e138680c587914bc0ded9734bdd48cbcbb7b55354117c407953b12cf6edd1df1`.
 Implementation is isolated under
-[`successors/item_wire_v1`](../../bridge/Sts2AgentBridge/successors/item_wire_v1),
+[`successors/item_wire_v1`](https://github.com/RowdeyGoos/StS_agent/tree/4f0c9ed912b533da17e431bc2ff59a63b06b2aae/bridge/Sts2AgentBridge/successors/item_wire_v1),
 based on integration commit `638bd70`. The commit containing this record owns
 this integration wave. The accepted `item_v1` tree and old 0.8.0 inputs are
 byte-identical; no existing contract, vector, host, package or default changed.
@@ -243,7 +243,7 @@ setup is needed. The coordinator froze
 SHA-256 `df21fad6f407bbf95a367b5678db53ef9127efd643cc3816458d91f700e35479`,
 based on `dcfb580`. The commit containing this record owns the integration.
 The new implementation is isolated in
-[`successors/item_transport_v1`](../../bridge/Sts2AgentBridge/successors/item_transport_v1).
+[`successors/item_transport_v1`](https://github.com/RowdeyGoos/StS_agent/tree/4f0c9ed912b533da17e431bc2ff59a63b06b2aae/bridge/Sts2AgentBridge/successors/item_transport_v1).
 The existing item core, wire tree and old bridge inventories remain exact.
 
 The C# runtime accepts an exact distinct configuration document and injected

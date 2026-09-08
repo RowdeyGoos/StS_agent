@@ -1,0 +1,88 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridgeGenericEventV10</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.GenericEventReleaseV10</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../components/cards/core/CardSelectionV1Contracts.cs" Link="card_selection_v1/core/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../../components/cards/core/CardSelectionV1Session.cs" Link="card_selection_v1/core/CardSelectionV1Session.cs" />
+    <Compile Include="../../../components/cards/native/CardSelectionV1NativeRules.cs" Link="card_selection_v1/native/CardSelectionV1NativeRules.cs" />
+    <Compile Include="../../../components/cards/parents/CardSelectionParentV1Contracts.cs" Link="card_selection_v1/parents/CardSelectionParentV1Contracts.cs" />
+    <Compile Include="../../../components/cards/wire/CardSelectionV1WireCodec.cs" Link="card_selection_v1/wire/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../../components/cards/wire/CardSelectionV1WireProtocol.cs" Link="card_selection_v1/wire/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../runtime/GenericEventDiagnosticCode.cs" Link="generic_event_release_v5/runtime/GenericEventDiagnosticCode.cs" />
+    <Compile Include="../runtime/GenericEventDiagnosticCodec.cs" Link="generic_event_release_v5/runtime/GenericEventDiagnosticCodec.cs" />
+    <Compile Include="../lifecycle/GenericEventBootstrapLifecycle.cs" Link="generic_event_release_v10/lifecycle/GenericEventBootstrapLifecycle.cs" />
+    <Compile Include="../native/GenericEventBootstrapHost.cs" Link="generic_event_release_v10/native/GenericEventBootstrapHost.cs" />
+    <Compile Include="../native/GenericEventBootstrapSupport.cs" Link="generic_event_release_v10/native/GenericEventBootstrapSupport.cs" />
+    <Compile Include="../native/GenericEventGodotFrameConnector.cs" Link="generic_event_release_v10/native/GenericEventGodotFrameConnector.cs" />
+    <Compile Include="../native/GenericEventModEntry.cs" Link="generic_event_release_v10/native/GenericEventModEntry.cs" />
+    <Compile Include="../native/PinnedGenericEventHarmonyGuard.cs" Link="generic_event_release_v10/native/PinnedGenericEventHarmonyGuard.cs" />
+    <Compile Include="../native/ProductionGenericEventRuntimeFactory.cs" Link="generic_event_release_v10/native/ProductionGenericEventRuntimeFactory.cs" />
+    <Compile Include="../operator/GenericEventOperatorFiles.cs" Link="generic_event_release_v10/operator/GenericEventOperatorFiles.cs" />
+    <Compile Include="../runtime/GenericEventTransportConfiguration.cs" Link="generic_event_release_v10/runtime/GenericEventTransportConfiguration.cs" />
+    <Compile Include="../runtime/GenericEventTransportContracts.cs" Link="generic_event_release_v10/runtime/GenericEventTransportContracts.cs" />
+    <Compile Include="../runtime/GenericEventTransportProtocol.cs" Link="generic_event_release_v10/runtime/GenericEventTransportProtocol.cs" />
+    <Compile Include="../runtime/GenericEventTransportRuntime.cs" Link="generic_event_release_v10/runtime/GenericEventTransportRuntime.cs" />
+    <Compile Include="../runtime/OwnedByteFrameQueue.cs" Link="generic_event_release_v10/runtime/OwnedByteFrameQueue.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV5ChildSession.cs" Link="generic_event_v5/core/GenericEventV5ChildSession.cs" />
+    <Compile Include="../../../components/events/transform_core/CardTransformV2Journal.cs" Link="generic_event_v7/transform_core/CardTransformV2Journal.cs" />
+    <Compile Include="../../../components/events/transform_core/CardTransformV2NativeContracts.cs" Link="generic_event_v7/transform_core/CardTransformV2NativeContracts.cs" />
+    <Compile Include="../../../components/events/transform_core/CardTransformV2Session.cs" Link="generic_event_v7/transform_core/CardTransformV2Session.cs" />
+    <Compile Include="../../../components/events/wire/CardTransformV2WireCodec.cs" Link="generic_event_v7/wire/CardTransformV2WireCodec.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7ChildSession.cs" Link="generic_event_v7/core/GenericEventV7ChildSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7Contracts.cs" Link="generic_event_v7/core/GenericEventV7Contracts.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7ItemChildSession.cs" Link="generic_event_v7/core/GenericEventV7ItemChildSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" Link="generic_event_v7/core/GenericEventV7NativeContracts.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7Session.cs" Link="generic_event_v7/core/GenericEventV7Session.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7Binding.cs" Link="generic_event_v7/native/GenericEventV7Binding.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7CardAdapter.cs" Link="generic_event_v7/native/GenericEventV7CardAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7Hooks.cs" Link="generic_event_v7/native/GenericEventV7Hooks.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7ItemAdapter.cs" Link="generic_event_v7/native/GenericEventV7ItemAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7ItemState.cs" Link="generic_event_v7/native/GenericEventV7ItemState.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7MultiUpgradeAdapter.cs" Link="generic_event_v7/native/GenericEventV7MultiUpgradeAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7MultiUpgradeState.cs" Link="generic_event_v7/native/GenericEventV7MultiUpgradeState.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7RemovalAdapter.cs" Link="generic_event_v7/native/GenericEventV7RemovalAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7RewardAdapter.cs" Link="generic_event_v7/native/GenericEventV7RewardAdapter.cs" />
+    <Compile Include="../gameplay/GenericEventV7TransformAdapter.cs" Link="generic_event_v7/native/GenericEventV7TransformAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7TransformState.cs" Link="generic_event_v7/native/GenericEventV7TransformState.cs" />
+    <Compile Include="../../../components/events/native/PinnedGenericEventV7NativeAdapter.cs" Link="generic_event_v7/native/PinnedGenericEventV7NativeAdapter.cs" />
+    <Compile Include="../../../components/events/wire/GenericEventV7WireCodec.cs" Link="generic_event_v7/wire/GenericEventV7WireCodec.cs" />
+    <Compile Include="../../../components/events/wire/GenericEventV7WireService.cs" Link="generic_event_v7/wire/GenericEventV7WireService.cs" />
+    <Compile Include="../../../components/item_bootstrap/native/PinnedItemBuildGuard.cs" Link="item_bootstrap_v1/native/PinnedItemBuildGuard.cs" />
+    <Compile Include="../../../components/item_bootstrap/operator/DarwinReadOnly.cs" Link="item_bootstrap_v1/operator/DarwinReadOnly.cs" />
+    <Compile Include="../../../components/item_bootstrap/operator/ItemOperatorConfiguration.cs" Link="item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" />
+    <Compile Include="../../../components/item_bootstrap/operator/ItemPinnedFileIdentity.cs" Link="item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" />
+    <Compile Include="../../../components/item_transport/runtime/kernel/FixedTimeAuthenticator.cs" Link="item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../../components/item_transport/runtime/kernel/MonotonicTokenBucket.cs" Link="item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" />
+    <Compile Include="../../../components/items/core/ItemV1CanonicalEncoder.cs" Link="item_v1/core/ItemV1CanonicalEncoder.cs" />
+    <Compile Include="../../../components/items/core/ItemV1Contracts.cs" Link="item_v1/core/ItemV1Contracts.cs" />
+    <Compile Include="../../../components/items/core/ItemV1Session.cs" Link="item_v1/core/ItemV1Session.cs" />
+    <Compile Include="../../../components/item_wire/producer/ItemWireV1Codec.cs" Link="item_wire_v1/producer/ItemWireV1Codec.cs" />
+    <Compile Include="../../../components/item_wire/producer/ItemWireV1Protocol.cs" Link="item_wire_v1/producer/ItemWireV1Protocol.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(STS2GameDataDir)/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidatePinnedGameData" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))" Text="STS2GameDataDir must be absolute." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')" Text="Pinned sts2.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/0Harmony.dll')" Text="Pinned 0Harmony.dll is missing." />
+  </Target>
+</Project>

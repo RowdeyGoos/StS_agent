@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.ShopMapPermissionV1.Release.Verifier</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Verifier</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="VerificationException.cs" Link="generic/VerificationException.cs" />
+    <Compile Include="SafeFiles.cs" Link="generic/SafeFiles.cs" />
+    <Compile Include="MetadataNames.cs" Link="generic/MetadataNames.cs" />
+    <Compile Include="IlDecoder.cs" Link="generic/IlDecoder.cs" />
+    <Compile Include="ShopMapPermissionReleasePolicy.cs" />
+    <Compile Include="ShopMapPermissionReleaseProjection.cs" />
+    <Compile Include="ShopMapPermissionReleaseVerifier.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

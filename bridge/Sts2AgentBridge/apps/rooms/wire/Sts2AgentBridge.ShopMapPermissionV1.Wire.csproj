@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.ShopMapPermissionV1.Wire</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.RoomFlowsV1</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../components/rooms/wire/RoomFlowWireService.cs" Link="wire/RoomFlowWireService.cs" />
+    <Compile Include="../../../components/rooms/wire/RoomFlowWireCodec.cs" Link="wire/RoomFlowWireCodec.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../core/Sts2AgentBridge.ShopMapPermissionV1.Core.csproj" />
+    <ProjectReference Include="../../../components/rooms/broker/Sts2AgentBridge.RoomFlowsV1.Broker.csproj" />
+    <ProjectReference Include="../../../components/rooms/event/core/Sts2AgentBridge.RoomFlowsV1.Event.Core.csproj" />
+  </ItemGroup>
+</Project>

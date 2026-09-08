@@ -1,274 +1,134 @@
-# AGENTS.md
+# Working guide
 
-This file is the working guide for coding sessions in this repo.
+Use this guide for every session. The user-approved workflow below (2026-09-08)
+supersedes procedural requirements in older plans, handoffs and packet briefs.
+Historical contracts still describe their exact artifact's semantics and evidence;
+do not falsify hashes, bypass runtime safeguards or broaden user-data access.
 
-Use it for:
+## Start with the task
 
-- where to read first
-- what not to break
-- how to validate changes
-- which docs to update when the project evolves
+1. Check `git status --short --branch` and recent commits. Work in the user's
+   current checkout; never switch to a hardcoded historical worktree. Main
+   contains the integrated work as of this update.
+2. Read the [README](README.md) overview and only the reference for your task:
 
-Do not treat this file as the full project description. For that, follow the reading order below.
+   | Task | Read next |
+   | --- | --- |
+   | Live bridge or generic events | [Current status](docs/PHASE_1_CURRENT_STATUS.md), then relevant source/contract; [live guide](docs/LIVE_DEVELOPMENT.md) before build/install/live work |
+   | Combat simulator or RL | Relevant sections of [project context](docs/PROJECT_CONTEXT.md), affected source and tests |
+   | Headless actor/data | Relevant source/schema and [actor evidence](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) |
+   | Architecture or priorities | [Decisions](DECISIONS.md) and [roadmap](ROADMAP.md) |
+   | Documentation | The document and its direct references |
 
-## Current event-work entry point
+3. Use the [documentation index](docs/README.md) when more context is needed.
+   Do not recursively read all linked documents or completed phase plans.
+   Search historical rationale only for a specific unresolved question.
 
-For event work, begin with [the Astra handoff](docs/PHASE_1_ASTRA_HANDOFF.md),
-[current status](docs/PHASE_1_CURRENT_STATUS.md) and the
-[generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md).
-Use `/Users/rowdeygoos/.codex/worktrees/23cf/StS_agent`; saved local main is older.
+## Default development loop
 
-The generic release v5 Cheese/Gorge add-two live test resolved through Proceed/map
-and completed all owned cleanup. All generic campaigns are closed, game stopped,
-and no installed overlay, credential or cleanup remains. The
-[v5 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) records
-exact evidence, including the last-action effects reporting limitation.
-Historical campaign state identities must never be reused.
+1. State the useful outcome and smallest observable acceptance case. For native
+   behavior, identify a representative game interaction before building a large
+   feature; label speculative capability work explicitly.
+2. Keep one owner responsible through implementation, packaging and validation.
+   Prefer a coherent end-to-end change using existing mechanisms.
+3. Resolve uncertain assumptions with a narrow source inspection or controlled
+   experiment early. Do not expand infrastructure to avoid testing the assumption.
+4. Run focused checks, fix concrete failures, and perform the relevant final
+   validation once the change is stable.
+5. Finish the authorized feedback loop. Do not routinely stop at "implemented,
+   needs packaging" when packaging/testing was requested. If user readiness is
+   needed, prepare the build first and give one precise setup instruction.
+6. Report behavior, evidence, remaining limits and next useful step concisely.
+   For substantial work, record available elapsed times for implementation,
+   review, validation, release preparation and user wait; do not invent missing
+   timings or create a telemetry subsystem.
 
-Continued development follows the independently accepted
-[generic v6 item contract](docs/PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
-[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md).
-Singleton potion/relic children and retained card families passed independent
-review and both complete offline gates; G6 is frozen as successor26. Preserve
-all 26 frozen successors and the original bridge. No new live setup is needed.
-Expand by authoritative shared interaction family, using event identities as
-tests instead of adding event-name allowlists.
+Reuse authorization already given. Ask only for genuinely missing scope, necessary
+user readiness or actions outside that authority. Routine fixes, documentation,
+local verification and implementation choices do not need repeated permission.
 
-## Read This First
+## Controlled experiments
 
-When starting a fresh session, read in this order:
+- Answer the concrete capability question with the smallest safe test.
+- Keep target identity, native legality, ownership, bounded execution, outcome
+  verification and cleanup. Never retry an uncertain mutation.
+- Distinguish prerequisites for safely acting from facts needed to broaden the
+  conclusion. User-controlled setup or visual confirmation may establish an
+  experiment's premise; record it without building a general proof mechanism.
+- Example: select a known allocated off-screen card once and check its exact
+  preview. Do not require clipping-parent detection or a viewport certificate.
+  One successful setup does not prove every deck size or selector.
+- If a test stops before exercising the feature, question the necessity of the
+  blocking prerequisite before adding diagnostics or another release.
+- Add bounded, useful failure categories at the relevant boundary. Tests of
+  inert game objects cannot settle assumptions about the real game's behavior.
 
-1. [README.md](README.md)
-2. [DECISIONS.md](DECISIONS.md)
-3. [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md)
-4. [ROADMAP.md](ROADMAP.md)
-5. [game/simulation/core.py](game/simulation/core.py)
-6. [game/simulation/encoding.py](game/simulation/encoding.py)
-7. [game/cli/train.py](game/cli/train.py)
+## Review and validation
 
-For work on the full-game program, live integration, shared contracts, or
-long-term agent architecture, also read:
+| Change | Required validation |
+| --- | --- |
+| Documentation only | Diff, relevant links, factual consistency and any affected artifact bindings; no gameplay suite or live launch |
+| Local behavior/fix using existing contracts | Focused regression and affected consumers; author review normally suffices |
+| Live mutation, protocol, public information, RNG, persistence or cleanup semantics | Focused adversarial cases, one independent semantic review and relevant integration checks |
+| Release | Changed behavior plus build/package/source identity and installation/cleanup checks; one final release gate |
 
-1. [docs/LONG_TERM_ARCHITECTURE_ROADMAP.md](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md)
-2. [docs/PHASE_0_TARGET_CHARTER.md](docs/PHASE_0_TARGET_CHARTER.md)
-3. [docs/PHASE_0_PROFILE_FIXTURE_PLAN.md](docs/PHASE_0_PROFILE_FIXTURE_PLAN.md)
-4. [docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md](docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md)
-   and its [sanitized result](docs/research/PHASE_0_PROFILE_METADATA_DISCOVERY_RESULT.md)
-   plus the approved
-   [D1B sidecar scope](docs/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_REQUEST.md)
-   and its [sanitized result](docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_RESULT.md)
-   before any further profile-filesystem work. D1C was reviewed, deliberately
-   unselected/skipped, and never executed; its fail-closed predicate is
-   incorporated into the
-   [baseline fingerprint request](docs/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md).
-   Its first approved invocation stopped before target-content access because
-   the runner used the wrong fixed profile-component construction; see the
-   [sanitized attempt-1 result](docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md).
-   No corrected rerun is currently authorized. No earlier approval authorizes
-   it or a later copy, parse, Cloud, restore, or launch step
-5. the active phase plan, currently
-   [docs/PHASE_1_INTEGRATION_SPIKE.md](docs/PHASE_1_INTEGRATION_SPIKE.md)
-6. [docs/PHASE_1_CURRENT_STATUS.md](docs/PHASE_1_CURRENT_STATUS.md)
-   for the living `R0i` capability, evidence-level, residual, and next-target
-   summary
-7. [docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md](docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-   for the preserved elite-continuation and actor-ready headless dependency graph,
-   exact ownership, acceptance gates, and stop boundaries, plus its
-   [acceptance ledger](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md)
-   and, for actor representation/model work, the frozen
-   [encoding schema](docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json)
-8. [docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md) before
-   dispatching implementation or review work
-9. [docs/PHASE_1_NEXT_INCREMENT_PLAN.md](docs/PHASE_1_NEXT_INCREMENT_PLAN.md)
-   and its
-   [acceptance ledger](docs/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md) for
-   the completed predecessor contracts and exact evidence
-10. [docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md](docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md)
-   for the completed foundational live/headless packet graph
-11. [docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md](docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md)
-12. [docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md](docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md)
-   for the staged bridge boundary and live acceptance gates
-13. [bridge/Sts2AgentBridge/README.md](bridge/Sts2AgentBridge/README.md)
-   before bridge build, test, package, or verifier work
-14. [docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md](docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md)
-    for the exact initial repository artifact and detailed `R0a`/`R0b` results
-15. [docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md](docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md)
-    as the preserved first-campaign authorization boundary. It is not standing
-    authorization for any new operator-config write, overlay change, launch,
-    live probe, teardown, or rollback work
+Additional review must answer a distinct unresolved risk. Reviewers block concrete
+correctness, compatibility or safety failures, not speculative improvements outside
+the task. Use [multi-agent guidance](docs/MULTI_AGENT_EXECUTION.md) only when
+delegation is permitted and would shorten the critical path.
 
-For delegated or parallel work, read
-[docs/MULTI_AGENT_EXECUTION.md](docs/MULTI_AGENT_EXECUTION.md) before assigning
-write ownership. These additional documents are not mandatory for an isolated
-combat-prototype change unless that change affects a full-game contract or
-program decision.
+Run targeted tests during corrections. Reuse trusted accepted evidence only when
+the relevant transitive sources, tests, dependencies, toolchain and settings match.
+A hash alone is not evidence that tests ran. Rerun affected checks after a relevant
+change, failure or new concern. Do not repeat full candidate/frozen matrices merely
+because a manifest, documentation or commit identity changed.
 
-## Doc Roles
-
-- `README.md`: user-facing overview, setup, and run commands
-- `AGENTS.md`: session workflow and repo invariants
-- `DECISIONS.md`: why important architecture and training choices were made
-- `docs/PROJECT_CONTEXT.md`: current technical state of the simulator
-- `ROADMAP.md`: likely next steps and current priorities
-- `docs/LONG_TERM_ARCHITECTURE_ROADMAP.md`: strategic destination and phase order
-- `docs/PHASE_0_TARGET_CHARTER.md`: initial benchmark target and open gates
-- `docs/PHASE_0_PROFILE_FIXTURE_PLAN.md`: dedicated profile construction,
-  privacy, reset, and validation plan
-- `docs/PHASE_0_PROFILE_METADATA_DISCOVERY_REQUEST.md`: exact first
-  metadata-only profile read scope; its approved hash is preserved and does not
-  authorize broader follow-up work
-- `docs/research/PHASE_0_PROFILE_METADATA_DISCOVERY_RESULT.md`: sanitized D1
-  local-boundary result, caveats, and historically redacted entries
-- `docs/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_REQUEST.md`: preserved exact
-  approved D1B scope for testing the current shallow state against the
-  statically predicted backup-sidecar pair
-- `docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_METADATA_RESULT.md`: sanitized
-  D1B current-projection pass, execution attempts, and strict limits
-- `docs/research/PHASE_0_PROFILE_BACKUP_SIDECAR_RESULT_REVIEW.md`: independent
-  hash-bound D1B execution-result, privacy, and gate-disposition review
-- `docs/PHASE_0_PROFILE_RECOVERY_UNIT_METADATA_REQUEST.md`: preserved exact D1C
-  metadata-only alternative; reviewed, deliberately unselected/skipped, and
-  never executed
-- `docs/research/PHASE_0_PROFILE_RECOVERY_UNIT_SCOPE_REVIEW.md`: independent
-  hash-bound review of the preserved D1C alternative
-- `docs/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md`: current exact, frozen
-  two-sample byte-fingerprint scope with the D1C fail-closed predicate as its
-  mandatory pre-read gate; attempt 1 stopped and no corrected invocation is
-  authorized
-- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_SCOPE_REVIEW.md`: independent
-  exact-hash authorization, race/claim, canonicalization, and privacy review of
-  the baseline-fingerprint request
-- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md`: sanitized
-  fail-closed first-invocation result, implementation defect, and fresh-rerun
-  approval boundary
-- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_REVIEW.md`: independent
-  hash-bound execution-stage, static-path, privacy, and rerun-authorization
-  review of attempt 1
-- `docs/research/PHASE_0_PROFILE_BASELINE_HASH_CORRECTED_RUNNER_SYNTHETIC_VALIDATION.md`:
-  disposable no-user-data validation of the corrected path binding, byte
-  ceiling, result markers, canonicalization, and fail-closed cases
-- `docs/research/PHASE_0_PROFILE_METADATA_RESULT_REVIEW.md`: independent
-  historical hash-bound review of the sanitized D1 result and exact D1B scope
-- `docs/PHASE_1_INTEGRATION_SPIKE.md`: current live/fast-backend evidence plan
-- `docs/PHASE_1_CURRENT_STATUS.md`: living bridge progress, demonstrated versus
-  fixture-only evidence, residuals, exclusions, and next bounded target
-- `docs/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`: preserved elite-continuation and
-  actor-ready headless packets, dependencies, ownership, gates, and handoff
-- `docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md`: preserved successor packet,
-  integration, review, evidence, telemetry, and live-cleanup ledger
-- `docs/research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json`: exact frozen
-  `headless_encoding_v1` API, features, normalization, joins and fingerprint input
-- `docs/PHASE_1_NEXT_INCREMENT_PLAN.md`: completed predecessor increment and
-  preserved packet contracts; its research ledger owns exact acceptance results
-- `docs/PHASE_1_PARALLEL_EXECUTION_PLAN.md`: completed foundational live/headless
-  packet graph and preserved ownership/acceptance contracts
-- `docs/PHASE_1_STATIC_AUDIT_SYNTHESIS.md`: preserved pre-implementation
-  candidate shortlist and ordered gates
-- `docs/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md`: preserved initial project-owned
-  live-bridge boundary, staged capabilities, and acceptance gates
-- `bridge/Sts2AgentBridge/README.md`: implemented `R0i` build, contract,
-  controllers, verifier, package, and operational-boundary guide
-- `docs/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md`: preserved initial
-  artifact identities and gate results plus detailed `R0a`/`R0b` live evidence
-- `docs/PHASE_1_R0A_LIVE_CAMPAIGN_REQUEST.md`: preserved exact approval-bound
-  first live smoke, teardown, rollback, privacy, and claim boundary; historical,
-  not reusable authorization
-- `docs/MULTI_AGENT_EXECUTION.md`: parallel-development operating model
-- `docs/PHASE_1_ASTRA_HANDOFF.md`: current integration checkout, evidence, user direction and operational state
-- `docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md`: active generic discovery/admission design and acceptance criteria; not an implemented contract
-- `.codex`: ultra-short bootstrap note for fresh Codex sessions
-
-## Core Working Assumptions
-
-These assumptions describe the current combat research path. They are not the
-end-state full-game contracts.
-
-- `CombatEnv` is the main RL-facing environment.
-- The structured observation is the source of truth for debugging and tests.
-- `ObservationEncoder` is the RL representation layer.
-- Multi-enemy combat uses stable enemy slots. Dead enemies stay in the encounter list so target indices and encoded slots do not shift.
-- The discrete action space is fixed-size and relies on legal-action masking.
-- Reward is intentionally shaped toward winning while preserving player HP.
-
-## Invariants To Preserve
-
-- Keep structured observations and encoded observations conceptually separate.
-- Keep randomness explicit and seeded through the environment RNG or objects created from it.
-- Avoid global state.
-- Keep game state serializable and easy to inspect.
-- Preserve compatibility with the simple single-enemy path unless there is a good reason to change it.
-- Maintain Python `3.10+` compatibility unless the project requirement is intentionally raised.
-
-## If You Change Observation Or Action Semantics
-
-Observation changes usually require updates to:
-
-- `game/simulation/core.py`
-- `game/simulation/encoding.py`
-- `game/simulation/action_features.py`
-- heuristic logic in `game/agents/baselines.py`
-- tests
-- demo formatting in `game/cli/demo.py`
-
-Action changes usually require updates to:
-
-- `game/simulation/actions.py`
-- `game/simulation/core.py`
-- `game/simulation/encoding.py`
-- `game/simulation/action_features.py`
-- action-mask tests
-
-## File Map
-
-- `game/simulation/`: combat rules, mutable state, observations, encoding, and factories
-- `game/agents/`: baselines, DQN-family agents, PPO, devices, and persistence
-- `game/training/`: PPO worker infrastructure and semantic profiling
-- `game/analysis/`: traces, rendering, brute-force search, regret, and uncertainty
-- `game/cli/`: real command-line implementations
-- `game/__init__.py`: stable symbol-level public API
-- `configs/`: reusable training and sweep configurations
-- `manifests/game-builds/`: sanitized immutable identities for pinned game builds
-- `tests/simulation/`: combat and encoding coverage
-- `tests/agents/`: model architecture and persistence coverage
-- `tests/training/`: trainer, profiling, and worker coverage
-- `tests/analysis/`: trace and oracle coverage
-- `tests/cli/`: command configuration and sweep coverage
-
-Use canonical subpackage paths. Do not reintroduce flat-module aliases or root
-CLI wrappers; stale imports and commands should fail visibly instead of creating
-a permanent second API surface.
-
-## Common Validation Commands
-
-Setup:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements-dev.txt
-pip install -e .
-```
-
-Regression checks:
+For broad Python integration, use the existing environment and run:
 
 ```bash
 python3 -m compileall game tests
 PYTHONPATH=. python3 -m pytest -q
 ```
 
-Manual runs:
+Choose narrower paths for local changes. Build bridge fixtures in disposable
+outputs; follow the selected release's actual build inputs and compatibility checks.
 
-```bash
-sts-demo
-sts-train --policy compare --episodes 500 --eval-episodes 100
-sts-train --policy heuristic --encounter-set overgrowth_easy --episodes 200
-```
+## Source and release discipline
 
-## When Editing
+Maintain shared bridge code in `bridge/Sts2AgentBridge/components/` and distinct
+release compositions in `apps/`. The 32 old successor source trees were removed
+at the user's request. Their exact sources remain in Git and original identities
+in `releases/history/`; do not restore a recursive predecessor dependency chain.
 
-- Prefer minimal, explicit changes over clever abstraction.
-- Keep the simulator readable as an RL research playground.
-- Update docs when core assumptions change.
-- Add or update a `DECISIONS.md` entry when you make a meaningful architecture or training-default choice.
-- Update `ROADMAP.md` when priorities or likely next steps shift materially.
+Use the [current bridge checker](bridge/Sts2AgentBridge/README.md) for the affected
+target. Develop and test current code without freezing every correction; use one
+final release gate for a stable artifact. Keep release packages, source commit,
+manifest and evidence. Version public interfaces for semantic changes, not test
+attempts. Never repin old evidence or bypass a failing runtime safeguard.
+
+## Invariants
+
+- Python 3.10+; explicit seeded RNG; no new global mutable simulator state.
+- Keep state serializable and structured observations separate from RL encoding.
+- Preserve stable enemy slots, legal-action masks and the simple combat path.
+- Keep canonical subpackage imports and installed `sts-*` commands; no flat aliases
+  or root CLI wrappers.
+- Observation/action changes require checking `game/simulation/core.py`,
+  `encoding.py`, `actions.py`, `action_features.py` and affected baselines,
+  demo formatting and tests. Update only affected consumers.
+- Preserve public/privileged separation and distinguish synthetic, released and
+  live-demonstrated evidence. Full-game utility is run victory probability;
+  combat-local HP reward shaping does not redefine it.
+- Profile/save/history/Cloud access is outside ordinary development. Old
+  one-shot approvals are not standing authority; see the [live guide](docs/LIVE_DEVELOPMENT.md).
+
+## Documentation maintenance
+
+Keep one source of truth per topic: README for usage, current status for capability
+and latest operational evidence, roadmap for priorities, decisions for durable
+choices, and acceptance ledgers for historical results. Update only documents whose
+meaning changes. Do not copy campaign chronology into several overview files.
+
+Keep startup guidance short. Archive historical rationale once; preserve exact
+hash-bound contracts and evidence at their existing paths. A completed plan is
+reference material, not a fresh-session task queue.

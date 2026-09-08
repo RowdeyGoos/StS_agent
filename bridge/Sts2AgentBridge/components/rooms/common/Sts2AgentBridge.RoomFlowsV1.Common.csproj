@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge.RoomFlowsV1.Common</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="RoomFlowContracts.cs" />
+    <Compile Include="EventItemChildContracts.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../items/core/Sts2AgentBridge.ItemV1.Core.csproj" />
+  </ItemGroup>
+</Project>

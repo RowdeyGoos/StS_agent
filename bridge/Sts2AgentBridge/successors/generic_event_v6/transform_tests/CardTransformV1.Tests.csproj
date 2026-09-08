@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>CardTransformV1.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
-  <ItemGroup>
-    <Compile Include="../../generic_event_v5/transform_tests/Program.cs" Link="Frozen/Program.cs" />
-    <ProjectReference Include="../core/GenericEventV6.Core.csproj" />
-  </ItemGroup>
-</Project>

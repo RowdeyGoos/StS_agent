@@ -11,17 +11,23 @@ it. It complements, but does not replace, the short-horizon work in
 the current combat research environment improves; this document should change
 only when the full-project strategy or end-state architecture changes.
 
-Active program artifacts:
+This is a specialist design reference, not a mandatory startup checklist.
+Its dated descriptions of repository state and proposed increments are historical;
+use [current status](PHASE_1_CURRENT_STATUS.md) and [ROADMAP.md](../ROADMAP.md)
+for present capabilities and priorities. [AGENTS.md](../AGENTS.md) owns the
+streamlined development process, including proportionate review and validation.
+
+Program references (read only the relevant one):
 
 - [`PHASE_0_TARGET_CHARTER.md`](PHASE_0_TARGET_CHARTER.md) fixes the initial
   scope, information boundary, objective, and unresolved evaluation gates.
-- [`PHASE_1_INTEGRATION_SPIKE.md`](PHASE_1_INTEGRATION_SPIKE.md) defines the
-  evidence campaign for selecting the live truth path and fast backend.
+- [`PHASE_1_INTEGRATION_SPIKE.md`](PHASE_1_INTEGRATION_SPIKE.md) preserves the
+  earlier evidence campaign for selecting the live truth path and fast backend.
 - [`PHASE_1_CURRENT_STATUS.md`](PHASE_1_CURRENT_STATUS.md) records the current
   `R0i` live-bridge capability, evidence levels, exclusions, and next bounded
   target.
 - [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
-  is the active bounded bridge/headless implementation graph.
+  preserves completed bridge/headless packet contracts; it is not the active queue.
 - [`MULTI_AGENT_EXECUTION.md`](MULTI_AGENT_EXECUTION.md) defines how parallel
   work is owned, reviewed, integrated, and reported to the user.
 
