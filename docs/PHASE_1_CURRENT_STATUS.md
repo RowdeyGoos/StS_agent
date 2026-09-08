@@ -1,5 +1,30 @@
 # Phase 1 Current Integration Status
 
+## Direct card 16 test — v10 installed, awaiting user start
+
+2026-09-08. V10 will directly select the sixteenth native grid holder (slot15)
+and check that the preview contains that exact card. The user explicitly
+supersedes all previous clipping/viewport/geometry proof requirements. No
+scrolling or replacement boundary proof is required for this controlled test.
+
+The single frozen aggregate passed 21 direct-target assertions, six socket
+cases and release/lifecycle checks. Independent review accepted all 73 frozen
+files and four identical production builds. All 31 predecessors remain frozen.
+See the [v10 contract](PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
+
+GENERIC-EVENT-V10-SMOKE-V1 is installed and verified: 429 unchanged base files,
+two owned overlay files and verified operator metadata. Fresh installed state:
+`d2c1267bcdc7f4a0754c4e595dee23bb0ccadaa4326f9b78087b876e9ed6f8ad`.
+No v10 live invocation or automatic launch has occurred. Tell the user to start
+manually on Profile3 with the same 20-card setup/window and fresh Aroma of Chaos
+at untouched Let Go/Maintain Control, then reply ready. After readiness, run the
+frozen client once. Report exact-card selection independently of later event
+completion. Normal quit and owned quarantine/purge follow the test.
+
+All readiness, closed-state and proposed boundary-proof instructions below are
+historical and superseded by this entry.
+
 ## V9 live diagnostic: clipping-parent search failed — campaign closed
 
 2026-09-08. User readiness was followed by actual UI verification: initial Aroma
