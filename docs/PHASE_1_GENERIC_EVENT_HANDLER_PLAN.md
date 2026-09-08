@@ -1,6 +1,35 @@
 # Generic event handler: next development direction
 
-## Geometry diagnostic repair v9 installed — awaiting manual readiness
+## V9 live diagnostic: clipping-parent search failed — campaign closed
+
+2026-09-08. User readiness was followed by actual UI verification: initial Aroma
+of Chaos choices untouched, deck20, console/popups closed. Fresh require-running
+passed. Exactly one frozen v9 invocation accepted Let Go and opened the selector,
+then stopped with unsupported_state / geometry_clip_missing after258 reads.
+One parent action was attempted/accepted, zero child episodes/actions/completions;
+effects remain unverified. No card input, retry or manual completion occurred.
+
+This identifies the clip-search stage, after holder/domain binding and exact
+scroll-layout admission succeeded. V9 expects a Control with ClipContents=true
+in the grid's parent chain; the search did not yield that proof. This code also
+covers an exception from ClipContents/GetParent, so the summary is not a retained
+scene tree or proof that the entire game has no clipping controls. It does not
+show that native off-screen input fails; that input has still never been tested
+live. The next correction must verify an actual visible/rendering boundary (for
+example the bound viewport) instead of assuming a clipping parent or deleting
+the off-screen proof. Retained positioning IL alone does not establish that
+rendering boundary. Do not guess a deck-size change or repeat this spent client.
+
+Normal UI quit, stopped/closed checks, code-first quarantine, exact four-file
+purge and final clean-base verification passed:429 unchanged files,0 overlays.
+All live campaigns are closed; no cleanup, overlay or credential remains. All31
+successors and the original bridge stay frozen. No further user game setup is
+needed until a corrected successor is prepared. See the
+[v9 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V9_ACCEPTANCE.md) for exact
+result and historical state hashes. Earlier installed-readiness entries below
+are historical and superseded.
+
+## Historical checkpoint: geometry diagnostic repair v9 installed
 
 2026-09-08. The user requested fixing the v8 stop so testing can continue.
 Successor31 preserves v8 selection admission and input behavior, but reports37

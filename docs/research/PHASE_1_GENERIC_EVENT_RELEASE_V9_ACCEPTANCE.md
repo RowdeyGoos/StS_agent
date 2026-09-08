@@ -150,3 +150,56 @@ using the newly returned quarantine hash, and final unchanged429-file clean-base
 0-overlay plus stopped/closed checks complete root-owned cleanup. Never reuse a
 historical state hash. These cleanup steps remain pending for this installed
 instance. Successful live off-screen selection remains pending.
+
+## Single live invocation: clip-search stop and completed cleanup
+
+2026-09-08. This closes the installed-readiness checkpoint above. User said ready.
+Current CUA screenshot showed initial Aroma of Chaos Let Go/Maintain Control
+options, deck20, no console/popups. Profile3 remained operator-provided setup;
+it was not independently visible on the event screen. Require-running passed
+(one process sample), then root invoked the frozen client exactly once with
+installed state e64573ebd1733943a2454fd6cc5a72678eca3899ce84bb6ce51a0c5968e15711.
+Exit4; sanitized result:
+
+```json
+{"schema_version":1,"status":"failed","parent_attempted":1,"parent_accepted":1,"parent_reconciled":0,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":1,"reads":258,"effects":"unverified","completed_card_children":0,"completed_item_children":0,"code":"unsupported_state","last_response_diagnostic":"geometry_clip_missing"}
+```
+
+Result `/private/tmp/generic-release-v9-live-result.json`, SHA256
+`e27bf9147805117cf66ebde6ad785ae83143bfab4779623050d774b87c132558`.
+Post-test screenshot showed the transform selector: deck20, five columns,
+two full rows and a partially clipped third row, with no transformation preview.
+No card-selection POST was sent and no child completed. The accepted Let Go
+parent opened the selector; effects remain unverified as reported. No retry,
+manual selection/completion, scrolling or extra live bridge probe occurred.
+
+The new diagnostic localizes the stop to ProbeGeometry.TryBind's clip search.
+TryPrepareSurface had already passed holder snapshot and candidate/domain binding;
+GridGeometry.TryBind had passed finite geometry and both exact scroll-layout
+formulas before entering the probe. The code covers no qualifying parent clip
+and exceptions at the ClipContents/GetParent reads. The result does not contain
+parent identities or a runtime exception marker, so it cannot distinguish those
+cases or prove absence of clipping elsewhere in the rendering tree. Clip search
+precedes canvas/ancestry/rectangle masking; none of those later stages or native
+card input was exercised by this run. This is stronger diagnostic evidence than
+v8, but cannot retrospectively prove which predicate stopped that earlier run.
+
+Root inspected the retained NCardGrid.UpdateGridPositions IL after cleanup; its
+row/column positioning logic does not establish the selector's actual rendering
+clip or viewport. No new target assembly capture or execution was performed.
+The next successor should verify a real visible boundary rather than assume a
+Control clipping parent. A viewport-based proof is a candidate requiring public
+API/coordinate-space review and tests, not an implemented or live-verified fix.
+Do not bypass the proof, guess a new deck count or replay this campaign.
+
+Normal UI quit returned App quit. wait-stopped passed with three process and two
+closed-port samples. Code-first quarantine using the installed state passed and
+returned fresh quarantined state:
+`859d3b064c4a609e6baafc5610f72785a0d90fa52ffad4a61d91907dd0f51a3b`.
+Purge used that fresh hash and passed: phase absent, generated_files_removed4.
+Final require-stopped passed (three process/two port samples), and base verification
+passed:429 unchanged files,0 overlays, projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/Cloud access or credential-content exposure occurred. Cleanup is
+complete. All state hashes above are historical; no installed instance remains.
+All31 successors remain frozen. Off-screen selection remains unproved live.

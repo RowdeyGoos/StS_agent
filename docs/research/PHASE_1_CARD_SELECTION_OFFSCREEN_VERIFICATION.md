@@ -104,3 +104,15 @@ exact failing predicate was recorded. The live result therefore neither confirms
 nor refutes the conditional direct-input finding above. Cleanup passed and all30
 successors are now frozen. See the [v8 acceptance ledger](PHASE_1_GENERIC_EVENT_RELEASE_V8_ACCEPTANCE.md)
 for exact evidence. More specific diagnostics are needed before another live test.
+
+## V9 live diagnostic: expected clipping parent not established
+
+2026-09-08. One20-card Aroma invocation passed holder/domain and scroll-layout
+checks, then stopped at geometry_clip_missing before any card input. The probe's
+parent search did not establish a Control with ClipContents=true. That stage can
+also report a getter exception; no runtime tree/exception payload was captured.
+This does not test or refute the conditional direct-input finding above. The
+probe's rendering-boundary assumption needs correction and verification before
+another live test. Cleanup passed429 unchanged base files/0 overlays; all31
+successors remain frozen. Exact evidence is in the
+[v9 ledger](PHASE_1_GENERIC_EVENT_RELEASE_V9_ACCEPTANCE.md).
