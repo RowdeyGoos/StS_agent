@@ -196,3 +196,17 @@ for authorization, exact identities, passed pre/post-install checks and cleanup.
 Current installed hash:
 `36db173d95bd97704415f33195b61af6d36d51cda5595e4376bbd1fe8d186d08`.
 Awaiting manual setup; no new live invocation has occurred.
+
+
+## Potion Courier live item gate passed; fresh instance closed
+
+2026-09-08. The single authorized invocation resolved Ransack, one verified item
+child and Proceed/map:2 parent and1 child actions attempted/accepted/reconciled,
+completed_item_children1,5 reads, map_ready. UI corroborated a newly occupied potion
+slot and map. Final effects=unverified is the last-parent reporting field, not a
+loss of cumulative item verification. Normal quit and full owned cleanup passed,
+including4-file purge,429-file clean base and final stopped/closed checks. All
+installed/quarantine state hashes are now historical. No overlay, credential or
+cleanup remains. See the [completed live ledger](PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
+for exact raw summary, UI limits and cleanup identities. One singleton potion
+path is demonstrated; no live relic/transform/full-run claim is made.

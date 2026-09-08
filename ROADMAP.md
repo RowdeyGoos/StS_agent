@@ -1,20 +1,23 @@
 # ROADMAP.md
 
-## Active Potion Courier test — installed, awaiting manual setup
+## Potion Courier live item test passed — cleanup complete
 
-2026-09-08. A fresh installation of unchanged generic releasev6 is verified for
-the user-authorized exploratory Potion Courier → Ransack test. The prior Cheese
-instance remains closed. New installed-state SHA256:
-`36db173d95bd97704415f33195b61af6d36d51cda5595e4376bbd1fe8d186d08`.
-Frozen sources, unchanged429-file base, exact2-file overlay, protected metadata
-and stopped/closed checks pass. No client invocation or credential-content read.
-Manual Profile3/single-player setup: fresh Potion Courier initial choices,
-Ransack second, at least one empty potion slot; leave options untouched and close
-console/popups. Wait for user readiness, verify UI and require-running, then one
-frozen invocation. Reward-screen behavior remains unconfirmed; only a completed
-item child plus map handoff passes the intended gate. Read the [active test ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
-for exact invocation, new-instance authorization and required cleanup. Older
-closed-campaign/no-setup statements below describe preserved earlier checkpoints.
+2026-09-08. One frozen generic releasev6 invocation completed Potion Courier →
+Ransack, one verified potion collection, and Proceed/map handoff. Result:2 parent
+and1 child actions attempted/accepted/reconciled,1 completed_item_children,
+5 reads, status resolved, diagnostic map_ready. UI confirmed a new potion in the
+previously empty second slot and the map. Final effects=unverified describes the
+later Proceed action; the cumulative item completion remains1.
+
+This establishes one live singleton potion path, not all events, relics,
+multiple-item sets, transformation or complete-run support. Normal quit,
+stopped/closed checks, code-first quarantine, exact4-file purge and unchanged
+429-file clean-base verification all passed. No overlay, credential or cleanup
+remains; no game setup is needed. All state hashes in the [test ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
+are historical. Frozen sources and prior offline evidence remain unchanged.
+Remaining development includes unsupported interaction families and additional
+held-out coverage. Earlier item-unproven and installed statements below are
+preserved checkpoints, superseded by this result and the linked ledger.
 
 This file tracks the most useful next steps for the project. It is not a strict commitment list; it is a guide for future work and for quickly understanding where the simulator is headed.
 
