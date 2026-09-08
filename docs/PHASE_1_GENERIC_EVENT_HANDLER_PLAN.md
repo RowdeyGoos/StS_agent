@@ -1,5 +1,38 @@
 # Generic event handler: next development direction
 
+## Geometry diagnostic repair v9 installed — awaiting manual readiness
+
+2026-09-08. The user requested fixing the v8 stop so testing can continue.
+Successor31 preserves v8 selection admission and input behavior, but reports37
+specific geometry failure stages instead of the single prepare_geometry label.
+This fixes observability; the actual v8 geometry cause and live off-screen
+selection remain unproved. No predicate has been bypassed.
+
+Complete candidate and source-frozen gates pass194 native probe assertions,
+966 runtime,378 verifier and52 end-to-end socket scenarios, plus frozen G7 and
+all release/lifecycle/cleanup checks. All31 successors and the original bridge
+are frozen. Independent review confirmed exact source closure, unchanged runtime
+API reads, six identical production compilations and final frozen acceptance.
+
+GENERIC-EVENT-V9-SMOKE-V1 is installed and verified:429 unchanged base files,
+two owned overlay files, fresh protected operator metadata. No live client has
+run and the coordinator has not launched the game. Current installed state:
+`e64573ebd1733943a2454fd6cc5a72678eca3899ce84bb6ce51a0c5968e15711`.
+See the [contract](PHASE_1_GENERIC_EVENT_RELEASE_V9_CONTRACT.md) and
+[ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V9_ACCEPTANCE.md) for exact pins,
+readiness, one-invocation boundary and owned cleanup. Earlier campaign hashes
+and closed-state entries below are historical; v9 is currently installed.
+
+Manual setup: Profile3, single-player, same window/resolution, ordinary20-card
+deck and fresh Aroma of Chaos initial Let Go/Maintain Control choices untouched;
+close console/popups. On user readiness verify current UI and require-running,
+then invoke frozen v9 client exactly once with the current installed hash.
+Do not adopt the earlier selector, retry uncertain input, scroll/select manually
+or guess a different card when admission fails. After invocation, normal quit,
+wait-stopped, code-first quarantine, purge with the fresh quarantine state hash
+and final clean-base/stopped checks remain root-owned cleanup. No credential
+contents, profile/save/Cloud data or raw game observations are part of the record.
+
 ## Off-screen test v8 stopped before selection — campaign closed
 
 2026-09-08. The user reported ready. Current UI showed fresh Aroma of Chaos
