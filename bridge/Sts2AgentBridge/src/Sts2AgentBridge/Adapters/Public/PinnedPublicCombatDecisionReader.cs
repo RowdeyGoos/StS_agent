@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
+using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using Sts2AgentBridge.Core.Public;
 
 namespace Sts2AgentBridge.Adapters.Public;
@@ -125,6 +126,7 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
 
         if (!manager.IsInProgress ||
             manager.PlayerActionsDisabled ||
+            NOverlayStack.Instance?.ScreenCount > 0 ||
             combat.CurrentSide != CombatSide.Player ||
             playerCombat.Phase != PlayerTurnPhase.Play)
         {

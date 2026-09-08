@@ -139,6 +139,8 @@ class Gate:
                 "--native-fixture", str(self.build("components/events/integration/GenericEventV7.Native.Integration.csproj")),
                 "--host", str(self.source / "components/events/host/generic_event_host.py")])
         if self.component in ("all", "cards"):
+            self.run("cards:combat_host_native", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_combat_choice.py"),
+                self.dotnet, str(self.build("components/cards/combat_tests/CombatCardChoice.Tests.csproj"))])
             self.run("cards:host_wire", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_cross_language.py"),
                 "--dotnet", self.dotnet, "--fixture", str(self.build("components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj"))])
         if self.component in ("all", "host", "core"):

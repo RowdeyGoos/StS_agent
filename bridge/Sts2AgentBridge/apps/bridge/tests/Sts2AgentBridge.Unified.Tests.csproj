@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><DefineConstants>BRIDGE_TEST_SEAM</DefineConstants></PropertyGroup><ItemGroup>
-  <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
+    <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
+<Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
   <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCodec.cs" />
   <Compile Include="../compatibility/CardSelectionTerminalClassifier.cs" />
   <Compile Include="../compatibility/GenericEventTerminalClassifier.cs" />

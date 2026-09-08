@@ -14,6 +14,7 @@ Read [current status](../../docs/STATUS.md) for evidence and
 | Module | Existing interface |
 | --- | --- |
 | Core combat, rewards, map, rest/basic rooms | `/probe/v0/health`, `/probe/v0/manifest`, `/probe/v0/public/*` |
+| Combat discard/exhaust choice | `/probe/combat-choice-v1/public/decision` and `action` |
 | Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
 | Shop and standard room flows | `/probe/room-flows-v1/public/decision` and `action` |
 | Standalone card selection | `/card-selection-v1/parent`, `parent/action`, `child`, `child/action` |
@@ -129,12 +130,21 @@ After installation and the user's requested game setup, use one client:
   --expected-state-sha256 <current-owned-state-hash> --capability events
 ```
 
-Capabilities are `events`, `event-map`, `cards`, `items`, `shop`, `room-event` and `core`.
+Capabilities are `events`, `event-map`, `combat`, `combat-choice`, `cards`, `items`,
+`shop`, `room-event` and `core`.
 The feature modes run their bounded controller; `core` observes one `--route` or
 submits an advertised action with `--decision` and `--action`. A core accepted
 receipt reports acceptance, not completion; reconcile through the corresponding
 decision route. Event choices use the replaceable first-legal host provider.
 The client verifies release and owned installation before credential access.
+
+Use `--capability combat` for bounded combat with nested discard/exhaust choices,
+or `combat-choice` to resolve one such selector. `--choice-policy minimum` confirms
+as soon as the native control permits it; the default `first-select` fills the
+selection to its maximum. Parent combat and child selection have separate
+attempted/accepted/reconciled counts, retained on failure. Supported native
+surfaces, protocol semantics and limits are in [combat choices](../../docs/COMBAT_CHOICES.md).
+These additions await live testing.
 
 Use `--capability event-map` for the next event-to-core handoff test. After a
 resolved event it polls `/probe/v0/public/map-decision` within a five-second

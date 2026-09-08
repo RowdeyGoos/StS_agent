@@ -4,6 +4,7 @@ using System.Text.Json;
 using Sts2AgentBridge.Core.Public;
 using Sts2AgentBridge.Core.Protocol;
 using Sts2AgentBridge.Core.Identity;
+using Sts2AgentBridge.Cards.Combat;
 
 namespace Sts2AgentBridge.Unified;
 
@@ -14,7 +15,8 @@ internal sealed class CoreBridgeModule : IDisposable
     private readonly string _correlation;
     private readonly IPublicScreenService _screen;
     private string? _pendingPath, _pendingDecision;
-    internal bool HasPendingAction => _pendingPath is not null;
+    internal bool HasPendingAction => _pendingPath is not null || _choice.IsActive;
+    private readonly CombatCardChoiceService _choice;
     private readonly IPublicCombatDecisionService _combatRead;
     private readonly IPublicCombatActionService _combatApply;
     private readonly IPublicRewardDecisionService _rewardRead;
@@ -27,13 +29,15 @@ internal sealed class CoreBridgeModule : IDisposable
         IPublicCombatDecisionService combatRead, IPublicCombatActionService combatApply,
         IPublicRewardDecisionService rewardRead, IPublicRewardActionService rewardApply,
         IPublicMapDecisionService mapRead, IPublicMapActionService mapApply,
-        IPublicRoomDecisionService roomRead, IPublicRoomActionService roomApply)
+        IPublicRoomDecisionService roomRead, IPublicRoomActionService roomApply,
+        CombatCardChoiceService? choice = null)
     {
         _correlation = correlation; _screen = screen;
         _combatRead = combatRead; _combatApply = combatApply;
         _rewardRead = rewardRead; _rewardApply = rewardApply;
         _mapRead = mapRead; _mapApply = mapApply;
         _roomRead = roomRead; _roomApply = roomApply;
+        _choice = choice ?? new CombatCardChoiceService(() => null, correlation);
     }
     internal static bool IsValidAction(BridgeRequest r) => r.Path switch
     {
@@ -41,6 +45,7 @@ internal sealed class CoreBridgeModule : IDisposable
         "/probe/v0/public/reward-action" => PublicRewardActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         "/probe/v0/public/map-action" => PublicMapActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         "/probe/v0/public/room-action" => PublicRoomActionRequest.TryCreate(r.Decision!, r.Action!, out _),
+        CombatCardChoiceService.ActionRoute => CombatCardChoiceService.IsAction(r.Decision, r.Action),
         _ => false,
     };
     internal ModuleReply Handle(BridgeRequest r)
@@ -54,8 +59,15 @@ internal sealed class CoreBridgeModule : IDisposable
                 .Replace("\"harmony_patches\":false", "\"harmony_patches\":true"))); }
             finally { Array.Clear(old); }
         }
-        if (HasPendingAction && (r.IsPost || r.Path != _pendingPath))
-            return new("{\"schema_version\":1,\"kind\":\"error\",\"code\":\"capability_busy\"}"u8.ToArray());
+        if (r.Path is CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute)
+        {
+            if (_pendingPath is not null && _pendingPath != "/probe/v0/public/combat-decision")
+                return Busy();
+            var choice = r.IsPost ? _choice.Apply(r.Decision!, r.Action!) : _choice.Read();
+            return new(choice.Body, Terminal: choice.Terminal);
+        }
+        if (_choice.IsActive || _pendingPath is not null && (r.IsPost || r.Path != _pendingPath))
+            return Busy();
         byte[] body;
         switch (r.Path)
         {
@@ -132,5 +144,6 @@ internal sealed class CoreBridgeModule : IDisposable
         catch { Array.Clear(body); throw; }
     }
     private ModuleReply Fault() => new(CanonicalProbeEncoder.EncodeErrorBody(ProbeErrorKind.BackendFault, _correlation), Terminal: true);
-    public void Dispose() { }
+    private static ModuleReply Busy() => new("{\"schema_version\":1,\"kind\":\"error\",\"code\":\"capability_busy\"}"u8.ToArray());
+    public void Dispose() => _choice.Dispose();
 }

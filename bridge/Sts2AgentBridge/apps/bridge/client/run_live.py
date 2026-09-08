@@ -87,7 +87,9 @@ def main():
     parser.add_argument('--release-manifest', type=Path, required=True)
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
-    parser.add_argument('--capability', choices=['events', 'event-map', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
+    parser.add_argument('--capability', choices=['events', 'event-map', 'combat', 'combat-choice', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
+    parser.add_argument('--choice-policy', choices=['first-select', 'minimum'], default='first-select',
+                        help='Combat chooser policy; minimum confirms as soon as native controls allow it.')
     parser.add_argument('--route', help='Core route to observe, or act on with --decision and --action.')
     parser.add_argument('--decision')
     parser.add_argument('--action')
@@ -106,7 +108,12 @@ def main():
         layout, state = manager.validate_installed_for_client(args.expected_state_sha256)
         credential = read_credential(layout.user_profile, os.geteuid(), state, manager.require_no_granting_acl_fd)
         client = BridgeClient(credential)
-        if args.capability in ('events', 'event-map'):
+        if args.capability in ('combat', 'combat-choice'):
+            host = load('unified_combat_host', 'apps/bridge/client/combat_host.py')
+            provider = host.first_select if args.choice_policy == 'first-select' else host.minimum_select
+            result = (host.run_combat(client.exchange, choice_provider=provider) if args.capability == 'combat' else
+                      host.run_choice(client.exchange, provider=provider))
+        elif args.capability in ('events', 'event-map'):
             host = load('unified_event_host', 'components/events/host/generic_event_host.py')
             result = (run_event_map(client.exchange, host) if args.capability == 'event-map' else
                       host.run_event(client.exchange, provider=host.first_legal))

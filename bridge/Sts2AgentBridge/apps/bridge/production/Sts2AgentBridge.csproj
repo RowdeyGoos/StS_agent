@@ -6,7 +6,9 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
+      <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
+  <Compile Include="../../../components/cards/combat_native/PinnedCombatCardChoiceAdapter.cs" />
+<Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
     <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCodec.cs" />
     <Compile Include="../compatibility/CardSelectionTerminalClassifier.cs" />
     <Compile Include="../compatibility/GenericEventTerminalClassifier.cs" />

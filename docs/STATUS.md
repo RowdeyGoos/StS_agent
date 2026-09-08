@@ -1,6 +1,6 @@
 # Current integration status
 
-Updated 2026-09-08. This is the single current capability/evidence and operational
+Updated 2026-09-09. This is the single current capability/evidence and operational
 handoff page. [AGENTS.md](../AGENTS.md) owns workflow; [roadmap](../ROADMAP.md) owns
 priorities. Historical acceptance ledgers retain exact artifact identities.
 
@@ -29,6 +29,7 @@ before any new authorized live operation.
 | Capability | Evidence and practical limit |
 | --- | --- |
 | Combat, rewards and map | Bounded live observation/control, combat completion, reward progression and fresh reward/map entry; no complete autonomous run |
+| Combat discard/exhaust choices | Optional zero, fixed and variable counts up to eight in native/host fixtures; shared combat resume and failure accounting tested offline; live testing deferred |
 | Rest and shop | Standalone heal/Proceed, older Smith upgrade-one, one bounded shop purchase/close/map path live-demonstrated |
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
@@ -71,6 +72,15 @@ decision after event resolution and preserves event evidence if that check fails
 It has controller/codec and shared-socket fixture coverage; a live event-to-core
 map check remains outstanding. The original live observations remain unchanged.
 
+The shared client now also has `combat` and `combat-choice` modes. The new native
+adapter resolves public discard/exhaust grid selectors, including the optional
+Neow's Fury surface identified in pinned source. Zero confirmation, positive and
+multiple selection, deselection, deferred completion, exact task results and
+cleanup have offline coverage. The shared listener fixture resumes the original
+combat action after child completion; failures retain separate counts. See
+[combat choices](COMBAT_CHOICES.md) for scope and limits. This new batch has no
+live result; live testing is deferred until the user is ready for a larger batch.
+
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused
 `--component` selection, one package identity and one client/operational entry
@@ -86,7 +96,7 @@ observable behavior to test.
 
 ## Current exclusions
 
-Optional/zero selection, variable upgrades, multiple-item sets, incomplete holder
+Generic-event optional/zero selection, variable upgrades, multiple-item sets, incomplete holder
 coverage, custom/repeated interactions and event combat remain generic gaps.
 Variable transformation has offline evidence but no variable-count live case.
 Elite continuation and complete room/run composition remain broader open evidence
@@ -102,6 +112,7 @@ Paths in the first column are relative to `bridge/Sts2AgentBridge/`.
 
 | Location | Responsibility |
 | --- | --- |
+| `components/cards/combat/`, `components/cards/combat_native/`, `apps/bridge/client/combat_host.py` | Combat selector protocol, native binding and bounded combat/choice host |
 | `components/events/native/GenericEventV7Hooks.cs`, `GenericEventV7Binding.cs` | Owned native discovery and parent/child identity |
 | `components/events/native/PinnedGenericEventV7NativeAdapter.cs` | Parent capture and child integration |
 | `components/events/native/GenericEventV7TransformState.cs` | Native transformation effect observations |

@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sts2AgentBridge.Core.Public;
 using Sts2AgentBridge.Unified;
+using Sts2AgentBridge.Cards.Combat;
+using System.Text.Json;
 
 internal static class Program
 {
@@ -16,22 +18,24 @@ internal static class Program
     private static int _checks;
     private static void Check(bool test, string label) { _checks++; if (!test) throw new Exception(label); }
     private static BridgeRequest Request(Capability c, string path, bool post = false) => new(c, path, post, 0, 64, post ? Decision : null, post ? "choose:0" : null);
-    private static CoreBridgeModule Core(CoreFixture f) => new(Nonce, f, f, f, f, f, f, f, f, f);
+    private static CoreBridgeModule Core(CoreFixture f) => new(Nonce, f, f, f, f, f, f, f, f, f, f.Choice);
     private static string Body(BridgeReply reply) => Encoding.UTF8.GetString(reply.Response);
     private static int Main(string[] args)
     {
         try
         {
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
-            Ownership(); CleanupFailure(); CoreHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
+            if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
+            Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
         catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
-    private static int Serve()
+    private static int Serve(bool combat = false)
     {
-        var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true }, new CoreFixture { Reject = true, MapReady = true });
+        var fixture = combat ? CombatScenario() : new CoreFixture { Reject = true, MapReady = true };
+        var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true }, fixture);
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
@@ -95,9 +99,60 @@ internal static class Program
         using var fault = new BridgeRouter(Core(new CoreFixture { Fault = true }), (c,_) => new FakeModule(c));
         Check(fault.Handle(post).Terminal && fault.Handle(next).Terminal, "backend fault remains terminal");
     }
+    private static CoreFixture CombatScenario()
+    {
+        var core = new CoreFixture { Scenario = true };
+        var selection = new ChoiceFixture { OnDispose = () => core.Stage = 2 };
+        core.Choice = new CombatCardChoiceService(() => core.Stage == 1 ? selection : null, Nonce);
+        return core;
+    }
+    private static void CombatChoiceHandoff()
+    {
+        var fixture = CombatScenario(); int factories = 0;
+        var module = Core(fixture);
+        using var router = new BridgeRouter(module, (c,_) => { factories++; return new FakeModule(c); });
+        router.Handle(new(Capability.Core,"/probe/v0/public/combat-action",true,0,64,Decision,"play:0:0"));
+        Check(module.HasPendingAction && fixture.Stage == 1, "accepted combat parent retained");
+        var ready = module.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute));
+        using var parsed = JsonDocument.Parse(ready.Body);
+        string choiceDecision = parsed.RootElement.GetProperty("decision_id").GetString()!;
+        Check(Body(router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision"))).Contains("capability_busy"), "nested choice owns core gameplay");
+        var events = Request(Capability.Events,"/probe/generic-event-v7/public/decision");
+        Check(Body(router.Handle(events)).Contains("capability_busy") && factories == 0, "choice blocks foreign module creation");
+        Check(!router.Handle(new(Capability.Core,CombatCardChoiceService.ActionRoute,true,0,64,choiceDecision,"select:0")).Terminal, "nested choice input accepted");
+        Check(Body(router.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute))).Contains("selection_verified"), "exact child completion");
+        Check(module.HasPendingAction && Body(router.Handle(events)).Contains("capability_busy"), "child cleanup does not reconcile parent card");
+        router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision"));
+        Check(!module.HasPendingAction, "fresh combat decision reconciles parent");
+        Check(!router.Handle(events).Terminal && factories == 1, "completed combat reconciliation releases ownership");
+        foreach (bool failDispose in new[] { false, true })
+        {
+            var child = new ChoiceFixture { FailDispose = failDispose, Throw = !failDispose };
+            var service = new CombatCardChoiceService(() => child,Nonce);
+            var f = new CoreFixture { Choice = service }; var failed = Core(f);
+            var observation = failed.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute));
+            using var value = JsonDocument.Parse(observation.Body);
+            var action = new BridgeRequest(Capability.Core,CombatCardChoiceService.ActionRoute,true,0,64,
+                value.RootElement.GetProperty("decision_id").GetString(),"select:0");
+            var reply = failed.Handle(action);
+            if (failDispose) reply = failed.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute));
+            Check(reply.Terminal && failed.HasPendingAction && child.Calls == 1, "uncertainty or failed child cleanup retains owner");
+            child.FailDispose = false; failed.Dispose();
+        }
+    }
+    private sealed class ChoiceFixture : ICombatCardChoiceAdapter
+    {
+        private readonly object _identity = new(), _model = new(), _holder = new();
+        internal bool Closed, FailDispose, Throw; internal int Calls; internal Action OnDispose = () => { };
+        public ChoiceSurface Capture() => new(_identity,"discard",0,1,false,true,Closed,Closed,false,
+            new[] { new ChoiceCard(_model,_holder,"STRIKE",0,Closed,true) },Closed ? new[] { _model } : Array.Empty<object>(),true);
+        public void Toggle(int slot) { Calls++; Closed = true; if (Throw) throw new Exception(); }
+        public void Confirm() => throw new Exception("not used by this scenario");
+        public void Dispose() { if (FailDispose) throw new Exception(); OnDispose(); }
+    }
     private static void Parser()
     {
-        foreach (string path in new[] { "/probe/v0/public/map-decision", "/probe/item-v1/public/item-decision", "/probe/room-flows-v1/public/decision", "/card-selection-v1/parent", "/probe/generic-event-v7/public/decision" })
+        foreach (string path in new[] { "/probe/combat-choice-v1/public/decision", "/probe/v0/public/map-decision", "/probe/item-v1/public/item-decision", "/probe/room-flows-v1/public/decision", "/card-selection-v1/parent", "/probe/generic-event-v7/public/decision" })
             Check(BridgeRequestParser.TryParse(Head(path), out _), "existing route grammar " + path);
         Check(!BridgeRequestParser.TryParse(Head("/probe/v0/public/map-decision", extra: "Origin: https://example.com\r\n"), out _), "origin rejected");
         Check(!BridgeRequestParser.TryParse(Head("/probe/generic-event-v7/public/decision", extra: "Content-Length: 0\r\n"), out _), "framing rejected");
@@ -199,17 +254,28 @@ internal static class Program
         IPublicRewardDecisionService, IPublicRewardActionService, IPublicMapDecisionService, IPublicMapActionService,
         IPublicRoomDecisionService, IPublicRoomActionService
     {
+        internal CombatCardChoiceService? Choice; internal bool Scenario; internal int Stage;
         internal bool MapComplete, MapReady, Reject, Fault, CombatReady; internal int Applies, CombatAccepted;
         PublicScreenReadResult IPublicScreenService.Read() => PublicScreenReadResult.BackendFault();
-        PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(CombatReady
+        PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(Scenario ? ScenarioSnapshot() : CombatReady
             ? new(PublicDecisionStatus.Ready, Decision, 1, new(80,80,0,0), new[] { new PublicCombatEnemy(0,"SLIME",8,8,0,Array.Empty<string>()) }, Array.Empty<PublicCombatCard>(), new[] { new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1) }, PublicCombatOutcome.None)
             : PublicCombatDecisionSnapshot.Waiting());
+        private PublicCombatDecisionSnapshot ScenarioSnapshot() => Stage switch {
+            0 => new(PublicDecisionStatus.Ready, Decision, 1, new(80,80,0,1),
+                new[] { new PublicCombatEnemy(0,"SLIME",8,8,0,Array.Empty<string>()) },
+                new[] { new PublicCombatCard(0,"NEOWS_FURY","attack","1","anyenemy",true) },
+                new[] { new PublicDecisionAction(PublicDecisionActionKind.PlayCard,0,0), new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1) }, PublicCombatOutcome.None),
+            2 => new(PublicDecisionStatus.Ready, new string('e',64), 1, new(80,80,0,0),
+                new[] { new PublicCombatEnemy(0,"SLIME",1,8,0,Array.Empty<string>()) }, Array.Empty<PublicCombatCard>(),
+                new[] { new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1) }, PublicCombatOutcome.None),
+            3 => PublicCombatDecisionSnapshot.Complete(2,new(80,80,0,0),Array.Empty<PublicCombatEnemy>(),PublicCombatOutcome.Victory),
+            _ => PublicCombatDecisionSnapshot.Waiting() };
         PublicRewardDecisionReadResult IPublicRewardDecisionService.Read() => PublicRewardDecisionReadResult.FromSnapshot(PublicRewardDecisionSnapshot.Waiting());
         PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : MapReady
             ? new(PublicDecisionStatus.Ready, Decision, "map", null, new[] { new PublicMapCandidate(0,2,3,"monster") }, new[] { "select:0" })
             : PublicMapDecisionSnapshot.Waiting());
         PublicRoomDecisionReadResult IPublicRoomDecisionService.Read() => PublicRoomDecisionReadResult.FromSnapshot(PublicRoomDecisionSnapshot.Waiting());
-        PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) { if (!Reject) CombatAccepted++; return PublicCombatActionApplyResult.FromRequest(Reject ? PublicCombatActionApplyOutcome.StaleDecision : PublicCombatActionApplyOutcome.Accepted,r); }
+        PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) { if (!Reject) { CombatAccepted++; if (Scenario) Stage++; } return PublicCombatActionApplyResult.FromRequest(Reject ? PublicCombatActionApplyOutcome.StaleDecision : PublicCombatActionApplyOutcome.Accepted,r); }
         PublicRewardActionApplyResult IPublicRewardActionService.Apply(PublicRewardActionRequest r) => PublicRewardActionApplyResult.FromRequest(Reject ? PublicRewardActionApplyOutcome.StaleDecision : PublicRewardActionApplyOutcome.Accepted,r);
         PublicRoomActionApplyResult IPublicRoomActionService.Apply(PublicRoomActionRequest r) => PublicRoomActionApplyResult.FromRequest(Reject ? PublicRoomActionApplyOutcome.StaleDecision : PublicRoomActionApplyOutcome.Accepted,r);
         PublicMapActionApplyResult IPublicMapActionService.Apply(PublicMapActionRequest r) { Applies++; return Fault ? PublicMapActionApplyResult.BackendFault() : PublicMapActionApplyResult.FromRequest(Reject ? PublicMapActionApplyOutcome.StaleDecision : PublicMapActionApplyOutcome.Accepted,r); }

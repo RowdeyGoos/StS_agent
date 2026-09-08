@@ -1,19 +1,18 @@
 # Roadmap
 
-Updated 2026-09-08. This file owns priorities; [current status](docs/STATUS.md)
+Updated 2026-09-09. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
 ## Immediate priorities
 
-1. **Close the concrete gaps from the unified module smoke.** Representative
-   module paths now have live results. Neow's Fury's optional combat chooser
-   required UI assistance. The legacy screen reader is menu-only; use the new
-   `event-map` client flow to test a fresh core map decision after event completion.
-   The generic final effect summary's narrower meaning is now documented in the
-   [generic event guide](docs/GENERIC_EVENTS.md).
-   Use the [live record](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) to choose one
-   next behavior; do not rerun every module for an isolated correction.
+1. **Build useful features in batches, then test them live.** The user has deferred
+   live testing until a substantial batch is ready. The event-to-core map check
+   and [combat discard/exhaust choices](docs/COMBAT_CHOICES.md) with bounded combat
+   resume are implemented offline. The next live batch should cover Neow's Fury
+   zero/positive choices, a suitable multi-card caller and event-to-core map return.
+   Reuse the [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
+   evidence for unchanged paths; do not repeat every module.
 2. **Use the generalized transformation path in useful play.** All eligible,
    allocated holders now use direct input, with identity/preview/completion
    checks. The [generic handler plan](docs/GENERIC_EVENTS.md)
@@ -32,7 +31,8 @@ that experiment to obtain a different geometric proof.
 
 ## Remaining generic interaction work
 
-- Optional/zero-card selection and native cancellation.
+- Generic-event optional/zero-card selection and native cancellation. Combat
+  discard/exhaust grid choices now have a separate implementation and offline evidence.
 - Variable-count upgrading where a real native early-completion path exists.
 - Selecting cards outside the allocated holder set, including scrolling/rebinding.
 - Multiple-item offer sets, repeated/custom interactions and event combat.

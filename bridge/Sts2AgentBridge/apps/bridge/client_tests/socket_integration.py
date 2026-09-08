@@ -10,7 +10,30 @@ ROOT = Path(__file__).absolute().parents[3]
 sys.path[:0] = [str(ROOT / 'apps/bridge/client'), str(ROOT / 'tools')]
 from wire_client import BridgeClient, parse_response
 from run_live import verify_map_handoff
+from combat_host import run_combat
 import probe_live
+
+
+def combat():
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-combat'], stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        try:
+            result = run_combat(client.exchange)
+            assert result['status'] == 'resolved' and result['outcome'] == 'victory', result
+            assert result['attempted'] == result['accepted'] == result['reconciled'] == 2, result
+            assert len(result['choices']) == 1 and result['choices'][0]['selected_count'] == 1, result
+            assert result['choices'][0]['accepted'] == result['choices'][0]['reconciled'] == 1, result
+        finally:
+            client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
 
 
 def main():
@@ -48,7 +71,8 @@ def main():
         process.stdin.write('stop\n'); process.stdin.flush()
         _, errors = process.communicate(timeout=5)
         assert process.returncode == 0, errors
-        print('{"status":"passed","suite":"unified_python_socket","capability_clients":5,"original_client":true,"stale_refresh":true}')
+        combat()
+        print('{"status":"passed","suite":"unified_python_socket","capability_clients":6,"original_client":true,"stale_refresh":true,"combat_choice_resume":true}')
     finally:
         if process.poll() is None:
             process.kill(); process.wait()

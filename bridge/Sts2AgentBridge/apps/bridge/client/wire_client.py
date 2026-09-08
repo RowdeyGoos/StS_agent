@@ -15,6 +15,7 @@ ROUTES = {
     "/card-selection-v1/parent": False, "/card-selection-v1/parent/action": True,
     "/card-selection-v1/child": False, "/card-selection-v1/child/action": True,
     "/probe/generic-event-v7/public/decision": False, "/probe/generic-event-v7/public/action": True,
+    "/probe/combat-choice-v1/public/decision": False, "/probe/combat-choice-v1/public/action": True,
 }
 
 

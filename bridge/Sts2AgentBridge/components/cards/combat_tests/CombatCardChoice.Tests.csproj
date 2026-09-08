@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../combat/CombatCardChoiceService.cs" />
+    <Compile Include="../combat_native/PinnedCombatCardChoiceAdapter.cs" />
+    <Compile Include="TargetStubs.cs" /><Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

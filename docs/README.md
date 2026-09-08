@@ -14,6 +14,7 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Priorities | [Roadmap](../ROADMAP.md) |
 | Architecture decisions | [Decisions](../DECISIONS.md) |
 | Live bridge development and testing | [Live development](LIVE_DEVELOPMENT.md), [bridge commands](../bridge/Sts2AgentBridge/README.md) |
+| Combat bridge selectors and host | [Combat choices](COMBAT_CHOICES.md) |
 | Generic event architecture and coverage | [Generic events](GENERIC_EVENTS.md), [coverage](EVENT_COVERAGE.md) |
 | Reduced headless actor and datasets | [Headless actor](HEADLESS_ACTOR.md) |
 | Combat simulator | [Project context](PROJECT_CONTEXT.md) |

@@ -1,5 +1,6 @@
 using Sts2AgentBridge.Adapters.Public;
 using Sts2AgentBridge.Core.Public;
+using Sts2AgentBridge.Cards.Combat;
 namespace Sts2AgentBridge.Unified;
 internal static class CoreNativeFactory
 {
@@ -13,6 +14,7 @@ internal static class CoreNativeFactory
             new PublicCombatDecisionService(combat), new PublicCombatActionService(new PinnedPublicCombatActionApplier(combat)),
             new PublicRewardDecisionService(reward), new PublicRewardActionService(new PinnedPublicRewardActionApplier(reward)),
             new PublicMapDecisionService(map), new PublicMapActionService(new PinnedPublicMapActionApplier(map)),
-            new PublicRoomDecisionService(room), new PublicRoomActionService(new PinnedPublicRoomActionApplier(room)));
+            new PublicRoomDecisionService(room), new PublicRoomActionService(new PinnedPublicRoomActionApplier(room)),
+            new CombatCardChoiceService(PinnedCombatCardChoiceAdapter.TryCreate, nonce));
     }
 }
