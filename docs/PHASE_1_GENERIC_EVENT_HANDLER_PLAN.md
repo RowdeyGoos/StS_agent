@@ -1,5 +1,24 @@
 # Generic event handler: next development direction
 
+## Generic v7 accepted — variable-count transformation
+
+2026-09-08. Successor28 adds positive variable-count transformations: native
+manual confirmation can finish selection at min or an intermediate count, then
+confirm the exact complete preview. Maximum selection keeps automatic preview.
+Expected originals are reserved before dispatch, partial preview cannot reduce
+that set, and the existing journal verifies selected-only final replacements.
+Outer generic_event_v7 uses card_transform_v2; frozen card/item engines remain.
+
+Both candidate and frozen gates and independent review pass:3815 native,
+1718 item,2650 transform assertions;171 wire cases;118 host tests;201 integration
+scenarios,139 through actual native adapters with inert game objects. Native and
+core artifacts each match across four builds. All27 predecessors remain unchanged.
+Read the [contract](PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and [acceptance ledger](research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md).
+This is functional support, not a packaged or live-tested G7 release. All live
+instances remain closed; no game setup is needed. Release preparation precedes
+any G7 live test. Optional/scrolling, variable upgrades, multiple-item sets and
+custom/combat interactions remain open. Older checkpoints below are historical.
+
 ## Potion Courier live item test passed — cleanup complete
 
 2026-09-08. One frozen generic releasev6 invocation completed Potion Courier →

@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="VariableTransformFixtures.cs" />
+    <Compile Include="../native/GenericEventV7ItemState.cs" />
+    <Compile Include="../native/GenericEventV7ItemAdapter.cs" />
+    <Compile Include="ItemFixtures.cs" />
+    <Compile Include="../native/GenericEventV7TransformAdapter.cs" />
+    <Compile Include="../native/GenericEventV7TransformState.cs" />
+    <Compile Include="TransformFixtures.cs" />
+
+    <Compile Include="MultiUpgradeFixtures.cs" />
+    <Compile Include="../native/GenericEventV7MultiUpgradeAdapter.cs" />
+    <Compile Include="../native/GenericEventV7MultiUpgradeState.cs" />
+
+    <Compile Include="../../generic_event_release_v5/runtime/GenericEventDiagnosticCode.cs" Link="Frozen/GenericEventDiagnosticCode.cs" />
+    <Compile Include="../native/GenericEventV7RewardAdapter.cs" Link="Native/GenericEventV7RewardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7RemovalAdapter.cs" Link="Native/GenericEventV7RemovalAdapter.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="TargetStubs.cs" />
+    <Compile Include="../native/GenericEventV7Binding.cs" Link="Native/GenericEventV7Binding.cs" />
+    <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Native/GenericEventV7CardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7Hooks.cs" Link="Native/GenericEventV7Hooks.cs" />
+    <Compile Include="../native/PinnedGenericEventV7NativeAdapter.cs" Link="Native/PinnedGenericEventV7NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
+    <ProjectReference Include="../core/GenericEventV7.Core.csproj" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

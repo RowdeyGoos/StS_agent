@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native</AssemblyName><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GenericEventV7ItemState.cs" />
+    <Compile Include="GenericEventV7ItemAdapter.cs" />
+    <Compile Include="GenericEventV7TransformAdapter.cs" />
+    <Compile Include="GenericEventV7TransformState.cs" />
+
+    <Compile Include="GenericEventV7MultiUpgradeAdapter.cs" />
+    <Compile Include="GenericEventV7MultiUpgradeState.cs" />
+
+    <Compile Include="../../generic_event_release_v5/runtime/GenericEventDiagnosticCode.cs" Link="Frozen/GenericEventDiagnosticCode.cs" />
+    <Compile Include="GenericEventV7RewardAdapter.cs" />
+    <Compile Include="GenericEventV7RemovalAdapter.cs" />
+    <Compile Include="GenericEventV7Binding.cs" />
+    <Compile Include="GenericEventV7CardAdapter.cs" />
+    <Compile Include="GenericEventV7Hooks.cs" />
+    <Compile Include="PinnedGenericEventV7NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
+    <ProjectReference Include="../core/GenericEventV7.Core.csproj" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>false</Private></Reference>
+    <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

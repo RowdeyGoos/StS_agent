@@ -1,15 +1,25 @@
 # Event coverage matrix
 
-Updated 2026-09-06 from the [accepted metadata census](PHASE_1_EVENT_COVERAGE_CENSUS_GENERIC_RESULT.md).
+## Generic v7 functional coverage — 2026-09-08
+
+G7 adds manual positive variable-count transformation without event registration.
+Minimum/intermediate/maximum selection, delayed/partial preview, exact selected-only
+replacements and mixed card/item continuation pass independent native-to-Python
+fixtures. Both full gates pass201 integrations,139 actual-native. See the [ledger](PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md).
+This adds shared-family capability, not a new named-event live row. No G7 release
+or live claim is made; older functional checkpoints below are preserved history.
+
+Updated 2026-09-08; type inventory remains from the [accepted metadata census](PHASE_1_EVENT_COVERAGE_CENSUS_GENERIC_RESULT.md).
 
 The inventory contains 68 concrete event-model types, including ancient and
 deprecated types. Runtime encounter eligibility and the reachable event pool have
 not been established by this metadata-only census. A concrete type is not a
 fully supported event. No type currently has evidence covering every branch.
 
-Two types have bounded live path evidence: Dense Vegetation ordinary continuation
-and Room Full of Cheese/Gorge add-two. Cheese/Gorge now also has successful
-generic release v5 composition evidence. Their remaining branches stay open;
+Three types have bounded live path evidence: Dense Vegetation ordinary continuation,
+Room Full of Cheese/Gorge add-two and Search continuation, and Potion Courier/Ransack
+singleton potion collection. Cheese/Gorge has generic releasev5 evidence; Ransack
+has generic releasev6 evidence. Their remaining branches stay open;
 predecessor live results do not automatically prove other shared compositions.
 
 ## Current generic v6 functional acceptance — 2026-09-08
@@ -159,11 +169,11 @@ catalog. Dedicated handlers remain appropriate for different custom surfaces.
 | Family | Current evidence | Next required work |
 | --- | --- | --- |
 | Ordinary option pages and Proceed | Generic native control; one Dense Vegetation path live | Classify remaining branches and test longer live chains |
-| Item reward child | Generic owned singleton potion/relic handling, frozen engine and actual native-to-Python fixtures | New release/live evidence and multiple-offer sets |
+| Item reward child | Generic singleton potion/relic handling and native fixtures; Potion Courier/Ransack potion collection live in releasev6 | Broader live relic/caller evidence and multiple-offer sets |
 | Add cards | Cheese/Gorge exact two-of-eight native/live and generic release v5 live; other shared compositions in fixtures | Other callers, domains and cardinalities |
 | Upgrade cards | Generic fixed-count1..8 discovery, exact preview mapping and native-to-Python fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Prepared release and live multi-upgrade validation; variable minima and scrolling |
 | Remove cards | Generic native discovery, variable1..8 preview confirmation and exact remaining-deck reconciliation in inert fixtures | Prepared release and live validation; optional/scrolling variants |
-| Transform cards | Frozen core fixtures; reviewed native request/preview/command metadata | New effect reconciliation for remove-before-insert states, final post-hook mapping and remaining ordering facts; no native adapter yet |
+| Transform cards | Generic fixed1..8 and manual positive variable min/max native discovery, exact preview ownership and transformation journal; G7 actual-native-to-Python fixtures | Protected release and live validation; optional/scrolling variants |
 | Optional selection and repeated choices | Explicitly unsupported by this increment | New reviewed bounds/confirmation and loop identity policies |
 | Embedded event combat | Metadata/shared API facts only | Combat handoff, event resumption and exact ownership |
 | Custom/ancient layouts | One custom node and two derived layouts inventoried | Exact caller/layout connections and action semantics |
@@ -213,12 +223,12 @@ runtime, but does not advance this evidence row to full coverage.
 | `Nonupeipe` | None recorded per type | Unclassified |
 | `Orobas` | None recorded per type | Unclassified |
 | `Pael` | None recorded per type | Unclassified |
-| `PotionCourier` | None recorded per type | Unclassified |
+| `PotionCourier` | RANSACK → one verified potion child → Proceed/map, generic releasev6 live; [ledger](PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md) | Other branches unclassified |
 | `PunchOff` | None recorded per type | Unclassified |
 | `RanwidTheElder` | None recorded per type | Unclassified |
 | `Reflections` | None recorded per type | Unclassified |
 | `RelicTrader` | None recorded per type | Unclassified |
-| `RoomFullOfCheese` | GORGE → add exactly two of eight → Proceed/map, predecessor and generic release v5 live | Unclassified |
+| `RoomFullOfCheese` | GORGE → add exactly two of eight → Proceed/map, predecessor and generic releasev5 live; SEARCH → Proceed/map, generic releasev6 live with zero item children | Other branches unclassified |
 | `RoundTeaParty` | None recorded per type | Unclassified |
 | `SapphireSeed` | EAT → upgrade one → Proceed/map, native fixtures; no new live evidence | PLANT enchantment unsupported; no all-branch claim |
 | `SelfHelpBook` | None recorded per type | Unclassified |

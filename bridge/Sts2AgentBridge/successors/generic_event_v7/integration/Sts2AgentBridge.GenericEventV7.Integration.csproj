@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Sts2AgentBridge.GenericEventV7.Integration</AssemblyName>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../core/GenericEventV7ChildSession.cs" />
+    <Compile Include="../core/GenericEventV7ItemChildSession.cs" />
+    <Compile Include="../../generic_event_v5/core/GenericEventV5ChildSession.cs" Link="Frozen/GenericEventV5ChildSession.cs" />
+    <Compile Include="../../item_v1/core/ItemV1Contracts.cs" Link="Frozen/ItemV1Contracts.cs" />
+    <Compile Include="../../item_v1/core/ItemV1CanonicalEncoder.cs" Link="Frozen/ItemV1CanonicalEncoder.cs" />
+    <Compile Include="../../item_v1/core/ItemV1Session.cs" Link="Frozen/ItemV1Session.cs" />
+    <Compile Include="../../item_wire_v1/producer/ItemWireV1Protocol.cs" Link="Frozen/ItemWireV1Protocol.cs" />
+    <Compile Include="../../item_wire_v1/producer/ItemWireV1Codec.cs" Link="Frozen/ItemWireV1Codec.cs" />
+    <Compile Include="../transform_core/CardTransformV2NativeContracts.cs" />
+    <Compile Include="../transform_core/CardTransformV2Session.cs" />
+    <Compile Include="../transform_core/CardTransformV2Journal.cs" />
+    <Compile Include="../wire/CardTransformV2WireCodec.cs" />
+
+    <Compile Include="GenericEventV7IntegrationHost.cs" />
+    <Compile Include="../core/GenericEventV7Contracts.cs" />
+    <Compile Include="../core/GenericEventV7NativeContracts.cs" />
+    <Compile Include="../core/GenericEventV7Session.cs" />
+    <Compile Include="../wire/GenericEventV7WireCodec.cs" />
+    <Compile Include="../wire/GenericEventV7WireService.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Session.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireProtocol.cs" Link="Frozen/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireCodec.cs" Link="Frozen/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../card_selection_v1/parents/CardSelectionParentV1Contracts.cs" Link="Frozen/CardSelectionParentV1Contracts.cs" />
+  </ItemGroup>
+</Project>

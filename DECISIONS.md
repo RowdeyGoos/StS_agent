@@ -2398,3 +2398,24 @@ derivation documents without changing any frozen predecessor's read limits.
 The [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md)
 own exact acceptance and the fresh bounded live-test disposition.
+
+
+## 2026-09-08 — Reserve exact selection before variable transformation preview
+
+Variable transformation needs two separate confirmations: finish choosing the
+originals, then confirm the previewed transformation. G7 uses the existing native
+root Confirm only when positive minimum selection is reached and manual confirmation
+is enabled. It captures the complete expected original set before that dispatch,
+or before the last select that automatically opens preview at maximum count.
+Partial preview population cannot lower the expected count or grant authority.
+
+The root control is a live dispatch capability until used and an opaque receipt
+thereafter. Final preview controls retain separate identity checks. Every layer
+rejects below-max preview without an explicit preview action. The selected-only
+transformation journal and native completion witnesses remain unchanged.
+
+Version this extension as generic_event_v7/card_transform_v2, preserving frozen
+predecessors and ordinary card/item engines. Handler legality does not decide the
+best number of cards to transform; a decision provider chooses among legal actions.
+The [contract](docs/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md)
+own exact scope and evidence. This decision does not authorize a live campaign.
