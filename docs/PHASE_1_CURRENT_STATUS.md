@@ -1,35 +1,26 @@
 # Phase 1 Current Integration Status
 
-## Generic release v7 installed — Aroma test awaiting readiness
+## Aroma live test stopped before card selection — campaign closed
 
-2026-09-08. Successor29 source-links frozen G7 with card_transform_v2 and the
-frozen card/item engines. Candidate acceptance, focused provenance correction,
-final source-frozen gate and independent review pass: complete G7 regressions,
-855 runtime assertions,42 socket scenarios,128 verifier checks and4 provenance
-mutations. All6 production builds match; all28 predecessors remain unchanged.
-Read the [release contract](PHASE_1_GENERIC_EVENT_RELEASE_V7_CONTRACT.md) and
-[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
+2026-09-08. One frozen releasev7 invocation accepted Let Go and opened the
+transformation selector,then stopped at prepare_geometry:1 parent attempted/
+accepted,0 reconciled,258 reads,0 child episodes/actions/completions. CUA showed
+15 cards in5 columns with a clipped third row and scroll bar. No card was selected
+or transformed. This is consistent with unsupported scrolling; exact live geometry
+values were not captured,so the precise failing predicate remains unproved.
 
-Fresh stopped/closed and429-file clean-base checks passed. Exact version7 package
-was published and installed; overlay verification finds the2 expected files and
-unchanged base. Protected metadata verification passed without reading credentials.
-Current installed campaign GENERIC-EVENT-V7-SMOKE-V1,state SHA256
-3e68b7e73fa1230b06a1801138c7e7a53c32884822082ac9829c63274608eb01.
-This is the current instance, not a historical reusable state. No client invocation
-or G7 live result exists yet. Operator/overlay cleanup remains due after this test.
+Normal quit,stopped/closed checks,code-first quarantine,exact4-file purge and final
+429-file clean-base/0-overlay verification passed. All live instances are closed;
+no credential,overlay or cleanup remains. State hashes in the [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md)
+are historical. No game setup is needed until a fresh test instance is prepared.
+Next test setup should explicitly require a fresh ordinary deck of at most10
+cards,not the existing15-card run; this avoids the observed clipped third row but
+is not a guarantee of geometry acceptance. Do not retry the spent invocation.
 
-Next manual setup: dedicated Profile3,single-player,fresh Aroma of Chaos initial
-2 choices untouched,ordinary small starter deck with at least2 visible eligible
-transformable cards,no console/selector/popup. Fixed policy chooses upper Let Go
-(index0) once,then first_legal. After user readiness verify current UI and running
-identity,then invoke the frozen client exactly once. Never retry uncertain actions.
-Normal quit and owned quarantine/purge/clean-base checks close the campaign.
-
-This is a fixed one-card transformation smoke. The [six-caller inspection](research/PHASE_1_GENERIC_EVENT_V7_TEST_CANDIDATE_ACCEPTANCE.md)
-found only fixed-count requests; it does not prove no variable caller exists
-elsewhere. Variable-count support remains offline evidence, including actual-native
-socket tests that preview below maximum. No variable-transform live or all-event
-claim is made. Earlier closed/unpackaged statements below are historical.
+Releasev7 and all28 predecessors remain frozen; complete offline gates,42 socket
+scenarios and6 matching production builds remain accepted. No successful fixed
+or variable transformation live claim is made. Earlier checkpoints below are
+historical; the ledger preserves exact preparation,invocation and cleanup evidence.
 
 ## Generic v7 accepted — variable-count transformation
 

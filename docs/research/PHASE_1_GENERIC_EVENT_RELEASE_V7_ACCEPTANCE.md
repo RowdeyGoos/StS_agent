@@ -158,3 +158,51 @@ frozen invocation. Do not use earlier ready messages as current readiness. Curre
 operator/overlay/state remain installed for this test and require the preserved
 normal-quit/quarantine/purge/clean-base closure afterward. All earlier closed and
 uninstalled entries in this ledger are checkpoints preceding this installation.
+
+
+## Single Aroma live invocation — stopped at geometry; cleanup complete
+
+2026-09-08. The user confirmed current readiness. CUA showed fresh Aroma of Chaos
+initial choices: Let Go first and Maintain Control second,HP62/80,gold257,deck15,
+no console or popup. This was an existing15-card run rather than the intended small
+starter deck. Initial UI did not show selector layout; root proceeded after exact
+running-process verification. The deck size should have been made explicit and
+checked before dispatch. No extra setup or inventory mutation was performed.
+
+Exactly one frozen client invocation used the installed state below. It returned:
+
+```json
+{"schema_version":1,"status":"failed","parent_attempted":1,"parent_accepted":1,"parent_reconciled":0,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":1,"reads":258,"effects":"unverified","completed_card_children":0,"completed_item_children":0,"code":"unsupported_state","last_response_diagnostic":"prepare_geometry"}
+```
+
+The parent choice was accepted, but no child was admitted and no card select,
+preview or confirm was attempted. CUA showed Choose a card to Transform,5 columns,
+3 rows,with the last row clipped and a vertical scroll bar. No card transformation
+or completion was observed or claimed. HP,gold and deck count remained62/80,257,15.
+
+The diagnostic identifies the prepare_geometry stage. Frozen G7 TransformAdapter
+GridGeometry requires the complete eligible grid to fit and exact stable size/
+position relationships. The clipped third row is consistent with its unsupported
+scrolling boundary. No live geometry numbers were captured, so this does not isolate
+which exact predicate failed or exclude other geometry mismatches. No retry,
+manual child action,scrolling or additional live probe was performed.
+
+Root quit normally through CUA Command-Q. Wait-stopped passed3 process/2 port
+samples. Code-first quarantine passed using historical installed state
+3e68b7e73fa1230b06a1801138c7e7a53c32884822082ac9829c63274608eb01;
+quarantined state was
+9c22e7d58afcba28924b2b3f6ed2c54dcca8f169791ab81199272e88d83bd55b.
+Exact purge removed4 generated files and returned phase absent. Final clean-base
+verification passed429 files,0 overlays,projection
+d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0;
+final require-stopped passed3 process/2 closed-port samples. No profile/save/Cloud
+filesystem access occurred. Both state hashes above are historical and cannot be
+reused. The campaign is closed; no installed credential,overlay or cleanup remains.
+
+Next bounded test preparation should explicitly require a fresh ordinary deck of
+at most10 cards and no added cards before opening Aroma. This targets the visible
+5-column/2-row layout, but does not guarantee every geometry predicate will pass.
+A new instance requires fresh setup/state and readiness; this invocation is spent.
+Do not broaden frozen admission or add scrolling based on an unmeasured diagnosis.
+All29 source components remain frozen; functional/offline release evidence is
+unchanged. Fixed and variable transformation still lack successful live evidence.

@@ -1,16 +1,14 @@
 # Event coverage matrix
 
-## G7 release prepared; fixed Aroma live test pending — 2026-09-08
+## Aroma live attempt stopped at geometry — 2026-09-08
 
-Releasev7 is frozen, installed and awaiting manual readiness. All42 release socket
-scenarios pass, including fixed1 Aroma-shaped public-policy flow and variable
-min/intermediate/max preview. This adds composition evidence, not a named-event
-live result. The six inspected direct transform callers all construct fixed-count
-preferences; shared variable capability is not proof of a real variable caller.
-See [candidate evidence](PHASE_1_GENERIC_EVENT_V7_TEST_CANDIDATE_ACCEPTANCE.md) and
-[release state](PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md). The number of
-live-demonstrated event types remains3 until an actual new result is accepted.
-Older uninstalled/unpackaged statements below are preserved checkpoints.
+One releasev7 Let Go invocation opened the transform selector but admitted no
+child and dispatched no card action. Diagnostic prepare_geometry; CUA showed a
+15-card grid with a clipped third row. Exact failing geometry predicate remains
+unmeasured. This is a bounded failed attempt,not successful transformation evidence.
+Full cleanup passed and the campaign is closed. Next setup should explicitly use
+a fresh ordinary deck of at most10 cards. See the [live ledger](PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
+Successful live event types remain3. Offline variable socket evidence is unchanged.
 
 ## Generic v7 functional coverage — 2026-09-08
 
@@ -206,7 +204,7 @@ runtime, but does not advance this evidence row to full coverage.
 | --- | --- | --- |
 | `AbyssalBaths` | None recorded per type | Unclassified |
 | `Amalgamator` | None recorded per type | Unclassified |
-| `AromaOfChaos` | MaintainControl upgrade-one native fixtures; LetGo fixed1 caller and awaited effect/finish audited, release smoke installed | Live LetGo result pending; no all-branch claim |
+| `AromaOfChaos` | MaintainControl upgrade-one native fixtures; LetGo fixed1 caller audited; live choice opened selector then stopped at prepare_geometry,0 child actions | No successful transformation live evidence; no all-branch claim |
 | `BattlewornDummy` | None recorded per type | Unclassified |
 | `BrainLeech` | None recorded per type | Unclassified |
 | `Bugslayer` | None recorded per type | Unclassified |
