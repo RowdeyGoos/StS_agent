@@ -4,12 +4,18 @@ Updated 2026-09-08. This is the single current capability/evidence and operation
 handoff page. [AGENTS.md](../AGENTS.md) owns workflow; [roadmap](../ROADMAP.md) owns
 priorities. Historical acceptance ledgers retain exact artifact identities.
 
-## Checkout and latest recorded operation
+## Checkout and current operation
 
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The latest recorded live campaign is release v10, implementation `6978943`,
+The unified bridge is now installed for the user-requested module smoke test.
+Its release, base installation and owned configuration checks passed. It awaits
+manual launch with Profile 3 at the main menu; no live request has run yet.
+The [active live record](research/PHASE_1_UNIFIED_BRIDGE_LIVE.md) owns the exact
+artifact/state identities, next action and cleanup handoff.
+
+The latest completed live campaign is release v10, implementation `6978943`,
 successful result and cleanup `dc5dbfc`. It selected native holder slot15
 (card16) in the user's controlled 20-card Aroma of Chaos/Let Go setup without
 scrolling, verified the exact original in preview, confirmed transformation and
@@ -55,7 +61,8 @@ Direct-input fixtures exercise different slots and invalid/deferred targets.
 The [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md)
 records offline native/host regressions, shared socket handoff and failure cases,
 actual Python clients, reproducible packaging and owned cleanup fixtures.
-No unified-package game installation, launch or live interaction is claimed.
+The unified package has now been installed and verified as recorded above;
+live runtime and gameplay evidence are still pending.
 
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused
