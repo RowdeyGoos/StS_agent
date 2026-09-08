@@ -9,6 +9,7 @@ import time
 ROOT = Path(__file__).absolute().parents[3]
 sys.path[:0] = [str(ROOT / 'apps/bridge/client'), str(ROOT / 'tools')]
 from wire_client import BridgeClient, parse_response
+from run_live import verify_map_handoff
 import probe_live
 
 
@@ -33,7 +34,8 @@ def main():
                 assert json.loads(client.exchange('POST', '/probe/room-flows-v1/public/action', purchase))['status'] == 'resolved'
             else:
                 assert json.loads(client.exchange('GET', route))['status'] == 'resolved'
-        assert json.loads(client.exchange('GET', '/probe/v0/public/map-decision'))['status'] == 'waiting'
+        assert verify_map_handoff(client.exchange) == {
+            'status': 'passed', 'reads': 1, 'candidate_count': 1, 'code': None}
         # Reuse the actual base-controller exchange helper, including SHUT_WR.
         def build():
             return bytearray(b'GET /probe/v0/manifest HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer ' + b'a' * 64 +

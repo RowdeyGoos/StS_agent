@@ -182,8 +182,9 @@ shop POST passed, followed by one independent review with no remaining blockers.
 The current release record binds the final maintained source; prior live evidence
 continues to identify the exact DLL and temporary client used at execution time.
 
-Final [release record](../../bridge/Sts2AgentBridge/releases/current/bridge.json)
-SHA-256: `c87183edbba11116ead11d5089903c001fae15f5c231ce7402e5e0f3904e3b9b`.
+The smoke's final release record is retained in Git at `176882f`, path
+`bridge/Sts2AgentBridge/releases/current/bridge.json`, SHA-256:
+`c87183edbba11116ead11d5089903c001fae15f5c231ce7402e5e0f3904e3b9b`.
 Its 67-group gate passed in 141.796 s. Final package bytes exactly match the live-
 tested corrected package, and the maintained wire client exactly matches the
 successful temporary candidate. No further installation or launch was needed.

@@ -8,8 +8,10 @@ process. Completed packets and old campaign instructions are historical referenc
 
 1. **Close the concrete gaps from the unified module smoke.** Representative
    module paths now have live results. Neow's Fury's optional combat chooser
-   required UI assistance; legacy screen observation after controlled event entry
-   was unsupported. Clarify the generic final effect summary's narrower meaning.
+   required UI assistance. The legacy screen reader is menu-only; use the new
+   `event-map` client flow to test a fresh core map decision after event completion.
+   The generic final effect summary's narrower meaning is now documented in the
+   [generic event guide](docs/GENERIC_EVENTS.md).
    Use the [live record](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) to choose one
    next behavior; do not rerun every module for an isolated correction.
 2. **Use the generalized transformation path in useful play.** All eligible,

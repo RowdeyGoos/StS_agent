@@ -100,7 +100,7 @@ def collect_sources(bridge: Path, targets: list[str]) -> dict[str, bytes]:
                 pending.append(name)
     # The actual original combat client transport is a maintained consumer.
     for name in ("tools/probe_live.py", "tools/probe_live_fixtures.py",
-                 "tools/decision_providers.py", "tools/tool_common.py"):
+                 "tools/decision_providers.py", "tools/tool_common.py", "tools/apply_map_live.py"):
         if (bridge / name).is_file():
             files[name] = read_regular(bridge / name)
     return dict(sorted(files.items()))

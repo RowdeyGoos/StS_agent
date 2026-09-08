@@ -129,12 +129,29 @@ After installation and the user's requested game setup, use one client:
   --expected-state-sha256 <current-owned-state-hash> --capability events
 ```
 
-Capabilities are `events`, `cards`, `items`, `shop`, `room-event` and `core`.
-The first five run their bounded controller; `core` observes one `--route` or
+Capabilities are `events`, `event-map`, `cards`, `items`, `shop`, `room-event` and `core`.
+The feature modes run their bounded controller; `core` observes one `--route` or
 submits an advertised action with `--decision` and `--action`. A core accepted
 receipt reports acceptance, not completion; reconcile through the corresponding
 decision route. Event choices use the replaceable first-legal host provider.
 The client verifies release and owned installation before credential access.
+
+Use `--capability event-map` for the next event-to-core handoff test. After a
+resolved event it polls `/probe/v0/public/map-decision` within a five-second
+window and 100-read cap, accepting only a validated actionable map. An in-flight
+exchange can extend elapsed time by its existing two-second transport limit;
+responses arriving after the polling deadline cannot pass. It selects no map node.
+Only a `waiting` map response permits another read; errors, unsupported responses,
+uncertainty or interruption stop the check. The result retains the full `event`
+summary and a separate `map_handoff` status/read count even when that check fails.
+A failed event never starts the map check. The existing `events` mode is unchanged.
+
+`/probe/v0/public/screen` recognizes only main menu/settings; its unsupported
+result during a run is not a map diagnostic. Use the map decision route above.
+The event summary's final `effects: unverified` describes its latest parent action
+(usually Proceed); cumulative `completed_card_children`/`completed_item_children`
+retain verified child completions. [Generic event semantics](../../docs/GENERIC_EVENTS.md)
+explain the distinction.
 
 Normal quit and stopped/closed-listener checks precede cleanup. Use the same
 operational command with `--mode quarantine`, then `--mode purge`, each with

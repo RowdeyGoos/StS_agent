@@ -61,8 +61,15 @@ actual Python clients, reproducible packaging and owned cleanup fixtures.
 The unified package demonstrated the representative paths above. The successful
 shop client correction is now in the maintained source. Generic orchestration
 resolved with one completed card child, but its final `effects` summary remained
-`unverified`; the legacy public-screen probe reported unsupported/unknown after
-that controlled event/map setup. These limits remain explicit in the live record.
+`unverified`; that field tracks the latest parent action, including Proceed,
+while cumulative child counts retain verified completions. See the
+[generic guide](GENERIC_EVENTS.md) for the precise distinction. The legacy
+public-screen reader recognizes only main menu/settings, so its unsupported/unknown
+result on the map did not test core map readiness. The shared client's new
+`event-map` mode performs a bounded, read-only check of the existing core map
+decision after event resolution and preserves event evidence if that check fails.
+It has controller/codec and shared-socket fixture coverage; a live event-to-core
+map check remains outstanding. The original live observations remain unchanged.
 
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused

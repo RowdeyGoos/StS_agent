@@ -31,7 +31,7 @@ internal static class Program
     }
     private static int Serve()
     {
-        var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true }, new CoreFixture { Reject = true });
+        var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true }, new CoreFixture { Reject = true, MapReady = true });
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
@@ -199,13 +199,15 @@ internal static class Program
         IPublicRewardDecisionService, IPublicRewardActionService, IPublicMapDecisionService, IPublicMapActionService,
         IPublicRoomDecisionService, IPublicRoomActionService
     {
-        internal bool MapComplete, Reject, Fault, CombatReady; internal int Applies, CombatAccepted;
+        internal bool MapComplete, MapReady, Reject, Fault, CombatReady; internal int Applies, CombatAccepted;
         PublicScreenReadResult IPublicScreenService.Read() => PublicScreenReadResult.BackendFault();
         PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(CombatReady
             ? new(PublicDecisionStatus.Ready, Decision, 1, new(80,80,0,0), new[] { new PublicCombatEnemy(0,"SLIME",8,8,0,Array.Empty<string>()) }, Array.Empty<PublicCombatCard>(), new[] { new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1) }, PublicCombatOutcome.None)
             : PublicCombatDecisionSnapshot.Waiting());
         PublicRewardDecisionReadResult IPublicRewardDecisionService.Read() => PublicRewardDecisionReadResult.FromSnapshot(PublicRewardDecisionSnapshot.Waiting());
-        PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : PublicMapDecisionSnapshot.Waiting());
+        PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : MapReady
+            ? new(PublicDecisionStatus.Ready, Decision, "map", null, new[] { new PublicMapCandidate(0,2,3,"monster") }, new[] { "select:0" })
+            : PublicMapDecisionSnapshot.Waiting());
         PublicRoomDecisionReadResult IPublicRoomDecisionService.Read() => PublicRoomDecisionReadResult.FromSnapshot(PublicRoomDecisionSnapshot.Waiting());
         PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) { if (!Reject) CombatAccepted++; return PublicCombatActionApplyResult.FromRequest(Reject ? PublicCombatActionApplyOutcome.StaleDecision : PublicCombatActionApplyOutcome.Accepted,r); }
         PublicRewardActionApplyResult IPublicRewardActionService.Apply(PublicRewardActionRequest r) => PublicRewardActionApplyResult.FromRequest(Reject ? PublicRewardActionApplyOutcome.StaleDecision : PublicRewardActionApplyOutcome.Accepted,r);

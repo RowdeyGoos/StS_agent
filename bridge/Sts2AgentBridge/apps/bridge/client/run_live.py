@@ -8,8 +8,57 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 
 ROOT = Path(__file__).absolute().parents[3]
+
+
+def verify_map_handoff(request, *, clock=time.monotonic, sleep=time.sleep):
+    """Observe a fresh actionable map through the existing codec; never select a node."""
+    sys.path.insert(0, str(ROOT / 'tools'))
+    import apply_map_live as maps
+    from tool_common import ToolFailure
+
+    reads = 0
+    code = 'map_handoff_timeout'
+    deadline = clock() + 5.0
+    try:
+        while reads < 100 and clock() < deadline:
+            reads += 1
+            response = request('GET', maps._MAP_DECISION_ROUTE, None)
+            try:
+                if clock() >= deadline:
+                    break
+                if response == maps._MAP_UNSUPPORTED:
+                    code = 'map_handoff_unsupported'
+                    break
+                if response != maps._MAP_WAITING:
+                    decision = maps._validate_ready(response)
+                    return {'status': 'passed', 'reads': reads,
+                            'candidate_count': len(decision['candidates']), 'code': None}
+            finally:
+                if type(response) is bytearray:
+                    response[:] = b'\0' * len(response)
+            sleep(min(0.05, max(0.0, deadline - clock())))
+    except KeyboardInterrupt:
+        code = 'interrupted'
+    except (ToolFailure, ValueError, TypeError, KeyError):
+        code = 'map_handoff_invalid_response'
+    except Exception:
+        code = 'map_handoff_transport_failure'
+    return {'status': 'failed', 'reads': reads, 'candidate_count': 0, 'code': code}
+
+
+def run_event_map(request, host, *, clock=time.monotonic, sleep=time.sleep):
+    """Keep event evidence even if the subsequent core observation fails."""
+    event = host.run_event(request, provider=host.first_legal, clock=clock, sleep=sleep)
+    handoff = ({'status': 'not_attempted', 'reads': 0, 'candidate_count': 0, 'code': None}
+               if event['status'] != 'resolved' else
+               verify_map_handoff(request, clock=clock, sleep=sleep))
+    return {'schema_version': 1,
+            'status': 'resolved' if handoff['status'] == 'passed' else 'failed',
+            'event': event, 'map_handoff': handoff,
+            'code': event['code'] if event['status'] != 'resolved' else handoff['code']}
 
 
 def core_summary(method, route, value):
@@ -38,7 +87,7 @@ def main():
     parser.add_argument('--release-manifest', type=Path, required=True)
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
-    parser.add_argument('--capability', choices=['events', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
+    parser.add_argument('--capability', choices=['events', 'event-map', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
     parser.add_argument('--route', help='Core route to observe, or act on with --decision and --action.')
     parser.add_argument('--decision')
     parser.add_argument('--action')
@@ -57,9 +106,10 @@ def main():
         layout, state = manager.validate_installed_for_client(args.expected_state_sha256)
         credential = read_credential(layout.user_profile, os.geteuid(), state, manager.require_no_granting_acl_fd)
         client = BridgeClient(credential)
-        if args.capability == 'events':
+        if args.capability in ('events', 'event-map'):
             host = load('unified_event_host', 'components/events/host/generic_event_host.py')
-            result = host.run_event(client.exchange, provider=host.first_legal)
+            result = (run_event_map(client.exchange, host) if args.capability == 'event-map' else
+                      host.run_event(client.exchange, provider=host.first_legal))
         elif args.capability == 'cards':
             host = load('unified_card_host', 'components/cards/host/card_selection_host.py')
             result = host.run_card_selection(client.exchange)

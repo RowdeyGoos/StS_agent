@@ -22,6 +22,16 @@ the old proposals. G7 and inherited child contracts describe exact semantics;
 a parent action may already have effects before an unsupported child appears.
 Preserve cumulative child completion independently of the latest parent's effect label.
 
+The summary's `effects` describes the latest parent action, not all effects of
+the event. Reconciled card/item children set `card_effect_verified` or
+`item_effect_verified`; the next parent dispatch, including Proceed, resets it
+to `unverified`. A resolved flow with `effects: unverified` and
+`completed_card_children: 1` therefore retains one verified card child. Parent
+`map_handoff` reconciliation establishes event exit, not verification of arbitrary
+parent effects or a fresh core map decision. The shared client's `event-map`
+flow separately checks that core decision and preserves the original event summary
+on success or failure. See the [bridge guide](../bridge/Sts2AgentBridge/README.md).
+
 ## Implemented: all eligible transform holders
 
 The successful v10 experiment directly selected an allocated off-screen card.
