@@ -130,8 +130,8 @@ After installation and the user's requested game setup, use one client:
   --expected-state-sha256 <current-owned-state-hash> --capability events
 ```
 
-Capabilities are `events`, `event-map`, `combat`, `combat-choice`, `cards`, `items`,
-`shop`, `room-event` and `core`.
+Capabilities are `events`, `event-map`, `combat`, `combat-map`, `combat-choice`,
+`rewards`, `cards`, `items`, `shop`, `room-event` and `core`.
 The feature modes run their bounded controller; `core` observes one `--route` or
 submits an advertised action with `--decision` and `--action`. A core accepted
 receipt reports acceptance, not completion; reconcile through the corresponding
@@ -145,6 +145,26 @@ selection to its maximum. Parent combat and child selection have separate
 attempted/accepted/reconciled counts, retained on failure. Supported native
 surfaces, protocol semantics and limits are in [combat choices](../../docs/COMBAT_CHOICES.md).
 These additions await live testing.
+
+Use `--capability combat-map` to finish one combat, resolve its gold/card rewards,
+and verify an actionable map with the same client. Defeat stops before rewards.
+The default `--reward-policy first-card` claims gold and chooses the first legal
+card; `skip-card` uses the native card skip. `--capability rewards` starts directly
+at a reward parent and ends after reward Proceed reconciles; it does not perform
+an additional map-readiness check. Neither mode selects a map node. Unsupported
+uncollected rewards stop the flow rather than being abandoned by Proceed.
+
+The composite result retains `combat`, `rewards` and `map_handoff` summaries plus
+its final `stage` and `code`. A failure never erases earlier reconciled actions or
+combat chooser results. Reward gold/card totals count only verified transitions.
+Reward bounds are 45 seconds, 512 reads, 17 accepted/25 attempted actions and eight
+known no-mutation stale rejections. Existing combat and map bounds also apply.
+These composed paths have offline shared-socket coverage and await live testing.
+
+The shared client spaces exchanges by at least 60 ms, below the listener's
+20-per-second authenticated allowance. Pacing consumes the existing exchange
+budget; an expired wait or connection cannot send a request. Server rate limits
+remain unchanged and rate-limited/uncertain requests are never retried.
 
 Use `--capability event-map` for the next event-to-core handoff test. After a
 resolved event it polls `/probe/v0/public/map-decision` within a five-second

@@ -26,15 +26,17 @@ internal static class Program
         {
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
             if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
+            if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
             Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
         catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
-    private static int Serve(bool combat = false)
+    private static int Serve(bool combat = false, bool rewards = false)
     {
         var fixture = combat ? CombatScenario() : new CoreFixture { Reject = true, MapReady = true };
+        fixture.RewardScenario = rewards;
         var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true }, fixture);
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
@@ -255,6 +257,7 @@ internal static class Program
         IPublicRoomDecisionService, IPublicRoomActionService
     {
         internal CombatCardChoiceService? Choice; internal bool Scenario; internal int Stage;
+        internal bool RewardScenario, RewardWaited, Skipped; internal int RewardStep;
         internal bool MapComplete, MapReady, Reject, Fault, CombatReady; internal int Applies, CombatAccepted;
         PublicScreenReadResult IPublicScreenService.Read() => PublicScreenReadResult.BackendFault();
         PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(Scenario ? ScenarioSnapshot() : CombatReady
@@ -270,13 +273,34 @@ internal static class Program
                 new[] { new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1) }, PublicCombatOutcome.None),
             3 => PublicCombatDecisionSnapshot.Complete(2,new(80,80,0,0),Array.Empty<PublicCombatEnemy>(),PublicCombatOutcome.Victory),
             _ => PublicCombatDecisionSnapshot.Waiting() };
-        PublicRewardDecisionReadResult IPublicRewardDecisionService.Read() => PublicRewardDecisionReadResult.FromSnapshot(PublicRewardDecisionSnapshot.Waiting());
-        PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : MapReady
+        private PublicRewardDecisionSnapshot RewardSnapshot()
+        {
+            if (Stage != 3 || !RewardWaited) { RewardWaited = true; return PublicRewardDecisionSnapshot.Waiting(); }
+            var player = new PublicRewardPlayer(80,80,RewardStep == 0 ? 99 : 113,RewardStep >= 3 && !Skipped ? 11 : 10);
+            if (RewardStep == 4) return PublicRewardDecisionSnapshot.Complete(player,4);
+            var card = new PublicRewardItem(1,PublicRewardKind.Card,RewardStep == 3 && !Skipped,0,new[] { "ANGER","BASH" },true);
+            var rewards = RewardStep == 0 ? new[] { new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),card } : new[] { card };
+            string[] actions = RewardStep switch { 0 => new[] { "claim:0","open:1","proceed" }, 1 => new[] { "open:0","proceed" },
+                2 => new[] { "choose:0","choose:1","skip_card" }, _ => new[] { "proceed" } };
+            return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep == 2 ? "card_reward" : "rewards",player,rewards,actions,RewardStep);
+        }
+        PublicRewardDecisionReadResult IPublicRewardDecisionService.Read() => PublicRewardDecisionReadResult.FromSnapshot(RewardScenario ? RewardSnapshot() : PublicRewardDecisionSnapshot.Waiting());
+        PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : MapReady || RewardScenario && RewardStep == 4
             ? new(PublicDecisionStatus.Ready, Decision, "map", null, new[] { new PublicMapCandidate(0,2,3,"monster") }, new[] { "select:0" })
             : PublicMapDecisionSnapshot.Waiting());
         PublicRoomDecisionReadResult IPublicRoomDecisionService.Read() => PublicRoomDecisionReadResult.FromSnapshot(PublicRoomDecisionSnapshot.Waiting());
         PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) { if (!Reject) { CombatAccepted++; if (Scenario) Stage++; } return PublicCombatActionApplyResult.FromRequest(Reject ? PublicCombatActionApplyOutcome.StaleDecision : PublicCombatActionApplyOutcome.Accepted,r); }
-        PublicRewardActionApplyResult IPublicRewardActionService.Apply(PublicRewardActionRequest r) => PublicRewardActionApplyResult.FromRequest(Reject ? PublicRewardActionApplyOutcome.StaleDecision : PublicRewardActionApplyOutcome.Accepted,r);
+        PublicRewardActionApplyResult IPublicRewardActionService.Apply(PublicRewardActionRequest r)
+        {
+            if (RewardScenario)
+            {
+                var state = RewardSnapshot();
+                Check(r.DecisionId == state.DecisionId && state.LegalActions.Contains(r.ActionId), "actual reward codec decision/action binding");
+                Skipped = Skipped || r.ActionId == "skip_card";
+                RewardStep++;
+            }
+            return PublicRewardActionApplyResult.FromRequest(Reject ? PublicRewardActionApplyOutcome.StaleDecision : PublicRewardActionApplyOutcome.Accepted,r);
+        }
         PublicRoomActionApplyResult IPublicRoomActionService.Apply(PublicRoomActionRequest r) => PublicRoomActionApplyResult.FromRequest(Reject ? PublicRoomActionApplyOutcome.StaleDecision : PublicRoomActionApplyOutcome.Accepted,r);
         PublicMapActionApplyResult IPublicMapActionService.Apply(PublicMapActionRequest r) { Applies++; return Fault ? PublicMapActionApplyResult.BackendFault() : PublicMapActionApplyResult.FromRequest(Reject ? PublicMapActionApplyOutcome.StaleDecision : PublicMapActionApplyOutcome.Accepted,r); }
     }

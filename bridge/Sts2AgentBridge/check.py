@@ -81,6 +81,7 @@ class Gate:
                 continue
             self.run("client", [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(app / "client_tests"), "-p", "test_*.py"])
             self.run("core_client", [sys.executable, "-B", str(self.source / "tools/probe_live_fixtures.py")])
+            self.run("reward_codec", [sys.executable, "-B", str(self.source / "tools/apply_reward_live_fixtures.py")])
             for script in sorted(app.glob("client_tests/*_fixtures.py")):
                 self.run(str(script.relative_to(self.source)), [sys.executable, "-B", str(script)])
             for script in sorted(app.glob("operations/*_fixtures.py")):

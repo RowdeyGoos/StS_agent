@@ -79,9 +79,10 @@ def parse_response(response: bytearray, *, event: bool) -> bytearray:
 
 
 class BridgeClient:
-    def __init__(self, credential: bytearray, *, connector=None, clock=time.monotonic):
+    def __init__(self, credential: bytearray, *, connector=None, clock=time.monotonic, sleep=time.sleep):
         require(type(credential) is bytearray and re.fullmatch(b"[0-9a-f]{64}", credential), "credential")
         self._credential, self._clock = credential, clock
+        self._sleep, self._next_exchange = sleep, float('-inf')
         self._connector = connector or (lambda: socket.create_connection(("127.0.0.1", 43117), timeout=2))
         self._failed, self._requests = False, 0
 
@@ -93,7 +94,16 @@ class BridgeClient:
         try:
             request = build_request(method, route, body, self._credential)
             until = min(self._clock() + 2, deadline if deadline is not None else float("inf"))
+            # Both reads and writes consume the native 20/s authenticated bucket.
+            # Pace this client below it; never replay a rate-limited mutation.
+            delay = max(0, self._next_exchange - self._clock())
+            require(self._clock() + delay < until, "transport_timeout")
+            if delay:
+                self._sleep(delay)
+            require(self._next_exchange <= self._clock() < until, "transport_timeout")
+            self._next_exchange = self._clock() + 0.06
             client = self._connector()
+            require(self._clock() < until, "transport_timeout")
             client.settimeout(max(0.001, until - self._clock()))
             client.sendall(request)
             client.shutdown(socket.SHUT_WR)

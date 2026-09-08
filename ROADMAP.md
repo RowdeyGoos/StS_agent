@@ -9,8 +9,10 @@ process. Completed packets and old campaign instructions are historical referenc
 1. **Build useful features in batches, then test them live.** The user has deferred
    live testing until a substantial batch is ready. The event-to-core map check
    and [combat discard/exhaust choices](docs/COMBAT_CHOICES.md) with bounded combat
-   resume are implemented offline. The next live batch should cover Neow's Fury
-   zero/positive choices, a suitable multi-card caller and event-to-core map return.
+   resume are implemented offline. `combat-map` now also composes combat, gold/card
+   rewards and map readiness, with both first-card and skip-card policy fixtures.
+   The next live batch should cover Neow's Fury zero/positive choices, a suitable
+   multi-card caller, both reward policies and event-to-core map return.
    Reuse the [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
    evidence for unchanged paths; do not repeat every module.
 2. **Use the generalized transformation path in useful play.** All eligible,
@@ -21,8 +23,9 @@ process. Completed packets and old campaign instructions are historical referenc
 3. **Expand the next interaction that blocks useful play.** Establish a real
    representative caller first. Prioritize observed gaps over hypothetical
    capability combinations or another event-name allowlist.
-4. **Compose supported interactions into longer live runs.** Test remaining
-   handoffs, elite continuation and unsupported surfaces with targeted setups.
+4. **Compose supported interactions into longer live runs.** The one-combat
+   reward/map host path now exists offline. After the deferred live batch, test
+   remaining handoffs, elite continuation and unsupported surfaces with targeted setups.
    Keep run-completion, branch coverage and strategic-quality claims separate.
 
 The current off-screen capability question has been answered for an allocated

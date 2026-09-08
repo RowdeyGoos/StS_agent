@@ -61,6 +61,30 @@ def run_event_map(request, host, *, clock=time.monotonic, sleep=time.sleep):
             'code': event['code'] if event['status'] != 'resolved' else handoff['code']}
 
 
+def run_combat_map(request, combat, rewards, *, choice_provider=None, reward_policy='first-card',
+                   clock=time.monotonic, sleep=time.sleep):
+    """One combat and its gold/card rewards, ending at an observed actionable map."""
+    fight = combat.run_combat(request, choice_provider=choice_provider or combat.first_select,
+                              clock=clock, sleep=sleep)
+    loot = {'status': 'not_attempted', 'code': None}
+    handoff = {'status': 'not_attempted', 'reads': 0, 'candidate_count': 0, 'code': None}
+    stage = 'combat'
+    code = fight['code']
+    if fight['status'] == 'resolved':
+        if fight['outcome'] != 'victory':
+            code = 'combat_defeat'
+        else:
+            stage = 'rewards'
+            loot = rewards.run_rewards(request, policy=reward_policy, clock=clock, sleep=sleep)
+            code = loot['code']
+            if loot['status'] == 'resolved':
+                stage = 'map'
+                handoff = verify_map_handoff(request, clock=clock, sleep=sleep)
+                code = handoff['code']
+    return {'schema_version': 1, 'status': 'resolved' if handoff['status'] == 'passed' else 'failed',
+            'stage': stage, 'code': code, 'combat': fight, 'rewards': loot, 'map_handoff': handoff}
+
+
 def core_summary(method, route, value):
     success = type(value) is dict and value.get('schema_version') == 1
     if method == 'POST':
@@ -87,9 +111,11 @@ def main():
     parser.add_argument('--release-manifest', type=Path, required=True)
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
-    parser.add_argument('--capability', choices=['events', 'event-map', 'combat', 'combat-choice', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
+    parser.add_argument('--capability', choices=['events', 'event-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
     parser.add_argument('--choice-policy', choices=['first-select', 'minimum'], default='first-select',
                         help='Combat chooser policy; minimum confirms as soon as native controls allow it.')
+    parser.add_argument('--reward-policy', choices=['first-card', 'skip-card'], default='first-card',
+                        help='Claim gold, then choose the first card or use the native card skip.')
     parser.add_argument('--route', help='Core route to observe, or act on with --decision and --action.')
     parser.add_argument('--decision')
     parser.add_argument('--action')
@@ -108,11 +134,16 @@ def main():
         layout, state = manager.validate_installed_for_client(args.expected_state_sha256)
         credential = read_credential(layout.user_profile, os.geteuid(), state, manager.require_no_granting_acl_fd)
         client = BridgeClient(credential)
-        if args.capability in ('combat', 'combat-choice'):
+        if args.capability in ('combat', 'combat-map', 'combat-choice', 'rewards'):
             host = load('unified_combat_host', 'apps/bridge/client/combat_host.py')
             provider = host.first_select if args.choice_policy == 'first-select' else host.minimum_select
-            result = (host.run_combat(client.exchange, choice_provider=provider) if args.capability == 'combat' else
-                      host.run_choice(client.exchange, provider=provider))
+            if args.capability in ('combat-map', 'rewards'):
+                rewards = load('unified_reward_host', 'apps/bridge/client/reward_host.py')
+                result = (run_combat_map(client.exchange, host, rewards, choice_provider=provider, reward_policy=args.reward_policy)
+                          if args.capability == 'combat-map' else rewards.run_rewards(client.exchange, policy=args.reward_policy))
+            else:
+                result = (host.run_combat(client.exchange, choice_provider=provider) if args.capability == 'combat' else
+                          host.run_choice(client.exchange, provider=provider))
         elif args.capability in ('events', 'event-map'):
             host = load('unified_event_host', 'components/events/host/generic_event_host.py')
             result = (run_event_map(client.exchange, host) if args.capability == 'event-map' else

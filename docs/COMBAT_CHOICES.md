@@ -95,7 +95,19 @@ review found no outstanding blockers after delayed-completion reconciliation was
 corrected. Current release identity and executed checks are recorded in the
 [release evidence](../bridge/Sts2AgentBridge/releases/current/README.md).
 
+The shared `combat-map` mode composes this combat controller with the maintained
+reward codec, then the existing map-readiness check. It claims gold, chooses or
+skips supported card rewards and stops at an actionable map. Each stage retains
+its own evidence; defeat prevents reward control and reward failure prevents the
+map check. The new reward host uses stable reward-set indices through compacted
+visible slots, binds opened card children to their original offer, checks player
+and revision transitions and never counts an unverified receipt as an effect.
+See the [bridge guide](../bridge/Sts2AgentBridge/README.md#installation-client-and-cleanup)
+for policy flags, bounds and shared-client pacing. Native combat/reward/choice
+adapters are unchanged by this composition.
+
 Live validation is deferred at the user's request. The next useful batch includes
-Neow's Fury zero and positive choices, a suitable multi-card caller, combat resume
-and the already prepared event-to-core map check. This feature does not establish
-unassisted native completion, generic-event optional selection or a full run.
+Neow's Fury zero and positive choices, a suitable multi-card caller, combat resume,
+combat-to-rewards-to-map with both card policies, and the already prepared
+event-to-core map check. This feature does not establish unassisted native
+completion, generic-event optional selection or a full run.

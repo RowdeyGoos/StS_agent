@@ -9,6 +9,53 @@ from run_live import core_summary
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_pacing_covers_reads_and_writes_without_bursting(self):
+        clock = FakeClock()
+        opened, sent = [], []
+        def connect():
+            opened.append(clock.value)
+            return FakeSocket(sent)
+        client = BridgeClient(bytearray(b'a' * 64), connector=connect, clock=clock, sleep=clock.sleep)
+        for i in range(40):
+            if i % 2:
+                body = bytearray(json.dumps({'decision_id': 'b' * 64, 'action_id': 'proceed'}).encode())
+                client.exchange('POST', '/probe/v0/public/reward-action', body)
+            else:
+                client.exchange('GET', '/probe/v0/health')
+        self.assertEqual(len(sent), 40)
+        self.assertTrue(all(b - a >= 0.059999 for a, b in zip(opened, opened[1:])))
+        self.assertTrue(all(not any(buffer) for buffer in sent))
+        client.close()
+
+    def test_expiry_or_interruption_while_pacing_does_not_connect_or_retry(self):
+        for mode in ('deadline', 'oversleep', 'interrupt'):
+            clock = FakeClock(); opened = []; sent = []
+            def connect():
+                opened.append(1)
+                return FakeSocket(sent)
+            def sleep(seconds):
+                if mode == 'interrupt': raise KeyboardInterrupt()
+                clock.value += seconds + 3
+            client = BridgeClient(bytearray(b'a' * 64), connector=connect, clock=clock, sleep=sleep)
+            client.exchange('GET', '/probe/v0/health')
+            body = bytearray(json.dumps({'decision_id': 'b' * 64, 'action_id': 'proceed'}).encode())
+            with self.assertRaises((ValueError, KeyboardInterrupt)):
+                client.exchange('POST', '/probe/v0/public/reward-action', body,
+                                deadline=0.01 if mode == 'deadline' else None)
+            with self.assertRaises(ValueError): client.exchange('GET', '/probe/v0/health')
+            self.assertEqual((len(opened),len(sent)), (1,1))
+            client.close()
+
+    def test_connection_finishing_after_deadline_never_sends(self):
+        clock = FakeClock(); sent = []
+        def connect():
+            clock.value += 3
+            return FakeSocket(sent)
+        client = BridgeClient(bytearray(b'a' * 64), connector=connect, clock=clock, sleep=clock.sleep)
+        with self.assertRaises(ValueError): client.exchange('GET','/probe/v0/health')
+        self.assertEqual(sent,[])
+        client.close()
+
     def test_shop_actions_match_the_existing_room_protocol(self):
         token = bytearray(b'a' * 64)
         route = '/probe/room-flows-v1/public/action'
@@ -68,6 +115,25 @@ class ClientBoundaryTests(unittest.TestCase):
                 parse_response(bad, event=False)
         with self.assertRaises(ValueError):
             parse_response(good, event=True)
+
+
+class FakeClock:
+    value = 0.0
+    def __call__(self): return self.value
+    def sleep(self, seconds): self.value += seconds
+
+
+class FakeSocket:
+    def __init__(self, sent):
+        self.sent = sent
+        self.response = b'HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: 2\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nConnection: close\r\n\r\n{}'
+    def settimeout(self, seconds): pass
+    def sendall(self, data): self.sent.append(data)
+    def shutdown(self, how): pass
+    def recv(self, count):
+        response, self.response = self.response, b''
+        return response
+    def close(self): pass
 
 
 if __name__ == '__main__':

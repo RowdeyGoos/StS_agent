@@ -29,6 +29,7 @@ before any new authorized live operation.
 | Capability | Evidence and practical limit |
 | --- | --- |
 | Combat, rewards and map | Bounded live observation/control, combat completion, reward progression and fresh reward/map entry; no complete autonomous run |
+| Combat → rewards → map | One shared-client command, gold/card choose-or-skip policies, separate stage/effect counts and request pacing; both policies pass shared-socket fixtures, no live composition result |
 | Combat discard/exhaust choices | Optional zero, fixed and variable counts up to eight in native/host fixtures; shared combat resume and failure accounting tested offline; live testing deferred |
 | Rest and shop | Standalone heal/Proceed, older Smith upgrade-one, one bounded shop purchase/close/map path live-demonstrated |
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
@@ -81,6 +82,15 @@ combat action after child completion; failures retain separate counts. See
 [combat choices](COMBAT_CHOICES.md) for scope and limits. This new batch has no
 live result; live testing is deferred until the user is ready for a larger batch.
 
+`combat-map` now carries one victorious combat through gold/card rewards to an
+independently validated actionable map. Standalone `rewards` uses the same bounded
+reward host. Uncollected unsupported rewards stop the flow; defeat never starts
+reward actions. Stage summaries preserve prior combat/choice/reward evidence on
+later failure. Shared-client pacing prevents a fast multi-stage flow from
+exhausting the existing listener burst allowance. Actual shared-socket fixtures
+cover both first-card and native skip-card policies. Native production adapters
+are unchanged; this is new host orchestration, not a new live result.
+
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused
 `--component` selection, one package identity and one client/operational entry
@@ -112,6 +122,7 @@ Paths in the first column are relative to `bridge/Sts2AgentBridge/`.
 
 | Location | Responsibility |
 | --- | --- |
+| `apps/bridge/client/reward_host.py`, `run_live.py` | Bounded reward resolution and combat/reward/map composition |
 | `components/cards/combat/`, `components/cards/combat_native/`, `apps/bridge/client/combat_host.py` | Combat selector protocol, native binding and bounded combat/choice host |
 | `components/events/native/GenericEventV7Hooks.cs`, `GenericEventV7Binding.cs` | Owned native discovery and parent/child identity |
 | `components/events/native/PinnedGenericEventV7NativeAdapter.cs` | Parent capture and child integration |
