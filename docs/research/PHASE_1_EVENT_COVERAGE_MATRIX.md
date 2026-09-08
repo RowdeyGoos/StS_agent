@@ -1,38 +1,28 @@
 # Event coverage matrix
 
-## Aroma live attempt stopped at geometry — 2026-09-08
+## Current coverage — 2026-09-08
 
-One releasev7 Let Go invocation opened the transform selector but admitted no
-child and dispatched no card action. Diagnostic prepare_geometry; CUA showed a
-15-card grid with a clipped third row. Exact failing geometry predicate remains
-unmeasured. This is a bounded failed attempt,not successful transformation evidence.
-Full cleanup passed and the campaign is closed. Next setup should explicitly use
-a fresh ordinary deck of at most10 cards. See the [live ledger](PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
-Successful live event types remain3. Offline variable socket evidence is unchanged.
+Four types have bounded successful live paths: Dense Vegetation ordinary
+continuation; Room Full of Cheese/Gorge add-two and Search continuation;
+Potion Courier/Ransack singleton potion collection; and Aroma of Chaos/Let Go
+fixed-one transformation. The latest v10 test selected card16 directly in the
+user's 20-card off-screen setup, verified its preview, completed the child and
+returned to the map. Cleanup passed. See the
+[v10 ledger](PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
 
-## Generic v7 functional coverage — 2026-09-08
+G7 positive variable transformation is implemented and fixture-tested; v10's
+live caller requested exactly one. V10 is deliberately restricted to slot15;
+all-holder generalization is the next increment. V7/v8/v9 geometry stops did
+not attempt card input and are superseded as the latest result. There is no
+current ten-card test limit or geometry-proof requirement.
 
-G7 adds manual positive variable-count transformation without event registration.
-Minimum/intermediate/maximum selection, delayed/partial preview, exact selected-only
-replacements and mixed card/item continuation pass independent native-to-Python
-fixtures. Both full gates pass201 integrations,139 actual-native. See the [ledger](PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md).
-This adds shared-family capability, not a new named-event live row. No G7 release
-or live claim is made; older functional checkpoints below are preserved history.
+The [accepted census](PHASE_1_EVENT_COVERAGE_CENSUS_GENERIC_RESULT.md) contains
+68 concrete types, including ancient/deprecated types; it does not establish
+runtime eligibility or the reachable pool. No type has all-branch coverage.
+The family/per-type tables below are current. Intervening functional checkpoints
+are historical; their next-step or not-yet-live statements describe their dates.
 
-Updated 2026-09-08; type inventory remains from the [accepted metadata census](PHASE_1_EVENT_COVERAGE_CENSUS_GENERIC_RESULT.md).
-
-The inventory contains 68 concrete event-model types, including ancient and
-deprecated types. Runtime encounter eligibility and the reachable event pool have
-not been established by this metadata-only census. A concrete type is not a
-fully supported event. No type currently has evidence covering every branch.
-
-Three types have bounded live path evidence: Dense Vegetation ordinary continuation,
-Room Full of Cheese/Gorge add-two and Search continuation, and Potion Courier/Ransack
-singleton potion collection. Cheese/Gorge has generic releasev5 evidence; Ransack
-has generic releasev6 evidence. Their remaining branches stay open;
-predecessor live results do not automatically prove other shared compositions.
-
-## Current generic v6 functional acceptance — 2026-09-08
+## Historical generic v6 functional acceptance — 2026-09-08
 
 `generic_event_v6` is accepted and frozen as successor26. It adds direct singleton
 potion/relic children through owned reward requests, post-generation screen
@@ -170,7 +160,9 @@ branches. Larger counts and other operation/custom families remain open.
 At `b2ae0dd`, card mechanics and event flow are reusable, but native event card
 support still requires one of three exact caller entries. This matrix records
 coverage evidence; it is not intended to become the production event allowlist.
-The next priority is [generic interaction discovery](../PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md).
+That historical discovery proposal is implemented for the supported G7 families.
+The [current plan](../PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) now starts with
+generalizing the live-proven transform holder path.
 Use events to test shared families, including identities absent from a named
 catalog. Dedicated handlers remain appropriate for different custom surfaces.
 
@@ -183,13 +175,13 @@ catalog. Dedicated handlers remain appropriate for different custom surfaces.
 | Add cards | Cheese/Gorge exact two-of-eight native/live and generic release v5 live; other shared compositions in fixtures | Other callers, domains and cardinalities |
 | Upgrade cards | Generic fixed-count1..8 discovery, exact preview mapping and native-to-Python fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Prepared release and live multi-upgrade validation; variable minima and scrolling |
 | Remove cards | Generic native discovery, variable1..8 preview confirmation and exact remaining-deck reconciliation in inert fixtures | Prepared release and live validation; optional/scrolling variants |
-| Transform cards | Generic fixed1..8 and manual positive variable min/max native discovery, exact preview ownership and transformation journal; G7 actual-native-to-Python fixtures | Protected release and live validation; optional/scrolling variants |
+| Transform cards | Generic fixed1..8 and positive variable counts in G7 fixtures; release v10 Aroma/Let Go fixed-one card16 selection, exact preview, completion and map live | Generalize all allocated holders; variable-count live evidence; optional and unallocated-card variants |
 | Optional selection and repeated choices | Explicitly unsupported by this increment | New reviewed bounds/confirmation and loop identity policies |
 | Embedded event combat | Metadata/shared API facts only | Combat handoff, event resumption and exact ownership |
 | Custom/ancient layouts | One custom node and two derived layouts inventoried | Exact caller/layout connections and action semantics |
 
-Prioritize authoritative discovery/admission for shared card interactions, then
-extend operation/count/confirmation families. Preserve exact parent ownership,
+Next generalize all eligible allocated transform holders, then extend the
+remaining operation/count/confirmation families. Preserve exact parent ownership,
 candidate identity and effects while avoiding a new event-name row for each
 standard interaction. Unknown semantics remain unsupported. Per-type results
 below are tests and evidence, not claims of automatic or all-branch support.
@@ -204,7 +196,7 @@ runtime, but does not advance this evidence row to full coverage.
 | --- | --- | --- |
 | `AbyssalBaths` | None recorded per type | Unclassified |
 | `Amalgamator` | None recorded per type | Unclassified |
-| `AromaOfChaos` | MaintainControl upgrade-one native fixtures; LetGo fixed1 caller audited; live choice opened selector then stopped at prepare_geometry,0 child actions | No successful transformation live evidence; no all-branch claim |
+| `AromaOfChaos` | MaintainControl upgrade-one native fixtures; LetGo fixed-one transformation live in release v10, directly selecting card16 without scrolling and completing Proceed/map | Other targets/counts and MaintainControl live remain open; no all-branch claim |
 | `BattlewornDummy` | None recorded per type | Unclassified |
 | `BrainLeech` | None recorded per type | Unclassified |
 | `Bugslayer` | None recorded per type | Unclassified |

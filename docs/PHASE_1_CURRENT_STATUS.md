@@ -1,694 +1,100 @@
 # Phase 1 Current Integration Status
 
-## Card 16 live selection succeeded — v10 campaign closed
-
-2026-09-08. After user readiness, UI showed untouched Aroma of Chaos choices
-and deck20 in the same window setup. Exactly one frozen v10 client invocation
-selected Let Go, directly dispatched native holder slot15 (card16), passed the
-exact-original preview check, confirmed the transformation and reached the map.
-Result: resolved, two parent and two child actions attempted/accepted/reconciled,
-one completed card child, six reads, map_ready. The final UI showed the map.
-
-This demonstrates direct off-screen card selection in the user's controlled
-setup without scrolling or any geometry proof. The earlier boundary checks were
-unnecessary for this test. It does not establish every possible selector's
-behavior. The generic effects field remains unverified; the specific selection,
-preview and card-child completion are supported by the bound adapter checks.
-
-Normal quit, stopped/closed checks, owned quarantine and four-file purge passed.
-Final verification: 429 unchanged base files, zero overlays, no running game or
-bridge. No campaign remains installed; all 32 successors remain frozen. Next
-development can use this evidence to remove the fixed-card test restriction in
-a successor and expose all eligible native holders. No further live setup is
-needed now. See the [v10 acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
-All earlier installed-readiness and boundary-proof proposals below are historical.
-
-## Historical checkpoint: v10 installed readiness
-
-2026-09-08. V10 will directly select the sixteenth native grid holder (slot15)
-and check that the preview contains that exact card. The user explicitly
-supersedes all previous clipping/viewport/geometry proof requirements. No
-scrolling or replacement boundary proof is required for this controlled test.
-
-The single frozen aggregate passed 21 direct-target assertions, six socket
-cases and release/lifecycle checks. Independent review accepted all 73 frozen
-files and four identical production builds. All 31 predecessors remain frozen.
-See the [v10 contract](PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md) and
-[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
-
-GENERIC-EVENT-V10-SMOKE-V1 is installed and verified: 429 unchanged base files,
-two owned overlay files and verified operator metadata. Fresh installed state:
-`d2c1267bcdc7f4a0754c4e595dee23bb0ccadaa4326f9b78087b876e9ed6f8ad`.
-No v10 live invocation or automatic launch has occurred. Tell the user to start
-manually on Profile3 with the same 20-card setup/window and fresh Aroma of Chaos
-at untouched Let Go/Maintain Control, then reply ready. After readiness, run the
-frozen client once. Report exact-card selection independently of later event
-completion. Normal quit and owned quarantine/purge follow the test.
-
-All readiness, closed-state and proposed boundary-proof instructions below are
-historical and superseded by this entry.
-
-## V9 live diagnostic: clipping-parent search failed — campaign closed
-
-2026-09-08. User readiness was followed by actual UI verification: initial Aroma
-of Chaos choices untouched, deck20, console/popups closed. Fresh require-running
-passed. Exactly one frozen v9 invocation accepted Let Go and opened the selector,
-then stopped with unsupported_state / geometry_clip_missing after258 reads.
-One parent action was attempted/accepted, zero child episodes/actions/completions;
-effects remain unverified. No card input, retry or manual completion occurred.
-
-This identifies the clip-search stage, after holder/domain binding and exact
-scroll-layout admission succeeded. V9 expects a Control with ClipContents=true
-in the grid's parent chain; the search did not yield that proof. This code also
-covers an exception from ClipContents/GetParent, so the summary is not a retained
-scene tree or proof that the entire game has no clipping controls. It does not
-show that native off-screen input fails; that input has still never been tested
-live. The next correction must verify an actual visible/rendering boundary (for
-example the bound viewport) instead of assuming a clipping parent or deleting
-the off-screen proof. Retained positioning IL alone does not establish that
-rendering boundary. Do not guess a deck-size change or repeat this spent client.
-
-Normal UI quit, stopped/closed checks, code-first quarantine, exact four-file
-purge and final clean-base verification passed:429 unchanged files,0 overlays.
-All live campaigns are closed; no cleanup, overlay or credential remains. All31
-successors and the original bridge stay frozen. No further user game setup is
-needed until a corrected successor is prepared. See the
-[v9 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V9_ACCEPTANCE.md) for exact
-result and historical state hashes. Earlier installed-readiness entries below
-are historical and superseded.
-
-## Historical checkpoint: geometry diagnostic repair v9 installed
-
-2026-09-08. The user requested fixing the v8 stop so testing can continue.
-Successor31 preserves v8 selection admission and input behavior, but reports37
-specific geometry failure stages instead of the single prepare_geometry label.
-This fixes observability; the actual v8 geometry cause and live off-screen
-selection remain unproved. No predicate has been bypassed.
-
-Complete candidate and source-frozen gates pass194 native probe assertions,
-966 runtime,378 verifier and52 end-to-end socket scenarios, plus frozen G7 and
-all release/lifecycle/cleanup checks. All31 successors and the original bridge
-are frozen. Independent review confirmed exact source closure, unchanged runtime
-API reads, six identical production compilations and final frozen acceptance.
-
-GENERIC-EVENT-V9-SMOKE-V1 is installed and verified:429 unchanged base files,
-two owned overlay files, fresh protected operator metadata. No live client has
-run and the coordinator has not launched the game. Current installed state:
-`e64573ebd1733943a2454fd6cc5a72678eca3899ce84bb6ce51a0c5968e15711`.
-See the [contract](PHASE_1_GENERIC_EVENT_RELEASE_V9_CONTRACT.md) and
-[ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V9_ACCEPTANCE.md) for exact pins,
-readiness, one-invocation boundary and owned cleanup. Earlier campaign hashes
-and closed-state entries below are historical; v9 is currently installed.
-
-Manual setup: Profile3, single-player, same window/resolution, ordinary20-card
-deck and fresh Aroma of Chaos initial Let Go/Maintain Control choices untouched;
-close console/popups. On user readiness verify current UI and require-running,
-then invoke frozen v9 client exactly once with the current installed hash.
-Do not adopt the earlier selector, retry uncertain input, scroll/select manually
-or guess a different card when admission fails. After invocation, normal quit,
-wait-stopped, code-first quarantine, purge with the fresh quarantine state hash
-and final clean-base/stopped checks remain root-owned cleanup. No credential
-contents, profile/save/Cloud data or raw game observations are part of the record.
-
-## Off-screen test v8 stopped before selection — campaign closed
-
-2026-09-08. The user reported ready. Current UI showed fresh Aroma of Chaos
-Let Go/Maintain Control choices, deck20 and no console/popups; require-running
-passed. Exactly one frozen v8 invocation accepted Let Go, opened the selector,
-and stopped with unsupported_state / prepare_geometry after258 reads. It sent
-one parent action and zero child actions; no transformation was verified.
-The screenshot showed five columns, two full rows and a partially clipped third
-row. Off-screen selection remains unproved; this stop does not establish a
-native viewport restriction.
-
-The diagnostic follows successful holder/candidate binding, but covers the
-remaining layout checks, clipping/parent-chain proof and final candidate
-admission. The result contains no subcheck or numeric geometry values, so the
-precise failure is unknown. The next development step is a separately reviewed
-successor with bounded, specific geometry diagnostics and offline coverage before
-another live setup; do not repeat this spent campaign or guess a new deck size.
-
-Normal quit, stopped/closed checks, code-first quarantine, exact four-file purge
-and final clean-base verification passed:429 unchanged files,0 overlays. No
-campaign cleanup remains. All30 successors and the original bridge remain frozen.
-See the [v8 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V8_ACCEPTANCE.md)
-for the exact result and historical state hashes. Earlier readiness entries below
-are superseded; the user need not start the game now.
-
-## Historical checkpoint: off-screen test v8 installed
-
-2026-09-08. The requested test is prepared and installed as successor30 after
-independent review, candidate and source-frozen aggregate gates. All30 successors
-and the original bridge remain frozen. The test composition retains G7 protocol
-and all gameplay except one derived transform adapter: only a holder/card/hitbox
-proved fully below an inherited clipping region can be selected, with a fresh
-proof before _GuiInput and exact preview/transformation completion checks.
-This is a test-only eligibility restriction, not general scrolling support.
-
-Native probe89, runtime855, verifier156 and50 socket scenarios pass, together
-with complete frozen G7 regressions and release/cleanup gates. Six production
-builds are byte-identical. The owned overlay and protected metadata are verified;
-429 original game files are unchanged. No live client has run and the coordinator
-has not launched the game. See the [contract](PHASE_1_GENERIC_EVENT_RELEASE_V8_CONTRACT.md)
-and [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V8_ACCEPTANCE.md) for exact
-source/artifact identities, current installed state and cleanup instructions.
-
-Manual setup: Profile3, single-player, same resolution/window as the last test,
-ordinary20-card deck, fresh Aroma of Chaos initial Let Go/Maintain Control choices
-untouched, console/popups closed. Await user readiness, verify UI/running state,
-then one frozen v8 invocation. Do not adopt the earlier selector or reuse a spent
-campaign hash. Twenty cards targets a fully clipped fourth row; runtime geometry
-and complete holder coverage still decide admission. The older ten-card suggestion
-below does not apply to this experiment. Earlier closed/uninstalled entries below
-are historical checkpoints. Live off-screen success and campaign cleanup remain
-pending for this installed instance.
-
-## Aroma live test stopped before card selection — campaign closed
-
-2026-09-08. One frozen releasev7 invocation accepted Let Go and opened the
-transformation selector,then stopped at prepare_geometry:1 parent attempted/
-accepted,0 reconciled,258 reads,0 child episodes/actions/completions. CUA showed
-15 cards in5 columns with a clipped third row and scroll bar. No card was selected
-or transformed. This is consistent with the bridge full-layout fit restriction;
-exact live geometry values were not captured, so the precise failing predicate
-remains unproved.
-
-Normal quit,stopped/closed checks,code-first quarantine,exact4-file purge and final
-429-file clean-base/0-overlay verification passed. All live instances are closed;
-no credential,overlay or cleanup remains. State hashes in the [ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md)
-are historical. No game setup is needed until a fresh test instance is prepared.
-The earlier at-most-ten-card suggestion stays within frozen admission; it is not
-a native card-count limit. [Retained-code verification](research/PHASE_1_CARD_SELECTION_OFFSCREEN_VERIFICATION.md)
-finds no viewport gate in the inspected holder-to-selection input path. Clipped
-but allocated holders differ from cards outside the grid's allocated rows. The
-next development candidate is complete stable-holder admission without requiring
-all cards to fit; incomplete holder coverage still needs scrolling/rebinding work.
-Off-screen selection remains unproved live. Do not retry the spent invocation.
-
-Releasev7 and all28 predecessors remain frozen; complete offline gates,42 socket
-scenarios and6 matching production builds remain accepted. No successful fixed
-or variable transformation live claim is made. Earlier checkpoints below are
-historical; the ledger preserves exact preparation,invocation and cleanup evidence.
-
-## Generic v7 accepted — variable-count transformation
-
-2026-09-08. Successor28 adds positive variable-count transformations: native
-manual confirmation can finish selection at min or an intermediate count, then
-confirm the exact complete preview. Maximum selection keeps automatic preview.
-Expected originals are reserved before dispatch, partial preview cannot reduce
-that set, and the existing journal verifies selected-only final replacements.
-Outer generic_event_v7 uses card_transform_v2; frozen card/item engines remain.
-
-Both candidate and frozen gates and independent review pass:3815 native,
-1718 item,2650 transform assertions;171 wire cases;118 host tests;201 integration
-scenarios,139 through actual native adapters with inert game objects. Native and
-core artifacts each match across four builds. All27 predecessors remain unchanged.
-Read the [contract](PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and [acceptance ledger](research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md).
-This is functional support, not a packaged or live-tested G7 release. All live
-instances remain closed; no game setup is needed. Release preparation precedes
-any G7 live test. Optional/scrolling, variable upgrades, multiple-item sets and
-custom/combat interactions remain open. Older checkpoints below are historical.
-
-## Potion Courier live item test passed — cleanup complete
-
-2026-09-08. One frozen generic releasev6 invocation completed Potion Courier →
-Ransack, one verified potion collection, and Proceed/map handoff. Result:2 parent
-and1 child actions attempted/accepted/reconciled,1 completed_item_children,
-5 reads, status resolved, diagnostic map_ready. UI confirmed a new potion in the
-previously empty second slot and the map. Final effects=unverified describes the
-later Proceed action; the cumulative item completion remains1.
-
-This establishes one live singleton potion path, not all events, relics,
-multiple-item sets, transformation or complete-run support. Normal quit,
-stopped/closed checks, code-first quarantine, exact4-file purge and unchanged
-429-file clean-base verification all passed. No overlay, credential or cleanup
-remains; no game setup is needed. All state hashes in the [test ledger](research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
-are historical. Frozen sources and prior offline evidence remain unchanged.
-Remaining development includes unsupported interaction families and additional
-held-out coverage. Earlier item-unproven and installed statements below are
-preserved checkpoints, superseded by this result and the linked ledger.
-
-- **Status date:** 2026-09-08
-- **Fresh-session handoff:** [Astra handoff](PHASE_1_ASTRA_HANDOFF.md)
-- **Active bridge milestone:** `R0i`
-- **Bridge version:** `0.8.0`
-- **Protocol:** `live_probe_v0`
-- **Pinned target:** Slay the Spire 2 `v0.107.1`, Steam build `23811903`,
-  macOS arm64
-- **Program disposition:** the project-owned bridge is the selected live path
-  and has passed bounded live observation and control smokes; Phase 1 remains
-  open and no full-run or near-optimal-agent claim has been made
-
-This is the living status page for the full-game integration track. It records
-what the current repository can do, what has actually been exercised in the
-game, and what remains open. Exact requests, approvals, manifests, and
-historical evidence reports remain preserved in their original documents; this
-page supersedes their old point-in-time status statements without changing
-their authorization scope.
-
-## Current generic release v6 — live continuation passed, campaign closed
-
-2026-09-08. The user confirmed ready and root performed exactly one Search test.
-CUA showed fresh Room Full of Cheese initial choices, HP62/80, Search cost14,
-empty potion slots and no selector/console/popup. Require-running passed. The
-frozen client resolved after2 parent actions and4 reads, ending at map_ready.
-Post-test UI showed HP48/80, an additional cheese relic icon and the map.
-
-This demonstrates Search→Proceed/map continuation in the G6 release. It does
-**not** validate generic item selection: child_episodes,child actions and both
-completion counters were zero; effects remained unverified. The desired item
-child acceptance gate is still unmet. No child reward surface was exposed to the
-controller in this invocation. The exact native reward-grant mechanism was not
-inspected and is not established by this result. No retry or extra gameplay action
-was attempted.
-
-Normal UI quit,stopped/closed,code-first quarantine,exact four-file purge,429-file
-clean-base verification and final stopped/closed checks all passed. The campaign
-is closed; no installed overlay,credential or cleanup remains. Historical installed
-and quarantine state hashes in the ledger must not be reused. No game setup is
-needed now.
-
-`generic_event_release_v6` remains frozen as successor27, source-linking the full
-G6 gameplay closure unchanged. Both full offline gates and independent reviews
-pass: complete G6 regressions,843 runtime assertions,30 socket/client scenarios,
-128 verifier checks,56 production sources. The379392-byte DLL SHA256 is
-`96723ba26f9f64a74cd0f1d8ae4217191a13410c5629a1feedc26a44f3890c2f`.
-All26 predecessors and the original bridge remain unchanged.
-
-Next, inspect retained event evidence to identify a parent choice demonstrably
-opening an ordinary singleton reward screen before preparing another live test.
-Visible relic gain alone is insufficient for selecting an item-handler fixture.
-Any fresh campaign requires its own reviewed setup and identities; this closed
-campaign supplies no reusable state or retry. Read the
-[release contract](PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
-[acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md).
-No live item/transform or complete-run claim is made. The functional acceptance
-snapshots below remain historical.
-
-## Preserved generic v6 functional acceptance — 2026-09-08
-
-`generic_event_v6` is accepted and frozen as successor26. It adds direct singleton
-potion/relic children through owned reward requests, post-generation screen
-creation and exact collection invocations. The actual frozen item engine verifies
-collection; the wrapper waits for collection, Offer and Chosen completion plus
-screen closure and freshly revalidates effects within one shared 256-read budget.
-Existing upgrade, removal, reward-card and transformation families are preserved.
-
-Separate cumulative item/card counts survive Proceed and later failure. Item replay
-keys include outer lineage, so identical successive relic offers remain valid.
-Stale invocation contexts stop a later child without erasing earlier completion.
-Event identities are test/ownership data, never production admission rows.
-
-Independent review and both full offline gates pass: 3,199 native and 1,718
-item assertions, 879 transformation assertions, 147 wire cases, 110 host tests
-and 161 integrations, including 99 actual-native cases. All 25 predecessors
-and the original bridge remain unchanged. Read the
-[G6 contract](PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
-[acceptance ledger](research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) for exact evidence.
-
-This is functional support, with no new release or live item/transform claim.
-All live campaigns remain closed; no game setup is needed yet. Multiple-offer
-item sets, optional/scrolling selectors, variable upgrade/transform minima and
-custom/combat interactions remain open.
-
-## Preserved generic v5 functional acceptance — 2026-09-08
-
-`generic_event_v5` is accepted and frozen as successor25. Fixed-count transform1..8
-uses native original/final command witnesses and exact surviving-original-plus-
-append reconciliation, including per-card awaits and replacement substitution.
-The new `card_transform_v1` engine/codec/parser is separate; earlier upgrade,
-removal and reward families retain the actual frozen `card_selection_v1` engine.
-Event names remain test/ownership data, never production admission rules.
-
-Independent review and both full gates pass:2345 native assertions,879 transform
-assertions,118 wire cases,95 host tests and124 integrations,64 through actual
-native adapters/hooks. Mixed transformations followed by upgrade retain cumulative
-completion through Proceed or later failure. The final native guard rechecks
-replacement and preserved-card ownership after insertion callbacks and during
-pending effects. All24 predecessors and original bridge remain unchanged.
-
-Read the [G5 contract](PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
-[acceptance ledger](research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) for exact source
-identities, review findings and evidence. This is functional support, with no new
-release or live transformation claim. All live campaigns remain closed; no game
-setup is needed. Next functional work is generic item children; optional/scrolling,
-variable minima and custom/combat families remain explicit open scope.
-
-## Preserved generic v4 functional acceptance — 2026-09-08
-
-`generic_event_v4` is accepted and frozen as successor24. It adds shared native
-fixed-count upgrade1..8 while preserving variable removal and reward modes.
-Multi-preview clones are bound to their exact originals through scoped native
-observations and one owned deferred-click ticket; retained controls and clone
-generations reject replacement or reuse before Confirm. Event-name registration
-is unnecessary. The frozen card core still proves exact selected-only +1 upgrades.
-
-The v4 protocol adds `completed_card_children`, preserving fully verified child
-completion through Proceed or later failure. `effects` keeps its last-parent-action
-meaning. Independent review and both full offline gates passed:1,343 native
-assertions,107 wire cases,86 host tests and96 integration scenarios,36 through
-production native adapters with inert stubs. Four native builds match exactly.
-Read the [v4 contract](PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) and
-[v4 ledger](research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) first for exact scope,
-identities and evidence. This functional component is not an installable release
-and has no multi-upgrade live claim.
-
-All24 successors and the original bridge remain frozen. All generic live
-campaigns are closed; no installed overlay, credential or cleanup remains.
-No game setup is needed. The next transformation discovery passed its reviewed
-single metadata capture: nine bodies, two types and1,395 instructions. It proves
-all-original removal followed by per-card insertion/awaits and a hook that may
-substitute the generated replacement. Multi-transform therefore needs a new
-reconciliation path; the frozen constant-length positional validator is insufficient.
-Read the [discovery ledger](research/PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md) and
-[native findings](research/PHASE_1_GENERIC_TRANSFORM_NATIVE_EVIDENCE.md) before
-selecting that contract. Native transform implementation, final mapping witnesses,
-remaining ordering facts, variable upgrade minima and item/optional/scrolling/custom/
-combat families remain open.
-
-## Preserved v5 live completion and clean teardown — 2026-09-08
-
-The single `generic_event_release_v5` live test resolved Cheese/Gorge through
-two card selections and Proceed/map. Both parent actions and both child actions
-were attempted, accepted and reconciled; one child episode, four total attempts,
-13 reads, final diagnostic `map_ready`. CUA confirmed initial untouched choices
-and the final map; visible deck count increased from 15 to 17. This establishes
-one bounded generic reward-addition live path, not all event branches or families.
-
-The raw final summary retains `effects: unverified`: the frozen parent session
-resets that field on Proceed after previously verifying the child effect. Child
-resolution still requires the exact selected-original additions and completion
-witness. This is a reporting limitation; do not silently relabel the raw field.
-See the [v5 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) for
-exact result, source-based interpretation, visible corroboration and limits.
-
-Normal quit, stopped/closed checks, code-first quarantine, exact four-file purge,
-429-file clean base and final stopped/closed checks passed. All v1/v2/v3/v4/v5
-campaigns are closed. No installed overlay, credential or cleanup remains; all
-state identities below are historical and must not be reused. All 23 successors
-and the original bridge remain frozen. No new game setup is needed. Next work can
-clarify cumulative effect reporting and extend evidence to held-out shared callers
-and remaining interaction families through a reviewed successor.
-
-## Preserved v5 pre-live installation — 2026-09-08
-
-`generic_event_release_v5` is accepted and frozen as successor 23. It repairs
-v4's measured reward hitbox exact-type mismatch: the declared native clickable
-control may be a live subclass, while the exact captured reference, liveness,
-visibility, enabled state and all other ownership/selection checks remain.
-The actual live subtype name is unknown. Diagnostic code 48 remains reserved;
-all 78 wire mappings and the generic_event_v3 gameplay protocol are unchanged.
-
-Independent review, both complete offline release gates, all 17 native-to-client
-socket scenarios and all 100 verifier checks passed. A controlled subtype input
-reproduces v4 code 48 and completes v5's two-card addition and Proceed/map path.
-This is fixture evidence; generic reward-addition live success remains open.
-Read the [v5 contract](PHASE_1_GENERIC_EVENT_RELEASE_V5_CONTRACT.md) and
-[v5 acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md)
-first for exact identities, evidence and operational boundaries.
-
-The fresh `GENERIC-EVENT-V5-SMOKE-V1` campaign is installed and metadata-validated;
-its current installed state SHA256 is
-`27ad96a07cb94509727aee99bc8eed4f6abc7d6291eb527a83716e52e15706ab`.
-The exact two-file overlay and unchanged 429-file base passed verification.
-Post-install checks confirmed game stopped and port closed (3 process/2 port
-samples). Credential content has not been read, and no v5 client has run.
-All v1/v2/v3/v4 campaigns remain closed; their state identities are historical.
-
-Next user action: manually launch Profile 3, single-player, and set up a fresh
-Room Full of Cheese at its initial choices with Gorge untouched; no open
-selector, console, map or popup. After readiness, verify that UI and require-running,
-then invoke the v5 client exactly once with the installed state above. No retry,
-adoption or manual child selection after uncertainty. Capture the bounded summary;
-then normal quit, stopped/closed, code-first quarantine, exact purge and clean-base
-verification close the campaign. Do not launch automatically or access profile,
-save or Cloud files. Repeated unmodded launch remains waived.
-
-## Preserved v4 live result and clean teardown — 2026-09-08
-
-`generic_event_release_v4` is accepted/frozen as successor22 and its one live
-campaign is now closed. It opened the Cheese reward chooser, then stopped with
-`candidate_hitbox_type`: the native clickable area failed the reward handler's
-exact-runtime-type requirement. The concrete subtype name was not captured.
-Parent attempts/accepts1,reconciled0,child episodes/actions0,reads258,effects
-unverified. The reason is the last completed capture's diagnostic; later checks
-and successful card additions remain unproven.
-
-Normal quit,stopped/closed,code-first quarantine,exact four-file purge and429-file
-clean-base verification passed. No campaign,overlay,credential or cleanup remains.
-All v1/v2/v3/v4 state identities are historical and must not be reused. The
-[v4 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md) owns exact
-result and cleanup evidence. Keep the game closed. Next review a successor repair
-of the hitbox exact-type assumption while preserving native contract compatibility,
-liveness,identity/replacement rejection,ownership and remaining predicates. All22
-successors remain frozen; no additional live setup is ready yet.
-
-## Preserved v3 diagnostic result and completed cleanup — 2026-09-07
-
-`generic_event_release_v3` is accepted and frozen as successor21. Both complete
-offline aggregates and independent source/binary reviews passed. Its one fresh
-Cheese invocation accepted Gorge and opened the chooser, then stopped after258
-reads with last_response_diagnostic prepare_candidates. Parent attempts/accepts1,
-reconciled0,child episodes/actions0,effects unverified. The diagnostic identifies
-the offered-card preparation stage, not its precise failing nested predicate.
-Geometry is checked later and is not resolved by this result.
-
-Normal quit, stopped/closed, code-first quarantine, exact four-file purge and429-file
-clean base verification passed. No campaign, overlay, credential or cleanup
-remains. The [v3 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md)
-owns the exact result and historical state identities. Next inspect/reproduce the
-candidate-binding and initial candidate-state subchecks in a reviewed successor;
-preserve all21 frozen identities and do not weaken ownership checks or retry a
-closed campaign. Keep the game closed; no new setup is needed.
-
-## Corrected generic release live result and cleanup — 2026-09-07
-
-The accepted lifecycle correction separates disposable option buttons from retained
-parent receipts; the original-source reproduction and745 native assertions passed.
-`generic_event_lifecycle_v1` and `generic_event_release_v2` are frozen successors19/20.
-V2 passed its release gates and was tested once live on fresh Cheese choices.
-It accepted Gorge and opened the chooser, then exhausted pending reads:258reads,
-1parent attempt/accept,0reconciled,0child episodes/actions,effects unverified,
-unsupported_state. V1 had stopped on read2; the earlier immediate failure no longer
-occurred, but no successful child or effects are demonstrated.
-
-The precise waiting predicate remains unknown. Add bounded fixed reason codes to
-distinguish pending binding/task readiness from selector preparation in a reviewed
-successor; reproduce identified mismatches before a fresh live test. Normal quit,
-code-first quarantine,exact purge,429-file base and stopped/closed checks passed.
-No campaign or cleanup remains. See the
-[v2 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V2_ACCEPTANCE.md). Historical
-installation statements below are superseded; no game setup is needed now.
-
-## Generic release live attempt and cleanup — 2026-09-07
-
-`generic_event_release_v1` is accepted and frozen as the eighteenth successor.
-Its offline and independent production verifier gates passed. The first live
-invocation accepted Gorge and opened the eight-card chooser, then stopped with
-unsupported_state before any child episode/action. Parent attempts/accepts1,
-reconciled0; effects unverified. No retry occurred. This establishes installed
-startup, authenticated parent dispatch and a visible chooser, not successful
-card admission or effects. The exact rejection cause remains unknown.
-
-Normal quit, code-first quarantine, exact purge,429-file clean base and final
-stopped/closed checks passed. No campaign or cleanup remains. Next diagnose the
-capture/admission/child-construction boundary in a reviewed successor, using
-bounded reason codes. See the
-[release ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md) for exact
-evidence and limits. Historical operational statements below are superseded.
-
-## Generic reward additions — 2026-09-07
-
-`generic_event_v3` adds shared reward-offer discovery and exact selected-original
-additions1..8, preserving upgrade-one and variable-count removal. Automatic mode
-submits at max; manual mode confirms at min..max. Offers bind exact result entries
-and effective card references, with native sorting supported. The actual frozen
-card session verifies selected originals were added while baseline cards retain
-identity, order, key and level. This does not certify all Add hooks/animations or
-unrelated HP/gold effects. See the [v3 ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md).
-
-There are seventeen frozen successors including v3. Transformation, multi-upgrade,
-optional/scrolling selectors, item children and custom/combat families remain open.
-No installable generic release or live campaign exists. The earlier checkpoints
-below retain their own narrower evidence boundaries.
-
-## Generic removal and variable counts — 2026-09-07
-
-`generic_event_v2` preserves generic upgrade-one and adds shared deck removal
-with1..8 selections and variable limits, without event-name registration. Native
-creation supplies an immutable operation/count/mode/domain description. Actual
-preview holders supply exact original references even after native highlights
-clear; request/selector/parent tasks and the frozen card session establish exact
-completion. Reverse selection order, explicit preview below max and automatic
-preview at max are supported. See the
-[v2 ledger](research/PHASE_1_GENERIC_EVENT_V2_ACCEPTANCE.md) for exact evidence.
-
-There are sixteen frozen successors including v2. Generated adds, transform,
-multi-upgrade, optional/scrolling and custom/combat families remain open. Release
-composition and real EventSynchronizer lifecycle validation are separate gates.
-The earlier checkpoints below preserve their own narrower evidence boundaries.
-
-## Generic discovery implementation — 2026-09-06
-
-The new `generic_event_v1` successor implements two-stage discovery for standard
-upgrade-one event interactions without an event-type/key catalog. It captures
-rules and original candidates at shared command/creation calls under the exact
-reserved asynchronous parent action, then reuses the frozen card session. Its
-bounded parent, wire and Python provider compose through explicit Proceed/map.
-The [new acceptance ledger](research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md)
-records the final functional gate and evidence boundaries.
-
-This is generic support for one interaction family, not automatic all-event
-coverage. Multi-card upgrades, add/remove/transform, item children and custom/
-combat/optional/scrolling interactions remain unsupported in this successor.
-Existing frozen capabilities are unchanged. No installable generic release or
-new live campaign exists. Continue by authoritative shared interaction family,
-using held-out event identities as tests.
-
-## Previous priority: generic interaction discovery — 2026-09-06
-
-Predecessor implementation: `b2ae0dd6577e7d44c208252f816e2266391c2ea5`.
-The user clarified that all-event support means shared handlers that work from
-authoritative interaction rules, without registering each standard event by
-name. Current code has reusable flow/card mechanics plus a closed native caller
-allowlist; that predecessor does not discover arbitrary event card interactions.
-
-That milestone led to the [generic event handler plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md):
-audit where operation, counts, candidates and completion ownership can be
-obtained, resolve the pre-dispatch versus child-creation contract, and implement
-a reviewed successor. Brain/Zen are useful test/evidence cases, not the default
-next event-by-event implementation queue. Preserve all fourteen frozen successor
-trees. New functionality and live readiness remain separate claims.
-
-## Accepted event coverage increments — 2026-09-06
-
-The user selected broader event support. The isolated `event_orchestrator_v1`
-functional increment now passes independent source review, its candidate gate
-and its frozen aggregate. Its 40-file source identity is frozen. One parent
-composes ordinary options, exact item rewards and Cheese card selection through
-the actual frozen child controllers, with sequential episodes and an immutable
-decision-provider API. Repository regression passes 1,243 tests; the aggregate
-reports 244 checks across 12 suites and matching native builds. Read the
-[orchestrator ledger](research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md)
-for exact identities, evidence and acceptance.
-
-The reviewed metadata census established 68 concrete event types, including
-ancient/deprecated types, without establishing runtime eligibility. The
-[coverage matrix](research/PHASE_1_EVENT_COVERAGE_MATRIX.md) keeps every type's
-remaining branches explicit; no type has complete all-branch evidence. The
-current expansion priority is generic interaction discovery/admission, followed
-by shared family support and explicit custom/combat handling. The
-[event coverage plan](PHASE_1_EVENT_COVERAGE_PLAN.md) owns that sequence.
-All twelve predecessors and old48 remain byte-exact. This functional component
-has no installable release or live evidence; earlier Smith/Cheese/Dense Vegetation
-live results belong to their predecessor releases. No campaign is active and no
-game setup is needed for the next repository work.
-
-The next isolated component, `event_card_operations_v1`, now implements two
-additional exact event paths: Aroma of Chaos/Maintain Control and Sapphire
-Seed/Eat, each upgrading one chosen card from a complete eligible domain of
-2..64 cards. The same event parent and frozen card controller handle selection,
-preview/confirmation, the exact upgrade effect and final Proceed. Independent
-native review and compile-only validation against the pinned game APIs pass.
-Actual native composition exercises both complete paths, delayed selector
-readiness, replacement screens and changed option keys. These paths have no
-release or live evidence yet. Their 66-file source identity is frozen, and the
-final aggregate passes 675 checks across 19 suites with four matching native
-builds across the candidate and frozen gates. Functional acceptance is complete.
-
-The shared contract binds operation, selection bounds and expected candidate
-count before choosing an option. Known unsupported card options stay observable
-but are never legal actions. Focused checks pass: core19, actual frozen-session
-brokers12, wire51, host58, native-card11, native-parent14, factories4 and full
-native composition2. Actual C# service-to-Python provider integration passes
-nine scenarios, including four sequential children and mixed ordinary/item/card
-flow. Synthetic add-three, remove-two, upgrade-two and transform-two descriptors
-exercise shared semantics without enabling those game callers.
-
-The repository regression completed with 1,300 passes and one sandbox-only
-localhost socket-bind failure; that unchanged inert socket fixture then passed
-with the required local permission. Thus all 1,301 collected checks passed
-across the full run and focused rerun. No live bridge was contacted.
-
-The positive static scan found 31 selector calls and 45 effect calls. A further
-bounded, successfully captured metadata inspection establishes Brain Leech's
-card-generation count key and Zen Weaver's two awaited removal callbacks.
-Their native connections remain absent; their named-row proposals are retained
-research under the new generic priority. Transformation,
-multiple-card upgrading, optional/scrolling selectors, custom screens and event
-combat remain explicit gaps. All fourteen frozen successor components and
-original48 remain preserved. No campaign is active and no game setup is needed. See the
-[event-card contract](PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md) and
-[active ledger](research/PHASE_1_EVENT_CARD_OPERATIONS_V1_ACCEPTANCE.md).
-
-## Active card-selection development — 2026-09-06
-
-**Current Cheese result:** the user-prepared Room Full of Cheese/Gorge test
-passed: parent2/2/2 and child2/2/2, exactly two cards added and explicit Proceed/map
-handoff. Normal quit, quarantine, exact purge, unchanged base429/zero overlay,
-stopped/closed and fixed absences passed by15:09:18 UTC. No campaign remains
-active. The [completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
-records exact evidence and closed states. Smith upgrade-one and Cheese add-two
-are live-demonstrated. Aroma/Sapphire now have offline native evidence above;
-other native event card operations remain unsupported.
-This test starts at the user-prepared event and proves no natural discovery.
-
-**Current live result:** the corrective Smith test passed on a fresh rest site:
-parent2/2/2 and child2/2/2, including one upgrade effect and Proceed/map handoff.
-Normal quit, quarantine, exact purge, unchanged base429/zero overlay, stopped/closed
-and fixed absences passed by14:57:35 UTC. That Smith campaign is closed. The
-[completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
-records the exact result and closed states. Ordinary single-card Smith upgrading
-is live-demonstrated; the subsequent Cheese exact-two live pass is above.
-
-The user selected event card addition/removal/upgrade/transform support and
-rest-site card upgrading, explicitly including multiple-card event selections
-and exactly one card for ordinary rest upgrades. Development is isolated in
-`card_selection_v1`; the nine accepted predecessors and old 0.8.0 sources remain
-byte-exact. Read the [contract](PHASE_1_CARD_SELECTION_V1_CONTRACT.md),
-[static evidence](research/PHASE_1_CARD_SELECTION_STATIC_RESULT.md) and
-[acceptance ledger](research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md).
-
-The shared pure core models all four operations with explicit minimum/maximum
-counts, per-selection receipts, preview/confirmation modes, complete candidate
-and deck witnesses, and exact effect reconciliation. Initial native entries are
-Room Full of Cheese/Gorge (add exactly two of eight) and ordinary SmithCount=1
-(upgrade exactly one). Native other-event removal/transform/multi-card upgrade,
-scrolling and partial visible domains remain unsupported pending exact callsite
-and effect proof. This does not change the currently accepted live package.
-
-The functional component passed independent source review and its aggregate
-gate, including actual C#/Python composition and two identical clean builds of
-each native adapter. Its 40-file source inventory is frozen. Repository
-regression for the functional component passed 1,192 tests. The separately
-isolated [release composition](PHASE_1_CARD_SELECTION_RELEASE_V1_CONTRACT.md)
-is now independently accepted, frozen and published for live testing. Four
-production builds match; full repository regression passes 1,206 tests in
-106.62 seconds. The complete aggregate passed, including 57 verifier mutations,
-3 actual runtime/host socket scenarios and all packaging/operations checks.
-Read its [ledger](research/PHASE_1_CARD_SELECTION_RELEASE_V1_ACCEPTANCE.md) for
-exact identities and the untouched Smith setup. The first Smith live test returned `unsupported_state` during child
-reconciliation: parent counts1/1/1, child2/2/1. Rest Proceed was subsequently
-visible, but no upgrade, child completion or map handoff is accepted as proven.
-Normal quit/quarantine/purge and clean base429/zero-overlay/stopped/closed checks
-passed by 14:19:58 UTC; that campaign is closed. Focused diagnosis proved two
-native projection mismatches against the unchanged core. The isolated
-[completion repair](PHASE_1_CARD_SELECTION_COMPLETION_V1_CONTRACT.md) is now
-independently accepted, frozen (41 files) and published. Its actual-adapter/core
-fixtures pass87 checks and frozen-original controls reproduce both rejections.
-The complete offline aggregate passes, four production builds match, and full
-repository regression passes1206 tests in107.35 seconds. Read the
-[completion ledger](research/PHASE_1_CARD_SELECTION_COMPLETION_V1_ACCEPTANCE.md)
-for exact identities and current campaign state. The fresh corrective Smith test
-now passes with all four actions reconciled and visible map handoff. Its complete
-cleanup is recorded above. The earlier uncertain action was never retried.
-All twelve accepted successor trees and old48 remain byte-exact. The separate
-Cheese exact-two card-add live test also passes and is fully cleaned. Remaining
-work is native support for other event callers and card operations.
-Do not reuse closed campaign state or retry a historical uncertain action.
-Fresh Steam capture still returns `-3811`, separately from controller behavior.
+Updated 2026-09-08. The active queue is generic event handling. Read the concise
+[Astra handoff](PHASE_1_ASTRA_HANDOFF.md) and
+[current development plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) first.
 
 ## Current result
+
+The latest live test succeeded: release v10 directly selected card16 in a
+20-card Aroma of Chaos/Let Go selector without scrolling, verified its exact
+preview, confirmed transformation and returned to the map. One invocation
+resolved with one completed card child, two parent and two child actions, six
+reads and map_ready. Its final effects field remains scoped to the latest
+parent action; cumulative child completion is retained.
+
+The [v10 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md) records
+validation, live result and cleanup. All campaigns are closed: game stopped,
+port closed, 429 unchanged base files, zero overlays and four test files removed.
+No user game setup is needed now. The original bridge and all 32 successors are
+frozen. Authoritative checkout: `/Users/rowdeygoos/.codex/worktrees/23cf/StS_agent`,
+branch `codex/phase1-actor-ready-integration`; implementation `6978943`, live
+result/cleanup `dc5dbfc`, followed by documentation updates.
+
+## Generic capability and evidence
+
+| Capability | Evidence level |
+| --- | --- |
+| Ordinary pages and parent/child/Proceed orchestration | Shared implementation and bounded live paths |
+| Card rewards, positive variable counts up to eight | Native/controller fixtures; Cheese/Gorge add-two live in release v5 |
+| Removal, positive variable counts up to eight | Native/controller fixtures |
+| Fixed upgrades 1–8 | Native/controller fixtures; older Smith single upgrade live |
+| Fixed/positive variable transformation up to eight | G7 native/controller fixtures; fixed-one card16 live in release v10 |
+| Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
+| Allocated off-screen transformation card | Direct input demonstrated by v10; no viewport/geometry gate |
+
+Four event types have bounded successful live paths in the coverage matrix:
+Dense Vegetation, Room Full of Cheese, Potion Courier and Aroma of Chaos.
+No event has complete all-branch evidence. G7 is the latest functional family
+component; v10 is the latest packaged experiment and restricts selection to
+slot15. It is not a general all-holder release.
+
+## Next bounded target
+
+Remove the test-only fixed-slot restriction in a successor and expose all legal,
+allocated transform holders while preserving identity and completion checks.
+Do not restore clipping-parent/viewport proof or the ten-card workaround.
+V7/v8/v9 stopped before card input; their geometry diagnostics are historical,
+not evidence against the now successful direct-input path.
+
+An unallocated card still differs from an allocated off-screen card. Incomplete
+holder coverage, other selector families and their remaining layout restrictions
+need separate work. Variable transformation remains fixture-only for variable
+counts; the live caller requested exactly one. See the
+[plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) for remaining features.
+
+## Broader integration and current exclusions
+
+The preserved R0i substrate includes bounded combat/reward/map/room controllers.
+Later successors demonstrated bounded shop purchase/close/map, item collection,
+Smith upgrading and the generic event paths above. The reduced headless stack,
+public encoder, masked candidate scorer and deterministic cloning smoke are
+accepted separately; their detailed evidence remains in the
+[actor-ready ledger](research/PHASE_1_ACTOR_READY_ACCEPTANCE.md).
+These are not complete-game simulation, learned live policy or full-run evidence.
+
+## Current exclusions
+
+Open generic scope includes optional/zero selection, variable upgrades,
+multiple-item offer sets, unallocated-card scrolling/rebinding, custom/repeated
+interactions and event combat. Whole-run autonomy, broad live branch coverage
+and strategic decision quality remain open. Profile/save/Cloud access and
+unpinned builds are outside this work. Earlier bridge-only exclusions below do
+not override the capabilities of accepted later successors.
+
+## Evidence references
+
+- [G7 functional contract](PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and
+  [acceptance](research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md).
+- [V10 test contract](PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md) and
+  [acceptance](research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
+- [Coverage matrix](research/PHASE_1_EVENT_COVERAGE_MATRIX.md) and
+  [off-screen verification](research/PHASE_1_CARD_SELECTION_OFFSCREEN_VERIFICATION.md).
+- [V5 card-reward live evidence](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md)
+  and [Potion Courier live evidence](research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md).
+
+## Historical broader integration reference
+
+The following preserves predecessor R0i/headless evidence. Its dated operational
+state, next targets and exclusions describe those checkpoints only. Current
+status and the next event task are above; old campaign instructions are not
+reusable. Earlier generic release chronology is retained in acceptance ledgers
+and Git history through `dc5dbfc`.
+
+<details>
+<summary>Historical R0i, headless and successor checkpoints</summary>
+
+## Historical R0i result
 
 The repository now contains a functional, authenticated, project-owned live
 bridge and external bounded controllers. Together they can:
@@ -1113,7 +519,7 @@ narrower:
   that discarded response. No C# repair or success inference is justified by
   the historical code alone.
 
-## Current exclusions
+## Historical R0i exclusions
 
 The present bridge intentionally does not support:
 
@@ -1357,3 +763,5 @@ and map return are live-demonstrated; rest-site card upgrades remain unsupported
   original staged boundary and `R0a` freeze.
 - [`PHASE_1_INTEGRATION_SPIKE.md`](PHASE_1_INTEGRATION_SPIKE.md) defines the
   broader evidence required to finish Phase 1 and choose the fast backend.
+
+</details>

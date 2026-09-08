@@ -2437,3 +2437,22 @@ preserved by transport. The release checker requires complete duplicate-free
 source derivation/reuse inventories, including every compiled dependency and the
 four frozen Python host/parser dependencies. The exact scope, identities and
 fresh live disposition belong to the [release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
+
+
+## 2026-09-08 — Test native off-screen selection directly
+
+The user explicitly requested selecting a known off-screen card rather than
+proving its rendering boundary first. V7/v8/v9 had stopped at bridge geometry
+admission before any child input. V10 removed those geometry reads, restricted
+the controlled experiment to native slot15, and retained holder/model identity,
+preview and completion checks. One live Aroma/Let Go test selected card16,
+confirmed transformation and reached the map without scrolling.
+
+Use this evidence for the next all-eligible-holder successor. Do not make a
+clipping/viewport proof or a ten-card workaround a prerequisite for selecting an
+allocated off-screen transform holder. Cards without an allocated holder remain
+a distinct scrolling/rebinding problem. Keep native action/preview/completion
+validation, and scope capability tests to the concrete question being asked.
+The test does not establish all selector families or variable-count live behavior.
+Exact scope and result: [v10 contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md)
+and [ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).

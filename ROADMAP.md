@@ -1,125 +1,29 @@
 # ROADMAP.md
 
-## Aroma live test stopped before card selection — campaign closed
+## Active integration priority — 2026-09-08
 
-2026-09-08. One frozen releasev7 invocation accepted Let Go and opened the
-transformation selector,then stopped at prepare_geometry:1 parent attempted/
-accepted,0 reconciled,258 reads,0 child episodes/actions/completions. CUA showed
-15 cards in5 columns with a clipped third row and scroll bar. No card was selected
-or transformed. This is consistent with unsupported scrolling; exact live geometry
-values were not captured,so the precise failing predicate remains unproved.
+The generic event handler's direct card16 test passed live in Aroma of Chaos:
+selection without scrolling, exact preview, transformation confirmation and
+Proceed/map. All temporary test files are removed; no live campaign or game
+setup remains. See the [handoff](docs/PHASE_1_ASTRA_HANDOFF.md) and
+[v10 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
 
-Normal quit,stopped/closed checks,code-first quarantine,exact4-file purge and final
-429-file clean-base/0-overlay verification passed. All live instances are closed;
-no credential,overlay or cleanup remains. State hashes in the [ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md)
-are historical. No game setup is needed until a fresh test instance is prepared.
-Next test setup should explicitly require a fresh ordinary deck of at most10
-cards,not the existing15-card run; this avoids the observed clipped third row but
-is not a guarantee of geometry acceptance. Do not retry the spent invocation.
+Next derive a successor that exposes all eligible allocated transform holders
+instead of v10's fixed slot15. Preserve native identity and completion checks;
+remove no additional rules merely on analogy to this one selector. The former
+ten-card workaround and geometry-proof test requirements are superseded.
+Incomplete holder coverage remains separate scrolling/rebinding work.
 
-Releasev7 and all28 predecessors remain frozen; complete offline gates,42 socket
-scenarios and6 matching production builds remain accepted. No successful fixed
-or variable transformation live claim is made. Earlier checkpoints below are
-historical; the ledger preserves exact preparation,invocation and cleanup evidence.
+G7 already implements positive variable transformations; variable-count live
+evidence remains open. Later shared features include variable upgrades,
+optional/zero selection, multiple-item sets and custom/combat interactions.
+Events serve as tests of shared families, not new production registration rows.
+The [generic plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) owns the active
+sequence; [current status](docs/PHASE_1_CURRENT_STATUS.md) separates functional,
+release and live evidence. All 32 accepted successors remain frozen.
 
-## Generic v7 accepted — variable-count transformation
-
-2026-09-08. Successor28 adds positive variable-count transformations: native
-manual confirmation can finish selection at min or an intermediate count, then
-confirm the exact complete preview. Maximum selection keeps automatic preview.
-Expected originals are reserved before dispatch, partial preview cannot reduce
-that set, and the existing journal verifies selected-only final replacements.
-Outer generic_event_v7 uses card_transform_v2; frozen card/item engines remain.
-
-Both candidate and frozen gates and independent review pass:3815 native,
-1718 item,2650 transform assertions;171 wire cases;118 host tests;201 integration
-scenarios,139 through actual native adapters with inert game objects. Native and
-core artifacts each match across four builds. All27 predecessors remain unchanged.
-Read the [contract](docs/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md).
-This is functional support, not a packaged or live-tested G7 release. All live
-instances remain closed; no game setup is needed. Release preparation precedes
-any G7 live test. Optional/scrolling, variable upgrades, multiple-item sets and
-custom/combat interactions remain open. Older checkpoints below are historical.
-
-## Potion Courier live item test passed — cleanup complete
-
-2026-09-08. One frozen generic releasev6 invocation completed Potion Courier →
-Ransack, one verified potion collection, and Proceed/map handoff. Result:2 parent
-and1 child actions attempted/accepted/reconciled,1 completed_item_children,
-5 reads, status resolved, diagnostic map_ready. UI confirmed a new potion in the
-previously empty second slot and the map. Final effects=unverified describes the
-later Proceed action; the cumulative item completion remains1.
-
-This establishes one live singleton potion path, not all events, relics,
-multiple-item sets, transformation or complete-run support. Normal quit,
-stopped/closed checks, code-first quarantine, exact4-file purge and unchanged
-429-file clean-base verification all passed. No overlay, credential or cleanup
-remains; no game setup is needed. All state hashes in the [test ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
-are historical. Frozen sources and prior offline evidence remain unchanged.
-Remaining development includes unsupported interaction families and additional
-held-out coverage. Earlier item-unproven and installed statements below are
-preserved checkpoints, superseded by this result and the linked ledger.
-
-This file tracks the most useful next steps for the project. It is not a strict commitment list; it is a guide for future work and for quickly understanding where the simulator is headed.
-
-The goal is to keep the scope growing in a way that stays useful for RL research
-without turning the codebase into a full game clone too early. The combat-
-research priorities below coexist with the active full-game integration track;
-the latter's authoritative progress summary is
-[`docs/PHASE_1_CURRENT_STATUS.md`](docs/PHASE_1_CURRENT_STATUS.md).
-
-## Active integration priority
-
-The accepted, frozen `generic_event_release_v6` packages the complete G6 handler
-for live testing. Both full gates and independent reviews pass: all G6 regressions,
-843 runtime assertions,30 socket/client scenarios and128 verifier checks. All27
-successors are frozen. See the [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md)
-and [ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md).
-
-The single Search test resolved through Proceed/map (2 parent actions,4 reads),
-with visible HP loss and a new cheese relic icon. It exposed no item child, so
-item selection remains live-unvalidated. All owned cleanup passed; no overlay,
-credential or game setup remains. First identify a representative event choice
-whose retained evidence demonstrates an ordinary singleton reward screen before
-preparing another live test. Visible relic gain alone is insufficient evidence.
-
-Continue later by shared interaction family: multiple-offer items, optional/
-scrolling selectors, variable upgrade/transform minima and custom/combat
-interactions remain open. Event names remain test data rather than admission rules.
-
-### Preserved predecessor milestones
-
-The shared `event_orchestrator_v1` functional increment is implemented, reviewed
-and frozen. It composes ordinary choices, item rewards and Cheese card selection
-under one parent with sequential children and an explicit decision provider.
-Repository regression passes 1,243 tests and its complete offline aggregate
-passes, including reproducible native builds. It is not yet an installable release.
-
-The next `event_card_operations_v1` functional component adds pre-dispatch card
-domain binding and two exact event upgrades: Aroma of Chaos/Maintain Control and
-Sapphire Seed/Eat. Native/controller composition, independent review and the
-candidate and frozen aggregates pass (675 checks across 19 suites). Its 66-file
-identity is frozen and functional acceptance is recorded in the [event-card ledger](docs/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_ACCEPTANCE.md).
-It does not yet have release or live evidence.
-
-The user clarified the next priority: make shared handlers obtain authoritative
-interaction rules without adding each standard event to a named allowlist.
-The existing code has generic mechanics with three exact native event entries;
-it does not yet provide automatic all-event support. Read the
-[generic event handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) before
-implementation. Resolve discovery, pre-dispatch/child-creation timing, ownership,
-counts and effect witnesses in a successor contract, then expand by interaction
-family. Brain/Zen research becomes representative test evidence, rather than the
-next two implementation packets. Custom screens and event combat may still need
-dedicated handlers. Preserve multi-card event counts and exactly-one ordinary
-Smith upgrading. The 68-type census is not a complete reachable-event proof.
-
-Smith upgrade-one and user-prepared Cheese add-two already pass live testing in
-their predecessor release; both campaigns are fully cleaned. All fourteen
-accepted successor trees remain frozen. See the
-[event coverage plan](docs/PHASE_1_EVENT_COVERAGE_PLAN.md),
-[coverage matrix](docs/research/PHASE_1_EVENT_COVERAGE_MATRIX.md) and
-[orchestrator ledger](docs/research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).
+The combat-research priorities and historical integration milestones below
+remain reference material; they do not replace the active event queue above.
 
 ## Current Position
 
@@ -212,7 +116,7 @@ measurements and no learned-policy or target-game-parity claim.
 
 These are the highest-value next steps.
 
-### Full-Game Integration Priority
+### Historical full-game integration milestones
 
 Keep the C# bridge and `live_probe_v0` wire frozen. The bounded Python host now
 treats `elite` as combat using the existing clients, with independent fixture

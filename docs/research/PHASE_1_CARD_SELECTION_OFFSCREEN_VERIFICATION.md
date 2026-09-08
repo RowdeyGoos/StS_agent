@@ -1,5 +1,20 @@
 # Off-screen card selection: retained-code verification
 
+## Current outcome — live direct selection succeeded
+
+2026-09-08. Release v10 directly selected card16 in the user's controlled
+20-card Aroma/Let Go setup without scrolling or geometry checks, verified the
+exact preview, confirmed transformation and reached the map. One completed card
+child was recorded and cleanup passed. See the
+[v10 acceptance ledger](PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
+This supplies live evidence for the allocated off-screen transformation path
+examined below. It does not establish access to cards without allocated holders.
+
+The following analysis and v8/v9 diagnostic entries are historical. Their
+proposed additional geometry prerequisites and statements that no live input
+has succeeded are superseded. Next generalize v10's test-only slot15 restriction;
+do not repeat the clipping-parent experiment.
+
 2026-09-08; baseline `c6da627`. Read-only analysis of retained pinned-game IL
 and frozen G7 source. No game launch, target assembly capture, installed overlay,
 profile access or live input. No frozen implementation was changed.
