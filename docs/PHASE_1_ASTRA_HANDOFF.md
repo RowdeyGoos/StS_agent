@@ -8,7 +8,33 @@ beyond the immediate stop but exhausted pending reads before child admission;
 full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
 the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current v5 live completion and clean teardown — 2026-09-08
+## Current generic v4 functional acceptance — 2026-09-08
+
+`generic_event_v4` is accepted and frozen as successor24. It adds shared native
+fixed-count upgrade1..8 while preserving variable removal and reward modes.
+Multi-preview clones are bound to their exact originals through scoped native
+observations and one owned deferred-click ticket; retained controls and clone
+generations reject replacement or reuse before Confirm. Event-name registration
+is unnecessary. The frozen card core still proves exact selected-only +1 upgrades.
+
+The v4 protocol adds `completed_card_children`, preserving fully verified child
+completion through Proceed or later failure. `effects` keeps its last-parent-action
+meaning. Independent review and both full offline gates passed:1,343 native
+assertions,107 wire cases,86 host tests and96 integration scenarios,36 through
+production native adapters with inert stubs. Four native builds match exactly.
+Read the [v4 contract](PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) and
+[v4 ledger](research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) first for exact scope,
+identities and evidence. This functional component is not an installable release
+and has no multi-upgrade live claim.
+
+All24 successors and the original bridge remain frozen. All generic live
+campaigns are closed; no installed overlay, credential or cleanup remains.
+No game setup is needed. Continued development now investigates authoritative
+transformation replacements and deck ordering under the new bounded
+[static scope](research/PHASE_1_GENERIC_TRANSFORM_SCOPE.md). Variable upgrade
+minima, item/optional/scrolling and custom/combat families remain open.
+
+## Preserved v5 live completion and clean teardown — 2026-09-08
 
 The single `generic_event_release_v5` live test resolved Cheese/Gorge through
 two card selections and Proceed/map. Both parent actions and both child actions
@@ -199,13 +225,13 @@ extending it.
 
 | Capability | Current evidence and limits |
 | --- | --- |
-| Generic discovery successor | Shared upgrade-one, removal1..8 and reward-add1..8 command/screen discovery without event-name registrations; production native-to-Python fixtures; lifecycle mismatch corrected; v2 live waits then stops before child admission |
+| Generic discovery successor | Shared fixed-upgrade1..8, removal1..8 and reward-add1..8 without event-name registration; v4 multi-upgrade native-to-Python fixtures and cumulative child evidence; v5 release Cheese/Gorge add-two resolved live |
 | Preserved shared event flow | Functional parent composes ordinary choices, sequential item/card children and explicit Proceed/map handoff; immutable host decision-provider seam |
 | Shared card mechanics | Add/remove/upgrade/transform, explicit min/max, confirmation, reference identity and exact effects; generic fixtures are not native all-event support |
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
 | New Aroma/Sapphire paths | Actual native/controller fixtures and reproducible compile-only builds; no installable release or live evidence |
 | Previous live paths | Ordinary Smith upgrade-one, Cheese add-two, Dense Vegetation continuation, one shop card purchase/close/map, and bounded potion/relic acquisition in predecessor releases |
-| Not implemented generically | Transform/multi-upgrade discovery, item children, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
+| Not implemented generically | Transform discovery, variable upgrade minima, item children, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
 
 Events may require multiple cards; ordinary rest-site Smith upgrades exactly one.
 Do not collapse these requirements. No event has complete all-branch evidence;

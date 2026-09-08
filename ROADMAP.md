@@ -10,21 +10,24 @@ the latter's authoritative progress summary is
 
 ## Active integration priority
 
-`generic_event_v3` handles shared upgrade-one, removal1..8 and reward-card
-addition1..8 with variable limits. Reward offers support automatic submission at
-max or manual confirmation at min..max. Native request/creation facts, exact
-asynchronous ownership and original-card reconciliation replace event-name rules.
-See the [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) for
-validation and limits. Continue by shared families, including transformation,
-multi-upgrade and item children. The button-lifetime mismatch is corrected. V2 progressed beyond the immediate
-live stop but exhausted pending reads before child admission; cleanup passed.
-The bounded diagnostic release v3 passed its release gates and one live test
-identified prepare_candidates as the last waiting stage before the read budget.
-No child actions occurred; full cleanup passed. Next inspect/reproduce candidate
-reference binding and initial candidate-state checks in a reviewed successor;
-use finer diagnostics only if static evidence and inert fixtures cannot establish
-the mismatch. See the
-[v3 release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md).
+The generic release v5 Cheese/Gorge add-two test completed through Proceed/map,
+then passed full owned cleanup. This establishes one shared reward-family live
+path. The latest evidence is in the
+[v5 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md).
+
+The accepted, frozen `generic_event_v4` functional slice extends fixed-count upgrades to
+1..8 and adds cumulative verified-child evidence, preserving existing variable
+removal and reward modes. Follow its [contract](docs/PHASE_1_GENERIC_EVENT_V4_CONTRACT.md)
+and [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) for
+implementation and validation status. Native preview mappings come from scoped
+original/clone observations, never card names or apparent similarity.
+
+Continue by shared interaction family: transformation needs authoritative
+original-to-replacement mapping and compatible deck-order semantics; item children,
+optional/scrolling selectors and custom/combat interactions remain open. Complete
+functional integration before release/live validation. Event identities are
+representative and held-out tests, not a production allowlist. All prior campaigns
+are closed; no new game setup is needed during functional development.
 
 ### Preserved predecessor milestones
 

@@ -5,7 +5,20 @@ support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
 accepted component, source identity, protocol or live release.
 
-## Current live validation checkpoint — 2026-09-08
+## Current functional checkpoint — 2026-09-08
+
+Generic v4 adds fixed-count upgrade1..8 through exact native preview-clone
+mapping, preserving earlier removal/reward families. `completed_card_children`
+retains full child-resolution evidence across Proceed and later failure.
+Independent review and candidate/frozen gates pass:1,343 native assertions,
+107 wire cases,86 host tests and96 integrations,36 with actual native adapters.
+See the [v4 ledger](research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md). All24 successors remain frozen.
+This is functional evidence; it adds no named event or multi-upgrade live coverage.
+Transformation requires authoritative replacement and deck-order evidence next;
+variable upgrade minima, item/optional/scrolling/custom/combat families remain open.
+All campaigns are closed and no new game setup is needed.
+
+## Preserved v5 live validation checkpoint — 2026-09-08
 
 V5's one live test resolved the shared Cheese/Gorge add-two path through Proceed
 and map. Both parent actions and both child selections reconciled; one child

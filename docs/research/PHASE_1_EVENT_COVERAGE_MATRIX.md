@@ -12,7 +12,20 @@ and Room Full of Cheese/Gorge add-two. Cheese/Gorge now also has successful
 generic release v5 composition evidence. Their remaining branches stay open;
 predecessor live results do not automatically prove other shared compositions.
 
-## Current live validation checkpoint — 2026-09-08
+## Current functional checkpoint — 2026-09-08
+
+Generic v4 adds fixed-count upgrade1..8 through exact native preview-clone
+mapping, preserving earlier removal/reward families. `completed_card_children`
+retains full child-resolution evidence across Proceed and later failure.
+Independent review and candidate/frozen gates pass:1,343 native assertions,
+107 wire cases,86 host tests and96 integrations,36 with actual native adapters.
+See the [v4 ledger](PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md). All24 successors remain frozen.
+This is functional evidence; it adds no named event or multi-upgrade live coverage.
+Transformation requires authoritative replacement and deck-order evidence next;
+variable upgrade minima, item/optional/scrolling/custom/combat families remain open.
+All campaigns are closed and no new game setup is needed.
+
+## Preserved v5 live validation checkpoint — 2026-09-08
 
 V5's one live test resolved the shared Cheese/Gorge add-two path through Proceed
 and map. Both parent actions and both child selections reconciled; one child
@@ -97,9 +110,9 @@ catalog. Dedicated handlers remain appropriate for different custom surfaces.
 | Ordinary option pages and Proceed | Generic native control; one Dense Vegetation path live | Classify remaining branches and test longer live chains |
 | Item reward child | Frozen item handler; sequential composition in fixtures | Event-specific live composition and broader reward forms |
 | Add cards | Cheese/Gorge exact two-of-eight native/live and generic release v5 live; other shared compositions in fixtures | Other callers, domains and cardinalities |
-| Upgrade cards | Generic upgrade-one shared discovery with native-to-Python inert fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Validate real synchronizer context in a prepared release; multiple-card discovery and reconciliation |
+| Upgrade cards | Generic fixed-count1..8 discovery, exact preview mapping and native-to-Python fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Prepared release and live multi-upgrade validation; variable minima and scrolling |
 | Remove cards | Generic native discovery, variable1..8 preview confirmation and exact remaining-deck reconciliation in inert fixtures | Prepared release and live validation; optional/scrolling variants |
-| Transform cards | Generic pure card core and shared selector facts | Exact callers, replacement/preview rules and result witnesses |
+| Transform cards | Frozen core fixtures and retained shared selector facts | Authoritative replacement/preview mapping, command completion and deck-order compatibility |
 | Optional selection and repeated choices | Explicitly unsupported by this increment | New reviewed bounds/confirmation and loop identity policies |
 | Embedded event combat | Metadata/shared API facts only | Combat handoff, event resumption and exact ownership |
 | Custom/ancient layouts | One custom node and two derived layouts inventoried | Exact caller/layout connections and action semantics |

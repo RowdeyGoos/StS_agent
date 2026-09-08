@@ -2294,3 +2294,33 @@ scope-less callback. Retained target metadata and an original-source regression
 establish the defect; a later live result is still needed to establish that it
 was the only obstacle in the observed campaign. See the
 [lifecycle contract](docs/PHASE_1_GENERIC_EVENT_LIFECYCLE_V1_CONTRACT.md).
+
+## 2026-09-08 — Correlate deferred multi-upgrade previews and retain child evidence
+
+The shared native multi-upgrade screen clones selected cards directly through
+RunState.CloneCard; its preview clones do not have a proved CloneOf link. The
+accepted generic v4 contract therefore correlates one validated native selection
+with one exact deferred callback ticket, then observes original/clone arguments
+and results only inside that callback's synchronous preview construction. Actual
+preview holder/card/clone references are retained and rechecked before Confirm.
+This is bounded single-controller callback correlation, not a claim that native
+queue callbacks carry an unforgeable token or preserve ambient async context.
+
+Admit fixed upgrade counts1..8 because retained native control flow opens the
+multi-preview at maximum; a variable early-preview mode must not be inferred.
+Preserve the frozen card core's exact original identity and selected-only +1
+upgrade reconciliation. Transformation requires a separate authoritative
+replacement witness and compatible deck ordering before it can be admitted.
+
+Keep the existing effects field scoped to the latest parent action. The successful
+v5 live test showed why cumulative card evidence must be separate: Proceed resets
+that field after a child has already resolved. The v4 protocol adds
+completed_card_children, credited once only after full child resolution and
+retained through later parent failure. Wire and host validate the exact
+parent-before-child sampling order and distinct completed lineage, so neither
+accepted selections nor malformed/lost terminal responses create completion credit.
+
+The [v4 contract](docs/PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) owns these semantics;
+its [ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) owns current
+implementation and validation evidence. This decision does not claim live
+multi-upgrade or all-event coverage.

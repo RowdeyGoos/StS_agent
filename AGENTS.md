@@ -13,31 +13,27 @@ Do not treat this file as the full project description. For that, follow the rea
 
 ## Current event-work entry point
 
-For event coverage or a session handoff, begin with
-[the Astra handoff](docs/PHASE_1_ASTRA_HANDOFF.md),
-[current status](docs/PHASE_1_CURRENT_STATUS.md) and
-[generic event handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md), then
-follow the reading order below. The active integration checkout is the existing
-23cf worktree named in the handoff; local main is older. The new
-[generic successor contract](docs/PHASE_1_GENERIC_EVENT_V3_CONTRACT.md) and
-[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) describe
-shared upgrade-one, variable-count removal and reward-card addition discovery
-with automatic or manual confirmation and no named caller entries. Other interaction
-families remain open. Expand by authoritative shared family, using event names
-as tests. Preserve all seventeen frozen successor trees, their contracts and
-identities, plus the original bridge; new behavior belongs in a reviewed successor.
+For event work, begin with [the Astra handoff](docs/PHASE_1_ASTRA_HANDOFF.md),
+[current status](docs/PHASE_1_CURRENT_STATUS.md) and the
+[generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md).
+Use `/Users/rowdeygoos/.codex/worktrees/23cf/StS_agent`; saved local main is older.
 
-For the latest generic event evidence, read the
-[generic release v3 diagnostic contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V3_CONTRACT.md)
-and [v3 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V3_ACCEPTANCE.md).
-The release is accepted and frozen as successor21. Its one live invocation stopped
-after258reads with prepare_candidates, zero child episodes/actions and unverified
-effects. Normal quit, exact owned teardown and429-file base/stopped checks passed.
-No campaign or cleanup remains. Next inspect and reproduce the candidate-binding/
-initial-candidate-state subchecks in a reviewed successor. The precise nested
-predicate is still unknown; do not assume geometry or relax identity rules.
-Preserve all21 source identities. All three generic campaigns are closed and
-purged; their state identities must not be reused. No game setup is needed now.
+The generic release v5 Cheese/Gorge add-two live test resolved through Proceed/map
+and completed all owned cleanup. All generic campaigns are closed, game stopped,
+and no installed overlay, credential or cleanup remains. The
+[v5 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) records
+exact evidence, including the last-action effects reporting limitation.
+Historical campaign state identities must never be reused.
+
+Continued development now follows the independently accepted
+[generic v4 functional contract](docs/PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md): fixed-count
+multi-upgrade1..8 and cumulative completed-child evidence. Both full offline gates
+passed; exact evidence lives in that ledger. Preserve all24 frozen successors and
+original bridge; new behavior belongs in a reviewed successor. Continued work now
+investigates transformation mapping and ordering. No new live setup is needed
+during functional development. Expand by authoritative shared interaction
+family, using event identities as tests instead of adding event-name allowlists.
 
 ## Read This First
 
