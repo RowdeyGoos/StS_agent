@@ -425,6 +425,7 @@ internal sealed class BridgeTransportRuntime : IDisposable
         bool serviceMayHaveRun = false;
         bool sent = false;
         bool terminalBody = false;
+        bool staleWithoutMutation = false;
         bool terminalAfterCleanup = false;
         try
         {
@@ -479,6 +480,7 @@ internal sealed class BridgeTransportRuntime : IDisposable
                 if (!request.IsPost) Interlocked.Increment(ref _readSubmissionCountForTests);
 #endif
                 BridgeReply reply = (_service ?? throw new InvalidOperationException("Service unavailable.")).Handle(request);
+                staleWithoutMutation = reply.StaleWithoutMutation;
                 return new OwnedServiceResponse(reply.Terminal ? 503 : 200, reply.Response);
             });
             body = dispatch.Value;
@@ -497,6 +499,11 @@ internal sealed class BridgeTransportRuntime : IDisposable
             response = body; body = null;
             await SendAllAsync(socket, response, lifetime.Token).ConfigureAwait(false);
             sent = true;
+            // A failed/partial delivery never reaches this point. Keep the total
+            // attempt budget, but allow a freshly observed, previously rejected
+            // identity to be selected again after native revalidation.
+            if (reservedPost && !terminalBody && staleWithoutMutation)
+                ReleaseStalePost(request);
             Volatile.Write(ref _exchangeResponseSent, 1);
             if (terminalBody)
             {
@@ -566,6 +573,13 @@ internal sealed class BridgeTransportRuntime : IDisposable
             _parentPostCount++;
             return true;
         }
+    }
+
+    private void ReleaseStalePost(BridgeRequest request)
+    {
+        var identity = new PostIdentity(request.Path, request.Decision!, request.Action!,
+            request.ChildOrdinal, request.ParentDecision, request.ParentAction);
+        lock (_gate) _reservedPosts.Remove(identity);
     }
 
     private bool TerminalRequestedOrStopping()

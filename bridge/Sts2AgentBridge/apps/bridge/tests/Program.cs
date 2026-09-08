@@ -23,7 +23,7 @@ internal static class Program
         try
         {
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
-            Ownership(); CleanupFailure(); CoreHandoff(); Parser(); SocketHandoff(); LostResponse(); DuplicatePost();
+            Ownership(); CleanupFailure(); CoreHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
@@ -31,7 +31,7 @@ internal static class Program
     }
     private static int Serve()
     {
-        var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true });
+        var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true }, new CoreFixture { Reject = true });
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
@@ -80,8 +80,20 @@ internal static class Program
         core.MapComplete = true;
         Check(!router.Handle(Request(Capability.Core, "/probe/v0/public/map-decision")).Terminal, "base map completion observed");
         Check(!router.Handle(next).Terminal && factories == 1, "base-to-event handoff");
-        using var rejected = new BridgeRouter(Core(new CoreFixture { Reject = true }), (c,_) => new FakeModule(c));
-        Check(rejected.Handle(post).Terminal, "base rejected action fails closed");
+        foreach (var (kind, action) in new[] { ("combat", "end_turn"), ("reward", "proceed"), ("map", "select:0"), ("room", "proceed") })
+        {
+            var fixture = new CoreFixture { Reject = true };
+            var module = Core(fixture);
+            using var rejected = new BridgeRouter(module, (c,_) => new FakeModule(c));
+            var stale = new BridgeRequest(Capability.Core, "/probe/v0/public/" + kind + "-action", true, 0, 64, Decision, action);
+            var reply = rejected.Handle(stale);
+            Check(!reply.Terminal && Body(reply).Contains("stale_decision"), "safe stale rejection preserves host: " + kind);
+            Check(!module.HasPendingAction, "stale rejection does not create a mutation fence: " + kind);
+            Check(!rejected.Handle(Request(Capability.Core, "/probe/v0/public/" + kind + "-decision")).Terminal, "fresh observation after stale rejection: " + kind);
+            Check(!rejected.Handle(next).Terminal, "stale rejection permits clean handoff: " + kind);
+        }
+        using var fault = new BridgeRouter(Core(new CoreFixture { Fault = true }), (c,_) => new FakeModule(c));
+        Check(fault.Handle(post).Terminal && fault.Handle(next).Terminal, "backend fault remains terminal");
     }
     private static void Parser()
     {
@@ -94,9 +106,9 @@ internal static class Program
     private static byte[] Head(string path, string? action = null, string? token = null, string extra = "") => Encoding.ASCII.GetBytes(
         (action is null ? "GET " : "POST ") + path + " HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer " + (token ?? Token) +
         "\r\nAccept: application/json\r\n" + (action is null ? "" : "X-Sts2-Decision-Id: " + Decision + "\r\nX-Sts2-Action-Id: " + action + "\r\n") + extra + "Connection: close\r\n\r\n");
-    private static (BridgeTransportRuntime Runtime, int Port) Start(Func<Capability,string,IBridgeModule> factory)
+    private static (BridgeTransportRuntime Runtime, int Port) Start(Func<Capability,string,IBridgeModule> factory, CoreFixture? core = null)
     {
-        var runtime = BridgeTransportRuntime.Create(BridgeConfiguration.Enabled.ToArray(), () => Encoding.ASCII.GetBytes(Token), n => new BridgeRouter(Core(new()), factory))!;
+        var runtime = BridgeTransportRuntime.Create(BridgeConfiguration.Enabled.ToArray(), () => Encoding.ASCII.GetBytes(Token), n => new BridgeRouter(Core(core ?? new()), factory))!;
         var listener = new TcpListener(IPAddress.Loopback, 0); listener.Start();
         int port = ((IPEndPoint)listener.LocalEndpoint).Port;
         Check(runtime.StartForTests(listener), "shared listener starts"); return (runtime, port);
@@ -142,6 +154,25 @@ internal static class Program
         Check(Exchange(runtime,port,Head("/probe/generic-event-v7/public/action","choose:0")) == "", "lost action response");
         Check(module.Posts == 1 && runtime.IsTerminalOrStopping, "lost response forbids retry and handoff"); Stop(runtime);
     }
+    private static void StaleRecovery()
+    {
+        var core = new CoreFixture { Reject = true, CombatReady = true };
+        var (runtime, port) = Start((c,_) => new FakeModule(c), core);
+        var action = Head("/probe/v0/public/combat-action", "end_turn");
+        Check(Exchange(runtime, port, action).Contains("stale_decision") && core.CombatAccepted == 0, "stale response has no accepted mutation");
+        Check(Exchange(runtime, port, Head("/probe/v0/public/combat-decision")).Contains(Decision), "fresh ready observation can retain the same identity");
+        core.Reject = false;
+        Check(Exchange(runtime, port, action).Contains("accepted") && core.CombatAccepted == 1, "known rejected identity can be revalidated and accepted");
+        Check(runtime.ReservedParentPosts == 2, "stale attempts still consume the process budget");
+        Check(Exchange(runtime, port, action) == "" && core.CombatAccepted == 1 && runtime.IsTerminalOrStopping, "accepted identity cannot execute twice");
+        Stop(runtime);
+
+        core = new CoreFixture { Reject = true };
+        (runtime, port) = Start((c,_) => new FakeModule(c), core);
+        runtime.DropNextPostResponseForTests = true;
+        Check(Exchange(runtime, port, action) == "" && core.CombatAccepted == 0 && runtime.IsTerminalOrStopping, "lost stale receipt still stops the host");
+        Stop(runtime);
+    }
     private static void DuplicatePost()
     {
         var module = new FakeModule(Capability.Events); var (runtime,port) = Start((_,_) => module);
@@ -168,15 +199,17 @@ internal static class Program
         IPublicRewardDecisionService, IPublicRewardActionService, IPublicMapDecisionService, IPublicMapActionService,
         IPublicRoomDecisionService, IPublicRoomActionService
     {
-        internal bool MapComplete, Reject; internal int Applies;
+        internal bool MapComplete, Reject, Fault, CombatReady; internal int Applies, CombatAccepted;
         PublicScreenReadResult IPublicScreenService.Read() => PublicScreenReadResult.BackendFault();
-        PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(PublicCombatDecisionSnapshot.Waiting());
+        PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(CombatReady
+            ? new(PublicDecisionStatus.Ready, Decision, 1, new(80,80,0,0), new[] { new PublicCombatEnemy(0,"SLIME",8,8,0,Array.Empty<string>()) }, Array.Empty<PublicCombatCard>(), new[] { new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1) }, PublicCombatOutcome.None)
+            : PublicCombatDecisionSnapshot.Waiting());
         PublicRewardDecisionReadResult IPublicRewardDecisionService.Read() => PublicRewardDecisionReadResult.FromSnapshot(PublicRewardDecisionSnapshot.Waiting());
         PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : PublicMapDecisionSnapshot.Waiting());
         PublicRoomDecisionReadResult IPublicRoomDecisionService.Read() => PublicRoomDecisionReadResult.FromSnapshot(PublicRoomDecisionSnapshot.Waiting());
-        PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) => PublicCombatActionApplyResult.FromRequest(PublicCombatActionApplyOutcome.Accepted,r);
-        PublicRewardActionApplyResult IPublicRewardActionService.Apply(PublicRewardActionRequest r) => PublicRewardActionApplyResult.FromRequest(PublicRewardActionApplyOutcome.Accepted,r);
-        PublicRoomActionApplyResult IPublicRoomActionService.Apply(PublicRoomActionRequest r) => PublicRoomActionApplyResult.FromRequest(PublicRoomActionApplyOutcome.Accepted,r);
-        PublicMapActionApplyResult IPublicMapActionService.Apply(PublicMapActionRequest r) { Applies++; return PublicMapActionApplyResult.FromRequest(Reject ? PublicMapActionApplyOutcome.StaleDecision : PublicMapActionApplyOutcome.Accepted,r); }
+        PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) { if (!Reject) CombatAccepted++; return PublicCombatActionApplyResult.FromRequest(Reject ? PublicCombatActionApplyOutcome.StaleDecision : PublicCombatActionApplyOutcome.Accepted,r); }
+        PublicRewardActionApplyResult IPublicRewardActionService.Apply(PublicRewardActionRequest r) => PublicRewardActionApplyResult.FromRequest(Reject ? PublicRewardActionApplyOutcome.StaleDecision : PublicRewardActionApplyOutcome.Accepted,r);
+        PublicRoomActionApplyResult IPublicRoomActionService.Apply(PublicRoomActionRequest r) => PublicRoomActionApplyResult.FromRequest(Reject ? PublicRoomActionApplyOutcome.StaleDecision : PublicRoomActionApplyOutcome.Accepted,r);
+        PublicMapActionApplyResult IPublicMapActionService.Apply(PublicMapActionRequest r) { Applies++; return Fault ? PublicMapActionApplyResult.BackendFault() : PublicMapActionApplyResult.FromRequest(Reject ? PublicMapActionApplyOutcome.StaleDecision : PublicMapActionApplyOutcome.Accepted,r); }
     }
 }

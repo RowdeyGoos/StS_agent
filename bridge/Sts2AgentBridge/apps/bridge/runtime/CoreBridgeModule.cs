@@ -107,7 +107,16 @@ internal sealed class CoreBridgeModule : IDisposable
             var root = json.RootElement;
             if (r.IsPost)
             {
-                if (root.GetProperty("status").GetString() != "accepted") return new(body, Terminal: true);
+                if (root.GetProperty("status").GetString() != "accepted")
+                {
+                    // Native adapters reject a stale observation before dispatch.
+                    // Let the controller obtain a fresh decision. Only delivery
+                    // of this known no-mutation receipt can release its reservation.
+                    bool stale = root.GetProperty("status").GetString() == "rejected" &&
+                        root.GetProperty("mutation_state").GetString() == "none" &&
+                        root.GetProperty("reason").GetString() == "stale_decision";
+                    return new(body, Terminal: !stale, StaleWithoutMutation: stale);
+                }
                 _pendingPath = r.Path.Replace("-action", "-decision");
                 _pendingDecision = r.Decision;
             }

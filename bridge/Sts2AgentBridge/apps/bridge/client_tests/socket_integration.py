@@ -19,6 +19,12 @@ def main():
         port = json.loads(process.stdout.readline())['port']
         connector = lambda: socket.create_connection(('127.0.0.1', port), timeout=2)
         client = BridgeClient(bytearray(b'a' * 64), connector=connector)
+        action = bytearray(json.dumps({'decision_id': 'b' * 64, 'action_id': 'end_turn'}).encode())
+        stale = json.loads(client.exchange('POST', '/probe/v0/public/combat-action', action))
+        assert (stale['status'], stale['mutation_state'], stale['reason']) == ('rejected', 'none', 'stale_decision')
+        # The controller refreshes after a known pre-dispatch rejection. This
+        # request used to fail because the shared host closed its listener.
+        assert json.loads(client.exchange('GET', '/probe/v0/public/combat-decision'))['status'] == 'waiting'
         for route in ['/probe/generic-event-v7/public/decision', '/card-selection-v1/parent',
                       '/probe/room-flows-v1/public/decision', '/probe/item-v1/public/item-decision']:
             assert json.loads(client.exchange('GET', route))['status'] == 'ready'
@@ -36,7 +42,7 @@ def main():
         process.stdin.write('stop\n'); process.stdin.flush()
         _, errors = process.communicate(timeout=5)
         assert process.returncode == 0, errors
-        print('{"status":"passed","suite":"unified_python_socket","capability_clients":5,"original_client":true}')
+        print('{"status":"passed","suite":"unified_python_socket","capability_clients":5,"original_client":true,"stale_refresh":true}')
     finally:
         if process.poll() is None:
             process.kill(); process.wait()

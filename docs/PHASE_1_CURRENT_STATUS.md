@@ -9,13 +9,14 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The unified bridge is now installed for the user-requested module smoke test.
-Its release, base installation and owned configuration checks passed. It awaits
-manual launch with Profile 3 at the main menu; no live request has run yet.
+The first unified module smoke passed the live handshake and one map transition,
+then stopped on a combat connection failure. Normal quit, exact owned cleanup and
+unchanged base verification passed. The stale-rejection shutdown regression is
+fixed; the accepted corrected package is installed and awaits manual restart.
 The [active live record](research/PHASE_1_UNIFIED_BRIDGE_LIVE.md) owns the exact
 artifact/state identities, next action and cleanup handoff.
 
-The latest completed live campaign is release v10, implementation `6978943`,
+The preceding successful feature campaign is release v10, implementation `6978943`,
 successful result and cleanup `dc5dbfc`. It selected native holder slot15
 (card16) in the user's controlled 20-card Aroma of Chaos/Let Go setup without
 scrolling, verified the exact original in preview, confirmed transformation and
@@ -61,8 +62,8 @@ Direct-input fixtures exercise different slots and invalid/deferred targets.
 The [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md)
 records offline native/host regressions, shared socket handoff and failure cases,
 actual Python clients, reproducible packaging and owned cleanup fixtures.
-The unified package has now been installed and verified as recorded above;
-live runtime and gameplay evidence are still pending.
+The first unified package demonstrated its handshake and map transition as recorded
+above; combat completion and combined feature handoffs remain pending.
 
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused

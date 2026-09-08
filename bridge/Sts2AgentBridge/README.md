@@ -32,6 +32,11 @@ stops the host. There are no automatic mutation retries. Process-wide limits are
 16,384 reads, 512 action reservations and 64 feature sessions, with the existing
 stricter limits inside each module.
 
+A core `stale_decision` rejection with `mutation_state: none` permits a fresh
+observation: native dispatch did not occur. Once its response is fully sent, its
+reservation is released; a fresh selection still revalidates native legality and
+consumes the bounded attempt budget. Other rejections remain terminal.
+
 The existing route/body versions remain meaningful protocol contracts. The
 manifest reports bridge version `1.0.0` and Harmony support. Internal historical
 namespace names do not denote separately installed mods.
@@ -137,8 +142,9 @@ operational command with `--mode quarantine`, then `--mode purge`, each with
 source/package bindings until its installed campaign is closed. Cleanup verifies
 exact ownership, state lineage and unchanged base files.
 
-The unified build has offline evidence. Its combined live handoffs have not yet
-been demonstrated, and it is not a complete autonomous-run controller. The latest
+The unified bridge has demonstrated its live handshake and one map transition.
+The first combat attempt exposed a corrected stale-rejection bug; combat completion
+and combined feature handoffs are still pending. It is not a complete autonomous-run controller. The latest
 real-game direct-input evidence remains the earlier controlled V10 card16 result.
 
 ## Historical references

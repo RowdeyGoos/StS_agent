@@ -1,18 +1,19 @@
 # Unified bridge live test
 
-Status: installed and awaiting the user's manual game start, 2026-09-08.
+Status: corrected release installed and awaiting manual restart, 2026-09-08.
+The first attempt is closed after a combat connection failure.
 The user requested preparation for a bounded live test of the current modules.
 Game launch remains manual; use the established Profile 3 test setup.
 
 ## Prepared artifact and ownership
 
 - Implementation: `bbf2f79`, one `Sts2AgentBridgeUnified` production mod.
-- Accepted [release record](../../bridge/Sts2AgentBridge/releases/current/bridge.json):
+- First accepted release record, retained in Git at `b78dc5e`:
   SHA-256 `e12a90f4ca993caae792192767844cb990683ff5a06fd7b1e24988e20c463628`.
 - DLL SHA-256: `3886fa8aae81058e405ade079807094c307ddfc245066aa6135e3962ed24b98e`.
-- Prepared package: `/private/tmp/sts-unified-bridge-release/Sts2AgentBridgeUnified-1.0.0.zip`.
-- Campaign: `UNIFIED-BRIDGE-V1`, phase `installed`; installer created the mods parent.
-- Current owned state SHA-256:
+- Previous package preserved at `/private/tmp/sts-unified-bridge-release-before-stale-fix/Sts2AgentBridgeUnified-1.0.0.zip`.
+- Campaign: `UNIFIED-BRIDGE-V1`, now purged; installer created the mods parent.
+- Historical installed state SHA-256:
   `aa27d034e7911df8100f765ae186254b971f9a789e45aa8da217331e8b04063d`.
 - State tree under the account's Application Support:
   `Sts2AgentBridgeCampaign-unified-bridge-v1`.
@@ -27,22 +28,74 @@ and zero overlay files. After installation, verification found the same 429 base
 files plus exactly the two expected overlay files. The client's read-only owned
 installation/configuration preflight passed.
 
-## Next action and coverage
+## First live attempt
 
-The user can now start the game with mods enabled, select Profile 3 and pause at
-the main menu. On readiness, first verify the exact running process and read the
-shared health/manifest. Then use observed convenient setups to exercise combat,
-rewards, item collection, map, shop/rest, standalone card selection and generic
-event children. Check actual results and transitions between modules in the same
-installation. One representative case per module is sufficient for this smoke;
-complete-run victory and all-branch coverage are separate evidence targets.
+After the user's `ready`, the exact game process, authenticated health and
+compatible 1.0.0 manifest passed. The public screen reported `main_menu`.
+UI inspection confirmed Profile 3. UI setup started an Ironclad Standard run
+without Ascension and chose Neow's Torment; this setup is not bridge event evidence.
 
-No live request or gameplay action has run yet. Do not infer a completed module
-or successful live handoff from the installation checks. Preserve the installed
-source/package bindings. Stop on uncertain mutation, failed ownership or failed
-cleanup; do not retry an uncertain action.
+The existing bounded core map controller selected the first legal monster node
+and reconciled its destination: **passed**, one map action and 10 route checks
+(0.711 s). The combat controller then failed with `decision_transport_failure`+(0.551 s). UI showed turn 1 with 0 energy, 10 block and three discarded cards;
+some actions took effect, but its success-only trace did not retain reliable
+attempted/accepted/reconciled totals on failure. Combat completion is unverified.
+The game remained alive, a health read failed, and a bounded TCP probe confirmed
+the listener was closed. No further gameplay actions were issued.
 
-After the test, normal quit and the stopped/closed-listener check precede exact
-owned quarantine and purge. Use the state hash above for the first owned operation
-and retain the new state hash returned by each transition. Verify unchanged base
-files after cleanup. Current commands are in the [bridge guide](../../bridge/Sts2AgentBridge/README.md).
+Source diagnosis found a reproducible unified-host regression: every rejected
+core POST terminated the listener, including `stale_decision`/`mutation_state: none`.
+The established combat controller refreshes after this pre-dispatch rejection;
+its next GET then fails. This explains the observed failure pattern, but the
+last live receipt was not retained, so the exact live cause remains inferred.
+The correction permits only this known no-mutation rejection to refresh and releases
+its reservation after full response delivery, retaining the attempt budget. This
+also permits native revalidation when the fresh decision has the same identity.
+Accepted duplicates, other rejections, backend faults and uncertain delivery stay terminal.
+The regression failed before correction and passed afterward, including the
+actual Python client on the shared C# socket. No frame timeout was increased.
+
+Normal quit passed; stopped/closed checks observed three process and two port
+samples. Exact quarantine produced state
+`64fd02a4321f9c2b9e95508dfe5960b213be5dc1a0f5befb4cb8fb70fae080e2`,
+then purge removed the four generated files and returned `absent`.
+Final base verification passed: 429 unchanged files, the projection above and
+zero overlays. These hashes are historical and cannot authorize a new installation.
+
+## Corrected release prepared
+
+The focused shared-host suite passed 101 checks, including same-identity recovery,
+accepted duplicates and a lost stale receipt. The actual Python client socket
+integration passed. One independent semantic review accepted the correction after
+its same-identity recovery finding was resolved. The final release gate passed all
+67 check groups in **140.794 s**, with one reproducibility pair and package/cleanup
+checks. No additional module behavior was claimed from these offline results.
+
+- Current [accepted release](../../bridge/Sts2AgentBridge/releases/current/bridge.json)
+  SHA-256: `ea3fbbb1e5fb4744681f73f070a937d8f3e1119bc6c9e42ad0417b85e85d4150`.
+- DLL: 752128 bytes, SHA-256
+  `15f3bff3468b77919f6db0aa95cc1d12160bbcef9a73a4baf48794bb7f3bf470`.
+- Package: `/private/tmp/sts-unified-bridge-release/Sts2AgentBridgeUnified-1.0.0.zip`,
+  SHA-256 `2ce3d6f1d01242a33639193a7aab6f30a9c6f3fb3ad308ef94152f993153cc57`.
+- New campaign phase: `installed`, `UNIFIED-BRIDGE-V1`; mods parent created.
+- **Current owned state SHA-256:**
+  `57171eadb44d439a939715c47cc037a4fc96e3f4482d503b3990965e8937a5d8`.
+
+Stopped-game/closed-listener checks passed before installation. The corrected
+overlay contains exactly its two expected files, and all 429 base files retain
+the projection above. The client ownership/configuration preflight passed without
+reading credential contents. This installation has not yet received a live request.
+Preserve its source/package bindings until exact cleanup finishes. After normal
+quit and stopped/closed checks, use the current state hash for quarantine, then
+the returned hash for purge; verify unchanged base files afterward.
+
+## Remaining coverage
+
+The user has been asked to manually relaunch with mods enabled, select Profile 3
+and pause at the main menu. Use observed convenient setups for combat completion,
+rewards, item collection, shop/rest,
+standalone card selection and generic event children, including actual transitions
+between modules. Preserve bounded failure counts during the next controller run.
+One representative case per module is sufficient; complete-run victory and
+all-branch coverage are separate evidence targets. Current commands are in the
+[bridge guide](../../bridge/Sts2AgentBridge/README.md).

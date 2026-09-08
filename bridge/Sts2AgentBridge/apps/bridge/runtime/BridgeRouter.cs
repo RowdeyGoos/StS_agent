@@ -9,8 +9,9 @@ using Sts2AgentBridge.Successors.CardSelectionReleaseV1;
 namespace Sts2AgentBridge.Unified;
 
 internal readonly record struct ModuleReply(byte[] Body, bool Complete = false, bool Terminal = false,
-    GenericEventDiagnosticCode Diagnostic = GenericEventDiagnosticCode.NotCaptured, bool EventDiagnostic = false);
-internal readonly record struct BridgeReply(byte[] Response, bool Terminal);
+    GenericEventDiagnosticCode Diagnostic = GenericEventDiagnosticCode.NotCaptured, bool EventDiagnostic = false,
+    bool StaleWithoutMutation = false);
+internal readonly record struct BridgeReply(byte[] Response, bool Terminal, bool StaleWithoutMutation = false);
 
 internal interface IBridgeModule : IDisposable
 {
@@ -70,7 +71,8 @@ internal sealed class BridgeRouter : IDisposable
         try
         {
             if (reply.Terminal) _failed = true;
-            return new(reply.EventDiagnostic ? GenericEventTransportHttpEncoder.Wrap(reply.Body, reply.Diagnostic) : CardSelectionTransportHttpEncoder.Wrap(reply.Body), _failed);
+            return new(reply.EventDiagnostic ? GenericEventTransportHttpEncoder.Wrap(reply.Body, reply.Diagnostic) : CardSelectionTransportHttpEncoder.Wrap(reply.Body), _failed,
+                !_failed && reply.StaleWithoutMutation);
         }
         finally { Array.Clear(reply.Body); }
     }
