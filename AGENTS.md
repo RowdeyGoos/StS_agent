@@ -14,9 +14,9 @@ do not falsify hashes, bypass runtime safeguards or broaden user-data access.
 
    | Task | Read next |
    | --- | --- |
-   | Live bridge or generic events | [Current status](docs/PHASE_1_CURRENT_STATUS.md), then relevant source/contract; [live guide](docs/LIVE_DEVELOPMENT.md) before build/install/live work |
+   | Live bridge or generic events | [Current status](docs/STATUS.md), then relevant source/contract; [live guide](docs/LIVE_DEVELOPMENT.md) before build/install/live work |
    | Combat simulator or RL | Relevant sections of [project context](docs/PROJECT_CONTEXT.md), affected source and tests |
-   | Headless actor/data | Relevant source/schema and [actor evidence](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) |
+   | Headless actor/data | [Headless actor guide](docs/HEADLESS_ACTOR.md), then affected source/schema and tests |
    | Architecture or priorities | [Decisions](DECISIONS.md) and [roadmap](ROADMAP.md) |
    | Documentation | The document and its direct references |
 
@@ -137,6 +137,14 @@ and latest operational evidence, roadmap for priorities, decisions for durable
 choices, and acceptance ledgers for historical results. Update only documents whose
 meaning changes. Do not copy campaign chronology into several overview files.
 
-Keep startup guidance short. Archive historical rationale once; preserve exact
-hash-bound contracts and evidence at their existing paths. A completed plan is
-reference material, not a fresh-session task queue.
+Keep current guides at the top of `docs/`, organized by topic rather than phase or
+test attempt. Put substantial experiment results in `docs/evidence/`; move
+completed plans, old reviews and superseded records to `docs/archive/`. Follow the
+[documentation index](docs/README.md) and [archive policy](docs/archive/README.md).
+Do not create a separate plan, review ledger, status page or handoff for every
+correction. Routine validation belongs in the change summary.
+
+Keep startup guidance short. Archived procedures are not a fresh-session task
+queue. Preserve recorded hashes and original Git identities when moving evidence;
+adjust navigation links without repinning historical results. Read exact original
+bytes from the recorded Git revision when a historical contract requires them.

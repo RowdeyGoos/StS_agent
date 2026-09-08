@@ -1,7 +1,7 @@
 # Live bridge development
 
 [AGENTS.md](../AGENTS.md) owns the development process. Read
-[current status](PHASE_1_CURRENT_STATUS.md) for the relevant implementation and
+[current status](STATUS.md) for the relevant implementation and
 evidence, then the [bridge guide](../bridge/Sts2AgentBridge/README.md) and relevant semantic contract. Historical
 packet procedures are not universal requirements for new work.
 
@@ -84,9 +84,9 @@ Ordinary development does not authorize profile, save, preference, progress,
 history or Cloud filesystem work, retained live corpora or Cloud setting changes.
 Do not use historical approvals as current permission.
 
-If that work is explicitly requested, first read the [profile fixture plan](PHASE_0_PROFILE_FIXTURE_PLAN.md)
-and the exact applicable request/result. The [baseline fingerprint request](PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md)
-and [attempt-1 result](research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md)
+If that work is explicitly requested, first read the [profile fixture plan](archive/phase-0/PHASE_0_PROFILE_FIXTURE_PLAN.md)
+and the exact applicable request/result. The [baseline fingerprint request](archive/phase-0/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md)
+and [attempt-1 result](archive/phase-0/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md)
 remain preserved: attempt 1 stopped before target-content access and no corrected
 invocation is authorized by those records. No ordinary bridge task needs to reread
 the entire profile-discovery history.

@@ -11,7 +11,7 @@ The repository contains three complementary systems:
   mechanisms, without adding an event-name registration for each caller.
 
 This is not yet a complete autonomous agent or a verified full-game simulator.
-[Current status](docs/PHASE_1_CURRENT_STATUS.md) distinguishes implemented,
+[Current status](docs/STATUS.md) distinguishes implemented,
 fixture-tested and live-demonstrated behavior, including the successful direct
 off-screen transformation-card test.
 
@@ -85,17 +85,18 @@ publishes a report, CPU checkpoint and completion marker; cancellation does not
 publish an accepted artifact. Keep the returned report and logical checkpoint
 hashes for `load_behavior_clone_artifact`. This smoke establishes plumbing on
 structural data, not strategic strength or a new `sts-train` policy.
-[Actor evidence](docs/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) records details.
+[Headless actor guide](docs/HEADLESS_ACTOR.md) links the source, schema and evidence.
 
 ## Live integration
 
-Read [current status](docs/PHASE_1_CURRENT_STATUS.md) and the
+Read [current status](docs/STATUS.md) and the
 [live development guide](docs/LIVE_DEVELOPMENT.md) before selecting a component
 or preparing a live test. The [unified bridge](bridge/Sts2AgentBridge/README.md)
 packages all supported capabilities in one mod, with one client and development
-checker. Its shared runtime and generalized transform input have offline evidence;
-the latest live result remains the earlier controlled card16 test. Complete
-autonomous runs remain an open target.
+checker. The [unified module smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
+demonstrated representative combat, reward, map, shop, card, item and event paths,
+with recorded setup assistance and remaining limits. Generalized transform input
+also has focused native fixtures. Complete autonomous runs remain an open target.
 
 ## Project layout and documentation
 

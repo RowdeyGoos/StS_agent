@@ -13,20 +13,19 @@ only when the full-project strategy or end-state architecture changes.
 
 This is a specialist design reference, not a mandatory startup checklist.
 Its dated descriptions of repository state and proposed increments are historical;
-use [current status](PHASE_1_CURRENT_STATUS.md) and [ROADMAP.md](../ROADMAP.md)
+use [current status](STATUS.md) and [ROADMAP.md](../ROADMAP.md)
 for present capabilities and priorities. [AGENTS.md](../AGENTS.md) owns the
 streamlined development process, including proportionate review and validation.
 
 Program references (read only the relevant one):
 
-- [`PHASE_0_TARGET_CHARTER.md`](PHASE_0_TARGET_CHARTER.md) fixes the initial
-  scope, information boundary, objective, and unresolved evaluation gates.
-- [`PHASE_1_INTEGRATION_SPIKE.md`](PHASE_1_INTEGRATION_SPIKE.md) preserves the
+- [Current target](TARGET.md) defines the initial scope, information boundary,
+  objective and unresolved evaluation requirements; the archived charter retains detail.
+- [`PHASE_1_INTEGRATION_SPIKE.md`](archive/phase-1/PHASE_1_INTEGRATION_SPIKE.md) preserves the
   earlier evidence campaign for selecting the live truth path and fast backend.
-- [`PHASE_1_CURRENT_STATUS.md`](PHASE_1_CURRENT_STATUS.md) records the current
-  `R0i` live-bridge capability, evidence levels, exclusions, and next bounded
-  target.
-- [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
+- [Current status](STATUS.md) records the unified bridge capabilities, evidence
+  levels and exclusions.
+- [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](archive/phase-1/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
   preserves completed bridge/headless packet contracts; it is not the active queue.
 - [`MULTI_AGENT_EXECUTION.md`](MULTI_AGENT_EXECUTION.md) defines how parallel
   work is owned, reviewed, integrated, and reported to the user.
@@ -1028,7 +1027,7 @@ latency, restart/resume, desynchronization, and recovery rate.
 
 Current progress: the adopt/fork/build design decision is now **build a lean
 project-owned bridge**, staged from a minimal read-only probe. See the
-[`Phase 1 restricted bridge design`](PHASE_1_RESTRICTED_BRIDGE_DESIGN.md).
+[`Phase 1 restricted bridge design`](archive/phase-1/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md).
 This resolves the source-boundary choice only; the Phase 1 compile, load,
 passivity, coverage, control, and fast-backend exit gates remain open.
 
@@ -1339,9 +1338,9 @@ the first point at which a credible staffing/compute schedule can be produced.
 
 ## 21. Open decisions
 
-The authoritative status of Phase 0 choices is maintained in the
-[target-charter decision register](PHASE_0_TARGET_CHARTER.md#9-decision-register).
-Do not duplicate resolved choices here.
+The [current target](TARGET.md#unresolved-evaluation-requirements) owns unresolved
+evaluation requirements. The [original decision register](archive/phase-0/PHASE_0_TARGET_CHARTER.md#9-decision-register)
+preserves their historical detail. Do not duplicate resolved choices here.
 
 - What inference latency/node budgets define policy-only and planner-enhanced
   modes?

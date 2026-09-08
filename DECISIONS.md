@@ -1,7 +1,7 @@
 # Current decisions
 
 This is the compact architectural record. [AGENTS.md](AGENTS.md) owns session
-workflow; [current status](docs/PHASE_1_CURRENT_STATUS.md) owns implementation
+workflow; [current status](docs/STATUS.md) owns implementation
 and evidence. Detailed earlier rationale, including D1–D64, remains in the
 [historical decision log](docs/archive/DECISIONS_2026_09_08.md).
 Historical process prescriptions do not override the decisions below.
@@ -19,7 +19,7 @@ The off-screen investigation demonstrated why: geometry admission prevented
 several tests from attempting card input. A direct card16 selection with exact
 preview/completion checks succeeded. Its conclusion applies to that controlled
 allocated-holder setup; it does not certify all selectors or deck sizes.
-[V10 evidence](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
+[V10 evidence](docs/archive/phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
 
 One owner carries a change through its requested feedback loop. Use focused
 regressions during corrections, one independent semantic review for risky changes,
@@ -105,7 +105,7 @@ cleanup and clients. New features extend modules, not release directories.
   not strategic quality or target-game parity.
 
 Detailed native semantics are in the selected component contracts, reached through
-[current status](docs/PHASE_1_CURRENT_STATUS.md). The [target charter](docs/PHASE_0_TARGET_CHARTER.md)
+[current status](docs/STATUS.md). The [target](docs/TARGET.md)
 and [long-term architecture](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md) retain the
 full-game objective, information rules and eventual evaluation requirements.
 

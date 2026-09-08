@@ -1,0 +1,52 @@
+# Historical documentation
+
+This archive holds completed work and earlier designs. Dated statuses, proposed
+next steps, one-shot approvals and validation procedures describe their original
+context. Use [current guides](../README.md) and [AGENTS.md](../../AGENTS.md) for new
+work. Consult an archived record only for a specific semantic or evidence question.
+
+## Find a record
+
+| Topic | Historical references |
+| --- | --- |
+| Earlier architecture decisions | [Decision log](DECISIONS_2026_09_08.md) |
+| Target and evaluation design | [Original charter](phase-0/PHASE_0_TARGET_CHARTER.md); [current target](../TARGET.md) owns the concise definition |
+| Profile design and access history | [Fixture plan](phase-0/PHASE_0_PROFILE_FIXTURE_PLAN.md), [baseline request](phase-0/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md), [stopped attempt](phase-0/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md) |
+| Initial bridge investigation | [Integration spike](phase-1/PHASE_1_INTEGRATION_SPIKE.md), [initial implementation](phase-1/research/PHASE_1_R0A_IMPLEMENTATION_EVIDENCE.md) |
+| Earlier live/headless integration | [Next increment](phase-1/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md), [actor-ready results](phase-1/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md) |
+| Room, shop and item semantics | [Room flows](phase-1/PHASE_1_ROOM_FLOWS_V1_CONTRACT.md), [shop map permission](phase-1/PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md), [items](phase-1/PHASE_1_ITEM_V1_CONTRACT.md) |
+| Card selection semantics | [Selection](phase-1/PHASE_1_CARD_SELECTION_V1_CONTRACT.md), [completion](phase-1/PHASE_1_CARD_SELECTION_COMPLETION_V1_CONTRACT.md) |
+| Generic event semantics | [G7 contract](phase-1/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md), [G7 results](phase-1/research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md); earlier versions are in the same directories |
+| Direct off-screen selection | [V10 contract](phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md), [successful result](phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md) |
+| Original release/source identities | [Bridge release history](../../bridge/Sts2AgentBridge/releases/history/README.md) |
+
+`phase-0/` and `phase-1/` retain original filenames; each `research/` directory
+contains the associated results, reviews and diagnostic records. Search these
+directories when the index does not cover the specific question. Archived
+versioned contracts remain useful references for their exact semantics, but their
+release-copying and review procedures do not govern the current unified bridge.
+
+## Original bytes and paths
+
+The documentation was reorganized on 2026-09-08 from commit
+`176882fe2016832d7dbafd355f76c42bb89cf1ae`. Archived document bodies and recorded
+hashes are preserved; relative Markdown links were adjusted for navigation.
+Those link edits can change a document's own byte hash. Use the original Git
+blob whenever a historical contract binds exact document bytes; never repin a
+historical hash to the relocated copy. For example:
+
+```bash
+git show 176882fe2016832d7dbafd355f76c42bb89cf1ae:docs/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md
+git show 176882fe2016832d7dbafd355f76c42bb89cf1ae:docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md
+```
+
+If a record names an earlier source commit, that exact revision remains the
+authority for its artifact. The retired `verify_live_campaign_inputs.py` binds
+the original R0a document paths and temporary campaign inputs; it belongs to
+that historical checkout, not today's operational workflow. The current bridge
+checker does not depend on these archived documentation paths.
+
+The redundant Astra handoff was removed. Superseded status and coverage chronology
+remain in Git at the commit above. The accepted headless JSON schema remains at
+its [existing consumer path](../research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json)
+because executable tests use it; it is a contract fixture, not a progress report.

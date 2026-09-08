@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 2026-09-08. This file owns priorities; [current status](docs/PHASE_1_CURRENT_STATUS.md)
+Updated 2026-09-08. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -10,11 +10,11 @@ process. Completed packets and old campaign instructions are historical referenc
    module paths now have live results. Neow's Fury's optional combat chooser
    required UI assistance; legacy screen observation after controlled event entry
    was unsupported. Clarify the generic final effect summary's narrower meaning.
-   Use the [live record](docs/research/PHASE_1_UNIFIED_BRIDGE_LIVE.md) to choose one
+   Use the [live record](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) to choose one
    next behavior; do not rerun every module for an isolated correction.
 2. **Use the generalized transformation path in useful play.** All eligible,
    allocated holders now use direct input, with identity/preview/completion
-   checks. The [generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
+   checks. The [generic handler plan](docs/GENERIC_EVENTS.md)
    describes its evidence and remaining native questions. Do not repeat the
    card16 experiment merely to obtain another geometric proof.
 3. **Expand the next interaction that blocks useful play.** Establish a real

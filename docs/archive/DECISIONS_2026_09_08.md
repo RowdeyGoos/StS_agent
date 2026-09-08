@@ -1854,7 +1854,7 @@ The separate diagnostic can identify the host stage of a new failure without
 reclassifying a discarded run or forming a live transition corpus. It cannot
 distinguish the C# causes behind the same waiting projection. D47's event-to-map
 limitation remains unchanged. The exact accepted scope is frozen in
-[`docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md`](../PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md);
+[`docs/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md`](phase-1/PHASE_1_ROOM_STAGE_DIAGNOSTIC_PLAN.md);
 implementation, fixture, review and any later live evidence are recorded in the
 actor-ready ledger with separate acceptance states.
 
@@ -1890,7 +1890,7 @@ potion belt can mark an offer claimed without adding a potion. The existing
 The component can be verified without changing the accepted live artifact.
 A future live successor still requires explicit routing/version/surface/package
 composition and campaign gates. The exact bounded contract is
-[PHASE_1_ITEM_V1_CONTRACT.md](../PHASE_1_ITEM_V1_CONTRACT.md); static findings
+[PHASE_1_ITEM_V1_CONTRACT.md](phase-1/PHASE_1_ITEM_V1_CONTRACT.md); static findings
 and subsequent executable evidence remain separately labeled.
 
 
@@ -1928,7 +1928,7 @@ The isolated item protocol and controller can be tested and reproduced without
 activating a live capability. Transport/frame-thread integration and pinned
 bootstrap/surface/package/campaign remain explicit dependencies. Parent event
 progression and shop controls are not implied by an item collection result.
-The exact contract is [the item wire plan](../PHASE_1_ITEM_V1_WIRE_PLAN.md).
+The exact contract is [the item wire plan](phase-1/PHASE_1_ITEM_V1_WIRE_PLAN.md).
 
 
 ## D59. Own Transport Attempts And Late Frame Results Explicitly
@@ -1965,7 +1965,7 @@ with queued and claimed work.
 The item controller now has a tested transport and frame-queue boundary without
 activating a live game capability. The next composition gate attaches it to the
 pinned game and secure operator configuration before a concrete campaign. The
-exact scope is [the transport plan](../PHASE_1_ITEM_V1_TRANSPORT_PLAN.md).
+exact scope is [the transport plan](phase-1/PHASE_1_ITEM_V1_TRANSPORT_PLAN.md).
 
 ## D60. Bind Operator Files Before First-Frame Item Activation
 
@@ -2001,7 +2001,7 @@ operator and lifecycle boundaries. Mapped-image identity, actual Godot frame
 behavior and live item collection remain unproven. Surface policy, packaging
 and item-aware operational tooling are the next gates; the user need not set
 up the game until those are complete. The exact contract is the
-[bootstrap plan](../PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md).
+[bootstrap plan](phase-1/PHASE_1_ITEM_V1_BOOTSTRAP_PLAN.md).
 
 ## D61. Release The Item Candidate With Separate Campaign Ownership
 
@@ -2029,7 +2029,7 @@ without changing those accepted semantics or the existing 0.8.0 artifact.
   applies; normal cleanup remains required and the repeated unmodded relaunch
   remains explicitly waived.
 
-The [release plan](../PHASE_1_ITEM_V1_RELEASE_PLAN.md) freezes this scope.
+The [release plan](phase-1/PHASE_1_ITEM_V1_RELEASE_PLAN.md) freezes this scope.
 Readiness does not establish live collection, event completion or shop support.
 
 ## D62. Integrate Bounded Shop And Event Flows Through One Functional Successor
@@ -2049,8 +2049,8 @@ that their effects or rewards were reconciled. Exact final Proceed and its
 action-bound map state establish exit. Shop purchase, inventory close and leave
 are separate correlated actions.
 
-The [functional contract](../PHASE_1_ROOM_FLOWS_V1_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md) distinguish
+The [functional contract](phase-1/PHASE_1_ROOM_FLOWS_V1_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_ROOM_FLOWS_V1_ACCEPTANCE.md) distinguish
 implemented/fixture-tested code, native compilation, packaging and live evidence.
 
 ## D63. Release Shop And Event Flows With One Protected Selection
@@ -2071,8 +2071,8 @@ item-child requests together within their existing deadlines.
 Freeze and independently verify the complete production source/metadata/IL
 policy, reproduce exact package bytes and run full synthetic installation and
 cleanup before live readiness. Preserve every predecessor tree. The
-[release contract](../PHASE_1_ROOM_RELEASE_V1_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) distinguish
+[release contract](phase-1/PHASE_1_ROOM_RELEASE_V1_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_ROOM_RELEASE_V1_ACCEPTANCE.md) distinguish
 release readiness from the separate live shop and event gates.
 
 ## D64. Diagnose The First Shop Rejection With A Passive Successor
@@ -2098,7 +2098,7 @@ outcome ends the runtime. Preserve network-stop, owner-disposal and detach order
 secure operator reads, exclusive campaign state and exact cleanup. No counts,
 content, keys, prices, identities or exception text are retained or returned.
 
-The [diagnostic contract](../PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md) owns the
+The [diagnostic contract](phase-1/PHASE_1_SHOP_DIAGNOSTIC_V1_CONTRACT.md) owns the
 selected boundary. Diagnostic completion is not shop-control acceptance, and a
 fresh diagnostic cannot reconstruct or reclassify the historical timeout.
 
@@ -2120,8 +2120,8 @@ The same loader identity/manifest and37-source production composition are retain
 as a hash-bound corrective package with a distinct artifact/campaign root. Only
 one source input is replaced. This changes no event/item/native/runtime capability
 or public wire contract. See the
-[repair contract](../PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md).
+[repair contract](phase-1/PHASE_1_SHOP_MAP_PERMISSION_V1_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_SHOP_MAP_PERMISSION_V1_ACCEPTANCE.md).
 
 ## Parent-bound card selection with explicit cardinality
 
@@ -2144,8 +2144,8 @@ Implement this as an isolated successor so accepted live shop/event/item paths
 and old 0.8.0 remain unchanged. Initial native policies are Cheese/Gorge add-two
 and ordinary Smith upgrade-one; shared fixtures for other operations do not
 claim those native policies are available. The
-[card-selection contract](../PHASE_1_CARD_SELECTION_V1_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md) own
+[card-selection contract](phase-1/PHASE_1_CARD_SELECTION_V1_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_CARD_SELECTION_V1_ACCEPTANCE.md) own
 reviewed interfaces, evidence and the later live release gate.
 
 
@@ -2166,9 +2166,9 @@ that every event is supported. The first integrated successor connects existing
 ordinary choices, item rewards and Cheese card selection; other native callers
 and custom/combat interactions remain explicit gaps.
 
-See the [coverage plan](../PHASE_1_EVENT_COVERAGE_PLAN.md),
-[functional contract](../PHASE_1_EVENT_ORCHESTRATOR_V1_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).
+See the [coverage plan](phase-1/PHASE_1_EVENT_COVERAGE_PLAN.md),
+[functional contract](phase-1/PHASE_1_EVENT_ORCHESTRATOR_V1_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_EVENT_ORCHESTRATOR_V1_ACCEPTANCE.md).
 
 
 ## 2026-09-06 — Bind event card domains before dispatch
@@ -2187,8 +2187,8 @@ before dispatch. Reuse the frozen card session for selection, preview and exact
 effect reconciliation; require the caller-specific post-effect completion witness
 before the event parent resumes. The first selected new callers upgrade one card
 in Aroma of Chaos and Sapphire Seed; shared multi-card fixtures do not enable
-other native callers. See the [event-card contract](../PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md)
-and [caller selection](../research/PHASE_1_EVENT_CARD_OPERATIONS_V1_CALLER_SELECTION.md).
+other native callers. See the [event-card contract](phase-1/PHASE_1_EVENT_CARD_OPERATIONS_V1_CONTRACT.md)
+and [caller selection](phase-1/research/PHASE_1_EVENT_CARD_OPERATIONS_V1_CALLER_SELECTION.md).
 
 
 ## 2026-09-06 — Prioritize generic event interaction discovery
@@ -2211,8 +2211,8 @@ selector. Design a reviewed successor that obtains authoritative facts at the
 appropriate boundary, accounts for parent effects before child creation, and
 preserves reference identity, receipts, bounds, exact effects and no uncertain
 retries. Availability of a suitable shared API or integration point is still an
-open design question. See the [generic handler plan](../PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
-and [current handoff](../PHASE_1_ASTRA_HANDOFF.md).
+open design question. See the [generic handler plan](../GENERIC_EVENTS.md)
+and [current handoff](../README.md).
 
 ## 2026-09-06 — Discover event upgrades at owned interaction creation
 
@@ -2232,8 +2232,8 @@ other operations need their own shared authoritative boundaries, not named rows.
 
 The fourteen predecessors remain frozen. This functional component does not
 broaden an existing release or install new instrumentation into the game. See the
-[new contract](../PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md).
+[new contract](phase-1/PHASE_1_GENERIC_EVENT_V1_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_GENERIC_EVENT_V1_ACCEPTANCE.md).
 
 ## 2026-09-07 — Carry native admissions through variable event selections
 
@@ -2249,7 +2249,7 @@ task results within admitted max+1, and stop before confirmation on incomplete o
 foreign preview membership. All fifteen predecessors remain unchanged. This adds
 functional family support; actual EventSynchronizer context preservation, release
 composition and live testing remain separate. See the
-[v2 contract](../PHASE_1_GENERIC_EVENT_V2_CONTRACT.md).
+[v2 contract](phase-1/PHASE_1_GENERIC_EVENT_V2_CONTRACT.md).
 
 ## 2026-09-07 — Discover reward offers and preserve native confirmation modes
 
@@ -2271,7 +2271,7 @@ does not certify every Add hook/animation or unrelated effects.
 Preserve all sixteen predecessors and their contracts. Generic upgrade/removal
 continue unchanged; event names supply test coverage, never admission semantics.
 Release composition and real EventSynchronizer context preservation remain separate
-live gates. See the [v3 contract](../PHASE_1_GENERIC_EVENT_V3_CONTRACT.md).
+live gates. See the [v3 contract](phase-1/PHASE_1_GENERIC_EVENT_V3_CONTRACT.md).
 
 ## 2026-09-07 — Compose generic discovery with the game-owned Harmony binding
 
@@ -2284,8 +2284,8 @@ Reference the pinned game-owned Harmony library instead of embedding a second
 copy. Verify actual loaded path, hash, assembly identity, MVID and load context
 before hook creation. Failed hook construction and unpatch exceptions retain
 owner-frame cleanup for retry; stop transport before removing native hooks.
-See the [release contract](../PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
+See the [release contract](phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V1_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V1_ACCEPTANCE.md).
 
 ## 2026-09-07 — Separate event action receipts from disposable option buttons
 
@@ -2301,7 +2301,7 @@ without changing core/wire semantics, adding named-event rules or accepting a
 scope-less callback. Retained target metadata and an original-source regression
 establish the defect; a later live result is still needed to establish that it
 was the only obstacle in the observed campaign. See the
-[lifecycle contract](../PHASE_1_GENERIC_EVENT_LIFECYCLE_V1_CONTRACT.md).
+[lifecycle contract](phase-1/PHASE_1_GENERIC_EVENT_LIFECYCLE_V1_CONTRACT.md).
 
 ## 2026-09-08 — Correlate deferred multi-upgrade previews and retain child evidence
 
@@ -2328,8 +2328,8 @@ retained through later parent failure. Wire and host validate the exact
 parent-before-child sampling order and distinct completed lineage, so neither
 accepted selections nor malformed/lost terminal responses create completion credit.
 
-The [v4 contract](../PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) owns these semantics;
-its [ledger](../research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) owns current
+The [v4 contract](phase-1/PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) owns these semantics;
+its [ledger](phase-1/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) owns current
 implementation and validation evidence. This decision does not claim live
 multi-upgrade or all-event coverage.
 
@@ -2355,8 +2355,8 @@ child only after the request, commands and parent callback complete. Synchronous
 insertion notifications run before AddInternal returns, so the observer validates
 the resulting deck after those callbacks too.
 
-The [G5 contract](../PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) distinguish
+The [G5 contract](phase-1/PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) distinguish
 accepted design from implementation and live evidence. This decision adds no
 new live campaign and preserves all frozen predecessor identities.
 
@@ -2383,8 +2383,8 @@ parent/child lineage, while old parent/card replay rules remain unchanged. Separ
 cumulative item/card counts retain verified completion after Proceed or later
 failure; last-action effect labels do not replace those counts.
 
-The [G6 contract](../PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) own precise
+The [G6 contract](phase-1/PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) own precise
 semantics and evidence. This decision introduces no live campaign.
 
 ## 2026-09-08 — Package frozen G6 semantics without another gameplay copy
@@ -2403,8 +2403,8 @@ separator-bearing generated method names explicitly, retaining strict token/body
 linkage. The release-only source reader accommodates bounded larger policy and
 derivation documents without changing any frozen predecessor's read limits.
 
-The [release contract](../PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
-[acceptance ledger](../research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md)
+The [release contract](phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
+[acceptance ledger](phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md)
 own exact acceptance and the fresh bounded live-test disposition.
 
 
@@ -2425,7 +2425,7 @@ transformation journal and native completion witnesses remain unchanged.
 Version this extension as generic_event_v7/card_transform_v2, preserving frozen
 predecessors and ordinary card/item engines. Handler legality does not decide the
 best number of cards to transform; a decision provider chooses among legal actions.
-The [contract](../PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and [acceptance ledger](../research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md)
+The [contract](phase-1/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and [acceptance ledger](phase-1/research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md)
 own exact scope and evidence. This decision does not authorize a live campaign.
 
 
@@ -2444,7 +2444,7 @@ Every G7 transform uses card_transform_v2, with typed nonterminal child completi
 preserved by transport. The release checker requires complete duplicate-free
 source derivation/reuse inventories, including every compiled dependency and the
 four frozen Python host/parser dependencies. The exact scope, identities and
-fresh live disposition belong to the [release ledger](../research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
+fresh live disposition belong to the [release ledger](phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
 
 
 ## 2026-09-08 — Test native off-screen selection directly
@@ -2462,5 +2462,5 @@ allocated off-screen transform holder. Cards without an allocated holder remain
 a distinct scrolling/rebinding problem. Keep native action/preview/completion
 validation, and scope capability tests to the concrete question being asked.
 The test does not establish all selector families or variable-count live behavior.
-Exact scope and result: [v10 contract](../PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md)
-and [ledger](../research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
+Exact scope and result: [v10 contract](phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md)
+and [ledger](phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).

@@ -6,7 +6,7 @@ tools. `components/` holds editable capability modules; `src/` retains the share
 public combat/reward/map/room adapters and codecs. The four former feature apps
 and the separate original production project are retired.
 
-Read [current status](../../docs/PHASE_1_CURRENT_STATUS.md) for evidence and
+Read [current status](../../docs/STATUS.md) for evidence and
 [live development](../../docs/LIVE_DEVELOPMENT.md) for the working process.
 
 ## Runtime and capabilities
@@ -142,7 +142,7 @@ operational command with `--mode quarantine`, then `--mode purge`, each with
 source/package bindings until its installed campaign is closed. Cleanup verifies
 exact ownership, state lineage and unchanged base files.
 
-The unified bridge has a [representative live module smoke](../../docs/research/PHASE_1_UNIFIED_BRIDGE_LIVE.md):
+The unified bridge has a [representative live module smoke](../../docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md):
 combat/rewards/map/shop, Smith/card selection, singleton potion collection and a
 generic transformation event. Combat needed one UI-assisted chooser; console/UI
 fixtures supplied later setups. The generic final effect summary and legacy
@@ -157,6 +157,9 @@ the four interim consolidated app releases. Do not restore them as dependencies.
 
 Original `contracts/live_probe_v0`, Python consumers and semantic fixtures keep
 their paths. `tests/core_reference/` is a test-only assembly without a mod entry
-point. The old `tools/run_gate.py` is retired; old operator/launch workflows are
-historical, while the actual core exchange/manifest helper is compatibility-tested
-against the unified listener. Use the entry points above for current work.
+point. The old `tools/run_gate.py` and R0a `verify_live_campaign_inputs.py` workflow
+are retired. The latter binds documentation and inputs in its original checkout;
+see the [documentation archive](../../docs/archive/README.md#original-bytes-and-paths).
+Old operator/launch workflows are historical, while the actual core exchange/
+manifest helper is compatibility-tested against the unified listener. Use the
+entry points above for current work.

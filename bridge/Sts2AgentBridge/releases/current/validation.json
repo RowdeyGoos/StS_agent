@@ -8,7 +8,7 @@
     "gate_target_game_executed": false,
     "generic_final_effects": "unverified",
     "legacy_screen_after_event": "unsupported_unknown",
-    "live_result": "../../../../../docs/research/PHASE_1_UNIFIED_BRIDGE_LIVE.md",
+    "live_result": "../../../../docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md",
     "native_dll_live_tested": true,
     "shop_client_correction_live_tested": true
   },

@@ -2,7 +2,7 @@
 
 This is a task-specific technical reference for the combat simulator and RL
 research path (`combat_v0`). [AGENTS.md](../AGENTS.md) owns the working process.
-The [current integration status](PHASE_1_CURRENT_STATUS.md) covers live events
+The [current integration status](STATUS.md) covers live events
 and the reduced headless actor; neither is full-game parity for this simulator.
 
 ## Gameplay and state
