@@ -10,29 +10,20 @@ the latter's authoritative progress summary is
 
 ## Active integration priority
 
-The generic release v5 Cheese/Gorge add-two test completed through Proceed/map,
-then passed full owned cleanup. This establishes one shared reward-family live
-path. The latest evidence is in the
-[v5 ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md).
+The accepted, frozen `generic_event_v6` adds generic singleton potion/relic rewards
+while preserving upgrade, removal, reward-card and transformation support. Its
+[contract](docs/PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
+[ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) record both full gates:
+3,199 native assertions, 1,718 item assertions, 879 retained transformation assertions, 147 wire cases, 110 host tests and 161 integrations (62 pure, 99 actual-native).
+All 26 successors remain frozen.
 
-The accepted, frozen `generic_event_v4` functional slice extends fixed-count upgrades to
-1..8 and adds cumulative verified-child evidence, preserving existing variable
-removal and reward modes. Follow its [contract](docs/PHASE_1_GENERIC_EVENT_V4_CONTRACT.md)
-and [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) for
-implementation and validation status. Native preview mappings come from scoped
-original/clone observations, never card names or apparent similarity.
-
-Continue by shared interaction family. The accepted
-[G5 transformation contract](docs/PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) now has an
-accepted, frozen transform core and native effect journal as successor25.
-The [G5 ledger](docs/research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) records both
-full passing gates:2345 native/879 transform assertions,118 wire cases,95 host
-tests and124 integrations,64 actual-native. It supports native remove-before-insert
-awaits, hook substitution and actual append order while preserving earlier engines.
-Next implement shared generic item-child discovery/admission before a new release
-or live campaign. Variable upgrade minima, optional/scrolling selectors and
-custom/combat interactions remain open. Event identities are representative and held-out tests, not a
-production allowlist. All campaigns remain closed; no new game setup is needed.
+Continue by shared interaction family: multiple-offer item sets, optional/scrolling
+selectors, variable upgrade/transform minima and custom/combat interactions remain
+open. Event identities are representative and held-out tests, never production
+allowlists. A reviewed release composition is required before a new live item test.
+All campaigns remain closed; no game setup is needed yet. The previous generic
+release v5 Cheese/Gorge test remains the latest generic reward-card live evidence;
+it does not provide live evidence for these new item or transformation handlers.
 
 ### Preserved predecessor milestones
 

@@ -25,16 +25,14 @@ and no installed overlay, credential or cleanup remains. The
 exact evidence, including the last-action effects reporting limitation.
 Historical campaign state identities must never be reused.
 
-Continued development now follows the independently accepted
-[generic v5 transformation contract](docs/PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
-[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md).
-The new transform engine and native adapter passed independent review and both
-complete offline gates, and are frozen as successor25. Preserve all25 frozen
-successors and original bridge. The preceding
-[v4 ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) owns accepted
-fixed-count upgrade1..8 and cumulative child evidence. No new live setup is needed.
-Expand by authoritative shared interaction family, using event identities as tests
-instead of adding event-name allowlists.
+Continued development follows the independently accepted
+[generic v6 item contract](docs/PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md).
+Singleton potion/relic children and retained card families passed independent
+review and both complete offline gates; G6 is frozen as successor26. Preserve
+all 26 frozen successors and the original bridge. No new live setup is needed.
+Expand by authoritative shared interaction family, using event identities as
+tests instead of adding event-name allowlists.
 
 ## Read This First
 

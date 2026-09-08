@@ -8,7 +8,33 @@ beyond the immediate stop but exhausted pending reads before child admission;
 full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
 the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current generic v5 functional acceptance — 2026-09-08
+## Current generic v6 functional acceptance — 2026-09-08
+
+`generic_event_v6` is accepted and frozen as successor26. It adds direct singleton
+potion/relic children through owned reward requests, post-generation screen
+creation and exact collection invocations. The actual frozen item engine verifies
+collection; the wrapper waits for collection, Offer and Chosen completion plus
+screen closure and freshly revalidates effects within one shared 256-read budget.
+Existing upgrade, removal, reward-card and transformation families are preserved.
+
+Separate cumulative item/card counts survive Proceed and later failure. Item replay
+keys include outer lineage, so identical successive relic offers remain valid.
+Stale invocation contexts stop a later child without erasing earlier completion.
+Event identities are test/ownership data, never production admission rows.
+
+Independent review and both full offline gates pass: 3,199 native and 1,718
+item assertions, 879 transformation assertions, 147 wire cases, 110 host tests
+and 161 integrations, including 99 actual-native cases. All 25 predecessors
+and the original bridge remain unchanged. Read the
+[G6 contract](PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) for exact evidence.
+
+This is functional support, with no new release or live item/transform claim.
+All live campaigns remain closed; no game setup is needed yet. Multiple-offer
+item sets, optional/scrolling selectors, variable upgrade/transform minima and
+custom/combat interactions remain open.
+
+## Preserved generic v5 functional acceptance — 2026-09-08
 
 `generic_event_v5` is accepted and frozen as successor25. Fixed-count transform1..8
 uses native original/final command witnesses and exact surviving-original-plus-
@@ -260,7 +286,7 @@ extending it.
 | Exact native event rows | Cheese/Gorge add-two-of-eight; Aroma/Maintain Control and Sapphire/Eat upgrade-one from domain2..64 |
 | New Aroma/Sapphire paths | Actual native/controller fixtures and reproducible compile-only builds; no installable release or live evidence |
 | Previous live paths | Ordinary Smith upgrade-one, Cheese add-two, Dense Vegetation continuation, one shop card purchase/close/map, and bounded potion/relic acquisition in predecessor releases |
-| Not implemented generically | Transform discovery, variable upgrade minima, item children, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
+| Not implemented generically | Multiple-offer item sets, variable upgrade/transform minima, optional/scrolling selectors, repeated custom choices, event combat and custom/minigame surfaces |
 
 Events may require multiple cards; ordinary rest-site Smith upgrades exactly one.
 Do not collapse these requirements. No event has complete all-branch evidence;

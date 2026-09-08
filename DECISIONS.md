@@ -2351,3 +2351,30 @@ The [G5 contract](docs/PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) distinguish
 accepted design from implementation and live evidence. This decision adds no
 new live campaign and preserves all frozen predecessor identities.
+
+## 2026-09-08 — Bind generic item rewards to owned invocations and delayed completion
+
+A visible reward screen alone does not prove that it belongs to the accepted event
+choice. G6 observes the shared RewardsSet.Offer invocation and its actual screen
+creation. Generation precedes that creation, so the authoritative singleton reward
+is bound at ShowScreen, while the set/player invocation is reserved earlier. The
+collection click is reserved once and its exact GetReward invocation supplies the
+completion task. Native release may change button eligibility after a valid click;
+post-dispatch ownership uses the retained receipt instead of rechecking clickability.
+
+Reuse the frozen item session, codec and parser alongside the frozen card engines.
+Local collection success is retained privately while exact Offer, GetReward and
+Chosen tasks finish and the owned nonterminal screen closes. Revalidate claims and
+potion inventory throughout one total 256-read budget. This prevents an early item
+result from prematurely resuming the event. Relic proof remains reward-local.
+
+An async operation may return a cached completed Task, so fresh owned invocations
+define item generations rather than global Task uniqueness. Likewise, identical
+item observations can legitimately hash alike: item replay keys include outer
+parent/child lineage, while old parent/card replay rules remain unchanged. Separate
+cumulative item/card counts retain verified completion after Proceed or later
+failure; last-action effect labels do not replace those counts.
+
+The [G6 contract](docs/PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) own precise
+semantics and evidence. This decision introduces no live campaign.

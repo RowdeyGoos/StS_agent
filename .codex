@@ -28,14 +28,15 @@ Most important code after that:
 - `game/simulation/encoding.py`
 - `game/cli/train.py`
 
-The live integration milestone remains `R0i`. Generic event v5 is the latest
-accepted functional component: fixed-count transform1..8 with native effect
-journals, preserving upgrade/removal/reward families and cumulative completion.
-Read its contract and acceptance ledger via the Astra handoff. All25 successor
-trees are frozen. Next is generic item-child discovery/admission; do not add
-event-name allowlists. All live campaigns are closed; no game setup is needed.
-An installable G5 release, live transformation, complete event coverage and a
-complete autonomous run remain unclaimed.
+The live integration milestone remains `R0i`. Generic event v6 is the latest
+accepted functional component: singleton potion/relic children plus retained
+upgrade/removal/reward/transform families and separate cumulative completion.
+Read its contract and acceptance ledger via the Astra handoff. All 26 successors
+are frozen. Remaining families include multiple-offer items, optional/scrolling
+selectors, variable minima and custom/combat interactions. All live campaigns
+are closed; no game setup is needed before a new reviewed release is ready.
+An installable G6 release, live item/transform support and a complete autonomous
+run remain unclaimed.
 
 Key invariants:
 
