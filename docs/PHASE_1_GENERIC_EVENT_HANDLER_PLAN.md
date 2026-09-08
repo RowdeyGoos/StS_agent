@@ -5,7 +5,22 @@ support. This is a planning document, not an implemented or frozen contract.
 It supersedes the caller-by-caller expansion priority; it does not change any
 accepted component, source identity, protocol or live release.
 
-## Current validation checkpoint — 2026-09-08
+## Current live validation checkpoint — 2026-09-08
+
+V5's one live test resolved the shared Cheese/Gorge add-two path through Proceed
+and map. Both parent actions and both child selections reconciled; one child
+episode, four total attempts and 13 reads, final diagnostic `map_ready`. Visible
+deck count increased from 15 to 17. The raw final `effects: unverified` reflects
+the frozen parent field resetting on Proceed after child verification; the
+[v5 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) records the exact result and source-based interpretation.
+This adds bounded generic reward-family live evidence for this branch only.
+Other branches, callers and interaction families remain open.
+
+Normal quit and complete owned cleanup passed, including four-file purge,
+429-file clean base, zero overlays and final stopped/closed checks. All generic
+campaigns are closed; no new game setup is needed. All 23 successors stay frozen.
+
+## Preserved v5 pre-live validation checkpoint — 2026-09-08
 
 V5's narrow reward hitbox compatibility repair is independently accepted, frozen
 as successor 23 and installed for one fresh bounded test. Both full release gates
@@ -38,8 +53,8 @@ requires exact request/selector sets and parent success before completion. Read
 its [contract](PHASE_1_GENERIC_EVENT_V3_CONTRACT.md) and
 [ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md). Extend remaining shared
 families, including transformation, multi-upgrade and item children; optional,
-scrolling and custom/combat interactions remain gaps. V5 release gates passed;
-generic child live validation remains open.
+scrolling and custom/combat interactions remain gaps. V5 now has bounded generic
+Cheese/Gorge add-two live evidence; other callers and families remain open.
 
 ## Removal and variable-count checkpoint — 2026-09-07
 

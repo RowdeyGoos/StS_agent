@@ -1,7 +1,8 @@
 # Generic event release v5 acceptance
 
-2026-09-08. Accepted, frozen and installed; first v5 live test pending. Game closed;
-v1/v2/v3/v4 campaigns closed. Authoritative 23cf baseline `526ad1b`.
+2026-09-08. Accepted and frozen; the single v5 live test resolved and full cleanup
+passed. Game closed; all v1/v2/v3/v4/v5 campaigns closed. Implementation/install
+commit `82211da`, authoritative worktree 23cf; original baseline `526ad1b`.
 
 ## Evidence and reviewed repair
 
@@ -91,7 +92,7 @@ without credential reads. Source inventory and production DLL match the candidat
 gate. The exact canonical three-file artifact set was then published under
 `/private/tmp/sts-generic-event-v5-release` using the frozen gate's production DLL.
 
-## Fresh installation and current state
+## Preserved fresh installation and historical state
 
 Both release gates and independent acceptance preceded installation. Fresh
 require-stopped passed with 3 process samples and 2 closed-port samples. Base
@@ -110,7 +111,7 @@ phase installed, with credential bytes unread. No v5 client, automatic game laun
 profile/save/Cloud work or foreign-mod change occurred. All older generic campaign
 states remain closed and must not be reused.
 
-## Next live step and remaining limits
+## Preserved pre-live instructions and limits
 
 The user may now manually launch Profile 3, single-player, fresh Room Full of
 Cheese initial choices, Gorge untouched, with no selector/console/map/popup.
@@ -129,3 +130,50 @@ and effects remain unverified until then. Quit normally and complete stopped/clo
 code-first quarantine, exact purge, clean-base and final stopped/closed checks.
 The installed state above is not the later quarantine state: use each freshly
 returned state hash for its next cleanup action. Repeated unmodded launch is waived.
+
+## One live result and completed cleanup — 2026-09-08
+
+After the user said ready, CUA verified Room Full of Cheese at initial choices,
+Gorge untouched, no selector/console/map/popup. The visible initial deck count
+was 15. Require-running passed with one exact-process sample. Profile 3 and
+single-player were user setup requirements; the event screenshot itself does
+not expose the profile identity. Exactly one v5 client invocation used the fresh
+installed state above. No retry or manual gameplay selection occurred.
+
+```json
+{"schema_version":1,"status":"resolved","parent_attempted":2,"parent_accepted":2,"parent_reconciled":2,"child_episodes":1,"child_attempted":2,"child_accepted":2,"child_reconciled":2,"total_attempted":4,"reads":13,"effects":"unverified","code":null,"last_response_diagnostic":"map_ready"}
+```
+
+CUA then showed the map and a visible deck count of 17. The parent actions
+(Gorge and Proceed) and both child selection actions were accepted and reconciled.
+This is the first successful bounded generic release Cheese/Gorge add-two and
+Proceed/map path. The source-bound child resolution requires exact selected
+original additions, baseline deck preservation and successful owned request
+completion; the live resolved result exercises those gates. No raw card identities,
+observations, credentials or concrete hitbox subtype names were persisted.
+
+The final `effects: unverified` field is retained verbatim. Its meaning is a
+known summary limitation, not a rewritten success flag: frozen
+`generic_event_v3/core/GenericEventV3Session.cs` sets `card_effect_verified`
+after delivering the resolved child, then `Apply` resets it to `unverified` for
+every later parent action, including Proceed. The terminal summary reports that
+last parent-action field. The child session still requires completed deck effects
+and effect witness before resolution (`card_selection_v1/core/CardSelectionV1Session.cs`,
+completion and ValidateAdd paths). The map screenshot and deck 15-to-17 change
+provide separate visible corroboration. This does not prove all effects for all
+branches or other generic interaction families. A future reviewed successor can
+clarify cumulative versus last-action effect reporting; no frozen source changed.
+
+Normal Cmd-Q returned App quit. Require-stopped passed (3 process/2 port samples).
+Code-first quarantine passed, yielding the historical quarantine state SHA256
+`5307b848aa1240465718487e6170cf6984073fec6b925b2ce0b3fdedbb024336`.
+Purge with that exact state passed, phase absent, four generated files removed.
+Final clean-base verification passed: 429 files, zero overlays, SHA256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Final require-stopped passed again (3 process/2 closed-port samples).
+
+`GENERIC-EVENT-V5-SMOKE-V1` is closed. No campaign, installed overlay, credential
+or cleanup remains. Both v5 state hashes above are historical and must not be
+reused. All 23 successor source trees and the original bridge remain frozen.
+Repeated unmodded launch remained waived. No profile/save/Cloud filesystem work,
+foreign-mod mutation or additional live test occurred. No new game setup is needed.

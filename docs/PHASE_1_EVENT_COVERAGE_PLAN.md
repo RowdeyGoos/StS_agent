@@ -6,7 +6,22 @@ preserved. The generic discovery increment below brings the total to seventeen
 frozen successor trees plus the original bridge.
 No campaign was left active; this plan update performed no new live check.
 
-## Current validation checkpoint — 2026-09-08
+## Current live validation checkpoint — 2026-09-08
+
+V5's one live test resolved the shared Cheese/Gorge add-two path through Proceed
+and map. Both parent actions and both child selections reconciled; one child
+episode, four total attempts and 13 reads, final diagnostic `map_ready`. Visible
+deck count increased from 15 to 17. The raw final `effects: unverified` reflects
+the frozen parent field resetting on Proceed after child verification; the
+[v5 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) records the exact result and source-based interpretation.
+This adds bounded generic reward-family live evidence for this branch only.
+Other branches, callers and interaction families remain open.
+
+Normal quit and complete owned cleanup passed, including four-file purge,
+429-file clean base, zero overlays and final stopped/closed checks. All generic
+campaigns are closed; no new game setup is needed. All 23 successors stay frozen.
+
+## Preserved v5 pre-live validation checkpoint — 2026-09-08
 
 V5's narrow reward hitbox compatibility repair is independently accepted, frozen
 as successor 23 and installed for one fresh bounded test. Both full release gates
@@ -35,8 +50,8 @@ The current `generic_event_v3` successor adds shared reward-card additions1..8,
 automatic-at-max or explicit-confirm, preserving upgrade-one and variable-count
 removal. Read the [v3 contract](PHASE_1_GENERIC_EVENT_V3_CONTRACT.md) and
 [acceptance ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) before
-extending it. Release v4 completed its bounded test and cleanup; v5 is installed for a fresh
-bounded test. Generic child live validation remains open.
+extending it. Release v5 completed a bounded generic Cheese/Gorge add-two test and cleanup.
+Other callers and generic child families still need live validation.
 
 The user wants shared handlers that support standard interactions without a
 new event-name connection for each event. `generic_event_v1` implements the first

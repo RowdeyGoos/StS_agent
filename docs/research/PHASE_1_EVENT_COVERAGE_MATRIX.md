@@ -7,12 +7,27 @@ deprecated types. Runtime encounter eligibility and the reachable event pool hav
 not been established by this metadata-only census. A concrete type is not a
 fully supported event. No type currently has evidence covering every branch.
 
-Two types have bounded live path evidence from predecessor releases: Dense
-Vegetation ordinary continuation and Room Full of Cheese/Gorge add-two. Their
-remaining branches stay open. The new shared orchestrator has separate functional
-fixtures; predecessor live results do not automatically prove its composition live.
+Two types have bounded live path evidence: Dense Vegetation ordinary continuation
+and Room Full of Cheese/Gorge add-two. Cheese/Gorge now also has successful
+generic release v5 composition evidence. Their remaining branches stay open;
+predecessor live results do not automatically prove other shared compositions.
 
-## Current validation checkpoint — 2026-09-08
+## Current live validation checkpoint — 2026-09-08
+
+V5's one live test resolved the shared Cheese/Gorge add-two path through Proceed
+and map. Both parent actions and both child selections reconciled; one child
+episode, four total attempts and 13 reads, final diagnostic `map_ready`. Visible
+deck count increased from 15 to 17. The raw final `effects: unverified` reflects
+the frozen parent field resetting on Proceed after child verification; the
+[v5 ledger](PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) records the exact result and source-based interpretation.
+This adds bounded generic reward-family live evidence for this branch only.
+Other branches, callers and interaction families remain open.
+
+Normal quit and complete owned cleanup passed, including four-file purge,
+429-file clean base, zero overlays and final stopped/closed checks. All generic
+campaigns are closed; no new game setup is needed. All 23 successors stay frozen.
+
+## Preserved v5 pre-live validation checkpoint — 2026-09-08
 
 V5's narrow reward hitbox compatibility repair is independently accepted, frozen
 as successor 23 and installed for one fresh bounded test. Both full release gates
@@ -81,7 +96,7 @@ catalog. Dedicated handlers remain appropriate for different custom surfaces.
 | --- | --- | --- |
 | Ordinary option pages and Proceed | Generic native control; one Dense Vegetation path live | Classify remaining branches and test longer live chains |
 | Item reward child | Frozen item handler; sequential composition in fixtures | Event-specific live composition and broader reward forms |
-| Add cards | Cheese/Gorge exact two-of-eight native/live; shared composition in fixtures | Other callers, domains and cardinalities |
+| Add cards | Cheese/Gorge exact two-of-eight native/live and generic release v5 live; other shared compositions in fixtures | Other callers, domains and cardinalities |
 | Upgrade cards | Generic upgrade-one shared discovery with native-to-Python inert fixtures; preserved Smith live and Aroma/Sapphire named fixtures | Validate real synchronizer context in a prepared release; multiple-card discovery and reconciliation |
 | Remove cards | Generic native discovery, variable1..8 preview confirmation and exact remaining-deck reconciliation in inert fixtures | Prepared release and live validation; optional/scrolling variants |
 | Transform cards | Generic pure card core and shared selector facts | Exact callers, replacement/preview rules and result witnesses |
@@ -139,7 +154,7 @@ runtime, but does not advance this evidence row to full coverage.
 | `RanwidTheElder` | None recorded per type | Unclassified |
 | `Reflections` | None recorded per type | Unclassified |
 | `RelicTrader` | None recorded per type | Unclassified |
-| `RoomFullOfCheese` | GORGE → add exactly two of eight → Proceed/map, live | Unclassified |
+| `RoomFullOfCheese` | GORGE → add exactly two of eight → Proceed/map, predecessor and generic release v5 live | Unclassified |
 | `RoundTeaParty` | None recorded per type | Unclassified |
 | `SapphireSeed` | EAT → upgrade one → Proceed/map, native fixtures; no new live evidence | PLANT enchantment unsupported; no all-branch claim |
 | `SelfHelpBook` | None recorded per type | Unclassified |

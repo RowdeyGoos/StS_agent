@@ -8,7 +8,31 @@ beyond the immediate stop but exhausted pending reads before child admission;
 full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
 the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current v5 repair installed; live test pending — 2026-09-08
+## Current v5 live completion and clean teardown — 2026-09-08
+
+The single `generic_event_release_v5` live test resolved Cheese/Gorge through
+two card selections and Proceed/map. Both parent actions and both child actions
+were attempted, accepted and reconciled; one child episode, four total attempts,
+13 reads, final diagnostic `map_ready`. CUA confirmed initial untouched choices
+and the final map; visible deck count increased from 15 to 17. This establishes
+one bounded generic reward-addition live path, not all event branches or families.
+
+The raw final summary retains `effects: unverified`: the frozen parent session
+resets that field on Proceed after previously verifying the child effect. Child
+resolution still requires the exact selected-original additions and completion
+witness. This is a reporting limitation; do not silently relabel the raw field.
+See the [v5 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) for
+exact result, source-based interpretation, visible corroboration and limits.
+
+Normal quit, stopped/closed checks, code-first quarantine, exact four-file purge,
+429-file clean base and final stopped/closed checks passed. All v1/v2/v3/v4/v5
+campaigns are closed. No installed overlay, credential or cleanup remains; all
+state identities below are historical and must not be reused. All 23 successors
+and the original bridge remain frozen. No new game setup is needed. Next work can
+clarify cumulative effect reporting and extend evidence to held-out shared callers
+and remaining interaction families through a reviewed successor.
+
+## Preserved v5 pre-live installation — 2026-09-08
 
 `generic_event_release_v5` is accepted and frozen as successor 23. It repairs
 v4's measured reward hitbox exact-type mismatch: the declared native clickable
