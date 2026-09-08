@@ -8,6 +8,19 @@ No campaign was left active; this plan update performed no new live check.
 
 ## Current validation checkpoint — 2026-09-08
 
+V5's narrow reward hitbox compatibility repair is independently accepted, frozen
+as successor 23 and installed for one fresh bounded test. Both full release gates
+passed, including a controlled subtype reproduction of v4's code-48 rejection,
+v5 native-to-client completion, all 17 socket scenarios and 100 verifier checks.
+Liveness and exact retained-reference checks remain; other candidate predicates
+and all 78 diagnostics are preserved. The actual live subtype name remains unknown.
+The game is stopped, the exact overlay is verified and no v5 client has run.
+See the [v5 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md) for current state and launch setup.
+Generic reward-addition live validation remains pending; no named event gains
+complete-branch or successful generic live coverage from offline tests.
+
+## Preserved v4 validation checkpoint — 2026-09-08
+
 V4's single live test opened the chooser but stopped with `candidate_hitbox_type`
 before child admission/action. This establishes a hitbox exact-type mismatch;
 its concrete subtype and downstream admission remain unverified. Complete owned
@@ -22,8 +35,8 @@ The current `generic_event_v3` successor adds shared reward-card additions1..8,
 automatic-at-max or explicit-confirm, preserving upgrade-one and variable-count
 removal. Read the [v3 contract](PHASE_1_GENERIC_EVENT_V3_CONTRACT.md) and
 [acceptance ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) before
-extending it. Release v4 completed its bounded test and cleanup; generic child live
-validation remains open.
+extending it. Release v4 completed its bounded test and cleanup; v5 is installed for a fresh
+bounded test. Generic child live validation remains open.
 
 The user wants shared handlers that support standard interactions without a
 new event-name connection for each event. `generic_event_v1` implements the first

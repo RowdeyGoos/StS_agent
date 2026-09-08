@@ -8,7 +8,41 @@ beyond the immediate stop but exhausted pending reads before child admission;
 full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
 the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current v4 live result and clean teardown — 2026-09-08
+## Current v5 repair installed; live test pending — 2026-09-08
+
+`generic_event_release_v5` is accepted and frozen as successor 23. It repairs
+v4's measured reward hitbox exact-type mismatch: the declared native clickable
+control may be a live subclass, while the exact captured reference, liveness,
+visibility, enabled state and all other ownership/selection checks remain.
+The actual live subtype name is unknown. Diagnostic code 48 remains reserved;
+all 78 wire mappings and the generic_event_v3 gameplay protocol are unchanged.
+
+Independent review, both complete offline release gates, all 17 native-to-client
+socket scenarios and all 100 verifier checks passed. A controlled subtype input
+reproduces v4 code 48 and completes v5's two-card addition and Proceed/map path.
+This is fixture evidence; generic reward-addition live success remains open.
+Read the [v5 contract](PHASE_1_GENERIC_EVENT_RELEASE_V5_CONTRACT.md) and
+[v5 acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md)
+first for exact identities, evidence and operational boundaries.
+
+The fresh `GENERIC-EVENT-V5-SMOKE-V1` campaign is installed and metadata-validated;
+its current installed state SHA256 is
+`27ad96a07cb94509727aee99bc8eed4f6abc7d6291eb527a83716e52e15706ab`.
+The exact two-file overlay and unchanged 429-file base passed verification.
+Post-install checks confirmed game stopped and port closed (3 process/2 port
+samples). Credential content has not been read, and no v5 client has run.
+All v1/v2/v3/v4 campaigns remain closed; their state identities are historical.
+
+Next user action: manually launch Profile 3, single-player, and set up a fresh
+Room Full of Cheese at its initial choices with Gorge untouched; no open
+selector, console, map or popup. After readiness, verify that UI and require-running,
+then invoke the v5 client exactly once with the installed state above. No retry,
+adoption or manual child selection after uncertainty. Capture the bounded summary;
+then normal quit, stopped/closed, code-first quarantine, exact purge and clean-base
+verification close the campaign. Do not launch automatically or access profile,
+save or Cloud files. Repeated unmodded launch remains waived.
+
+## Preserved v4 live result and clean teardown — 2026-09-08
 
 `generic_event_release_v4` is accepted/frozen as successor22 and its one live
 campaign is now closed. It opened the Cheese reward chooser, then stopped with

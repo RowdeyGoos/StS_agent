@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework><OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridgeGenericEventV5</AssemblyName>
+    <RootNamespace>Sts2AgentBridge.Successors.GenericEventReleaseV5</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Contracts.cs" Link="card_selection_v1/core/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/core/CardSelectionV1Session.cs" Link="card_selection_v1/core/CardSelectionV1Session.cs" />
+    <Compile Include="../../card_selection_v1/parents/CardSelectionParentV1Contracts.cs" Link="card_selection_v1/parents/CardSelectionParentV1Contracts.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="card_selection_v1/native/CardSelectionV1NativeRules.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireProtocol.cs" Link="card_selection_v1/wire/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../../card_selection_v1/wire/CardSelectionV1WireCodec.cs" Link="card_selection_v1/wire/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../generic_event_v3/core/GenericEventV3Contracts.cs" Link="generic_event_v3/core/GenericEventV3Contracts.cs" />
+    <Compile Include="../../generic_event_v3/core/GenericEventV3NativeContracts.cs" Link="generic_event_v3/core/GenericEventV3NativeContracts.cs" />
+    <Compile Include="../../generic_event_v3/core/GenericEventV3Session.cs" Link="generic_event_v3/core/GenericEventV3Session.cs" />
+    <Compile Include="../../generic_event_v3/wire/GenericEventV3WireService.cs" Link="generic_event_v3/wire/GenericEventV3WireService.cs" />
+    <Compile Include="../../generic_event_v3/wire/GenericEventV3WireCodec.cs" Link="generic_event_v3/wire/GenericEventV3WireCodec.cs" />
+    <Compile Include="../native/GenericEventV3RewardAdapter.cs" Link="generic_event_v3/native/GenericEventV3RewardAdapter.cs" />
+    <Compile Include="../native/GenericEventV3RemovalAdapter.cs" Link="generic_event_v3/native/GenericEventV3RemovalAdapter.cs" />
+    <Compile Include="../../generic_event_lifecycle_v1/native/GenericEventV3Binding.cs" Link="generic_event_v3/native/GenericEventV3Binding.cs" />
+    <Compile Include="../native/GenericEventV3CardAdapter.cs" Link="generic_event_v3/native/GenericEventV3CardAdapter.cs" />
+    <Compile Include="../../generic_event_v3/native/GenericEventV3Hooks.cs" Link="generic_event_v3/native/GenericEventV3Hooks.cs" />
+    <Compile Include="../native/PinnedGenericEventV3NativeAdapter.cs" Link="generic_event_v3/native/PinnedGenericEventV3NativeAdapter.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" Link="item_transport_v1/runtime/kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" Link="item_transport_v1/runtime/kernel/MonotonicTokenBucket.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/DarwinReadOnly.cs" Link="item_bootstrap_v1/operator/DarwinReadOnly.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" Link="item_bootstrap_v1/operator/ItemOperatorConfiguration.cs" />
+    <Compile Include="../../item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" Link="item_bootstrap_v1/operator/ItemPinnedFileIdentity.cs" />
+    <Compile Include="../../item_bootstrap_v1/native/PinnedItemBuildGuard.cs" Link="item_bootstrap_v1/native/PinnedItemBuildGuard.cs" />
+    <Compile Include="../runtime/GenericEventDiagnosticCode.cs" />
+    <Compile Include="../runtime/GenericEventDiagnosticCodec.cs" />
+    <Compile Include="../runtime/OwnedByteFrameQueue.cs" Link="generic_event_release_v5/runtime/OwnedByteFrameQueue.cs" />
+    <Compile Include="../runtime/GenericEventTransportConfiguration.cs" Link="generic_event_release_v5/runtime/GenericEventTransportConfiguration.cs" />
+    <Compile Include="../runtime/GenericEventTransportContracts.cs" Link="generic_event_release_v5/runtime/GenericEventTransportContracts.cs" />
+    <Compile Include="../runtime/GenericEventTransportProtocol.cs" Link="generic_event_release_v5/runtime/GenericEventTransportProtocol.cs" />
+    <Compile Include="../runtime/GenericEventTransportRuntime.cs" Link="generic_event_release_v5/runtime/GenericEventTransportRuntime.cs" />
+    <Compile Include="../operator/GenericEventOperatorFiles.cs" Link="generic_event_release_v5/operator/GenericEventOperatorFiles.cs" />
+    <Compile Include="../lifecycle/GenericEventBootstrapLifecycle.cs" Link="generic_event_release_v5/lifecycle/GenericEventBootstrapLifecycle.cs" />
+    <Compile Include="../native/ProductionGenericEventRuntimeFactory.cs" Link="generic_event_release_v5/native/ProductionGenericEventRuntimeFactory.cs" />
+    <Compile Include="../native/PinnedGenericEventHarmonyGuard.cs" Link="generic_event_release_v5/native/PinnedGenericEventHarmonyGuard.cs" />
+    <Compile Include="../native/GenericEventBootstrapHost.cs" Link="generic_event_release_v5/native/GenericEventBootstrapHost.cs" />
+    <Compile Include="../native/GenericEventBootstrapSupport.cs" Link="generic_event_release_v5/native/GenericEventBootstrapSupport.cs" />
+    <Compile Include="../native/GenericEventGodotFrameConnector.cs" Link="generic_event_release_v5/native/GenericEventGodotFrameConnector.cs" />
+    <Compile Include="../native/GenericEventModEntry.cs" Link="generic_event_release_v5/native/GenericEventModEntry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(STS2GameDataDir)/0Harmony.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="ValidatePinnedGameData" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))" Text="STS2GameDataDir must be absolute." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')" Text="Pinned sts2.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/0Harmony.dll')" Text="Pinned 0Harmony.dll is missing." />
+  </Target>
+</Project>
