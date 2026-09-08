@@ -1,8 +1,8 @@
 # Generic event release v4 acceptance
 
-Started2026-09-07; accepted/frozen/installed2026-09-08. No v4 live invocation
-yet. Game closed; v1/v2/v3 campaigns closed. The fresh v4 campaign is installed
-and awaits manual user setup; cleanup will be required after its one invocation.
+Started2026-09-07; accepted/frozen/installed/tested/cleaned2026-09-08.
+V4 is closed after one live invocation and complete owned cleanup. No campaign,
+overlay, credential or cleanup remains. All state hashes below are historical.
 
 ## Reviewed contract and investigation
 
@@ -103,7 +103,7 @@ accepting listener. Exact base passed429files,zero overlays,projection
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 
 Fresh install passed: campaign `GENERIC-EVENT-V4-SMOKE-V1`,phase `installed`,
-mods_parent_created=true. CURRENT installed-state SHA256:
+mods_parent_created=true. Historical installed-state SHA256 (campaign now closed; never reuse):
 `da007460de2cd4b6c6b41e53d4290903b3a4882c35b156e7b264e752912269a1`.
 The metadata-only installed client validator passed without reading credential
 bytes. Post-install require-stopped passed3process/2port samples; exact overlay
@@ -111,10 +111,55 @@ check passed429basefiles and2overlayfiles against the pinned package. Initial
 overlay-check invocation omitted required --package and stopped at argument
 validation; the corrected read-only check passed. No live controller invocation.
 
-Next: user manually starts the game with Profile3,single-player,fresh Room Full
+Preserved pre-test instruction: user manually starts the game with Profile3,single-player,fresh Room Full
 of Cheese initial options,Gorge untouched,no selector/console/map/popup. Confirm
 visible state and require-running before exactly one frozenv4 client invocation
 with the current state hash above. Retain only bounded result and finite reason.
 No retries/adoption/manual child selection after uncertain failure. Normal quit,
 stopped/closed,code-first quarantine,exact purge,clean base and stopped/closed
 close this fresh campaign. Repeated unmodded launch remains waived.
+
+## Single v4 live result and completed cleanup — 2026-09-08
+
+User said ready after the exact manual setup instructions. Supported native UI
+inspection showed fresh Room Full of Cheese initial options with Gorge untouched,
+no chooser/console/map/popup. Require-running passed one exact process sample.
+Exactly one frozen v4 client invocation used the then-current installed-state
+SHA256 above. During execution the visible eight-card chooser showed its choose2
+prompt with no cards selected. No manual child action or second invocation.
+
+Client exit4, exact bounded summary:
+
+```json
+{"schema_version":1,"status":"failed","parent_attempted":1,"parent_accepted":1,"parent_reconciled":0,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":1,"reads":258,"effects":"unverified","code":"unsupported_state","last_response_diagnostic":"candidate_hitbox_type"}
+```
+
+The last completed native capture failed the reward candidate hitbox's exact
+runtime-type check, before its Godot-liveness check. This is a concrete type
+contract mismatch, rather than only the prior preparation-stage category. The
+actual subtype name was not captured and must not be invented. Earlier binding
+and candidate predicates passed up to this type check; downstream checks remain
+unproven. This diagnoses the v4 run and does not by itself identify every earlier
+campaign's cause. It remains last-completed-capture history on the last fully
+transport-valid response; the final core budget stop need not perform a new
+Capture. No child episode/action or verified card-addition effect is claimed.
+
+Normal Cmd-Q quit the game; the UI API reported App quit. Wait-stopped passed
+3process/2port samples, no game process and no accepting listener. Exact owned
+code-first quarantine passed with historical state SHA256
+`2633ff2cf9a475ea7f977142026ea47b9055b592d6c8e3e752f44ac818a2aa60`.
+Purge using that identity passed,phase absent,4generated files removed. Final
+require-stopped passed3process/2port samples. Final clean-base verification passed
+429files,zerooverlays,projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No campaign,overlay,credential or pending cleanup remains. Repeated unmodded
+launch waived. No raw bridge responses, profile/save/Cloud content or subtype
+name was captured. V1/v2/v3/v4 are all closed; no campaign can be retried/adopted.
+
+Next bounded implementation: review a successor repair of the reward hitbox's
+exact-type assumption using the statically typed native hitbox contract and the
+older successful reward path as evidence. Retain liveness, reference binding,
+replacement rejection, visibility/enabled checks, ownership and all other exact
+type predicates. Reproduce the observed subtype rejection and prove the narrow
+repair with inert subtype/replacement and unchanged-path tests before new release
+gates or live setup. Do not edit any of the22 frozen successors. Keep game closed.

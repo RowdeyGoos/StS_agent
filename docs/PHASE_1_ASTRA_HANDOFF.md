@@ -8,24 +8,24 @@ beyond the immediate stop but exhausted pending reads before child admission;
 full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
 the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current candidate diagnostic release — 2026-09-08
+## Current v4 live result and clean teardown — 2026-09-08
 
-`generic_event_release_v4` is accepted and frozen as successor22. It appends41
-finite reward candidate failure codes while preserving all prior gameplay checks.
-All41 codes passed focused tests;14 comparisons against frozen v3 matched getter
-order/counts, candidate identities and original outcomes. Full candidate/frozen
-aggregates and independent source/binary review passed. The examined native holder
-refresh retains the original model; it does not justify weakening identity checks.
+`generic_event_release_v4` is accepted/frozen as successor22 and its one live
+campaign is now closed. It opened the Cheese reward chooser, then stopped with
+`candidate_hitbox_type`: the native clickable area failed the reward handler's
+exact-runtime-type requirement. The concrete subtype name was not captured.
+Parent attempts/accepts1,reconciled0,child episodes/actions0,reads258,effects
+unverified. The reason is the last completed capture's diagnostic; later checks
+and successful card additions remain unproven.
 
-A fresh v4 campaign is installed after stopped/closed and exact429-file base
-checks. Protected metadata and overlay verification passed. Next the user launches
-manually: Profile3, single-player, fresh Room Full of Cheese initial choices,
-Gorge untouched, no selector/console/map/popup. Verify visible state, then exactly
-one v4 client invocation with the current installed-state hash from the
-[v4 acceptance ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md).
-No live result is claimed yet. Preserve all22 frozen successors; no closed v1/v2/v3
-campaign or historical state identity may be reused. After the invocation, normal
-quit, stopped/closed, quarantine, exact purge and clean base remain required.
+Normal quit,stopped/closed,code-first quarantine,exact four-file purge and429-file
+clean-base verification passed. No campaign,overlay,credential or cleanup remains.
+All v1/v2/v3/v4 state identities are historical and must not be reused. The
+[v4 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md) owns exact
+result and cleanup evidence. Keep the game closed. Next review a successor repair
+of the hitbox exact-type assumption while preserving native contract compatibility,
+liveness,identity/replacement rejection,ownership and remaining predicates. All22
+successors remain frozen; no additional live setup is ready yet.
 
 ## Preserved v3 diagnostic result
 

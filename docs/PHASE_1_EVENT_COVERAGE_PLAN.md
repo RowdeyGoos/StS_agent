@@ -8,14 +8,13 @@ No campaign was left active; this plan update performed no new live check.
 
 ## Current validation checkpoint — 2026-09-08
 
-The generic handler's v3 live test opened the reward chooser but stopped at
-candidate preparation before any child action; cleanup passed. V4 adds41 finite
-candidate diagnostics, preserving admission and game-state reads. All41 leaf
-fixtures and14 comparisons with frozen v3 pass, as do the full release gates.
-This adds diagnostic evidence, not named-event or complete-branch coverage.
-The fresh installed v4 campaign awaits manual setup; the
-[v4 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md) owns exact
-identities, launch instructions and required post-test cleanup.
+V4's single live test opened the chooser but stopped with `candidate_hitbox_type`
+before child admission/action. This establishes a hitbox exact-type mismatch;
+its concrete subtype and downstream admission remain unverified. Complete owned
+cleanup passed; all generic campaigns are closed and the game should stay closed.
+The [v4 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V4_ACCEPTANCE.md) records
+exact evidence and the next narrow reviewed successor repair. No named event gains
+complete-branch or successful generic reward-addition live coverage from this test.
 
 ## Current direction
 
@@ -23,7 +22,7 @@ The current `generic_event_v3` successor adds shared reward-card additions1..8,
 automatic-at-max or explicit-confirm, preserving upgrade-one and variable-count
 removal. Read the [v3 contract](PHASE_1_GENERIC_EVENT_V3_CONTRACT.md) and
 [acceptance ledger](research/PHASE_1_GENERIC_EVENT_V3_ACCEPTANCE.md) before
-extending it. Release v4 is installed as recorded above; generic child live
+extending it. Release v4 completed its bounded test and cleanup; generic child live
 validation remains open.
 
 The user wants shared handlers that support standard interactions without a
