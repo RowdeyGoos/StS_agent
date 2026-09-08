@@ -10,20 +10,20 @@ the latter's authoritative progress summary is
 
 ## Active integration priority
 
-The accepted, frozen `generic_event_v6` adds generic singleton potion/relic rewards
-while preserving upgrade, removal, reward-card and transformation support. Its
-[contract](docs/PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
-[ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) record both full gates:
-3,199 native assertions, 1,718 item assertions, 879 retained transformation assertions, 147 wire cases, 110 host tests and 161 integrations (62 pure, 99 actual-native).
-All 26 successors remain frozen.
+The accepted, frozen `generic_event_release_v6` packages the complete G6 handler
+for live testing. Both full gates and independent reviews pass: all G6 regressions,
+843 runtime assertions,30 socket/client scenarios and128 verifier checks. All27
+successors are frozen. See the [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md)
+and [ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md).
 
-Continue by shared interaction family: multiple-offer item sets, optional/scrolling
-selectors, variable upgrade/transform minima and custom/combat interactions remain
-open. Event identities are representative and held-out tests, never production
-allowlists. A reviewed release composition is required before a new live item test.
-All campaigns remain closed; no game setup is needed yet. The previous generic
-release v5 Cheese/Gorge test remains the latest generic reward-card live evidence;
-it does not provide live evidence for these new item or transformation handlers.
+The fresh package is installed and awaiting manual Profile3/single-player/Room
+Full of Cheese setup, with Search untouched and HP above its displayed damage.
+One bounded Search attempt will test whether that event branch exposes the owned
+singleton reward family; compatibility is not assumed. Complete owned cleanup
+afterward. No live item/transform claim is made yet. Continue later by shared
+interaction family: multiple-offer items, optional/scrolling selectors, variable
+upgrade/transform minima and custom/combat interactions remain open. Event names
+remain representative test data rather than production admission rules.
 
 ### Preserved predecessor milestones
 

@@ -2378,3 +2378,23 @@ failure; last-action effect labels do not replace those counts.
 The [G6 contract](docs/PHASE_1_GENERIC_EVENT_V6_CONTRACT.md) and
 [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V6_ACCEPTANCE.md) own precise
 semantics and evidence. This decision introduces no live campaign.
+
+## 2026-09-08 — Package frozen G6 semantics without another gameplay copy
+
+The new live release source-links the full accepted G6 native/core/wire closure
+and its frozen child engines. Release changes stay in bootstrap, transport,
+verification and operations. Typed child completion is nonterminal until the
+parent reaches map handoff; cumulative item/card credit survives Proceed.
+The cached releasev5 diagnostic enum/codec remain source-linked so CLR identity
+and historical diagnostic meaning are preserved.
+
+The fixed Search-first test policy is separate from generic handler admission.
+It requires two initial legal choices and does not claim that the untested event
+branch uses a supported singleton reward request. Metadata verification encodes
+separator-bearing generated method names explicitly, retaining strict token/body
+linkage. The release-only source reader accommodates bounded larger policy and
+derivation documents without changing any frozen predecessor's read limits.
+
+The [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md)
+own exact acceptance and the fresh bounded live-test disposition.

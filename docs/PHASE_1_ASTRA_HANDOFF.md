@@ -8,7 +8,41 @@ beyond the immediate stop but exhausted pending reads before child admission;
 full owned cleanup passed. Diagnostic v3 then identified prepare_candidates as
 the last waiting stage in one live test and also completed full owned cleanup.
 
-## Current generic v6 functional acceptance — 2026-09-08
+## Current generic release v6 — ready for manual live setup, 2026-09-08
+
+`generic_event_release_v6` is accepted and frozen as successor27. It packages the
+entire frozen G6 gameplay closure unchanged: upgrade/removal/reward-card,
+fixed multi-upgrade, transformation and singleton direct potion/relic children.
+Both full gates pass, including the complete G6 regression suite,843 runtime
+assertions,30 socket/client scenarios and128 binary-verifier checks. The56-source
+production DLL is379392 bytes, SHA256
+`96723ba26f9f64a74cd0f1d8ae4217191a13410c5629a1feedc26a44f3890c2f`.
+All26 predecessors and the original bridge remain unchanged.
+
+The fresh GENERIC-EVENT-V6-SMOKE-V1 package is installed after stopped/closed and
+429-file clean-base checks. Post-install exact overlay and protected metadata
+checks pass without credential-content reads. Game remains stopped; no automatic
+launch or client invocation occurred. Current installed state SHA256:
+`def7e9ae464f16918b6eb28b936a43f95e80fd9aba51f843fb73342448d167d0`.
+
+The user may now manually launch Profile3,single-player,fresh Room Full of Cheese
+initial choices. Require HP above Search's currently displayed damage cost (base14)
+and an empty potion slot; close the console and all popups. Leave both choices
+untouched. The fixed client requires exactly two initial options and legal choose:1
+(Search), then uses first_legal. Search's ordinary singleton reward compatibility
+remains unproved; one fail-closed live attempt will test it. Do not adopt an open
+reward/selector. After user readiness, verify UI and require-running, then invoke
+this release's client exactly once with the fresh state hash above. Never reuse
+historical states or retry an uncertain dispatch. Normal quit and exact owned
+cleanup remain required after the campaign.
+
+Read the [release contract](PHASE_1_GENERIC_EVENT_RELEASE_V6_CONTRACT.md) and
+[ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V6_ACCEPTANCE.md) for exact frozen
+identities, source provenance, test results and campaign operation sequence.
+No live item/transform or complete-run claim is made. The functional acceptance
+snapshots below preserve the state before this installable release.
+
+## Preserved generic v6 functional acceptance — 2026-09-08
 
 `generic_event_v6` is accepted and frozen as successor26. It adds direct singleton
 potion/relic children through owned reward requests, post-generation screen
