@@ -1,6 +1,31 @@
 # Generic event handler: next development direction
 
-## Off-screen test v8 installed — awaiting manual readiness
+## Off-screen test v8 stopped before selection — campaign closed
+
+2026-09-08. The user reported ready. Current UI showed fresh Aroma of Chaos
+Let Go/Maintain Control choices, deck20 and no console/popups; require-running
+passed. Exactly one frozen v8 invocation accepted Let Go, opened the selector,
+and stopped with unsupported_state / prepare_geometry after258 reads. It sent
+one parent action and zero child actions; no transformation was verified.
+The screenshot showed five columns, two full rows and a partially clipped third
+row. Off-screen selection remains unproved; this stop does not establish a
+native viewport restriction.
+
+The diagnostic follows successful holder/candidate binding, but covers the
+remaining layout checks, clipping/parent-chain proof and final candidate
+admission. The result contains no subcheck or numeric geometry values, so the
+precise failure is unknown. The next development step is a separately reviewed
+successor with bounded, specific geometry diagnostics and offline coverage before
+another live setup; do not repeat this spent campaign or guess a new deck size.
+
+Normal quit, stopped/closed checks, code-first quarantine, exact four-file purge
+and final clean-base verification passed:429 unchanged files,0 overlays. No
+campaign cleanup remains. All30 successors and the original bridge remain frozen.
+See the [v8 ledger](research/PHASE_1_GENERIC_EVENT_RELEASE_V8_ACCEPTANCE.md)
+for the exact result and historical state hashes. Earlier readiness entries below
+are superseded; the user need not start the game now.
+
+## Historical checkpoint: off-screen test v8 installed
 
 2026-09-08. The requested test is prepared and installed as successor30 after
 independent review, candidate and source-frozen aggregate gates. All30 successors

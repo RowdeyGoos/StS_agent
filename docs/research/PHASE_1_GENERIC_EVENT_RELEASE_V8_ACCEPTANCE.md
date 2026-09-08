@@ -132,3 +132,54 @@ exact four-file purge and final clean-base/stopped checks remain owned cleanup
 for this installed campaign after its live invocation. Earlier state hashes and
 closed-campaign results are historical. All30 successors remain frozen; live
 success is still pending.
+
+## Single live invocation and completed cleanup
+
+2026-09-08. This closes the installed-readiness checkpoint above. User said ready;
+CUA screenshot showed initial Aroma of Chaos options, deck20, no console/popups.
+Profile identity was operator setup, not independently established by this event
+screenshot. Fresh require-running passed (one process sample). The frozen client
+was invoked exactly once with installed state
+`c5624818b227412d0290018eb05462e0b5a8780c75d3c9b9b54bae2fc5a25c05`.
+It exited4; sanitized result:
+
+```json
+{"schema_version":1,"status":"failed","parent_attempted":1,"parent_accepted":1,"parent_reconciled":0,"child_episodes":0,"child_attempted":0,"child_accepted":0,"child_reconciled":0,"total_attempted":1,"reads":258,"effects":"unverified","completed_card_children":0,"completed_item_children":0,"code":"unsupported_state","last_response_diagnostic":"prepare_geometry"}
+```
+
+Result file `/private/tmp/generic-release-v8-live-result.json`, SHA256
+`9b8780fc41cc828f7f8e6f280286109ba6136cdcfd12902a594aa5534b1b55eb`.
+
+Post-test screenshot showed the open transform selector, deck20, five columns,
+two fully visible rows and a clipped third row; no transformation preview.
+The accepted parent action opened the selector. Zero child episodes/actions
+means the probe did not reach card selection. Effects remain unverified as
+reported; no selected-original replacement or event continuation is claimed.
+No retry, manual card completion or additional bridge invocation occurred.
+
+Static localization: TryPrepareSurface assigns PrepareGeometry after holder
+snapshot and candidate binding succeed. That label covers GridGeometry.TryBind
+(scroll/layout validation plus ProbeGeometry binding), geometry.Mask and
+InitialCandidatesValid. The latter also rejects selected/invisible candidates
+or a mask with no enabled candidate. The result does not distinguish these
+predicates and contains no numeric runtime geometry. Passing earlier binding
+stages is not a retained full runtime inventory. Neither screenshot nor this
+result proves native off-screen selection impossible. Removing the fit inequality
+was insufficient for this test to reach dispatch; the exact remaining rejection
+must be diagnosed instead of inferred from deck count.
+
+Normal UI quit returned App quit; wait-stopped passed with three process samples
+and two closed-port samples. Code-first quarantine passed, returning fresh state
+`bcd301217b6df0c4025b5a89525b125f53a8134635c27b022dd58c7af67a86e4`.
+Purge used that hash and passed: phase absent, generated_files_removed4.
+Final require-stopped passed (three process/two port samples), and base verification
+passed:429 files,0 overlays, projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/Cloud access was used. Cleanup is complete; all campaign state
+hashes above are historical and must not be reused.
+
+Disposition: offline gates remain accepted; live off-screen selection remains
+unproved. All30 successors stay frozen. Before another live test, prepare a
+separate successor that reports bounded per-predicate geometry failures (without
+raw observations or credentials), with matching contract and offline validation.
+No new campaign is installed and no further user game setup is needed now.

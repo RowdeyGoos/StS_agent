@@ -93,3 +93,14 @@ verification and inspection of retained method bodies and signal wiring; no
 mocked test was presented as execution of the actual Godot runtime. Godot base
 input, native event matching, signal/deferred delivery and the full selection
 outcome remain a live verification gap. No game setup is needed now.
+
+## Later live probe: v8 stopped before dispatch
+
+2026-09-08. The separate frozen v8 probe removed complete-layout-fit admission
+and required a proven fully below-clip candidate. Its one20-card Aroma invocation
+opened the selector but stopped at prepare_geometry, with zero child actions.
+This diagnostic spans multiple remaining geometry and candidate predicates; no
+exact failing predicate was recorded. The live result therefore neither confirms
+nor refutes the conditional direct-input finding above. Cleanup passed and all30
+successors are now frozen. See the [v8 acceptance ledger](PHASE_1_GENERIC_EVENT_RELEASE_V8_ACCEPTANCE.md)
+for exact evidence. More specific diagnostics are needed before another live test.
