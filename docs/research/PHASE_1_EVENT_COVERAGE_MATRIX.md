@@ -1,5 +1,17 @@
 # Event coverage matrix
 
+## G7 release prepared; fixed Aroma live test pending — 2026-09-08
+
+Releasev7 is frozen, installed and awaiting manual readiness. All42 release socket
+scenarios pass, including fixed1 Aroma-shaped public-policy flow and variable
+min/intermediate/max preview. This adds composition evidence, not a named-event
+live result. The six inspected direct transform callers all construct fixed-count
+preferences; shared variable capability is not proof of a real variable caller.
+See [candidate evidence](PHASE_1_GENERIC_EVENT_V7_TEST_CANDIDATE_ACCEPTANCE.md) and
+[release state](PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md). The number of
+live-demonstrated event types remains3 until an actual new result is accepted.
+Older uninstalled/unpackaged statements below are preserved checkpoints.
+
 ## Generic v7 functional coverage — 2026-09-08
 
 G7 adds manual positive variable-count transformation without event registration.
@@ -194,7 +206,7 @@ runtime, but does not advance this evidence row to full coverage.
 | --- | --- | --- |
 | `AbyssalBaths` | None recorded per type | Unclassified |
 | `Amalgamator` | None recorded per type | Unclassified |
-| `AromaOfChaos` | MAINTAIN_CONTROL → upgrade one → Proceed/map, native fixtures; no new live evidence | LET_GO transformation unsupported; no all-branch claim |
+| `AromaOfChaos` | MaintainControl upgrade-one native fixtures; LetGo fixed1 caller and awaited effect/finish audited, release smoke installed | Live LetGo result pending; no all-branch claim |
 | `BattlewornDummy` | None recorded per type | Unclassified |
 | `BrainLeech` | None recorded per type | Unclassified |
 | `Bugslayer` | None recorded per type | Unclassified |
@@ -209,7 +221,7 @@ runtime, but does not advance this evidence row to full coverage.
 | `DollRoom` | None recorded per type | Unclassified |
 | `DoorsOfLightAndDark` | None recorded per type | Unclassified |
 | `DrowningBeacon` | None recorded per type | Unclassified |
-| `EndlessConveyor` | None recorded per type | Unclassified |
+| `EndlessConveyor` | JellyLiver fixed1 transform caller statically audited; no finish in selected body | No native caller/live acceptance; remaining branches unclassified |
 | `FakeMerchant` | None recorded per type | Unclassified |
 | `FieldOfManSizedHoles` | None recorded per type | Unclassified |
 | `GraveOfTheForgotten` | None recorded per type | Unclassified |
@@ -218,7 +230,7 @@ runtime, but does not advance this evidence row to full coverage.
 | `JungleMazeAdventure` | None recorded per type | Unclassified |
 | `LostWisp` | None recorded per type | Unclassified |
 | `LuminousChoir` | None recorded per type | Unclassified |
-| `MorphicGrove` | None recorded per type | Unclassified |
+| `MorphicGrove` | Group fixed2 transform caller statically audited; loses current gold first | No native caller/live acceptance; remaining branches unclassified |
 | `Neow` | None recorded per type | Unclassified |
 | `Nonupeipe` | None recorded per type | Unclassified |
 | `Orobas` | None recorded per type | Unclassified |
@@ -238,7 +250,7 @@ runtime, but does not advance this evidence row to full coverage.
 | `StoneOfAllTime` | None recorded per type | Unclassified |
 | `SunkenStatue` | None recorded per type | Unclassified |
 | `SunkenTreasury` | None recorded per type | Unclassified |
-| `Symbiote` | None recorded per type | Unclassified |
+| `Symbiote` | KillWithFire fixed equal-count transform request statically audited; dynamic count value unproved | No native caller/live acceptance; remaining branches unclassified |
 | `TabletOfTruth` | None recorded per type | Unclassified |
 | `Tanx` | None recorded per type | Unclassified |
 | `TeaMaster` | None recorded per type | Unclassified |
@@ -250,14 +262,14 @@ runtime, but does not advance this evidence row to full coverage.
 | `ThisOrThat` | None recorded per type | Unclassified |
 | `TinkerTime` | None recorded per type | Unclassified |
 | `TrashHeap` | None recorded per type | Unclassified |
-| `Trial` | None recorded per type | Unclassified |
+| `Trial` | NondescriptInnocent fixed2 transform caller statically audited; adds curse first | No native caller/live acceptance; remaining branches unclassified |
 | `UnrestSite` | None recorded per type | Unclassified |
 | `Vakuu` | None recorded per type | Unclassified |
 | `WarHistorianRepy` | None recorded per type | Unclassified |
 | `WaterloggedScriptorium` | None recorded per type | Unclassified |
 | `WelcomeToWongos` | None recorded per type | Unclassified |
 | `Wellspring` | None recorded per type | Unclassified |
-| `WhisperingHollow` | None recorded per type | Unclassified |
+| `WhisperingHollow` | Hug fixed1 transform caller statically audited; dynamic HP loss afterward | No native caller/live acceptance; remaining branches unclassified |
 | `WoodCarvings` | None recorded per type | Unclassified |
 | `ZenWeaver` | None recorded per type | Unclassified |
 

@@ -1,5 +1,36 @@
 # ROADMAP.md
 
+## Generic release v7 installed — Aroma test awaiting readiness
+
+2026-09-08. Successor29 source-links frozen G7 with card_transform_v2 and the
+frozen card/item engines. Candidate acceptance, focused provenance correction,
+final source-frozen gate and independent review pass: complete G7 regressions,
+855 runtime assertions,42 socket scenarios,128 verifier checks and4 provenance
+mutations. All6 production builds match; all28 predecessors remain unchanged.
+Read the [release contract](docs/PHASE_1_GENERIC_EVENT_RELEASE_V7_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
+
+Fresh stopped/closed and429-file clean-base checks passed. Exact version7 package
+was published and installed; overlay verification finds the2 expected files and
+unchanged base. Protected metadata verification passed without reading credentials.
+Current installed campaign GENERIC-EVENT-V7-SMOKE-V1,state SHA256
+3e68b7e73fa1230b06a1801138c7e7a53c32884822082ac9829c63274608eb01.
+This is the current instance, not a historical reusable state. No client invocation
+or G7 live result exists yet. Operator/overlay cleanup remains due after this test.
+
+Next manual setup: dedicated Profile3,single-player,fresh Aroma of Chaos initial
+2 choices untouched,ordinary small starter deck with at least2 visible eligible
+transformable cards,no console/selector/popup. Fixed policy chooses upper Let Go
+(index0) once,then first_legal. After user readiness verify current UI and running
+identity,then invoke the frozen client exactly once. Never retry uncertain actions.
+Normal quit and owned quarantine/purge/clean-base checks close the campaign.
+
+This is a fixed one-card transformation smoke. The [six-caller inspection](docs/research/PHASE_1_GENERIC_EVENT_V7_TEST_CANDIDATE_ACCEPTANCE.md)
+found only fixed-count requests; it does not prove no variable caller exists
+elsewhere. Variable-count support remains offline evidence, including actual-native
+socket tests that preview below maximum. No variable-transform live or all-event
+claim is made. Earlier closed/unpackaged statements below are historical.
+
 ## Generic v7 accepted — variable-count transformation
 
 2026-09-08. Successor28 adds positive variable-count transformations: native

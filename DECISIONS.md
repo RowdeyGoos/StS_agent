@@ -2419,3 +2419,21 @@ predecessors and ordinary card/item engines. Handler legality does not decide th
 best number of cards to transform; a decision provider chooses among legal actions.
 The [contract](docs/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and [acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md)
 own exact scope and evidence. This decision does not authorize a live campaign.
+
+
+## 2026-09-08 — Separate selector capability from a suitable live event
+
+G7 can handle positive variable-count transformations, but a live feature test
+requires a real caller that supplies that preference. A bounded inspection of
+six known direct transform callbacks found only fixed counts. Do not infer a
+variable test fixture from generic selector support or from event reward text.
+Use Aroma/Let Go as a separately labeled fixed1 transformation release smoke;
+variable min/intermediate/max remain offline native/socket evidence until a real
+compatible caller is established. This does not narrow generic admission by name.
+
+Releasev7 source-links the entire frozen G7 closure and V5 diagnostic types.
+Every G7 transform uses card_transform_v2, with typed nonterminal child completion
+preserved by transport. The release checker requires complete duplicate-free
+source derivation/reuse inventories, including every compiled dependency and the
+four frozen Python host/parser dependencies. The exact scope, identities and
+fresh live disposition belong to the [release ledger](docs/research/PHASE_1_GENERIC_EVENT_RELEASE_V7_ACCEPTANCE.md).
