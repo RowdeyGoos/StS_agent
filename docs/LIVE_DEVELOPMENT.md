@@ -2,7 +2,7 @@
 
 [AGENTS.md](../AGENTS.md) owns the development process. Read
 [current status](PHASE_1_CURRENT_STATUS.md) for the relevant implementation and
-evidence, then the selected component's README and semantic contract. Historical
+evidence, then the [bridge guide](../bridge/Sts2AgentBridge/README.md) and relevant semantic contract. Historical
 packet procedures are not universal requirements for new work.
 
 ## First answer the behavior question
@@ -47,10 +47,12 @@ before a later failure. Keep raw responses, credentials and private data out of 
 A historical cleanup result is a dated observation, not a current process check.
 This guide does not authorize a live campaign outside the user's requested work.
 
-## Develop once; release a snapshot
+## Develop once; release one package
 
-Use the editable `bridge/Sts2AgentBridge/components/` source and `apps/` release
-compositions. The [bridge guide](../bridge/Sts2AgentBridge/README.md) owns current
+Use the editable `bridge/Sts2AgentBridge/components/` source and the single
+`apps/bridge/` production composition. Features share the listener, authenticated
+configuration, client and installation/cleanup tools. Extend a capability module;
+do not fork another deployment workflow. The [bridge guide](../bridge/Sts2AgentBridge/README.md) owns current
 commands. Development suites test current code without requiring a frozen release
 inventory. One release gate binds the stable source/test/toolchain inputs and
 verified binary; its manifest and separately retained hash select the live client.

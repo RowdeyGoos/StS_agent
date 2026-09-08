@@ -29,12 +29,13 @@ internal static class Program
             Check(CleanupFailures);
             Check(OutputShapeAndImmutability);
             Check(CanonicalDigest);
-            Console.WriteLine("{\"schema_version\":1,\"status\":\"passed\",\"suite\":\"room_flows_v1_shop\",\"check_count\":" + _checks + "}");
+            Check(MapTravelPermissionRepair);
+            Console.WriteLine("{\"schema_version\":1,\"status\":\"passed\",\"suite\":\"shop_map_permission_v1_core\",\"check_count\":" + _checks + "}");
             return 0;
         }
         catch
         {
-            Console.WriteLine("{\"schema_version\":1,\"status\":\"failed\",\"suite\":\"room_flows_v1_shop\",\"check_count\":0}");
+            Console.WriteLine("{\"schema_version\":1,\"status\":\"failed\",\"suite\":\"shop_map_permission_v1_core\",\"check_count\":0}");
             return 1;
         }
     }
@@ -380,6 +381,133 @@ internal static class Program
         NotEqual(first, Obs(c.Read()).DecisionId);
     }
 
+    private static void MapTravelPermissionRepair()
+    {
+        var full = new Fixture { MapTravelEnabled = true };
+        using (var session = new ShopV1Session(Nonce, full.Adapter))
+        {
+            ShopV1Observation ready = Obs(session.Read());
+            Equal("ready", ready.Status);
+            Receipt(session.Apply(ready.DecisionId, "buy:card:7"));
+            Equal(1, full.Dispatch.InvokeCount);
+            full.CompletePurchase();
+            ShopV1Observation purchased = Obs(session.Read());
+            Equal("ready", purchased.Status);
+            Equal("purchase_card", purchased.PriorResults[0].Kind);
+            Receipt(session.Apply(purchased.DecisionId, "inventory:close"));
+            Equal(1, full.BackCount);
+            ShopV1Observation leave = Obs(session.Read());
+            Equal("room_ready_to_leave", leave.Phase);
+            Equal(true, full.MapTravelEnabled);
+            Receipt(session.Apply(leave.DecisionId, "leave"));
+            Equal(1, full.ProceedCount);
+            Equal("complete", Obs(session.Read()).Status);
+        }
+
+        foreach (bool mapOpen in new[] { true, false })
+        {
+            var invalid = new Fixture { MapTravelEnabled = true };
+            if (mapOpen) invalid.MapOpen = true;
+            else invalid.MapTraveling = true;
+            using var session = new ShopV1Session(Nonce, invalid.Adapter);
+            Equal("unsupported", Obs(session.Read()).Status);
+            Equal(0, invalid.Dispatch.InvokeCount);
+            Equal(0, invalid.BackCount);
+        }
+
+        foreach (bool mapOpen in new[] { true, false })
+        {
+            var stale = new Fixture { MapTravelEnabled = true };
+            using var session = new ShopV1Session(Nonce, stale.Adapter);
+            ShopV1Observation ready = Obs(session.Read());
+            if (mapOpen) stale.MapOpen = true;
+            else stale.MapTraveling = true;
+            Equal("unsupported", Failure(session.Apply(
+                ready.DecisionId, "inventory:close")).Outcome);
+            Equal(0, stale.BackCount);
+            Equal(0, stale.Dispatch.InvokeCount);
+        }
+
+        foreach (bool mapOpen in new[] { true, false })
+        {
+            var changed = new Fixture { MapTravelEnabled = true };
+            using var session = new ShopV1Session(Nonce, changed.Adapter);
+            ShopV1Observation ready = Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId, "buy:card:7"));
+            if (mapOpen) changed.MapOpen = true;
+            else changed.MapTraveling = true;
+            Equal("unsupported", Obs(session.Read()).Status);
+            Equal(1, changed.Dispatch.InvokeCount);
+        }
+
+        foreach (bool mapOpen in new[] { true, false })
+        {
+            var changed = new Fixture { MapTravelEnabled = true };
+            using var session = new ShopV1Session(Nonce, changed.Adapter);
+            ShopV1Observation ready = Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId, "inventory:close"));
+            if (mapOpen) changed.MapOpen = true;
+            else changed.MapTraveling = true;
+            Equal("unsupported", Obs(session.Read()).Status);
+            Equal(1, changed.BackCount);
+        }
+
+        var intercepted = new Fixture
+        {
+            MapTravelEnabled = true,
+            ProceedOpensMap = false,
+        };
+        using (var session = new ShopV1Session(Nonce, intercepted.Adapter))
+        {
+            ShopV1Observation ready = Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId, "inventory:close"));
+            ShopV1Observation leave = Obs(session.Read());
+            Receipt(session.Apply(leave.DecisionId, "leave"));
+            Equal(1, intercepted.ProceedCount);
+            Equal("unsupported", Obs(session.Read()).Status);
+            int reads = intercepted.Adapter.PendingCalls;
+            intercepted.MapOpen = true;
+            Equal("unsupported", Obs(session.Read()).Status);
+            Equal(reads, intercepted.Adapter.PendingCalls);
+            Equal("unsupported", Failure(session.Apply(leave.DecisionId, "leave")).Outcome);
+            Equal(1, intercepted.ProceedCount);
+        }
+
+        var disabledWait = new Fixture
+        {
+            MapTravelEnabled = true,
+            ProceedOpensMap = false,
+        };
+        using (var session = new ShopV1Session(Nonce, disabledWait.Adapter))
+        {
+            ShopV1Observation ready = Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId, "inventory:close"));
+            ShopV1Observation leave = Obs(session.Read());
+            disabledWait.MapTravelEnabled = false;
+            Receipt(session.Apply(leave.DecisionId, "leave"));
+            Equal("waiting", Obs(session.Read()).Status);
+        }
+
+        foreach (bool traveling in new[] { false, true })
+        {
+            var invalid = new Fixture
+            {
+                MapTravelEnabled = true,
+                ProceedOpensMap = false,
+            };
+            using var session = new ShopV1Session(Nonce, invalid.Adapter);
+            ShopV1Observation ready = Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId, "inventory:close"));
+            ShopV1Observation leave = Obs(session.Read());
+            Receipt(session.Apply(leave.DecisionId, "leave"));
+            invalid.MapOpen = true;
+            invalid.MapTravelEnabled = traveling;
+            invalid.MapTraveling = traveling;
+            Equal("unsupported", Obs(session.Read()).Status);
+            Equal(1, invalid.ProceedCount);
+        }
+    }
+
     private static ShopV1SurfaceCapture SurfaceWithOffers(IReadOnlyList<ShopV1NativeOffer> offers) =>
         new Fixture().Surface(offers: offers);
 
@@ -477,6 +605,7 @@ internal static class Program
         internal bool MapTravelEnabled;
         internal bool MapTraveling;
         internal bool RoomVisible = true;
+        internal bool ProceedOpensMap = true;
         internal bool Stocked = true;
         internal object? TargetModel;
         internal int BackCount;
@@ -510,8 +639,12 @@ internal static class Program
                 new ShopV1NativeControl(Merchant, true, true, null),
                 new ShopV1NativeControl(Proceed, true, true, () =>
                 {
-                    ProceedCount++; MapOpen = true; MapTravelEnabled = true;
-                    RoomVisible = false;
+                    ProceedCount++;
+                    if (ProceedOpensMap)
+                    {
+                        MapOpen = true; MapTravelEnabled = true;
+                        RoomVisible = false;
+                    }
                 }));
         }
 

@@ -1,105 +1,154 @@
 # Live bridge
 
-One maintained source tree replaces the 32 successor snapshots. Shared code lives
-in `components/`; `apps/` contains the latest distinct release compositions,
-clients and operational tools. Historical source is in Git, with original source
-manifests and release policies in [releases/history](releases/history/README.md).
+One production mod, **Sts2AgentBridgeUnified**, contains all supported live
+capabilities. `apps/bridge/` owns its runtime, client, package and operational
+tools. `components/` holds editable capability modules; `src/` retains the shared
+public combat/reward/map/room adapters and codecs. The four former feature apps
+and the separate original production project are retired.
 
-Read [current status](../../docs/PHASE_1_CURRENT_STATUS.md) for demonstrated
-capabilities and [live development](../../docs/LIVE_DEVELOPMENT.md) for workflow.
+Read [current status](../../docs/PHASE_1_CURRENT_STATUS.md) for evidence and
+[live development](../../docs/LIVE_DEVELOPMENT.md) for the working process.
 
-## Maintained targets
+## Runtime and capabilities
 
-| Target | Implementation | Scope |
-| --- | --- | --- |
-| `events` | [components/events](components/events), [apps/events](apps/events/README.md) | General G7 interactions and latest V10 direct-card16 experiment |
-| `rooms` | [components/rooms](components/rooms), [apps/rooms](apps/rooms/README.md) | Shop/map permission repair and bounded standard room flows |
-| `cards` | [components/cards](components/cards), [apps/cards](apps/cards/README.md) | Standalone card selection with accepted completion repair |
-| `items` | [components/items](components/items), [apps/items](apps/items/README.md) | Standalone potion/relic collection |
+| Module | Existing interface |
+| --- | --- |
+| Core combat, rewards, map, rest/basic rooms | `/probe/v0/health`, `/probe/v0/manifest`, `/probe/v0/public/*` |
+| Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
+| Shop and standard room flows | `/probe/room-flows-v1/public/decision` and `action` |
+| Standalone card selection | `/card-selection-v1/parent`, `parent/action`, `child`, `child/action` |
+| Generic events and their children | `/probe/generic-event-v7/public/decision` and `action` |
 
-`components/item_wire`, `item_transport` and `item_bootstrap` provide shared
-producer, transport, operator-file and bootstrap code. Keep one maintained copy
-of a component. Existing C# namespaces, assembly names and wire versions remain
-stable; directory consolidation does not create new protocol semantics.
+All routes use one authenticated loopback listener at `127.0.0.1:43117` and one
+owner-frame queue. Native feature sessions are created only when their route is
+requested. The current session owns its parent and child operations until the
+native result reconciles and disposal succeeds; another capability receives
+`capability_busy`. The standard event parent retains its item-child route.
+Core actions likewise fence unrelated operations until their decision reconciles.
 
-The general G7 transformation adapter and V10 experiment deliberately have
-different behavior. The experiment's project explicitly selects its card16-only
-adapter in `apps/events/gameplay`; it does not replace general G7 with a restricted
-test policy. Generalizing direct input remains the next behavior change.
+Clean completion releases the module and keeps the host available for the next
+capability. An uncertain mutation, failed response delivery or failed cleanup
+stops the host. There are no automatic mutation retries. Process-wide limits are
+16,384 reads, 512 action reservations and 64 feature sessions, with the existing
+stricter limits inside each module.
+
+The existing route/body versions remain meaningful protocol contracts. The
+manifest reports bridge version `1.0.0` and Harmony support. Internal historical
+namespace names do not denote separately installed mods.
+
+Transformation now uses direct native input for every eligible allocated holder.
+The test-only card16 restriction is removed; exact holder/model ownership,
+native legality, preview membership, deferred input and effect checks remain.
+This does not support cards without allocated holders or certify every selector.
 
 ## Development checks
 
-Use Python 3.10+; the repository `.venv` is suitable. From the repository root:
+Use Python 3.10+ and the existing environment. From the repository root:
 
 ```bash
-.venv/bin/python -B bridge/Sts2AgentBridge/check.py --target events --suite sources
-.venv/bin/python -B bridge/Sts2AgentBridge/check.py --target events --suite python
-.venv/bin/python -B bridge/Sts2AgentBridge/check.py --target events --suite test \
-  --dotnet /ABS/dotnet \
-  --game-data-dir /ABS/data_sts2_macos_arm64
+.venv/bin/python -B bridge/Sts2AgentBridge/check.py --suite sources
+.venv/bin/python -B bridge/Sts2AgentBridge/check.py --component events --suite python
+.venv/bin/python -B bridge/Sts2AgentBridge/check.py --component events --suite test \
+  --dotnet /ABS/dotnet --game-data-dir /ABS/data_sts2_macos_arm64
 ```
 
-Choose `items`, `rooms`, `cards`, or `events`; use `all` only when the change
-affects all compositions. `sources` checks explicit current project dependencies.
-`python` runs the selected host, transport, client and operational fixtures.
-`test` also compiles and exercises C# behavior and actual producer/client
-integration. Development suites do not require freezing a source inventory or
-updating a release policy before testing a change.
+Select `host`, `core`, `items`, `rooms`, `cards` or `events` for focused behavior
+checks. `all` is the default. `sources` checks the complete explicit source graph;
+`python` runs the affected Python fixtures; `test` adds affected C# behavior and
+producer/client integration. `build` compiles only the one production DLL.
+A narrow correction can run its individual existing fixture directly.
 
-The checker uses .NET SDK **9.0.303**, no NuGet feeds, and pinned read-only
-`sts2.dll`, `GodotSharp.dll` and `0Harmony.dll` references. Build inputs and outputs
-are isolated under a new `/private/tmp/sts-bridge-*` directory. Native fixtures
-use inert game stubs; the actual game assemblies are never executed. Socket
-fixtures use temporary loopback endpoints and may require sandbox permission.
+The checker pins .NET SDK **9.0.303** and read-only `sts2.dll`, `GodotSharp.dll`
+and `0Harmony.dll` identities. It uses no NuGet feeds and isolates outputs under
+`/private/tmp/sts-bridge-*`. Native fixtures use inert game objects; target-game
+assemblies are not executed. Test loopback listeners may need sandbox permission.
 
-For a narrow correction, run the affected existing test script or project
-directly. Do not rerun the aggregate because documentation changed.
+New features extend the shared modules and relevant tests. They do not create
+another launcher, listener, operator tree, package, source copy or release gate.
+Do not run gameplay checks for documentation-only changes.
 
-## Release and live client
+## One release
 
-Use `--suite build` for only the selected production build. Use `--suite release`
-once the change is stable; it adds the maintained source/policy closure, binary
-surface and mutation checks, canonical package checks and clean-install fixtures.
-The accepted surface and package bindings live beside each app. Update these
-current bindings deliberately for a new binary; do not create another successor
-directory or repin historical evidence.
-
-A successful release gate writes `<target>-release.json` and its SHA-256 to the
-disposable output directory. The manifest binds current transitive sources,
-tests, toolchain/references, test results and binary identity. Keep its printed
-hash separately. Failed or development-only gates do not publish a live-usable
-release manifest.
-
-The four migrated targets' [current release records](releases/current/README.md)
-and validation summary are retained in the repository. Replace a target's current
-record after a later release; Git preserves its earlier versions.
-
-The maintained live client now takes the release identity in addition to the
-owned campaign state:
+Once behavior is stable, run:
 
 ```bash
-.venv/bin/python -B bridge/Sts2AgentBridge/apps/events/client/run_live.py \
-  --expected-state-sha256 <current-owned-campaign-state-hash> \
-  --release-manifest /ABS/events-release.json \
-  --release-sha256 <hash-printed-by-the-successful-release-gate>
+.venv/bin/python -B bridge/Sts2AgentBridge/check.py --suite release \
+  --dotnet /ABS/dotnet --game-data-dir /ABS/data_sts2_macos_arm64
 ```
 
-This verifies the selected current source bundle before credential access. It
-never loads historical checkers. Native identity, legality, single-attempt
-dispatch, reconciliation, authenticated configuration and owned cleanup remain.
-Use the selected app's package/operations tools within the requested live scope;
-old campaign readiness and credentials are not reusable. A repository gate does
-not install, launch or interact with the game.
+This runs the integrated checks, verifies a reproducible production binary, checks
+its compiled entry point/dependency surface, and exercises package mutations and
+owned installation/cleanup. It derives `apps/bridge/package/identity.json` from
+the candidate once; package and operational tools share that binding.
 
-## Original combat/reward/map bridge
+A successful gate writes `bridge-release.json`, `result.json` and the three
+package files into its printed scratch directory. The release manifest binds
+exact source/test inputs, toolchain, references, results and binary/package
+identities. Retain its printed SHA-256 separately. Failure cannot emit an accepted
+release manifest. Keep one [current release record](releases/current/README.md);
+Git retains earlier records. Development corrections do not need manual freezing.
 
-The original `live_probe_v0` implementation remains in `src/`, with its tests,
-`contracts/live_probe_v0`, package manifest and `tools/` entry points. It provides
-the existing combat/reward/map/rest/bounded-run capabilities and is a distinct
-protocol, not a copy of the generic event component. Its Python consumers in
-`game/backends/live` and `tests/backends/live` keep their paths.
+To place accepted artifacts in the fixed install-input directory:
 
-Use `tools/run_gate.py --help` for its existing offline gate and the
-[BR0 contract](../../docs/PHASE_1_BR0_PREFLIGHT.md) when changing that interface.
-Exact earlier commands and source are available in the
-[original guide at the consolidation baseline](https://github.com/RowdeyGoos/StS_agent/blob/4f0c9ed912b533da17e431bc2ff59a63b06b2aae/bridge/Sts2AgentBridge/README.md).
+```bash
+.venv/bin/python -B bridge/Sts2AgentBridge/apps/bridge/package/publish.py \
+  --release-manifest /ABS/bridge-release.json --release-sha256 <accepted-hash> \
+  --dll /ABS/release-output/package/Sts2AgentBridgeUnified.dll
+```
+
+This verifies current release sources and package identity, then creates
+`/private/tmp/sts-unified-bridge-release` exclusively. It never overwrites or
+adopts an existing directory. It does not install or launch the game.
+
+## Installation, client and cleanup
+
+Within the user's requested live scope, the single operational entry point is:
+
+```bash
+.venv/bin/python -B bridge/Sts2AgentBridge/apps/bridge/operations/run.py \
+  --release-manifest /ABS/bridge-release.json --release-sha256 <accepted-hash> \
+  --mode install
+```
+
+It creates only the owned `Sts2AgentBridgeUnified` overlay and the fixed
+`Library/Application Support/Sts2AgentBridge/unified/` configuration/credential.
+Existing legacy overlays and campaign state are conflicts, not files to adopt or
+delete. Native dependencies and the game build remain pinned. Configuration is
+fixed; credentials are generated by the owned installer, not hand-entered.
+
+After installation and the user's requested game setup, use one client:
+
+```bash
+.venv/bin/python -B bridge/Sts2AgentBridge/apps/bridge/client/run_live.py \
+  --release-manifest /ABS/bridge-release.json --release-sha256 <accepted-hash> \
+  --expected-state-sha256 <current-owned-state-hash> --capability events
+```
+
+Capabilities are `events`, `cards`, `items`, `shop`, `room-event` and `core`.
+The first five run their bounded controller; `core` observes one `--route` or
+submits an advertised action with `--decision` and `--action`. A core accepted
+receipt reports acceptance, not completion; reconcile through the corresponding
+decision route. Event choices use the replaceable first-legal host provider.
+The client verifies release and owned installation before credential access.
+
+Normal quit and stopped/closed-listener checks precede cleanup. Use the same
+operational command with `--mode quarantine`, then `--mode purge`, each with
+`--expected-state-sha256` from the preceding owned state. Preserve the release
+source/package bindings until its installed campaign is closed. Cleanup verifies
+exact ownership, state lineage and unchanged base files.
+
+The unified build has offline evidence. Its combined live handoffs have not yet
+been demonstrated, and it is not a complete autonomous-run controller. The latest
+real-game direct-input evidence remains the earlier controlled V10 card16 result.
+
+## Historical references
+
+[Release history](releases/history/README.md) retains original identities; Git
+retains the removed source trees and feature workflows. Commit `1d63e74` contains
+the four interim consolidated app releases. Do not restore them as dependencies.
+
+Original `contracts/live_probe_v0`, Python consumers and semantic fixtures keep
+their paths. `tests/core_reference/` is a test-only assembly without a mod entry
+point. The old `tools/run_gate.py` is retired; old operator/launch workflows are
+historical, while the actual core exchange/manifest helper is compatibility-tested
+against the unified listener. Use the entry points above for current work.

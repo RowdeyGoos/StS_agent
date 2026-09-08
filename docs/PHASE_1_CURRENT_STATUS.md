@@ -41,23 +41,37 @@ Event identities supply ownership and test coverage, not a production admission
 list for each supported shared interaction. No event has complete all-branch
 evidence. Choice strategy remains a replaceable host decision provider.
 
-G7 is the latest general functional family component. V10 is the latest packaged
-experiment and intentionally exposes only card16; it is not an all-holder release.
-The 32 successor source trees have been consolidated into maintained `components/`
-and `apps/` directories. All four selected production DLLs reproduce their accepted
-bytes. Historical sources remain in Git and original identities in
-[release history](../bridge/Sts2AgentBridge/releases/history/README.md).
-The current checker and live client do not execute predecessor checkers.
-The [consolidation validation](../bridge/Sts2AgentBridge/releases/current/validation.json)
-passed current behavior/integration, verifier, packaging and cleanup fixtures,
-with four actual client source preflights and no credential read or game launch.
+The current production artifact is **Sts2AgentBridgeUnified 1.0.0**. It combines
+core combat/reward/map/rest, item collection, room flows, card selection and
+generic events in one mod, listener and owner-frame queue. Native modules are
+created lazily and remain exclusive through reconciliation and successful cleanup.
+A failed/uncertain action or failed disposal stops the shared host. Clean completion
+allows the next capability without replacing or restarting the mod.
+
+The canonical transformation adapter now offers all eligible allocated holders
+using the successful direct-input mechanism. The card16-only restriction is gone;
+identity, legality, preview, deferred-input and completion checks remain.
+Direct-input fixtures exercise different slots and invalid/deferred targets.
+The [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md)
+records offline native/host regressions, shared socket handoff and failure cases,
+actual Python clients, reproducible packaging and owned cleanup fixtures.
+No unified-package game installation, launch or live interaction is claimed.
+
+Only `apps/bridge/` is a production composition. The old four feature apps and
+separate original production project are retired. Use one checker with focused
+`--component` selection, one package identity and one client/operational entry
+point. Historical sources and earlier release records remain in Git; original
+identities remain in [release history](../bridge/Sts2AgentBridge/releases/history/README.md).
 
 ## Next bounded target
 
-Generalize v10's working input to all eligible, allocated transform holders.
-The [generic plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) defines the change and
-acceptance case. Do not restart the V7/V8/V9 geometry investigation: those
-attempts stopped before card input, and V10 answered the direct-selection question.
+Exercise one useful transition between supported capabilities through the unified
+host in a requested live session. The direct-input generalization is already
+implemented offline; a further native test should exercise a different advertised
+target or another actual gap. Do not repeat V7/V8/V9 geometry admission work:
+those attempts stopped before input, and V10 answered the direct-selection question.
+The [generic plan](PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md) distinguishes implemented
+behavior from remaining native coverage.
 
 ## Current exclusions
 
@@ -81,14 +95,14 @@ Paths in the first column are relative to `bridge/Sts2AgentBridge/`.
 | `components/events/native/PinnedGenericEventV7NativeAdapter.cs` | Parent capture and child integration |
 | `components/events/native/GenericEventV7TransformState.cs` | Native transformation effect observations |
 | `components/events/host/generic_event_host.py`, `card_transform_host.py` | Bounded orchestration and replaceable decisions |
-| `apps/events/gameplay/GenericEventV7TransformAdapter.cs` | Live-proven direct input with the test-only slot15 restriction |
-| `apps/events/gameplay_tests/OffscreenFixtures.cs`, `integration/OffscreenSocketFixture.cs` | Actual adapter and client cases |
-| `apps/events/production/Sts2AgentBridgeGenericEventV10.csproj`, `check.py` at the bridge root | Selected production composition and current gate |
+| `components/events/native/GenericEventV7TransformAdapter.cs` | Generalized direct input for eligible allocated holders |
+| `components/events/direct_input_tests/`, `apps/bridge/client_tests/` | Actual adapter and shared-client cases |
+| `apps/bridge/production/Sts2AgentBridge.csproj`, `check.py` at the bridge root | Single production composition and focused/current release checks |
 
 - [G7 semantics](PHASE_1_GENERIC_EVENT_V7_CONTRACT.md) and
   [functional evidence](research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md).
 - [V10 test contract](PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md),
-  [component guide](../bridge/Sts2AgentBridge/apps/events/README.md)
+  [current bridge guide](../bridge/Sts2AgentBridge/README.md)
   and [acceptance](research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md).
 - [Event coverage matrix](research/PHASE_1_EVENT_COVERAGE_MATRIX.md),
   [card-reward live evidence](research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md)

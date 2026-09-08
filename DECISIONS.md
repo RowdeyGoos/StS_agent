@@ -36,7 +36,7 @@ phase timings for substantial work rather than treating test counts as progress.
 ## D66. Preserve releases without freezing every development iteration
 
 Accepted and implemented 2026-09-08 at the user's request. Shared bridge code now
-lives in `components/`, with the latest distinct compositions in `apps/` and one
+lives in `components/`, initially with distinct compositions in `apps/` and one
 maintained checker. The 32 successor source trees are removed from the working
 tree. Git commit `4f0c9ed912b533da17e431bc2ff59a63b06b2aae` retains their exact
 sources; original manifests/policies remain in
@@ -48,9 +48,32 @@ results. Live clients verify the selected release manifest before credential
 access, without executing a predecessor checker. Historical evidence is never
 silently repinned. Public interfaces change version when semantics change.
 
-The four consolidated production builds reproduce the accepted DLLs byte-for-byte.
-The general G7 adapter and restricted V10 experiment remain explicit distinct
-compositions; consolidation does not broaden live acceptance or change gameplay.
+The four initial consolidated production builds reproduced their accepted DLLs
+byte-for-byte. D67 replaces those deployment compositions; their exact records
+remain in Git at `1d63e74`. Consolidation itself did not broaden live acceptance.
+
+## D67. Ship one bridge with exclusive capability modules
+
+Implemented 2026-09-08 at the user's request. Combat, rewards, map/rest, items,
+shop/standard rooms, card selection and generic events share one production DLL,
+loopback listener, owner-frame queue, configuration, client and package pipeline.
+The separate feature mods and their operational/checker copies are retired.
+Existing route versions describe their contracts; they do not require separate
+runtime deployments.
+
+Create native feature sessions lazily. Preserve parent-owned child routes, block
+unrelated actions while a session owns the game, and hand off only after native
+completion and successful disposal. An uncertain mutation or cleanup failure
+stops the shared host. Core action reconciliation also fences feature entry.
+
+Generalized transformation uses the successful direct native input mechanism for
+all eligible allocated holders, preserving exact identity, preview, deferred
+input and effect checks. No card16-only mask or viewport certificate remains.
+Offline handoff and native-input fixtures do not establish a live full-run claim.
+
+Develop through focused component checks. One final release binds the combined
+binary and package; package identity is derived once and shared by installation,
+cleanup and clients. New features extend modules, not release directories.
 
 ## Core architecture
 

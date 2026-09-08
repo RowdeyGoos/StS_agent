@@ -1,0 +1,133 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework><OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridgeUnified</AssemblyName><RootNamespace>Sts2AgentBridge.Unified</RootNamespace>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion><FileVersion>1.0.0.0</FileVersion><Version>1.0.0</Version>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
+    <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCodec.cs" />
+    <Compile Include="../compatibility/CardSelectionTerminalClassifier.cs" />
+    <Compile Include="../compatibility/GenericEventTerminalClassifier.cs" />
+    <Compile Include="../compatibility/RoomFlowTerminalClassifier.cs" />
+    <Compile Include="../lifecycle/BridgeBootstrapLifecycle.cs" />
+    <Compile Include="../native/BridgeBootstrapHost.cs" />
+    <Compile Include="../native/BridgeBootstrapSupport.cs" />
+    <Compile Include="../native/BridgeGodotFrameConnector.cs" />
+    <Compile Include="../native/BridgeModEntry.cs" />
+    <Compile Include="../native/CoreNativeFactory.cs" />
+    <Compile Include="../native/NativeBridgeModule.cs" />
+    <Compile Include="../native/ProductionBridgeRuntimeFactory.cs" />
+    <Compile Include="../operator/BridgeOperatorFiles.cs" />
+    <Compile Include="../runtime/BridgeProtocol.cs" />
+    <Compile Include="../runtime/BridgeRouter.cs" />
+    <Compile Include="../runtime/BridgeTransportRuntime.cs" />
+    <Compile Include="../runtime/CoreBridgeModule.cs" />
+    <Compile Include="../runtime/OwnedByteFrameQueue.cs" />
+    <Compile Include="../../../components/cards/transport/CardSelectionTransportContracts.cs" />
+    <Compile Include="../../../components/cards/transport/CardSelectionTransportProtocol.cs" />
+    <Compile Include="../../../components/events/native/PinnedGenericEventHarmonyGuard.cs" />
+    <Compile Include="../../../components/events/transport/GenericEventTransportContracts.cs" />
+    <Compile Include="../../../components/events/transport/GenericEventTransportProtocol.cs" />
+    <Compile Include="../../../components/rooms/transport/RoomFlowTransportContracts.cs" />
+    <Compile Include="../../../components/rooms/transport/RoomFlowTransportProtocol.cs" />
+    <Compile Include="../../../components/cards/core/CardSelectionV1Contracts.cs" />
+    <Compile Include="../../../components/cards/core/CardSelectionV1Session.cs" />
+    <Compile Include="../../../components/cards/native/CardSelectionV1NativeRules.cs" />
+    <Compile Include="../../../components/cards/native/PinnedCardSelectionV1NativeAdapter.cs" />
+    <Compile Include="../../../components/cards/parent_native/CardSelectionParentV1NativeRules.cs" />
+    <Compile Include="../../../components/cards/parent_native/PinnedCardSelectionParentV1NativeAdapter.cs" />
+    <Compile Include="../../../components/cards/parents/CardSelectionParentV1Contracts.cs" />
+    <Compile Include="../../../components/cards/parents/CardSelectionParentV1Session.cs" />
+    <Compile Include="../../../components/cards/wire/CardSelectionV1WireCodec.cs" />
+    <Compile Include="../../../components/cards/wire/CardSelectionV1WireProtocol.cs" />
+    <Compile Include="../../../components/cards/wire/CardSelectionV1WireService.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV5ChildSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7ChildSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7Contracts.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7ItemChildSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7Binding.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7CardAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7Hooks.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7ItemAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7ItemState.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7MultiUpgradeAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7MultiUpgradeState.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7RemovalAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7RewardAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7TransformAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7TransformState.cs" />
+    <Compile Include="../../../components/events/native/PinnedGenericEventV7NativeAdapter.cs" />
+    <Compile Include="../../../components/events/transform_core/CardTransformV2Journal.cs" />
+    <Compile Include="../../../components/events/transform_core/CardTransformV2NativeContracts.cs" />
+    <Compile Include="../../../components/events/transform_core/CardTransformV2Session.cs" />
+    <Compile Include="../../../components/events/wire/CardTransformV2WireCodec.cs" />
+    <Compile Include="../../../components/events/wire/GenericEventV7WireCodec.cs" />
+    <Compile Include="../../../components/events/wire/GenericEventV7WireService.cs" />
+    <Compile Include="../../../components/item_bootstrap/native/PinnedItemBuildGuard.cs" />
+    <Compile Include="../../../components/item_bootstrap/operator/DarwinReadOnly.cs" />
+    <Compile Include="../../../components/item_bootstrap/operator/ItemOperatorConfiguration.cs" />
+    <Compile Include="../../../components/item_bootstrap/operator/ItemPinnedFileIdentity.cs" />
+    <Compile Include="../../../components/item_transport/runtime/ItemTransportProtocol.cs" />
+    <Compile Include="../../../components/item_transport/runtime/kernel/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../../components/item_transport/runtime/kernel/MonotonicTokenBucket.cs" />
+    <Compile Include="../../../components/item_wire/producer/ItemWireV1Codec.cs" />
+    <Compile Include="../../../components/item_wire/producer/ItemWireV1Protocol.cs" />
+    <Compile Include="../../../components/item_wire/producer/ItemWireV1Service.cs" />
+    <Compile Include="../../../components/items/core/ItemV1CanonicalEncoder.cs" />
+    <Compile Include="../../../components/items/core/ItemV1Contracts.cs" />
+    <Compile Include="../../../components/items/core/ItemV1Session.cs" />
+    <Compile Include="../../../components/items/native/PinnedItemV1NativeAdapter.cs" />
+    <Compile Include="../../../components/rooms/broker/FrozenEventItemChildBroker.cs" />
+    <Compile Include="../../../components/rooms/common/EventItemChildContracts.cs" />
+    <Compile Include="../../../components/rooms/common/RoomFlowContracts.cs" />
+    <Compile Include="../../../components/rooms/event/core/EventV1CanonicalEncoder.cs" />
+    <Compile Include="../../../components/rooms/event/core/EventV1Contracts.cs" />
+    <Compile Include="../../../components/rooms/event/core/EventV1Session.cs" />
+    <Compile Include="../../../components/rooms/event/native/PinnedEventV1NativeAdapter.cs" />
+    <Compile Include="../../../components/rooms/shop/core/ShopV1CanonicalEncoder.cs" />
+    <Compile Include="../../../components/rooms/shop/core/ShopV1Contracts.cs" />
+    <Compile Include="../../../components/rooms/shop/core/ShopV1Session.cs" />
+    <Compile Include="../../../components/rooms/shop/native/PinnedShopV1NativeAdapter.cs" />
+    <Compile Include="../../../components/rooms/wire/RoomFlowWireCodec.cs" />
+    <Compile Include="../../../components/rooms/wire/RoomFlowWireService.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatActionApplier.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatDecisionReader.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapActionApplier.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapDecisionReader.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardActionApplier.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardDecisionReader.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomActionApplier.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomDecisionReader.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Identity/CorrelationIdGenerator.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Protocol/CanonicalProbeEncoder.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Protocol/LiveProbeLimits.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Protocol/ProbeErrors.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Protocol/ProbeRoutes.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatAction.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicMapAction.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicMapDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardAction.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRoomAction.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRoomDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicScreenModel.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicScreenProjector.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicScreenService.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Transport/ProbeRequestParser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(STS2GameDataDir)/0Harmony.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="RequirePinnedReferences" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
+  </Target>
+</Project>

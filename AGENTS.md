@@ -95,16 +95,24 @@ outputs; follow the selected release's actual build inputs and compatibility che
 
 ## Source and release discipline
 
-Maintain shared bridge code in `bridge/Sts2AgentBridge/components/` and distinct
-release compositions in `apps/`. The 32 old successor source trees were removed
-at the user's request. Their exact sources remain in Git and original identities
-in `releases/history/`; do not restore a recursive predecessor dependency chain.
+Maintain **one production bridge**, `bridge/Sts2AgentBridge/apps/bridge/`.
+Shared capability code lives in `components/`; the original public combat/reward/
+map/room adapters remain in `src/`. New features extend these modules and the
+shared router. Do not create another mod, listener, configuration tree, client,
+package pipeline or source snapshot for a feature or test attempt.
 
-Use the [current bridge checker](bridge/Sts2AgentBridge/README.md) for the affected
-target. Develop and test current code without freezing every correction; use one
-final release gate for a stable artifact. Keep release packages, source commit,
-manifest and evidence. Version public interfaces for semantic changes, not test
-attempts. Never repin old evidence or bypass a failing runtime safeguard.
+Use the [bridge checker](bridge/Sts2AgentBridge/README.md) with `--component` for
+focused development. One stable release builds and packages the combined bridge.
+The checker derives the current package identity from that build; do not manually
+repin several operational tools. Retain one current release manifest and evidence;
+Git keeps earlier versions. The old successor sources remain in Git and original
+identities in `releases/history/`, outside the current build graph.
+
+Keep native modules exclusive through reconciliation and successful cleanup.
+An uncertain action or failed disposal stops the host; never turn it into a clean
+handoff. Keep release packages, source commit, manifest and evidence. Version
+public interfaces for semantic changes, not test attempts. Never repin old
+evidence or bypass a failing runtime safeguard.
 
 ## Invariants
 

@@ -17,13 +17,13 @@ class ReleaseBoundaryTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory(prefix="sts-release-test-", dir="/private/tmp")
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
-        for name in ("check.py", "release_support.py", "global.json",
-                     "apps/events/client/run_live.py", "components/cards/host/card_selection_host.py"):
+        for name in ("check.py", "release_support.py", "global.json", "Directory.Build.props",
+                     "apps/bridge/client/run_live.py", "components/cards/host/card_selection_host.py"):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("source\n")
-        hashes, digest = inventory(collect_sources(self.root, ["events"]))
-        self.release = {"schema_version": 1, "status": "passed", "suite": "release", "target": "events",
+        hashes, digest = inventory(collect_sources(self.root, ["bridge"]))
+        self.release = {"schema_version": 1, "status": "passed", "suite": "release", "target": "bridge",
                         "files": hashes, "source_inventory_sha256": digest,
                         "checks": {"behavior": {"status": "passed"}}}
         self.manifest = self.root / "release.json"
@@ -34,7 +34,7 @@ class ReleaseBoundaryTests(unittest.TestCase):
         return sha(data)
 
     def verify(self, digest):
-        verify_release_sources(self.root, "events", self.manifest, digest)
+        verify_release_sources(self.root, "bridge", self.manifest, digest)
 
     def test_current_release_requires_no_history(self):
         self.verify(self.seal())
@@ -48,9 +48,9 @@ class ReleaseBoundaryTests(unittest.TestCase):
 
     def test_added_source_rejected_but_documentation_does_not_rebind_release(self):
         digest = self.seal()
-        (self.root / "apps/events/README.md").write_text("usage\n")
+        (self.root / "apps/bridge/README.md").write_text("usage\n")
         self.verify(digest)
-        (self.root / "apps/events/client/additional.py").write_text("new\n")
+        (self.root / "apps/bridge/client/additional.py").write_text("new\n")
         with self.assertRaisesRegex(ValueError, "release_source_mismatch"):
             self.verify(digest)
 
@@ -73,7 +73,7 @@ class ReleaseBoundaryTests(unittest.TestCase):
 
     def test_links_and_nonregular_inputs_rejected(self):
         digest = self.seal()
-        original = self.root / "apps/events/client/run_live.py"
+        original = self.root / "apps/bridge/client/run_live.py"
         original.unlink()
         original.symlink_to(self.root / "check.py")
         with self.assertRaisesRegex(ValueError, "source_link"):
@@ -87,21 +87,20 @@ class ReleaseBoundaryTests(unittest.TestCase):
 class ProjectBoundaryTests(unittest.TestCase):
     def test_development_does_not_require_frozen_release_policy(self):
         files = self.project('<Compile Include="../../../components/events/core/Core.cs" />')
-        files['apps/events/production/Sts2AgentBridgeGenericEventV10.csproj'] = files.pop(
-            'apps/events/production/bridge.csproj')
-        validate_sources(files, ['events'])
-        with self.assertRaisesRegex(ValueError, 'policy_inventory'):
-            validate_sources(files, ['events'], release=True)
+        files['apps/bridge/production/Sts2AgentBridge.csproj'] = files.pop(
+            'apps/bridge/production/bridge.csproj')
+        validate_sources(files, ['bridge'])
+        validate_sources(files, ['bridge'], release=True)
 
     def project(self, entry):
-        return {"apps/events/production/bridge.csproj": (
+        return {"apps/bridge/production/bridge.csproj": (
             '<Project><PropertyGroup><EnableDefaultCompileItems>false</EnableDefaultCompileItems>'
             '</PropertyGroup><ItemGroup>' + entry + '</ItemGroup></Project>').encode(),
-                "components/events/core/Core.cs": b"public class Core {}"}
+                "components/events/core/Core.cs": b"[MegaCrit.Sts2.Core.Modding.ModInitializer(\"Initialize\")] public class Core {}"}
 
     def test_explicit_current_dependency(self):
         files = self.project('<Compile Include="../../../components/events/core/Core.cs" />')
-        _, compiled = project_closure(files, "apps/events/production/bridge.csproj")
+        _, compiled = project_closure(files, "apps/bridge/production/bridge.csproj")
         self.assertEqual(compiled, {"components/events/core/Core.cs"})
 
     def test_missing_dynamic_external_and_historical_inputs_rejected(self):
@@ -114,7 +113,7 @@ class ProjectBoundaryTests(unittest.TestCase):
         )
         for entry in entries:
             with self.subTest(entry=entry), self.assertRaises(ValueError):
-                project_closure(self.project(entry), "apps/events/production/bridge.csproj")
+                project_closure(self.project(entry), "apps/bridge/production/bridge.csproj")
 
 
 if __name__ == "__main__":

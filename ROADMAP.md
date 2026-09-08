@@ -6,16 +6,15 @@ process. Completed packets and old campaign instructions are historical referenc
 
 ## Immediate priorities
 
-1. **Generalize the working direct transformation input.** Remove the latest
-   experiment's card-16-only restriction in the maintained development path and
-   expose all legal, allocated holders. Preserve exact identity, preview and
-   completion checks. Do not reintroduce viewport/clipping proof or a ten-card
-   workaround. The [generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
-   defines the concrete acceptance case.
-2. **Keep the consolidated source editable.** The 32 source snapshots and
-   predecessor-checker chain have been removed. Use the affected current target,
-   retain one shared implementation and reuse unchanged evidence. Consolidate
-   remaining app-specific tooling only when it helps the feature being changed.
+1. **Exercise one useful handoff through the unified bridge.** All supported
+   capabilities now share one host and package. Offline checks cover ownership,
+   clean handoff, terminal failures and client compatibility. A bounded live
+   transition between supported capabilities is the next integration evidence.
+2. **Use the generalized transformation path in useful play.** All eligible,
+   allocated holders now use direct input, with identity/preview/completion
+   checks. The [generic handler plan](docs/PHASE_1_GENERIC_EVENT_HANDLER_PLAN.md)
+   describes its evidence and remaining native questions. Do not repeat the
+   card16 experiment merely to obtain another geometric proof.
 3. **Expand the next interaction that blocks useful play.** Establish a real
    representative caller first. Prioritize observed gaps over hypothetical
    capability combinations or another event-name allowlist.

@@ -90,6 +90,10 @@ class _FixtureSocket:
             fail(EXIT_MISMATCH, "probe_fixture_request_bytes")
         self.request_buffers.append(request)
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not self.request_buffers:
+            fail(EXIT_MISMATCH, "probe_fixture_half_close")
+
     def recv(self, maximum: int) -> bytes:
         if maximum != probe._RECEIVE_CHUNK_BYTES:
             fail(EXIT_MISMATCH, "probe_fixture_receive_bound")

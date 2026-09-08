@@ -542,6 +542,7 @@ def _exchange_request(
         request = request_builder()
         _set_bounded_timeout(client, connection_deadline, label)
         client.sendall(request)
+        client.shutdown(socket.SHUT_WR)
         while True:
             _set_bounded_timeout(client, connection_deadline, label)
             chunk = client.recv(_RECEIVE_CHUNK_BYTES)
@@ -693,7 +694,9 @@ def _validate_health(body: memoryview) -> None:
 
 
 def _validate_manifest(body: memoryview) -> None:
-    if body != _MANIFEST_COMPATIBLE:
+    if body != _MANIFEST_COMPATIBLE and body != _MANIFEST_COMPATIBLE.replace(
+        b'"bridge_version":"0.8.0"', b'"bridge_version":"1.0.0"'
+    ).replace(b'"harmony_patches":false', b'"harmony_patches":true'):
         fail(EXIT_MISMATCH, "manifest_response_mismatch")
 
 

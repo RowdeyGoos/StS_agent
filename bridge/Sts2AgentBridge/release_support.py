@@ -20,18 +20,8 @@ REFERENCES = {
     "0Harmony.dll": (2328064, "ef1898322c9f5c86dc1b0758b272a9c440823b4a41ca9a0b82a3aa6b3d206387"),
 }
 COMMON_COMPONENTS = ("items", "item_wire", "item_transport", "item_bootstrap")
-TARGET_COMPONENTS = {
-    "items": COMMON_COMPONENTS,
-    "rooms": (*COMMON_COMPONENTS, "rooms"),
-    "cards": (*COMMON_COMPONENTS, "cards"),
-    "events": (*COMMON_COMPONENTS, "cards", "events"),
-}
-PRODUCTION = {
-    "items": "components/item_bootstrap/production/Sts2AgentBridgeItemV1.csproj",
-    "rooms": "apps/rooms/production/Sts2AgentBridgeRoomFlowsV1.csproj",
-    "cards": "apps/cards/production/Sts2AgentBridgeCardSelectionV1.csproj",
-    "events": "apps/events/production/Sts2AgentBridgeGenericEventV10.csproj",
-}
+TARGET_COMPONENTS = {"bridge": (*COMMON_COMPONENTS, "rooms", "cards", "events")}
+PRODUCTION = {"bridge": "apps/bridge/production/Sts2AgentBridge.csproj"}
 IGNORED = {"bin", "obj", "__pycache__", ".pytest_cache", "artifacts"}
 SOURCE_SUFFIXES = {".py", ".cs", ".csproj", ".props", ".json"}
 
@@ -77,7 +67,7 @@ def collect_sources(bridge: Path, targets: list[str]) -> dict[str, bytes]:
         roots.add("apps/" + target)
         roots.update("components/" + name for name in TARGET_COMPONENTS[target])
     files = {}
-    for name in ("check.py", "release_support.py", "global.json"):
+    for name in ("check.py", "release_support.py", "global.json", "Directory.Build.props"):
         files[name] = read_regular(bridge / name)
     roots.add("tests/maintenance")
     for root in sorted(roots):
@@ -88,6 +78,31 @@ def collect_sources(bridge: Path, targets: list[str]) -> dict[str, bytes]:
             require(not path.is_symlink(), "source_link")
             if path.is_file() and path.suffix in SOURCE_SUFFIXES:
                 files[relative.as_posix()] = read_regular(path)
+    # Follow explicit project inputs to shared legacy protocol/adapter sources.
+    # Historical deployment projects and their checkers are never discovered here.
+    pending = [p for p in files if p.endswith(".csproj")]
+    seen = set()
+    while pending:
+        project = pending.pop()
+        if project in seen:
+            continue
+        seen.add(project)
+        for node in ET.fromstring(files[project]).iter():
+            if node.tag not in ("Compile", "ProjectReference"):
+                continue
+            name = node.attrib["Include"]
+            require(not any(c in name for c in "*?$\\") and not Path(name).is_absolute(), "dynamic_input")
+            name = os.path.normpath(str(Path(project).parent / name))
+            require(name.startswith(("apps/", "components/", "src/")), "input_boundary")
+            if name not in files:
+                files[name] = read_regular(bridge / name)
+            if node.tag == "ProjectReference":
+                pending.append(name)
+    # The actual original combat client transport is a maintained consumer.
+    for name in ("tools/probe_live.py", "tools/probe_live_fixtures.py",
+                 "tools/decision_providers.py", "tools/tool_common.py"):
+        if (bridge / name).is_file():
+            files[name] = read_regular(bridge / name)
     return dict(sorted(files.items()))
 
 
@@ -115,7 +130,7 @@ def project_closure(files: dict[str, bytes], project: str) -> tuple[set[str], se
                 require(value and not Path(value).is_absolute()
                         and not any(c in value for c in "*?$\\"), "dynamic_input")
                 target = os.path.normpath(str(Path(name).parent / value))
-                require(target in files and target.startswith(("apps/", "components/")), "input_boundary")
+                require(target in files and target.startswith(("apps/", "components/", "src/")), "input_boundary")
                 if node.tag == "Compile":
                     compiled.add(target)
                 else:
@@ -137,16 +152,9 @@ def validate_sources(files: dict[str, bytes], targets: list[str], *, release: bo
         project_closure(files, project)
     for target in targets:
         _, compiled = project_closure(files, PRODUCTION[target])
-        if not release:
-            continue
-        policies = [p for p in files if p.startswith("apps/" + target + "/policy/")]
-        require(len(policies) == 1, "policy_inventory")
-        policy = json.loads(files[policies[0]])
-        expected = [{"path": "bridge/Sts2AgentBridge/" + p, "sha256": sha(files[p])}
-                    for p in sorted(compiled)]
-        require(policy["source_files"] == expected, "policy_source_closure")
-        require(policy["source_projection_sha256"] == sha("".join(
-            row["sha256"] + "  ./" + row["path"] + "\n" for row in expected).encode()), "policy_source_identity")
+        require(sum(b'[MegaCrit.Sts2.Core.Modding.ModInitializer(' in files[p]
+                    for p in compiled) == 1, "single_initializer")
+        require(not any(b"#define BRIDGE_TEST_SEAM" in files[p] for p in compiled), "production_test_seam")
     return {"files": len(files), "projects": len(projects), "targets": len(targets)}
 
 

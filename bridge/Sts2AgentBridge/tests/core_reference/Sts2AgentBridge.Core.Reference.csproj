@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sts2AgentBridge</AssemblyName>
+    <RootNamespace>Sts2AgentBridge</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AssemblyVersion>0.8.0.0</AssemblyVersion>
+    <FileVersion>0.8.0.0</FileVersion>
+    <Version>0.8.0</Version>
+    <InformationalVersion>0.8.0</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <DefineConstants>STS2_AGENT_BRIDGE_TEST_SEAM</DefineConstants>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <Target Name="ValidateSts2GameDataDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(STS2GameDataDir)' == ''"
+           Text="STS2GameDataDir is required and must name the explicit pinned managed-data directory." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !$([System.IO.Path]::IsPathFullyQualified('$(STS2GameDataDir)'))"
+           Text="STS2GameDataDir must be an absolute path." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/sts2.dll')"
+           Text="The explicit STS2GameDataDir does not contain sts2.dll." />
+    <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')"
+           Text="The explicit STS2GameDataDir does not contain GodotSharp.dll." />
+  </Target>
+
+  <ItemGroup>
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Diagnostics/GodotBridgeLogger.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Identity/PinnedBuildGuard.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatActionApplier.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatDecisionReader.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapActionApplier.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapDecisionReader.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardActionApplier.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardDecisionReader.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomActionApplier.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomDecisionReader.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Adapters/Threading/GodotFrameDispatcher.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Configuration/ConfigurationModels.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Configuration/StrictConfigurationLoader.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Hosting/BoundedFrameWorkQueue.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Hosting/BridgeLifecycle.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Hosting/BridgeRuntime.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Hosting/BuildIdentity.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Identity/CorrelationIdGenerator.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Identity/FixedTimeAuthenticator.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Protocol/CanonicalProbeEncoder.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Protocol/LiveProbeLimits.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Protocol/ProbeErrors.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Protocol/ProbeRoutes.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicCombatAction.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicMapDecision.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicMapAction.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicRewardAction.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicRoomDecision.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicRoomAction.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicScreenModel.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicScreenProjector.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Public/PublicScreenService.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Transport/BoundedLoopbackServer.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Transport/MonotonicTokenBucket.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Transport/ProbeRequestParser.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Transport/ProbeRequestProcessor.cs" />
+    <Compile Include="../../src/Sts2AgentBridge/Core/Transport/TransportAssemblyAccess.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

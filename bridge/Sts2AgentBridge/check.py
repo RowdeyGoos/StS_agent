@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check one maintained bridge capability; never install or launch the game."""
+"""Check the unified production bridge or one capability module; never install or launch the game."""
 from __future__ import annotations
 
 import argparse
@@ -23,6 +23,7 @@ class Gate:
     def __init__(self, targets: list[str], scratch: Path, dotnet: str | None,
                  game_data: Path | None, *, release: bool = False) -> None:
         self.targets, self.scratch, self.dotnet = targets, scratch, dotnet
+        self.component = "all"
         self.files = collect_sources(ROOT, targets)
         self.summary = validate_sources(self.files, targets, release=release)
         self.source = scratch / "source/bridge/Sts2AgentBridge"
@@ -69,11 +70,17 @@ class Gate:
         folders = sorted({str(Path(p).parent) for p in self.files if p.endswith(".py")
                           and Path(p).parent.name in ("host_tests", "transport_tests", "maintenance")})
         for folder in folders:
+            if not self.affected(folder):
+                continue
             self.run(folder, [sys.executable, "-B", "-m", "unittest", "discover",
                               "-s", str(self.source / folder), "-p", "test_*.py"],
                      cwd=self.source / Path(folder).parent)
         for target in self.targets:
             app = self.source / "apps" / target
+            if self.component not in ("all", "host", "core"):
+                continue
+            self.run("client", [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(app / "client_tests"), "-p", "test_*.py"])
+            self.run("core_client", [sys.executable, "-B", str(self.source / "tools/probe_live_fixtures.py")])
             for script in sorted(app.glob("client_tests/*_fixtures.py")):
                 self.run(str(script.relative_to(self.source)), [sys.executable, "-B", str(script)])
             for script in sorted(app.glob("operations/*_fixtures.py")):
@@ -97,103 +104,101 @@ class Gate:
         require(output.is_file(), "missing_build_output")
         require(not any((output.parent / name).exists() for name in ("sts2.dll", "GodotSharp.dll")),
                 "copied_target_game")
+        if project in PRODUCTION.values():
+            require(not (output.parent / "0Harmony.dll").exists(), "copied_production_harmony")
         self.outputs[project] = output
         return output
 
+    def affected(self, name: str) -> bool:
+        if self.component == "all": return True
+        if self.component in ("host", "core"):
+            return name.startswith(("apps/bridge/", "tests/maintenance/"))
+        names = {"items": ("items", "item_wire", "item_transport", "item_bootstrap"),
+                 "rooms": ("rooms",), "cards": ("cards",), "events": ("events",)}[self.component]
+        return any(name.startswith("components/" + part + "/") for part in names)
+
     def behavior(self) -> None:
         require(self.run("sdk", [self.dotnet, "--version"]) == SDK_VERSION, "sdk_identity")
-        for project in sorted(p for p in self.files if p.endswith(".csproj")):
-            output = self.build(project)
+        for project in sorted(p for p in self.files if p.endswith(".csproj") and self.affected(p)):
             tree = ET.fromstring(self.files[project])
-            if tree.findtext(".//OutputType") != "Exe":
-                continue
             folder = Path(project).parent.name
-            if folder == "verifier_tests" or not (folder == "tests" or folder.endswith("_tests")):
+            if tree.findtext(".//OutputType") != "Exe" or not (folder == "tests" or folder.endswith("_tests")):
                 continue
             dependencies, _ = project_closure(self.files, project)
             require(all(node.attrib.get("Include") not in ("sts2", "GodotSharp")
                         for p in dependencies for node in ET.fromstring(self.files[p]).iter("Reference")),
                     "game_assembly_in_executable_fixture")
-            command = [self.dotnet, str(output)]
+            command = [self.dotnet, str(self.build(project))]
             if folder == "operator_tests":
                 command += ["--fixture-root", str(self.scratch.with_name(
                     self.scratch.name + "-" + Path(project).stem + "-operator"))]
             self.run("test:" + project, command)
-        self.integration()
+        if self.component in ("all", "events"):
+            self.run("events:host_native", [sys.executable, "-B", str(self.source / "components/events/integration_tests/test_generic_event_integration.py"),
+                "--dotnet", self.dotnet, "--fixture", str(self.build("components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj")),
+                "--native-fixture", str(self.build("components/events/integration/GenericEventV7.Native.Integration.csproj")),
+                "--host", str(self.source / "components/events/host/generic_event_host.py")])
+        if self.component in ("all", "cards"):
+            self.run("cards:host_wire", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_cross_language.py"),
+                "--dotnet", self.dotnet, "--fixture", str(self.build("components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj"))])
+        if self.component in ("all", "host", "core"):
+            self.run("shared_client:socket", [sys.executable, "-B", str(self.source / "apps/bridge/client_tests/socket_integration.py"),
+                self.dotnet, str(self.build("apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj"))])
 
-    def integration(self) -> None:
-        def call(name: str, script: str, *args: str) -> None:
-            self.run(name, [sys.executable, "-B", str(self.source / script), "--dotnet", self.dotnet, *args])
+    def prepare_identity(self) -> None:
+        """Bind the built candidate once, before packaging/installation fixtures.
 
-        if "items" in self.targets:
-            self.run("items:host_wire", [sys.executable, "-B", "-c",
-                "import json,sys; from pathlib import Path; from cross_language import run_cross_language; "
-                "print(json.dumps(run_cross_language(Path(sys.argv[1]), Path(sys.argv[2]), Path('vectors.json'))))",
-                self.dotnet, str(self.build("components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj"))],
-                cwd=self.source / "components/item_wire")
-            self.run("items:socket", [sys.executable, "-B", "-c",
-                "import json,sys; from pathlib import Path; from cross_socket import run_cross_socket; "
-                "print(json.dumps(run_cross_socket(Path(sys.argv[1]), Path(sys.argv[2]))))",
-                self.dotnet, str(self.build("components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj"))],
-                cwd=self.source / "components/item_transport")
-        if "events" in self.targets:
-            call("events:host_native", "components/events/integration_tests/test_generic_event_integration.py",
-                 "--fixture", str(self.build("components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj")),
-                 "--native-fixture", str(self.build("components/events/integration/GenericEventV7.Native.Integration.csproj")),
-                 "--host", str(self.source / "components/events/host/generic_event_host.py"))
-            call("events:socket", "apps/events/integration/test_generic_event_socket_composition.py",
-                 "--fixture", str(self.build("apps/events/integration/GenericEventReleaseV10.SocketFixture.csproj")))
-        if "cards" in self.targets:
-            call("cards:host_wire", "components/cards/host_tests/run_cross_language.py",
-                 "--fixture", str(self.build("components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj")))
-            call("cards:socket", "apps/cards/integration/test_card_selection_socket_composition.py",
-                 "--fixture", str(self.build("apps/cards/runtime_tests/Sts2AgentBridge.CardSelectionV1.Transport.Tests.csproj")))
-        if "rooms" in self.targets:
-            call("rooms:host_wire", "apps/rooms/integration/test_shop_map_cross_language.py",
-                 "--fixture", str(self.build("apps/rooms/integration/Sts2AgentBridge.ShopMapPermissionV1.Integration.csproj")),
-                 "--item-host", str(self.source / "components/item_wire/host/item_host.py"))
-            call("rooms:socket", "apps/rooms/integration/test_socket_composition.py",
-                 "--fixture", str(self.build("apps/rooms/runtime_tests/Sts2AgentBridge.ShopMapPermissionV1.Transport.Tests.csproj")))
+        identity.json is release metadata, never a C# build input. A failed gate
+        still cannot publish a live-usable release manifest.
+        """
+        candidate = self.build(PRODUCTION["bridge"])
+        command = [sys.executable, "-B", str(self.source / "apps/bridge/package/prepare_identity.py"), str(candidate)]
+        raw = self.run("package_identity", command) + "\n"
+        name = "apps/bridge/package/identity.json"
+        require(read_regular(ROOT / name) == self.files[name], "identity_changed_during_gate")
+        (ROOT / name).write_text(raw)
+        self.files[name] = raw.encode()
+        (self.source / name).write_text(raw)
 
     def release(self) -> dict[str, dict]:
-        releases = {}
-        for target in self.targets:
-            app = self.source / "apps" / target
-            candidate = self.build(PRODUCTION[target])
-            require(not (candidate.parent / "0Harmony.dll").exists(), "copied_harmony")
-            policy = next(app.glob("policy/*.json"))
-            verifier_project = str(next(app.glob("verifier/*.csproj")).relative_to(self.source))
-            verifier_tests = str(next(app.glob("verifier_tests/*.csproj")).relative_to(self.source))
-            source_root = str(self.source.parents[1])
-            self.run(target + ":surface", [self.dotnet, str(self.build(verifier_project)),
-                "--assembly", str(candidate), "--source-root", source_root, "--policy", str(policy)])
-            self.run(target + ":verifier_mutations", [self.dotnet, str(self.build(verifier_tests)),
-                "--candidate", str(candidate), "--source-root", source_root, "--policy", str(policy)])
-            self.run(target + ":package", [sys.executable, "-B", str(app / "package/package_fixtures.py"), str(candidate)])
-            clean = app / "operations/verify_clean_install_fixtures.py"
-            if clean.exists():
-                self.run(target + ":clean_install", [sys.executable, "-B", str(clean), "--candidate", str(candidate)])
-            # Only a completed release gate emits a live-usable manifest. It binds
-            # current transitive sources and tests, never an ancestry inventory.
-            hashes, digest = inventory(collect_sources(self.source, [target]))
-            release = {"schema_version": 1, "status": "passed", "suite": "release", "target": target,
-                       "source_inventory_sha256": digest, "files": hashes,
-                       "sdk": SDK_VERSION, "references": REFERENCES, "checks": self.checks,
-                       "production": {"sha256": sha(candidate.read_bytes()), "bytes": candidate.stat().st_size}}
-            releases[target] = release
-        return releases
+        candidate = self.build(PRODUCTION["bridge"])
+        app = self.source / "apps/bridge"
+        # A new binary gets one independent reproducibility build. Exact bytes
+        # are then reused by verifier, package and installation fixtures.
+        second = self.scratch / "reproduce"
+        import shutil
+        shutil.copytree(self.source, second / "source")
+        self.run("reproducible_build", [self.dotnet, "build", str(second / "source" / PRODUCTION["bridge"]),
+            "-c", "Release", "--configfile", str(self.nuget), "--artifacts-path", str(second / "artifacts"),
+            "-m:1", "-p:STS2GameDataDir=" + str(self.refs), "-p:NuGetAudit=false", "-p:UseSharedCompilation=false"])
+        repeated = second / "artifacts/bin/Sts2AgentBridge/release/Sts2AgentBridgeUnified.dll"
+        require(read_regular(candidate) == read_regular(repeated), "nonreproducible_binary")
+        verifier = self.build("apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj")
+        self.run("production_surface", [self.dotnet, str(verifier), str(candidate)])
+        self.run("production_surface_rejections", [sys.executable, "-B", str(app / "verifier/negative_fixtures.py"),
+            self.dotnet, str(verifier), str(candidate), str(self.build("apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj"))])
+        self.run("package", [sys.executable, "-B", str(app / "package/package_fixtures.py"), str(candidate)])
+        self.run("clean_install", [sys.executable, "-B", str(app / "operations/verify_clean_install_fixtures.py"), "--candidate", str(candidate)])
+        self.run("package_output", [sys.executable, "-B", str(app / "package/prepare_identity.py"), str(candidate), str(self.scratch / "package")])
+        hashes, digest = inventory(self.files)
+        return {"bridge": {"schema_version": 1, "status": "passed", "suite": "release", "target": "bridge",
+            "source_inventory_sha256": digest, "files": hashes, "sdk": SDK_VERSION, "references": REFERENCES,
+            "checks": self.checks, "production": {"sha256": sha(read_regular(candidate)), "bytes": candidate.stat().st_size},
+            "package": json.loads(self.files["apps/bridge/package/identity.json"])}}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--target", choices=[*TARGET_COMPONENTS, "all"], default="events")
+    parser.add_argument("--target", choices=["bridge"], default="bridge")
+    parser.add_argument("--component", choices=["all", "host", "core", "items", "rooms", "cards", "events"], default="all")
     parser.add_argument("--suite", choices=["sources", "python", "build", "test", "release"], default="test")
     parser.add_argument("--dotnet", type=Path)
     parser.add_argument("--game-data-dir", type=Path)
     parser.add_argument("--scratch", type=Path, help="New disposable output directory; created exclusively.")
     args = parser.parse_args()
     require(sys.version_info >= (3, 10), "python_310")
-    targets = list(TARGET_COMPONENTS) if args.target == "all" else [args.target]
+    targets = ["bridge"]
+    require(args.suite != "release" or args.component == "all", "release_requires_all_components")
     files = collect_sources(ROOT, targets)
     if args.suite == "sources":
         print(json.dumps({"status": "passed", **validate_sources(files, targets)}))
@@ -209,8 +214,11 @@ def main() -> int:
     start = time.monotonic()
     gate = Gate(targets, scratch, str(args.dotnet.resolve(strict=True)) if args.dotnet else None,
                 args.game_data_dir, release=args.suite == "release")
+    gate.component = args.component
     print(json.dumps({"status": "running", "scratch": str(scratch), "suite": args.suite, "targets": targets}), flush=True)
     try:
+        if args.suite == "release":
+            gate.prepare_identity()
         if args.suite == "build":
             require(gate.run("sdk", [gate.dotnet, "--version"]) == SDK_VERSION, "sdk_identity")
             for target in targets:

@@ -19,7 +19,7 @@
   </Target>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Sts2AgentBridge/Sts2AgentBridge.csproj"
+    <ProjectReference Include="../core_reference/Sts2AgentBridge.Core.Reference.csproj"
                       AdditionalProperties="BridgeTestSeam=true" />
     <Reference Include="sts2">
       <HintPath>$(STS2GameDataDir)/sts2.dll</HintPath>

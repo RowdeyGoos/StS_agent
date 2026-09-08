@@ -91,9 +91,11 @@ structural data, not strategic strength or a new `sts-train` policy.
 
 Read [current status](docs/PHASE_1_CURRENT_STATUS.md) and the
 [live development guide](docs/LIVE_DEVELOPMENT.md) before selecting a component
-or preparing a live test. The latest packaged experiment has a test-only card
-selection restriction; it is not a general full-run release. Old campaign commands,
-credentials and readiness messages are not reusable.
+or preparing a live test. The [unified bridge](bridge/Sts2AgentBridge/README.md)
+packages all supported capabilities in one mod, with one client and development
+checker. Its shared runtime and generalized transform input have offline evidence;
+the latest live result remains the earlier controlled card16 test. Complete
+autonomous runs remain an open target.
 
 ## Project layout and documentation
 
@@ -103,7 +105,7 @@ credentials and readiness messages are not reusable.
 | `game/agents/`, `game/training/` | Policies, persistence, collectors and training |
 | `game/contracts/`, `game/backends/`, `game/data/` | Full-game interfaces, reduced backend and artifacts |
 | `game/analysis/`, `game/cli/` | Evaluation, inspection and installed commands |
-| `bridge/Sts2AgentBridge/` | Maintained shared components and distinct live bridge compositions |
+| `bridge/Sts2AgentBridge/` | One production bridge, shared capability modules and focused checks |
 | `configs/`, `tests/`, `manifests/game-builds/` | Experiments, regression coverage and pinned build identities |
 
 Use canonical subpackage imports and installed `sts-*` commands; there are no

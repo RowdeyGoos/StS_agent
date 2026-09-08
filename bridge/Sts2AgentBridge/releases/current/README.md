@@ -1,16 +1,15 @@
-# Current validated release records
+# Current unified release
 
-The [validation summary](validation.json) records the source consolidation and
-separately retained hashes of these four successful release manifests. Each
-production DLL reproduces its historical accepted bytes. No game was launched.
+[bridge.json](bridge.json) is the accepted source, toolchain, test, binary and
+package identity for the single production bridge. [validation.json](validation.json)
+retains its separately recorded manifest hash, timing and evidence limits.
 
-These files contain identities and test evidence, not source copies. Their
-`files` fields identify the exact current source bundle accepted by each live
-client. A later code change can be developed and tested normally; retain a new
-manifest after its relevant release gate passes. Replace the appropriate current
-record and let Git keep previous versions.
+These are small release records, not source snapshots. Replace them after an
+accepted later release; Git keeps earlier versions. The four interim consolidated
+release records are preserved at commit `1d63e74`, and original artifact identities
+remain in [history](../history/README.md).
 
-Detailed command logs referenced by these records were disposable local outputs.
-The original tested release policies, source identities and live evidence remain
-available through [history](../history/README.md) and the repository's acceptance
-ledgers. A passing fixture is not additional live-game evidence.
+The package contains one mod DLL and manifest. Offline tests cover shared-host
+handoff/failure behavior, native capabilities, clients, reproducibility and owned
+installation/cleanup. They do not establish a live combined-run result. See the
+[bridge guide](../../README.md) for the single development and operational workflow.

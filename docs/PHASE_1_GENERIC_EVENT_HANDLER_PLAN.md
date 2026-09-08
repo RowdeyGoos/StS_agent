@@ -22,15 +22,16 @@ the old proposals. G7 and inherited child contracts describe exact semantics;
 a parent action may already have effects before an unsupported child appears.
 Preserve cumulative child completion independently of the latest parent's effect label.
 
-## Next change: all eligible transform holders
+## Implemented: all eligible transform holders
 
 The successful v10 experiment directly selected an allocated off-screen card.
-Its card16-only mask and dispatch guard are test restrictions. Generalize this
-working path in `bridge/Sts2AgentBridge/apps/events/gameplay`, retaining historical
-release evidence in Git. Shared generic code is in `components/events`.
+Its card16-only mask and dispatch guard were test restrictions. The unified
+production bridge now uses the generalized adapter in
+`bridge/Sts2AgentBridge/components/events/native/GenericEventV7TransformAdapter.cs`.
+Historical release evidence remains in Git.
 
-- Remove both fixed-slot restrictions and expose all legal allocated holders in
-  native order. Preserve complete candidate/domain binding.
+- Both fixed-slot restrictions are removed. All legal allocated holders are
+  exposed in native order, with complete candidate/domain binding.
 - Retain exact holder/model/run/screen/task ownership, native enabled state,
   deferred-callback identity, exact-original preview membership and selected-only
   transformation reconciliation. Matching card names do not establish identity.
@@ -50,7 +51,11 @@ another advertised target through the generalized path. Use the minimal known
 setup and one precise expected outcome. Do not repeat the same card16 question
 with another visibility-proof implementation.
 
-This generalization is planned; the documentation change does not implement it.
+The generalization is implemented and tested offline. The direct-input fixtures
+exercise slots 0, 15 and 19 in a 20-card domain and slot 1 in a two-card domain,
+plus missing/disabled/reassigned targets and deferred input. Existing fixed and
+variable transformation regressions remain. A new live all-holder claim has not
+been made; see [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md).
 
 ## Separate remaining questions
 
