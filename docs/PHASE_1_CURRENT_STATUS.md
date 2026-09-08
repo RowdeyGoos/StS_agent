@@ -18,7 +18,30 @@ historical evidence reports remain preserved in their original documents; this
 page supersedes their old point-in-time status statements without changing
 their authorization scope.
 
-## Current generic v4 functional acceptance — 2026-09-08
+## Current generic v5 functional acceptance — 2026-09-08
+
+`generic_event_v5` is accepted and frozen as successor25. Fixed-count transform1..8
+uses native original/final command witnesses and exact surviving-original-plus-
+append reconciliation, including per-card awaits and replacement substitution.
+The new `card_transform_v1` engine/codec/parser is separate; earlier upgrade,
+removal and reward families retain the actual frozen `card_selection_v1` engine.
+Event names remain test/ownership data, never production admission rules.
+
+Independent review and both full gates pass:2345 native assertions,879 transform
+assertions,118 wire cases,95 host tests and124 integrations,64 through actual
+native adapters/hooks. Mixed transformations followed by upgrade retain cumulative
+completion through Proceed or later failure. The final native guard rechecks
+replacement and preserved-card ownership after insertion callbacks and during
+pending effects. All24 predecessors and original bridge remain unchanged.
+
+Read the [G5 contract](PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
+[acceptance ledger](research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) for exact source
+identities, review findings and evidence. This is functional support, with no new
+release or live transformation claim. All live campaigns remain closed; no game
+setup is needed. Next functional work is generic item children; optional/scrolling,
+variable minima and custom/combat families remain explicit open scope.
+
+## Preserved generic v4 functional acceptance — 2026-09-08
 
 `generic_event_v4` is accepted and frozen as successor24. It adds shared native
 fixed-count upgrade1..8 while preserving variable removal and reward modes.

@@ -23,14 +23,16 @@ implementation and validation status. Native preview mappings come from scoped
 original/clone observations, never card names or apparent similarity.
 
 Continue by shared interaction family. The accepted
-[transformation capture](docs/research/PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md)
-proves remove-before-insert awaits and possible replacement substitution. Build a
-new reconciliation path after binding final replacements and the remaining native
-ordering facts; preserve the frozen positional validator for prior components. Item children,
-optional/scrolling selectors and custom/combat interactions remain open. Complete
-functional integration before release/live validation. Event identities are
-representative and held-out tests, not a production allowlist. All prior campaigns
-are closed; no new game setup is needed during functional development.
+[G5 transformation contract](docs/PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) now has an
+accepted, frozen transform core and native effect journal as successor25.
+The [G5 ledger](docs/research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) records both
+full passing gates:2345 native/879 transform assertions,118 wire cases,95 host
+tests and124 integrations,64 actual-native. It supports native remove-before-insert
+awaits, hook substitution and actual append order while preserving earlier engines.
+Next implement shared generic item-child discovery/admission before a new release
+or live campaign. Variable upgrade minima, optional/scrolling selectors and
+custom/combat interactions remain open. Event identities are representative and held-out tests, not a
+production allowlist. All campaigns remain closed; no new game setup is needed.
 
 ### Preserved predecessor milestones
 

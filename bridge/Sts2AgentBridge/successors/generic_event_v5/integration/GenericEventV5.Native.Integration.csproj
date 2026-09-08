@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>GenericEventV5.Native.Integration</AssemblyName>
+    <StartupObject>GenericEventV5NativeIntegrationHost</StartupObject>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../native/GenericEventV5TransformAdapter.cs" />
+    <Compile Include="../native/GenericEventV5TransformState.cs" />
+    <Compile Include="../native_tests/TransformFixtures.cs" />
+
+    <Compile Include="../native_tests/MultiUpgradeFixtures.cs" />
+    <Compile Include="../native/GenericEventV5MultiUpgradeAdapter.cs" />
+    <Compile Include="../native/GenericEventV5MultiUpgradeState.cs" />
+
+    <Compile Include="../../generic_event_release_v5/runtime/GenericEventDiagnosticCode.cs" Link="Frozen/GenericEventDiagnosticCode.cs" />
+    <Compile Include="GenericEventV5NativeIntegrationHost.cs" />
+    <Compile Include="GenericEventV5TransformIntegrationHost.cs" />
+    <Compile Include="../native_tests/Program.cs" Link="Inert/Program.cs" />
+    <Compile Include="../native_tests/TargetStubs.cs" Link="Inert/TargetStubs.cs" />
+    <Compile Include="../native/GenericEventV5Binding.cs" Link="Actual/GenericEventV5Binding.cs" />
+    <Compile Include="../native/GenericEventV5CardAdapter.cs" Link="Actual/GenericEventV5CardAdapter.cs" />
+    <Compile Include="../native/GenericEventV5RewardAdapter.cs" Link="Actual/GenericEventV5RewardAdapter.cs" />
+    <Compile Include="../native/GenericEventV5RemovalAdapter.cs" Link="Actual/GenericEventV5RemovalAdapter.cs" />
+    <Compile Include="../native/GenericEventV5Hooks.cs" Link="Actual/GenericEventV5Hooks.cs" />
+    <Compile Include="../native/PinnedGenericEventV5NativeAdapter.cs" Link="Actual/PinnedGenericEventV5NativeAdapter.cs" />
+    <Compile Include="../../card_selection_v1/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
+    <ProjectReference Include="../core/GenericEventV5.Core.csproj" />
+    <ProjectReference Include="../wire/GenericEventV5.Wire.csproj" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

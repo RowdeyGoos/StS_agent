@@ -2324,3 +2324,30 @@ The [v4 contract](docs/PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) owns these semantic
 its [ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) owns current
 implementation and validation evidence. This decision does not claim live
 multi-upgrade or all-event coverage.
+
+## 2026-09-08 — Reconcile transformations through native effect observations
+
+Pinned native metadata proves that transformation removes a complete batch before
+appending replacements and may await after each insertion. Replacement generation
+also precedes a hook that may substitute the card. The frozen positional,
+constant-length card-selection validator therefore cannot represent this operation.
+
+The accepted G5 contract introduces a separate `card_transform_v1` engine and
+explicitly tagged wire/parser path. Earlier families keep their frozen engine.
+Observe native original-to-initial generation, post-hook final identity, actual
+append completion and exact successful command results. Never invoke generation
+or enumerate a lazy transformation sequence a second time. Validate every current
+deck as surviving baseline originals plus the actual insertion prefix; do not
+assume tied sort order or infer provenance from a later deck difference.
+
+Bind the complete preview before one native Confirm dispatch. Carry its immutable
+selected-original authorization across sequential command batches and asynchronous
+waits. Retain result witnesses once, reject unrelated mutations, and credit one
+child only after the request, commands and parent callback complete. Synchronous
+insertion notifications run before AddInternal returns, so the observer validates
+the resulting deck after those callbacks too.
+
+The [G5 contract](docs/PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md) distinguish
+accepted design from implementation and live evidence. This decision adds no
+new live campaign and preserves all frozen predecessor identities.

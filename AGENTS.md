@@ -26,17 +26,15 @@ exact evidence, including the last-action effects reporting limitation.
 Historical campaign state identities must never be reused.
 
 Continued development now follows the independently accepted
-[generic v4 functional contract](docs/PHASE_1_GENERIC_EVENT_V4_CONTRACT.md) and
-[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md): fixed-count
-multi-upgrade1..8 and cumulative completed-child evidence. Both full offline gates
-passed; exact evidence lives in that ledger. Preserve all24 frozen successors and
-original bridge; new behavior belongs in a reviewed successor. Continued work now
-uses the [transformation discovery](docs/research/PHASE_1_GENERIC_TRANSFORM_ACCEPTANCE.md):
-native remove-before-insert awaits contradict the frozen positional core, and final
-replacement witnesses must account for substitution hooks. Read its native findings
-before designing a new transform reconciliation path. No new live setup is needed
-during functional development. Expand by authoritative shared interaction
-family, using event identities as tests instead of adding event-name allowlists.
+[generic v5 transformation contract](docs/PHASE_1_GENERIC_EVENT_V5_CONTRACT.md) and
+[acceptance ledger](docs/research/PHASE_1_GENERIC_EVENT_V5_ACCEPTANCE.md).
+The new transform engine and native adapter passed independent review and both
+complete offline gates, and are frozen as successor25. Preserve all25 frozen
+successors and original bridge. The preceding
+[v4 ledger](docs/research/PHASE_1_GENERIC_EVENT_V4_ACCEPTANCE.md) owns accepted
+fixed-count upgrade1..8 and cumulative child evidence. No new live setup is needed.
+Expand by authoritative shared interaction family, using event identities as tests
+instead of adding event-name allowlists.
 
 ## Read This First
 

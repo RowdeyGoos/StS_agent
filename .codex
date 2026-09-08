@@ -28,13 +28,14 @@ Most important code after that:
 - `game/simulation/encoding.py`
 - `game/cli/train.py`
 
-The live integration milestone remains `R0i`. Elite/headless actor packets are
-completed predecessor work. The latest event-card functional checkpoint is
-`b2ae0dd`: generic mechanics plus three exact native event rows, not automatic
-all-event support. Next is authoritative generic interaction discovery/admission
-in a reviewed successor; do not default to adding Brain/Zen rows. Fourteen
-successor trees are frozen. No new event-card release or live setup is ready.
-A complete autonomous run and target-game fidelity remain unclaimed.
+The live integration milestone remains `R0i`. Generic event v5 is the latest
+accepted functional component: fixed-count transform1..8 with native effect
+journals, preserving upgrade/removal/reward families and cumulative completion.
+Read its contract and acceptance ledger via the Astra handoff. All25 successor
+trees are frozen. Next is generic item-child discovery/admission; do not add
+event-name allowlists. All live campaigns are closed; no game setup is needed.
+An installable G5 release, live transformation, complete event coverage and a
+complete autonomous run remain unclaimed.
 
 Key invariants:
 
