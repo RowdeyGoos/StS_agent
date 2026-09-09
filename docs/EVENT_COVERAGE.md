@@ -1,6 +1,6 @@
 # Event coverage
 
-Updated 2026-09-08. This page records family and caller evidence. It is not a
+Updated 2026-09-09. This page records family and caller evidence. It is not a
 production event allowlist: supported shared interactions are discovered at runtime.
 [Generic events](GENERIC_EVENTS.md) explains the architecture; [status](STATUS.md)
 owns the latest operational result and [roadmap](../ROADMAP.md) owns priorities.
@@ -12,7 +12,7 @@ owns the latest operational result and [roadmap](../ROADMAP.md) owns priorities.
 | Ordinary option pages and Proceed | Generic native control; Dense Vegetation continuation live | Longer chains and other branches need evidence |
 | Item rewards | Singleton potion/relic children in native fixtures; Potion Courier/Ransack potion collection live | Broader relic/caller evidence and multiple-offer sets |
 | Add cards | Positive variable counts up to eight in fixtures; Cheese/Gorge two-of-eight live | Other callers/domains/counts are not all live-proven |
-| Upgrade cards | Fixed counts 1–8, exact preview mapping and allocated off-screen holder selection in native-to-Python fixtures; Smith and Sapphire Seed single upgrades live | Generic off-screen and multi-upgrade live evidence, variable counts and unallocated holders |
+| Upgrade cards | Fixed counts 1–8, exact preview mapping and allocated off-screen holder selection in native-to-Python fixtures; Smith and Sapphire Seed single upgrades live, including Sapphire Seed off-screen slot 20 of 23 | Multi-upgrade live evidence, variable counts and unallocated holders |
 | Remove cards | Positive variable counts up to eight, preview confirmation and exact remaining-deck reconciliation in native fixtures | Live caller evidence, optional selection and unallocated holders |
 | Transform cards | Fixed counts and positive variable counts up to eight in G7 fixtures; Aroma/Let Go fixed-one live | Variable-count live evidence, optional selection and unallocated holders |
 | Optional/zero selection and repeated choices | Unsupported by the current generic implementation | Cancellation, bounds and loop ownership need explicit semantics |
@@ -24,8 +24,10 @@ bridge. Native fixtures cover different slots, including 0, 15 and 19 in a
 20-card domain, plus missing/disabled/reassigned and deferred targets. The earlier
 card16-only mask was a test restriction and is removed. The controlled
 [V10 result](archive/phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md)
-is the specific live evidence for an allocated off-screen holder; it does not
-prove unallocated cards or every selector family. A further test should answer
+establishes one allocated off-screen transform holder. The September 9
+[combined batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) separately establishes
+an allocated off-screen single-upgrade holder. Neither proves unallocated cards
+or every selector family. A further test should answer
 a new behavior question rather than repeat the geometry investigation.
 
 ## Caller evidence
@@ -42,7 +44,7 @@ unclassified. No event has complete all-branch evidence.
 | `RoomFullOfCheese` | Gorge adds exactly two of eight; Search returns to map with zero item children | Bounded live paths; other branches unclassified |
 | `PotionCourier` | Ransack collects one potion then Proceed/map | Bounded live path; other branches unclassified |
 | `AromaOfChaos` | MaintainControl upgrade-one fixtures; LetGo fixed-one transformation live, including direct card16 in V10 | Other targets/counts and MaintainControl live remain open; unified smoke has the final-summary limit below |
-| `SapphireSeed` | Consume/Eat single upgrade, Proceed and independently checked core map live in the September 9 batch | Off-screen targets and Plant enchantment remain unverified/unsupported |
+| `SapphireSeed` | Consume/Eat single upgrade, including off-screen Defend slot 20 of 23, Proceed and independently checked core map live in the September 9 batch | Other domains/counts unverified; Plant enchantment unsupported |
 | `EndlessConveyor` | JellyLiver fixed-one transform caller statically audited | No native caller/live acceptance; selected body did not establish finish |
 | `MorphicGrove` | Group fixed-two transform caller statically audited; loses current gold first | No native caller/live acceptance |
 | `Symbiote` | KillWithFire equal-count transform request statically audited | Dynamic count unproved; no native caller/live acceptance |

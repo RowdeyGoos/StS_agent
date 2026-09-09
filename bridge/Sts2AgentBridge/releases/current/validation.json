@@ -2,6 +2,7 @@
   "change": "Wait through original-round snapshots after a queued end-turn while servicing bounded nested combat choices",
   "date": "2026-09-09",
   "evidence_limits": {
+    "allocated_offscreen_single_upgrade_live_tested": true,
     "autonomous_full_run": false,
     "combat_choice_live_completed": true,
     "combat_reward_map_live_tested": true,
@@ -19,6 +20,37 @@
     "status": "passed"
   },
   "live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
+  "live_offscreen_upgrade": {
+    "child_attempted_accepted_reconciled": [
+      2,
+      2,
+      2
+    ],
+    "cleanup": "Normal quit, stopped process/closed listener, exact quarantine/purge; 429 unchanged base files, zero overlays.",
+    "completed_card_children": 1,
+    "domain_count": 23,
+    "event": "SAPPHIRE_SEED",
+    "event_reads": 13,
+    "limits": "One fixed-single allocated target; no multi-upgrade, unallocated-holder or full-run claim.",
+    "manual_card_input": false,
+    "map_candidate_count": 2,
+    "map_reads": 1,
+    "observation_window_seconds": 18,
+    "operation": "upgrade",
+    "parent_attempted_accepted_reconciled": [
+      2,
+      2,
+      2
+    ],
+    "seconds_including_observation_window": 19.362,
+    "selector_scrolling": false,
+    "status": "passed",
+    "target": {
+      "before_upgrade_level": 0,
+      "key": "DEFEND_IRONCLAD",
+      "slot": 20
+    }
+  },
   "live_retest": {
     "actionable_map_returns": 2,
     "choice_selected_counts": [

@@ -6,32 +6,27 @@ process. Completed packets and old campaign instructions are historical referenc
 
 ## Immediate priorities
 
-1. **Close the remaining concrete live gap.** The combined batch passed Sapphire
-   Seed single-upgrade/event-to-map and two combat/choice/reward/map flows:
-   Neow's Fury selected two cards and zero cards, with first-card and skip-card
-   rewards respectively. The corrected end-turn wait passed. Off-screen generic
-   upgrade remains unverified because the console setup did not establish a larger
-   deck. First establish one known allocated off-screen upgrade target, then
-   verify its exact preview/effect. Reuse the
+1. **Compose supported interactions into longer live runs.** The combined batch
+   now covers Neow's Fury two-card and zero-card choices, combat resume, both
+   reward policies, event/map handoff and an allocated off-screen single upgrade.
+   Test remaining handoffs, elite continuation and unsupported surfaces with
+   targeted setups. Keep run-completion, branch coverage and strategic-quality
+   claims separate. Reuse the
    [combined batch](docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) and
    [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
-   evidence for unchanged paths; do not repeat every module.
+   evidence for unchanged paths.
 2. **Use the generalized transformation path in useful play.** All eligible,
-   allocated holders now use direct input, with identity/preview/completion
-   checks. The [generic handler plan](docs/GENERIC_EVENTS.md)
-   describes its evidence and remaining native questions. Do not repeat the
-   card16 experiment merely to obtain another geometric proof.
+   allocated holders use direct input, with identity/preview/completion checks.
+   The [generic handler guide](docs/GENERIC_EVENTS.md) describes its evidence and
+   remaining native questions. Do not repeat the card16 experiment merely to
+   obtain another geometric proof.
 3. **Expand the next interaction that blocks useful play.** Establish a real
    representative caller first. Prioritize observed gaps over hypothetical
    capability combinations or another event-name allowlist.
-4. **Compose supported interactions into longer live runs.** The one-combat
-   reward/map host path has now passed live with both reward policies. Test
-   remaining handoffs, elite continuation and unsupported surfaces with targeted setups.
-   Keep run-completion, branch coverage and strategic-quality claims separate.
 
-The current off-screen capability question has been answered for an allocated
-transform holder. A further live test should address new behavior, not repeat
-that experiment to obtain a different geometric proof.
+Allocated off-screen transformation and single-upgrade holders each have a
+representative live result. Further tests should address new behavior, such as
+multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 ## Remaining generic interaction work
 

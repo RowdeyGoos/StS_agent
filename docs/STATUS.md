@@ -9,40 +9,28 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The representative combined live batch passed. Its first four installations are
-cleaned up. A fifth installation of the unchanged accepted release is prepared
-for the off-screen upgrade test:
+The representative combined live batch passed, including the allocated
+**off-screen single-upgrade** test. All five installations are cleaned up;
+there is no current installed campaign. Accepted release:
 `fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb`.
-Current installed state:
-`ed59694f0015caa4c07309af8e9eab3fe459aa95d249efc555cfc6961b8e3537`.
-The pinned 429-file base, exactly two overlay files and client ownership preflight
-passed. Manual launch on Profile 3 at the main menu is pending; this installation
-still requires cleanup.
+Its unchanged source/package passed the 71-group gate in 146.105 seconds.
 
-The fourth installation reproduced the stale counter: twelve `card BASH Deck`
-additions left 13 displayed, and one `remove_card BASH Deck` refreshed it to 24.
-A later native upgrade selector contained only eight cards and no Bash. The user
-identified automatic attack upgrading by a relic as a possible explanation;
-verify the relic and card upgrade states rather than treating the counter as an
-eligible-card count. Next setup uses unupgraded `DEFEND_IRONCLAD` skills after
-opening Sapphire Seed from a fresh native room, with actual eligibility checked
-before input. The prepared test provider requires at least 21 candidates and
-selects slot 20 only if it is an unupgraded Defend; it has no timed input pause.
+Sapphire Seed admitted 23 eligible cards. The bridge directly selected the
+unupgraded Defend at slot 20, below the unscrolled selector viewport, verified
+its exact preview and completed upgrade, then returned to a fresh actionable
+map. All four actions reconciled. No selector scrolling or manual card input
+was used. The Bashes' absence from the earlier selector is now explained:
+Molten Egg was visibly confirmed, and the console-added Bashes were already upgraded. Defend skills
+provided the eligible targets. The deck counter also required a one-card removal
+to refresh; its value alone is not an eligible-card count.
 
-The fourth installation's first event read stopped with `parent_unavailable`
-before any input. After relaunch/native room entry, an ordinary upgrade/map flow
-passed, but the test wrapper's wrong child-kind check selected slot 0 instead of
-the intended later target. A corrected wrapper subsequently admitted the eight-card
-selector but its inspection timer expired before card input. The pending event
-was not completed manually; normal quit, exact quarantine/purge and unchanged
-base verification passed. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
-retains exact counts, setup limits and cleanup identities. Off-screen upgrade is
-still unverified; no production bridge source change was needed for these attempts.
-
-The accepted release's 71-group gate passed in 146.105 seconds. Its corrected
-combat host completed Neow's Fury two-card and zero-card choices, both reward
-policies and fresh actionable maps without UI assistance inside those flows.
-The same native DLL passed Sapphire Seed single-upgrade and event-to-core map.
+The same release completed Neow's Fury two-card and zero-card choices, resumed
+both combats to victory, exercised both card-reward policies and verified fresh
+maps without UI assistance inside those flows. Normal quit, stopped process and
+closed listener, exact quarantine/purge, and 429 unchanged base files with zero
+overlays passed after the final test. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
+owns exact counters, setup assistance, unsuccessful attempts, timings and cleanup
+identities. These are representative paths, not all-branch or full-run evidence.
 
 The September 8 unified module smoke is complete and its three installations are cleaned up.
 Representative paths covered combat (one UI-assisted chooser), rewards, map, shop,
@@ -70,7 +58,7 @@ before any new authorized live operation.
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
-| Upgrades | Sapphire Seed single upgrade and core map return live-demonstrated; fixed counts 1–8 and allocated off-screen targets have fixture coverage; generic off-screen live check pending |
+| Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
 | Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
@@ -94,7 +82,9 @@ identity, legality, preview, deferred-input and completion checks remain.
 Direct-input fixtures exercise different slots and invalid/deferred targets.
 Generic single/multi-upgrade selectors also accept allocated holders beyond the
 viewport, retaining native clickability, exact preview and effect checks. This
-upgrade extension has 20-card native-to-host fixture coverage and awaits live testing.
+upgrade extension has 20-card native-to-host fixtures and a live single-upgrade
+result for off-screen slot 20 in a 23-card domain; other counts retain narrower
+evidence.
 The [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md)
 records offline native/host regressions, shared socket handoff and failure cases,
 actual Python clients, reproducible packaging and owned cleanup fixtures.

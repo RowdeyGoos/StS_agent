@@ -85,11 +85,14 @@ multi-upgrade selection. Native-to-Python fixtures verify later-card selection,
 exact deck effects, Proceed and map return. These are offline checks, not live
 proof of upgrade behavior below the viewport.
 
-The next representative live interaction is `SapphireSeed`/Eat or
-`AromaOfChaos`/MaintainControl with an allocated upgrade target below the viewport:
-select the advertised target once, verify its exact upgrade preview and effect,
-then use `event-map` to check core map readiness. User setup may establish which
-card is off screen; no general clipping certificate is required.
+The September 9 [live batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
+demonstrated `SapphireSeed`/Consume with 23 eligible cards: direct selection of
+unupgraded Defend slot 20 below the viewport, exact preview and upgrade effect,
+Proceed and an independently checked core map. No selector scrolling or manual
+card input was used. This establishes one allocated off-screen single-upgrade
+path; multi-upgrade and other domains/counts remain separate evidence targets.
+For console fixtures, check automatic-upgrade relics and actual card eligibility:
+Molten Egg upgraded the added Bashes; unupgraded Defend skills supplied this case.
 
 ## Separate remaining questions
 

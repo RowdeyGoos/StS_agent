@@ -48,7 +48,9 @@ native legality, preview membership, deferred input and effect checks remain.
 Generic single/multi-upgrade selectors now also accept allocated holders beyond
 the viewport, retaining native clickability and exact preview/effect checks.
 This does not support cards without allocated holders or certify every selector.
-The upgrade extension is tested offline and awaits its representative live case.
+The upgrade extension has a live Sapphire Seed single-upgrade result for
+off-screen Defend slot 20 in a 23-card eligible domain; see the
+[combined batch](../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md).
 
 ## Development checks
 

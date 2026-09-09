@@ -1,11 +1,11 @@
 # Combined bridge live batch
 
-Status: representative batch completed. Generic single-upgrade/event-to-map and
-both combat/choice/reward/map flows passed; those three installations were cleaned
-up. The fourth installation is also now cleaned up; a fifth is prepared for a
-revised skill-card setup. Off-screen upgrade was not exercised because its larger-deck setup was not
-established. The user authorized live testing after feature preparation and
-confirmed manual readiness on Profile 3.
+Status: representative batch completed, including allocated off-screen
+single-upgrade. Generic event/map, both combat/choice/reward/map policies and
+Sapphire Seed off-screen Defend slot 20 of 23 passed. All five installations were
+cleaned up. The user authorized live testing after feature preparation and
+confirmed manual readiness on Profile 3. Earlier unsuccessful attempts below
+retain their original evidence limits.
 
 ## First installation and event attempt
 
@@ -371,3 +371,67 @@ preview confirmation and rejection of an eight-card domain. Planned setup adds
 Defend skills after opening the event, checks visible upgrade states and the
 allocated off-screen premise, then runs the bounded controller. This remains a
 prepared experiment, not a successful off-screen result.
+
+## Fifth live attempt: off-screen Defend upgrade passed
+
+Manual readiness, Profile 3 main menu, exact running process and authenticated
+compatible-build checks passed for the fifth installation above. Continue resumed
+a fresh native combat at HP 80/80, gold 193 and deck count 24. Public UI showed
+Bash+ cards. Opening the relic detail confirmed **Molten Egg**, whose displayed
+behavior upgrades attacks added to the deck. This supports the user's explanation
+for the added Bashes being absent from upgrade choices; they had not established
+an eligible off-screen domain. The earlier stale-counter observation also remains
+valid, but was a separate issue.
+
+Controlled console setup opened `event SAPPHIRE_SEED` from that native room,
+then added sixteen `card DEFEND_IRONCLAD Deck` and removed one with
+`remove_card DEFEND_IRONCLAD Deck` to refresh the displayed counter to 39.
+The public deck view showed the added Defends unupgraded, with 5 Block. Setup
+scrolled that deck viewer only; it was closed before bridge control. The initial
+event choices were visible with no other overlay or extra Proceed control.
+
+The existing shared client and generic host ran the prepared exact-target
+provider. After Consume, the native child advertised **23 eligible candidates**,
+including slot **20**, `DEFEND_IRONCLAD`, upgrade level **0**. An 18-second fixed
+observation window before selection remained inside the unmodified 30-second host
+deadline and required no operator input. During it, a CUA screenshot showed the
+selector at its initial top scroll position with five columns, the first two
+rows fully visible and the third partially visible. Slot 20 is in the fifth row,
+below that viewport. No selector scroll or other UI input was performed during
+the bridge-owned flow.
+
+The provider sent `select:20` once, received a preview observation with exact
+selected slots `[20]`, then sent `confirm`. The unchanged native adapter checked
+the exact original preview, selected-only upgrade effect and child completion.
+The host then chose Proceed and independently verified core map readiness:
+
+- Status resolved, no error, diagnostics `parent_ready`, `child_ready`,
+  `parent_ready`, `map_ready`.
+- Parent attempted / accepted / reconciled: **2 / 2 / 2**.
+- Card child attempted / accepted / reconciled: **2 / 2 / 2**.
+- One admitted and completed card child; no completed item children.
+- Four total actions, 13 event reads.
+- Fresh core map check: one read, two actionable candidates; UI also showed map.
+- Elapsed controller time **19.362 seconds**, including the 18-second observation
+  window. No new production build or repeated release gate was needed.
+- The final parent `effects: unverified` follows Proceed semantics; the completed
+  card-child count retains the verified upgrade.
+
+The bounded summary is `/private/tmp/sts-upgrade-after-event-result.json`; the
+counts and target above are the durable evidence. This proves one allocated
+off-screen **single-upgrade** target in this controlled Sapphire Seed setup. It
+does not establish multi-upgrade, arbitrary deck sizes, unallocated cards, other
+event branches, strategic quality or complete autonomous runs.
+
+### Fifth installation cleanup
+
+Normal quit succeeded. Runtime checks confirmed the game stopped and the listener
+closed using three process and two port samples. Exact quarantine state:
+`822b77bea2309fa7b0700372c8efdea5c09f8af44bf64a779a39019bfcda91e9`.
+Purge removed four owned generated files and returned the campaign to absent.
+Base verification passed: 429 unchanged files, zero overlays, projection
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem contents were read; credentials remained
+inside the existing client's read lease and were cleared after use. The waived
+unmodded relaunch was not repeated. User-wait, setup and documentation phase totals
+were not captured; measured controller and release-gate times are retained above.
