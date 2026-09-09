@@ -982,3 +982,49 @@ purge removed four generated files. All **429 base files** remained unchanged
 with the recorded base hash and **zero overlays**. The eleventh installation is
 **cleaned up**. Bird's earlier pass remains bound to its original release. No
 profile/save/history/Cloud filesystem content was accessed.
+
+
+## Twelfth installation: production event boundary correction
+
+Corrected the production classifier's multi-enchantment contract selection and
+its item-set / singleton and multiple card-reward payload handling. Added the
+canonical card-reward verbs to the existing shared event request grammar. Native
+legality/effect checks, parent ownership through child resolution, terminal
+failures and no-retry behavior remain intact. One independent semantic review
+found no blockers. Focused checks passed: **664 shared checks**, **311 C#/Python
+event cases** including **249 native-adapter cases**, and the event Python suite.
+Every native integration response now traverses the actual production classifier.
+
+The final release gate passed **71 groups in 257.219 seconds**, including 6,004
+native assertions, 125 host tests, 311 integration cases, 664 shared checks,
+byte-identical reproducibility, canonical packaging and owned installation/cleanup.
+Release outputs: `/private/tmp/sts-bridge-ot98xkue`. Manifest SHA-256:
+`748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`. Exact input commit: `c531b4c9963b640d52d0bb5fe9ec40d9808f3021`;
+all **303 inputs** were independently checked against its Git bytes. Source inventory:
+`4cd44456be890b42becf72682d4283ca55e64938d778573f3d80b39146abdd8a`.
+
+DLL: **871424 bytes**, SHA-256
+`dd8e8a986808522a2fd80a6bf001eb17921fe79be21e7529dd3ff7ddc18e5ec9`. Package ZIP: **872,118 bytes**, SHA-256
+`c9ddf52c7a354fd1b07f60c98a301d62053540702be1e6073f4fdecd89f042d7`.
+The prior package is retained unchanged at
+`/private/tmp/sts-unified-bridge-release-before-boundary-fix-20260909`.
+The corrected package occupies `/private/tmp/sts-unified-bridge-release`.
+
+Fresh pre-install runtime checks confirmed the exact game process stopped and
+bridge port closed. All 429 base files passed with the existing base hash.
+Installation produced state
+`1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec`;
+post-install verification found the unchanged 429 base files and exactly two
+owned mod files. **Installation is active; no live input has been sent.**
+
+Reuse the unchanged reviewed Prickly Sponge policy at
+`/private/tmp/sts-scriptorium-live-20260909.py`, SHA-256
+`6e9861219a796665c13e6dfe5ac51ae4af44957455b66e4ed3148ac4288c349e`.
+Its twelve actual frozen host-view checks were rerun and passed. The new exclusive
+result path is `/private/tmp/sts-scriptorium-live-20260909-retry-result.json`.
+Manual Profile 3 setup is pending: enter a room normally, ensure at least 99 gold
+and three eligible unenchanted cards, then `event WATERLOGGED_SCRIPTORIUM` and
+leave initial choices visible with the console closed. This is a fresh attempt,
+not adoption or replay of the stopped selector. Normal quit and owned cleanup
+remain required after testing. No profile/save/history/Cloud content was accessed.
+Separate implementation, review, packaging and user-wait times were not measured.

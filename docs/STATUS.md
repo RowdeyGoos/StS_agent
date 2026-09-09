@@ -20,32 +20,41 @@ core map. All four actions reconciled in 6.119 seconds. Torus and the other four
 new feature groups still await their live cases. The
 bridge distinguishes native transform-prompt generic selection from removal's
 forwarding request without event-name admission rules. Mixed card/item sets and
-broader pickup composition remain gaps. The current test release is
-`e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18`, built from
-source commit `7fa8eae`. All **71 release groups passed in 258.357 seconds**,
-including reproducible packaging and installation/cleanup fixtures. The eleventh
-installation is **cleaned up** after Prickly Sponge stopped following its accepted
-parent option. No card actions were sent; the user saw the native selector. The
-production response classifier rejected the new multi-enchantment descriptor.
-Offline inspection also found missing item/card-reward response formats and
-card-reward request verbs at that boundary. A correction and boundary regressions
-are being validated before the next installation. Normal quit, stopped process /
-closed port, exact owned quarantine/purge and all 429 unchanged base files passed.
-Bird's completed child and fresh map remain verified on the recorded release;
-the user separately confirmed Peck in the deck. The next live case remains
-**Waterlogged Scriptorium/Prickly Sponge**, with a fresh setup after the fix.
-The [eleventh-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eleventh-installation-generic-event-feature-batch)
-retains setup, provider and release details. See [generic semantics](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors).
+broader pickup composition remain gaps. The corrected test release is
+`748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, built from
+source commit `c531b4c`. All **71 release groups passed in 257.219 seconds**,
+including reproducible packaging and installation/cleanup fixtures. The twelfth
+installation is **active**, with state
+`1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec`.
+Stopped-process/closed-port checks and all 429 base files passed before install;
+post-install verification found exactly the two owned mod files.
+
+The previous Prickly Sponge attempt stopped after accepting its parent option,
+before any card actions. The user saw the native selector. The production response
+classifier rejected `card_enchant_v2`; offline inspection also found missing
+item/card-reward formats and card-reward request verbs. These boundaries are now
+corrected, retaining native legality, parent ownership and terminal failure behavior.
+The eleventh installation was cleaned up after normal quit, with all 429 base
+files unchanged. Bird's earlier transformation/map pass and user-confirmed Peck
+remain bound to that original release; they are not repinned to this package.
+
+The next fresh setup is **Waterlogged Scriptorium/Prickly Sponge** in Profile 3:
+at least 99 gold, three eligible unenchanted cards, and initial choices with the
+console closed after normal room entry. The unchanged reviewed policy selects two
+cards, checks Steady amount 1 and map return; its twelve frozen-view checks passed.
+No live input has been sent on the corrected installation. Cleanup remains required
+after the batch and normal quit. The
+[twelfth-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#twelfth-installation-production-event-boundary-correction)
+retains exact release, setup and cleanup bindings.
 
 The release gate includes **6,004 native assertions**, **125 event host tests**,
-**311 event C#/Python integration cases** (249 using the actual native adapters)
-and **112 shared bridge checks**. It verifies the compiled production surface,
-byte-identical reproducibility and canonical package. All 302 accepted inputs
-match the recorded source commit. Feature semantic reviews were retained; the
-bounded live provider passed independent review after correcting its preview
-comparison, with nine checks using the host's actual frozen views. The final
-release outputs are at `/private/tmp/sts-bridge-4ljtuw2f`; these offline checks do
-not establish live acceptance of the new features.
+**311 event C#/Python integration cases** (249 using actual native adapters) and
+**664 shared bridge checks**. Every native event integration response now passes
+through the production terminal classifier, with independent terminal-ownership
+assertions. Shared parser regressions cover supported reward verbs and malformed
+inputs. Independent semantic review found no blockers. All 303 accepted inputs
+match the recorded source commit. The final release outputs are at
+`/private/tmp/sts-bridge-ot98xkue`; offline checks do not establish live acceptance.
 
 Generic removal followed by one appended event grant has live acceptance.
 The previous live-accepted release was

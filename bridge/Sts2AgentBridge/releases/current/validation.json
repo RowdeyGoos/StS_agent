@@ -1,148 +1,51 @@
 {
-  "change": "Combined release for fixed multi-card enchantment, item reward sets, singleton and multiple card reward menus, and generic deck transformation selectors",
+  "change": "Production generic-event boundary compatibility for multi-enchantment, item reward sets and singleton/multiple card-reward menus",
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": false,
-    "current_package_live_tested": true,
-    "generic_deck_transform_bird_live_tested": true,
+    "current_package_installed": true,
+    "current_package_live_tested": false,
     "native_fixture_objects_are_inert": true,
-    "profile_save_history_cloud_files_accessed": false,
-    "remaining_four_new_features_live_tested": false
+    "profile_save_history_cloud_files_accessed": false
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Existing feature semantic reviews retained for unchanged implementations; Wood Carvings live provider independently reviewed, tuple/list preview mismatch corrected and checked with actual frozen DecisionView fixtures",
+    "scope": "Classifier and request grammar compatibility, item-set receipt version, child ownership and terminal failure behavior; reviewed by review_event_map",
     "status": "passed"
   },
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "cleanup": "passed: normal quit, stopped process/closed port, exact quarantine/purge, 429 unchanged base files",
-    "generated_files_removed": 4,
-    "live_input_sent": true,
-    "overlay_count": 0,
+    "cleanup": "required after live batch and normal quit",
+    "live_input_sent": false,
+    "overlay_count": 2,
     "pre_install_runtime": "passed: stopped exact game process and closed local bridge port",
-    "quarantine_state_sha256": "21fcace5e8f27b5dc0ccec9361b1bd7dca20d3481628cb33f030dd9442fbea9a",
-    "state_sha256": "23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942",
-    "status": "cleaned"
+    "state_sha256": "1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec",
+    "status": "installed"
   },
-  "live_results": [
-    {
-      "case": "WoodCarvings/Bird",
-      "domain_count": 21,
-      "event": {
-        "child_accepted": 2,
-        "child_attempted": 2,
-        "child_episodes": 1,
-        "child_reconciled": 2,
-        "code": null,
-        "completed_card_children": 1,
-        "completed_item_children": 0,
-        "effects": "unverified",
-        "parent_accepted": 2,
-        "parent_attempted": 2,
-        "parent_reconciled": 2,
-        "reads": 6,
-        "schema_version": 1,
-        "status": "resolved",
-        "total_attempted": 4
-      },
-      "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eleventh-installation-generic-event-feature-batch",
-      "expected_native_replacement": "PECK",
-      "map_handoff": {
-        "candidate_count": 2,
-        "code": null,
-        "reads": 1,
-        "status": "passed"
-      },
-      "policy": "/private/tmp/sts-wood-carvings-live-20260909.py",
-      "policy_sha256": "59107dcf50e773b5a3e8dae8e5198e8bce7514fb2903bff2b83131d17c17d0cc",
-      "replacement_key_evidence": {
-        "key": "PECK",
-        "response": "Yes, Peck is present",
-        "source": "user_visual_confirmation"
-      },
-      "replacement_key_observed": true,
-      "result_path": "/private/tmp/sts-wood-carvings-live-20260909-result.json",
-      "result_sha256": "9f9c6f53a0b3dd53d31164ff0e0622a550100274eac71d8cadf1f1699d62a33b",
-      "seconds": 6.119,
-      "selected": {
-        "key": "STRIKE_IRONCLAD",
-        "slot": 0,
-        "upgrade_level": 1
-      },
-      "status": "passed"
-    },
-    {
-      "case": "WaterloggedScriptorium/PricklySponge",
-      "decisions": [
-        {
-          "action": "choose:2",
-          "option": "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.PRICKLY_SPONGE",
-          "stage": "parent"
-        }
-      ],
-      "diagnostic_followup": "One read-only GET failed ConnectionRefusedError; zero further mutations",
-      "diagnostics": [
-        "parent_ready"
-      ],
-      "event": {
-        "child_accepted": 0,
-        "child_attempted": 0,
-        "child_episodes": 0,
-        "child_reconciled": 0,
-        "code": "invalid_response",
-        "completed_card_children": 0,
-        "completed_item_children": 0,
-        "effects": "unverified",
-        "parent_accepted": 1,
-        "parent_attempted": 1,
-        "parent_reconciled": 0,
-        "reads": 2,
-        "schema_version": 1,
-        "status": "failed",
-        "total_attempted": 1
-      },
-      "expected_enchantment": {
-        "amount": 1,
-        "key": "STEADY"
-      },
-      "installation_state_sha256": "23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942",
-      "map_handoff": {
-        "status": "not_attempted"
-      },
-      "release_sha256": "e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18",
-      "result_path": "/private/tmp/sts-scriptorium-live-20260909-result.json",
-      "result_sha256": "68c9748e0c1d1f67876ccc62b729f0f10b5b7b5a5ebb27a82c98158eb3120da8",
-      "seconds": 0.308,
-      "status": "failed",
-      "user_visible_surface": "A card-selection screen"
-    }
-  ],
   "live_test": {
     "expected_enchantment": {
       "amount": 1,
       "key": "STEADY"
     },
     "expected_selected_count": 2,
-    "independent_review": "passed; exact option/child/Steady1/selection, one-shot dispatch, counters/map and unchanged credential/no-retry path",
+    "independent_review": "Existing accepted policy reused unchanged; twelve actual frozen host-view checks rerun",
     "next_case": "WaterloggedScriptorium/PricklySponge",
     "policy": "/private/tmp/sts-scriptorium-live-20260909.py",
     "policy_fixture_checks": 12,
     "policy_sha256": "6e9861219a796665c13e6dfe5ac51ae4af44957455b66e4ed3148ac4288c349e",
-    "result_path": "/private/tmp/sts-scriptorium-live-20260909-result.json",
-    "setup": "At least 99 gold and 3 eligible unenchanted cards; fresh native room then event WATERLOGGED_SCRIPTORIUM, initial choices, console closed",
-    "status": "failed_before_child_actions"
+    "result_path": "/private/tmp/sts-scriptorium-live-20260909-retry-result.json",
+    "setup": "Fresh native room in Profile 3, at least 99 gold and 3 eligible unenchanted cards; event WATERLOGGED_SCRIPTORIUM, initial choices and console closed",
+    "status": "awaiting_manual_setup"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      869046,
-      "432b4877bc05acb0aedef3cc9039583761dd5e7be7274c8caf017248e00f59d2"
+      872118,
+      "c9ddf52c7a354fd1b07f60c98a301d62053540702be1e6073f4fdecd89f042d7"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      868352,
-      "e2b5b0344f0820a2030b22c2b0617552c5e44e18fa81727da85f32e7a7a00b00"
+      871424,
+      "dd8e8a986808522a2fd80a6bf001eb17921fe79be21e7529dd3ff7ddc18e5ec9"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -150,28 +53,35 @@
     ]
   },
   "package_directory": "/private/tmp/sts-unified-bridge-release",
-  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-event-batch-20260909",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-boundary-fix-20260909",
+  "prior_live_evidence": {
+    "bird": "passed; user confirmed Peck",
+    "prickly_sponge": "stopped after parent accepted, zero card actions; owned cleanup passed",
+    "record": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eleventh-installation-generic-event-feature-batch",
+    "release_sha256": "e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18"
+  },
   "production": {
-    "bytes": 868352,
-    "sha256": "e2b5b0344f0820a2030b22c2b0617552c5e44e18fa81727da85f32e7a7a00b00"
+    "bytes": 871424,
+    "sha256": "dd8e8a986808522a2fd80a6bf001eb17921fe79be21e7529dd3ff7ddc18e5ec9"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18",
+  "release_manifest_sha256": "748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3",
   "schema_version": 1,
-  "source_commit": "7fa8eae89160ee582dc9e66610f6b8f976a98825",
-  "source_inventory_sha256": "da579606508e0855e18b6f9d7e0d710a7037cab7ff977076c8211070255183a4",
-  "source_state": "All 302 accepted source/test inputs verified byte-for-byte at the recorded commit",
+  "source_commit": "c531b4c9963b640d52d0bb5fe9ec40d9808f3021",
+  "source_inventory_sha256": "4cd44456be890b42becf72682d4283ca55e64938d778573f3d80b39146abdd8a",
+  "source_state": "All 303 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate 258.357 seconds; Bird live flow 6.119 seconds, including a five-second preview pause. Separate packaging/review/setup-wait times were not measured.",
+  "timing_limits": "Final release gate 257.219 seconds; stopped prior live case 0.308 seconds. Separate implementation/review/release-preparation/user-wait times were not measured.",
   "validation": {
     "check_groups": 71,
     "event_integration_cases": 311,
     "host_tests": 125,
     "native_assertions": 6004,
     "production_native_integration_cases": 249,
-    "release_gate_seconds": 258.357,
-    "scope": "Final combined release gate; native/host/wire, shared host/client, reproducibility, package, owned installation/cleanup and compatibility fixtures",
-    "scratch": "/private/tmp/sts-bridge-4ljtuw2f"
+    "release_gate_seconds": 257.219,
+    "scope": "Final combined release gate; actual native integration now includes the production terminal classifier, shared request grammar regressions, reproducible build/package and owned installation/cleanup",
+    "scratch": "/private/tmp/sts-bridge-ot98xkue",
+    "shared_bridge_checks": 664
   }
 }
