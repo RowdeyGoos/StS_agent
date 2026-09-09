@@ -14,7 +14,7 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after live batch; Sea Glass zero passed on the same installation",
+    "cleanup": "pending normal quit after live batch; Sea Glass zero and three passed",
     "live_input_sent": true,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
@@ -93,6 +93,53 @@
       "result_sha256": "fc20941a3ab3108fd1d17e39b32cd35e99f72ae3bb1eaab8bcf659c3d4abea59",
       "seconds": 0.712,
       "selected_cards": [],
+      "status": "passed"
+    },
+    {
+      "case": "Orobas/SeaGlass three",
+      "event": {
+        "child_accepted": 4,
+        "child_attempted": 4,
+        "child_episodes": 1,
+        "child_reconciled": 4,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 29,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 6
+      },
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-seaglass-three-live-20260909-result.json",
+      "result_sha256": "b52252ae9b8d1a3ebeefac1f2df12724205784e69eafd0785f08ff785967ea53",
+      "seconds": 2.517,
+      "selected_cards": [
+        {
+          "key": "TWIN_STRIKE",
+          "slot": 0,
+          "upgrade_level": 0
+        },
+        {
+          "key": "SWORD_BOOMERANG",
+          "slot": 1,
+          "upgrade_level": 0
+        },
+        {
+          "key": "TREMBLE",
+          "slot": 2,
+          "upgrade_level": 0
+        }
+      ],
       "status": "passed"
     }
   ],

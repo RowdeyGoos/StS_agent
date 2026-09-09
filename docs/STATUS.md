@@ -139,7 +139,9 @@ The **fifteenth installation is active**, installed state
 `1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`.
 **Sea Glass zero-card selection passed**: the 15-card grid admitted, Confirm
 returned an empty result with unchanged deck, and all three actions reconciled
-through a fresh actionable map in **0.712 seconds**. Three-card selection is next;
+through a fresh actionable map in **0.712 seconds**. **Three-card selection also
+passed**: unupgraded Twin Strike, Sword Boomerang and Tremble, six reconciled
+actions and fresh map in **2.517 seconds**. Full fifteen-card selection is next;
 the same package remains installed and cleanup is pending after the batch.
 
 A preceding fresh-process attempt on this same release stopped before any action
@@ -159,8 +161,8 @@ The add-card adapter still required computed whole-grid fit. That prerequisite i
 now removed, while exact grid/holder/card/control ownership, native clickability,
 legality, bounded input and task/deck outcomes remain checked. Focused reward
 surface checks passed 283 assertions; optional-event checks passed 379. Independent
-semantic review found no blockers. Sea Glass zero now has representative live
-acceptance; partial/full selection remains pending.
+semantic review found no blockers. Sea Glass zero and three now have representative
+live acceptance; full selection remains pending.
 
 The **fourteenth installation is cleaned up**: normal quit, exact quarantine/purge
 and **429 unchanged base files with zero overlays** passed before source edits and

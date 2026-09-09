@@ -605,7 +605,9 @@ checks remain enforced. This also permits zero-selection Confirm on a larger gri
 The initial Sea Glass live attempt exposed the leftover layout prerequisite and
 stopped before any card input. The corrected **Sea Glass zero-selection path has
 live acceptance**: explicitly confirmed empty result, unchanged deck and fresh map.
-Partial/full selection remains pending. See the
+**Three-card selection also passed**, adding the exact unupgraded Twin Strike,
+Sword Boomerang and Tremble originals and verifying a fresh map. Full selection
+remains pending. See the
 [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sea-glass-zero-passed-after-read-only-startup).
 
 Optional behavior is enabled only by an explicit event context. Existing positive

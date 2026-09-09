@@ -1541,3 +1541,29 @@ enter a room from the map normally, run `ancient OROBAS SEA_GLASS`, close the co
 and leave the option untouched. The same installed release remains active; cleanup
 is pending after the batch. No profile/save/history/Cloud filesystem content was
 accessed, and no uncertain mutation was retried.
+
+### Sea Glass three-card selection passed
+
+The user prepared a fresh Sea Glass option. Fresh exact running-process,
+release/source/owned installation and authenticated health/manifest checks passed
+on the unchanged fifteenth installation and release. The reviewed `--count 3`
+policy selected slots **0 Twin Strike**, **1 Sword Boomerang**, **2 Tremble**, each
+at upgrade level **0**, then Confirm and Proceed. `card_add_v2` resolved with
+exactly those selected original cards; baseline deck and exact additions passed
+native effect checks. Three `selected` receipts and one `committed` receipt were
+reconciled in the child.
+
+All **six actions reconciled**: parent attempted/accepted/reconciled 2/2/2, child
+4/4/4, one completed card child, zero item children, 29 event reads. A fresh core
+map read passed with two candidates. Policy time: **2.517 seconds**. Parent effects
+remain `unverified`. This demonstrates partial selection and native card input on
+the offered grid; it does not establish off-screen selection or every layout.
+Result: `/private/tmp/sts-seaglass-three-live-20260909-result.json`, SHA-256
+`b52252ae9b8d1a3ebeefac1f2df12724205784e69eafd0785f08ff785967ea53`.
+
+Full **fifteen-card selection** is next using the same unchanged reviewed policy
+with `--count 15`. Its 96 completed checks/review are reused. Prepare a fresh
+Profile 3 run, enter a room from the map normally, run `ancient OROBAS SEA_GLASS`,
+close the console and leave the relic option untouched. The same release remains
+installed; cleanup is pending after the batch. No uncertain mutation was retried
+and no profile/save/history/Cloud filesystem content was accessed.
