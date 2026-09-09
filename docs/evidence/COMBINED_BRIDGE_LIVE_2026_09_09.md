@@ -754,3 +754,69 @@ requires computed whole-grid dimensions and complete containment. The next
 correction should align removal with existing holder-based sibling adapters,
 preserving target identity, native legality and exact preview/effect verification.
 No geometry predicate has yet been changed or live-tested in this record.
+
+### Removal layout correction
+
+At the user's request, removal now follows the sibling adapters' native holder
+input policy. The obsolete `GridGeometry` capture, computed full-grid fit and
+size/position retention checks are removed. The exact grid must remain valid and
+not animating out; the complete allocated holder domain and retained
+holder/model/card/hitbox/highlight/material identities still govern admission and
+commit. Candidate legality now explicitly checks the native `_isClickable` field
+using the existing sibling mechanism, in addition to hitbox enabled state and
+node visibility. Pinned `NCardHolder._GuiInput` IL checks this field before
+deferring `EmitPressed`; input uses the holder object, not screen coordinates.
+
+Native fixtures cover five and twenty allocated cards in layouts that fail the
+old computed fit, then change grid size and scroll position after the first
+selection. Both cases verify exact two-original preview, selected-only removal,
+ordered survivors and parent/map completion. Additional stale-decision cases
+reject an unclickable holder, replaced or destroyed grid, outgoing animation and
+changed holder domain with zero card dispatch and unchanged deck. Existing
+replacement/disabled/hidden/destroyed hitbox tests remain. The full focused native
+executable passed **4,687 checks** in `/private/tmp/sts-removal-layout-tests`.
+An initial fixture compile used a set method on its list; the assertion was
+corrected to exact sequence equality before the passing run.
+
+Independent semantic review found no blockers. Ownership, action bounds,
+preview, native-task completion, full-deck removal/grant reconciliation, wire
+contracts and cleanup behavior remain unchanged. Fixtures are inert and do not
+prove live off-screen removal. The upcoming live target remains the user's
+ordinary five-Strike Amalgamator setup, previously confirmed visible without
+scrolling. No extra viewport certificate or diagnostic system was introduced.
+
+## Tenth installation: native removal without whole-grid geometry
+
+The corrected combined release passed all **71 groups in 161.665 seconds**,
+including **4,687 native checks**, **221 event integration cases** (159 production
+native), reproducibility, packaging and owned installation/cleanup fixtures.
+All 294 source/test inputs match source commit
+`bd45e1bbd3a7c007a3acf3d1dac12182c1582d79` byte-for-byte.
+
+- Release manifest SHA-256:
+  `fcfdd9e9deb162a5ca1f0b0756505048b48cdb83e18255520fcc788081a526dd`.
+- Source inventory:
+  `058cf81db3b713373268e0a4574bcb6ed3e6e17f10d0fe692f8593a7bc0d479a`.
+- DLL: 801280 bytes,
+  `a7e62b229a5e103c8802b599f705da908551ffa3087c5470c7a089b04ef11c50`.
+- Installed state:
+  `a8b6ba4456681d5a8c824f0c84826a21446c0aeddee5207b0be1de85fee1d496`.
+
+The previous package is retained at
+`/private/tmp/sts-unified-bridge-release-before-removal-layout-20260909`.
+Canonical publication and installation passed, including exact package/source
+identity, stopped process/closed listener, pinned base build and owned files.
+The current package occupies `/private/tmp/sts-unified-bridge-release`.
+
+The bounded Amalgamator provider is prepared at
+`/private/tmp/sts-amalgamator-live-20260909-layout.py` with the new release/state
+identities and a fresh exclusive result path. Selection policy remains unchanged:
+Combine Strikes, first two eligible slots, eight-second exact preview, confirmation,
+Proceed and independent fresh core map check, with separate Ultimate Strike grant
+metadata. Compilation and exact sequence plus wrong-event/preview/duplicate-confirm
+rejection checks passed without credentials or live transport.
+
+Manual Profile 3 setup is pending; no live input has been sent on this release.
+Installation remains active and cleanup follows the attempt and normal quit.
+Native and integration checks took 19.399 and 78.143 seconds respectively;
+implementation, review, packaging and user wait were not separately timed.

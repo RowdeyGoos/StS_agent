@@ -11,19 +11,27 @@ and inspect Git state; do not switch to the historical 23cf worktree.
 
 Generic removal followed by one appended event grant is implemented and packaged.
 The current accepted release is
-`5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d`,
-with a reproduced removal-selector compatibility correction: derived native
-hitboxes are accepted while exact reference identity, liveness, visibility,
-enabled state and all preview/task/deck-effect checks remain enforced.
-All **71 combined release groups** passed in **161.809 seconds**, including
-**4,638 native assertions**, **221 event integration cases**, reproducible
+`fcfdd9e9deb162a5ca1f0b0756505048b48cdb83e18255520fcc788081a526dd`.
+Removal now uses exact allocated native holders without computed whole-grid fit
+or retained scroll/grid dimensions. Native clickability, valid exact grid and
+holder/control identity, visibility, enabled state, preview and task/deck-effect
+checks remain enforced. Derived native hitboxes remain supported.
+All **71 combined release groups** passed in **161.665 seconds**, including
+**4,687 native assertions**, **221 event integration cases**, reproducible
 packaging and owned installation/cleanup fixtures. The package is published at
-`/private/tmp/sts-unified-bridge-release`. The ninth live campaign is cleaned up.
-The live retry passed candidate binding, then stopped at `prepare_geometry`
-before admitting a child. Combine Strikes was accepted; zero card actions were
-sent. The user confirmed all five Strikes were visible without scrolling. Normal
-quit, owned quarantine/purge and the 429-file base check passed; no campaign
-remains installed.
+`/private/tmp/sts-unified-bridge-release` and installed for the tenth live campaign.
+No live input has been sent on this release; manual Profile 3 setup is pending.
+
+The ninth live campaign used release
+`5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d`.
+It passed candidate binding but stopped at `prepare_geometry` before admitting a
+child; Combine Strikes was accepted and zero card actions were sent. The user
+confirmed all five Strikes were visible without scrolling. Normal quit, owned
+cleanup and the 429-file base check passed. The
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#ninth-installation-corrected-removal-hitboxes)
+retains that failure and the subsequent layout correction. Off-screen removal
+has fixture coverage only; the upcoming case uses the ordinary Amalgamator setup.
+
 The next case is **Amalgamator/CombineStrikes**: select two of at least three
 eligible Strikes, confirm removal, observe Ultimate Strike and verify a fresh
 core map. The `card_remove_v2` child verifies exact selected removals and unchanged

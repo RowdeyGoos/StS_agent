@@ -84,6 +84,15 @@ Existing selection counts, preview/confirm actions, task ownership, action bound
 and parent completion checks remain. Older generic clients reject the new child
 version rather than silently accepting broader semantics.
 
+Removal uses native input on the exact allocated holder, so admission no longer
+requires computed whole-grid dimensions, full viewport containment or unchanged
+scroll position. It retains the exact grid and allocated holder domain, native
+`_isClickable`, hitbox validity/identity/enabled state, visible nodes and settled
+selection state. Grid replacement, destruction or animation and target/domain
+changes still prevent input. Fixtures cover five- and twenty-card layouts,
+mid-selection resizing/scrolling and exact preview/removal/map completion. These
+are not live off-screen removal evidence.
+
 The adapter captures the complete actual deck, including enchantment descriptors
 and player/run ownership. Selecting and previewing require the unchanged request
 baseline. After confirmation, only selected originals may disappear; all survivors

@@ -1,57 +1,44 @@
 {
-  "change": "Generic removal retains derived NClickableControl hitboxes, preserving exact reference identity and native legality",
+  "change": "Generic removal uses exact allocated native holder input without whole-grid geometry requirements; native clickability and identity remain enforced",
   "date": "2026-09-09",
   "evidence_limits": {
     "automatic_addition_provenance_verified": false,
     "autonomous_full_run": false,
     "changed_surviving_cards_supported": false,
-    "current_package_installed": false,
-    "current_package_live_tested": true,
+    "current_package_installed": true,
+    "current_package_live_tested": false,
     "maximum_post_removal_grants": 1,
     "multiple_post_removal_grants_supported": false,
     "native_fixture_objects_are_inert": true,
+    "offscreen_removal_live_tested": false,
     "other_post_selector_additions_supported": false,
     "removal_parent_grant_live_tested": false
   },
   "evidence_reused": {
     "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
-    "prior_release_manifest_sha256": "f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9",
-    "scope": "Existing sibling derived-hitbox compatibility correction and pinned native control/preview behavior informed this narrow change. Prior Amalgamator stop remains at its original identity, with no removal-parent-grant live acceptance. One complete final gate ran against the corrected inputs."
+    "prior_release_manifest_sha256": "5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d",
+    "scope": "Existing sibling native holder input and _isClickable checks; pinned NCardHolder._GuiInput IL; ninth live attempt passed candidates and stopped at prepare_geometry with five visible Strikes. Historical identities and failed live conclusions unchanged. One full release gate ran against the corrected inputs."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Two hitbox predicates; statically typed native controls; retained reference identity, liveness, enabled/visible state and untouched preview/task/deck-effect checks; zero-input mutation regressions",
+    "scope": "Removal of scroll/grid dimension and position requirements; exact grid/domain/control identity, native clickability, visibility and enabled state; unchanged ownership, preview/task/deck effects, wire and cleanup semantics; layout and stale-target regressions",
     "status": "passed"
   },
   "installation": {
-    "cleanup": "passed: owned quarantine/purge; 429 unchanged base files, zero overlays",
-    "live_input_sent": true,
-    "quarantine_state_sha256": "e813c87ea2c73dba2b53a21d146010c4313898b00c8738a9150cc680e9a06953",
-    "state_sha256": "d492bdf9406a4f23fe1d13b4b3fa794e64c50c1f198152e44f76afafd8e9de03",
-    "status": "absent"
-  },
-  "live_attempt": {
-    "child_attempted": 0,
-    "code": "unsupported_state",
-    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#ninth-installation-corrected-removal-hitboxes",
-    "native_diagnostic": "prepare_geometry",
-    "parent_accepted": 1,
-    "parent_attempted": 1,
-    "parent_reconciled": 0,
-    "reads": 258,
-    "seconds": 17.704,
-    "status": "failed",
-    "user_observation": "All five Strikes visible without scrolling"
+    "cleanup": "pending_live_attempt_and_normal_quit",
+    "live_input_sent": false,
+    "state_sha256": "a8b6ba4456681d5a8c824f0c84826a21446c0aeddee5207b0be1de85fee1d496",
+    "status": "installed"
   },
   "next_live_case": "Amalgamator/CombineStrikes with at least three eligible Strikes: select two, confirm their exact removal preview, observe Ultimate Strike in separate unverified parent_additions, and independently verify a fresh core map. Native game body has not been executed by these fixtures.",
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      803510,
-      "70bf5b64f2f921c41dc19eb8bbcde6326605813384b6884b5f2fdffa5dc33ed4"
+      801974,
+      "59fecef1f41bbf7ced0948b16236aecedcd055554b1a43ea34f3f671a948dd40"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      802816,
-      "4e38a6121adf1a57e6eca5d34ae71f28dcf4f767c3c76a6487f2cf4c2fc78319"
+      801280,
+      "a7e62b229a5e103c8802b599f705da908551ffa3087c5470c7a089b04ef11c50"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -59,31 +46,31 @@
     ]
   },
   "package_directory": "/private/tmp/sts-unified-bridge-release",
-  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-removal-hitbox-20260909",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-removal-layout-20260909",
   "production": {
-    "bytes": 802816,
-    "sha256": "4e38a6121adf1a57e6eca5d34ae71f28dcf4f767c3c76a6487f2cf4c2fc78319"
+    "bytes": 801280,
+    "sha256": "a7e62b229a5e103c8802b599f705da908551ffa3087c5470c7a089b04ef11c50"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d",
+  "release_manifest_sha256": "fcfdd9e9deb162a5ca1f0b0756505048b48cdb83e18255520fcc788081a526dd",
   "schema_version": 1,
-  "source_commit": "93ffbb9c441fa05a71d3f666f109c1313f995623",
-  "source_inventory_sha256": "b2cc26cb8ccfe4076328cb817fb45be77b64a68c33686682addb86bb946baeee",
+  "source_commit": "bd45e1bbd3a7c007a3acf3d1dac12182c1582d79",
+  "source_inventory_sha256": "058cf81db3b713373268e0a4574bcb6ed3e6e17f10d0fe692f8593a7bc0d479a",
   "source_state": "All 294 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate: 161.809 seconds; native run: 20.332 seconds; event integration: 77.185 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. The live retry took 17.704 seconds and stopped before child admission.",
+  "timing_limits": "Final release gate: 161.665 seconds; native run: 19.399 seconds; event integration: 78.143 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. No live input has been sent on this release.",
   "validation": {
     "check_groups": 71,
-    "corrections": "Before-fix fixture using derived hitboxes failed at removal admitted. After-fix test initially reached a retained legacy assertion-count guard because new cases were placed in the legacy group; moved only the new cases after existing groups and preserved every original count. Focused native execution and the single final release gate passed.",
+    "corrections": "An initial new fixture assertion used a set method on its List; corrected to exact sequence equality before focused execution. Focused native execution passed 4,687 checks; the single final combined release gate passed all 71 groups.",
     "event_integration_cases": 221,
-    "event_integration_seconds": 77.185,
+    "event_integration_seconds": 78.143,
     "host_tests": 125,
-    "native_assertions": 4638,
-    "native_tests_seconds": 20.332,
+    "native_assertions": 4687,
+    "native_tests_seconds": 19.399,
     "production_native_integration_cases": 159,
-    "release_gate_seconds": 161.809,
-    "scope": "Derived-hitbox removal families and fixed-two removal-plus-grant; stale decision with replaced, disabled, hidden or destroyed hitbox sends zero card input and leaves the deck unchanged; full native/host/production integration, reproducibility, package and owned installation/cleanup checks",
-    "scratch": "/private/tmp/sts-bridge-lgcfbovd"
+    "release_gate_seconds": 161.665,
+    "scope": "Five/twenty allocated holders with noncanonical/overflow layout; mid-selection resize/scroll; exact two-original preview, removal, ordered survivors and map; unclickable holder, grid replacement/destruction/animation and domain changes send zero card input; retained hitbox mutations; full native/host/production integration, reproducibility, package and owned installation/cleanup checks",
+    "scratch": "/private/tmp/sts-bridge-s4oazj82"
   }
 }
