@@ -1,6 +1,7 @@
 using System;
 using Sts2AgentBridge.Successors.GenericEventReleaseV5;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -25,7 +26,6 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
     private readonly NSimpleCardSelectScreen _screen;
     private readonly NCardGrid _grid;
     private readonly NConfirmButton _confirm;
-    private readonly GridGeometry _geometry;
     private readonly Action _confirmDispatch;
     private readonly Task<IEnumerable<CardModel>> _completionTask;
     private readonly CandidateBinding[] _candidates;
@@ -48,14 +48,12 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
                 out NCardGrid grid,
                 out CandidateBinding[] candidateBindings,
                 out CardSelectionV1NativeCandidate[] candidates,
-                out NConfirmButton confirm,
-                out GridGeometry geometry, out _))
+                out NConfirmButton confirm, out _))
             throw new InvalidOperationException("Event selector binding is unsupported.");
         _grid = grid;
         _candidates = candidateBindings;
         _cachedCandidates = candidates;
         _confirm = confirm;
-        _geometry = geometry;
         _confirmDispatch = _confirm.ForceClick;
 
         _completionTask = _screen.CardsSelected() ??
@@ -74,7 +72,7 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
         {
             return binding is not null && screen is not null &&
                 TryPrepareSurface(binding, screen, out _, out _, out _,
-                    out _, out _, out diagnostic);
+                    out _, out diagnostic);
         }
         catch { return false; }
     }
@@ -104,7 +102,7 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
         else if(!_screen.IsVisibleInTree()||_taskState!=CardSelectionV1TaskState.Incomplete)phase=CardSelectionV1Phase.Transient;
         else
         {
-            if(!ReferenceEquals(_screen.GetNodeOrNull<NCardGrid>("%CardGrid"),_grid)||!_geometry.Matches(_grid)||
+            if(!ReferenceEquals(_screen.GetNodeOrNull<NCardGrid>("%CardGrid"),_grid)||!ValidExact(_grid)||
                 !TrySnapshotHolders(_grid,out NGridCardHolder[] holders)||
                 !TryCaptureBindings(holders,_candidates,out candidates,out bool allSettled,out _,out _)||
                 !ValidExact(_confirm)||!ReferenceEquals(_screen.GetNodeOrNull<NConfirmButton>("%Confirm"),_confirm))return Unsupported();
@@ -197,14 +195,12 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
         out CandidateBinding[] bindings,
         out CardSelectionV1NativeCandidate[] candidates,
         out NConfirmButton confirm,
-        out GridGeometry geometry,
         out GenericEventDiagnosticCode diagnostic)
     {
         grid = null!;
         bindings = Array.Empty<CandidateBinding>();
         candidates = Array.Empty<CardSelectionV1NativeCandidate>();
         confirm = null!;
-        geometry = null!;
         diagnostic = GenericEventDiagnosticCode.PrepareBinding;
         if (!binding.Ready || binding.Operation!=CardSelectionV1Operation.Add || !binding.MatchesOffers()) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareScreen;
@@ -223,8 +219,6 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
         if (!TrySnapshotHolders(grid, out NGridCardHolder[] holders)) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareCandidates;
         if (!TryCreateBindings(holders, binding.EligibleOriginals, out bindings, out candidates, out diagnostic)) return false;
-        diagnostic = GenericEventDiagnosticCode.PrepareGeometry;
-        if (!GridGeometry.TryBind(grid, bindings.Length, out geometry)) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareConfirm;
         confirm = RequiredNode<NConfirmButton>(screen,"%Confirm");
         return ValidExact(confirm) && confirm.IsEnabled==(binding.Prefs.MinSelect==0);
@@ -380,88 +374,11 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
         return true;
     }
 
-    private sealed class GridGeometry
-    {
-        private const float Padding = 40f;
-        private const float TopPadding = 80f;
-        private const float BottomPadding = 320f;
-
-        private GridGeometry(Control scroll, Vector2 scrollSize,
-            Vector2 scrollPosition, Vector2 gridSize, int yOffset,
-            Vector2 cardSize)
-        {
-            Scroll = scroll;
-            ScrollSize = scrollSize;
-            ScrollPosition = scrollPosition;
-            GridSize = gridSize;
-            YOffset = yOffset;
-            CardSize = cardSize;
-        }
-
-        private Control Scroll { get; }
-        private Vector2 ScrollSize { get; }
-        private Vector2 ScrollPosition { get; }
-        private Vector2 GridSize { get; }
-        private int YOffset { get; }
-        private Vector2 CardSize { get; }
-
-        internal static bool TryBind(NCardGrid grid, int count,
-            out GridGeometry geometry)
-        {
-            geometry = null!;
-            Control? scroll = grid.GetNodeOrNull<Control>("%ScrollContainer");
-            if (count is < 2 or > 64 || scroll is null || !Valid(scroll) ||
-                !scroll.IsVisibleInTree()) return false;
-            Vector2 scrollSize = scroll.Size;
-            Vector2 gridSize = grid.Size;
-            Vector2 cardSize = NCard.defaultSize * NCardHolder.smallScale;
-            int yOffset = grid.YOffset;
-            if (!CompleteVisibleLayout(count, scrollSize, scroll.Position,
-                    gridSize, cardSize, yOffset)) return false;
-            geometry = new GridGeometry(scroll, scrollSize, scroll.Position,
-                gridSize, yOffset, cardSize);
-            return true;
-        }
-
-        internal bool Matches(NCardGrid grid)
-        {
-            if (!Valid(Scroll) ||
-                !ReferenceEquals(grid.GetNodeOrNull<Control>("%ScrollContainer"), Scroll))
-                return false;
-            Vector2 cardSize = NCard.defaultSize * NCardHolder.smallScale;
-            return Scroll.Size == ScrollSize && Scroll.Position == ScrollPosition &&
-                grid.Size == GridSize && grid.YOffset == YOffset &&
-                cardSize == CardSize && !grid.IsAnimatingOut;
-        }
-
-        private static bool CompleteVisibleLayout(int count, Vector2 scrollSize,
-            Vector2 scrollPosition, Vector2 gridSize, Vector2 cardSize, int yOffset)
-        {
-            if (!FinitePositive(scrollSize.X) || !FinitePositive(scrollSize.Y) ||
-                !float.IsFinite(scrollPosition.X) || !float.IsFinite(scrollPosition.Y) ||
-                !FinitePositive(gridSize.X) || !FinitePositive(gridSize.Y) ||
-                !FinitePositive(cardSize.X) || !FinitePositive(cardSize.Y) ||
-                yOffset < 0) return false;
-            int columns = (int)((scrollSize.X + Padding) / (cardSize.X + Padding));
-            if (columns is < 1 or > 64) return false;
-            int rows = (count + columns - 1) / columns;
-            float containedHeight = rows * cardSize.Y + (rows - 1) * Padding;
-            float expectedScrollHeight = containedHeight + TopPadding +
-                BottomPadding + yOffset;
-            float expectedPositionY = Math.Max(0f,
-                (gridSize.Y - scrollSize.Y) * 0.5f);
-            return SameFloat(scrollSize.Y, expectedScrollHeight) &&
-                SameFloat(scrollPosition.Y, expectedPositionY) &&
-                containedHeight + TopPadding + yOffset <= gridSize.Y;
-        }
-
-        private static bool FinitePositive(float value) =>
-            float.IsFinite(value) && value > 0f;
-
-        private static bool SameFloat(float left, float right) =>
-            BitConverter.SingleToInt32Bits(left) ==
-            BitConverter.SingleToInt32Bits(right);
-    }
+    // Native holder input does not depend on inferred viewport dimensions.
+    private static bool HolderClickable(NGridCardHolder holder) =>
+        typeof(NCardHolder).GetField("_isClickable",
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+            ?.GetValue(holder) is true;
 
     private static bool TryCaptureBindings(
         IReadOnlyList<NGridCardHolder> holdersSnapshot,
@@ -505,7 +422,7 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
             else if (!binding.Hitbox.IsVisibleInTree()) { visible = false; visibilityReasons[index] = GenericEventDiagnosticCode.CandidateHitboxInvisible; }
             else visible = true;
             diagnostic = GenericEventDiagnosticCode.CandidateEnabledRead;
-            bool enabled = binding.Hitbox.IsEnabled;
+            bool enabled = binding.Hitbox.IsEnabled && HolderClickable(binding.Holder);
             diagnostic = GenericEventDiagnosticCode.PrepareCandidates;
             candidates[index] = new CardSelectionV1NativeCandidate(
                 binding.Slot, binding.StableKey, binding.Holder, binding.Model, binding.Card,

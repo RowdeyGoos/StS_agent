@@ -32,6 +32,7 @@ internal static partial class Program
     static void Check(bool okay,string name){_checks++;if(!okay)throw new Exception(name);}
     static void Main(string[] args)
     {
+        if(args.SequenceEqual(new[]{"--reward-surface"})){RewardSurfaceTests();RewardTests();Console.WriteLine("reward surface checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--baseline"})){BaselineRetirement();return;}
         if(args.SequenceEqual(new[]{"--pre-selector-additions"})){PreSelectorAdditionTests();Console.WriteLine("pre-selector addition checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--item-set"})){ItemSetTests();Console.WriteLine("item-set checks: "+_checks);return;}
@@ -153,6 +154,7 @@ internal static partial class Program
         PatchOwnership();
         LifecycleTests();
         Check(_checks==745,"preserved predecessor assertion count");
+        RewardSurfaceTests();
         EnchantmentTests();
         UpgradeHolderInputTests();
         MultiUpgradeTests();
@@ -847,6 +849,50 @@ internal static partial class Program
         public void Dispose(){Session.Dispose();CardSelectCmd.Selector=null;NRun.Instance=null;NEventRoom.Instance=null;NMapScreen.Instance=null;}
     }
 
+    private static void RewardSurfaceTests()
+    {
+        foreach(int count in new[]{0,3,15})
+        {
+            using var f=new RewardFixture("REWARD_LAYOUT",0,15,15,manual:true);
+            f.BeforeReturn=()=>{
+                f.Grid.Size=new Vector2(1000,480);
+                f.Grid.GetNodeOrNull<Control>("%ScrollContainer")!.Size=new Vector2(910,1800);
+                f.Grid.GetNodeOrNull<Control>("%ScrollContainer")!.Position=new Vector2(13,-240);
+            };
+            var c=f.Start();Check(c.Status=="child","reward grid admitted without full-layout fit");
+            // Exact allocated holders remain selectable after layout/scroll changes.
+            f.Grid.Size=new Vector2(880,450);f.Grid.YOffset=17;
+            for(int i=0;i<count;i++)f.Act(c,"select:"+(14-i));
+            f.Act(c,"confirm");Check(f.Child(c) is CardSelectionV1ResolvedResult done&&done.SelectedCards.Count==count,"layout-independent add count");
+            Check(f.SelectCalls==count&&f.ConfirmCalls==1&&f.Player.Deck.Cards.SequenceEqual(f.BaselineCards.Concat(Enumerable.Range(0,count).Select(i=>f.OfferCards[14-i]))),"layout-independent exact selected additions");
+            var p=f.Session.Read();f.Session.Apply(p.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","layout-independent reward map");
+        }
+        foreach(string mutation in new[]{"grid_replaced","grid_dead","holder_replaced","model_replaced","hitbox_replaced","domain_changed","unclickable","disabled","hidden","animating","confirm_replaced","confirm_disabled"})
+        {
+            using var f=new RewardFixture("REWARD_NATIVE_GATE",0,15,15,manual:true);
+            var c=f.Start();var before=(CardSelectionV1Observation)f.Child(c);
+            var holder=f.Grid.CurrentlyDisplayedCardHolders[0];
+            switch(mutation)
+            {
+                case "grid_replaced":f.Screen.Bind("%CardGrid",new NCardGrid());break;
+                case "grid_dead":f.Grid.InstanceValid=false;break;
+                case "holder_replaced":f.Grid.CurrentlyDisplayedCardHolders[0]=new NGridCardHolder();break;
+                case "model_replaced":holder.CardModel=f.OfferCards[1];break;
+                case "hitbox_replaced":holder.Hitbox=new NClickableControl();break;
+                case "domain_changed":f.Grid.CurrentlyDisplayedCardHolders.RemoveAt(14);break;
+                case "unclickable":holder.SetClickable(false);break;
+                case "disabled":holder.Hitbox.IsEnabled=false;break;
+                case "hidden":holder.Visible=false;break;
+                case "animating":f.Grid.IsAnimatingOut=true;break;
+                case "confirm_replaced":f.Screen.Bind("%Confirm",new NConfirmButton{IsEnabled=true});break;
+                case "confirm_disabled":f.ConfirmButton.IsEnabled=false;break;
+            }
+            var action=mutation.StartsWith("confirm_",StringComparison.Ordinal)?"confirm":"select:0";
+            f.Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,before.DecisionId,action);
+            Check(f.SelectCalls==0&&f.ConfirmCalls==0,"invalid reward gate prevents native dispatch: "+mutation);
+            Check(f.Player.Deck.Cards.SequenceEqual(f.BaselineCards),"reward gate preserves deck: "+mutation);
+        }
+    }
     private static void RewardTests()
     {
         foreach(var spec in new[]{("FIRST_REWARD",1,2,new[]{2,0},false,false),("ANOTHER_REWARD",1,3,new[]{3,1},true,true),("HELD_OUT_REWARD",1,3,new[]{3,1,0},false,true),("MAX_REWARD",8,8,Enumerable.Range(0,8).Reverse().ToArray(),false,false),("MANUAL_MAX",8,8,Enumerable.Range(0,8).Reverse().ToArray(),true,false)})
