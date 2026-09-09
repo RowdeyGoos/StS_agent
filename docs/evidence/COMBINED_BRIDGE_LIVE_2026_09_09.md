@@ -1674,3 +1674,47 @@ eligible cards, normal map-room entry, `ancient TANX CLAWS`, console closed and
 relic option untouched. The same release remains installed; cleanup is pending
 after the batch. No uncertain mutation was retried and no profile/save/history/
 Cloud filesystem content was accessed.
+
+### Claws six-card maximum passed
+
+The user prepared a fresh Claws option on the unchanged fifteenth installation.
+Fresh exact running-process, release/source/owned package and authenticated
+health/manifest checks passed. The unchanged reviewed `--count 6` policy selected
+**five unupgraded Strikes at slots 0–4 and one unupgraded Defend at slot 5**. The
+native selector automatically opened preview at the maximum; **no explicit Preview
+action was sent**. The policy then Confirmed once and selected Proceed.
+`card_transform_v3` resolved with exactly those original identities. Native preview,
+transformation journal and deck checks verified the replacement effects; public
+payloads do not expose replacement names, and none are asserted from this result.
+
+All **nine actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **7/7/7**, one completed card child, zero item children, 46 event reads.
+A fresh core-map read passed with three candidates. Policy time: **3.808 seconds**.
+Diagnostics: parent-ready/child-ready/parent-ready/map-ready. Parent effects remain
+`unverified`. This demonstrates the maximum-count automatic-preview path on this
+deck; it does not establish every deck size or layout.
+Result: `/private/tmp/sts-claws-six-live-20260909-result.json`, SHA-256
+`8a3c6e2f1014b26857095f64c6dc9c61e0da4db27f93a313f799881b76c90eb7`.
+
+Claws now has **zero, partial (three), and full (six)** live acceptance. The next
+family is **Neow/ScrollBoxes bundle selection**. The same release remains installed,
+and cleanup is pending after the batch. No uncertain mutation was retried and no
+profile/save/history/Cloud filesystem content was accessed.
+
+Scroll Boxes policy `/private/tmp/sts-scrollboxes-live-20260909.py`, SHA-256
+`e9abf4280bcfcc03877989a0b54276255973fb32f66bf22b341d24d7272ab147`, passed **89 frozen-view checks** and
+independent semantic review with no blockers. It reuses the existing unified
+source/state/authentication checks, client, event host and map verifier. Pinned
+metadata supports exact `NEOW.pages.INITIAL.options.SCROLL_BOXES` and the native
+bundle caller. The policy requires `bundle_offer_v1`, one to five offers and one
+to eight cards per bundle, chooses bundle zero once, requires the same exact ordered
+cards and selected index in native preview, then Confirms once. Completion requires
+two reconciled child actions, one completed card child, exact chosen-bundle cards
+in the resolved payload and a fresh actionable map. Native task/deck checks verify
+all selected additions; no uncertain input is retried.
+
+Prepare a fresh Profile 3 run, enter a room from the map normally, run
+`ancient NEOW SCROLL_BOXES`, close the console and leave the relic option untouched.
+The policy has not run live yet. No source/build/install change is needed; the
+same accepted release and installation remain active. Separate policy preparation/
+review times were not measured.

@@ -147,8 +147,10 @@ now has zero/partial/full live coverage. **Claws zero-transformation also passed
 explicit empty Preview/Confirm, unchanged deck, four reconciled actions and fresh
 map in **0.832 seconds**. **Claws three-card transformation passed**: three
 unupgraded Strikes, explicit Preview/Confirm, seven reconciled actions and fresh
-map in **2.637 seconds**. Claws six-card maximum is next; the same package remains
-installed and cleanup is pending after the batch.
+map in **2.637 seconds**. **Claws six-card maximum passed**: five Strikes and one
+Defend, automatic preview, nine reconciled actions and fresh map in **3.808 seconds**.
+Claws now has zero/partial/full live coverage. Scroll Boxes bundle selection is next;
+the same package remains installed and cleanup is pending after the batch.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only
@@ -168,8 +170,8 @@ now removed, while exact grid/holder/card/control ownership, native clickability
 legality, bounded input and task/deck outcomes remain checked. Focused reward
 surface checks passed 283 assertions; optional-event checks passed 379. Independent
 semantic review found no blockers. Sea Glass zero, three and fifteen now have
-representative live acceptance. Claws zero and partial selection are demonstrated;
-maximum-count Claws and other ancient families remain pending.
+representative live acceptance. Claws zero/partial/full selection is also
+demonstrated; other ancient families remain pending.
 
 The **fourteenth installation is cleaned up**: normal quit, exact quarantine/purge
 and **429 unchanged base files with zero overlays** passed before source edits and

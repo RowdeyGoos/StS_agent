@@ -14,7 +14,7 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after live batch; Sea Glass zero/three/fifteen and Claws zero/three passed",
+    "cleanup": "pending normal quit after live batch; Sea Glass and Claws zero/partial/full passed",
     "live_input_sent": true,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
@@ -323,6 +323,70 @@
         {
           "key": "STRIKE_IRONCLAD",
           "slot": 2,
+          "upgrade_level": 0
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "automatic_preview_at_max": true,
+      "case": "Tanx/Claws six",
+      "event": {
+        "child_accepted": 7,
+        "child_attempted": 7,
+        "child_episodes": 1,
+        "child_reconciled": 7,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 46,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 9
+      },
+      "map_handoff": {
+        "candidate_count": 3,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "replacement_names_exposed": false,
+      "result_path": "/private/tmp/sts-claws-six-live-20260909-result.json",
+      "result_sha256": "8a3c6e2f1014b26857095f64c6dc9c61e0da4db27f93a313f799881b76c90eb7",
+      "seconds": 3.808,
+      "selected_originals": [
+        {
+          "key": "STRIKE_IRONCLAD",
+          "slot": 0,
+          "upgrade_level": 0
+        },
+        {
+          "key": "STRIKE_IRONCLAD",
+          "slot": 1,
+          "upgrade_level": 0
+        },
+        {
+          "key": "STRIKE_IRONCLAD",
+          "slot": 2,
+          "upgrade_level": 0
+        },
+        {
+          "key": "STRIKE_IRONCLAD",
+          "slot": 3,
+          "upgrade_level": 0
+        },
+        {
+          "key": "STRIKE_IRONCLAD",
+          "slot": 4,
+          "upgrade_level": 0
+        },
+        {
+          "key": "DEFEND_IRONCLAD",
+          "slot": 5,
           "upgrade_level": 0
         }
       ],

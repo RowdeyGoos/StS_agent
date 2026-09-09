@@ -615,7 +615,9 @@ fresh map. These establish zero/partial/full examples, not every grid layout. Se
 unchanged deck, four reconciled actions and a fresh map. **Three-card Claws also
 passed**: three unupgraded Strike originals, explicit preview and seven reconciled
 actions through exact native replacement checks and map return. Replacement names
-are not exposed in the public result. Full selection remains pending. The native
+are not exposed in the public result. **Six-card maximum selection also passed**:
+five Strikes and one Defend, automatic preview, exact native replacement checks,
+nine reconciled actions and fresh map. The native
 zero-selection completion includes the required successful
 empty transform command described above. See the
 [live evidence](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#claws-zero-transformation-passed).
@@ -785,7 +787,7 @@ is implemented above; Bird passed live, while Torus remains a branch candidate.
 
 Choose the next feature from those source-backed callers. Positive variable
 transformation and optional Claws selections are implemented. Claws zero-selection
-and partial selection have live acceptance; its maximum-count branch remains pending. Sea Glass has zero/partial/full live acceptance through its
+and partial/full selection have representative live acceptance. Sea Glass has zero/partial/full live acceptance through its
 ancient route; other native ancient routes remain candidates for testing. No
 inspected event/immediate pickup establishes variable-count upgrades or true native
 cancellation. Keep those speculative extensions separate from demonstrated gaps.
