@@ -129,7 +129,23 @@ projects. Independent semantic review found no blockers. Evidence:
 `/private/tmp/sts-offer-v2-boundary` (shared checks), and
 `/private/tmp/sts-bridge-izl7m9bm` (production build). The retained release is unchanged.
 
-The current release is
+The offline increments above are now packaged in the current release
+`1512ea86fa2b6b445fcae7023379257c13f94b4b180507c3e6afa337f41e555d`, with all
+313 source/test inputs verified at `691cb31`. Its final **71 release groups passed
+in 370.564 seconds**, including 7,788 native assertions, 125 host tests, 450
+C#/Python cases (388 native), 809 shared bridge checks, reproducible packaging and
+owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-0j2oddyi`.
+The **thirteenth installation is active**, state
+`2645fc0353e50095acd66fedcd789dc9d266a1dd20a527df4c2f4ca0f58a8013`.
+Fresh stopped-process/closed-port checks, installation and read-only owned-file
+verification passed. Manual Profile 3 launch/setup is pending; no live input has
+been sent on this release. The first case is `ancient NEOW HEFTY_TABLET`, initially
+choosing a card, followed by a separate Skip case. The bounded policy passed 32
+frozen-view checks and independent semantic review. Normal quit and cleanup remain
+required after testing. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#thirteenth-installation-ancient-and-event-feature-batch)
+retains the exact setup and package bindings.
+
+The preceding live-accepted release was
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source
 commit `c531b4c`. It corrected the production event response classifier and reward
 request grammar after the earlier Prickly Sponge attempt stopped before any card

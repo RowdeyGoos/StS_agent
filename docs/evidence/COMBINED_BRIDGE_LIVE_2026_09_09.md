@@ -1196,3 +1196,51 @@ Base verification passed **429 files**, hash
 **closed and cleaned up**. Current package, manifest and source identity remain
 retained; no profile/save/history/Cloud content was accessed. No new build or
 broad test rerun was required for these evidence-only updates.
+
+
+## Thirteenth installation: ancient and event feature batch
+
+The user requested live testing after the optional-offer increment. Release
+`1512ea86fa2b6b445fcae7023379257c13f94b4b180507c3e6afa337f41e555d` packages the
+combined offline increments: mixed rewards, ancient dialogue, optional grids and
+transforms, direct card offers/bundles, inactive combat-layout options, results
+acknowledgment, and optional offers with one extra grant. All 313 accepted inputs
+match source commit `691cb31ad088140d4fd7c5878ffb9830442d3b8e`. Production DLL SHA-256:
+`06602e6ba4865887985e94317bfab84d51fe87243dfd1711ad8cdf1eb2fc0433`.
+The previous accepted package is preserved at
+`/private/tmp/sts-unified-bridge-release-before-ancient-batch-20260909`.
+
+Final release validation passed all **71 groups in 370.564 seconds**, including
+7,788 native assertions, 125 host tests, 450 C#/Python cases (388 through native
+adapters), 809 shared checks, reproducible production builds, package rejection
+fixtures and owned installation/cleanup checks. Output:
+`/private/tmp/sts-bridge-0j2oddyi`. Existing implementation semantic reviews were
+reused; this is one final combined release gate, not live acceptance.
+
+Three process samples and two port samples verified the exact game stopped and
+listener closed. The canonical installer rechecked the pinned build and ownership,
+installed the accepted package, and created the mods parent. Installed state:
+`2645fc0353e50095acd66fedcd789dc9d266a1dd20a527df4c2f4ca0f58a8013`.
+Read-only post-install metadata/content verification passed without reading the
+credential. The installation is **active**, awaiting manual Profile 3 launch and
+setup. Normal quit and exact owned cleanup remain pending.
+
+The first planned cases are HeftyTablet choose and Skip. A narrow inspection of
+the same pinned game PE establishes `AncientConsoleCmd` syntax
+`ancient <id> <choice>`: it creates an ancient event and sets `DebugOption` from the
+matching option key. Use `ancient NEOW HEFTY_TABLET` after normal map-room entry;
+leave the ancient dialogue/options visible with the console closed. This user
+setup establishes the ancient identity before its generic dialogue is advanced.
+The policy then requires the exact `NEOW.pages.INITIAL.options.HEFTY_TABLET` option.
+Direct console relic acquisition would bypass the owned event callback and is
+not this test's setup. Inspection output: `/private/tmp/sts-live-ancient-il.json`.
+
+Policy `/private/tmp/sts-hefty-live-20260909.py`, SHA-256
+`906bfff7db565c74ddcb1caef8c2f852ab42e8de585c378379cc23150a381a07`, passed **32
+frozen-view checks** and independent semantic review. It uses the existing unified
+release/state/credential checks, client, host and map verifier. Each invocation
+chooses once or skips once, requires one `card_offer_v2` completion and the observed
+Injury suffix, and verifies a fresh actionable map. It retains `unverified` effect
+semantics and never retries uncertain input. No live input has been sent yet.
+No profile/save/history/Cloud filesystem content was accessed. Separate preparation,
+review and user-wait elapsed times were not measured.
