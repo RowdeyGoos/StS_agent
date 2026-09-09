@@ -1244,3 +1244,37 @@ Injury suffix, and verifies a fresh actionable map. It retains `unverified` effe
 semantics and never retries uncertain input. No live input has been sent yet.
 No profile/save/history/Cloud filesystem content was accessed. Separate preparation,
 review and user-wait elapsed times were not measured.
+
+
+### HeftyTablet first observation stopped; thirteenth installation cleaned
+
+The user confirmed readiness with the Hefty Tablet relic option visible. Fresh
+exact-process, accepted source/package/state and authenticated health/manifest
+checks passed. The reviewed choose policy then stopped on the first event read:
+`invalid_response`, **zero parent/child actions attempted, accepted or reconciled**,
+no child admission and no map check. Elapsed policy time: **0.227 seconds**.
+No dialogue or relic option was selected. Console setup may skip initial dialogue;
+the policy already permits the relic option directly, so missing dialogue is not
+the cause. Result: `/private/tmp/sts-hefty-choose-live-20260909-result.json`, SHA-256
+`4c98d007e8bf0568b28331d6b903f078644abbab2f4f5607d9b2ce0830c8fa79`. A subsequent read-only diagnostic received connection refused,
+confirming the listener had stopped; no action was retried.
+
+Pinned PE metadata inspection found the concrete initialization defect:
+`NSimpleCardsViewScreen.ShowScreen(List<CardPileAddResult>, LocString)` declares
+return type **NCardsViewScreen**, although it creates a NSimpleCardsViewScreen.
+The hook guard, postfix signature and inert stubs had incorrectly used the concrete
+return type, rejecting event-hook initialization. Earlier IL callsite inventories
+omitted declared return types and therefore did not establish that signature.
+The correction uses the base declaration and retains the exact concrete runtime
+screen/capstone identity. A release verifier check now compares the production
+postfix and inert target declaration against pinned game metadata without loading
+the game. Inspection: `/private/tmp/sts-hooks-signature-inspect/il.json`.
+
+The user quit normally. Owned quarantine moved installed state
+`2645fc0353e50095acd66fedcd789dc9d266a1dd20a527df4c2f4ca0f58a8013` to
+`1c4c2b979e8a8203bf40bf5a2e52ea0ecf7dd90e469efc87d68d1a37d4efdfa2`;
+exact purge removed four generated files and left the campaign absent. Base
+verification passed **429 unchanged files**, SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`, with **zero
+overlays**. The thirteenth installation is **closed and cleaned up**. No
+profile/save/history/Cloud filesystem content was accessed.

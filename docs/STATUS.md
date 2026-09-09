@@ -135,15 +135,16 @@ The offline increments above are now packaged in the current release
 in 370.564 seconds**, including 7,788 native assertions, 125 host tests, 450
 C#/Python cases (388 native), 809 shared bridge checks, reproducible packaging and
 owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-0j2oddyi`.
-The **thirteenth installation is active**, state
+The **thirteenth installation is cleaned up**, originally installed state
 `2645fc0353e50095acd66fedcd789dc9d266a1dd20a527df4c2f4ca0f58a8013`.
-Fresh stopped-process/closed-port checks, installation and read-only owned-file
-verification passed. Manual Profile 3 launch/setup is pending; no live input has
-been sent on this release. The first case is `ancient NEOW HEFTY_TABLET`, initially
-choosing a card, followed by a separate Skip case. The bounded policy passed 32
-frozen-view checks and independent semantic review. Normal quit and cleanup remain
-required after testing. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#thirteenth-installation-ancient-and-event-feature-batch)
-retains the exact setup and package bindings.
+The first HeftyTablet live read stopped with `invalid_response` and zero actions;
+the listener stopped. The native results hook incorrectly expected the concrete
+screen return type instead of the declared `NCardsViewScreen` base. The signature
+correction retains exact concrete runtime ownership and adds a pinned-metadata
+release check. Normal quit, exact quarantine/purge and **429 unchanged base files
+with zero overlays** passed. A corrected release is being prepared; HeftyTablet
+choose/Skip live acceptance remains pending. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#heftytablet-first-observation-stopped-thirteenth-installation-cleaned)
+retains the failed attempt and cleanup bindings.
 
 The preceding live-accepted release was
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source

@@ -3,8 +3,8 @@
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": true,
-    "current_package_live_tested": false,
+    "current_package_installed": false,
+    "current_package_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
   },
@@ -14,13 +14,30 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after testing",
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "cleanup": "passed: normal quit, exact quarantine/purge, 429 base files unchanged and zero overlays",
+    "generated_files_removed": 4,
     "live_input_sent": false,
     "mods_parent_created": true,
+    "overlay_count": 0,
     "pre_install_runtime": "passed: exact game process stopped, local bridge port closed",
+    "quarantine_state_sha256": "1c4c2b979e8a8203bf40bf5a2e52ea0ecf7dd90e469efc87d68d1a37d4efdfa2",
     "state_sha256": "2645fc0353e50095acd66fedcd789dc9d266a1dd20a527df4c2f4ca0f58a8013",
-    "status": "installed"
+    "status": "cleaned"
   },
+  "live_results": [
+    {
+      "case": "Neow/HeftyTablet choose",
+      "code": "invalid_response",
+      "diagnosis": "Results ShowScreen declared return type is NCardsViewScreen; hook guard/postfix/stubs incorrectly expected NSimpleCardsViewScreen.",
+      "result_path": "/private/tmp/sts-hefty-choose-live-20260909-result.json",
+      "result_sha256": "4c98d007e8bf0568b28331d6b903f078644abbab2f4f5607d9b2ce0830c8fa79",
+      "seconds": 0.227,
+      "status": "failed",
+      "total_attempted": 0
+    }
+  ],
   "release_manifest_sha256": "1512ea86fa2b6b445fcae7023379257c13f94b4b180507c3e6afa337f41e555d",
   "schema_version": 1,
   "source_commit": "691cb31ad088140d4fd7c5878ffb9830442d3b8e",

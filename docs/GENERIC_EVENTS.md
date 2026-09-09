@@ -715,8 +715,11 @@ caller; Darv's pool eligibility remains unresolved. Pandora's Box performs its
 automatic transformation first, then opens a capstone screen with the results.
 The hook retains the exact returned screen, results list and added-card models,
 current capstone container, native ConfirmButton and post-transformation deck.
-This path needs no synthetic selector task: ShowScreen returns a screen, and
-Confirm closes the native capstone synchronously (deferred input may still wait).
+The method declares `NCardsViewScreen` as its return type; the hook receives that
+base type and requires the exact concrete `NSimpleCardsViewScreen` instance at
+runtime. The release verifier compares this declaration and the postfix/fixture
+signatures against pinned game PE metadata. This path needs no synthetic selector
+task: Confirm closes the native capstone synchronously (deferred input may still wait).
 Completion requires that exact capstone to close, Chosen to succeed and the
 entire post-show deck to remain unchanged in model/order/key/upgrade/enchantment
 and ownership. The result list must contain 1–64 successful, unique models
