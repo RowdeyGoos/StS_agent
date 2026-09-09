@@ -1074,3 +1074,47 @@ Result path `/private/tmp/sts-courier-set-live-20260909-result.json` is exclusiv
 installation: enter a room normally, leave at least three empty potion slots,
 run `event POTION_COURIER`, and leave initial choices visible with console closed.
 No new package or install is needed, and no input for this next case has been sent.
+
+
+### Potion Courier three-item reward set passed
+
+After manual setup and user readiness, the exact running process, installed
+release/source/state, authenticated health and manifest checks passed. The reviewed
+provider chose `POTION_COURIER.pages.INITIAL.options.GRAB_POTIONS`, then collected
+`FOUL_POTION` at generated list indexes **0, 1 and 2** in order. Each native claim,
+collection task and exact inventory insertion reconciled before the next action.
+The set, Offer/Chosen tasks and overlay completion reconciled, Proceed completed,
+and a separate core-map read exposed **two actionable candidates**.
+
+Result: **passed in 0.944 seconds**. Parent counters: **2 attempted / 2 accepted /
+2 reconciled**. Child counters: **3 / 3 / 3**, one completed item child, zero card
+children, five total actions, seven event reads and one map read. Diagnostics:
+`parent_ready`, `child_ready`, `parent_ready`, `map_ready`. No action was retried.
+Final `effects: unverified` refers to the last parent Proceed; cumulative child
+completion retains the verified collections.
+
+Result: `/private/tmp/sts-courier-set-live-20260909-result.json`, SHA-256
+`93a8b5d60bd18e92bb0d48a1074469fa2c6f04bec1d7a01dd4fd5408680cf19b`. This demonstrates the three-potion caller with
+sufficient empty slots, not full-inventory replacement or arbitrary relic pickup
+composition. Release and installation remain the twelfth bindings above. The
+installation is **active** for the remaining card-reward cases; normal quit and
+owned cleanup are still required. No profile/save/history/Cloud content was read.
+
+
+The next policy is Brain Leech/Rip at `/private/tmp/sts-brain-reward-live-20260909.py`, SHA-256
+`6f116005c341c5e8cbd8a2f536f64657deb1177df3fd96a97122436309ca4f10`. Eighteen offline checks using actual frozen host views passed.
+Independent semantic review found no blockers. It requires exact
+`BRAIN_LEECH.pages.INITIAL.options.RIP`, one `card_reward_v1` child, `open` once,
+then advertised slot 0 from a 1–5 card menu once, followed by Proceed only after
+native/host reconciliation. Success requires two parent and two child actions
+all reconciled, one completed card child, no item child and fresh core map.
+The existing credential, bounded host/transport and no-retry paths are unchanged.
+
+Pinned source confirms canonical `RipHpLoss = 5`, `RewardCount = 1`, damage before
+one ordinary colorless CardReward/OfferCustom and final SetEventFinished.
+The card child does not independently verify the preceding damage. Manual setup
+must establish more than 5 HP; that premise is not new bridge HP telemetry.
+Result path `/private/tmp/sts-brain-reward-live-20260909-result.json` is exclusive and unused. Setup is pending on the same
+installation: enter a room normally, have more than 5 HP, run `event BRAIN_LEECH`,
+and leave initial choices visible with console closed. No input for this next
+case has been sent. Existing release and completed evidence are reused unchanged.

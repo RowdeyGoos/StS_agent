@@ -20,9 +20,10 @@ process. Completed packets and old campaign instructions are historical referenc
    the Forgotten/Confront and verified SoulsPower selection. Removal followed by
    one appended grant has live acceptance through Amalgamator/CombineStrikes,
    exact two-card removal, separate grant observation and fresh core map. Fixed-two
-   enchantment has Prickly Sponge live acceptance. Sets of 2–8 potion/relic rewards,
-   ordinary singleton card reward menus and 2–8 card reward menus within one set
-   have offline evidence and await their cases in the current batch. Fixed-one generic deck transformation
+   enchantment has Prickly Sponge live acceptance; Potion Courier/Grab Potions
+   demonstrated a three-potion reward set. Ordinary singleton card reward menus
+   and 2–8 card reward menus within one set have offline evidence and await their
+   cases in the current batch. Fixed-one generic deck transformation
    now has WoodCarvings/Bird live acceptance; Torus remains a branch candidate. Next address mixed card/item sets,
    full-inventory/nested pickup handling and remaining narrow
    selector additions; then layout/combat and custom/terminal dependencies. This

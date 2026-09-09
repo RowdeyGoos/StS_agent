@@ -16,8 +16,9 @@ reward menus (`card_reward_v1`, 1–5 offers), multiple card reward menus in one
 (`card_reward_set_v1`, 2–8 entries), and fixed-one generic deck transformations
 using the existing `card_transform_v2` protocol. WoodCarvings/Bird now has representative live acceptance: upgraded Strike slot 0
 of 21 eligible cards, exact original preview, verified transformation and a fresh
-core map. All four actions reconciled in 6.119 seconds. Prickly Sponge also passed fixed-two Steady enchantment and map return. Torus and
-the three reward feature groups still await their live cases. The
+core map. All four actions reconciled in 6.119 seconds. Prickly Sponge passed fixed-two Steady enchantment, and Potion Courier passed
+three Foul Potion rewards; both verified map return. Torus and the two card-reward
+feature groups still await their live cases. The
 bridge distinguishes native transform-prompt generic selection from removal's
 forwarding request without event-name admission rules. Mixed card/item sets and
 broader pickup composition remain gaps. The corrected test release is
@@ -42,8 +43,9 @@ The fresh **Waterlogged Scriptorium/Prickly Sponge** test passed on this release
 two upgraded Strikes at slots 0/1 of 24 eligible cards, exact original preview,
 Steady amount 1 on each, all five actions reconciled and an independent core map
 with two actionable candidates. Elapsed time was 6.730 seconds, including the
-five-second preview pause. The next case is **Potion Courier/Grab Potions** with
-three empty potion slots. The installation remains active for the batch; normal
+five-second preview pause. **Potion Courier/Grab Potions** also passed: all three Foul Potions, five
+reconciled actions and an independent fresh map in 0.944 seconds. The next case is
+**Brain Leech/Rip**, with more than 5 HP for the native damage cost. The installation remains active for the batch; normal
 quit and owned cleanup remain required. The
 [twelfth-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#twelfth-installation-production-event-boundary-correction)
 retains exact release, result, setup and cleanup bindings.
@@ -173,7 +175,7 @@ before any new authorized live operation.
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
 | Enchantment | Single-card v1 has Sapphire Seed/Sown and Grave/Confront live evidence; fixed counts 2–8 in v2 now have native and C#/Python fixtures, including original-card preview, partial effects and deferred input; Prickly Sponge fixed-two Steady and core map passed live; other counts/callers remain open |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
-| Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; sets are packaged but await live acceptance |
+| Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; Potion Courier/Grab Potions three-item set and map passed live; other counts/relic sets remain fixture-only |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
 | Reduced headless/actor stack | Deterministic backend, public encoder, trusted datasets, masked candidate scorer and cloning smoke accepted on structural data; no target-game parity or learned live-policy claim |
 

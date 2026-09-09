@@ -343,9 +343,13 @@ budgets still apply; the set has a shared 256-read local bound.
 
 Offline native and C#/Python fixtures cover two potions, mixed sets, eight relics,
 delayed tasks, late changes to completed claims/slots, malformed public history,
-lost replies and cleanup interference. These capabilities are packaged in the current combined test release and await
-live acceptance in the planned batch. [Current status](STATUS.md) owns the release
-and installation identity.
+lost replies and cleanup interference. Potion Courier/Grab Potions now has live
+acceptance: three Foul Potions collected in order, each exact inventory effect
+reconciled, parent completion and an independent fresh core map. All five actions
+reconciled. See the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#potion-courier-three-item-reward-set-passed).
+Other counts, relic-containing sets and full-inventory behavior retain their
+narrower evidence or remain gaps. [Current status](STATUS.md) owns the release and
+installation identity.
 
 ## Implemented: ordinary event card reward menus
 

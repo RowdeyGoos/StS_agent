@@ -7,7 +7,8 @@
     "current_package_live_tested": true,
     "fixed_two_enchantment_live_tested": true,
     "native_fixture_objects_are_inert": true,
-    "profile_save_history_cloud_files_accessed": false
+    "profile_save_history_cloud_files_accessed": false,
+    "three_potion_reward_set_live_tested": true
   },
   "independent_semantic_review": {
     "blocking_findings": [],
@@ -122,20 +123,91 @@
       "result_sha256": "63ffcf38f5b4f1a4ebe385e670e9d6230aeeed2099af86d1b4ef78adb35b43ea",
       "seconds": 6.73,
       "status": "passed"
+    },
+    {
+      "case": "PotionCourier/GrabPotions",
+      "decisions": [
+        {
+          "action": "choose:0",
+          "option": "POTION_COURIER.pages.INITIAL.options.GRAB_POTIONS",
+          "stage": "parent"
+        },
+        {
+          "action": "collect:0",
+          "index": 0,
+          "key": "FOUL_POTION",
+          "stage": "collect"
+        },
+        {
+          "action": "collect:1",
+          "index": 1,
+          "key": "FOUL_POTION",
+          "stage": "collect"
+        },
+        {
+          "action": "collect:2",
+          "index": 2,
+          "key": "FOUL_POTION",
+          "stage": "collect"
+        },
+        {
+          "action": "choose:0",
+          "option": "PROCEED",
+          "stage": "proceed"
+        }
+      ],
+      "diagnostics": [
+        "parent_ready",
+        "child_ready",
+        "parent_ready",
+        "map_ready"
+      ],
+      "event": {
+        "child_accepted": 3,
+        "child_attempted": 3,
+        "child_episodes": 1,
+        "child_reconciled": 3,
+        "code": null,
+        "completed_card_children": 0,
+        "completed_item_children": 1,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 7,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 5
+      },
+      "expected_items": {
+        "count": 3,
+        "key": "FOUL_POTION"
+      },
+      "installation_state_sha256": "1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec",
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "policy": "/private/tmp/sts-courier-set-live-20260909.py",
+      "policy_sha256": "e64bd456ab0b1dc603ad1db4b5a9954119d4280dd3295b1b91f52ccea8e7ba22",
+      "release_sha256": "748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3",
+      "result_path": "/private/tmp/sts-courier-set-live-20260909-result.json",
+      "result_sha256": "93a8b5d60bd18e92bb0d48a1074469fa2c6f04bec1d7a01dd4fd5408680cf19b",
+      "seconds": 0.944,
+      "status": "passed"
     }
   ],
   "live_test": {
-    "expected_items": {
-      "count": 3,
-      "key": "FOUL_POTION"
-    },
-    "independent_review": "passed; exact option/items/order/capacity, host reconciliation, success counters/map, unchanged credential cleanup and no-retry path",
-    "next_case": "PotionCourier/GrabPotions",
-    "policy": "/private/tmp/sts-courier-set-live-20260909.py",
+    "expected_card_rewards": 1,
+    "independent_review": "passed; exact Rip/open/slot0/Proceed order, host verifies insertion, counters/map and unchanged no-retry/credential cleanup; HP premise supplied by manual setup",
+    "next_case": "BrainLeech/Rip",
+    "policy": "/private/tmp/sts-brain-reward-live-20260909.py",
     "policy_fixture_checks": 18,
-    "policy_sha256": "e64bd456ab0b1dc603ad1db4b5a9954119d4280dd3295b1b91f52ccea8e7ba22",
-    "result_path": "/private/tmp/sts-courier-set-live-20260909-result.json",
-    "setup": "Same running Profile 3; enter a room normally, ensure at least 3 empty potion slots, then event POTION_COURIER; leave initial choices visible and close console",
+    "policy_sha256": "6f116005c341c5e8cbd8a2f536f64657deb1177df3fd96a97122436309ca4f10",
+    "result_path": "/private/tmp/sts-brain-reward-live-20260909-result.json",
+    "setup": "Same running Profile 3; more than 5 HP, enter a room normally, then event BRAIN_LEECH; initial choices visible and console closed",
     "status": "awaiting_manual_setup"
   },
   "package": {
@@ -172,7 +244,7 @@
   "source_state": "All 303 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate 257.219 seconds; stopped prior live case 0.308 seconds. Separate implementation/review/release-preparation/user-wait times were not measured. Prickly Sponge success 6.730 seconds including five-second preview pause.",
+  "timing_limits": "Final release gate 257.219 seconds; stopped prior live case 0.308 seconds. Separate implementation/review/release-preparation/user-wait times were not measured. Prickly Sponge success 6.730 seconds including five-second preview pause. Potion Courier success 0.944 seconds.",
   "validation": {
     "check_groups": 71,
     "event_integration_cases": 311,

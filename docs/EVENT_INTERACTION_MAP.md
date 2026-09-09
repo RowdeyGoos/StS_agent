@@ -16,7 +16,8 @@ now has representative live acceptance through Amalgamator/CombineStrikes,
 including exact removal and fresh map return; grant provenance remains unverified.
 Broader post-selector deck changes remain gaps. Fixed multi-card enchantment now
 has representative live acceptance through Prickly Sponge. Sets of 2–8 potion/relic
-rewards have offline implementation evidence. Ordinary
+rewards have offline implementation evidence, with Potion Courier/Grab Potions
+now live-demonstrating three potions and map return. Ordinary
 singleton CardReward menus also have offline choose/Skip/dismiss coverage, with
 BrainLeech/Rip as the representative caller. Sets of 2–8 ordinary CardReward
 entries now also have offline choose/Skip/final-dismissal coverage, with Colorful
