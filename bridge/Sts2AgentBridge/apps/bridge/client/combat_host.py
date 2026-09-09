@@ -251,6 +251,12 @@ def run_combat(request, *, choice_provider=first_select, clock=time.monotonic, s
                     value = probe._validate_combat(memoryview(body), 'heuristic')
             finally:
                 body[:] = b'\0' * len(body)
+            # A queued end-turn can leave changed, actionable snapshots in its
+            # original round while an earlier card/chooser is still completing.
+            # Keep the reservation pending and service that chooser; only the
+            # next round (or terminal combat) reconciles this end-turn.
+            if value is not None and pending is not None and pending[2] == 'end_turn' and value['round'] == pending[1]:
+                value = None
             if value is None:
                 choice_probes += 1
                 initial = request('GET', CHOICE_READ, None)

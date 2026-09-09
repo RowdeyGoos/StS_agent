@@ -1,8 +1,8 @@
 # Combined bridge live batch
 
-Status: first event attempt stopped before child admission and was cleaned up.
-Generic upgrade, combat-choice and reward/map completion remain unverified in
-this batch. The user authorized live testing after feature preparation and
+Status: generic single-upgrade and core map return passed on the second
+installation. Combat orchestration stopped before chooser input; combat-choice
+and reward/map completion remain unverified. Both live installations were cleaned up. The user authorized live testing after feature preparation and
 confirmed manual readiness on Profile 3.
 
 ## First installation and event attempt
@@ -94,3 +94,76 @@ Post-install verification found 429 unchanged base files plus exactly two overla
 files. Client release/ownership/configuration preflight passed without reading
 credential contents. This installation remains active on disk, awaiting manual
 relaunch; cleanup is pending. No corrected-binary live result exists yet.
+
+## Second live attempt: generic upgrade and core map passed
+
+Manual readiness, exact running process, authenticated health, compatible manifest
+and public main menu passed for release
+`731a8cf1c51ecdb5cfa4ef574085122c70606c62eea4a896312fb05506f6c755`,
+installed state `050f6a250dd2f4241bff666922dee80ce77ff2f97fdb0d7687177c25b67e626b`.
+UI confirmed Profile 3 and continued its existing test run. Console setup issued
+only `event SAPPHIRE_SEED`, with success visibly verified before bridge control.
+
+The actual shared client/generic host selected the first advertised card,
+confirmed its exact upgrade preview, completed the card effect and chose Proceed.
+The original response parser still validated each response; a test wrapper
+retained only its bounded native diagnostic code after validation. Diagnostics
+were `parent_ready`, `child_ready`, `parent_ready`, `map_ready`.
+
+- Parent attempted/accepted/reconciled: **2 / 2 / 2**.
+- Card child attempted/accepted/reconciled: **2 / 2 / 2**.
+- One admitted and completed card child, no completed item children.
+- Four total actions, 14 event reads; resolved with no error.
+- A fresh core map decision passed after one read, with one actionable candidate.
+- Combined event and map elapsed time: **1.506 seconds**.
+
+The latest parent effect label remained `unverified` after Proceed, as specified;
+one completed card child retains the verified upgrade. UI showed the map. This
+establishes ordinary single-upgrade and event-to-core map return, not off-screen
+upgrade behavior, all event branches or a full run. The result summary is retained
+at `/private/tmp/sts-upgrade-retest-result.json`.
+
+## Second live attempt: combat transition stopped
+
+A fresh core map read advertised `select:0` for monster column 4, row 7. Its one
+accepted action was reconciled by a complete map observation for the same
+destination; UI showed combat at 80/80 HP. The shared `combat-map` controller ran
+with `first-select` chooser and `first-card` reward policies.
+
+It stopped at stage `combat` with `unexpected_combat_round`:
+
+- Combat attempted/accepted/reconciled: **9 / 7 / 6**.
+- Two confirmed no-mutation stale rejections, 30 combat reads, 19 chooser probes.
+- No admitted/completed chooser summaries; rewards and map check not attempted.
+- UI showed Neow's Fury's discard selector in turn 2, allowing up to two cards.
+  No selector input was sent. Enemy HP was visibly 16/40; player HP remained 80/80.
+- A single read-only diagnostic combat observation returned `waiting`.
+
+The pending combat action was not retried or manually completed. No exact pending
+versus observed round pair was retained, so the live result alone does not prove
+which round transition triggered the check. The predecessor's tested
+`apply_combat_live._poll_after_action` waits through changed original-round
+observations after end-turn; the newer host immediately rejected them. Focused
+regressions reproduced that missing wait before the correction.
+
+Normal quit, stopped process and closed port passed (three process/two port
+samples). Quarantine state was
+`9160526d7ee99de0e5544812b80dbdb78a0a411f4d4d44f6911ced5b66fb9eff`.
+Purge removed the four generated files. Post-cleanup verification found the same
+429-file pinned base and zero overlays.
+
+## Combat host correction
+
+Only an accepted pending `end_turn` in its original round enters the existing
+bounded wait/chooser path. It retains the reservation and counts; no combat
+redispatch or early reconciliation is allowed. Exact next round or terminal
+combat still reconciles; backward/skipped rounds and a card action advancing the
+round still fail. All deadlines and read/action bounds remain.
+
+Nine focused combat-host tests pass, including optional zero and multiple chooser
+selections during this wait, unchanged round timing out without redispatch, and
+invalid round changes. The two new waiting scenarios failed before the correction.
+The focused host gate passed all ten groups in **9.776 seconds**, including the
+existing shared-client socket integration (`/private/tmp/sts-bridge-qy139kvm`).
+One independent semantic review found no blockers. Current release records own
+the final combined gate and package identity. No native bridge change is needed.

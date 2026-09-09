@@ -139,5 +139,76 @@ class CombatHostTests(unittest.TestCase):
                 self.assertEqual((result['choices'][0]['attempted'],result['choices'][0]['accepted']), (1,0))
             self.assertTrue(all(not any(b) for b in buffers+wire.buffers))
 
+    def test_end_turn_waits_for_round_advance_and_services_chooser(self):
+        for provider, expected in [(host.minimum_select, 0), (host.first_select, 2)]:
+            wire = ChoiceWire(); posts = []; reads = 0; buffers = []
+            def ready(round_number, identity):
+                v = json.loads(_FIXTURE_COMBAT)
+                v.update(round=round_number, decision_id=identity*64, hand=[],
+                         legal_actions=[dict(action_id='end_turn',kind='end_turn',hand_index=None,target_index=None)])
+                v['player']['energy'] = 0
+                return encoded(v)
+            def request(method, route, body):
+                nonlocal reads
+                if route in (host.CHOICE_READ, host.CHOICE_ACTION):
+                    return wire.request(method, route, body)
+                if method == 'POST':
+                    posts.append((reads, json.loads(body))); buffers.append(body)
+                    result = encoded(dict(schema_version=1,status='accepted',mutation_state='queued',reason='accepted',**posts[-1][1]))
+                else:
+                    reads += 1
+                    if reads == 1: result = ready(5, 'a')
+                    elif not wire.closed: result = ready(5, 'b')  # Changed snapshot; queued end-turn not complete.
+                    elif len(posts) == 1: result = ready(6, 'c')
+                    else:
+                        result = encoded(dict(schema_version=1,status='complete',decision_kind='combat',actionable=False,
+                                              decision_id=None,round=7,player=dict(hp=72,max_hp=80,block=0,energy=0),
+                                              enemies=[],hand=[],legal_actions=[],outcome='victory'))
+                buffers.append(result); return result
+            result = host.run_combat(request, choice_provider=provider, sleep=lambda _: None)
+            self.assertEqual((result['status'],result['attempted'],result['accepted'],result['reconciled']), ('resolved',2,2,2), result)
+            self.assertEqual(result['choices'][0]['selected_count'], expected)
+            self.assertEqual([p['decision_id'] for _,p in posts], ['a'*64,'c'*64])
+            self.assertTrue(all(not any(b) for b in buffers+wire.buffers))
+
+    def test_end_turn_same_round_is_bounded_without_redispatch(self):
+        now = [0.0]; posts = []; buffers = []
+        def request(method, route, body):
+            if method == 'POST':
+                posts.append(json.loads(body)); buffers.append(body)
+                result = encoded(dict(schema_version=1,status='accepted',mutation_state='queued',reason='accepted',**posts[-1]))
+            elif route == host.CHOICE_READ:
+                result = encoded(dict(schema_version=1,protocol='combat_card_choice_v1',status='waiting',choice_id=None,
+                                      decision_id=None,pile=None,min_select=0,max_select=0,manual_confirmation=False,
+                                      candidates=None,selected_slots=[],legal_actions=[],attempted=0,accepted=0,reconciled=0,result=None))
+            else:
+                v = json.loads(_FIXTURE_COMBAT)
+                v.update(hand=[],decision_id=('b' if posts else 'a')*64,
+                         legal_actions=[dict(action_id='end_turn',kind='end_turn',hand_index=None,target_index=None)])
+                result = encoded(v)
+            buffers.append(result); return result
+        result = host.run_combat(request,clock=lambda:now[0],sleep=lambda _:now.__setitem__(0,now[0]+100))
+        self.assertEqual((result['code'],result['attempted'],result['accepted'],result['reconciled']), ('combat_timeout',1,1,0), result)
+        self.assertEqual(len(posts),1)
+        self.assertTrue(all(not any(b) for b in buffers))
+
+    def test_unexpected_rounds_remain_terminal(self):
+        for end_turn, following in [(True,4),(True,7),(False,4),(False,6)]:
+            posts = []; reads = 0
+            def request(method, route, body):
+                nonlocal reads
+                if method == 'POST':
+                    posts.append(json.loads(body))
+                    return encoded(dict(schema_version=1,status='accepted',mutation_state='queued',reason='accepted',**posts[-1]))
+                self.assertEqual(route,host.COMBAT_READ)
+                reads += 1; v = json.loads(_FIXTURE_COMBAT)
+                v.update(round=5 if reads==1 else following,decision_id=('a' if reads==1 else 'b')*64)
+                if end_turn:
+                    v.update(hand=[],legal_actions=[dict(action_id='end_turn',kind='end_turn',hand_index=None,target_index=None)])
+                return encoded(v)
+            result = host.run_combat(request,sleep=lambda _:None)
+            self.assertEqual((result['code'],result['attempted'],result['accepted'],result['reconciled']), ('unexpected_combat_round',1,1,0),result)
+            self.assertEqual(len(posts),1)
+
 
 if __name__ == '__main__': unittest.main()

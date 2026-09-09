@@ -7,14 +7,14 @@ process. Completed packets and old campaign instructions are historical referenc
 ## Immediate priorities
 
 1. **Test the accumulated features live after generic event work.** The user has
-   requested the combined live batch next. The event-to-core map check
-   and [combat discard/exhaust choices](docs/COMBAT_CHOICES.md) with bounded combat
+   requested the combined live batch next. Sapphire Seed single-upgrade and
+   the event-to-core map check have passed live. The [combat discard/exhaust choices](docs/COMBAT_CHOICES.md) with bounded combat
    resume are implemented offline. `combat-map` now also composes combat, gold/card
    rewards and map readiness, with both first-card and skip-card policy fixtures.
    Generic upgrades now also accept allocated holders beyond the viewport.
-   The next live batch should cover a Sapphire Seed–style off-screen upgrade and
-   event-to-core map return, Neow's Fury zero/positive choices, a suitable
-   multi-card caller and both reward policies.
+   The next live attempts should cover the corrected combat end-turn wait,
+   Neow's Fury zero/positive choices, a suitable multi-card caller, both reward
+   policies and a Sapphire Seed–style off-screen upgrade.
    Reuse the [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
    evidence for unchanged paths; do not repeat every module.
 2. **Use the generalized transformation path in useful play.** All eligible,

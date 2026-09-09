@@ -9,18 +9,18 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The corrected combined bridge is **installed and awaiting manual relaunch**.
-Accepted release:
-`731a8cf1c51ecdb5cfa4ef574085122c70606c62eea4a896312fb05506f6c755`.
-Current installed state:
-`050f6a250dd2f4241bff666922dee80ce77ff2f97fdb0d7687177c25b67e626b`.
-The final release gate passed 71 groups in 148.735 seconds. Installation verified
-429 unchanged base files, exactly two overlay files and the client ownership
-preflight. The installer created the mods parent; this installation's cleanup
-is pending. Launch remains manual: select Profile 3 and stop at the main menu.
-The preceding package is preserved at `/private/tmp/sts-bridge-retained-release-km0yyy77/package`.
-Reverify current runtime/ownership before acting. Do not reuse the first attempt's
-state hash or assume this correction has passed live.
+The corrected generic upgrade passed the second live attempt: Sapphire Seed
+completed one verified card child and all four actions, then the fresh core map
+check passed. The following combat stopped at an end-turn transition with a
+Neow's Fury chooser visible, before any chooser input or reward stage. This
+installation was normally quit, quarantined and purged; the pinned base passed
+post-cleanup verification. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
+retains exact counters, identities and remaining limits.
+
+The new combat host's missing same-round end-turn wait was reproduced and
+corrected using the prior tested polling behavior. Its bounded wait now services
+nested choices without reconciling or redispatching the pending end-turn early.
+The host correction awaits live testing; native package bytes are unchanged.
 
 The first combined live attempt stopped before generic upgrade child admission
 and was cleaned up. Sapphire Seed/Consume was accepted; its 11-card selector
@@ -29,8 +29,9 @@ console setup was not established. [The live record](evidence/COMBINED_BRIDGE_LI
 retains exact counts, setup limits, installation identity and verified cleanup.
 A derived-hitbox compatibility defect was separately reproduced in the
 single-upgrade adapter and corrected with exact identity/input guards retained.
-The correction awaits a fresh live attempt; its relation to the first admission
-failure remains unproven. Combat-choice/reward/map live checks remain pending.
+The corrected path subsequently passed; the first attempt did not retain the
+exact diagnostic needed to prove its failure cause. Combat-choice/reward/map
+live checks remain pending.
 
 The September 8 unified module smoke is complete and its three installations are cleaned up.
 Representative paths covered combat (one UI-assisted chooser), rewards, map, shop,
@@ -58,7 +59,7 @@ before any new authorized live operation.
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
-| Upgrades | Generic fixed counts 1–8 support allocated holders beyond the viewport in native/controller fixtures; older Smith single-upgrade live, generic off-screen upgrade live check pending |
+| Upgrades | Sapphire Seed single upgrade and core map return live-demonstrated; fixed counts 1–8 and allocated off-screen targets have fixture coverage; generic off-screen live check pending |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
 | Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
@@ -96,8 +97,8 @@ public-screen reader recognizes only main menu/settings, so its unsupported/unkn
 result on the map did not test core map readiness. The shared client's new
 `event-map` mode performs a bounded, read-only check of the existing core map
 decision after event resolution and preserves event evidence if that check fails.
-It has controller/codec and shared-socket fixture coverage; a live event-to-core
-map check remains outstanding. The original live observations remain unchanged.
+It has controller/codec and shared-socket fixture coverage; the Sapphire Seed live event-to-core
+map check passed. The original live observations remain unchanged.
 
 The shared client now also has `combat` and `combat-choice` modes. The new native
 adapter resolves public discard/exhaust grid selectors, including the optional

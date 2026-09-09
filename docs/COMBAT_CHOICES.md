@@ -85,7 +85,10 @@ combat limit of 300 seconds, 4,096 reads, 48 accepted/72 attempted combat action
 in-flight transport may finish after a deadline; a late response cannot pass.
 All exits retain attempted, accepted and reconciled combat counts and completed
 child summaries. Only the exact native `queued` receipt counts as accepted;
-a later observation establishes reconciliation. Unknown/lost receipts stop.
+a later observation establishes reconciliation. After a queued end-turn, changed
+observations in the original round remain pending and service native choices;
+only the exact next round or terminal combat reconciles that end-turn. Backward
+and skipped rounds still stop. Unknown/lost receipts stop.
 
 Offline evidence includes actual-adapter inert native fixtures, adversarial
 Python accounting cases, real C# producer-to-Python chooser tests and the shared
@@ -106,8 +109,13 @@ See the [bridge guide](../bridge/Sts2AgentBridge/README.md#installation-client-a
 for policy flags, bounds and shared-client pacing. Native combat/reward/choice
 adapters are unchanged by this composition.
 
-Live validation is deferred at the user's request. The next useful batch includes
-Neow's Fury zero and positive choices, a suitable multi-card caller, combat resume,
-combat-to-rewards-to-map with both card policies, and the already prepared
-event-to-core map check. This feature does not establish unassisted native
-completion, generic-event optional selection or a full run.
+The September 9 live batch reached a Neow's Fury chooser, but combat orchestration
+stopped at a round-transition check before selecting. The missing end-turn wait
+described above was separately reproduced; the exact live round pair was not retained.
+The corrected wait has regression and integration coverage; its live retest is
+pending. The remaining batch includes Neow's Fury zero and positive choices, a
+suitable multi-card caller, combat resume and combat-to-rewards-to-map with both
+card policies. The separate Sapphire Seed event-to-core map check has passed;
+see the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md). This feature
+does not establish unassisted native completion, generic-event optional selection
+or a full run.
