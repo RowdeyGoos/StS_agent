@@ -135,9 +135,11 @@ Native fixtures cover distinct event identities, copied/sorted request lists,
 preview and effect replacement, collateral changes, failed/delayed completion and
 unsupported request shapes. Native-to-Python checks cover selection through
 Proceed/map return, a later allocated target, delayed completion and wrong effects.
-These are offline results. The live acceptance case remains: Plant and Nourish,
-one eligible original, exact Sown preview/effect, then Proceed and the shared
-client's independently checked core map decision.
+The [sixth live installation](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sixth-installation-single-card-enchantment)
+passed Plant and Nourish: Sown amount 1 on unupgraded Defend slot 5 of 24,
+exact preview/effect verification, Proceed and the shared client's independently
+checked core map. All four actions reconciled; normal quit and owned cleanup
+passed. Other enchantments/callers and broader selection semantics remain unproved.
 
 ## Separate remaining questions
 

@@ -4,7 +4,7 @@
   "evidence_limits": {
     "autonomous_full_run": false,
     "current_package_installed": false,
-    "generic_single_enchantment_live_tested": false,
+    "generic_single_enchantment_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "stacking_replacement_or_multi_enchantment_supported": false
   },
@@ -18,7 +18,40 @@
     "scope": "Native request/screen ownership and sorting, preview/effect identities, cleanup, public/private descriptor separation and compatibility",
     "status": "passed"
   },
-  "next_live_case": "Sapphire Seed Plant and Nourish: one previously unenchanted original, exact Sown preview/effect, Proceed and independent core map readiness through the existing event-map client.",
+  "live_enchantment": {
+    "child_attempted_accepted_reconciled": [
+      2,
+      2,
+      2
+    ],
+    "cleanup": "Normal quit, stopped process/closed listener, exact quarantine/purge; 429 unchanged base files, zero overlays.",
+    "completed_card_children": 1,
+    "domain_count": 24,
+    "enchantment": {
+      "amount": 1,
+      "key": "SOWN"
+    },
+    "event": "SAPPHIRE_SEED",
+    "event_reads": 13,
+    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sixth-installation-single-card-enchantment",
+    "flow_seconds": 9.54,
+    "limits": "One fixed-single Sown event; no stacking/replacement, multi/optional enchantment, other-caller or full-run claim.",
+    "map_candidate_count": 2,
+    "map_reads": 1,
+    "observation_window_seconds": 8,
+    "option": "PLANT",
+    "parent_attempted_accepted_reconciled": [
+      2,
+      2,
+      2
+    ],
+    "status": "passed",
+    "target": {
+      "key": "DEFEND_IRONCLAD",
+      "slot": 5,
+      "upgrade_level": 0
+    }
+  },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       797878,

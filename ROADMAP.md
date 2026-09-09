@@ -8,13 +8,10 @@ process. Completed packets and old campaign instructions are historical referenc
 
 1. **Expand generic event interactions first.** The user identified event
    coverage as the current obstacle and prioritized it ahead of longer-run
-   orchestration. Validate the implemented generic **single-card enchantment**, an observed gap
-   in Sapphire Seed's Plant and Nourish branch. Pinned source also confirms
-   Field of Man-Sized Holes/EnterYourHole uses the shared deck-enchantment
-   selector and applies an enchantment before finishing. The smallest acceptance
-   case is one eligible card selected, its exact enchantment effect verified,
-   then event continuation and a fresh actionable map. Extend the existing
-   generic parent/child machinery; do not add event-name admission rules.
+   orchestration. Generic **single-card enchantment** now has live acceptance:
+   Sapphire Seed Plant and Nourish, exact Sown effect and fresh actionable map.
+   Keep extending the shared parent/child machinery from representative native
+   interactions; do not add event-name admission rules.
 2. **Address the next demonstrated event blocker.** Consider optional/zero
    selection and cancellation, repeated/custom choices, multiple-item sets,
    variable upgrades and event combat. Establish a representative native caller
@@ -36,7 +33,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 ## Remaining generic interaction work
 
-- Live acceptance for the implemented fixed-single enchantment selector; stacking, replacement and broader counts remain separate work.
+- Broader enchantment callers, stacking/replacement and multiple-card counts. The fixed-single Sown path has live acceptance.
 - Generic-event optional/zero-card selection and native cancellation. Combat
   discard/exhaust grid choices have a separate implementation; Neow's Fury zero
   and two-card discard choices now have live evidence.

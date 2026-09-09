@@ -14,8 +14,13 @@ accepted release: `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099c
 All 71 combined release groups passed in 172.194 seconds, including
 207 event integration cases, reproducible packaging and owned installation/cleanup
 fixtures. The package is published at `/private/tmp/sts-unified-bridge-release`.
-It has not been installed or live-tested. All five earlier live installations
-remain cleaned up.
+The single-enchantment live test passed: Sapphire Seed Plant and Nourish,
+Sown amount 1 on unupgraded Defend slot 5 of 24, exact preview/effect verification,
+Proceed and an independently checked actionable map. All four actions reconciled.
+Normal quit, owned quarantine/purge and the 429-file base check passed; all six
+installations are cleaned up and no campaign remains installed. The
+[sixth-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sixth-installation-single-card-enchantment)
+retains exact artifact/state identities, counters, timings and limits.
 
 The representative combined live batch passed on the preceding release, including
 the allocated **off-screen single-upgrade** test. Those live results retain their
@@ -66,7 +71,7 @@ before any new authorized live operation.
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
-| Enchantment | Shared fixed-single `card_enchant_v1` with exact preview/effect and native-to-Python event handoff fixtures; live acceptance pending |
+| Enchantment | Shared fixed-single `card_enchant_v1`; Sapphire Seed Plant and Nourish added Sown to exact Defend slot 5 of 24 and returned to a fresh core map live |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
 | Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
@@ -138,8 +143,8 @@ identities remain in [release history](../bridge/Sts2AgentBridge/releases/histor
 ## Next work
 
 The user prioritized generic event coverage before longer-run orchestration.
-Single-card enchantment is implemented offline; its next acceptance case is
-Sapphire Seed Plant and Nourish, exact Sown preview/effect, Proceed and a fresh core map.
+Single-card enchantment now has live acceptance through Sapphire Seed Plant and
+Nourish. Choose the next concrete event blocker from a representative native caller.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
 from remaining native coverage. Reuse completed evidence when choosing the next

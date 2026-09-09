@@ -2,8 +2,9 @@
 
 Status: representative batch completed, including allocated off-screen
 single-upgrade. Generic event/map, both combat/choice/reward/map policies and
-Sapphire Seed off-screen Defend slot 20 of 23 passed. All five installations were
-cleaned up. The user authorized live testing after feature preparation and
+Sapphire Seed off-screen Defend slot 20 of 23 passed. A sixth installation
+also passed Plant and Nourish single-card enchantment on the new artifact.
+All six installations were cleaned up. The user authorized live testing after feature preparation and
 confirmed manual readiness on Profile 3. Earlier unsuccessful attempts below
 retain their original evidence limits.
 
@@ -435,3 +436,68 @@ No profile/save/history/Cloud filesystem contents were read; credentials remaine
 inside the existing client's read lease and were cleared after use. The waived
 unmodded relaunch was not repeated. User-wait, setup and documentation phase totals
 were not captured; measured controller and release-gate times are retained above.
+
+
+## Sixth installation: single-card enchantment
+
+The user requested the prepared test and confirmed readiness after manual launch
+and Sapphire Seed setup on the established Profile 3 workflow. UI showed the
+initial Consume and Plant and Nourish options untouched. No profile/save/history/
+Cloud filesystem data was accessed. The same installed bridge, transport and
+generic controller were used with a bounded test provider.
+
+Artifact and ownership:
+
+- Source commit: `50add7d2d5516c23166f80be91dbb54ed94400e3`.
+- Release manifest SHA-256:
+  `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0`.
+- DLL: 797184 bytes,
+  `9f0021f98a269214e02a99a9c834c27472276dd28703343f37cdae7383926303`.
+- Installed state:
+  `95d1580479666caeea76dabb82150d0d9d07a6f21eef54c35c00da201d0d7358`.
+- Release/source/package and owned installation validation passed. Authenticated
+  health was running and the manifest reported a compatible build before input.
+
+The provider selected advertised `choose:1`,
+`SAPPHIRE_SEED.pages.INITIAL.options.PLANT`. The bridge admitted a
+`card_enchant_v1` child with **24 eligible candidates**, requesting **SOWN,
+amount 1**. It selected `DEFEND_IRONCLAD`, **slot 5**, upgrade level **0**,
+then received the exact-original enchantment preview. The provider allowed an
+eight-second observation window and sent `confirm` once. No preview screenshot
+was retained; preview identity and effect verification were performed by the
+native adapter. A subsequent screenshot showed the returned map.
+
+The child resolved only after the selected original gained the requested
+enchantment, the unselected deck remained unchanged, the native tasks completed
+and the selector closed. The parent resumed through advertised Proceed
+(`choose:0`). The existing core map checker independently accepted a fresh
+actionable map with two candidates; no map node was selected.
+
+| Result | Observed value |
+| --- | --- |
+| Event status | resolved |
+| Parent attempted / accepted / reconciled | 2 / 2 / 2 |
+| Child attempted / accepted / reconciled | 2 / 2 / 2 |
+| Child episodes / completed card children | 1 / 1 |
+| Event reads | 13 |
+| Map reads / candidates | 1 / 2 |
+| Final latest-parent effect label | unverified (Proceed); one verified card child retained |
+| Elapsed client flow | 9.540 seconds, including eight-second preview window |
+| Native diagnostics | parent_ready → child_ready → parent_ready → map_ready |
+
+There was no UI card selection, manual confirmation, mutation retry or gameplay
+source correction during this test. The provider and sanitized result remain at
+`/private/tmp/sts-enchant-live-20260909.py` and
+`/private/tmp/sts-enchant-live-20260909-result.json`. Credentials were cleared by
+the shared client and not recorded.
+
+Normal application quit was followed by successful owned quarantine:
+`8dcecc449ba73d8266c403d98306e3f2a8d695dce578eecaf2fb24d90abfbee7`.
+The manager verified the stopped process/closed listener and exact ownership;
+purge returned the campaign to absent and removed four generated files.
+Post-cleanup base verification passed: **429 unchanged files, zero overlays**,
+projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+
+This demonstrates one fixed-single Sown enchantment and event-to-core map
+handoff on this release. Stacking/replacement, other enchantments/callers,
+multiple/optional selection and full runs are not established.
