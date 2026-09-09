@@ -1,113 +1,64 @@
 {
-  "change": "Wait through original-round snapshots after a queued end-turn while servicing bounded nested combat choices",
+  "change": "Generic single-card enchantment with exact preview/effect identity, versioned public descriptor and event resumption",
   "date": "2026-09-09",
   "evidence_limits": {
-    "allocated_offscreen_single_upgrade_live_tested": true,
     "autonomous_full_run": false,
-    "combat_choice_live_completed": true,
-    "combat_reward_map_live_tested": true,
-    "exact_live_round_pair_retained": false,
-    "host_correction_live_tested": true
+    "current_package_installed": false,
+    "generic_single_enchantment_live_tested": false,
+    "native_fixture_objects_are_inert": true,
+    "stacking_replacement_or_multi_enchantment_supported": false
   },
   "evidence_reused": {
-    "native_binary_and_package_identical": true,
-    "prior_release_manifest_sha256": "731a8cf1c51ecdb5cfa4ef574085122c70606c62eea4a896312fb05506f6c755",
-    "scope": "Unchanged native adapters and published package bytes. Live Sapphire Seed single-upgrade and event-to-core map result applies to this same native binary; changed combat host subsequently passed the third-installation retest."
+    "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
+    "prior_live_release_manifest_sha256": "fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb",
+    "scope": "Retained pinned metadata and prior live results informed implementation and next setup. All 71 current release groups ran. Historical live observations are not repinned to this changed binary."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Pending end-turn ownership, chooser servicing, exact-round reconciliation, bounded waiting and no redispatch",
+    "scope": "Native request/screen ownership and sorting, preview/effect identities, cleanup, public/private descriptor separation and compatibility",
     "status": "passed"
   },
-  "live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
-  "live_offscreen_upgrade": {
-    "child_attempted_accepted_reconciled": [
-      2,
-      2,
-      2
-    ],
-    "cleanup": "Normal quit, stopped process/closed listener, exact quarantine/purge; 429 unchanged base files, zero overlays.",
-    "completed_card_children": 1,
-    "domain_count": 23,
-    "event": "SAPPHIRE_SEED",
-    "event_reads": 13,
-    "limits": "One fixed-single allocated target; no multi-upgrade, unallocated-holder or full-run claim.",
-    "manual_card_input": false,
-    "map_candidate_count": 2,
-    "map_reads": 1,
-    "observation_window_seconds": 18,
-    "operation": "upgrade",
-    "parent_attempted_accepted_reconciled": [
-      2,
-      2,
-      2
-    ],
-    "seconds_including_observation_window": 19.362,
-    "selector_scrolling": false,
-    "status": "passed",
-    "target": {
-      "before_upgrade_level": 0,
-      "key": "DEFEND_IRONCLAD",
-      "slot": 20
-    }
-  },
-  "live_retest": {
-    "actionable_map_returns": 2,
-    "choice_selected_counts": [
-      2,
-      0
-    ],
-    "cleanup": "Normal quit, stopped process/closed listener, exact quarantine/purge; 429 unchanged base files, zero overlays.",
-    "combat_victories": 2,
-    "flow_seconds": [
-      12.881,
-      16.518
-    ],
-    "host_wait_trace": "Accepted end-turn, original-round ready snapshot and exact next-round progression retained in successful retest; failed-attempt exact round pair remains unavailable.",
-    "reward_policies": [
-      "first-card",
-      "skip-card"
-    ],
-    "status": "passed"
-  },
+  "next_live_case": "Sapphire Seed Plant and Nourish: one previously unenchanted original, exact Sown preview/effect, Proceed and independent core map readiness through the existing event-map client.",
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      785590,
-      "0c0cb103fd4837b5f2b6dc702c5ba17a5a9652ca93120daf822aeb00c1e72bab"
+      797878,
+      "698886ba84008bb894fc301a059089ac7ed4c8ee9c3081d4c4e6cb9f50883cb4"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      784896,
-      "3439dfac57bba4f93216598054e87083aaffd6a1edd7658139369df2ef883b2d"
+      797184,
+      "9f0021f98a269214e02a99a9c834c27472276dd28703343f37cdae7383926303"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
       "bfb70a5edd38b1f9bcf8254e5fea117c6d9bf5ef3988431d2077436aca710955"
     ]
   },
-  "package_directory": "/private/tmp/sts-bridge-tx2i28t8/package",
+  "package_directory": "/private/tmp/sts-unified-bridge-release",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-enchant-20260909",
   "production": {
-    "bytes": 784896,
-    "sha256": "3439dfac57bba4f93216598054e87083aaffd6a1edd7658139369df2ef883b2d"
+    "bytes": 797184,
+    "sha256": "9f0021f98a269214e02a99a9c834c27472276dd28703343f37cdae7383926303"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb",
+  "release_manifest_sha256": "19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0",
   "schema_version": 1,
-  "source_base_commit": "a871680",
-  "source_commit": "370bd777d38f2769ee4e04566c2a0f7ef8994562",
-  "source_inventory_sha256": "2b4b0dfb2f9308f743fb695cf37fd9a142e6db4f9968ffc733433ead61452100",
+  "source_base_commit": "3d7514e",
+  "source_commit": "50add7d2d5516c23166f80be91dbb54ed94400e3",
+  "source_inventory_sha256": "f84ea798f40027cb3dabf93c129ddb7a5746543450dc845be909dd2c9a1a80fd",
   "source_state": "Committed source verified against the exact accepted inventory",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Implementation and independent review elapsed times were not captured.",
+  "timing_limits": "Release and focused-card elapsed times were captured by the checker. Implementation, review, publication and user-wait elapsed times were not separately captured.",
   "validation": {
-    "before_fix": "New same-round end-turn wait and chooser scenarios failed with unexpected_combat_round before correction",
     "check_groups": 71,
-    "combat_host_tests": 9,
-    "focused_host_check_groups": 10,
-    "focused_host_scratch": "/private/tmp/sts-bridge-qy139kvm",
-    "focused_host_seconds": 9.776,
-    "release_gate_seconds": 146.105,
-    "scope": "Queued end-turn with optional zero/multi-card choice, exact next-round reconciliation, timeout without redispatch, backward/skipped/card-advanced round rejection; shared client socket integration and combined gate",
-    "scratch": "/private/tmp/sts-bridge-tx2i28t8"
+    "corrections": "Independent review found copied/sorted native input and same-metadata identity replacement gaps; both fixed with regressions. Broader tests updated legacy-operation and public-surface fixtures. One sandbox socket denial and one analyzer exception passed on unchanged reruns with required environment access; no checks disabled.",
+    "event_integration_cases": 207,
+    "focused_card_check_groups": 20,
+    "focused_card_scratch": "/private/tmp/sts-bridge-9seznyje",
+    "focused_card_seconds": 15.553,
+    "production_native_integration_cases": 145,
+    "release_gate_seconds": 172.194,
+    "scope": "Single-card native request/sorted-list admission, exact preview and applied effect identity retention, selected-only effect, delayed/faulted/mismatched tasks, unsupported shapes, strict public descriptor/version, parent Proceed/map handoff; existing bridge regressions, reproducibility, package and owned install/cleanup fixtures",
+    "scratch": "/private/tmp/sts-bridge-gdyoejoi"
   }
 }
