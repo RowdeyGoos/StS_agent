@@ -60,7 +60,7 @@ internal sealed class GenericEventV7MultiUpgradeState
     internal void CloneExit(CardModel original,CardModel? clone)
     {
         if(!_active||_closed||_binding.Failed||clone is null||_pairs.ContainsKey(original)||
-            _binding.PreDispatchDeck.Any(c=>ReferenceEquals(c.ModelIdentity,clone))||
+            _binding.SelectionDeck.Any(c=>ReferenceEquals(c.ModelIdentity,clone))||
             _binding.Originals.Contains(clone,ReferenceEqualityComparer.Instance)||
             _pairs.Values.Contains(clone,ReferenceEqualityComparer.Instance)||
             _binding.ObservedUpgradeClones.Count>=32||_binding.ObservedPreviewClones.Count>=64||!_binding.ObservedPreviewClones.Add(clone)||!_binding.ObservedUpgradeClones.Add(clone))

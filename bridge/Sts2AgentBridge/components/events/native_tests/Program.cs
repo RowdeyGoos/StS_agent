@@ -33,6 +33,7 @@ internal static partial class Program
     static void Main(string[] args)
     {
         if(args.SequenceEqual(new[]{"--baseline"})){BaselineRetirement();return;}
+        if(args.SequenceEqual(new[]{"--pre-selector-additions"})){PreSelectorAdditionTests();Console.WriteLine("pre-selector addition checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -152,6 +153,7 @@ internal static partial class Program
         ItemTests();
         VariableTransformTests();
         RepeatedPageTests();
+        PreSelectorAdditionTests();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)

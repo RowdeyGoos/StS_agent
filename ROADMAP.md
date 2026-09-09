@@ -16,7 +16,9 @@ process. Completed packets and old campaign instructions are historical referenc
    [all-event map](docs/EVENT_INTERACTION_MAP.md) classifies all 68 pinned types and
    exposes previously missing composition and surface gaps. Repeated ordinary pages
    are implemented offline; retain Abyssal Baths' two-Linger path for the next live
-   batch. Next address deck changes around children; event card/multiple rewards; narrow
+   batch. Append-only additions before selectors are also implemented offline;
+   retain Grave of the Forgotten/Confront for live acceptance. Next address deck
+   changes after selection, such as removal-plus-grant; event card/multiple rewards; narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.
@@ -38,7 +40,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
-include deck changes around selectors, event card/multiple
+include deck changes after selectors and other pre-selector mutations, event card/multiple
 rewards, ancient/combat layouts, embedded combat, multi-card enchantment, optional
 and sequential pickup selectors, generic-deck transformations, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.

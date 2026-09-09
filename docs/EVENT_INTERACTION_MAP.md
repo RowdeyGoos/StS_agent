@@ -11,6 +11,8 @@ and positive IL callsite offsets, plus immediate relic interactions.
 
 Implementation update, later on September 9: [repeated ordinary pages](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages)
 now use completed callbacks and fresh native controls, with offline coverage.
+The [pre-selector append increment](GENERIC_EVENTS.md#implemented-appended-cards-before-a-selector)
+also has offline coverage; post-selector deck additions remain a gap.
 The inventory and gap matrix below retain the original research comparison at
 `4d3516f`; their source hashes and gap annotations are not repinned to later code.
 Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.
@@ -22,7 +24,7 @@ Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.
   Those are different from the already implemented Cheese add-card grid.
 - **Existing selectors do not cover every composition.** Grave of the Forgotten
   and Trial add a curse before requesting a selector. Amalgamator and several
-  removal events add cards after selection. The current parent binds the earlier
+  removal events add cards after selection. The baseline parent binds the earlier
   deck and requires the complete option task to finish before accepting the child
   effect. These are concrete compatibility gaps, even with supported card counts.
 - **Repeated options needed a progress model at the research baseline.** Abyssal Baths reuses option IDs;

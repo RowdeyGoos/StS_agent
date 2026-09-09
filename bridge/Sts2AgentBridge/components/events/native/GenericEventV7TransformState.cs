@@ -43,7 +43,7 @@ internal sealed class GenericEventV7TransformState
     internal void CommandFault(Command command){command.State=CardTransformV2CommandState.Faulted;Fail();}
     private bool Current(Command command)=>_commands.Count>0&&ReferenceEquals(_commands[^1],command)&&ReferenceEquals(command.Owner,this);
     private bool OwnedCard(CardModel? card)=>card is not null&&ReferenceEquals(card.Owner,_binding.Player)&&ReferenceEquals(card.RunState,_binding.RunState)&&CardSelectionV1NativeRules.IsStableKey(card.Id.Entry)&&card.CurrentUpgradeLevel>=0;
-    private bool Baseline(CardModel card)=>_binding.PreDispatchDeck.Any(c=>ReferenceEquals(c.ModelIdentity,card));
+    private bool Baseline(CardModel card)=>_binding.SelectionDeck.Any(c=>ReferenceEquals(c.ModelIdentity,card));
     internal CardModel ChoiceEntry(Command command,CardTransformation transformation)
     {
         Context();Require(Current(command)&&!command.Frozen&&command.PendingChoice is null&&command.Choices.Count<_selected!.Length);
@@ -95,10 +95,10 @@ internal sealed class GenericEventV7TransformState
     {
         Context();Require(Current(command)&&command.Inserting&&ReferenceEquals(command.PendingInsertion,choice));
         var row=new CardTransformV2Insertion(_insertions.Count+1,choice.Original,choice.Final!,choice.FinalKey!,choice.FinalLevel);
-        Require(Matches(_binding.PreDispatchDeck,_removed,_insertions.Append(row)));
+        Require(Matches(_binding.SelectionDeck,_removed,_insertions.Append(row)));
         command.Insertions.Add(row);_insertions.Add(row);command.PendingInsertion=null;command.Inserting=false;
     }
-    private bool ExpectedDeck()=>Matches(_binding.PreDispatchDeck,_removed,_insertions);
+    private bool ExpectedDeck()=>Matches(_binding.SelectionDeck,_removed,_insertions);
     private bool Matches(IReadOnlyList<CardSelectionV1DeckCard> baseline,IEnumerable<object> removed,IEnumerable<CardTransformV2Insertion> inserted)
     {
         var remove=new HashSet<object>(removed,ReferenceEqualityComparer.Instance);

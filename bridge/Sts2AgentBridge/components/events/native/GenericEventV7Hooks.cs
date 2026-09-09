@@ -300,7 +300,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         __state.Binding=b;
         try
         {
-            if(!Owns(b)||b.Closed||b.RequestSeen||!b.ContextValid(false)||!b.MatchesCurrentDeck()||
+            if(!Owns(b)||b.Closed||b.RequestSeen||!b.ContextValid(false)||!b.BindSelectionDeck()||
                 __0 is null||__1 is null||__2<1||__3.MinSelect!=1||__3.MaxSelect!=1||__3.Cancelable||
                 !ReferenceEquals(__1.CanonicalInstance,__1)||
                 !Sts2AgentBridge.Successors.CardSelectionV1.Native.CardSelectionV1NativeRules.IsStableKey(__1.Id.Entry)||
@@ -313,9 +313,9 @@ public sealed class GenericEventV7Hooks : IDisposable
             if(originals.Distinct(ReferenceEqualityComparer.Instance).Count()!=originals.Length||
                 originals.Any(c=>c is null||c.Enchantment is not null||!__1.CanEnchant(c)||
                     !ReferenceEquals(c.Owner,b.Player)||!ReferenceEquals(c.RunState,b.RunState)||
-                    !b.PreDispatchDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
+                    !b.SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
             {b.Failed=true;return;}
-            b.Originals=b.PreDispatchDeck.Select(d=>(CardModel)d.ModelIdentity).Where(c=>originals.Contains(c,ReferenceEqualityComparer.Instance)).ToArray();
+            b.Originals=b.SelectionDeck.Select(d=>(CardModel)d.ModelIdentity).Where(c=>originals.Contains(c,ReferenceEqualityComparer.Instance)).ToArray();
             Request.Value=b;
         }
         catch{b.Failed=true;}
@@ -353,7 +353,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         __state.Binding=b;
         try
         {
-            if (!Owns(b) || b.Closed || b.RequestSeen || !ReferenceEquals(__0,b.Player) || !b.ContextValid(false))
+            if (!Owns(b) || b.Closed || b.RequestSeen || !ReferenceEquals(__0,b.Player) || !b.ContextValid(false)||!b.BindSelectionDeck())
             { b.Failed=true; return; }
             b.RequestSeen=true; b.Prefs=__1; b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Upgrade;
             if (__1.MinSelect<1 || __1.MinSelect!=__1.MaxSelect || __1.MaxSelect>8 || __1.Cancelable) b.Failed=true;
@@ -389,7 +389,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             for(int i=0;i<originals.Length;i++) originals[i]=__0[i];
             if (originals.Any(c=>c is null || !c.IsUpgradable) ||
                 originals.Distinct(ReferenceEqualityComparer.Instance).Count()!=originals.Length ||
-                originals.Any(c=>!b.PreDispatchDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
+                originals.Any(c=>!b.SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
             { b.Failed=true; return; }
             b.Originals=originals;
         }
@@ -413,7 +413,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         __state.Binding=b;
         try
         {
-            if(!Owns(b)||b.Closed||b.RequestSeen||!ReferenceEquals(__0,b.Player)||!b.ContextValid(false))
+            if(!Owns(b)||b.Closed||b.RequestSeen||!ReferenceEquals(__0,b.Player)||!b.ContextValid(false)||!b.BindSelectionDeck())
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__1;b.RemovalPredicate=__2;
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Remove;
@@ -437,7 +437,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             b.ScreenSeen=true;
             var originals=new CardModel[__0.Count];for(int i=0;i<originals.Length;i++)originals[i]=__0[i];
             if(originals.Any(c=>c is null||!c.IsRemovable)||originals.Distinct(ReferenceEqualityComparer.Instance).Count()!=originals.Length||
-                originals.Any(c=>!b.PreDispatchDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
+                originals.Any(c=>!b.SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
             {b.Failed=true;return;}
             b.Originals=originals;
         }
@@ -462,7 +462,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         __state.Binding=b;
         try
         {
-            if(!Owns(b)||b.Closed||b.RequestSeen||__0 is null||__1 is null||!ReferenceEquals(__2,b.Player)||!b.ContextValid(false)||!b.MatchesCurrentDeck())
+            if(!Owns(b)||b.Closed||b.RequestSeen||__0 is null||__1 is null||!ReferenceEquals(__2,b.Player)||!b.ContextValid(false)||!b.BindSelectionDeck())
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__3;b.RewardContext=__0;
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Add;
@@ -555,7 +555,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         __state.Binding=b;
         try
         {
-            if(!Owns(b)||b.Closed||b.RequestSeen||!ReferenceEquals(__0,b.Player)||!b.ContextValid(false)||!b.MatchesCurrentDeck())
+            if(!Owns(b)||b.Closed||b.RequestSeen||!ReferenceEquals(__0,b.Player)||!b.ContextValid(false)||!b.BindSelectionDeck())
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__1;b.TransformFunction=__2;
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Transform;
@@ -579,7 +579,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             {b.Failed=true;return;}
             b.ScreenSeen=true;
             var originals=new CardModel[__0.Count];for(int i=0;i<originals.Length;i++)originals[i]=__0[i];
-            var eligible=b.PreDispatchDeck.Select(d=>(CardModel)d.ModelIdentity).Where(c=>(int)c.Type!=6&&c.IsTransformable).ToArray();
+            var eligible=b.SelectionDeck.Select(d=>(CardModel)d.ModelIdentity).Where(c=>(int)c.Type!=6&&c.IsTransformable).ToArray();
             if(originals.Length!=eligible.Length||originals.Where((c,i)=>c is null||!ReferenceEquals(c,eligible[i])||
                 !ReferenceEquals(c.Owner,b.Player)||!ReferenceEquals(c.RunState,b.RunState)).Any())
             {b.Failed=true;return;}

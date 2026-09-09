@@ -581,6 +581,40 @@ def main() -> int:
 
     native_checks = 0
     if args.native_fixture is not None:
+        for scenario in ('ENCHANT_PRE_ADD', 'U_PRE_ADD', 'T_PRE_ADD', 'ENCHANT_POST_ADD', 'ENCHANT_PRE_ADD_OWNER'):
+            native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
+            count = 2 if scenario.startswith(('U_', 'T_')) else 1
+            actions = tuple(f'select:{i}' for i in range(count)) + ('confirm',)
+            try:
+                result = host.run_event(native.request, provider=planned(actions), clock=lambda: 1.0, sleep=lambda _: None)
+            finally:
+                native.close()
+            end = native.telemetry[-1]
+            failure = scenario in ('ENCHANT_POST_ADD', 'ENCHANT_PRE_ADD_OWNER')
+            assert (result['status'] == 'resolved') != failure, (scenario, result, native.envelopes[-1])
+            assert result['completed_card_children'] == (0 if failure else 1), result
+            assert native.posts == count + (2 if failure else 3), result
+            assert end['select_calls'] == count and end['confirm_calls'] == 1, end
+            if not failure:
+                completed_history(result, native, 1)
+                key = 'SHAME' if scenario == 'U_PRE_ADD' else 'DOUBT' if scenario == 'T_PRE_ADD' else 'DECAY'
+                assert end['remaining_keys'].count(key) == 1 and end['map_open'], end
+                slot = end['remaining_keys'].index(key)
+                assert end['remaining_levels'][slot] == 0 and end['remaining_originals'][slot] == -1, end
+                if scenario != 'T_PRE_ADD':
+                    assert end['remaining_keys'] == end['baseline_keys'] + [key], end
+                    assert end['enchantment_keys'][slot] is None, end
+                    if scenario == 'U_PRE_ADD':
+                        assert end['multi_completion_valid'] and end['remaining_levels'] == [1, 1] + [0] * (len(end['remaining_keys']) - 2), end
+                    else:
+                        assert end['enchantment_keys'][0] == 'SOWN' and sum(x is not None for x in end['enchantment_keys']) == 1, end
+                else:
+                    assert end['remaining_originals'] == list(range(2, len(end['baseline_keys']))) + [-1, -1, -1], end
+                    assert len(end['transform_originals']) == 2 and end['transform_batches'] == 2, end
+                    assert end['transform_completion_valid'], end
+                assert result['effects'] == 'unverified', result
+            checks += 1
+            native_checks += 1
         for scenario in ('P_REPEAT', 'P_REVISIT', 'P_DELAY', 'P_FAULT', 'P_STALE', 'P_DANGER', 'P_BOUND'):
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
             def repeat_provider(view):

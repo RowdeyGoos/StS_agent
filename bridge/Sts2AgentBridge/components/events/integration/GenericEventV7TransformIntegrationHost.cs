@@ -12,6 +12,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
     {
         var cases = new Dictionary<string, (string Name, int Count, int Domain, bool Manual, int[]? Batches)>
         {
+            ["T_PRE_ADD"] = ("TRIAL_NONDESCRIPT_INNOCENT", 2, 5, false, new[] { 1, 1 }),
             ["T_FIRST"] = ("FIRST_TRANSFORM", 1, 4, false, null),
             ["T_ANOTHER"] = ("ANOTHER_TRANSFORM", 2, 5, true, null),
             ["T_HELD_OUT"] = ("HELD_OUT_TRANSFORM", 2, 5, false, null),
@@ -39,6 +40,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
         if (scenario == "T_BAD_RESULT") fixture.Results = rows => { rows.Reverse(); return rows; };
         if (scenario == "T_CALLBACK_FAULT") fixture.FaultCallback = true;
         if (scenario == "T_COMMAND_FAULT") fixture.FaultCommand = true;
+        if (scenario=="T_PRE_ADD") fixture.PreSelectorAdditions=new[]{Program.AppendBeforeSelector(fixture.Room.Layout,fixture.Player,"DOUBT")};
         Program.RetireBeforeChosen(fixture.Room.Layout);
         var baseline = fixture.Player.Deck.Cards.ToArray();
         var baselineKeys = baseline.Select(c => c.Id.Entry).ToArray();

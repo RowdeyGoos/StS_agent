@@ -51,6 +51,7 @@ internal static partial class Program
         internal NDeckUpgradeSelectScreen Screen=null!;
         internal NCardGrid Grid=null!;
         internal int OptionCalls,SelectCalls,ConfirmCalls;
+        internal CardModel[] PreSelectorAdditions=Array.Empty<CardModel>();
         internal Action? BeforeCreate {get;set;}
         internal Action? BeforeClick {get;set;}
         internal Action? AfterClone {get;set;}
@@ -154,7 +155,7 @@ internal static partial class Program
         }
         internal void AdvanceClick(){if(Clicks.Count==0)throw new InvalidOperationException("No deferred callback.");Clicks.Dequeue()();}
         internal void AdvancePreview(){PreviewCards.Children.AddRange(_previewTail);_previewTail.Clear();}
-        internal bool CompletionValid=>Player.Deck.Cards.SequenceEqual(Cards)&&Selected.Count==_count&&Selected.Distinct(ReferenceEqualityComparer.Instance).Count()==_count&&Cards.Select((card,index)=>card.Id.Entry=="Card_"+index&&card.CurrentUpgradeLevel==(Selected.Contains(card)?1:0)).All(x=>x);
+        internal bool CompletionValid=>Player.Deck.Cards.SequenceEqual(Cards.Concat(PreSelectorAdditions))&&Selected.Count==_count&&Selected.Distinct(ReferenceEqualityComparer.Instance).Count()==_count&&Cards.Select((card,index)=>card.Id.Entry=="Card_"+index&&card.CurrentUpgradeLevel==(Selected.Contains(card)?1:0)).All(x=>x);
         internal GenericEventV7Observation Start()
         {var p=Session.Read();Check(p.Status=="ready","multi parent ready");Check(Session.Apply(p.DecisionId,"choose:0").Outcome=="accepted","multi parent dispatch");return Session.Read();}
         internal object Child(GenericEventV7Observation c)=>Session.ReadCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal).Value;

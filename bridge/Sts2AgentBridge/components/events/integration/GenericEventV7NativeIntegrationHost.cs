@@ -38,6 +38,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
     };
     private static readonly Dictionary<string, (string Name, int Count, int Domain, bool Manual, bool Creation, bool Completion, bool Click, bool Preview)> MultiCases = new()
     {
+        ["U_PRE_ADD"] = ("TRIAL_MERCHANT_INNOCENT", 2, 5, false, false, false, false, false),
         ["U_ALLOCATED"] = ("HELD_OUT_MULTI", 2, 20, false, false, false, true, false),
         ["U_FIRST"] = ("FIRST_MULTI", 2, 5, false, false, false, false, false),
         ["U_ANOTHER"] = ("ANOTHER_MULTI", 2, 5, true, false, false, false, false),
@@ -88,6 +89,13 @@ internal static partial class GenericEventV7NativeIntegrationHost
         var model = upgrade?.Model ?? removal?.Model ?? reward?.Model ?? multi!.Model;
         var map = upgrade?.Map ?? removal?.Map ?? reward?.Map ?? multi!.Map;
         var overlays = upgrade?.Overlays ?? removal?.Overlays ?? reward?.Overlays ?? multi!.Overlays;
+        if (args[0] is "ENCHANT_PRE_ADD" or "ENCHANT_POST_ADD" or "ENCHANT_PRE_ADD_OWNER" or "U_PRE_ADD") {
+            var added=Program.AppendBeforeSelector((upgrade?.Room ?? multi!.Room).Layout,player,
+                multi is null?"DECAY":"SHAME");
+            if(multi is not null)multi.PreSelectorAdditions=new[]{added};
+            if(args[0]=="ENCHANT_POST_ADD") upgrade!.AfterEffect=()=>player.Deck.Cards.Add(new CardModel {Owner=player});
+            if(args[0]=="ENCHANT_PRE_ADD_OWNER") upgrade!.AfterEffect=()=>added.Owner=new MegaCrit.Sts2.Core.Entities.Players.Player();
+        }
         Program.RetireBeforeChosen((upgrade?.Room ?? removal?.Room ?? reward?.Room ?? multi!.Room).Layout);
         var baseline = player.Deck.Cards.ToArray();
         var baselineKeys = baseline.Select(c => c.Id.Entry).ToArray();

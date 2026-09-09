@@ -76,6 +76,7 @@ before any new authorized live operation.
 | Rest and shop | Standalone heal/Proceed, older Smith upgrade-one, one bounded shop purchase/close/map path live-demonstrated |
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
 | Repeated generic event pages | Fresh controls and completed callbacks permit repeated keys/text; native-to-host two-repeat/Exit/Proceed/map fixtures pass; live acceptance remains open |
+| Appended cards before selectors | First owned request binds appended cards while preserving the original deck; enchant/upgrade/transform native-to-host shapes pass; Grave/Confront and Trial live acceptance remain open |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
@@ -155,7 +156,8 @@ Single-card enchantment now has live acceptance through Sapphire Seed Plant and
 Nourish. The [all-event research map](EVENT_INTERACTION_MAP.md) now accounts for
 all 68 pinned types, with branch families, concrete blockers and ancient pickup
 paths. Repeated-page progress is the first implemented increment from that map,
-with offline acceptance. Deck changes around selectors are the next concrete gap;
+with offline acceptance. Append-only additions before selectors are also implemented
+offline. Deck changes after selection, such as removal-plus-grant, are the next concrete gap;
 the static inventory itself adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
@@ -165,7 +167,7 @@ observable behavior to test.
 ## Current exclusions
 
 The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in
-deck changes around selectors, event card/multiple rewards,
+deck changes after selectors and other pre-selector deck mutations, event card/multiple rewards,
 ancient/combat layouts, embedded combat, multi-card enchantment, optional/sequential
 pickup selectors, generic-deck transformation and custom/terminal surfaces.
 Unallocated holder support remains limited. Variable upgrades, true native

@@ -11,7 +11,8 @@ a supported interaction does not need an event-name registration. Event names
 identify ownership and representative/held-out cases; custom surfaces may need
 separate adapters.
 
-The parent reserves the chosen option and pre-action deck. Owned native request
+The parent reserves the chosen option and pre-action deck. At the first owned
+selector request it may bind appended cards as described below. Owned request
 and screen-creation hooks supply operation, counts, candidate originals and task
 identity. The child advertises legal actions; a replaceable host provider chooses
 one. The adapter rechecks identity before native input, verifies preview/effect
@@ -31,6 +32,43 @@ to `unverified`. A resolved flow with `effects: unverified` and
 parent effects or a fresh core map decision. The shared client's `event-map`
 flow separately checks that core decision and preserves the original event summary
 on success or failure. See the [bridge guide](../bridge/Sts2AgentBridge/README.md).
+
+## Implemented: appended cards before a selector
+
+The first owned card-selector request can establish a deck baseline that includes
+cards appended by the preceding event callback. The original pre-action deck must
+remain an exact prefix: identical card objects, order, keys, upgrade levels and
+enchantment identities/values. New cards must belong to the same player and run;
+the complete deck remains bounded at 512 cards. Binding happens once, before
+native selector creation, with the existing parent ownership and empty-overlay
+checks. Prepending, replacing, removing, reordering or modifying original cards
+is unsupported in this increment.
+
+The request-time deck then stays fixed through admission, target selection and
+preview. All shared card families use it, including transform effect observations
+and reward-offer exclusion. The existing selected-only child effect checks apply
+to that deck. Appended-card ownership remains checked; non-enchantment selectors
+also retain those cards' enchantment identities because their older child codecs
+omit enchantment fields. Enchantment selectors retain their full-deck checks.
+No later deck change can refresh the baseline, and a second request cannot rebind it.
+
+This accepts a pre-selector deck state; it does not verify the source or intended
+effect of the automatic additions. `card_effect_verified` still describes only
+the verified selector effect. No public fields, action meanings, hooks, retry
+behavior or selector limits change. Deck additions after selection remain
+unsupported: removal-plus-grant events need a separate completion boundary.
+
+Pinned callers are Grave of the Forgotten/Confront (Decay before single-card
+SoulsPower), Trial/MerchantInnocent (Shame before two upgrades), and
+Trial/NondescriptInnocent (Doubt before two transformations). The pinned
+`AddCursesToDeck` path uses the deck append position. Inert fixtures cover these
+interaction shapes, the other shared selector families, selection of an eligible
+newly appended card, delayed requests, changed originals, late additions,
+ownership loss and collateral enchantment changes. Native-to-host cases complete
+the three representative shapes through Proceed/map. The enchantment fixture
+uses Sown; it does not execute Grave's native body or establish SoulsPower live
+acceptance. The next live case is Grave of the Forgotten/Confront with at least
+two eligible unenchanted cards.
 
 ## Implemented: repeated ordinary option pages
 
@@ -178,7 +216,8 @@ layout restrictions and need their own evidence.
 
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
-progress is now implemented above; deck changes around selectors, event card/multiple rewards, ancient and
+progress and pre-selector append-only additions are implemented above. Deck
+changes after selectors, other pre-selector deck mutations, event card/multiple rewards, ancient and
 combat layouts, multi-enchantment, optional/sequential pickup children and custom
 surfaces are distinct gaps. WoodCarvings uses a generic deck selector before a
 fixed-result transformation; it does not enter the supported transform screen.

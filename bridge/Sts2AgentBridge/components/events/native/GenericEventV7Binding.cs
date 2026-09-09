@@ -30,7 +30,7 @@ internal sealed class GenericEventV7Binding
         Run=run; Player=player; Room=room; Map=map; Overlays=overlays; Layout=layout;
         EventModel=model; Option=option; Controller=controller; Nonce=nonce; Decision=decision; Action=action;
         RunState=player.RunState; OptionKey=option.TextKey;
-        PreDispatchDeck=CopyDeck(player);
+        PreDispatchDeck=CopyDeck(player); SelectionDeck=PreDispatchDeck;
         // Reservation is the final authority check for this presentation node.
         // Native event dispatch may remove and free it before Chosen runs.
         if (!ContextValid(false) || overlays.ScreenCount!=0 || !Valid(Controller) ||
@@ -52,6 +52,8 @@ internal sealed class GenericEventV7Binding
     internal string Action {get;}
     internal string OptionKey {get;}
     internal CardSelectionV1DeckCard[] PreDispatchDeck {get;}
+    internal CardSelectionV1DeckCard[] SelectionDeck {get;private set;}
+    private bool _selectionDeckBound;
     internal CardSelectorPrefs Prefs;
     internal bool Failed,Closed,ChosenSeen,RequestSeen,ScreenSeen;
     internal Task? ChosenTask;
@@ -73,7 +75,7 @@ internal sealed class GenericEventV7Binding
         CommitMode==CardSelectionV1CommitMode.ExplicitConfirm?"explicit_confirm":"auto_at_max";
     internal bool CaptureOffers(List<CardCreationResult> offers)
     {
-        if(offers.Count<=Prefs.MaxSelect||offers.Count>64||PreDispatchDeck.Length+Prefs.MaxSelect>512)return false;
+        if(offers.Count<=Prefs.MaxSelect||offers.Count>64||SelectionDeck.Length+Prefs.MaxSelect>512)return false;
         RewardList=offers;RewardEntries=offers.ToArray();Originals=new CardModel[offers.Count];RewardKeys=new string[offers.Count];RewardLevels=new int[offers.Count];
         var entries=new HashSet<object>(ReferenceEqualityComparer.Instance);var originals=new HashSet<object>(ReferenceEqualityComparer.Instance);
         for(int i=0;i<RewardEntries.Length;i++)
@@ -81,7 +83,7 @@ internal sealed class GenericEventV7Binding
             var entry=RewardEntries[i];var card=entry?.Card;
             if(entry is null||!entries.Add(entry)||card is null||!originals.Add(card)||
                 !ReferenceEquals(card.Owner,Player)||!ReferenceEquals(card.RunState,RunState)||
-                PreDispatchDeck.Any(d=>ReferenceEquals(d.ModelIdentity,card))||
+                SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,card))||
                 !CardSelectionV1NativeRules.IsStableKey(card.Id.Entry)||card.CurrentUpgradeLevel<0)return false;
             Originals[i]=card;RewardKeys[i]=card.Id.Entry;RewardLevels[i]=card.CurrentUpgradeLevel;
         }
@@ -120,7 +122,7 @@ internal sealed class GenericEventV7Binding
         other.RequireManualConfirmation==Prefs.RequireManualConfirmation &&
         ReferenceEquals(other.Comparison,Prefs.Comparison) && other.UnpoweredPreviews==Prefs.UnpoweredPreviews &&
         other.PretendCardsCanBePlayed==Prefs.PretendCardsCanBePlayed && ReferenceEquals(other.ShouldGlowGold,Prefs.ShouldGlowGold);
-    internal bool MatchesChildBinding()=>!Failed && !Closed && GenericEventV7Hooks.Owns(this) && ContextValid(false) && MatchesOffers();
+    internal bool MatchesChildBinding()=>!Failed && !Closed && GenericEventV7Hooks.Owns(this) && ContextValid(false) && MatchesOffers() && AddedCardInvariantsValid();
     internal bool ContextValid(bool exit)=>
         !Closed && ReferenceEquals(NRun.Instance,Run) && ReferenceEquals(Run.EventRoom,Room) &&
         ReferenceEquals(NEventRoom.Instance,Room) && ReferenceEquals(NMapScreen.Instance,Map) &&
@@ -131,15 +133,45 @@ internal sealed class GenericEventV7Binding
         (exit || Room.IsVisibleInTree()) && Room.CustomEventNode is null && Room.EmbeddedCombatRoom is null &&
         CardSelectCmd.Selector is null && (exit || !Map.IsOpen && !Map.IsTravelEnabled && !Map.IsTraveling);
     private static bool Valid(GodotObject obj)=>GodotObject.IsInstanceValid(obj);
+    // The native option may append cards before asking for a selector. Bind
+    // once, at the owned request entry, without certifying those parent effects.
+    // Existing originals cannot change, disappear, or move in this increment.
+    internal bool BindSelectionDeck()
+    {
+        try
+        {
+            if (_selectionDeckBound || Failed || RequestSeen || ScreenSeen ||
+                !GenericEventV7Hooks.Owns(this) || !ContextValid(false) || Overlays.ScreenCount!=0) return false;
+            var deck=CopyDeck(Player);
+            if (deck.Length<PreDispatchDeck.Length) return false;
+            for (int i=0;i<PreDispatchDeck.Length;i++)
+                if (!SameDeckCard(deck[i],PreDispatchDeck[i])) return false;
+            if (deck.Skip(PreDispatchDeck.Length).Any(c=>c.ModelIdentity is not CardModel card ||
+                !ReferenceEquals(card.Owner,Player) || !ReferenceEquals(card.RunState,RunState))) return false;
+            SelectionDeck=deck; _selectionDeckBound=true;
+            return true;
+        }
+        catch { return false; }
+    }
+    private static bool SameDeckCard(CardSelectionV1DeckCard a,CardSelectionV1DeckCard b)=>
+        ReferenceEquals(a.ModelIdentity,b.ModelIdentity) && a.StableKey==b.StableKey &&
+        a.UpgradeLevel==b.UpgradeLevel && CardSelectionV1Enchantment.Same(a.Enchantment,b.Enchantment);
+    // Non-enchantment child codecs omit enchantments. Keep those identities
+    // for the newly admitted baseline cards here; enchant children validate
+    // selected-only enchantment changes with their full deck snapshots.
+    private bool AddedCardInvariantsValid()=>SelectionDeck.Skip(PreDispatchDeck.Length).All(c=>
+        c.ModelIdentity is CardModel card && (!Player.Deck.Cards.Contains(card) ||
+        ReferenceEquals(card.Owner,Player) && ReferenceEquals(card.RunState,RunState) &&
+        (Operation==CardSelectionV1Operation.Enchant || CardSelectionV1Enchantment.Same(CopyEnchantment(card),c.Enchantment))));
     internal bool MatchesCurrentDeck()
     {
         try
         {
             var deck=CopyDeck(Player);
-            return deck.Length==PreDispatchDeck.Length && deck.Where((c,i)=>
-                !ReferenceEquals(c.ModelIdentity,PreDispatchDeck[i].ModelIdentity)||
-                c.StableKey!=PreDispatchDeck[i].StableKey || c.UpgradeLevel!=PreDispatchDeck[i].UpgradeLevel ||
-                !CardSelectionV1Enchantment.Same(c.Enchantment,PreDispatchDeck[i].Enchantment)).Any()==false;
+            return AddedCardInvariantsValid() && deck.Length==SelectionDeck.Length && deck.Where((c,i)=>
+                !ReferenceEquals(c.ModelIdentity,SelectionDeck[i].ModelIdentity)||
+                c.StableKey!=SelectionDeck[i].StableKey || c.UpgradeLevel!=SelectionDeck[i].UpgradeLevel ||
+                !CardSelectionV1Enchantment.Same(c.Enchantment,SelectionDeck[i].Enchantment)).Any()==false;
         }
         catch{return false;}
     }

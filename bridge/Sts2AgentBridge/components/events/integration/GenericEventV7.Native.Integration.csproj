@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../native_tests/RepeatedPageFixtures.cs" />
+    <Compile Include="../native_tests/PreSelectorAdditionFixtures.cs" />
     <Compile Include="GenericEventV7RepeatedPageIntegrationHost.cs" />
     <Compile Include="GenericEventV7VariableTransformIntegrationHost.cs" />
     <Compile Include="../native_tests/VariableTransformFixtures.cs" />

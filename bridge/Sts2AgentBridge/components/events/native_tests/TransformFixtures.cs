@@ -61,6 +61,7 @@ internal static partial class Program
         internal NDeckTransformSelectScreen Screen=null!;
         internal NCardGrid Grid=null!;
         internal int OptionCalls,SelectCalls,ConfirmCalls,BatchCount;
+        internal CardModel[] PreSelectorAdditions=Array.Empty<CardModel>();
         internal List<CardModel> InsertedOriginals=>Originals;
         internal int CompletedBatches {get;private set;}
         internal Control BeforeCards=>Before;internal Control AfterCards=>After;
@@ -210,7 +211,7 @@ internal static partial class Program
         internal void AdvanceInsertion(){if(_insertions.Count==0)throw new InvalidOperationException("No pending insertion");_insertions.Dequeue().SetResult();}
         internal bool HasPendingInsertion=>_insertions.Count>0;
         internal bool CompletionValid=>Selected.Count>=(MinimumOverride??_count)&&Selected.Count<=_count&&Originals.Count>=Selected.Count&&Originals.Distinct(ReferenceEqualityComparer.Instance).Count()==Originals.Count&&
-            Player.Deck.Cards.SequenceEqual(Cards.Where(c=>!Originals.Contains(c)).Concat(FinalCards.Where(c=>!Originals.Contains(c))))&&FinalCards.Distinct(ReferenceEqualityComparer.Instance).Count()==FinalCards.Count&&
+            Player.Deck.Cards.SequenceEqual(Cards.Concat(PreSelectorAdditions).Where(c=>!Originals.Contains(c)).Concat(FinalCards.Where(c=>!Originals.Contains(c))))&&FinalCards.Distinct(ReferenceEqualityComparer.Instance).Count()==FinalCards.Count&&
             Cards.Select((c,i)=>c.Id.Entry=="Card_"+i&&c.CurrentUpgradeLevel==(UpgradedOriginals.Contains(c)?1:0)).All(x=>x)&&
             UpgradedOriginals.All(c=>c.CurrentUpgradeLevel==1);
         internal GenericEventV7Observation Start(){var p=Session.Read();Check(p.Status=="ready","transform parent ready");Check(Session.Apply(p.DecisionId,"choose:0").Outcome=="accepted","transform parent dispatch");return Session.Read();}
