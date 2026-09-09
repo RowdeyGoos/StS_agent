@@ -61,7 +61,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             if (!request.EnumerateObject().Select(p => p.Name).SequenceEqual(new[] { "method", "route", "body" })) return 3;
             byte[]? body = request.GetProperty("body").ValueKind == JsonValueKind.Null ? null :
                 Convert.FromBase64String(request.GetProperty("body").GetString()!);
-            byte[] response = wire.Handle(request.GetProperty("method").GetString(), request.GetProperty("route").GetString(), body);
+            byte[] response = CheckedHandle(wire,request.GetProperty("method").GetString(), request.GetProperty("route").GetString(), body);
             var remaining = fixture.Player.Deck.Cards.ToArray();
             var known = baseline.Concat(fixture.FinalCards).ToArray();
             Console.WriteLine(JsonSerializer.Serialize(new {

@@ -24,17 +24,16 @@ broader pickup composition remain gaps. The current test release is
 `e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18`, built from
 source commit `7fa8eae`. All **71 release groups passed in 258.357 seconds**,
 including reproducible packaging and installation/cleanup fixtures. The eleventh
-installation is **active**, with state
-`23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942`.
-Stopped-process/closed-port checks and all 429 base files passed before install;
-post-install verification found only the two owned mod files. Bird's completed
-child and fresh map are verified on this release; the summary records PECK as the
-expected native result, and the user confirmed Peck is present in the deck.
-The next setup is **Waterlogged Scriptorium/Prickly Sponge**: at least 99 gold,
-three eligible unenchanted cards, and the initial choices with console closed after
-normal room entry. The prepared policy selects two cards, verifies Steady amount 1
-on each and checks map return. Cleanup remains required after the batch and normal
-quit. Earlier live results retain their original identities.
+installation is **cleaned up** after Prickly Sponge stopped following its accepted
+parent option. No card actions were sent; the user saw the native selector. The
+production response classifier rejected the new multi-enchantment descriptor.
+Offline inspection also found missing item/card-reward response formats and
+card-reward request verbs at that boundary. A correction and boundary regressions
+are being validated before the next installation. Normal quit, stopped process /
+closed port, exact owned quarantine/purge and all 429 unchanged base files passed.
+Bird's completed child and fresh map remain verified on the recorded release;
+the user separately confirmed Peck in the deck. The next live case remains
+**Waterlogged Scriptorium/Prickly Sponge**, with a fresh setup after the fix.
 The [eleventh-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eleventh-installation-generic-event-feature-batch)
 retains setup, provider and release details. See [generic semantics](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors).
 
@@ -164,7 +163,7 @@ before any new authorized live operation.
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
 | Enchantment | Single-card v1 has Sapphire Seed/Sown and Grave/Confront live evidence; fixed counts 2–8 in v2 now have native and C#/Python fixtures, including original-card preview, partial effects and deferred input; multi-card live remains open |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
-| Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; sets remain unreleased and not live-tested |
+| Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; sets are packaged but await live acceptance |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
 | Reduced headless/actor stack | Deterministic backend, public encoder, trusted datasets, masked candidate scorer and cloning smoke accepted on structural data; no target-game parity or learned live-policy claim |
 

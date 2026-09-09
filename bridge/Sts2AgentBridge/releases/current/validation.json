@@ -3,7 +3,7 @@
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": true,
+    "current_package_installed": false,
     "current_package_live_tested": true,
     "generic_deck_transform_bird_live_tested": true,
     "native_fixture_objects_are_inert": true,
@@ -18,12 +18,14 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "cleanup": "required after live batch and normal quit",
+    "cleanup": "passed: normal quit, stopped process/closed port, exact quarantine/purge, 429 unchanged base files",
+    "generated_files_removed": 4,
     "live_input_sent": true,
-    "overlay_count": 2,
+    "overlay_count": 0,
     "pre_install_runtime": "passed: stopped exact game process and closed local bridge port",
+    "quarantine_state_sha256": "21fcace5e8f27b5dc0ccec9361b1bd7dca20d3481628cb33f030dd9442fbea9a",
     "state_sha256": "23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942",
-    "status": "installed"
+    "status": "cleaned"
   },
   "live_results": [
     {
@@ -71,6 +73,51 @@
         "upgrade_level": 1
       },
       "status": "passed"
+    },
+    {
+      "case": "WaterloggedScriptorium/PricklySponge",
+      "decisions": [
+        {
+          "action": "choose:2",
+          "option": "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.PRICKLY_SPONGE",
+          "stage": "parent"
+        }
+      ],
+      "diagnostic_followup": "One read-only GET failed ConnectionRefusedError; zero further mutations",
+      "diagnostics": [
+        "parent_ready"
+      ],
+      "event": {
+        "child_accepted": 0,
+        "child_attempted": 0,
+        "child_episodes": 0,
+        "child_reconciled": 0,
+        "code": "invalid_response",
+        "completed_card_children": 0,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 1,
+        "parent_attempted": 1,
+        "parent_reconciled": 0,
+        "reads": 2,
+        "schema_version": 1,
+        "status": "failed",
+        "total_attempted": 1
+      },
+      "expected_enchantment": {
+        "amount": 1,
+        "key": "STEADY"
+      },
+      "installation_state_sha256": "23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942",
+      "map_handoff": {
+        "status": "not_attempted"
+      },
+      "release_sha256": "e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18",
+      "result_path": "/private/tmp/sts-scriptorium-live-20260909-result.json",
+      "result_sha256": "68c9748e0c1d1f67876ccc62b729f0f10b5b7b5a5ebb27a82c98158eb3120da8",
+      "seconds": 0.308,
+      "status": "failed",
+      "user_visible_surface": "A card-selection screen"
     }
   ],
   "live_test": {
@@ -86,7 +133,7 @@
     "policy_sha256": "6e9861219a796665c13e6dfe5ac51ae4af44957455b66e4ed3148ac4288c349e",
     "result_path": "/private/tmp/sts-scriptorium-live-20260909-result.json",
     "setup": "At least 99 gold and 3 eligible unenchanted cards; fresh native room then event WATERLOGGED_SCRIPTORIUM, initial choices, console closed",
-    "status": "awaiting_manual_setup"
+    "status": "failed_before_child_actions"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [

@@ -11,6 +11,32 @@ using Sts2AgentBridge.Successors.GenericEventV7;
 // target stubs. Python drives every native control; no fixture Finish shortcut.
 internal static partial class GenericEventV7NativeIntegrationHost
 {
+    // Exercise the same response boundary as NativeBridgeModule for every real
+    // adapter/core/wire exchange, including pending and rejected action paths.
+    private static byte[] CheckedHandle(GenericEventV7WireService wire,string? method,string? route,byte[]? body) {
+        using var request=body is null?null:JsonDocument.Parse(body);
+        var kind=method=="GET"?Sts2AgentBridge.Successors.GenericEventReleaseV10.GenericEventTransportRoute.DecisionGet:
+            request!.RootElement.GetProperty("child").ValueKind==JsonValueKind.Null?
+                Sts2AgentBridge.Successors.GenericEventReleaseV10.GenericEventTransportRoute.ParentPost:
+                Sts2AgentBridge.Successors.GenericEventReleaseV10.GenericEventTransportRoute.ChildPost;
+        var response=wire.Handle(method,route,body);
+        using var document=JsonDocument.Parse(response);var root=document.RootElement;
+        var classification=Sts2AgentBridge.Successors.GenericEventReleaseV10.GenericEventTerminalClassifier.Classify(kind,
+            Sts2AgentBridge.Successors.GenericEventReleaseV10.GenericEventReleaseSelection.Generic,root.GetProperty("session_nonce").GetString()!,200,response);
+        if(classification==Sts2AgentBridge.Successors.GenericEventReleaseV10.TerminalClassification.Invalid)
+            throw new InvalidOperationException("Production event response classifier rejected the native wire response.");
+        // A resolved child still belongs to its parent. Only parent completion or
+        // a failure can stop/release this module; waiting must never do so.
+        string envelope=root.GetProperty("kind").GetString()!;
+        JsonElement value=envelope=="decision" && root.GetProperty("child").ValueKind==JsonValueKind.Null
+            ?root.GetProperty("parent"):root.GetProperty("payload");
+        string? status=value.TryGetProperty("outcome",out var outcome)?outcome.GetString():
+            value.TryGetProperty("status",out var state)?state.GetString():null;
+        bool terminal=envelope=="error" || status is "complete" or "unsupported" or "uncertain" or "rejected" or "stale_decision" or "illegal_action" or "budget_exhausted";
+        if((classification==Sts2AgentBridge.Successors.GenericEventReleaseV10.TerminalClassification.Terminal)!=terminal)
+            throw new InvalidOperationException("Production event terminal ownership mismatch.");
+        return response;
+    }
     private sealed class DerivedRewardHitbox : NClickableControl { }
     private static readonly Dictionary<string, (string Name, int Min, int Max, int Domain, bool Creation, bool Completion)> RemovalCases = new()
     {
@@ -118,7 +144,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             if (!request.EnumerateObject().Select(p => p.Name).SequenceEqual(new[] { "method", "route", "body" })) return 3;
             byte[]? body = request.GetProperty("body").ValueKind == JsonValueKind.Null ? null :
                 Convert.FromBase64String(request.GetProperty("body").GetString()!);
-            byte[] response = wire.Handle(request.GetProperty("method").GetString(), request.GetProperty("route").GetString(), body);
+            byte[] response = CheckedHandle(wire,request.GetProperty("method").GetString(), request.GetProperty("route").GetString(), body);
             var remaining = player.Deck.Cards.ToArray();
             var offers = reward?.OfferCards ?? Array.Empty<CardModel>();
             var displayed = reward?.DisplayedOffers ?? Array.Empty<CardModel>();

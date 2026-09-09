@@ -76,4 +76,5 @@
   <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicScreenService.cs" />
   <Compile Include="../../../src/Sts2AgentBridge/Core/Transport/ProbeRequestParser.cs" />
   <Compile Include="Program.cs" />
+  <Compile Include="EventBoundaryTests.cs" />
 </ItemGroup></Project>

@@ -7,6 +7,10 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../apps/bridge/compatibility/GenericEventTerminalClassifier.cs" />
+    <Compile Include="../transport/GenericEventTransportContracts.cs" />
+    <Compile Include="../transport/GenericEventTransportProtocol.cs" />
+    <Compile Include="../diagnostics/GenericEventDiagnosticCodec.cs" />
     <Compile Include="../native_tests/CardRewardFixtures.cs" />
     <Compile Include="../native_tests/CardRewardSetFixtures.cs" />
     <Compile Include="../native_tests/PostRemovalAdditionFixtures.cs" />

@@ -54,7 +54,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             if (!request.EnumerateObject().Select(p => p.Name).SequenceEqual(new[] { "method", "route", "body" })) return 3;
             byte[]? body = request.GetProperty("body").ValueKind == JsonValueKind.Null ? null :
                 Convert.FromBase64String(request.GetProperty("body").GetString()!);
-            byte[] response = wire.Handle(request.GetProperty("method").GetString(), request.GetProperty("route").GetString(), body);
+            byte[] response = CheckedHandle(wire,request.GetProperty("method").GetString(), request.GetProperty("route").GetString(), body);
             Console.WriteLine(JsonSerializer.Serialize(new {
                 body = Convert.ToBase64String(response), event_type = fixture.Model.GetType().Name,
                 map_open = fixture.Map.IsOpen, overlay_count = fixture.Overlays.ScreenCount,
@@ -120,7 +120,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             using var doc=JsonDocument.Parse(line);var request=doc.RootElement;
             if(!request.EnumerateObject().Select(p=>p.Name).SequenceEqual(new[]{"method","route","body"}))return 3;
             byte[]? body=request.GetProperty("body").ValueKind==JsonValueKind.Null?null:Convert.FromBase64String(request.GetProperty("body").GetString()!);
-            byte[] response=wire.Handle(request.GetProperty("method").GetString(),request.GetProperty("route").GetString(),body);
+            byte[] response=CheckedHandle(wire,request.GetProperty("method").GetString(),request.GetProperty("route").GetString(),body);
             Console.WriteLine(JsonSerializer.Serialize(new {
                 body=Convert.ToBase64String(response),map_open=f.World.Map.IsOpen,overlay_count=f.World.Overlays.ScreenCount,
                 opens=f.Opens,choices=f.Choices,skips=f.Skips,dismisses=f.Dismisses,
@@ -162,7 +162,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             using var doc=JsonDocument.Parse(line);var request=doc.RootElement;
             if(!request.EnumerateObject().Select(p=>p.Name).SequenceEqual(new[]{"method","route","body"}))return 3;
             byte[]? body=request.GetProperty("body").ValueKind==JsonValueKind.Null?null:Convert.FromBase64String(request.GetProperty("body").GetString()!);
-            byte[] response=wire.Handle(request.GetProperty("method").GetString(),request.GetProperty("route").GetString(),body);
+            byte[] response=CheckedHandle(wire,request.GetProperty("method").GetString(),request.GetProperty("route").GetString(),body);
             Console.WriteLine(JsonSerializer.Serialize(new {
                 body=Convert.ToBase64String(response),map_open=f.World.Map.IsOpen,overlay_count=f.World.Overlays.ScreenCount,
                 opens=f.Opened.Count,choices=f.Chosen.Count,skips=f.Skipped.Count,dismisses=f.Dismisses,

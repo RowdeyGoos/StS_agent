@@ -20,7 +20,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             if(!request.EnumerateObject().Select(p=>p.Name).SequenceEqual(new[]{"method","route","body"}))return 3;
             byte[]? body=request.GetProperty("body").ValueKind==JsonValueKind.Null?null:
                 Convert.FromBase64String(request.GetProperty("body").GetString()!);
-            var response=wire.Handle(request.GetProperty("method").GetString(),request.GetProperty("route").GetString(),body);
+            var response=CheckedHandle(wire,request.GetProperty("method").GetString(),request.GetProperty("route").GetString(),body);
             Console.WriteLine(JsonSerializer.Serialize(new {
                 body=Convert.ToBase64String(response), map_open=f.Native.Map.IsOpen,
                 chosen_calls=f.Native.OptionCalls, linger_calls=f.Lingers,

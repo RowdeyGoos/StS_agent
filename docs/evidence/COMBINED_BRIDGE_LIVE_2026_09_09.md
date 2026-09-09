@@ -950,3 +950,35 @@ review passed with no blockers; manual setup is pending. The native branch costs
 99 gold. No live input
 for this second case has been sent; normal quit and owned cleanup remain required
 after the batch.
+
+
+### Prickly Sponge stopped at the production response boundary
+
+The user prepared the initial event choices and confirmed readiness. The exact
+running process and installed release/source/state checks passed. The policy
+accepted `WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.PRICKLY_SPONGE`
+(`choose:2`), but the next read failed with `invalid_response`. There were **1
+parent attempted / 1 accepted / 0 reconciled**, **zero child actions**, two reads
+and no map check. Elapsed time: **0.308 seconds**. The user confirmed a
+card-selection screen was visible. Only `parent_ready` reached the controller.
+The parent may already have spent its native 99-gold cost; this attempt did not
+verify that effect or enchant any cards through the bridge.
+
+Result: `/private/tmp/sts-scriptorium-live-20260909-result.json`, SHA-256
+`68c9748e0c1d1f67876ccc62b729f0f10b5b7b5a5ebb27a82c98158eb3120da8`. One subsequent read-only diagnostic GET received
+`ConnectionRefusedError`; it sent no mutations. No action was retried.
+
+Source inspection identified a concrete production mismatch: the terminal
+classifier called `ContractVersion(operation)` with the default maximum of one,
+rejecting the emitted `card_enchant_v2` descriptor. The same classifier lacked the
+new item-set/card-reward formats, and the shared request parser lacked new
+card-reward verbs. These latter gaps were found offline, not by additional live
+attempts. The fix preserves parent ownership and terminal failure semantics.
+
+After the user quit normally, three process samples and two port samples confirmed
+the game stopped and listener closed. Exact owned quarantine produced state
+`21fcace5e8f27b5dc0ccec9361b1bd7dca20d3481628cb33f030dd9442fbea9a`;
+purge removed four generated files. All **429 base files** remained unchanged
+with the recorded base hash and **zero overlays**. The eleventh installation is
+**cleaned up**. Bird's earlier pass remains bound to its original release. No
+profile/save/history/Cloud filesystem content was accessed.

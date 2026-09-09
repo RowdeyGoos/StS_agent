@@ -69,13 +69,19 @@ internal static class GenericEventTransportRequestParser
     internal static bool ParentActionValue(ReadOnlySpan<byte> value)=>value.Length==8&&value[..7].SequenceEqual("choose:"u8)&&value[7] is >=(byte)'0' and <=(byte)'7';
     internal static bool ChildAction(ReadOnlySpan<byte> value)
     {
-        if(value.SequenceEqual("preview"u8)||value.SequenceEqual("confirm"u8))return true;
+        if(value.SequenceEqual("preview"u8)||value.SequenceEqual("confirm"u8)||RewardAction(value))return true;
         bool item=value.StartsWith("collect:"u8);
         int prefix=item?8:7;
         if(!item&&!value.StartsWith("select:"u8)||value.Length<=prefix||value.Length>prefix+(item?3:2))return false;
         var digits=value[prefix..];if(digits.Length>1&&digits[0]=='0')return false;
         int n=0;foreach(byte c in digits){if(c<'0'||c>'9')return false;n=n*10+c-'0';}return n<=(item?255:63);
     }
+    internal static bool RewardAction(ReadOnlySpan<byte> value) =>
+        value.SequenceEqual("open"u8) || value.SequenceEqual("skip"u8) || value.SequenceEqual("dismiss"u8) ||
+        value.Length==8 && value.StartsWith("choose:"u8) && value[7] is >=(byte)'0' and <=(byte)'4' ||
+        value.Length==6 && (value.StartsWith("open:"u8) || value.StartsWith("skip:"u8)) && value[5] is >=(byte)'0' and <=(byte)'7' ||
+        value.Length==10 && value.StartsWith("choose:"u8) && value[7] is >=(byte)'0' and <=(byte)'7' && value[8]==':' && value[9] is >=(byte)'0' and <=(byte)'4';
+
     private static bool Split(ReadOnlySpan<byte> source,Span<Line> lines,out int count)
     {
         count=0;int start=0;
