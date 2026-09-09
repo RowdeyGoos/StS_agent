@@ -86,7 +86,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(captured.Phase=="unsupported")return Fixed("unsupported");
                 if(captured.Phase=="waiting"||b.ChosenTask is null||offer.RequestTask is null)return Fixed("waiting");
                 if(captured.Phase!="choose"||offer.Screen is null)return Fixed("unsupported");
-                b.Admission??=new GenericEventV7OfferAdmission(new object(),offer.Count,offer.Bundle);
+                b.Admission??=new GenericEventV7OfferAdmission(new object(),offer.Count,offer.Bundle,offer.CanSkip);
                 return new("child",false,Array.Empty<GenericEventV7NativeOption>(),offer.Screen,b.Admission);
             }
             if(b.Item is {} item)
@@ -220,7 +220,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(b?.Offer is {} offer) {
             if(_childCreated||b.Admission is not GenericEventV7OfferAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||
                 offer.Capture().Phase!="choose"||!_screens.Add(offer.Screen!)||!_tasks.Add(offer.RequestTask!)||!_tasks.Add(b.ChosenTask!))throw new InvalidOperationException("Unowned offer child.");
-            _childCreated=true;return new GenericEventV7OfferSession(b.Nonce,offer.Bundle,offer.Count,offer);
+            _childCreated=true;return new GenericEventV7OfferSession(b.Nonce,offer.Bundle,offer.Count,offer,offer.CanSkip);
         }
         if(b?.Item is {} item)
         {

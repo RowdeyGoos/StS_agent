@@ -118,7 +118,7 @@ def _decode(body: Any) -> dict[str, Any]:
             if c['kind']=='card_results':
                 _require(type(c['offer_count']) is int and 1<=c['offer_count']<=64 and c['contract_version']=='card_results_v1')
             elif c['kind']=='card_offer':
-                _require(type(c['offer_count']) is int and 1<=c['offer_count']<=5 and c['contract_version'] in ('card_offer_v1','bundle_offer_v1'))
+                _require(type(c['offer_count']) is int and 1<=c['offer_count']<=5 and c['contract_version'] in ('card_offer_v1','card_offer_v2','bundle_offer_v1') and (c['contract_version']!='card_offer_v2' or c['offer_count']<=3))
             elif c['kind']=='card_reward':
                 _require(type(c['offer_count']) is int and 1<=c['offer_count']<=8 and (c['contract_version']==('card_reward_v1' if c['offer_count']==1 else 'card_reward_set_v1') or c['offer_count']>=2 and c['contract_version']=='mixed_reward_set_v1'))
             elif c['kind'] == 'item':
@@ -211,7 +211,7 @@ class _Controller:
         self.preview_seen = False
         self.child_parents: set[tuple[str, str]] = set()
         self.completed_children: set[tuple[str, str]] = set()
-        self.acknowledged_results: set[tuple[str, str]] = set()
+        self.unverified_children: set[tuple[str, str]] = set()
         self.completed_items: set[tuple[str, str]] = set()
         self.effects = 'none_attempted'
         self.card = _load_card()
@@ -319,7 +319,7 @@ class _Controller:
                  p['completed_card_children'] + p['completed_item_children'] <= p['child_episodes'])
         _require((p['effects'] == 'none_attempted') == (p['total_attempted'] == 0))
         if p['effects'] in ('card_effect_verified', 'item_effect_verified'):
-            _require(self.parent_receipts and self.parent_receipts[-1] in self.completed_children and self.parent_receipts[-1] not in self.acknowledged_results and
+            _require(self.parent_receipts and self.parent_receipts[-1] in self.completed_children and self.parent_receipts[-1] not in self.unverified_children and
                      ((self.parent_receipts[-1] in self.completed_items) == (p['effects'] == 'item_effect_verified')))
         _require(p['parent_accepted'] <= p['parent_attempted'] and p['parent_reconciled'] <= p['parent_accepted'])
         _require(p['child_reconciled'] <= p['child_accepted'] <= p['child_attempted'])
@@ -546,20 +546,25 @@ class _Controller:
             else:
                 _require(p['phase']=='complete' and p['decision_id']=='' and not actions and len(history)==len(self.child_receipts)==1)
                 owner=(self.child['parent_decision_id'],self.child['parent_action_id']);_require(owner not in self.completed_children)
-                self.completed_children.add(owner);self.acknowledged_results.add(owner);self.child_done=True
+                self.completed_children.add(owner);self.unverified_children.add(owner);self.child_done=True
         else:_require(status in ('waiting','unsupported') and p['phase']==status and not cards and not actions and p['decision_id']=='')
         self.counts['child_reconciled']+=len(history)-len(self.child_history);self.child_history=history
         return status
 
     def offer_read(self, p: Any) -> str:
-        _keys(p, ('version','session_nonce','status','phase','decision_id','offers','legal_actions','prior_results','selected_index'))
+        optional=self.child['contract_version']=='card_offer_v2'
+        _keys(p, ('version','session_nonce','status','phase','decision_id','offers','legal_actions','prior_results','selected_index')+(('additional_cards',) if optional else ()))
+        if optional:
+            extra=p['additional_cards'];_require(type(extra) is list and len(extra)<=(1 if p['status']=='resolved' else 0))
+            for i,c in enumerate(extra):
+                _keys(c,('slot','key','upgrade_level'));_require(type(c['slot']) is int and c['slot']==i and self.transform._stable_key(c['key']) and self.transform._integer(c['upgrade_level']))
         _require(p['version']==self.child['contract_version'] and p['session_nonce']==self.nonce)
         bundle=p['version']=='bundle_offer_v1'
         history=p['prior_results'];actions=[a for _,a in self.child_receipts]
         _require(type(history) is list and len(self.child_history)<=len(history)<=len(actions)<=(2 if bundle else 1) and history[:len(self.child_history)]==self.child_history)
         for i,h in enumerate(history):
             _keys(h,('decision_id','action_id','result'))
-            _require((h['decision_id'],h['action_id'])==self.child_receipts[i] and h['result']==('previewed' if bundle and actions[i]!='confirm' else 'collected'))
+            _require((h['decision_id'],h['action_id'])==self.child_receipts[i] and h['result']==('skipped' if actions[i]=='skip' else 'previewed' if bundle and actions[i]!='confirm' else 'collected'))
         status=p['status'];offers=p['offers'];legal=p['legal_actions'];selected=p['selected_index']
         _require(type(offers) is list and type(legal) is list)
         if status in ('ready','resolved'):
@@ -574,9 +579,9 @@ class _Controller:
                 self.child_shape=json.loads(json.dumps(offers))
             _require(offers==self.child_shape)
             if status=='ready' and p['phase']=='choose':
-                _require(selected is None and not actions and legal==['choose:'+str(i) for i in range(len(offers))])
+                _require(selected is None and not actions and legal==['choose:'+str(i) for i in range(len(offers))]+(['skip'] if optional else []))
             else:
-                _require(type(selected) is int and 0<=selected<len(offers) and actions and actions[0]=='choose:'+str(selected))
+                _require(optional and status=='resolved' and selected is None and actions==['skip'] or type(selected) is int and 0<=selected<len(offers) and actions and actions[0]=='choose:'+str(selected))
                 if status=='ready':
                     _require(bundle and p['phase']=='preview' and len(actions)==1 and legal==['confirm'])
                     self.preview_seen=True
@@ -584,6 +589,7 @@ class _Controller:
                     _require(p['phase']=='complete' and not legal and p['decision_id']=='' and len(actions)==(2 if bundle else 1) and (not bundle or self.preview_seen and actions[-1]=='confirm'))
                     owner=(self.child['parent_decision_id'],self.child['parent_action_id'])
                     _require(owner not in self.completed_children);self.completed_children.add(owner);self.child_done=True
+                    if optional:self.unverified_children.add(owner)
             if status=='ready':_require(_hex(p['decision_id'],64))
         else:
             _require(status in ('waiting','unsupported') and p['phase']==status and not offers and not legal and p['decision_id']=='' and selected is None)

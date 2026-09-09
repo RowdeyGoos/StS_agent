@@ -67,8 +67,9 @@ and ScrollBoxes are the representative Neow callers. Both retain exact model,
 control, task and deck ownership through event/map return. See the
 [contract and limits](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles).
 Add these to the next live batch alongside ancient entry, Sea Glass, Claws and
-mixed reward sets. HeftyTablet's additional grant, Skip, cancellation and nested
-pickup composition remain outside this increment. No live install or launch ran.
+mixed reward sets. This v1 increment excludes HeftyTablet's additional grant and
+Skip (now covered by v2 below), cancellation and nested pickup composition. No live
+install or launch ran.
 
 Validation: all **15 individual event check groups** passed in **291.307 seconds**,
 including **7,435 native assertions**, **125 host tests**, and **404 C#/Python cases**
@@ -84,7 +85,7 @@ Independent semantic review found no remaining blockers. Evidence outputs:
 `/private/tmp/sts-offers-boundary` (shared checks), and
 `/private/tmp/sts-bridge-elkbf7uv` (final build). The retained release is unchanged.
 
-The next offline batch adds **inactive combat-layout options** and **automatic
+A further offline batch adds **inactive combat-layout options** and **automatic
 card-results acknowledgment** (`card_results_v1`). PunchOff/Nab-shaped Injury plus
 relic pickup now composes through Proceed/map; active combat and changed embedded
 room identities stop the handler. Darv/PandorasBox supplies the inspected results
@@ -105,6 +106,28 @@ projects. Independent semantic review found no remaining blockers. Evidence:
 `/private/tmp/sts-surfaces-boundary` (shared checks), and
 `/private/tmp/sts-bridge-8q85ewwe` (production build). The retained release below
 remains unchanged.
+
+The latest offline batch adds **optional card offers** and **one appended grant**
+under `card_offer_v2`. HeftyTablet's concrete branches are choose → selected card
+plus Injury, and Skip → Injury. The native Skip control, exact task outcomes,
+unchanged baseline and bounded appended-card identities are checked through
+Proceed/map. Resolved payloads expose the extra card separately; grant provenance
+and parent effects remain **unverified**. Required offers and bundles keep their
+v1 behavior. See the [contract and limits](GENERIC_EVENTS.md#implemented-offline-optional-card-offers-and-one-appended-grant).
+No live launch/install was performed. Add both HeftyTablet branches to the next
+live batch; nested pickups and broader selector grant composition remain open.
+
+Final validation passed **15 event groups in 319.959 seconds**: **7,788 native
+assertions**, **125 host tests** and **450 C#/Python cases** (**388 through native
+adapters**). Native execution took 80.320 seconds; cross-language integration took
+224.234 seconds. Focused offer checks separately passed 818 native assertions and
+64 native/host cases. Shared bridge validation passed **809 checks**. The production
+build passed in **1.748 seconds**, with source closure covering 313 files / 46
+projects. Independent semantic review found no blockers. Evidence:
+`/private/tmp/sts-bridge-0yfivulm` (final event gate),
+`/private/tmp/sts-optional-offers` (focused native/host fixtures),
+`/private/tmp/sts-offer-v2-boundary` (shared checks), and
+`/private/tmp/sts-bridge-izl7m9bm` (production build). The retained release is unchanged.
 
 The current release is
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source

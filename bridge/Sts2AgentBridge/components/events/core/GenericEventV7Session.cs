@@ -61,7 +61,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         {
             if (!_resolvedDelivered) return Observation("child", "child");
             _card.Dispose(); _card = null;
-            _effects = _child!.Kind=="card_results"?"unverified":_child.Kind == "item" ? "item_effect_verified" : "card_effect_verified";
+            _effects = (_child!.Kind=="card_results"||_child.ContractVersion=="card_offer_v2")?"unverified":_child.Kind == "item" ? "item_effect_verified" : "card_effect_verified";
             _child = null;
             Reconcile("child_completed");
         }
@@ -81,7 +81,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 _child = admission switch {
                     GenericEventV7CardAdmission c => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
                     GenericEventV7ResultsAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r),
-                    GenericEventV7OfferAdmission o => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,o.OfferCount,o.Bundle?"bundle_offer_v1":"card_offer_v1"),
+                    GenericEventV7OfferAdmission o => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,o.OfferCount,o.Bundle?"bundle_offer_v1":o.CanSkip?"card_offer_v2":"card_offer_v1"),
                     GenericEventV7RewardAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r.OfferCount,true,r.Mixed),
                     GenericEventV7ItemAdmission i => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,i.OfferCount),
                     _ => null };

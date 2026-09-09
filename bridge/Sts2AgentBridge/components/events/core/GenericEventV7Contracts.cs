@@ -74,7 +74,7 @@ public sealed class GenericEventV7Child
         Operation=""; CommitMode="";
     }
     public GenericEventV7Child(int ordinal,string decision,string action,int count,string offerVersion):this(ordinal,decision,action,count,true) {
-        if(offerVersion is not ("card_offer_v1" or "bundle_offer_v1"))throw new ArgumentException("Unknown offer version.");
+        if(offerVersion is not ("card_offer_v1" or "card_offer_v2" or "bundle_offer_v1")||offerVersion=="card_offer_v2"&&count>3)throw new ArgumentException("Unknown offer version.");
         Kind="card_offer";ContractVersion=offerVersion;
     }
     public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7ResultsAdmission results) {

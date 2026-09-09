@@ -6,10 +6,11 @@ internal static partial class GenericEventV7NativeIntegrationHost {
     private static int RunOffers(string scenario) {
         bool bundle=!scenario.StartsWith("O_CARD",StringComparison.Ordinal);
         using var f=new Program.OfferFixture(bundle,bundle?5:3,bundle?8:1,dialogue:3) {
+            CanSkip=scenario.Contains("OPTIONAL",StringComparison.Ordinal),
             DelayCreation=scenario.EndsWith("CREATION",StringComparison.Ordinal),DelayCompletion=scenario.EndsWith("COMPLETION",StringComparison.Ordinal),
             DeferChoice=scenario.EndsWith("CHOICE",StringComparison.Ordinal),DeferConfirm=scenario.EndsWith("CONFIRM",StringComparison.Ordinal),
             PartialAddition=scenario.EndsWith("PARTIAL",StringComparison.Ordinal),Fault=scenario.EndsWith("FAULT",StringComparison.Ordinal),
-            WrongRequest=scenario.EndsWith("WRONG",StringComparison.Ordinal),ExtraCard=scenario.EndsWith("EXTRA",StringComparison.Ordinal)
+            WrongRequest=scenario.EndsWith("WRONG",StringComparison.Ordinal),ExtraCard=scenario.EndsWith("EXTRA",StringComparison.Ordinal)||scenario.Contains("GRANT",StringComparison.Ordinal)
         };
         using var wire=new GenericEventV7WireService(new string('e',32),f.Session);
         for(int count=0;count<2200;count++) {

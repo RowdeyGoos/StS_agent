@@ -644,10 +644,57 @@ and deferred input/tasks wait; unrelated changes, failures or exhausted waits st
 The deck limit remains 512. Each input is attempted at most once.
 
 This increment has native, production-boundary and C#/Python fixture evidence;
-**live acceptance is pending**. It does not add Skip, preview cancellation,
-extra grants/copies, card substitution or nested pickups. HeftyTablet uses the same
-choose screen but has a broader post-choice grant including Injury; that composition
-remains unsupported. Native direct menus with more than three choices are rejected.
+**live acceptance is pending**. These v1 contracts do not add Skip, preview
+cancellation, extra grants/copies, card substitution or nested pickups. Optional
+choose-one offers and one extra grant now have the separate v2 contract below.
+Native direct menus with more than three choices are rejected.
+
+## Implemented offline: optional card offers and one appended grant
+
+`card_offer_v2` extends the direct ChooseACard family only when the owned native
+request has `canSkip=true`. **Neow/HeftyTablet** is the representative caller:
+its pinned `AfterObtained.MoveNext` passes true at IL185–186, creates Injury at
+IL313, inserts the chosen card at list index zero only when non-null at IL324–340,
+and awaits enumerable `CardPileCmd.Add` at IL350. Choosing therefore adds the
+selected original followed by Injury; Skip still adds Injury. Admission remains
+generic, with no event/relic allowlist. Other optional requests may add no extra.
+
+The descriptor remains `kind: card_offer`, now with `contract_version: card_offer_v2`
+and 1–3 offers. The ready phase exposes `choose:0` through the final offered index,
+then `skip`. Either action is attempted once. Skip dispatches the exact
+`NChoiceSelectionSkipButton` retained through both the screen's `_skipButton`
+field and `SkipButton` node path. Its native visibility/enabled state, the offer
+controls and owned screen must remain valid. The existing opening delay is retained
+for the whole ready surface. Native Skip itself completes the selector with an
+empty sequence; completion also requires the actual request to return null,
+Chosen to succeed and the overlay to close. Chosen input instead requires both
+selector and request results to identify the selected original model.
+
+The baseline deck must retain exact order, identities, metadata, enchantments and
+ownership. No addition is allowed before an input attempt. After choosing, the
+selected original must be the first appended card; after either choosing or
+skipping, zero or one additional card may follow. That extra model must belong to
+the same player/run, have valid metadata, and differ from every baseline and
+offered model. Once observed, its identity and metadata cannot change or disappear.
+Ordered partial additions and deferred input/task completion wait within the
+existing read budget. Multiple extras, prepended/interleaved grants, offered-model
+reuse, changed survivors, cancellation and nested children stop the session.
+Admission reserves room for the selected card plus one extra within the 512-card
+limit. Required offers and bundles retain their strict v1 rules.
+
+The payload retains all v1 fields in their original order and appends
+`additional_cards`. This list is empty except in a resolved payload, where it has
+zero or one `{slot: 0, key, upgrade_level}` entry. It is an observation of the extra
+card, **not verified grant provenance or a prediction of the event's cost**. The
+resolved history is `collected` with the chosen `selected_index`, or `skipped` with
+`selected_index: null`. Both count as one completed card child. All v2 outcomes
+leave parent `effects: unverified`; core, wire and host retain that distinction
+through reconciliation and map return. Lost input/replies are never retried.
+
+Native fixtures, strict C#/Python integration and production-boundary checks cover
+choose/Skip with and without the extra, delayed completion, changed controls/decks,
+extra-card substitution/rollback, mismatched task results and lost replies.
+**Live acceptance is pending** for both HeftyTablet branches.
 
 ## Implemented offline: inactive combat layouts and result acknowledgment
 

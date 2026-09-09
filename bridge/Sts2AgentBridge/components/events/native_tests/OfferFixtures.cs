@@ -23,13 +23,14 @@ internal static partial class Program {
         internal readonly IReadOnlyList<CardModel>[] Offers;
         internal readonly Control Row=new(),Preview=new(){Visible=false},PreviewCards=new();
         internal readonly NConfirmButton Confirm=new();
+        internal readonly NChoiceSelectionSkipButton Skip=new();
         internal Control Screen=null!;
         internal readonly List<NGridCardHolder> Holders=new();
         internal readonly List<NCardBundle> Bundles=new();
         internal readonly TaskCompletionSource Creation=new(),Completion=new(),Insertion=new();
         internal bool DelayCreation,DelayCompletion,PartialAddition,DeferChoice,DeferConfirm,LostChoice,LostConfirm,WrongRequest,WrongSelection,Fault,ExtraCard,Nested,CanSkip;
         internal Action? PendingChoice,PendingConfirm;
-        internal int Choices,Confirms,Selected=-1;
+        internal int Choices,Confirms,Skips,Selected=-1;
         internal GenericEventV7Session Session=>World.Session;
         internal OfferFixture(bool bundle,int count=3,int width=2,int dialogue=1) {
             Bundle=bundle;Time.Ticks=1000;
@@ -40,6 +41,7 @@ internal static partial class Program {
                 World.OptionCalls++;
                 var cards=bundle?(await CardSelectCmd.FromChooseABundleScreen(World.Player,Offers)).ToArray():
                     new[]{await CardSelectCmd.FromChooseACardScreen(new PlayerChoiceContext(),Offers.Select(o=>o[0]).ToArray(),World.Player,CanSkip)};
+                cards=cards.Where(c=>c is not null).ToArray();
                 for(int i=0;i<cards.Length;i++){World.Player.Deck.Cards.Add(cards[i]);if(PartialAddition&&i==0)await Insertion.Task;}
                 if(ExtraCard)World.Player.Deck.Cards.Add(World.NewCard("Unexpected"));
                 if(Nested)await CardSelectCmd.FromChooseABundleScreen(World.Player,Offers);
@@ -51,7 +53,7 @@ internal static partial class Program {
             CardSelectCmd.OfferHandler=async(context,cards,player,skip)=>{
                 if(DelayCreation)await Creation.Task;
                 var screen=NChooseACardSelectionScreen.ShowScreen(cards,skip);var result=(await screen.CardsSelected()).ToArray();
-                return WrongRequest?World.NewCard("Wrong"):result.Single();
+                return WrongRequest?World.NewCard("Wrong"):result.SingleOrDefault()!;
             };
             CardSelectCmd.BundleHandler=async(player,offers)=>{
                 if(DelayCreation)await Creation.Task;
@@ -59,7 +61,8 @@ internal static partial class Program {
                 return WrongRequest?new[]{World.NewCard("Wrong")}:result;
             };
             NChooseACardSelectionScreen.Factory=(cards,skip)=>{
-                var screen=new NChooseACardSelectionScreen();screen.Setup(cards,skip);screen.BindControls(Row);Screen=screen;screen.Bind("CardRow",Row);
+                var screen=new NChooseACardSelectionScreen();screen.Setup(cards,skip);screen.BindControls(Row);Screen=screen;screen.Bind("CardRow",Row);screen.BindSkip(Skip);screen.Bind("SkipButton",Skip);
+                Skip.Clicked=()=>{Skips++;if(LostChoice)return;Action apply=()=>screen.Complete(WrongSelection?new[]{World.NewCard("Wrong")}:Array.Empty<CardModel>());if(DeferChoice)PendingChoice=apply;else apply();};
                 foreach(var card in cards){int index=Holders.Count;var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{Model=card},Hitbox=new NClickableControl()};
                     holder.RewardPressed=()=>{Choices++;if(LostChoice)return;Action apply=()=>{Selected=index;screen.Complete(new[]{WrongSelection?World.NewCard("Wrong"):card});};if(DeferChoice)PendingChoice=apply;else apply();};Holders.Add(holder);Row.Children.Add(holder);}
                 World.Overlays.Screens.Add(screen);return screen;
@@ -83,6 +86,52 @@ internal static partial class Program {
     private sealed class OfferProbe:IGenericEventV7OfferAdapter {
         internal Action? OnDispose;public GenericEventV7OfferCapture Capture()=>new("choose",new[]{new GenericEventV7Offer(0,new[]{new GenericEventV7RewardCard(0,"ONE",0)})});
         public void Dispatch(string action){}public void Dispose()=>OnDispose?.Invoke();
+    }
+    private static void OptionalOfferTests() {
+        foreach(bool skip in new[]{false,true})foreach(bool extra in new[]{false,true}) {
+            using var f=new OfferFixture(false){CanSkip=true,ExtraCard=extra,DelayCompletion=true};var c=f.Start();
+            Check(c.Child!.ContractVersion=="card_offer_v2"&&f.Read(c).LegalActions.SequenceEqual(new[]{"choose:0","choose:1","choose:2","skip"}),"optional domain");
+            f.Act(c,skip?"skip":"choose:1");Check(f.Read(c).Status=="waiting","optional waits parent");f.Completion.SetResult();var r=f.Read(c);
+            Check(r.Status=="resolved"&&r.SelectedSlot==(skip?(int?)null:1)&&r.PriorResults.Single().Result==(skip?"skipped":"collected"),"optional exact completion");
+            Check(r.AdditionalCards!.Count==(extra?1:0)&&f.World.Player.Deck.Cards.Count==3+(skip?0:1)+(extra?1:0),"bounded additional observation");
+            Check(f.Skips==(skip?1:0)&&f.Choices==(skip?0:1),"one native optional action");
+            var p=f.Session.Read();Check(p.Effects=="unverified"&&p.CompletedCardChildren==1,"compound effect remains unverified");f.Session.Apply(p.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","optional map");
+        }
+        foreach(string fault in new[]{"skip_node","skip_field","skip_disabled","skip_hidden","can_skip","early_extra","early_offered","wrong_request","wrong_selection","lost","two_extras","offered_extra","prepend","extra_owner","extra_level","extra_key","extra_replace","extra_remove","baseline_change"}) {
+            using var f=new OfferFixture(false){CanSkip=true,ExtraCard=true,DelayCompletion=true};var c=f.Start();var r=f.Read(c);
+            bool before=fault.StartsWith("skip_",StringComparison.Ordinal)||fault is "can_skip" or "early_extra" or "early_offered";
+            switch(fault) {
+                case "skip_node":f.Screen.Bind("SkipButton",new NChoiceSelectionSkipButton());break;
+                case "skip_field":OfferFixture.Set(f.Screen,"_skipButton",new NChoiceSelectionSkipButton());break;
+                case "skip_disabled":f.Skip.IsEnabled=false;break;case "skip_hidden":f.Skip.Visible=false;break;
+                case "can_skip":OfferFixture.Set(f.Screen,"_canSkip",false);break;
+                case "early_extra":f.World.Player.Deck.Cards.Add(f.World.NewCard("Early"));break;
+                case "early_offered":f.World.Player.Deck.Cards.Add(f.Offers[1][0]);break;
+                case "wrong_request":f.WrongRequest=true;break;case "wrong_selection":f.WrongSelection=true;break;case "lost":f.LostChoice=true;break;
+            }
+            string action=fault=="prepend"?"choose:1":"skip";
+            Check((f.Apply(c,r.DecisionId,action)=="accepted")==!before,"optional stale "+fault);
+            if(!before&&fault is not ("wrong_request" or "wrong_selection" or "lost")) {
+                Check(f.Read(c).Status=="waiting","observe extra before tampering");var deck=f.World.Player.Deck.Cards;
+                switch(fault) {
+                    case "two_extras":deck.Add(f.World.NewCard("Second"));break;
+                    case "offered_extra":deck[^1]=f.Offers[2][0];break;
+                    case "prepend":(deck[3],deck[4])=(deck[4],deck[3]);break;
+                    case "extra_owner":deck[^1].Owner=new();break;case "extra_level":deck[^1].CurrentUpgradeLevel++;break;
+                    case "extra_key":deck[^1].Id.Entry="Changed";break;case "extra_replace":deck[^1]=f.World.NewCard("Unexpected");break;
+                    case "extra_remove":deck.RemoveAt(deck.Count-1);break;case "baseline_change":deck[0].CurrentUpgradeLevel++;break;
+                }
+                f.Completion.SetResult();
+            }
+            var end=f.Read(c);for(int i=0;i<257&&end.Status=="waiting";i++)end=f.Read(c);
+            Check(end.Status=="unsupported"&&f.Skips+f.Choices==(before?0:1),"bounded optional failure "+fault);
+        }
+        using(var f=new OfferFixture(false){CanSkip=true,ExtraCard=true,PartialAddition=true}) {
+            var c=f.Start();f.Act(c,"choose:0");Check(f.Read(c).Status=="waiting"&&f.World.Player.Deck.Cards.Count==4,"chosen before extra");f.Insertion.SetResult();Check(f.Read(c).Status=="resolved","chosen then extra settles");
+        }
+        using(var f=new OfferFixture(false){CanSkip=true,ExtraCard=true,DeferChoice=true}) {
+            var c=f.Start();f.Act(c,"skip");Check(f.Read(c).Status=="waiting"&&f.World.Player.Deck.Cards.Count==3,"deferred skip no effect");f.PendingChoice!();Check(f.Read(c).Status=="resolved"&&f.Skips==1,"deferred skip settles");
+        }
     }
     private static void OfferTests() {
         foreach(bool bundle in new[]{false,true})foreach(int count in (bundle?new[]{1,3,5}:new[]{1,2,3}))foreach(int width in (bundle?new[]{1,2,8}:new[]{1}))foreach(int choice in Enumerable.Range(0,count)) {
@@ -127,7 +176,7 @@ internal static partial class Program {
         }
         using(var f=new OfferFixture(false)){Time.Ticks=350;Check(f.Start().Status=="waiting","native opening rejects 350");Time.Ticks=351;var c=f.Session.Read();Check(c.Status=="child","native opening allows 351");f.Act(c,"choose:0");Check(f.Read(c).Status=="resolved","opening final");}
         using(var f=new OfferFixture(false,4)){Check(f.Start().Status=="unsupported","native max three");}
-        using(var f=new OfferFixture(false){CanSkip=true}){Check(f.Start().Status=="unsupported","skip excluded");}
+        OptionalOfferTests();
         foreach(bool bundle in new[]{false,true}) {
             using var f=new OfferFixture(bundle);foreach(var card in f.Offers.SelectMany(o=>o))card.Id.Entry="SAME_KEY";
             var c=f.Start();f.Act(c,"choose:2");if(bundle)f.Act(c,"confirm");

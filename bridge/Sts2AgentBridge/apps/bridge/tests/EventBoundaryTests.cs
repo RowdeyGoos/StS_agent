@@ -48,6 +48,30 @@ internal static class EventBoundaryTests
             }
         }
 
+        foreach(bool skip in new[]{false,true}) {
+            var child=new GenericEventV7Child(1,Decision,"choose:0",1,"card_offer_v2");
+            var offer=new[]{new GenericEventV7Offer(0,new[]{new GenericEventV7RewardCard(0,"CARD",0)})};
+            var ready=new GenericEventV7RewardRead(Nonce,"ready","choose",Decision,Array.Empty<GenericEventV7RewardCard>(),false,new[]{"choose:0","skip"},Array.Empty<GenericEventV7PriorResult>(),null,Offers:offer);
+            var done=ready with{Status="resolved",Phase="complete",DecisionId="",LegalActions=Array.Empty<string>(),SelectedSlot=skip?null:0,
+                PriorResults=new[]{new GenericEventV7PriorResult(Decision,skip?"skip":"choose:0",skip?"skipped":"collected")},AdditionalCards=new[]{new GenericEventV7RewardCard(0,"INJURY",0)}};
+            byte[] Encode(GenericEventV7RewardRead p)=>GenericEventV7WireCodec.Decision(Nonce,Parent(child),GenericEventV7WireCodec.CardOffer(p,"card_offer_v2"));
+            check(Classify(Encode(ready))==TerminalClassification.NonTerminal,"optional offer ready");
+            check(Classify(Encode(done))==TerminalClassification.NonTerminal,"optional offer reconciles choose or skip");
+            foreach(string fault in new[]{"early","count","key","slot","level","selected","history","missing"}) {
+                var invalid=Mutate(Encode(fault=="early"?ready:done),n=>{var p=n["payload"]!;switch(fault) {
+                    case "early":p["additional_cards"]=new JsonArray(new JsonObject{["slot"]=0,["key"]="INJURY",["upgrade_level"]=0});break;
+                    case "count":n["child"]!["offer_count"]=4;break;case "key":p["additional_cards"]![0]!["key"]="BAD KEY";break;
+                    case "slot":p["additional_cards"]![0]!["slot"]=true;break;case "level":p["additional_cards"]![0]!["upgrade_level"]=-1;break;
+                    case "selected":p["selected_index"]=skip?JsonValue.Create(0):null;break;
+                    case "history":p["prior_results"]![0]!["result"]="acknowledged";break;case "missing":p.AsObject().Remove("additional_cards");break;
+                }});check(Classify(invalid)==TerminalClassification.Invalid,"optional boundary rejects "+fault);
+            }
+            foreach(string outcome in new[]{"accepted","rejected","unsupported","uncertain"}) {
+                var receipt=GenericEventV7WireCodec.Action(Nonce,child,null,GenericEventV7WireCodec.CardOffer(new GenericEventV7RewardReceipt(Nonce,Decision,"skip",outcome),"card_offer_v2"));
+                check(Classify(receipt,GenericEventTransportRoute.ChildPost)==(outcome=="accepted"?TerminalClassification.NonTerminal:TerminalClassification.Terminal),"optional skip receipt "+outcome);
+            }
+        }
+
         foreach(bool bundle in new[]{false,true}) {
             string version=bundle?"bundle_offer_v1":"card_offer_v1";
             var child=new GenericEventV7Child(1,Decision,"choose:0",3,version);

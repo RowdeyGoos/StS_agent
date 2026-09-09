@@ -93,9 +93,13 @@ internal static class GenericEventV7WireCodec
                 w.WriteStartObject();w.WriteNumber("index",offer.Index);w.WriteStartArray("cards");
                 foreach(var c in offer.Cards){w.WriteStartObject();w.WriteNumber("slot",c.Slot);w.WriteString("key",c.Key);w.WriteNumber("upgrade_level",c.UpgradeLevel);w.WriteEndObject();}
                 w.WriteEndArray();w.WriteEndObject();
-            }w.WriteEndArray();Strings(w,"legal_actions",p.LegalActions);
+            }w.WriteEndArray();
+            Strings(w,"legal_actions",p.LegalActions);
             w.WriteStartArray("prior_results");foreach(var h in p.PriorResults){w.WriteStartObject();w.WriteString("decision_id",h.DecisionId);w.WriteString("action_id",h.ActionId);w.WriteString("result",h.Result);w.WriteEndObject();}w.WriteEndArray();
             if(p.SelectedSlot is {} slot)w.WriteNumber("selected_index",slot);else w.WriteNull("selected_index");
+            if(version=="card_offer_v2") {
+                w.WriteStartArray("additional_cards");foreach(var c in p.AdditionalCards??Array.Empty<GenericEventV7RewardCard>()){w.WriteStartObject();w.WriteNumber("slot",c.Slot);w.WriteString("key",c.Key);w.WriteNumber("upgrade_level",c.UpgradeLevel);w.WriteEndObject();}w.WriteEndArray();
+            }
         }else if(value is GenericEventV7RewardReceipt receipt) {
             w.WriteString("session_nonce",receipt.SessionNonce);w.WriteString("decision_id",receipt.DecisionId);w.WriteString("action_id",receipt.ActionId);w.WriteString("outcome",receipt.Outcome);
         }else throw new InvalidOperationException("Unknown offer value.");

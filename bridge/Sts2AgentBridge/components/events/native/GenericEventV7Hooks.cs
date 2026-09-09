@@ -752,12 +752,12 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ResultsScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);
     private static void OfferRequestPrefix(PlayerChoiceContext __0,IReadOnlyList<CardModel> __1,Player __2,bool __3,out State __state) {
-        OfferEntry(__2,__1,false,__0 is not null&&!__3,out __state);
+        OfferEntry(__2,__1,false,__0 is not null,out __state,__3);
     }
     private static void BundleRequestPrefix(Player __0,IReadOnlyList<IReadOnlyList<CardModel>> __1,out State __state) {
         OfferEntry(__0,__1,true,true,out __state);
     }
-    private static void OfferEntry(Player player,object domain,bool bundle,bool legal,out State state) {
+    private static void OfferEntry(Player player,object domain,bool bundle,bool legal,out State state,bool canSkip=false) {
         state=new State{Previous=Request.Value};var b=Parent.Value;state.Binding=b;
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         try {
@@ -765,7 +765,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             IReadOnlyList<CardModel>[] offers;
             if(bundle) {if(domain is not IReadOnlyList<IReadOnlyList<CardModel>> lists||lists.Count is <1 or >5||lists.Any(o=>o is null||o.Count is <1 or >8))throw new InvalidOperationException();offers=lists.ToArray();}
             else {if(domain is not IReadOnlyList<CardModel> cards||cards.Count is <1 or >3)throw new InvalidOperationException();offers=cards.Select(c=>(IReadOnlyList<CardModel>)new[]{c}).ToArray();}
-            b.RequestSeen=true;b.Offer=new GenericEventV7OfferAdapter(b,domain,offers,bundle);Request.Value=b;
+            b.RequestSeen=true;b.Offer=new GenericEventV7OfferAdapter(b,domain,offers,bundle,canSkip);Request.Value=b;
         }catch{b.Failed=true;}
     }
     private static void OfferRequestPostfix(Task<CardModel> __result,State? __state)=>OfferTask(__result,__state);

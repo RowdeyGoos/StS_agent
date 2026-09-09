@@ -33,8 +33,10 @@ process. Completed packets and old campaign instructions are historical referenc
    (ScrollBoxes) now also have unreleased native/C#/Python support. Validate these
    together in the next live batch. Inactive combat-layout options and automatic
    card-results acknowledgment are also implemented offline (PunchOff/Nab and
-   Darv/PandorasBox shapes). Next address full-inventory/nested pickups, broader
-   selector grant composition, embedded combat execution/resumption and custom/terminal dependencies. This
+   Darv/PandorasBox shapes). Optional card offers and one appended grant now also
+   have offline support for HeftyTablet's choose/Skip plus Injury branches.
+   Next address full-inventory/nested pickups, broader selector grant composition,
+   embedded combat execution/resumption and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.
 3. **Compose supported interactions into longer live runs after event coverage.**

@@ -23,7 +23,7 @@ public sealed class GenericEventV7WireService : IDisposable
     private readonly HashSet<string> _used = new(StringComparer.Ordinal);
     private readonly List<(string Decision, string Action)> _childAccepted = new();
     private readonly HashSet<(string Decision, string Action)> _completedChildren = new();
-    private readonly HashSet<(string Decision, string Action)> _acknowledgedResults=new();
+    private readonly HashSet<(string Decision, string Action)> _unverifiedChildren=new();
     private readonly HashSet<(string Decision, string Action)> _completedItems = new();
     private ItemV1Observation? _itemDomain;
     private GenericEventV7RewardCard[]? _rewardCards;
@@ -247,7 +247,7 @@ public sealed class GenericEventV7WireService : IDisposable
         Require((_child is null && request.Ordinal == 0 && ParentAction(action)) ||
             (_child is not null && request.Ordinal == _child.Ordinal &&
              request.ParentDecision == _child.ParentDecisionId && request.ParentAction == _child.ParentActionId &&
-             (_child.Kind=="card_results"?action=="confirm":_child.Kind=="card_offer"?(action=="confirm"&&_child.ContractVersion=="bundle_offer_v1"||action.Length==8&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7]>='0'&&action[7]-'0'<_child.OfferCount):_child.Kind=="card_reward"?(_child.OfferCount>1?RewardSetAction(action)||_child.ContractVersion=="mixed_reward_set_v1"&&MixedCollect(action):RewardAction(action)):_child.Kind == "item" ? ItemWireV1Protocol.IsCanonicalActionId(action,out _) : CardSelectionV1WireProtocol.IsChildAction(action))));
+             (_child.Kind=="card_results"?action=="confirm":_child.Kind=="card_offer"?(action=="skip"&&_child.ContractVersion=="card_offer_v2"||action=="confirm"&&_child.ContractVersion=="bundle_offer_v1"||action.Length==8&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7]>='0'&&action[7]-'0'<_child.OfferCount):_child.Kind=="card_reward"?(_child.OfferCount>1?RewardSetAction(action)||_child.ContractVersion=="mixed_reward_set_v1"&&MixedCollect(action):RewardAction(action)):_child.Kind == "item" ? ItemWireV1Protocol.IsCanonicalActionId(action,out _) : CardSelectionV1WireProtocol.IsChildAction(action))));
         // Exact canonical requests have no text-bearing fields or alternative JSON encodings.
         byte[] canonical = GenericEventV7WireCodec.Request(request.Decision, request.Action,
             request.Ordinal, request.ParentDecision, request.ParentAction);
@@ -274,7 +274,7 @@ public sealed class GenericEventV7WireService : IDisposable
             p.CompletedItemChildren == _completedItems.Count && _completedChildren.Count <= p.ChildEpisodes);
         if (p.Effects is "item_effect_verified" or "card_effect_verified") {
             var latest=(_lastParentDecision!,_lastParentAction!);
-            Require(_completedChildren.Contains(latest) && !_acknowledgedResults.Contains(latest) &&
+            Require(_completedChildren.Contains(latest) && !_unverifiedChildren.Contains(latest) &&
                 (_completedItems.Contains(latest) == (p.Effects == "item_effect_verified")));
         }
         var completedHistory = p.PriorResults.Where(r => r.Result == "child_completed")
@@ -449,7 +449,7 @@ public sealed class GenericEventV7WireService : IDisposable
         ? _child.Kind+":"+_child.ParentDecisionId+":"+_child.ParentActionId+":"+_child.Ordinal+":"+_child.ContractVersion+":"+decision : decision;
     private static void ValidateDescriptor(GenericEventV7Child c) => Require(c.Ordinal is >= 1 and <= 4 &&
         Hex(c.ParentDecisionId,64) && ParentAction(c.ParentActionId) &&
-        (c.Kind=="card_results"?c.OfferCount is >=1 and <=64&&c.ContractVersion=="card_results_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_offer"?c.OfferCount is >=1 and <=5&&c.ContractVersion is "card_offer_v1" or "bundle_offer_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_reward"?c.OfferCount is >=1 and <=8&&(c.ContractVersion==(c.OfferCount==1?"card_reward_v1":"card_reward_set_v1")||c.OfferCount>=2&&c.ContractVersion=="mixed_reward_set_v1")&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
+        (c.Kind=="card_results"?c.OfferCount is >=1 and <=64&&c.ContractVersion=="card_results_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_offer"?c.OfferCount is >=1 and <=5&&(c.ContractVersion!="card_offer_v2"||c.OfferCount<=3)&&c.ContractVersion is "card_offer_v1" or "card_offer_v2" or "bundle_offer_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_reward"?c.OfferCount is >=1 and <=8&&(c.ContractVersion==(c.OfferCount==1?"card_reward_v1":"card_reward_set_v1")||c.OfferCount>=2&&c.ContractVersion=="mixed_reward_set_v1")&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
             c.MinSelect == 0 && c.MaxSelect == 0 && c.CommitMode == "" && c.DomainCount == 0 :
          c.Kind == "card_selection" && c.OfferCount == 0 && c.ContractVersion == GenericEventV7Families.ContractVersion(c.Operation,c.MaxSelect,c.MinSelect) &&
             GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount)));
@@ -473,30 +473,32 @@ public sealed class GenericEventV7WireService : IDisposable
             if(_rewardCards is null){Require(p.Status=="ready"&&_childAccepted.Count==0);_rewardCards=p.Cards.ToArray();}
             Require(_rewardCards.SequenceEqual(p.Cards));
             if(p.Status=="ready"){Require(p.Phase=="acknowledge"&&_childAccepted.Count==0&&_history==0&&p.LegalActions.SequenceEqual(new[]{"confirm"}));Publish(p.DecisionId,p.LegalActions);}
-            else {Require(p.Phase=="complete"&&p.DecisionId==""&&p.LegalActions.Count==0&&_history==1&&_childAccepted.Count==1);Require(_completedChildren.Count<4&&_completedChildren.Add((_child.ParentDecisionId,_child.ParentActionId)));_acknowledgedResults.Add((_child.ParentDecisionId,_child.ParentActionId));_childResolved=true;}
+            else {Require(p.Phase=="complete"&&p.DecisionId==""&&p.LegalActions.Count==0&&_history==1&&_childAccepted.Count==1);Require(_completedChildren.Count<4&&_completedChildren.Add((_child.ParentDecisionId,_child.ParentActionId)));_unverifiedChildren.Add((_child.ParentDecisionId,_child.ParentActionId));_childResolved=true;}
         }else Require((p.Status,p.Phase) is ("waiting","waiting") or ("unsupported","unsupported")&&p.Cards.Count==0&&p.DecisionId==""&&p.LegalActions.Count==0);
     }
     private void ValidateOffer(object value) {
         Require(value is GenericEventV7RewardRead);var p=(GenericEventV7RewardRead)value;
-        bool bundle=_child!.ContractVersion=="bundle_offer_v1";
+        bool bundle=_child!.ContractVersion=="bundle_offer_v1",optional=_child.ContractVersion=="card_offer_v2";
         Require(p.SessionNonce==_nonce&&p.Cards.Count==0&&!p.CanSkip&&p.PriorResults.Count>=_history&&p.PriorResults.Count<=_childAccepted.Count);
         for(int i=0;i<p.PriorResults.Count;i++) {
-            var h=p.PriorResults[i];var a=_childAccepted[i];Require(h.DecisionId==a.Decision&&h.ActionId==a.Action&&h.Result==(a.Action=="confirm"||!bundle?"collected":"previewed"));
+            var h=p.PriorResults[i];var a=_childAccepted[i];Require(h.DecisionId==a.Decision&&h.ActionId==a.Action&&h.Result==(a.Action=="skip"?"skipped":a.Action=="confirm"||!bundle?"collected":"previewed"));
         }
         _history=p.PriorResults.Count;
+        var extra=p.AdditionalCards??Array.Empty<GenericEventV7RewardCard>();
+        Require(extra.Count<=(optional&&p.Status=="resolved"?1:0)&&!extra.Where((c,i)=>c.Slot!=i||!StableKey(c.Key)||c.UpgradeLevel<0).Any());
         if(p.Status is "ready" or "resolved") {
             Require(_history==_childAccepted.Count&&p.Offers is not null&&p.Offers.Count==_child.OfferCount);
             var offers=p.Offers!;
             Require(offers.Where((o,i)=>o.Index!=i||o.Cards.Count<1||o.Cards.Count>(bundle?8:1)||o.Cards.Where((c,j)=>c.Slot!=j||!StableKey(c.Key)||c.UpgradeLevel<0).Any()).Any()==false);
             _offerDomain??=offers.Select(o=>new GenericEventV7Offer(o.Index,o.Cards.ToArray())).ToArray();
             Require(_offerDomain.Length==offers.Count&&!_offerDomain.Where((o,i)=>o.Index!=offers[i].Index||!o.Cards.SequenceEqual(offers[i].Cards)).Any());
-            if(p.Status=="ready"&&p.Phase=="choose")Require(_childAccepted.Count==0&&p.SelectedSlot is null&&p.LegalActions.SequenceEqual(offers.Select(o=>"choose:"+o.Index)));
+            if(p.Status=="ready"&&p.Phase=="choose")Require(_childAccepted.Count==0&&p.SelectedSlot is null&&p.LegalActions.SequenceEqual(offers.Select(o=>"choose:"+o.Index).Concat(optional?new[]{"skip"}:Array.Empty<string>())));
             else {
-                Require(p.SelectedSlot is {} selected&&selected>=0&&selected<offers.Count&&_childAccepted.Count>0&&_childAccepted[0].Action=="choose:"+selected);
+                Require(optional&&p.Status=="resolved"&&p.SelectedSlot is null&&_childAccepted.Count==1&&_childAccepted[0].Action=="skip"||p.SelectedSlot is {} selected&&selected>=0&&selected<offers.Count&&_childAccepted.Count>0&&_childAccepted[0].Action=="choose:"+selected);
                 if(p.Status=="ready")Require(bundle&&p.Phase=="preview"&&_childAccepted.Count==1&&p.LegalActions.SequenceEqual(new[]{"confirm"}));
                 else {
                     Require(p.Phase=="complete"&&p.LegalActions.Count==0&&p.DecisionId==""&&_childAccepted.Count==(bundle?2:1)&&(!bundle||_childAccepted[1].Action=="confirm"));
-                    Require(_completedChildren.Count<4&&_completedChildren.Add((_child.ParentDecisionId,_child.ParentActionId)));_childResolved=true;
+                    Require(_completedChildren.Count<4&&_completedChildren.Add((_child.ParentDecisionId,_child.ParentActionId)));if(optional)_unverifiedChildren.Add((_child.ParentDecisionId,_child.ParentActionId));_childResolved=true;
                 }
             }
             if(p.Status=="ready")Publish(p.DecisionId,p.LegalActions);

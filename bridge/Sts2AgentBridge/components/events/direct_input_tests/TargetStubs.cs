@@ -673,7 +673,10 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards {
     }
 }
 namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection {
+    public sealed class NChoiceSelectionSkipButton:MegaCrit.Sts2.Core.Nodes.GodotExtensions.NButton {}
     public sealed class NChooseACardSelectionScreen:Godot.Control {
+        private NChoiceSelectionSkipButton? _skipButton;
+        public void BindSkip(NChoiceSelectionSkipButton skip)=>_skipButton=skip;
         private Godot.Control _cardRow=null!;
         public void BindControls(Godot.Control row)=>_cardRow=row;
         private IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> _cards=Array.Empty<MegaCrit.Sts2.Core.Models.CardModel>();

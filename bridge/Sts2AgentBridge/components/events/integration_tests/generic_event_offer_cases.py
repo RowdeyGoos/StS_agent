@@ -10,7 +10,7 @@ def run_offer_cases(args: Any, host: Any, exchange_type: Any) -> int:
         ex=exchange_type(args.dotnet,args.native_fixture,scenario,native=True)
         def choose(view):
             if view.kind=='card_offer' and view.payload['phase']=='choose':
-                return 'choose:'+str(len(view.payload['offers'])-1 if slot is None else slot)
+                return 'skip' if slot==-1 else 'choose:'+str(len(view.payload['offers'])-1 if slot is None else slot)
             return host.first_legal(view)
         request=ex.request if wrapper is None else lambda m,r,b:wrapper(ex,m,r,b)
         try:result=host.run_event(request,provider=choose,clock=lambda:1.,sleep=lambda _:None)
@@ -70,4 +70,45 @@ def run_offer_cases(args: Any, host: Any, exchange_type: Any) -> int:
                 response[:]=b'\0'*len(response);response=bytearray(json.dumps(v,separators=(',',':')).encode());ex.buffers.append(response)
             return response
         result,ex=run('O_BUNDLE',corrupt);assert changed and result['code']=='invalid_response' and result['completed_card_children']==0,(change,result);checks+=1
+    for skip in (False,True):
+        for ending in ('','_GRANT','_GRANT_CHOICE','_GRANT_COMPLETION'):
+            result,ex=run('O_CARD_OPTIONAL'+ending,slot=-1 if skip else 1)
+            assert result['status']=='resolved' and result['child_attempted']==result['child_reconciled']==1,(ending,skip,result)
+            assert ex.telemetry[-1]['deck']==['Card_0','Card_1','Card_2']+([] if skip else ['Offer_1_0'])+(['Unexpected'] if ending else [])
+            resolved=next(v['payload'] for v in ex.envelopes if v['child'] and v['payload'].get('status')=='resolved')
+            assert resolved['additional_cards']==([dict(slot=0,key='Unexpected',upgrade_level=0)] if ending else [])
+            assert resolved['selected_index']==(None if skip else 1) and resolved['prior_results'][0]['result']==('skipped' if skip else 'collected')
+            assert all(v['parent']['effects']!='card_effect_verified' for v in ex.envelopes if v['parent'])
+            checks+=1
+    for change in ('early_extra','extra_count','extra_key','extra_slot','extra_level','selected','history','effect','version','count','actions','lost_skip'):
+        changed=False
+        def corrupt_optional(ex,m,r,b):
+            nonlocal changed
+            response=ex.request(m,r,b);v=json.loads(response);p=v['payload'];c=v['child']
+            if not changed:
+                if change=='lost_skip' and c and m=='POST' and p['action_id']=='skip':
+                    changed=True;response[:]=b'\0'*len(response);raise host.TransportFailure()
+                if c and m=='GET' and p['status']=='ready' and change in ('early_extra','version','count','actions'):
+                    if change=='early_extra':p['additional_cards']=[dict(slot=0,key='EARLY',upgrade_level=0)]
+                    elif change=='version':c['contract_version']=p['version']='card_offer_v1'
+                    elif change=='count':c['offer_count']=4
+                    else:p['legal_actions'].remove('skip')
+                    changed=True
+                elif c and m=='GET' and p['status']=='resolved' and change not in ('early_extra','version','count','actions','effect','lost_skip'):
+                    if change=='extra_count':p['additional_cards']*=2
+                    elif change=='extra_key':p['additional_cards'][0]['key']='bad key'
+                    elif change=='extra_slot':p['additional_cards'][0]['slot']=True
+                    elif change=='extra_level':p['additional_cards'][0]['upgrade_level']=-1
+                    elif change=='selected':p['selected_index']=0
+                    elif change=='history':p['prior_results'][0]['result']='collected'
+                    changed=True
+                elif change=='effect' and v['parent'] and v['parent']['completed_card_children']==1:
+                    v['parent']['effects']='card_effect_verified';changed=True
+            if changed:
+                response[:]=b'\0'*len(response);response=bytearray(json.dumps(v,separators=(',',':')).encode());ex.buffers.append(response)
+            return response
+        result,ex=run('O_CARD_OPTIONAL_GRANT',corrupt_optional,slot=-1)
+        assert changed and result['code']==('transport_failure' if change=='lost_skip' else 'invalid_response'),(change,result)
+        assert ex.telemetry[-1]['choices']==0
+        checks+=1
     return checks

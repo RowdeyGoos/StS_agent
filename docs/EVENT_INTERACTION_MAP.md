@@ -32,7 +32,9 @@ Sea Glass/Claws selectors now also have unreleased offline implementation.
 now have unreleased offline support for LeadPaperweight/MassiveScroll and ScrollBoxes.
 [Inactive combat layouts and result acknowledgment](GENERIC_EVENTS.md#implemented-offline-inactive-combat-layouts-and-result-acknowledgment)
 now have unreleased offline support: PunchOff/Nab-shaped Injury plus relic pickup,
-and Darv/PandorasBox-style results confirmation. Embedded combat execution and
+and Darv/PandorasBox-style results confirmation. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-offline-optional-card-offers-and-one-appended-grant)
+now also have unreleased offline support for HeftyTablet's choose/Skip plus Injury
+shape; grant provenance remains unverified. Embedded combat execution and
 resumption, full-inventory handling and nested pickup composition remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
@@ -62,10 +64,11 @@ before the request completes.
 
 HeftyTablet's `AfterObtained.MoveNext` chooses at IL186, creates an additional
 `Injury` at IL313, and invokes enumerable `CardPileCmd.Add` at IL350. Its original
-appendix description of “multiple copies” is incomplete: chosen-only exact addition
-does not cover this compound grant. The original inventory and hashes are retained;
-current choose-one implementation covers the simpler LeadPaperweight/MassiveScroll
-shape and explicitly excludes this broader HeftyTablet composition.
+appendix description of “multiple copies” is incorrect: it passes `canSkip=true`
+at IL185, then inserts the chosen original before Injury only when non-null at
+IL324–340. Skip therefore still adds Injury. The original inventory and hashes are
+retained; `card_offer_v1` covers the simpler LeadPaperweight/MassiveScroll shape,
+while the new optional `card_offer_v2` supports this bounded composition offline.
 
 ## What the research changes
 
