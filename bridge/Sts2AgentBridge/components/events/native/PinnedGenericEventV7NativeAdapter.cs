@@ -79,8 +79,8 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!item.Domain()||!item.Overlay())return Fixed("unsupported");
                 if(!item.TryButton(out _)){diagnostic=GenericEventDiagnosticCode.PrepareCandidates;return Fixed("waiting");}
                 if(!GenericEventV7ItemAdapter.Slots(b.Player,out _,out var slots)||
-                    item.Kind==Sts2AgentBridge.Successors.ItemV1.ItemV1ItemKind.Potion&&!slots.Exists(s=>s.ModelIdentity is null))return Fixed("unsupported");
-                b.Admission??=new GenericEventV7ItemAdmission(new object(),1);
+                    slots.Count(s=>s.ModelIdentity is null)<item.Entries!.Count(e=>e.Kind==Sts2AgentBridge.Successors.ItemV1.ItemV1ItemKind.Potion))return Fixed("unsupported");
+                b.Admission??=new GenericEventV7ItemAdmission(new object(),item.OfferCount);
                 diagnostic=GenericEventDiagnosticCode.ChildReady;
                 return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
             }
@@ -102,7 +102,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!b.MatchesOffers()) return Fixed("unsupported");
                 diagnostic=GenericEventDiagnosticCode.PrepareFamily;
                 if(!(b.Screen is NDeckUpgradeSelectScreen upgrade ? (b.Prefs.MaxSelect==1?GenericEventV7CardAdapter.IsReady(b,upgrade,out diagnostic):GenericEventV7MultiUpgradeAdapter.IsReady(b,upgrade,out diagnostic)) :
-                    b.Screen is NDeckEnchantSelectScreen enchant ? GenericEventV7CardAdapter.IsReady(b,enchant,out diagnostic):
+                    b.Screen is NDeckEnchantSelectScreen enchant ? (b.Prefs.MaxSelect==1?GenericEventV7CardAdapter.IsReady(b,enchant,out diagnostic):GenericEventV7RemovalAdapter.IsReady(b,enchant,out diagnostic)):
                     b.Screen is NDeckTransformSelectScreen transform ? GenericEventV7TransformAdapter.IsReady(b,transform,out diagnostic):
                     b.Screen is NDeckCardSelectScreen removal ? GenericEventV7RemovalAdapter.IsReady(b,removal,out diagnostic):
                     b.Screen is NSimpleCardSelectScreen reward && GenericEventV7RewardAdapter.IsReady(b,reward,out diagnostic)))return Fixed("waiting");
@@ -175,6 +175,10 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 !_screens.Add(item.Screen!)||!_itemIdentities.Add(item.Set)||!_itemIdentities.Add(item.Reward!))
                 throw new InvalidOperationException("Unowned or repeated item child.");
             _childCreated=true;
+            if(item.OfferCount>1) {
+                var set=new GenericEventV7ItemSetAdapter(item);
+                try{return new GenericEventV7ItemSetSession(b.Nonce,set);}catch{set.Dispose();throw;}
+            }
             var native=new GenericEventV7ItemAdapter(item);
             try{return new GenericEventV7ItemChildSession(b.Nonce,native);}catch{native.Dispose();throw;}
         }
@@ -191,7 +195,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         }
         ICardSelectionV1NativeAdapter adapter=b.Screen is NDeckUpgradeSelectScreen upgrade
             ?(b.Prefs.MaxSelect==1?new GenericEventV7CardAdapter(b,context,upgrade):new GenericEventV7MultiUpgradeAdapter(b,context,upgrade))
-            :b.Screen is NDeckEnchantSelectScreen enchant?new GenericEventV7CardAdapter(b,context,enchant)
+            :b.Screen is NDeckEnchantSelectScreen enchant?(b.Prefs.MaxSelect==1?new GenericEventV7CardAdapter(b,context,enchant):new GenericEventV7RemovalAdapter(b,context,enchant))
             :b.Screen is NDeckCardSelectScreen removal?new GenericEventV7RemovalAdapter(b,context,removal)
             :b.Screen is NSimpleCardSelectScreen reward?new GenericEventV7RewardAdapter(b,context,reward)
             :throw new InvalidOperationException("Unsupported selector family.");

@@ -116,17 +116,18 @@ def _decode(body: Any) -> dict[str, Any]:
             _require(_integer(c['ordinal'], 4) and c['ordinal'] >= 1)
             _require(_hex(c['parent_decision_id'], 64) and _parent_action(c['parent_action_id']))
             if c['kind'] == 'item':
-                _require(c['contract_version'] == 'item_v1' and type(c['offer_count']) is int and c['offer_count'] == 1)
+                _require(type(c['offer_count']) is int and 1 <= c['offer_count'] <= 8 and
+                         c['contract_version'] == ('item_v1' if c['offer_count']==1 else 'item_set_v1'))
             else:
                 _require(c['kind'] == 'card_selection' and c['contract_version'] ==
-                         ('card_remove_v2' if c['operation'] == 'remove' else 'card_enchant_v1' if c['operation'] == 'enchant' else 'card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
+                         ('card_remove_v2' if c['operation'] == 'remove' else ('card_enchant_v2' if c['max_select']>1 else 'card_enchant_v1') if c['operation'] == 'enchant' else 'card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
                 _require((c['operation'] in ('upgrade', 'remove', 'transform', 'enchant') and c['commit_mode'] == 'preview_confirm') or
                          (c['operation'] == 'add' and c['commit_mode'] in ('auto_at_max', 'explicit_confirm')))
                 _require(type(c['min_select']) is int and type(c['max_select']) is int and
                          1 <= c['min_select'] <= c['max_select'] <= 8)
                 _require(_integer(c['domain_count'], 64) and c['domain_count'] > c['max_select'])
                 if c['operation'] == 'enchant':
-                    _require(c['min_select'] == c['max_select'] == 1)
+                    _require(c['min_select'] == c['max_select'])
                 if c['operation'] == 'upgrade':
                     _require(c['min_select'] == c['max_select'])
         return v
@@ -196,6 +197,7 @@ class _Controller:
         self.child_receipts: list[tuple[str, str]] = []
         self.child_history: list[dict[str, Any]] = []
         self.child_shape = None
+        self.item_set_history = []
         self.enchantment = None
         self.preview_seen = False
         self.child_parents: set[tuple[str, str]] = set()
@@ -236,7 +238,7 @@ class _Controller:
                 self.counts['parent_attempted'] += 1
                 lineage = None
             else:
-                if len(self.child_receipts) >= (1 if self.child['kind'] == 'item' else 10):
+                if len(self.child_receipts) >= (self.child['offer_count'] if self.child['kind'] == 'item' else 10):
                     raise _Stop('action_limit')
                 self.counts['child_attempted'] += 1
                 lineage = {k: self.child[k] for k in _CHILD[:3]}
@@ -363,6 +365,7 @@ class _Controller:
             self.child_receipts = []
             self.child_history = []
             self.child_shape = None
+            self.item_set_history = []
             self.enchantment = None
             self.preview_seen = False
             self.child_done = False
@@ -400,9 +403,9 @@ class _Controller:
         self.card._validate_envelope(normalized)
 
     def enchant_parse(self, p: dict[str, Any]) -> None:
-        # The version owns the one-card policy and exact new enchantment metadata.
+        # The version owns fixed cardinality and exact enchantment metadata.
         # Reuse only the common selection envelope validation after normalization.
-        _require(p.get('version') == 'card_enchant_v1')
+        _require(p.get('version') == self.child['contract_version'])
         normalized = dict(p)
         normalized['version'] = 'card_transform_v2'
         if p.get('kind') in ('child_observation', 'child_resolved'):
@@ -414,9 +417,9 @@ class _Controller:
                          type(effect['amount']) is int and 1 <= effect['amount'] <= 2_147_483_647)
                 normalized['operation'] = 'transform'
                 if p['kind'] == 'child_observation':
-                    _require(p['min_select'] == p['max_select'] == 1 and p['commit_mode'] == 'preview_confirm')
+                    _require(p['min_select'] == p['max_select'] == self.child['max_select'] and p['commit_mode'] == 'preview_confirm')
                 else:
-                    _require(len(p['selected_cards']) == 1)
+                    _require(len(p['selected_cards']) == self.child['max_select'])
                 if self.enchantment is None:
                     _require(p['kind'] == 'child_observation' and p['phase'] == 'selecting')
                     self.enchantment = dict(effect)
@@ -427,7 +430,7 @@ class _Controller:
 
     def child_read(self, p: Any) -> str:
         if self.child['kind'] == 'item':
-            return self.item_read(p)
+            return self.item_set_read(p) if self.child['offer_count']>1 else self.item_read(p)
         self.card_parse(p)
         _require(p['kind'] in ('child_observation', 'child_resolved'))
         status = p['status']
@@ -478,12 +481,12 @@ class _Controller:
                     _require(len(selections) < maximum)
             elif p['phase'] == 'preview':
                 _require(minimum <= len(selections) <= maximum)
-                if (operation in ('remove', 'transform') or operation == 'upgrade' and maximum > 1) and 'preview' not in actions:
+                if (operation in ('remove', 'transform') or operation in ('upgrade', 'enchant') and maximum > 1) and 'preview' not in actions:
                     _require(len(selections) == maximum)
                 self.preview_seen = True
             else:
                 _require(not self.preview_seen and 'preview' not in actions)
-                if operation in ('remove', 'transform') or operation == 'upgrade' and maximum > 1:
+                if operation in ('remove', 'transform') or operation in ('upgrade', 'enchant') and maximum > 1:
                     _require(len(selections) < maximum)
         elif status == 'resolved':
             _require(self.child_shape is not None and minimum <= len(selections) <= maximum)
@@ -506,6 +509,35 @@ class _Controller:
         self.child_history = history
         return status
 
+    def complete_item(self) -> None:
+        owner = (self.child['parent_decision_id'], self.child['parent_action_id'])
+        _require(owner not in self.completed_children and len(self.completed_children) < 4)
+        self.completed_children.add(owner)
+        self.completed_items.add(owner)
+        self.child_done = True
+
+    def item_set_read(self, p: Any) -> str:
+        _keys(p, ('version', 'session_nonce', 'status', 'offer_count', 'collected', 'current'))
+        _require(p['version'] == 'item_set_v1' and p['session_nonce'] == self.nonce and
+                 type(p['offer_count']) is int and p['offer_count'] == self.child['offer_count'])
+        history = p['collected']
+        _require(type(history) is list and len(self.item_set_history) <= len(history) <= min(p['offer_count'], len(self.item_set_history)+1) and
+                 history[:len(self.item_set_history)] == self.item_set_history)
+        if len(history) > len(self.item_set_history):
+            _require(self.item_read(history[-1]) == 'resolved')
+            self.item_set_history = list(history)
+            self.child_shape = None
+        status, current = p['status'], p['current']
+        _require(status in ('ready', 'waiting', 'unsupported', 'resolved'))
+        if status == 'resolved':
+            _require(current is None and len(history) == p['offer_count'] == len(self.child_receipts))
+            self.complete_item()
+        elif status == 'ready':
+            _require(len(history) < p['offer_count'] and self.item_read(current) == 'ready')
+        elif current is not None:
+            _require(status == 'waiting' and self.item_read(current) == 'waiting')
+        return status
+
     def item_parse(self, p: Any) -> None:
         buffer = bytearray(json.dumps(p, separators=(',', ':'), ensure_ascii=True).encode('ascii'))
         try:
@@ -521,23 +553,21 @@ class _Controller:
         status = p['status']
         _require(status in ('ready', 'waiting', 'unsupported', 'resolved'))
         if status == 'ready':
-            _require(not self.child_receipts and len(p['offers']) == self.child['offer_count'] == 1)
+            _require(len(self.child_receipts) == len(self.item_set_history) and len(p['offers']) == 1)
+            _require(self.child['offer_count']==1 or p['offers'][0]['index']==len(self.item_set_history))
             shape = (p['offers'], p['potion_slots'], p['legal_actions'], p['decision_id'])
             _require(self.child_shape is None or self.child_shape == shape)
             self.child_shape = shape
         elif status == 'resolved':
-            _require(len(self.child_receipts) == 1 and self.child_shape is not None)
+            _require(len(self.child_receipts) == len(self.item_set_history)+1 and self.child_shape is not None)
             offer = self.child_shape[0][0]
-            _require((p['decision_id'], p['action_id']) == self.child_receipts[0] and
+            _require((p['decision_id'], p['action_id']) == self.child_receipts[len(self.item_set_history)] and
                      p['action_id'] == f"collect:{offer['index']}" and
                      (p['offer_index'], p['kind'], p['key'], p['result']) ==
                      (offer['index'], offer['kind'], offer['key'], 'collected'))
-            owner = (self.child['parent_decision_id'], self.child['parent_action_id'])
-            _require(owner not in self.completed_children and len(self.completed_children) < 4)
-            self.completed_children.add(owner)
-            self.completed_items.add(owner)
             self.counts['child_reconciled'] += 1
-            self.child_done = True
+            if self.child['offer_count'] == 1:
+                self.complete_item()
         return status
 
     def replay_key(self, decision: str) -> Any:
@@ -606,6 +636,8 @@ class _Controller:
                 if status == 'resolved':
                     continue
                 p = response['payload']
+                if self.child['kind']=='item' and self.child['offer_count']>1 and status=='ready':
+                    p = p['current']
             else:
                 _require(response['payload'] is None and status != 'child')
                 if status == 'complete':

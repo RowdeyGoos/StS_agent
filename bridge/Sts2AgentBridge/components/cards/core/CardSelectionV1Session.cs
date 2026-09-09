@@ -21,7 +21,7 @@ public sealed class CardSelectionV1Session : IDisposable
     private CardSelectionV1ResolvedResult? _resolved;
     private bool _awaitingCommit;
     private object[] _effectProgress = Array.Empty<object>();
-    private CardSelectionV1Enchantment? _enchantEffect;
+    private readonly Dictionary<object,CardSelectionV1Enchantment> _enchantEffects = new(ReferenceEqualityComparer.Instance);
     private CardSelectionV1DeckCard[] _parentAddedCards = Array.Empty<CardSelectionV1DeckCard>();
     private bool _taskSucceededSeen;
     private bool _selectorClosedSeen;
@@ -899,13 +899,20 @@ public sealed class CardSelectionV1Session : IDisposable
                 !ReferenceEquals(before.ModelIdentity, now.ModelIdentity) ||
                 before.StableKey != now.StableKey || before.UpgradeLevel != now.UpgradeLevel)
                 return false;
-            if (now.Enchantment is not { } effect) continue;
+            if (now.Enchantment is not { } effect)
+            { if (_enchantEffects.ContainsKey(before.ModelIdentity)) return false; continue; }
             if (effect.Key != requested.Key || effect.Amount != requested.Amount ||
                 ReferenceEquals(effect.Identity, requested.Identity) ||
                 System.Array.Exists(_bound.BaselineDeck, card => ReferenceEquals(card.Enchantment?.Identity, effect.Identity)))
                 return false;
-            _enchantEffect ??= effect;
-            if (!CardSelectionV1Enchantment.Same(_enchantEffect, effect)) return false;
+            if (_enchantEffects.TryGetValue(before.ModelIdentity,out var retained))
+            { if (!CardSelectionV1Enchantment.Same(retained,effect)) return false; }
+            else
+            {
+                foreach (var priorEffect in _enchantEffects.Values)
+                    if (ReferenceEquals(priorEffect.Identity,effect.Identity)) return false;
+                _enchantEffects.Add(before.ModelIdentity,effect);
+            }
             changed++;
         }
         complete = changed == selected.Length;
@@ -1297,7 +1304,7 @@ public sealed class CardSelectionV1Session : IDisposable
                 context.Operation==CardSelectionV1Operation.Remove) &&
             (context.Operation == CardSelectionV1Operation.Enchant
                 ? context.ParentKind == CardSelectionV1ParentKind.Event &&
-                  context.MinSelect == 1 && context.MaxSelect == 1 &&
+                  context.MinSelect == context.MaxSelect &&
                   context.CommitMode == CardSelectionV1CommitMode.PreviewConfirm &&
                   context.Enchantment is { Identity: not null, Amount: > 0 } e &&
                   CardSelectionV1Identity.IsStableKey(e.Key)

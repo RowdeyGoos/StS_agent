@@ -536,7 +536,7 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
     private static object? Field(object obj, string name) =>
         obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)?.GetValue(obj);
 
-    private static bool EnchantmentScreenMatches(GenericEventV7Binding b, NCardGridSelectionScreen screen) =>
+    internal static bool EnchantmentScreenMatches(GenericEventV7Binding b, NCardGridSelectionScreen screen) =>
         b.Enchantment is { } requested && b.EnchantmentModel is { } model &&
         ReferenceEquals(requested.Identity, model) && model.Id.Entry == requested.Key &&
         ReferenceEquals(Field(screen, "_enchantment"), model) &&

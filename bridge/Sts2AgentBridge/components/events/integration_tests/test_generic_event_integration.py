@@ -932,6 +932,22 @@ def main() -> int:
 
 
     if args.native_fixture is not None:
+        for scenario, count in [('ENCHANT_MULTI_TWO',2),('ENCHANT_MULTI_EIGHT',8)]:
+            ex=Exchange(args.dotnet,args.native_fixture,scenario,native=True)
+            try:
+                result=host.run_event(ex.request,provider=planned(tuple(f'select:{19-i}' for i in range(count))+('confirm',)),clock=lambda:1.0,sleep=lambda _:None)
+            finally:
+                ex.close()
+            assert result['status']=='resolved' and result['completed_card_children']==1, (scenario,result,ex.envelopes[-1])
+            assert result['child_accepted']==result['child_reconciled']==count+1
+            end=ex.telemetry[-1]
+            assert end['remaining_originals']==list(range(20)) and end['confirm_calls']==1
+            assert end['enchantment_keys']==[None]*(20-count)+['STEADY']*count
+            assert end['enchantment_amounts']==[None]*(20-count)+[1]*count
+            assert all(v['child']['contract_version']=='card_enchant_v2' for v in ex.envelopes if v['child'])
+            checks+=1;native_checks+=1
+
+    if args.native_fixture is not None:
         from generic_event_transform_cases import run_transform_cases
         added = run_transform_cases(args, host, Exchange, planned, completed_history)
         checks += added

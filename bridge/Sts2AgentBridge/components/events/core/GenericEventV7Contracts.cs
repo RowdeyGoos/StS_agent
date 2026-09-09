@@ -66,11 +66,11 @@ public sealed class GenericEventV7Child
         CommitMode = commitMode;
         DomainCount = domainCount;
         Kind = "card_selection";
-        ContractVersion = GenericEventV7Families.ContractVersion(operation);
+        ContractVersion = GenericEventV7Families.ContractVersion(operation,maxSelect);
     }
     public GenericEventV7Child(int ordinal, string parentDecisionId, string parentActionId, int offerCount) {
         Ordinal=ordinal; ParentDecisionId=parentDecisionId; ParentActionId=parentActionId;
-        Kind="item"; ContractVersion="item_v1"; OfferCount=offerCount;
+        Kind="item"; ContractVersion=offerCount==1?"item_v1":"item_set_v1"; OfferCount=offerCount;
         Operation=""; CommitMode="";
     }
     public string Kind { get; }

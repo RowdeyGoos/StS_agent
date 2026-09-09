@@ -46,6 +46,8 @@ internal static partial class Program
         internal RewardsSet Set=null!;
         internal object Offered=null!;
         private readonly string _name,_kind;
+        private readonly string[]? _itemKinds;
+        internal readonly List<NRewardButton> Buttons=new();
         private readonly int _index,_repeat;
         private readonly bool _creation,_collection,_offer,_chosen,_mixed;
         private readonly Func<Task> _transform;
@@ -61,18 +63,23 @@ internal static partial class Program
         internal bool DisableDuringRelease,DerivedButton;
         internal readonly List<Reward> CompletedRewards=new();
         internal readonly List<Task> CollectionTasks=new();
-        internal ItemFixture(string name,string kind,int index=7,bool delayedCreation=false,bool delayedCollection=false,bool delayedOffer=false,bool delayedChosen=false,int repeatItems=1,bool mixed=false,int? transformMinimum=null,int transformMaximum=1)
+        internal ItemFixture(string name,string kind,int index=7,bool delayedCreation=false,bool delayedCollection=false,bool delayedOffer=false,bool delayedChosen=false,int repeatItems=1,bool mixed=false,int? transformMinimum=null,int transformMaximum=1,string[]? itemKinds=null)
         {
-            _name=name;_kind=kind;_index=index;_repeat=repeatItems;_creation=delayedCreation;_collection=delayedCollection;_offer=delayedOffer;_chosen=delayedChosen;_mixed=mixed;
+            _name=name;_kind=kind;_itemKinds=itemKinds;_index=index;_repeat=repeatItems;_creation=delayedCreation;_collection=delayedCollection;_offer=delayedOffer;_chosen=delayedChosen;_mixed=mixed;
             EventModel model=name=="FIRST_ITEM"?new FirstItemEvent():name=="ANOTHER_ITEM"?new AnotherItemEvent():new HeldOutItemEvent();
             _world=new TransformFixture("ITEM_WORLD",transformMaximum,manual:transformMinimum is not null,nonce:new string('e',32),eventModel:model,minimum:transformMinimum);
             _transform=Room.Layout.OptionButtons[0].Option.Callback;
             var existing=new PotionModel();existing.Id.Entry="ExistingPotion";Player.PotionSlots[0]=existing;
             NRewardsScreen.Factory=(set,terminal,run)=>{
-                Screen=new NRewardsScreen();Button=DerivedButton?new DerivedRewardButton{Reward=Reward}:new NRewardButton{Reward=Reward};Screen.Children.Add(Button);
+                Screen=new NRewardsScreen();Buttons.Clear();
+                foreach(var reward in set.Rewards) {
+                    var button=DerivedButton?new DerivedRewardButton{Reward=reward}:new NRewardButton{Reward=reward};
+                    Screen.Children.Add(button);Buttons.Add(button);
+                    button.Handler=()=>CollectEntry(reward,button);
+                    button.DispatchOverride=()=>{if(DisableDuringRelease)button.IsEnabled=false;button.LastTask=button.ForeignGetReward();if(button.LastTask is not null)CollectionTasks.Add(button.LastTask);};
+                }
+                Button=Buttons[0];
                 if(HiddenExtraButton)Screen.Children.Add(new NRewardButton{Reward=Reward,Visible=false});
-                Button.Handler=Collect;
-                Button.DispatchOverride=()=>{if(DisableDuringRelease)Button.IsEnabled=false;Button.LastTask=Button.ForeignGetReward();if(Button.LastTask is not null)CollectionTasks.Add(Button.LastTask);};
                 Overlays.Screens.Add(Screen);AfterScreen?.Invoke();return Screen;
             };
             ShowItem();
@@ -104,7 +111,12 @@ internal static partial class Program
             // Real Offer may generate asynchronously; list is empty at request entry.
             if(Linked)Reward.ParentRewardSet=new LinkedRewardSet();
             if(WrongPlayer)Reward.Player=new Player();
-            Set.Rewards.Add(Reward);if(ExtraReward)Set.Rewards.Add(new RelicReward{Player=Player,Relic=new RelicModel(),RewardsSetIndex=8});
+            Set.Rewards.Add(Reward);
+            if(_itemKinds is not null)for(int i=1;i<_itemKinds.Length;i++) {
+                if(_itemKinds[i]=="potion"){var potion=new PotionModel();potion.Id.Entry="OfferedPotion";Set.Rewards.Add(new PotionReward{Player=Player,Potion=potion,RewardsSetIndex=2});}
+                else{var relic=new RelicModel();relic.Id.Entry="OfferedRelic";Set.Rewards.Add(new RelicReward{Player=Player,Relic=relic,RewardsSetIndex=3});}
+            }
+            if(ExtraReward)for(int i=0;i<8;i++)Set.Rewards.Add(new RelicReward{Player=Player,Relic=new RelicModel(),RewardsSetIndex=3});
             BeforeScreen?.Invoke();if(Shortcut)return;
             NRewardsScreen.ShowScreen(Set,Terminal,WrongRun?new MegaCrit.Sts2.Core.Runs.FixtureRunState():Player.RunState);
             if(DuplicateScreen)NRewardsScreen.ShowScreen(Set,false,Player.RunState);
@@ -112,17 +124,19 @@ internal static partial class Program
             if(_offer){HasPendingOffer=true;await _offerGate.Task;HasPendingOffer=false;}
             if(CancelOffer)throw new OperationCanceledException();if(FaultOffer)throw new InvalidOperationException("offer fault");
         }
-        private async Task Collect()
+        private async Task CollectEntry(Reward reward,NRewardButton button)
         {
             CollectCalls++;BeforeCollection?.Invoke();
             if(_collection){HasPendingCollection=true;await _collectionGate.Task;HasPendingCollection=false;}
             if(CancelCollection)throw new OperationCanceledException();if(FaultCollection)throw new InvalidOperationException("collection fault");
-            if(Reward is PotionReward p){p.ClaimedPotion=p.Potion;int at=Player.PotionSlots.FindIndex(x=>x is null);if(at>=0)Player.PotionSlots[at]=p.Potion;}
-            else{var r=(RelicReward)Reward;r.ClaimedRelic=r.Relic;}
-            Reward.SuccessfullySelected=true;ItemCompletions++;CompletedRewards.Add(Reward);
+            if(reward is PotionReward p){p.ClaimedPotion=p.Potion;int at=Player.PotionSlots.FindIndex(x=>x is null);if(at>=0)Player.PotionSlots[at]=p.Potion;}
+            else{var r=(RelicReward)reward;r.ClaimedRelic=r.Relic;}
+            reward.SuccessfullySelected=true;ItemCompletions++;CompletedRewards.Add(reward);
             // Native reward claimed removes/frees its control and nonterminal screen.
-            Overlays.Screens.Clear();Screen.Visible=false;Screen.InstanceValid=false;Button.InstanceValid=false;
-            AfterCollection?.Invoke();_screenDone.SetResult();
+            Screen.Children.Remove(button);button.InstanceValid=false;
+            bool done=Set.Rewards.All(x=>x.SuccessfullySelected);
+            if(done){Overlays.Screens.Clear();Screen.Visible=false;Screen.InstanceValid=false;}
+            AfterCollection?.Invoke();if(done)_screenDone.SetResult();
         }
         internal void AdvanceCreation(){_creationGate.SetResult();}
         internal void AdvanceCollection(){_collectionGate.SetResult();}
@@ -204,6 +218,76 @@ internal static partial class Program
             Check(f.Session.Read().CompletedItemChildren==1,"prior item completion survives stale scope");
         }
         ItemHookTests();
+    }
+    private static GenericEventV7ItemSetRead SetRead(ItemFixture f,GenericEventV7Observation c)=>(GenericEventV7ItemSetRead)f.Child(c);
+    private static void SetCollect(ItemFixture f,GenericEventV7Observation c) {
+        var read=SetRead(f,c);var o=(ItemV1Observation)read.Current!;
+        Check(read.Status=="ready"&&o.Offers[0].Index==read.Collected.Count,"next exact set entry");
+        Check(((GenericEventV7ItemApply)f.Session.ApplyChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,o.DecisionId,o.LegalActions[0])).Value is ItemV1DispatchReceipt,"set collection accepted");
+    }
+    private static void ItemSetTests() {
+        foreach(var kinds in new[]{new[]{"potion","potion"},new[]{"potion","potion","relic","relic"},Enumerable.Repeat("relic",8).ToArray()}) {
+            using var f=new ItemFixture("ITEM_SET",kinds[0],index:kinds[0]=="potion"?2:3,itemKinds:kinds);
+            var c=f.Start();Check(c.Status=="child"&&c.Child!.ContractVersion=="item_set_v1"&&c.Child.OfferCount==kinds.Length,"multi item admission");
+            for(int i=0;i<kinds.Length;i++) {
+                SetCollect(f,c);var read=SetRead(f,c);
+                Check(read.Collected.Count==i+1&&read.Status==(i==kinds.Length-1?"resolved":"ready"),"each collection settles once");
+                Check(f.Session.Read().ChildReconciled==i+1,"cumulative set accounting");
+            }
+            Check(f.CompletionValid&&f.CollectCalls==kinds.Length,"all exact set effects");
+            var parent=f.Session.Read();Check(parent.CompletedItemChildren==1&&parent.ChildAccepted==kinds.Length,"one set child several actions");
+            f.Session.Apply(parent.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","set map continuation");
+        }
+        foreach(string delay in new[]{"collection","offer","chosen"}) {
+            using var f=new ItemFixture("DELAY_SET","relic",itemKinds:new[]{"relic","relic"},delayedCollection:delay=="collection",delayedOffer:delay=="offer",delayedChosen:delay=="chosen");
+            var c=f.Start();SetCollect(f,c);
+            if(delay=="collection"){Check(SetRead(f,c).Status=="waiting"&&f.CollectCalls==1,"pending first collection never advances");f.AdvanceCollection();}
+            Check(SetRead(f,c).Status=="ready","settled first collection exposes second");SetCollect(f,c);
+            if(delay=="offer"||delay=="chosen") {
+                var wait=SetRead(f,c);Check(wait.Status=="waiting"&&wait.Collected.Count==2&&f.Session.Read().CompletedItemChildren==0,"effects cannot fake owner completion");
+                if(delay=="offer")f.AdvanceOffer();else f.AdvanceChosen();
+            }
+            Check(SetRead(f,c).Status=="resolved","actual set tasks finish");
+        }
+        foreach(string fault in new[]{"domain","model","key","claim","rollback","relocate","inventory","capacity","foreign_button","duplicate_button","future_selected","index","task"}) {
+            using var f=new ItemFixture("BAD_SET","potion",itemKinds:new[]{"potion","relic"});
+            var c=f.Start();SetCollect(f,c);Check(SetRead(f,c).Status=="ready","first effect retained before fault");
+            var second=(RelicReward)f.Set.Rewards[1];
+            switch(fault) {
+                case "domain":f.Set.Rewards.Reverse();break;
+                case "model":second.Relic=new RelicModel();break;
+                case "key":second.Relic.Id.Entry="Changed";break;
+                case "claim":((PotionReward)f.Reward).ClaimedPotion=new PotionModel();break;
+                case "rollback":f.Reward.SuccessfullySelected=false;((PotionReward)f.Reward).ClaimedPotion=null;break;
+                case "relocate":f.Player.PotionSlots[2]=f.Player.PotionSlots[1];f.Player.PotionSlots[1]=null;break;
+                case "inventory":f.Player.PotionSlots[1]=null;break;
+                case "capacity":f.Player.MaxPotionCount++;break;
+                case "foreign_button":f.Screen.Children.Add(new NRewardButton{Reward=new RelicReward()});break;
+                case "duplicate_button":f.Screen.Children.Add(new NRewardButton{Reward=second});break;
+                case "future_selected":second.SuccessfullySelected=true;break;
+                case "index":second.RewardsSetIndex++;break;
+                case "task":f.FaultCollection=true;SetCollect(f,c);break;
+            }
+            var stopped=SetRead(f,c);Check(stopped.Status=="unsupported"&&stopped.Collected.Count==1,"set rejects "+fault);
+            Check(f.CollectCalls==(fault=="task"?2:1)&&f.Session.Read().CompletedItemChildren==0,"no retry or false batch completion");
+        }
+        foreach(string fault in new[]{"rollback","claim","relocate"}) {
+            using var f=new ItemFixture("SET_LATE_RETENTION","potion",itemKinds:new[]{"potion","relic"},delayedOffer:true);
+            var c=f.Start();SetCollect(f,c);SetCollect(f,c);
+            Check(SetRead(f,c) is {Status:"waiting",Collected.Count:2},"both local effects wait actual Offer");
+            if(fault=="rollback")f.Reward.SuccessfullySelected=false;
+            if(fault=="claim")((PotionReward)f.Reward).ClaimedPotion=null;
+            if(fault=="relocate"){f.Player.PotionSlots[2]=f.Player.PotionSlots[1];f.Player.PotionSlots[1]=null;}
+            f.AdvanceOffer();Check(SetRead(f,c) is {Status:"unsupported",Collected.Count:2},"earlier effect retained through final gate "+fault);
+            Check(f.Session.Read().CompletedItemChildren==0&&f.CollectCalls==2,"failed set retains per-item credit without completion");
+        }
+        using(var f=new ItemFixture("SET_FULL","potion",itemKinds:new[]{"potion","potion","potion"})) {
+            Check(f.Start().Status=="unsupported"&&f.CollectCalls==0,"enough capacity for entire potion set before first input");
+        }
+        using(var f=new ItemFixture("SET_SHARED_MODEL","potion",itemKinds:new[]{"potion","potion"})) {
+            f.BeforeScreen=()=>((PotionReward)f.Set.Rewards[1]).Potion=((PotionReward)f.Reward).Potion;
+            Check(f.Start().Status=="unsupported"&&f.CollectCalls==0,"ambiguous shared offered model rejected");
+        }
     }
     private static void ItemHookTests()
     {

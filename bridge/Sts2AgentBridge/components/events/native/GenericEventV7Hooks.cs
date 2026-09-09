@@ -181,6 +181,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     {
         internal GenericEventV7Binding? Binding;
         internal GenericEventV7Binding? Previous;
+        internal GenericEventV7ItemState? Item;
         internal bool Restored;
     }
     private static void ChosenPrefix(EventOption __instance, out State __state)
@@ -275,7 +276,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     {if(__exception is not null&&__state?.Binding is {} b)FailItem(b);}
     private static void ItemCollectionPrefix(NRewardButton __instance,out State __state)
     {
-        var item=CollectionScope.Value;__state=new State{Binding=item?.Binding};
+        var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
         if(item is null){FailItem(null);return;}
         try
         {
@@ -288,7 +289,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void ItemCollectionPostfix(Task __result,State? __state)
     {
         if(__state?.Binding is {} b&&!b.Failed)
-        {if(b.Item is not {} item||!item.CollectionEntered||item.CollectionTask is not null||__result is null)FailItem(b);else item.CollectionTask=__result;}
+        {if(__state?.Item is not {} item||!item.CollectionEntered||item.CollectionTask is not null||__result is null)FailItem(b);else item.CollectionTask=__result;}
     }
     private static void ItemCollectionFinalizer(Exception? __exception,State? __state)
     {if(__exception is not null&&__state?.Binding is {} b)FailItem(b);}
@@ -301,10 +302,10 @@ public sealed class GenericEventV7Hooks : IDisposable
         try
         {
             if(!Owns(b)||b.Closed||b.RequestSeen||!b.ContextValid(false)||!b.BindSelectionDeck()||
-                __0 is null||__1 is null||__2<1||__3.MinSelect!=1||__3.MaxSelect!=1||__3.Cancelable||
+                __0 is null||__1 is null||__2<1||__3.MinSelect<1||__3.MinSelect!=__3.MaxSelect||__3.MaxSelect>8||__3.Cancelable||
                 !ReferenceEquals(__1.CanonicalInstance,__1)||
                 !Sts2AgentBridge.Successors.CardSelectionV1.Native.CardSelectionV1NativeRules.IsStableKey(__1.Id.Entry)||
-                __0.Count is <2 or >64)
+                __0.Count<=__3.MaxSelect||__0.Count>64)
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__3;
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Enchant;

@@ -23,7 +23,7 @@ public sealed record GenericEventV7NativeCapture(string Status, bool EventFinish
 public abstract record GenericEventV7Admission(object Identity) {
     public bool IsSupported => Identity is not null && (this switch {
         GenericEventV7CardAdmission c => GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
-        GenericEventV7ItemAdmission i => i.OfferCount == 1,
+        GenericEventV7ItemAdmission i => i.OfferCount is >= 1 and <= 8,
         _ => false });
 }
 public sealed record GenericEventV7CardAdmission(object AdmissionIdentity, string Operation,
@@ -32,11 +32,11 @@ public sealed record GenericEventV7ItemAdmission(object AdmissionIdentity, int O
 
 public static class GenericEventV7Families
 {
-    public static string ContractVersion(string operation) => operation == "remove" ? "card_remove_v2" : operation == "enchant" ? "card_enchant_v1" : operation == "transform" ? "card_transform_v2" : "card_selection_v1";
+    public static string ContractVersion(string operation, int maxSelect = 1) => operation == "remove" ? "card_remove_v2" : operation == "enchant" ? (maxSelect>1?"card_enchant_v2":"card_enchant_v1") : operation == "transform" ? "card_transform_v2" : "card_selection_v1";
     public static bool Supports(string operation, int minSelect, int maxSelect,
         string commitMode, int domainCount) => domainCount <= 64 && domainCount > maxSelect &&
         minSelect >= 1 && minSelect <= maxSelect && maxSelect <= 8 &&
-        ((operation == "enchant" && minSelect == 1 && maxSelect == 1 && commitMode == "preview_confirm") ||
+        ((operation == "enchant" && minSelect == maxSelect && commitMode == "preview_confirm") ||
          (operation == "upgrade" && minSelect == maxSelect && commitMode == "preview_confirm") ||
          (operation is "remove" or "transform" && commitMode == "preview_confirm") ||
          (operation == "add" && commitMode is "auto_at_max" or "explicit_confirm"));

@@ -21,17 +21,21 @@ namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
 {
     private const string HighlightWidthParameter = "width";
+    private bool IsEnchant => _binding.Operation == CardSelectionV1Operation.Enchant;
+    private static string ContainerPath(GenericEventV7Binding b) => b.Operation==CardSelectionV1Operation.Enchant ? "%EnchantMultiPreviewContainer" : "%PreviewContainer";
+    private static string CardsPath(GenericEventV7Binding b) => b.Operation==CardSelectionV1Operation.Enchant ? "Cards" : "%Cards";
+    private static string ConfirmPath(GenericEventV7Binding b) => b.Operation==CardSelectionV1Operation.Enchant ? "Confirm" : "%PreviewConfirm";
 
     private readonly GenericEventV7Binding _binding;
     private readonly CardSelectionV1ParentContext _context;
-    private readonly NDeckCardSelectScreen _screen;
+    private readonly NCardGridSelectionScreen _screen;
     private readonly NCardGrid _grid;
     private readonly Control _previewContainer;
     private readonly Control _preview;
     private readonly NConfirmButton _confirm;
     private readonly Action _confirmDispatch;
-    private readonly NConfirmButton _openPreview;
-    private readonly Action _previewDispatch;
+    private readonly NConfirmButton? _openPreview;
+    private readonly Action? _previewDispatch;
     private NPreviewCardHolder[]? _previewHolders;
     private NCard[]? _previewCards;
     private readonly HashSet<object> _expectedSelection=new(ReferenceEqualityComparer.Instance);
@@ -50,7 +54,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
     internal GenericEventV7RemovalAdapter(
         GenericEventV7Binding binding,
         CardSelectionV1ParentContext context,
-        NDeckCardSelectScreen screen)
+        NCardGridSelectionScreen screen)
     {
         _binding = binding ?? throw new ArgumentNullException(nameof(binding));
         _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -75,8 +79,8 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         _preview = preview;
         _confirm = confirm;
         _confirmDispatch = _confirm.ForceClick;
-        _openPreview = RequiredNode<NConfirmButton>(_screen,"%Confirm");
-        _previewDispatch = _openPreview.ForceClick;
+        _openPreview = IsEnchant ? null : RequiredNode<NConfirmButton>(_screen,"%Confirm");
+        _previewDispatch = _openPreview is null ? null : _openPreview.ForceClick;
 
         _completionTask = _screen.CardsSelected() ??
             throw new InvalidOperationException("Event selector task was unavailable.");
@@ -86,7 +90,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
 
     internal static bool IsReady(
         GenericEventV7Binding binding,
-        NDeckCardSelectScreen screen,
+        NCardGridSelectionScreen screen,
         out GenericEventDiagnosticCode diagnostic)
     {
         diagnostic = GenericEventDiagnosticCode.PrepareBinding;
@@ -114,6 +118,10 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
             !TryCopyDeck(out CardSelectionV1DeckCard[] deck))
             return Unsupported();
         SnapshotTask();
+        if (!selectorClosed && IsEnchant &&
+            (!GenericEventV7CardAdapter.EnchantmentScreenMatches(_binding,_screen) ||
+             _taskState==CardSelectionV1TaskState.Incomplete && _binding.Originals.Any(c=>
+                 c.Enchantment is not null || !_binding.EnchantmentModel!.CanEnchant(c)))) return Unsupported();
 
         bool selectorTop = !selectorClosed;
         CardSelectionV1Phase phase;
@@ -196,7 +204,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
             _completionTask,
             previewIdentity,
             CardSelectionV1ParentKind.Event,
-            CardSelectionV1Operation.Remove,
+            _binding.Operation,
             _binding.Prefs.MinSelect,
             _binding.Prefs.MaxSelect,
             CardSelectionV1CommitMode.PreviewConfirm,
@@ -214,8 +222,8 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
             candidates,
             deck,
             Array.Empty<CardSelectionV1Replacement>(),
-            selectorTop && !previewOpen ? new CardSelectionV1NativeControl(_openPreview,_openPreview.IsVisibleInTree(),_openPreview.IsEnabled,_previewDispatch) : null,
-            confirm);
+            selectorTop && !previewOpen && _openPreview is not null ? new CardSelectionV1NativeControl(_openPreview,_openPreview.IsVisibleInTree(),_openPreview.IsEnabled,_previewDispatch!) : null,
+            confirm, _binding.Enchantment);
     }
 
     private bool TryBoundForeground(out bool selectorClosed)
@@ -256,7 +264,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
 
     private static bool TryPrepareSurface(
         GenericEventV7Binding binding,
-        NDeckCardSelectScreen screen,
+        NCardGridSelectionScreen screen,
         out NCardGrid grid,
         out CandidateBinding[] bindings,
         out CardSelectionV1NativeCandidate[] candidates,
@@ -272,9 +280,12 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         preview = null!;
         confirm = null!;
         diagnostic = GenericEventDiagnosticCode.PrepareBinding;
-        if (!binding.Ready || binding.Operation!=CardSelectionV1Operation.Remove) return false;
+        if (!binding.Ready || binding.Operation is not (CardSelectionV1Operation.Remove or CardSelectionV1Operation.Enchant)) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareScreen;
-        if (!ValidExact(screen) || !screen.IsVisibleInTree()) return false;
+        if (!Valid(screen) || !screen.IsVisibleInTree() ||
+            !(binding.Operation==CardSelectionV1Operation.Remove ? screen.GetType()==typeof(NDeckCardSelectScreen) :
+              screen.GetType()==typeof(NDeckEnchantSelectScreen) && binding.Prefs.MinSelect==binding.Prefs.MaxSelect && binding.Prefs.MaxSelect>=2 &&
+              GenericEventV7CardAdapter.EnchantmentScreenMatches(binding,screen))) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareExternalSelector;
         if (CardSelectCmd.Selector is not null) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareDeck;
@@ -291,18 +302,18 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         if (!TryCreateBindings(holders, binding.EligibleOriginals, out bindings, out candidates)) return false;
         diagnostic = GenericEventDiagnosticCode.PreparePreviewNodes;
         previewContainer = RequiredNode<Control>(screen,
-            "%PreviewContainer");
-        preview = RequiredNode<Control>(previewContainer, "%Cards");
-        confirm = RequiredNode<NConfirmButton>(previewContainer, "%PreviewConfirm");
+            ContainerPath(binding));
+        preview = RequiredNode<Control>(previewContainer, CardsPath(binding));
+        confirm = RequiredNode<NConfirmButton>(previewContainer, ConfirmPath(binding));
         diagnostic = GenericEventDiagnosticCode.PreparePreviewState;
         return Valid(preview) && ValidExact(confirm) &&
             !previewContainer.Visible && preview.GetChildren().Count==0 &&
-            ValidExact(RequiredNode<NConfirmButton>(screen,"%Confirm"));
+            (binding.Operation==CardSelectionV1Operation.Enchant || ValidExact(RequiredNode<NConfirmButton>(screen,"%Confirm")));
     }
 
     private static bool InitialForeground(
         GenericEventV7Binding binding,
-        NDeckCardSelectScreen screen) =>
+        NCardGridSelectionScreen screen) =>
         ReferenceEquals(MegaCrit.Sts2.Core.Nodes.NRun.Instance, binding.Run) &&
         ReferenceEquals(binding.Run.EventRoom, binding.Room) &&
         ReferenceEquals(MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom.Instance,
@@ -330,15 +341,15 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         identity = null;
         originals = Array.Empty<object>();
         confirm = null;
-        if (!Valid(_previewContainer) || !Valid(_preview) || !ValidExact(_openPreview) ||
-            !ReferenceEquals(_screen.GetNodeOrNull<NConfirmButton>("%Confirm"),_openPreview) ||
+        if (!Valid(_previewContainer) || !Valid(_preview) || (!IsEnchant && (_openPreview is null || !ValidExact(_openPreview) ||
+            !ReferenceEquals(_screen.GetNodeOrNull<NConfirmButton>("%Confirm"),_openPreview))) ||
             !ValidExact(_confirm) ||
             !ReferenceEquals(_screen.GetNodeOrNull<Control>(
-                "%PreviewContainer"), _previewContainer) ||
+                ContainerPath(_binding)), _previewContainer) ||
             !ReferenceEquals(_previewContainer.GetNodeOrNull<Control>(
-                "%Cards"), _preview) ||
+                CardsPath(_binding)), _preview) ||
             !ReferenceEquals(_previewContainer.GetNodeOrNull<NConfirmButton>(
-                "%PreviewConfirm"), _confirm))
+                ConfirmPath(_binding)), _confirm))
             return false;
         open = _previewContainer.Visible && _previewContainer.IsVisibleInTree();
         if (!open) return true;
@@ -590,7 +601,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         CardSelectionV1SurfaceStatus.Unsupported,
         null, null, null, null, null, null, null, null, null, null,
         CardSelectionV1ParentKind.Event,
-        CardSelectionV1Operation.Remove,
+        _binding.Operation,
         _binding.Prefs.MinSelect, _binding.Prefs.MaxSelect,
         CardSelectionV1CommitMode.PreviewConfirm,
         CardSelectionV1Phase.Transient,

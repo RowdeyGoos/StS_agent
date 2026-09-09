@@ -104,7 +104,21 @@ internal static class Program {
             Check(next.Status==(failParent?"unsupported":"ready") && next.PriorResults.Count==(failParent?0:1),"parent gate history");
             if(!failParent){s.Apply(next.DecisionId,"choose:0");var end=s.Read();Check(end.Status=="complete"&&end.CompletedItemChildren==1&&end.Effects=="unverified","Proceed preserves completion");}
         }
+        foreach(string reentry in new[]{"read","apply","dispose"}) {
+            var adapter=new SetCleanupFixture();var set=new GenericEventV7ItemSetSession(Nonce,adapter);
+            adapter.OnDispose=()=>{try{if(reentry=="read")set.Read();else if(reentry=="apply")set.Apply("x","collect:0");else set.Dispose();}catch{}};
+            bool threw=false;try{set.Dispose();}catch{threw=true;}
+            Check(threw&&adapter.Calls==1,"item-set cleanup interference retained");
+            adapter.OnDispose=null;set.Dispose();Check(adapter.Calls==2,"item-set cleanup retry");
+        }
         Console.WriteLine($"Item consumer assertions passed: {_checks}");
+    }
+    private sealed class SetCleanupFixture : IGenericEventV7ItemSetNativeAdapter {
+        internal Action? OnDispose;internal int Calls;
+        public int OfferCount=>2;
+        public IItemV1NativeAdapter CreateEntry(int index)=>throw new InvalidOperationException();
+        public GenericEventV7ItemCompletion CaptureCompletion(int index)=>throw new InvalidOperationException();
+        public void Dispose(){Calls++;OnDispose?.Invoke();}
     }
     private sealed class EqualIdentity { public override bool Equals(object? o)=>o is EqualIdentity; public override int GetHashCode()=>1; }
     private sealed class Fixture : IGenericEventV7ItemNativeAdapter {

@@ -14,15 +14,15 @@ public interface IGenericEventV7ItemChildSession : IGenericEventV7ChildSession {
 }
 public abstract record GenericEventV7ChildRead(string ContractVersion);
 public sealed record GenericEventV7CardRead(string Version, ICardSelectionV1ReadValue Value) : GenericEventV7ChildRead(Version);
-public sealed record GenericEventV7ItemRead(IItemV1ReadValue Value) : GenericEventV7ChildRead("item_v1");
+public sealed record GenericEventV7ItemRead(IItemV1ReadValue Value, string Version="item_v1") : GenericEventV7ChildRead(Version);
 public abstract record GenericEventV7ChildApply(string ContractVersion);
 public sealed record GenericEventV7CardApply(string Version, ICardSelectionV1ApplyValue Value) : GenericEventV7ChildApply(Version);
-public sealed record GenericEventV7ItemApply(IItemV1ApplyValue Value) : GenericEventV7ChildApply("item_v1");
+public sealed record GenericEventV7ItemApply(IItemV1ApplyValue Value, string Version="item_v1") : GenericEventV7ChildApply(Version);
 public sealed class GenericEventV7CardChildSession : IGenericEventV7CardChildSession {
     private readonly IGenericEventV5ChildSession _session;
     public GenericEventV7CardChildSession(IGenericEventV5ChildSession session) {
         _session = session ?? throw new ArgumentNullException(nameof(session));
-        if (session.ContractVersion is not ("card_selection_v1" or "card_transform_v2" or "card_enchant_v1" or "card_remove_v2"))
+        if (session.ContractVersion is not ("card_selection_v1" or "card_transform_v2" or "card_enchant_v1" or "card_enchant_v2" or "card_remove_v2"))
             throw new ArgumentException("Unknown card contract.", nameof(session));
     }
     public string ContractVersion => _session.ContractVersion;
@@ -34,12 +34,14 @@ public sealed class GenericEventV7CardChildSession : IGenericEventV7CardChildSes
 public sealed class GenericEventV7EnchantChildSession : IGenericEventV5ChildSession
 {
     private readonly CardSelectionV1Session _session;
+    private readonly string _version;
     public GenericEventV7EnchantChildSession(CardSelectionV1ParentContext context, ICardSelectionV1NativeAdapter adapter)
     {
         if (context.Operation != CardSelectionV1Operation.Enchant) throw new ArgumentException("Expected enchantment context.");
         _session = new CardSelectionV1Session(context, adapter);
+        _version=GenericEventV7Families.ContractVersion("enchant",context.MaxSelect);
     }
-    public string ContractVersion => "card_enchant_v1";
+    public string ContractVersion => _version;
     public ICardSelectionV1ReadValue Read() => _session.Read();
     public ICardSelectionV1ApplyValue Apply(string? decisionId, string? actionId) => _session.Apply(decisionId, actionId);
     public void Dispose() => _session.Dispose();

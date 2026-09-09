@@ -120,3 +120,99 @@ public sealed class GenericEventV7ItemChildSession : IGenericEventV7ItemChildSes
         public ItemV1PendingCapture CapturePending(ItemV1PendingProbe probe) { Check(); return _inner.CapturePending(probe); }
     }
 }
+
+
+// A set is one owned Offer, with independently reconciled collections. The local
+// item_v1 contracts remain unchanged; the versioned wrapper retains progress.
+public sealed record GenericEventV7ItemSetRead(string SessionNonce, string Status,
+    int OfferCount, System.Collections.Generic.IReadOnlyList<ItemV1ResolvedResult> Collected,
+    IItemV1ReadValue? Current) : IItemV1ReadValue;
+public interface IGenericEventV7ItemSetNativeAdapter : IDisposable {
+    int OfferCount { get; }
+    IItemV1NativeAdapter CreateEntry(int index);
+    GenericEventV7ItemCompletion CaptureCompletion(int index);
+}
+public sealed class GenericEventV7ItemSetSession : IGenericEventV7ItemChildSession {
+    private readonly string _nonce;
+    private readonly IGenericEventV7ItemSetNativeAdapter _adapter;
+    private readonly int _owner=Environment.CurrentManagedThreadId, _count;
+    private readonly System.Collections.Generic.List<ItemV1ResolvedResult> _collected=new();
+    private readonly GenericEventV7ItemTaskWitness?[] _tasks=new GenericEventV7ItemTaskWitness?[3];
+    private ItemV1Session? _local;
+    private bool _inside, _failed, _disposed, _accepted, _complete, _interfered;
+    private int _reads;
+    public GenericEventV7ItemSetSession(string nonce, IGenericEventV7ItemSetNativeAdapter adapter) {
+        _nonce=nonce;_adapter=adapter;_count=adapter.OfferCount;
+        if(_count is <2 or >8)throw new ArgumentException("Bounded item set required.");
+    }
+    public string ContractVersion=>"item_set_v1";
+    private GenericEventV7ItemSetRead Value(string status,IItemV1ReadValue? current=null)=>
+        new(_nonce,status,_count,Array.AsReadOnly(_collected.ToArray()),current);
+    private GenericEventV7ItemSetRead Stop(){_failed=true;return Value("unsupported");}
+    private bool Enter(){if(_inside||_disposed||_failed||Environment.CurrentManagedThreadId!=_owner){if(_inside)_interfered=true;_failed=true;return false;}_inside=true;return true;}
+    private bool Task(int index,GenericEventV7ItemTaskWitness? now) {
+        var old=_tasks[index];
+        if(now is null||now.Identity is null||now.State is not (GenericEventV7ItemTaskState.Pending or GenericEventV7ItemTaskState.Succeeded)||
+            old is not null&&(!ReferenceEquals(old.Identity,now.Identity)||old.State==GenericEventV7ItemTaskState.Succeeded&&now.State!=old.State))return false;
+        _tasks[index]=now;return true;
+    }
+    public IItemV1ReadValue Read() {
+        if(!Enter())return Value("unsupported");
+        try {
+            if(_complete)return Value("resolved");
+            if(++_reads>ItemV1Constants.MaximumReconciliationReads)return Stop();
+            if(_accepted||_collected.Count==_count) {
+                int index=Math.Min(_collected.Count,_count-1);
+                var state=_adapter.CaptureCompletion(index);
+                if(_failed||!state.OwnershipValid||!Task(0,state.Collection)||!Task(1,state.Offer)||!Task(2,state.Chosen))return Stop();
+                if(_collected.Count<_count) {
+                    var read=_local!.Read();
+                    if(_failed)return Stop();
+                    if(read is ItemV1ResolvedResult done) {
+                        if(!state.EffectStillValid)return Stop();
+                        if(state.Collection!.State==GenericEventV7ItemTaskState.Succeeded) {
+                            _collected.Add(done);_accepted=false;_local=null;
+                            if(_collected.Count<_count)_tasks[0]=null;
+                        }
+                    } else if(read is not ItemV1Observation waiting||waiting.Status!="waiting")return Stop();
+                }
+                if(_collected.Count==_count) {
+                    if(!state.EffectStillValid)return Stop();
+                    if(state.ScreenClosed&&state.Collection!.State==GenericEventV7ItemTaskState.Succeeded&&
+                        state.Offer!.State==GenericEventV7ItemTaskState.Succeeded&&state.Chosen!.State==GenericEventV7ItemTaskState.Succeeded){_complete=true;return Value("resolved");}
+                    return Value("waiting");
+                }
+                if(_accepted)return Value("waiting");
+            }
+            _local??=new ItemV1Session(_nonce,new Guard(this,_adapter.CreateEntry(_collected.Count)));
+            var current=_local.Read();
+            if(_failed||current is not ItemV1Observation o||o.Status is not ("ready" or "waiting")||o.Status=="ready"&&o.Offers.Count!=1)return Stop();
+            return Value(o.Status,o);
+        } catch{return Stop();}finally{_inside=false;}
+    }
+    public IItemV1ApplyValue Apply(string? decisionId,string? actionId) {
+        if(!Enter())return new ItemV1ApplyFailure(_nonce,"unsupported");
+        try {
+            if(_complete||_accepted||_local is null)return new ItemV1ApplyFailure(_nonce,"rejected");
+            var result=_local.Apply(decisionId,actionId);
+            if(_failed)return new ItemV1ApplyFailure(_nonce,"uncertain");
+            if(result is ItemV1DispatchReceipt)_accepted=true;
+            else if(result is not ItemV1ApplyFailure {Outcome:"rejected"})_failed=true;
+            return result;
+        }catch{_failed=true;return new ItemV1ApplyFailure(_nonce,"uncertain");}finally{_inside=false;}
+    }
+    public void Dispose(){
+        if(_disposed)return;
+        if(_inside||Environment.CurrentManagedThreadId!=_owner){_interfered=true;_failed=true;throw new InvalidOperationException("Idle item-set owner required.");}
+        _failed=true;_inside=true;_interfered=false;
+        try{_adapter.Dispose();if(_interfered)throw new InvalidOperationException("Reentrant item-set cleanup.");_disposed=true;}finally{_inside=false;}
+    }
+    private sealed class Guard : IItemV1NativeAdapter {
+        private readonly GenericEventV7ItemSetSession _owner;
+        private readonly IItemV1NativeAdapter _inner;
+        internal Guard(GenericEventV7ItemSetSession owner,IItemV1NativeAdapter inner){_owner=owner;_inner=inner;}
+        private void Check(){if(!_owner._inside||_owner._failed||_owner._disposed||Environment.CurrentManagedThreadId!=_owner._owner)throw new InvalidOperationException("Inactive item-set entry.");}
+        public ItemV1SurfaceCapture CaptureSurface(){Check();return _inner.CaptureSurface();}
+        public ItemV1PendingCapture CapturePending(ItemV1PendingProbe probe){Check();return _inner.CapturePending(probe);}
+    }
+}

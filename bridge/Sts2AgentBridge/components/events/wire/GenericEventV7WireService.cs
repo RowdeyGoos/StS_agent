@@ -25,6 +25,7 @@ public sealed class GenericEventV7WireService : IDisposable
     private readonly HashSet<(string Decision, string Action)> _completedChildren = new();
     private readonly HashSet<(string Decision, string Action)> _completedItems = new();
     private ItemV1Observation? _itemDomain;
+    private readonly List<ItemV1ResolvedResult> _itemSetHistory=new();
     private string? _decision, _lastParentDecision, _lastParentAction;
     private string[] _legal = Array.Empty<string>();
     private GenericEventV7Child? _child;
@@ -93,7 +94,7 @@ public sealed class GenericEventV7WireService : IDisposable
                 {
                     Require(child.Ordinal == _ordinal + 1);
                     _child = child; _ordinal = child.Ordinal;
-                    _domain = null; _enchantment = null; _itemDomain = null; _childAccepted.Clear(); _history = 0; _previewSeen = false;
+                    _domain = null; _enchantment = null; _itemDomain = null; _itemSetHistory.Clear(); _childAccepted.Clear(); _history = 0; _previewSeen = false;
                 }
                 else Require(SameChild(child, _child));
                 var tagged = _session.ReadChild(child.ParentDecisionId, child.ParentActionId, child.Ordinal);
@@ -141,7 +142,7 @@ public sealed class GenericEventV7WireService : IDisposable
         }
         Require(!_childResolved && request.Ordinal == _child.Ordinal &&
             request.ParentDecision == _child.ParentDecisionId && request.ParentAction == _child.ParentActionId &&
-            _childAccepted.Count < (_child.Kind == "item" ? 1 : 10));
+            _childAccepted.Count < (_child.Kind == "item" ? _child.OfferCount : 10));
         var tagged = _session.ApplyChild(request.ParentDecision, request.ParentAction,
             request.Ordinal, request.Decision, request.Action);
         Require(tagged.ContractVersion == _child.ContractVersion);
@@ -180,10 +181,23 @@ public sealed class GenericEventV7WireService : IDisposable
     }
 
     private byte[] EncodeChild(object value) => _child!.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
-        ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value) : _child.Operation == "remove"
+        ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value,_child.MaxSelect>1) : _child.Operation == "remove"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardRemoveV2WireCodec.Encode(value) : _child.Operation == "transform"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value) : CardSelectionV1WireCodec.Encode(value);
     private static byte[] EncodeItem(object value) {
+        if(value is GenericEventV7ItemSetRead set) {
+            using var stream=new System.IO.MemoryStream();
+            using(var w=new Utf8JsonWriter(stream)) {
+                w.WriteStartObject();w.WriteString("version","item_set_v1");w.WriteString("session_nonce",set.SessionNonce);
+                w.WriteString("status",set.Status);w.WriteNumber("offer_count",set.OfferCount);
+                w.WritePropertyName("collected");w.WriteStartArray();
+                foreach(var entry in set.Collected)WriteItem(w,entry);
+                w.WriteEndArray();w.WritePropertyName("current");
+                if(set.Current is null)w.WriteNullValue();else WriteItem(w,set.Current);
+                w.WriteEndObject();
+            }
+            return stream.ToArray();
+        }
         ItemWireV1Envelope envelope=value switch {
             ItemV1Observation x => new(x.SessionNonce,x.Status,decisionId:x.DecisionId,
                 offers:x.Offers.Select(o=>new ItemWireV1OfferDto(o.Index,o.Kind,o.Key,o.Enabled)).ToArray(),potionSlots:x.PotionSlots,legalActions:x.LegalActions),
@@ -193,6 +207,10 @@ public sealed class GenericEventV7WireService : IDisposable
             ItemV1ApplyFailure x => new(x.SessionNonce,x.Outcome),
             _ => throw new InvalidOperationException() };
         return ItemWireV1Codec.Encode(envelope);
+    }
+
+    private static void WriteItem(Utf8JsonWriter writer,object value) {
+        var bytes=EncodeItem(value);try{using var doc=JsonDocument.Parse(bytes);doc.RootElement.WriteTo(writer);}finally{Array.Clear(bytes);}
     }
 
     private ActionRequest Parse(byte[] body)
@@ -304,7 +322,7 @@ public sealed class GenericEventV7WireService : IDisposable
     private void ValidateChild(object value)
     {
         Require(_child is not null);
-        if (_child.Kind == "item") { ValidateItem(value); return; }
+        if (_child.Kind == "item") { if(_child.OfferCount>1)ValidateItemSet(value);else ValidateItem(value); return; }
         if (value is CardSelectionV1Observation p)
         {
             Require(p.Version == "card_selection_v1" && p.SessionNonce == _nonce && p.ParentOrdinal == 1 &&
@@ -325,7 +343,7 @@ public sealed class GenericEventV7WireService : IDisposable
                 if (p.Phase == "preview")
                 {
                     Require(_child.CommitMode == "preview_confirm" && selectedActions.Length >= _child.MinSelect &&
-                        (!(_child.Operation is "remove" or "transform" || _child.Operation == "upgrade" && _child.MaxSelect > 1) || selectedActions.Length == _child.MaxSelect ||
+                        (!(_child.Operation is "remove" or "transform" || _child.Operation is "upgrade" or "enchant" && _child.MaxSelect > 1) || selectedActions.Length == _child.MaxSelect ||
                          _childAccepted.Any(a => a.Action == "preview")));
                     Require(p.LegalActions.SequenceEqual(new[] { "confirm" }));
                     _previewSeen = true;
@@ -334,7 +352,7 @@ public sealed class GenericEventV7WireService : IDisposable
                 {
                     Require(p.Phase == "selecting" && !_previewSeen && !_childAccepted.Any(a => a.Action == "preview") &&
                         (_child.CommitMode == "explicit_confirm" || !p.LegalActions.Contains("confirm")) &&
-                        ((!(_child.Operation is "remove" or "transform" || _child.Operation == "upgrade" && _child.MaxSelect > 1) && _child.CommitMode != "auto_at_max") || selectedActions.Length < _child.MaxSelect));
+                        ((!(_child.Operation is "remove" or "transform" || _child.Operation is "upgrade" or "enchant" && _child.MaxSelect > 1) && _child.CommitMode != "auto_at_max") || selectedActions.Length < _child.MaxSelect));
                 }
                 if (_domain is null) _domain = p.Candidates.ToArray();
                 for (int i = 0; i < _domain.Length; i++)
@@ -416,14 +434,38 @@ public sealed class GenericEventV7WireService : IDisposable
         ? "item:"+_child.ParentDecisionId+":"+_child.ParentActionId+":"+_child.Ordinal+":"+_child.ContractVersion+":"+decision : decision;
     private static void ValidateDescriptor(GenericEventV7Child c) => Require(c.Ordinal is >= 1 and <= 4 &&
         Hex(c.ParentDecisionId,64) && ParentAction(c.ParentActionId) &&
-        (c.Kind == "item" ? c.ContractVersion == "item_v1" && c.OfferCount == 1 && c.Operation == "" &&
+        (c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
             c.MinSelect == 0 && c.MaxSelect == 0 && c.CommitMode == "" && c.DomainCount == 0 :
-         c.Kind == "card_selection" && c.OfferCount == 0 && c.ContractVersion == GenericEventV7Families.ContractVersion(c.Operation) &&
+         c.Kind == "card_selection" && c.OfferCount == 0 && c.ContractVersion == GenericEventV7Families.ContractVersion(c.Operation,c.MaxSelect) &&
             GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount)));
     private static bool SameChild(GenericEventV7Child a,GenericEventV7Child b) => a.Ordinal == b.Ordinal &&
         a.ParentDecisionId == b.ParentDecisionId && a.ParentActionId == b.ParentActionId && a.Kind == b.Kind &&
         a.ContractVersion == b.ContractVersion && a.OfferCount == b.OfferCount && a.Operation == b.Operation &&
         a.MinSelect == b.MinSelect && a.MaxSelect == b.MaxSelect && a.CommitMode == b.CommitMode && a.DomainCount == b.DomainCount;
+    private void CompleteItem() {
+        var owner=(_child!.ParentDecisionId,_child.ParentActionId);
+        Require(_completedChildren.Count<4&&_completedChildren.Add(owner)&&_completedItems.Add(owner));_childResolved=true;
+    }
+    private static bool SameItem(ItemV1ResolvedResult a,ItemV1ResolvedResult b)=>a.SessionNonce==b.SessionNonce&&
+        a.DecisionId==b.DecisionId&&a.ActionId==b.ActionId&&a.OfferIndex==b.OfferIndex&&a.Kind==b.Kind&&a.Key==b.Key&&a.Result==b.Result;
+    private void ValidateItemSet(object value) {
+        Require(value is GenericEventV7ItemSetRead);
+        var set=(GenericEventV7ItemSetRead)value;
+        Require(set.SessionNonce==_nonce&&set.OfferCount==_child!.OfferCount&&set.Collected.Count>=_itemSetHistory.Count&&
+            set.Collected.Count<=Math.Min(set.OfferCount,_itemSetHistory.Count+1));
+        for(int i=0;i<_itemSetHistory.Count;i++)Require(SameItem(_itemSetHistory[i],set.Collected[i]));
+        if(set.Collected.Count>_itemSetHistory.Count) {
+            ValidateItem(set.Collected[^1]);_itemSetHistory.Add(set.Collected[^1]);_itemDomain=null;
+        }
+        Require(set.Status is "ready" or "waiting" or "unsupported" or "resolved");
+        if(set.Status=="resolved") {
+            Require(set.Current is null&&set.Collected.Count==set.OfferCount&&_childAccepted.Count==set.OfferCount);CompleteItem();
+        }else if(set.Status=="ready") {
+            Require(set.Collected.Count<set.OfferCount&&set.Current is ItemV1Observation {Status:"ready"});ValidateItem(set.Current);
+        }else if(set.Current is not null) {
+            Require(set.Status=="waiting"&&set.Current is ItemV1Observation {Status:"waiting"});ValidateItem(set.Current);
+        }
+    }
     private void ValidateItem(object value) {
         if (value is ItemV1Observation p) {
             Require(p.Version == "item_v1" && p.SessionNonce == _nonce && p.SurfaceOrdinal == 1 && p.Status is "ready" or "waiting" or "unsupported");
@@ -431,8 +473,9 @@ public sealed class GenericEventV7WireService : IDisposable
                 Require(p.DecisionId == "" && p.Offers.Count == 0 && p.PotionSlots.Count == 0 && p.LegalActions.Count == 0);
                 return;
             }
-            Require(_childAccepted.Count == 0 && p.Offers.Count == 1 && p.PotionSlots.Count <= 8);
+            Require(_childAccepted.Count == _itemSetHistory.Count && p.Offers.Count == 1 && p.PotionSlots.Count <= 8);
             var offer=p.Offers[0];
+            Require(_child!.OfferCount==1||offer.Index==_itemSetHistory.Count);
             Require(offer.Index is >= 0 and <= 255 && offer.Kind is "potion" or "relic" &&
                 ItemV1CanonicalEncoder.IsStableKey(offer.Key) && offer.Enabled &&
                 p.PotionSlots.All(slot=>slot is null || ItemV1CanonicalEncoder.IsStableKey(slot)) &&
@@ -447,13 +490,11 @@ public sealed class GenericEventV7WireService : IDisposable
             _itemDomain ??= p; Publish(p.DecisionId,p.LegalActions);
         } else if (value is ItemV1ResolvedResult r) {
             Require(r.Version == "item_v1" && r.SessionNonce == _nonce && r.SurfaceOrdinal == 1 &&
-                _childAccepted.Count == 1 && _itemDomain is not null);
-            var offer=_itemDomain.Offers[0]; var accepted=_childAccepted[0];
+                _childAccepted.Count == _itemSetHistory.Count+1 && _itemDomain is not null);
+            var offer=_itemDomain.Offers[0]; var accepted=_childAccepted[_itemSetHistory.Count];
             Require(r.DecisionId == accepted.Decision && r.ActionId == accepted.Action && r.ActionId == "collect:"+offer.Index &&
                 r.OfferIndex == offer.Index && r.Kind == offer.Kind && r.Key == offer.Key && r.Result == "collected");
-            var owner=(_child!.ParentDecisionId,_child.ParentActionId);
-            Require(_completedChildren.Count < 4 && _completedChildren.Add(owner) && _completedItems.Add(owner));
-            _childResolved=true;
+            if(_child!.OfferCount==1)CompleteItem();
         } else throw new InvalidOperationException();
     }
     private static bool ParentAction(string? s) => s is { Length: 8 } && s.StartsWith("choose:", StringComparison.Ordinal) && s[7] is >= '0' and <= '7';

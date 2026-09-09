@@ -102,8 +102,12 @@ internal static class CardTransformV2WireCodec
 
 internal static class CardEnchantV1WireCodec
 {
-    public static byte[] Encode(object value)
+    public static byte[] Encode(object value, bool multi = false)
     {
+        if(value is CardSelectionV1Observation {Status:"ready"} ready &&
+            (ready.MinSelect!=ready.MaxSelect||ready.MaxSelect<(multi?2:1)||ready.MaxSelect>(multi?8:1)) ||
+            value is CardSelectionV1ResolvedResult resolved && (resolved.SelectedCards.Count<(multi?2:1)||resolved.SelectedCards.Count>(multi?8:1)))
+            throw new InvalidOperationException("Enchantment version/count mismatch.");
         CardSelectionV1EnchantmentEffect? enchantment = value switch
         {
             CardSelectionV1Observation o when o.Status != "ready" || o.Operation == "enchant" => o.Enchantment,
@@ -121,7 +125,7 @@ internal static class CardEnchantV1WireCodec
                 writer.WriteStartObject();
                 foreach (var property in document.RootElement.EnumerateObject())
                 {
-                    if (property.Name == "version") writer.WriteString("version", "card_enchant_v1");
+                    if (property.Name == "version") writer.WriteString("version", multi ? "card_enchant_v2" : "card_enchant_v1");
                     else property.WriteTo(writer);
                 }
                 if (value is CardSelectionV1Observation or CardSelectionV1ResolvedResult)

@@ -24,6 +24,63 @@ def run_item_cases(args: Any, host: Any, exchange_type: Any, completed_history: 
     def item_decisions(ex: Any) -> list[dict]:
         return [v for v in ex.envelopes if v['kind'] == 'decision' and v['child'] and v['child']['kind'] == 'item']
 
+    for scenario, count in [('I_SET_TWO', 2), ('I_SET_MIXED', 4), ('I_SET_EIGHT', 8),
+                            ('I_SET_COLLECTION', 2), ('I_SET_OFFER', 2), ('I_SET_CHOSEN', 2)]:
+        result, ex = run(scenario)
+        assert result['status']=='resolved', (scenario, result, ex.envelopes[-1])
+        assert result['child_episodes']==result['completed_item_children']==1
+        assert result['child_attempted']==result['child_accepted']==result['child_reconciled']==count
+        assert result['parent_accepted']==result['parent_reconciled']==2
+        assert ex.telemetry[-1]['completion_valid'] and ex.telemetry[-1]['item_completions']==count
+        assert ex.telemetry[-1]['collect_calls']==count and ex.telemetry[-1]['map_open']
+        done=[v['payload'] for v in item_decisions(ex) if v['payload']['status']=='resolved']
+        assert len(done)==1 and done[0]['version']=='item_set_v1' and done[0]['current'] is None
+        assert [x['offer_index'] for x in done[0]['collected']]==list(range(count))
+        checks+=1
+
+    result, ex=run('I_SET_LATE_SLOT')
+    assert result['code']=='unsupported_state' and result['child_reconciled']==1 and result['completed_item_children']==0, result
+    assert ex.telemetry[-1]['collect_calls']==1
+    checks+=1
+
+    for mutation in ('version', 'count', 'history', 'entry', 'premature', 'effect', 'receipt'):
+        changed=False
+        def corrupt_set(ex, method, route, body):
+            nonlocal changed
+            response=ex.request(method,route,body)
+            value=json.loads(response)
+            child,p=value['child'],value['payload']
+            if not changed and child and child['contract_version']=='item_set_v1':
+                if mutation=='receipt' and method=='POST':
+                    p['action_id']='collect:7';changed=True
+                elif method=='GET' and p['status']=='ready':
+                    if mutation=='version':child['contract_version']='item_v1';changed=True
+                    if mutation=='count':p['offer_count']=3;changed=True
+                    if mutation=='entry':p['current']['offers'][0]['index']=7;changed=True
+                    if mutation=='premature':p['status']='resolved';p['current']=None;changed=True
+                    if mutation in ('history','effect') and p['collected']:
+                        if mutation=='history':p['collected']=[]
+                        else:p['collected'][0]['key']='Changed'
+                        changed=True
+            response[:]=json.dumps(value,separators=(',',':')).encode()
+            return response
+        result,ex=run('I_SET_TWO',corrupt_set)
+        assert changed and result['code']=='invalid_response' and result['completed_item_children']==0, (mutation,result)
+        assert ex.telemetry[-1]['collect_calls']<=1
+        checks+=1
+
+    lost=False
+    def lose_second(ex,method,route,body):
+        nonlocal lost
+        response=ex.request(method,route,body)
+        if method=='POST' and json.loads(body)['action_id']=='collect:1':
+            lost=True;response[:]=b'\0'*len(response);raise host.TransportFailure()
+        return response
+    result,ex=run('I_SET_TWO',lose_second)
+    assert lost and result['code']=='transport_failure' and result['child_accepted']==1 and result['child_reconciled']==1 and result['completed_item_children']==0
+    assert ex.telemetry[-1]['collect_calls']==2
+    checks+=1
+
     types, relic_types = set(), set()
     for scenario in ('I_FIRST', 'I_ANOTHER', 'I_HELD_OUT', 'I_RELIC', 'I_INDEX255',
                      'I_DELAYED_CREATION', 'I_DELAYED_COLLECTION', 'I_DELAYED_OFFER', 'I_DELAYED_CHOSEN',

@@ -106,3 +106,78 @@ internal sealed class GenericEventV7ItemAdapter : IGenericEventV7ItemNativeAdapt
     public void Dispose()
     {if(_disposed)return;if(System.Environment.CurrentManagedThreadId!=_thread)throw new InvalidOperationException("Owner thread required.");_disposed=true;}
 }
+
+
+// Exact generated entries share the Offer and screen. No reward generation,
+// native collection or parent-completion task is manufactured by this adapter.
+internal sealed class GenericEventV7ItemSetAdapter : IGenericEventV7ItemSetNativeAdapter {
+    private readonly GenericEventV7ItemState _root;
+    private readonly ItemV1PotionSlotBinding[] _baseline;
+    private readonly int _capacity, _thread=System.Environment.CurrentManagedThreadId;
+    private readonly List<GenericEventV7ItemAdapter> _adapters=new();
+    private readonly Dictionary<object,int> _settledPotionSlots=new(ReferenceEqualityComparer.Instance);
+    private readonly Dictionary<GenericEventV7ItemState,System.Threading.Tasks.Task> _settled=new();
+    private readonly System.Threading.Tasks.Task _offerTask, _chosenTask;
+    private bool _disposed;
+    internal GenericEventV7ItemSetAdapter(GenericEventV7ItemState root) {
+        _root=root;
+        if(!root.Domain()||!root.Ready||!GenericEventV7ItemAdapter.Slots(root.Binding.Player,out _capacity,out var slots))throw new InvalidOperationException("Item set unavailable.");
+        _baseline=slots.ToArray();_offerTask=root.OfferTask!;_chosenTask=root.Binding.ChosenTask!;
+        if(slots.Count(x=>x.ModelIdentity is null)<root.Entries!.Count(e=>e.Kind==ItemV1ItemKind.Potion))throw new InvalidOperationException("Item-set capacity unavailable.");
+        foreach(var entry in root.Entries!){entry.Screen=root.Screen;entry.OfferTask=root.OfferTask;}
+    }
+    public int OfferCount=>_root.OfferCount;
+    private bool Owned()=>!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&_root.Domain()&&_root.Overlay()&&
+        ReferenceEquals(_root.OfferTask,_offerTask)&&ReferenceEquals(_root.Binding.ChosenTask,_chosenTask)&&
+        _root.Entries!.All(e=>!e.FailedTask&&ReferenceEquals(e.OfferTask,_offerTask))&&_root.Binding.ChosenTask is {IsFaulted:false,IsCanceled:false}&&Inventory();
+    private bool Inventory() {
+        if(!GenericEventV7ItemAdapter.Slots(_root.Binding.Player,out int capacity,out var slots)||capacity!=_capacity||slots.Count!=_baseline.Length)return false;
+        var seen=new HashSet<object>(ReferenceEqualityComparer.Instance);
+        for(int i=0;i<slots.Count;i++) {
+            var before=_baseline[i];var now=slots[i];
+            if(ReferenceEquals(before.ModelIdentity,now.ModelIdentity)&&before.StableKey==now.StableKey)continue;
+            if(before.ModelIdentity is not null||now.ModelIdentity is null||!seen.Add(now.ModelIdentity)||
+                !_root.Entries!.Any(e=>e.Kind==ItemV1ItemKind.Potion&&e.Dispatched&&ReferenceEquals(e.Model,now.ModelIdentity)&&e.Key==now.StableKey))return false;
+        }
+        foreach(var pair in _settled) {
+            if(!pair.Key.Reward!.SuccessfullySelected||!ReferenceEquals(pair.Key.CollectionTask,pair.Value)||!pair.Value.IsCompletedSuccessfully)return false;
+        }
+        foreach(var pair in _settledPotionSlots)if(!ReferenceEquals(slots[pair.Value].ModelIdentity,pair.Key))return false;
+        foreach(var e in _root.Entries!) {
+            if(!e.Reward!.SuccessfullySelected)continue;
+            object? claimed=e.Reward is PotionReward p?p.ClaimedPotion:((RelicReward)e.Reward).ClaimedRelic;
+            if(!e.Dispatched||!ReferenceEquals(claimed,e.Model)||e.Kind==ItemV1ItemKind.Potion&&!seen.Contains(e.Model!))return false;
+        }
+        return true;
+    }
+    public IItemV1NativeAdapter CreateEntry(int index) {
+        if(!Owned()||index!=_adapters.Count||index<0||index>=OfferCount||
+            _root.Entries!.Take(index).Any(e=>!e.Reward!.SuccessfullySelected||e.CollectionTask?.IsCompletedSuccessfully!=true))throw new InvalidOperationException("Unsettled item-set entry.");
+        var adapter=new GenericEventV7ItemAdapter(_root.Entries![index]);_adapters.Add(adapter);
+        return new Entry(this,adapter);
+    }
+    public GenericEventV7ItemCompletion CaptureCompletion(int index) {
+        if(!Owned()||index!=_adapters.Count-1)throw new InvalidOperationException("Item-set ownership lost.");
+        var result=_adapters[index].CaptureCompletion();
+        if(result.OwnershipValid&&result.EffectStillValid&&result.Collection?.State==GenericEventV7ItemTaskState.Succeeded) {
+            var entry=_root.Entries![index];_settled.TryAdd(entry,entry.CollectionTask!);
+            if(entry.Kind==ItemV1ItemKind.Potion&&!_settledPotionSlots.ContainsKey(entry.Model!)) {
+                if(!GenericEventV7ItemAdapter.Slots(_root.Binding.Player,out _,out var slots))throw new InvalidOperationException("Settled inventory unavailable.");
+                int at=slots.FindIndex(s=>ReferenceEquals(s.ModelIdentity,entry.Model));
+                if(at<0)throw new InvalidOperationException("Settled potion absent.");_settledPotionSlots.Add(entry.Model!,at);
+            }
+        }
+        return result;
+    }
+    public void Dispose(){
+        if(_disposed)return;
+        if(System.Environment.CurrentManagedThreadId!=_thread)throw new InvalidOperationException("Item-set owner required.");
+        foreach(var adapter in _adapters)adapter.Dispose();_disposed=true;
+    }
+    private sealed class Entry : IItemV1NativeAdapter {
+        private readonly GenericEventV7ItemSetAdapter _owner;private readonly GenericEventV7ItemAdapter _entry;
+        internal Entry(GenericEventV7ItemSetAdapter owner,GenericEventV7ItemAdapter entry){_owner=owner;_entry=entry;}
+        public ItemV1SurfaceCapture CaptureSurface(){if(!_owner.Owned())return ItemV1SurfaceCapture.Unsupported();return _entry.CaptureSurface();}
+        public ItemV1PendingCapture CapturePending(ItemV1PendingProbe probe){if(!_owner.Owned())throw new InvalidOperationException("Item-set effect changed.");return _entry.CapturePending(probe);}
+    }
+}

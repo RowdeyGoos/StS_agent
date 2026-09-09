@@ -233,8 +233,8 @@ applies an enchantment and finishes the event.
 
 The initial scope is `min_select = max_select = 1`, `preview_confirm`, and
 2–64 eligible allocated candidates. Every offered candidate must be previously
-unenchanted; stacking, replacement, multiple selection and cancellation are
-unsupported. The request binds canonical enchantment identity, public key,
+unenchanted; stacking, replacement and cancellation remain unsupported.
+This v1 path is single-card; the fixed multi-card extension is described below. The request binds canonical enchantment identity, public key,
 positive integer amount, preferences, player/run, exact original cards and tasks.
 The native command copies and sorts its input by deck position, so screen admission
 checks those exact originals in deck order rather than requiring the same list object.
@@ -269,6 +269,83 @@ exact preview/effect verification, Proceed and the shared client's independently
 checked core map. All four actions reconciled; normal quit and owned cleanup
 passed. Other enchantments/callers and broader selection semantics remain unproved.
 
+## Implemented: fixed multi-card enchantment
+
+`card_enchant_v2` extends the same owned enchantment request to fixed counts
+2–8, with more eligible allocated candidates than the requested count (up to
+64). Waterlogged Scriptorium/Prickly Sponge is the representative two-card
+Steady caller. Native source confirms that its multi-selection preview contains
+the **selected original cards**, while single selection uses an enchanted clone.
+The adapter therefore reuses the exact original-preview path used by removal,
+with the native enchantment container and confirm control. Reaching the fixed
+count opens that preview automatically; there is no separate preview action.
+
+Every selected original must gain the requested key/amount with its own retained
+enchantment identity. Effects may arrive across successive reads. An effect that
+was already observed cannot disappear or be replaced, and two originals cannot
+share one effect object. Deck identity/order, card keys/upgrades, unselected
+cards, exact selector/request results, successful parent completion and closed
+overlay remain required. Deferred input waits for the exact preview and never
+permits an early confirm. Single-card v1 retains its existing preview and wire
+semantics; v2 carries the same public fields with fixed multi-card cardinality.
+
+Native fixtures cover counts two, three and eight, deferred final input,
+replacement targets/previews, partial effects, shared/replaced/disappearing
+enchantments and collateral changes. Actual C# wire/Python controller fixtures
+complete two and eight selections through Proceed/map. These are offline
+implementation checks; Prickly Sponge and other multi-card callers have not yet
+been live-tested. Optional counts, stacking/replacement and ancient-layout entry
+remain separate gaps.
+
+## Implemented: multiple potion/relic rewards
+
+One owned, nonterminal `RewardsSet.Offer` may now yield 2–8 populated, unlinked
+potion/relic entries. The new generic item child uses `item_set_v1`; a singleton
+keeps `item_v1`. Whispering Hollow/Gold (two potions) and War Historian Repy's
+Unlock Chest (two potions and two relics) supply representative native shapes.
+This is the ordinary item-reward screen, distinct from event card-reward menus.
+
+The child collects entries in their original generated-list order. Each entry
+retains its exact reward/model identity, native type index and control. Public
+`collect:N` indexes are zero-based **list positions** within the set: the game's
+`RewardsSetIndex` identifies a type and can repeat for two potions or two relics.
+Duplicate offered model identities, linked rewards, unsupported reward types,
+foreign controls and changed list membership/order are rejected. All potion
+entries must fit in the initially free slots before the first collection; this
+increment does not add discard/replace/skip behavior for full inventory.
+
+Each entry uses the existing `item_v1` observation/action/effect checks. Its
+collection task must succeed before advancing. Completed entries retain their
+selected flag, exact claim, collection task and potion slot across subsequent
+entries. The initial potion inventory and capacity remain fixed apart from the
+verified insertions. The last collection also waits for the original Offer and
+Chosen tasks and automatic closure of the owned reward screen. Native rewards
+stay in the list after collection; removed/freed completed buttons are allowed.
+Relic substitution, nested pickup selectors and inventory-changing pickup effects
+remain unsupported by the existing exact-effect boundary.
+
+The versioned read envelope contains, in order, `version`, `session_nonce`,
+`status`, `offer_count`, `collected` and `current`. `collected` is an immutable
+prefix of resolved `item_v1` payloads. `current` is the next single-entry
+`item_v1` observation, or null while awaiting final completion or after a stop.
+Action receipts retain their `item_v1` shape under the `item_set_v1` child
+descriptor. A resolved set has all entries in `collected` and null `current`.
+The host checks the ordered receipts, stable history and next entry before input;
+older consumers reject the new descriptor rather than interpreting it as v1.
+
+One set counts as one child episode and one completed item child. Each reconciled
+collection contributes separately to child action counts. A later failure retains
+earlier reconciled collections without claiming set or parent completion, and a
+lost mutation reply never causes a retry. The existing event-wide action/read
+budgets still apply; the set has a shared 256-read local bound.
+
+Offline native and C#/Python fixtures cover two potions, mixed sets, eight relics,
+delayed tasks, late changes to completed claims/slots, malformed public history,
+lost replies and cleanup interference. These two new capabilities are implemented
+in source; the current accepted release and its live evidence still describe the
+previous removal build. Packaging and live acceptance will follow the planned
+batch test session.
+
 ## Separate remaining questions
 
 An allocated off-screen holder can accept direct input. A card without an
@@ -280,8 +357,8 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, event card/multiple rewards, ancient and
-combat layouts, multi-enchantment, optional/sequential pickup children and custom
+changes after selectors, other pre-selector deck mutations, event card rewards and broader reward/pickup composition, ancient and
+combat layouts, optional/sequential pickup children and custom
 surfaces are distinct gaps. WoodCarvings uses a generic deck selector before a
 fixed-result transformation; it does not enter the supported transform screen.
 

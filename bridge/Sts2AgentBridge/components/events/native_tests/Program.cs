@@ -34,6 +34,8 @@ internal static partial class Program
     {
         if(args.SequenceEqual(new[]{"--baseline"})){BaselineRetirement();return;}
         if(args.SequenceEqual(new[]{"--pre-selector-additions"})){PreSelectorAdditionTests();Console.WriteLine("pre-selector addition checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--item-set"})){ItemSetTests();Console.WriteLine("item-set checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--multi-enchantment"})){MultiEnchantmentTests();Console.WriteLine("multi-enchantment checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -157,6 +159,8 @@ internal static partial class Program
         PostRemovalAdditionTests();
         RemovalHitboxTests();
         RemovalLayoutTests();
+        MultiEnchantmentTests();
+        ItemSetTests();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)
@@ -337,8 +341,8 @@ internal static partial class Program
         {Fixture.ApplyEnchantment(f.Cards[0],1);Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"stacking unavailable");}
         using(var f=new Fixture("ENCHANT_AMOUNT",enchant:true,enchantAmount:0))
         {Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"invalid request amount");}
-        using(var f=new Fixture("ENCHANT_COUNT",enchant:true,count:2,domain:3))
-        {Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"multi enchant unavailable");}
+        using(var f=new Fixture("ENCHANT_COUNT",enchant:true,count:9,domain:10))
+        {Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"oversize enchant unavailable");}
         using(var f=new Fixture("ENCHANT_PREFS",enchant:true,mismatchPrefs:true))
         {Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"enchant prefs exact");}
         using(var f=new Fixture("ENCHANT_DELAY",enchant:true,effectDelayed:true))
@@ -569,6 +573,49 @@ internal static partial class Program
         }
         public void Dispose(){Session.Dispose();CardSelectCmd.Selector=null;NRun.Instance=null;NEventRoom.Instance=null;NMapScreen.Instance=null;}
     }
+    private static void MultiEnchantmentTests()
+    {
+        foreach(int count in new[]{2,3,8})
+        {
+            using var f=new RemovalFixture("MULTI_ENCHANT_"+count,count,count,20,enchant:true,amount:2);
+            var c=f.Start();Check(c.Status=="child"&&c.Child!.ContractVersion=="card_enchant_v2","multi-enchant v2 admitted");
+            for(int i=0;i<count;i++)f.Act(c,"select:"+(19-i));
+            var preview=(CardSelectionV1Observation)f.Child(c);Check(preview.Phase=="preview"&&preview.SelectedSlots.Count==count,"multi-enchant original preview");
+            f.Act(c,"confirm");Check(f.Child(c) is CardSelectionV1ResolvedResult,"multi-enchant exact effect completed");
+            Check(f.Player.Deck.Cards.SequenceEqual(f.Cards)&&f.Cards.Take(20-count).All(x=>x.Enchantment is null)&&f.Cards.Skip(20-count).All(x=>x.Enchantment is {Amount:2} e&&e.Id.Entry=="STEADY"),"multi-enchant only selected cards changed");
+            Check(f.Cards.Skip(20-count).Select(x=>x.Enchantment).Distinct(ReferenceEqualityComparer.Instance).Count()==count,"separate effect identities");
+            var parent=f.Session.Read();f.Session.Apply(parent.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","multi-enchant map");
+        }
+        foreach(bool replace in new[]{false,true}) {
+            using var f=new RemovalFixture("MULTI_ENCHANT_DEFERRED",2,2,5,enchant:true);
+            var c=f.Start();f.Act(c,"select:0");
+            var holder=f.Grid.CurrentlyDisplayedCardHolders[1];var deliver=holder.Selected;int queued=0;holder.Selected=()=>queued++;
+            f.Act(c,"select:1");
+            Check(queued==1&&f.Child(c) is CardSelectionV1Observation {Status:"waiting"}&&f.ConfirmCalls==0,"last deferred enchant input cannot confirm");
+            if(replace){holder.CardModel=f.Cards[3];holder.CardNode.Model=f.Cards[3];Check(f.Child(c) is CardSelectionV1Observation {Status:"unsupported"}&&f.ConfirmCalls==0,"deferred enchant target replaced");}
+            else{deliver!();Check(f.Child(c) is CardSelectionV1Observation {Phase:"preview"},"deferred original preview arrives");f.Act(c,"confirm");Check(f.Child(c) is CardSelectionV1ResolvedResult&&queued==1,"deferred enchant completes once");}
+        }
+        using(var f=new RemovalFixture("MULTI_ENCHANT_PARTIAL",2,2,5,enchant:true,delayedCompletion:true)) {
+            f.AfterEffect=()=>f.Cards[1].Enchantment=null;
+            var c=f.Start();f.Act(c,"select:0");f.Act(c,"select:1");f.Act(c,"confirm");
+            Check(f.Child(c) is CardSelectionV1Observation {Status:"waiting"},"partial enchant effect waits");
+            Fixture.ApplyEnchantment(f.Cards[1],1,"STEADY");f.CompletionGate.SetResult();
+            Check(f.Child(c) is CardSelectionV1ResolvedResult,"distinct later enchant effect completes");
+        }
+        foreach(string fault in new[]{"effect_swap","shared_effect","effect_disappears","unselected","wrong_key","request","preview","eligibility","prefs"})
+        {
+            using var f=new RemovalFixture("BAD_MULTI_ENCHANT_"+fault,2,2,5,enchant:true,delayedCompletion:true);
+            var c=f.Start();
+            if(fault=="eligibility"){f.Enchantment.Eligible=_=>false;Check(f.Child(c) is CardSelectionV1Observation e&&e.Status=="unsupported","multi eligibility rechecked");continue;}
+            if(fault=="prefs"){((NDeckEnchantSelectScreen)f.Screen).Setup(f.Enchantment,2,new CardSelectorPrefs(2,2));Check(f.Child(c) is CardSelectionV1Observation e&&e.Status=="unsupported","multi request amount retained");continue;}
+            f.Act(c,"select:0");f.Act(c,"select:1");
+            if(fault=="preview"){((NPreviewCardHolder)f.PreviewCards.Children[0]).CardNode.Model=f.Cards[4];Check(f.Child(c) is CardSelectionV1Observation e&&e.Status=="unsupported"&&f.ConfirmCalls==0,"foreign multi preview blocks confirm");continue;}
+            if(fault=="request")f.RequestResult=_=>new[]{f.Cards[0],f.Cards[2]};
+            f.Act(c,"confirm");_=f.Child(c);
+            switch(fault){case "shared_effect":f.Cards[1].Enchantment=f.Cards[0].Enchantment;break;case "effect_swap":Fixture.ApplyEnchantment(f.Cards[0],1,"STEADY");break;case "effect_disappears":f.Cards[0].Enchantment=null;break;case "unselected":Fixture.ApplyEnchantment(f.Cards[4],1,"STEADY");break;case "wrong_key":f.Cards[1].Enchantment!.Id.Entry="OTHER";break;}
+            f.CompletionGate.SetResult();Check(f.Child(c) is CardSelectionV1Observation o&&o.Status=="unsupported","multi rejects "+fault);
+        }
+    }
     private static void RemovalLayoutTests()
     {
         foreach(int count in new[]{5,20})
@@ -697,7 +744,10 @@ internal static partial class Program
         internal readonly Control PreviewContainer=new(){Visible=false},PreviewCards=new();
         internal readonly NConfirmButton PreviewButton=new(){IsEnabled=false},ConfirmButton=new();
         internal readonly List<CardModel> Selected=new();
-        internal NDeckCardSelectScreen Screen=null!;
+        internal NCardGridSelectionScreen Screen=null!;
+        internal readonly EnchantmentModel Enchantment=new();
+        private readonly bool _enchant;
+        private readonly int _amount;
         internal NCardGrid Grid=null!;
         internal GenericEventV7Session Session;
         internal PinnedGenericEventV7NativeAdapter Adapter;
@@ -706,16 +756,18 @@ internal static partial class Program
         internal bool IgnoreRequestForEffect=false;
         internal Action? BeforeCreate,AfterCreate,AfterEffect;
         internal bool FaultRequest,FaultCallback,DuplicateCreate,WrongPlayer,ChangePrefs,Shortcut;
-        internal RemovalFixture(string name,int minSelect,int maxSelect,int domainCount=10,bool delayedCreation=false,bool delayedCompletion=false)
+        internal RemovalFixture(string name,int minSelect,int maxSelect,int domainCount=10,bool delayedCreation=false,bool delayedCompletion=false,bool enchant=false,int amount=1)
         {
+            _enchant=enchant;_amount=amount;Enchantment.Id.Entry="STEADY";
             Cards=Enumerable.Range(0,domainCount).Select(i=>new CardModel{Owner=Player,IsRemovable=true,IsUpgradable=true}).ToArray();
             for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);}
             Model=name=="FIRST_REMOVAL"?new FirstRemovalEvent():name=="ANOTHER_REMOVAL"?new AnotherRemovalEvent():new HeldOutRemovalEvent();Model.Owner=Player;
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;
             AddOption(new EventOption{TextKey=name+".OPTION",Callback=async()=>{
                 OptionCalls++;
-                var selected=await CardSelectCmd.FromDeckForRemoval(WrongPlayer?new Player():Player,new CardSelectorPrefs(minSelect,maxSelect),null);
-                foreach(var card in IgnoreRequestForEffect?Selected:selected)Player.Deck.Cards.Remove(card);
+                var selected=enchant ? await CardSelectCmd.FromDeckForEnchantment(Cards,Enchantment,amount,new CardSelectorPrefs(minSelect,maxSelect)) : await CardSelectCmd.FromDeckForRemoval(WrongPlayer?new Player():Player,new CardSelectorPrefs(minSelect,maxSelect),null);
+                foreach(var card in IgnoreRequestForEffect?Selected:selected)
+                    if(enchant)Fixture.ApplyEnchantment(card,amount,"STEADY");else Player.Deck.Cards.Remove(card);
                 AfterEffect?.Invoke();
                 if(delayedCompletion)await CompletionGate.Task;
                 if(FaultCallback)throw new InvalidOperationException("callback fault");
@@ -735,16 +787,24 @@ internal static partial class Program
                 if(FaultRequest)throw new InvalidOperationException("request fault");
                 return RequestResult?.Invoke(selected)??selected;
             };
-            NDeckCardSelectScreen.Factory=(cards,prefs)=>CreateScreen(cards,prefs);
+            NDeckCardSelectScreen.Factory=(cards,prefs)=>(NDeckCardSelectScreen)CreateScreen(cards,prefs);
+            NDeckEnchantSelectScreen.Factory=(cards,model,amount,prefs)=>{
+                var screen=(NDeckEnchantSelectScreen)CreateScreen(cards,prefs);screen.Setup(model,amount,prefs);return screen;};
+            if(enchant)CardSelectCmd.EnchantHandler=async(cards,model,amount,prefs)=>{
+                if(delayedCreation)await CreationGate.Task;
+                BeforeCreate?.Invoke();
+                var screen=NDeckEnchantSelectScreen.ShowScreen(cards,model,amount,prefs);AfterCreate?.Invoke();Overlays.Screens.Add(screen);
+                var selected=await screen.CardsSelected();if(FaultRequest)throw new InvalidOperationException("request fault");
+                return RequestResult?.Invoke(selected)??selected;};
             Adapter=new PinnedGenericEventV7NativeAdapter();Session=new GenericEventV7Session(Adapter,new string('b',32));
         }
         private void AddOption(EventOption option)
         {var button=new NEventOptionButton{Option=option,Event=Model};button.Bind("%Text",new MegaRichTextLabel{Text="Removal native option"});Room.Layout.OptionButtons.Add(button);}
         private void ShowProceed()
         {Room.Layout.OptionButtons.Clear();AddOption(new EventOption{TextKey="PROCEED",IsProceed=true,Callback=()=>{OptionCalls++;Map.IsOpen=true;Map.IsTravelEnabled=true;return Task.CompletedTask;}});}
-        private NDeckCardSelectScreen CreateScreen(IReadOnlyList<CardModel> cards,CardSelectorPrefs prefs)
+        private NCardGridSelectionScreen CreateScreen(IReadOnlyList<CardModel> cards,CardSelectorPrefs prefs)
         {
-            Screen=new NDeckCardSelectScreen{SelectionTask=SelectedTask.Task};Grid=new NCardGrid();
+            Screen=_enchant ? new NDeckEnchantSelectScreen{SelectionTask=SelectedTask.Task} : new NDeckCardSelectScreen{SelectionTask=SelectedTask.Task};Grid=new NCardGrid();
             int rows=(cards.Count+3)/4;float content=rows*300+(rows-1)*40;float height=content+400;
             Grid.Size=new Vector2(1000,height+100);Grid.Bind("%ScrollContainer",new Control{Size=new Vector2(1000,height),Position=new Vector2(0,50)});
             foreach(var card in cards)
@@ -756,8 +816,8 @@ internal static partial class Program
                     if(Selected.Count==prefs.MaxSelect)OpenPreview();
                 };Grid.CurrentlyDisplayedCardHolders.Add(holder);
             }
-            Screen.Bind("%CardGrid",Grid);Screen.Bind("%PreviewContainer",PreviewContainer);Screen.Bind("%Confirm",PreviewButton);
-            PreviewContainer.Bind("%Cards",PreviewCards);PreviewContainer.Bind("%PreviewConfirm",ConfirmButton);
+            Screen.Bind("%CardGrid",Grid);Screen.Bind(_enchant?"%EnchantMultiPreviewContainer":"%PreviewContainer",PreviewContainer);Screen.Bind("%Confirm",PreviewButton);
+            PreviewContainer.Bind(_enchant?"Cards":"%Cards",PreviewCards);PreviewContainer.Bind(_enchant?"Confirm":"%PreviewConfirm",ConfirmButton);
             PreviewButton.Clicked=OpenPreview;
             ConfirmButton.Clicked=()=>{ConfirmCalls++;Overlays.Screens.Clear();Screen.Visible=false;SelectedTask.SetResult(ScreenResult?.Invoke(Selected)??Selected.ToArray());};
             return Screen;

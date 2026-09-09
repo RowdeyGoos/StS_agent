@@ -14,6 +14,8 @@ internal static partial class GenericEventV7NativeIntegrationHost
     private sealed class DerivedRewardHitbox : NClickableControl { }
     private static readonly Dictionary<string, (string Name, int Min, int Max, int Domain, bool Creation, bool Completion)> RemovalCases = new()
     {
+        ["ENCHANT_MULTI_TWO"] = ("FIRST_REMOVAL", 2, 2, 20, false, false),
+        ["ENCHANT_MULTI_EIGHT"] = ("HELD_OUT_REMOVAL", 8, 8, 20, false, false),
         ["R_POST_ADD"] = ("FIRST_REMOVAL", 2, 2, 5, false, false),
         ["R_POST_ADD_DELAY"] = ("FIRST_REMOVAL", 2, 2, 5, false, true),
         ["R_FIRST"] = ("FIRST_REMOVAL", 2, 2, 5, false, false),
@@ -69,7 +71,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
         var upgrade = removing || adding || multiUpgrading ? null : new Program.Fixture(args[0], delayed: args[0] == "DELAYED", domain: args[0] is "ALLOCATED_UPGRADE" or "ENCHANT_ALLOCATED" ? 20 : 2, enchant: enchanting, effectDelayed: args[0] == "ENCHANT_DELAY");
         if (args[0] == "ENCHANT_WRONG_EFFECT") upgrade!.AfterEffect = () => upgrade.Cards[0].Enchantment!.Amount++;
         var removal = removing ? new Program.RemovalFixture(config.Name, config.Min, config.Max, config.Domain,
-            delayedCreation: config.Creation, delayedCompletion: config.Completion) : null;
+            delayedCreation: config.Creation, delayedCompletion: config.Completion,enchant:enchanting) : null;
         var reward = adding ? new Program.RewardFixture(rewardConfig.Name, rewardConfig.Min, rewardConfig.Max, rewardConfig.Domain,
             manual: rewardConfig.Manual, sortedOffers: rewardConfig.Sorted, delayedCreation: rewardConfig.Creation,
             partialAdd: rewardConfig.Partial, delayedCompletion: rewardConfig.Completion) : null;

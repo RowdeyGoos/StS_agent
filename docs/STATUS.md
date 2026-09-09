@@ -9,6 +9,21 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
+Two further generic-event features are implemented in the checkout and await
+batch live testing: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8)
+and multiple potion/relic rewards (`item_set_v1`, 2–8 entries in one owned set).
+The latter verifies each collection separately and retains earlier claims through
+final event completion. Both have focused native and C#/Python fixture coverage;
+they are **not yet packaged or live-accepted**. The accepted release below retains
+its original source and evidence. See [generic semantics](GENERIC_EVENTS.md#implemented-fixed-multi-card-enchantment)
+for the new scope and remaining reward/pickup limits.
+The final focused event check passed **15 groups in 125.218 seconds**, including
+**5,066 native assertions** and **238 integration cases** (176 using the actual
+native adapters). The affected standalone card core passed 17 checks, and the
+combined production build passed in **1.579 seconds**. One independent semantic
+review completed after regressions for retained item effects and reentrant cleanup.
+These are current-source development checks, not a release or live campaign.
+
 Generic removal followed by one appended event grant is implemented and packaged.
 The current accepted release is
 `fcfdd9e9deb162a5ca1f0b0756505048b48cdb83e18255520fcc788081a526dd`.
@@ -122,9 +137,9 @@ before any new authorized live operation.
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Generic v2 supports counts up to eight and one appended parent grant, with exact survivor checks and separate unverified grant metadata; Amalgamator/CombineStrikes fixed-two removal, upgraded Ultimate Strike observation and fresh core map passed live |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
-| Enchantment | Shared fixed-single `card_enchant_v1`; Sapphire Seed/Sown on Defend and Grave/Confront/SoulsPower on Neow's Fury passed exact preview/effect and fresh core map live |
+| Enchantment | Single-card v1 has Sapphire Seed/Sown and Grave/Confront live evidence; fixed counts 2–8 in v2 now have native and C#/Python fixtures, including original-card preview, partial effects and deferred input; multi-card live remains open |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
-| Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
+| Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; sets remain unreleased and not live-tested |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
 | Reduced headless/actor stack | Deterministic backend, public encoder, trusted datasets, masked candidate scorer and cloning smoke accepted on structural data; no target-game parity or learned live-policy claim |
 
@@ -200,7 +215,9 @@ all 68 pinned types, with branch families, concrete blockers and ancient pickup
 paths. Repeated-page progress is the first implemented increment from that map,
 with live acceptance through Abyssal Baths. Append-only additions before selectors
 passed Grave/Confront. Removal followed by one appended grant passed
-Amalgamator/CombineStrikes live; event card/multiple rewards remain a concrete gap;
+Amalgamator/CombineStrikes live. Multiple potion/relic rewards and fixed multi-card
+enchantment are the next implemented batch; event card rewards, full-inventory
+handling and nested pickup composition remain concrete gaps;
 the static inventory itself adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
@@ -210,8 +227,8 @@ observable behavior to test.
 ## Current exclusions
 
 The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in
-deck changes after selectors and other pre-selector deck mutations, event card/multiple rewards,
-ancient/combat layouts, embedded combat, multi-card enchantment, optional/sequential
+deck changes after selectors and other pre-selector deck mutations, event card rewards and broader reward/pickup composition,
+ancient/combat layouts, embedded combat, optional/sequential
 pickup selectors, generic-deck transformation and custom/terminal surfaces.
 Unallocated holder support remains limited. Variable upgrades, true native
 cancellation and enchantment stacking/replacement remain unsupported but have no

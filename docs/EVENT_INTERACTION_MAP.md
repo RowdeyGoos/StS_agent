@@ -14,7 +14,10 @@ and [pre-selector append increment](GENERIC_EVENTS.md#implemented-appended-cards
 now have representative live acceptance. [Removal followed by one appended grant](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
 now has representative live acceptance through Amalgamator/CombineStrikes,
 including exact removal and fresh map return; grant provenance remains unverified.
-Broader post-selector deck changes remain gaps.
+Broader post-selector deck changes remain gaps. Fixed multi-card enchantment and
+2–8 potion/relic reward sets now have offline implementation evidence; card-reward
+menus, full-inventory handling and nested pickup composition remain gaps. These
+new increments await the next batch live session.
 The inventory and gap matrix below retain the original research comparison at
 `4d3516f`; their source hashes and gap annotations are not repinned to later code.
 Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.
