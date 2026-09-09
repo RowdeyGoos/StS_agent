@@ -912,3 +912,41 @@ No live input has been sent. **Installation is active; cleanup is required after
 the batch and normal quit.** No profile/save/history/Cloud filesystem content was
 accessed. Release-gate time is recorded above; separate review/packaging timing
 was not tracked, and manual setup wait begins after this preparation.
+
+
+### Bird transformation result
+
+After user readiness, the exact running process, installed release/source and
+state identity, authenticated health and compatible manifest passed. The bounded
+provider chose `WOOD_CARVINGS.pages.INITIAL.options.BIRD`, then upgraded
+`STRIKE_IRONCLAD` at slot **0** in a **21-card** domain. Its exact original preview
+was held for five seconds, then confirmed once.
+
+The native transformation journal reconciled the selected removal and exact
+replacement insertion, successful native tasks and unchanged ordered survivors.
+The child resolved, Proceed completed, and an independent core map read reported
+**two actionable candidates**. Parent and child counters were each **2 attempted /
+2 accepted / 2 reconciled**: four total actions, six event reads and one map read.
+One completed card child was retained. Elapsed time was **6.119 seconds** including
+the preview pause. The final `effects: unverified` field describes the latest parent
+Proceed action; it does not erase the verified child result.
+
+Result: `/private/tmp/sts-wood-carvings-live-20260909-result.json`, SHA-256
+`9f9c6f53a0b3dd53d31164ff0e0622a550100274eac71d8cadf1f1699d62a33b`. Native diagnostic sequence:
+`parent_ready`, `child_ready`, `parent_ready`, `map_ready`. No mutation was retried.
+The policy records PECK as the expected native result. Its public summary does not
+expose the replacement key; the user separately confirmed “Yes, Peck is present”
+in the deck. This is visual confirmation, not replacement-name telemetry. This is live
+acceptance of one generic deck transformation interaction, not Torus/all branches,
+all deck sizes or an autonomous full run.
+
+The installation remains active for the next case, Waterlogged Scriptorium's
+Prickly Sponge. Its policy at `/private/tmp/sts-scriptorium-live-20260909.py`
+(SHA-256 `6e9861219a796665c13e6dfe5ac51ae4af44957455b66e4ed3148ac4288c349e`) passes twelve offline checks with the
+actual frozen host views. It requires the exact Prickly Sponge parent, fixed-two
+`card_enchant_v2`, Steady amount 1, two distinct eligible cards, exact original
+preview, one confirmation, parent completion and fresh map. Independent policy
+review passed with no blockers; manual setup is pending. The native branch costs
+99 gold. No live input
+for this second case has been sent; normal quit and owned cleanup remain required
+after the batch.

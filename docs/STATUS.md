@@ -9,14 +9,15 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Five further generic-event features are now packaged and installed for batch
-live testing: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8),
+Five further generic-event features are packaged and installed for this live
+batch: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8),
 multiple potion/relic rewards (`item_set_v1`, 2–8 entries), ordinary singleton card
 reward menus (`card_reward_v1`, 1–5 offers), multiple card reward menus in one set
 (`card_reward_set_v1`, 2–8 entries), and fixed-one generic deck transformations
-using the existing `card_transform_v2` protocol. The latest extension handles
-WoodCarvings' Bird/Torus selector shape: select an original card, confirm its native
-preview and verify the exact replacement before returning to the parent. The
+using the existing `card_transform_v2` protocol. WoodCarvings/Bird now has representative live acceptance: upgraded Strike slot 0
+of 21 eligible cards, exact original preview, verified transformation and a fresh
+core map. All four actions reconciled in 6.119 seconds. Torus and the other four
+new feature groups still await their live cases. The
 bridge distinguishes native transform-prompt generic selection from removal's
 forwarding request without event-name admission rules. Mixed card/item sets and
 broader pickup composition remain gaps. The current test release is
@@ -26,10 +27,14 @@ including reproducible packaging and installation/cleanup fixtures. The eleventh
 installation is **active**, with state
 `23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942`.
 Stopped-process/closed-port checks and all 429 base files passed before install;
-post-install verification found only the two owned mod files. Manual Profile 3
-setup for WoodCarvings/Bird is pending; no live input has been sent on this release.
-Cleanup remains required after the batch and normal quit. These new features are
-**not yet live-accepted**; earlier live results retain their original identities.
+post-install verification found only the two owned mod files. Bird's completed
+child and fresh map are verified on this release; the summary records PECK as the
+expected native result, and the user confirmed Peck is present in the deck.
+The next setup is **Waterlogged Scriptorium/Prickly Sponge**: at least 99 gold,
+three eligible unenchanted cards, and the initial choices with console closed after
+normal room entry. The prepared policy selects two cards, verifies Steady amount 1
+on each and checks map return. Cleanup remains required after the batch and normal
+quit. Earlier live results retain their original identities.
 The [eleventh-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eleventh-installation-generic-event-feature-batch)
 retains setup, provider and release details. See [generic semantics](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors).
 

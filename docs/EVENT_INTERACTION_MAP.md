@@ -21,9 +21,10 @@ BrainLeech/Rip as the representative caller. Sets of 2–8 ordinary CardReward
 entries now also have offline choose/Skip/final-dismissal coverage, with Colorful
 Philosophers as the representative caller. [Fixed-one generic deck transformations](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors)
 now have offline original-preview and exact-effect coverage for the WoodCarvings
-Bird/Torus interaction shape. Mixed card/item sets, full-inventory
+Bird/Torus interaction shape; Bird also passed live with exact preview, verified
+transformation and a fresh core map. Mixed card/item sets, full-inventory
 handling and nested pickup composition remain gaps. These
-new increments await the next batch live session.
+other new increments await their cases in the current live batch.
 The inventory and gap matrix below retain the original research comparison at
 `4d3516f`; their source hashes and gap annotations are not repinned to later code.
 Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.

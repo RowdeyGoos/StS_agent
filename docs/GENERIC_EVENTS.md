@@ -464,7 +464,10 @@ noncancelable `NDeckCardSelectScreen` child. WoodCarvings/Bird and Torus are the
 representative pinned callers: they filter transformable deck cards, show this
 original-card preview, then call `TransformTo<Peck>` or
 `TransformTo<ToricToughness>`. That command forwards through the existing observed
-batch transformation path. This source increment awaits the batch live session.
+batch transformation path. The eleventh installation passed Bird on upgraded
+Strike slot 0 of 21 eligible cards: exact preview, journal-verified transformation,
+completed parent and fresh actionable core map. Torus remains a live candidate;
+[status and the live record](STATUS.md) retain the result and scope.
 
 Admission uses the native prompt's localization table/key (`card_selection` /
 `TO_TRANSFORM`), not event names or rendered English. The prompt classifies intent;
@@ -490,9 +493,9 @@ filtered/reversed domains, original-only previews, delayed creation/selection/
 command/parent completion, prompt/domain/legality/preview mutations, wrong request
 results, failed commands, unrelated deck additions and removal forwarding. Actual
 native-to-wire-to-Python cases also cover both named replacement shapes, callback
-failure and a lost confirmation reply without retry. The next live acceptance case
-is Wood Carvings Bird or Torus with at least two eligible cards, followed by exact
-replacement verification and a fresh actionable map.
+failure and a lost confirmation reply without retry. The Bird case now has representative live acceptance. Torus with at least two
+eligible cards remains a distinct branch candidate. The live summary does not
+expose the replacement key; the user separately confirmed Peck in the deck.
 
 ## Separate remaining questions
 
@@ -508,7 +511,7 @@ progress and pre-selector append-only additions are implemented above. Deck
 changes after selectors, other pre-selector deck mutations, mixed card/item reward sets and broader pickup composition, ancient and
 combat layouts, optional/sequential pickup children and custom
 surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
-is implemented above; its live acceptance remains open.
+is implemented above; Bird passed live, while Torus remains a branch candidate.
 
 Choose the next feature from those source-backed callers. Positive variable
 transformation already works offline; Claws supplies a concrete optional zero-to-six

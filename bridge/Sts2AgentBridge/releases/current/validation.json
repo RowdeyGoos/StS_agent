@@ -4,9 +4,11 @@
   "evidence_limits": {
     "autonomous_full_run": false,
     "current_package_installed": true,
-    "current_package_live_tested": false,
+    "current_package_live_tested": true,
+    "generic_deck_transform_bird_live_tested": true,
     "native_fixture_objects_are_inert": true,
-    "profile_save_history_cloud_files_accessed": false
+    "profile_save_history_cloud_files_accessed": false,
+    "remaining_four_new_features_live_tested": false
   },
   "independent_semantic_review": {
     "blocking_findings": [],
@@ -17,20 +19,73 @@
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "cleanup": "required after live batch and normal quit",
-    "live_input_sent": false,
+    "live_input_sent": true,
     "overlay_count": 2,
     "pre_install_runtime": "passed: stopped exact game process and closed local bridge port",
     "state_sha256": "23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942",
     "status": "installed"
   },
+  "live_results": [
+    {
+      "case": "WoodCarvings/Bird",
+      "domain_count": 21,
+      "event": {
+        "child_accepted": 2,
+        "child_attempted": 2,
+        "child_episodes": 1,
+        "child_reconciled": 2,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 6,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 4
+      },
+      "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eleventh-installation-generic-event-feature-batch",
+      "expected_native_replacement": "PECK",
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "policy": "/private/tmp/sts-wood-carvings-live-20260909.py",
+      "policy_sha256": "59107dcf50e773b5a3e8dae8e5198e8bce7514fb2903bff2b83131d17c17d0cc",
+      "replacement_key_evidence": {
+        "key": "PECK",
+        "response": "Yes, Peck is present",
+        "source": "user_visual_confirmation"
+      },
+      "replacement_key_observed": true,
+      "result_path": "/private/tmp/sts-wood-carvings-live-20260909-result.json",
+      "result_sha256": "9f9c6f53a0b3dd53d31164ff0e0622a550100274eac71d8cadf1f1699d62a33b",
+      "seconds": 6.119,
+      "selected": {
+        "key": "STRIKE_IRONCLAD",
+        "slot": 0,
+        "upgrade_level": 1
+      },
+      "status": "passed"
+    }
+  ],
   "live_test": {
-    "expected_native_replacement": "PECK",
-    "first_case": "WoodCarvings/Bird",
-    "policy": "/private/tmp/sts-wood-carvings-live-20260909.py",
-    "policy_fixture_checks": 9,
-    "policy_sha256": "59107dcf50e773b5a3e8dae8e5198e8bce7514fb2903bff2b83131d17c17d0cc",
-    "replacement_key_observed": false,
-    "result_path": "/private/tmp/sts-wood-carvings-live-20260909-result.json",
+    "expected_enchantment": {
+      "amount": 1,
+      "key": "STEADY"
+    },
+    "expected_selected_count": 2,
+    "independent_review": "passed; exact option/child/Steady1/selection, one-shot dispatch, counters/map and unchanged credential/no-retry path",
+    "next_case": "WaterloggedScriptorium/PricklySponge",
+    "policy": "/private/tmp/sts-scriptorium-live-20260909.py",
+    "policy_fixture_checks": 12,
+    "policy_sha256": "6e9861219a796665c13e6dfe5ac51ae4af44957455b66e4ed3148ac4288c349e",
+    "result_path": "/private/tmp/sts-scriptorium-live-20260909-result.json",
+    "setup": "At least 99 gold and 3 eligible unenchanted cards; fresh native room then event WATERLOGGED_SCRIPTORIUM, initial choices, console closed",
     "status": "awaiting_manual_setup"
   },
   "package": {
@@ -61,7 +116,7 @@
   "source_state": "All 302 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate 258.357 seconds. Separate packaging and review timings were not tracked. Manual setup is pending; no live execution has occurred.",
+  "timing_limits": "Final release gate 258.357 seconds; Bird live flow 6.119 seconds, including a five-second preview pause. Separate packaging/review/setup-wait times were not measured.",
   "validation": {
     "check_groups": 71,
     "event_integration_cases": 311,
