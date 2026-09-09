@@ -18,8 +18,12 @@ enabled state and all preview/task/deck-effect checks remain enforced.
 All **71 combined release groups** passed in **161.809 seconds**, including
 **4,638 native assertions**, **221 event integration cases**, reproducible
 packaging and owned installation/cleanup fixtures. The package is published at
-`/private/tmp/sts-unified-bridge-release` and installed for the ninth live campaign.
-No live input has been sent on this release; manual Profile 3 setup is pending.
+`/private/tmp/sts-unified-bridge-release`. The ninth live campaign is cleaned up.
+The live retry passed candidate binding, then stopped at `prepare_geometry`
+before admitting a child. Combine Strikes was accepted; zero card actions were
+sent. The user confirmed all five Strikes were visible without scrolling. Normal
+quit, owned quarantine/purge and the 429-file base check passed; no campaign
+remains installed.
 The next case is **Amalgamator/CombineStrikes**: select two of at least three
 eligible Strikes, confirm removal, observe Ultimate Strike and verify a fresh
 core map. The `card_remove_v2` child verifies exact selected removals and unchanged

@@ -720,3 +720,37 @@ pending; no live input has been sent on this release. Installation remains activ
 and cleanup follows the live attempt and normal quit. Native and integration
 checks took 20.332 and 77.185 seconds respectively; implementation, review,
 packaging and user wait were not separately timed.
+
+After the user confirmed readiness, installed-source identity and authenticated
+health/manifest preflight passed. Combine Strikes (`choose:0`) was attempted and
+accepted. Candidate binding passed; the next diagnostic was `prepare_geometry`.
+The host stopped with `unsupported_state` after **258 reads and 17.704 seconds**.
+Parent attempted/accepted/reconciled counts were **1/1/0**. All child counts were
+**0**; no card selection, removal confirmation, completed child or map handoff
+occurred. No mutation was retried. Effects remain `unverified`.
+
+The sanitized result is
+`/private/tmp/sts-amalgamator-live-20260909-hitbox-result.json`. Credentials were
+cleared and not recorded. This demonstrates progress beyond candidate binding on
+the corrected package, but does not establish removal-parent-grant behavior.
+The failure is within the existing `GridGeometry.TryBind` layout checks, which
+include exact computed dimensions and complete-grid containment; the diagnostic
+does not distinguish their individual predicates. Normal quit was requested for
+owned cleanup, together with confirmation of whether all five cards were visible.
+
+The user confirmed all five Strikes were visible without scrolling and then
+explicitly confirmed the game was closed. The manager independently verified
+stopped process/closed listener and exact ownership. Quarantine returned state
+`e813c87ea2c73dba2b53a21d146010c4313898b00c8738a9150cc680e9a06953`;
+purge returned the campaign to **absent**, removing four generated files.
+Post-cleanup base verification passed: **429 unchanged files, zero overlays**,
+projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+All nine installations are cleaned up. No profile/save/history/Cloud filesystem
+data was accessed.
+
+The user questioned the retained geometry restriction. Removal dispatch uses the
+exact bound holder's native input method, while the geometry policy additionally
+requires computed whole-grid dimensions and complete containment. The next
+correction should align removal with existing holder-based sibling adapters,
+preserving target identity, native legality and exact preview/effect verification.
+No geometry predicate has yet been changed or live-tested in this record.

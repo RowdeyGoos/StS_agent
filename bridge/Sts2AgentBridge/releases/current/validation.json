@@ -5,8 +5,8 @@
     "automatic_addition_provenance_verified": false,
     "autonomous_full_run": false,
     "changed_surviving_cards_supported": false,
-    "current_package_installed": true,
-    "current_package_live_tested": false,
+    "current_package_installed": false,
+    "current_package_live_tested": true,
     "maximum_post_removal_grants": 1,
     "multiple_post_removal_grants_supported": false,
     "native_fixture_objects_are_inert": true,
@@ -24,10 +24,24 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending_live_attempt_and_normal_quit",
-    "live_input_sent": false,
+    "cleanup": "passed: owned quarantine/purge; 429 unchanged base files, zero overlays",
+    "live_input_sent": true,
+    "quarantine_state_sha256": "e813c87ea2c73dba2b53a21d146010c4313898b00c8738a9150cc680e9a06953",
     "state_sha256": "d492bdf9406a4f23fe1d13b4b3fa794e64c50c1f198152e44f76afafd8e9de03",
-    "status": "installed"
+    "status": "absent"
+  },
+  "live_attempt": {
+    "child_attempted": 0,
+    "code": "unsupported_state",
+    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#ninth-installation-corrected-removal-hitboxes",
+    "native_diagnostic": "prepare_geometry",
+    "parent_accepted": 1,
+    "parent_attempted": 1,
+    "parent_reconciled": 0,
+    "reads": 258,
+    "seconds": 17.704,
+    "status": "failed",
+    "user_observation": "All five Strikes visible without scrolling"
   },
   "next_live_case": "Amalgamator/CombineStrikes with at least three eligible Strikes: select two, confirm their exact removal preview, observe Ultimate Strike in separate unverified parent_additions, and independently verify a fresh core map. Native game body has not been executed by these fixtures.",
   "package": {
@@ -58,7 +72,7 @@
   "source_state": "All 294 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate: 161.809 seconds; native run: 20.332 seconds; event integration: 77.185 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. No live input has been sent on this release.",
+  "timing_limits": "Final release gate: 161.809 seconds; native run: 20.332 seconds; event integration: 77.185 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. The live retry took 17.704 seconds and stopped before child admission.",
   "validation": {
     "check_groups": 71,
     "corrections": "Before-fix fixture using derived hitboxes failed at removal admitted. After-fix test initially reached a retained legacy assertion-count guard because new cases were placed in the legacy group; moved only the new cases after existing groups and preserved every original count. Focused native execution and the single final release gate passed.",
