@@ -9,15 +9,17 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Repeated ordinary event pages are implemented and packaged in the current
-accepted release: `bd3f3b5a7c4c8592c207cb32b7a3a051eba795155933e8dfae7df4379e1cadff`.
-Completed owned callbacks plus fresh native controls admit identical option
-keys/text and revisits. All 71 combined release groups passed in 174.518 seconds,
-including 4,204 native assertions, 214 event integration cases, reproducible
+Append-only cards added before an event selector are implemented and packaged in
+the current accepted release: `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`.
+The first owned request binds appended cards while preserving every original
+card; later child checks use that fixed deck. Repeated ordinary pages remain
+supported. All 71 combined release groups passed in 179.797 seconds,
+including 4,360 native assertions, 219 event integration cases, reproducible
 packaging and owned installation/cleanup fixtures. The package is published at
 `/private/tmp/sts-unified-bridge-release`; it has not been installed or live-tested.
-The Abyssal Baths two-Linger live case remains open. See
-[generic semantics](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages)
+Grave of the Forgotten/Confront is the next pre-selector-addition live case;
+the Abyssal Baths two-Linger test also remains open. See
+[generic semantics](GENERIC_EVENTS.md#implemented-appended-cards-before-a-selector)
 and the [release record](../bridge/Sts2AgentBridge/releases/current/validation.json).
 
 The prior release `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0`
@@ -32,7 +34,7 @@ retains exact artifact/state identities, counters, timings and limits.
 The representative combined live batch passed on an earlier release, including
 the allocated **off-screen single-upgrade** test. Those live results retain their
 original artifact identity in the linked evidence; they are not live acceptance
-of the current repeated-page package.
+of the current pre-selector-addition package.
 
 Sapphire Seed admitted 23 eligible cards. The bridge directly selected the
 unupgraded Defend at slot 20, below the unscrolled selector viewport, verified

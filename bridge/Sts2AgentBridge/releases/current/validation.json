@@ -1,34 +1,51 @@
 {
-  "change": "Repeated ordinary event pages using completed owned callbacks, fresh native controls and decision-scoped host replay protection",
+  "additional_static_inspection": {
+    "bytes": 6011321,
+    "finding": "AddCurseToDeck state machine calls AddCursesToDeck at IL31; AddCursesToDeck calls Add at IL127 with pile6 and position1. Add d__9 switch at IL1898 maps position1 to index -1 at IL1917; CardPile.AddInternal takes the negative-index branch at IL77 to List.Add at IL101. This confirms the ordinary append path without executing game code.",
+    "game_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+    "scanner": "../../../../docs/evidence/event_interactions_2026_09_09/scan.cs",
+    "scratch": "/private/tmp/sts-pre-selector-additions-20260909/addition-il.json",
+    "selectors": [
+      "MegaCrit.Sts2.Core.Commands.CardPileCmd",
+      "MegaCrit.Sts2.Core.Entities.Cards.CardPile"
+    ],
+    "sha256": "7ce8d68078e4bea86668fdec9d21721bc20d5f459871c8cf46c447dba9d07cd9",
+    "target_game_executed": false
+  },
+  "change": "One-time request baseline for append-only pre-selector event additions, with unchanged original cards and retained child effect isolation",
   "date": "2026-09-09",
   "evidence_limits": {
     "arbitrary_parent_hp_gold_effects_verified": false,
+    "automatic_addition_provenance_verified": false,
     "autonomous_full_run": false,
+    "changes_to_preexisting_cards_before_selection_supported": false,
     "current_package_installed": false,
     "current_package_live_tested": false,
-    "generic_repeated_pages_live_tested": false,
-    "native_fixture_objects_are_inert": true
+    "native_fixture_objects_are_inert": true,
+    "post_selector_deck_additions_supported": false,
+    "pre_selector_additions_live_tested": false
   },
   "evidence_reused": {
     "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
     "pinned_event_research": "../../../../docs/evidence/event_interactions_2026_09_09/inventory.json",
-    "prior_release_manifest_sha256": "19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0",
-    "scope": "Retained pinned IL established Linger allocation and ordinary SetOptions control rebuilding. Prior live observations and research source hashes remain tied to their original revisions; they are not acceptance of this binary. All 71 current release groups ran."
+    "prior_release_manifest_sha256": "bd3f3b5a7c4c8592c207cb32b7a3a051eba795155933e8dfae7df4379e1cadff",
+    "scope": "Retained pinned IL established Grave/Confront and Trial curse-before-selector paths. Research hashes and historical live results remain at their original revisions. All 71 current release groups ran."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Completed callback and retired control ownership, replay protection, bounded transitions, failure/cleanup semantics and bundled-host compatibility",
+    "resolved_finding": "Non-enchantment child codecs omit enchantments. Appended originals now retain their enchantment identity/key/amount through non-enchant operations, with new-effect and same-value replacement regressions.",
+    "scope": "Owned request timing and one-time baseline, unchanged original-card prefix, appended-card identity/ownership/enchantments, child effect checks, replay/protocol/cleanup compatibility",
     "status": "passed"
   },
-  "next_live_case": "Abyssal Baths: Immerse, two legal Linger choices, Exit Baths, Proceed and fresh core map. Requires sufficient HP; no live campaign started.",
+  "next_live_case": "Grave of the Forgotten/Confront: append Decay, select one of at least two eligible unenchanted cards, verify SoulsPower preview/effect, Proceed and fresh core map. Existing shape fixture uses Sown, not the real Grave body. Trial curse-before-two-upgrade/transform are separate caller tests.",
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      797878,
-      "f75105371141b8965e57c92e399a64f72ba1216203b2c5f48c9068f11e06db52"
+      798902,
+      "16da24c1be91080383f4071aabab0ef343ec9c3d213b45ccf1d36d7482e9377d"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      797184,
-      "db5530281994b42a4f303f91c71bce84ef9a133b6424712ab3daa44fb27d3878"
+      798208,
+      "e2906241d61ca70456257de5de214ad1f2a899e15b3c47ae800b3b5323ee339a"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -36,32 +53,36 @@
     ]
   },
   "package_directory": "/private/tmp/sts-unified-bridge-release",
-  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-repeated-pages-20260909",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-pre-selector-additions-20260909",
   "production": {
-    "bytes": 797184,
-    "sha256": "db5530281994b42a4f303f91c71bce84ef9a133b6424712ab3daa44fb27d3878"
+    "bytes": 798208,
+    "sha256": "e2906241d61ca70456257de5de214ad1f2a899e15b3c47ae800b3b5323ee339a"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "bd3f3b5a7c4c8592c207cb32b7a3a051eba795155933e8dfae7df4379e1cadff",
+  "release_manifest_sha256": "65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9",
   "schema_version": 1,
-  "source_commit": "c6ac1cba671f7c9049f7f1d3b471b718c085d520",
-  "source_inventory_sha256": "d76cd046f6f7fc28ab4bb8c8365270eac0510538c2bb3208d9d044366be93fe0",
+  "source_commit": "baeaf5c3ac4420fdc6927c8bd357389cf116d6fc",
+  "source_inventory_sha256": "990451f40256d600aa16a6d79a940579f6a6cff0c54dd5e2b39fe7c6ec9fe8dc",
   "source_state": "Committed source verified against the exact accepted inventory",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Focused checks, final gate, narrow build retry and package publication were timed. Implementation, independent review and failed-attempt totals were not separately captured; no user setup wait occurred.",
+  "timing_limits": "Targeted build/check, focused event gate, final release gate and package publication were timed. Implementation and independent review were not separately timed; no user setup wait occurred.",
   "validation": {
     "check_groups": 71,
-    "corrections": "Focused checks found a missing shared fixture compile input and an inert item parent reusing its control for Proceed; corrected both. A release attempt hit sandbox denial of an ephemeral loopback socket. Another hit an SDK analyzer MissingMethodException on the unchanged integration project; its isolated unchanged build passed in 0.604 seconds (log-100.txt in /private/tmp/sts-bridge-y7u8y_0u). The final gate passed with required socket access and all analyzers/tests enabled.",
-    "event_integration_cases": 214,
+    "corrections": "Independent review found the appended-card enchantment hole and confirmed its correction. After the focused pass, multi-upgrade/transform fixture completion oracles were extended to include their explicitly expected appended originals; the final gate reran all cases with those stronger oracles. One final release gate passed with required ephemeral socket access; no tests or analyzers disabled.",
+    "event_integration_cases": 219,
     "focused_event_check_groups": 15,
-    "focused_event_scratch": "/private/tmp/sts-bridge-694w_ss3",
-    "focused_event_seconds": 119.911,
-    "native_assertions": 4204,
-    "production_native_integration_cases": 152,
-    "publication_seconds": 0.063,
-    "release_gate_seconds": 174.518,
-    "scope": "Identical/revisited keys and text, two repeated choices through Exit/Proceed/map, delayed/faulted/canceled callbacks, stale/partial/old controls, danger and read/apply revalidation, read/action bounds, repeated parent keys after item children; existing bridge regressions, reproducibility, package and owned install/cleanup fixtures",
-    "scratch": "/private/tmp/sts-bridge-uz94dg7q"
+    "focused_event_scratch": "/private/tmp/sts-bridge-xyot7ih0",
+    "focused_event_seconds": 121.496,
+    "native_assertions": 4360,
+    "production_native_integration_cases": 157,
+    "publication_seconds": 0.052,
+    "release_gate_seconds": 179.797,
+    "scope": "Pre-appended card with single enchant/upgrade, fixed-two upgrade and transform, removal and add-grid; eligible appended-card selection; delayed request, original-card mutation/reorder/removal/replacement, wrong appended owner/run, duplicate/oversize decks, late additions/ownership/identity/enchantment changes; native-to-host representative shapes through Proceed/map and post-selector rejection; existing bridge regressions, reproducibility and owned package/install/cleanup fixtures",
+    "scratch": "/private/tmp/sts-bridge-srxwjvku",
+    "targeted_initial_build_seconds": 2.657,
+    "targeted_initial_checks": 127,
+    "targeted_initial_scratch": "/private/tmp/sts-pre-selector-additions-20260909/targeted",
+    "targeted_initial_seconds": 1.196
   }
 }
