@@ -47,7 +47,7 @@ def receipt(decision=D[0], child=None, action='choose:0', outcome='accepted'):
     if child is None:
         payload = dict(version='generic_event_v7', session_nonce=N, decision_id=decision, action_id=action, outcome=outcome)
     else:
-        payload = dict(schema_version=1, kind='child_receipt', version='card_selection_v1',
+        payload = dict(schema_version=1, kind='child_receipt', version=child['contract_version'],
                        session_nonce=N, parent_ordinal=1, decision_id=decision, action_id=action, outcome=outcome)
     return env('action', child=child, payload=payload)
 

@@ -7,6 +7,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../native_tests/PostRemovalAdditionFixtures.cs" />
     <Compile Include="../native_tests/RepeatedPageFixtures.cs" />
     <Compile Include="../native_tests/PreSelectorAdditionFixtures.cs" />
     <Compile Include="GenericEventV7RepeatedPageIntegrationHost.cs" />

@@ -55,8 +55,8 @@ No later deck change can refresh the baseline, and a second request cannot rebin
 This accepts a pre-selector deck state; it does not verify the source or intended
 effect of the automatic additions. `card_effect_verified` still describes only
 the verified selector effect. No public fields, action meanings, hooks, retry
-behavior or selector limits change. Deck additions after selection remain
-unsupported: removal-plus-grant events need a separate completion boundary.
+behavior or selector limits change. The removal-specific post-selection extension
+below is separate; other selectors still reject post-selection additions.
 
 Pinned callers are Grave of the Forgotten/Confront (Decay before single-card
 SoulsPower), Trial/MerchantInnocent (Shame before two upgrades), and
@@ -74,6 +74,48 @@ reconciled. This exercises the native curse-before-selector caller; automatic
 addition provenance is still outside the child effect guarantee. Trial verdicts
 remain separate caller tests. See the
 [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions).
+
+## Implemented: removal followed by one appended grant
+
+Generic removal children now advertise **`card_remove_v2`** before input. The
+shared card session uses an explicit event-removal policy; standalone
+`card_selection_v1` removal keeps its exact baseline-minus-selection guarantee.
+Existing selection counts, preview/confirm actions, task ownership, action bounds
+and parent completion checks remain. Older generic clients reject the new child
+version rather than silently accepting broader semantics.
+
+The adapter captures the complete actual deck, including enchantment descriptors
+and player/run ownership. Selecting and previewing require the unchanged request
+baseline. After confirmation, only selected originals may disappear; all survivors
+must retain identity, order, key, upgrade and enchantment identity/value. Once all
+selected originals are absent, the selector is closed and its exact task result
+matches the committed set, at most **one** new card may follow those survivors.
+The grant cannot reuse any baseline card, candidate, or nonbaseline observed clone.
+A legitimate baseline card produced by an earlier transformation remains eligible.
+
+The first observed appended identity, key, level and enchantment are retained
+through pending reads. Disappearance, replacement, reordering or descriptor
+changes reject; no baseline refresh hides those changes. The child still waits
+for both request and chosen-option tasks to complete successfully. A grant does
+not excuse a failed callback, extra removal or unfinished selector.
+
+Resolved v2 payloads keep `selected_cards` for the verified removals and separately
+include `parent_additions: {status: "unverified", cards: [...]}`. Each observed
+card exposes only its key, upgrade level and optional enchantment key/amount.
+The list has zero or one entries. These observations do not establish the grant's
+provenance or intended identity, and do not add child actions or effect counts.
+The parent `card_effect_verified` label still refers to the selected removal.
+
+The concrete pinned caller is **Amalgamator/CombineStrikes** (two removals followed
+by an appended Ultimate Strike); CombineDefends follows the same shape with
+Ultimate Defend. Native fixtures cover immediate and delayed callbacks,
+pre-selector plus post-removal additions, exact survivors and invalid suffixes;
+producer-to-Python cases check separate grant metadata through Proceed/map.
+These are inert fixtures, not execution of Amalgamator's native body. The next
+live case is CombineStrikes with at least three eligible Strikes,
+select exactly two, confirm their preview, then observe the grant and fresh map.
+Multiple grants, interleaved/prepended additions, other post-selector operations
+and changes to surviving cards remain unsupported.
 
 ## Implemented: repeated ordinary option pages
 

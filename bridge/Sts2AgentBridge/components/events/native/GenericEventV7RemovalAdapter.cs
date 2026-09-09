@@ -603,22 +603,16 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
 
     private bool TryCopyDeck(out CardSelectionV1DeckCard[] deck)
     {
-        var copied = new List<CardSelectionV1DeckCard>();
-        var seen = new HashSet<object>(ReferenceEqualityComparer.Instance);
-        foreach (CardModel? card in _binding.Player.Deck.Cards)
+        deck=Array.Empty<CardSelectionV1DeckCard>();
+        try
         {
-            if (card is null || copied.Count >= CardSelectionV1Limits.MaximumDeckCards ||
-                !seen.Add(card) || !CardSelectionV1NativeRules.IsStableKey(card.Id.Entry) ||
-                card.CurrentUpgradeLevel < 0)
-            {
-                deck = Array.Empty<CardSelectionV1DeckCard>();
-                return false;
-            }
-            copied.Add(new CardSelectionV1DeckCard(
-                card, card.Id.Entry, card.CurrentUpgradeLevel));
+            deck=GenericEventV7Binding.CopyDeck(_binding.Player);
+            return deck.All(c=>c.ModelIdentity is CardModel card &&
+                ReferenceEquals(card.Owner,_binding.Player) && ReferenceEquals(card.RunState,_binding.RunState) &&
+                (_binding.SelectionDeck.Any(before=>ReferenceEquals(before.ModelIdentity,card)) ||
+                 !_binding.ObservedPreviewClones.Contains(card) && !_binding.ObservedUpgradeClones.Contains(card)));
         }
-        deck = copied.ToArray();
-        return true;
+        catch { return false; }
     }
 
     private static bool SelectedModelIs(

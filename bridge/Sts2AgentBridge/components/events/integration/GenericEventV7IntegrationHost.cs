@@ -132,7 +132,7 @@ internal static class GenericEventV7IntegrationHost
             var context = new CardSelectionV1ParentContext(nonce, CardSelectionV1ParentKind.Event,
                 decisionId, actionId, new object(), new object(), new object(), new object(),
                 new object(), candidateIdentity, this, CurrentAdd ? CardSelectionV1Operation.Add : CurrentRemoval ? CardSelectionV1Operation.Remove : CardSelectionV1Operation.Upgrade,
-                minimum, maximum, mode == "auto_at_max" ? CardSelectionV1CommitMode.AutoAtMax : mode == "explicit_confirm" ? CardSelectionV1CommitMode.ExplicitConfirm : CardSelectionV1CommitMode.PreviewConfirm, domain);
+                minimum, maximum, mode == "auto_at_max" ? CardSelectionV1CommitMode.AutoAtMax : mode == "explicit_confirm" ? CardSelectionV1CommitMode.ExplicitConfirm : CardSelectionV1CommitMode.PreviewConfirm, domain, allowRemovalParentAppend:CurrentRemoval);
             Card = new InertCard(context, _screen, _scenario is "early_delta" or "removal_early_delta",
                 _scenario is "removal_delayed_completion" or "reward_auto_partial" or "reward_explicit_delayed_completion", inherited,
                 _scenario.Contains("sorted", StringComparison.Ordinal), _scenario.Contains("partial_terminal", StringComparison.Ordinal) ? "partial" : _scenario.Contains("empty", StringComparison.Ordinal) ? "empty" : "");
@@ -141,7 +141,7 @@ internal static class GenericEventV7IntegrationHost
         {
             if (!ReferenceEquals(admissionIdentity, _admissionIdentity) || _scenario == "admission_changed")
                 throw new InvalidOperationException("Changed admission.");
-            return new GenericEventV7CardChildSession(new GenericEventV5FrozenChildSession(new CardSelectionV1Session(Card!.Context, Card)));
+            return new GenericEventV7CardChildSession(CurrentRemoval ? new GenericEventV7RemovalChildSession(Card!.Context,Card) : new GenericEventV5FrozenChildSession(new CardSelectionV1Session(Card!.Context, Card)));
         }
         public void CompleteParent() { if (_scenario == "cleanup_failure") throw new InvalidOperationException("Owned parent cleanup failed."); if (ChildStage) { _pending = false; _stage++; } }
         public void Dispose() { }

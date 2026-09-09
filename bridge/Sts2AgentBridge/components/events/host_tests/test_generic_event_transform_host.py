@@ -12,6 +12,7 @@ def transform(count=2):
             value['child']['operation']='transform'
             value['child']['contract_version']='card_transform_v2'
             value['payload']['version']='card_transform_v2'
+            value['payload'].pop('parent_additions', None)
             if 'operation' in value['payload'] and value['payload']['operation']:
                 value['payload']['operation']='transform'
     return rows

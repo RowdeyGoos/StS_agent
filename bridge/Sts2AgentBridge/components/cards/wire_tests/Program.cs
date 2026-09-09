@@ -327,7 +327,7 @@ internal static class Program
             CardSelectionV1Observation preview = (CardSelectionV1Observation)session.ReadChild();
             var onlySelected = preview.Candidates.Where(item => item.Selected).ToArray();
             CardSelectionV1ResolvedResult missingConfirm = Construct<CardSelectionV1ResolvedResult>(
-                Hex('1', 32), "upgrade", onlySelected, preview.PriorResults, null!);
+                Hex('1', 32), "upgrade", onlySelected, preview.PriorResults, null!, null!);
             InvokeValidationReject(service, "ValidateChildRead", missingConfirm,
                 "smith resolved without confirm");
         }

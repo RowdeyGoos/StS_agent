@@ -180,7 +180,8 @@ public sealed class GenericEventV7WireService : IDisposable
     }
 
     private byte[] EncodeChild(object value) => _child!.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
-        ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value) : _child.Operation == "transform"
+        ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value) : _child.Operation == "remove"
+        ? Sts2AgentBridge.Successors.GenericEventV5.CardRemoveV2WireCodec.Encode(value) : _child.Operation == "transform"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value) : CardSelectionV1WireCodec.Encode(value);
     private static byte[] EncodeItem(object value) {
         ItemWireV1Envelope envelope=value switch {
@@ -290,6 +291,8 @@ public sealed class GenericEventV7WireService : IDisposable
         _previous = p;
     }
 
+    private static bool StableKey(string key)=>key is {Length:>0 and <=128} &&
+        key.All(c=>c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_');
     private void ValidateEnchantment(CardSelectionV1EnchantmentEffect? value)
     {
         if (_child!.Operation != "enchant") { Require(value is null); return; }
@@ -359,6 +362,11 @@ public sealed class GenericEventV7WireService : IDisposable
         else if (value is CardSelectionV1ResolvedResult done)
         {
             ValidateEnchantment(done.Enchantment);
+            Require(done.ParentAddedCards.Count<=(_child!.Operation=="remove"?1:0));
+            foreach(var added in done.ParentAddedCards) {
+                Require(StableKey(added.Key) && added.UpgradeLevel>=0);
+                if(added.Enchantment is {} e) Require(StableKey(e.Key) && e.Amount>0);
+            }
             Require(done.SessionNonce == _nonce && done.Operation == _child!.Operation && _domain is not null &&
                 done.SelectedCards.Count >= _child.MinSelect && done.SelectedCards.Count <= _child.MaxSelect &&
                 done.PriorResults.Count == _childAccepted.Count && _childAccepted.Count > 0);

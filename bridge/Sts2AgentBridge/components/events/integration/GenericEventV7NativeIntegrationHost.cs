@@ -14,6 +14,8 @@ internal static partial class GenericEventV7NativeIntegrationHost
     private sealed class DerivedRewardHitbox : NClickableControl { }
     private static readonly Dictionary<string, (string Name, int Min, int Max, int Domain, bool Creation, bool Completion)> RemovalCases = new()
     {
+        ["R_POST_ADD"] = ("FIRST_REMOVAL", 2, 2, 5, false, false),
+        ["R_POST_ADD_DELAY"] = ("FIRST_REMOVAL", 2, 2, 5, false, true),
         ["R_FIRST"] = ("FIRST_REMOVAL", 2, 2, 5, false, false),
         ["R_ANOTHER"] = ("ANOTHER_REMOVAL", 1, 3, 5, false, false),
         ["R_HELD_OUT"] = ("HELD_OUT_REMOVAL", 1, 3, 5, false, false),
@@ -96,6 +98,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             if(args[0]=="ENCHANT_POST_ADD") upgrade!.AfterEffect=()=>player.Deck.Cards.Add(new CardModel {Owner=player});
             if(args[0]=="ENCHANT_PRE_ADD_OWNER") upgrade!.AfterEffect=()=>added.Owner=new MegaCrit.Sts2.Core.Entities.Players.Player();
         }
+        if (args[0] is "R_POST_ADD" or "R_POST_ADD_DELAY") Program.AppendAfterRemoval(removal!);
         Program.RetireBeforeChosen((upgrade?.Room ?? removal?.Room ?? reward?.Room ?? multi!.Room).Layout);
         var baseline = player.Deck.Cards.ToArray();
         var baselineKeys = baseline.Select(c => c.Id.Entry).ToArray();

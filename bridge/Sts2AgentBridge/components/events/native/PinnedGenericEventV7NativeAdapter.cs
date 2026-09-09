@@ -197,6 +197,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             :throw new InvalidOperationException("Unsupported selector family.");
         try{return new GenericEventV7CardChildSession(b.Operation==CardSelectionV1Operation.Enchant
             ?new GenericEventV7EnchantChildSession(context,adapter)
+            :b.Operation==CardSelectionV1Operation.Remove?new GenericEventV7RemovalChildSession(context,adapter)
             :new Sts2AgentBridge.Successors.GenericEventV5.GenericEventV5FrozenChildSession(new CardSelectionV1Session(context,adapter)));}catch{adapter.Dispose();throw;}
     }
     public void CompleteParent()

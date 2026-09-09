@@ -145,3 +145,50 @@ internal static class CardEnchantV1WireCodec
         finally { Array.Clear(source); }
     }
 }
+
+internal static class CardRemoveV2WireCodec
+{
+    public static byte[] Encode(object value)
+    {
+        if(value is CardSelectionV1Observation o && o.Status=="ready" && o.Operation!="remove" ||
+            value is CardSelectionV1ResolvedResult r && r.Operation!="remove")
+            throw new InvalidOperationException("Wrong removal wire value.");
+        byte[] source=CardSelectionV1WireCodec.Encode(value);
+        try
+        {
+            using var document=JsonDocument.Parse(source);
+            var buffer=new ArrayBufferWriter<byte>();
+            using(var writer=new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                foreach(var property in document.RootElement.EnumerateObject())
+                    if(property.Name=="version") writer.WriteString("version","card_remove_v2");
+                    else property.WriteTo(writer);
+                if(value is CardSelectionV1ResolvedResult done)
+                {
+                    writer.WriteStartObject("parent_additions");
+                    writer.WriteString("status","unverified");
+                    writer.WriteStartArray("cards");
+                    foreach(var card in done.ParentAddedCards)
+                    {
+                        writer.WriteStartObject();
+                        writer.WriteString("key",card.Key);
+                        writer.WriteNumber("upgrade_level",card.UpgradeLevel);
+                        writer.WritePropertyName("enchantment");
+                        if(card.Enchantment is {} e) {
+                            writer.WriteStartObject();writer.WriteString("key",e.Key);
+                            writer.WriteNumber("amount",e.Amount);writer.WriteEndObject();
+                        } else writer.WriteNullValue();
+                        writer.WriteEndObject();
+                    }
+                    writer.WriteEndArray();writer.WriteEndObject();
+                }
+                writer.WriteEndObject();
+            }
+            if(buffer.WrittenCount>CardSelectionV1WireProtocol.MaximumResponseBytes)
+                throw new InvalidOperationException("Removal response exceeded its cap.");
+            return buffer.WrittenSpan.ToArray();
+        }
+        finally { Array.Clear(source); }
+    }
+}

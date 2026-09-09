@@ -22,6 +22,7 @@ public sealed class CardSelectionV1Session : IDisposable
     private bool _awaitingCommit;
     private object[] _effectProgress = Array.Empty<object>();
     private CardSelectionV1Enchantment? _enchantEffect;
+    private CardSelectionV1DeckCard[] _parentAddedCards = Array.Empty<CardSelectionV1DeckCard>();
     private bool _taskSucceededSeen;
     private bool _selectorClosedSeen;
     private bool _effectWitnessSeen;
@@ -476,7 +477,7 @@ public sealed class CardSelectionV1Session : IDisposable
         var selectedCards = PublicSelected(_selected);
         _resolved = new CardSelectionV1ResolvedResult(
             _context.SessionNonce, OperationName(_context.Operation),
-            selectedCards, _history, _context.Enchantment);
+            selectedCards, _history, _context.Enchantment, _parentAddedCards);
         _pending = null;
         _awaitingCommit = false;
         _published = null;
@@ -747,7 +748,9 @@ public sealed class CardSelectionV1Session : IDisposable
         bool valid = _context.Operation switch
         {
             CardSelectionV1Operation.Add => ValidateAdd(capture.Deck, selected, out complete),
-            CardSelectionV1Operation.Remove => ValidateRemove(capture.Deck, selected, out complete),
+            CardSelectionV1Operation.Remove => _context.AllowRemovalParentAppend
+                ? ValidateRemovalWithParentAppend(capture, selected, out complete)
+                : ValidateRemove(capture.Deck, selected, out complete),
             CardSelectionV1Operation.Upgrade => ValidateUpgrade(capture.Deck, selected, out complete),
             CardSelectionV1Operation.Transform => ValidateTransform(capture, selected, out complete),
             CardSelectionV1Operation.Enchant => ValidateEnchant(capture.Deck, selected, out complete),
@@ -841,6 +844,38 @@ public sealed class CardSelectionV1Session : IDisposable
         }
         if (currentIndex != current.Count) return false;
         complete = removed == selected.Length;
+        return true;
+    }
+
+    // The complete actual deck is retained. Only the new removal policy admits
+    // one parent-owned appended card, after the exact selected removal settles.
+    private bool ValidateRemovalWithParentAppend(CardSelectionV1SurfaceCapture capture,
+        object[] selected, out bool complete)
+    {
+        complete=false;
+        if (_bound is null) return false;
+        int index=0, removed=0;
+        foreach(var before in _bound.BaselineDeck)
+        {
+            if(index<capture.Deck.Count && SameDeckCard(capture.Deck[index],before)) index++;
+            else if(ContainsReference(selected,before.ModelIdentity)) removed++;
+            else return false;
+        }
+        int added=capture.Deck.Count-index;
+        if(added>1 || added<_parentAddedCards.Length) return false;
+        if(added>0)
+        {
+            if(removed!=selected.Length || selected.Length==0 ||
+                !(_awaitingCommit || _pending?.Kind==ActionKind.Confirm) ||
+                !capture.SelectorClosed || capture.SelectorTop || capture.PreviewOpen ||
+                capture.TaskState!=CardSelectionV1TaskState.Succeeded || !ExactTaskResult(capture,selected)) return false;
+            var now=capture.Deck[index];
+            if(Array.Exists(_bound.BaselineDeck,c=>ReferenceEquals(c.ModelIdentity,now.ModelIdentity)) ||
+                ContainsReference(_bound.CandidateModels,now.ModelIdentity)) return false;
+            if(_parentAddedCards.Length!=0 && !SameDeckCard(_parentAddedCards[0],now)) return false;
+            _parentAddedCards=new[]{now};
+        }
+        complete=removed==selected.Length;
         return true;
     }
 
@@ -1258,6 +1293,8 @@ public sealed class CardSelectionV1Session : IDisposable
             context.MinSelect is >= 1 and <= CardSelectionV1Limits.MaximumSelectedCards &&
             context.MaxSelect is >= 1 and <= CardSelectionV1Limits.MaximumSelectedCards &&
             context.MinSelect <= context.MaxSelect &&
+            (!context.AllowRemovalParentAppend || context.ParentKind==CardSelectionV1ParentKind.Event &&
+                context.Operation==CardSelectionV1Operation.Remove) &&
             (context.Operation == CardSelectionV1Operation.Enchant
                 ? context.ParentKind == CardSelectionV1ParentKind.Event &&
                   context.MinSelect == 1 && context.MaxSelect == 1 &&
@@ -1446,6 +1483,7 @@ internal static class CardSelectionV1Identity
         IReadOnlyList<CardSelectionV1ActionResult> history)
     {
         var builder = new StringBuilder();
+        if(context.AllowRemovalParentAppend) Append(builder, "card_remove_v2");
         Append(builder, context.SessionNonce);
         Append(builder, ((int)context.ParentKind).ToString(CultureInfo.InvariantCulture));
         Append(builder, context.ParentDecisionId);

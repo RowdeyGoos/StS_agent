@@ -17,8 +17,9 @@ process. Completed packets and old campaign instructions are historical referenc
    exposes previously missing composition and surface gaps. Repeated ordinary pages
    now have live acceptance through Abyssal Baths' two-Linger path and fresh map.
    Append-only additions before selectors have live acceptance through Grave of
-   the Forgotten/Confront and verified SoulsPower selection. Next address deck
-   changes after selection, such as removal-plus-grant; event card/multiple rewards; narrow
+   the Forgotten/Confront and verified SoulsPower selection. Removal followed by
+   one appended grant is implemented with a versioned child contract; retain
+   Amalgamator/CombineStrikes for live acceptance. Next address event card/multiple rewards; narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.
@@ -40,7 +41,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
-include deck changes after selectors and other pre-selector mutations, event card/multiple
+include broader deck changes after selectors and other pre-selector mutations, event card/multiple
 rewards, ancient/combat layouts, embedded combat, multi-card enchantment, optional
 and sequential pickup selectors, generic-deck transformations, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.

@@ -89,8 +89,10 @@ public sealed class CardSelectionV1ParentContext
         int maxSelect,
         CardSelectionV1CommitMode commitMode,
         int expectedDomainCount = 0,
-        CardSelectionV1Enchantment? enchantment = null)
+        CardSelectionV1Enchantment? enchantment = null,
+        bool allowRemovalParentAppend = false)
     {
+        AllowRemovalParentAppend = allowRemovalParentAppend;
         SessionNonce = sessionNonce;
         ParentKind = parentKind;
         ParentDecisionId = parentDecisionId;
@@ -110,6 +112,7 @@ public sealed class CardSelectionV1ParentContext
         Enchantment = enchantment;
     }
 
+    public bool AllowRemovalParentAppend { get; }
     public string SessionNonce { get; }
     public CardSelectionV1ParentKind ParentKind { get; }
     public string ParentDecisionId { get; }
@@ -478,6 +481,18 @@ public sealed class CardSelectionV1Observation : ICardSelectionV1ReadValue
     }
 }
 
+public sealed class CardSelectionV1ParentAddedCard
+{
+    internal CardSelectionV1ParentAddedCard(CardSelectionV1DeckCard card)
+    {
+        Key=card.StableKey; UpgradeLevel=card.UpgradeLevel;
+        Enchantment=card.Enchantment is {} e ? new CardSelectionV1EnchantmentEffect(e.Key,e.Amount) : null;
+    }
+    public string Key { get; }
+    public int UpgradeLevel { get; }
+    public CardSelectionV1EnchantmentEffect? Enchantment { get; }
+}
+
 public sealed class CardSelectionV1ResolvedResult : ICardSelectionV1ReadValue
 {
     private readonly ReadOnlyCollection<CardSelectionV1Candidate> _selectedCards;
@@ -488,8 +503,12 @@ public sealed class CardSelectionV1ResolvedResult : ICardSelectionV1ReadValue
         string operation,
         IReadOnlyList<CardSelectionV1Candidate> selectedCards,
         IReadOnlyList<CardSelectionV1ActionResult> priorResults,
-        CardSelectionV1Enchantment? enchantment = null)
+        CardSelectionV1Enchantment? enchantment = null,
+        IReadOnlyList<CardSelectionV1DeckCard>? parentAddedCards = null)
     {
+        var additions=new List<CardSelectionV1ParentAddedCard>();
+        foreach(var card in parentAddedCards ?? Array.Empty<CardSelectionV1DeckCard>()) additions.Add(new(card));
+        ParentAddedCards=additions.AsReadOnly();
         Version = CardSelectionV1Limits.Version;
         SessionNonce = sessionNonce;
         ParentOrdinal = CardSelectionV1Limits.ParentOrdinal;
@@ -507,6 +526,7 @@ public sealed class CardSelectionV1ResolvedResult : ICardSelectionV1ReadValue
     public string Status { get; }
     public string Phase { get; }
     public string Operation { get; }
+    public IReadOnlyList<CardSelectionV1ParentAddedCard> ParentAddedCards { get; }
     public IReadOnlyList<CardSelectionV1Candidate> SelectedCards => _selectedCards;
     public IReadOnlyList<CardSelectionV1ActionResult> PriorResults => _priorResults;
     public CardSelectionV1EnchantmentEffect? Enchantment { get; }

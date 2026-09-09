@@ -161,7 +161,7 @@ def main() -> int:
             else:
                 assert child['kind'] == 'card_selection', child
                 assert tuple(child) == common + ('operation', 'min_select', 'max_select', 'commit_mode', 'domain_count'), child
-                assert child['contract_version'] == ('card_enchant_v1' if child['operation'] == 'enchant' else 'card_transform_v2' if child['operation'] == 'transform' else 'card_selection_v1'), child
+                assert child['contract_version'] == ('card_remove_v2' if child['operation'] == 'remove' else 'card_enchant_v1' if child['operation'] == 'enchant' else 'card_transform_v2' if child['operation'] == 'transform' else 'card_selection_v1'), child
                 complete = payload.get('kind') == 'child_resolved'
                 seen = cards
             if complete:
@@ -710,6 +710,8 @@ def main() -> int:
             native_checks += 1
         removal_types = set()
         native_removal_cases = (
+            ('R_POST_ADD', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
+            ('R_POST_ADD_DELAY', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
             ('R_FIRST', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
             ('R_ANOTHER', 1, 3, 5, ('select:3', 'preview', 'confirm')),
             ('R_HELD_OUT', 1, 3, 5, ('select:3', 'select:1', 'select:0', 'confirm')),
@@ -734,9 +736,13 @@ def main() -> int:
             removal_types.add(end['event_type'])
             selected = {int(a[7:]) for a in actions if a.startswith('select:')}
             expected_indices = [i for i in range(len(end['baseline_keys'])) if i not in selected]
-            assert end['remaining_originals'] == expected_indices, (scenario, end)
-            assert end['remaining_keys'] == [end['baseline_keys'][i] for i in expected_indices]
-            assert end['remaining_levels'] == [end['baseline_levels'][i] for i in expected_indices]
+            appended = scenario.startswith('R_POST_ADD')
+            assert end['remaining_originals'] == expected_indices + ([-1] if appended else []), (scenario, end)
+            assert end['remaining_keys'] == [end['baseline_keys'][i] for i in expected_indices] + (['ULTIMATE_STRIKE'] if appended else [])
+            assert end['remaining_levels'] == [end['baseline_levels'][i] for i in expected_indices] + ([0] if appended else [])
+            payload = next(v['payload'] for v in native.envelopes if v['payload'] and v['payload'].get('kind') == 'child_resolved')
+            assert payload['version'] == 'card_remove_v2'
+            assert payload['parent_additions'] == dict(status='unverified', cards=[dict(key='ULTIMATE_STRIKE', upgrade_level=0, enchantment=None)] if appended else [])
             assert end['upgraded_cards'] == 0 and end['map_open'] and end['overlay_count'] == 0
             assert (end['chosen_calls'], end['select_calls'], end['preview_calls'], end['confirm_calls']) == (
                 2, len(selected), 1, 1), (scenario, end)
@@ -754,7 +760,7 @@ def main() -> int:
             assert decisions[resolved[0] + 1]['parent']['prior_results'][0]['result'] == 'child_completed'
             if scenario == 'R_DELAYED_CREATION':
                 assert any(v['parent']['status'] == 'waiting' and v['child'] is None for v in decisions)
-            if scenario == 'R_DELAYED_COMPLETION':
+            if scenario in ('R_DELAYED_COMPLETION', 'R_POST_ADD_DELAY'):
                 assert any(v['payload']['status'] == 'waiting' for v in children)
             checks += 1
             native_checks += 1

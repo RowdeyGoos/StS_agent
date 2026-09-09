@@ -10,6 +10,9 @@ def multi_upgrade(count):
     for _, value in rows:
         if value['child'] is not None:
             value['child']['operation'] = 'upgrade'
+            value['child']['contract_version'] = 'card_selection_v1'
+            value['payload']['version'] = 'card_selection_v1'
+            value['payload'].pop('parent_additions', None)
         if value['payload'] is not None and 'operation' in value['payload']:
             value['payload']['operation'] = 'upgrade'
     return rows

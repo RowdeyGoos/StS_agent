@@ -119,7 +119,7 @@ def _decode(body: Any) -> dict[str, Any]:
                 _require(c['contract_version'] == 'item_v1' and type(c['offer_count']) is int and c['offer_count'] == 1)
             else:
                 _require(c['kind'] == 'card_selection' and c['contract_version'] ==
-                         ('card_enchant_v1' if c['operation'] == 'enchant' else 'card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
+                         ('card_remove_v2' if c['operation'] == 'remove' else 'card_enchant_v1' if c['operation'] == 'enchant' else 'card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
                 _require((c['operation'] in ('upgrade', 'remove', 'transform', 'enchant') and c['commit_mode'] == 'preview_confirm') or
                          (c['operation'] == 'add' and c['commit_mode'] in ('auto_at_max', 'explicit_confirm')))
                 _require(type(c['min_select']) is int and type(c['max_select']) is int and
@@ -371,13 +371,33 @@ class _Controller:
     def card_parse(self, p: Any) -> None:
         _require(type(p) is dict and type(p.get('schema_version')) is int and p['schema_version'] == 1)
         try:
-            if self.child is not None and self.child['operation'] == 'enchant':
+            if self.child is not None and self.child['operation'] == 'remove':
+                self.removal_parse(p)
+            elif self.child is not None and self.child['operation'] == 'enchant':
                 self.enchant_parse(p)
             else:
                 (self.transform if self.child is not None and self.child['operation'] == 'transform' else self.card)._validate_envelope(p)
         except Exception:
             raise _Stop('invalid_response') from None
         _require(p.get('session_nonce') == self.nonce)
+
+    def removal_parse(self, p: dict[str, Any]) -> None:
+        _require(p.get('version') == 'card_remove_v2')
+        normalized = dict(p)
+        normalized['version'] = 'card_selection_v1'
+        if p.get('kind') == 'child_resolved':
+            _require(tuple(p)[-1] == 'parent_additions' and p.get('operation') == 'remove')
+            additions = normalized.pop('parent_additions')
+            _keys(additions, ('status', 'cards'))
+            _require(additions['status'] == 'unverified' and type(additions['cards']) is list and len(additions['cards']) <= 1)
+            for card in additions['cards']:
+                _keys(card, ('key', 'upgrade_level', 'enchantment'))
+                _require(self.transform._stable_key(card['key']) and self.transform._integer(card['upgrade_level']))
+                if card['enchantment'] is not None:
+                    e = card['enchantment']
+                    _keys(e, ('key', 'amount'))
+                    _require(self.transform._stable_key(e['key']) and self.transform._integer(e['amount']) and e['amount'] > 0)
+        self.card._validate_envelope(normalized)
 
     def enchant_parse(self, p: dict[str, Any]) -> None:
         # The version owns the one-card policy and exact new enchantment metadata.

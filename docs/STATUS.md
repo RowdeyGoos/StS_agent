@@ -9,26 +9,30 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Append-only cards added before an event selector are implemented and packaged in
-the current accepted release: `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`.
-The first owned request binds appended cards while preserving every original
-card; later child checks use that fixed deck. Repeated ordinary pages remain
-supported. All 71 combined release groups passed in 179.797 seconds,
-including 4,360 native assertions, 219 event integration cases, reproducible
-packaging and owned installation/cleanup fixtures. The package is published at
-`/private/tmp/sts-unified-bridge-release`. The seventh live installation passed
-the owned install checks. Abyssal Baths passed Immerse → Linger twice → Exit Baths
-→ Proceed and fresh core map; all five parent actions reconciled in 1.349 seconds.
-Grave of the Forgotten/Confront then passed after a fresh launch and room setup:
-SoulsPower amount 1 on unupgraded Neow's Fury, slot 0 of 3 eligible cards, verified
-preview/effect and fresh map. All four actions reconciled in 9.526 seconds,
-including an eight-second preview window. An earlier setup attempt stopped before
-any action; its exact cause remains unresolved. Normal quit and owned
-quarantine/purge passed: all seven installations are cleaned up, with 429
-unchanged base files and zero overlays. No campaign remains installed. See the
-[seventh-installation live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions),
-[generic semantics](GENERIC_EVENTS.md#implemented-appended-cards-before-a-selector)
+Generic removal followed by one appended event grant is implemented and packaged
+in accepted release `f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9`.
+The new `card_remove_v2` child verifies selected removals and unchanged ordered
+survivors, separately reporting the appended card as an unverified parent effect.
+It retains the complete actual deck and waits for successful native completion;
+strict standalone removal v1 remains unchanged. All **71 combined release groups**
+passed in **160.077 seconds**, including **4,614 native assertions**, **221 event
+integration cases**, reproducible packaging and owned installation/cleanup fixtures.
+The accepted package is published at `/private/tmp/sts-unified-bridge-release`.
+It has not been installed or live-tested. The next live case is
+**Amalgamator/CombineStrikes**: select two of at least three eligible Strikes,
+confirm removal, observe the Ultimate Strike grant and verify a fresh core map.
+See [generic semantics](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
 and the [release record](../bridge/Sts2AgentBridge/releases/current/validation.json).
+
+The previous release `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`
+passed Abyssal Baths (Immerse, two Lingers, Exit/Proceed/map) and Grave/Confront
+(SoulsPower on Neow's Fury, exact preview/effect and map). One earlier Grave setup
+stopped before any action; its exact cause remains unresolved. All seven live
+installations were cleaned up: 429 unchanged base files and zero overlays. No
+campaign remains installed. The
+[seventh-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions)
+retains those exact release identities and evidence; they are not live acceptance
+of the new removal package.
 
 The prior release `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0`
 passed the single-enchantment live test: Sapphire Seed Plant and Nourish,
@@ -41,7 +45,7 @@ retains exact artifact/state identities, counters, timings and limits.
 The representative combined live batch passed on an earlier release, including
 the allocated **off-screen single-upgrade** test. Those live results retain their
 original artifact identity in the linked evidence; they are not live acceptance
-of the current pre-selector-addition package.
+of the current removal-plus-grant package.
 
 Sapphire Seed admitted 23 eligible cards. The bridge directly selected the
 unupgraded Defend at slot 20, below the unscrolled selector viewport, verified
@@ -87,7 +91,7 @@ before any new authorized live operation.
 | Repeated generic event pages | Fresh controls and completed callbacks permit repeated keys/text; Abyssal Baths passed two Lingers through Exit/Proceed and fresh core map live |
 | Appended cards before selectors | First owned request binds appended cards while preserving the original deck; Grave/Confront SoulsPower preview/effect and map passed live; Trial caller tests remain open |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
-| Removal | Positive variable counts up to eight in native/controller fixtures |
+| Removal | Generic v2 supports counts up to eight and one appended parent grant, with exact survivor checks and separate unverified grant metadata; Amalgamator live acceptance remains open |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
 | Enchantment | Shared fixed-single `card_enchant_v1`; Sapphire Seed/Sown on Defend and Grave/Confront/SoulsPower on Neow's Fury passed exact preview/effect and fresh core map live |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |

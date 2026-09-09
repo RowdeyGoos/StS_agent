@@ -154,6 +154,7 @@ internal static partial class Program
         VariableTransformTests();
         RepeatedPageTests();
         PreSelectorAdditionTests();
+        PostRemovalAdditionTests();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)
@@ -645,7 +646,7 @@ internal static partial class Program
         internal bool FaultRequest,FaultCallback,DuplicateCreate,WrongPlayer,ChangePrefs,Shortcut;
         internal RemovalFixture(string name,int minSelect,int maxSelect,int domainCount=10,bool delayedCreation=false,bool delayedCompletion=false)
         {
-            Cards=Enumerable.Range(0,domainCount).Select(i=>new CardModel{IsRemovable=true,IsUpgradable=true}).ToArray();
+            Cards=Enumerable.Range(0,domainCount).Select(i=>new CardModel{Owner=Player,IsRemovable=true,IsUpgradable=true}).ToArray();
             for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);}
             Model=name=="FIRST_REMOVAL"?new FirstRemovalEvent():name=="ANOTHER_REMOVAL"?new AnotherRemovalEvent():new HeldOutRemovalEvent();Model.Owner=Player;
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;

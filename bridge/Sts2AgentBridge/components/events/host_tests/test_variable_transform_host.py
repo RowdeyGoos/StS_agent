@@ -12,6 +12,7 @@ def variable(minimum=1, maximum=3, slots=(0,), explicit=None):
             value['child']['operation'] = 'transform'
             value['child']['contract_version'] = 'card_transform_v2'
             value['payload']['version'] = 'card_transform_v2'
+            value['payload'].pop('parent_additions', None)
             if value['payload'].get('operation'):
                 value['payload']['operation'] = 'transform'
     return rows

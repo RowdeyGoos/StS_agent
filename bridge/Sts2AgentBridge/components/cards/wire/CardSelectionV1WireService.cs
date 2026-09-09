@@ -291,7 +291,7 @@ public sealed class CardSelectionV1WireService : IDisposable
         {
             ChildCommon(resolved.Version, resolved.SessionNonce, resolved.ParentOrdinal);
             ValidateHistory(resolved.PriorResults);
-            if (resolved.Status != "resolved" || resolved.Phase != "complete" ||
+            if (resolved.ParentAddedCards.Count!=0 || resolved.Status != "resolved" || resolved.Phase != "complete" ||
                 resolved.Operation != _childOperation || _childOperation is null ||
                 resolved.PriorResults.Count != _childAccepted.Count ||
                 resolved.SelectedCards.Count < _childMin || resolved.SelectedCards.Count > _childMax ||

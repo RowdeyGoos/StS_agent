@@ -8,7 +8,7 @@ from test_generic_event_host import D, N, Script, card, child, env, host, parent
 
 def removal(minimum=1, maximum=2, slots=(1, 0), explicit=False, domain=None):
     domain = maximum + 1 if domain is None else domain
-    descriptor = dict(child(), operation='remove', min_select=minimum,
+    descriptor = dict(child(), contract_version='card_remove_v2', operation='remove', min_select=minimum,
                       max_select=maximum, domain_count=domain)
     actions = ['select:%d' % slot for slot in slots] + (['preview'] if explicit else []) + ['confirm']
     rows = [('GET', env(parent=parent())), ('POST', receipt())]
@@ -20,7 +20,7 @@ def removal(minimum=1, maximum=2, slots=(1, 0), explicit=False, domain=None):
         legal = ['confirm'] if phase == 'preview' else [f'select:{i}' for i in range(domain) if i not in selected]
         if phase == 'selecting' and minimum <= len(selected) < maximum:
             legal.append('preview')
-        payload = dict(schema_version=1, kind='child_observation', version='card_selection_v1',
+        payload = dict(schema_version=1, kind='child_observation', version='card_remove_v2',
                        session_nonce=N, parent_ordinal=1, status='ready', phase=phase,
                        operation='remove', commit_mode='preview_confirm', min_select=minimum,
                        max_select=maximum, decision_id=decision,
@@ -37,10 +37,10 @@ def removal(minimum=1, maximum=2, slots=(1, 0), explicit=False, domain=None):
         elif action == 'preview':
             preview = True
     total = len(actions)
-    resolved = dict(schema_version=1, kind='child_resolved', version='card_selection_v1',
+    resolved = dict(schema_version=1, kind='child_resolved', version='card_remove_v2',
                     session_nonce=N, parent_ordinal=1, status='resolved', phase='complete',
                     operation='remove', selected_cards=[card(i, True) for i in sorted(selected)],
-                    prior_results=history)
+                    prior_results=history, parent_additions=dict(status="unverified", cards=[]))
     rows.append(('GET', env(parent=parent('child', pa=1, ce=1, ca=total, cr=total - 1),
                             child=dict(descriptor), payload=resolved)))
     completed = [prior(result='child_completed')]
@@ -63,6 +63,38 @@ def drive(rows):
 
 
 class RemovalHostTests(unittest.TestCase):
+    def test_parent_grant_is_separate_unverified_metadata(self):
+        rows = removal()
+        done = next(v['payload'] for _, v in rows if v['payload'] and v['payload'].get('kind') == 'child_resolved')
+        done['parent_additions']['cards'] = [dict(key='ULTIMATE_STRIKE', upgrade_level=1, enchantment=dict(key='SOWN', amount=1))]
+        result, _ = drive(rows)
+        self.assertEqual(result['status'], 'resolved', result)
+        self.assertEqual(result['completed_card_children'], 1)
+        self.assertEqual(result['child_attempted'], 3)
+
+    def test_untrusted_parent_grant_metadata_rejects(self):
+        grant = dict(key='ULTIMATE_STRIKE', upgrade_level=0, enchantment=None)
+        invalid = [dict(status='verified', cards=[grant]), dict(status='unverified', cards=[grant, grant]),
+                   dict(status='unverified', cards=[dict(grant, key='bad-key')]),
+                   dict(status='unverified', cards=[dict(grant, upgrade_level=True)]),
+                   dict(status='unverified', cards=[dict(grant, owner='private')]),
+                   dict(status='unverified', cards=[dict(grant, enchantment=dict(key='SOWN', amount=0))])]
+        for value in invalid:
+            rows = removal()
+            done = next(v['payload'] for _, v in rows if v['payload'] and v['payload'].get('kind') == 'child_resolved')
+            done['parent_additions'] = value
+            result, _ = drive(rows)
+            self.assertEqual(result['code'], 'invalid_response', (value, result))
+            self.assertEqual(result['completed_card_children'], 0)
+
+    def test_legacy_version_cannot_claim_new_removal_semantics(self):
+        for index in (2, 3, 8):
+            rows = removal()
+            rows[index][1]['payload']['version'] = 'card_selection_v1'
+            result, _ = drive(rows)
+            self.assertEqual(result['code'], 'invalid_response', (index, result))
+
+
     def test_all_exact_counts_one_through_eight_reverse_selection(self):
         for count in range(1, 9):
             with self.subTest(count=count):
@@ -189,7 +221,7 @@ class RemovalHostTests(unittest.TestCase):
         rows = removal()
         rows[7][1]['payload']['outcome'] = 'uncertain'
         # Frozen failure payload intentionally has no untrusted decision identity.
-        rows[7][1]['payload'] = dict(schema_version=1, kind='child_failure', version='card_selection_v1',
+        rows[7][1]['payload'] = dict(schema_version=1, kind='child_failure', version='card_remove_v2',
                                    session_nonce=N, parent_ordinal=1, outcome='uncertain')
         script = Script(rows)
         actions = iter(['choose:0', 'select:1', 'select:0', 'confirm'])

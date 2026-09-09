@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
   <ItemGroup>
+    <Compile Include="PostRemovalAdditionFixtures.cs" />
     <Compile Include="RepeatedPageFixtures.cs" />
     <Compile Include="PreSelectorAdditionFixtures.cs" />
     <Compile Include="VariableTransformFixtures.cs" />
