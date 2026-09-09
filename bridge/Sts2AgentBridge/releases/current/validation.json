@@ -4,7 +4,8 @@
   "evidence_limits": {
     "autonomous_full_run": false,
     "current_package_installed": true,
-    "current_package_live_tested": false,
+    "current_package_live_tested": true,
+    "fixed_two_enchantment_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
   },
@@ -17,25 +18,124 @@
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "cleanup": "required after live batch and normal quit",
-    "live_input_sent": false,
+    "live_input_sent": true,
     "overlay_count": 2,
     "pre_install_runtime": "passed: stopped exact game process and closed local bridge port",
     "state_sha256": "1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec",
     "status": "installed"
   },
+  "live_results": [
+    {
+      "case": "WaterloggedScriptorium/PricklySponge",
+      "decisions": [
+        {
+          "action": "choose:2",
+          "option": "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.PRICKLY_SPONGE",
+          "stage": "parent"
+        },
+        {
+          "domain_count": 24,
+          "enchantment": {
+            "amount": 1,
+            "key": "STEADY"
+          },
+          "stage": "select",
+          "target": {
+            "key": "STRIKE_IRONCLAD",
+            "slot": 0,
+            "upgrade_level": 1
+          }
+        },
+        {
+          "domain_count": 24,
+          "enchantment": {
+            "amount": 1,
+            "key": "STEADY"
+          },
+          "stage": "select",
+          "target": {
+            "key": "STRIKE_IRONCLAD",
+            "slot": 1,
+            "upgrade_level": 1
+          }
+        },
+        {
+          "observation_window_seconds": 5,
+          "stage": "preview",
+          "targets": [
+            {
+              "key": "STRIKE_IRONCLAD",
+              "slot": 0,
+              "upgrade_level": 1
+            },
+            {
+              "key": "STRIKE_IRONCLAD",
+              "slot": 1,
+              "upgrade_level": 1
+            }
+          ]
+        },
+        {
+          "action": "choose:0",
+          "option": "PROCEED",
+          "stage": "proceed"
+        }
+      ],
+      "diagnostics": [
+        "parent_ready",
+        "child_ready",
+        "parent_ready",
+        "map_ready"
+      ],
+      "event": {
+        "child_accepted": 3,
+        "child_attempted": 3,
+        "child_episodes": 1,
+        "child_reconciled": 3,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 14,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 5
+      },
+      "expected_enchantment": {
+        "amount": 1,
+        "key": "STEADY"
+      },
+      "installation_state_sha256": "1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec",
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "policy": "/private/tmp/sts-scriptorium-live-20260909.py",
+      "policy_sha256": "6e9861219a796665c13e6dfe5ac51ae4af44957455b66e4ed3148ac4288c349e",
+      "release_sha256": "748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3",
+      "result_path": "/private/tmp/sts-scriptorium-live-20260909-retry-result.json",
+      "result_sha256": "63ffcf38f5b4f1a4ebe385e670e9d6230aeeed2099af86d1b4ef78adb35b43ea",
+      "seconds": 6.73,
+      "status": "passed"
+    }
+  ],
   "live_test": {
-    "expected_enchantment": {
-      "amount": 1,
-      "key": "STEADY"
+    "expected_items": {
+      "count": 3,
+      "key": "FOUL_POTION"
     },
-    "expected_selected_count": 2,
-    "independent_review": "Existing accepted policy reused unchanged; twelve actual frozen host-view checks rerun",
-    "next_case": "WaterloggedScriptorium/PricklySponge",
-    "policy": "/private/tmp/sts-scriptorium-live-20260909.py",
-    "policy_fixture_checks": 12,
-    "policy_sha256": "6e9861219a796665c13e6dfe5ac51ae4af44957455b66e4ed3148ac4288c349e",
-    "result_path": "/private/tmp/sts-scriptorium-live-20260909-retry-result.json",
-    "setup": "Fresh native room in Profile 3, at least 99 gold and 3 eligible unenchanted cards; event WATERLOGGED_SCRIPTORIUM, initial choices and console closed",
+    "independent_review": "passed; exact option/items/order/capacity, host reconciliation, success counters/map, unchanged credential cleanup and no-retry path",
+    "next_case": "PotionCourier/GrabPotions",
+    "policy": "/private/tmp/sts-courier-set-live-20260909.py",
+    "policy_fixture_checks": 18,
+    "policy_sha256": "e64bd456ab0b1dc603ad1db4b5a9954119d4280dd3295b1b91f52ccea8e7ba22",
+    "result_path": "/private/tmp/sts-courier-set-live-20260909-result.json",
+    "setup": "Same running Profile 3; enter a room normally, ensure at least 3 empty potion slots, then event POTION_COURIER; leave initial choices visible and close console",
     "status": "awaiting_manual_setup"
   },
   "package": {
@@ -72,7 +172,7 @@
   "source_state": "All 303 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate 257.219 seconds; stopped prior live case 0.308 seconds. Separate implementation/review/release-preparation/user-wait times were not measured.",
+  "timing_limits": "Final release gate 257.219 seconds; stopped prior live case 0.308 seconds. Separate implementation/review/release-preparation/user-wait times were not measured. Prickly Sponge success 6.730 seconds including five-second preview pause.",
   "validation": {
     "check_groups": 71,
     "event_integration_cases": 311,

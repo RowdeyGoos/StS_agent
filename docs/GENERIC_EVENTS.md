@@ -292,10 +292,12 @@ semantics; v2 carries the same public fields with fixed multi-card cardinality.
 Native fixtures cover counts two, three and eight, deferred final input,
 replacement targets/previews, partial effects, shared/replaced/disappearing
 enchantments and collateral changes. Actual C# wire/Python controller fixtures
-complete two and eight selections through Proceed/map. These are offline
-implementation checks; Prickly Sponge and other multi-card callers have not yet
-been live-tested. Optional counts, stacking/replacement and ancient-layout entry
-remain separate gaps.
+complete two and eight selections through Proceed/map. Prickly Sponge now also
+has live acceptance: two upgraded Strikes in a 24-card eligible domain, exact
+original preview, Steady amount 1 on each and an independent fresh core map.
+All five actions reconciled. See the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#prickly-sponge-fixed-two-enchantment-passed).
+Other counts/callers, optional counts, stacking/replacement and ancient-layout
+entry retain their narrower evidence or remain gaps.
 
 ## Implemented: multiple potion/relic rewards
 

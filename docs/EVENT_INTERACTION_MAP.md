@@ -14,8 +14,9 @@ and [pre-selector append increment](GENERIC_EVENTS.md#implemented-appended-cards
 now have representative live acceptance. [Removal followed by one appended grant](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
 now has representative live acceptance through Amalgamator/CombineStrikes,
 including exact removal and fresh map return; grant provenance remains unverified.
-Broader post-selector deck changes remain gaps. Fixed multi-card enchantment and
-2–8 potion/relic reward sets now have offline implementation evidence. Ordinary
+Broader post-selector deck changes remain gaps. Fixed multi-card enchantment now
+has representative live acceptance through Prickly Sponge. Sets of 2–8 potion/relic
+rewards have offline implementation evidence. Ordinary
 singleton CardReward menus also have offline choose/Skip/dismiss coverage, with
 BrainLeech/Rip as the representative caller. Sets of 2–8 ordinary CardReward
 entries now also have offline choose/Skip/final-dismissal coverage, with Colorful

@@ -1028,3 +1028,49 @@ leave initial choices visible with the console closed. This is a fresh attempt,
 not adoption or replay of the stopped selector. Normal quit and owned cleanup
 remain required after testing. No profile/save/history/Cloud content was accessed.
 Separate implementation, review, packaging and user-wait times were not measured.
+
+
+### Prickly Sponge fixed-two enchantment passed
+
+After fresh manual setup and user readiness, the exact running game, installed
+release/source/state identities, authenticated health and compatible manifest
+passed. The unchanged reviewed policy chose Prickly Sponge, selected upgraded
+`STRIKE_IRONCLAD` slots **0 and 1** in a **24-card** eligible domain, observed
+the exact selected originals in preview for five seconds and confirmed once.
+The native journal verified **Steady amount 1 on each selected original**, exact
+request results, unchanged survivors, completed native tasks and overlay closure.
+Proceed reconciled and one independent core-map read exposed **two actionable
+candidates**.
+
+Result: **passed in 6.730 seconds**, including the preview pause. Parent counters:
+**2 attempted / 2 accepted / 2 reconciled**. Child counters: **3 / 3 / 3**, one
+completed card child, five total actions, 14 event reads and one map read.
+Diagnostics: `parent_ready`, `child_ready`, `parent_ready`, `map_ready`.
+Final `effects: unverified` describes the last parent Proceed; it does not erase
+verified cumulative child completion. No action was retried.
+
+Result: `/private/tmp/sts-scriptorium-live-20260909-retry-result.json`, SHA-256
+`63ffcf38f5b4f1a4ebe385e670e9d6230aeeed2099af86d1b4ef78adb35b43ea`. Release and installation remain the twelfth bindings
+recorded above. This demonstrates one fixed-two caller/domain, not every count,
+selector or enchantment. The successful event released its native module and the
+shared core map was independently available. The installation stays **active** for
+the remaining reward cases; normal quit and owned cleanup are still required.
+No profile/save/history/Cloud filesystem content was accessed.
+
+
+The next reviewed policy is Potion Courier/Grab Potions at `/private/tmp/sts-courier-set-live-20260909.py`, SHA-256
+`e64bd456ab0b1dc603ad1db4b5a9954119d4280dd3295b1b91f52ccea8e7ba22`. Eighteen offline checks using actual frozen host views passed.
+Independent semantic review found no blockers. The policy requires the exact
+`POTION_COURIER.pages.INITIAL.options.GRAB_POTIONS` option and one `item_set_v1`
+child containing three sequential `FOUL_POTION` entries. The host presents each
+next inner `item_v1` view after validating the set history; the policy checks
+remaining free potion capacity before collection. Each effect reconciles through
+the existing host before another input. Success requires three reconciled item
+actions, one completed item child, two reconciled parent actions and fresh map.
+The bounded native source inspection confirmed canonical `FoulPotions = 3`,
+mutable PotionReward creation followed by OfferCustom and SetEventFinished.
+
+Result path `/private/tmp/sts-courier-set-live-20260909-result.json` is exclusive and unused. Setup is pending on the same
+installation: enter a room normally, leave at least three empty potion slots,
+run `event POTION_COURIER`, and leave initial choices visible with console closed.
+No new package or install is needed, and no input for this next case has been sent.

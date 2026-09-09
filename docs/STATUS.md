@@ -16,8 +16,8 @@ reward menus (`card_reward_v1`, 1–5 offers), multiple card reward menus in one
 (`card_reward_set_v1`, 2–8 entries), and fixed-one generic deck transformations
 using the existing `card_transform_v2` protocol. WoodCarvings/Bird now has representative live acceptance: upgraded Strike slot 0
 of 21 eligible cards, exact original preview, verified transformation and a fresh
-core map. All four actions reconciled in 6.119 seconds. Torus and the other four
-new feature groups still await their live cases. The
+core map. All four actions reconciled in 6.119 seconds. Prickly Sponge also passed fixed-two Steady enchantment and map return. Torus and
+the three reward feature groups still await their live cases. The
 bridge distinguishes native transform-prompt generic selection from removal's
 forwarding request without event-name admission rules. Mixed card/item sets and
 broader pickup composition remain gaps. The corrected test release is
@@ -38,14 +38,15 @@ The eleventh installation was cleaned up after normal quit, with all 429 base
 files unchanged. Bird's earlier transformation/map pass and user-confirmed Peck
 remain bound to that original release; they are not repinned to this package.
 
-The next fresh setup is **Waterlogged Scriptorium/Prickly Sponge** in Profile 3:
-at least 99 gold, three eligible unenchanted cards, and initial choices with the
-console closed after normal room entry. The unchanged reviewed policy selects two
-cards, checks Steady amount 1 and map return; its twelve frozen-view checks passed.
-No live input has been sent on the corrected installation. Cleanup remains required
-after the batch and normal quit. The
+The fresh **Waterlogged Scriptorium/Prickly Sponge** test passed on this release:
+two upgraded Strikes at slots 0/1 of 24 eligible cards, exact original preview,
+Steady amount 1 on each, all five actions reconciled and an independent core map
+with two actionable candidates. Elapsed time was 6.730 seconds, including the
+five-second preview pause. The next case is **Potion Courier/Grab Potions** with
+three empty potion slots. The installation remains active for the batch; normal
+quit and owned cleanup remain required. The
 [twelfth-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#twelfth-installation-production-event-boundary-correction)
-retains exact release, setup and cleanup bindings.
+retains exact release, result, setup and cleanup bindings.
 
 The release gate includes **6,004 native assertions**, **125 event host tests**,
 **311 event C#/Python integration cases** (249 using actual native adapters) and
@@ -170,7 +171,7 @@ before any new authorized live operation.
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Generic v2 supports counts up to eight and one appended parent grant, with exact survivor checks and separate unverified grant metadata; Amalgamator/CombineStrikes fixed-two removal, upgraded Ultimate Strike observation and fresh core map passed live |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
-| Enchantment | Single-card v1 has Sapphire Seed/Sown and Grave/Confront live evidence; fixed counts 2–8 in v2 now have native and C#/Python fixtures, including original-card preview, partial effects and deferred input; multi-card live remains open |
+| Enchantment | Single-card v1 has Sapphire Seed/Sown and Grave/Confront live evidence; fixed counts 2–8 in v2 now have native and C#/Python fixtures, including original-card preview, partial effects and deferred input; Prickly Sponge fixed-two Steady and core map passed live; other counts/callers remain open |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
 | Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; sets are packaged but await live acceptance |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
