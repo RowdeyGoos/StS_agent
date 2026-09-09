@@ -341,10 +341,9 @@ budgets still apply; the set has a shared 256-read local bound.
 
 Offline native and C#/Python fixtures cover two potions, mixed sets, eight relics,
 delayed tasks, late changes to completed claims/slots, malformed public history,
-lost replies and cleanup interference. These capabilities are implemented
-in source; the current accepted release and its live evidence still describe the
-previous removal build. Packaging and live acceptance will follow the planned
-batch test session.
+lost replies and cleanup interference. These capabilities are packaged in the current combined test release and await
+live acceptance in the planned batch. [Current status](STATUS.md) owns the release
+and installation identity.
 
 ## Implemented: ordinary event card reward menus
 
@@ -397,7 +396,7 @@ Offline native fixtures and the actual C#/Python path cover single and five-card
 menus, duplicate-key originals, both outcomes, delayed/deferred completion,
 changed targets/owners/deck effects, native Skip legality, nondefault alternatives,
 malformed replies, lost replies and rollback of either new hook. This code is
-not yet packaged or live-accepted. The multiple-entry extension is described below.
+packaged in the current combined test release and awaits live acceptance. The multiple-entry extension is described below.
 Mixed card/item sets, repeated offers within one option, SpecialCardReward, reroll/multiple picks,
 hook-substituted cards and nested pickup selectors remain unsupported.
 

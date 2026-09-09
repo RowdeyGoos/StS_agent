@@ -864,3 +864,51 @@ projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 All ten installations are cleaned up. No profile/save/history/Cloud filesystem
 data was accessed. The live flow took 10.078 seconds; user setup/quit wait and
 documentation were not separately timed.
+
+
+## Eleventh installation: generic event feature batch
+
+The user requested live testing after five offline feature increments. One combined
+release passed all **71 groups in 258.357 seconds**, including **6,004 native
+assertions**, **311 event integration cases** (249 production native), shared
+host/client checks, reproducible packaging and owned installation/cleanup fixtures.
+All 302 source/test inputs match commit `7fa8eae89160ee582dc9e66610f6b8f976a98825` byte-for-byte. The existing
+feature semantic reviews remain applicable to these unchanged implementations.
+
+- Release manifest SHA-256: `e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18`.
+- Source inventory: `da579606508e0855e18b6f9d7e0d710a7037cab7ff977076c8211070255183a4`.
+- DLL: 868352 bytes, `e2b5b0344f0820a2030b22c2b0617552c5e44e18fa81727da85f32e7a7a00b00`.
+- Installed state: `23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942`.
+- Gate outputs: `/private/tmp/sts-bridge-4ljtuw2f`.
+
+Canonical publication and installation passed. Fresh pre-install checks found the
+exact game process stopped and local bridge port closed; all 429 pinned base files
+matched with zero overlays. Post-install verification matched the same base files
+and exactly two owned overlay files. The prior accepted package is retained at
+`/private/tmp/sts-unified-bridge-release-before-event-batch-20260909`; the new package
+occupies `/private/tmp/sts-unified-bridge-release`.
+
+The first bounded policy is prepared at
+`/private/tmp/sts-wood-carvings-live-20260909.py`, SHA-256
+`59107dcf50e773b5a3e8dae8e5198e8bce7514fb2903bff2b83131d17c17d0cc`. It uses the existing unified release,
+installation, credential, transport and host machinery. It chooses only Wood
+Carvings' Bird option, selects one advertised eligible card, pauses five seconds
+at its exact original preview, confirms once, chooses Proceed and independently
+checks a fresh actionable core map. Nine offline policy checks use the actual
+host's frozen DecisionView shape. Independent review caught a tuple/list preview
+comparison mismatch; the correction passed those checks and narrow re-review.
+The result path is exclusively created at
+`/private/tmp/sts-wood-carvings-live-20260909-result.json`. PECK is an expected native
+result, not an observed replacement-key claim before the test.
+
+Manual Profile 3 launch/setup is pending. Start from a normally entered map room,
+open `event WOOD_CARVINGS`, keep at least two eligible basic cards and leave the
+initial choices visible with the console closed. The remaining batch queue is
+Waterlogged Scriptorium/Prickly Sponge, item reward sets, an ordinary singleton
+CardReward menu and Colorful Philosophers' multiple menus. Each later setup will
+be checked before acting; this queue is not live evidence.
+
+No live input has been sent. **Installation is active; cleanup is required after
+the batch and normal quit.** No profile/save/history/Cloud filesystem content was
+accessed. Release-gate time is recorded above; separate review/packaging timing
+was not tracked, and manual setup wait begins after this preparation.

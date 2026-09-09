@@ -9,8 +9,8 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Five further generic-event features are implemented in the checkout and await
-batch live testing: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8),
+Five further generic-event features are now packaged and installed for batch
+live testing: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8),
 multiple potion/relic rewards (`item_set_v1`, 2–8 entries), ordinary singleton card
 reward menus (`card_reward_v1`, 1–5 offers), multiple card reward menus in one set
 (`card_reward_set_v1`, 2–8 entries), and fixed-one generic deck transformations
@@ -19,24 +19,32 @@ WoodCarvings' Bird/Torus selector shape: select an original card, confirm its na
 preview and verify the exact replacement before returning to the parent. The
 bridge distinguishes native transform-prompt generic selection from removal's
 forwarding request without event-name admission rules. Mixed card/item sets and
-broader pickup composition remain gaps. These features are **not yet packaged or
-live-accepted**; the accepted release below retains its original source and
-evidence. See [generic semantics](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors).
+broader pickup composition remain gaps. The current test release is
+`e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18`, built from
+source commit `7fa8eae`. All **71 release groups passed in 258.357 seconds**,
+including reproducible packaging and installation/cleanup fixtures. The eleventh
+installation is **active**, with state
+`23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942`.
+Stopped-process/closed-port checks and all 429 base files passed before install;
+post-install verification found only the two owned mod files. Manual Profile 3
+setup for WoodCarvings/Bird is pending; no live input has been sent on this release.
+Cleanup remains required after the batch and normal quit. These new features are
+**not yet live-accepted**; earlier live results retain their original identities.
+The [eleventh-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eleventh-installation-generic-event-feature-batch)
+retains setup, provider and release details. See [generic semantics](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors).
 
-The final event gate passed **15 groups in 208.790 seconds**, including **6,004
-native assertions**, **125 host tests** and **311 C#/Python integration cases**
-(249 using the actual native adapters). This increment adds 118 native assertions
-and four integration cases. The shared bridge passed **112 checks** and the
-combined production build passed in **1.653 seconds**, with zero warnings/errors.
-One independent semantic review checked the pinned native forwarding, request
-ownership, original preview, exact effect reconciliation and cleanup. Validation
-outputs are retained at `/private/tmp/sts-bridge-e3oohn3g` (event gate) and
-`/private/tmp/sts-bridge-qk2pljhy` (production build). Separate implementation and
-review durations were not tracked; no release preparation or user wait occurred.
-These are current-source development checks, not a release or live campaign.
+The release gate includes **6,004 native assertions**, **125 event host tests**,
+**311 event C#/Python integration cases** (249 using the actual native adapters)
+and **112 shared bridge checks**. It verifies the compiled production surface,
+byte-identical reproducibility and canonical package. All 302 accepted inputs
+match the recorded source commit. Feature semantic reviews were retained; the
+bounded live provider passed independent review after correcting its preview
+comparison, with nine checks using the host's actual frozen views. The final
+release outputs are at `/private/tmp/sts-bridge-4ljtuw2f`; these offline checks do
+not establish live acceptance of the new features.
 
-Generic removal followed by one appended event grant is implemented and packaged.
-The current accepted release is
+Generic removal followed by one appended event grant has live acceptance.
+The previous live-accepted release was
 `fcfdd9e9deb162a5ca1f0b0756505048b48cdb83e18255520fcc788081a526dd`.
 Removal now uses exact allocated native holders without computed whole-grid fit
 or retained scroll/grid dimensions. Native clickability, valid exact grid and
@@ -44,13 +52,14 @@ holder/control identity, visibility, enabled state, preview and task/deck-effect
 checks remain enforced. Derived native hitboxes remain supported.
 All **71 combined release groups** passed in **161.665 seconds**, including
 **4,687 native assertions**, **221 event integration cases**, reproducible
-packaging and owned installation/cleanup fixtures. The package is published at
-`/private/tmp/sts-unified-bridge-release`; the tenth live campaign is cleaned up.
+packaging and owned installation/cleanup fixtures. Its package is retained at
+`/private/tmp/sts-unified-bridge-release-before-event-batch-20260909`; the tenth
+live campaign is cleaned up.
 The live Amalgamator/CombineStrikes test passed: two upgraded Strikes (slots 0
 and 1 of five eligible cards) removed after exact preview, one upgraded Ultimate
 Strike reported separately, then a fresh actionable core map. All five actions
 reconciled. Normal quit, owned quarantine/purge and the 429-file base check passed;
-no campaign remains installed.
+that campaign no longer remains installed.
 
 The ninth live campaign used release
 `5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d`.

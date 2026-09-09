@@ -1,83 +1,46 @@
 {
-  "change": "Generic removal uses exact allocated native holder input without whole-grid geometry requirements; native clickability and identity remain enforced",
+  "change": "Combined release for fixed multi-card enchantment, item reward sets, singleton and multiple card reward menus, and generic deck transformation selectors",
   "date": "2026-09-09",
   "evidence_limits": {
-    "automatic_addition_provenance_verified": false,
     "autonomous_full_run": false,
-    "changed_surviving_cards_supported": false,
-    "current_package_installed": false,
-    "current_package_live_tested": true,
-    "maximum_post_removal_grants": 1,
-    "multiple_post_removal_grants_supported": false,
+    "current_package_installed": true,
+    "current_package_live_tested": false,
     "native_fixture_objects_are_inert": true,
-    "offscreen_removal_live_tested": false,
-    "other_post_selector_additions_supported": false,
-    "removal_parent_grant_live_tested": true
-  },
-  "evidence_reused": {
-    "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
-    "prior_release_manifest_sha256": "5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d",
-    "scope": "Existing sibling native holder input and _isClickable checks; pinned NCardHolder._GuiInput IL; ninth live attempt passed candidates and stopped at prepare_geometry with five visible Strikes. Historical identities and failed live conclusions unchanged. One full release gate ran against the corrected inputs."
+    "profile_save_history_cloud_files_accessed": false
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Removal of scroll/grid dimension and position requirements; exact grid/domain/control identity, native clickability, visibility and enabled state; unchanged ownership, preview/task/deck effects, wire and cleanup semantics; layout and stale-target regressions",
+    "scope": "Existing feature semantic reviews retained for unchanged implementations; Wood Carvings live provider independently reviewed, tuple/list preview mismatch corrected and checked with actual frozen DecisionView fixtures",
     "status": "passed"
   },
   "installation": {
-    "cleanup": "passed: owned quarantine/purge; 429 unchanged base files, zero overlays",
-    "live_input_sent": true,
-    "quarantine_state_sha256": "b1e8b8807acab62773612764a416b6bcc9a54de755e8d8ea4dac825d653ace20",
-    "state_sha256": "a8b6ba4456681d5a8c824f0c84826a21446c0aeddee5207b0be1de85fee1d496",
-    "status": "absent"
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "cleanup": "required after live batch and normal quit",
+    "live_input_sent": false,
+    "overlay_count": 2,
+    "pre_install_runtime": "passed: stopped exact game process and closed local bridge port",
+    "state_sha256": "23576968fd70ae15c79efd9081b977ad1a81075ed211d59d8d1259ce612c8942",
+    "status": "installed"
   },
-  "live_result": {
-    "child_accepted": 3,
-    "child_attempted": 3,
-    "child_reconciled": 3,
-    "completed_card_children": 1,
-    "domain_count": 5,
-    "event": "Amalgamator/CombineStrikes",
-    "event_reads": 18,
-    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#tenth-installation-native-removal-without-whole-grid-geometry",
-    "map_candidates": 2,
-    "map_reads": 1,
-    "parent_accepted": 2,
-    "parent_additions": {
-      "cards": [
-        {
-          "enchantment": null,
-          "key": "ULTIMATE_STRIKE",
-          "upgrade_level": 1
-        }
-      ],
-      "status": "unverified"
-    },
-    "parent_attempted": 2,
-    "parent_reconciled": 2,
-    "seconds": 10.078,
-    "selected": [
-      {
-        "key": "STRIKE_IRONCLAD",
-        "slot": 0,
-        "upgrade_level": 1
-      },
-      {
-        "key": "STRIKE_IRONCLAD",
-        "slot": 1,
-        "upgrade_level": 1
-      }
-    ],
-    "status": "passed"
+  "live_test": {
+    "expected_native_replacement": "PECK",
+    "first_case": "WoodCarvings/Bird",
+    "policy": "/private/tmp/sts-wood-carvings-live-20260909.py",
+    "policy_fixture_checks": 9,
+    "policy_sha256": "59107dcf50e773b5a3e8dae8e5198e8bce7514fb2903bff2b83131d17c17d0cc",
+    "replacement_key_observed": false,
+    "result_path": "/private/tmp/sts-wood-carvings-live-20260909-result.json",
+    "status": "awaiting_manual_setup"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      801974,
-      "59fecef1f41bbf7ced0948b16236aecedcd055554b1a43ea34f3f671a948dd40"
+      869046,
+      "432b4877bc05acb0aedef3cc9039583761dd5e7be7274c8caf017248e00f59d2"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      801280,
-      "a7e62b229a5e103c8802b599f705da908551ffa3087c5470c7a089b04ef11c50"
+      868352,
+      "e2b5b0344f0820a2030b22c2b0617552c5e44e18fa81727da85f32e7a7a00b00"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -85,31 +48,28 @@
     ]
   },
   "package_directory": "/private/tmp/sts-unified-bridge-release",
-  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-removal-layout-20260909",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-event-batch-20260909",
   "production": {
-    "bytes": 801280,
-    "sha256": "a7e62b229a5e103c8802b599f705da908551ffa3087c5470c7a089b04ef11c50"
+    "bytes": 868352,
+    "sha256": "e2b5b0344f0820a2030b22c2b0617552c5e44e18fa81727da85f32e7a7a00b00"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "fcfdd9e9deb162a5ca1f0b0756505048b48cdb83e18255520fcc788081a526dd",
+  "release_manifest_sha256": "e7126021456c35077fea0996ccdef98f5ea045bdfa4f8333bc124eed80f3ad18",
   "schema_version": 1,
-  "source_commit": "bd45e1bbd3a7c007a3acf3d1dac12182c1582d79",
-  "source_inventory_sha256": "058cf81db3b713373268e0a4574bcb6ed3e6e17f10d0fe692f8593a7bc0d479a",
-  "source_state": "All 294 accepted source/test inputs verified byte-for-byte at the recorded commit",
+  "source_commit": "7fa8eae89160ee582dc9e66610f6b8f976a98825",
+  "source_inventory_sha256": "da579606508e0855e18b6f9d7e0d710a7037cab7ff977076c8211070255183a4",
+  "source_state": "All 302 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate: 161.665 seconds; native run: 19.399 seconds; event integration: 78.143 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. Successful live flow: 10.078 seconds, including an eight-second preview pause.",
+  "timing_limits": "Final release gate 258.357 seconds. Separate packaging and review timings were not tracked. Manual setup is pending; no live execution has occurred.",
   "validation": {
     "check_groups": 71,
-    "corrections": "An initial new fixture assertion used a set method on its List; corrected to exact sequence equality before focused execution. Focused native execution passed 4,687 checks; the single final combined release gate passed all 71 groups.",
-    "event_integration_cases": 221,
-    "event_integration_seconds": 78.143,
+    "event_integration_cases": 311,
     "host_tests": 125,
-    "native_assertions": 4687,
-    "native_tests_seconds": 19.399,
-    "production_native_integration_cases": 159,
-    "release_gate_seconds": 161.665,
-    "scope": "Five/twenty allocated holders with noncanonical/overflow layout; mid-selection resize/scroll; exact two-original preview, removal, ordered survivors and map; unclickable holder, grid replacement/destruction/animation and domain changes send zero card input; retained hitbox mutations; full native/host/production integration, reproducibility, package and owned installation/cleanup checks",
-    "scratch": "/private/tmp/sts-bridge-s4oazj82"
+    "native_assertions": 6004,
+    "production_native_integration_cases": 249,
+    "release_gate_seconds": 258.357,
+    "scope": "Final combined release gate; native/host/wire, shared host/client, reproducibility, package, owned installation/cleanup and compatibility fixtures",
+    "scratch": "/private/tmp/sts-bridge-4ljtuw2f"
   }
 }
