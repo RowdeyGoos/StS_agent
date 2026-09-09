@@ -20,6 +20,8 @@ def run_transform_cases(args: Any, host: Any, exchange_type: Any,
 
     pair = ('select:3', 'select:1', 'confirm')
     cases = (
+        ('T_GENERIC_BIRD', 1, 4, ('select:2', 'confirm'), 1),
+        ('T_GENERIC_TORUS', 1, 4, ('select:2', 'confirm'), 1),
         ('T_FIRST', 1, 4, ('select:2', 'confirm'), 1),
         ('T_ANOTHER', 2, 5, pair, 1),
         ('T_HELD_OUT', 2, 5, pair, 1),
@@ -83,6 +85,22 @@ def run_transform_cases(args: Any, host: Any, exchange_type: Any,
             assert any(v['payload']['status'] == 'waiting' for v in children)
         checks += 1
     assert len(event_types) == 3, event_types
+
+    result, ex = run('T_GENERIC_FAULT', ('select:2', 'confirm'))
+    assert result['status'] != 'resolved' and result['completed_card_children'] == 0
+    assert ex.telemetry[-1]['confirm_calls'] == 1 and not ex.telemetry[-1]['map_open']
+    checks += 1
+
+    def lose_generic_confirm(ex, method, route, body):
+        response = ex.request(method, route, body)
+        if method == 'POST' and json.loads(body)['action_id'] == 'confirm':
+            response[:] = b'\0' * len(response)
+            raise host.TransportFailure()
+        return response
+    result, ex = run('T_GENERIC_BIRD', ('select:2', 'confirm'), lose_generic_confirm)
+    assert result['code'] == 'transport_failure' and result['completed_card_children'] == 0
+    assert ex.telemetry[-1]['confirm_calls'] == 1 and ex.posts == 3
+    checks += 1
 
     for lost_action in ('select:3', 'confirm'):
         def lose(ex: Any, method: str, route: str, body: bytearray | None) -> bytearray:

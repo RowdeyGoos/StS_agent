@@ -9,28 +9,30 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Four further generic-event features are implemented in the checkout and await
+Five further generic-event features are implemented in the checkout and await
 batch live testing: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8),
 multiple potion/relic rewards (`item_set_v1`, 2–8 entries), ordinary singleton card
-reward menus (`card_reward_v1`, 1–5 offers), and multiple card reward menus in one
-set (`card_reward_set_v1`, 2–8 entries). The latest extension visits each menu once,
-verifies a choice or Skip, retains earlier results and dismisses the root after all
-menus when needed. ColorfulPhilosophers/OfferRewards (three card rewards) is its
-representative pinned caller for the next live batch. Mixed card/item sets and
+reward menus (`card_reward_v1`, 1–5 offers), multiple card reward menus in one set
+(`card_reward_set_v1`, 2–8 entries), and fixed-one generic deck transformations
+using the existing `card_transform_v2` protocol. The latest extension handles
+WoodCarvings' Bird/Torus selector shape: select an original card, confirm its native
+preview and verify the exact replacement before returning to the parent. The
+bridge distinguishes native transform-prompt generic selection from removal's
+forwarding request without event-name admission rules. Mixed card/item sets and
 broader pickup composition remain gaps. These features are **not yet packaged or
 live-accepted**; the accepted release below retains its original source and
-evidence. See [generic semantics](GENERIC_EVENTS.md#implemented-multiple-card-reward-menus).
+evidence. See [generic semantics](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors).
 
-The event gate passed **15 groups in 195.607 seconds**, including **5,886 native
-assertions**. After the final host-only decoder correction, all **125 host tests**
-passed in **2.313 seconds** and the full C#/Python integration rerun passed
-**307 cases** (245 using the actual native adapters). This increment adds 540 native
-assertions and 39 integration cases. The shared bridge passed **112 checks** and
-the combined production build passed in **1.762 seconds**. Compiled fixture/build
-evidence was reused after the Python-only correction: 127 transitive fixture
-source/project/settings files and 124 production inputs were unchanged, with the
-same pinned references and SDK. One independent semantic review completed after
-initial-baseline, reentry and strict retained-row decoder corrections.
+The final event gate passed **15 groups in 208.790 seconds**, including **6,004
+native assertions**, **125 host tests** and **311 C#/Python integration cases**
+(249 using the actual native adapters). This increment adds 118 native assertions
+and four integration cases. The shared bridge passed **112 checks** and the
+combined production build passed in **1.653 seconds**, with zero warnings/errors.
+One independent semantic review checked the pinned native forwarding, request
+ownership, original preview, exact effect reconciliation and cleanup. Validation
+outputs are retained at `/private/tmp/sts-bridge-e3oohn3g` (event gate) and
+`/private/tmp/sts-bridge-qk2pljhy` (production build). Separate implementation and
+review durations were not tracked; no release preparation or user wait occurred.
 These are current-source development checks, not a release or live campaign.
 
 Generic removal followed by one appended event grant is implemented and packaged.

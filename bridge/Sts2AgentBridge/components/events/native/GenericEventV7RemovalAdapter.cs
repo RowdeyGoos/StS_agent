@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using Sts2AgentBridge.Successors.CardSelectionV1;
 using Sts2AgentBridge.Successors.CardSelectionV1.Native;
+using Sts2AgentBridge.Successors.CardTransformV2;
 
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
@@ -78,7 +79,18 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         _previewContainer = previewContainer;
         _preview = preview;
         _confirm = confirm;
-        _confirmDispatch = _confirm.ForceClick;
+        _confirmDispatch = ()=>{
+            if(_binding.GenericDeckTransform) {
+                if(_disposed||!_binding.MatchesChildBinding()||!_binding.MatchesCurrentDeck()||
+                    !TryBoundForeground(out bool closed)||closed||_completionTask?.IsCompleted!=false||
+                    !TryCapturePreview(out bool open,out _,out var originals,out var control)||!open||
+                    !_expectedSelection.SetEquals(originals)||control is not {Visible:true,Enabled:true}||
+                    originals.Any(o=>o is not CardModel c||!c.IsTransformable))
+                    throw new InvalidOperationException("Generic transformation preview changed.");
+                _binding.Transform!.Reserve(originals);
+            }
+            try{_confirm.ForceClick();}catch{_binding.Transform?.Fail();throw;}
+        };
         _openPreview = IsEnchant ? null : RequiredNode<NConfirmButton>(_screen,"%Confirm");
         _previewDispatch = _openPreview is null ? null : _openPreview.ForceClick;
 
@@ -110,7 +122,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         catch { return Unsupported(); }
     }
 
-    public void Dispose() => _disposed = true;
+    public void Dispose() {if(_binding.GenericDeckTransform)_binding.Transform?.Close();_disposed=true;}
 
     private CardSelectionV1SurfaceCapture CaptureCore()
     {
@@ -118,6 +130,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
             !TryCopyDeck(out CardSelectionV1DeckCard[] deck))
             return Unsupported();
         SnapshotTask();
+        if (!selectorClosed && _binding.GenericDeckTransform && _taskState==CardSelectionV1TaskState.Incomplete && _binding.Originals.Any(c=>!c.IsTransformable)) return Unsupported();
         if (!selectorClosed && IsEnchant &&
             (!GenericEventV7CardAdapter.EnchantmentScreenMatches(_binding,_screen) ||
              _taskState==CardSelectionV1TaskState.Incomplete && _binding.Originals.Any(c=>
@@ -189,7 +202,7 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
 
         if (_binding.Failed || _binding.ChosenTask?.IsFaulted == true || _binding.ChosenTask?.IsCanceled == true || _binding.RequestTask?.IsFaulted == true || _binding.RequestTask?.IsCanceled == true)
             return Unsupported();
-        bool effectCompletion = selectorClosed && _taskState == CardSelectionV1TaskState.Succeeded && _binding.EffectCompleted(_taskResult);
+        bool effectCompletion = selectorClosed && _taskState == CardSelectionV1TaskState.Succeeded && _binding.EffectCompleted(_taskResult) && (!_binding.GenericDeckTransform || _binding.Transform!.Complete);
         if(_binding.Failed)return Unsupported();
         return new CardSelectionV1SurfaceCapture(
             CardSelectionV1SurfaceStatus.Available,
@@ -280,10 +293,10 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         preview = null!;
         confirm = null!;
         diagnostic = GenericEventDiagnosticCode.PrepareBinding;
-        if (!binding.Ready || binding.Operation is not (CardSelectionV1Operation.Remove or CardSelectionV1Operation.Enchant)) return false;
+        if (!binding.Ready || binding.Operation is not (CardSelectionV1Operation.Remove or CardSelectionV1Operation.Enchant) && !(binding.GenericDeckTransform && binding.Operation==CardSelectionV1Operation.Transform && binding.Prefs.MinSelect==1 && binding.Prefs.MaxSelect==1 && binding.Transform is not null)) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareScreen;
         if (!Valid(screen) || !screen.IsVisibleInTree() ||
-            !(binding.Operation==CardSelectionV1Operation.Remove ? screen.GetType()==typeof(NDeckCardSelectScreen) :
+            !(binding.Operation==CardSelectionV1Operation.Remove || binding.GenericDeckTransform ? screen.GetType()==typeof(NDeckCardSelectScreen) :
               screen.GetType()==typeof(NDeckEnchantSelectScreen) && binding.Prefs.MinSelect==binding.Prefs.MaxSelect && binding.Prefs.MaxSelect>=2 &&
               GenericEventV7CardAdapter.EnchantmentScreenMatches(binding,screen))) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareExternalSelector;
@@ -539,9 +552,11 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         try
         {
             deck=GenericEventV7Binding.CopyDeck(_binding.Player);
+            // Transform finals are journal-observed objects; their exact insertion
+            // is checked by the wrapper instead of the removal clone exclusion.
             return deck.All(c=>c.ModelIdentity is CardModel card &&
                 ReferenceEquals(card.Owner,_binding.Player) && ReferenceEquals(card.RunState,_binding.RunState) &&
-                (_binding.SelectionDeck.Any(before=>ReferenceEquals(before.ModelIdentity,card)) ||
+                (_binding.GenericDeckTransform || _binding.SelectionDeck.Any(before=>ReferenceEquals(before.ModelIdentity,card)) ||
                  !_binding.ObservedPreviewClones.Contains(card) && !_binding.ObservedUpgradeClones.Contains(card)));
         }
         catch { return false; }
@@ -652,4 +667,21 @@ public sealed class GenericEventV7RemovalAdapter : ICardSelectionV1NativeAdapter
         internal int UpgradeLevel { get; }
         internal Action Dispatch { get; set; }
     }
+}
+
+// A generic deck preview shows the original being replaced, without a generated
+// result preview. The same v2 journal proves the actual native transformation.
+internal sealed class GenericEventV7DeckTransformAdapter : ICardTransformV2NativeAdapter
+{
+    private readonly GenericEventV7RemovalAdapter _selector;
+    private readonly GenericEventV7TransformState _effect;
+    internal GenericEventV7DeckTransformAdapter(GenericEventV7Binding binding,CardSelectionV1ParentContext context,NDeckCardSelectScreen screen)
+    { _effect=binding.Transform!;_selector=new GenericEventV7RemovalAdapter(binding,context,screen); }
+    public CardTransformV2SurfaceCapture CaptureSurface()
+    {
+        var surface=_selector.CaptureSurface();
+        try{return new(surface,_effect.Capture());}
+        catch{_effect.Fail();throw;}
+    }
+    public void Dispose()=>_selector.Dispose();
 }

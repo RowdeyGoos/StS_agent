@@ -59,6 +59,10 @@ internal static partial class Program
         internal readonly Queue<Action> Confirms=new();
         private readonly Queue<TaskCompletionSource> _insertions=new();
         internal NDeckTransformSelectScreen Screen=null!;
+        internal NDeckCardSelectScreen GenericScreen=null!;
+        internal MegaCrit.Sts2.Core.Localization.LocString? GenericPrompt=CardSelectorPrefs.TransformSelectionPrompt;
+        internal Func<IEnumerable<CardModel>,IEnumerable<CardModel>>? GenericDomain;
+        private readonly bool _genericDeck;
         internal NCardGrid Grid=null!;
         internal int OptionCalls,SelectCalls,ConfirmCalls,BatchCount;
         internal CardModel[] PreSelectorAdditions=Array.Empty<CardModel>();
@@ -86,8 +90,9 @@ internal static partial class Program
         private readonly bool _partialInsertion,_deferredConfirm;
         private readonly int[] _batches;
         private TaskCompletionSource<IEnumerable<CardModel>> _selected=new();
-        internal TransformFixture(string name,int count,int domain=10,bool manual=false,int[]? batchSizes=null,bool delayedCreation=false,bool delayedCompletion=false,bool partialInsertion=false,bool substitute=false,bool deferredConfirm=false,string? nonce=null,EventModel? eventModel=null,int? minimum=null,bool delayedPreview=false,bool partialPreview=false)
+        internal TransformFixture(string name,int count,int domain=10,bool manual=false,int[]? batchSizes=null,bool delayedCreation=false,bool delayedCompletion=false,bool partialInsertion=false,bool substitute=false,bool deferredConfirm=false,string? nonce=null,EventModel? eventModel=null,int? minimum=null,bool delayedPreview=false,bool partialPreview=false,bool genericDeck=false)
         {
+            _genericDeck=genericDeck;
             _count=count;_domain=domain;MinimumOverride=minimum;_delayedPreview=delayedPreview;_partialPreview=partialPreview;_partialInsertion=partialInsertion;_deferredConfirm=deferredConfirm;_batches=batchSizes??new[]{count};
             Player.RunState=RunState;
             Cards=Enumerable.Range(0,domain+1).Select(i=>{var c=new CardModel{Owner=Player,IsUpgradable=true,IsTransformable=i<domain,Type=i==domain?6:0};c.Id.Entry="Card_"+i;return c;}).ToArray();Player.Deck.Cards.AddRange(Cards);
@@ -95,7 +100,9 @@ internal static partial class Program
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;
             EventOption option=null!;option=new EventOption{TextKey=name+".OPTION",Callback=async()=>{
                 OptionCalls++;
-                var values=(await CardSelectCmd.FromDeckForTransformation(Player,new CardSelectorPrefs(MinimumOverride??count,count,Cancelable,manual))).ToArray();
+                var prefs=new CardSelectorPrefs(MinimumOverride??count,count,Cancelable,manual);
+                var values=(genericDeck ? await CardSelectCmd.FromDeckGeneric(Player,prefs with {Prompt=GenericPrompt}) :
+                    await CardSelectCmd.FromDeckForTransformation(Player,prefs)).ToArray();
                 int at=0;foreach(int size in _batches){var batch=values.Skip(at).Take(size).Select(c=>new CardTransformation(c));await CardCmd.Transform(batch,new Rng(),CardPreviewStyle.None);at+=size;}
                 AfterEffect?.Invoke();if(delayedCompletion)await CompletionGate.Task;
                 if(CancelCallback)throw new OperationCanceledException();if(FaultCallback)throw new InvalidOperationException("callback");
@@ -112,6 +119,13 @@ internal static partial class Program
                 var screen=NDeckTransformSelectScreen.ShowScreen((WrongDomain?Cards.Take(_domain):Player.Deck.Cards.Where(c=>(int)c.Type!=6&&c.IsTransformable).Take(_domain)).ToArray(),factory??(c=>new CardTransformation(c)),prefs);
                 var result=await screen.CardsSelected();return RequestResult?.Invoke(result)??result;
             };
+            CardSelectCmd.GenericHandler=async(player,prefs,filter)=>{
+                if(delayedCreation)await CreationGate.Task;BeforeCreate?.Invoke();
+                var candidates=player.Deck.Cards.Where(c=>c.IsTransformable);
+                var screen=NDeckCardSelectScreen.Create((GenericDomain?.Invoke(candidates)??candidates).ToArray(),prefs);
+                var result=await screen.CardsSelected();return RequestResult?.Invoke(result)??result;
+            };
+            NDeckCardSelectScreen.Factory=(cards,prefs)=>CreateGenericScreen(cards);
             NDeckTransformSelectScreen.Factory=(cards,factory,prefs)=>CreateScreen(cards);
             CardTransformation.Generator=original=>{
                 var card=Generate?.Invoke(original)??NewCard("Initial_"+original.Id.Entry);
@@ -154,6 +168,16 @@ internal static partial class Program
         {var button=new NEventOptionButton{Option=option,Event=Model};button.Bind("%Text",new MegaRichTextLabel{Text="Transform native option"});Room.Layout.OptionButtons.Add(button);}
         private void ShowProceed()
         {Room.Layout.OptionButtons.Clear();AddOption(new EventOption{TextKey="PROCEED",IsProceed=true,Callback=()=>{OptionCalls++;Map.IsOpen=true;Map.IsTravelEnabled=true;return Task.CompletedTask;}});}
+        private NDeckCardSelectScreen CreateGenericScreen(IReadOnlyList<CardModel> cards)
+        {
+            // Reuse holder dispatch/confirmation timing; expose the distinct
+            // generic screen node paths and preview only original cards.
+            CreateScreen(cards);Overlays.Screens.Clear();
+            GenericScreen=new NDeckCardSelectScreen {SelectionTask=_selected.Task};
+            GenericScreen.Bind("%CardGrid",Grid);GenericScreen.Bind("%PreviewContainer",Preview);GenericScreen.Bind("%Confirm",RootConfirmButton);
+            Preview.Bind("%Cards",Before);Preview.Bind("%PreviewConfirm",ConfirmButton);
+            Overlays.Screens.Add(GenericScreen);return GenericScreen;
+        }
         private NDeckTransformSelectScreen CreateScreen(IReadOnlyList<CardModel> cards)
         {
             Screen=new NDeckTransformSelectScreen{SelectionTask=_selected.Task};Grid=new NCardGrid();
@@ -171,7 +195,7 @@ internal static partial class Program
         {
             Preview.Visible=true;var selected=Selected.ToArray();
             foreach(var original in selected)((ShaderMaterial)Grid.CurrentlyDisplayedCardHolders.Single(h=>ReferenceEquals(h.CardModel,original)).CardNode.CardHighlight.Material!).Width=0;
-            void Add(CardModel original){Before.Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=original}});After.Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=original}});}
+            void Add(CardModel original){Before.Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=original}});if(!_genericDeck)After.Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=original}});}
             int immediate=_partialPreview?Math.Min(MinimumOverride??1,selected.Length):selected.Length;
             foreach(var original in selected.Take(immediate))Add(original);
             if(immediate<selected.Length)_previews.Enqueue(()=>{foreach(var original in selected.Skip(immediate))Add(original);});
@@ -217,7 +241,63 @@ internal static partial class Program
         internal GenericEventV7Observation Start(){var p=Session.Read();Check(p.Status=="ready","transform parent ready");Check(Session.Apply(p.DecisionId,"choose:0").Outcome=="accepted","transform parent dispatch");return Session.Read();}
         internal object Child(GenericEventV7Observation c)=>Session.ReadCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal).Value;
         internal void Act(GenericEventV7Observation c,string action){var o=(CardSelectionV1Observation)Child(c);Check(o.Status=="ready"&&o.LegalActions.Contains(action),"transform legal "+action+" was "+o.Status);Check(Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,o.DecisionId,action).Value is CardSelectionV1DispatchReceipt,"transform dispatch "+action);}
-        public void Dispose(){Session.Dispose();CardSelectCmd.Selector=null;CardCmd.Handler=null;NativeHook.Modifier=null;CardTransformation.Generator=null;NRun.Instance=null;NEventRoom.Instance=null;NMapScreen.Instance=null;}
+        public void Dispose(){Session.Dispose();CardSelectCmd.Selector=null;CardSelectCmd.GenericHandler=null;CardCmd.Handler=null;NativeHook.Modifier=null;CardTransformation.Generator=null;NRun.Instance=null;NEventRoom.Instance=null;NMapScreen.Instance=null;}
+    }
+    private static void GenericDeckTransformTests()
+    {
+        foreach(var key in new[]{"PECK","TORIC_TOUGHNESS","HELD_OUT_REPLACEMENT"})
+        {
+            using var f=new TransformFixture("GENERIC_"+key,1,domain:6,genericDeck:true);
+            f.GenericDomain=cards=>cards.Take(4).Reverse();f.Generate=_=>f.NewCard(key);
+            var child=f.Start();Check(child.Status=="child"&&child.Child!.ContractVersion=="card_transform_v2","generic transform admission");
+            f.Act(child,"select:1");Check(f.Before.Children.Count==1&&f.After.Children.Count==0,"original-only generic preview");
+            f.Act(child,"confirm");Check(f.Child(child) is CardSelectionV1ResolvedResult&&f.CompletionValid,"generic transform exact journal");
+            Check(ReferenceEquals(f.Originals.Single(),f.Cards[2])&&f.FinalCards.Single().Id.Entry==key,"sorted generic target and replacement");
+            var next=f.Session.Read();Check(next.Phase=="proceed","generic transform returns parent");
+            f.Session.Apply(next.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","generic transform map handoff");
+        }
+        using(var f=new TransformFixture("GENERIC_DELAY",1,genericDeck:true,delayedCreation:true,delayedCompletion:true,partialInsertion:true,deferredConfirm:true))
+        {
+            Check(f.Start().Status=="waiting","generic creation wait");f.CreationGate.SetResult();var child=f.Session.Read();
+            f.Act(child,"select:3");f.Act(child,"confirm");Check(f.Child(child) is CardSelectionV1Observation {Status:"waiting"},"generic delayed selector");
+            f.AdvanceConfirm();Check(f.Child(child) is CardSelectionV1Observation {Status:"waiting"},"generic waits command");
+            f.AdvanceInsertion();Check(f.Child(child) is CardSelectionV1Observation {Status:"waiting"},"generic waits chosen");
+            f.CompletionGate.SetResult();Check(f.Child(child) is CardSelectionV1ResolvedResult,"generic delayed completion");
+        }
+        foreach(var fault in new[]{"prompt","table","null_prompt","count","cancel","duplicate","foreign","untransformable"})
+        {
+            using var f=new TransformFixture("GENERIC_BAD_"+fault,1,genericDeck:true);
+            if(fault=="prompt")f.GenericPrompt=new("card_selection","TO_REMOVE");
+            if(fault=="table")f.GenericPrompt=new("events","TO_TRANSFORM");
+            if(fault=="null_prompt")f.GenericPrompt=null;
+            if(fault=="count")f.MinimumOverride=0;
+            if(fault=="cancel")f.Cancelable=true;
+            if(fault=="duplicate")f.GenericDomain=cards=>cards.Take(2).Concat(cards.Take(1));
+            if(fault=="foreign")f.GenericDomain=cards=>cards.Take(2).Append(f.NewCard("FOREIGN"));
+            if(fault=="untransformable")f.GenericDomain=cards=>cards.Take(2).Append(f.Cards[^1]);
+            Check(f.Start().Status=="unsupported","generic rejects "+fault);Check(f.SelectCalls==0&&f.ConfirmCalls==0,"generic bad request no child input");
+        }
+        foreach(var fault in new[]{"legality","preview","result","command","delta"})
+        {
+            using var f=new TransformFixture("GENERIC_MUTATE_"+fault,1,genericDeck:true);
+            var child=f.Start();f.Act(child,"select:0");
+            if(fault=="legality")f.Cards[0].IsTransformable=false;
+            if(fault=="preview")((NPreviewCardHolder)f.Before.Children[0]).CardNode.Model=f.Cards[1];
+            if(fault=="result")f.RequestResult=_=>new[]{f.Cards[1]};
+            if(fault=="command")f.FaultCommand=true;
+            if(fault=="delta")f.AfterEffect=()=>f.Player.Deck.Cards.Add(f.NewCard("UNRELATED"));
+            if(fault is "legality" or "preview")Check(f.Child(child) is CardSelectionV1Observation {Status:"unsupported"}&&f.ConfirmCalls==0,"generic predispatch "+fault);
+            else {f.Act(child,"confirm");Check(f.Child(child) is CardSelectionV1Observation {Status:"unsupported"},"generic unverified "+fault);}
+        }
+        using(var f=new RemovalFixture("FORWARDED_REMOVAL",1,1))
+        {
+            var handler=CardSelectCmd.RemovalHandler;
+            CardSelectCmd.GenericHandler=handler;
+            CardSelectCmd.RemovalHandler=(player,prefs,filter)=>CardSelectCmd.FromDeckGeneric(player,prefs,filter);
+            var child=f.Start();Check(child.Status=="child"&&child.Child!.Operation=="remove","nested generic removal stays removal");
+            f.Act(child,"select:0");f.Act(child,"confirm");Check(f.Child(child) is CardSelectionV1ResolvedResult,"nested generic removal resolves");
+            CardSelectCmd.GenericHandler=null;
+        }
     }
     private static void TransformTests()
     {

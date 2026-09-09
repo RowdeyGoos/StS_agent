@@ -458,6 +458,43 @@ Philosophers remains a live acceptance candidate. Mixed card/item sets, repeated
 Offers within one option, SpecialCardReward, rerolls/multiple picks, substituted
 cards and nested pickup selectors remain separate gaps.
 
+## Implemented: generic deck transformation selectors
+
+`FromDeckGeneric` with the native transformation prompt now admits a fixed-one,
+noncancelable `NDeckCardSelectScreen` child. WoodCarvings/Bird and Torus are the
+representative pinned callers: they filter transformable deck cards, show this
+original-card preview, then call `TransformTo<Peck>` or
+`TransformTo<ToricToughness>`. That command forwards through the existing observed
+batch transformation path. This source increment awaits the batch live session.
+
+Admission uses the native prompt's localization table/key (`card_selection` /
+`TO_TRANSFORM`), not event names or rendered English. The prompt classifies intent;
+it does not prove the eventual effect. The screen's filtered/sorted original list
+is authoritative: 2–64 distinct, owned, transformable baseline cards with exact
+allocated holder bindings. The bridge does not rerun filter or sorting callbacks.
+Other prompts, optional/multiple selection, cancellation and selectorless automatic
+completion remain outside this increment. The existing removal request's nested
+`FromDeckGeneric` call retains its outer request ownership.
+
+The child reuses `card_transform_v2`: select one advertised slot, then confirm its
+exact original-card preview. The generic screen does not display a generated
+replacement preview, so none is fabricated. Before confirmation the adapter checks
+current native legality, expected selection, preview/control identity and deck,
+then reserves the original before input can complete the selector task. The
+existing journal must witness the selected original's removal, exact replacement
+and insertion order, successful command result, unchanged survivors, completed
+selector/request/Chosen tasks and closed overlay. A prompt, click receipt or deck
+change alone cannot report success. Public wire shape and host actions are unchanged.
+
+Offline cases exercise Bird/Peck, Torus/ToricToughness and a held-out replacement,
+filtered/reversed domains, original-only previews, delayed creation/selection/
+command/parent completion, prompt/domain/legality/preview mutations, wrong request
+results, failed commands, unrelated deck additions and removal forwarding. Actual
+native-to-wire-to-Python cases also cover both named replacement shapes, callback
+failure and a lost confirmation reply without retry. The next live acceptance case
+is Wood Carvings Bird or Torus with at least two eligible cards, followed by exact
+replacement verification and a fresh actionable map.
+
 ## Separate remaining questions
 
 An allocated off-screen holder can accept direct input. A card without an
@@ -471,8 +508,8 @@ for all 68 pinned types and concrete callers for the remaining work. Repeated-pa
 progress and pre-selector append-only additions are implemented above. Deck
 changes after selectors, other pre-selector deck mutations, mixed card/item reward sets and broader pickup composition, ancient and
 combat layouts, optional/sequential pickup children and custom
-surfaces are distinct gaps. WoodCarvings uses a generic deck selector before a
-fixed-result transformation; it does not enter the supported transform screen.
+surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
+is implemented above; its live acceptance remains open.
 
 Choose the next feature from those source-backed callers. Positive variable
 transformation already works offline; Claws supplies a concrete optional zero-to-six

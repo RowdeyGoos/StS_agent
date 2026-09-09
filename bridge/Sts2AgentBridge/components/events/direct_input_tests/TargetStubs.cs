@@ -104,6 +104,10 @@ namespace MegaCrit.Sts2.Core.Commands
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public static Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>> FromDeckForUpgrade(MegaCrit.Sts2.Core.Entities.Players.Player player,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs){Calls++;return Handler!(player,prefs);}
         public static Func<MegaCrit.Sts2.Core.Entities.Players.Player,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs,Func<MegaCrit.Sts2.Core.Models.CardModel,bool>?,Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>>>? RemovalHandler;
+        public static Func<MegaCrit.Sts2.Core.Entities.Players.Player,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs,Func<MegaCrit.Sts2.Core.Models.CardModel,bool>?,Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>>>? GenericHandler;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>> FromDeckGeneric(MegaCrit.Sts2.Core.Entities.Players.Player player,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs,Func<MegaCrit.Sts2.Core.Models.CardModel,bool>? filter=null,Func<MegaCrit.Sts2.Core.Models.CardModel,int>? sorting=null) {Calls++;return GenericHandler!(player,prefs,filter);}
+
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public static Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>> FromDeckForRemoval(MegaCrit.Sts2.Core.Entities.Players.Player player,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs,Func<MegaCrit.Sts2.Core.Models.CardModel,bool>? filter=null) {Calls++;return RemovalHandler!(player,prefs,filter);}
         public static Func<MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext,List<MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult>,MegaCrit.Sts2.Core.Entities.Players.Player,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs,Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>>>? RewardHandler;
@@ -400,6 +404,8 @@ namespace MegaCrit.Sts2.Core.Nodes.Events {
 namespace MegaCrit.Sts2.Core.CardSelection {
     public readonly record struct CardSelectorPrefs(int MinSelect,int MaxSelect,bool Cancelable=false,bool RequireManualConfirmation=false)
     {
+        public MegaCrit.Sts2.Core.Localization.LocString? Prompt {get;init;}
+        public static MegaCrit.Sts2.Core.Localization.LocString TransformSelectionPrompt=>new("card_selection","TO_TRANSFORM");
         public Comparison<MegaCrit.Sts2.Core.Models.CardModel>? Comparison {get;init;}
         public bool UnpoweredPreviews {get;init;}
         public bool PretendCardsCanBePlayed {get;init;}
@@ -623,3 +629,5 @@ internal static class GeometryTrace
         return Scripts.TryGetValue(key,out var script)?(T)script(count,value)!:value;
     }
 }
+
+namespace MegaCrit.Sts2.Core.Localization { public sealed record LocString(string LocTable,string LocEntryKey); }

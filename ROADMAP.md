@@ -21,8 +21,9 @@ process. Completed packets and old campaign instructions are historical referenc
    one appended grant has live acceptance through Amalgamator/CombineStrikes,
    exact two-card removal, separate grant observation and fresh core map. Fixed
    multi-card enchantment, 2–8 potion/relic reward sets, ordinary singleton
-   card reward menus, and 2–8 card reward menus within one set now have offline
-   evidence and await the planned batch live session. Next address mixed card/item sets,
+   card reward menus, 2–8 card reward menus within one set, and fixed-one generic
+   deck transformations (WoodCarvings Bird/Torus) now have offline evidence and
+   await the planned batch live session. Next address mixed card/item sets,
    full-inventory/nested pickup handling and remaining narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
@@ -47,7 +48,7 @@ The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concre
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
 include broader deck changes after selectors and other pre-selector mutations, mixed card/item reward sets and broader pickup
 composition, ancient/combat layouts, embedded combat, optional
-and sequential pickup selectors, generic-deck transformations, and custom/terminal
+and sequential pickup selectors, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.
 
 Keep representative held-out/live coverage for implemented families separate from

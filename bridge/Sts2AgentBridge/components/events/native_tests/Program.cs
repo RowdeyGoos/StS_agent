@@ -154,6 +154,7 @@ internal static partial class Program
         UpgradeHolderInputTests();
         MultiUpgradeTests();
         TransformTests();
+        GenericDeckTransformTests();
         ItemTests();
         VariableTransformTests();
         RepeatedPageTests();

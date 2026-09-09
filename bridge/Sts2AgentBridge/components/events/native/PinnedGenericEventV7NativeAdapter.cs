@@ -201,6 +201,11 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             var native=new GenericEventV7TransformAdapter(b,context,transform);
             try{return new GenericEventV7CardChildSession(new CardTransformV2Session(context,native));}catch{native.Dispose();throw;}
         }
+        if(b.GenericDeckTransform && b.Screen is NDeckCardSelectScreen generic)
+        {
+            var native=new GenericEventV7DeckTransformAdapter(b,context,generic);
+            try{return new GenericEventV7CardChildSession(new CardTransformV2Session(context,native));}catch{native.Dispose();throw;}
+        }
         ICardSelectionV1NativeAdapter adapter=b.Screen is NDeckUpgradeSelectScreen upgrade
             ?(b.Prefs.MaxSelect==1?new GenericEventV7CardAdapter(b,context,upgrade):new GenericEventV7MultiUpgradeAdapter(b,context,upgrade))
             :b.Screen is NDeckEnchantSelectScreen enchant?(b.Prefs.MaxSelect==1?new GenericEventV7CardAdapter(b,context,enchant):new GenericEventV7RemovalAdapter(b,context,enchant))

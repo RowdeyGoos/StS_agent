@@ -19,7 +19,9 @@ Broader post-selector deck changes remain gaps. Fixed multi-card enchantment and
 singleton CardReward menus also have offline choose/Skip/dismiss coverage, with
 BrainLeech/Rip as the representative caller. Sets of 2–8 ordinary CardReward
 entries now also have offline choose/Skip/final-dismissal coverage, with Colorful
-Philosophers as the representative caller. Mixed card/item sets, full-inventory
+Philosophers as the representative caller. [Fixed-one generic deck transformations](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors)
+now have offline original-preview and exact-effect coverage for the WoodCarvings
+Bird/Torus interaction shape. Mixed card/item sets, full-inventory
 handling and nested pickup composition remain gaps. These
 new increments await the next batch live session.
 The inventory and gap matrix below retain the original research comparison at

@@ -61,6 +61,7 @@ internal sealed class GenericEventV7Binding
     internal NCardGridSelectionScreen? Screen;
     internal CardSelectionV1Operation Operation=CardSelectionV1Operation.Upgrade;
     internal Func<CardModel,bool>? RemovalPredicate;
+    internal bool GenericDeckTransform;
     internal EnchantmentModel? EnchantmentModel;
     internal CardSelectionV1Enchantment? Enchantment;
     internal GenericEventV7Admission? Admission;

@@ -69,7 +69,8 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromDeckForEnchantment),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!,
             typeof(NDeckEnchantSelectScreen).GetMethod(nameof(NDeckEnchantSelectScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!,
             typeof(NCardRewardSelectionScreen).GetMethod(nameof(NCardRewardSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardCreationResult>),typeof(IReadOnlyList<CardRewardAlternative>)})!,
-            typeof(NCardRewardSelectionScreen).GetMethod(nameof(NCardRewardSelectionScreen.OptionSelected),Type.EmptyTypes)!
+            typeof(NCardRewardSelectionScreen).GetMethod(nameof(NCardRewardSelectionScreen.OptionSelected),Type.EmptyTypes)!,
+            typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromDeckGeneric),new[]{typeof(Player),typeof(CardSelectorPrefs),typeof(Func<CardModel,bool>),typeof(Func<CardModel,int>)})!
         };
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
@@ -86,7 +87,9 @@ public sealed class GenericEventV7Hooks : IDisposable
             throw new InvalidOperationException("Enchantment hook signature mismatch.");
         if(!targets[20].IsStatic||!targets[20].IsPublic||targets[20].ReturnType!=typeof(NCardRewardSelectionScreen)||
             targets[21].IsStatic||!targets[21].IsPublic||targets[21].ReturnType!=typeof(Task<int?>))throw new InvalidOperationException("Card reward hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask"};
+        if(!targets[22].IsStatic||!targets[22].IsPublic||targets[22].IsGenericMethod||targets[22].ReturnType!=typeof(Task<IEnumerable<CardModel>>))
+            throw new InvalidOperationException("Generic deck hook signature mismatch.");
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck"};
         _installed=this;
         try
         {
@@ -431,6 +434,38 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ScreenFinalizer(Exception? __exception, State? __state)
     { if (__exception is not null && __state?.Binding is { } b) b.Failed=true; }
+    // The native prompt classifies intent, not success. Only the observed
+    // transformation journal can establish a completed effect.
+    private static bool TransformPrompt(CardSelectorPrefs prefs)
+    {
+        var expected=CardSelectorPrefs.TransformSelectionPrompt;
+        return prefs.Prompt is {} prompt && prompt.LocTable==expected.LocTable && prompt.LocEntryKey==expected.LocEntryKey;
+    }
+    private static void GenericDeckPrefix(Player __0,CardSelectorPrefs __1,Func<CardModel,bool>? __2,Func<CardModel,int>? __3,out State __state)
+    {
+        __state=new State {Previous=Request.Value};var b=Parent.Value;
+        // Removal forwards through FromDeckGeneric. Its outer request retains
+        // ownership and its own completion task; do not admit a second child.
+        if(b is not null&&ReferenceEquals(Request.Value,b)&&b.Operation==Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Remove)
+        {
+            if(!Owns(b)||b.Closed||!ReferenceEquals(__0,b.Player)||!b.SamePrefs(__1)||b.ScreenSeen)b.Failed=true;
+            return;
+        }
+        if(b is null){if(_armed is not null)_armed.Failed=true;return;}
+        __state.Binding=b;
+        try
+        {
+            if(!Owns(b)||b.Closed||b.RequestSeen||!ReferenceEquals(__0,b.Player)||!b.ContextValid(false)||!b.BindSelectionDeck()||
+                !TransformPrompt(__1)||__1.MinSelect!=1||__1.MaxSelect!=1||__1.Cancelable)
+            {b.Failed=true;return;}
+            b.RequestSeen=true;b.Prefs=__1;b.GenericDeckTransform=true;
+            b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Transform;
+            Request.Value=b;
+        }
+        catch{b.Failed=true;}
+    }
+    private static void GenericDeckPostfix(Task<IEnumerable<CardModel>> __result,State? __state)=>UpgradePostfix(__result,__state);
+    private static void GenericDeckFinalizer(Exception? __exception,State? __state)=>UpgradeFinalizer(__exception,__state);
     private static void RemovalPrefix(Player __0, CardSelectorPrefs __1, Func<CardModel,bool>? __2, out State __state)
     {
         __state=new State {Previous=Request.Value};
@@ -457,12 +492,12 @@ public sealed class GenericEventV7Hooks : IDisposable
         try
         {
             if(!Owns(b)||b.Closed||b.ScreenSeen||!ReferenceEquals(Parent.Value,b)||!b.ContextValid(false)||
-                b.Operation!=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Remove||
-                !b.SamePrefs(__1)||!b.MatchesCurrentDeck()||__0.Count<=b.Prefs.MaxSelect||__0.Count>64)
+                (b.Operation!=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Remove&&!b.GenericDeckTransform)||
+                (b.GenericDeckTransform&&!TransformPrompt(__1))||!b.SamePrefs(__1)||!b.MatchesCurrentDeck()||__0.Count<=b.Prefs.MaxSelect||__0.Count>64)
             {b.Failed=true;return;}
             b.ScreenSeen=true;
             var originals=new CardModel[__0.Count];for(int i=0;i<originals.Length;i++)originals[i]=__0[i];
-            if(originals.Any(c=>c is null||!c.IsRemovable)||originals.Distinct(ReferenceEqualityComparer.Instance).Count()!=originals.Length||
+            if(originals.Any(c=>c is null||(b.GenericDeckTransform?!c.IsTransformable:!c.IsRemovable)||!ReferenceEquals(c.Owner,b.Player)||!ReferenceEquals(c.RunState,b.RunState))||originals.Distinct(ReferenceEqualityComparer.Instance).Count()!=originals.Length||
                 originals.Any(c=>!b.SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
             {b.Failed=true;return;}
             b.Originals=originals;
@@ -476,7 +511,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         {
             if(__result is null||b.Screen is not null||__result.GetType()!=typeof(NDeckCardSelectScreen)||
                 !b.ContextValid(false)||!b.MatchesCurrentDeck())b.Failed=true;
-            else b.Screen=__result;
+            else {b.Screen=__result;if(b.GenericDeckTransform)b.Transform=new GenericEventV7TransformState(b);}
         }
         catch {b.Failed=true;}
     }

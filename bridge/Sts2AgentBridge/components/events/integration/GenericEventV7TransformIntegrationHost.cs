@@ -13,6 +13,9 @@ internal static partial class GenericEventV7NativeIntegrationHost
         var cases = new Dictionary<string, (string Name, int Count, int Domain, bool Manual, int[]? Batches)>
         {
             ["T_PRE_ADD"] = ("TRIAL_NONDESCRIPT_INNOCENT", 2, 5, false, new[] { 1, 1 }),
+            ["T_GENERIC_BIRD"] = ("WOOD_CARVINGS_BIRD", 1, 4, false, null),
+            ["T_GENERIC_TORUS"] = ("WOOD_CARVINGS_TORUS", 1, 4, false, null),
+            ["T_GENERIC_FAULT"] = ("GENERIC_CALLBACK_FAULT", 1, 4, false, null),
             ["T_FIRST"] = ("FIRST_TRANSFORM", 1, 4, false, null),
             ["T_ANOTHER"] = ("ANOTHER_TRANSFORM", 2, 5, true, null),
             ["T_HELD_OUT"] = ("HELD_OUT_TRANSFORM", 2, 5, false, null),
@@ -31,7 +34,9 @@ internal static partial class GenericEventV7NativeIntegrationHost
             manual: config.Manual, batchSizes: config.Batches,
             delayedCreation: scenario == "T_DELAYED_CREATION", delayedCompletion: scenario == "T_DELAYED_COMPLETION",
             partialInsertion: scenario == "T_PARTIAL", substitute: scenario is "T_SUBSTITUTE" or "T_MIXED" or "T_MIXED_BAD_UPGRADE",
-            deferredConfirm: scenario == "T_DEFERRED_CONFIRM");
+            deferredConfirm: scenario == "T_DEFERRED_CONFIRM",genericDeck: scenario.StartsWith("T_GENERIC_",StringComparison.Ordinal));
+        if(scenario.StartsWith("T_GENERIC_",StringComparison.Ordinal))fixture.Generate=_=>fixture.NewCard(scenario=="T_GENERIC_TORUS"?"TORIC_TOUGHNESS":"PECK");
+        if(scenario=="T_GENERIC_FAULT")fixture.FaultCallback=true;
         if (scenario is "T_MIXED" or "T_MIXED_BAD_UPGRADE")
         { fixture.RepeatTransforms = 1; fixture.ContinueWithUpgrade = true; }
         if (scenario == "T_NOTIFICATION") fixture.Player.Deck.CardAdded = _ => fixture.Player.Deck.Cards.Add(fixture.NewCard("Extra"));
