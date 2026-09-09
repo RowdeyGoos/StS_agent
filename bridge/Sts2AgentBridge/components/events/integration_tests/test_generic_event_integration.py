@@ -28,7 +28,7 @@ class Exchange:
         self.native = native
         self.transform = native and scenario.startswith(('T_', 'V_'))
         self.variable_transform = native and scenario.startswith('V_')
-        self.card_reward = native and scenario.startswith(("CR_","CRS_"))
+        self.card_reward = native and scenario.startswith(("CR_","CRS_","MR_"))
         self.item = native and scenario.startswith('I_')
         self.repeated_page = native and scenario.startswith('P_')
         self.process = subprocess.Popen([dotnet, str(fixture), scenario],

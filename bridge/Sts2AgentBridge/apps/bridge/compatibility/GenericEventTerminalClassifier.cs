@@ -99,7 +99,7 @@ internal static class GenericEventTerminalClassifier
         if(item) {
             int count=value.GetProperty("offer_count").GetInt32();
             string version=Text(value,"kind")=="item" ? (count==1?"item_v1":"item_set_v1") : (count==1?"card_reward_v1":"card_reward_set_v1");
-            return count is >=1 and <=8 && Text(value,"contract_version")==version;
+            return count is >=1 and <=8 && (Text(value,"contract_version")==version||Text(value,"kind")=="card_reward"&&count>=2&&Text(value,"contract_version")=="mixed_reward_set_v1");
         }
         return
             Text(value,"kind")=="card_selection"&&Text(value,"contract_version")==GenericEventV7Families.ContractVersion(Text(value,"operation")??"",value.GetProperty("max_select").GetInt32())&&
@@ -135,9 +135,11 @@ internal static class GenericEventTerminalClassifier
 
     private static TerminalClassification Reward(JsonElement p,JsonElement child,string nonce,bool apply) {
         if(p.ValueKind!=JsonValueKind.Object || Text(p,"version")!=Text(child,"contract_version") || Text(p,"session_nonce")!=nonce)return TerminalClassification.Invalid;
-        bool set=Text(child,"contract_version")=="card_reward_set_v1";
+        bool mixed=Text(child,"contract_version")=="mixed_reward_set_v1";
+        bool set=mixed||Text(child,"contract_version")=="card_reward_set_v1";
         int count=child.GetProperty("offer_count").GetInt32();
         bool Action(string? action) {
+            if(mixed&&Collect(action,out int collected)&&collected<count)return true;
             if(action is null || !GenericEventTransportRequestParser.RewardAction(Encoding.ASCII.GetBytes(action)))return false;
             if(action=="dismiss")return true;
             if(!set)return action is "open" or "skip" || action.Length==8 && action.StartsWith("choose:",StringComparison.Ordinal);
@@ -149,18 +151,31 @@ internal static class GenericEventTerminalClassifier
                 "rejected" or "unsupported" or "uncertain"=>TerminalClassification.Terminal,_=>TerminalClassification.Invalid};
         }
         string[] common={"version","session_nonce","status","phase","decision_id","cards","can_skip","legal_actions","prior_results","selected_slot"};
-        if(!Keys(p,set?System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(common,new[]{"offer_count","offer_index","settled"})):common))return TerminalClassification.Invalid;
+        if(!Keys(p,set?System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(common,(mixed?new[]{"offer_count","offer_index","settled","offer_kinds","item"}:new[]{"offer_count","offer_index","settled"}))):common))return TerminalClassification.Invalid;
         if(set) {
             var settled=p.GetProperty("settled");
             if(p.GetProperty("offer_count").GetInt32()!=count || settled.ValueKind!=JsonValueKind.Array || settled.GetArrayLength()>count ||
                 p.GetProperty("offer_index").GetInt32()!=settled.GetArrayLength() || !Null(p.GetProperty("selected_slot")))return TerminalClassification.Invalid;
+        }
+        if(mixed) {
+            var kinds=p.GetProperty("offer_kinds");var item=p.GetProperty("item");int index=p.GetProperty("offer_index").GetInt32();
+            if(kinds.ValueKind!=JsonValueKind.Array||kinds.GetArrayLength()!=count)return TerminalClassification.Invalid;
+            bool card=false,other=false;
+            foreach(var k in kinds.EnumerateArray()){string? text=k.GetString();if(text=="card")card=true;else if(text is "potion" or "relic")other=true;else return TerminalClassification.Invalid;}
+            if(!card||!other)return TerminalClassification.Invalid;
+            if(Text(p,"phase")=="collect") {
+                if(Text(p,"status")!="ready"||index>=count||kinds[index].GetString()=="card"||Item(item,nonce,false)!=TerminalClassification.NonTerminal||Text(item,"status")!="ready"||
+                    Text(item,"decision_id")!=Text(p,"decision_id")||item.GetProperty("offers")[0].GetProperty("index").GetInt32()!=index||
+                    Text(item.GetProperty("offers")[0],"kind")!=kinds[index].GetString()||p.GetProperty("cards").GetArrayLength()!=0||p.GetProperty("can_skip").GetBoolean()||
+                    p.GetProperty("legal_actions").GetArrayLength()!=1||p.GetProperty("legal_actions")[0].GetString()!="collect:"+index)return TerminalClassification.Invalid;
+            }else if(!Null(item))return TerminalClassification.Invalid;
         }
         var cards=p.GetProperty("cards");var actions=p.GetProperty("legal_actions");var history=p.GetProperty("prior_results");
         if(cards.ValueKind!=JsonValueKind.Array || cards.GetArrayLength()>5 || actions.ValueKind!=JsonValueKind.Array || actions.GetArrayLength()>6 ||
             history.ValueKind!=JsonValueKind.Array || history.GetArrayLength()>2*count+1 || p.GetProperty("can_skip").ValueKind is not (JsonValueKind.True or JsonValueKind.False))return TerminalClassification.Invalid;
         foreach(var action in actions.EnumerateArray())if(!Action(action.GetString()))return TerminalClassification.Invalid;
         string? status=Text(p,"status"),phase=Text(p,"phase");
-        if(status=="ready")return Hex(Text(p,"decision_id"),64) && actions.GetArrayLength()>0 && phase is "open" or "choose" or "dismiss"
+        if(status=="ready")return Hex(Text(p,"decision_id"),64) && actions.GetArrayLength()>0 && (phase is "open" or "choose" or "dismiss" || mixed&&phase=="collect")
             ?TerminalClassification.NonTerminal:TerminalClassification.Invalid;
         if(Text(p,"decision_id")!="" || cards.GetArrayLength()!=0 || actions.GetArrayLength()!=0 || p.GetProperty("can_skip").GetBoolean())return TerminalClassification.Invalid;
         return (status,phase) switch {("waiting","waiting")=>TerminalClassification.NonTerminal,

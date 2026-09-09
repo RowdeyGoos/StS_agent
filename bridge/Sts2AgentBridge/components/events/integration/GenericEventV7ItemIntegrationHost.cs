@@ -149,9 +149,11 @@ internal static partial class GenericEventV7NativeIntegrationHost
     }
 
     private static int RunCardRewardSet(string scenario) {
-        if(!new[]{"CRS_TWO","CRS_THREE","CRS_EIGHT","CRS_MIXED","CRS_SKIP","CRS_OFFER","CRS_COLLECTION","CRS_CHOSEN","CRS_DEFERRED","CRS_OWNER","CRS_CLAIM","CRS_DECK","CRS_WRONG","CRS_DISMISS_DISABLED"}.Contains(scenario))return 2;
-        using var f=new Program.CardRewardSetFixture(scenario=="CRS_TWO"?2:scenario is "CRS_EIGHT" or "CRS_SKIP"?8:3,chosenDelay:scenario=="CRS_CHOSEN") {
-            DelayOffer=scenario=="CRS_OFFER",DelayCollection=scenario=="CRS_COLLECTION",DeferInput=scenario=="CRS_DEFERRED",WrongInsertion=scenario=="CRS_WRONG"
+        if(!new[]{"MR_COFFER","MR_SKIP","MR_FIRST","MR_EIGHT","MR_COLLECTION","MR_OFFER","MR_CHOSEN","MR_LATE_SLOT","CRS_TWO","CRS_THREE","CRS_EIGHT","CRS_MIXED","CRS_SKIP","CRS_OFFER","CRS_COLLECTION","CRS_CHOSEN","CRS_DEFERRED","CRS_OWNER","CRS_CLAIM","CRS_DECK","CRS_WRONG","CRS_DISMISS_DISABLED"}.Contains(scenario))return 2;
+        string[]? kinds=scenario.StartsWith("MR_",StringComparison.Ordinal)?scenario=="MR_EIGHT"?new[]{"card","relic","card","potion","relic","card","potion","relic"}:
+            scenario is "MR_FIRST" or "MR_COLLECTION" or "MR_LATE_SLOT"?new[]{"potion","card","potion"}:new[]{"card","potion"}:null;
+        using var f=new Program.CardRewardSetFixture(scenario=="CRS_TWO"?2:scenario is "CRS_EIGHT" or "CRS_SKIP"?8:3,chosenDelay:scenario is "CRS_CHOSEN" or "MR_CHOSEN",kinds:kinds) {
+            DelayOffer=scenario is "CRS_OFFER" or "MR_OFFER" or "MR_LATE_SLOT",DelayCollection=scenario is "CRS_COLLECTION" or "MR_COLLECTION",DeferInput=scenario=="CRS_DEFERRED",WrongInsertion=scenario=="CRS_WRONG"
         };
         if(scenario=="CRS_DISMISS_DISABLED")f.Dismiss.IsEnabled=false;
         Program.RetireBeforeChosen(f.World.Room.Layout);
@@ -180,12 +182,14 @@ internal static partial class GenericEventV7NativeIntegrationHost
                     if(scenario=="CRS_DECK")f.World.Player.Deck.Cards.Remove(f.Cards[0][0]);
                 }
                 if(payload.GetProperty("status").GetString()=="waiting") {
+                    if(scenario=="MR_COLLECTION"&&f.Collected.Count==1){released=true;f.CollectionGate.SetResult();}
                     if(scenario=="CRS_COLLECTION"&&f.Chosen.Count==1){released=true;f.CollectionGate.SetResult();}
                     if(scenario=="CRS_DEFERRED"&&f.Chosen.Count==1){released=true;f.PendingInput!();f.DeferInput=false;}
                     if(payload.GetProperty("settled").GetArrayLength()==f.Rewards.Length) {
                         released=true;
-                        if(scenario=="CRS_OFFER")f.OfferGate.SetResult();
-                        if(scenario=="CRS_CHOSEN")f.World.AdvanceChosen();
+                        if(scenario is "CRS_OFFER" or "MR_OFFER")f.OfferGate.SetResult();
+                        if(scenario=="MR_LATE_SLOT")f.World.Player.PotionSlots[1]=null;
+                        if(scenario is "CRS_CHOSEN" or "MR_CHOSEN")f.World.AdvanceChosen();
                         if(scenario=="CRS_DISMISS_DISABLED")f.Dismiss.IsEnabled=true;
                     }
                 }

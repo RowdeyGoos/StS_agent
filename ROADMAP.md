@@ -25,8 +25,10 @@ process. Completed packets and old campaign instructions are historical referenc
    singleton card reward; Colorful Philosophers passed three card menus with
    choose/Skip/choose and final dismissal. Other menu counts/outcomes retain offline
    evidence. Fixed-one generic deck transformation
-   now has WoodCarvings/Bird live acceptance; Torus remains a branch candidate. Next address mixed card/item sets,
-   full-inventory/nested pickup handling and remaining narrow
+   now has WoodCarvings/Bird live acceptance; Torus remains a branch candidate. Mixed card/item sets
+   now have unreleased native/C#/Python implementation, with Lost Coffer's
+   card-plus-potion pickup as the concrete shape. Ancient entry still blocks its
+   full Neow route. Next address full-inventory/nested pickup handling and remaining narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.
@@ -48,7 +50,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
-include broader deck changes after selectors and other pre-selector mutations, mixed card/item reward sets and broader pickup
+include broader deck changes after selectors and other pre-selector mutations, broader pickup
 composition, ancient/combat layouts, embedded combat, optional
 and sequential pickup selectors, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.

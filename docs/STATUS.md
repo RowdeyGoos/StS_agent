@@ -16,7 +16,25 @@ Colorful Philosophers' three menus with choose/Skip/choose and final dismissal.
 Each successful case independently verified a fresh core map. Colorful Philosophers
 added Fear+ and Necro Mastery, skipped the middle menu and reconciled all nine
 actions. These cases do not establish all counts, branches or full-inventory /
-nested pickup handling. Mixed card/item sets are the next concrete feature gap.
+nested pickup handling.
+
+The checkout now implements **mixed card/item reward sets** (`mixed_reward_set_v1`)
+with ordered card choice/Skip and potion/relic collection, typed settlements and
+one final dismissal when needed. This is an unreleased, offline-tested increment.
+Lost Coffer supplies the pinned card-plus-potion caller; Neow ancient entry remains
+a prerequisite for its full live route. See the
+[mixed-set contract](GENERIC_EVENTS.md#implemented-offline-mixed-carditem-reward-sets).
+Its focused event gate passed **15 groups in 238.607 seconds**, including **6,417
+native assertions**, **125 host tests** and **341 C#/Python cases** (279 through
+actual native adapters). Shared bridge validation passed **689 checks**; the
+production build passed in **1.772 seconds**. Independent semantic review found
+no blockers; item reentry and cleanup interference regressions also passed.
+A final fixture refinement uses three-card mixed menus, matching Lost Coffer;
+the affected **953 native reward-set checks** and **69 native/host cases** passed
+again after that test-only change. Production sources were unchanged.
+Evidence outputs: `/private/tmp/sts-bridge-ajht2u5w` (event gate),
+`/private/tmp/sts-mixed-boundary` (shared checks) and
+`/private/tmp/sts-bridge-x6aizyt2` (production build). No live installation started.
 
 The current release is
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source
@@ -158,6 +176,7 @@ before any new authorized live operation.
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
 | Enchantment | Single-card v1 has Sapphire Seed/Sown and Grave/Confront live evidence; fixed counts 2–8 in v2 now have native and C#/Python fixtures, including original-card preview, partial effects and deferred input; Prickly Sponge fixed-two Steady and core map passed live; other counts/callers remain open |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
+| Mixed card/item reward sets | Unreleased native/C#/Python implementation for 2–8 entries, exact per-entry effects and final task/closure gating; Lost Coffer card-plus-potion shape is source-backed; no live acceptance, ancient entry or nested pickup support |
 | Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; Potion Courier/Grab Potions three-item set and map passed live; other counts/relic sets remain fixture-only |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
 | Reduced headless/actor stack | Deterministic backend, public encoder, trusted datasets, masked candidate scorer and cloning smoke accepted on structural data; no target-game parity or learned live-policy claim |
@@ -237,8 +256,9 @@ passed Grave/Confront. Removal followed by one appended grant passed
 Amalgamator/CombineStrikes live. Multiple potion/relic rewards, fixed multi-card
 enchantment, ordinary singleton card reward menus now have representative live acceptance.
 Colorful Philosophers also passed three card-reward menus with choose/Skip/choose
-and final dismissal. Mixed card/item sets, full-inventory handling
-and nested pickup composition remain concrete gaps; the static inventory itself
+and final dismissal. Mixed card/item sets now have unreleased offline implementation
+and validation. Full-inventory handling, nested pickup composition and ancient
+entry remain concrete gaps; the static inventory itself
 adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
@@ -248,9 +268,9 @@ observable behavior to test.
 ## Current exclusions
 
 The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in
-deck changes after selectors and other pre-selector deck mutations, mixed card/item reward sets and broader pickup composition,
+deck changes after selectors and other pre-selector deck mutations and broader pickup composition,
 ancient/combat layouts, embedded combat, optional/sequential
-pickup selectors, generic-deck transformation and custom/terminal surfaces.
+pickup selectors, broader generic-deck transformation and custom/terminal surfaces.
 Unallocated holder support remains limited. Variable upgrades, true native
 cancellation and enchantment stacking/replacement remain unsupported but have no
 confirmed caller in the inspected event/immediate-pickup paths. Variable

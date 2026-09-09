@@ -67,6 +67,39 @@ internal static class EventBoundaryTests
                 }
             }
         }
+        {
+            var child=new GenericEventV7Child(1,Decision,"choose:0",2,true,true);
+            var item=new Sts2AgentBridge.Successors.ItemV1.ItemV1Observation(Nonce,"ready",Decision,
+                new[]{new Sts2AgentBridge.Successors.ItemV1.ItemV1Offer(0,"potion","POTION",true)},new string?[]{null},new[]{"collect:0"});
+            var read=new GenericEventV7RewardRead(Nonce,"ready","collect",Decision,Array.Empty<GenericEventV7RewardCard>(),false,new[]{"collect:0"},
+                Array.Empty<GenericEventV7PriorResult>(),null,2,0,Array.Empty<GenericEventV7RewardSettlement>(),new[]{"potion","card"},item);
+            var body=GenericEventV7WireCodec.Decision(Nonce,Parent(child),GenericEventV7WireCodec.CardReward(read,child.ContractVersion));
+            check(Classify(body)==TerminalClassification.NonTerminal,"mixed native item observation remains owned");
+            foreach(string change in new[]{"version","kinds","item","index","nonce","action","cards","skip"}) {
+                var bad=Mutate(body,n=>{var p=n["payload"]!;
+                    if(change=="version")n["child"]!["contract_version"]="card_reward_set_v1";
+                    if(change=="kinds")p["offer_kinds"]![0]="card";
+                    if(change=="item")p["item"]=null;
+                    if(change=="index")p["item"]!["offers"]![0]!["index"]=1;
+                    if(change=="nonce")p["item"]!["session_nonce"]=new string('f',32);
+                    if(change=="action")p["legal_actions"]![0]="collect:1";
+                    if(change=="cards")p["cards"]=new JsonArray(new JsonObject());
+                    if(change=="skip")p["can_skip"]=true;
+                });check(Classify(bad)==TerminalClassification.Invalid,"mixed malformed boundary "+change);
+            }
+            foreach(string action in new[]{"collect:0","collect:1","open:1","choose:1:4","skip:1","dismiss"}) {
+                check(BridgeRequestParser.TryParse(Header(action),out var parsed)&&parsed.IsChild&&parsed.Action==action,"mixed shared request "+action);
+                var receipt=GenericEventV7WireCodec.Action(Nonce,child,null,GenericEventV7WireCodec.CardReward(new GenericEventV7RewardReceipt(Nonce,Decision,action,"accepted"),child.ContractVersion));
+                check(Classify(receipt,GenericEventTransportRoute.ChildPost)==TerminalClassification.NonTerminal,"mixed receipt "+action);
+            }
+            foreach(string action in new[]{"collect:2","collect:00","collect:255"}) {
+                var receipt=GenericEventV7WireCodec.Action(Nonce,child,null,GenericEventV7WireCodec.CardReward(new GenericEventV7RewardReceipt(Nonce,Decision,action,"accepted"),child.ContractVersion));
+                check(Classify(receipt,GenericEventTransportRoute.ChildPost)==TerminalClassification.Invalid,"mixed action bounds "+action);
+            }
+            var done=read with {Status="resolved",Phase="complete",DecisionId="",LegalActions=Array.Empty<string>(),Item=null,OfferIndex=2,
+                Settled=new[]{new GenericEventV7RewardSettlement(0,null,"POTION",null,"collected","potion"),new GenericEventV7RewardSettlement(1,0,"CARD",0,"collected")}};
+            check(Classify(GenericEventV7WireCodec.Decision(Nonce,Parent(child),GenericEventV7WireCodec.CardReward(done,child.ContractVersion)))==TerminalClassification.NonTerminal,"mixed child completion retains parent ownership");
+        }
         foreach(int count in new[]{2,8}) {
             var child=new GenericEventV7Child(1,Decision,"choose:0",count);
             JsonNode Entry(int index) => JsonNode.Parse(ItemWireV1Codec.Encode(new ItemWireV1Envelope(Nonce,"resolved",decisionId:Decision,

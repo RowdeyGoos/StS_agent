@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 
 def run_card_reward_set_cases(args: Any, host: Any, exchange_type: Any) -> int:
-    checks = 0
+    checks = run_mixed_reward_set_cases(args,host,exchange_type)
     def run(scenario: str, wrapper: Callable | None = None) -> tuple[dict, Any]:
         ex = exchange_type(args.dotnet, args.native_fixture, scenario, native=True)
         request = ex.request if wrapper is None else lambda m, r, b: wrapper(ex, m, r, b)
@@ -112,5 +112,86 @@ def run_card_reward_set_cases(args: Any, host: Any, exchange_type: Any) -> int:
         result,ex=run('CRS_THREE',corrupt_old)
         assert changed and result['code']=='invalid_response' and result['child_reconciled']==2 and result['completed_card_children']==0, (field,result)
         assert ex.telemetry[-1]['opens']==ex.telemetry[-1]['choices']==1
+        checks+=1
+    return checks
+
+
+def run_mixed_reward_set_cases(args: Any, host: Any, exchange_type: Any) -> int:
+    checks=0
+    def run(scenario='MR_COFFER',wrapper=None):
+        ex=exchange_type(args.dotnet,args.native_fixture,scenario,native=True)
+        def choose(view):
+            if scenario=='MR_SKIP' and view.payload.get('phase')=='choose':return 'skip:0'
+            return host.first_legal(view)
+        try:
+            result=host.run_event(ex.request if wrapper is None else lambda m,r,b:wrapper(ex,m,r,b),provider=choose,clock=lambda:1.0,sleep=lambda _:None)
+        finally:ex.close()
+        return result,ex
+    for scenario in ('MR_COFFER','MR_SKIP','MR_FIRST','MR_EIGHT','MR_COLLECTION','MR_OFFER','MR_CHOSEN'):
+        result,ex=run(scenario)
+        assert result['status']=='resolved',(scenario,result,ex.envelopes[-1])
+        kinds=['card','relic','card','potion','relic','card','potion','relic'] if scenario=='MR_EIGHT' else ['potion','card','potion'] if scenario in ('MR_FIRST','MR_COLLECTION') else ['card','potion']
+        count=len(kinds);actions=sum(2 if k=='card' else 1 for k in kinds)+int(scenario=='MR_SKIP')
+        assert result['child_attempted']==result['child_accepted']==result['child_reconciled']==actions
+        assert result['completed_card_children']==result['child_episodes']==1 and result['completed_item_children']==0 and result['parent_reconciled']==2
+        children=[v for v in ex.envelopes if v['kind']=='decision' and v['child']]
+        assert all(v['child']['contract_version']=='mixed_reward_set_v1' and v['payload']['offer_kinds']==kinds for v in children)
+        done=[v['payload'] for v in children if v['payload']['status']=='resolved']
+        assert len(done)==1 and len(done[0]['settled'])==count
+        assert [r['kind'] for r in done[0]['settled']]==kinds
+        assert sum(v['payload']['phase']=='collect' for v in children)>=kinds.count('potion')+kinds.count('relic')
+        end=ex.telemetry[-1]
+        assert end['map_open'] and end['overlay_count']==0 and end['opens']==kinds.count('card') and end['dismisses']==int(scenario=='MR_SKIP')
+        assert end['added_slots']==[10*i for i,k in enumerate(kinds) if k=='card' and scenario!='MR_SKIP']
+        checks+=1
+    result,ex=run('MR_LATE_SLOT')
+    assert result['code']=='unsupported_state' and result['completed_card_children']==0 and result['child_reconciled']==4,(result,ex.envelopes[-1])
+    checks+=1
+    for stage in ('collect:0','collect:2','terminal'):
+        changed=False
+        def lose(ex,m,r,b):
+            nonlocal changed
+            response=ex.request(m,r,b);v=json.loads(response)
+            if not changed and v['child'] and (m=='POST' and json.loads(b)['action_id']==stage or stage=='terminal' and m=='GET' and v['payload']['status']=='resolved'):
+                changed=True;response[:]=b'\0'*len(response);raise host.TransportFailure()
+            return response
+        result,ex=run('MR_FIRST',lose)
+        assert changed and result['code']=='transport_failure' and result['completed_card_children']==0
+        assert ex.posts=={'collect:0':2,'collect:2':5,'terminal':5}[stage]
+        checks+=1
+    for change in ('kinds','all_cards','version','extra','nested_kind','nested_index','nested_nonce','nested_decision','nested_key','nested_slots','action','card_phase','null_item','item_on_wait','settled_kind','settled_slot','settled_key','old_bool','early_complete'):
+        changed=False
+        def corrupt(ex,m,r,b):
+            nonlocal changed
+            response=ex.request(m,r,b);v=json.loads(response);p=v['payload']
+            if not changed and m=='GET' and v['child']:
+                if p['phase']=='collect' and p['offer_index']==0 and change not in ('settled_kind','settled_slot','settled_key','old_bool','item_on_wait'):
+                    if change=='kinds':p['offer_kinds']=['relic','card','potion']
+                    if change=='all_cards':p['offer_kinds']=['card']*3
+                    if change=='version':v['child']['contract_version']='card_reward_set_v1'
+                    if change=='extra':p['extra']=1
+                    if change=='nested_kind':p['item']['offers'][0]['kind']='relic'
+                    if change=='nested_index':p['item']['offers'][0]['index']=True
+                    if change=='nested_nonce':p['item']['session_nonce']='f'*32
+                    if change=='nested_decision':p['item']['decision_id']='a'*64
+                    if change=='nested_key':p['item']['offers'][0]['key']='CHANGED'
+                    if change=='nested_slots':p['item']['potion_slots']=[None,None,None]
+                    if change=='action':p['legal_actions']=['collect:2']
+                    if change=='card_phase':p['phase']='open';p['legal_actions']=['open:0'];p['item']=None
+                    if change=='null_item':p['item']=None
+                    if change=='early_complete':p['status']='resolved';p['phase']='complete';p['decision_id']='';p['legal_actions']=[];p['item']=None
+                    changed=True
+                elif p['settled'] and change in ('settled_kind','settled_slot','settled_key','old_bool','item_on_wait'):
+                    if change=='settled_kind':p['settled'][0]['kind']='relic'
+                    if change=='settled_slot':p['settled'][0]['selected_slot']=0
+                    if change=='settled_key':p['settled'][0]['key']='CHANGED'
+                    if change=='old_bool' and p['phase']!='open':return response
+                    if change=='old_bool':p['settled'][0]['offer_index']=False
+                    if change=='item_on_wait':p['item']={}
+                    changed=True
+            response[:]=json.dumps(v,separators=(',',':')).encode();return response
+        result,ex=run('MR_FIRST',corrupt)
+        assert changed and result['code']=='invalid_response' and result['completed_card_children']==0,(change,result)
+        assert ex.telemetry[-1]['opens']==0
         checks+=1
     return checks

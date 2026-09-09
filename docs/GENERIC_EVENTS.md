@@ -407,7 +407,7 @@ packaged in the current combined test release. Brain Leech's choose path passed
 live; singleton Skip/dismiss retains offline evidence. See the
 [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#brain-leech-singleton-card-reward-passed).
 The multiple-entry extension is described below.
-Mixed card/item sets, repeated offers within one option, SpecialCardReward, reroll/multiple picks,
+Mixed card/item sets use the versioned extension below. Repeated offers within one option, SpecialCardReward, reroll/multiple picks,
 hook-substituted cards and nested pickup selectors remain unsupported.
 
 ## Implemented: multiple card reward menus
@@ -434,7 +434,7 @@ valid. The later snapshot includes those verified insertions; this does not admi
 new unrelated additions, removals, reordering or upgrades between menus. All
 reward/list identities, offered models and metadata, prior selection flags,
 collection/choice task identities and results remain retained. Future entries
-cannot collect early. Duplicate rewards/models, mixed card/item sets, linked or
+cannot collect early. Duplicate rewards/models, linked or
 empty rewards, replaced controls and changed prior effects stop the flow.
 The starting deck plus one possible card per reward must fit the 512-card bound. Root Offer and Chosen task failures always
 stop it, including after earlier menus have succeeded.
@@ -468,9 +468,62 @@ Fear+ from the first, native Skip in the second, Necro Mastery from the third,
 final dismissal and an independent fresh map. All nine actions reconciled. See
 [the live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#colorful-philosophers-multiple-menus-and-skip-passed).
 Other counts and all-collected/all-skipped paths retain offline evidence.
-Mixed card/item sets, repeated
+Mixed card/item sets use the versioned extension below. Repeated
 Offers within one option, SpecialCardReward, rerolls/multiple picks, substituted
 cards and nested pickup selectors remain separate gaps.
+
+## Implemented offline: mixed card/item reward sets
+
+`mixed_reward_set_v1` extends the existing set session to **2–8 ordinary card,
+potion and relic rewards in one owned nonterminal RewardsSet**, with at least one
+card and one item. The pinned concrete caller is **LostCoffer.AfterObtained**:
+its generated list contains a three-card CardReward followed by a PotionReward,
+passed to `RewardsCmd.OfferCustom`. Lost Coffer is offered by Neow; reaching that
+pickup through Neow still requires ancient-layout support. This increment covers
+the shared reward surface in native fixtures, not the full ancient route or a
+live-demonstrated Lost Coffer interaction.
+
+Entries retain generated-list order. Cards use `open:N`, `choose:N:S` and legal
+`skip:N`; items use `collect:N` through the existing item adapter and exact native
+collection task. Each item settles after its collection succeeds and its exact
+model/claim effect is verified. Offer and Chosen completion belong to the whole
+set. If any card was skipped, the exact root Proceed control provides one final
+`dismiss`, including when the last entry is an item. Otherwise native automatic
+closure applies. Item Skip and full-inventory replacement are not part of this
+contract; enough potion slots must be free for the whole set before first input.
+
+The admission deck remains fixed through leading items. Only verified card
+insertions advance its baseline. Initial potion slots plus verified insertions,
+settled item claims, assigned slots and collection task identities remain valid
+across later menus and collections. An item pickup that changes the deck, an
+unexpected inventory change during a card menu, a cleared prior claim, changed
+slot/task, early future entry or failed parent task stops the episode. Nested
+pickup selectors and hook-substituted cards remain unsupported.
+
+The six-field descriptor keeps `kind: card_reward`, sets the new contract version
+and includes `offer_count`. Set reads append `offer_kinds` (ordered `card`, `potion`
+or `relic` values) and `item`; each `settled` row appends `kind`. A ready item uses
+`phase: collect`, empty `cards`, `can_skip: false`, its ordinary ready `item_v1`
+observation in `item`, and the same decision/`collect:N` action at the top level.
+All other phases have `item: null`. An item settlement has null `selected_slot`
+and `upgrade_level`, its exact stable key, and `result: collected`. Card rows and
+open/choice/Skip history keep their existing meanings. Pure-card and pure-item
+versions retain their wire shapes and semantics.
+
+History reconciles **two actions per card, one per item**, plus the final dismissal
+when needed. One complete mixed set increments `completed_card_children` once;
+it does not also increment `completed_item_children`. Typed settlements expose
+its contents. Stable prefixes and the variable action count are checked by both
+wire service and host; an uncertain or lost action reply stops without retry.
+The existing 256-read/set and event-wide budgets remain in force.
+
+Native and C#/Python fixtures cover card→potion, potion→card, potion→card→potion,
+eight mixed entries, choose/Skip/final dismissal, actual collection/Offer/Chosen
+delays, failed collections, retained deck/inventory/task changes, insufficient
+capacity, malformed replies, lost replies and item reentry/cleanup interference.
+The production response classifier and shared request parser are included in
+these checks. This source increment is unreleased and has no live acceptance;
+the current release and previous live evidence retain their original identities.
 
 ## Implemented: generic deck transformation selectors
 
@@ -523,7 +576,7 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, mixed card/item reward sets and broader pickup composition, ancient and
+changes after selectors, other pre-selector deck mutations, broader pickup composition, ancient and
 combat layouts, optional/sequential pickup children and custom
 surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
 is implemented above; Bird passed live, while Torus remains a branch candidate.

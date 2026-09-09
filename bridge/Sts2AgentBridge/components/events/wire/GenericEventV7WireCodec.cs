@@ -83,15 +83,19 @@ internal static class GenericEventV7WireCodec
             w.WriteBoolean("can_skip",p.CanSkip);Strings(w,"legal_actions",p.LegalActions);
             w.WriteStartArray("prior_results");foreach(var h in p.PriorResults){w.WriteStartObject();w.WriteString("decision_id",h.DecisionId);w.WriteString("action_id",h.ActionId);w.WriteString("result",h.Result);w.WriteEndObject();}w.WriteEndArray();
             if(p.SelectedSlot is {} slot)w.WriteNumber("selected_slot",slot);else w.WriteNull("selected_slot");
-            if(version=="card_reward_set_v1") {
+            if(version is "card_reward_set_v1" or "mixed_reward_set_v1") {
                 w.WriteNumber("offer_count",p.OfferCount);w.WriteNumber("offer_index",p.OfferIndex);w.WriteStartArray("settled");
                 foreach(var row in p.Settled!) {
                     w.WriteStartObject();w.WriteNumber("offer_index",row.OfferIndex);
                     if(row.SelectedSlot is {} selected)w.WriteNumber("selected_slot",selected);else w.WriteNull("selected_slot");
                     w.WriteString("key",row.Key);if(row.UpgradeLevel is {} level)w.WriteNumber("upgrade_level",level);else w.WriteNull("upgrade_level");
-                    w.WriteString("result",row.Result);w.WriteEndObject();
+                    w.WriteString("result",row.Result);if(version=="mixed_reward_set_v1")w.WriteString("kind",row.Kind);w.WriteEndObject();
                 }
                 w.WriteEndArray();
+                if(version=="mixed_reward_set_v1") {
+                    Strings(w,"offer_kinds",p.OfferKinds!);w.WritePropertyName("item");
+                    if(p.Item is null)w.WriteNullValue();else GenericEventV7WireService.WriteItem(w,p.Item);
+                }
             }
         }else if(value is GenericEventV7RewardReceipt receipt) {
             w.WriteString("session_nonce",receipt.SessionNonce);w.WriteString("decision_id",receipt.DecisionId);w.WriteString("action_id",receipt.ActionId);w.WriteString("outcome",receipt.Outcome);

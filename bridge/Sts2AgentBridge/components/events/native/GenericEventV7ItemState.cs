@@ -19,6 +19,8 @@ internal sealed class GenericEventV7ItemState
     internal GenericEventV7ItemState[]? Entries;
     internal GenericEventV7ItemState? Root;
     internal int Position;
+    internal bool HasCards=>System.Linq.Enumerable.Any(Entries!,e=>e.CardReward is not null);
+    internal bool IsMixed=>HasCards&&System.Linq.Enumerable.Any(Entries!,e=>e.CardReward is null);
     internal int OfferCount=>Entries?.Length??1;
     internal Reward? Reward;
     internal GenericEventV7CardRewardAdapter? CardReward;
@@ -40,29 +42,23 @@ internal sealed class GenericEventV7ItemState
         var list=Set.Rewards;
         if(list is null||list.Count is <1 or >8)return false;
         Rewards=list;
-        if(list.TrueForAll(r=>r is not null&&r.GetType()==typeof(CardReward))) {
-            if(GenericEventV7Binding.CopyDeck(Binding.Player).Length>512-list.Count)return false;
-            var cards=new HashSet<object>(ReferenceEqualityComparer.Instance);
-            var rewards=new HashSet<object>(ReferenceEqualityComparer.Instance);
-            var cardEntries=new GenericEventV7ItemState[list.Count];
-            for(int i=0;i<list.Count;i++) {
-                var entry=i==0?this:new GenericEventV7ItemState(Binding,Set);
-                entry.Rewards=list;entry.Position=i;entry.Root=this;entry.Reward=list[i];
-                entry.Index=entry.NativeIndex=list[i].RewardsSetIndex;
-                if(!rewards.Add(list[i])||!ReferenceEquals(list[i].Player,Binding.Player)||list[i].ParentRewardSet is not null||!list[i].IsPopulated||list[i].SuccessfullySelected)return false;
-                entry.CardReward=new GenericEventV7CardRewardAdapter(entry,(CardReward)list[i]);
-                foreach(var card in entry.CardReward.Originals)if(!cards.Add(card))return false;
-                cardEntries[i]=entry;
-            }
-            Entries=cardEntries;return Domain();
-        }
+        int cardCount=list.FindAll(r=>r is not null&&r.GetType()==typeof(CardReward)).Count;
+        if(cardCount>0&&GenericEventV7Binding.CopyDeck(Binding.Player).Length>512-cardCount)return false;
         var entries=new GenericEventV7ItemState[list.Count];
         var identities=new HashSet<object>(ReferenceEqualityComparer.Instance);
         for(int i=0;i<list.Count;i++) {
             var entry=i==0?this:new GenericEventV7ItemState(Binding,Set);
             entry.Rewards=list;entry.Position=i;entry.Root=this;
-            if(!entry.BindReward(list[i])||!identities.Add(entry.Reward!)||!identities.Add(entry.Model!))return false;
-            if(list.Count>1)entry.Index=i;
+            var reward=list[i];
+            if(reward is not null&&reward.GetType()==typeof(CardReward)) {
+                entry.Reward=reward;entry.Index=entry.NativeIndex=reward.RewardsSetIndex;
+                if(!identities.Add(reward)||!ReferenceEquals(reward.Player,Binding.Player)||reward.ParentRewardSet is not null||!reward.IsPopulated||reward.SuccessfullySelected)return false;
+                entry.CardReward=new GenericEventV7CardRewardAdapter(entry,(CardReward)reward);
+                foreach(var card in entry.CardReward.Originals)if(!identities.Add(card))return false;
+            }else {
+                if(!entry.BindReward(reward!)||!identities.Add(entry.Reward!)||!identities.Add(entry.Model!))return false;
+                if(list.Count>1)entry.Index=i;
+            }
             entries[i]=entry;
         }
         Entries=entries;

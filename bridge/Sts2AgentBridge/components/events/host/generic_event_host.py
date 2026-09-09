@@ -116,7 +116,7 @@ def _decode(body: Any) -> dict[str, Any]:
             _require(_integer(c['ordinal'], 4) and c['ordinal'] >= 1)
             _require(_hex(c['parent_decision_id'], 64) and _parent_action(c['parent_action_id']))
             if c['kind']=='card_reward':
-                _require(type(c['offer_count']) is int and 1<=c['offer_count']<=8 and c['contract_version']==('card_reward_v1' if c['offer_count']==1 else 'card_reward_set_v1'))
+                _require(type(c['offer_count']) is int and 1<=c['offer_count']<=8 and (c['contract_version']==('card_reward_v1' if c['offer_count']==1 else 'card_reward_set_v1') or c['offer_count']>=2 and c['contract_version']=='mixed_reward_set_v1'))
             elif c['kind'] == 'item':
                 _require(type(c['offer_count']) is int and 1 <= c['offer_count'] <= 8 and
                          c['contract_version'] == ('item_v1' if c['offer_count']==1 else 'item_set_v1'))
@@ -200,7 +200,7 @@ class _Controller:
         self.child_history: list[dict[str, Any]] = []
         self.child_shape = None
         self.item_set_history = []
-        self.reward_set_history = []
+        self.reward_set_history = []; self.reward_kinds = None
         self.enchantment = None
         self.preview_seen = False
         self.child_parents: set[tuple[str, str]] = set()
@@ -369,7 +369,7 @@ class _Controller:
             self.child_history = []
             self.child_shape = None
             self.item_set_history = []
-            self.reward_set_history = []
+            self.reward_set_history = []; self.reward_kinds = None
             self.enchantment = None
             self.preview_seen = False
             self.child_done = False
@@ -562,18 +562,25 @@ class _Controller:
         return status
 
     def reward_set_read(self, p: Any) -> str:
-        _keys(p,('version','session_nonce','status','phase','decision_id','cards','can_skip','legal_actions','prior_results','selected_slot','offer_count','offer_index','settled'))
-        _require(p['version']=='card_reward_set_v1' and p['session_nonce']==self.nonce and
+        mixed=self.child['contract_version']=='mixed_reward_set_v1'
+        _keys(p,('version','session_nonce','status','phase','decision_id','cards','can_skip','legal_actions','prior_results','selected_slot','offer_count','offer_index','settled')+(('offer_kinds','item') if mixed else ()))
+        _require(p['version']==self.child['contract_version'] and p['session_nonce']==self.nonce and
                  type(p['offer_count']) is int and p['offer_count']==self.child['offer_count'] and p['selected_slot'] is None)
+        kinds=p['offer_kinds'] if mixed else ['card']*p['offer_count']
+        _require(type(kinds) is list and len(kinds)==p['offer_count'] and all(k in ('card','potion','relic') for k in kinds))
+        if mixed:
+            _require('card' in kinds and any(k!='card' for k in kinds) and (self.reward_kinds is None or self.reward_kinds==kinds))
+            self.reward_kinds=list(kinds)
+        prefix=lambda index: sum(2 if k=='card' else 1 for k in kinds[:index])
         settled,history=p['settled'],p['prior_results']
         _require(type(settled) is list and len(self.reward_set_history)<=len(settled)<=min(p['offer_count'],len(self.reward_set_history)+1) and
                  settled[:len(self.reward_set_history)]==self.reward_set_history and type(p['offer_index']) is int and p['offer_index']==len(settled))
-        # Python considers False == 0; validate every retained row's scalar
-        # types before trusting equality with an earlier verified prefix.
         for index,row in enumerate(settled):
-            _keys(row,('offer_index','selected_slot','key','upgrade_level','result'))
-            _require(type(row['offer_index']) is int and row['offer_index']==index)
-            if row['result']=='skipped':
+            _keys(row,('offer_index','selected_slot','key','upgrade_level','result')+(('kind',) if mixed else ()))
+            _require(type(row['offer_index']) is int and row['offer_index']==index and (not mixed or row['kind']==kinds[index]))
+            if kinds[index]!='card':
+                _require(row['result']=='collected' and row['selected_slot'] is None and row['upgrade_level'] is None and self.transform._stable_key(row['key']))
+            elif row['result']=='skipped':
                 _require(row['selected_slot'] is None and row['key'] is None and row['upgrade_level'] is None)
             else:
                 _require(row['result']=='collected' and _integer(row['selected_slot'],4) and
@@ -581,44 +588,53 @@ class _Controller:
         _require(type(history) is list and len(self.child_history)<=len(history)<=len(self.child_receipts) and history[:len(self.child_history)]==self.child_history)
         actions=[a for _,a in self.child_receipts]
         for i,row in enumerate(history):
-            _keys(row,('decision_id','action_id','result'))
-            action=actions[i]
+            _keys(row,('decision_id','action_id','result')); action=actions[i]
             _require((row['decision_id'],row['action_id'])==self.child_receipts[i] and row['result']==
                      ('opened' if action.startswith('open:') else 'skipped' if action.startswith('skip:') else 'dismissed' if action=='dismiss' else 'collected'))
         if len(settled)>len(self.reward_set_history):
-            index=len(self.reward_set_history);row=settled[index]
-            _keys(row,('offer_index','selected_slot','key','upgrade_level','result'))
-            _require(type(row['offer_index']) is int and row['offer_index']==index and self.child_shape is not None and
-                     len(history)>=2*(index+1) and len(actions)>=2*(index+1) and actions[2*index]==f'open:{index}')
-            slot=row['selected_slot'];cards,skip=self.child_shape
-            if slot is None:
-                _require(skip and actions[2*index+1]==f'skip:{index}' and row['result']=='skipped' and row['key'] is None and row['upgrade_level'] is None)
+            index=len(self.reward_set_history);row=settled[index];at=prefix(index)
+            _require(self.child_shape is not None and len(history)>=prefix(index+1) and len(actions)>=prefix(index+1))
+            if kinds[index]!='card':
+                offer=self.child_shape['offers'][0]
+                _require(actions[at]==f'collect:{index}' and row['key']==offer['key'])
             else:
-                _require(type(slot) is int and 0<=slot<len(cards) and actions[2*index+1]==f'choose:{index}:{slot}' and row['result']=='collected' and
-                         row['key']==cards[slot]['key'] and type(row['upgrade_level']) is int and row['upgrade_level']==cards[slot]['upgrade_level'])
+                _require(actions[at]==f'open:{index}')
+                slot=row['selected_slot'];cards,skip=self.child_shape
+                if slot is None:
+                    _require(skip and actions[at+1]==f'skip:{index}')
+                else:
+                    _require(slot<len(cards) and actions[at+1]==f'choose:{index}:{slot}' and row['key']==cards[slot]['key'] and row['upgrade_level']==cards[slot]['upgrade_level'])
             self.reward_set_history=list(settled);self.child_shape=None
-        index=p['offer_index'];status,phase=p['status'],p['phase']
-        _require(2*index<=len(history)<=2*index+1)
+        index=p['offer_index'];status,phase=p['status'],p['phase'];total=prefix(index)
+        _require(total<=len(history)<=total+1)
         if status=='ready':
             _require(len(history)==len(actions) and _hex(p['decision_id'],64) and type(p['can_skip']) is bool)
-            if phase=='choose':
-                cards=p['cards']
-                _require(index<p['offer_count'] and len(actions)==2*index+1 and actions[-1]==f'open:{index}' and type(cards) is list and 1<=len(cards)<=5)
-                for i,c in enumerate(cards):
-                    _keys(c,('slot','key','upgrade_level'))
-                    _require(type(c['slot']) is int and c['slot']==i and self.transform._stable_key(c['key']) and _integer(c['upgrade_level'],2147483647))
-                shape=(cards,p['can_skip'])
-                _require(self.child_shape is None or self.child_shape==shape);self.child_shape=shape
-                _require(p['legal_actions']==[f'choose:{index}:{i}' for i in range(len(cards))]+([f'skip:{index}'] if p['can_skip'] else []))
+            if phase=='collect':
+                _require(mixed and index<p['offer_count'] and kinds[index]!='card' and len(actions)==total and p['cards']==[] and p['can_skip'] is False)
+                item=p['item'];self.item_parse(item)
+                _require(item['status']=='ready' and len(item['offers'])==1 and item['offers'][0]['index']==index and item['offers'][0]['kind']==kinds[index] and
+                         item['decision_id']==p['decision_id'] and p['legal_actions']==item['legal_actions']==[f'collect:{index}'])
+                _require(self.child_shape is None or self.child_shape==item);self.child_shape=item
             else:
-                _require(p['cards']==[] and p['can_skip'] is False and
-                         (phase=='open' and index<p['offer_count'] and len(actions)==2*index and p['legal_actions']==[f'open:{index}'] or
-                          phase=='dismiss' and index==p['offer_count'] and len(actions)==2*index and any(r['result']=='skipped' for r in settled) and p['legal_actions']==['dismiss']))
+                _require(not mixed or p['item'] is None)
+                if phase=='choose':
+                    cards=p['cards']
+                    _require(index<p['offer_count'] and kinds[index]=='card' and len(actions)==total+1 and actions[-1]==f'open:{index}' and type(cards) is list and 1<=len(cards)<=5)
+                    for i,c in enumerate(cards):
+                        _keys(c,('slot','key','upgrade_level'))
+                        _require(type(c['slot']) is int and c['slot']==i and self.transform._stable_key(c['key']) and _integer(c['upgrade_level'],2147483647))
+                    shape=(cards,p['can_skip'])
+                    _require(self.child_shape is None or self.child_shape==shape);self.child_shape=shape
+                    _require(p['legal_actions']==[f'choose:{index}:{i}' for i in range(len(cards))]+([f'skip:{index}'] if p['can_skip'] else []))
+                else:
+                    _require(p['cards']==[] and p['can_skip'] is False and
+                             (phase=='open' and index<p['offer_count'] and kinds[index]=='card' and len(actions)==total and p['legal_actions']==[f'open:{index}'] or
+                              phase=='dismiss' and index==p['offer_count'] and len(actions)==total and any(r['result']=='skipped' for r in settled) and p['legal_actions']==['dismiss']))
         else:
-            _require(p['decision_id']=='' and p['cards']==[] and p['can_skip'] is False and p['legal_actions']==[])
+            _require((not mixed or p['item'] is None) and p['decision_id']=='' and p['cards']==[] and p['can_skip'] is False and p['legal_actions']==[])
             if status=='resolved':
                 skipped=any(r['result']=='skipped' for r in settled)
-                _require(phase=='complete' and index==p['offer_count'] and len(history)==len(actions)==2*index+int(skipped) and (not skipped or actions[-1]=='dismiss'))
+                _require(phase=='complete' and index==p['offer_count'] and len(history)==len(actions)==total+int(skipped) and (not skipped or actions[-1]=='dismiss'))
                 owner=(self.child['parent_decision_id'],self.child['parent_action_id'])
                 _require(owner not in self.completed_children and len(self.completed_children)<4)
                 self.completed_children.add(owner);self.child_done=True
