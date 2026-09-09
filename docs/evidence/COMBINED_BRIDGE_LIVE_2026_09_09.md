@@ -1616,3 +1616,31 @@ entry, `ancient TANX CLAWS`, console closed and relic option untouched. The poli
 has not yet run live. No source/build/install change is needed; current release
 and installed state remain unchanged. Separate policy preparation/review times
 were not measured.
+
+### Claws zero-transformation passed
+
+The user prepared Claws on the unchanged fifteenth installation and release.
+Fresh exact running-process, release/source/owned installation and authenticated
+health/manifest checks passed. The unchanged reviewed `--count 0` policy selected
+`TANX.pages.INITIAL.options.CLAWS`, explicitly requested an **empty Preview**, then
+**Confirm** and Proceed. `card_transform_v3` resolved with `operation: transform`,
+empty selected originals and reconciled `previewed`/`committed` receipts. Native
+completion verified the unchanged deck, empty request/selector results and required
+single successful empty transform command. This is confirmation, not cancellation.
+
+All **four actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **2/2/2**, one completed card child, zero item children, six event reads. A
+fresh core-map read passed with three candidates. Policy time: **0.832 seconds**.
+Diagnostics: parent-ready/child-ready/parent-ready/map-ready. Parent effects remain
+`unverified`. No replacement-name claim is needed for the empty outcome.
+Result: `/private/tmp/sts-claws-zero-live-20260909-result.json`, SHA-256
+`843cd255bb5d26a654661061641ccdd0da36ba88abb052b775e1b2744b1a5e5c`.
+
+**Three-card transformation** is next with the same reviewed policy and `--count 3`:
+select three exact originals, explicitly preview below the native maximum of six,
+confirm and verify native replacements and map return. Its 105 completed checks
+and independent review are reused. Prepare a fresh Profile 3 run with at least
+three eligible cards, normal map-room entry, `ancient TANX CLAWS`, console closed
+and relic option untouched. The same release remains installed; cleanup is pending
+after the batch. No uncertain mutation was retried and no profile/save/history/
+Cloud filesystem content was accessed.

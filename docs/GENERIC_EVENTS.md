@@ -611,6 +611,12 @@ selected cards also passed**, with exact additions, 18 reconciled actions and a
 fresh map. These establish zero/partial/full examples, not every grid layout. See the
 [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sea-glass-zero-passed-after-read-only-startup).
 
+**Claws zero-selection has live acceptance**: explicit empty Preview/Confirm,
+unchanged deck, four reconciled actions and a fresh map. Partial/full Claws
+selection remains pending. The native completion includes the required successful
+empty transform command described above. See the
+[live evidence](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#claws-zero-transformation-passed).
+
 Optional behavior is enabled only by an explicit event context. Existing positive
 selection versions, standalone card contracts and their limits remain unchanged.
 Host and production boundary validation require the new matching descriptor and
@@ -775,8 +781,8 @@ surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
 is implemented above; Bird passed live, while Torus remains a branch candidate.
 
 Choose the next feature from those source-backed callers. Positive variable
-transformation and optional Claws selections are implemented, with live Claws
-acceptance pending. Sea Glass has zero/partial/full live acceptance through its
+transformation and optional Claws selections are implemented. Claws zero-selection
+has live acceptance; its nonzero branches remain pending. Sea Glass has zero/partial/full live acceptance through its
 ancient route; other native ancient routes remain candidates for testing. No
 inspected event/immediate pickup establishes variable-count upgrades or true native
 cancellation. Keep those speculative extensions separate from demonstrated gaps.

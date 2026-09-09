@@ -14,7 +14,7 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after live batch; Sea Glass zero, three and fifteen passed",
+    "cleanup": "pending normal quit after live batch; Sea Glass zero/three/fifteen and Claws zero passed",
     "live_input_sent": true,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
@@ -247,6 +247,37 @@
           "upgrade_level": 0
         }
       ],
+      "status": "passed"
+    },
+    {
+      "case": "Tanx/Claws zero",
+      "event": {
+        "child_accepted": 2,
+        "child_attempted": 2,
+        "child_episodes": 1,
+        "child_reconciled": 2,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 6,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 4
+      },
+      "map_handoff": {
+        "candidate_count": 3,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-claws-zero-live-20260909-result.json",
+      "result_sha256": "843cd255bb5d26a654661061641ccdd0da36ba88abb052b775e1b2744b1a5e5c",
+      "seconds": 0.832,
+      "selected_cards": [],
       "status": "passed"
     }
   ],
