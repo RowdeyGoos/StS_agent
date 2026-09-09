@@ -1,168 +1,47 @@
 {
-  "change": "Correct results-screen hook declaration against pinned native metadata; combined ancient/event live batch",
+  "change": "Remove inferred whole-grid layout requirements from generic event add-card selectors; retain exact native ownership, clickability and task/deck outcomes",
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": false,
-    "current_package_live_tested": true,
+    "current_package_installed": true,
+    "current_package_live_tested": false,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Results hook/base return correction, exact concrete runtime ownership, mandatory pinned-PE release comparison and local metadata provider independently reviewed by review_event_map; unchanged HeftyTablet policy review reused",
+    "scope": "Reward adapter removal of inferred geometry, native holder clickability, zero/3/15 selection cases and stale ownership/control guards independently reviewed by review_event_map; unchanged Sea Glass policy review reused",
     "status": "passed"
   },
   "installation": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "cleanup": "passed: normal quit, exact quarantine/purge, 429 unchanged base files and zero overlays",
-    "generated_files_removed": 4,
-    "live_input_sent": true,
+    "cleanup": "pending normal quit after live testing",
+    "live_input_sent": false,
     "mods_parent_created": true,
-    "overlay_count": 0,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
     "pre_install_runtime": "passed: fresh exact game process stopped and bridge port closed",
-    "quarantine_state_sha256": "a3f7500c77db6cd4f98b4e3dcf80002327145fbd9c201a864f6dcbee7a42476f",
-    "state_sha256": "265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1",
-    "status": "cleaned"
+    "state_sha256": "1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9",
+    "status": "installed"
   },
-  "live_results": [
-    {
-      "additional_cards": [
-        {
-          "key": "INJURY",
-          "slot": 0,
-          "upgrade_level": 0
-        }
-      ],
-      "case": "Neow/HeftyTablet choose",
-      "event": {
-        "child_accepted": 1,
-        "child_attempted": 1,
-        "child_episodes": 1,
-        "child_reconciled": 1,
-        "code": null,
-        "completed_card_children": 1,
-        "completed_item_children": 0,
-        "effects": "unverified",
-        "parent_accepted": 2,
-        "parent_attempted": 2,
-        "parent_reconciled": 2,
-        "reads": 11,
-        "schema_version": 1,
-        "status": "resolved",
-        "total_attempted": 3
-      },
-      "map_handoff": {
-        "candidate_count": 2,
-        "code": null,
-        "reads": 1,
-        "status": "passed"
-      },
-      "result_path": "/private/tmp/sts-hefty-choose-live-corrected-20260909-result.json",
-      "result_sha256": "bdbe657ebf4db7ba213dfd22fd8f2dbe4e7674b70d9f08cea5e60489136bc7a7",
-      "seconds": 1.436,
-      "selected_card": "CRUELTY",
-      "status": "passed",
-      "upgrade_level": 0
-    },
-    {
-      "additional_cards": [
-        {
-          "key": "INJURY",
-          "slot": 0,
-          "upgrade_level": 0
-        }
-      ],
-      "case": "Neow/HeftyTablet Skip",
-      "event": {
-        "child_accepted": 1,
-        "child_attempted": 1,
-        "child_episodes": 1,
-        "child_reconciled": 1,
-        "code": null,
-        "completed_card_children": 1,
-        "completed_item_children": 0,
-        "effects": "unverified",
-        "parent_accepted": 2,
-        "parent_attempted": 2,
-        "parent_reconciled": 2,
-        "reads": 10,
-        "schema_version": 1,
-        "status": "resolved",
-        "total_attempted": 3
-      },
-      "map_handoff": {
-        "candidate_count": 3,
-        "code": null,
-        "reads": 1,
-        "status": "passed"
-      },
-      "result_path": "/private/tmp/sts-hefty-skip-live-20260909-result.json",
-      "result_sha256": "94986e6a39f42c7683e1845b34246664055fc80b35c1d9d46bc4dc6795e18257",
-      "seconds": 1.006,
-      "selected_card": null,
-      "status": "passed"
-    },
-    {
-      "case": "Orobas/SeaGlass zero",
-      "diagnosis": "Reward adapter GridGeometry requires computed whole-grid fit and exact layout dimensions before admitting even zero-selection Confirm.",
-      "diagnostics": [
-        "parent_ready",
-        "prepare_geometry"
-      ],
-      "event": {
-        "child_accepted": 0,
-        "child_attempted": 0,
-        "child_episodes": 0,
-        "child_reconciled": 0,
-        "code": "unsupported_state",
-        "completed_card_children": 0,
-        "completed_item_children": 0,
-        "effects": "unverified",
-        "parent_accepted": 1,
-        "parent_attempted": 1,
-        "parent_reconciled": 0,
-        "reads": 258,
-        "schema_version": 1,
-        "status": "failed",
-        "total_attempted": 1
-      },
-      "map_handoff": {
-        "status": "not_attempted"
-      },
-      "result_path": "/private/tmp/sts-seaglass-zero-live-20260909-result.json",
-      "result_sha256": "94fc6792fc1584068b0830ed104199fbb90287a8f2a2285520d1ef60b05076cd",
-      "seconds": 17.358,
-      "status": "failed",
-      "user_visible_setup": "Card-selection grid with 15 cards"
-    }
-  ],
-  "release_manifest_sha256": "c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57",
+  "live_results": [],
+  "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",
   "schema_version": 1,
-  "source_commit": "b7d474070b89978747d64f30dae5f76668cbf084",
-  "source_inventory_sha256": "871f6567255b07e3205df1b1bd8a08053022b62ff58d27400e7ef05b90a17a69",
+  "source_commit": "23cbff0d38a18b866c94531f8b23a57b3bb030e0",
+  "source_inventory_sha256": "53aabaa9a79373c1628d915b14ba9af99509dff0023231666a01ed54c55cb193",
   "source_state": "All 314 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Release gate 370.071 seconds; integration 225.883 seconds, production build 1.437 seconds and reproducibility build 1.460 seconds. Separate implementation/review/preparation/user-wait times not measured.",
+  "timing_limits": "Final release gate 371.191 seconds; integration 225.461 seconds, production build 1.490 seconds, reproducibility build 1.469 seconds. Separate implementation/review/preparation/user-wait times not measured.",
   "validation": {
     "check_groups": 71,
     "event_integration_cases": 450,
-    "focused_metadata_regression": {
-      "negative_cases": 2,
-      "negative_inputs": "Prior failed-release production postfix and prior inaccurate native fixture each rejected against pinned game metadata",
-      "path": "/private/tmp/sts-results-return-metadata-evidence.json",
-      "positive_cases": 1,
-      "sha256": "3bf214e7dca5b91dd432bebc4c9fcc39d410254572ea79d4713cb0a6ab074757"
-    },
+    "focused_optional_event_assertions": 379,
+    "focused_reward_surface_assertions": 283,
     "host_tests": 125,
-    "native_assertions": 7788,
+    "native_assertions": 7896,
     "production_native_integration_cases": 388,
-    "release_gate_seconds": 370.071,
-    "scope": "Final combined release gate, including declared native signature comparison, reproducible production build, package and owned installation/cleanup fixtures",
-    "scratch": "/private/tmp/sts-bridge-_el21wpf",
+    "release_gate_seconds": 371.191,
+    "scope": "Final combined release gate, including native selector regression, declared signature comparison, reproducible build, package and owned installation/cleanup fixtures",
+    "scratch": "/private/tmp/sts-bridge-n2fi2egq",
     "shared_bridge_checks": 809
   }
 }

@@ -130,32 +130,33 @@ projects. Independent semantic review found no blockers. Evidence:
 `/private/tmp/sts-bridge-izl7m9bm` (production build). The retained release is unchanged.
 
 The offline increments above are packaged in corrected release
-`c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57`, with all
-314 accepted source/test inputs verified at `b7d4740`. Its final **71 release groups
-passed in 370.071 seconds**, including 7,788 native assertions, 125 host tests,
-450 C#/Python cases (388 native), 809 shared bridge checks, reproducible packaging
-and owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-_el21wpf`.
-The **fourteenth installation is cleaned up**, original installed state
-`265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1`. HeftyTablet choose passed: **Cruelty** plus **Injury**,
-three reconciled actions and a fresh actionable map in **1.436 seconds**.
-**Skip also passed**: Injury only, three reconciled actions and a fresh actionable
-map in **1.006 seconds**. The package was subsequently used for Sea Glass. Sea Glass zero-selection stopped at `prepare_geometry` after the
-parent option was accepted; **no card selection or Confirm was sent**. The user
-confirmed the expected 15-card grid. The reward adapter still requires computed
-whole-grid fit. Normal quit, exact quarantine/purge and **429 unchanged base files
-with zero overlays** passed. The corrected add-card adapter is being validated.
+`c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5`, with all
+314 accepted source/test inputs verified at `23cbff0`. Its final **71 release groups
+passed in 371.191 seconds**, including **7,896 native assertions**, 125 host tests,
+450 C#/Python cases (388 native), 809 shared checks, reproducible packaging and
+owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-n2fi2egq`.
+The **fifteenth installation is active**, installed state
+`1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`, awaiting a fresh
+Profile 3 Sea Glass zero-card setup. Fresh stopped-process/closed-port and read-only
+installed package/configuration checks passed. No live input has been sent on it.
 
-The thirteenth installation is cleaned up. Its first HeftyTablet read stopped with
-`invalid_response` and zero actions; pinned metadata exposed a results hook that
-expected the concrete screen return instead of declared `NCardsViewScreen`.
-The correction preserves exact concrete runtime ownership. The release gate now
-compares the production postfix and fixture declaration with actual pinned game
-metadata; the corrected positive and both prior-binary negatives passed separately.
-Normal quit, exact quarantine/purge and **429 unchanged base files with zero overlays**
-passed before reinstalling. Both HeftyTablet branches have representative live
-acceptance; the other new interaction families remain pending.
-The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#fourteenth-installation-results-return-correction)
-retains the correction, failed attempt, cleanup and current installation bindings.
+Both HeftyTablet branches passed on preceding release `c73fde6c`: choose added
+**Cruelty plus Injury** (1.436 seconds); Skip added **Injury only** (1.006 seconds).
+Each reconciled three actions and verified a fresh actionable map. The subsequent
+Sea Glass zero-card attempt stopped at `prepare_geometry` after accepting the relic
+option; **no card selection or Confirm was sent**. The user confirmed a 15-card grid.
+The add-card adapter still required computed whole-grid fit. That prerequisite is
+now removed, while exact grid/holder/card/control ownership, native clickability,
+legality, bounded input and task/deck outcomes remain checked. Focused reward
+surface checks passed 283 assertions; optional-event checks passed 379. Independent
+semantic review found no blockers. Live Sea Glass acceptance remains pending.
+
+The **fourteenth installation is cleaned up**: normal quit, exact quarantine/purge
+and **429 unchanged base files with zero overlays** passed before source edits and
+reinstallation. The thirteenth installation is also cleaned up; its earlier results
+hook return-type defect remains corrected and checked against pinned game metadata.
+The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#fifteenth-installation-native-add-card-input-without-inferred-layout)
+retains original release hashes, successful cases, stopped attempts and cleanup.
 
 The preceding live-accepted release was
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source

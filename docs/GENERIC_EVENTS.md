@@ -598,6 +598,15 @@ successful command returning the native empty array, with no choice, modificatio
 insertion or removal effects. Missing, repeated, faulted or effect-bearing empty
 commands cannot resolve. Preview cancellation is never exposed.
 
+Generic add-card grids use exact allocated native holders and their clickability,
+without inferred scroll dimensions or whole-grid viewport fit. Grid/holder/card/
+hitbox identity, animation state, Confirm ownership and native task/deck outcome
+checks remain enforced. This also permits zero-selection Confirm on a larger grid.
+The initial Sea Glass live attempt exposed the leftover layout prerequisite and
+stopped before any card input; its correction has focused fixture evidence, with
+live acceptance still pending. See the
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sea-glass-zero-stopped-before-child-admission).
+
 Optional behavior is enabled only by an explicit event context. Existing positive
 selection versions, standalone card contracts and their limits remain unchanged.
 Host and production boundary validation require the new matching descriptor and

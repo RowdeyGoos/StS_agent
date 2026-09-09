@@ -1419,3 +1419,50 @@ Purge removed four generated files and left the campaign absent. Base verificati
 passed **429 unchanged files**, SHA-256
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`, with zero overlays.
 The fourteenth installation is **closed and cleaned up** before source edits.
+
+### Fifteenth installation: native add-card input without inferred layout
+
+The correction removes `GridGeometry` from the generic reward/add-card adapter.
+Exact allocated grid/holder/card/hitbox/Confirm identities remain required;
+native holder `_isClickable` now mirrors the removal adapter. Visibility/enabled
+state, animation/transient behavior, bounded input, exact tasks and deck outcomes
+remain checked. Zero selection no longer requires a computed layout certificate.
+The audit found no other actual whole-grid-fit check in generic event adapters;
+the separate older standalone Cheese adapter retains its historical geometry.
+
+Focused reward surface checks passed **283 assertions**, including zero/three/
+fifteen selections under overflowing and changing layouts, and stale grid, holder,
+model, hitbox, domain, clickability and Confirm failures without dispatch. Existing
+optional-event checks passed **379 assertions**. Independent semantic review found
+no blockers. An initial release run stopped because the new tests had been invoked
+before fixed historical assertion-count boundaries. Moving only the invocation
+after the preserved predecessor boundary corrected test ordering; no production
+change was required. The final gate used stable sources.
+
+All **71 release groups passed in 371.191 seconds**: 7,896 native event assertions,
+125 host tests, 450 C#/Python cases (388 native), 809 shared checks, pinned-signature
+comparison, reproducible production binary and package/owned cleanup fixtures.
+Integration took 225.461 seconds; production/reproducibility builds took
+1.490/1.469 seconds. Evidence: `/private/tmp/sts-bridge-n2fi2egq`; initial stopped
+gate: `/private/tmp/sts-bridge-88z165dz`.
+
+Release SHA-256: `c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5`.
+Source commit: `23cbff0d38a18b866c94531f8b23a57b3bb030e0`, with all 314
+accepted inputs verified byte-for-byte. DLL SHA-256:
+`95d3bd970682cef1d13b07eaebfdfbde0c762e43c06ef83d9631fbaa99148e5a`.
+The previous package was verified and preserved at
+`/private/tmp/sts-unified-bridge-release-before-reward-layout-fix-20260909`.
+
+Fresh stopped-process/closed-port checks passed. Installation succeeded with state
+`1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`.
+Read-only installed package/configuration verification passed without reading the
+credential. The **fifteenth installation is active**, awaiting manual fresh
+Profile 3 setup, normal map-room entry, `ancient OROBAS SEA_GLASS`, console closed,
+relic option untouched. The next case is explicitly **zero cards**, not cancellation.
+The unchanged Sea Glass policy remains at
+`/private/tmp/sts-seaglass-live-20260909.py`, SHA-256
+`6351761f495671d8f388205fe0c32047d239e8e858935188af5b359d27422de3`;
+its 96 completed checks and independent review are reused. No live input has been
+sent on this installation; normal quit/cleanup remain pending after testing.
+No profile/save/history/Cloud filesystem content was accessed. Separate
+implementation/review/preparation/user-wait elapsed times were not measured.
