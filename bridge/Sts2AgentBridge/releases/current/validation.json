@@ -1,54 +1,39 @@
 {
-  "additional_static_inspection": {
-    "bytes": 6011321,
-    "finding": "AddCurseToDeck state machine calls AddCursesToDeck at IL31; AddCursesToDeck calls Add at IL127 with pile6 and position1. Add d__9 switch at IL1898 maps position1 to index -1 at IL1917; CardPile.AddInternal takes the negative-index branch at IL77 to List.Add at IL101. This confirms the ordinary append path without executing game code.",
-    "game_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
-    "scanner": "../../../../docs/evidence/event_interactions_2026_09_09/scan.cs",
-    "scratch": "/private/tmp/sts-pre-selector-additions-20260909/addition-il.json",
-    "selectors": [
-      "MegaCrit.Sts2.Core.Commands.CardPileCmd",
-      "MegaCrit.Sts2.Core.Entities.Cards.CardPile"
-    ],
-    "sha256": "7ce8d68078e4bea86668fdec9d21721bc20d5f459871c8cf46c447dba9d07cd9",
-    "target_game_executed": false
-  },
-  "change": "One-time request baseline for append-only pre-selector event additions, with unchanged original cards and retained child effect isolation",
+  "change": "Versioned card_remove_v2 child: exact selected removal and ordered unchanged survivors with one fresh appended parent grant, reported separately as unverified",
   "date": "2026-09-09",
   "evidence_limits": {
-    "arbitrary_parent_hp_gold_effects_verified": false,
     "automatic_addition_provenance_verified": false,
     "autonomous_full_run": false,
-    "changes_to_preexisting_cards_before_selection_supported": false,
+    "changed_surviving_cards_supported": false,
     "current_package_installed": false,
-    "current_package_installation_tested": true,
-    "current_package_live_tested": true,
-    "repeated_pages_live_tested": true,
+    "current_package_live_tested": false,
+    "maximum_post_removal_grants": 1,
+    "multiple_post_removal_grants_supported": false,
     "native_fixture_objects_are_inert": true,
-    "post_selector_deck_additions_supported": false,
-    "pre_selector_additions_live_tested": true
+    "other_post_selector_additions_supported": false,
+    "removal_parent_grant_live_tested": false
   },
   "evidence_reused": {
     "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
     "pinned_event_research": "../../../../docs/evidence/event_interactions_2026_09_09/inventory.json",
-    "prior_release_manifest_sha256": "bd3f3b5a7c4c8592c207cb32b7a3a051eba795155933e8dfae7df4379e1cadff",
-    "scope": "Retained pinned IL established Grave/Confront and Trial curse-before-selector paths. Research hashes and historical live results remain at their original revisions. All 71 current release groups ran."
+    "prior_release_manifest_sha256": "65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9",
+    "scope": "Retained pinned Amalgamator IL confirms FromDeckForRemoval, awaited RemoveFromDeck, UltimateStrike/UltimateDefend creation and deck Add before SetEventFinished. Original research/live identities remain unchanged. The corrected Python integration assertions reused unchanged compiled fixtures during development; all current release groups subsequently ran."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "resolved_finding": "Non-enchantment child codecs omit enchantments. Appended originals now retain their enchantment identity/key/amount through non-enchant operations, with new-effect and same-value replacement regressions.",
-    "scope": "Owned request timing and one-time baseline, unchanged original-card prefix, appended-card identity/ownership/enchantments, child effect checks, replay/protocol/cleanup compatibility",
+    "resolved_finding": "Clone exclusions apply only to new grant identities outside SelectionDeck; legitimate baseline cards from previous transforms remain admissible.",
+    "scope": "Full real deck capture, selected-removal and survivor invariants, bounded monotonic suffix, ownership, task/overlay completion, legacy-v1 compatibility, public v2 semantics and host lineage",
     "status": "passed"
   },
-  "live_acceptance": "Abyssal Baths: Immerse, two Lingers, Exit Baths, Proceed and fresh map; five actions reconciled. Grave/Confront after fresh launch/room setup: SoulsPower amount 1 on unupgraded Neow's Fury slot 0 of 3 eligible cards, verified preview/effect, Proceed and fresh map; four actions reconciled. Earlier Grave admission stopped with zero actions. See the seventh-installation record in COMBINED_BRIDGE_LIVE_2026_09_09.md.",
-  "next_live_case": "Trial curse-before-two-upgrade/transform remain separate caller tests; Grave/Confront and Abyssal Baths now have live acceptance.",
+  "next_live_case": "Amalgamator/CombineStrikes with at least three eligible Strikes: select two, confirm their exact removal preview, observe Ultimate Strike in separate unverified parent_additions, and independently verify a fresh core map. Native game body has not been executed by these fixtures.",
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      798902,
-      "16da24c1be91080383f4071aabab0ef343ec9c3d213b45ccf1d36d7482e9377d"
+      803510,
+      "46815e66bcaac9c344a16b0e203e55b17376643309194406ebebed9a5a553d10"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      798208,
-      "e2906241d61ca70456257de5de214ad1f2a899e15b3c47ae800b3b5323ee339a"
+      802816,
+      "e15a31cb8c397a061f92b1e655e73ef839effc5dda62f91378b84c8a367f3978"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -56,36 +41,31 @@
     ]
   },
   "package_directory": "/private/tmp/sts-unified-bridge-release",
-  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-pre-selector-additions-20260909",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-removal-parent-grant-20260909",
   "production": {
-    "bytes": 798208,
-    "sha256": "e2906241d61ca70456257de5de214ad1f2a899e15b3c47ae800b3b5323ee339a"
+    "bytes": 802816,
+    "sha256": "e15a31cb8c397a061f92b1e655e73ef839effc5dda62f91378b84c8a367f3978"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9",
+  "release_manifest_sha256": "f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9",
   "schema_version": 1,
-  "source_commit": "baeaf5c3ac4420fdc6927c8bd357389cf116d6fc",
-  "source_inventory_sha256": "990451f40256d600aa16a6d79a940579f6a6cff0c54dd5e2b39fe7c6ec9fe8dc",
-  "source_state": "Committed source verified against the exact accepted inventory",
+  "source_commit": "3a354b0a65d6a96b16eacf340eee56e3e1370229",
+  "source_inventory_sha256": "d0b78c7adf0ea51f3fdbaddac740ec17d1c8c2f233dbc08b49e90f1b972b6dd5",
+  "source_state": "All 294 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Targeted build/check, focused event gate, final release gate and package publication were timed. Implementation and independent review were not separately timed; no user setup wait occurred.",
+  "timing_limits": "Final release/native/integration elapsed times are retained from actual gate results. Implementation, independent review, documentation and package publication were not separately timed. No user setup wait or live campaign occurred.",
   "validation": {
     "check_groups": 71,
-    "corrections": "Independent review found the appended-card enchantment hole and confirmed its correction. After the focused pass, multi-upgrade/transform fixture completion oracles were extended to include their explicitly expected appended originals; the final gate reran all cases with those stronger oracles. One final release gate passed with required ephemeral socket access; no tests or analyzers disabled.",
-    "event_integration_cases": 219,
-    "focused_event_check_groups": 15,
-    "focused_event_scratch": "/private/tmp/sts-bridge-xyot7ih0",
-    "focused_event_seconds": 121.496,
-    "native_assertions": 4360,
-    "production_native_integration_cases": 157,
-    "publication_seconds": 0.052,
-    "release_gate_seconds": 179.797,
-    "scope": "Pre-appended card with single enchant/upgrade, fixed-two upgrade and transform, removal and add-grid; eligible appended-card selection; delayed request, original-card mutation/reorder/removal/replacement, wrong appended owner/run, duplicate/oversize decks, late additions/ownership/identity/enchantment changes; native-to-host representative shapes through Proceed/map and post-selector rejection; existing bridge regressions, reproducibility and owned package/install/cleanup fixtures",
-    "scratch": "/private/tmp/sts-bridge-srxwjvku",
-    "targeted_initial_build_seconds": 2.657,
-    "targeted_initial_checks": 127,
-    "targeted_initial_scratch": "/private/tmp/sts-pre-selector-additions-20260909/targeted",
-    "targeted_initial_seconds": 1.196
+    "corrections": "Review found session-wide clone records could reject legitimate baseline cards from earlier transforms; baseline membership now takes precedence and targeted registry-state regressions pass. Updated all dependent fixture projects, cross-assembly key validation and expected wire versions. An initial release gate caught a legacy reflection fixture missing the new optional constructor argument; its targeted check passed after correction. Another gate stopped in the compiler with an internal MissingMethodException; unchanged source/settings passed the final full gate and reproducibility pair. No runtime safeguards, checks or analyzers were disabled.",
+    "event_integration_cases": 221,
+    "event_integration_seconds": 76.828,
+    "host_tests": 125,
+    "native_assertions": 4614,
+    "native_tests_seconds": 19.264,
+    "production_native_integration_cases": 159,
+    "release_gate_seconds": 160.077,
+    "scope": "Strict legacy-v1 extra-card rejection; exact survivors plus one appended grant; immediate/delayed Chosen completion; pre-selector plus post-removal additions; wrong owner/run, stale clone grants, missing/reordered/replaced/enchantment-mutated survivors, incomplete selected removal, selected reappearance, premature/interleaved/duplicate/multiple/oversize grants, grant identity/value changes while pending, callback failure; version discrimination and malformed public grant metadata; native-to-Python Proceed/map flows; complete production regression, reproducibility, package and owned installation/cleanup fixtures",
+    "scratch": "/private/tmp/sts-bridge-e_hjm2hx"
   }
 }
