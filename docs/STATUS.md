@@ -9,6 +9,19 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
+The corrected combined bridge is **installed and awaiting manual relaunch**.
+Accepted release:
+`731a8cf1c51ecdb5cfa4ef574085122c70606c62eea4a896312fb05506f6c755`.
+Current installed state:
+`050f6a250dd2f4241bff666922dee80ce77ff2f97fdb0d7687177c25b67e626b`.
+The final release gate passed 71 groups in 148.735 seconds. Installation verified
+429 unchanged base files, exactly two overlay files and the client ownership
+preflight. The installer created the mods parent; this installation's cleanup
+is pending. Launch remains manual: select Profile 3 and stop at the main menu.
+The preceding package is preserved at `/private/tmp/sts-bridge-retained-release-km0yyy77/package`.
+Reverify current runtime/ownership before acting. Do not reuse the first attempt's
+state hash or assume this correction has passed live.
+
 The first combined live attempt stopped before generic upgrade child admission
 and was cleaned up. Sapphire Seed/Consume was accepted; its 11-card selector
 appeared, but no card input or upgrade was attempted. The intended larger-deck

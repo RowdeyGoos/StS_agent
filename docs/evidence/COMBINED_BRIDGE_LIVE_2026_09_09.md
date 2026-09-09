@@ -76,3 +76,21 @@ admission fails, verify the actual advertised domain, and establish any off-scre
 target premise from the visible selector. Combat choices, both reward policies
 and event-to-core map return still belong to the pending batch. Phase elapsed
 times for live setup and review were not captured.
+
+## Corrected release prepared
+
+The final combined gate passed 71 check groups in **148.735 seconds** at
+`/private/tmp/sts-bridge-70buv13o`, including production reproducibility, actual
+native-to-host integration and owned package/install/cleanup fixtures. Source
+commit is `a57cb98`; accepted release SHA-256 is
+`731a8cf1c51ecdb5cfa4ef574085122c70606c62eea4a896312fb05506f6c755`.
+The preceding package and release records were preserved under
+`/private/tmp/sts-bridge-retained-release-km0yyy77` before publishing the correction.
+
+The game was rechecked stopped with its listener closed. Corrected installation
+passed with a fresh owned state:
+`050f6a250dd2f4241bff666922dee80ce77ff2f97fdb0d7687177c25b67e626b`.
+Post-install verification found 429 unchanged base files plus exactly two overlay
+files. Client release/ownership/configuration preflight passed without reading
+credential contents. This installation remains active on disk, awaiting manual
+relaunch; cleanup is pending. No corrected-binary live result exists yet.
