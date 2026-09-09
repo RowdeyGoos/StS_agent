@@ -357,8 +357,9 @@ installation identity.
 `CardReward` in an owned nonterminal `RewardsSet.Offer`. The representative pinned
 caller is **BrainLeech/Rip** (canonical RewardCount one); **TheFutureOfPotions/Trade**
 also offers one reward and upgrades its generated cards before opening the screen.
-These are source-backed acceptance candidates; neither caller has live acceptance
-for this increment. The Cheese add-card grid remains a separate interaction.
+BrainLeech/Rip now has live acceptance: Equilibrium selected from slot 0 of three
+offers, exact deck insertion, all four actions reconciled and fresh core map.
+TheFutureOfPotions/Trade remains a source-backed caller candidate. The Cheese add-card grid remains a separate interaction.
 
 The child first advertises `open` on the exact native reward button. Observational
 hooks retain the resulting `NCardRewardSelectionScreen`, its original generated
@@ -402,7 +403,10 @@ Offline native fixtures and the actual C#/Python path cover single and five-card
 menus, duplicate-key originals, both outcomes, delayed/deferred completion,
 changed targets/owners/deck effects, native Skip legality, nondefault alternatives,
 malformed replies, lost replies and rollback of either new hook. This code is
-packaged in the current combined test release and awaits live acceptance. The multiple-entry extension is described below.
+packaged in the current combined test release. Brain Leech's choose path passed
+live; singleton Skip/dismiss retains offline evidence. See the
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#brain-leech-singleton-card-reward-passed).
+The multiple-entry extension is described below.
 Mixed card/item sets, repeated offers within one option, SpecialCardReward, reroll/multiple picks,
 hook-substituted cards and nested pickup selectors remain unsupported.
 
@@ -459,7 +463,12 @@ Offline fixtures cover two, three and eight rewards with varied one/three/five-c
 menus, all-collected, mixed and all-skipped outcomes, delayed collection/parent
 tasks, native dismissal legality, changed admission and prior-effect state,
 unsupported domains, malformed replies, lost replies and reentry. Colorful
-Philosophers remains a live acceptance candidate. Mixed card/item sets, repeated
+Philosophers now has live acceptance through its Necrobinder option: three menus,
+Fear+ from the first, native Skip in the second, Necro Mastery from the third,
+final dismissal and an independent fresh map. All nine actions reconciled. See
+[the live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#colorful-philosophers-multiple-menus-and-skip-passed).
+Other counts and all-collected/all-skipped paths retain offline evidence.
+Mixed card/item sets, repeated
 Offers within one option, SpecialCardReward, rerolls/multiple picks, substituted
 cards and nested pickup selectors remain separate gaps.
 

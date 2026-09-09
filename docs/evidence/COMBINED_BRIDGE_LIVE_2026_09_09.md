@@ -1118,3 +1118,81 @@ Result path `/private/tmp/sts-brain-reward-live-20260909-result.json` is exclusi
 installation: enter a room normally, have more than 5 HP, run `event BRAIN_LEECH`,
 and leave initial choices visible with console closed. No input for this next
 case has been sent. Existing release and completed evidence are reused unchanged.
+
+
+### Brain Leech singleton card reward passed
+
+The user reported Brain Leech ready after the setup instruction requiring more
+than 5 HP. That HP premise came from manual setup; no HP preflight telemetry was
+added. Exact running-process, release/source/state, authenticated health and
+compatible manifest checks passed. The reviewed provider chose
+`BRAIN_LEECH.pages.INITIAL.options.RIP`, opened the ordinary reward, and selected
+**EQUILIBRIUM**, upgrade level **0**, slot **0 of 3** advertised cards.
+The native/host checks verified exact offered-card insertion and task completion.
+Proceed reconciled and an independent map read showed **two actionable candidates**.
+The child does not independently verify Rip's preceding automatic damage.
+
+Result: **passed in 1.232 seconds**. Parent counters: **2 attempted / 2 accepted /
+2 reconciled**. Child counters: **2 / 2 / 2**, one completed card child, no item
+child, four total actions, 12 event reads and one map read. Diagnostics:
+`parent_ready`, `pending_chosen_completion`, `pending_offers`, `parent_ready`,
+`map_ready`. Waiting during native completion did not cause a retry or early
+handoff. Final `effects: unverified` describes the last parent Proceed, not the
+verified card-child completion.
+
+Result: `/private/tmp/sts-brain-reward-live-20260909-result.json`, SHA-256
+`f04edd4668c664ca38163caa9c763ab71999507f819155040fc60cceedeb643a`. This demonstrates the singleton choose path, not
+singleton Skip/dismiss or every caller/card modification. Release and installation
+remain the twelfth bindings above. The installation is **active** for the final
+multiple-menu feature case; normal quit and owned cleanup remain required.
+No profile/save/history/Cloud content was accessed.
+
+
+### Colorful Philosophers multiple menus and Skip passed
+
+The policy at `/private/tmp/sts-philosophers-set-live-20260909.py`, SHA-256
+`bb384d2f2669c23d65a754309579ef38315f2a2c2c8b70e4bd10ee47e01d6ef8`, passed 25 actual frozen-view checks and independent
+semantic review before execution. It admits an advertised generated color option
+with the pinned `COLORFUL_PHILOSOPHERS.pages.INITIAL.options.` prefix, exactly
+three ordinary card-reward entries, sequential open/choose or Skip, then final
+dismissal. Existing release/state/credential, host, map and no-retry paths are
+unchanged. The user reported the Colorful event ready. Exact running-process,
+installed release/source/state, authenticated health and manifest checks passed.
+
+The provider chose **NECROBINDER**, opened menu 0 and chose **FEAR**, upgrade
+level **1**, slot **0 of 3**. It opened menu 1 and used the advertised native
+**skip:1**. It opened menu 2 and chose **NECRO_MASTERY**, level **0**, slot **0 of 3**.
+Each original-card insertion or unchanged-deck Skip reconciled before advancing.
+After all three menus settled, the exact root **dismiss** action completed the
+reward set. Parent Proceed reconciled and an independent core-map read exposed
+**two actionable candidates**.
+
+Result: **passed in 2.768 seconds**. Parent counters: **2 attempted / 2 accepted /
+2 reconciled**. Child counters: **7 / 7 / 7**, one completed card child, no item
+child, nine total actions, 25 event reads and one map read. Diagnostics:
+`parent_ready`, `pending_offers`, `parent_ready`, `map_ready`. No action was retried.
+Final `effects: unverified` refers to parent Proceed; cumulative child completion
+retains all three verified menu outcomes and final dismissal.
+
+Result: `/private/tmp/sts-philosophers-set-live-20260909-result.json`, SHA-256
+`f31bae713734293589e09865300ddda5b539baf665a46165812dd7baceafb76e`. This demonstrates one three-menu mixed outcome,
+not every count, all-collected/all-skipped or singleton Skip/dismiss. Together
+with Bird on its original release and the other three cases on this package,
+all five planned feature representatives passed. Release and installation remain
+the twelfth bindings above. Normal quit was requested; **cleanup is pending**.
+No profile/save/history/Cloud content was accessed.
+
+
+### Twelfth installation cleanup
+
+The user confirmed the game closed normally. Three exact-process samples and two
+listener samples verified stopped/closed state. Quarantine from installed state
+`1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec`
+produced `6a5d4fef1db86dd1e9269717f1d00b03ca941d31cfced47fd4966d58de75cc15`.
+Exact owned purge removed four generated files and reported the campaign absent.
+Base verification passed **429 files**, hash
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`, with
+**zero overlays**. The twelfth installation and this five-feature live batch are
+**closed and cleaned up**. Current package, manifest and source identity remain
+retained; no profile/save/history/Cloud content was accessed. No new build or
+broad test rerun was required for these evidence-only updates.

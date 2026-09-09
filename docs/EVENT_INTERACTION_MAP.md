@@ -18,15 +18,16 @@ Broader post-selector deck changes remain gaps. Fixed multi-card enchantment now
 has representative live acceptance through Prickly Sponge. Sets of 2–8 potion/relic
 rewards have offline implementation evidence, with Potion Courier/Grab Potions
 now live-demonstrating three potions and map return. Ordinary
-singleton CardReward menus also have offline choose/Skip/dismiss coverage, with
-BrainLeech/Rip as the representative caller. Sets of 2–8 ordinary CardReward
-entries now also have offline choose/Skip/final-dismissal coverage, with Colorful
-Philosophers as the representative caller. [Fixed-one generic deck transformations](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors)
+singleton CardReward menus have offline choose/Skip/dismiss coverage; BrainLeech/Rip
+now also has a representative live choose/map result. Sets of 2–8 ordinary CardReward
+entries have offline choose/Skip/final-dismissal coverage; Colorful Philosophers
+now live-demonstrated three menus with choose/Skip/choose, final dismissal and map. [Fixed-one generic deck transformations](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors)
 now have offline original-preview and exact-effect coverage for the WoodCarvings
 Bird/Torus interaction shape; Bird also passed live with exact preview, verified
 transformation and a fresh core map. Mixed card/item sets, full-inventory
-handling and nested pickup composition remain gaps. These
-other new increments await their cases in the current live batch.
+handling and nested pickup composition remain gaps. The five new
+increments have representative live acceptance; broader branches retain narrower
+evidence.
 The inventory and gap matrix below retain the original research comparison at
 `4d3516f`; their source hashes and gap annotations are not repinned to later code.
 Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.

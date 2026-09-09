@@ -9,55 +9,38 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Five further generic-event features are packaged and installed for this live
-batch: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8),
-multiple potion/relic rewards (`item_set_v1`, 2–8 entries), ordinary singleton card
-reward menus (`card_reward_v1`, 1–5 offers), multiple card reward menus in one set
-(`card_reward_set_v1`, 2–8 entries), and fixed-one generic deck transformations
-using the existing `card_transform_v2` protocol. WoodCarvings/Bird now has representative live acceptance: upgraded Strike slot 0
-of 21 eligible cards, exact original preview, verified transformation and a fresh
-core map. All four actions reconciled in 6.119 seconds. Prickly Sponge passed fixed-two Steady enchantment, and Potion Courier passed
-three Foul Potion rewards; both verified map return. Torus and the two card-reward
-feature groups still await their live cases. The
-bridge distinguishes native transform-prompt generic selection from removal's
-forwarding request without event-name admission rules. Mixed card/item sets and
-broader pickup composition remain gaps. The corrected test release is
-`748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, built from
-source commit `c531b4c`. All **71 release groups passed in 257.219 seconds**,
-including reproducible packaging and installation/cleanup fixtures. The twelfth
-installation is **active**, with state
-`1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec`.
-Stopped-process/closed-port checks and all 429 base files passed before install;
-post-install verification found exactly the two owned mod files.
+The five-feature generic-event batch has representative live acceptance:
+WoodCarvings/Bird transformation; Prickly Sponge fixed-two Steady enchantment;
+Potion Courier's three Foul Potions; Brain Leech's singleton card reward; and
+Colorful Philosophers' three menus with choose/Skip/choose and final dismissal.
+Each successful case independently verified a fresh core map. Colorful Philosophers
+added Fear+ and Necro Mastery, skipped the middle menu and reconciled all nine
+actions. These cases do not establish all counts, branches or full-inventory /
+nested pickup handling. Mixed card/item sets are the next concrete feature gap.
 
-The previous Prickly Sponge attempt stopped after accepting its parent option,
-before any card actions. The user saw the native selector. The production response
-classifier rejected `card_enchant_v2`; offline inspection also found missing
-item/card-reward formats and card-reward request verbs. These boundaries are now
-corrected, retaining native legality, parent ownership and terminal failure behavior.
-The eleventh installation was cleaned up after normal quit, with all 429 base
-files unchanged. Bird's earlier transformation/map pass and user-confirmed Peck
-remain bound to that original release; they are not repinned to this package.
+The current release is
+`748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source
+commit `c531b4c`. It corrected the production event response classifier and reward
+request grammar after the earlier Prickly Sponge attempt stopped before any card
+actions. Native legality, parent ownership, terminal failures and no-retry behavior
+remain enforced. Bird's pass retains its original release; the four later cases
+passed on this corrected package.
 
-The fresh **Waterlogged Scriptorium/Prickly Sponge** test passed on this release:
-two upgraded Strikes at slots 0/1 of 24 eligible cards, exact original preview,
-Steady amount 1 on each, all five actions reconciled and an independent core map
-with two actionable candidates. Elapsed time was 6.730 seconds, including the
-five-second preview pause. **Potion Courier/Grab Potions** also passed: all three Foul Potions, five
-reconciled actions and an independent fresh map in 0.944 seconds. The next case is
-**Brain Leech/Rip**, with more than 5 HP for the native damage cost. The installation remains active for the batch; normal
-quit and owned cleanup remain required. The
-[twelfth-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#twelfth-installation-production-event-boundary-correction)
-retains exact release, result, setup and cleanup bindings.
+The twelfth installation is **cleaned up**. Normal quit, stopped-process /
+closed-port checks, exact owned quarantine/purge and all **429 unchanged base
+files with zero overlays** passed. The earlier installations are also cleaned up. The
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#twelfth-installation-production-event-boundary-correction)
+owns exact per-case results, timings, setup, release and cleanup bindings.
 
-The release gate includes **6,004 native assertions**, **125 event host tests**,
-**311 event C#/Python integration cases** (249 using actual native adapters) and
-**664 shared bridge checks**. Every native event integration response now passes
-through the production terminal classifier, with independent terminal-ownership
-assertions. Shared parser regressions cover supported reward verbs and malformed
-inputs. Independent semantic review found no blockers. All 303 accepted inputs
-match the recorded source commit. The final release outputs are at
-`/private/tmp/sts-bridge-ot98xkue`; offline checks do not establish live acceptance.
+All **71 release groups passed in 257.219 seconds**: **6,004 native assertions**,
+**125 host tests**, **311 event C#/Python cases** (249 using actual native adapters),
+**664 shared bridge checks**, reproducible packaging and installation/cleanup
+fixtures. Native event integration now includes the production terminal classifier
+and independent ownership checks; shared parser cases cover reward actions and
+malformed inputs. Independent semantic review found no blockers. All 303 accepted
+inputs match the recorded source commit. Outputs are at
+`/private/tmp/sts-bridge-ot98xkue`. No new package was needed between the four
+successful cases. No profile/save/history/Cloud filesystem content was accessed.
 
 Generic removal followed by one appended event grant has live acceptance.
 The previous live-accepted release was
@@ -252,8 +235,9 @@ paths. Repeated-page progress is the first implemented increment from that map,
 with live acceptance through Abyssal Baths. Append-only additions before selectors
 passed Grave/Confront. Removal followed by one appended grant passed
 Amalgamator/CombineStrikes live. Multiple potion/relic rewards, fixed multi-card
-enchantment, ordinary singleton card reward menus and multiple card-reward sets
-form the next implemented batch. Mixed card/item sets, full-inventory handling
+enchantment, ordinary singleton card reward menus now have representative live acceptance.
+Colorful Philosophers also passed three card-reward menus with choose/Skip/choose
+and final dismissal. Mixed card/item sets, full-inventory handling
 and nested pickup composition remain concrete gaps; the static inventory itself
 adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.

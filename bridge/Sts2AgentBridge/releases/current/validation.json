@@ -3,11 +3,13 @@
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": true,
+    "current_package_installed": false,
     "current_package_live_tested": true,
     "fixed_two_enchantment_live_tested": true,
+    "multiple_card_rewards_mixed_choose_skip_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false,
+    "singleton_card_reward_live_tested": true,
     "three_potion_reward_set_live_tested": true
   },
   "independent_semantic_review": {
@@ -18,12 +20,14 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "cleanup": "required after live batch and normal quit",
+    "cleanup": "passed: normal quit, three stopped-process samples/two closed-port samples, exact owned quarantine/purge, all 429 base files unchanged",
+    "generated_files_removed": 4,
     "live_input_sent": true,
-    "overlay_count": 2,
+    "overlay_count": 0,
     "pre_install_runtime": "passed: stopped exact game process and closed local bridge port",
+    "quarantine_state_sha256": "6a5d4fef1db86dd1e9269717f1d00b03ca941d31cfced47fd4966d58de75cc15",
     "state_sha256": "1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec",
-    "status": "installed"
+    "status": "cleaned"
   },
   "live_results": [
     {
@@ -197,18 +201,191 @@
       "result_sha256": "93a8b5d60bd18e92bb0d48a1074469fa2c6f04bec1d7a01dd4fd5408680cf19b",
       "seconds": 0.944,
       "status": "passed"
+    },
+    {
+      "case": "BrainLeech/Rip",
+      "decisions": [
+        {
+          "action": "choose:1",
+          "option": "BRAIN_LEECH.pages.INITIAL.options.RIP",
+          "stage": "parent"
+        },
+        {
+          "action": "open",
+          "stage": "open"
+        },
+        {
+          "action": "choose:0",
+          "key": "EQUILIBRIUM",
+          "offer_count": 3,
+          "slot": 0,
+          "stage": "choose",
+          "upgrade_level": 0
+        },
+        {
+          "action": "choose:0",
+          "option": "PROCEED",
+          "stage": "proceed"
+        }
+      ],
+      "diagnostics": [
+        "parent_ready",
+        "pending_chosen_completion",
+        "pending_offers",
+        "parent_ready",
+        "map_ready"
+      ],
+      "event": {
+        "child_accepted": 2,
+        "child_attempted": 2,
+        "child_episodes": 1,
+        "child_reconciled": 2,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 12,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 4
+      },
+      "expected_card_rewards": 1,
+      "installation_state_sha256": "1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec",
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "policy": "/private/tmp/sts-brain-reward-live-20260909.py",
+      "policy_sha256": "6f116005c341c5e8cbd8a2f536f64657deb1177df3fd96a97122436309ca4f10",
+      "release_sha256": "748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3",
+      "result_path": "/private/tmp/sts-brain-reward-live-20260909-result.json",
+      "result_sha256": "f04edd4668c664ca38163caa9c763ab71999507f819155040fc60cceedeb643a",
+      "seconds": 1.232,
+      "status": "passed"
+    },
+    {
+      "case": "ColorfulPhilosophers/OfferRewards",
+      "decisions": [
+        {
+          "action": "choose:0",
+          "option": "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.NECROBINDER",
+          "stage": "parent"
+        },
+        {
+          "action": "open:0",
+          "index": 0,
+          "stage": "open"
+        },
+        {
+          "action": "choose:0:0",
+          "index": 0,
+          "key": "FEAR",
+          "offer_count": 3,
+          "slot": 0,
+          "stage": "choose",
+          "upgrade_level": 1
+        },
+        {
+          "action": "open:1",
+          "index": 1,
+          "stage": "open"
+        },
+        {
+          "action": "skip:1",
+          "index": 1,
+          "stage": "skip"
+        },
+        {
+          "action": "open:2",
+          "index": 2,
+          "stage": "open"
+        },
+        {
+          "action": "choose:2:0",
+          "index": 2,
+          "key": "NECRO_MASTERY",
+          "offer_count": 3,
+          "slot": 0,
+          "stage": "choose",
+          "upgrade_level": 0
+        },
+        {
+          "action": "dismiss",
+          "stage": "dismiss"
+        },
+        {
+          "action": "choose:0",
+          "option": "PROCEED",
+          "stage": "proceed"
+        }
+      ],
+      "diagnostics": [
+        "parent_ready",
+        "pending_offers",
+        "parent_ready",
+        "map_ready"
+      ],
+      "event": {
+        "child_accepted": 7,
+        "child_attempted": 7,
+        "child_episodes": 1,
+        "child_reconciled": 7,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 25,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 9
+      },
+      "expected_card_rewards": 3,
+      "installation_state_sha256": "1801571490790c9ec82fc9a8fe1bc8c72ad1cd0e9a5a6a5316e69c7446fc05ec",
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "planned_outcomes": [
+        "choose:0:0",
+        "skip:1",
+        "choose:2:0",
+        "dismiss"
+      ],
+      "policy": "/private/tmp/sts-philosophers-set-live-20260909.py",
+      "policy_sha256": "bb384d2f2669c23d65a754309579ef38315f2a2c2c8b70e4bd10ee47e01d6ef8",
+      "release_sha256": "748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3",
+      "result_path": "/private/tmp/sts-philosophers-set-live-20260909-result.json",
+      "result_sha256": "f31bae713734293589e09865300ddda5b539baf665a46165812dd7baceafb76e",
+      "seconds": 2.768,
+      "status": "passed"
     }
   ],
   "live_test": {
-    "expected_card_rewards": 1,
-    "independent_review": "passed; exact Rip/open/slot0/Proceed order, host verifies insertion, counters/map and unchanged no-retry/credential cleanup; HP premise supplied by manual setup",
-    "next_case": "BrainLeech/Rip",
-    "policy": "/private/tmp/sts-brain-reward-live-20260909.py",
-    "policy_fixture_checks": 18,
-    "policy_sha256": "6f116005c341c5e8cbd8a2f536f64657deb1177df3fd96a97122436309ca4f10",
-    "result_path": "/private/tmp/sts-brain-reward-live-20260909-result.json",
-    "setup": "Same running Profile 3; more than 5 HP, enter a room normally, then event BRAIN_LEECH; initial choices visible and console closed",
-    "status": "awaiting_manual_setup"
+    "expected_card_rewards": 3,
+    "independent_review": "passed; native option prefix, sequential menu ownership/choice/skip/final dismissal, host settlement, counters/map and unchanged no-retry/credential cleanup",
+    "next_case": "ColorfulPhilosophers/OfferRewards",
+    "planned_outcomes": [
+      "choose:0:0",
+      "skip:1",
+      "choose:2:0",
+      "dismiss"
+    ],
+    "policy": "/private/tmp/sts-philosophers-set-live-20260909.py",
+    "policy_fixture_checks": 25,
+    "policy_sha256": "bb384d2f2669c23d65a754309579ef38315f2a2c2c8b70e4bd10ee47e01d6ef8",
+    "result_path": "/private/tmp/sts-philosophers-set-live-20260909-result.json",
+    "setup": "Same running Profile 3; user reports Colorful event ready, initial choices and console closed",
+    "status": "passed_and_cleaned"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
@@ -244,7 +421,7 @@
   "source_state": "All 303 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate 257.219 seconds; stopped prior live case 0.308 seconds. Separate implementation/review/release-preparation/user-wait times were not measured. Prickly Sponge success 6.730 seconds including five-second preview pause. Potion Courier success 0.944 seconds.",
+  "timing_limits": "Final release gate 257.219 seconds; stopped prior live case 0.308 seconds. Separate implementation/review/release-preparation/user-wait times were not measured. Prickly Sponge success 6.730 seconds including five-second preview pause. Potion Courier success 0.944 seconds. Brain Leech success 1.232 seconds. Colorful Philosophers success 2.768 seconds.",
   "validation": {
     "check_groups": 71,
     "event_integration_cases": 311,

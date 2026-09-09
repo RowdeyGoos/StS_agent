@@ -21,9 +21,10 @@ process. Completed packets and old campaign instructions are historical referenc
    one appended grant has live acceptance through Amalgamator/CombineStrikes,
    exact two-card removal, separate grant observation and fresh core map. Fixed-two
    enchantment has Prickly Sponge live acceptance; Potion Courier/Grab Potions
-   demonstrated a three-potion reward set. Ordinary singleton card reward menus
-   and 2–8 card reward menus within one set have offline evidence and await their
-   cases in the current batch. Fixed-one generic deck transformation
+   demonstrated a three-potion reward set. Brain Leech/Rip passed an ordinary
+   singleton card reward; Colorful Philosophers passed three card menus with
+   choose/Skip/choose and final dismissal. Other menu counts/outcomes retain offline
+   evidence. Fixed-one generic deck transformation
    now has WoodCarvings/Bird live acceptance; Torus remains a branch candidate. Next address mixed card/item sets,
    full-inventory/nested pickup handling and remaining narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
