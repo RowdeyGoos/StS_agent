@@ -9,20 +9,15 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The next combined live batch is **installed and awaiting manual launch** as of
-2026-09-09. The accepted release is unchanged from the 71-group offline gate:
-`74e3cfee962253f9bab0fbc8b13e1aa80df1e134d20c31e5bbc5cb029afc01a8`.
-Current installed campaign state:
-`4b8cea51c2d3e334c888db600a94cc7ff0b7fa972833f4ed22466f3df4d40a9f`.
-Preparation verified the stopped game/closed port, pinned 429-file base, exactly
-two installed overlay files and the client's owned installation/configuration
-preflight. The installer created the mods parent; cleanup remains pending for
-this installation. Credential contents and game profile/save data were not read.
-The new package is staged at `/private/tmp/sts-unified-bridge-release`; the prior
-accepted package is preserved at `/private/tmp/sts-bridge-retained-release-hq543vus/package`.
-Next user setup: launch manually, select Profile 3 and stop at the main menu.
-Verify runtime and current ownership again before live actions; no new live
-behavior result has been claimed.
+The first combined live attempt stopped before generic upgrade child admission
+and was cleaned up. Sapphire Seed/Consume was accepted; its 11-card selector
+appeared, but no card input or upgrade was attempted. The intended larger-deck
+console setup was not established. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
+retains exact counts, setup limits, installation identity and verified cleanup.
+A derived-hitbox compatibility defect was separately reproduced in the
+single-upgrade adapter and corrected with exact identity/input guards retained.
+The correction awaits a fresh live attempt; its relation to the first admission
+failure remains unproven. Combat-choice/reward/map live checks remain pending.
 
 The September 8 unified module smoke is complete and its three installations are cleaned up.
 Representative paths covered combat (one UI-assisted chooser), rewards, map, shop,

@@ -196,13 +196,13 @@ internal static partial class Program
             Check(f.Cards.Select((card,index)=>card.CurrentUpgradeLevel==(index==slot?1:0)).All(x=>x),"only requested original upgraded");
             Check(f.SelectCalls==1&&f.ConfirmCalls==1,"allocated upgrade exactly once");
         }
-        foreach(string mutation in new[]{"unclickable","disabled","hidden","holder","grid","domain","animating"})
+        foreach(string mutation in new[]{"unclickable","disabled","hidden","holder","hitbox","grid","domain","animating"})
         {
             using var f=new Fixture("ALLOCATED_MUTATION",domain:20);LimitUpgradeViewport();
             var c=f.Start();var o=(CardSelectionV1Observation)Child(f,c);
             var screen=(NDeckUpgradeSelectScreen)f.Overlays.Screens[0];var grid=screen.GetNodeOrNull<NCardGrid>("%CardGrid")!;
             var h=grid.CurrentlyDisplayedCardHolders[15];
-            switch(mutation){case "unclickable":h.SetClickable(false);break;case "disabled":h.Hitbox.IsEnabled=false;break;case "hidden":h.Visible=false;break;case "holder":h.CardModel=f.Cards[19];break;case "grid":screen.Bind("%CardGrid",new NCardGrid());break;case "domain":grid.CurrentlyDisplayedCardHolders.RemoveAt(19);break;case "animating":grid.IsAnimatingOut=true;break;}
+            switch(mutation){case "unclickable":h.SetClickable(false);break;case "disabled":h.Hitbox.IsEnabled=false;break;case "hidden":h.Visible=false;break;case "holder":h.CardModel=f.Cards[19];break;case "hitbox":h.Hitbox=new MultiDerivedHitbox();break;case "grid":screen.Bind("%CardGrid",new NCardGrid());break;case "domain":grid.CurrentlyDisplayedCardHolders.RemoveAt(19);break;case "animating":grid.IsAnimatingOut=true;break;}
             f.Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,o.DecisionId,"select:15");
             Check(f.SelectCalls==0&&f.ConfirmCalls==0,"changed allocated target never dispatched: "+mutation);
         }

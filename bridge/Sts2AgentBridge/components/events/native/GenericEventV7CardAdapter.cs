@@ -400,7 +400,7 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
             NClickableControl? hitbox = holder.Hitbox;
             NCardHighlight? highlight = card?.CardHighlight;
             if (model is null || card is null || hitbox is null || highlight is null ||
-                !ValidExact(card) || !ValidExact(hitbox) || !ValidExact(highlight) ||
+                !ValidExact(card) || !Valid(hitbox) || !ValidExact(highlight) ||
                 highlight.Material is not ShaderMaterial material ||
                 !ValidExact(material) ||
                 !CardSelectionV1NativeRules.IsStableKey(model.Id.Entry))
@@ -457,7 +457,7 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
             CandidateBinding binding = bindings[index];
             if (!ReferenceEquals(holdersSnapshot[index], binding.Holder) ||
                 !ValidExact(binding.Holder) || !ValidExact(binding.Card) ||
-                !ValidExact(binding.Hitbox) || !ValidExact(binding.Highlight) ||
+                !Valid(binding.Hitbox) || !ValidExact(binding.Highlight) ||
                 !ValidExact(binding.Material) ||
                 !ReferenceEquals(binding.Holder.CardModel, binding.Model) ||
                 !ReferenceEquals(binding.Holder.CardNode, binding.Card) ||

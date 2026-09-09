@@ -391,7 +391,7 @@ internal static partial class Program
             grid.Size=new Vector2(1000,scrollHeight+100);grid.Bind("%ScrollContainer",new Control{Size=new Vector2(1000,scrollHeight),Position=new Vector2(0,50)});
             foreach(var card in cards)
             {
-                var material=new ShaderMaterial();var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{CardHighlight=new NCardHighlight{Material=material}},Hitbox=new NClickableControl()};
+                var material=new ShaderMaterial();var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{CardHighlight=new NCardHighlight{Material=material}},Hitbox=new MultiDerivedHitbox()};
                 holder.Selected=()=>{SelectCalls++;material.Width=BitConverter.Int32BitsToSingle(CardSelectionV1NativeRules.SelectedWidthBits);_preview.Card=card;_previewContainer.Visible=true;};
                 grid.CurrentlyDisplayedCardHolders.Add(holder);
             }
