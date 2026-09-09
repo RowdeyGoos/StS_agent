@@ -9,6 +9,18 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
+The release with the corrected combat end-turn wait is **installed and awaiting
+manual relaunch**. Accepted release:
+`fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb`.
+Current installed state:
+`3599640917195929280b307348fd83cd7a7d3e9d9602821d11a25be45feb6b00`.
+The final gate passed 71 groups in 146.105 seconds. Native DLL/package bytes are
+unchanged from the live-tested generic upgrade. Current installation verified
+429 unchanged base files, exactly two overlay files and client ownership; the
+installer created the mods parent. Cleanup is pending for this installation.
+Next setup: launch manually, select Profile 3 and stop at the main menu. Reverify
+runtime and this current state before acting; prior installation hashes are historical.
+
 The corrected generic upgrade passed the second live attempt: Sapphire Seed
 completed one verified card child and all four actions, then the fresh core map
 check passed. The following combat stopped at an end-turn transition with a

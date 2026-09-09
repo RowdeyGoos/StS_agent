@@ -167,3 +167,20 @@ The focused host gate passed all ten groups in **9.776 seconds**, including the
 existing shared-client socket integration (`/private/tmp/sts-bridge-qy139kvm`).
 One independent semantic review found no blockers. Current release records own
 the final combined gate and package identity. No native bridge change is needed.
+
+## Combat host retest prepared
+
+Source `370bd77` passed the final 71-group release gate in **146.105 seconds**
+(`/private/tmp/sts-bridge-tx2i28t8`). Accepted manifest SHA-256:
+`fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb`.
+Its native DLL and canonical package exactly match the preceding accepted
+release. The already published, validated package was reused; the changed host
+is covered by the new source inventory and executed checks.
+
+Stopped-game/closed-listener checks passed before installing with fresh state
+`3599640917195929280b307348fd83cd7a7d3e9d9602821d11a25be45feb6b00`.
+Post-install verification found the pinned 429 base files plus exactly two
+overlay files. Release and client ownership/configuration preflight passed
+without reading credential contents. This third installation is awaiting manual
+relaunch and still requires cleanup. The corrected combat wait has not yet been
+live-tested; the same native binary's generic upgrade/map result remains valid.
