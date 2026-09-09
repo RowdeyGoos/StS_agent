@@ -62,8 +62,11 @@ found no production blockers. Evidence: `/private/tmp/sts-bridge-4u2id5yc`
 
 Two more capabilities are implemented offline: **choose-one offered cards**
 (`card_offer_v1`, native 1–3 choices) and **card bundles** (`bundle_offer_v1`,
-1–5 bundles of 1–8 cards, native preview/Confirm). LeadPaperweight/MassiveScroll
-and ScrollBoxes are the representative Neow callers. Both retain exact model,
+1–5 bundles of 1–8 cards, native preview/Confirm). ScrollBoxes is the representative
+Neow bundle caller. A later pinned-caller
+check found LeadPaperweight/MassiveScroll allow Skip and therefore use v2; no
+required v1 caller was identified in that bounded inspection. Both retain exact
+model,
 control, task and deck ownership through event/map return. See the
 [contract and limits](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles).
 Add these to the next live batch alongside ancient entry, Sea Glass, Claws and
@@ -149,8 +152,11 @@ map in **0.832 seconds**. **Claws three-card transformation passed**: three
 unupgraded Strikes, explicit Preview/Confirm, seven reconciled actions and fresh
 map in **2.637 seconds**. **Claws six-card maximum passed**: five Strikes and one
 Defend, automatic preview, nine reconciled actions and fresh map in **3.808 seconds**.
-Claws now has zero/partial/full live coverage. Scroll Boxes bundle selection is next;
-the same package remains installed and cleanup is pending after the batch.
+Claws now has zero/partial/full live coverage. **Scroll Boxes bundle selection passed**:
+unupgraded Havoc, Cinder and Feel No Pain, exact preview/Confirm, four reconciled
+actions and fresh map in **0.841 seconds**. Lead Paperweight optional single-card
+choice without an extra grant is next; the same package remains installed and
+cleanup is pending after the batch.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

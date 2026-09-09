@@ -635,10 +635,11 @@ nested pickups, cancellation and empty candidate domains remain outside this cha
 ## Implemented offline: choose-one cards and bundles
 
 Two native selection surfaces now compose with the same event parent, including
-ancient dialogue/options and Proceed/map. Representative pinned callers are
-**Neow/LeadPaperweight** and **MassiveScroll** (choose one offered card), and
-**Neow/ScrollBoxes** (choose a bundle). Admission uses the owned request/screen
-chain and native models, without an event or relic allowlist.
+ancient dialogue/options and Proceed/map. **Neow/ScrollBoxes** is the pinned bundle
+caller. LeadPaperweight and MassiveScroll use the direct-card surface but pass
+`canSkip=true`, so their actual admission uses **card_offer_v2** below. No required
+v1 caller was found in the bounded retained-caller inspection. Admission uses the
+owned request/screen chain and native models, without an event or relic allowlist.
 
 | Contract | Native path | Legal flow and bounds |
 | --- | --- | --- |
@@ -667,8 +668,13 @@ cards in order. Baseline and offer ownership are retained. Partial ordered addit
 and deferred input/tasks wait; unrelated changes, failures or exhausted waits stop.
 The deck limit remains 512. Each input is attempted at most once.
 
-This increment has native, production-boundary and C#/Python fixture evidence;
-**live acceptance is pending**. These v1 contracts do not add Skip, preview
+This increment has native, production-boundary and C#/Python fixture evidence.
+**Scroll Boxes has representative live acceptance**: bundle zero of two three-card
+offers added unupgraded Havoc, Cinder and Feel No Pain after exact native preview
+and Confirm, with four reconciled actions and fresh map return in 0.841 seconds.
+Required single-card v1 offers remain pending live acceptance. The
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#scroll-boxes-bundle-selection-passed)
+binds the result to its release and installation. These v1 contracts do not add Skip, preview
 cancellation, extra grants/copies, card substitution or nested pickups. Optional
 choose-one offers and one extra grant now have the separate v2 contract below.
 Native direct menus with more than three choices are rejected.

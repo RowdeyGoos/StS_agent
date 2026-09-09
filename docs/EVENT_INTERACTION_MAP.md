@@ -31,7 +31,9 @@ Sea Glass/Claws selectors are packaged. Sea Glass has zero/partial/full live
 acceptance; Claws zero/partial/full selection also passed.
 See [current evidence](STATUS.md).
 [Choose-one cards and bundles](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles)
-now have packaged offline support for LeadPaperweight/MassiveScroll and ScrollBoxes.
+now have packaged support for LeadPaperweight/MassiveScroll and ScrollBoxes.
+Scroll Boxes has representative live acceptance (one three-card bundle, exact
+preview/Confirm and map return); required single-card v1 offers remain pending.
 [Inactive combat layouts and result acknowledgment](GENERIC_EVENTS.md#implemented-offline-inactive-combat-layouts-and-result-acknowledgment)
 now have packaged offline support: PunchOff/Nab-shaped Injury plus relic pickup,
 and Darv/PandorasBox-style results confirmation. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-offline-optional-card-offers-and-one-appended-grant)
@@ -69,8 +71,9 @@ HeftyTablet's `AfterObtained.MoveNext` chooses at IL186, creates an additional
 appendix description of “multiple copies” is incorrect: it passes `canSkip=true`
 at IL185, then inserts the chosen original before Injury only when non-null at
 IL324–340. Skip therefore still adds Injury. The original inventory and hashes are
-retained; `card_offer_v1` covers the simpler LeadPaperweight/MassiveScroll shape,
-while the new optional `card_offer_v2` supports this bounded composition offline.
+retained. LeadPaperweight/MassiveScroll also pass `canSkip=true` and use
+`card_offer_v2`, with no appended grant expected. The required `card_offer_v1`
+contract has no identified caller in the bounded retained-caller inspection.
 
 ## What the research changes
 

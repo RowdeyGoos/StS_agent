@@ -1718,3 +1718,52 @@ Prepare a fresh Profile 3 run, enter a room from the map normally, run
 The policy has not run live yet. No source/build/install change is needed; the
 same accepted release and installation remain active. Separate policy preparation/
 review times were not measured.
+
+### Scroll Boxes bundle selection passed
+
+The user prepared Scroll Boxes on the unchanged fifteenth installation and release.
+Fresh exact running-process, release/source/owned package and authenticated
+health/manifest checks passed. The unchanged reviewed policy selected
+`NEOW.pages.INITIAL.options.SCROLL_BOXES`, then bundle zero of two three-card offers:
+**unupgraded Havoc, Cinder and Feel No Pain**. It required the same exact ordered
+cards in native preview, Confirmed once and selected Proceed. `bundle_offer_v1`
+resolved with selected index zero and previewed/collected history. Native task/deck
+checks verified all three additions.
+
+All **four actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **2/2/2**, one completed card child, zero item children, six event reads.
+A fresh core-map read passed with two candidates. Policy time: **0.841 seconds**.
+The transient `pending_task_failed` diagnostic also appeared in this successful
+run; it is not a terminal result (the earlier Hefty evidence explains its pending
+placement). Parent effects remain `unverified`. This demonstrates one selected
+three-card bundle, not every bundle size or alternative branch.
+Result: `/private/tmp/sts-scrollboxes-live-20260909-result.json`, SHA-256
+`419c84b7c370aa22b5d8513a85b55c6be2b784e9861af103a1667c92dff5f7fc`.
+
+The next case is **Neow/LeadPaperweight optional single-card choice without an
+extra grant**. The same
+release remains installed; cleanup is pending after the batch. No uncertain mutation
+was retried and no profile/save/history/Cloud filesystem content was accessed.
+
+Lead Paperweight policy `/private/tmp/sts-leadpaperweight-live-20260909.py`, SHA-256
+`3c013be775e7af2217c44ac0bc372ec561abd15a6038ec8f2bdadfc9db87a43d`, passed **35 frozen-view checks** and
+independent semantic review with no remaining blockers. Review caught the initial
+incorrect required-offer assumption before live input. Retained pinned metadata
+`/private/tmp/sts-event-research-20260909/retained-il.json`, SHA-256
+`87a8f2847f841403d7963c929e34bcef1eb24a8ec51c592c8db3881c942d8390`, shows
+LeadPaperweight `AfterObtained.MoveNext` passing `canSkip=true` at IL123–124,
+with its sole chosen-card `CardPileCmd.Add` at IL243 (null choice bypasses addition).
+MassiveScroll also passes true at IL250–251. These callers therefore use
+`card_offer_v2`; the current guides' v1 classification is corrected. The bounded
+retained-caller inspection identified no required v1 caller. Original research
+artifacts and accepted build evidence are unchanged.
+
+The corrected policy requires exact `NEOW.pages.INITIAL.options.LEAD_PAPERWEIGHT`,
+a v2 menu of one to three single-card offers with advertised Skip, chooses card
+zero once, and requires that exact selected card, no additional cards, one
+reconciled child action and a fresh actionable map. Native ownership/task/deck
+checks remain in force. No Lead Paperweight live input has been sent.
+Prepare a fresh Profile 3 run, enter a room from the map normally, run
+`ancient NEOW LEAD_PAPERWEIGHT`, close the console and leave the relic option
+untouched. No source/build/install change is needed. Separate policy preparation/
+review times were not measured.

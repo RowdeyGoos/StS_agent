@@ -391,6 +391,53 @@
         }
       ],
       "status": "passed"
+    },
+    {
+      "cards": [
+        {
+          "key": "HAVOC",
+          "slot": 0,
+          "upgrade_level": 0
+        },
+        {
+          "key": "CINDER",
+          "slot": 1,
+          "upgrade_level": 0
+        },
+        {
+          "key": "FEEL_NO_PAIN",
+          "slot": 2,
+          "upgrade_level": 0
+        }
+      ],
+      "case": "Neow/ScrollBoxes",
+      "event": {
+        "child_accepted": 2,
+        "child_attempted": 2,
+        "child_episodes": 1,
+        "child_reconciled": 2,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 6,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 4
+      },
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-scrollboxes-live-20260909-result.json",
+      "result_sha256": "419c84b7c370aa22b5d8513a85b55c6be2b784e9861af103a1667c92dff5f7fc",
+      "seconds": 0.841,
+      "status": "passed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",
