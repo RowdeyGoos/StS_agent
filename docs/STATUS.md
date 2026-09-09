@@ -154,9 +154,10 @@ map in **2.637 seconds**. **Claws six-card maximum passed**: five Strikes and on
 Defend, automatic preview, nine reconciled actions and fresh map in **3.808 seconds**.
 Claws now has zero/partial/full live coverage. **Scroll Boxes bundle selection passed**:
 unupgraded Havoc, Cinder and Feel No Pain, exact preview/Confirm, four reconciled
-actions and fresh map in **0.841 seconds**. Lead Paperweight optional single-card
-choice without an extra grant is next; the same package remains installed and
-cleanup is pending after the batch.
+actions and fresh map in **0.841 seconds**. **Lead Paperweight choice also passed**:
+unupgraded Dramatic Entrance, no additional card, three reconciled actions and
+fresh map in **1.054 seconds**. Its Skip branch without a grant is next; the same
+package remains installed and cleanup is pending after the batch.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

@@ -72,7 +72,9 @@ appendix description of “multiple copies” is incorrect: it passes `canSkip=t
 at IL185, then inserts the chosen original before Injury only when non-null at
 IL324–340. Skip therefore still adds Injury. The original inventory and hashes are
 retained. LeadPaperweight/MassiveScroll also pass `canSkip=true` and use
-`card_offer_v2`, with no appended grant expected. The required `card_offer_v1`
+`card_offer_v2`, with no appended grant expected. Lead Paperweight choice now has
+live acceptance: one Dramatic Entrance, no extra card and map return. Its Skip
+branch remains pending. The required `card_offer_v1`
 contract has no identified caller in the bounded retained-caller inspection.
 
 ## What the research changes

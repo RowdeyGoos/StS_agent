@@ -1767,3 +1767,39 @@ Prepare a fresh Profile 3 run, enter a room from the map normally, run
 `ancient NEOW LEAD_PAPERWEIGHT`, close the console and leave the relic option
 untouched. No source/build/install change is needed. Separate policy preparation/
 review times were not measured.
+
+### Lead Paperweight choice passed
+
+The user prepared Lead Paperweight on the unchanged fifteenth installation and
+release. Fresh exact running-process, release/source/owned package and authenticated
+health/manifest checks passed. The unchanged reviewed policy selected
+`NEOW.pages.INITIAL.options.LEAD_PAPERWEIGHT`, then the first of two offered cards:
+**unupgraded Dramatic Entrance** (the other offer was Jack of All Trades). It then
+selected Proceed. `card_offer_v2` resolved with selected index zero, the exact
+chosen card, an empty `additional_cards` list and one collected receipt. Native
+task/deck checks verified the sole chosen-card addition.
+
+All **three actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **1/1/1**, one completed card child, zero item children, ten event reads.
+A fresh core-map read passed with three candidates. Policy time: **1.054 seconds**.
+The previously explained transient `pending_task_failed` diagnostic appeared;
+no terminal failure occurred. Parent effects remain `unverified`.
+Result: `/private/tmp/sts-leadpaperweight-live-20260909-result.json`, SHA-256
+`f7ce7cca140938176d5773dba560e5618466eab11772507a1ba342fef89f31f7`.
+
+The next case is **Lead Paperweight Skip without an additional grant**. The same
+release remains installed; cleanup is pending after the batch. No uncertain mutation
+was retried and no profile/save/history/Cloud filesystem content was accessed.
+
+Skip policy `/private/tmp/sts-leadpaperweight-skip-live-20260909.py`, SHA-256
+`9e40218fafff0d5bf5df4fe9a49fe7f09dedc62684589602cedb81d87f6ee016`, passed **35 frozen-view checks** and
+independent semantic review with no blockers. It retains the reviewed exact parent
+and v2 menu admission, sends Skip once and requires a null selected index, empty
+additional cards, a single skipped result, one reconciled child action and a fresh
+map. Native completion requires empty selector/null request results, successful
+tasks, overlay closure and unchanged deck identity/order/metadata from child
+admission. Parent effects remain unverified.
+Prepare a fresh Profile 3 run, enter a room from the map normally, run
+`ancient NEOW LEAD_PAPERWEIGHT`, close the console and leave the relic option
+untouched. This Skip policy has not run live. No source/build/install change is
+needed. Separate policy preparation/review times were not measured.
