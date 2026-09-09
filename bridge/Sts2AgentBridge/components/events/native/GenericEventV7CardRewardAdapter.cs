@@ -22,7 +22,10 @@ internal sealed class GenericEventV7CardRewardAdapter : IGenericEventV7RewardAda
     private readonly List<CardCreationResult> _offers;
     private readonly CardCreationResult[] _entries;
     private readonly CardModel[] _models;
-    private readonly CardSelectionV1DeckCard[] _deck,_cards;
+    private CardSelectionV1DeckCard[] _deck;
+    private readonly CardSelectionV1DeckCard[] _cards;
+    private bool _batch;
+    internal IReadOnlyList<CardModel> Originals=>Array.AsReadOnly(_models);
     private readonly bool _canSkip;
     private readonly int _thread=System.Environment.CurrentManagedThreadId;
     private Task? _offerTask,_chosenTask,_collectionTask;
@@ -68,7 +71,18 @@ internal sealed class GenericEventV7CardRewardAdapter : IGenericEventV7RewardAda
         if(removed)_removedSeen=true;
         return true;
     }
-    internal void Start(){if(_offerTask is not null||!_root.Ready)throw new InvalidOperationException("Reward lease unavailable.");_offerTask=_root.OfferTask;_chosenTask=_root.Binding.ChosenTask;}
+    internal void Start(bool batch=false,bool retainBaseline=false){
+        if(_offerTask is not null||!_root.Ready)throw new InvalidOperationException("Reward lease unavailable.");
+        _batch=batch;if(batch&&!retainBaseline)_deck=GenericEventV7Binding.CopyDeck(_root.Binding.Player);
+        if(!DeckOwned())throw new InvalidOperationException("Reward deck ownership changed.");
+        _offerTask=_root.OfferTask;_chosenTask=_root.Binding.ChosenTask;
+    }
+    internal bool InitialDeck()=>!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&Domain()&&Deck(out bool effect)&&!effect;
+    internal bool RetainDeck()=>Owned()&&Deck(out _);
+    internal bool RetainResult(bool selected)=>Owned()&&ReferenceEquals(_collectionTask,_root.CollectionTask)&&
+        _collectionTask is {IsCompletedSuccessfully:true}&&_optionTask is {IsCompletedSuccessfully:true}&&
+        _optionTask.Result==(_selected??_models.Length)&&(_selected is not null)==selected&&
+        _reward.SuccessfullySelected==selected&&_removedSeen==selected;
     internal void MenuEntering(IReadOnlyList<CardCreationResult> options,IReadOnlyList<CardRewardAlternative> alternatives) {
         if(_entered||_phase!="opening"||!ReferenceEquals(options,_offers)||!Domain()||alternatives.Count>1)throw new InvalidOperationException("Unexpected reward menu.");
         if(alternatives.Count==1) {
@@ -126,7 +140,7 @@ internal sealed class GenericEventV7CardRewardAdapter : IGenericEventV7RewardAda
         }
         return true;
     }
-    private bool DismissReady() {
+    internal bool DismissReady() {
         if(!Top(_root.Screen!,1)||!_root.Screen!.IsVisibleInTree())return false;
         var button=_root.Screen.GetNodeOrNull<NProceedButton>("ProceedButton");
         if(button is null||!Valid(button)||!ReferenceEquals(Field<NProceedButton>(_root.Screen,"_proceedButton"),button))return false;
@@ -150,12 +164,15 @@ internal sealed class GenericEventV7CardRewardAdapter : IGenericEventV7RewardAda
             if(_optionTask.Result!=(_selected??_models.Length))return Value("unsupported");
             if(_phase=="chosen") {
                 if(_root.Binding.Overlays.ScreenCount!=0&&!(Top(_menu,2)||Top(_root.Screen!,1)))return Value("unsupported");
+                if(_batch&&_collectionTask.IsCompletedSuccessfully)
+                    return Value(effect&&_reward.SuccessfullySelected&&_removedSeen&&(Top(_root.Screen!,1)||_root.Binding.Overlays.ScreenCount==0)?"complete":"unsupported");
                 if(_collectionTask.IsCompletedSuccessfully&&_offerTask!.IsCompletedSuccessfully&&_chosenTask!.IsCompletedSuccessfully)
                     return Value(effect&&_reward.SuccessfullySelected&&_removedSeen&&_root.Binding.Overlays.ScreenCount==0?"complete":"unsupported");
                 return Value("waiting");
             }
             if(effect||_reward.SuccessfullySelected||_removedSeen)return Value("unsupported");
             if(!_collectionTask.IsCompleted)return Value("waiting");
+            if(_batch)return Value(Top(_root.Screen!,1)?"complete":"unsupported");
             if(_phase=="dismissing")return Value(_offerTask!.IsCompletedSuccessfully&&_chosenTask!.IsCompletedSuccessfully&&_root.Binding.Overlays.ScreenCount==0?"complete":"waiting");
             if(!DismissReady())return Value("waiting");_phase="dismiss";return Value("dismiss");
         }
@@ -178,5 +195,6 @@ internal sealed class GenericEventV7CardRewardAdapter : IGenericEventV7RewardAda
         if(action=="dismiss"&&capture.Phase=="dismiss"){_phase="dismissing";_dismiss!.ForceClick();return;}
         throw new InvalidOperationException("Stale reward action.");
     }
+    internal void DismissSet(){if(!_batch||!Owned()||!DismissReady())throw new InvalidOperationException("Set dismissal unavailable.");_dismiss!.ForceClick();}
     public void Dispose(){if(System.Environment.CurrentManagedThreadId!=_thread)throw new InvalidOperationException("Reward owner required.");_disposed=true;}
 }

@@ -4,6 +4,7 @@
     <Compile Include="GenericEventV7ChildSession.cs" />
     <Compile Include="GenericEventV7ItemChildSession.cs" />
     <Compile Include="GenericEventV7CardRewardSession.cs" />
+    <Compile Include="GenericEventV7CardRewardSetSession.cs" />
     <Compile Include="GenericEventV5ChildSession.cs" Link="Frozen/GenericEventV5ChildSession.cs" />
     <Compile Include="../../items/core/ItemV1Contracts.cs" Link="Frozen/ItemV1Contracts.cs" />
     <Compile Include="../../items/core/ItemV1CanonicalEncoder.cs" Link="Frozen/ItemV1CanonicalEncoder.cs" />

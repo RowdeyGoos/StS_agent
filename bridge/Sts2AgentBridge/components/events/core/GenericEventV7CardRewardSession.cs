@@ -17,15 +17,17 @@ public interface IGenericEventV7RewardChildSession : IGenericEventV7ChildSession
 }
 public sealed record GenericEventV7RewardRead(string SessionNonce,string Status,string Phase,string DecisionId,
     IReadOnlyList<GenericEventV7RewardCard> Cards,bool CanSkip,IReadOnlyList<string> LegalActions,
-    IReadOnlyList<GenericEventV7PriorResult> PriorResults,int? SelectedSlot);
+    IReadOnlyList<GenericEventV7PriorResult> PriorResults,int? SelectedSlot,
+    int OfferCount=1,int OfferIndex=0,IReadOnlyList<GenericEventV7RewardSettlement>? Settled=null);
 public sealed record GenericEventV7RewardReceipt(string SessionNonce,string DecisionId,string ActionId,string Outcome);
-public sealed record GenericEventV7RewardChildRead(GenericEventV7RewardRead Value):GenericEventV7ChildRead("card_reward_v1");
-public sealed record GenericEventV7RewardChildApply(GenericEventV7RewardReceipt Value):GenericEventV7ChildApply("card_reward_v1");
+public sealed record GenericEventV7RewardChildRead(GenericEventV7RewardRead Value,string Version="card_reward_v1"):GenericEventV7ChildRead(Version);
+public sealed record GenericEventV7RewardChildApply(GenericEventV7RewardReceipt Value,string Version="card_reward_v1"):GenericEventV7ChildApply(Version);
 
 // One generated CardReward, its menu, and (after native Skip) explicit dismissal.
 public sealed class GenericEventV7CardRewardSession : IGenericEventV7RewardChildSession {
     private readonly IGenericEventV7RewardAdapter _adapter;
     private readonly string _nonce;
+    private readonly bool _entry;
     private readonly int _thread=Environment.CurrentManagedThreadId;
     private readonly List<GenericEventV7PriorResult> _history=new();
     private GenericEventV7RewardCapture? _published;
@@ -34,8 +36,8 @@ public sealed class GenericEventV7CardRewardSession : IGenericEventV7RewardChild
     private int? _selected;
     private bool _inside,_failed,_disposed,_interfered;
     private int _reads,_attempts;
-    public GenericEventV7CardRewardSession(string nonce,IGenericEventV7RewardAdapter adapter){_nonce=nonce;_adapter=adapter;}
-    public string ContractVersion=>"card_reward_v1";
+    public GenericEventV7CardRewardSession(string nonce,IGenericEventV7RewardAdapter adapter,bool entry=false){_nonce=nonce;_adapter=adapter;_entry=entry;}
+    public string ContractVersion=>_entry?"card_reward_entry_v1":"card_reward_v1";
     private bool Enter(){if(_inside||_failed||_disposed||Environment.CurrentManagedThreadId!=_thread){if(_inside)_interfered=true;_failed=true;return false;}_inside=true;return true;}
     private GenericEventV7RewardRead Value(string status,string phase)=>new(_nonce,status,phase,status=="ready"?_decision:"",
         status=="ready"&&phase=="choose"?Array.AsReadOnly(_cards!):Array.Empty<GenericEventV7RewardCard>(),
@@ -52,7 +54,7 @@ public sealed class GenericEventV7CardRewardSession : IGenericEventV7RewardChild
             var capture=_adapter.Capture();if(_failed||capture.Phase=="unsupported")return Stop();
             if(capture.Phase=="waiting")return Value("waiting","waiting");
             if(_pendingAction!="") {
-                string expected=_pendingAction=="open"?"choose":_pendingAction=="skip"?"dismiss":"complete";
+                string expected=_pendingAction=="open"?"choose":_pendingAction=="skip"&&!_entry?"dismiss":"complete";
                 if(capture.Phase!=expected)return Stop();
                 _history.Add(new(_pendingDecision,_pendingAction,_pendingAction=="open"?"opened":_pendingAction=="skip"?"skipped":_pendingAction=="dismiss"?"dismissed":"collected"));
                 _phase=expected;_pendingAction="";

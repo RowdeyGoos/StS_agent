@@ -17,8 +17,10 @@ including exact removal and fresh map return; grant provenance remains unverifie
 Broader post-selector deck changes remain gaps. Fixed multi-card enchantment and
 2–8 potion/relic reward sets now have offline implementation evidence. Ordinary
 singleton CardReward menus also have offline choose/Skip/dismiss coverage, with
-BrainLeech/Rip as the representative caller. Multiple/mixed card-reward sets,
-full-inventory handling and nested pickup composition remain gaps. These
+BrainLeech/Rip as the representative caller. Sets of 2–8 ordinary CardReward
+entries now also have offline choose/Skip/final-dismissal coverage, with Colorful
+Philosophers as the representative caller. Mixed card/item sets, full-inventory
+handling and nested pickup composition remain gaps. These
 new increments await the next batch live session.
 The inventory and gap matrix below retain the original research comparison at
 `4d3516f`; their source hashes and gap annotations are not repinned to later code.

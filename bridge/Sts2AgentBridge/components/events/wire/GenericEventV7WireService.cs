@@ -27,6 +27,7 @@ public sealed class GenericEventV7WireService : IDisposable
     private ItemV1Observation? _itemDomain;
     private GenericEventV7RewardCard[]? _rewardCards;
     private bool? _rewardCanSkip;
+    private GenericEventV7RewardSettlement[] _rewardSettled=Array.Empty<GenericEventV7RewardSettlement>();
     private readonly List<ItemV1ResolvedResult> _itemSetHistory=new();
     private string? _decision, _lastParentDecision, _lastParentAction;
     private string[] _legal = Array.Empty<string>();
@@ -96,7 +97,7 @@ public sealed class GenericEventV7WireService : IDisposable
                 {
                     Require(child.Ordinal == _ordinal + 1);
                     _child = child; _ordinal = child.Ordinal;
-                    _domain = null; _enchantment = null; _itemDomain = null; _rewardCards=null; _rewardCanSkip=null; _itemSetHistory.Clear(); _childAccepted.Clear(); _history = 0; _previewSeen = false;
+                    _domain = null; _enchantment = null; _itemDomain = null; _rewardCards=null; _rewardCanSkip=null; _rewardSettled=Array.Empty<GenericEventV7RewardSettlement>(); _itemSetHistory.Clear(); _childAccepted.Clear(); _history = 0; _previewSeen = false;
                 }
                 else Require(SameChild(child, _child));
                 var tagged = _session.ReadChild(child.ParentDecisionId, child.ParentActionId, child.Ordinal);
@@ -145,7 +146,7 @@ public sealed class GenericEventV7WireService : IDisposable
         }
         Require(!_childResolved && request.Ordinal == _child.Ordinal &&
             request.ParentDecision == _child.ParentDecisionId && request.ParentAction == _child.ParentActionId &&
-            _childAccepted.Count < (_child.Kind=="card_reward"?3:_child.Kind == "item" ? _child.OfferCount : 10));
+            _childAccepted.Count < (_child.Kind=="card_reward"?2*_child.OfferCount+1:_child.Kind == "item" ? _child.OfferCount : 10));
         var tagged = _session.ApplyChild(request.ParentDecision, request.ParentAction,
             request.Ordinal, request.Decision, request.Action);
         Require(tagged.ContractVersion == _child.ContractVersion);
@@ -189,7 +190,7 @@ public sealed class GenericEventV7WireService : IDisposable
         finally { Array.Clear(bytes); }
     }
 
-    private byte[] EncodeChild(object value) => _child!.Kind=="card_reward"?GenericEventV7WireCodec.CardReward(value):_child.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
+    private byte[] EncodeChild(object value) => _child!.Kind=="card_reward"?GenericEventV7WireCodec.CardReward(value,_child.ContractVersion):_child.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value,_child.MaxSelect>1) : _child.Operation == "remove"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardRemoveV2WireCodec.Encode(value) : _child.Operation == "transform"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value) : CardSelectionV1WireCodec.Encode(value);
@@ -244,7 +245,7 @@ public sealed class GenericEventV7WireService : IDisposable
         Require((_child is null && request.Ordinal == 0 && ParentAction(action)) ||
             (_child is not null && request.Ordinal == _child.Ordinal &&
              request.ParentDecision == _child.ParentDecisionId && request.ParentAction == _child.ParentActionId &&
-             (_child.Kind=="card_reward"?RewardAction(action):_child.Kind == "item" ? ItemWireV1Protocol.IsCanonicalActionId(action,out _) : CardSelectionV1WireProtocol.IsChildAction(action))));
+             (_child.Kind=="card_reward"?(_child.OfferCount>1?RewardSetAction(action):RewardAction(action)):_child.Kind == "item" ? ItemWireV1Protocol.IsCanonicalActionId(action,out _) : CardSelectionV1WireProtocol.IsChildAction(action))));
         // Exact canonical requests have no text-bearing fields or alternative JSON encodings.
         byte[] canonical = GenericEventV7WireCodec.Request(request.Decision, request.Action,
             request.Ordinal, request.ParentDecision, request.ParentAction);
@@ -444,7 +445,7 @@ public sealed class GenericEventV7WireService : IDisposable
         ? _child.Kind+":"+_child.ParentDecisionId+":"+_child.ParentActionId+":"+_child.Ordinal+":"+_child.ContractVersion+":"+decision : decision;
     private static void ValidateDescriptor(GenericEventV7Child c) => Require(c.Ordinal is >= 1 and <= 4 &&
         Hex(c.ParentDecisionId,64) && ParentAction(c.ParentActionId) &&
-        (c.Kind=="card_reward"?c.OfferCount==1&&c.ContractVersion=="card_reward_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
+        (c.Kind=="card_reward"?c.OfferCount is >=1 and <=8&&c.ContractVersion==(c.OfferCount==1?"card_reward_v1":"card_reward_set_v1")&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
             c.MinSelect == 0 && c.MaxSelect == 0 && c.CommitMode == "" && c.DomainCount == 0 :
          c.Kind == "card_selection" && c.OfferCount == 0 && c.ContractVersion == GenericEventV7Families.ContractVersion(c.Operation,c.MaxSelect) &&
             GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount)));
@@ -452,8 +453,12 @@ public sealed class GenericEventV7WireService : IDisposable
         a.ParentDecisionId == b.ParentDecisionId && a.ParentActionId == b.ParentActionId && a.Kind == b.Kind &&
         a.ContractVersion == b.ContractVersion && a.OfferCount == b.OfferCount && a.Operation == b.Operation &&
         a.MinSelect == b.MinSelect && a.MaxSelect == b.MaxSelect && a.CommitMode == b.CommitMode && a.DomainCount == b.DomainCount;
+    private static bool RewardSetAction(string action)=>action=="dismiss"||
+        action.Length==6&&(action.StartsWith("open:",StringComparison.Ordinal)||action.StartsWith("skip:",StringComparison.Ordinal))&&action[5] is >= '0' and <= '7'||
+        action.Length==10&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7] is >= '0' and <= '7'&&action[8]==':'&&action[9] is >= '0' and <= '4';
     private static bool RewardAction(string action)=>action is "open" or "skip" or "dismiss"||action.Length==8&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7] is >= '0' and <= '4';
     private void ValidateReward(object value) {
+        if(_child!.OfferCount>1){ValidateRewardSet(value);return;}
         Require(value is GenericEventV7RewardRead);var p=(GenericEventV7RewardRead)value;
         Require(p.SessionNonce==_nonce&&p.PriorResults.Count>=_history&&p.PriorResults.Count<=_childAccepted.Count);
         for(int i=0;i<p.PriorResults.Count;i++) {
@@ -481,6 +486,47 @@ public sealed class GenericEventV7WireService : IDisposable
                 _childAccepted.Count==3&&_rewardCanSkip==true&&_childAccepted[1].Action=="skip"&&_childAccepted[2].Action=="dismiss");
             Require(_completedChildren.Count<4&&_completedChildren.Add((_child!.ParentDecisionId,_child.ParentActionId)));_childResolved=true;
         }else Require(p.SelectedSlot is null&&(p.Status,p.Phase) is ("waiting","waiting") or ("unsupported","unsupported"));
+    }
+    private void ValidateRewardSet(object value) {
+        Require(value is GenericEventV7RewardRead);var p=(GenericEventV7RewardRead)value;
+        Require(p.SessionNonce==_nonce&&p.OfferCount==_child!.OfferCount&&p.SelectedSlot is null&&p.Settled is not null&&
+            p.Settled.Count>=_rewardSettled.Length&&p.Settled.Count<=Math.Min(p.OfferCount,_rewardSettled.Length+1)&&p.OfferIndex==p.Settled.Count&&
+            p.Settled.Take(_rewardSettled.Length).SequenceEqual(_rewardSettled));
+        Require(p.PriorResults.Count>=_history&&p.PriorResults.Count<=_childAccepted.Count);
+        for(int i=0;i<p.PriorResults.Count;i++) {
+            var row=p.PriorResults[i];var a=_childAccepted[i];
+            Require(row.DecisionId==a.Decision&&row.ActionId==a.Action&&row.Result==(a.Action.StartsWith("open:",StringComparison.Ordinal)?"opened":a.Action.StartsWith("skip:",StringComparison.Ordinal)?"skipped":a.Action=="dismiss"?"dismissed":"collected"));
+        }
+        _history=p.PriorResults.Count;
+        if(p.Settled.Count>_rewardSettled.Length) {
+            int index=_rewardSettled.Length;var row=p.Settled[index];
+            Require(row.OfferIndex==index&&_rewardCards is not null&&_history>=2*(index+1)&&_childAccepted.Count>=2*(index+1)&&_childAccepted[2*index].Action=="open:"+index);
+            string action=_childAccepted[2*index+1].Action;
+            if(row.SelectedSlot is {} slot)Require(slot>=0&&slot<_rewardCards.Length&&action=="choose:"+index+":"+slot&&row.Result=="collected"&&row.Key==_rewardCards[slot].Key&&row.UpgradeLevel==_rewardCards[slot].UpgradeLevel);
+            else Require(action=="skip:"+index&&_rewardCanSkip==true&&row.Result=="skipped"&&row.Key is null&&row.UpgradeLevel is null);
+            _rewardSettled=p.Settled.ToArray();_rewardCards=null;_rewardCanSkip=null;
+        }
+        int next=p.OfferIndex;
+        Require(_history>=2*next&&_history<=2*next+1);
+        if(p.Status=="ready") {
+            Require(_history==_childAccepted.Count);
+            if(p.Phase=="choose") {
+                Require(next<p.OfferCount&&_childAccepted.Count==2*next+1&&_childAccepted[^1].Action=="open:"+next&&p.Cards.Count is >=1 and <=5);
+                for(int i=0;i<p.Cards.Count;i++)Require(p.Cards[i].Slot==i&&StableKey(p.Cards[i].Key)&&p.Cards[i].UpgradeLevel>=0);
+                _rewardCards??=p.Cards.ToArray();_rewardCanSkip??=p.CanSkip;
+                Require(_rewardCards.SequenceEqual(p.Cards)&&_rewardCanSkip==p.CanSkip&&p.LegalActions.SequenceEqual(p.Cards.Select(c=>"choose:"+next+":"+c.Slot).Concat(p.CanSkip?new[]{"skip:"+next}:Array.Empty<string>())));
+            }else {
+                Require(p.Cards.Count==0&&!p.CanSkip&&((p.Phase=="open"&&next<p.OfferCount&&_childAccepted.Count==2*next&&p.LegalActions.SequenceEqual(new[]{"open:"+next}))||
+                    (p.Phase=="dismiss"&&next==p.OfferCount&&_childAccepted.Count==2*next&&_rewardSettled.Any(x=>x.Result=="skipped")&&p.LegalActions.SequenceEqual(new[]{"dismiss"}))));
+            }
+            Publish(p.DecisionId,p.LegalActions);return;
+        }
+        Require(p.DecisionId==""&&p.Cards.Count==0&&!p.CanSkip&&p.LegalActions.Count==0);
+        if(p.Status=="resolved") {
+            bool skipped=_rewardSettled.Any(x=>x.Result=="skipped");
+            Require(p.Phase=="complete"&&next==p.OfferCount&&_history==_childAccepted.Count&&_history==2*next+(skipped?1:0)&&(!skipped||_childAccepted[^1].Action=="dismiss"));
+            Require(_completedChildren.Count<4&&_completedChildren.Add((_child!.ParentDecisionId,_child.ParentActionId)));_childResolved=true;
+        }else Require((p.Status,p.Phase) is ("waiting","waiting") or ("unsupported","unsupported"));
     }
     private void CompleteItem() {
         var owner=(_child!.ParentDecisionId,_child.ParentActionId);

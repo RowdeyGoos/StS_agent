@@ -23,6 +23,7 @@
     <Compile Include="../core/GenericEventV7Contracts.cs" />
     <Compile Include="../core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../core/GenericEventV7CardRewardSession.cs" />
+    <Compile Include="../core/GenericEventV7CardRewardSetSession.cs" />
     <Compile Include="../core/GenericEventV7Session.cs" />
     <Compile Include="../wire/GenericEventV7WireCodec.cs" />
     <Compile Include="../wire/GenericEventV7WireService.cs" />

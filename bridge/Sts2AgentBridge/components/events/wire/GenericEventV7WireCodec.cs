@@ -75,14 +75,24 @@ internal static class GenericEventV7WireCodec
         w.WriteEndObject();
     });
 
-    internal static byte[] CardReward(object value)=>Encode(w=>{
-        w.WriteStartObject();w.WriteString("version","card_reward_v1");
+    internal static byte[] CardReward(object value,string version)=>Encode(w=>{
+        w.WriteStartObject();w.WriteString("version",version);
         if(value is GenericEventV7RewardRead p) {
             w.WriteString("session_nonce",p.SessionNonce);w.WriteString("status",p.Status);w.WriteString("phase",p.Phase);w.WriteString("decision_id",p.DecisionId);
             w.WriteStartArray("cards");foreach(var c in p.Cards){w.WriteStartObject();w.WriteNumber("slot",c.Slot);w.WriteString("key",c.Key);w.WriteNumber("upgrade_level",c.UpgradeLevel);w.WriteEndObject();}w.WriteEndArray();
             w.WriteBoolean("can_skip",p.CanSkip);Strings(w,"legal_actions",p.LegalActions);
             w.WriteStartArray("prior_results");foreach(var h in p.PriorResults){w.WriteStartObject();w.WriteString("decision_id",h.DecisionId);w.WriteString("action_id",h.ActionId);w.WriteString("result",h.Result);w.WriteEndObject();}w.WriteEndArray();
             if(p.SelectedSlot is {} slot)w.WriteNumber("selected_slot",slot);else w.WriteNull("selected_slot");
+            if(version=="card_reward_set_v1") {
+                w.WriteNumber("offer_count",p.OfferCount);w.WriteNumber("offer_index",p.OfferIndex);w.WriteStartArray("settled");
+                foreach(var row in p.Settled!) {
+                    w.WriteStartObject();w.WriteNumber("offer_index",row.OfferIndex);
+                    if(row.SelectedSlot is {} selected)w.WriteNumber("selected_slot",selected);else w.WriteNull("selected_slot");
+                    w.WriteString("key",row.Key);if(row.UpgradeLevel is {} level)w.WriteNumber("upgrade_level",level);else w.WriteNull("upgrade_level");
+                    w.WriteString("result",row.Result);w.WriteEndObject();
+                }
+                w.WriteEndArray();
+            }
         }else if(value is GenericEventV7RewardReceipt receipt) {
             w.WriteString("session_nonce",receipt.SessionNonce);w.WriteString("decision_id",receipt.DecisionId);w.WriteString("action_id",receipt.ActionId);w.WriteString("outcome",receipt.Outcome);
         }else throw new InvalidOperationException("Wrong card reward value.");

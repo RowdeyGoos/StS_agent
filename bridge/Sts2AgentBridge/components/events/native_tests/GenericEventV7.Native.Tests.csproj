@@ -2,6 +2,7 @@
   <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
   <ItemGroup>
     <Compile Include="CardRewardFixtures.cs" />
+    <Compile Include="CardRewardSetFixtures.cs" />
     <Compile Include="PostRemovalAdditionFixtures.cs" />
     <Compile Include="RepeatedPageFixtures.cs" />
     <Compile Include="PreSelectorAdditionFixtures.cs" />
@@ -9,6 +10,7 @@
     <Compile Include="../native/GenericEventV7ItemState.cs" />
     <Compile Include="../native/GenericEventV7ItemAdapter.cs" />
     <Compile Include="../native/GenericEventV7CardRewardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7CardRewardSetAdapter.cs" />
     <Compile Include="ItemFixtures.cs" />
     <Compile Include="../native/GenericEventV7TransformAdapter.cs" />
     <Compile Include="../native/GenericEventV7TransformState.cs" />

@@ -79,7 +79,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!item.Domain()||!item.Overlay())return Fixed("unsupported");
                 if(!item.TryButton(out _)){diagnostic=GenericEventDiagnosticCode.PrepareCandidates;return Fixed("waiting");}
                 if(item.CardReward is not null) {
-                    b.Admission??=new GenericEventV7RewardAdmission(new object());
+                    b.Admission??=new GenericEventV7RewardAdmission(new object(),item.OfferCount);
                     return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
                 }
                 if(!GenericEventV7ItemAdapter.Slots(b.Player,out _,out var slots)||
@@ -179,7 +179,10 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 !_screens.Add(item.Screen!)||!_itemIdentities.Add(item.Set)||!_itemIdentities.Add(item.Reward!))
                 throw new InvalidOperationException("Unowned or repeated item child.");
             _childCreated=true;
-            if(item.CardReward is {} menuReward) {menuReward.Start();return new GenericEventV7CardRewardSession(b.Nonce,menuReward);}
+            if(item.CardReward is {} menuReward) {
+                if(item.OfferCount>1)return new GenericEventV7CardRewardSetSession(b.Nonce,new GenericEventV7CardRewardSetAdapter(item));
+                menuReward.Start();return new GenericEventV7CardRewardSession(b.Nonce,menuReward);
+            }
             if(item.OfferCount>1) {
                 var set=new GenericEventV7ItemSetAdapter(item);
                 try{return new GenericEventV7ItemSetSession(b.Nonce,set);}catch{set.Dispose();throw;}

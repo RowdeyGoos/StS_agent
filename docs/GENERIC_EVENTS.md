@@ -397,9 +397,66 @@ Offline native fixtures and the actual C#/Python path cover single and five-card
 menus, duplicate-key originals, both outcomes, delayed/deferred completion,
 changed targets/owners/deck effects, native Skip legality, nondefault alternatives,
 malformed replies, lost replies and rollback of either new hook. This code is
-not yet packaged or live-accepted. Multiple card rewards in one set, mixed card/item
-sets, repeated offers within one option, SpecialCardReward, reroll/multiple picks,
+not yet packaged or live-accepted. The multiple-entry extension is described below.
+Mixed card/item sets, repeated offers within one option, SpecialCardReward, reroll/multiple picks,
 hook-substituted cards and nested pickup selectors remain unsupported.
+
+## Implemented: multiple card reward menus
+
+`card_reward_set_v1` extends the same `card_reward` child family to **2–8 ordinary
+CardReward entries in one owned nonterminal RewardsSet**. The pinned representative
+is **ColorfulPhilosophers/OfferRewards**: three rewards, normally three cards per
+menu, followed by event completion. Every reward has native `RewardsSetIndex=5`;
+public indexes therefore use retained generated-list positions and exact reward
+identities.
+
+The child visits each reward once, in list order. `open:N` opens that reward's
+menu; `choose:N:S` selects original slot S and `skip:N` uses the ordinary native
+Skip alternative when legal. Each menu still has 1–5 offers. A verified choice
+removes only its original offer and inserts that exact card; a verified Skip
+closes the menu without changing the deck. Skipped reward buttons stay on the
+root screen and cannot be reopened through this child. If any reward was skipped,
+`dismiss` is advertised **after every menu is settled**, on the exact native root
+Proceed control. Collecting every reward instead uses native automatic closure.
+
+The admission deck snapshot remains fixed through entry zero. Before each later
+entry starts, the previous active entry's complete deck and result must remain
+valid. The later snapshot includes those verified insertions; this does not admit
+new unrelated additions, removals, reordering or upgrades between menus. All
+reward/list identities, offered models and metadata, prior selection flags,
+collection/choice task identities and results remain retained. Future entries
+cannot collect early. Duplicate rewards/models, mixed card/item sets, linked or
+empty rewards, replaced controls and changed prior effects stop the flow.
+The starting deck plus one possible card per reward must fit the 512-card bound. Root Offer and Chosen task failures always
+stop it, including after earlier menus have succeeded.
+
+Read payloads retain the card-reward fields and append `offer_count`, `offer_index`
+and `settled`. `offer_index` is the next generated-list position, or the count when
+all menus are settled. Each ordered settled row has `offer_index`, `selected_slot`,
+`key`, `upgrade_level` and `result` (`collected` or `skipped`); a skipped row has
+null card fields. The top-level `selected_slot` remains null for sets. Current
+cards and legal actions describe only the active menu. Receipts carry the new set
+version and namespaced action. History records each open and choice/Skip, then the
+single final dismissal if needed. Singleton `card_reward_v1` wire shape and
+completion semantics remain unchanged; internal entry completion is never
+published as singleton completion.
+
+Each settled menu contributes two reconciled actions; one set counts as one card
+child only after all native tasks succeed and the root closes. A later failure
+retains earlier verified rows/counts without claiming completion. The set uses at
+most 17 actions and 256 reads, within the existing event-wide budgets. Wire and
+host validate stable settled prefixes, exact card values, menu-specific receipts,
+legal transitions and final dismissal. Lost mutation replies stop without retry.
+Reentry into the outer session blocks subsequent inner input and cleanup retains
+ownership on failure.
+
+Offline fixtures cover two, three and eight rewards with varied one/three/five-card
+menus, all-collected, mixed and all-skipped outcomes, delayed collection/parent
+tasks, native dismissal legality, changed admission and prior-effect state,
+unsupported domains, malformed replies, lost replies and reentry. Colorful
+Philosophers remains a live acceptance candidate. Mixed card/item sets, repeated
+Offers within one option, SpecialCardReward, rerolls/multiple picks, substituted
+cards and nested pickup selectors remain separate gaps.
 
 ## Separate remaining questions
 
@@ -412,7 +469,7 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader card-reward sets and reward/pickup composition, ancient and
+changes after selectors, other pre-selector deck mutations, mixed card/item reward sets and broader pickup composition, ancient and
 combat layouts, optional/sequential pickup children and custom
 surfaces are distinct gaps. WoodCarvings uses a generic deck selector before a
 fixed-result transformation; it does not enter the supported transform screen.

@@ -34,12 +34,15 @@
     <Compile Include="../core/GenericEventV7Contracts.cs" />
     <Compile Include="../core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../core/GenericEventV7CardRewardSession.cs" />
+    <Compile Include="../core/GenericEventV7CardRewardSetSession.cs" />
     <Compile Include="../core/GenericEventV7Session.cs" />
     <Compile Include="../../cards/core/CardSelectionV1Contracts.cs" />
     <Compile Include="../../cards/core/CardSelectionV1Session.cs" />
     <Compile Include="../native/GenericEventV7ItemState.cs" />
     <Compile Include="../native/GenericEventV7CardRewardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7CardRewardSetAdapter.cs" />
     <Compile Include="../native_tests/CardRewardFixtures.cs" />
+    <Compile Include="../native_tests/CardRewardSetFixtures.cs" />
     <Compile Include="../native/GenericEventV7ItemAdapter.cs" />
     <Compile Include="../native_tests/ItemFixtures.cs" />
     <Compile Include="../native/GenericEventV7TransformAdapter.cs" />

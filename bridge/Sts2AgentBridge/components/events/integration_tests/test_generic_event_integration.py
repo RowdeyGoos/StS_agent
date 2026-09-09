@@ -28,7 +28,7 @@ class Exchange:
         self.native = native
         self.transform = native and scenario.startswith(('T_', 'V_'))
         self.variable_transform = native and scenario.startswith('V_')
-        self.card_reward = native and scenario.startswith("CR_")
+        self.card_reward = native and scenario.startswith(("CR_","CRS_"))
         self.item = native and scenario.startswith('I_')
         self.repeated_page = native and scenario.startswith('P_')
         self.process = subprocess.Popen([dotnet, str(fixture), scenario],
@@ -957,6 +957,10 @@ def main() -> int:
         native_checks += added
 
     if args.native_fixture is not None:
+        from generic_event_card_reward_set_cases import run_card_reward_set_cases
+        added=run_card_reward_set_cases(args,host,Exchange)
+        checks+=added
+        native_checks+=added
         from generic_event_card_reward_cases import run_card_reward_cases
         added=run_card_reward_cases(args,host,Exchange)
         checks+=added

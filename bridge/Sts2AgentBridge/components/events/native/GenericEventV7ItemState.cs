@@ -40,10 +40,21 @@ internal sealed class GenericEventV7ItemState
         var list=Set.Rewards;
         if(list is null||list.Count is <1 or >8)return false;
         Rewards=list;
-        if(list.Count==1&&list[0].GetType()==typeof(CardReward)) {
-            Reward=list[0];Index=NativeIndex=Reward.RewardsSetIndex;
-            if(!ReferenceEquals(Reward.Player,Binding.Player)||Reward.ParentRewardSet is not null||!Reward.IsPopulated||Reward.SuccessfullySelected)return false;
-            Entries=new[]{this};CardReward=new GenericEventV7CardRewardAdapter(this,(CardReward)Reward);return Domain();
+        if(list.TrueForAll(r=>r is not null&&r.GetType()==typeof(CardReward))) {
+            if(GenericEventV7Binding.CopyDeck(Binding.Player).Length>512-list.Count)return false;
+            var cards=new HashSet<object>(ReferenceEqualityComparer.Instance);
+            var rewards=new HashSet<object>(ReferenceEqualityComparer.Instance);
+            var cardEntries=new GenericEventV7ItemState[list.Count];
+            for(int i=0;i<list.Count;i++) {
+                var entry=i==0?this:new GenericEventV7ItemState(Binding,Set);
+                entry.Rewards=list;entry.Position=i;entry.Root=this;entry.Reward=list[i];
+                entry.Index=entry.NativeIndex=list[i].RewardsSetIndex;
+                if(!rewards.Add(list[i])||!ReferenceEquals(list[i].Player,Binding.Player)||list[i].ParentRewardSet is not null||!list[i].IsPopulated||list[i].SuccessfullySelected)return false;
+                entry.CardReward=new GenericEventV7CardRewardAdapter(entry,(CardReward)list[i]);
+                foreach(var card in entry.CardReward.Originals)if(!cards.Add(card))return false;
+                cardEntries[i]=entry;
+            }
+            Entries=cardEntries;return Domain();
         }
         var entries=new GenericEventV7ItemState[list.Count];
         var identities=new HashSet<object>(ReferenceEqualityComparer.Instance);

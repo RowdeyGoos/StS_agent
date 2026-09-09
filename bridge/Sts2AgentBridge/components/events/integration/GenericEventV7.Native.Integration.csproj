@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../native_tests/CardRewardFixtures.cs" />
+    <Compile Include="../native_tests/CardRewardSetFixtures.cs" />
     <Compile Include="../native_tests/PostRemovalAdditionFixtures.cs" />
     <Compile Include="../native_tests/RepeatedPageFixtures.cs" />
     <Compile Include="../native_tests/PreSelectorAdditionFixtures.cs" />
@@ -17,6 +18,7 @@
     <Compile Include="../native/GenericEventV7ItemState.cs" />
     <Compile Include="../native/GenericEventV7ItemAdapter.cs" />
     <Compile Include="../native/GenericEventV7CardRewardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7CardRewardSetAdapter.cs" />
     <Compile Include="../native_tests/ItemFixtures.cs" />
     <Compile Include="../native/GenericEventV7TransformAdapter.cs" />
     <Compile Include="../native/GenericEventV7TransformState.cs" />
