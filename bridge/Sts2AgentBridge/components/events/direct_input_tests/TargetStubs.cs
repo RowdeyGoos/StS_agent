@@ -225,7 +225,7 @@ namespace MegaCrit.Sts2.Core.Nodes
     using MegaCrit.Sts2.Core.Nodes.Rooms;
     using MegaCrit.Sts2.Core.Nodes.Screens.Map;
     using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
-    public sealed class GlobalUiState { public NMapScreen MapScreen { get; set; } = null!; public NOverlayStack Overlays { get; set; } = null!; }
+    public sealed class GlobalUiState { public MegaCrit.Sts2.Core.Nodes.Screens.Capstones.NCapstoneContainer CapstoneContainer {get;set;}=new(); public NMapScreen MapScreen { get; set; } = null!; public NOverlayStack Overlays { get; set; } = null!; }
     public sealed class NRun : Node
     {
         public static NRun? Instance { get; set; }
@@ -393,7 +393,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Rooms
     {
         public static NEventRoom? Instance { get; set; }
         public object? CustomEventNode { get; set; }
-        public object? EmbeddedCombatRoom { get; set; }
+        private object? _embedded; public object? EmbeddedCombatRoom {get=>_embedded??(Layout as MegaCrit.Sts2.Core.Nodes.Events.NCombatEventLayout)?.EmbeddedCombatRoom;set=>_embedded=value;}
         public MegaCrit.Sts2.Core.Nodes.Events.NEventLayout Layout {get;set;}=new();
     }
     public sealed class NRestSiteRoom : Control
@@ -702,5 +702,41 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection {
         public void Select(MegaCrit.Sts2.Core.Nodes.Cards.NCardBundle selected)=>_selectedBundle=selected;
         public void Complete(IEnumerable<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>> cards)=>_completionSource.SetResult(cards);
         public async Task<IEnumerable<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>>> CardsSelected(){var result=await _completionSource.Task;MegaCrit.Sts2.Core.Nodes.NRun.Instance!.GlobalUi.Overlays.Screens.Remove(this);Visible=false;return result;}
+    }
+}
+namespace MegaCrit.Sts2.Core.Nodes.GodotExtensions {
+    public class NButton:MegaCrit.Sts2.Core.Nodes.CommonUi.NClickableControl {
+        public Action? Clicked;
+        public void ForceClick(){if(IsEnabled)Clicked?.Invoke();}
+    }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Screens.Capstones {
+    public interface ICapstoneScreen { }
+    public sealed class NCapstoneContainer:Godot.Control {
+        public static NCapstoneContainer? Instance=>MegaCrit.Sts2.Core.Nodes.NRun.Instance?.GlobalUi.CapstoneContainer;
+        public ICapstoneScreen? CurrentCapstoneScreen {get;set;}
+        public bool InUse=>CurrentCapstoneScreen is not null;
+        public void Open(ICapstoneScreen screen)=>CurrentCapstoneScreen=screen;
+        public void Close(){var old=CurrentCapstoneScreen;CurrentCapstoneScreen=null;if(old is Godot.Control c)c.Visible=false;}
+    }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Screens {
+    public class NCardsViewScreen:Godot.Control {
+        protected IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> _cards=Array.Empty<MegaCrit.Sts2.Core.Models.CardModel>();
+    }
+    public sealed class NSimpleCardsViewScreen:NCardsViewScreen,MegaCrit.Sts2.Core.Nodes.Screens.Capstones.ICapstoneScreen {
+        private List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult> _cardResults=null!;
+        private MegaCrit.Sts2.Core.Nodes.GodotExtensions.NButton _confirmButton=null!;
+        public static Func<List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult>,MegaCrit.Sts2.Core.Localization.LocString,NSimpleCardsViewScreen>? Factory;
+        public void Setup(List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult> results,MegaCrit.Sts2.Core.Nodes.GodotExtensions.NButton confirm){_cardResults=results;_cards=System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(results,r=>r.cardAdded));_confirmButton=confirm;Bind("ConfirmButton",confirm);}
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static NSimpleCardsViewScreen ShowScreen(List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult> results,MegaCrit.Sts2.Core.Localization.LocString text)=>Factory!(results,text);
+    }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Rooms {public class NCombatRoom:Godot.Control {}}
+namespace MegaCrit.Sts2.Core.Nodes.Events {
+    public class NCombatEventLayout:NEventLayout {
+        public bool HasCombatStarted {get;set;}
+        public MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom? EmbeddedCombatRoom {get;set;}=new();
     }
 }

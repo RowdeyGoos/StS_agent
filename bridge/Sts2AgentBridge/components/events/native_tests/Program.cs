@@ -40,6 +40,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--card-reward"})){CardRewardTests();Console.WriteLine("card-reward checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--optional-events"})){OptionalEventTests();Console.WriteLine("optional event checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-offers"})){OfferTests();Console.WriteLine("card offer checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -160,6 +161,7 @@ internal static partial class Program
         ItemTests();
         VariableTransformTests();
         OfferTests();
+        SurfaceTests();
         OptionalEventTests();
         RepeatedPageTests();
         PreSelectorAdditionTests();

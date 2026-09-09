@@ -605,7 +605,7 @@ payload versions; confirmed histories and exact selected sets remain mandatory.
 Fixtures cover ancient entry, post-pickup dialogue reset, zero/partial/full counts,
 small transform domains, delayed completion, stale input, malformed versions/results
 and lost replies without retry. This is offline evidence, not live acceptance or
-support for every ancient pickup. Results screens, full inventory,
+support for every ancient pickup. Full inventory,
 nested pickups, cancellation and empty candidate domains remain outside this change.
 
 ## Implemented offline: choose-one cards and bundles
@@ -649,6 +649,50 @@ extra grants/copies, card substitution or nested pickups. HeftyTablet uses the s
 choose screen but has a broader post-choice grant including Injury; that composition
 remains unsupported. Native direct menus with more than three choices are rejected.
 
+## Implemented offline: inactive combat layouts and result acknowledgment
+
+The parent now admits the pinned `NCombatEventLayout` while `HasCombatStarted`
+is false and its native embedded room remains valid and unchanged. Ordinary
+options and existing children use the same ownership and completion rules.
+**PunchOff/Nab** is the representative interaction: Injury is added before the
+singleton relic reward, then Proceed returns to map. **TheLanternKey/ReturnTheKey**
+is another source-backed noncombat candidate. Layout admission does not implement
+combat execution or return from combat. If a choice starts combat, this handler
+stops as unsupported rather than reporting a map handoff. Native options do not
+expose a reliable pre-choice combat flag, so this increment does not classify
+all combat-starting choices in advance. Actual live acceptance is pending.
+
+The `card_results_v1` child acknowledges the pinned `NSimpleCardsViewScreen`
+opened by an owned event callback. **Darv/PandorasBox** supplies the inspected
+caller; Darv's pool eligibility remains unresolved. Pandora's Box performs its
+automatic transformation first, then opens a capstone screen with the results.
+The hook retains the exact returned screen, results list and added-card models,
+current capstone container, native ConfirmButton and post-transformation deck.
+This path needs no synthetic selector task: ShowScreen returns a screen, and
+Confirm closes the native capstone synchronously (deferred input may still wait).
+Completion requires that exact capstone to close, Chosen to succeed and the
+entire post-show deck to remain unchanged in model/order/key/upgrade/enchantment
+and ownership. The result list must contain 1–64 successful, unique models
+currently present exactly once in the deck. The existing 512-card deck limit applies.
+
+The descriptor uses `kind: card_results`, `contract_version: card_results_v1`,
+parent lineage/ordinal and `offer_count` for the result-card count. Payload fields
+are `version`, `session_nonce`, `status`, `phase`, `decision_id`, `cards`,
+`legal_actions` and `prior_results`. Cards contain `slot`, `key`, `upgrade_level`.
+The ready phase is `acknowledge`, with one legal action, `confirm`. Resolved
+payloads retain the original result cards and one `acknowledged` history entry.
+Waiting/unsupported payloads expose no cards or actions. Confirmation is attempted
+at most once; lost input/replies are never retried. Foreign, replaced or prematurely
+closed capstones and changed controls/models/decks stop the session.
+
+Acknowledgment counts as a completed card child, but parent effects remain
+**`unverified`**. It does not certify the correctness of the earlier automatic
+transformation. Wire and host checks reject a fabricated `card_effect_verified`
+claim for that acknowledgment. Card inspection, nested/sequential result screens,
+results inside an existing pickup/selector child and alternative result screens
+remain unsupported. Both new paths have offline native/C#/Python and production
+boundary evidence; no live launch or installation was performed.
+
 ## Separate remaining questions
 
 An allocated off-screen holder can accept direct input. A card without an
@@ -660,7 +704,7 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader pickup composition, combat layouts, repeated/nested pickup children and custom
+changes after selectors, other pre-selector deck mutations, broader pickup composition, combat execution/resumption, repeated/nested pickup children and custom
 surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
 is implemented above; Bird passed live, while Torus remains a branch candidate.
 

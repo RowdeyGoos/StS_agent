@@ -19,12 +19,15 @@
     <Compile Include="GenericEventV7RepeatedPageIntegrationHost.cs" />
     <Compile Include="GenericEventV7VariableTransformIntegrationHost.cs" />
     <Compile Include="GenericEventV7OfferIntegrationHost.cs" />
+    <Compile Include="GenericEventV7SurfaceIntegrationHost.cs" />
     <Compile Include="../native_tests/VariableTransformFixtures.cs" />
     <Compile Include="../native_tests/OfferFixtures.cs" />
+    <Compile Include="../native_tests/SurfaceFixtures.cs" />
     <Compile Include="../native/GenericEventV7ItemState.cs" />
     <Compile Include="../native/GenericEventV7ItemAdapter.cs" />
     <Compile Include="../native/GenericEventV7CardRewardAdapter.cs" />
     <Compile Include="../native/GenericEventV7OfferAdapter.cs" />
+    <Compile Include="../native/GenericEventV7ResultsAdapter.cs" />
     <Compile Include="../native/GenericEventV7CardRewardSetAdapter.cs" />
     <Compile Include="../native_tests/ItemFixtures.cs" />
     <Compile Include="../native/GenericEventV7TransformAdapter.cs" />

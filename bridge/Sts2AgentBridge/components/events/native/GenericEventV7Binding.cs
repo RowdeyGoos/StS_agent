@@ -29,7 +29,7 @@ internal sealed class GenericEventV7Binding
     {
         Run=run; Player=player; Room=room; Map=map; Overlays=overlays; Layout=layout;
         EventModel=model; Option=option; Controller=controller; Nonce=nonce; Decision=decision; Action=action;
-        RunState=player.RunState; OptionKey=option.TextKey;
+        EmbeddedRoom=room.EmbeddedCombatRoom;RunState=player.RunState; OptionKey=option.TextKey;
         PreDispatchDeck=CopyDeck(player); SelectionDeck=PreDispatchDeck;
         // Reservation is the final authority check for this presentation node.
         // Native event dispatch may remove and free it before Chosen runs.
@@ -54,6 +54,8 @@ internal sealed class GenericEventV7Binding
     internal CardSelectionV1DeckCard[] PreDispatchDeck {get;}
     internal CardSelectionV1DeckCard[] SelectionDeck {get;private set;}
     private bool _selectionDeckBound;
+    internal readonly object? EmbeddedRoom;
+    internal GenericEventV7ResultsAdapter? Results;
     internal GenericEventV7OfferAdapter? Offer;
     internal CardSelectorPrefs Prefs;
     internal bool Failed,Closed,ChosenSeen,RequestSeen,ScreenSeen;
@@ -132,8 +134,14 @@ internal sealed class GenericEventV7Binding
         ReferenceEquals(Room.Layout,Layout) && ReferenceEquals(EventModel.Owner,Player) &&
         ReferenceEquals(Player.RunState,RunState) && Option.TextKey==OptionKey &&
         Valid(Run)&&Valid(Room)&&Valid(Map)&&Valid(Overlays)&&Valid(Layout) &&
-        (exit || Room.IsVisibleInTree()) && Room.CustomEventNode is null && Room.EmbeddedCombatRoom is null &&
+        (exit || Room.IsVisibleInTree()) && Room.CustomEventNode is null && CombatLayoutReady(Room) && ReferenceEquals(Room.EmbeddedCombatRoom,EmbeddedRoom) && CapstoneReady(Results) &&
         CardSelectCmd.Selector is null && (exit || !Map.IsOpen && !Map.IsTravelEnabled && !Map.IsTraveling);
+    internal static bool CombatLayoutReady(NEventRoom room)=>room.Layout is NCombatEventLayout combat?
+        combat.GetType()==typeof(NCombatEventLayout)&&!combat.HasCombatStarted&&combat.EmbeddedCombatRoom is {} embedded&&GodotObject.IsInstanceValid(embedded)&&ReferenceEquals(room.EmbeddedCombatRoom,embedded):room.EmbeddedCombatRoom is null;
+    internal static bool CapstoneReady(GenericEventV7ResultsAdapter? results=null) {
+        var container=MegaCrit.Sts2.Core.Nodes.Screens.Capstones.NCapstoneContainer.Instance;
+        return results is not null?results.OwnsCapstone():container is null||GodotObject.IsInstanceValid(container)&&!container.InUse&&container.CurrentCapstoneScreen is null;
+    }
     private static bool Valid(GodotObject obj)=>GodotObject.IsInstanceValid(obj);
     // The native option may append cards before asking for a selector. Bind
     // once, at the owned request entry, without certifying those parent effects.

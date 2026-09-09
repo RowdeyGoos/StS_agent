@@ -29,6 +29,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private NMapScreen? _map;
     private NOverlayStack? _overlays;
     private NEventLayout? _layout;
+    private object? _embeddedRoom;
     private EventModel? _event;
     private Player? _player;
     private GenericEventV7Binding? _pending;
@@ -72,6 +73,13 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 { diagnostic=GenericEventDiagnosticCode.MapReady; return Fixed("map"); }
                 diagnostic=GenericEventDiagnosticCode.PendingProceed;
                 return Fixed("waiting");
+            }
+            if(b.Results is {} results) {
+                var value=results.Capture();if(value.Status=="unsupported")return Fixed("unsupported");
+                if(value.Status=="waiting"||b.ChosenTask is null)return Fixed("waiting");
+                if(value.Status!="ready"||results.Screen is null)return Fixed("unsupported");
+                b.Admission??=new GenericEventV7ResultsAdmission(new object(),results.Count);
+                return new("child",false,Array.Empty<GenericEventV7NativeOption>(),results.Screen,b.Admission);
             }
             if(b.Offer is {} offer) {
                 var captured=offer.Capture();
@@ -142,7 +150,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(!Exact(run)||!Exact(room)||!Exact(map)||!Exact(overlays)||
             !ReferenceEquals(NEventRoom.Instance,room)||!ReferenceEquals(NMapScreen.Instance,map)||
             map!.IsOpen||map.IsTravelEnabled||map.IsTraveling||overlays!.ScreenCount!=0||
-            !room!.IsVisibleInTree()||room.CustomEventNode is not null||room.EmbeddedCombatRoom is not null||
+            !room!.IsVisibleInTree()||room.CustomEventNode is not null||!GenericEventV7Binding.CombatLayoutReady(room)||!GenericEventV7Binding.CapstoneReady()||
             CardSelectCmd.Selector is not null) return Fixed("unsupported");
         NEventLayout? layout=room.Layout;
         if(!SupportedLayout(layout)||!layout!.IsVisibleInTree()) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
@@ -204,6 +212,11 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     public IGenericEventV7ChildSession CreateChild(object admissionIdentity)
     {
         var b=_pending;
+        if(b?.Results is {} results) {
+            if(_childCreated||b.Admission is not GenericEventV7ResultsAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||
+                results.Capture().Status!="ready"||!_screens.Add(results.Screen!)||!_tasks.Add(b.ChosenTask!))throw new InvalidOperationException("Unowned results child.");
+            _childCreated=true;return new GenericEventV7ResultsSession(b.Nonce,results.Count,results);
+        }
         if(b?.Offer is {} offer) {
             if(_childCreated||b.Admission is not GenericEventV7OfferAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||
                 offer.Capture().Phase!="choose"||!_screens.Add(offer.Screen!)||!_tasks.Add(offer.RequestTask!)||!_tasks.Add(b.ChosenTask!))throw new InvalidOperationException("Unowned offer child.");
@@ -273,12 +286,12 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         _hooks.Dispose();_disposed=true;
     }
     private bool BindWorld(NRun run,NEventRoom room,NMapScreen map,NOverlayStack overlays,NEventLayout layout,EventModel model,Player player) {
-        if(_run is null){_run=run;_room=room;_map=map;_overlays=overlays;_layout=layout;_event=model;_player=player;}
+        if(_run is null){_run=run;_room=room;_map=map;_overlays=overlays;_layout=layout;_embeddedRoom=room.EmbeddedCombatRoom;_event=model;_player=player;}
         return ReferenceEquals(_run,run)&&ReferenceEquals(_room,room)&&ReferenceEquals(_map,map)&&ReferenceEquals(_overlays,overlays)&&
-            ReferenceEquals(_layout,layout)&&ReferenceEquals(_event,model)&&ReferenceEquals(_player,player);
+            ReferenceEquals(_layout,layout)&&ReferenceEquals(_embeddedRoom,room.EmbeddedCombatRoom)&&ReferenceEquals(_event,model)&&ReferenceEquals(_player,player);
     }
     private static bool SupportedLayout(NEventLayout? layout)=>layout is not null&&GodotObject.IsInstanceValid(layout)&&
-        (layout.GetType()==typeof(NEventLayout)||layout.GetType()==typeof(NAncientEventLayout));
+        (layout.GetType()==typeof(NEventLayout)||layout.GetType()==typeof(NAncientEventLayout)||layout.GetType()==typeof(NCombatEventLayout));
     private sealed class DialogueBinding {
         internal readonly NAncientEventLayout Layout;internal readonly AncientEventModel Model;internal readonly NAncientDialogueHitbox Hitbox;
         internal readonly IList Lines;internal readonly object[] Originals;internal readonly int Line;

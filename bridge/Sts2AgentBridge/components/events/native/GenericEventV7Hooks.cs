@@ -74,10 +74,12 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromChooseACardScreen),new[]{typeof(PlayerChoiceContext),typeof(IReadOnlyList<CardModel>),typeof(Player),typeof(bool)})!,
             typeof(NChooseACardSelectionScreen).GetMethod(nameof(NChooseACardSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(bool)})!,
             typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromChooseABundleScreen),new[]{typeof(Player),typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!,
-            typeof(NChooseABundleSelectionScreen).GetMethod(nameof(NChooseABundleSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!
+            typeof(NChooseABundleSelectionScreen).GetMethod(nameof(NChooseABundleSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!,
+            typeof(NSimpleCardsViewScreen).GetMethod(nameof(NSimpleCardsViewScreen.ShowScreen),new[]{typeof(List<CardPileAddResult>),typeof(MegaCrit.Sts2.Core.Localization.LocString)})!
         };
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
+        if(!targets[27].IsPublic||!targets[27].IsStatic||targets[27].IsGenericMethod||targets[27].ReturnType!=typeof(NSimpleCardsViewScreen))throw new InvalidOperationException("Results screen signature mismatch.");
         Type[] offerReturns={typeof(Task<CardModel>),typeof(NChooseACardSelectionScreen),typeof(Task<IEnumerable<CardModel>>),typeof(NChooseABundleSelectionScreen)};
         for(int i=23;i<27;i++)
             if(!targets[i].IsPublic||!targets[i].IsStatic||targets[i].IsGenericMethod||targets[i].ReturnType!=offerReturns[i-23])
@@ -97,7 +99,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             targets[21].IsStatic||!targets[21].IsPublic||targets[21].ReturnType!=typeof(Task<int?>))throw new InvalidOperationException("Card reward hook signature mismatch.");
         if(!targets[22].IsStatic||!targets[22].IsPublic||targets[22].IsGenericMethod||targets[22].ReturnType!=typeof(Task<IEnumerable<CardModel>>))
             throw new InvalidOperationException("Generic deck hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen"};
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen","ResultsScreen"};
         _installed=this;
         try
         {
@@ -736,6 +738,19 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void TransformInsertPostfix(TransformObservation? __state)
     {if(__state?.Command is not { } c||__state.Choice is null)return;try{__state.Owner!.InsertionExit(c,__state.Choice);}catch{__state.Owner!.Fail();}}
     private static void TransformInsertFinalizer(Exception? __exception,TransformObservation? __state)=>TransformChoiceFinalizer(__exception,__state);
+    private static void ResultsScreenPrefix(List<CardPileAddResult> __0,out State __state) {
+        var b=Parent.Value;__state=new State{Binding=b};
+        if(b is null){if(_armed is not null)_armed.Failed=true;return;}
+        try {
+            if(!Owns(b)||b.Failed||b.Closed||b.RequestSeen||b.ScreenSeen||b.Results is not null||b.Item is not null||b.Offer is not null||
+                !b.ContextValid(false)||b.Overlays.ScreenCount!=0)throw new InvalidOperationException();
+            b.RequestSeen=true;b.Results=new GenericEventV7ResultsAdapter(b,__0);
+        }catch{b.Failed=true;}
+    }
+    private static void ResultsScreenPostfix(NSimpleCardsViewScreen __result,State? __state) {
+        if(__state?.Binding is not {} b||b.Failed)return;try{b.Results!.BindScreen(__result);}catch{b.Failed=true;}
+    }
+    private static void ResultsScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);
     private static void OfferRequestPrefix(PlayerChoiceContext __0,IReadOnlyList<CardModel> __1,Player __2,bool __3,out State __state) {
         OfferEntry(__2,__1,false,__0 is not null&&!__3,out __state);
     }

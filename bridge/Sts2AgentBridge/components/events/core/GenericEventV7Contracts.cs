@@ -77,6 +77,10 @@ public sealed class GenericEventV7Child
         if(offerVersion is not ("card_offer_v1" or "bundle_offer_v1"))throw new ArgumentException("Unknown offer version.");
         Kind="card_offer";ContractVersion=offerVersion;
     }
+    public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7ResultsAdmission results) {
+        if(!results.IsSupported)throw new ArgumentException("Results bounds.");
+        Ordinal=ordinal;ParentDecisionId=decision;ParentActionId=action;Kind="card_results";ContractVersion="card_results_v1";OfferCount=results.CardCount;Operation="";CommitMode="";
+    }
     public string Kind { get; }
     public string ContractVersion { get; }
     public int OfferCount { get; }

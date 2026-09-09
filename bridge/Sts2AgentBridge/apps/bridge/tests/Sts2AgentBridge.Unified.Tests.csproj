@@ -31,6 +31,7 @@
   <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />
   <Compile Include="../../../components/events/core/GenericEventV7CardRewardSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7OfferSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7ResultsSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7CardRewardSetSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
   <Compile Include="../../../components/events/transform_core/CardTransformV2Journal.cs" />

@@ -30,6 +30,24 @@ internal static class EventBoundaryTests
 
     internal static void Run(Action<bool,string> check)
     {
+        foreach(int count in new[]{1,10,64}) {
+            var child=new GenericEventV7Child(1,Decision,"choose:0",new GenericEventV7ResultsAdmission(new object(),count));
+            var cards=Enumerable.Range(0,count).Select(i=>new GenericEventV7RewardCard(i,"CARD_"+i,0)).ToArray();
+            GenericEventV7RewardRead Read(string status)=>new(Nonce,status,status=="ready"?"acknowledge":status=="resolved"?"complete":status,status=="ready"?Decision:"",status is "ready" or "resolved"?cards:Array.Empty<GenericEventV7RewardCard>(),false,status=="ready"?new[]{"confirm"}:Array.Empty<string>(),status=="resolved"?new[]{new GenericEventV7PriorResult(Decision,"confirm","acknowledged")}:Array.Empty<GenericEventV7PriorResult>(),null);
+            byte[] Encode(string status)=>GenericEventV7WireCodec.Decision(Nonce,Parent(child),GenericEventV7WireCodec.CardResults(Read(status)));
+            foreach(string status in new[]{"ready","waiting","unsupported","resolved"})check(Classify(Encode(status))==(status=="unsupported"?TerminalClassification.Terminal:TerminalClassification.NonTerminal),"result screen boundary "+status);
+            var ready=Encode("ready");
+            foreach(string mutation in new[]{"version","count","slot","action","key","effect"}) {
+                var invalid=Mutate(ready,n=>{switch(mutation){case "version":n["child"]!["contract_version"]="card_offer_v1";break;case "count":n["child"]!["offer_count"]=65;break;case "slot":n["payload"]!["cards"]![0]!["slot"]=true;break;case "action":n["payload"]!["legal_actions"]=new JsonArray("choose:0");break;case "key":n["payload"]!["cards"]![0]!["key"]="BAD KEY";break;case "effect":n["payload"]!["effect"]="transformed";break;}});
+                check(Classify(invalid)==TerminalClassification.Invalid,"malformed results boundary "+mutation);
+            }
+            check(Classify(Mutate(Encode("resolved"),n=>n["payload"]!["prior_results"]![0]!["result"]="collected"))==TerminalClassification.Invalid,"acknowledgment is not collection");
+            foreach(string outcome in new[]{"accepted","rejected","unsupported","uncertain"}) {
+                var receipt=GenericEventV7WireCodec.Action(Nonce,child,null,GenericEventV7WireCodec.CardResults(new GenericEventV7RewardReceipt(Nonce,Decision,"confirm",outcome)));
+                check(Classify(receipt,GenericEventTransportRoute.ChildPost)==(outcome=="accepted"?TerminalClassification.NonTerminal:TerminalClassification.Terminal),"results action receipt "+outcome);
+            }
+        }
+
         foreach(bool bundle in new[]{false,true}) {
             string version=bundle?"bundle_offer_v1":"card_offer_v1";
             var child=new GenericEventV7Child(1,Decision,"choose:0",3,version);

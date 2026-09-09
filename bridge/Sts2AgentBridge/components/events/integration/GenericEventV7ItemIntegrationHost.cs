@@ -11,7 +11,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
 {
     private static int RunItem(string scenario)
     {
-        if (!new[] { "I_SET_TWO", "I_SET_MIXED", "I_SET_EIGHT", "I_SET_COLLECTION", "I_SET_OFFER", "I_SET_CHOSEN", "I_SET_LATE_SLOT", "I_FIRST", "I_ANOTHER", "I_HELD_OUT", "I_RELIC", "I_INDEX255",
+        if (!new[] { "I_COMBAT", "I_COMBAT_STARTED", "I_COMBAT_REPLACED", "I_SET_TWO", "I_SET_MIXED", "I_SET_EIGHT", "I_SET_COLLECTION", "I_SET_OFFER", "I_SET_CHOSEN", "I_SET_LATE_SLOT", "I_FIRST", "I_ANOTHER", "I_HELD_OUT", "I_RELIC", "I_INDEX255",
             "I_DELAYED_CREATION", "I_DELAYED_COLLECTION", "I_DELAYED_OFFER", "I_DELAYED_CHOSEN",
             "I_REPEAT", "I_MIXED", "I_MIXED_VARIABLE", "I_RELIC_FIRST", "I_RELIC_ANOTHER", "I_FULL", "I_EXTRA",
             "I_HIDDEN", "I_LINKED", "I_TERMINAL", "I_TASK_FAULT", "I_LATE_CLAIM", "I_LATE_SLOT",
@@ -19,7 +19,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
         bool creation = scenario == "I_DELAYED_CREATION", collection = scenario is "I_DELAYED_COLLECTION" or "I_SET_COLLECTION",
             offer = scenario is "I_DELAYED_OFFER" or "I_SET_OFFER" or "I_LATE_CLAIM" or "I_LATE_SLOT", chosen = scenario is "I_DELAYED_CHOSEN" or "I_SET_CHOSEN";
         string name = scenario is "I_FIRST" or "I_RELIC_FIRST" ? "FIRST_ITEM" : scenario is "I_ANOTHER" or "I_RELIC_ANOTHER" ? "ANOTHER_ITEM" : "HELD_OUT_ITEM";
-        string kind = scenario is "I_SET_EIGHT" or "I_RELIC" or "I_REPEAT" or "I_RELIC_FIRST" or "I_RELIC_ANOTHER" ? "relic" : "potion";
+        string kind = scenario.StartsWith("I_COMBAT",StringComparison.Ordinal)?"relic":scenario is "I_SET_EIGHT" or "I_RELIC" or "I_REPEAT" or "I_RELIC_FIRST" or "I_RELIC_ANOTHER" ? "relic" : "potion";
         string[]? kinds=scenario.StartsWith("I_SET_",StringComparison.Ordinal)?
             scenario=="I_SET_EIGHT"?Enumerable.Repeat("relic",8).ToArray():
             scenario=="I_SET_MIXED"?new[]{"potion","potion","relic","relic"}:new[]{"potion","potion"}:null;
@@ -29,6 +29,11 @@ internal static partial class GenericEventV7NativeIntegrationHost
             mixed: scenario is "I_MIXED" or "I_MIXED_VARIABLE",
             transformMinimum: scenario == "I_MIXED_VARIABLE" ? 1 : null,
             transformMaximum: scenario == "I_MIXED_VARIABLE" ? 3 : 1,itemKinds:kinds);
+        if(scenario.StartsWith("I_COMBAT",StringComparison.Ordinal)) {
+            var layout=new MegaCrit.Sts2.Core.Nodes.Events.NCombatEventLayout();layout.OptionButtons.AddRange(fixture.Room.Layout.OptionButtons);fixture.Room.Layout=layout;
+            var callback=layout.OptionButtons[0].Option.Callback;
+            layout.OptionButtons[0].Option.Callback=async()=>{var injury=new CardModel{Owner=fixture.Player};injury.Id.Entry="INJURY";fixture.Player.Deck.Cards.Add(injury);await callback();};
+        }
         if (scenario == "I_FULL")
             for (int i = 0; i < fixture.Player.PotionSlots.Count; i++) fixture.Player.PotionSlots[i] = fixture.Player.PotionSlots[0];
         fixture.ExtraReward = scenario == "I_EXTRA";
@@ -73,6 +78,10 @@ internal static partial class GenericEventV7NativeIntegrationHost
                 { creationReleased = true; fixture.AdvanceCreation(); }
                 var child = value.GetProperty("child");
                 var payload = value.GetProperty("payload");
+                if(!mutated&&child.ValueKind==JsonValueKind.Object&&payload.GetProperty("status").GetString()=="ready"&&scenario is "I_COMBAT_STARTED" or "I_COMBAT_REPLACED") {
+                    mutated=true;var layout=(MegaCrit.Sts2.Core.Nodes.Events.NCombatEventLayout)fixture.Room.Layout;
+                    if(scenario=="I_COMBAT_STARTED")layout.HasCombatStarted=true;else layout.EmbeddedCombatRoom=new();
+                }
                 if (child.ValueKind == JsonValueKind.Object && child.GetProperty("kind").GetString() == "item" &&
                     payload.ValueKind == JsonValueKind.Object && payload.GetProperty("status").GetString() == "waiting" && fixture.CollectCalls > 0)
                 {

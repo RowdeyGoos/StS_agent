@@ -24,6 +24,7 @@ public sealed record GenericEventV7NativeCapture(string Status, bool EventFinish
 public abstract record GenericEventV7Admission(object Identity) {
     public bool IsSupported => Identity is not null && (this switch {
         GenericEventV7CardAdmission c => GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
+        GenericEventV7ResultsAdmission r => r.CardCount is >=1 and <=64,
         GenericEventV7OfferAdmission o => o.OfferCount is >=1 and <=5,
         GenericEventV7RewardAdmission r => r.OfferCount is >=1 and <=8 && (!r.Mixed || r.OfferCount>=2),
         GenericEventV7ItemAdmission i => i.OfferCount is >= 1 and <= 8,
@@ -31,6 +32,7 @@ public abstract record GenericEventV7Admission(object Identity) {
 }
 public sealed record GenericEventV7CardAdmission(object AdmissionIdentity, string Operation,
     int MinSelect, int MaxSelect, string CommitMode, int DomainCount) : GenericEventV7Admission(AdmissionIdentity);
+public sealed record GenericEventV7ResultsAdmission(object AdmissionIdentity,int CardCount):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7OfferAdmission(object AdmissionIdentity,int OfferCount,bool Bundle):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7RewardAdmission(object AdmissionIdentity,int OfferCount=1,bool Mixed=false) : GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7ItemAdmission(object AdmissionIdentity, int OfferCount) : GenericEventV7Admission(AdmissionIdentity);

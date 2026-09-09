@@ -8,10 +8,12 @@
     <Compile Include="PreSelectorAdditionFixtures.cs" />
     <Compile Include="VariableTransformFixtures.cs" />
     <Compile Include="OfferFixtures.cs" />
+    <Compile Include="SurfaceFixtures.cs" />
     <Compile Include="../native/GenericEventV7ItemState.cs" />
     <Compile Include="../native/GenericEventV7ItemAdapter.cs" />
     <Compile Include="../native/GenericEventV7CardRewardAdapter.cs" />
     <Compile Include="../native/GenericEventV7OfferAdapter.cs" />
+    <Compile Include="../native/GenericEventV7ResultsAdapter.cs" />
     <Compile Include="../native/GenericEventV7CardRewardSetAdapter.cs" />
     <Compile Include="ItemFixtures.cs" />
     <Compile Include="../native/GenericEventV7TransformAdapter.cs" />

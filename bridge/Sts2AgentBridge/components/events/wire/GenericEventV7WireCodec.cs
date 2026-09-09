@@ -75,6 +75,16 @@ internal static class GenericEventV7WireCodec
         w.WriteEndObject();
     });
 
+    internal static byte[] CardResults(object value) => Encode(w=>{
+        w.WriteStartObject();w.WriteString("version","card_results_v1");
+        if(value is GenericEventV7RewardRead p) {
+            w.WriteString("session_nonce",p.SessionNonce);w.WriteString("status",p.Status);w.WriteString("phase",p.Phase);w.WriteString("decision_id",p.DecisionId);
+            w.WriteStartArray("cards");foreach(var c in p.Cards){w.WriteStartObject();w.WriteNumber("slot",c.Slot);w.WriteString("key",c.Key);w.WriteNumber("upgrade_level",c.UpgradeLevel);w.WriteEndObject();}w.WriteEndArray();
+            w.WriteStartArray("legal_actions");foreach(var a in p.LegalActions)w.WriteStringValue(a);w.WriteEndArray();
+            w.WriteStartArray("prior_results");foreach(var h in p.PriorResults){w.WriteStartObject();w.WriteString("decision_id",h.DecisionId);w.WriteString("action_id",h.ActionId);w.WriteString("result",h.Result);w.WriteEndObject();}w.WriteEndArray();
+        }else if(value is GenericEventV7RewardReceipt receipt){w.WriteString("session_nonce",receipt.SessionNonce);w.WriteString("decision_id",receipt.DecisionId);w.WriteString("action_id",receipt.ActionId);w.WriteString("outcome",receipt.Outcome);}else throw new InvalidOperationException();
+        w.WriteEndObject();
+    });
     internal static byte[] CardOffer(object value,string version)=>Encode(w=>{
         w.WriteStartObject();w.WriteString("version",version);
         if(value is GenericEventV7RewardRead p) {
@@ -131,7 +141,7 @@ internal static class GenericEventV7WireCodec
         w.WriteStartObject("child"); w.WriteNumber("ordinal", c.Ordinal);
         w.WriteString("parent_decision_id", c.ParentDecisionId); w.WriteString("parent_action_id", c.ParentActionId);
         w.WriteString("kind", c.Kind); w.WriteString("contract_version", c.ContractVersion);
-        if (c.Kind is "item" or "card_reward" or "card_offer") { w.WriteNumber("offer_count", c.OfferCount); w.WriteEndObject(); return; }
+        if (c.Kind is "item" or "card_reward" or "card_offer" or "card_results") { w.WriteNumber("offer_count", c.OfferCount); w.WriteEndObject(); return; }
         w.WriteString("operation", c.Operation); w.WriteNumber("min_select", c.MinSelect);
         w.WriteNumber("max_select", c.MaxSelect); w.WriteString("commit_mode", c.CommitMode);
         w.WriteNumber("domain_count", c.DomainCount); w.WriteEndObject();

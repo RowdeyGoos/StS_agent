@@ -30,7 +30,10 @@ shape and other bounded interleavings. Ancient entry/dialogue and optional
 Sea Glass/Claws selectors now also have unreleased offline implementation.
 [Choose-one cards and bundles](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles)
 now have unreleased offline support for LeadPaperweight/MassiveScroll and ScrollBoxes.
-Full-inventory handling and nested pickup composition remain gaps. The preceding five tested
+[Inactive combat layouts and result acknowledgment](GENERIC_EVENTS.md#implemented-offline-inactive-combat-layouts-and-result-acknowledgment)
+now have unreleased offline support: PunchOff/Nab-shaped Injury plus relic pickup,
+and Darv/PandorasBox-style results confirmation. Embedded combat execution and
+resumption, full-inventory handling and nested pickup composition remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
 The inventory and gap matrix below retain the original research comparison at

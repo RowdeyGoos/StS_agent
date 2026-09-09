@@ -31,9 +31,10 @@ process. Completed packets and old campaign instructions are historical referenc
    Sea Glass add selection and Claws transformation now also have unreleased offline
    implementation. Choose-one cards (LeadPaperweight/MassiveScroll) and bundles
    (ScrollBoxes) now also have unreleased native/C#/Python support. Validate these
-   together in the next live batch. Next address
-   full-inventory/nested pickups and remaining narrow selector additions; then
-   combat layouts and custom/terminal dependencies. This
+   together in the next live batch. Inactive combat-layout options and automatic
+   card-results acknowledgment are also implemented offline (PunchOff/Nab and
+   Darv/PandorasBox shapes). Next address full-inventory/nested pickups, broader
+   selector grant composition, embedded combat execution/resumption and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.
 3. **Compose supported interactions into longer live runs after event coverage.**
@@ -55,7 +56,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
 include broader deck changes after selectors and other pre-selector mutations, broader pickup
-composition, combat layouts, embedded combat, repeated/nested pickup selectors, and custom/terminal
+composition, embedded combat execution/resumption, repeated/nested pickup selectors, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.
 
 Keep representative held-out/live coverage for implemented families separate from

@@ -51,6 +51,7 @@
     <Compile Include="../../../components/events/core/GenericEventV7ItemChildSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7CardRewardSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7OfferSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7ResultsSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7CardRewardSetSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="../../../components/events/native/GenericEventV7ItemAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CardRewardAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7OfferAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7ResultsAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CardRewardSetAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7ItemState.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7MultiUpgradeAdapter.cs" />

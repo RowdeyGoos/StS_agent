@@ -28,6 +28,7 @@ class Exchange:
         self.native = native
         self.transform = native and scenario.startswith(('T_', 'V_'))
         self.variable_transform = native and scenario.startswith('V_')
+        self.results_surface=native and scenario.startswith("S_")
         self.card_offer = native and scenario.startswith("O_")
         self.card_reward = native and scenario.startswith(("CR_","CRS_","MR_"))
         self.item = native and scenario.startswith('I_')
@@ -93,6 +94,8 @@ class Exchange:
             expected=("body","map_open","overlay_count","opens","choices","skips","dismisses","added_slots")
         if self.card_offer:
             expected=("body","map_open","overlay_count","choices","confirms","selected","deck")
+        if self.results_surface:
+            expected=("body","map_open","capstone_open","confirms","chosen_calls","deck")
         assert tuple(value) == expected, value
         self.telemetry.append({k: value[k] for k in value if k != 'body'})
         response = bytearray(base64.b64decode(value['body'], validate=True))
@@ -981,6 +984,11 @@ def main() -> int:
 
         from generic_event_offer_cases import run_offer_cases
         added=run_offer_cases(args,host,Exchange)
+        checks+=added
+        native_checks+=added
+
+        from generic_event_surface_cases import run_surface_cases
+        added=run_surface_cases(args,host,Exchange)
         checks+=added
         native_checks+=added
 

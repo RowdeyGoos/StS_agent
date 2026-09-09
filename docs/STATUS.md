@@ -84,6 +84,28 @@ Independent semantic review found no remaining blockers. Evidence outputs:
 `/private/tmp/sts-offers-boundary` (shared checks), and
 `/private/tmp/sts-bridge-elkbf7uv` (final build). The retained release is unchanged.
 
+The next offline batch adds **inactive combat-layout options** and **automatic
+card-results acknowledgment** (`card_results_v1`). PunchOff/Nab-shaped Injury plus
+relic pickup now composes through Proceed/map; active combat and changed embedded
+room identities stop the handler. Darv/PandorasBox supplies the inspected results
+screen: one native Confirm closes the owned capstone with unchanged post-show
+deck and successful Chosen completion. Acknowledgment leaves automatic card
+effects **unverified**. Darv pool eligibility, embedded combat execution/resumption,
+nested pickups and alternate results screens remain open. See the
+[contract and limits](GENERIC_EVENTS.md#implemented-offline-inactive-combat-layouts-and-result-acknowledgment).
+Neither feature has live acceptance; no live launch/install was performed.
+
+Final validation passed **15 event groups in 306.026 seconds**: **7,650 native
+assertions**, **125 host tests** and **430 C#/Python cases** (**368 through native
+adapters**). Native execution took 78.563 seconds; cross-language integration took
+211.928 seconds. Shared bridge validation passed **781 checks**, and the production
+build passed in **1.547 seconds**. Final source closure covers 313 files / 46
+projects. Independent semantic review found no remaining blockers. Evidence:
+`/private/tmp/sts-bridge-3xonexx4` (final event gate),
+`/private/tmp/sts-surfaces-boundary` (shared checks), and
+`/private/tmp/sts-bridge-8q85ewwe` (production build). The retained release below
+remains unchanged.
+
 The current release is
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source
 commit `c531b4c`. It corrected the production event response classifier and reward
