@@ -16,9 +16,17 @@ card; later child checks use that fixed deck. Repeated ordinary pages remain
 supported. All 71 combined release groups passed in 179.797 seconds,
 including 4,360 native assertions, 219 event integration cases, reproducible
 packaging and owned installation/cleanup fixtures. The package is published at
-`/private/tmp/sts-unified-bridge-release`; it has not been installed or live-tested.
-Grave of the Forgotten/Confront is the next pre-selector-addition live case;
-the Abyssal Baths two-Linger test also remains open. See
+`/private/tmp/sts-unified-bridge-release`. The seventh live installation passed
+the owned install checks. Abyssal Baths passed Immerse → Linger twice → Exit Baths
+→ Proceed and fresh core map; all five parent actions reconciled in 1.349 seconds.
+Grave of the Forgotten/Confront then passed after a fresh launch and room setup:
+SoulsPower amount 1 on unupgraded Neow's Fury, slot 0 of 3 eligible cards, verified
+preview/effect and fresh map. All four actions reconciled in 9.526 seconds,
+including an eight-second preview window. An earlier setup attempt stopped before
+any action; its exact cause remains unresolved. Normal quit and owned
+quarantine/purge passed: all seven installations are cleaned up, with 429
+unchanged base files and zero overlays. No campaign remains installed. See the
+[seventh-installation live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions),
 [generic semantics](GENERIC_EVENTS.md#implemented-appended-cards-before-a-selector)
 and the [release record](../bridge/Sts2AgentBridge/releases/current/validation.json).
 
@@ -26,8 +34,7 @@ The prior release `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099c
 passed the single-enchantment live test: Sapphire Seed Plant and Nourish,
 Sown amount 1 on unupgraded Defend slot 5 of 24, exact preview/effect verification,
 Proceed and an independently checked actionable map. All four actions reconciled.
-Normal quit, owned quarantine/purge and the 429-file base check passed; all six
-installations are cleaned up and no campaign remains installed. The
+Normal quit, owned quarantine/purge and the 429-file base check passed. The
 [sixth-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sixth-installation-single-card-enchantment)
 retains exact artifact/state identities, counters, timings and limits.
 
@@ -77,12 +84,12 @@ before any new authorized live operation.
 | Combat discard/exhaust choices | Optional zero, fixed and variable counts up to eight in native/host fixtures; Neow's Fury zero and two-card choices plus combat resume live-demonstrated; exhaust/fixed-count callers remain fixture-only |
 | Rest and shop | Standalone heal/Proceed, older Smith upgrade-one, one bounded shop purchase/close/map path live-demonstrated |
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
-| Repeated generic event pages | Fresh controls and completed callbacks permit repeated keys/text; native-to-host two-repeat/Exit/Proceed/map fixtures pass; live acceptance remains open |
-| Appended cards before selectors | First owned request binds appended cards while preserving the original deck; enchant/upgrade/transform native-to-host shapes pass; Grave/Confront and Trial live acceptance remain open |
+| Repeated generic event pages | Fresh controls and completed callbacks permit repeated keys/text; Abyssal Baths passed two Lingers through Exit/Proceed and fresh core map live |
+| Appended cards before selectors | First owned request binds appended cards while preserving the original deck; Grave/Confront SoulsPower preview/effect and map passed live; Trial caller tests remain open |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
-| Enchantment | Shared fixed-single `card_enchant_v1`; Sapphire Seed Plant and Nourish added Sown to exact Defend slot 5 of 24 and returned to a fresh core map live |
+| Enchantment | Shared fixed-single `card_enchant_v1`; Sapphire Seed/Sown on Defend and Grave/Confront/SoulsPower on Neow's Fury passed exact preview/effect and fresh core map live |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
 | Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |

@@ -66,9 +66,14 @@ interaction shapes, the other shared selector families, selection of an eligible
 newly appended card, delayed requests, changed originals, late additions,
 ownership loss and collateral enchantment changes. Native-to-host cases complete
 the three representative shapes through Proceed/map. The enchantment fixture
-uses Sown; it does not execute Grave's native body or establish SoulsPower live
-acceptance. The next live case is Grave of the Forgotten/Confront with at least
-two eligible unenchanted cards.
+uses Sown and does not execute Grave's native body. Separately, Grave/Confront
+passed live on release `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`:
+SoulsPower amount 1 on unupgraded Neow's Fury, slot 0 of 3 eligible cards, exact
+preview/effect, Proceed and independently verified core map. All four actions
+reconciled. This exercises the native curse-before-selector caller; automatic
+addition provenance is still outside the child effect guarantee. Trial verdicts
+remain separate caller tests. See the
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions).
 
 ## Implemented: repeated ordinary option pages
 
@@ -94,8 +99,11 @@ Inert native-to-host fixtures exercise Immerse → Linger twice → Exit → Pro
 identical text, revisited keys, delayed/failed callbacks, stale/partially replaced
 controls, dangerous choices and action limits. Existing item-child cases also
 reuse a parent key across separate completed children. These are offline checks.
-The next live acceptance case is Abyssal Baths with enough HP for two legal
-Linger choices; Endless Conveyor and Slippery Bridge remain separate caller tests.
+Abyssal Baths passed live on release `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`:
+Immerse, two Lingers, Exit Baths and Proceed all reconciled, followed by an
+independently verified actionable map. See the
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions).
+Endless Conveyor and Slippery Bridge remain separate caller tests.
 
 ## Implemented: all eligible transform holders
 

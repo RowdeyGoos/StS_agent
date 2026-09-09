@@ -501,3 +501,104 @@ projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 This demonstrates one fixed-single Sown enchantment and event-to-core map
 handoff on this release. Stacking/replacement, other enchantments/callers,
 multiple/optional selection and full runs are not established.
+
+## Seventh installation: repeated pages and pre-selector additions
+
+The user requested live testing before further implementation. The accepted
+combined package was reused without rebuilding or repeating unchanged release
+checks. Installation passed through the existing manager, including stopped
+process/closed listener, pinned base build and owned artifact/configuration checks.
+
+- Source commit: `baeaf5c3ac4420fdc6927c8bd357389cf116d6fc`.
+- Release manifest SHA-256:
+  `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`.
+- DLL: 798208 bytes,
+  `e2906241d61ca70456257de5de214ad1f2a899e15b3c47ae800b3b5323ee339a`.
+- Installed state:
+  `1ca975ba8d0ecd4d043afb8443550c2c263d400002c7ba78dd61fd7aaa6e6a4a`.
+
+The user confirmed readiness after manual Profile 3 launch and initial Abyssal
+Baths setup. The ephemeral
+provider `/private/tmp/sts-baths-live-20260909.py` uses the existing client and
+generic host for exactly Immerse, Linger, Linger, Exit Baths and Proceed, then
+the existing read-only core map check. Its local sequence and wrong/extra-page
+rejection checks passed without credentials or live transport.
+
+Authenticated health/manifest and exact installed release validation passed before
+input. The live sequence selected the advertised IMMERSE key, the same LINGER key
+on two successive fresh decisions, EXIT_BATHS and PROCEED. All **5 attempted,
+accepted and reconciled parent actions** completed; there were **0 children**.
+The event resolved in **8 reads**, followed by a successful independent core map
+check in **1 read with 2 candidates**. No map node was selected. Elapsed client
+flow was **1.349 seconds**. Native diagnostics included `parent_ready`,
+`pending_chosen_completion` and `map_ready`. No mutation was retried.
+
+The sanitized result is `/private/tmp/sts-baths-live-20260909-result.json`.
+Credentials were cleared and not recorded. The effect label remains `unverified`:
+this establishes completed option callbacks and page/map transitions, not an
+independent HP-effect oracle. Other repeat-page callers remain untested.
+
+Grave of the Forgotten/Confront is prepared next with the same client/host in
+`/private/tmp/sts-grave-live-20260909.py`: exact Confront, first native-eligible
+slot, SoulsPower amount 1, an eight-second preview, confirmation and Proceed/map.
+The first Grave attempt, after user readiness, passed installed-release and
+authenticated health/manifest checks but stopped on its first event read:
+`unsupported_state`, native diagnostic `parent_unavailable`. All attempted,
+accepted and reconciled action counts were **0**; effects were `none_attempted`.
+No option or card was selected, and no map handoff was attempted. Elapsed flow
+was **0.218 seconds**. The sanitized result is
+`/private/tmp/sts-grave-live-20260909-result.json`. The initial native context or
+presentation must be established before another attempt; this did not exercise
+pre-selector additions. The user confirmed that initial Confront/Accept choices
+were visible with the console closed. The diagnostic does not identify which
+native context predicate failed. Retained map travel state from console creation
+is a possible explanation, consistent with the fourth installation's earlier
+admission failure, not a proven cause. The terminal response stops the bridge
+session; no retry was issued.
+
+The user confirmed fresh setup after instructions to quit normally, manually
+relaunch Profile 3, enter a normal room through the map, then create Grave with
+the console. The unchanged provider ran from
+`/private/tmp/sts-grave-live-20260909-fresh-room.py`, with a separate result path.
+The same installed package was used; no source correction, guard change or
+rebuild was made.
+
+Authenticated health/manifest and exact installation validation passed. The
+provider selected advertised Confront (`choose:0`), then received a fixed-single
+`card_enchant_v1` child with **3 eligible candidates**, requesting **SOULS_POWER,
+amount 1**. It selected **NEOWS_FURY, slot 0, upgrade level 0** once. The exact
+preview was admitted, held for eight seconds, then confirmed once. Native effect
+verification required the selected original to gain the requested enchantment,
+the rest of the request-time deck to remain unchanged, completed native tasks
+and a closed selector. Proceed (`choose:0`) returned to a fresh core map.
+
+| Result | Observed value |
+| --- | --- |
+| Event status | resolved |
+| Parent attempted / accepted / reconciled | 2 / 2 / 2 |
+| Child attempted / accepted / reconciled | 2 / 2 / 2 |
+| Child episodes / completed card children | 1 / 1 |
+| Event reads | 13 |
+| Map reads / candidates | 1 / 2 |
+| Elapsed client flow | 9.526 seconds, including eight-second preview window |
+| Native diagnostics | parent_ready → child_ready → parent_ready → map_ready |
+
+The sanitized result is
+`/private/tmp/sts-grave-live-20260909-fresh-room-result.json`. Credentials were
+cleared and not recorded. No UI card selection, mutation retry or map-node action
+was used. The final parent effect label is `unverified` for Proceed; the completed
+verified card child remains counted. This demonstrates Grave's native
+curse-before-selector composition and SoulsPower effect, not independent
+verification of automatic Decay addition provenance. Trial verdicts and
+post-selector additions are not established. The successful fresh setup does not
+identify the exact predicate behind the first admission failure.
+
+The user confirmed normal game quit. Owned quarantine verified stopped process,
+closed listener and ownership, returning state
+`e9015c5b0f83f7d20c6eb9005f974fe7260b8fd0319b7b2054a3ed7214a35bd5`.
+Purge returned the campaign to **absent**, removing four generated files.
+Post-cleanup base verification passed: **429 unchanged files, zero overlays**,
+projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+All seven installations are now cleaned up. No profile/save/history/Cloud
+filesystem data was accessed. Live flows were timed above; documentation and
+user setup/quit wait were not separately timed.

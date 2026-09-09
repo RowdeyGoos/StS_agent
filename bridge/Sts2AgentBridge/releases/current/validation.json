@@ -20,10 +20,12 @@
     "autonomous_full_run": false,
     "changes_to_preexisting_cards_before_selection_supported": false,
     "current_package_installed": false,
-    "current_package_live_tested": false,
+    "current_package_installation_tested": true,
+    "current_package_live_tested": true,
+    "repeated_pages_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "post_selector_deck_additions_supported": false,
-    "pre_selector_additions_live_tested": false
+    "pre_selector_additions_live_tested": true
   },
   "evidence_reused": {
     "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
@@ -37,7 +39,8 @@
     "scope": "Owned request timing and one-time baseline, unchanged original-card prefix, appended-card identity/ownership/enchantments, child effect checks, replay/protocol/cleanup compatibility",
     "status": "passed"
   },
-  "next_live_case": "Grave of the Forgotten/Confront: append Decay, select one of at least two eligible unenchanted cards, verify SoulsPower preview/effect, Proceed and fresh core map. Existing shape fixture uses Sown, not the real Grave body. Trial curse-before-two-upgrade/transform are separate caller tests.",
+  "live_acceptance": "Abyssal Baths: Immerse, two Lingers, Exit Baths, Proceed and fresh map; five actions reconciled. Grave/Confront after fresh launch/room setup: SoulsPower amount 1 on unupgraded Neow's Fury slot 0 of 3 eligible cards, verified preview/effect, Proceed and fresh map; four actions reconciled. Earlier Grave admission stopped with zero actions. See the seventh-installation record in COMBINED_BRIDGE_LIVE_2026_09_09.md.",
+  "next_live_case": "Trial curse-before-two-upgrade/transform remain separate caller tests; Grave/Confront and Abyssal Baths now have live acceptance.",
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       798902,

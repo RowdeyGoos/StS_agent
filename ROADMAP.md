@@ -15,9 +15,9 @@ process. Completed packets and old campaign instructions are historical referenc
 2. **Implement the next generic increments from the completed event research.** The
    [all-event map](docs/EVENT_INTERACTION_MAP.md) classifies all 68 pinned types and
    exposes previously missing composition and surface gaps. Repeated ordinary pages
-   are implemented offline; retain Abyssal Baths' two-Linger path for the next live
-   batch. Append-only additions before selectors are also implemented offline;
-   retain Grave of the Forgotten/Confront for live acceptance. Next address deck
+   now have live acceptance through Abyssal Baths' two-Linger path and fresh map.
+   Append-only additions before selectors have live acceptance through Grave of
+   the Forgotten/Confront and verified SoulsPower selection. Next address deck
    changes after selection, such as removal-plus-grant; event card/multiple rewards; narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
