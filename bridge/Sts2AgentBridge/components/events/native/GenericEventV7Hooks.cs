@@ -527,7 +527,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__3;b.RewardContext=__0;
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Add;
-            if(__3.Cancelable||__3.MinSelect<1||__3.MinSelect>__3.MaxSelect||__3.MaxSelect>8||!b.CaptureOffers(__1))b.Failed=true;
+            if(__3.Cancelable||__3.MinSelect<0||__3.MinSelect>__3.MaxSelect||__3.MaxSelect<1||__3.MaxSelect>(__3.MinSelect==0?15:8)||(__3.MinSelect==0&&!__3.RequireManualConfirmation)||!b.CaptureOffers(__1))b.Failed=true;
             Request.Value=b;
         }
         catch {b.Failed=true;}
@@ -620,7 +620,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__1;b.TransformFunction=__2;
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Transform;
-            if(__1.Cancelable||__1.MinSelect<1||__1.MinSelect>__1.MaxSelect||__1.MaxSelect>8||(__1.MinSelect<__1.MaxSelect&&!__1.RequireManualConfirmation))b.Failed=true;
+            if(__1.Cancelable||__1.MinSelect<0||__1.MinSelect>__1.MaxSelect||__1.MaxSelect<1||__1.MaxSelect>8||(__1.MinSelect<__1.MaxSelect&&!__1.RequireManualConfirmation))b.Failed=true;
             Request.Value=b;
         }
         catch{b.Failed=true;}
@@ -635,7 +635,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         {
             if(!Owns(b)||b.Closed||b.ScreenSeen||!ReferenceEquals(Parent.Value,b)||!b.ContextValid(false)||
                 b.Operation!=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Transform||
-                !b.SamePrefs(__2)||!b.MatchesCurrentDeck()||__0.Count<=b.Prefs.MaxSelect||__0.Count>64||__1 is null||
+                !b.SamePrefs(__2)||!b.MatchesCurrentDeck()||(b.Prefs.MinSelect==0?__0.Count<1:__0.Count<=b.Prefs.MaxSelect)||__0.Count>64||__1 is null||
                 (b.TransformFunction is not null&&!ReferenceEquals(__1,b.TransformFunction)))
             {b.Failed=true;return;}
             b.ScreenSeen=true;

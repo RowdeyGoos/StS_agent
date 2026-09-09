@@ -66,7 +66,7 @@ public sealed class GenericEventV7Child
         CommitMode = commitMode;
         DomainCount = domainCount;
         Kind = "card_selection";
-        ContractVersion = GenericEventV7Families.ContractVersion(operation,maxSelect);
+        ContractVersion = GenericEventV7Families.ContractVersion(operation,maxSelect,minSelect);
     }
     public GenericEventV7Child(int ordinal, string parentDecisionId, string parentActionId, int offerCount, bool cardReward=false, bool mixed=false) {
         Ordinal=ordinal; ParentDecisionId=parentDecisionId; ParentActionId=parentActionId;

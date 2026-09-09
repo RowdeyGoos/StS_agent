@@ -90,9 +90,11 @@ public sealed class CardSelectionV1ParentContext
         CardSelectionV1CommitMode commitMode,
         int expectedDomainCount = 0,
         CardSelectionV1Enchantment? enchantment = null,
-        bool allowRemovalParentAppend = false)
+        bool allowRemovalParentAppend = false,
+        bool allowOptionalSelection = false)
     {
         AllowRemovalParentAppend = allowRemovalParentAppend;
+        AllowOptionalSelection = allowOptionalSelection;
         SessionNonce = sessionNonce;
         ParentKind = parentKind;
         ParentDecisionId = parentDecisionId;
@@ -112,6 +114,7 @@ public sealed class CardSelectionV1ParentContext
         Enchantment = enchantment;
     }
 
+    public bool AllowOptionalSelection { get; }
     public bool AllowRemovalParentAppend { get; }
     public string SessionNonce { get; }
     public CardSelectionV1ParentKind ParentKind { get; }

@@ -21,8 +21,8 @@ nested pickup handling.
 The checkout now implements **mixed card/item reward sets** (`mixed_reward_set_v1`)
 with ordered card choice/Skip and potion/relic collection, typed settlements and
 one final dismissal when needed. This is an unreleased, offline-tested increment.
-Lost Coffer supplies the pinned card-plus-potion caller; Neow ancient entry remains
-a prerequisite for its full live route. See the
+Lost Coffer supplies the pinned card-plus-potion caller; ancient entry now has
+unreleased offline support, while its full live route remains unverified. See the
 [mixed-set contract](GENERIC_EVENTS.md#implemented-offline-mixed-carditem-reward-sets).
 Its focused event gate passed **15 groups in 238.607 seconds**, including **6,417
 native assertions**, **125 host tests** and **341 C#/Python cases** (279 through
@@ -35,6 +35,30 @@ again after that test-only change. Production sources were unchanged.
 Evidence outputs: `/private/tmp/sts-bridge-ajht2u5w` (event gate),
 `/private/tmp/sts-mixed-boundary` (shared checks) and
 `/private/tmp/sts-bridge-x6aizyt2` (production build). No live installation started.
+
+The checkout also implements three unreleased capabilities in one batch:
+**ancient dialogue/options**, **optional add-card grids** (`card_add_v2`, up to
+15 selections), and **optional deck transformation** (`card_transform_v3`, up to
+eight). Sea Glass's native grid is 0..15; Claws is 0..6. Zero still requires native
+confirmation, exact empty task results, unchanged deck and, for transformation,
+one successful empty command. Ancient dialogue works before and after pickup.
+See the [contract and limits](GENERIC_EVENTS.md#implemented-offline-ancient-dialogue-and-optional-selections).
+No live launch or installation was performed; the retained release below remains
+unchanged. The next live batch can cover ancient entry, Sea Glass zero/partial/full,
+Claws zero/partial/full, and the earlier mixed reward-set increment.
+
+Validation: the event gate's **14 completed groups** passed, including **6,784
+native assertions** and **125 host tests**; its final cross-language group required
+a test-helper version correction. Its rerun passed **360 C#/Python cases**,
+including **298 through native adapters**. The additional post-pickup regression passed
+in **379 focused optional-event checks**. The existing card component passed
+**20 groups in 12.922 seconds**. Shared bridge validation passed **703 checks**
+and the production build passed in **1.597 seconds**. Independent semantic review
+found no production blockers. Evidence: `/private/tmp/sts-bridge-4u2id5yc`
+(completed event groups), `/private/tmp/sts-optional-dev` (final focused regression),
+`/private/tmp/sts-bridge-w3xbn9ld` (cards), `/private/tmp/sts-optional-boundary`
+(shared bridge), `/private/tmp/sts-bridge-4mw3qegw` (production), and
+`/private/tmp/sts-optional-host-final.log` (final integration).
 
 The current release is
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source
@@ -160,6 +184,7 @@ Aroma of Chaos/Let Go setup, exact-original preview, transformation and map retu
 Campaign and cleanup records are dated observations; verify current runtime state
 before any new authorized live operation.
 
+
 ## Current capability and evidence
 
 | Capability | Evidence and practical limit |
@@ -176,7 +201,9 @@ before any new authorized live operation.
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
 | Enchantment | Single-card v1 has Sapphire Seed/Sown and Grave/Confront live evidence; fixed counts 2–8 in v2 now have native and C#/Python fixtures, including original-card preview, partial effects and deferred input; Prickly Sponge fixed-two Steady and core map passed live; other counts/callers remain open |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
-| Mixed card/item reward sets | Unreleased native/C#/Python implementation for 2–8 entries, exact per-entry effects and final task/closure gating; Lost Coffer card-plus-potion shape is source-backed; no live acceptance, ancient entry or nested pickup support |
+| Mixed card/item reward sets | Unreleased native/C#/Python implementation for 2–8 entries, exact per-entry effects and final task/closure gating; Lost Coffer card-plus-potion shape is source-backed; no live acceptance or nested pickup support |
+| Ancient layout/dialogue | Unreleased exact native hitbox/line ownership, dialogue before/after pickup, ordinary options and map handoff; offline fixtures, no live acceptance |
+| Optional add/transform selection | Unreleased `card_add_v2` 0..15 and `card_transform_v3` 0..8 with confirmed zero results and exact effects; SeaGlass and Claws are source-backed live candidates |
 | Potion/relic rewards | Singleton v1 has Potion Courier/Ransack live evidence; sets of 2–8 entries now have native/C#/Python fixtures with per-entry reconciliation and final owner-task gating; sufficient free potion capacity required; Potion Courier/Grab Potions three-item set and map passed live; other counts/relic sets remain fixture-only |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
 | Reduced headless/actor stack | Deterministic backend, public encoder, trusted datasets, masked candidate scorer and cloning smoke accepted on structural data; no target-game parity or learned live-policy claim |
@@ -257,8 +284,9 @@ Amalgamator/CombineStrikes live. Multiple potion/relic rewards, fixed multi-card
 enchantment, ordinary singleton card reward menus now have representative live acceptance.
 Colorful Philosophers also passed three card-reward menus with choose/Skip/choose
 and final dismissal. Mixed card/item sets now have unreleased offline implementation
-and validation. Full-inventory handling, nested pickup composition and ancient
-entry remain concrete gaps; the static inventory itself
+and validation. Ancient dialogue, optional SeaGlass add selection and optional
+Claws transformation now also have unreleased offline implementation. Full-inventory
+handling and nested pickup composition remain concrete gaps; the static inventory itself
 adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
@@ -269,7 +297,7 @@ observable behavior to test.
 
 The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in
 deck changes after selectors and other pre-selector deck mutations and broader pickup composition,
-ancient/combat layouts, embedded combat, optional/sequential
+combat layouts, embedded combat, repeated/nested
 pickup selectors, broader generic-deck transformation and custom/terminal surfaces.
 Unallocated holder support remains limited. Variable upgrades, true native
 cancellation and enchantment stacking/replacement remain unsupported but have no

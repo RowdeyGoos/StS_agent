@@ -90,7 +90,7 @@ public sealed class CardSelectionV1Session : IDisposable
                     StringComparison.Ordinal) ||
                 !_published.Actions.TryGetValue(actionId!, out ActionProbe? probe) ||
                 _reservedDecisions.Contains(decisionId!) ||
-                _acceptedActions >= CardSelectionV1Limits.MaximumAcceptedActions)
+                _acceptedActions >= (_context.AllowOptionalSelection ? 16 : CardSelectionV1Limits.MaximumAcceptedActions))
             {
                 return Failure("rejected");
             }
@@ -674,8 +674,8 @@ public sealed class CardSelectionV1Session : IDisposable
     {
         if (!Enum.IsDefined(capture.ParentKind) || !Enum.IsDefined(capture.Operation) ||
             !Enum.IsDefined(capture.CommitMode) || !Enum.IsDefined(capture.Phase) ||
-            capture.MinSelect is < 1 or > CardSelectionV1Limits.MaximumSelectedCards ||
-            capture.MaxSelect is < 1 or > CardSelectionV1Limits.MaximumSelectedCards ||
+            capture.MinSelect < (_context.AllowOptionalSelection ? 0 : 1) || capture.MinSelect > SelectionLimit(_context) ||
+            capture.MaxSelect < 1 || capture.MaxSelect > SelectionLimit(_context) ||
             capture.MinSelect > capture.MaxSelect ||
             !capture.CompleteDomain ||
             capture.CompleteDomainCount != capture.Candidates.Count ||
@@ -694,9 +694,9 @@ public sealed class CardSelectionV1Session : IDisposable
         if (!capture.CompleteDeck ||
             capture.Candidates.Count is < 1 or > CardSelectionV1Limits.MaximumCandidates ||
             capture.Deck.Count > CardSelectionV1Limits.MaximumDeckCards ||
-            capture.TaskResultOriginals.Count > CardSelectionV1Limits.MaximumSelectedCards ||
-            capture.PreviewOriginals.Count > CardSelectionV1Limits.MaximumSelectedCards ||
-            capture.Replacements.Count > CardSelectionV1Limits.MaximumSelectedCards)
+            capture.TaskResultOriginals.Count > SelectionLimit(_context) ||
+            capture.PreviewOriginals.Count > SelectionLimit(_context) ||
+            capture.Replacements.Count > SelectionLimit(_context))
             return false;
 
         var slots = new HashSet<int>();
@@ -1208,7 +1208,7 @@ public sealed class CardSelectionV1Session : IDisposable
         if (capture.TaskState is CardSelectionV1TaskState.Canceled or CardSelectionV1TaskState.Faulted &&
             capture.TaskResultOriginals.Count != 0) return false;
         if (capture.TaskState == CardSelectionV1TaskState.Succeeded &&
-            capture.TaskResultOriginals.Count is < 1 or > CardSelectionV1Limits.MaximumSelectedCards)
+            (capture.TaskResultOriginals.Count < (_context.AllowOptionalSelection ? 0 : 1) || capture.TaskResultOriginals.Count > SelectionLimit(_context)))
             return false;
         if (_context.Operation != CardSelectionV1Operation.Transform &&
             capture.Replacements.Count != 0) return false;
@@ -1286,6 +1286,10 @@ public sealed class CardSelectionV1Session : IDisposable
             ReferenceEquals(left.Dispatch, right.Dispatch) &&
             left.Visible == right.Visible && left.Enabled == right.Enabled;
     }
+    private static int SelectionLimit(CardSelectionV1ParentContext context) => context.AllowOptionalSelection && context.Operation==CardSelectionV1Operation.Add ? 15 : CardSelectionV1Limits.MaximumSelectedCards;
+    private static bool OptionalContextValid(CardSelectionV1ParentContext context) => !context.AllowOptionalSelection ||
+        context.ParentKind==CardSelectionV1ParentKind.Event && context.MinSelect==0 &&
+        context.Operation==CardSelectionV1Operation.Add && context.CommitMode==CardSelectionV1CommitMode.ExplicitConfirm;
     private static bool ValidContext(CardSelectionV1ParentContext context)
     {
         return CardSelectionV1Identity.IsNonce(context.SessionNonce) &&
@@ -1297,8 +1301,9 @@ public sealed class CardSelectionV1Session : IDisposable
             context.ParentControllerIdentity is not null &&
             Enum.IsDefined(context.ParentKind) && Enum.IsDefined(context.Operation) &&
             Enum.IsDefined(context.CommitMode) &&
-            context.MinSelect is >= 1 and <= CardSelectionV1Limits.MaximumSelectedCards &&
-            context.MaxSelect is >= 1 and <= CardSelectionV1Limits.MaximumSelectedCards &&
+            OptionalContextValid(context) &&
+            context.MinSelect >= (context.AllowOptionalSelection ? 0 : 1) && context.MinSelect <= SelectionLimit(context) &&
+            context.MaxSelect >= 1 && context.MaxSelect <= SelectionLimit(context) &&
             context.MinSelect <= context.MaxSelect &&
             (!context.AllowRemovalParentAppend || context.ParentKind==CardSelectionV1ParentKind.Event &&
                 context.Operation==CardSelectionV1Operation.Remove) &&
@@ -1310,7 +1315,7 @@ public sealed class CardSelectionV1Session : IDisposable
                   CardSelectionV1Identity.IsStableKey(e.Key)
                 : context.Enchantment is null) &&
             context.ExpectedDomainCount is >= 0 and <= CardSelectionV1Limits.MaximumCandidates &&
-            (context.ExpectedDomainCount == 0 || context.ExpectedDomainCount >= context.MaxSelect) &&
+            (context.AllowOptionalSelection ? context.ExpectedDomainCount > 0 : context.ExpectedDomainCount == 0 || context.ExpectedDomainCount >= context.MaxSelect) &&
             (context.ParentKind != CardSelectionV1ParentKind.Rest ||
              context.Operation == CardSelectionV1Operation.Upgrade &&
              context.MinSelect == 1 && context.MaxSelect == 1 &&
@@ -1491,6 +1496,7 @@ internal static class CardSelectionV1Identity
     {
         var builder = new StringBuilder();
         if(context.AllowRemovalParentAppend) Append(builder, "card_remove_v2");
+        if(context.AllowOptionalSelection) Append(builder, "card_add_v2");
         Append(builder, context.SessionNonce);
         Append(builder, ((int)context.ParentKind).ToString(CultureInfo.InvariantCulture));
         Append(builder, context.ParentDecisionId);

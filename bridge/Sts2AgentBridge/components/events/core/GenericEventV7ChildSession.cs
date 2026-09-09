@@ -22,7 +22,7 @@ public sealed class GenericEventV7CardChildSession : IGenericEventV7CardChildSes
     private readonly IGenericEventV5ChildSession _session;
     public GenericEventV7CardChildSession(IGenericEventV5ChildSession session) {
         _session = session ?? throw new ArgumentNullException(nameof(session));
-        if (session.ContractVersion is not ("card_selection_v1" or "card_transform_v2" or "card_enchant_v1" or "card_enchant_v2" or "card_remove_v2"))
+        if (session.ContractVersion is not ("card_selection_v1" or "card_add_v2" or "card_transform_v3" or "card_transform_v2" or "card_enchant_v1" or "card_enchant_v2" or "card_remove_v2"))
             throw new ArgumentException("Unknown card contract.", nameof(session));
     }
     public string ContractVersion => _session.ContractVersion;
@@ -57,6 +57,19 @@ public sealed class GenericEventV7RemovalChildSession : IGenericEventV5ChildSess
         _session=new CardSelectionV1Session(context,adapter);
     }
     public string ContractVersion => "card_remove_v2";
+    public ICardSelectionV1ReadValue Read()=>_session.Read();
+    public ICardSelectionV1ApplyValue Apply(string? decisionId,string? actionId)=>_session.Apply(decisionId,actionId);
+    public void Dispose()=>_session.Dispose();
+}
+
+public sealed class GenericEventV7OptionalAddChildSession : IGenericEventV5ChildSession
+{
+    private readonly CardSelectionV1Session _session;
+    public GenericEventV7OptionalAddChildSession(CardSelectionV1ParentContext context, ICardSelectionV1NativeAdapter adapter) {
+        if(!context.AllowOptionalSelection || context.Operation!=CardSelectionV1Operation.Add)throw new ArgumentException("Expected optional add context.");
+        _session=new(context,adapter);
+    }
+    public string ContractVersion=>"card_add_v2";
     public ICardSelectionV1ReadValue Read()=>_session.Read();
     public ICardSelectionV1ApplyValue Apply(string? decisionId,string? actionId)=>_session.Apply(decisionId,actionId);
     public void Dispose()=>_session.Dispose();

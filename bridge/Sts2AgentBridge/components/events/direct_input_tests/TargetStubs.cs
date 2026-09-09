@@ -120,6 +120,7 @@ namespace MegaCrit.Sts2.Core.Models
 {
     using MegaCrit.Sts2.Core.Entities.Players;
     public sealed class ModelId { private string _entry=string.Empty; public string Entry { get=>FixtureTrace.Read(this,"key",_entry); set=>_entry=value; } }
+    public class AncientEventModel:EventModel {}
     public class EventModel
     {
         public Player? Owner { get; set; }
@@ -228,7 +229,7 @@ namespace MegaCrit.Sts2.Core.Nodes
 namespace MegaCrit.Sts2.Core.Nodes.CommonUi
 {
     using Godot;
-    public class NClickableControl : Control { private bool _enabled=true; public bool IsEnabled { get=>FixtureTrace.Read(this,"enabled",_enabled);set=>_enabled=value; } }
+    public class NClickableControl : Control { public static class SignalName {public const string Released="released";} private bool _enabled=true; public bool IsEnabled { get=>FixtureTrace.Read(this,"enabled",_enabled);set=>_enabled=value; } }
     public sealed class NProceedButton : Control { public bool IsEnabled { get; set; } public Action? Clicked; public void ForceClick() => Clicked?.Invoke(); }
     public class NConfirmButton : Control
     {
@@ -399,7 +400,27 @@ namespace MegaCrit.Sts2.Core.Nodes.Rooms
 namespace MegaCrit.Sts2.Core.Nodes.GodotExtensions { }
 
 namespace MegaCrit.Sts2.Core.Nodes.Events {
-    public sealed class NEventLayout : Godot.Control {public List<NEventOptionButton> OptionButtons {get;}=new();}
+    public class NEventLayout : Godot.Control {public List<NEventOptionButton> OptionButtons {get;}=new();}
+    public sealed class NAncientDialogueHitbox : MegaCrit.Sts2.Core.Nodes.CommonUi.NClickableControl {
+        public Action? Clicked;
+        public Godot.Error EmitSignal(string signal,Godot.Node arg){if(signal==SignalName.Released){Clicked?.Invoke();return Godot.Error.Ok;}return Godot.Error.Failed;}
+    }
+    public sealed class NAncientEventLayout : NEventLayout {
+        private MegaCrit.Sts2.Core.Models.AncientEventModel _ancientEvent=null!;
+        private readonly List<object> _dialogue=new();
+        private int _currentDialogueLine;
+        private NAncientDialogueHitbox _dialogueHitbox=null!;
+        internal int Advances;internal bool Defer=false;internal Action? Pending;
+        internal int Line {get=>_currentDialogueLine;set=>_currentDialogueLine=value;}
+        internal List<object> Lines=>_dialogue;
+        internal NAncientDialogueHitbox Hitbox=>_dialogueHitbox;
+        internal void Setup(MegaCrit.Sts2.Core.Models.AncientEventModel model,int count) {
+            _ancientEvent=model;_dialogue.Clear();for(int i=0;i<count;i++)_dialogue.Add(new object());_currentDialogueLine=0;
+            _dialogueHitbox=new(){Clicked=()=>{Advances++;Action next=()=>{_currentDialogueLine++;Refresh();};if(Defer)Pending=next;else next();}};
+            Bind("%DialogueHitbox",_dialogueHitbox);Refresh();
+        }
+        internal void Refresh(){bool ready=_currentDialogueLine>=_dialogue.Count-1;_dialogueHitbox.Visible=!ready;_dialogueHitbox.IsEnabled=!ready;foreach(var b in OptionButtons)b.IsEnabled=ready;}
+    }
 }
 namespace MegaCrit.Sts2.Core.CardSelection {
     public readonly record struct CardSelectorPrefs(int MinSelect,int MaxSelect,bool Cancelable=false,bool RequireManualConfirmation=false)

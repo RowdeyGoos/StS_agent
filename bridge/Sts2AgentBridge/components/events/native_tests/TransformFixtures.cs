@@ -55,6 +55,7 @@ internal static partial class Program
         private readonly bool _delayedPreview,_partialPreview;
         internal readonly TaskCompletionSource CreationGate=new(),CompletionGate=new();
         internal readonly GenericEventV7Session Session;
+        internal readonly PinnedGenericEventV7NativeAdapter Adapter;
         internal readonly List<CardModel> Selected=new(),InitialCards=new(),FinalCards=new(),Originals=new();
         internal readonly Queue<Action> Confirms=new();
         private readonly Queue<TaskCompletionSource> _insertions=new();
@@ -138,7 +139,7 @@ internal static partial class Program
                 if(_reusedTask is null){_reusedTask=task;return task;}
                 var current=task.GetAwaiter().GetResult().ToArray();var old=(List<CardPileAddResult>)_reusedTask.Result;old.Clear();old.AddRange(current);return _reusedTask;
             };
-            Session=new GenericEventV7Session(new PinnedGenericEventV7NativeAdapter(),nonce??new string('e',32));
+            Adapter=new PinnedGenericEventV7NativeAdapter();Session=new GenericEventV7Session(Adapter,nonce??new string('e',32));
         }
         internal CardModel NewCard(string key){var card=new CardModel{Owner=Player,IsUpgradable=true};card.Id.Entry=key;return card;}
         private async Task<IEnumerable<CardPileAddResult>> RunCommand(IEnumerable<CardTransformation> input,Rng rng,CardPreviewStyle style)
@@ -162,7 +163,7 @@ internal static partial class Program
                 results.Add(new CardPileAddResult{success=true,cardAdded=final,modifyingModels=modifiers});
             }
             if(CancelCommand)throw new OperationCanceledException();if(FaultCommand)throw new InvalidOperationException("command");
-            CompletedBatches++;return Results?.Invoke(results)??results;
+            CompletedBatches++;return Results?.Invoke(results)??(values.Length==0?Array.Empty<CardPileAddResult>():results);
         }
         private void AddOption(EventOption option)
         {var button=new NEventOptionButton{Option=option,Event=Model};button.Bind("%Text",new MegaRichTextLabel{Text="Transform native option"});Room.Layout.OptionButtons.Add(button);}
@@ -188,6 +189,7 @@ internal static partial class Program
                 holder.Selected=()=>{SelectCalls++;Selected.Add(card);material.Width=BitConverter.Int32BitsToSingle(CardSelectionV1NativeRules.SelectedWidthBits);RootConfirmButton.Visible=RootConfirmButton.IsEnabled=(MinimumOverride??_count)<_count&&Selected.Count>=(MinimumOverride??_count);if(Selected.Count==_count||UnexpectedEarlyPreview)OpenPreview();};Grid.CurrentlyDisplayedCardHolders.Add(holder);
             }
             TransformPreview.Bind("%Before",Before);TransformPreview.Bind("%After",After);Preview.Bind("TransformPreview",TransformPreview);Preview.Bind("Confirm",ConfirmButton);Screen.Bind("%PreviewContainer",Preview);Screen.Bind("%CardGrid",Grid);Screen.Bind("Confirm",RootConfirmButton);
+            if(MinimumOverride==0)RootConfirmButton.Visible=RootConfirmButton.IsEnabled=true;
             RootConfirmButton.Clicked=()=>{PreviewCalls++;BeforePreview?.Invoke();if(LostPreview)return;if(_delayedPreview)_previews.Enqueue(OpenPreview);else OpenPreview();};
             ConfirmButton.Clicked=()=>{ConfirmCalls++;BeforeConfirm?.Invoke();if(LostConfirm)return;Action complete=()=>{Overlays.Screens.Clear();Screen.Visible=false;_selected.TrySetResult(ScreenResult?.Invoke(Selected)??Selected.ToArray());};if(_deferredConfirm)Confirms.Enqueue(complete);else complete();};Overlays.Screens.Add(Screen);return Screen;
         }

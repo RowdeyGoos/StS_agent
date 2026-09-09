@@ -9,8 +9,9 @@ namespace Sts2AgentBridge.Successors.GenericEventV5;
 
 internal static class CardTransformV2WireCodec
 {
-    public static byte[] Encode(object value)
+    public static byte[] Encode(object value, string version="card_transform_v2")
     {
+        if(version is not ("card_transform_v2" or "card_transform_v3" or "card_add_v2"))throw new ArgumentException("Unknown card version.");
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer, new JsonWriterOptions { Indented = false }))
         {
@@ -19,13 +20,13 @@ internal static class CardTransformV2WireCodec
             switch (value)
             {
                 case CardSelectionV1Observation item:
-                    if (item.Status == "ready" && item.Operation != "transform") throw new InvalidOperationException("Wrong transform operation.");
-                    ChildObservation(writer, item); break;
+                    if (item.Status == "ready" && item.Operation != (version=="card_add_v2"?"add":"transform")) throw new InvalidOperationException("Wrong transform operation.");
+                    ChildObservation(writer, item, version); break;
                 case CardSelectionV1ResolvedResult item:
-                    if (item.Operation != "transform") throw new InvalidOperationException("Wrong transform operation.");
-                    ChildResolved(writer, item); break;
-                case CardSelectionV1DispatchReceipt item: ChildReceipt(writer, item); break;
-                case CardSelectionV1ApplyFailure item: ChildFailure(writer, item); break;
+                    if (item.Operation != (version=="card_add_v2"?"add":"transform")) throw new InvalidOperationException("Wrong transform operation.");
+                    ChildResolved(writer, item, version); break;
+                case CardSelectionV1DispatchReceipt item: ChildReceipt(writer, item, version); break;
+                case CardSelectionV1ApplyFailure item: ChildFailure(writer, item, version); break;
                 default: throw new InvalidOperationException("Unknown card-selection wire value.");
             }
             writer.WriteEndObject();
@@ -54,29 +55,29 @@ internal static class CardTransformV2WireCodec
         return buffer.WrittenSpan.ToArray();
     }
 
-    private static void ChildObservation(Utf8JsonWriter w, CardSelectionV1Observation x)
+    private static void ChildObservation(Utf8JsonWriter w, CardSelectionV1Observation x, string version)
     {
-        w.WriteString("kind", "child_observation"); Common(w, "card_transform_v2", x.SessionNonce, x.ParentOrdinal);
+        w.WriteString("kind", "child_observation"); Common(w, version, x.SessionNonce, x.ParentOrdinal);
         w.WriteString("status", x.Status); w.WriteString("phase", x.Phase); w.WriteString("operation", x.Operation);
         w.WriteString("commit_mode", x.CommitMode); w.WriteNumber("min_select", x.MinSelect); w.WriteNumber("max_select", x.MaxSelect);
         w.WriteString("decision_id", x.DecisionId); Candidates(w, "candidates", x.Candidates);
         Ints(w, "selected_slots", x.SelectedSlots); Strings(w, "legal_actions", x.LegalActions);
         Results(w, x.PriorResults);
     }
-    private static void ChildResolved(Utf8JsonWriter w, CardSelectionV1ResolvedResult x)
+    private static void ChildResolved(Utf8JsonWriter w, CardSelectionV1ResolvedResult x, string version)
     {
-        w.WriteString("kind", "child_resolved"); Common(w, "card_transform_v2", x.SessionNonce, x.ParentOrdinal);
+        w.WriteString("kind", "child_resolved"); Common(w, version, x.SessionNonce, x.ParentOrdinal);
         w.WriteString("status", x.Status); w.WriteString("phase", x.Phase); w.WriteString("operation", x.Operation);
         Candidates(w, "selected_cards", x.SelectedCards); Results(w, x.PriorResults);
     }
-    private static void ChildReceipt(Utf8JsonWriter w, CardSelectionV1DispatchReceipt x)
+    private static void ChildReceipt(Utf8JsonWriter w, CardSelectionV1DispatchReceipt x, string version)
     {
-        w.WriteString("kind", "child_receipt"); Common(w, "card_transform_v2", x.SessionNonce, x.ParentOrdinal);
+        w.WriteString("kind", "child_receipt"); Common(w, version, x.SessionNonce, x.ParentOrdinal);
         w.WriteString("decision_id", x.DecisionId); w.WriteString("action_id", x.ActionId); w.WriteString("outcome", x.Outcome);
     }
-    private static void ChildFailure(Utf8JsonWriter w, CardSelectionV1ApplyFailure x)
+    private static void ChildFailure(Utf8JsonWriter w, CardSelectionV1ApplyFailure x, string version)
     {
-        w.WriteString("kind", "child_failure"); Common(w, "card_transform_v2", x.SessionNonce, x.ParentOrdinal); w.WriteString("outcome", x.Outcome);
+        w.WriteString("kind", "child_failure"); Common(w, version, x.SessionNonce, x.ParentOrdinal); w.WriteString("outcome", x.Outcome);
     }
     private static void Common(Utf8JsonWriter w, string version, string nonce, int ordinal)
     { w.WriteString("version", version); w.WriteString("session_nonce", nonce); w.WriteNumber("parent_ordinal", ordinal); }

@@ -147,7 +147,7 @@ public sealed class GenericEventV7WireService : IDisposable
         }
         Require(!_childResolved && request.Ordinal == _child.Ordinal &&
             request.ParentDecision == _child.ParentDecisionId && request.ParentAction == _child.ParentActionId &&
-            _childAccepted.Count < (_child.Kind=="card_reward"?2*_child.OfferCount+1:_child.Kind == "item" ? _child.OfferCount : 10));
+            _childAccepted.Count < (_child.Kind=="card_reward"?2*_child.OfferCount+1:_child.Kind == "item" ? _child.OfferCount : _child.ContractVersion=="card_add_v2"?16:10));
         var tagged = _session.ApplyChild(request.ParentDecision, request.ParentAction,
             request.Ordinal, request.Decision, request.Action);
         Require(tagged.ContractVersion == _child.ContractVersion);
@@ -193,8 +193,8 @@ public sealed class GenericEventV7WireService : IDisposable
 
     private byte[] EncodeChild(object value) => _child!.Kind=="card_reward"?GenericEventV7WireCodec.CardReward(value,_child.ContractVersion):_child.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value,_child.MaxSelect>1) : _child.Operation == "remove"
-        ? Sts2AgentBridge.Successors.GenericEventV5.CardRemoveV2WireCodec.Encode(value) : _child.Operation == "transform"
-        ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value) : CardSelectionV1WireCodec.Encode(value);
+        ? Sts2AgentBridge.Successors.GenericEventV5.CardRemoveV2WireCodec.Encode(value) : _child.Operation == "transform" || _child.ContractVersion=="card_add_v2"
+        ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value,_child.ContractVersion) : CardSelectionV1WireCodec.Encode(value);
     private static byte[] EncodeItem(object value) {
         if(value is GenericEventV7ItemSetRead set) {
             using var stream=new System.IO.MemoryStream();
@@ -448,7 +448,7 @@ public sealed class GenericEventV7WireService : IDisposable
         Hex(c.ParentDecisionId,64) && ParentAction(c.ParentActionId) &&
         (c.Kind=="card_reward"?c.OfferCount is >=1 and <=8&&(c.ContractVersion==(c.OfferCount==1?"card_reward_v1":"card_reward_set_v1")||c.OfferCount>=2&&c.ContractVersion=="mixed_reward_set_v1")&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
             c.MinSelect == 0 && c.MaxSelect == 0 && c.CommitMode == "" && c.DomainCount == 0 :
-         c.Kind == "card_selection" && c.OfferCount == 0 && c.ContractVersion == GenericEventV7Families.ContractVersion(c.Operation,c.MaxSelect) &&
+         c.Kind == "card_selection" && c.OfferCount == 0 && c.ContractVersion == GenericEventV7Families.ContractVersion(c.Operation,c.MaxSelect,c.MinSelect) &&
             GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount)));
     private static bool SameChild(GenericEventV7Child a,GenericEventV7Child b) => a.Ordinal == b.Ordinal &&
         a.ParentDecisionId == b.ParentDecisionId && a.ParentActionId == b.ParentActionId && a.Kind == b.Kind &&

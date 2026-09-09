@@ -2,6 +2,8 @@ using System;
 using Sts2AgentBridge.Successors.GenericEventReleaseV5;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
+using System.Reflection;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -31,6 +33,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private Player? _player;
     private GenericEventV7Binding? _pending;
     private bool _childCreated,_disposed;
+    private DialogueBinding? _dialogue,_pendingDialogue;
     private readonly Dictionary<NEventOptionButton,OptionBinding> _options=new();
     private readonly HashSet<object> _screens=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _upgradeClones=new(ReferenceEqualityComparer.Instance);
@@ -134,8 +137,23 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             !room!.IsVisibleInTree()||room.CustomEventNode is not null||room.EmbeddedCombatRoom is not null||
             CardSelectCmd.Selector is not null) return Fixed("unsupported");
         NEventLayout? layout=room.Layout;
-        if(!Exact(layout)||!layout!.IsVisibleInTree()) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
+        if(!SupportedLayout(layout)||!layout!.IsVisibleInTree()) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
         var options=new List<GenericEventV7NativeOption>(); EventModel? model=null;Player? player=null;
+        if(layout is NAncientEventLayout ancient) {
+            var frame=DialogueBinding.Capture(ancient);model=frame.Model;player=model.Owner;
+            if(player is null||!BindWorld(run!,room,map!,overlays!,layout,model,player))return Fixed("unsupported");
+            if(_pendingDialogue is {} pending) {
+                if(!pending.Dispatched||!pending.SameScene(frame)||frame.Line<pending.Line||frame.Line>pending.Line+1)return Fixed("unsupported");
+                if(frame.Line==pending.Line)return Fixed("waiting");
+                pending.Completed=true;
+            }
+            if(frame.NeedsAdvance) {
+                if(!frame.Hitbox.IsVisibleInTree()||!frame.Hitbox.IsEnabled)return Fixed("waiting");
+                if(_dialogue is null||!_dialogue.SameScene(frame)||_dialogue.Line!=frame.Line)_dialogue=frame;
+                diagnostic=GenericEventDiagnosticCode.ParentReady;
+                return new("parent",false,new[]{new GenericEventV7NativeOption(_dialogue,"ANCIENT_DIALOGUE."+frame.Line,"Continue dialogue",true,false,false)});
+            }
+        }else if(_pendingDialogue is not null)return Fixed("unsupported");
         foreach(NEventOptionButton button in layout.OptionButtons)
         {
             if(options.Count>=8||!Exact(button)||button.Option is not EventOption option||option.GetType()!=typeof(EventOption)||
@@ -151,16 +169,20 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 button.IsVisibleInTree()&&button.IsEnabled&&!option.IsLocked,dangerous,option.IsProceed));
         }
         if(model is null||player is null) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
-        if(_run is null){_run=run;_room=room;_map=map;_overlays=overlays;_layout=layout;_event=model;_player=player;}
-        if(!ReferenceEquals(_run,run)||!ReferenceEquals(_room,room)||!ReferenceEquals(_map,map)||
-            !ReferenceEquals(_overlays,overlays)||!ReferenceEquals(_layout,layout)||!ReferenceEquals(_event,model)||
-            !ReferenceEquals(_player,player))return Fixed("unsupported");
+        if(!BindWorld(run!,room,map!,overlays!,layout,model,player))return Fixed("unsupported");
         diagnostic=GenericEventDiagnosticCode.ParentReady;
         return new GenericEventV7NativeCapture("parent",model.IsFinished,options);
     }
     public void Dispatch(object candidateIdentity,string nonce,string decisionId,string actionId)
     {
-        if(_disposed||_pending is not null||candidateIdentity is not OptionBinding c||
+        if(candidateIdentity is DialogueBinding dialogue) {
+            if(_disposed||_pending is not null||_pendingDialogue is not null||!ReferenceEquals(dialogue,_dialogue)||
+                Capture().Options.All(o=>!ReferenceEquals(o.Identity,dialogue)))throw new InvalidOperationException("Unowned ancient dialogue.");
+            _pendingDialogue=dialogue;dialogue.Dispatched=true;
+            if(dialogue.Hitbox.EmitSignal(NAncientDialogueHitbox.SignalName.Released,dialogue.Hitbox)!=Error.Ok)throw new InvalidOperationException("Ancient dialogue input failed.");
+            return;
+        }
+        if(_disposed||_pending is not null||_pendingDialogue is not null||candidateIdentity is not OptionBinding c||
             !_options.TryGetValue(c.Button,out var owned)||!ReferenceEquals(owned,c))throw new InvalidOperationException("Unowned option.");
         _pending=new GenericEventV7Binding(_run!,_player!,_room!,_map!,_overlays!,_layout!,_event!,c.Option,c.Button,nonce,decisionId,actionId);
         _pending.ObservedPreviewClones=_previewClones;
@@ -217,10 +239,15 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         try{return new GenericEventV7CardChildSession(b.Operation==CardSelectionV1Operation.Enchant
             ?new GenericEventV7EnchantChildSession(context,adapter)
             :b.Operation==CardSelectionV1Operation.Remove?new GenericEventV7RemovalChildSession(context,adapter)
+            :context.AllowOptionalSelection?new GenericEventV7OptionalAddChildSession(context,adapter)
             :new Sts2AgentBridge.Successors.GenericEventV5.GenericEventV5FrozenChildSession(new CardSelectionV1Session(context,adapter)));}catch{adapter.Dispose();throw;}
     }
     public void CompleteParent()
     {
+        if(_pendingDialogue is {} dialogue) {
+            if(!dialogue.Completed)throw new InvalidOperationException("Ancient dialogue is incomplete.");
+            _pendingDialogue=null;return;
+        }
         if(_pending is null||_pending.Failed||_pending.ChosenTask?.IsCompletedSuccessfully!=true)
             throw new InvalidOperationException("Parent callback is incomplete.");
         GenericEventV7Hooks.Close(_pending);_pending=null;_childCreated=false;
@@ -231,6 +258,32 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(System.Environment.CurrentManagedThreadId!=_thread)throw new InvalidOperationException("Owner thread cleanup required.");
         if(_pending is not null)GenericEventV7Hooks.Close(_pending);
         _hooks.Dispose();_disposed=true;
+    }
+    private bool BindWorld(NRun run,NEventRoom room,NMapScreen map,NOverlayStack overlays,NEventLayout layout,EventModel model,Player player) {
+        if(_run is null){_run=run;_room=room;_map=map;_overlays=overlays;_layout=layout;_event=model;_player=player;}
+        return ReferenceEquals(_run,run)&&ReferenceEquals(_room,room)&&ReferenceEquals(_map,map)&&ReferenceEquals(_overlays,overlays)&&
+            ReferenceEquals(_layout,layout)&&ReferenceEquals(_event,model)&&ReferenceEquals(_player,player);
+    }
+    private static bool SupportedLayout(NEventLayout? layout)=>layout is not null&&GodotObject.IsInstanceValid(layout)&&
+        (layout.GetType()==typeof(NEventLayout)||layout.GetType()==typeof(NAncientEventLayout));
+    private sealed class DialogueBinding {
+        internal readonly NAncientEventLayout Layout;internal readonly AncientEventModel Model;internal readonly NAncientDialogueHitbox Hitbox;
+        internal readonly IList Lines;internal readonly object[] Originals;internal readonly int Line;
+        internal bool Dispatched,Completed;
+        private DialogueBinding(NAncientEventLayout layout,AncientEventModel model,NAncientDialogueHitbox hitbox,IList lines,int line) {
+            Layout=layout;Model=model;Hitbox=hitbox;Lines=lines;Originals=lines.Cast<object>().ToArray();Line=line;
+        }
+        private static object Field(NAncientEventLayout layout,string name)=>typeof(NAncientEventLayout).GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)?.GetValue(layout)??throw new InvalidOperationException("Ancient field absent.");
+        internal static DialogueBinding Capture(NAncientEventLayout layout) {
+            if(Field(layout,"_ancientEvent") is not AncientEventModel model||Field(layout,"_dialogue") is not IList lines||lines.Count>32||
+                Field(layout,"_currentDialogueLine") is not int line||line<0||line>Math.Max(0,lines.Count-1)||
+                Field(layout,"_dialogueHitbox") is not NAncientDialogueHitbox hitbox||!Exact(hitbox)||
+                !ReferenceEquals(layout.GetNodeOrNull<NAncientDialogueHitbox>("%DialogueHitbox"),hitbox)||lines.Cast<object>().Any(o=>o is null))throw new InvalidOperationException("Ancient dialogue unavailable.");
+            return new(layout,model,hitbox,lines,line);
+        }
+        internal bool NeedsAdvance=>Line<Originals.Length-1;
+        internal bool SameScene(DialogueBinding other)=>ReferenceEquals(Layout,other.Layout)&&ReferenceEquals(Model,other.Model)&&ReferenceEquals(Hitbox,other.Hitbox)&&
+            ReferenceEquals(Lines,other.Lines)&&Originals.Length==other.Originals.Length&&Originals.Where((o,i)=>!ReferenceEquals(o,other.Originals[i])).Any()==false;
     }
     private static bool Exact<T>(T? value)where T:GodotObject=>value is not null&&value.GetType()==typeof(T)&&GodotObject.IsInstanceValid(value);
     private sealed record OptionBinding(NEventOptionButton Button,EventOption Option);

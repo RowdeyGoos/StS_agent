@@ -21,7 +21,9 @@ internal static partial class GenericEventV7NativeIntegrationHost
             ["V_MAX"] = ("HELD_OUT_TRANSFORM", 1, 3, 5),
             ["V_EIGHT"] = ("HELD_OUT_TRANSFORM", 2, 8, 9),
             ["V_EIGHT_EARLY"] = ("HELD_OUT_TRANSFORM", 2, 8, 9),
-            ["V_MIN_ZERO"] = ("HELD_OUT_TRANSFORM", 0, 3, 5),
+            ["V_MIN_NEGATIVE"] = ("HELD_OUT_TRANSFORM", -1, 3, 5),
+            ["V_OPTIONAL"] = ("CLAWS",0,6,6),
+            ["V_OPTIONAL_SMALL"] = ("CLAWS",0,6,1),
             ["V_MIN_GT_MAX"] = ("HELD_OUT_TRANSFORM", 4, 3, 5),
         };
         foreach (string name in new[] { "V_DELAYED_PREVIEW", "V_PARTIAL_PREVIEW", "V_FOREIGN_PREVIEW",
@@ -34,7 +36,8 @@ internal static partial class GenericEventV7NativeIntegrationHost
             manual: scenario != "V_MANUAL_FALSE", minimum: config.Min,
             delayedPreview: scenario == "V_DELAYED_PREVIEW", partialPreview: scenario == "V_PARTIAL_PREVIEW",
             delayedCompletion: scenario is "V_DELAYED_COMPLETION" or "V_LATE_TASK_FAULT", partialInsertion: scenario == "V_PARTIAL_EFFECT",
-            substitute: scenario == "V_SUBSTITUTE", deferredConfirm: scenario == "V_DEFERRED_CONFIRM");
+            substitute: scenario == "V_SUBSTITUTE", deferredConfirm: scenario == "V_DEFERRED_CONFIRM",eventModel:scenario.StartsWith("V_OPTIONAL",StringComparison.Ordinal)?new MegaCrit.Sts2.Core.Models.AncientEventModel():null);
+        if(scenario.StartsWith("V_OPTIONAL",StringComparison.Ordinal))Program.AncientLayout(fixture.Room,fixture.Model);
         fixture.LostPreview = scenario == "V_LOST_PREVIEW";
         fixture.UnexpectedEarlyPreview = scenario == "V_UNEXPECTED_EARLY";
         fixture.FaultCommand = scenario == "V_FAULT_COMMAND";

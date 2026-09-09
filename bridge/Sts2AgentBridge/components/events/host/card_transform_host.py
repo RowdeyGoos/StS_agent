@@ -1,4 +1,4 @@
-"""Strict child-only card_transform_v2 parser; derived from frozen card host helpers."""
+"""Strict version-scoped transform and optional-add card envelope parser."""
 from __future__ import annotations
 from typing import Any
 
@@ -56,25 +56,26 @@ def _common(value: dict[str, Any], version: str) -> None:
     _require(type(value.get("parent_ordinal")) is int and value["parent_ordinal"] == 1)
 
 
-def _validate_envelope(value: dict[str, Any]) -> None:
+def _validate_envelope(value: dict[str, Any], version: str = "card_transform_v2") -> None:
+    _require(version in ("card_transform_v2", "card_transform_v3", "card_add_v2"))
     _require(type(value) is dict and type(value.get("schema_version")) is int and value["schema_version"] == 1)
     kind = value.get("kind")
-    if kind == "child_observation": _child_observation(value)
-    elif kind == "child_resolved": _child_resolved(value)
-    elif kind == "child_receipt": _receipt(value)
-    elif kind == "child_failure": _failure(value)
+    if kind == "child_observation": _child_observation(value, version)
+    elif kind == "child_resolved": _child_resolved(value, version)
+    elif kind == "child_receipt": _receipt(value, version)
+    elif kind == "child_failure": _failure(value, version)
     else: raise _InvalidResponse()
 
 
-def _receipt(v: dict[str, Any]) -> None:
+def _receipt(v: dict[str, Any], version: str) -> None:
     _keys(v, ("schema_version", "kind", "version", "session_nonce", "parent_ordinal", "decision_id", "action_id", "outcome"))
-    _common(v, "card_transform_v2")
+    _common(v, version)
     _require(_hex(v["decision_id"], 64) and _action(v["action_id"], False) and v["outcome"] == "accepted")
 
 
-def _failure(v: dict[str, Any]) -> None:
+def _failure(v: dict[str, Any], version: str) -> None:
     _keys(v, ("schema_version", "kind", "version", "session_nonce", "parent_ordinal", "outcome"))
-    _common(v, "card_transform_v2")
+    _common(v, version)
     _require(v["outcome"] in ("rejected", "unsupported", "uncertain"))
 
 
@@ -92,10 +93,12 @@ def _history(value: Any) -> None:
     _require(value["result"] == expected)
 
 
-def _child_observation(v: dict[str, Any]) -> None:
+def _child_observation(v: dict[str, Any], version: str) -> None:
     _keys(v, ("schema_version", "kind", "version", "session_nonce", "parent_ordinal", "status", "phase", "operation", "commit_mode", "min_select", "max_select", "decision_id", "candidates", "selected_slots", "legal_actions", "prior_results"))
-    _common(v, "card_transform_v2")
-    for name, maximum in (("candidates", 64), ("selected_slots", 8), ("legal_actions", 65), ("prior_results", 10)):
+    _common(v, version)
+    optional = version != "card_transform_v2"
+    limit = 15 if version == "card_add_v2" else 8
+    for name, maximum in (("candidates", 64), ("selected_slots", limit), ("legal_actions", 65), ("prior_results", 16 if version == "card_add_v2" else 10)):
         _require(type(v[name]) is list and len(v[name]) <= maximum)
     for result in v["prior_results"]:
         _history(result)
@@ -108,11 +111,11 @@ def _child_observation(v: dict[str, Any]) -> None:
         _require(v["candidates"] == v["selected_slots"] == v["legal_actions"] == [])
         return
     _require(v["phase"] in ("selecting", "preview"))
-    _require(v["operation"] == "transform")
+    _require(v["operation"] == ("add" if version == "card_add_v2" else "transform"))
     _require(v["commit_mode"] in ("auto_at_max", "explicit_confirm", "preview_confirm"))
-    _require(_integer(v["min_select"], 8) and _integer(v["max_select"], 8))
-    _require(1 <= v["min_select"] <= v["max_select"] and v["commit_mode"] == "preview_confirm" and _hex(v["decision_id"], 64))
-    _require(v["max_select"] < len(v["candidates"]) <= 64 and len(v["legal_actions"]) >= 1)
+    _require(_integer(v["min_select"], limit) and _integer(v["max_select"], limit))
+    _require((v["min_select"] == 0 if optional else 1 <= v["min_select"] <= v["max_select"]) and v["max_select"] >= 1 and v["commit_mode"] == ("explicit_confirm" if version == "card_add_v2" else "preview_confirm") and _hex(v["decision_id"], 64))
+    _require((0 if optional else v["max_select"]) < len(v["candidates"]) <= 64 and len(v["legal_actions"]) >= 1)
     slots: set[int] = set()
     selected: set[int] = set()
     for candidate in v["candidates"]:
@@ -128,11 +131,12 @@ def _child_observation(v: dict[str, Any]) -> None:
     _require(selected == expected_selected)
     preview_receipts = [row for row in v["prior_results"] if row["action_id"] == "preview"]
     if v["phase"] == "preview":
+        _require(version != "card_add_v2")
         _require(v["min_select"] <= len(selected) <= v["max_select"])
         _require(len(selected) == v["max_select"] or len(preview_receipts) == 1)
         _require(v["legal_actions"] == ["confirm"])
     else:
-        _require(len(selected) < v["max_select"] and not preview_receipts)
+        _require((len(selected) <= v["max_select"] if version == "card_add_v2" else len(selected) < v["max_select"]) and not preview_receipts)
     _require(all(type(action) is str and _action(action, False) for action in v["legal_actions"]))
     _require(len(set(v["legal_actions"])) == len(v["legal_actions"]))
     selections = [
@@ -151,13 +155,13 @@ def _child_observation(v: dict[str, Any]) -> None:
     _require(not (v["min_select"] == v["max_select"] and len(selected) < v["min_select"] and "confirm" in v["legal_actions"]))
 
 
-def _child_resolved(v: dict[str, Any]) -> None:
+def _child_resolved(v: dict[str, Any], version: str) -> None:
     _keys(v, ("schema_version", "kind", "version", "session_nonce", "parent_ordinal", "status", "phase", "operation", "selected_cards", "prior_results"))
-    _common(v, "card_transform_v2")
+    _common(v, version)
     _require(v["status"] == "resolved" and v["phase"] == "complete")
-    _require(v["operation"] == "transform")
-    _require(type(v["selected_cards"]) is list and 1 <= len(v["selected_cards"]) <= 8)
-    _require(type(v["prior_results"]) is list and 1 <= len(v["prior_results"]) <= 10)
+    _require(v["operation"] == ("add" if version == "card_add_v2" else "transform"))
+    _require(type(v["selected_cards"]) is list and (0 if version != "card_transform_v2" else 1) <= len(v["selected_cards"]) <= (15 if version == "card_add_v2" else 8))
+    _require(type(v["prior_results"]) is list and 1 <= len(v["prior_results"]) <= (16 if version == "card_add_v2" else 10))
     slots: set[int] = set()
     for card in v["selected_cards"]:
         _candidate(card)

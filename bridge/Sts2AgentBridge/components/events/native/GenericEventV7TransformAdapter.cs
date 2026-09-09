@@ -328,7 +328,7 @@ public sealed class GenericEventV7TransformAdapter : ICardTransformV2NativeAdapt
         preview = null!;
         confirm = null!;
         diagnostic = GenericEventDiagnosticCode.PrepareBinding;
-        if (!binding.Ready || binding.Operation!=CardSelectionV1Operation.Transform || binding.Prefs.MinSelect<1 || binding.Prefs.MinSelect>binding.Prefs.MaxSelect || binding.Prefs.MaxSelect>8 || (binding.Prefs.MinSelect<binding.Prefs.MaxSelect&&!binding.Prefs.RequireManualConfirmation) || binding.Transform is null) return false;
+        if (!binding.Ready || binding.Operation!=CardSelectionV1Operation.Transform || binding.Prefs.MinSelect<0 || binding.Prefs.MinSelect>binding.Prefs.MaxSelect || binding.Prefs.MaxSelect<1 || binding.Prefs.MaxSelect>8 || (binding.Prefs.MinSelect<binding.Prefs.MaxSelect&&!binding.Prefs.RequireManualConfirmation) || binding.Transform is null) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareScreen;
         if (!ValidExact(screen) || !screen.IsVisibleInTree()) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareExternalSelector;
@@ -502,7 +502,7 @@ public sealed class GenericEventV7TransformAdapter : ICardTransformV2NativeAdapt
             found.Add(new CandidateBinding(index, holder, model, card, hitbox,
                 highlight, material));
         }
-        if (found.Count != expected.Count || found.Count is < 2 or > 64)
+        if (found.Count != expected.Count || found.Count is <1 or >64)
             return false;
         bindings = found.ToArray();
         return TryCaptureBindings(holdersSnapshot, bindings, out candidates,

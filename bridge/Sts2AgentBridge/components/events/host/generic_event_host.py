@@ -122,12 +122,14 @@ def _decode(body: Any) -> dict[str, Any]:
                          c['contract_version'] == ('item_v1' if c['offer_count']==1 else 'item_set_v1'))
             else:
                 _require(c['kind'] == 'card_selection' and c['contract_version'] ==
-                         ('card_remove_v2' if c['operation'] == 'remove' else ('card_enchant_v2' if c['max_select']>1 else 'card_enchant_v1') if c['operation'] == 'enchant' else 'card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
+                         (('card_add_v2' if c['operation']=='add' else 'card_transform_v3') if c['min_select']==0 else 'card_remove_v2' if c['operation'] == 'remove' else ('card_enchant_v2' if c['max_select']>1 else 'card_enchant_v1') if c['operation'] == 'enchant' else 'card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
                 _require((c['operation'] in ('upgrade', 'remove', 'transform', 'enchant') and c['commit_mode'] == 'preview_confirm') or
                          (c['operation'] == 'add' and c['commit_mode'] in ('auto_at_max', 'explicit_confirm')))
                 _require(type(c['min_select']) is int and type(c['max_select']) is int and
-                         1 <= c['min_select'] <= c['max_select'] <= 8)
-                _require(_integer(c['domain_count'], 64) and c['domain_count'] > c['max_select'])
+                         0 <= c['min_select'] <= c['max_select'] and 1 <= c['max_select'] <= (15 if c['contract_version']=='card_add_v2' else 8))
+                if c['min_select']==0:
+                    _require((c['operation'], c['commit_mode']) in (('add','explicit_confirm'),('transform','preview_confirm')))
+                _require(_integer(c['domain_count'], 64) and c['domain_count'] > (0 if c['min_select']==0 else c['max_select']))
                 if c['operation'] == 'enchant':
                     _require(c['min_select'] == c['max_select'])
                 if c['operation'] == 'upgrade':
@@ -161,7 +163,7 @@ def _load_transform() -> Any:
     module = ModuleType('_generic_event_transform_host')
     module.__file__ = str(path)
     source = path.read_bytes()
-    _require(hashlib.sha256(source).hexdigest() == 'cf5b42f4cc5d412e46e6e46dc7fcf93eb9bf512b5fab1307b1d87d13f33f67ba')
+    _require(hashlib.sha256(source).hexdigest() == '0cd5a02d8cdf708c61d54838c90f81930a9fc06550fc93f4833d0d5a947d7e65')
     exec(compile(source, str(path), 'exec'), module.__dict__)
     return module
 
@@ -241,7 +243,7 @@ class _Controller:
                 self.counts['parent_attempted'] += 1
                 lineage = None
             else:
-                if len(self.child_receipts) >= (2*self.child['offer_count']+1 if self.child['kind']=='card_reward' else self.child['offer_count'] if self.child['kind'] == 'item' else 10):
+                if len(self.child_receipts) >= (2*self.child['offer_count']+1 if self.child['kind']=='card_reward' else self.child['offer_count'] if self.child['kind'] == 'item' else 16 if self.child['contract_version']=='card_add_v2' else 10):
                     raise _Stop('action_limit')
                 self.counts['child_attempted'] += 1
                 lineage = {k: self.child[k] for k in _CHILD[:3]}
@@ -378,7 +380,9 @@ class _Controller:
     def card_parse(self, p: Any) -> None:
         _require(type(p) is dict and type(p.get('schema_version')) is int and p['schema_version'] == 1)
         try:
-            if self.child is not None and self.child['operation'] == 'remove':
+            if self.child is not None and self.child['contract_version'] in ('card_add_v2','card_transform_v3'):
+                self.transform._validate_envelope(p, self.child['contract_version'])
+            elif self.child is not None and self.child['operation'] == 'remove':
                 self.removal_parse(p)
             elif self.child is not None and self.child['operation'] == 'enchant':
                 self.enchant_parse(p)

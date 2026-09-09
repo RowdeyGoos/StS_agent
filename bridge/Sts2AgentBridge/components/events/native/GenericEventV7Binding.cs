@@ -76,7 +76,7 @@ internal sealed class GenericEventV7Binding
         CommitMode==CardSelectionV1CommitMode.ExplicitConfirm?"explicit_confirm":"auto_at_max";
     internal bool CaptureOffers(List<CardCreationResult> offers)
     {
-        if(offers.Count<=Prefs.MaxSelect||offers.Count>64||SelectionDeck.Length+Prefs.MaxSelect>512)return false;
+        if((Prefs.MinSelect==0 ? offers.Count<1 : offers.Count<=Prefs.MaxSelect)||offers.Count>64||SelectionDeck.Length+Prefs.MaxSelect>512)return false;
         RewardList=offers;RewardEntries=offers.ToArray();Originals=new CardModel[offers.Count];RewardKeys=new string[offers.Count];RewardLevels=new int[offers.Count];
         var entries=new HashSet<object>(ReferenceEqualityComparer.Instance);var originals=new HashSet<object>(ReferenceEqualityComparer.Instance);
         for(int i=0;i<RewardEntries.Length;i++)
@@ -212,7 +212,7 @@ internal sealed class GenericEventV7Binding
     }
     internal CardSelectionV1ParentContext Context()=>new(Nonce,CardSelectionV1ParentKind.Event,
         Decision,Action,this,Run,Player,Room,Map,Option,Controller,Operation,
-        Prefs.MinSelect,Prefs.MaxSelect,CommitMode,DomainCount,Enchantment,Operation==CardSelectionV1Operation.Remove);
+        Prefs.MinSelect,Prefs.MaxSelect,CommitMode,DomainCount,Enchantment,Operation==CardSelectionV1Operation.Remove,Prefs.MinSelect==0);
     internal bool MatchesAcceptedParent(CardSelectionV1ParentContext context)=>
         ReferenceEquals(context.ParentReceiptIdentity,this)&&ReferenceEquals(context.ParentOptionIdentity,Option)&&
         context.AllowRemovalParentAppend==(Operation==CardSelectionV1Operation.Remove)&&

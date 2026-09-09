@@ -33,10 +33,11 @@ internal sealed class GenericEventV7TransformState
     }
     internal Command Begin()
     {
-        Context();Require(Authorized&&_commands.Count<8);
+        Context();Require(Authorized&&_commands.Count<(_selected!.Length==0?1:8));
         Refresh();Require(_commands.Count==0||_commands[^1].State==CardTransformV2CommandState.Succeeded);
         Require(ExpectedDeck());
-        var command=new Command(this,GenericEventV7Binding.CopyDeck(_binding.Player));_commands.Add(command);return command;
+        var command=new Command(this,GenericEventV7Binding.CopyDeck(_binding.Player));
+        if(_selected!.Length==0){Require(_binding.Prefs.MinSelect==0);command.Frozen=true;}_commands.Add(command);return command;
     }
     internal void BindTask(Command command,Task<IEnumerable<CardPileAddResult>> task)
     {Context();Require(Current(command)&&task is not null&&command.Task is null&&_binding.ObservedCommandTasks.Count<32&&_binding.ObservedCommandTasks.Add(task));command.Task=task;Refresh();}
@@ -116,8 +117,8 @@ internal sealed class GenericEventV7TransformState
             if(task.IsCanceled){command.State=CardTransformV2CommandState.Canceled;Fail();continue;}
             if(!task.IsCompletedSuccessfully){command.State=CardTransformV2CommandState.Faulted;Fail();continue;}
             Require(command.Frozen&&command.PendingChoice is null&&command.PendingFinal is null&&command.PendingInsertion is null&&!command.Inserting&&command.Insertions.Count==command.Choices.Count);
-            Require(task.Result is List<CardPileAddResult>);
-            var result=(List<CardPileAddResult>)task.Result;Require(result.Count==command.Insertions.Count&&result.Count<=_binding.Prefs.MaxSelect);
+            Require(_selected!.Length==0 ? task.Result is CardPileAddResult[] {Length:0} : task.Result is List<CardPileAddResult>);
+            var result=(IReadOnlyList<CardPileAddResult>)task.Result;Require(result.Count==command.Insertions.Count&&result.Count<=_binding.Prefs.MaxSelect);
             var rows=new List<CardTransformV2CommandResult>();
             for(int i=0;i<result.Count;i++)
             {var value=result[i];Require(value.success&&value.cardAdded is not null&&ReferenceEquals(value.cardAdded,command.Insertions[i].FinalIdentity));rows.Add(new(value.success,value.cardAdded!));}

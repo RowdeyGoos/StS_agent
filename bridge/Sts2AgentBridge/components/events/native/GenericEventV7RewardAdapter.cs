@@ -227,7 +227,7 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
         if (!GridGeometry.TryBind(grid, bindings.Length, out geometry)) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareConfirm;
         confirm = RequiredNode<NConfirmButton>(screen,"%Confirm");
-        return ValidExact(confirm) && !confirm.IsEnabled;
+        return ValidExact(confirm) && confirm.IsEnabled==(binding.Prefs.MinSelect==0);
     }
 
     private static bool InitialForeground(
@@ -339,7 +339,7 @@ public sealed class GenericEventV7RewardAdapter : ICardSelectionV1NativeAdapter
                 highlight, material));
         }
         if (found.Count != expected.Count) { diagnostic = GenericEventDiagnosticCode.CandidateDomainCount; return false; }
-        if (found.Count is < 2 or > 64) { diagnostic = GenericEventDiagnosticCode.CandidateDomainBounds; return false; }
+        if (found.Count is <1 or >64) { diagnostic = GenericEventDiagnosticCode.CandidateDomainBounds; return false; }
         bindings = found.ToArray();
         if (!TryCaptureBindings(holdersSnapshot, bindings, out candidates, out bool settled,
             out GenericEventDiagnosticCode[] visibilityReasons, out diagnostic)) return false;

@@ -38,6 +38,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--multi-enchantment"})){MultiEnchantmentTests();Console.WriteLine("multi-enchantment checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-reward-set"})){CardRewardSetTests();Console.WriteLine("card-reward-set checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-reward"})){CardRewardTests();Console.WriteLine("card-reward checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--optional-events"})){OptionalEventTests();Console.WriteLine("optional event checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -157,6 +158,7 @@ internal static partial class Program
         GenericDeckTransformTests();
         ItemTests();
         VariableTransformTests();
+        OptionalEventTests();
         RepeatedPageTests();
         PreSelectorAdditionTests();
         PostRemovalAdditionTests();
@@ -899,14 +901,14 @@ internal static partial class Program
         internal Func<IEnumerable<CardModel>,IEnumerable<CardModel>>? RequestResult=null,ScreenResult=null;
         internal Action? BeforeRequest=null,BeforeCreate=null,BeforeReturn=null,BeforeEffect=null,AfterFirstAdd=null,AfterEffect=null;
         internal bool WrongPlayer=false,NullContext=false,ChangePrefs=false,Shortcut=false,FaultRequest=false,FaultCallback=false,PlainOverload=false,DuplicateCreate=false,ReplaceList=false,IgnoreRequestForEffect=false,NoAddition=false;
-        internal RewardFixture(string name,int minSelect,int maxSelect,int domainCount=10,bool manual=false,bool sortedOffers=false,bool delayedCreation=false,bool partialAdd=false,bool delayedCompletion=false,string? nonce=null)
+        internal RewardFixture(string name,int minSelect,int maxSelect,int domainCount=10,bool manual=false,bool sortedOffers=false,bool delayedCreation=false,bool partialAdd=false,bool delayedCompletion=false,string? nonce=null,EventModel? eventModel=null)
         {
             BaselineCards=Enumerable.Range(0,3).Select(i=>new CardModel{Owner=Player}).ToArray();
             for(int i=0;i<BaselineCards.Length;i++){BaselineCards[i].Id.Entry="Baseline_"+i;Player.Deck.Cards.Add(BaselineCards[i]);}
             OfferCards=Enumerable.Range(0,domainCount).Select(i=>new CardModel{Owner=Player}).ToArray();
             for(int i=0;i<OfferCards.Length;i++)OfferCards[i].Id.Entry="Reward_"+i;
             ResultEntries=OfferCards.Select(c=>new CardCreationResult(c)).ToList();
-            Model=name=="FIRST_REWARD"?new FirstRewardEvent():name=="ANOTHER_REWARD"?new AnotherRewardEvent():new HeldOutRewardEvent();Model.Owner=Player;
+            Model=eventModel??(name=="FIRST_REWARD"?new FirstRewardEvent():name=="ANOTHER_REWARD"?new AnotherRewardEvent():new HeldOutRewardEvent());Model.Owner=Player;
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;
             AddOption(new EventOption{TextKey=name+".OPTION",Callback=async()=>{
                 OptionCalls++;BeforeRequest?.Invoke();
@@ -960,6 +962,7 @@ internal static partial class Program
                 };Grid.CurrentlyDisplayedCardHolders.Add(holder);
             }
             Screen.Bind("%CardGrid",Grid);Screen.Bind("%Confirm",ConfirmButton);
+            ConfirmButton.IsEnabled=prefs.RequireManualConfirmation&&prefs.MinSelect==0;
             ConfirmButton.Clicked=()=>{ConfirmCalls++;CompleteSelection();};BeforeReturn?.Invoke();return Screen;
         }
         private void CompleteSelection()

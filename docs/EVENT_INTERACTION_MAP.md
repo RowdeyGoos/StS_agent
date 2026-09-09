@@ -26,13 +26,26 @@ now have offline original-preview and exact-effect coverage for the WoodCarvings
 Bird/Torus interaction shape; Bird also passed live with exact preview, verified
 transformation and a fresh core map. [Mixed card/item sets](GENERIC_EVENTS.md#implemented-offline-mixed-carditem-reward-sets)
 now have unreleased offline implementation for Lost Coffer's card-plus-potion
-shape and other bounded interleavings. Neow ancient entry, full-inventory handling
-and nested pickup composition remain gaps. The preceding five tested
+shape and other bounded interleavings. Ancient entry/dialogue and optional
+Sea Glass/Claws selectors now also have unreleased offline implementation.
+Full-inventory handling and nested pickup composition remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
 The inventory and gap matrix below retain the original research comparison at
 `4d3516f`; their source hashes and gap annotations are not repinned to later code.
 Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.
+
+## Sea Glass research correction
+
+A narrow reread of the same pinned IL corrected the original sequential-grid
+classification. `SeaGlass.get_CanonicalVars` constructs `CardsVar(15)`; its
+`AfterObtained.MoveNext` concatenates the three rarity lists at IL offsets 335/342,
+materializes one list at 347, constructs preferences `(0, list.Count)` at 390,
+and calls `FromSimpleGridForRewards` once at 410. Selected additions follow at
+551. Sea Glass therefore needs one optional 0..15 grid, not sequential children.
+The original inventory and recorded research hashes remain intact; its
+`sequential_children` finding for Orobas is superseded by this correction.
+No other sequential selector caller is established by that finding.
 
 ## What the research changes
 
@@ -50,9 +63,9 @@ Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.
   Numbered chains such as Colossal Flower or Tablet of Truth are separate
   validation cases, not automatic evidence that a new adapter is necessary.
 - **Ancients expose additional shared selectors through relic pickup effects.**
-  Claws requests zero-to-six transformations; Sea Glass uses optional card grids
-  in successive passes; Scroll Boxes chooses a bundle. The current exact-layout
-  check rejects `NAncientEventLayout` before any of those choices can run.
+  Claws requests zero-to-six transformations; Sea Glass uses one optional
+  15-card grid; Scroll Boxes chooses a bundle. The research baseline rejected
+  `NAncientEventLayout`; the current checkout admits its dialogue and options.
 - **Named custom cases are now identified.** Crystal Sphere needs a cell-reveal
   minigame, Fake Merchant a custom merchant surface, Wood Carvings a generic deck
   selector followed by a fixed-result transformation, and Trial an abandon popup.
@@ -112,7 +125,7 @@ or how many entire events a single change will complete.
 | Event combat handoff (`event_combat`) | 5 | DenseVegetation/Rest for combat exit; BattlewornDummy for actual return-to-event handling. |
 | Multi-card enchantment (`multi_enchant`) | 3 | WaterloggedScriptorium/PricklySponge: exact two-card Steady selection and effect. |
 | Zero/optional selection (`optional_select`) | 2 | Tanx/Claws: select zero or a positive subset; zero completion is not cancellation. |
-| Sequential child ownership (`sequential_children`) | 1 | Orobas/SeaGlass: finish one optional grid, then handle the next while the same parent task is pending. |
+| Sequential child ownership (`sequential_children`) | 0 (originally 1) | Original SeaGlass classification corrected above; no sequential selector caller established. |
 | Generic deck → transform (`generic_deck_transform`) | 1 | WoodCarvings/Bird: select an eligible original on the generic deck grid and verify its fixed-result transform. |
 | Choose-card surface (`choose_card`) | 1 | Neow/LeadPaperweight: choose through the native ChooseACard screen and add the exact card. |
 | Bundle surface (`choose_bundle`) | 1 | Neow/ScrollBoxes: select one bundle and reconcile all its cards. |
@@ -175,7 +188,7 @@ only one branch of an event; other branches can remain candidates.
 | `MorphicGrove` | Overgrowth | **Loner** → options. Max-HP effect.<br>**Group** → options, transform selector. Gold loss followed by fixed-two random transformation. Gold does not alter the deck baseline. | Candidate; caller validation remains |
 | `Neow` | Overgrowth ancient, Underdocks ancient | **Generated relic options / inherited Done** → ancient layout/options, removal selector, upgrade selector, transform selector, choose-card screen, bundle screen, reward set, card reward. Relic options include fixed removal/upgrade/transform, ChooseACard rewards, ScrollBoxes bundles and custom reward sets; see relic appendix. Modifier options are also generated conditionally. | `ancient_layout`, `choose_bundle`, `choose_card`, `event_card_rewards`, `multiple_rewards` |
 | `Nonupeipe` | Glory ancient | **Generated relic options / inherited Done** → ancient layout/options, enchant selector. BeautifulBracelet requests Swift on three cards; remaining fixed relic options apply automatic/passive effects. | `ancient_layout`, `multi_enchant` |
-| `Orobas` | Hive ancient | **Generated relic options / inherited Done** → ancient layout/options, enchant selector, card reward, reward set, add-card grid, optional selection. ElectricShrymp enchant-one; GlassEye five-card-reward set; SeaGlass optional generated-card selection across rarity passes; remaining options automatic/passive. | `ancient_layout`, `event_card_rewards`, `multiple_rewards`, `optional_select`, `sequential_children` |
+| `Orobas` | Hive ancient | **Generated relic options / inherited Done** → ancient layout/options, enchant selector, card reward, reward set, add-card grid, optional selection. ElectricShrymp enchant-one; GlassEye five-card-reward set; SeaGlass one optional 15-card grid combining rarity lists; remaining options automatic/passive. | `ancient_layout`, `event_card_rewards`, `multiple_rewards`, `optional_select` |
 | `Pael` | Hive ancient | **Generated relic options / inherited Done** → ancient layout/options, enchant selector, removal selector. PaelsGrowth enchant-one; PaelsTooth remove-five; remaining fixed relic options automatic/passive. | `ancient_layout` |
 | `PotionCourier` | Shared | **Ransack** → options, item reward. Singleton potion; representative live acceptance.<br>**GrabPotions** → options, item reward, reward set. Canonical three FoulPotion rewards in one OfferCustom. | `multiple_rewards` |
 | `PunchOff` | Underdocks | **Nab** → options, item reward, automatic deck effects. Injury then singleton relic reward; Combat layout blocks entry before this branch.<br>**TakeThem → Fight** → options, event combat, reward set. Combat layout; relic and potion extra rewards; shouldResume=false. | `combat_layout`, `event_combat`, `multiple_rewards` |
@@ -250,7 +263,7 @@ can bring additional pickup callbacks and are not exhaustively enumerated here.
 | `PreciseScissors` | Neow | Fixed-one removal. |
 | `PreservedFog` | Vakuu | Fixed-three removal then Folly; composite deck-effect boundary. |
 | `ScrollBoxes` | Neow | NChooseABundleSelectionScreen, then add each card in the chosen bundle. |
-| `SeaGlass` | Orobas | Multiple rarity passes; each offers min=0, max=offer count. Sequential children within one AfterObtained task; a pass may select zero or the entire offered domain. |
+| `SeaGlass` | Orobas | One combined 15-card grid; min=0, max=15; manual Confirm, including zero or all offers. See correction above. |
 | `SmallCapsule` | Neow | One relic reward; its randomly obtained relic may have a further pickup interaction. |
 | `ToyBox` | Tezcatara | Several randomly pulled wax relic rewards; pickup effects can introduce nested work. |
 | `TriBoomerang` | Tanx | Fixed-three Instinct; multi-enchantment gap. |

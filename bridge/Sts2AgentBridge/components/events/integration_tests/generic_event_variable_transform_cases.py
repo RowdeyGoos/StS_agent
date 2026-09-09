@@ -152,7 +152,7 @@ def run_variable_transform_cases(args: Any, host: Any, exchange_type: Any,
         assert ex.telemetry[-1]['confirm_calls'] == int(expected_posts == 4)
         checks += 1
 
-    for scenario in ('V_MANUAL_FALSE', 'V_MIN_ZERO', 'V_MIN_GT_MAX'):
+    for scenario in ('V_MANUAL_FALSE', 'V_MIN_NEGATIVE', 'V_MIN_GT_MAX'):
         result, ex = run(scenario, one)
         assert result['code'] == 'unsupported_state' and result['completed_card_children'] == 0, (scenario, result)
         assert ex.posts == 1 and result['child_attempted'] == 0
@@ -204,4 +204,49 @@ def run_variable_transform_cases(args: Any, host: Any, exchange_type: Any,
     assert ex.posts == 9 and result['child_attempted'] == 7 and result['child_accepted'] == 6
     assert ex.telemetry[-1]['confirm_calls'] == 2
     checks += 1
+    # Optional native grids retain actual min/max and require explicit completion.
+    optional_cases = [
+        ('A_OPTIONAL', (), 'card_add_v2'),
+        ('A_OPTIONAL', ('select:4', 'select:2'), 'card_add_v2'),
+        ('A_OPTIONAL', tuple('select:'+str(i) for i in range(15)), 'card_add_v2'),
+        ('A_OPTIONAL_DELAY', (), 'card_add_v2'),
+        ('V_OPTIONAL', (), 'card_transform_v3'),
+        ('V_OPTIONAL', ('select:4', 'select:2'), 'card_transform_v3'),
+        ('V_OPTIONAL', tuple('select:'+str(i) for i in range(6)), 'card_transform_v3'),
+        ('V_OPTIONAL_SMALL', (), 'card_transform_v3'),
+        ('V_OPTIONAL_SMALL', ('select:0',), 'card_transform_v3'),
+    ]
+    for scenario, selections, version in optional_cases:
+        actions = selections + (('preview',) if version=='card_transform_v3' and len(selections)<6 else ()) + ('confirm',)
+        result, ex = run(scenario, actions)
+        assert result['status']=='resolved', (scenario, actions, result, ex.envelopes[-1])
+        assert result['child_attempted']==len(actions) and result['parent_reconciled']==4
+        assert ex.telemetry[-1]['map_open'] and ex.telemetry[-1]['overlay_count']==0
+        done = [v['payload'] for v in ex.envelopes if v['payload'] and v['payload'].get('kind')=='child_resolved']
+        assert len(done)==1 and done[0]['version']==version and len(done[0]['selected_cards'])==len(selections)
+        if not selections:
+            assert ex.telemetry[-1]['remaining_keys']==ex.telemetry[-1]['baseline_keys']
+        completed_history(result, ex, 1)
+        checks += 1
+    for scenario, actions in [('A_OPTIONAL',('confirm',)),('V_OPTIONAL',('preview','confirm'))]:
+        for mutation in ('descriptor_version','payload_version','missing_history','nonempty_result','lost_confirm'):
+            changed=False
+            def corrupt_optional(ex, method, route, body):
+                nonlocal changed
+                response=ex.request(method,route,body)
+                value=json.loads(response);p=value['payload'];c=value['child']
+                if changed or not c or not p:return response
+                done=p.get('kind')=='child_resolved'
+                if mutation=='descriptor_version':c['contract_version']='card_selection_v1'
+                elif mutation=='payload_version':p['version']='card_transform_v2'
+                elif mutation=='missing_history' and done:p['prior_results']=[]
+                elif mutation=='nonempty_result' and done:p['selected_cards']=[dict(slot=0,key='Foreign',upgrade_level=0,visible=True,enabled=True,selected=True)]
+                elif mutation=='lost_confirm' and method=='POST' and json.loads(body)['action_id']=='confirm':
+                    changed=True;response[:]=b'\0'*len(response);raise host.TransportFailure()
+                else:return response
+                changed=True;response[:]=json.dumps(value,separators=(',',':')).encode();return response
+            result, ex = run(scenario,actions,corrupt_optional)
+            assert changed and result['code']==('transport_failure' if mutation=='lost_confirm' else 'invalid_response'), (scenario,mutation,result)
+            assert result['completed_card_children']==0 and ex.telemetry[-1]['confirm_calls']<=1
+            checks += 1
     return checks

@@ -42,7 +42,7 @@ public sealed partial class CardTransformV2Session
         complete = false;
         if (_bound is null || capture.Replacements.Count != 0) return false;
         var journal = _captureJournal;
-        if (journal.Commands.Count > selected.Length || journal.Commands.Count < _validatedJournal.Commands.Count) return false;
+        if (journal.Commands.Count > (selected.Length==0 && _context.AllowOptionalSelection ? 1 : selected.Length) || journal.Commands.Count < _validatedJournal.Commands.Count) return false;
         var identities = new HashSet<object>(ReferenceComparer.Instance);
         var originals = new HashSet<object>(ReferenceComparer.Instance);
         var removed = new HashSet<object>(ReferenceComparer.Instance);
@@ -53,7 +53,7 @@ public sealed partial class CardTransformV2Session
         {
             var c = journal.Commands[i];
             if (c.CommandIdentity is null || !identities.Add(c.CommandIdentity) || !Enum.IsDefined(c.State) ||
-                c.OriginalIdentities.Count == 0 || c.OriginalIdentities.Count > selected.Length ||
+                c.OriginalIdentities.Count == 0 && !(_context.AllowOptionalSelection && selected.Length==0) || c.OriginalIdentities.Count > selected.Length ||
                 i > 0 && journal.Commands[i-1].State != CardTransformV2CommandState.Succeeded) return false;
             var domain = new HashSet<object>(ReferenceComparer.Instance);
             foreach (object original in c.OriginalIdentities)
@@ -105,7 +105,7 @@ public sealed partial class CardTransformV2Session
         if (capture.Deck.Count != expected.Count) return false;
         for (int i = 0; i < expected.Count; i++)
             if (!SameDeckCard(capture.Deck[i], expected[i])) return false;
-        complete = selected.Length > 0 && originals.Count == selected.Length && removed.Count == selected.Length &&
+        complete = (selected.Length > 0 || _context.AllowOptionalSelection && journal.Commands.Count==1) && originals.Count == selected.Length && removed.Count == selected.Length &&
             insertions.Count == selected.Length && journal.Commands.All(c => c.State == CardTransformV2CommandState.Succeeded);
         _validatedJournal = journal;
         return true;

@@ -27,9 +27,11 @@ process. Completed packets and old campaign instructions are historical referenc
    evidence. Fixed-one generic deck transformation
    now has WoodCarvings/Bird live acceptance; Torus remains a branch candidate. Mixed card/item sets
    now have unreleased native/C#/Python implementation, with Lost Coffer's
-   card-plus-potion pickup as the concrete shape. Ancient entry still blocks its
-   full Neow route. Next address full-inventory/nested pickup handling and remaining narrow
-   selector additions; then layout/combat and custom/terminal dependencies. This
+   card-plus-potion pickup as the concrete shape. Ancient layout/dialogue, optional
+   Sea Glass add selection and Claws transformation now also have unreleased offline
+   implementation. Validate these together in the next live batch. Next address
+   full-inventory/nested pickups and remaining narrow selector additions; then
+   combat layouts and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.
 3. **Compose supported interactions into longer live runs after event coverage.**
@@ -51,15 +53,15 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
 include broader deck changes after selectors and other pre-selector mutations, broader pickup
-composition, ancient/combat layouts, embedded combat, optional
-and sequential pickup selectors, and custom/terminal
+composition, combat layouts, embedded combat, repeated/nested pickup selectors, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.
 
 Keep representative held-out/live coverage for implemented families separate from
 new implementation. Variable upgrades, true native cancellation, enchantment
 stacking/replacement and unallocated-holder mechanisms need a concrete caller or
 setup before becoming priorities. Claws and Sea Glass establish optional selection
-through ancient pickup paths; they do not establish variable-count upgrades.
+through ancient pickup paths; these optional selectors are implemented offline
+and need live acceptance. They do not establish variable-count upgrades.
 
 ## Headless and learning direction
 

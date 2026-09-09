@@ -164,7 +164,7 @@ def main() -> int:
             else:
                 assert child['kind'] == 'card_selection', child
                 assert tuple(child) == common + ('operation', 'min_select', 'max_select', 'commit_mode', 'domain_count'), child
-                assert child['contract_version'] == ('card_remove_v2' if child['operation'] == 'remove' else 'card_enchant_v1' if child['operation'] == 'enchant' else 'card_transform_v2' if child['operation'] == 'transform' else 'card_selection_v1'), child
+                assert child['contract_version'] == (('card_add_v2' if child['operation']=='add' else 'card_transform_v3') if child['min_select']==0 else 'card_remove_v2' if child['operation'] == 'remove' else 'card_enchant_v1' if child['operation'] == 'enchant' else 'card_transform_v2' if child['operation'] == 'transform' else 'card_selection_v1'), child
                 complete = payload.get('kind') == 'child_resolved'
                 seen = cards
             if complete:

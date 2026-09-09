@@ -30,6 +30,19 @@ internal static class EventBoundaryTests
 
     internal static void Run(Action<bool,string> check)
     {
+        foreach(var spec in new[]{("add",15,"explicit_confirm","card_add_v2"),("transform",6,"preview_confirm","card_transform_v3")}) {
+            var child=new GenericEventV7Child(1,Decision,"choose:0",spec.Item1,0,spec.Item2,spec.Item3,spec.Item2);
+            var value=CardSelectionV1Observation.Fixed(Nonce,"waiting","transient",Array.Empty<CardSelectionV1ActionResult>());
+            var body=GenericEventV7WireCodec.Decision(Nonce,Parent(child),CardTransformV2WireCodec.Encode(value,spec.Item4));
+            check(Classify(body)==TerminalClassification.NonTerminal,"optional card boundary");
+            check(Classify(Mutate(body,n=>n["child"]!["contract_version"]="card_selection_v1"))==TerminalClassification.Invalid,"optional descriptor cannot use legacy contract");
+            check(Classify(Mutate(body,n=>n["payload"]!["version"]="card_transform_v2"))==TerminalClassification.Invalid,"optional payload version must match");
+            check(Classify(Mutate(body,n=>n["child"]!["operation"]="upgrade"))==TerminalClassification.Invalid,"optional upgrade forbidden");
+            check(Classify(Mutate(body,n=>n["child"]!["max_select"]=16))==TerminalClassification.Invalid,"optional overflow forbidden");
+            check(Classify(Mutate(body,n=>n["child"]!["domain_count"]=0))==TerminalClassification.Invalid,"empty candidate domain forbidden");
+            var receipt=GenericEventV7WireCodec.Action(Nonce,child,null,CardTransformV2WireCodec.Encode(new CardSelectionV1DispatchReceipt(Nonce,Decision,"confirm"),spec.Item4));
+            check(Classify(receipt,GenericEventTransportRoute.ChildPost)==TerminalClassification.NonTerminal,"optional confirm accepted receipt");
+        }
         foreach(int count in new[]{1,2,8}) {
             var child=new GenericEventV7Child(1,Decision,"choose:0","enchant",count,count,"preview_confirm",20);
             var observation=new CardSelectionV1Observation(Nonce,"waiting","transient","","",0,0,"",

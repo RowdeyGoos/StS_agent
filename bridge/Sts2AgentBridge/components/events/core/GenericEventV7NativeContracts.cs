@@ -6,7 +6,8 @@ namespace Sts2AgentBridge.Successors.GenericEventV7;
 public interface IGenericEventV7NativeAdapter : IDisposable
 {
     // While a parent action is pending, "parent" requires its owned Chosen
-    // task to have succeeded and all child/overlay work to have settled.
+    // task to have succeeded and all child/overlay work to have settled. An owned
+    // ancient dialogue action instead requires its exact next native line.
     // Option identities stay stable for the lifetime of each native control.
     GenericEventV7NativeCapture Capture();
     void Dispatch(object candidateIdentity, string nonce, string decisionId, string actionId);
@@ -34,9 +35,12 @@ public sealed record GenericEventV7ItemAdmission(object AdmissionIdentity, int O
 
 public static class GenericEventV7Families
 {
-    public static string ContractVersion(string operation, int maxSelect = 1) => operation == "remove" ? "card_remove_v2" : operation == "enchant" ? (maxSelect>1?"card_enchant_v2":"card_enchant_v1") : operation == "transform" ? "card_transform_v2" : "card_selection_v1";
+    public static string ContractVersion(string operation, int maxSelect = 1, int minSelect = 1) => minSelect == 0 ? (operation=="add"?"card_add_v2":"card_transform_v3") : operation == "remove" ? "card_remove_v2" : operation == "enchant" ? (maxSelect>1?"card_enchant_v2":"card_enchant_v1") : operation == "transform" ? "card_transform_v2" : "card_selection_v1";
     public static bool Supports(string operation, int minSelect, int maxSelect,
-        string commitMode, int domainCount) => domainCount <= 64 && domainCount > maxSelect &&
+        string commitMode, int domainCount) => minSelect==0
+        ? domainCount is >=1 and <=64 && maxSelect>=1 &&
+          (operation=="add" && maxSelect<=15 && commitMode=="explicit_confirm" || operation=="transform" && maxSelect<=8 && commitMode=="preview_confirm")
+        : domainCount <= 64 && domainCount > maxSelect &&
         minSelect >= 1 && minSelect <= maxSelect && maxSelect <= 8 &&
         ((operation == "enchant" && minSelect == maxSelect && commitMode == "preview_confirm") ||
          (operation == "upgrade" && minSelect == maxSelect && commitMode == "preview_confirm") ||

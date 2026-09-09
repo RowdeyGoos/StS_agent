@@ -296,8 +296,8 @@ complete two and eight selections through Proceed/map. Prickly Sponge now also
 has live acceptance: two upgraded Strikes in a 24-card eligible domain, exact
 original preview, Steady amount 1 on each and an independent fresh core map.
 All five actions reconciled. See the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#prickly-sponge-fixed-two-enchantment-passed).
-Other counts/callers, optional counts, stacking/replacement and ancient-layout
-entry retain their narrower evidence or remain gaps.
+Other enchantment counts/callers, optional counts and stacking/replacement retain
+their narrower evidence or remain gaps. Ancient entry now has offline support below.
 
 ## Implemented: multiple potion/relic rewards
 
@@ -479,9 +479,9 @@ potion and relic rewards in one owned nonterminal RewardsSet**, with at least on
 card and one item. The pinned concrete caller is **LostCoffer.AfterObtained**:
 its generated list contains a three-card CardReward followed by a PotionReward,
 passed to `RewardsCmd.OfferCustom`. Lost Coffer is offered by Neow; reaching that
-pickup through Neow still requires ancient-layout support. This increment covers
-the shared reward surface in native fixtures, not the full ancient route or a
-live-demonstrated Lost Coffer interaction.
+pickup through Neow can now use the ancient layout support below. The mixed-set
+fixtures cover the shared reward surface; a full live Lost Coffer route remains
+unverified.
 
 Entries retain generated-list order. Cards use `open:N`, `choose:N:S` and legal
 `skip:N`; items use `collect:N` through the existing item adapter and exact native
@@ -565,6 +565,49 @@ failure and a lost confirmation reply without retry. The Bird case now has repre
 eligible cards remains a distinct branch candidate. The live summary does not
 expose the replacement key; the user separately confirmed Peck in the deck.
 
+## Implemented offline: ancient dialogue and optional selections
+
+The shared parent admits the pinned `NAncientEventLayout` alongside ordinary
+`NEventLayout`. While native dialogue remains, it exposes one `choose:0` action
+with text “Continue dialogue”. This emits the owned dialogue hitbox's native
+Released signal once. Completion requires exactly one line advancement on the
+same layout, event, hitbox and dialogue list with unchanged line identities.
+Hidden or disabled input waits; replaced objects, changed lines, jumps, exceptions
+and exhausted waits stop the session. There is no fabricated Chosen task for a
+dialogue action. Dialogue uses the existing parent action budget (12).
+
+The last native dialogue line enables ordinary event options. Those options use
+the existing Chosen/child ownership and effect checks. Dialogue that restarts
+after a completed relic pickup is handled before Proceed. Proceed still requires
+the native callback and actionable map. No event-name admission list is added.
+Automatic relic effects without a child remain unverified parent effects.
+
+Two explicit child versions extend the existing card envelope:
+
+| Contract | Native selection | Completion and bounds |
+| --- | --- | --- |
+| `card_add_v2` | Event `FromSimpleGridForRewards` → `NSimpleCardSelectScreen`; min=0, max=1..15; manual confirmation | Select zero through max, then Confirm; at most 16 child actions. Complete nonempty offer domain of up to 64, including domain equal to max. Exact selected additions and unchanged baseline deck. |
+| `card_transform_v3` | Event `FromDeckForTransformation` → `NDeckTransformSelectScreen`; min=0, max=1..8; manual confirmation | Select a subset, explicitly open preview below max, then Confirm. At max the native selector opens preview. Complete nonempty domain of up to 64, including domains smaller than max. Existing 10-action limit. |
+
+The pinned acceptance callers are **Orobas/SeaGlass** (one combined 15-card grid,
+0..15) and **Tanx/Claws** (0..6). Zero is a submitted selection, not cancellation.
+Both selector and request results must be exactly empty, the overlay must close,
+the complete deck must remain unchanged, and Chosen must succeed. Claws still
+invokes one native transform command for zero: the journal requires exactly one
+successful command returning the native empty array, with no choice, modification,
+insertion or removal effects. Missing, repeated, faulted or effect-bearing empty
+commands cannot resolve. Preview cancellation is never exposed.
+
+Optional behavior is enabled only by an explicit event context. Existing positive
+selection versions, standalone card contracts and their limits remain unchanged.
+Host and production boundary validation require the new matching descriptor and
+payload versions; confirmed histories and exact selected sets remain mandatory.
+Fixtures cover ancient entry, post-pickup dialogue reset, zero/partial/full counts,
+small transform domains, delayed completion, stale input, malformed versions/results
+and lost replies without retry. This is offline evidence, not live acceptance or
+support for every ancient pickup. Bundle/ChooseACard/results screens, full inventory,
+nested pickups, cancellation and empty candidate domains remain outside this change.
+
 ## Separate remaining questions
 
 An allocated off-screen holder can accept direct input. A card without an
@@ -576,14 +619,13 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader pickup composition, ancient and
-combat layouts, optional/sequential pickup children and custom
+changes after selectors, other pre-selector deck mutations, broader pickup composition, combat layouts, repeated/nested pickup children and custom
 surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
 is implemented above; Bird passed live, while Torus remains a branch candidate.
 
 Choose the next feature from those source-backed callers. Positive variable
-transformation already works offline; Claws supplies a concrete optional zero-to-six
-caller through Tanx, with ancient layout and zero-selection prerequisites. No
+transformation and optional Claws/Sea Glass selections now work offline. Their full
+native ancient routes are candidates for the next live batch. No
 inspected event/immediate pickup establishes variable-count upgrades or true native
 cancellation. Keep those speculative extensions separate from demonstrated gaps.
 

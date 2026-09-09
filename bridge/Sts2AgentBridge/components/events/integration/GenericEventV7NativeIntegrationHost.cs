@@ -54,6 +54,8 @@ internal static partial class GenericEventV7NativeIntegrationHost
     };
     private static readonly Dictionary<string, (string Name, int Min, int Max, int Domain, bool Manual, bool Sorted, bool Creation, bool Partial, bool Completion)> RewardCases = new()
     {
+        ["A_OPTIONAL"] = ("SEA_GLASS", 0, 15, 15, true, false, false, false, false),
+        ["A_OPTIONAL_DELAY"] = ("SEA_GLASS", 0, 15, 15, true, false, false, false, true),
         ["A_DERIVED"] = ("HELD_OUT_REWARD", 2, 2, 5, false, false, false, false, false),
         ["A_FIRST"] = ("FIRST_REWARD", 2, 2, 5, false, false, false, false, false),
         ["A_ANOTHER"] = ("ANOTHER_REWARD", 1, 3, 5, true, false, false, false, false),
@@ -102,7 +104,8 @@ internal static partial class GenericEventV7NativeIntegrationHost
             delayedCreation: config.Creation, delayedCompletion: config.Completion,enchant:enchanting) : null;
         var reward = adding ? new Program.RewardFixture(rewardConfig.Name, rewardConfig.Min, rewardConfig.Max, rewardConfig.Domain,
             manual: rewardConfig.Manual, sortedOffers: rewardConfig.Sorted, delayedCreation: rewardConfig.Creation,
-            partialAdd: rewardConfig.Partial, delayedCompletion: rewardConfig.Completion) : null;
+            partialAdd: rewardConfig.Partial, delayedCompletion: rewardConfig.Completion,eventModel:args[0].StartsWith("A_OPTIONAL",StringComparison.Ordinal)?new AncientEventModel():null) : null;
+        if(reward is not null&&args[0].StartsWith("A_OPTIONAL",StringComparison.Ordinal))Program.AncientLayout(reward.Room,reward.Model);
         NClickableControl[]? retainedHitboxes = null;
         if (reward is not null && args[0] == "A_DERIVED")
             reward.BeforeReturn = () => {

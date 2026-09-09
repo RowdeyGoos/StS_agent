@@ -102,7 +102,7 @@ internal static class GenericEventTerminalClassifier
             return count is >=1 and <=8 && (Text(value,"contract_version")==version||Text(value,"kind")=="card_reward"&&count>=2&&Text(value,"contract_version")=="mixed_reward_set_v1");
         }
         return
-            Text(value,"kind")=="card_selection"&&Text(value,"contract_version")==GenericEventV7Families.ContractVersion(Text(value,"operation")??"",value.GetProperty("max_select").GetInt32())&&
+            Text(value,"kind")=="card_selection"&&Text(value,"contract_version")==GenericEventV7Families.ContractVersion(Text(value,"operation")??"",value.GetProperty("max_select").GetInt32(),value.GetProperty("min_select").GetInt32())&&
             GenericEventV7Families.Supports(Text(value,"operation")??"",value.GetProperty("min_select").GetInt32(),value.GetProperty("max_select").GetInt32(),Text(value,"commit_mode")??"",value.GetProperty("domain_count").GetInt32());
     }
     // The wire service validates action history and native effects. This boundary
