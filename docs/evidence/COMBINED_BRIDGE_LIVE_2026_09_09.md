@@ -1505,3 +1505,39 @@ bytes from a structured bridge-stopped response if the failure repeats. A ready
 result can precede the already reviewed zero-selection policy; no new build,
 installation or release gate is needed. No profile/save/history/Cloud filesystem
 content was accessed.
+
+### Sea Glass zero passed after read-only startup
+
+The user relaunched and prepared the Sea Glass option on the unchanged fifteenth
+installation. Fresh exact running-process verification passed. The prepared
+read-only diagnostic revalidated release/source/owned installation and authenticated
+health/manifest, then made one event GET: **HTTP 200, 1,692 response bytes**, exact
+Sea Glass option ready, no bridge error, **0.528 seconds** for the event exchange
+(**0.629 seconds** total). No POST or game input occurred in that check.
+Result: `/private/tmp/sts-seaglass-startup-read-live-20260909-result.json`, SHA-256
+`7ee235349e7bb9a1747be83acb02ee5ae397b4264d98a09cd9e80fc60ddd7e23`.
+This demonstrates successful startup on the same binary in a fresh process. It
+does not identify the previous failure: exchange timing includes client pacing,
+so native initialization duration and a frame-work timeout remain unproven.
+
+With the exact option freshly verified, the unchanged reviewed zero-card policy
+then selected `OROBAS.pages.INITIAL.options.SEA_GLASS`, explicitly **confirmed zero
+cards**, and selected Proceed. `card_add_v2` resolved with `operation: add`, empty
+`selected_cards` and a `committed` Confirm receipt. Native task/deck checks verified
+the empty selection and unchanged baseline deck. All **three actions reconciled**:
+two parent and one child attempted/accepted/reconciled, one completed card child,
+zero item children, five event reads. A separate fresh map read passed with one
+candidate. Diagnostics: `parent_ready`, `child_ready`, `parent_ready`, `map_ready`.
+Policy time: **0.712 seconds**. Parent effects remain `unverified`.
+Result: `/private/tmp/sts-seaglass-zero-live-after-startup-20260909-result.json`, SHA-256
+`fc20941a3ab3108fd1d17e39b32cd35e99f72ae3bb1eaab8bcf659c3d4abea59`.
+
+This gives representative live acceptance to zero-selection confirmation after
+removing inferred grid-fit admission. It does not yet demonstrate nonzero native
+holder selection or every layout. **Three-card selection is next**, using the same
+reviewed policy with `--count 3`; its 96 completed checks/review remain applicable.
+A fresh Profile 3 test run avoids re-obtaining the already owned Sea Glass relic;
+enter a room from the map normally, run `ancient OROBAS SEA_GLASS`, close the console
+and leave the option untouched. The same installed release remains active; cleanup
+is pending after the batch. No profile/save/history/Cloud filesystem content was
+accessed, and no uncertain mutation was retried.

@@ -136,15 +136,19 @@ passed in 371.191 seconds**, including **7,896 native assertions**, 125 host tes
 450 C#/Python cases (388 native), 809 shared checks, reproducible packaging and
 owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-n2fi2egq`.
 The **fifteenth installation is active**, installed state
-`1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`, awaiting a fresh
-Profile 3 Sea Glass setup for a **read-only startup check**. The corrected-release
-retry stopped on its first event read with `invalid_response`, **zero actions**,
-and a stopped listener; the relic option remained untouched. The user then quit
-normally. Fresh stopped-process/closed-port and unchanged owned-install checks
-passed. The same validated build remains installed; no live input has been sent
-on it. The raw first frame was not retained, so initialization exceptions and the
-500 ms frame-work timeout are hypotheses, not established causes. The next check
-records bounded response shape/timing before further changes.
+`1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`.
+**Sea Glass zero-card selection passed**: the 15-card grid admitted, Confirm
+returned an empty result with unchanged deck, and all three actions reconciled
+through a fresh actionable map in **0.712 seconds**. Three-card selection is next;
+the same package remains installed and cleanup is pending after the batch.
+
+A preceding fresh-process attempt on this same release stopped before any action
+with `invalid_response`. After normal quit and verified stopped state, one read-only
+startup check succeeded: HTTP 200, 1,692 bytes, exact Sea Glass option ready,
+0.528 seconds for the paced event exchange. No binary or timeout change was made.
+The earlier startup failure remains unexplained; the measured exchange includes
+client pacing and does not establish native initialization duration or prove a
+frame-work timeout. The successful run then exercised the reviewed zero-card policy.
 
 Both HeftyTablet branches passed on preceding release `c73fde6c`: choose added
 **Cruelty plus Injury** (1.436 seconds); Skip added **Injury only** (1.006 seconds).
@@ -155,7 +159,8 @@ The add-card adapter still required computed whole-grid fit. That prerequisite i
 now removed, while exact grid/holder/card/control ownership, native clickability,
 legality, bounded input and task/deck outcomes remain checked. Focused reward
 surface checks passed 283 assertions; optional-event checks passed 379. Independent
-semantic review found no blockers. Live Sea Glass acceptance remains pending.
+semantic review found no blockers. Sea Glass zero now has representative live
+acceptance; partial/full selection remains pending.
 
 The **fourteenth installation is cleaned up**: normal quit, exact quarantine/purge
 and **429 unchanged base files with zero overlays** passed before source edits and

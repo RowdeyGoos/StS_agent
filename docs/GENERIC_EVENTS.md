@@ -603,9 +603,10 @@ without inferred scroll dimensions or whole-grid viewport fit. Grid/holder/card/
 hitbox identity, animation state, Confirm ownership and native task/deck outcome
 checks remain enforced. This also permits zero-selection Confirm on a larger grid.
 The initial Sea Glass live attempt exposed the leftover layout prerequisite and
-stopped before any card input; its correction has focused fixture evidence, with
-live acceptance still pending. See the
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sea-glass-zero-stopped-before-child-admission).
+stopped before any card input. The corrected **Sea Glass zero-selection path has
+live acceptance**: explicitly confirmed empty result, unchanged deck and fresh map.
+Partial/full selection remains pending. See the
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sea-glass-zero-passed-after-read-only-startup).
 
 Optional behavior is enabled only by an explicit event context. Existing positive
 selection versions, standalone card contracts and their limits remain unchanged.

@@ -14,8 +14,8 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending after read-only startup experiment; game quit normally, exact process stopped and listener closed; same installation retained",
-    "live_input_sent": false,
+    "cleanup": "pending normal quit after live batch; Sea Glass zero passed on the same installation",
+    "live_input_sent": true,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
     "pre_install_runtime": "passed: fresh exact game process stopped and bridge port closed",
@@ -53,6 +53,47 @@
       "seconds": 0.694,
       "status": "failed",
       "user_visible_setup": "Sea Glass relic option, untouched"
+    },
+    {
+      "case": "Sea Glass read-only fresh-process startup",
+      "event_read_seconds": 0.528,
+      "http_status": "HTTP/1.1 200 OK",
+      "read_only": true,
+      "response_bytes": 1692,
+      "result_path": "/private/tmp/sts-seaglass-startup-read-live-20260909-result.json",
+      "result_sha256": "7ee235349e7bb9a1747be83acb02ee5ae397b4264d98a09cd9e80fc60ddd7e23",
+      "status": "passed"
+    },
+    {
+      "case": "Orobas/SeaGlass zero",
+      "event": {
+        "child_accepted": 1,
+        "child_attempted": 1,
+        "child_episodes": 1,
+        "child_reconciled": 1,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 5,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 3
+      },
+      "map_handoff": {
+        "candidate_count": 1,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-seaglass-zero-live-after-startup-20260909-result.json",
+      "result_sha256": "fc20941a3ab3108fd1d17e39b32cd35e99f72ae3bb1eaab8bcf659c3d4abea59",
+      "seconds": 0.712,
+      "selected_cards": [],
+      "status": "passed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",
