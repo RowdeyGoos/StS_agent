@@ -3,7 +3,7 @@
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": true,
+    "current_package_installed": false,
     "current_package_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
@@ -14,13 +14,18 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after live testing",
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "cleanup": "passed: normal quit, exact quarantine/purge, 429 unchanged base files and zero overlays",
+    "generated_files_removed": 4,
     "live_input_sent": true,
     "mods_parent_created": true,
+    "overlay_count": 0,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
     "pre_install_runtime": "passed: fresh exact game process stopped and bridge port closed",
+    "quarantine_state_sha256": "a3f7500c77db6cd4f98b4e3dcf80002327145fbd9c201a864f6dcbee7a42476f",
     "state_sha256": "265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1",
-    "status": "installed"
+    "status": "cleaned"
   },
   "live_results": [
     {
@@ -99,6 +104,39 @@
       "seconds": 1.006,
       "selected_card": null,
       "status": "passed"
+    },
+    {
+      "case": "Orobas/SeaGlass zero",
+      "diagnosis": "Reward adapter GridGeometry requires computed whole-grid fit and exact layout dimensions before admitting even zero-selection Confirm.",
+      "diagnostics": [
+        "parent_ready",
+        "prepare_geometry"
+      ],
+      "event": {
+        "child_accepted": 0,
+        "child_attempted": 0,
+        "child_episodes": 0,
+        "child_reconciled": 0,
+        "code": "unsupported_state",
+        "completed_card_children": 0,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 1,
+        "parent_attempted": 1,
+        "parent_reconciled": 0,
+        "reads": 258,
+        "schema_version": 1,
+        "status": "failed",
+        "total_attempted": 1
+      },
+      "map_handoff": {
+        "status": "not_attempted"
+      },
+      "result_path": "/private/tmp/sts-seaglass-zero-live-20260909-result.json",
+      "result_sha256": "94fc6792fc1584068b0830ed104199fbb90287a8f2a2285520d1ef60b05076cd",
+      "seconds": 17.358,
+      "status": "failed",
+      "user_visible_setup": "Card-selection grid with 15 cards"
     }
   ],
   "release_manifest_sha256": "c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57",

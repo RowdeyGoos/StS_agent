@@ -135,12 +135,15 @@ The offline increments above are packaged in corrected release
 passed in 370.071 seconds**, including 7,788 native assertions, 125 host tests,
 450 C#/Python cases (388 native), 809 shared bridge checks, reproducible packaging
 and owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-_el21wpf`.
-The **fourteenth installation is active**, installed state
+The **fourteenth installation is cleaned up**, original installed state
 `265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1`. HeftyTablet choose passed: **Cruelty** plus **Injury**,
 three reconciled actions and a fresh actionable map in **1.436 seconds**.
 **Skip also passed**: Injury only, three reconciled actions and a fresh actionable
-map in **1.006 seconds**. The same package remains installed for the remaining
-live batch; Sea Glass zero-selection is next and cleanup is pending.
+map in **1.006 seconds**. The package was subsequently used for Sea Glass. Sea Glass zero-selection stopped at `prepare_geometry` after the
+parent option was accepted; **no card selection or Confirm was sent**. The user
+confirmed the expected 15-card grid. The reward adapter still requires computed
+whole-grid fit. Normal quit, exact quarantine/purge and **429 unchanged base files
+with zero overlays** passed. The corrected add-card adapter is being validated.
 
 The thirteenth installation is cleaned up. Its first HeftyTablet read stopped with
 `invalid_response` and zero actions; pinned metadata exposed a results hook that

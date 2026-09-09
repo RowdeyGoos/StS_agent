@@ -1383,3 +1383,39 @@ this test makes no pool/color claim. Enter a room from the map normally, invoke
 the console command, close the console and leave the relic option untouched.
 No further build/install is needed; the accepted release is unchanged. This policy
 has not yet run live. Separate policy preparation/review times were not measured.
+
+### Sea Glass zero stopped before child admission
+
+The user confirmed readiness, and fresh running-process, release/source/owned
+installation and authenticated health/manifest checks passed. The reviewed policy
+accepted `OROBAS.pages.INITIAL.options.SEA_GLASS` once. The selector could not be
+admitted: diagnostic `prepare_geometry`, followed by bounded `unsupported_state`
+after **17.358 seconds / 258 event reads**. Parent attempted/accepted/reconciled
+**1/1/0**; child episodes and actions **zero**. No card selection or Confirm was
+sent, no child outcome was verified and no map check ran. The user confirmed a
+card-selection grid with **15 cards**. No uncertain input was retried.
+
+Source inspection identifies the admission boundary in
+`GenericEventV7RewardAdapter.TryPrepareSurface`: exact offered models, native
+holder/control identities, initial visibility/enabled state and foreground checks
+pass before `GridGeometry.TryBind`. That remaining geometry helper demands computed
+whole-grid fit and bit-identical inferred dimensions. This is an unnecessary
+prerequisite for native holder input or zero-selection Confirm, analogous to the
+previously removed deck-removal layout prerequisite. The result does not identify
+which individual dimension failed. Correction should retain exact grid/holder/card
+identity, native legality, bounded input, task/deck outcome checks and cleanup.
+
+Result: `/private/tmp/sts-seaglass-zero-live-20260909-result.json`, SHA-256
+`94fc6792fc1584068b0830ed104199fbb90287a8f2a2285520d1ef60b05076cd`.
+The fourteenth installation is stopped for this test and remains installed,
+awaiting user-confirmed normal quit and exact owned cleanup before source changes.
+The earlier HeftyTablet passes retain their original release evidence. No
+profile/save/history/Cloud filesystem content was accessed.
+
+The user then quit normally. Exact owned quarantine moved installation state
+`265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1` to
+`a3f7500c77db6cd4f98b4e3dcf80002327145fbd9c201a864f6dcbee7a42476f`.
+Purge removed four generated files and left the campaign absent. Base verification
+passed **429 unchanged files**, SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`, with zero overlays.
+The fourteenth installation is **closed and cleaned up** before source edits.
