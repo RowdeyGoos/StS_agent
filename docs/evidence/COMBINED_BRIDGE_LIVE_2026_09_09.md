@@ -1567,3 +1567,52 @@ Profile 3 run, enter a room from the map normally, run `ancient OROBAS SEA_GLASS
 close the console and leave the relic option untouched. The same release remains
 installed; cleanup is pending after the batch. No uncertain mutation was retried
 and no profile/save/history/Cloud filesystem content was accessed.
+
+### Sea Glass fifteen-card selection passed
+
+The user prepared a fresh Sea Glass option on the unchanged release and fifteenth
+installation. Fresh exact running-process, release/source/owned package and
+authenticated health/manifest checks passed. The unchanged reviewed policy ran
+with `--count 15`, selected every advertised slot **0 through 14** once, then
+explicitly Confirmed and selected Proceed. All fifteen cards were unupgraded.
+`card_add_v2` resolved with exactly those selected originals and fifteen selected
+receipts followed by one committed Confirm receipt. Native effect checks preserved
+the baseline and verified every appended card. Exact card keys are retained in the
+bound result below.
+
+All **18 actions reconciled**: parent attempted/accepted/reconciled **2/2/2** and
+child **16/16/16**, one completed card child, zero item children, **125 event reads**.
+A fresh core-map read passed with two candidates. Policy time: **9.617 seconds**.
+Diagnostics remained parent-ready/child-ready/parent-ready/map-ready; parent effects
+remain `unverified`. The test establishes a full selection on this allocated grid,
+not universal layout/viewport coverage or grant provenance.
+Result: `/private/tmp/sts-seaglass-fifteen-live-20260909-result.json`, SHA-256
+`35f614c88241cf9c005b3745d3b88e3674a9e96542df79d8b1a2680e0a283aed`.
+
+Sea Glass now has **zero, partial (three) and full (fifteen)** live acceptance.
+The same bridge remains installed for the next family, **Tanx/Claws**, starting
+with zero transformations. Cleanup remains pending after the live batch. No
+uncertain mutation was retried and no profile/save/history/Cloud filesystem content
+was accessed.
+
+Claws policy `/private/tmp/sts-claws-live-20260909.py`, SHA-256
+`f3017dddcefb463b45ca896b09ac748a6628027e8b4bf4b8677f7b42f5783750`, passed **105 frozen-view checks** and
+independent semantic review with no blockers. It reuses the existing unified
+client/source/state/authentication checks, generic event host and map verifier.
+The exact parent key is `TANX.pages.INITIAL.options.CLAWS`, established by pinned
+Tanx `RelicOption<Claws>(INITIAL)` metadata. It requires `card_transform_v3`, min
+zero/max six, preview-confirm mode and a complete eligible domain sufficient for
+the requested count. Counts zero/three/six are supported. Below six it sends one
+explicit preview request; at six it requires the native preview. It confirms once,
+requires exact selected-original identities and matching action reconciliation,
+one completed child and a fresh map. Public result payloads do not expose replacement
+names, so none are claimed by the policy. Native preview/task/effect checks remain
+responsible for exact replacement verification.
+
+**Zero transformations is the next live case**: explicit Preview then Confirm,
+empty selected result and unchanged deck, with the native empty transform command
+required by the implemented contract. Use a fresh Profile 3 run, normal map-room
+entry, `ancient TANX CLAWS`, console closed and relic option untouched. The policy
+has not yet run live. No source/build/install change is needed; current release
+and installed state remain unchanged. Separate policy preparation/review times
+were not measured.

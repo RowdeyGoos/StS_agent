@@ -25,13 +25,14 @@ now live-demonstrated three menus with choose/Skip/choose, final dismissal and m
 now have offline original-preview and exact-effect coverage for the WoodCarvings
 Bird/Torus interaction shape; Bird also passed live with exact preview, verified
 transformation and a fresh core map. [Mixed card/item sets](GENERIC_EVENTS.md#implemented-offline-mixed-carditem-reward-sets)
-now have unreleased offline implementation for Lost Coffer's card-plus-potion
+now have packaged offline implementation for Lost Coffer's card-plus-potion
 shape and other bounded interleavings. Ancient entry/dialogue and optional
-Sea Glass/Claws selectors now also have unreleased offline implementation.
+Sea Glass/Claws selectors are packaged. Sea Glass has zero/partial/full live
+acceptance; Claws remains pending. See [current evidence](STATUS.md).
 [Choose-one cards and bundles](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles)
-now have unreleased offline support for LeadPaperweight/MassiveScroll and ScrollBoxes.
+now have packaged offline support for LeadPaperweight/MassiveScroll and ScrollBoxes.
 [Inactive combat layouts and result acknowledgment](GENERIC_EVENTS.md#implemented-offline-inactive-combat-layouts-and-result-acknowledgment)
-now have unreleased offline support: PunchOff/Nab-shaped Injury plus relic pickup,
+now have packaged offline support: PunchOff/Nab-shaped Injury plus relic pickup,
 and Darv/PandorasBox-style results confirmation. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-offline-optional-card-offers-and-one-appended-grant)
 now also have unreleased offline support for HeftyTablet's choose/Skip plus Injury
 shape; grant provenance remains unverified. Embedded combat execution and

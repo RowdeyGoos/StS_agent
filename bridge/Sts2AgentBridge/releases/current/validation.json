@@ -14,7 +14,7 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after live batch; Sea Glass zero and three passed",
+    "cleanup": "pending normal quit after live batch; Sea Glass zero, three and fifteen passed",
     "live_input_sent": true,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
@@ -137,6 +137,113 @@
         {
           "key": "TREMBLE",
           "slot": 2,
+          "upgrade_level": 0
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "Orobas/SeaGlass fifteen",
+      "event": {
+        "child_accepted": 16,
+        "child_attempted": 16,
+        "child_episodes": 1,
+        "child_reconciled": 16,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 125,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 18
+      },
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-seaglass-fifteen-live-20260909-result.json",
+      "result_sha256": "35f614c88241cf9c005b3745d3b88e3674a9e96542df79d8b1a2680e0a283aed",
+      "seconds": 9.617,
+      "selected_cards": [
+        {
+          "key": "SETUP_STRIKE",
+          "slot": 0,
+          "upgrade_level": 0
+        },
+        {
+          "key": "TREMBLE",
+          "slot": 1,
+          "upgrade_level": 0
+        },
+        {
+          "key": "IRON_WAVE",
+          "slot": 2,
+          "upgrade_level": 0
+        },
+        {
+          "key": "PERFECTED_STRIKE",
+          "slot": 3,
+          "upgrade_level": 0
+        },
+        {
+          "key": "SHRUG_IT_OFF",
+          "slot": 4,
+          "upgrade_level": 0
+        },
+        {
+          "key": "UNRELENTING",
+          "slot": 5,
+          "upgrade_level": 0
+        },
+        {
+          "key": "COLOSSUS",
+          "slot": 6,
+          "upgrade_level": 0
+        },
+        {
+          "key": "HEMOKINESIS",
+          "slot": 7,
+          "upgrade_level": 0
+        },
+        {
+          "key": "FORGOTTEN_RITUAL",
+          "slot": 8,
+          "upgrade_level": 0
+        },
+        {
+          "key": "RUPTURE",
+          "slot": 9,
+          "upgrade_level": 0
+        },
+        {
+          "key": "ONE_TWO_PUNCH",
+          "slot": 10,
+          "upgrade_level": 0
+        },
+        {
+          "key": "BARRICADE",
+          "slot": 11,
+          "upgrade_level": 0
+        },
+        {
+          "key": "DEMON_FORM",
+          "slot": 12,
+          "upgrade_level": 0
+        },
+        {
+          "key": "JUGGERNAUT",
+          "slot": 13,
+          "upgrade_level": 0
+        },
+        {
+          "key": "PYRE",
+          "slot": 14,
           "upgrade_level": 0
         }
       ],
