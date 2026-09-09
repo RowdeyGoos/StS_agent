@@ -45,7 +45,10 @@ namespace names do not denote separately installed mods.
 Transformation now uses direct native input for every eligible allocated holder.
 The test-only card16 restriction is removed; exact holder/model ownership,
 native legality, preview membership, deferred input and effect checks remain.
+Generic single/multi-upgrade selectors now also accept allocated holders beyond
+the viewport, retaining native clickability and exact preview/effect checks.
 This does not support cards without allocated holders or certify every selector.
+The upgrade extension is tested offline and awaits its representative live case.
 
 ## Development checks
 

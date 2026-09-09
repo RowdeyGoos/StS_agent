@@ -12,7 +12,7 @@ owns the latest operational result and [roadmap](../ROADMAP.md) owns priorities.
 | Ordinary option pages and Proceed | Generic native control; Dense Vegetation continuation live | Longer chains and other branches need evidence |
 | Item rewards | Singleton potion/relic children in native fixtures; Potion Courier/Ransack potion collection live | Broader relic/caller evidence and multiple-offer sets |
 | Add cards | Positive variable counts up to eight in fixtures; Cheese/Gorge two-of-eight live | Other callers/domains/counts are not all live-proven |
-| Upgrade cards | Fixed counts 1–8, exact preview mapping and native-to-Python fixtures; Smith single upgrade live | Multi-upgrade live evidence, variable counts and other selector layouts |
+| Upgrade cards | Fixed counts 1–8, exact preview mapping and allocated off-screen holder selection in native-to-Python fixtures; Smith single upgrade live | Generic off-screen and multi-upgrade live evidence, variable counts and unallocated holders |
 | Remove cards | Positive variable counts up to eight, preview confirmation and exact remaining-deck reconciliation in native fixtures | Live caller evidence, optional selection and unallocated holders |
 | Transform cards | Fixed counts and positive variable counts up to eight in G7 fixtures; Aroma/Let Go fixed-one live | Variable-count live evidence, optional selection and unallocated holders |
 | Optional/zero selection and repeated choices | Unsupported by the current generic implementation | Cancellation, bounds and loop ownership need explicit semantics |

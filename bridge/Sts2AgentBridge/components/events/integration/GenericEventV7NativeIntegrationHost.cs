@@ -38,6 +38,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
     };
     private static readonly Dictionary<string, (string Name, int Count, int Domain, bool Manual, bool Creation, bool Completion, bool Click, bool Preview)> MultiCases = new()
     {
+        ["U_ALLOCATED"] = ("HELD_OUT_MULTI", 2, 20, false, false, false, true, false),
         ["U_FIRST"] = ("FIRST_MULTI", 2, 5, false, false, false, false, false),
         ["U_ANOTHER"] = ("ANOTHER_MULTI", 2, 5, true, false, false, false, false),
         ["U_HELD_OUT"] = ("HELD_OUT_MULTI", 2, 5, false, false, false, false, false),
@@ -59,8 +60,8 @@ internal static partial class GenericEventV7NativeIntegrationHost
         bool multiUpgrading = MultiCases.TryGetValue(args[0], out var multiConfig);
         bool removing = RemovalCases.TryGetValue(args[0], out var config);
         bool adding = RewardCases.TryGetValue(args[0], out var rewardConfig);
-        if (!multiUpgrading && !removing && !adding && !new[] { "FIRST_EVENT", "ANOTHER_EVENT", "HELD_OUT_EVENT", "DELAYED" }.Contains(args[0])) return 2;
-        var upgrade = removing || adding || multiUpgrading ? null : new Program.Fixture(args[0], delayed: args[0] == "DELAYED");
+        if (!multiUpgrading && !removing && !adding && !new[] { "FIRST_EVENT", "ANOTHER_EVENT", "HELD_OUT_EVENT", "DELAYED", "ALLOCATED_UPGRADE" }.Contains(args[0])) return 2;
+        var upgrade = removing || adding || multiUpgrading ? null : new Program.Fixture(args[0], delayed: args[0] == "DELAYED", domain: args[0] == "ALLOCATED_UPGRADE" ? 20 : 2);
         var removal = removing ? new Program.RemovalFixture(config.Name, config.Min, config.Max, config.Domain,
             delayedCreation: config.Creation, delayedCompletion: config.Completion) : null;
         var reward = adding ? new Program.RewardFixture(rewardConfig.Name, rewardConfig.Min, rewardConfig.Max, rewardConfig.Domain,
@@ -77,6 +78,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             manual: multiConfig.Manual, delayedCreation: multiConfig.Creation, delayedCompletion: multiConfig.Completion,
             deferredClick: multiConfig.Click, deferredPreview: multiConfig.Preview) : null;
         if (multi is not null && args[0] == "U_PARTIAL_EFFECT") multi.PartialEffect = true;
+        if (args[0] is "ALLOCATED_UPGRADE" or "U_ALLOCATED") Program.LimitUpgradeViewport();
         using var fixture = (IDisposable?)upgrade ?? (IDisposable?)removal ?? (IDisposable?)reward ?? multi!;
         var session = upgrade?.Session ?? removal?.Session ?? reward?.Session ?? multi!.Session;
         var player = upgrade?.Player ?? removal?.Player ?? reward?.Player ?? multi!.Player;

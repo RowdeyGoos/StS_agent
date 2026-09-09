@@ -577,10 +577,10 @@ def main() -> int:
     native_checks = 0
     if args.native_fixture is not None:
         event_types = set()
-        for scenario in ('FIRST_EVENT', 'ANOTHER_EVENT', 'HELD_OUT_EVENT', 'DELAYED'):
+        for scenario in ('FIRST_EVENT', 'ANOTHER_EVENT', 'HELD_OUT_EVENT', 'DELAYED', 'ALLOCATED_UPGRADE'):
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
             try:
-                result = host.run_event(native.request, provider=host.first_legal,
+                result = host.run_event(native.request, provider=planned(('select:15', 'confirm')) if scenario == 'ALLOCATED_UPGRADE' else host.first_legal,
                                         clock=lambda: 1.0, sleep=lambda _: None)
             finally:
                 native.close()
@@ -595,7 +595,11 @@ def main() -> int:
             assert (end['chosen_calls'], end['select_calls'], end['confirm_calls']) == (2, 1, 1), end
             actions = [v['payload']['action_id'] for v in native.envelopes
                        if v['kind'] == 'action' and v['child']]
-            assert actions == ['select:0', 'confirm'], actions
+            assert actions == ['select:15' if scenario == 'ALLOCATED_UPGRADE' else 'select:0', 'confirm'], actions
+            selected_slot = 15 if scenario == 'ALLOCATED_UPGRADE' else 0
+            assert end['remaining_originals'] == list(range(len(end['baseline_keys'])))
+            assert end['remaining_keys'] == end['baseline_keys']
+            assert end['remaining_levels'] == [level + (i == selected_slot) for i, level in enumerate(end['baseline_levels'])]
             decisions = [v for v in native.envelopes if v['kind'] == 'decision']
             assert any(v['payload'] and v['payload'].get('phase') == 'preview' for v in decisions)
             resolved = [i for i, v in enumerate(decisions)
@@ -747,9 +751,9 @@ def main() -> int:
         multi_baseline_reads = 0
         multi_cases = (('U_FIRST', 2, 5), ('U_ANOTHER', 2, 5), ('U_HELD_OUT', 2, 5),
                        ('U_EIGHT', 8, 9), ('U_DELAYED_CREATION', 2, 5),
-                       ('U_DELAYED_COMPLETION', 2, 5), ('U_DEFERRED', 2, 5), ('U_PARTIAL', 2, 5), ('U_PARTIAL_EFFECT', 2, 5))
+                       ('U_DELAYED_COMPLETION', 2, 5), ('U_DEFERRED', 2, 5), ('U_PARTIAL', 2, 5), ('U_PARTIAL_EFFECT', 2, 5), ('U_ALLOCATED', 2, 20))
         for scenario, count, domain in multi_cases:
-            actions = (tuple(f'select:{i}' for i in range(8, 0, -1)) if count == 8 else ('select:3', 'select:1')) + ('confirm',)
+            actions = (tuple(f'select:{i}' for i in range(8, 0, -1)) if count == 8 else ('select:15', 'select:19') if scenario == 'U_ALLOCATED' else ('select:3', 'select:1')) + ('confirm',)
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
             try:
                 result = host.run_event(native.request, provider=planned(actions), clock=lambda: 1.0, sleep=lambda _: None)

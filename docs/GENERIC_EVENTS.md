@@ -67,6 +67,30 @@ plus missing/disabled/reassigned targets and deferred input. Existing fixed and
 variable transformation regressions remain. A new live all-holder claim has not
 been made; see [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md).
 
+## Implemented: allocated upgrade holders
+
+Generic fixed-count upgrades (1–8) now use their existing direct holder input
+without requiring the entire eligible grid to fit inside the viewport. The exact
+allocated domain remains bounded at 64 cards; unallocated cards are unsupported.
+The adapter retains holder/model/card/hitbox identity, native `_isClickable` and
+hitbox enabled state, settled highlights, exact preview originals (or mapped
+multi-upgrade clones), task results and selected-only deck effects. Multi-upgrade
+input retains its dispatch ticket through the deferred native callback. Scroll
+position and viewport size are not target identity.
+
+The pinned `NCardHolder._GuiInput` checks `_isClickable` before deferring
+`EmitPressed` on that holder. Inert native fixtures exercise slots 0, 15 and 19
+in a 20-card domain, viewport changes, rejected target mutations and deferred
+multi-upgrade selection. Native-to-Python fixtures verify later-card selection,
+exact deck effects, Proceed and map return. These are offline checks, not live
+proof of upgrade behavior below the viewport.
+
+The next representative live interaction is `SapphireSeed`/Eat or
+`AromaOfChaos`/MaintainControl with an allocated upgrade target below the viewport:
+select the advertised target once, verify its exact upgrade preview and effect,
+then use `event-map` to check core map readiness. User setup may establish which
+card is off screen; no general clipping certificate is required.
+
 ## Separate remaining questions
 
 An allocated off-screen holder can accept direct input. A card without an

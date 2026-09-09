@@ -35,7 +35,7 @@ before any new authorized live operation.
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
-| Upgrades | Fixed counts 1–8 in native/controller fixtures; older Smith single-upgrade live |
+| Upgrades | Generic fixed counts 1–8 support allocated holders beyond the viewport in native/controller fixtures; older Smith single-upgrade live, generic off-screen upgrade live check pending |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
 | Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
@@ -57,6 +57,9 @@ The canonical transformation adapter now offers all eligible allocated holders
 using the successful direct-input mechanism. The card16-only restriction is gone;
 identity, legality, preview, deferred-input and completion checks remain.
 Direct-input fixtures exercise different slots and invalid/deferred targets.
+Generic single/multi-upgrade selectors also accept allocated holders beyond the
+viewport, retaining native clickability, exact preview and effect checks. This
+upgrade extension has 20-card native-to-host fixture coverage and awaits live testing.
 The [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md)
 records offline native/host regressions, shared socket handoff and failure cases,
 actual Python clients, reproducible packaging and owned cleanup fixtures.
@@ -80,7 +83,8 @@ multiple selection, deselection, deferred completion, exact task results and
 cleanup have offline coverage. The shared listener fixture resumes the original
 combat action after child completion; failures retain separate counts. See
 [combat choices](COMBAT_CHOICES.md) for scope and limits. This new batch has no
-live result; live testing is deferred until the user is ready for a larger batch.
+live result. The user has requested a combined live batch after the generic
+event work; the roadmap identifies its representative cases.
 
 `combat-map` now carries one victorious combat through gold/card rewards to an
 independently validated actionable map. Standalone `rewards` uses the same bounded
@@ -88,8 +92,8 @@ reward host. Uncollected unsupported rewards stop the flow; defeat never starts
 reward actions. Stage summaries preserve prior combat/choice/reward evidence on
 later failure. Shared-client pacing prevents a fast multi-stage flow from
 exhausting the existing listener burst allowance. Actual shared-socket fixtures
-cover both first-card and native skip-card policies. Native production adapters
-are unchanged; this is new host orchestration, not a new live result.
+cover both first-card and native skip-card policies. The composition uses the existing combat/reward/map adapters; this is host
+orchestration, not a new live result.
 
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused

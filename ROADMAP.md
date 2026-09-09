@@ -6,13 +6,15 @@ process. Completed packets and old campaign instructions are historical referenc
 
 ## Immediate priorities
 
-1. **Build useful features in batches, then test them live.** The user has deferred
-   live testing until a substantial batch is ready. The event-to-core map check
+1. **Test the accumulated features live after generic event work.** The user has
+   requested the combined live batch next. The event-to-core map check
    and [combat discard/exhaust choices](docs/COMBAT_CHOICES.md) with bounded combat
    resume are implemented offline. `combat-map` now also composes combat, gold/card
    rewards and map readiness, with both first-card and skip-card policy fixtures.
-   The next live batch should cover Neow's Fury zero/positive choices, a suitable
-   multi-card caller, both reward policies and event-to-core map return.
+   Generic upgrades now also accept allocated holders beyond the viewport.
+   The next live batch should cover a Sapphire Seed–style off-screen upgrade and
+   event-to-core map return, Neow's Fury zero/positive choices, a suitable
+   multi-card caller and both reward policies.
    Reuse the [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
    evidence for unchanged paths; do not repeat every module.
 2. **Use the generalized transformation path in useful play.** All eligible,
@@ -24,7 +26,7 @@ process. Completed packets and old campaign instructions are historical referenc
    representative caller first. Prioritize observed gaps over hypothetical
    capability combinations or another event-name allowlist.
 4. **Compose supported interactions into longer live runs.** The one-combat
-   reward/map host path now exists offline. After the deferred live batch, test
+   reward/map host path now exists offline. After the combined live batch, test
    remaining handoffs, elite continuation and unsupported surfaces with targeted setups.
    Keep run-completion, branch coverage and strategic-quality claims separate.
 

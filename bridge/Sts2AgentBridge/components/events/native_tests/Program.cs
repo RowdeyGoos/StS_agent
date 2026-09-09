@@ -145,6 +145,7 @@ internal static partial class Program
         PatchOwnership();
         LifecycleTests();
         Check(_checks==745,"preserved predecessor assertion count");
+        UpgradeHolderInputTests();
         MultiUpgradeTests();
         TransformTests();
         ItemTests();
@@ -322,7 +323,7 @@ internal static partial class Program
     internal sealed class Fixture:IDisposable
     {
         internal readonly Player Player=new();
-        internal readonly CardModel[] Cards={new(){IsUpgradable=true},new(){IsUpgradable=true},new(){IsUpgradable=false}};
+        internal readonly CardModel[] Cards;
         internal readonly EventModel Model;
         internal readonly NEventRoom Room=new();internal readonly NMapScreen Map=new();internal readonly NOverlayStack Overlays=new();
         internal readonly NRun Run=new();
@@ -333,8 +334,9 @@ internal static partial class Program
         private readonly NConfirmButton _confirm=new();
         internal GenericEventV7Session Session;
         internal int OptionCalls,SelectCalls,ConfirmCalls;
-        internal Fixture(string name,bool manual=false,int count=1,bool cancelable=false,bool delayed=false,bool shortcut=false,bool wrongRun=false,bool mutateBefore=false,bool faultAfter=false,bool requestDelayed=false,bool effectDelayed=false,bool secondRequest=false,bool mismatchRequest=false,bool catchRequestFault=false,bool mismatchPrefs=false,bool wrongPlayer=false,bool throwingGetter=false)
+        internal Fixture(string name,bool manual=false,int count=1,bool cancelable=false,bool delayed=false,bool shortcut=false,bool wrongRun=false,bool mutateBefore=false,bool faultAfter=false,bool requestDelayed=false,bool effectDelayed=false,bool secondRequest=false,bool mismatchRequest=false,bool catchRequestFault=false,bool mismatchPrefs=false,bool wrongPlayer=false,bool throwingGetter=false,int domain=2)
         {
+            Cards=Enumerable.Range(0,domain+1).Select(i=>new CardModel{IsUpgradable=i<domain}).ToArray();
             for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);}
             Model=name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
             Model.Owner=Player;

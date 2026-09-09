@@ -162,6 +162,79 @@ internal static partial class Program
         {var o=(CardSelectionV1Observation)Child(c);Check(o.Status=="ready"&&o.LegalActions.Contains(action),"multi legal "+action+" was "+o.Status);Check(Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,o.DecisionId,action).Value is CardSelectionV1DispatchReceipt,"multi dispatch "+action);}
         public void Dispose(){Session.Dispose();CardSelectCmd.Selector=null;NRun.Instance=null;NEventRoom.Instance=null;NMapScreen.Instance=null;}
     }
+    // Inert allocated holders below a deliberately small viewport. This tests
+    // admission/dispatch, not native clipping or allocation behavior in a live game.
+    internal static void LimitUpgradeViewport()
+    {
+        var create=NDeckUpgradeSelectScreen.Factory!;
+        NDeckUpgradeSelectScreen.Factory=(cards,prefs,run)=>{
+            var screen=create(cards,prefs,run);
+            var grid=screen.GetNodeOrNull<NCardGrid>("%CardGrid")!;
+            grid.Size=new Vector2(1000,500);
+            for(int i=0;i<grid.CurrentlyDisplayedCardHolders.Count;i++)
+                grid.CurrentlyDisplayedCardHolders[i].Position=new Vector2((i%4)*240,80+(i/4)*340);
+            return screen;
+        };
+    }
+    private static void UpgradeHolderInputTests()
+    {
+        object Child(Fixture f,GenericEventV7Observation c)=>f.Session.ReadCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal).Value;
+        void Act(Fixture f,GenericEventV7Observation c,string action)
+        {
+            var o=(CardSelectionV1Observation)Child(f,c);
+            Check(o.Status=="ready"&&o.LegalActions.Contains(action),"allocated upgrade legal "+action);
+            Check(f.Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,o.DecisionId,action).Value is CardSelectionV1DispatchReceipt,"allocated upgrade dispatch");
+        }
+        foreach(int slot in new[]{0,15,19})
+        {
+            using var f=new Fixture("ALLOCATED_UPGRADE",domain:20);LimitUpgradeViewport();
+            var c=f.Start();Check(c.Status=="child","large upgrade domain admitted");
+            var grid=((NDeckUpgradeSelectScreen)f.Overlays.Screens[0]).GetNodeOrNull<NCardGrid>("%CardGrid")!;
+            grid.Size=new Vector2(800,400);grid.GetNodeOrNull<Control>("%ScrollContainer")!.Position=new Vector2(0,-100);
+            Act(f,c,"select:"+slot);Act(f,c,"confirm");
+            Check(Child(f,c) is CardSelectionV1ResolvedResult,"allocated upgrade exact resolution");
+            Check(f.Cards.Select((card,index)=>card.CurrentUpgradeLevel==(index==slot?1:0)).All(x=>x),"only requested original upgraded");
+            Check(f.SelectCalls==1&&f.ConfirmCalls==1,"allocated upgrade exactly once");
+        }
+        foreach(string mutation in new[]{"unclickable","disabled","hidden","holder","grid","domain","animating"})
+        {
+            using var f=new Fixture("ALLOCATED_MUTATION",domain:20);LimitUpgradeViewport();
+            var c=f.Start();var o=(CardSelectionV1Observation)Child(f,c);
+            var screen=(NDeckUpgradeSelectScreen)f.Overlays.Screens[0];var grid=screen.GetNodeOrNull<NCardGrid>("%CardGrid")!;
+            var h=grid.CurrentlyDisplayedCardHolders[15];
+            switch(mutation){case "unclickable":h.SetClickable(false);break;case "disabled":h.Hitbox.IsEnabled=false;break;case "hidden":h.Visible=false;break;case "holder":h.CardModel=f.Cards[19];break;case "grid":screen.Bind("%CardGrid",new NCardGrid());break;case "domain":grid.CurrentlyDisplayedCardHolders.RemoveAt(19);break;case "animating":grid.IsAnimatingOut=true;break;}
+            f.Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,o.DecisionId,"select:15");
+            Check(f.SelectCalls==0&&f.ConfirmCalls==0,"changed allocated target never dispatched: "+mutation);
+        }
+        using(var f=new Fixture("UNCLICKABLE_ADMISSION",domain:20))
+        {
+            LimitUpgradeViewport();var create=NDeckUpgradeSelectScreen.Factory!;
+            NDeckUpgradeSelectScreen.Factory=(cards,prefs,run)=>{var screen=create(cards,prefs,run);foreach(var h in screen.GetNodeOrNull<NCardGrid>("%CardGrid")!.CurrentlyDisplayedCardHolders)h.SetClickable(false);return screen;};
+            Check(f.Start().Status=="waiting"&&f.SelectCalls==0,"no clickable holder waits without admission");
+            ((NDeckUpgradeSelectScreen)f.Overlays.Screens[0]).GetNodeOrNull<NCardGrid>("%CardGrid")!.CurrentlyDisplayedCardHolders[15].SetClickable(true);
+            var c=f.Session.Read();Check(c.Status=="child","native enable admits selector");Act(f,c,"select:15");Act(f,c,"confirm");
+            Check(Child(f,c) is CardSelectionV1ResolvedResult,"native enabled target resolves");
+        }
+        using(var f=new MultiUpgradeFixture("ALLOCATED_MULTI",2,20,deferredClick:true))
+        {
+            LimitUpgradeViewport();var c=f.Start();Check(c.Status=="child","large multi domain admitted");
+            foreach(int slot in new[]{15,19})
+            {
+                f.Act(c,"select:"+slot);
+                Check(f.Child(c) is CardSelectionV1Observation o&&o.Status=="waiting","allocated deferred input waits");
+                f.Grid.Size=new Vector2(800,400);f.Grid.GetNodeOrNull<Control>("%ScrollContainer")!.Position=new Vector2(0,-500);
+                f.AdvanceClick();
+            }
+            f.Act(c,"confirm");Check(f.Child(c) is CardSelectionV1ResolvedResult&&f.CompletionValid,"allocated multi exact resolution");
+            Check(f.Selected.SequenceEqual(new[]{f.Cards[15],f.Cards[19]})&&f.SelectCalls==2&&f.ConfirmCalls==1,"allocated multi exact originals once");
+        }
+        using(var f=new MultiUpgradeFixture("ALLOCATED_UNCLICKABLE",2,20,deferredClick:true))
+        {
+            LimitUpgradeViewport();var c=f.Start();f.Act(c,"select:15");f.Grid.CurrentlyDisplayedCardHolders[15].SetClickable(false);f.AdvanceClick();
+            Check(f.Child(c) is CardSelectionV1Observation o&&o.Status=="unsupported","deferred native clickability revalidated");
+            Check(f.SelectCalls==1&&f.ConfirmCalls==0&&f.Cards.All(card=>card.CurrentUpgradeLevel==0),"unclickable deferred callback stops before further input or effect");
+        }
+    }
     private static void MultiUpgradeTests()
     {
         foreach(string name in new[]{"FIRST_MULTI","ANOTHER_MULTI","HELD_OUT_MULTI"})

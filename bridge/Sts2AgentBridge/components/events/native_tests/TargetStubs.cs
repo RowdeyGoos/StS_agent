@@ -220,6 +220,9 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
     using MegaCrit.Sts2.Core.Nodes.Cards;
     using MegaCrit.Sts2.Core.Nodes.CommonUi;
     public class NCardHolder : Control { public static float smallScale { get; set; } = 1f;
+        private bool _isClickable=true;
+        public void SetClickable(bool value) => _isClickable=value;
+        protected bool InputClickable => _isClickable;
         private NCard _cardNode=null!; public NCard CardNode {get=>FixtureTrace.Read(this,"card",_cardNode);set=>_cardNode=value;}
         public virtual CardModel CardModel=>CardNode.Model;
     }
@@ -229,7 +232,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
         private CardModel _cardModel=null!; public new CardModel CardModel { get=>FixtureTrace.Read(this,"model",_cardModel);set=>_cardModel=value; }
         private NClickableControl _hitbox=null!; public NClickableControl Hitbox { get=>FixtureTrace.Read(this,"hitbox",_hitbox);set=>_hitbox=value; }
         public Action? Selected { get; set; }
-        public void _GuiInput(InputEventAction _) => Selected?.Invoke();
+        public void _GuiInput(InputEventAction _) { if (InputClickable) Selected?.Invoke(); }
     }
 }
 
