@@ -1,60 +1,52 @@
 {
-  "change": "Combined ancient/event batch: mixed rewards, optional selectors, direct offers/bundles, inactive combat layouts, results acknowledgment and optional offers with one extra grant",
+  "change": "Correct results-screen hook declaration against pinned native metadata; combined ancient/event live batch",
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": false,
-    "current_package_live_tested": true,
+    "current_package_installed": true,
+    "current_package_live_tested": false,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Implementation reviews reused; bounded HeftyTablet live policy independently reviewed by review_event_map with no blockers",
+    "scope": "Results hook/base return correction, exact concrete runtime ownership, mandatory pinned-PE release comparison and local metadata provider independently reviewed by review_event_map; unchanged HeftyTablet policy review reused",
     "status": "passed"
   },
   "installation": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "cleanup": "passed: normal quit, exact quarantine/purge, 429 base files unchanged and zero overlays",
-    "generated_files_removed": 4,
+    "cleanup": "pending normal quit after live testing",
     "live_input_sent": false,
     "mods_parent_created": true,
-    "overlay_count": 0,
-    "pre_install_runtime": "passed: exact game process stopped, local bridge port closed",
-    "quarantine_state_sha256": "1c4c2b979e8a8203bf40bf5a2e52ea0ecf7dd90e469efc87d68d1a37d4efdfa2",
-    "state_sha256": "2645fc0353e50095acd66fedcd789dc9d266a1dd20a527df4c2f4ca0f58a8013",
-    "status": "cleaned"
+    "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
+    "pre_install_runtime": "passed: fresh exact game process stopped and bridge port closed",
+    "state_sha256": "265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1",
+    "status": "installed"
   },
-  "live_results": [
-    {
-      "case": "Neow/HeftyTablet choose",
-      "code": "invalid_response",
-      "diagnosis": "Results ShowScreen declared return type is NCardsViewScreen; hook guard/postfix/stubs incorrectly expected NSimpleCardsViewScreen.",
-      "result_path": "/private/tmp/sts-hefty-choose-live-20260909-result.json",
-      "result_sha256": "4c98d007e8bf0568b28331d6b903f078644abbab2f4f5607d9b2ce0830c8fa79",
-      "seconds": 0.227,
-      "status": "failed",
-      "total_attempted": 0
-    }
-  ],
-  "release_manifest_sha256": "1512ea86fa2b6b445fcae7023379257c13f94b4b180507c3e6afa337f41e555d",
+  "live_results": [],
+  "release_manifest_sha256": "c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57",
   "schema_version": 1,
-  "source_commit": "691cb31ad088140d4fd7c5878ffb9830442d3b8e",
-  "source_inventory_sha256": "a6e2137db87c0c1cdea57c9929ece94e0edf8f46390b991841dbae2f1af3b0b3",
-  "source_state": "All 313 accepted source/test inputs verified byte-for-byte at the recorded commit",
+  "source_commit": "b7d474070b89978747d64f30dae5f76668cbf084",
+  "source_inventory_sha256": "871f6567255b07e3205df1b1bd8a08053022b62ff58d27400e7ef05b90a17a69",
+  "source_state": "All 314 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Release gate 370.564 seconds; separate preparation/review/user-wait times not measured.",
+  "timing_limits": "Release gate 370.071 seconds; integration 225.883 seconds, production build 1.437 seconds and reproducibility build 1.460 seconds. Separate implementation/review/preparation/user-wait times not measured.",
   "validation": {
     "check_groups": 71,
     "event_integration_cases": 450,
+    "focused_metadata_regression": {
+      "negative_cases": 2,
+      "negative_inputs": "Prior failed-release production postfix and prior inaccurate native fixture each rejected against pinned game metadata",
+      "path": "/private/tmp/sts-results-return-metadata-evidence.json",
+      "positive_cases": 1,
+      "sha256": "3bf214e7dca5b91dd432bebc4c9fcc39d410254572ea79d4713cb0a6ab074757"
+    },
     "host_tests": 125,
     "native_assertions": 7788,
     "production_native_integration_cases": 388,
-    "release_gate_seconds": 370.564,
-    "scope": "Final combined release gate including reproducible production build, package and owned installation/cleanup fixtures",
-    "scratch": "/private/tmp/sts-bridge-0j2oddyi",
+    "release_gate_seconds": 370.071,
+    "scope": "Final combined release gate, including declared native signature comparison, reproducible production build, package and owned installation/cleanup fixtures",
+    "scratch": "/private/tmp/sts-bridge-_el21wpf",
     "shared_bridge_checks": 809
   }
 }

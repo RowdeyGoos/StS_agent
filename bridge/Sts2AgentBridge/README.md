@@ -88,7 +88,8 @@ Once behavior is stable, run:
 ```
 
 This runs the integrated checks, verifies a reproducible production binary, checks
-its compiled entry point/dependency surface, and exercises package mutations and
+its compiled entry point/dependency surface, compares the results-screen hook and
+fixture declaration against pinned game PE metadata, and exercises package mutations and
 owned installation/cleanup. It derives `apps/bridge/package/identity.json` from
 the candidate once; package and operational tools share that binding.
 

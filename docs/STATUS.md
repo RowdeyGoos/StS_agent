@@ -129,22 +129,27 @@ projects. Independent semantic review found no blockers. Evidence:
 `/private/tmp/sts-offer-v2-boundary` (shared checks), and
 `/private/tmp/sts-bridge-izl7m9bm` (production build). The retained release is unchanged.
 
-The offline increments above are now packaged in the current release
-`1512ea86fa2b6b445fcae7023379257c13f94b4b180507c3e6afa337f41e555d`, with all
-313 source/test inputs verified at `691cb31`. Its final **71 release groups passed
-in 370.564 seconds**, including 7,788 native assertions, 125 host tests, 450
-C#/Python cases (388 native), 809 shared bridge checks, reproducible packaging and
-owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-0j2oddyi`.
-The **thirteenth installation is cleaned up**, originally installed state
-`2645fc0353e50095acd66fedcd789dc9d266a1dd20a527df4c2f4ca0f58a8013`.
-The first HeftyTablet live read stopped with `invalid_response` and zero actions;
-the listener stopped. The native results hook incorrectly expected the concrete
-screen return type instead of the declared `NCardsViewScreen` base. The signature
-correction retains exact concrete runtime ownership and adds a pinned-metadata
-release check. Normal quit, exact quarantine/purge and **429 unchanged base files
-with zero overlays** passed. A corrected release is being prepared; HeftyTablet
-choose/Skip live acceptance remains pending. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#heftytablet-first-observation-stopped-thirteenth-installation-cleaned)
-retains the failed attempt and cleanup bindings.
+The offline increments above are packaged in corrected release
+`c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57`, with all
+314 accepted source/test inputs verified at `b7d4740`. Its final **71 release groups
+passed in 370.071 seconds**, including 7,788 native assertions, 125 host tests,
+450 C#/Python cases (388 native), 809 shared bridge checks, reproducible packaging
+and owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-_el21wpf`.
+The **fourteenth installation is active**, installed state
+`265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1`, awaiting manual
+Profile 3 setup. Fresh stopped-process/closed-port checks and read-only installed
+package/configuration verification passed; no live input has been sent on it.
+
+The thirteenth installation is cleaned up. Its first HeftyTablet read stopped with
+`invalid_response` and zero actions; pinned metadata exposed a results hook that
+expected the concrete screen return instead of declared `NCardsViewScreen`.
+The correction preserves exact concrete runtime ownership. The release gate now
+compares the production postfix and fixture declaration with actual pinned game
+metadata; the corrected positive and both prior-binary negatives passed separately.
+Normal quit, exact quarantine/purge and **429 unchanged base files with zero overlays**
+passed before reinstalling. HeftyTablet choose/Skip live acceptance remains pending.
+The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#fourteenth-installation-results-return-correction)
+retains the correction, failed attempt, cleanup and current installation bindings.
 
 The preceding live-accepted release was
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source

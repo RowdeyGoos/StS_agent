@@ -1278,3 +1278,39 @@ verification passed **429 unchanged files**, SHA-256
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`, with **zero
 overlays**. The thirteenth installation is **closed and cleaned up**. No
 profile/save/history/Cloud filesystem content was accessed.
+
+### Fourteenth installation: results-return correction
+
+Corrected release `c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57`
+is bound to source commit `b7d474070b89978747d64f30dae5f76668cbf084`:
+all **314 source/test inputs** match the accepted manifest byte-for-byte. DLL
+SHA-256: `356f0e18d6b5f2db99fdd8351cab533a69441ee34216b9dd62985c61671454c3`.
+All **71 release groups passed in 370.071 seconds**, including 450 C#/Python cases
+(388 native), 809 shared checks, reproducibility, the mandatory pinned-PE signature
+comparison, and package/owned installation-cleanup fixtures. Integration took
+225.883 seconds; production and reproducibility builds took 1.437 and 1.460 seconds.
+Evidence: `/private/tmp/sts-bridge-_el21wpf`.
+
+Focused surface checks passed 174 assertions. The metadata regression accepted
+the corrected production/fixture pair and rejected each prior incorrect production
+postfix or fixture against pinned game metadata. Evidence:
+`/private/tmp/sts-results-return-metadata-evidence.json`, SHA-256
+`3bf214e7dca5b91dd432bebc4c9fcc39d410254572ea79d4713cb0a6ab074757`.
+Independent semantic review found no blockers. An initial release invocation
+stopped before checks because its metadata-helper link lay outside the maintained
+source boundary; a local metadata-only provider corrected that prerequisite.
+The final gate used the stable corrected sources. The previous package was verified
+and preserved at
+`/private/tmp/sts-unified-bridge-release-before-results-return-fix-20260909`.
+
+Fresh stopped-process/closed-port checks passed. Installation succeeded with state
+`265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1`.
+Read-only installed package/configuration verification passed without reading the
+credential. The **fourteenth installation is active**, awaiting manual Profile 3
+launch and `ancient NEOW HEFTY_TABLET` after normal map-room entry. Direct relic
+options are allowed; initial dialogue is not required. The policy remains unchanged
+at SHA-256 `906bfff7db565c74ddcb1caef8c2f852ab42e8de585c378379cc23150a381a07`;
+its 32 completed frozen-view checks and semantic review are reused.
+No live input has been sent on this installation. Cleanup is pending after testing.
+No profile/save/history/Cloud filesystem content was accessed. Separate
+implementation, review, preparation and user-wait times were not measured.
