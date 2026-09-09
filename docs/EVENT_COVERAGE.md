@@ -4,6 +4,8 @@ Updated 2026-09-09. This page records family and caller evidence. It is not a
 production event allowlist: supported shared interactions are discovered at runtime.
 [Generic events](GENERIC_EVENTS.md) explains the architecture; [status](STATUS.md)
 owns the latest operational result and [roadmap](../ROADMAP.md) owns priorities.
+The [all-event research map](EVENT_INTERACTION_MAP.md) classifies native interaction
+requirements across all 68 pinned event types; static findings are not live acceptance.
 
 ## Interaction families
 
@@ -16,9 +18,13 @@ owns the latest operational result and [roadmap](../ROADMAP.md) owns priorities.
 | Enchant cards | Fixed single-card `card_enchant_v1`; Sapphire Seed Plant and Nourish/Sown on Defend slot 5 of 24, exact effect, Proceed and core map passed live | Other enchantments/callers unverified; all offered candidates must be unenchanted; stacking/replacement, multi/optional counts unsupported |
 | Remove cards | Positive variable counts up to eight, preview confirmation and exact remaining-deck reconciliation in native fixtures | Live caller evidence, optional selection and unallocated holders |
 | Transform cards | Fixed counts and positive variable counts up to eight in G7 fixtures; Aroma/Let Go fixed-one live | Variable-count live evidence, optional selection and unallocated holders |
-| Optional/zero selection and repeated choices | Unsupported by the current generic implementation | Cancellation, bounds and loop ownership need explicit semantics |
-| Embedded event combat | Metadata/shared API evidence only | Combat handoff and event resumption are not accepted |
-| Custom/ancient layouts | Limited static inventory | Caller/layout connections and action semantics remain unproved |
+| Optional/zero selection | Unsupported by the current generic implementation | Concrete pickup callers: Tanx/Claws and Orobas/SeaGlass; true cancellation remains a separate unconfirmed caller question |
+| Repeated option pages | Ordinary distinct pages are implemented; structural stamps reject identical transitions/revisits | AbyssalBaths, EndlessConveyor and SlipperyBridge need bounded progress semantics |
+| Deck changes around selectors | Current children bind the pre-option deck and reconcile after the whole option completes | Curse-before-selection and removal-plus-addition callers require composite effect boundaries |
+| Event card rewards and multiple reward entries | Generic item child accepts only one potion or relic; Cheese uses a different add-grid surface | CardReward/SpecialCardReward, multiple entries and nested pickup/selector ownership remain gaps |
+| Embedded event combat | Five concrete static callers; BattlewornDummy requests resumption, four callers do not | Combat handoff and event resumption are not accepted |
+| Custom/ancient layouts and terminal flows | Static caller/surface map now identifies ancient and combat layouts, CrystalSphere, FakeMerchant, Trial popup and TheArchitect | Runtime adapters/admission and terminal outcomes remain unsupported; see the research map |
+| Other card surfaces | Static pickup callers identify ChooseACard, bundle and result screens; WoodCarvings uses FromDeckGeneric before transforming | These request/screen pairs are not covered by current generic card children |
 
 All eligible allocated transform holders now use direct input in the unified
 bridge. Native fixtures cover different slots, including 0, 15 and 19 in a
@@ -36,8 +42,9 @@ a new behavior question rather than repeat the geometry investigation.
 The [accepted census](archive/phase-1/research/PHASE_1_EVENT_COVERAGE_CENSUS_GENERIC_RESULT.md)
 contains 68 concrete types, including ancient/deprecated types. That count does
 not establish the reachable pool or runtime eligibility. The rows below retain
-positive caller evidence; all unlisted types and untested branches remain
-unclassified. No event has complete all-branch evidence.
+positive caller evidence from earlier inspection, fixtures or live tests. The new
+research map supplies broader static classification; unlisted or untested paths
+have no additional runtime acceptance. No event has complete all-branch evidence.
 
 | Event | Observed path | Evidence limit |
 | --- | --- | --- |

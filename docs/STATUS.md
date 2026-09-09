@@ -144,7 +144,10 @@ identities remain in [release history](../bridge/Sts2AgentBridge/releases/histor
 
 The user prioritized generic event coverage before longer-run orchestration.
 Single-card enchantment now has live acceptance through Sapphire Seed Plant and
-Nourish. Choose the next concrete event blocker from a representative native caller.
+Nourish. The [all-event research map](EVENT_INTERACTION_MAP.md) now accounts for
+all 68 pinned types, with branch families, concrete blockers and ancient pickup
+paths. Use that static inventory to plan the next shared feature; it adds no live
+acceptance or production capability.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
 from remaining native coverage. Reuse completed evidence when choosing the next
@@ -152,10 +155,14 @@ observable behavior to test.
 
 ## Current exclusions
 
-Enchantment stacking/replacement and multiple-card enchantment, generic-event
-optional/zero selection, variable upgrades, multiple-item sets, incomplete holder
-coverage, custom/repeated interactions and event combat remain generic gaps.
-Variable transformation has offline evidence but no variable-count live case.
+The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in repeated
+page progress, deck changes around selectors, event card/multiple rewards,
+ancient/combat layouts, embedded combat, multi-card enchantment, optional/sequential
+pickup selectors, generic-deck transformation and custom/terminal surfaces.
+Unallocated holder support remains limited. Variable upgrades, true native
+cancellation and enchantment stacking/replacement remain unsupported but have no
+confirmed caller in the inspected event/immediate-pickup paths. Variable
+transformation has offline evidence but no variable-count live case.
 Elite continuation and complete room/run composition remain broader open evidence
 targets. A successful fixed-one event does not certify all selectors or deck sizes.
 

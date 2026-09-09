@@ -149,11 +149,18 @@ scrolling/rebinding or another supported native mechanism; inspect that specific
 case before designing infrastructure. Other selector families may still impose
 layout restrictions and need their own evidence.
 
-Further work includes optional/zero selection and cancellation, variable-count
-upgrading, multiple-item reward sets, custom/repeated choices and event combat.
-Choose the next family from a real representative caller or observed play blocker.
-Positive variable transformation already works offline; the inspected live caller
-used a fixed count. Do not invent a live test from the selector API alone.
+The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
+for all 68 pinned types and concrete callers for the remaining work. Repeated-page
+progress, deck changes around selectors, event card/multiple rewards, ancient and
+combat layouts, multi-enchantment, optional/sequential pickup children and custom
+surfaces are distinct gaps. WoodCarvings uses a generic deck selector before a
+fixed-result transformation; it does not enter the supported transform screen.
+
+Choose the next feature from those source-backed callers. Positive variable
+transformation already works offline; Claws supplies a concrete optional zero-to-six
+caller through Tanx, with ancient layout and zero-selection prerequisites. No
+inspected event/immediate pickup establishes variable-count upgrades or true native
+cancellation. Keep those speculative extensions separate from demonstrated gaps.
 
 For semantic detail use [G7](archive/phase-1/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md), the
 [v10 input experiment](archive/phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md) and the
