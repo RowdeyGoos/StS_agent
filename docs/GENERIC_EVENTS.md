@@ -120,9 +120,13 @@ by an appended Ultimate Strike); CombineDefends follows the same shape with
 Ultimate Defend. Native fixtures cover immediate and delayed callbacks,
 pre-selector plus post-removal additions, exact survivors and invalid suffixes;
 producer-to-Python cases check separate grant metadata through Proceed/map.
-These are inert fixtures, not execution of Amalgamator's native body. The next
-live case is CombineStrikes with at least three eligible Strikes,
-select exactly two, confirm their preview, then observe the grant and fresh map.
+These fixtures are inert. Separately, the September 9 live CombineStrikes test
+passed with five eligible cards: upgraded Strikes at slots 0 and 1 were removed
+after exact preview, one upgraded Ultimate Strike was reported with unverified
+parent provenance, and Proceed returned to a fresh actionable core map. All five
+actions reconciled. CombineDefends, other callers and off-screen removal remain
+untested live. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#tenth-installation-native-removal-without-whole-grid-geometry)
+retains the exact release and result.
 Multiple grants, interleaved/prepended additions, other post-selector operations
 and changes to surviving cards remain unsupported.
 

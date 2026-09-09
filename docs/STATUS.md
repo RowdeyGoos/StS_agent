@@ -19,8 +19,12 @@ checks remain enforced. Derived native hitboxes remain supported.
 All **71 combined release groups** passed in **161.665 seconds**, including
 **4,687 native assertions**, **221 event integration cases**, reproducible
 packaging and owned installation/cleanup fixtures. The package is published at
-`/private/tmp/sts-unified-bridge-release` and installed for the tenth live campaign.
-No live input has been sent on this release; manual Profile 3 setup is pending.
+`/private/tmp/sts-unified-bridge-release`; the tenth live campaign is cleaned up.
+The live Amalgamator/CombineStrikes test passed: two upgraded Strikes (slots 0
+and 1 of five eligible cards) removed after exact preview, one upgraded Ultimate
+Strike reported separately, then a fresh actionable core map. All five actions
+reconciled. Normal quit, owned quarantine/purge and the 429-file base check passed;
+no campaign remains installed.
 
 The ninth live campaign used release
 `5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d`.
@@ -30,11 +34,10 @@ confirmed all five Strikes were visible without scrolling. Normal quit, owned
 cleanup and the 429-file base check passed. The
 [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#ninth-installation-corrected-removal-hitboxes)
 retains that failure and the subsequent layout correction. Off-screen removal
-has fixture coverage only; the upcoming case uses the ordinary Amalgamator setup.
+has fixture coverage only; the successful case used the ordinary Amalgamator setup.
 
-The next case is **Amalgamator/CombineStrikes**: select two of at least three
-eligible Strikes, confirm removal, observe Ultimate Strike and verify a fresh
-core map. The `card_remove_v2` child verifies exact selected removals and unchanged
+The passed **Amalgamator/CombineStrikes** case demonstrates one fixed-two removal
+followed by an appended grant. The `card_remove_v2` child verifies selected removals and unchanged
 ordered survivors, separately reporting the appended card as an unverified parent
 effect. Strict standalone removal v1 remains unchanged.
 
@@ -46,7 +49,7 @@ hitbox defect was subsequently reproduced offline, but the coarse diagnostic
 does not establish that it caused the live stop. Normal quit, owned cleanup and
 the 429-file base check passed. The
 [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eighth-installation-removal-followed-by-one-appended-grant)
-retains the failed attempt and correction; Amalgamator live acceptance remains open.
+retains the failed attempt and correction at their original artifact identities.
 See [generic semantics](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
 and the [release record](../bridge/Sts2AgentBridge/releases/current/validation.json).
 
@@ -117,7 +120,7 @@ before any new authorized live operation.
 | Repeated generic event pages | Fresh controls and completed callbacks permit repeated keys/text; Abyssal Baths passed two Lingers through Exit/Proceed and fresh core map live |
 | Appended cards before selectors | First owned request binds appended cards while preserving the original deck; Grave/Confront SoulsPower preview/effect and map passed live; Trial caller tests remain open |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
-| Removal | Generic v2 supports counts up to eight and one appended parent grant, with exact survivor checks and separate unverified grant metadata; Amalgamator live acceptance remains open |
+| Removal | Generic v2 supports counts up to eight and one appended parent grant, with exact survivor checks and separate unverified grant metadata; Amalgamator/CombineStrikes fixed-two removal, upgraded Ultimate Strike observation and fresh core map passed live |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
 | Enchantment | Shared fixed-single `card_enchant_v1`; Sapphire Seed/Sown on Defend and Grave/Confront/SoulsPower on Neow's Fury passed exact preview/effect and fresh core map live |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
@@ -196,8 +199,8 @@ Nourish. The [all-event research map](EVENT_INTERACTION_MAP.md) now accounts for
 all 68 pinned types, with branch families, concrete blockers and ancient pickup
 paths. Repeated-page progress is the first implemented increment from that map,
 with live acceptance through Abyssal Baths. Append-only additions before selectors
-passed Grave/Confront. Removal followed by one appended grant is packaged and
-installed for Amalgamator testing; event card/multiple rewards remain a concrete gap;
+passed Grave/Confront. Removal followed by one appended grant passed
+Amalgamator/CombineStrikes live; event card/multiple rewards remain a concrete gap;
 the static inventory itself adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior

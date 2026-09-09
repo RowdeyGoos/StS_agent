@@ -18,8 +18,8 @@ process. Completed packets and old campaign instructions are historical referenc
    now have live acceptance through Abyssal Baths' two-Linger path and fresh map.
    Append-only additions before selectors have live acceptance through Grave of
    the Forgotten/Confront and verified SoulsPower selection. Removal followed by
-   one appended grant is implemented with a versioned child contract; retain
-   Amalgamator/CombineStrikes for live acceptance. Next address event card/multiple rewards; narrow
+   one appended grant has live acceptance through Amalgamator/CombineStrikes,
+   exact two-card removal, separate grant observation and fresh core map. Next address event card/multiple rewards; narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.

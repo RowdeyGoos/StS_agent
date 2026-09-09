@@ -12,8 +12,9 @@ and positive IL callsite offsets, plus immediate relic interactions.
 Implementation update, later on September 9: [repeated ordinary pages](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages)
 and [pre-selector append increment](GENERIC_EVENTS.md#implemented-appended-cards-before-a-selector)
 now have representative live acceptance. [Removal followed by one appended grant](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
-has a versioned implementation and inert fixture coverage; broader post-selector
-deck changes remain gaps.
+now has representative live acceptance through Amalgamator/CombineStrikes,
+including exact removal and fresh map return; grant provenance remains unverified.
+Broader post-selector deck changes remain gaps.
 The inventory and gap matrix below retain the original research comparison at
 `4d3516f`; their source hashes and gap annotations are not repinned to later code.
 Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.

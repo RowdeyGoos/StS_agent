@@ -820,3 +820,47 @@ Manual Profile 3 setup is pending; no live input has been sent on this release.
 Installation remains active and cleanup follows the attempt and normal quit.
 Native and integration checks took 19.399 and 78.143 seconds respectively;
 implementation, review, packaging and user wait were not separately timed.
+
+After the user confirmed readiness, exact installed-release validation and
+authenticated health/manifest checks passed. The bridge selected advertised
+Combine Strikes (`choose:0`) and admitted a fixed-two `card_remove_v2` child with
+**five eligible candidates**. It selected **STRIKE_IRONCLAD, upgrade level 1,
+slots 0 and 1**, paused for eight seconds on their exact preview, then confirmed
+once. The native child verified both selected originals absent, unchanged ordered
+survivors, closed selector and successful native task/option completion.
+
+The resolved child reported exactly one separate parent addition:
+`ULTIMATE_STRIKE`, upgrade level **1**, no enchantment, status **unverified**.
+This records the actual appended descriptor; it does not independently certify
+automatic grant provenance. Proceed returned to an independently checked
+fresh actionable core map. No map node was selected.
+
+| Result | Observed value |
+| --- | --- |
+| Event status | resolved |
+| Parent attempted / accepted / reconciled | 2 / 2 / 2 |
+| Child attempted / accepted / reconciled | 3 / 3 / 3 |
+| Child episodes / completed card children | 1 / 1 |
+| Event reads | 18 |
+| Map reads / candidates | 1 / 2 |
+| Elapsed client flow | 10.078 seconds, including eight-second preview pause |
+| Native diagnostics | parent_ready → child_ready → parent_ready → map_ready |
+
+The sanitized result is
+`/private/tmp/sts-amalgamator-live-20260909-layout-result.json`. Credentials were
+cleared and not recorded. No UI card selection or mutation retry was used. The
+final parent effect label remains `unverified` for Proceed; the completed
+verified removal child remains counted. This demonstrates one fixed-two
+Amalgamator/CombineStrikes removal-plus-grant path, not CombineDefends, arbitrary
+counts, other callers, off-screen removal or a full run. Normal quit was requested
+for owned cleanup.
+
+The user confirmed normal quit. The manager independently verified stopped
+process/closed listener and exact ownership. Quarantine returned state
+`b1e8b8807acab62773612764a416b6bcc9a54de755e8d8ea4dac825d653ace20`;
+purge returned the campaign to **absent**, removing four generated files.
+Post-cleanup base verification passed: **429 unchanged files, zero overlays**,
+projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+All ten installations are cleaned up. No profile/save/history/Cloud filesystem
+data was accessed. The live flow took 10.078 seconds; user setup/quit wait and
+documentation were not separately timed.

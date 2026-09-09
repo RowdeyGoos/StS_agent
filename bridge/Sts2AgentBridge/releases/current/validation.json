@@ -5,14 +5,14 @@
     "automatic_addition_provenance_verified": false,
     "autonomous_full_run": false,
     "changed_surviving_cards_supported": false,
-    "current_package_installed": true,
-    "current_package_live_tested": false,
+    "current_package_installed": false,
+    "current_package_live_tested": true,
     "maximum_post_removal_grants": 1,
     "multiple_post_removal_grants_supported": false,
     "native_fixture_objects_are_inert": true,
     "offscreen_removal_live_tested": false,
     "other_post_selector_additions_supported": false,
-    "removal_parent_grant_live_tested": false
+    "removal_parent_grant_live_tested": true
   },
   "evidence_reused": {
     "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
@@ -25,12 +25,51 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending_live_attempt_and_normal_quit",
-    "live_input_sent": false,
+    "cleanup": "passed: owned quarantine/purge; 429 unchanged base files, zero overlays",
+    "live_input_sent": true,
+    "quarantine_state_sha256": "b1e8b8807acab62773612764a416b6bcc9a54de755e8d8ea4dac825d653ace20",
     "state_sha256": "a8b6ba4456681d5a8c824f0c84826a21446c0aeddee5207b0be1de85fee1d496",
-    "status": "installed"
+    "status": "absent"
   },
-  "next_live_case": "Amalgamator/CombineStrikes with at least three eligible Strikes: select two, confirm their exact removal preview, observe Ultimate Strike in separate unverified parent_additions, and independently verify a fresh core map. Native game body has not been executed by these fixtures.",
+  "live_result": {
+    "child_accepted": 3,
+    "child_attempted": 3,
+    "child_reconciled": 3,
+    "completed_card_children": 1,
+    "domain_count": 5,
+    "event": "Amalgamator/CombineStrikes",
+    "event_reads": 18,
+    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#tenth-installation-native-removal-without-whole-grid-geometry",
+    "map_candidates": 2,
+    "map_reads": 1,
+    "parent_accepted": 2,
+    "parent_additions": {
+      "cards": [
+        {
+          "enchantment": null,
+          "key": "ULTIMATE_STRIKE",
+          "upgrade_level": 1
+        }
+      ],
+      "status": "unverified"
+    },
+    "parent_attempted": 2,
+    "parent_reconciled": 2,
+    "seconds": 10.078,
+    "selected": [
+      {
+        "key": "STRIKE_IRONCLAD",
+        "slot": 0,
+        "upgrade_level": 1
+      },
+      {
+        "key": "STRIKE_IRONCLAD",
+        "slot": 1,
+        "upgrade_level": 1
+      }
+    ],
+    "status": "passed"
+  },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       801974,
@@ -59,7 +98,7 @@
   "source_state": "All 294 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release gate: 161.665 seconds; native run: 19.399 seconds; event integration: 78.143 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. No live input has been sent on this release.",
+  "timing_limits": "Final release gate: 161.665 seconds; native run: 19.399 seconds; event integration: 78.143 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. Successful live flow: 10.078 seconds, including an eight-second preview pause.",
   "validation": {
     "check_groups": 71,
     "corrections": "An initial new fixture assertion used a set method on its List; corrected to exact sequence equality before focused execution. Focused native execution passed 4,687 checks; the single final combined release gate passed all 71 groups.",
