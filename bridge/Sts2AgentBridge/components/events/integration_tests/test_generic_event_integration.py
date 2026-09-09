@@ -29,6 +29,7 @@ class Exchange:
         self.transform = native and scenario.startswith(('T_', 'V_'))
         self.variable_transform = native and scenario.startswith('V_')
         self.item = native and scenario.startswith('I_')
+        self.repeated_page = native and scenario.startswith('P_')
         self.process = subprocess.Popen([dotnet, str(fixture), scenario],
                                         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, bufsize=0)
@@ -84,6 +85,8 @@ class Exchange:
                          'transform_batches', 'transform_completion_valid')
         if self.variable_transform:
             expected += ('preview_holder_count', 'selected_originals')
+        if self.repeated_page:
+            expected = ('body', 'map_open', 'chosen_calls', 'linger_calls', 'control_calls')
         assert tuple(value) == expected, value
         self.telemetry.append({k: value[k] for k in value if k != 'body'})
         response = bytearray(base64.b64decode(value['body'], validate=True))
@@ -578,6 +581,38 @@ def main() -> int:
 
     native_checks = 0
     if args.native_fixture is not None:
+        for scenario in ('P_REPEAT', 'P_REVISIT', 'P_DELAY', 'P_FAULT', 'P_STALE', 'P_DANGER', 'P_BOUND'):
+            native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
+            def repeat_provider(view):
+                p = view.payload
+                if scenario != 'P_BOUND' and p['parent_reconciled'] >= 3 and p['phase'] != 'proceed':
+                    return 'choose:1'
+                return host.first_legal(view)
+            try:
+                result = host.run_event(native.request, provider=repeat_provider,
+                                        clock=lambda: 1.0, sleep=lambda _: None)
+            finally:
+                native.close()
+            success = scenario in ('P_REPEAT', 'P_REVISIT', 'P_DELAY', 'P_DANGER')
+            assert (result['status'] == 'resolved') == success, (scenario, result)
+            expected_calls = 3 if scenario == 'P_DANGER' else 12 if scenario == 'P_BOUND' else 5 if success else 2
+            end = native.telemetry[-1]
+            assert end['chosen_calls'] == native.posts == expected_calls, (scenario, end, result)
+            assert all(n <= 1 for n in end['control_calls']), end
+            assert end['map_open'] == success and result['child_episodes'] == 0, result
+            assert result['parent_reconciled'] == (expected_calls if success or scenario == 'P_BOUND' else 1), result
+            if success:
+                completed_history(result, native, 0)
+                assert result['effects'] == 'unverified', result
+            if scenario in ('P_REPEAT', 'P_REVISIT', 'P_DELAY'):
+                pages = [e['parent'] for e in native.envelopes if e['kind'] == 'decision' and e['parent']['status'] == 'ready']
+                loops = [p for p in pages if p['candidates'][0]['stable_id'] == 'LINGER']
+                assert len(loops) >= 2 and len({p['decision_id'] for p in loops}) == len(loops), loops
+                assert end['linger_calls'] == 2, end
+            if scenario == 'P_DELAY':
+                assert any(e['kind'] == 'decision' and e['parent']['status'] == 'waiting' for e in native.envelopes)
+            checks += 1
+            native_checks += 1
         event_types = set()
         for scenario in ('FIRST_EVENT', 'ANOTHER_EVENT', 'HELD_OUT_EVENT', 'DELAYED', 'ALLOCATED_UPGRADE'):
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)

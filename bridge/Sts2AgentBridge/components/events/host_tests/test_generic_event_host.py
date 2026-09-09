@@ -321,6 +321,25 @@ class GenericHostTests(unittest.TestCase):
         self.assertEqual(result['code'], 'invalid_response')
         self.assertEqual(calls, ['parent'])
 
+    def test_repeated_key_requires_fresh_decision_and_completed_history(self):
+        rows, history = [], []
+        for i in range(4):
+            rows += [('GET', env(parent=parent(decision=D[i], history=list(history), pa=i, pr=i, proceed=i == 3))),
+                     ('POST', receipt(D[i]))]
+            history.append(prior(D[i], 'map_handoff' if i == 3 else 'option_transition'))
+        rows += [('GET', env(parent=parent('complete', history=history, pa=4, pr=4)))]
+        result = run(Script(rows))
+        self.assertEqual((result['status'], result['parent_reconciled']), ('resolved', 4))
+        for mutation in ('decision', 'unreconciled'):
+            bad = copy.deepcopy(rows)
+            if mutation == 'decision':
+                bad[2][1]['parent']['decision_id'] = D[0]
+            else:
+                bad[2][1]['parent'].update(prior_results=[], parent_reconciled=0)
+            script = Script(bad)
+            self.assertEqual(run(script)['code'], 'invalid_response')
+            self.assertEqual(len(script.calls), 3)  # One POST only; no repeat input.
+
     def test_read_budget_shared_and_bounded(self):
         calls = []
         def request(method, route, body):

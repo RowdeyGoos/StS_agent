@@ -5,6 +5,9 @@ namespace Sts2AgentBridge.Successors.GenericEventV7;
 
 public interface IGenericEventV7NativeAdapter : IDisposable
 {
+    // While a parent action is pending, "parent" requires its owned Chosen
+    // task to have succeeded and all child/overlay work to have settled.
+    // Option identities stay stable for the lifetime of each native control.
     GenericEventV7NativeCapture Capture();
     void Dispatch(object candidateIdentity, string nonce, string decisionId, string actionId);
     IGenericEventV7ChildSession CreateChild(object admissionIdentity);

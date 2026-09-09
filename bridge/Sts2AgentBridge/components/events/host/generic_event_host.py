@@ -188,7 +188,6 @@ class _Controller:
         self.reads = 0
         self.nonce = None
         self.used: set[str] = set()
-        self.reserved: set[str] = set()
         self.parent_receipts: list[tuple[str, str]] = []
         self.parent_history: list[dict[str, Any]] = []
         self.last_proceed = False
@@ -333,7 +332,7 @@ class _Controller:
                 _require(all(type(candidate[k]) is bool for k in ('enabled', 'is_dangerous', 'is_proceed')))
                 _require(candidate['discovery'] == ('none' if candidate['is_proceed'] else 'deferred'))
                 _require(candidate['is_proceed'] == (p['phase'] == 'proceed'))
-                if candidate['enabled'] and not candidate['is_dangerous'] and stable not in self.reserved:
+                if candidate['enabled'] and not candidate['is_dangerous']:
                     expected.append(candidate['action_id'])
             _require(p['legal_actions'] == expected and len(expected) >= 1)
             if p['phase'] == 'proceed':
@@ -543,7 +542,6 @@ class _Controller:
             raise _Stop('invalid_provider')
         if self.child is None:
             candidate = next(c for c in p['candidates'] if c['action_id'] == action)
-            self.reserved.add(candidate['stable_id'])
             self.last_proceed = candidate['is_proceed']
         response = self.call('POST', decision, action)
         _require(response['parent'] is None and response['child'] == self.child)

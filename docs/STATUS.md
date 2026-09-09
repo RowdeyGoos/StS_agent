@@ -9,6 +9,12 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
+Repeated ordinary event pages are implemented: completed owned callbacks plus
+fresh native controls admit identical option keys/text and revisits. The focused
+event suite passed 15 groups in 119.911 seconds, including 4,204 native assertions
+and 214 integration cases. This is offline evidence; the Abyssal Baths two-Linger
+live test remains open. See [generic semantics](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages).
+
 Generic single-card enchantment is implemented and packaged in the current
 accepted release: `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0`.
 All 71 combined release groups passed in 172.194 seconds, including
@@ -68,6 +74,7 @@ before any new authorized live operation.
 | Combat discard/exhaust choices | Optional zero, fixed and variable counts up to eight in native/host fixtures; Neow's Fury zero and two-card choices plus combat resume live-demonstrated; exhaust/fixed-count callers remain fixture-only |
 | Rest and shop | Standalone heal/Proceed, older Smith upgrade-one, one bounded shop purchase/close/map path live-demonstrated |
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
+| Repeated generic event pages | Fresh controls and completed callbacks permit repeated keys/text; native-to-host two-repeat/Exit/Proceed/map fixtures pass; live acceptance remains open |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
@@ -146,8 +153,9 @@ The user prioritized generic event coverage before longer-run orchestration.
 Single-card enchantment now has live acceptance through Sapphire Seed Plant and
 Nourish. The [all-event research map](EVENT_INTERACTION_MAP.md) now accounts for
 all 68 pinned types, with branch families, concrete blockers and ancient pickup
-paths. Use that static inventory to plan the next shared feature; it adds no live
-acceptance or production capability.
+paths. Repeated-page progress is the first implemented increment from that map,
+with offline acceptance. Deck changes around selectors are the next concrete gap;
+the static inventory itself adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
 from remaining native coverage. Reuse completed evidence when choosing the next
@@ -155,8 +163,8 @@ observable behavior to test.
 
 ## Current exclusions
 
-The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in repeated
-page progress, deck changes around selectors, event card/multiple rewards,
+The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in
+deck changes around selectors, event card/multiple rewards,
 ancient/combat layouts, embedded combat, multi-card enchantment, optional/sequential
 pickup selectors, generic-deck transformation and custom/terminal surfaces.
 Unallocated holder support remains limited. Variable upgrades, true native

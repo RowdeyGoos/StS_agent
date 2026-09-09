@@ -140,12 +140,12 @@ internal static class Program {
         public void Dispose(){DisposeCalls++;OnDispose?.Invoke();if(FailCleanup&&DisposeCalls==1)throw new Exception();}
     }
     private sealed class Parent : IGenericEventV7NativeAdapter {
-        private readonly object _option=new(),_admission=new(),_screen=new();
+        private readonly object _option=new(),_proceed=new(),_admission=new(),_screen=new();
         private readonly Fixture _item=new(false);private bool _chosen,_done,_map;
         internal bool FailParent;
         public GenericEventV7NativeCapture Capture()=>_map?new("map",true,Array.Empty<GenericEventV7NativeOption>()):
             _chosen&&!_done?new("child",false,Array.Empty<GenericEventV7NativeOption>(),_screen,new GenericEventV7ItemAdmission(_admission,1)):
-            new("parent",_done,new[]{new GenericEventV7NativeOption(_option,_done?"PROCEED":"ITEM","Choice",true,false,_done)});
+            new("parent",_done,new[]{new GenericEventV7NativeOption(_done?_proceed:_option,_done?"PROCEED":"ITEM","Choice",true,false,_done)});
         public void Dispatch(object identity,string nonce,string decision,string action){if(_done)_map=true;else _chosen=true;}
         public IGenericEventV7ChildSession CreateChild(object identity)=>new GenericEventV7ItemChildSession(Nonce,_item);
         public void CompleteParent(){if(FailParent)throw new Exception();_done=true;}

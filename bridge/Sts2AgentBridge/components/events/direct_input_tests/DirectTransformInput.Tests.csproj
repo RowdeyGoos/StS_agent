@@ -8,6 +8,7 @@
     <DefineConstants>GENERIC_EVENT_RELEASE_TEST_SEAM</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../native_tests/RepeatedPageFixtures.cs" />
     <Compile Include="OffscreenFixtures.cs" />
     <Compile Include="../diagnostics/GenericEventDiagnosticCode.cs" />
     <Compile Include="../diagnostics/GenericEventDiagnosticCodec.cs" />

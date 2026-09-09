@@ -32,6 +32,33 @@ parent effects or a fresh core map decision. The shared client's `event-map`
 flow separately checks that core decision and preserves the original event summary
 on success or failure. See the [bridge guide](../bridge/Sts2AgentBridge/README.md).
 
+## Implemented: repeated ordinary option pages
+
+The parent can revisit option keys and accept identical keys/text on consecutive
+pages. Pinned `AbyssalBaths.Linger` allocates new options, and the ordinary
+`NEventRoom.SetOptions` path clears and rebuilds the native option controls.
+Those control identities establish a new presentation; text or flag changes alone
+do not. The owned `Chosen` task must succeed and child/overlay work must settle
+before an ordinary transition reconciles. All controls on a dispatched page,
+including unchosen ones, are retired for the session. A page retaining any retired
+control waits within the existing pending-read bound and cannot receive input.
+
+Each reconciled choice advances the decision identity. The shared host reserves
+that decision rather than the localization key, while retaining receipt/history
+checks and replay rejection. Read/apply identity and legality revalidation, danger
+masking, 12 parent actions, 52 total actions and all existing read/time bounds
+remain. This is an expansion of admitted native behavior with the same wire
+shape and decision/action semantics; repeated pages require the updated bundled
+host. An `option_transition` verifies callback/page progress, not arbitrary HP or
+gold effects. No uncertain action is retried.
+
+Inert native-to-host fixtures exercise Immerse → Linger twice → Exit → Proceed/map,
+identical text, revisited keys, delayed/failed callbacks, stale/partially replaced
+controls, dangerous choices and action limits. Existing item-child cases also
+reuse a parent key across separate completed children. These are offline checks.
+The next live acceptance case is Abyssal Baths with enough HP for two legal
+Linger choices; Endless Conveyor and Slippery Bridge remain separate caller tests.
+
 ## Implemented: all eligible transform holders
 
 The successful v10 experiment directly selected an allocated off-screen card.
@@ -151,7 +178,7 @@ layout restrictions and need their own evidence.
 
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
-progress, deck changes around selectors, event card/multiple rewards, ancient and
+progress is now implemented above; deck changes around selectors, event card/multiple rewards, ancient and
 combat layouts, multi-enchantment, optional/sequential pickup children and custom
 surfaces are distinct gaps. WoodCarvings uses a generic deck selector before a
 fixed-result transformation; it does not enter the supported transform screen.

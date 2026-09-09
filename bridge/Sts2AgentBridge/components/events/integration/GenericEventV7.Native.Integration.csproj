@@ -7,6 +7,8 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../native_tests/RepeatedPageFixtures.cs" />
+    <Compile Include="GenericEventV7RepeatedPageIntegrationHost.cs" />
     <Compile Include="GenericEventV7VariableTransformIntegrationHost.cs" />
     <Compile Include="../native_tests/VariableTransformFixtures.cs" />
     <Compile Include="../native/GenericEventV7ItemState.cs" />

@@ -151,6 +151,7 @@ internal static partial class Program
         TransformTests();
         ItemTests();
         VariableTransformTests();
+        RepeatedPageTests();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)

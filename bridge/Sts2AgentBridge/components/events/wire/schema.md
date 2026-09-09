@@ -1,4 +1,4 @@
-# Generic event v6 wire
+# Generic event v7 wire
 
 GET `/probe/generic-event-v7/public/decision` has no body. POST
 `/probe/generic-event-v7/public/action` is a canonical UTF-8 JSON object with
@@ -25,6 +25,12 @@ Candidates contain `index`, `action_id`, `stable_id`, `rendered_text`, `enabled`
 choice and `none` for Proceed. Counts are monotonic; parent history is an immutable
 prefix of matching accepted receipts, with `option_transition`, `child_completed`
 or `map_handoff` results. Ordinary transitions do not certify HP/gold effects.
+
+`stable_id` is a public option key, not a session-wide action reservation. It can
+reappear on a later page, including with identical text. A settled page with fresh
+native controls receives a fresh decision after the preceding accepted choice
+reconciles. Reused decisions remain forbidden. The bundled host reserves decisions
+rather than option keys; older hosts may reject these newly admitted repeat pages.
 
 An admitted child begins with `ordinal`, `parent_decision_id`, `parent_action_id`,
 `kind`, `contract_version`. Card descriptors (`kind: card_selection`) continue with

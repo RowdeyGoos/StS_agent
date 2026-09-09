@@ -12,15 +12,15 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
     private readonly IGenericEventV7NativeAdapter _native;
     private readonly string _nonce;
     private readonly int _thread = Environment.CurrentManagedThreadId;
-    private readonly HashSet<string> _seenStructures = new(StringComparer.Ordinal);
-    private string _lastStructure = "";
-    private readonly HashSet<string> _chosen = new(StringComparer.Ordinal);
+    // Retire native controls, not localization keys: a settled new page may
+    // legitimately offer the same choice again. Bounded by 8 * 12 controls.
+    private readonly HashSet<object> _retiredOptions = new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _screens = new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _admissions = new(ReferenceEqualityComparer.Instance);
     private readonly List<GenericEventV7PriorResult> _history = new();
     private GenericEventV7NativeCapture? _published;
     private string _decision = "";
-    private string _pendingDecision = "", _pendingAction = "", _pendingStamp = "";
+    private string _pendingDecision = "", _pendingAction = "";
     private bool _pending, _proceed, _unsupported, _complete, _inside, _disposed;
     private int _attempted, _accepted, _reconciled, _episodes, _childAttempted, _childAccepted, _childReconciled, _pendingReads, _reads;
     private IGenericEventV7ChildSession? _card;
@@ -66,6 +66,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         }
         GenericEventV7NativeCapture capture = _native.Capture();
         if (_unsupported || capture.Status == "unsupported") return Stop();
+        if (capture.Status == "parent" && !ValidParent(capture)) return Stop();
         if (_pending)
         {
             if (++_pendingReads > GenericEventV7Limits.MaximumPendingReads) return Stop();
@@ -95,23 +96,29 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             }
             if (capture.Status == "waiting") return Observation("waiting", "waiting");
             if (capture.Status != "parent") return Stop();
-            if (Stamp(capture) == _pendingStamp) return Observation("waiting", "waiting");
+            // A parent capture during a pending choice already requires the
+            // owned native Chosen task to have succeeded. Also require fresh
+            // controls: changed labels/flags alone cannot settle the action.
+            if (capture.Options.Any(x => _retiredOptions.Contains(x.Identity)))
+                return Observation("waiting", "waiting");
             Reconcile("option_transition");
         }
-        if (capture.Status != "parent" || capture.Options.Count is < 1 or > 8) return Stop();
-        var ids = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var option in capture.Options)
-            if (option.Identity is null || option.StableId.Length is < 1 or > 96 || option.StableId.Any(c => c < ' ' || c > '~') ||
-                option.RenderedText.Length == 0 || Encoding.UTF8.GetByteCount(option.RenderedText) > 1024 || option.RenderedText.Any(c => char.IsControl(c) && c != '\n' && c != '\t') || !ids.Add(option.StableId) ||
-                capture.EventFinished != option.IsProceed) return Stop();
-        if (capture.EventFinished && capture.Options.Count != 1) return Stop();
-        string structure = Stamp(capture);
-        if (structure != _lastStructure && !_seenStructures.Add(structure)) return Stop();
-        _lastStructure = structure;
+        if (capture.Status != "parent" || capture.Options.Any(x => _retiredOptions.Contains(x.Identity))) return Stop();
         _published = capture;
         _decision = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
             _nonce + ":" + _attempted + ":" + DecisionStamp(capture)))).ToLowerInvariant();
         return Observation("ready", capture.EventFinished ? "proceed" : "choose_option");
+    }
+    private static bool ValidParent(GenericEventV7NativeCapture capture)
+    {
+        if (capture.Options.Count is < 1 or > GenericEventV7Limits.MaximumCandidates) return false;
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        var identities = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        foreach (var option in capture.Options)
+            if (option.Identity is null || !identities.Add(option.Identity) || option.StableId.Length is < 1 or > 96 || option.StableId.Any(c => c < ' ' || c > '~') ||
+                option.RenderedText.Length == 0 || Encoding.UTF8.GetByteCount(option.RenderedText) > 1024 || option.RenderedText.Any(c => char.IsControl(c) && c != '\n' && c != '\t') || !ids.Add(option.StableId) ||
+                capture.EventFinished != option.IsProceed) return false;
+        return !capture.EventFinished || capture.Options.Count == 1;
     }
     public GenericEventV7ApplyResult Apply(string? decisionId, string? actionId)
     {
@@ -125,7 +132,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             for (int i = 0; i < _published.Options.Count; i++) if (actionId == "choose:" + i) index = i;
             if (index < 0) return Result(decisionId, actionId, "illegal_action");
             GenericEventV7NativeOption selected = _published.Options[index];
-            if (!selected.Enabled || selected.Dangerous || _chosen.Contains(selected.StableId))
+            if (!selected.Enabled || selected.Dangerous)
                 return Result(decisionId, actionId, "illegal_action");
             if (_attempted >= 12 || _attempted + _childAttempted >= 52)
             { _unsupported = true; return Result(decisionId, actionId, "budget_exhausted"); }
@@ -135,8 +142,9 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 recapture.Options.Where((x,i) => !ReferenceEquals(x.Identity,_published.Options[i].Identity)).Any())
             { _unsupported = true; return Result(decisionId, actionId, "unsupported"); }
             _pending = true; _proceed = selected.IsProceed; _pendingReads = 0;
-            _pendingDecision = decisionId!; _pendingAction = actionId!; _pendingStamp = Stamp(_published);
-            _chosen.Add(selected.StableId); _attempted++; _effects = "unverified";
+            _pendingDecision = decisionId!; _pendingAction = actionId!;
+            foreach (var option in _published.Options) _retiredOptions.Add(option.Identity);
+            _attempted++; _effects = "unverified";
             _published = null; _decision = "";
             try { _native.Dispatch(selected.Identity, _nonce, decisionId!, actionId!); }
             catch { _unsupported = true; return Result(decisionId, actionId, "uncertain"); }
@@ -258,7 +266,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             for (int i=0;i<_published.Options.Count;i++)
             {
                 var c = _published.Options[i]; string action = "choose:"+i;
-                bool enabled = c.Enabled && !_chosen.Contains(c.StableId);
+                bool enabled = c.Enabled;
                 candidates.Add(new GenericEventV7Candidate(i,action,c.StableId,c.RenderedText,enabled,c.Dangerous,c.IsProceed));
                 if (enabled && !c.Dangerous) actions.Add(action);
             }

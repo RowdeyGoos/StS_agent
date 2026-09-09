@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
   <ItemGroup>
+    <Compile Include="RepeatedPageFixtures.cs" />
     <Compile Include="VariableTransformFixtures.cs" />
     <Compile Include="../native/GenericEventV7ItemState.cs" />
     <Compile Include="../native/GenericEventV7ItemAdapter.cs" />

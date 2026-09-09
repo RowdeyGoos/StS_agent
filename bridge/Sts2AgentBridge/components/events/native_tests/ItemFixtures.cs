@@ -86,7 +86,7 @@ internal static partial class Program
             if(_kind=="potion"){var model=new PotionModel();model.Id.Entry="OfferedPotion";Offered=model;Reward=new PotionReward{Potion=model,Player=Player,RewardsSetIndex=_index};}
             else{var model=new RelicModel();model.Id.Entry="OfferedRelic";Offered=model;Reward=new RelicReward{Relic=model,Player=Player,RewardsSetIndex=_index};}
             Set=new RewardsSet{Player=Player,DisallowSkipping=true};Set.OfferHandler=Offer;
-            AddOption(new EventOption{TextKey=_name+".ITEM."+ItemCompletions,Callback=async()=>{
+            AddOption(new EventOption{TextKey=_name+".ITEM",Callback=async()=>{
                 _itemOptionCalls++;await Set.Offer();
                 if(_chosen){HasPendingChosen=true;await _chosenGate.Task;HasPendingChosen=false;}
                 if(CancelChosen)throw new OperationCanceledException();if(FaultChosen)throw new InvalidOperationException("chosen fault");

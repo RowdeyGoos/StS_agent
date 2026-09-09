@@ -9,6 +9,12 @@ retain the pinned source identity, scope and validation. The
 contains all 68 types, 105 branch groups, pool references, source method tokens
 and positive IL callsite offsets, plus immediate relic interactions.
 
+Implementation update, later on September 9: [repeated ordinary pages](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages)
+now use completed callbacks and fresh native controls, with offline coverage.
+The inventory and gap matrix below retain the original research comparison at
+`4d3516f`; their source hashes and gap annotations are not repinned to later code.
+Use [coverage](EVENT_COVERAGE.md) for current implementation/live evidence.
+
 ## What the research changes
 
 - **Rewards need more than “multiple items.”** Ordinary events offer card rewards
@@ -19,9 +25,9 @@ and positive IL callsite offsets, plus immediate relic interactions.
   removal events add cards after selection. The current parent binds the earlier
   deck and requires the complete option task to finish before accepting the child
   effect. These are concrete compatibility gaps, even with supported card counts.
-- **Repeated options need a progress model.** Abyssal Baths reuses option IDs;
+- **Repeated options needed a progress model at the research baseline.** Abyssal Baths reuses option IDs;
   Endless Conveyor can revisit a dish; Slippery Bridge eventually uses a `LOOP`
-  suffix. The current structural stamp ignores changed text and rejects revisits.
+  suffix. The baseline structural stamp ignores changed text and rejects revisits.
   Numbered chains such as Colossal Flower or Tablet of Truth are separate
   validation cases, not automatic evidence that a new adapter is necessary.
 - **Ancients expose additional shared selectors through relic pickup effects.**
