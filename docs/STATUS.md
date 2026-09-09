@@ -60,6 +60,30 @@ found no production blockers. Evidence: `/private/tmp/sts-bridge-4u2id5yc`
 (shared bridge), `/private/tmp/sts-bridge-4mw3qegw` (production), and
 `/private/tmp/sts-optional-host-final.log` (final integration).
 
+Two more capabilities are implemented offline: **choose-one offered cards**
+(`card_offer_v1`, native 1–3 choices) and **card bundles** (`bundle_offer_v1`,
+1–5 bundles of 1–8 cards, native preview/Confirm). LeadPaperweight/MassiveScroll
+and ScrollBoxes are the representative Neow callers. Both retain exact model,
+control, task and deck ownership through event/map return. See the
+[contract and limits](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles).
+Add these to the next live batch alongside ancient entry, Sea Glass, Claws and
+mixed reward sets. HeftyTablet's additional grant, Skip, cancellation and nested
+pickup composition remain outside this increment. No live install or launch ran.
+
+Validation: all **15 individual event check groups** passed in **291.307 seconds**,
+including **7,435 native assertions**, **125 host tests**, and **404 C#/Python cases**
+(**342 through native adapters**). The checker's closing source-consistency check
+rejected the run because final hardening edits landed during its snapshot run;
+this is not recorded as a passed final gate. Unchanged results were reused, with
+final affected checks passing **680 native offer assertions**, **44 native/host
+cases**, and **736 shared bridge checks**. Final production build and source
+closure checks passed (build **1.687 seconds**, 308 files / 46 projects).
+Independent semantic review found no remaining blockers. Evidence outputs:
+`/private/tmp/sts-bridge-wxszur_s` (completed snapshot groups),
+`/private/tmp/sts-offers-final` (final native and host fixtures),
+`/private/tmp/sts-offers-boundary` (shared checks), and
+`/private/tmp/sts-bridge-elkbf7uv` (final build). The retained release is unchanged.
+
 The current release is
 `748e3172a886a499342810aec43e86fd0987ce003e7989c9f5ffb1594f52c1d3`, from source
 commit `c531b4c`. It corrected the production event response classifier and reward

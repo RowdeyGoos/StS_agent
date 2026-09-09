@@ -87,6 +87,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
     private static int Main(string[] args)
     {
         if (args.Length != 1) return 2;
+        if (args[0].StartsWith("O_",StringComparison.Ordinal))return RunOffers(args[0]);
         if (args[0].StartsWith("P_", StringComparison.Ordinal)) return RunRepeatedPage(args[0]);
         if (args[0].StartsWith("V_", StringComparison.Ordinal)) return RunVariableTransform(args[0]);
         if (args[0].StartsWith("T_", StringComparison.Ordinal)) return RunTransform(args[0]);

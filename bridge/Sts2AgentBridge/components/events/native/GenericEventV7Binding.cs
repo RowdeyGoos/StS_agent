@@ -54,6 +54,7 @@ internal sealed class GenericEventV7Binding
     internal CardSelectionV1DeckCard[] PreDispatchDeck {get;}
     internal CardSelectionV1DeckCard[] SelectionDeck {get;private set;}
     private bool _selectionDeckBound;
+    internal GenericEventV7OfferAdapter? Offer;
     internal CardSelectorPrefs Prefs;
     internal bool Failed,Closed,ChosenSeen,RequestSeen,ScreenSeen;
     internal Task? ChosenTask;

@@ -605,8 +605,49 @@ payload versions; confirmed histories and exact selected sets remain mandatory.
 Fixtures cover ancient entry, post-pickup dialogue reset, zero/partial/full counts,
 small transform domains, delayed completion, stale input, malformed versions/results
 and lost replies without retry. This is offline evidence, not live acceptance or
-support for every ancient pickup. Bundle/ChooseACard/results screens, full inventory,
+support for every ancient pickup. Results screens, full inventory,
 nested pickups, cancellation and empty candidate domains remain outside this change.
+
+## Implemented offline: choose-one cards and bundles
+
+Two native selection surfaces now compose with the same event parent, including
+ancient dialogue/options and Proceed/map. Representative pinned callers are
+**Neow/LeadPaperweight** and **MassiveScroll** (choose one offered card), and
+**Neow/ScrollBoxes** (choose a bundle). Admission uses the owned request/screen
+chain and native models, without an event or relic allowlist.
+
+| Contract | Native path | Legal flow and bounds |
+| --- | --- | --- |
+| `card_offer_v1` | `FromChooseACardScreen` → `NChooseACardSelectionScreen` | One `choose:i`; native admission accepts 1–3 offers with one card each. `canSkip` must be false. Input waits until more than 350 ms after the native opening timestamp. |
+| `bundle_offer_v1` | `FromChooseABundleScreen` → `NChooseABundleSelectionScreen` | `choose:i` → exact native preview → `confirm`; 1–5 bundles, each containing 1–8 cards. |
+
+The child descriptor has `kind: card_offer`, the matching `contract_version`,
+`offer_count`, ordinal and parent decision/action lineage. The shared descriptor
+and choose-action grammar have capacity for five offers; native direct-card
+admission retains the pinned three-offer limit. Payload fields are `version`,
+`session_nonce`, `status`, `phase`, `decision_id`, `offers`, `legal_actions`,
+`prior_results` and `selected_index`. Each offer contains its `index` and ordered
+`cards` (`slot`, `key`, `upgrade_level`). Ready/resolved payloads retain the exact
+initial domain. Waiting/unsupported payloads expose no legal actions or offers.
+Bundle history records `previewed`, then `collected`; direct choice records
+`collected`. A completed child retains its parent's ownership until Proceed/map.
+
+The adapter retains exact offered models, list order, screen, selector completion
+source, controls/hitboxes and bundle preview card nodes. Native clickability,
+visibility and enabled state gate input. Bundle preview uses the original moved
+card nodes; same-model replacement holders or controls cannot inherit a decision.
+Before completion, selector and request results must identify exactly the chosen
+model or bundle, the real request and Chosen tasks must succeed, the overlay must
+close, and the original deck must be unchanged followed by exactly the selected
+cards in order. Baseline and offer ownership are retained. Partial ordered additions
+and deferred input/tasks wait; unrelated changes, failures or exhausted waits stop.
+The deck limit remains 512. Each input is attempted at most once.
+
+This increment has native, production-boundary and C#/Python fixture evidence;
+**live acceptance is pending**. It does not add Skip, preview cancellation,
+extra grants/copies, card substitution or nested pickups. HeftyTablet uses the same
+choose screen but has a broader post-choice grant including Injury; that composition
+remains unsupported. Native direct menus with more than three choices are rejected.
 
 ## Separate remaining questions
 

@@ -80,6 +80,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 _card = _native.CreateChild(admission.Identity);
                 _child = admission switch {
                     GenericEventV7CardAdmission c => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
+                    GenericEventV7OfferAdmission o => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,o.OfferCount,o.Bundle?"bundle_offer_v1":"card_offer_v1"),
                     GenericEventV7RewardAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r.OfferCount,true,r.Mixed),
                     GenericEventV7ItemAdmission i => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,i.OfferCount),
                     _ => null };
@@ -288,13 +289,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         action == _child.ParentActionId && ordinal == _child.Ordinal;
     private string ChildContract() => _child?.ContractVersion ?? "card_selection_v1";
     private bool TypedChild() => _card is not null && _child is not null && _card.ContractVersion == ChildContract() &&
-        (_child.Kind == "card_reward" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
+        (_child.Kind is "card_reward" or "card_offer" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
             _card is IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession);
-    private GenericEventV7ChildRead ChildFailure() => _child?.Kind=="card_reward" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildRead ChildFailure() => _child?.Kind is "card_reward" or "card_offer" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemRead(_child!.OfferCount>1 ? new GenericEventV7ItemSetRead(_nonce,"unsupported",_child.OfferCount,Array.AsReadOnly(_itemResults.ToArray()),null) : ItemV1Observation.Fixed(_nonce,"unsupported"),ChildContract())
         : new GenericEventV7CardRead(ChildContract(),CardSelectionV1Observation.Fixed(
             _nonce,"unsupported","unsupported",Array.Empty<CardSelectionV1ActionResult>()));
-    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind=="card_reward" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind is "card_reward" or "card_offer" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemApply(new ItemV1ApplyFailure(_nonce,outcome),ChildContract())
         : new GenericEventV7CardApply(ChildContract(),new CardSelectionV1ApplyFailure(_nonce,outcome));
     private void Reconcile(string result)

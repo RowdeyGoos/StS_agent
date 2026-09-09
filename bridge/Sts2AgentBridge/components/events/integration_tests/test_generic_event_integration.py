@@ -28,6 +28,7 @@ class Exchange:
         self.native = native
         self.transform = native and scenario.startswith(('T_', 'V_'))
         self.variable_transform = native and scenario.startswith('V_')
+        self.card_offer = native and scenario.startswith("O_")
         self.card_reward = native and scenario.startswith(("CR_","CRS_","MR_"))
         self.item = native and scenario.startswith('I_')
         self.repeated_page = native and scenario.startswith('P_')
@@ -90,6 +91,8 @@ class Exchange:
             expected = ('body', 'map_open', 'chosen_calls', 'linger_calls', 'control_calls')
         if self.card_reward:
             expected=("body","map_open","overlay_count","opens","choices","skips","dismisses","added_slots")
+        if self.card_offer:
+            expected=("body","map_open","overlay_count","choices","confirms","selected","deck")
         assert tuple(value) == expected, value
         self.telemetry.append({k: value[k] for k in value if k != 'body'})
         response = bytearray(base64.b64decode(value['body'], validate=True))
@@ -975,6 +978,11 @@ def main() -> int:
         added = run_variable_transform_cases(args, host, Exchange, planned, completed_history)
         checks += added
         native_checks += added
+
+        from generic_event_offer_cases import run_offer_cases
+        added=run_offer_cases(args,host,Exchange)
+        checks+=added
+        native_checks+=added
 
     print(json.dumps({'schema_version': 1, 'status': 'passed',
                       'suite': 'generic_event_v7_integration', 'check_count': checks,

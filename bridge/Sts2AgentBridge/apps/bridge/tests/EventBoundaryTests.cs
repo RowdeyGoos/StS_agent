@@ -30,6 +30,30 @@ internal static class EventBoundaryTests
 
     internal static void Run(Action<bool,string> check)
     {
+        foreach(bool bundle in new[]{false,true}) {
+            string version=bundle?"bundle_offer_v1":"card_offer_v1";
+            var child=new GenericEventV7Child(1,Decision,"choose:0",3,version);
+            var offers=Enumerable.Range(0,3).Select(i=>new GenericEventV7Offer(i,Enumerable.Range(0,bundle?2:1).Select(j=>new GenericEventV7RewardCard(j,"CARD_"+i+"_"+j,0)).ToArray())).ToArray();
+            GenericEventV7RewardRead Read(string status,string phase,int count,int? selected)=>new(Nonce,status,phase,status=="ready"?Decision:"",Array.Empty<GenericEventV7RewardCard>(),false,
+                status=="ready"?(phase=="choose"?new[]{"choose:0","choose:1","choose:2"}:new[]{"confirm"}):Array.Empty<string>(),
+                Enumerable.Range(0,count).Select(i=>new GenericEventV7PriorResult(Decision,i==0?"choose:2":"confirm",bundle&&i==0?"previewed":"collected")).ToArray(),selected,Offers:status is "ready" or "resolved"?offers:Array.Empty<GenericEventV7Offer>());
+            byte[] Encode(GenericEventV7RewardRead p)=>GenericEventV7WireCodec.Decision(Nonce,Parent(child),GenericEventV7WireCodec.CardOffer(p,version));
+            var ready=Encode(Read("ready","choose",0,null));
+            check(Classify(ready)==TerminalClassification.NonTerminal,"card offer ready boundary");
+            foreach(string invalid in new[]{"version","count","key","slot","selected","history","confirm"})
+                check(Classify(Mutate(ready,n=>{var p=n["payload"]!;switch(invalid){case "version":p["version"]="card_reward_v1";break;case "count":n["child"]!["offer_count"]=6;break;case "key":p["offers"]![0]!["cards"]![0]!["key"]="BAD KEY";break;case "slot":p["offers"]![0]!["cards"]![0]!["slot"]=true;break;case "selected":p["selected_index"]=2;break;case "history":p["prior_results"]=new JsonArray(new JsonObject{["decision_id"]=Decision,["action_id"]="choose:2",["result"]="collected"});break;case "confirm":p["legal_actions"]=new JsonArray("confirm");break;}}))==TerminalClassification.Invalid,"malformed offer boundary "+invalid);
+            check(Classify(Encode(Read("waiting","waiting",0,null)))==TerminalClassification.NonTerminal,"offer waiting retains owner");
+            check(Classify(Encode(Read("unsupported","unsupported",0,null)))==TerminalClassification.Terminal,"offer failure stops owner");
+            if(bundle)check(Classify(Encode(Read("ready","preview",1,2)))==TerminalClassification.NonTerminal,"bundle preview retains owner");
+            var done=Encode(Read("resolved","complete",bundle?2:1,2));
+            check(Classify(done)==TerminalClassification.NonTerminal,"offer completed child retains parent");
+            check(Classify(Mutate(done,n=>n["payload"]!["selected_index"]=0))==TerminalClassification.Invalid,"offer settlement selected identity");
+            foreach(string outcome in new[]{"accepted","rejected","unsupported","uncertain"}) {
+                var receipt=GenericEventV7WireCodec.Action(Nonce,child,null,GenericEventV7WireCodec.CardOffer(new GenericEventV7RewardReceipt(Nonce,Decision,bundle?"confirm":"choose:2",outcome),version));
+                check(Classify(receipt,GenericEventTransportRoute.ChildPost)==(outcome=="accepted"?TerminalClassification.NonTerminal:TerminalClassification.Terminal),"offer receipt "+outcome);
+            }
+        }
+
         foreach(var spec in new[]{("add",15,"explicit_confirm","card_add_v2"),("transform",6,"preview_confirm","card_transform_v3")}) {
             var child=new GenericEventV7Child(1,Decision,"choose:0",spec.Item1,0,spec.Item2,spec.Item3,spec.Item2);
             var value=CardSelectionV1Observation.Fixed(Nonce,"waiting","transient",Array.Empty<CardSelectionV1ActionResult>());

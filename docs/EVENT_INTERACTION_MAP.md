@@ -28,6 +28,8 @@ transformation and a fresh core map. [Mixed card/item sets](GENERIC_EVENTS.md#im
 now have unreleased offline implementation for Lost Coffer's card-plus-potion
 shape and other bounded interleavings. Ancient entry/dialogue and optional
 Sea Glass/Claws selectors now also have unreleased offline implementation.
+[Choose-one cards and bundles](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles)
+now have unreleased offline support for LeadPaperweight/MassiveScroll and ScrollBoxes.
 Full-inventory handling and nested pickup composition remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
@@ -46,6 +48,21 @@ and calls `FromSimpleGridForRewards` once at 410. Selected additions follow at
 The original inventory and recorded research hashes remain intact; its
 `sequential_children` finding for Orobas is superseded by this correction.
 No other sequential selector caller is established by that finding.
+
+## Choose-card research clarification
+
+A narrow reread of the same pinned IL establishes a maximum of three direct
+choices in `CardSelectCmd.FromChooseACardScreen` (state machine d13, IL39–45).
+The native click requires elapsed time strictly greater than 350 ms. Bundle preview
+moves existing card nodes, and both screen task wrappers remove their own overlay
+before the request completes.
+
+HeftyTablet's `AfterObtained.MoveNext` chooses at IL186, creates an additional
+`Injury` at IL313, and invokes enumerable `CardPileCmd.Add` at IL350. Its original
+appendix description of “multiple copies” is incomplete: chosen-only exact addition
+does not cover this compound grant. The original inventory and hashes are retained;
+current choose-one implementation covers the simpler LeadPaperweight/MassiveScroll
+shape and explicitly excludes this broader HeftyTablet composition.
 
 ## What the research changes
 

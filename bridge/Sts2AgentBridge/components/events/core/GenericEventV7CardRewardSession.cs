@@ -19,7 +19,7 @@ public sealed record GenericEventV7RewardRead(string SessionNonce,string Status,
     IReadOnlyList<GenericEventV7RewardCard> Cards,bool CanSkip,IReadOnlyList<string> LegalActions,
     IReadOnlyList<GenericEventV7PriorResult> PriorResults,int? SelectedSlot,
     int OfferCount=1,int OfferIndex=0,IReadOnlyList<GenericEventV7RewardSettlement>? Settled=null,
-    IReadOnlyList<string>? OfferKinds=null,Sts2AgentBridge.Successors.ItemV1.ItemV1Observation? Item=null);
+    IReadOnlyList<string>? OfferKinds=null,Sts2AgentBridge.Successors.ItemV1.ItemV1Observation? Item=null,IReadOnlyList<GenericEventV7Offer>? Offers=null);
 public sealed record GenericEventV7RewardReceipt(string SessionNonce,string DecisionId,string ActionId,string Outcome);
 public sealed record GenericEventV7RewardChildRead(GenericEventV7RewardRead Value,string Version="card_reward_v1"):GenericEventV7ChildRead(Version);
 public sealed record GenericEventV7RewardChildApply(GenericEventV7RewardReceipt Value,string Version="card_reward_v1"):GenericEventV7ChildApply(Version);

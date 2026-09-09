@@ -29,7 +29,9 @@ process. Completed packets and old campaign instructions are historical referenc
    now have unreleased native/C#/Python implementation, with Lost Coffer's
    card-plus-potion pickup as the concrete shape. Ancient layout/dialogue, optional
    Sea Glass add selection and Claws transformation now also have unreleased offline
-   implementation. Validate these together in the next live batch. Next address
+   implementation. Choose-one cards (LeadPaperweight/MassiveScroll) and bundles
+   (ScrollBoxes) now also have unreleased native/C#/Python support. Validate these
+   together in the next live batch. Next address
    full-inventory/nested pickups and remaining narrow selector additions; then
    combat layouts and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch

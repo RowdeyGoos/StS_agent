@@ -4,6 +4,7 @@
     <Compile Include="GenericEventV7ItemState.cs" />
     <Compile Include="GenericEventV7ItemAdapter.cs" />
     <Compile Include="GenericEventV7CardRewardAdapter.cs" />
+    <Compile Include="GenericEventV7OfferAdapter.cs" />
     <Compile Include="GenericEventV7CardRewardSetAdapter.cs" />
     <Compile Include="GenericEventV7TransformAdapter.cs" />
     <Compile Include="GenericEventV7TransformState.cs" />

@@ -1,3 +1,5 @@
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Entities.Players;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -75,6 +77,13 @@ namespace MegaCrit.Sts2.Core.ControllerInput
 namespace MegaCrit.Sts2.Core.Commands
 {
     public static class CardSelectCmd {
+        public static Func<MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext,IReadOnlyList<CardModel>,Player,bool,Task<CardModel>>? OfferHandler;
+        public static Func<Player,IReadOnlyList<IReadOnlyList<CardModel>>,Task<IEnumerable<CardModel>>>? BundleHandler;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static Task<CardModel> FromChooseACardScreen(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext context,IReadOnlyList<CardModel> cards,Player player,bool skip)=>OfferHandler!(context,cards,player,skip);
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static Task<IEnumerable<CardModel>> FromChooseABundleScreen(Player player,IReadOnlyList<IReadOnlyList<CardModel>> bundles)=>BundleHandler!(player,bundles);
+
         public static Func<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>,MegaCrit.Sts2.Core.Models.EnchantmentModel,int,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs,Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>>>? EnchantHandler;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public static Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>> FromDeckForEnchantment(IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> cards,MegaCrit.Sts2.Core.Models.EnchantmentModel enchantment,int amount,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs)
@@ -615,3 +624,46 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection {
 }
 
 namespace MegaCrit.Sts2.Core.Localization { public sealed record LocString(string LocTable,string LocEntryKey); }
+namespace Godot {public static class Time {public static ulong Ticks=1000;public static ulong GetTicksMsec()=>Ticks;}}
+namespace MegaCrit.Sts2.Core.Nodes.Cards {
+    public sealed class NCardBundle:Godot.Control {
+        public static class SignalName {public const string Clicked="clicked";}
+        public IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> Bundle {get;set;}=Array.Empty<MegaCrit.Sts2.Core.Models.CardModel>();
+        public IReadOnlyList<NCard> CardNodes {get;set;}=Array.Empty<NCard>();
+        public MegaCrit.Sts2.Core.Nodes.CommonUi.NClickableControl Hitbox {get;set;}=new();
+        public Action? Clicked;
+        public Godot.Error EmitSignal(string name,NCardBundle node){if(name!=SignalName.Clicked||!ReferenceEquals(node,this))return Godot.Error.Failed;Clicked?.Invoke();return Godot.Error.Ok;}
+    }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection {
+    public sealed class NChooseACardSelectionScreen:Godot.Control {
+        private Godot.Control _cardRow=null!;
+        public void BindControls(Godot.Control row)=>_cardRow=row;
+        private IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> _cards=Array.Empty<MegaCrit.Sts2.Core.Models.CardModel>();
+        private bool _canSkip=false;private ulong _openedTicks=0;
+        private readonly TaskCompletionSource<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>> _completionSource=new();
+        public static Func<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>,bool,NChooseACardSelectionScreen> Factory=null!;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static NChooseACardSelectionScreen ShowScreen(IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> cards,bool skip)=>Factory(cards,skip);
+        public void Setup(IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> cards,bool skip){_cards=cards;_canSkip=skip;_openedTicks=0;}
+        public void OpenedAt(ulong ticks)=>_openedTicks=ticks;
+        public void Complete(IEnumerable<MegaCrit.Sts2.Core.Models.CardModel> cards)=>_completionSource.SetResult(cards);
+        public void Fault()=>_completionSource.SetException(new InvalidOperationException("selector"));
+        public async Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>> CardsSelected(){var result=await _completionSource.Task;MegaCrit.Sts2.Core.Nodes.NRun.Instance!.GlobalUi.Overlays.Screens.Remove(this);Visible=false;return result;}
+    }
+    public sealed class NChooseABundleSelectionScreen:Godot.Control {
+        private Godot.Control _bundleRow=null!,_bundlePreviewContainer=null!,_bundlePreviewCards=null!;
+        private MegaCrit.Sts2.Core.Nodes.CommonUi.NConfirmButton _previewConfirmButton=null!;
+        public void BindControls(Godot.Control row,Godot.Control preview,Godot.Control cards,MegaCrit.Sts2.Core.Nodes.CommonUi.NConfirmButton confirm){_bundleRow=row;_bundlePreviewContainer=preview;_bundlePreviewCards=cards;_previewConfirmButton=confirm;}
+        private IReadOnlyList<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>> _bundles=Array.Empty<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>>();
+        private MegaCrit.Sts2.Core.Nodes.Cards.NCardBundle? _selectedBundle;
+        private readonly TaskCompletionSource<IEnumerable<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>>> _completionSource=new();
+        public static Func<IReadOnlyList<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>>,NChooseABundleSelectionScreen> Factory=null!;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static NChooseABundleSelectionScreen ShowScreen(IReadOnlyList<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>> bundles)=>Factory(bundles);
+        public void Setup(IReadOnlyList<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>> bundles)=>_bundles=bundles;
+        public void Select(MegaCrit.Sts2.Core.Nodes.Cards.NCardBundle selected)=>_selectedBundle=selected;
+        public void Complete(IEnumerable<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>> cards)=>_completionSource.SetResult(cards);
+        public async Task<IEnumerable<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>>> CardsSelected(){var result=await _completionSource.Task;MegaCrit.Sts2.Core.Nodes.NRun.Instance!.GlobalUi.Overlays.Screens.Remove(this);Visible=false;return result;}
+    }
+}

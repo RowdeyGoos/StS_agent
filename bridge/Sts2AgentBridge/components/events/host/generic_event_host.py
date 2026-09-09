@@ -112,10 +112,12 @@ def _decode(body: Any) -> dict[str, Any]:
         _require(v['kind'] in ('decision', 'action', 'error'))
         if v['child'] is not None:
             c = v['child']
-            _keys(c, _ITEM_CHILD if c.get('kind') in ('item','card_reward') else _CHILD)
+            _keys(c, _ITEM_CHILD if c.get('kind') in ('item','card_reward','card_offer') else _CHILD)
             _require(_integer(c['ordinal'], 4) and c['ordinal'] >= 1)
             _require(_hex(c['parent_decision_id'], 64) and _parent_action(c['parent_action_id']))
-            if c['kind']=='card_reward':
+            if c['kind']=='card_offer':
+                _require(type(c['offer_count']) is int and 1<=c['offer_count']<=5 and c['contract_version'] in ('card_offer_v1','bundle_offer_v1'))
+            elif c['kind']=='card_reward':
                 _require(type(c['offer_count']) is int and 1<=c['offer_count']<=8 and (c['contract_version']==('card_reward_v1' if c['offer_count']==1 else 'card_reward_set_v1') or c['offer_count']>=2 and c['contract_version']=='mixed_reward_set_v1'))
             elif c['kind'] == 'item':
                 _require(type(c['offer_count']) is int and 1 <= c['offer_count'] <= 8 and
@@ -243,7 +245,7 @@ class _Controller:
                 self.counts['parent_attempted'] += 1
                 lineage = None
             else:
-                if len(self.child_receipts) >= (2*self.child['offer_count']+1 if self.child['kind']=='card_reward' else self.child['offer_count'] if self.child['kind'] == 'item' else 16 if self.child['contract_version']=='card_add_v2' else 10):
+                if len(self.child_receipts) >= (2 if self.child['kind']=='card_offer' else 2*self.child['offer_count']+1 if self.child['kind']=='card_reward' else self.child['offer_count'] if self.child['kind'] == 'item' else 16 if self.child['contract_version']=='card_add_v2' else 10):
                     raise _Stop('action_limit')
                 self.counts['child_attempted'] += 1
                 lineage = {k: self.child[k] for k in _CHILD[:3]}
@@ -437,6 +439,7 @@ class _Controller:
         self.transform._validate_envelope(normalized)
 
     def child_read(self, p: Any) -> str:
+        if self.child['kind']=='card_offer':return self.offer_read(p)
         if self.child['kind']=='card_reward':
             return self.reward_read(p)
         if self.child['kind'] == 'item':
@@ -517,6 +520,45 @@ class _Controller:
             self.child_done = True
         self.counts['child_reconciled'] += len(history) - len(self.child_history)
         self.child_history = history
+        return status
+
+    def offer_read(self, p: Any) -> str:
+        _keys(p, ('version','session_nonce','status','phase','decision_id','offers','legal_actions','prior_results','selected_index'))
+        _require(p['version']==self.child['contract_version'] and p['session_nonce']==self.nonce)
+        bundle=p['version']=='bundle_offer_v1'
+        history=p['prior_results'];actions=[a for _,a in self.child_receipts]
+        _require(type(history) is list and len(self.child_history)<=len(history)<=len(actions)<=(2 if bundle else 1) and history[:len(self.child_history)]==self.child_history)
+        for i,h in enumerate(history):
+            _keys(h,('decision_id','action_id','result'))
+            _require((h['decision_id'],h['action_id'])==self.child_receipts[i] and h['result']==('previewed' if bundle and actions[i]!='confirm' else 'collected'))
+        status=p['status'];offers=p['offers'];legal=p['legal_actions'];selected=p['selected_index']
+        _require(type(offers) is list and type(legal) is list)
+        if status in ('ready','resolved'):
+            _require(len(history)==len(actions) and len(offers)==self.child['offer_count'])
+            for i,o in enumerate(offers):
+                _keys(o,('index','cards'));_require(type(o['index']) is int and o['index']==i and type(o['cards']) is list and 1<=len(o['cards'])<=(8 if bundle else 1))
+                for j,c in enumerate(o['cards']):
+                    _keys(c,('slot','key','upgrade_level'))
+                    _require(type(c['slot']) is int and c['slot']==j and self.transform._stable_key(c['key']) and self.transform._integer(c['upgrade_level']))
+            if self.child_shape is None:
+                _require(status=='ready' and p['phase']=='choose' and not actions)
+                self.child_shape=json.loads(json.dumps(offers))
+            _require(offers==self.child_shape)
+            if status=='ready' and p['phase']=='choose':
+                _require(selected is None and not actions and legal==['choose:'+str(i) for i in range(len(offers))])
+            else:
+                _require(type(selected) is int and 0<=selected<len(offers) and actions and actions[0]=='choose:'+str(selected))
+                if status=='ready':
+                    _require(bundle and p['phase']=='preview' and len(actions)==1 and legal==['confirm'])
+                    self.preview_seen=True
+                else:
+                    _require(p['phase']=='complete' and not legal and p['decision_id']=='' and len(actions)==(2 if bundle else 1) and (not bundle or self.preview_seen and actions[-1]=='confirm'))
+                    owner=(self.child['parent_decision_id'],self.child['parent_action_id'])
+                    _require(owner not in self.completed_children);self.completed_children.add(owner);self.child_done=True
+            if status=='ready':_require(_hex(p['decision_id'],64))
+        else:
+            _require(status in ('waiting','unsupported') and p['phase']==status and not offers and not legal and p['decision_id']=='' and selected is None)
+        self.counts['child_reconciled']+=len(history)-len(self.child_history);self.child_history=history
         return status
 
     def reward_read(self, p: Any) -> str:
@@ -709,7 +751,7 @@ class _Controller:
         return status
 
     def replay_key(self, decision: str) -> Any:
-        if self.child is not None and self.child['kind'] in ('item','card_reward'):
+        if self.child is not None and self.child['kind'] in ('item','card_reward','card_offer'):
             return tuple(self.child[k] for k in ('parent_decision_id', 'parent_action_id', 'ordinal', 'contract_version')) + (decision,)
         return decision
 
@@ -738,7 +780,7 @@ class _Controller:
             _keys(receipt, ('version', 'session_nonce', 'decision_id', 'action_id', 'outcome'))
             _require(receipt['version'] == VERSION and receipt['session_nonce'] == self.nonce)
             _require((receipt['decision_id'], receipt['action_id']) == (decision, action))
-        elif self.child['kind']=='card_reward':
+        elif self.child['kind'] in ('card_reward','card_offer'):
             _keys(receipt,('version','session_nonce','decision_id','action_id','outcome'))
             _require(receipt['version']==self.child['contract_version'] and receipt['session_nonce']==self.nonce and
                      (receipt['decision_id'],receipt['action_id'])==(decision,action))

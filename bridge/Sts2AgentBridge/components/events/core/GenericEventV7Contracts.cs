@@ -73,6 +73,10 @@ public sealed class GenericEventV7Child
         Kind=cardReward?"card_reward":"item"; ContractVersion=mixed?"mixed_reward_set_v1":cardReward?(offerCount==1?"card_reward_v1":"card_reward_set_v1"):offerCount==1?"item_v1":"item_set_v1"; OfferCount=offerCount;
         Operation=""; CommitMode="";
     }
+    public GenericEventV7Child(int ordinal,string decision,string action,int count,string offerVersion):this(ordinal,decision,action,count,true) {
+        if(offerVersion is not ("card_offer_v1" or "bundle_offer_v1"))throw new ArgumentException("Unknown offer version.");
+        Kind="card_offer";ContractVersion=offerVersion;
+    }
     public string Kind { get; }
     public string ContractVersion { get; }
     public int OfferCount { get; }

@@ -70,10 +70,18 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(NDeckEnchantSelectScreen).GetMethod(nameof(NDeckEnchantSelectScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!,
             typeof(NCardRewardSelectionScreen).GetMethod(nameof(NCardRewardSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardCreationResult>),typeof(IReadOnlyList<CardRewardAlternative>)})!,
             typeof(NCardRewardSelectionScreen).GetMethod(nameof(NCardRewardSelectionScreen.OptionSelected),Type.EmptyTypes)!,
-            typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromDeckGeneric),new[]{typeof(Player),typeof(CardSelectorPrefs),typeof(Func<CardModel,bool>),typeof(Func<CardModel,int>)})!
+            typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromDeckGeneric),new[]{typeof(Player),typeof(CardSelectorPrefs),typeof(Func<CardModel,bool>),typeof(Func<CardModel,int>)})!,
+            typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromChooseACardScreen),new[]{typeof(PlayerChoiceContext),typeof(IReadOnlyList<CardModel>),typeof(Player),typeof(bool)})!,
+            typeof(NChooseACardSelectionScreen).GetMethod(nameof(NChooseACardSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(bool)})!,
+            typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromChooseABundleScreen),new[]{typeof(Player),typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!,
+            typeof(NChooseABundleSelectionScreen).GetMethod(nameof(NChooseABundleSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!
         };
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
+        Type[] offerReturns={typeof(Task<CardModel>),typeof(NChooseACardSelectionScreen),typeof(Task<IEnumerable<CardModel>>),typeof(NChooseABundleSelectionScreen)};
+        for(int i=23;i<27;i++)
+            if(!targets[i].IsPublic||!targets[i].IsStatic||targets[i].IsGenericMethod||targets[i].ReturnType!=offerReturns[i-23])
+                throw new InvalidOperationException("Card offer hook signature mismatch.");
         Type[] returns={typeof(Task<IEnumerable<CardModel>>),typeof(NDeckTransformSelectScreen),typeof(Task<IEnumerable<CardPileAddResult>>),typeof(CardModel),typeof(CardModel),typeof(void)};
         for(int i=9;i<15;i++)
             if(!targets[i].IsPublic||targets[i].IsStatic!=(i!=12&&i!=14)||targets[i].ReturnType!=returns[i-9]||targets[i].IsGenericMethod)
@@ -89,7 +97,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             targets[21].IsStatic||!targets[21].IsPublic||targets[21].ReturnType!=typeof(Task<int?>))throw new InvalidOperationException("Card reward hook signature mismatch.");
         if(!targets[22].IsStatic||!targets[22].IsPublic||targets[22].IsGenericMethod||targets[22].ReturnType!=typeof(Task<IEnumerable<CardModel>>))
             throw new InvalidOperationException("Generic deck hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck"};
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen"};
         _installed=this;
         try
         {
@@ -728,6 +736,46 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void TransformInsertPostfix(TransformObservation? __state)
     {if(__state?.Command is not { } c||__state.Choice is null)return;try{__state.Owner!.InsertionExit(c,__state.Choice);}catch{__state.Owner!.Fail();}}
     private static void TransformInsertFinalizer(Exception? __exception,TransformObservation? __state)=>TransformChoiceFinalizer(__exception,__state);
+    private static void OfferRequestPrefix(PlayerChoiceContext __0,IReadOnlyList<CardModel> __1,Player __2,bool __3,out State __state) {
+        OfferEntry(__2,__1,false,__0 is not null&&!__3,out __state);
+    }
+    private static void BundleRequestPrefix(Player __0,IReadOnlyList<IReadOnlyList<CardModel>> __1,out State __state) {
+        OfferEntry(__0,__1,true,true,out __state);
+    }
+    private static void OfferEntry(Player player,object domain,bool bundle,bool legal,out State state) {
+        state=new State{Previous=Request.Value};var b=Parent.Value;state.Binding=b;
+        if(b is null){if(_armed is not null)_armed.Failed=true;return;}
+        try {
+            if(!legal||!Owns(b)||b.RequestSeen||b.Item is not null||!ReferenceEquals(player,b.Player)||!b.BindSelectionDeck())throw new InvalidOperationException();
+            IReadOnlyList<CardModel>[] offers;
+            if(bundle) {if(domain is not IReadOnlyList<IReadOnlyList<CardModel>> lists||lists.Count is <1 or >5||lists.Any(o=>o is null||o.Count is <1 or >8))throw new InvalidOperationException();offers=lists.ToArray();}
+            else {if(domain is not IReadOnlyList<CardModel> cards||cards.Count is <1 or >3)throw new InvalidOperationException();offers=cards.Select(c=>(IReadOnlyList<CardModel>)new[]{c}).ToArray();}
+            b.RequestSeen=true;b.Offer=new GenericEventV7OfferAdapter(b,domain,offers,bundle);Request.Value=b;
+        }catch{b.Failed=true;}
+    }
+    private static void OfferRequestPostfix(Task<CardModel> __result,State? __state)=>OfferTask(__result,__state);
+    private static void BundleRequestPostfix(Task<IEnumerable<CardModel>> __result,State? __state)=>OfferTask(__result,__state);
+    private static void OfferTask(Task result,State? state) {
+        if(state?.Binding is {} b&&!b.Failed) {
+            if(b.Offer is null||b.Offer.RequestTask is not null||result is null)b.Failed=true;else b.Offer.RequestTask=result;
+        }
+    }
+    private static void OfferRequestFinalizer(Exception? __exception,State? __state)=>UpgradeFinalizer(__exception,__state);
+    private static void BundleRequestFinalizer(Exception? __exception,State? __state)=>UpgradeFinalizer(__exception,__state);
+    private static void OfferScreenPrefix(IReadOnlyList<CardModel> __0,bool __1,out State __state)=>OfferScreenEntry(__0,__1,false,out __state);
+    private static void BundleScreenPrefix(IReadOnlyList<IReadOnlyList<CardModel>> __0,out State __state)=>OfferScreenEntry(__0,false,true,out __state);
+    private static void OfferScreenEntry(object domain,bool canSkip,bool bundle,out State state) {
+        var b=Request.Value;state=new State{Binding=b};
+        if(b is null){if(_armed is not null)_armed.Failed=true;return;}
+        try {if(!Owns(b)||!ReferenceEquals(Parent.Value,b)||b.Offer is null||b.Offer.Bundle!=bundle)throw new InvalidOperationException();b.Offer.EnterScreen(domain,canSkip);}catch{b.Failed=true;}
+    }
+    private static void OfferScreenPostfix(NChooseACardSelectionScreen __result,State? __state)=>OfferScreenExit(__result,__state);
+    private static void BundleScreenPostfix(NChooseABundleSelectionScreen __result,State? __state)=>OfferScreenExit(__result,__state);
+    private static void OfferScreenExit(Godot.Control result,State? state) {
+        if(state?.Binding is not {} b||b.Failed)return;try{b.Offer!.BindScreen(result);}catch{b.Failed=true;}
+    }
+    private static void OfferScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);
+    private static void BundleScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);
     public void Dispose()
     {
         if (_disposed) return;
