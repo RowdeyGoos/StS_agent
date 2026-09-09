@@ -156,6 +156,7 @@ internal static partial class Program
         PreSelectorAdditionTests();
         PostRemovalAdditionTests();
         RemovalHitboxTests();
+        RemovalLayoutTests();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)
@@ -567,6 +568,45 @@ internal static partial class Program
             Check(r is CardSelectionV1ResolvedResult,"actual frozen child resolved");
         }
         public void Dispose(){Session.Dispose();CardSelectCmd.Selector=null;NRun.Instance=null;NEventRoom.Instance=null;NMapScreen.Instance=null;}
+    }
+    private static void RemovalLayoutTests()
+    {
+        foreach(int count in new[]{5,20})
+        {
+            using var f=new RemovalFixture("REMOVAL_LAYOUT_"+count,2,2,count);
+            f.AfterCreate=()=>{
+                f.Grid.Size=new Vector2(1000,500);
+                f.Grid.GetNodeOrNull<Control>("%ScrollContainer")!.Size=new Vector2(900,850);
+                f.Grid.GetNodeOrNull<Control>("%ScrollContainer")!.Position=new Vector2(12,-200);
+            };
+            var c=f.Start();Check(c.Status=="child","removal does not require computed full-grid containment");
+            f.Act(c,"select:0");
+            f.Grid.Size=new Vector2(950,480);
+            f.Grid.GetNodeOrNull<Control>("%ScrollContainer")!.Position=new Vector2(0,-320);
+            f.Act(c,"select:"+(count-1));
+            Check(f.PreviewCalls==1&&f.Selected.SequenceEqual(new[]{f.Cards[0],f.Cards[count-1]}),"layout change retains exact removal preview originals");
+            f.Act(c,"confirm");Check(f.Child(c) is CardSelectionV1ResolvedResult,"removal completes after layout change");
+            Check(f.Player.Deck.Cards.SequenceEqual(f.Cards.Skip(1).Take(count-2)),"layout-independent exact removals and ordered survivors");
+            var p=f.Session.Read();Check(p.Phase=="proceed","removal layout parent resumes");
+            f.Session.Apply(p.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","removal layout map");
+        }
+        foreach(string mutation in new[]{"unclickable","grid_replaced","grid_dead","animating","domain_changed"})
+        {
+            using var f=new RemovalFixture("REMOVAL_NATIVE_GATE_"+mutation,2,2,5);
+            var c=f.Start();var before=(CardSelectionV1Observation)f.Child(c);
+            switch(mutation)
+            {
+                case "unclickable":f.Grid.CurrentlyDisplayedCardHolders[0].SetClickable(false);break;
+                case "grid_replaced":f.Screen.Bind("%CardGrid",new NCardGrid());break;
+                case "grid_dead":f.Grid.InstanceValid=false;break;
+                case "animating":f.Grid.IsAnimatingOut=true;break;
+                case "domain_changed":f.Grid.CurrentlyDisplayedCardHolders.RemoveAt(4);break;
+            }
+            if(mutation=="unclickable")Check(f.Child(c) is CardSelectionV1Observation o&&!o.LegalActions.Contains("select:0"),"native-unclickable holder is not advertised");
+            f.Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,before.DecisionId,"select:0");
+            Check(f.SelectCalls==0&&f.ConfirmCalls==0,"invalid removal native gate cannot dispatch: "+mutation);
+            Check(f.Player.Deck.Cards.SequenceEqual(f.Cards),"native gate rejection preserves deck");
+        }
     }
     private static void RemovalHitboxTests()
     {
