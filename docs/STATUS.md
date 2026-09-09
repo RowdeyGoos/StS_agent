@@ -9,18 +9,19 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Repeated ordinary event pages are implemented: completed owned callbacks plus
-fresh native controls admit identical option keys/text and revisits. The focused
-event suite passed 15 groups in 119.911 seconds, including 4,204 native assertions
-and 214 integration cases. This is offline evidence; the Abyssal Baths two-Linger
-live test remains open. See [generic semantics](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages).
+Repeated ordinary event pages are implemented and packaged in the current
+accepted release: `bd3f3b5a7c4c8592c207cb32b7a3a051eba795155933e8dfae7df4379e1cadff`.
+Completed owned callbacks plus fresh native controls admit identical option
+keys/text and revisits. All 71 combined release groups passed in 174.518 seconds,
+including 4,204 native assertions, 214 event integration cases, reproducible
+packaging and owned installation/cleanup fixtures. The package is published at
+`/private/tmp/sts-unified-bridge-release`; it has not been installed or live-tested.
+The Abyssal Baths two-Linger live case remains open. See
+[generic semantics](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages)
+and the [release record](../bridge/Sts2AgentBridge/releases/current/validation.json).
 
-Generic single-card enchantment is implemented and packaged in the current
-accepted release: `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0`.
-All 71 combined release groups passed in 172.194 seconds, including
-207 event integration cases, reproducible packaging and owned installation/cleanup
-fixtures. The package is published at `/private/tmp/sts-unified-bridge-release`.
-The single-enchantment live test passed: Sapphire Seed Plant and Nourish,
+The prior release `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0`
+passed the single-enchantment live test: Sapphire Seed Plant and Nourish,
 Sown amount 1 on unupgraded Defend slot 5 of 24, exact preview/effect verification,
 Proceed and an independently checked actionable map. All four actions reconciled.
 Normal quit, owned quarantine/purge and the 429-file base check passed; all six
@@ -28,10 +29,10 @@ installations are cleaned up and no campaign remains installed. The
 [sixth-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sixth-installation-single-card-enchantment)
 retains exact artifact/state identities, counters, timings and limits.
 
-The representative combined live batch passed on the preceding release, including
+The representative combined live batch passed on an earlier release, including
 the allocated **off-screen single-upgrade** test. Those live results retain their
 original artifact identity in the linked evidence; they are not live acceptance
-of the new enchantment package.
+of the current repeated-page package.
 
 Sapphire Seed admitted 23 eligible cards. The bridge directly selected the
 unupgraded Defend at slot 20, below the unscrolled selector viewport, verified
@@ -42,7 +43,7 @@ Molten Egg was visibly confirmed, and the console-added Bashes were already upgr
 provided the eligible targets. The deck counter also required a one-card removal
 to refresh; its value alone is not an eligible-card count.
 
-The preceding live-tested release completed Neow's Fury two-card and zero-card choices, resumed
+That earlier live-tested release completed Neow's Fury two-card and zero-card choices, resumed
 both combats to victory, exercised both card-reward policies and verified fresh
 maps without UI assistance inside those flows. Normal quit, stopped process and
 closed listener, exact quarantine/purge, and 429 unchanged base files with zero

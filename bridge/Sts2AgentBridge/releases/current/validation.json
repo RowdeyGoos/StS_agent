@@ -1,65 +1,34 @@
 {
-  "change": "Generic single-card enchantment with exact preview/effect identity, versioned public descriptor and event resumption",
+  "change": "Repeated ordinary event pages using completed owned callbacks, fresh native controls and decision-scoped host replay protection",
   "date": "2026-09-09",
   "evidence_limits": {
+    "arbitrary_parent_hp_gold_effects_verified": false,
     "autonomous_full_run": false,
     "current_package_installed": false,
-    "generic_single_enchantment_live_tested": true,
-    "native_fixture_objects_are_inert": true,
-    "stacking_replacement_or_multi_enchantment_supported": false
+    "current_package_live_tested": false,
+    "generic_repeated_pages_live_tested": false,
+    "native_fixture_objects_are_inert": true
   },
   "evidence_reused": {
     "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
-    "prior_live_release_manifest_sha256": "fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb",
-    "scope": "Retained pinned metadata and prior live results informed implementation and next setup. All 71 current release groups ran. Historical live observations are not repinned to this changed binary."
+    "pinned_event_research": "../../../../docs/evidence/event_interactions_2026_09_09/inventory.json",
+    "prior_release_manifest_sha256": "19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0",
+    "scope": "Retained pinned IL established Linger allocation and ordinary SetOptions control rebuilding. Prior live observations and research source hashes remain tied to their original revisions; they are not acceptance of this binary. All 71 current release groups ran."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "scope": "Native request/screen ownership and sorting, preview/effect identities, cleanup, public/private descriptor separation and compatibility",
+    "scope": "Completed callback and retired control ownership, replay protection, bounded transitions, failure/cleanup semantics and bundled-host compatibility",
     "status": "passed"
   },
-  "live_enchantment": {
-    "child_attempted_accepted_reconciled": [
-      2,
-      2,
-      2
-    ],
-    "cleanup": "Normal quit, stopped process/closed listener, exact quarantine/purge; 429 unchanged base files, zero overlays.",
-    "completed_card_children": 1,
-    "domain_count": 24,
-    "enchantment": {
-      "amount": 1,
-      "key": "SOWN"
-    },
-    "event": "SAPPHIRE_SEED",
-    "event_reads": 13,
-    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sixth-installation-single-card-enchantment",
-    "flow_seconds": 9.54,
-    "limits": "One fixed-single Sown event; no stacking/replacement, multi/optional enchantment, other-caller or full-run claim.",
-    "map_candidate_count": 2,
-    "map_reads": 1,
-    "observation_window_seconds": 8,
-    "option": "PLANT",
-    "parent_attempted_accepted_reconciled": [
-      2,
-      2,
-      2
-    ],
-    "status": "passed",
-    "target": {
-      "key": "DEFEND_IRONCLAD",
-      "slot": 5,
-      "upgrade_level": 0
-    }
-  },
+  "next_live_case": "Abyssal Baths: Immerse, two legal Linger choices, Exit Baths, Proceed and fresh core map. Requires sufficient HP; no live campaign started.",
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       797878,
-      "698886ba84008bb894fc301a059089ac7ed4c8ee9c3081d4c4e6cb9f50883cb4"
+      "f75105371141b8965e57c92e399a64f72ba1216203b2c5f48c9068f11e06db52"
     ],
     "Sts2AgentBridgeUnified.dll": [
       797184,
-      "9f0021f98a269214e02a99a9c834c27472276dd28703343f37cdae7383926303"
+      "db5530281994b42a4f303f91c71bce84ef9a133b6424712ab3daa44fb27d3878"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -67,31 +36,32 @@
     ]
   },
   "package_directory": "/private/tmp/sts-unified-bridge-release",
-  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-enchant-20260909",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-repeated-pages-20260909",
   "production": {
     "bytes": 797184,
-    "sha256": "9f0021f98a269214e02a99a9c834c27472276dd28703343f37cdae7383926303"
+    "sha256": "db5530281994b42a4f303f91c71bce84ef9a133b6424712ab3daa44fb27d3878"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0",
+  "release_manifest_sha256": "bd3f3b5a7c4c8592c207cb32b7a3a051eba795155933e8dfae7df4379e1cadff",
   "schema_version": 1,
-  "source_base_commit": "3d7514e",
-  "source_commit": "50add7d2d5516c23166f80be91dbb54ed94400e3",
-  "source_inventory_sha256": "f84ea798f40027cb3dabf93c129ddb7a5746543450dc845be909dd2c9a1a80fd",
+  "source_commit": "c6ac1cba671f7c9049f7f1d3b471b718c085d520",
+  "source_inventory_sha256": "d76cd046f6f7fc28ab4bb8c8365270eac0510538c2bb3208d9d044366be93fe0",
   "source_state": "Committed source verified against the exact accepted inventory",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Release and focused-card elapsed times were captured by the checker. Implementation, review, publication and user-wait elapsed times were not separately captured.",
+  "timing_limits": "Focused checks, final gate, narrow build retry and package publication were timed. Implementation, independent review and failed-attempt totals were not separately captured; no user setup wait occurred.",
   "validation": {
     "check_groups": 71,
-    "corrections": "Independent review found copied/sorted native input and same-metadata identity replacement gaps; both fixed with regressions. Broader tests updated legacy-operation and public-surface fixtures. One sandbox socket denial and one analyzer exception passed on unchanged reruns with required environment access; no checks disabled.",
-    "event_integration_cases": 207,
-    "focused_card_check_groups": 20,
-    "focused_card_scratch": "/private/tmp/sts-bridge-9seznyje",
-    "focused_card_seconds": 15.553,
-    "production_native_integration_cases": 145,
-    "release_gate_seconds": 172.194,
-    "scope": "Single-card native request/sorted-list admission, exact preview and applied effect identity retention, selected-only effect, delayed/faulted/mismatched tasks, unsupported shapes, strict public descriptor/version, parent Proceed/map handoff; existing bridge regressions, reproducibility, package and owned install/cleanup fixtures",
-    "scratch": "/private/tmp/sts-bridge-gdyoejoi"
+    "corrections": "Focused checks found a missing shared fixture compile input and an inert item parent reusing its control for Proceed; corrected both. A release attempt hit sandbox denial of an ephemeral loopback socket. Another hit an SDK analyzer MissingMethodException on the unchanged integration project; its isolated unchanged build passed in 0.604 seconds (log-100.txt in /private/tmp/sts-bridge-y7u8y_0u). The final gate passed with required socket access and all analyzers/tests enabled.",
+    "event_integration_cases": 214,
+    "focused_event_check_groups": 15,
+    "focused_event_scratch": "/private/tmp/sts-bridge-694w_ss3",
+    "focused_event_seconds": 119.911,
+    "native_assertions": 4204,
+    "production_native_integration_cases": 152,
+    "publication_seconds": 0.063,
+    "release_gate_seconds": 174.518,
+    "scope": "Identical/revisited keys and text, two repeated choices through Exit/Proceed/map, delayed/faulted/canceled callbacks, stale/partial/old controls, danger and read/apply revalidation, read/action bounds, repeated parent keys after item children; existing bridge regressions, reproducibility, package and owned install/cleanup fixtures",
+    "scratch": "/private/tmp/sts-bridge-uz94dg7q"
   }
 }
