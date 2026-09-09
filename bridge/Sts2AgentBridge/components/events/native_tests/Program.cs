@@ -155,6 +155,7 @@ internal static partial class Program
         RepeatedPageTests();
         PreSelectorAdditionTests();
         PostRemovalAdditionTests();
+        RemovalHitboxTests();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)
@@ -567,6 +568,27 @@ internal static partial class Program
         }
         public void Dispose(){Session.Dispose();CardSelectCmd.Selector=null;NRun.Instance=null;NEventRoom.Instance=null;NMapScreen.Instance=null;}
     }
+    private static void RemovalHitboxTests()
+    {
+        foreach(string mutation in new[]{"replacement","disabled","hidden","dead"})
+        {
+            using var f=new RemovalFixture("REMOVAL_HITBOX_"+mutation,2,2,5);
+            var c=f.Start();Check(c.Status=="child","derived removal hitboxes admitted");
+            var before=(CardSelectionV1Observation)f.Child(c);
+            Check(before.LegalActions.Contains("select:0"),"derived removal target legal");
+            var holder=f.Grid.CurrentlyDisplayedCardHolders[0];
+            switch(mutation)
+            {
+                case "replacement":holder.Hitbox=new MultiDerivedHitbox();break;
+                case "disabled":holder.Hitbox.IsEnabled=false;break;
+                case "hidden":holder.Hitbox.Visible=false;break;
+                case "dead":holder.Hitbox.InstanceValid=false;break;
+            }
+            f.Session.ApplyCardChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,before.DecisionId,"select:0");
+            Check(f.SelectCalls==0&&f.ConfirmCalls==0,"changed removal hitbox cannot dispatch: "+mutation);
+            Check(f.Player.Deck.Cards.SequenceEqual(f.Cards),"rejected removal target leaves deck unchanged");
+        }
+    }
     private static void RemovalTests()
     {
         foreach(var spec in new[]{("FIRST_REMOVAL",2,2,new[]{1,0},false),("ANOTHER_REMOVAL",1,3,new[]{2,0},true),("HELD_OUT_REMOVAL",1,3,new[]{3,1,0},false),("MAX_REMOVAL",8,8,Enumerable.Range(0,8).Reverse().ToArray(),false)})
@@ -687,7 +709,7 @@ internal static partial class Program
             Grid.Size=new Vector2(1000,height+100);Grid.Bind("%ScrollContainer",new Control{Size=new Vector2(1000,height),Position=new Vector2(0,50)});
             foreach(var card in cards)
             {
-                var material=new ShaderMaterial();var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{Model=card,CardHighlight=new NCardHighlight{Material=material}},Hitbox=new NClickableControl()};
+                var material=new ShaderMaterial();var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{Model=card,CardHighlight=new NCardHighlight{Material=material}},Hitbox=new MultiDerivedHitbox()};
                 holder.Selected=()=>{
                     SelectCalls++;Selected.Add(card);material.Width=BitConverter.Int32BitsToSingle(CardSelectionV1NativeRules.SelectedWidthBits);
                     PreviewButton.IsEnabled=prefs.MinSelect!=prefs.MaxSelect&&Selected.Count>=prefs.MinSelect;
