@@ -57,11 +57,13 @@ internal static partial class GenericEventV7NativeIntegrationHost
         if (args[0].StartsWith("V_", StringComparison.Ordinal)) return RunVariableTransform(args[0]);
         if (args[0].StartsWith("T_", StringComparison.Ordinal)) return RunTransform(args[0]);
         if (args[0].StartsWith("I_", StringComparison.Ordinal)) return RunItem(args[0]);
+        bool enchanting = args[0].StartsWith("ENCHANT_", StringComparison.Ordinal);
         bool multiUpgrading = MultiCases.TryGetValue(args[0], out var multiConfig);
         bool removing = RemovalCases.TryGetValue(args[0], out var config);
         bool adding = RewardCases.TryGetValue(args[0], out var rewardConfig);
-        if (!multiUpgrading && !removing && !adding && !new[] { "FIRST_EVENT", "ANOTHER_EVENT", "HELD_OUT_EVENT", "DELAYED", "ALLOCATED_UPGRADE" }.Contains(args[0])) return 2;
-        var upgrade = removing || adding || multiUpgrading ? null : new Program.Fixture(args[0], delayed: args[0] == "DELAYED", domain: args[0] == "ALLOCATED_UPGRADE" ? 20 : 2);
+        if (!enchanting && !multiUpgrading && !removing && !adding && !new[] { "FIRST_EVENT", "ANOTHER_EVENT", "HELD_OUT_EVENT", "DELAYED", "ALLOCATED_UPGRADE" }.Contains(args[0])) return 2;
+        var upgrade = removing || adding || multiUpgrading ? null : new Program.Fixture(args[0], delayed: args[0] == "DELAYED", domain: args[0] is "ALLOCATED_UPGRADE" or "ENCHANT_ALLOCATED" ? 20 : 2, enchant: enchanting, effectDelayed: args[0] == "ENCHANT_DELAY");
+        if (args[0] == "ENCHANT_WRONG_EFFECT") upgrade!.AfterEffect = () => upgrade.Cards[0].Enchantment!.Amount++;
         var removal = removing ? new Program.RemovalFixture(config.Name, config.Min, config.Max, config.Domain,
             delayedCreation: config.Creation, delayedCompletion: config.Completion) : null;
         var reward = adding ? new Program.RewardFixture(rewardConfig.Name, rewardConfig.Min, rewardConfig.Max, rewardConfig.Domain,
@@ -122,6 +124,8 @@ internal static partial class GenericEventV7NativeIntegrationHost
                 deck_originals = remaining.Select(c => Array.FindIndex(allOriginals, original => ReferenceEquals(original, c))).ToArray(),
                 multi_completion_valid = multi?.CompletionValid ?? false,
                 derived_hitboxes_retained = retainedHitboxes is not null && reward!.Grid.CurrentlyDisplayedCardHolders.Select(h => h.Hitbox).SequenceEqual(retainedHitboxes),
+                enchantment_keys = remaining.Select(c => c.Enchantment?.Id.Entry).ToArray(),
+                enchantment_amounts = remaining.Select(c => c.Enchantment?.Amount).ToArray(),
             }));
             using var reply = JsonDocument.Parse(response);
             var parent = reply.RootElement.GetProperty("parent");
@@ -133,6 +137,9 @@ internal static partial class GenericEventV7NativeIntegrationHost
                 if (reward is not null && rewardConfig.Creation) { releasedCreation = true; reward.CreationGate.SetResult(); }
             }
             var payload = reply.RootElement.GetProperty("payload");
+            if (args[0] == "ENCHANT_DELAY" && !releasedCompletion && payload.ValueKind == JsonValueKind.Object &&
+                payload.TryGetProperty("status",out var status) && status.GetString() == "waiting" && upgrade!.ConfirmCalls == 1)
+            {releasedCompletion=true;upgrade.Gate.SetResult();}
             if (removal is not null && config.Completion && !releasedCompletion &&
                 parent.ValueKind == JsonValueKind.Object && parent.GetProperty("status").GetString() == "child" &&
                 payload.ValueKind == JsonValueKind.Object && payload.GetProperty("status").GetString() == "waiting")

@@ -22,7 +22,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens;
 using NativeHook = MegaCrit.Sts2.Core.Hooks.Hook;
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
-// Explicit, exclusive eighteen-method observational patch scope. Originals always run.
+// Explicit, exclusive twenty-method observational patch scope. Originals always run.
 public sealed class GenericEventV7Hooks : IDisposable
 {
     private const string Owner = "sts2agent.generic_event_v7";
@@ -64,7 +64,9 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(CardPile).GetMethod(nameof(CardPile.AddInternal),new[]{typeof(CardModel),typeof(int),typeof(bool)})!,
             typeof(RewardsSet).GetMethod(nameof(RewardsSet.Offer),Type.EmptyTypes)!,
             typeof(NRewardsScreen).GetMethod(nameof(NRewardsScreen.ShowScreen),new[]{typeof(RewardsSet),typeof(bool),typeof(IRunState)})!,
-            typeof(NRewardButton).GetMethod("GetReward",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null)!
+            typeof(NRewardButton).GetMethod("GetReward",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null)!,
+            typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromDeckForEnchantment),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!,
+            typeof(NDeckEnchantSelectScreen).GetMethod(nameof(NDeckEnchantSelectScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!
         };
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
@@ -76,7 +78,10 @@ public sealed class GenericEventV7Hooks : IDisposable
             !targets[16].IsPublic||!targets[16].IsStatic||targets[16].ReturnType!=typeof(NRewardsScreen)||targets[16].IsGenericMethod||
             !targets[17].IsPrivate||targets[17].IsStatic||targets[17].ReturnType!=typeof(Task)||targets[17].IsGenericMethod)
             throw new InvalidOperationException("Item hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection"};
+        if (!targets[18].IsPublic || !targets[18].IsStatic || targets[18].IsGenericMethod || targets[18].ReturnType != typeof(Task<IEnumerable<CardModel>>) ||
+            !targets[19].IsPublic || !targets[19].IsStatic || targets[19].IsGenericMethod || targets[19].ReturnType != typeof(NDeckEnchantSelectScreen))
+            throw new InvalidOperationException("Enchantment hook signature mismatch.");
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen"};
         _installed=this;
         try
         {
@@ -287,6 +292,59 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ItemCollectionFinalizer(Exception? __exception,State? __state)
     {if(__exception is not null&&__state?.Binding is {} b)FailItem(b);}
+    private static void EnchantRequestPrefix(IReadOnlyList<CardModel> __0, EnchantmentModel __1, int __2, CardSelectorPrefs __3, out State __state)
+    {
+        __state = new State { Previous=Request.Value };
+        var b=Parent.Value;
+        if(b is null){if(_armed is not null)_armed.Failed=true;return;}
+        __state.Binding=b;
+        try
+        {
+            if(!Owns(b)||b.Closed||b.RequestSeen||!b.ContextValid(false)||!b.MatchesCurrentDeck()||
+                __0 is null||__1 is null||__2<1||__3.MinSelect!=1||__3.MaxSelect!=1||__3.Cancelable||
+                !ReferenceEquals(__1.CanonicalInstance,__1)||
+                !Sts2AgentBridge.Successors.CardSelectionV1.Native.CardSelectionV1NativeRules.IsStableKey(__1.Id.Entry)||
+                __0.Count is <2 or >64)
+            {b.Failed=true;return;}
+            b.RequestSeen=true;b.Prefs=__3;
+            b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Enchant;
+            b.EnchantmentModel=__1;b.Enchantment=new(__1,__1.Id.Entry,__2);
+            var originals=__0.ToArray();
+            if(originals.Distinct(ReferenceEqualityComparer.Instance).Count()!=originals.Length||
+                originals.Any(c=>c is null||c.Enchantment is not null||!__1.CanEnchant(c)||
+                    !ReferenceEquals(c.Owner,b.Player)||!ReferenceEquals(c.RunState,b.RunState)||
+                    !b.PreDispatchDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))
+            {b.Failed=true;return;}
+            b.Originals=b.PreDispatchDeck.Select(d=>(CardModel)d.ModelIdentity).Where(c=>originals.Contains(c,ReferenceEqualityComparer.Instance)).ToArray();
+            Request.Value=b;
+        }
+        catch{b.Failed=true;}
+    }
+    private static void EnchantRequestPostfix(Task<IEnumerable<CardModel>> __result,State? __state)=>UpgradePostfix(__result,__state);
+    private static void EnchantRequestFinalizer(Exception? __exception,State? __state)=>UpgradeFinalizer(__exception,__state);
+    private static void EnchantScreenPrefix(IReadOnlyList<CardModel> __0,EnchantmentModel __1,int __2,CardSelectorPrefs __3,out State __state)
+    {
+        __state=new State {Binding=Request.Value};var b=Request.Value;
+        if(b is null){if(_armed is not null)_armed.Failed=true;return;}
+        try
+        {
+            if(!Owns(b)||b.Closed||b.ScreenSeen||!ReferenceEquals(Parent.Value,b)||!b.ContextValid(false)||
+                b.Operation!=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Enchant||
+                __0 is null||!ReferenceEquals(__1,b.EnchantmentModel)||
+                b.Enchantment?.Amount!=__2||!b.SamePrefs(__3)||!b.MatchesCurrentDeck()||
+                __0.Count!=b.Originals.Length||__0.Where((c,i)=>!ReferenceEquals(c,b.Originals[i])||c.Enchantment is not null||!__1.CanEnchant(c)).Any())
+            {b.Failed=true;return;}
+            b.ScreenSeen=true;
+        }
+        catch{b.Failed=true;}
+    }
+    private static void EnchantScreenPostfix(NDeckEnchantSelectScreen __result,State? __state)
+    {
+        if(__state?.Binding is not {} b||b.Failed)return;
+        if(__result is null||__result.GetType()!=typeof(NDeckEnchantSelectScreen)||b.Screen is not null)b.Failed=true;
+        else b.Screen=__result;
+    }
+    private static void EnchantScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);
     private static void UpgradePrefix(Player __0, CardSelectorPrefs __1, out State __state)
     {
         __state = new State {Previous=Request.Value};

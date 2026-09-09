@@ -9,11 +9,18 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The representative combined live batch passed, including the allocated
-**off-screen single-upgrade** test. All five installations are cleaned up;
-there is no current installed campaign. Accepted release:
-`fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb`.
-Its unchanged source/package passed the 71-group gate in 146.105 seconds.
+Generic single-card enchantment is implemented and packaged in the current
+accepted release: `19142148f81ab5363aa3a131c9ff28ca8f9745af29b322a2ef2e1fb25099ccf0`.
+All 71 combined release groups passed in 172.194 seconds, including
+207 event integration cases, reproducible packaging and owned installation/cleanup
+fixtures. The package is published at `/private/tmp/sts-unified-bridge-release`.
+It has not been installed or live-tested. All five earlier live installations
+remain cleaned up.
+
+The representative combined live batch passed on the preceding release, including
+the allocated **off-screen single-upgrade** test. Those live results retain their
+original artifact identity in the linked evidence; they are not live acceptance
+of the new enchantment package.
 
 Sapphire Seed admitted 23 eligible cards. The bridge directly selected the
 unupgraded Defend at slot 20, below the unscrolled selector viewport, verified
@@ -24,7 +31,7 @@ Molten Egg was visibly confirmed, and the console-added Bashes were already upgr
 provided the eligible targets. The deck counter also required a one-card removal
 to refresh; its value alone is not an eligible-card count.
 
-The same release completed Neow's Fury two-card and zero-card choices, resumed
+The preceding live-tested release completed Neow's Fury two-card and zero-card choices, resumed
 both combats to victory, exercised both card-reward policies and verified fresh
 maps without UI assistance inside those flows. Normal quit, stopped process and
 closed listener, exact quarantine/purge, and 429 unchanged base files with zero
@@ -59,6 +66,7 @@ before any new authorized live operation.
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
 | Removal | Positive variable counts up to eight in native/controller fixtures |
 | Upgrades | Sapphire Seed single upgrade of off-screen slot 20 in a 23-card eligible domain and core map return live-demonstrated; fixed counts 1–8 have fixtures; multi-upgrade live remains open |
+| Enchantment | Shared fixed-single `card_enchant_v1` with exact preview/effect and native-to-Python event handoff fixtures; live acceptance pending |
 | Transformation | Fixed and positive variable counts up to eight in G7 fixtures; fixed-one card16 live in release v10 |
 | Singleton potion/relic rewards | G6/G7 native/controller fixtures; Potion Courier/Ransack potion live in release v6 |
 | Allocated off-screen transform holder | Direct selection demonstrated in the controlled v10 setup; other selector families and unallocated cards are separate questions |
@@ -130,7 +138,8 @@ identities remain in [release history](../bridge/Sts2AgentBridge/releases/histor
 ## Next work
 
 The user prioritized generic event coverage before longer-run orchestration.
-Single-card enchantment is the next implementation target; it remains unsupported.
+Single-card enchantment is implemented offline; its next acceptance case is
+Sapphire Seed Plant and Nourish, exact Sown preview/effect, Proceed and a fresh core map.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
 from remaining native coverage. Reuse completed evidence when choosing the next
@@ -138,7 +147,8 @@ observable behavior to test.
 
 ## Current exclusions
 
-Generic-event enchantments, optional/zero selection, variable upgrades, multiple-item sets, incomplete holder
+Enchantment stacking/replacement and multiple-card enchantment, generic-event
+optional/zero selection, variable upgrades, multiple-item sets, incomplete holder
 coverage, custom/repeated interactions and event combat remain generic gaps.
 Variable transformation has offline evidence but no variable-count live case.
 Elite continuation and complete room/run composition remain broader open evidence

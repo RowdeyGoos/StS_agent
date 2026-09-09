@@ -84,3 +84,70 @@ class TransformHostTests(unittest.TestCase):
     def test_explicit_routes(self):
         self.assertEqual(host.DECISION_ROUTE,'/probe/generic-event-v7/public/decision')
         self.assertEqual(host.ACTION_ROUTE,'/probe/generic-event-v7/public/action')
+
+
+def enchant():
+    rows = transform(1)
+    for _, value in rows:
+        if value['child'] is not None:
+            value['child'].update(operation='enchant', contract_version='card_enchant_v1')
+            p = value['payload']
+            p['version'] = 'card_enchant_v1'
+            if p.get('operation'):
+                p['operation'] = 'enchant'
+            if p['kind'] in ('child_observation', 'child_resolved'):
+                p['enchantment'] = {'key': 'SOWN', 'amount': 1}
+    return rows
+
+
+class EnchantHostTests(unittest.TestCase):
+    def test_single_enchantment_and_completion(self):
+        result, script = drive(enchant())
+        self.assertEqual(result['status'], 'resolved', result)
+        self.assertEqual(result['child_attempted'], 2)
+        self.assertEqual(result['completed_card_children'], 1)
+        self.assertFalse(script.rows)
+
+    def test_enchantment_metadata_tampering(self):
+        for mutation in ('missing', 'extra', 'amount_bool', 'amount_zero', 'amount_negative',
+                         'amount_overflow', 'key_invalid', 'changed_amount', 'changed_key'):
+            rows = enchant()
+            seen = False
+            for method, value in rows:
+                p = value['payload']
+                if method != 'GET' or p is None or p.get('status') not in ('ready', 'resolved') or 'enchantment' not in p:
+                    continue
+                if mutation.startswith('changed_') and not seen:
+                    seen = True
+                    continue
+                if mutation == 'missing':
+                    del p['enchantment']
+                elif mutation == 'extra':
+                    p['enchantment']['identity'] = 'private'
+                elif mutation == 'key_invalid':
+                    p['enchantment']['key'] = 'invalid key'
+                elif mutation == 'changed_key':
+                    p['enchantment']['key'] = 'OTHER'
+                else:
+                    p['enchantment']['amount'] = {'amount_bool': True, 'amount_zero': 0,
+                        'amount_negative': -1, 'amount_overflow': 2**31, 'changed_amount': 2}[mutation]
+                break
+            result, _ = drive(rows)
+            self.assertEqual(result['code'], 'invalid_response', (mutation, result))
+
+    def test_version_and_multi_card_not_accepted(self):
+        for mutation in ('parent_version', 'payload_version', 'operation', 'multi'):
+            rows = enchant()
+            for _, value in rows:
+                if value['child'] is None:
+                    continue
+                if mutation == 'parent_version':
+                    value['child']['contract_version'] = 'card_selection_v1'
+                elif mutation == 'payload_version':
+                    value['payload']['version'] = 'card_selection_v1'
+                elif mutation == 'operation':
+                    value['payload']['operation'] = 'upgrade'
+                else:
+                    value['child']['min_select'] = value['child']['max_select'] = 2
+                break
+            self.assertEqual(drive(rows)[0]['code'], 'invalid_response')

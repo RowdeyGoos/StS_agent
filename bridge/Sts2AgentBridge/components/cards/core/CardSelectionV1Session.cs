@@ -21,6 +21,7 @@ public sealed class CardSelectionV1Session : IDisposable
     private CardSelectionV1ResolvedResult? _resolved;
     private bool _awaitingCommit;
     private object[] _effectProgress = Array.Empty<object>();
+    private CardSelectionV1Enchantment? _enchantEffect;
     private bool _taskSucceededSeen;
     private bool _selectorClosedSeen;
     private bool _effectWitnessSeen;
@@ -475,7 +476,7 @@ public sealed class CardSelectionV1Session : IDisposable
         var selectedCards = PublicSelected(_selected);
         _resolved = new CardSelectionV1ResolvedResult(
             _context.SessionNonce, OperationName(_context.Operation),
-            selectedCards, _history);
+            selectedCards, _history, _context.Enchantment);
         _pending = null;
         _awaitingCommit = false;
         _published = null;
@@ -556,7 +557,7 @@ public sealed class CardSelectionV1Session : IDisposable
             _context.SessionNonce, "ready", phase,
             OperationName(_context.Operation), CommitModeName(_context.CommitMode),
             _context.MinSelect, _context.MaxSelect, decisionId,
-            candidates, selectedSlots, new List<string>(actions.Keys), _history);
+            candidates, selectedSlots, new List<string>(actions.Keys), _history, _context.Enchantment);
         decision = new PublishedDecision(observation, actions, capture);
         return true;
     }
@@ -664,7 +665,8 @@ public sealed class CardSelectionV1Session : IDisposable
             capture.Operation == _context.Operation &&
             capture.MinSelect == _context.MinSelect &&
             capture.MaxSelect == _context.MaxSelect &&
-            capture.CommitMode == _context.CommitMode;
+            capture.CommitMode == _context.CommitMode &&
+            CardSelectionV1Enchantment.Same(capture.Enchantment, _context.Enchantment);
     }
 
     private bool ValidPolicy(CardSelectionV1SurfaceCapture capture)
@@ -717,11 +719,15 @@ public sealed class CardSelectionV1Session : IDisposable
         {
             if (card is null || card.ModelIdentity is null ||
                 !CardSelectionV1Identity.IsStableKey(card.StableKey) || card.UpgradeLevel < 0 ||
-                !deckModels.Add(card.ModelIdentity)) return false;
+                !deckModels.Add(card.ModelIdentity) ||
+                card.Enchantment is { } e && (e.Identity is null || !CardSelectionV1Identity.IsStableKey(e.Key) || e.Amount < 1)) return false;
         }
         foreach (CardSelectionV1NativeCandidate candidate in capture.Candidates)
         {
             bool inDeck = deckModels.Contains(candidate.ModelIdentity);
+            if (_bound is null && _context.Operation == CardSelectionV1Operation.Enchant &&
+                FindDeckCard(capture.Deck, candidate.ModelIdentity)?.Enchantment is not null)
+                return false;
             if (_bound is null &&
                 ((_context.Operation == CardSelectionV1Operation.Add && inDeck) ||
                  (_context.Operation != CardSelectionV1Operation.Add && !inDeck)))
@@ -744,6 +750,7 @@ public sealed class CardSelectionV1Session : IDisposable
             CardSelectionV1Operation.Remove => ValidateRemove(capture.Deck, selected, out complete),
             CardSelectionV1Operation.Upgrade => ValidateUpgrade(capture.Deck, selected, out complete),
             CardSelectionV1Operation.Transform => ValidateTransform(capture, selected, out complete),
+            CardSelectionV1Operation.Enchant => ValidateEnchant(capture.Deck, selected, out complete),
             _ => false,
         };
         if (!valid) return false;
@@ -767,6 +774,7 @@ public sealed class CardSelectionV1Session : IDisposable
             {
                 CardSelectionV1Operation.Add => now is not null,
                 CardSelectionV1Operation.Remove => now is null,
+                CardSelectionV1Operation.Enchant => now?.Enchantment is not null,
                 CardSelectionV1Operation.Upgrade => before is not null && now is not null &&
                     (long)now.UpgradeLevel - before.UpgradeLevel == 1L,
                 CardSelectionV1Operation.Transform => now is null &&
@@ -833,6 +841,39 @@ public sealed class CardSelectionV1Session : IDisposable
         }
         if (currentIndex != current.Count) return false;
         complete = removed == selected.Length;
+        return true;
+    }
+
+    private bool ValidateEnchant(
+        IReadOnlyList<CardSelectionV1DeckCard> current, object[] selected, out bool complete)
+    {
+        complete = false;
+        if (_bound is null || _context.Enchantment is not { } requested ||
+            current.Count != _bound.BaselineDeck.Length) return false;
+        int changed = 0;
+        for (int i = 0; i < current.Count; i++)
+        {
+            var before = _bound.BaselineDeck[i];
+            var now = current[i];
+            if (!ContainsReference(selected, before.ModelIdentity))
+            {
+                if (!SameDeckCard(before, now)) return false;
+                continue;
+            }
+            if (before.Enchantment is not null ||
+                !ReferenceEquals(before.ModelIdentity, now.ModelIdentity) ||
+                before.StableKey != now.StableKey || before.UpgradeLevel != now.UpgradeLevel)
+                return false;
+            if (now.Enchantment is not { } effect) continue;
+            if (effect.Key != requested.Key || effect.Amount != requested.Amount ||
+                ReferenceEquals(effect.Identity, requested.Identity) ||
+                System.Array.Exists(_bound.BaselineDeck, card => ReferenceEquals(card.Enchantment?.Identity, effect.Identity)))
+                return false;
+            _enchantEffect ??= effect;
+            if (!CardSelectionV1Enchantment.Same(_enchantEffect, effect)) return false;
+            changed++;
+        }
+        complete = changed == selected.Length;
         return true;
     }
 
@@ -974,7 +1015,8 @@ public sealed class CardSelectionV1Session : IDisposable
     private static bool SameDeckCard(CardSelectionV1DeckCard left, CardSelectionV1DeckCard right) =>
         ReferenceEquals(left.ModelIdentity, right.ModelIdentity) &&
         string.Equals(left.StableKey, right.StableKey, StringComparison.Ordinal) &&
-        left.UpgradeLevel == right.UpgradeLevel;
+        left.UpgradeLevel == right.UpgradeLevel &&
+        CardSelectionV1Enchantment.Same(left.Enchantment, right.Enchantment);
 
     private bool MatchesCandidate(CardSelectionV1DeckCard card)
     {
@@ -1216,6 +1258,13 @@ public sealed class CardSelectionV1Session : IDisposable
             context.MinSelect is >= 1 and <= CardSelectionV1Limits.MaximumSelectedCards &&
             context.MaxSelect is >= 1 and <= CardSelectionV1Limits.MaximumSelectedCards &&
             context.MinSelect <= context.MaxSelect &&
+            (context.Operation == CardSelectionV1Operation.Enchant
+                ? context.ParentKind == CardSelectionV1ParentKind.Event &&
+                  context.MinSelect == 1 && context.MaxSelect == 1 &&
+                  context.CommitMode == CardSelectionV1CommitMode.PreviewConfirm &&
+                  context.Enchantment is { Identity: not null, Amount: > 0 } e &&
+                  CardSelectionV1Identity.IsStableKey(e.Key)
+                : context.Enchantment is null) &&
             context.ExpectedDomainCount is >= 0 and <= CardSelectionV1Limits.MaximumCandidates &&
             (context.ExpectedDomainCount == 0 || context.ExpectedDomainCount >= context.MaxSelect) &&
             (context.ParentKind != CardSelectionV1ParentKind.Rest ||
@@ -1237,6 +1286,7 @@ public sealed class CardSelectionV1Session : IDisposable
         CardSelectionV1Operation.Remove => "remove",
         CardSelectionV1Operation.Upgrade => "upgrade",
         CardSelectionV1Operation.Transform => "transform",
+        CardSelectionV1Operation.Enchant => "enchant",
         _ => throw new InvalidOperationException("Unsupported operation."),
     };
 
@@ -1401,6 +1451,11 @@ internal static class CardSelectionV1Identity
         Append(builder, context.ParentDecisionId);
         Append(builder, context.ParentActionId);
         Append(builder, ((int)context.Operation).ToString(CultureInfo.InvariantCulture));
+        if (context.Enchantment is { } enchantment)
+        {
+            Append(builder, enchantment.Key);
+            Append(builder, enchantment.Amount.ToString(CultureInfo.InvariantCulture));
+        }
         Append(builder, context.MinSelect.ToString(CultureInfo.InvariantCulture));
         Append(builder, context.MaxSelect.ToString(CultureInfo.InvariantCulture));
         Append(builder, ((int)context.CommitMode).ToString(CultureInfo.InvariantCulture));
@@ -1420,6 +1475,11 @@ internal static class CardSelectionV1Identity
         {
             Append(builder, card.StableKey);
             Append(builder, card.UpgradeLevel.ToString(CultureInfo.InvariantCulture));
+            if (card.Enchantment is { } effect)
+            {
+                Append(builder, effect.Key);
+                Append(builder, effect.Amount.ToString(CultureInfo.InvariantCulture));
+            }
         }
         foreach (object item in selected)
         {

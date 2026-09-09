@@ -59,6 +59,8 @@ internal sealed class GenericEventV7Binding
     internal NCardGridSelectionScreen? Screen;
     internal CardSelectionV1Operation Operation=CardSelectionV1Operation.Upgrade;
     internal Func<CardModel,bool>? RemovalPredicate;
+    internal EnchantmentModel? EnchantmentModel;
+    internal CardSelectionV1Enchantment? Enchantment;
     internal GenericEventV7Admission? Admission;
     internal PlayerChoiceContext? RewardContext;
     internal List<CardCreationResult>? RewardList;
@@ -136,7 +138,8 @@ internal sealed class GenericEventV7Binding
             var deck=CopyDeck(Player);
             return deck.Length==PreDispatchDeck.Length && deck.Where((c,i)=>
                 !ReferenceEquals(c.ModelIdentity,PreDispatchDeck[i].ModelIdentity)||
-                c.StableKey!=PreDispatchDeck[i].StableKey || c.UpgradeLevel!=PreDispatchDeck[i].UpgradeLevel).Any()==false;
+                c.StableKey!=PreDispatchDeck[i].StableKey || c.UpgradeLevel!=PreDispatchDeck[i].UpgradeLevel ||
+                !CardSelectionV1Enchantment.Same(c.Enchantment,PreDispatchDeck[i].Enchantment)).Any()==false;
         }
         catch{return false;}
     }
@@ -148,9 +151,16 @@ internal sealed class GenericEventV7Binding
             if(card is null || deck.Count>=512 || !seen.Add(card) ||
                 !CardSelectionV1NativeRules.IsStableKey(card.Id.Entry)||card.CurrentUpgradeLevel<0)
                 throw new InvalidOperationException("Incomplete deck.");
-            deck.Add(new CardSelectionV1DeckCard(card,card.Id.Entry,card.CurrentUpgradeLevel));
+            deck.Add(new CardSelectionV1DeckCard(card,card.Id.Entry,card.CurrentUpgradeLevel,CopyEnchantment(card)));
         }
         return deck.ToArray();
+    }
+    internal static CardSelectionV1Enchantment? CopyEnchantment(CardModel card)
+    {
+        if (card.Enchantment is not { } e) return null;
+        if (!ReferenceEquals(e.Card,card) || !CardSelectionV1NativeRules.IsStableKey(e.Id.Entry) || e.Amount < 1)
+            throw new InvalidOperationException("Invalid card enchantment.");
+        return new(e,e.Id.Entry,e.Amount);
     }
     private CardModel[]? _requestResult;
     internal bool EffectCompleted(IReadOnlyList<object> selected)
@@ -169,10 +179,10 @@ internal sealed class GenericEventV7Binding
     }
     internal CardSelectionV1ParentContext Context()=>new(Nonce,CardSelectionV1ParentKind.Event,
         Decision,Action,this,Run,Player,Room,Map,Option,Controller,Operation,
-        Prefs.MinSelect,Prefs.MaxSelect,CommitMode,DomainCount);
+        Prefs.MinSelect,Prefs.MaxSelect,CommitMode,DomainCount,Enchantment);
     internal bool MatchesAcceptedParent(CardSelectionV1ParentContext context)=>
         ReferenceEquals(context.ParentReceiptIdentity,this)&&ReferenceEquals(context.ParentOptionIdentity,Option)&&
         context.Operation==Operation&&context.MinSelect==Prefs.MinSelect&&context.MaxSelect==Prefs.MaxSelect&&
         context.CommitMode==CommitMode&&
-        context.ExpectedDomainCount==DomainCount;
+        context.ExpectedDomainCount==DomainCount && CardSelectionV1Enchantment.Same(context.Enchantment,Enchantment);
 }

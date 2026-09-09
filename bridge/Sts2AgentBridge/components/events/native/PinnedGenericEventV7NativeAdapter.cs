@@ -102,10 +102,11 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!b.MatchesOffers()) return Fixed("unsupported");
                 diagnostic=GenericEventDiagnosticCode.PrepareFamily;
                 if(!(b.Screen is NDeckUpgradeSelectScreen upgrade ? (b.Prefs.MaxSelect==1?GenericEventV7CardAdapter.IsReady(b,upgrade,out diagnostic):GenericEventV7MultiUpgradeAdapter.IsReady(b,upgrade,out diagnostic)) :
+                    b.Screen is NDeckEnchantSelectScreen enchant ? GenericEventV7CardAdapter.IsReady(b,enchant,out diagnostic):
                     b.Screen is NDeckTransformSelectScreen transform ? GenericEventV7TransformAdapter.IsReady(b,transform,out diagnostic):
                     b.Screen is NDeckCardSelectScreen removal ? GenericEventV7RemovalAdapter.IsReady(b,removal,out diagnostic):
                     b.Screen is NSimpleCardSelectScreen reward && GenericEventV7RewardAdapter.IsReady(b,reward,out diagnostic)))return Fixed("waiting");
-                b.Admission ??= new GenericEventV7CardAdmission(new object(),b.Operation==CardSelectionV1Operation.Upgrade?"upgrade":b.Operation==CardSelectionV1Operation.Remove?"remove":b.Operation==CardSelectionV1Operation.Transform?"transform":"add",
+                b.Admission ??= new GenericEventV7CardAdmission(new object(),b.Operation==CardSelectionV1Operation.Enchant?"enchant":b.Operation==CardSelectionV1Operation.Upgrade?"upgrade":b.Operation==CardSelectionV1Operation.Remove?"remove":b.Operation==CardSelectionV1Operation.Transform?"transform":"add",
                     b.Prefs.MinSelect,b.Prefs.MaxSelect,b.CommitModeName,b.DomainCount);
                 diagnostic=GenericEventDiagnosticCode.ChildReady;
                 return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),b.Screen,b.Admission);
@@ -190,10 +191,13 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         }
         ICardSelectionV1NativeAdapter adapter=b.Screen is NDeckUpgradeSelectScreen upgrade
             ?(b.Prefs.MaxSelect==1?new GenericEventV7CardAdapter(b,context,upgrade):new GenericEventV7MultiUpgradeAdapter(b,context,upgrade))
+            :b.Screen is NDeckEnchantSelectScreen enchant?new GenericEventV7CardAdapter(b,context,enchant)
             :b.Screen is NDeckCardSelectScreen removal?new GenericEventV7RemovalAdapter(b,context,removal)
             :b.Screen is NSimpleCardSelectScreen reward?new GenericEventV7RewardAdapter(b,context,reward)
             :throw new InvalidOperationException("Unsupported selector family.");
-        try{return new GenericEventV7CardChildSession(new Sts2AgentBridge.Successors.GenericEventV5.GenericEventV5FrozenChildSession(new CardSelectionV1Session(context,adapter)));}catch{adapter.Dispose();throw;}
+        try{return new GenericEventV7CardChildSession(b.Operation==CardSelectionV1Operation.Enchant
+            ?new GenericEventV7EnchantChildSession(context,adapter)
+            :new Sts2AgentBridge.Successors.GenericEventV5.GenericEventV5FrozenChildSession(new CardSelectionV1Session(context,adapter)));}catch{adapter.Dispose();throw;}
     }
     public void CompleteParent()
     {

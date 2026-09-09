@@ -73,6 +73,8 @@ class Exchange:
                      'slot_offer_indices', 'deck_originals', 'multi_completion_valid', 'derived_hitboxes_retained') if self.native else
                     ('body', 'parent_dispatches', 'card_dispatches', 'before_child_effects', 'disposed_children',
                      'remaining_keys', 'remaining_levels'))
+        if self.native and not self.item and not self.transform:
+            expected += ("enchantment_keys", "enchantment_amounts")
         if self.item:
             expected = ('body', 'event_type', 'map_open', 'overlay_count', 'chosen_calls',
                         'collect_calls', 'completion_valid', 'item_completions', 'baseline_keys', 'baseline_levels',
@@ -156,7 +158,7 @@ def main() -> int:
             else:
                 assert child['kind'] == 'card_selection', child
                 assert tuple(child) == common + ('operation', 'min_select', 'max_select', 'commit_mode', 'domain_count'), child
-                assert child['contract_version'] == ('card_transform_v2' if child['operation'] == 'transform' else 'card_selection_v1'), child
+                assert child['contract_version'] == ('card_enchant_v1' if child['operation'] == 'enchant' else 'card_transform_v2' if child['operation'] == 'transform' else 'card_selection_v1'), child
                 complete = payload.get('kind') == 'child_resolved'
                 seen = cards
             if complete:
@@ -611,6 +613,32 @@ def main() -> int:
             checks += 1
             native_checks += 1
         assert len(event_types) == 3, event_types
+        for scenario in ('ENCHANT_FIRST', 'ENCHANT_DELAY', 'ENCHANT_ALLOCATED', 'ENCHANT_WRONG_EFFECT'):
+            native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
+            slot = 19 if scenario == 'ENCHANT_ALLOCATED' else 0
+            try:
+                result = host.run_event(native.request, provider=planned((f'select:{slot}', 'confirm')),
+                                        clock=lambda: 1.0, sleep=lambda _: None)
+            finally:
+                native.close()
+            if scenario == 'ENCHANT_WRONG_EFFECT':
+                assert result['status'] == 'failed' and result['completed_card_children'] == 0, result
+                assert native.telemetry[-1]['confirm_calls'] == 1 and native.posts == 3
+            else:
+                assert result['status'] == 'resolved', (scenario, result, native.envelopes[-1])
+                completed_history(result, native, 1)
+                assert result['parent_reconciled'] == result['child_reconciled'] == 2 and native.posts == 4
+                end = native.telemetry[-1]
+                assert end['enchantment_keys'][slot] == 'SOWN' and end['enchantment_amounts'][slot] == 1
+                assert sum(x is not None for x in end['enchantment_keys']) == 1
+                assert end['remaining_keys'] == end['baseline_keys'] and end['remaining_levels'] == end['baseline_levels']
+                assert end['map_open'] and end['overlay_count'] == 0
+                payloads = [v['payload'] for v in native.envelopes if v.get('child')]
+                assert all(p['version'] == 'card_enchant_v1' for p in payloads)
+                assert all(p['enchantment'] == {'key': 'SOWN', 'amount': 1}
+                           for p in payloads if p.get('status') in ('ready', 'resolved'))
+            checks += 1
+            native_checks += 1
         removal_types = set()
         native_removal_cases = (
             ('R_FIRST', 2, 2, 5, ('select:3', 'select:1', 'confirm')),

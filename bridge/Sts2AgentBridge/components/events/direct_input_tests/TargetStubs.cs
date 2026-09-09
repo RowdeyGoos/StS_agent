@@ -89,6 +89,10 @@ namespace MegaCrit.Sts2.Core.ControllerInput
 namespace MegaCrit.Sts2.Core.Commands
 {
     public static class CardSelectCmd {
+        public static Func<IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel>,MegaCrit.Sts2.Core.Models.EnchantmentModel,int,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs,Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>>>? EnchantHandler;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>> FromDeckForEnchantment(IReadOnlyList<MegaCrit.Sts2.Core.Models.CardModel> cards,MegaCrit.Sts2.Core.Models.EnchantmentModel enchantment,int amount,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs)
+        { Calls++; return EnchantHandler!(cards,enchantment,amount,prefs); }
         public static object? Selector { get; set; }
         public static Func<MegaCrit.Sts2.Core.Entities.Players.Player,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs,Func<MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Cards.CardTransformation>?,Task<IEnumerable<MegaCrit.Sts2.Core.Models.CardModel>>>? TransformHandler;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
@@ -118,8 +122,19 @@ namespace MegaCrit.Sts2.Core.Models
     public class PotionModel { public ModelId Id {get;}=new(); }
     public class RelicModel { public ModelId Id {get;}=new(); }
     public class AbstractModel {}
+    public class EnchantmentModel
+    {
+        public ModelId Id {get;}=new();
+        public int Amount {get;set;}
+        public CardModel? Card {get;set;}
+        public EnchantmentModel CanonicalInstance => this;
+        public Func<CardModel,bool>? Eligible;
+        public bool CanEnchant(CardModel card)=>Eligible?.Invoke(card)??card.Enchantment is null;
+    }
     public class CardModel
     {
+        public EnchantmentModel? Enchantment {get;set;}
+        public bool IsEnchantmentPreview {get;set;}
         public MegaCrit.Sts2.Core.Entities.Players.Player? Owner {get;set;}
         public MegaCrit.Sts2.Core.Runs.IRunState? RunOverride {get;set;}
         public MegaCrit.Sts2.Core.Runs.IRunState? RunState=>RunOverride??Owner?.RunState;
@@ -281,6 +296,24 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection
         public static NSimpleCardSelectScreen Create(IReadOnlyList<MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult> cards,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs)=>Factory!(cards,prefs);
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public static NSimpleCardSelectScreen Create(IReadOnlyList<CardModel> cards,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs)=>new NSimpleCardSelectScreen();
+    }
+    public sealed class NDeckEnchantSelectScreen : NCardGridSelectionScreen
+    {
+        private EnchantmentModel _enchantment=null!;
+        private int _enchantmentAmount;
+        private MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs _prefs;
+        public void Setup(EnchantmentModel enchantment,int amount,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs)
+        {_enchantment=enchantment;_enchantmentAmount=amount;_prefs=prefs;}
+        public object[] ReadFixtureFields()=>new object[]{_enchantment,_enchantmentAmount,_prefs};
+        public static Func<IReadOnlyList<CardModel>,EnchantmentModel,int,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs,NDeckEnchantSelectScreen>? Factory;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static NDeckEnchantSelectScreen ShowScreen(IReadOnlyList<CardModel> cards,EnchantmentModel enchantment,int amount,MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs)=>Factory!(cards,enchantment,amount,prefs);
+    }
+    public class NEnchantPreview : Control
+    {
+        private Control _before=null!,_after=null!;
+        public void Setup(Control before,Control after){_before=before;_after=after;}
+        public object[] ReadFixtureFields()=>new object[]{_before,_after};
     }
     public class NDeckUpgradeSelectScreen : NCardGridSelectionScreen {
         public Action<CardModel>? ClickHandler;

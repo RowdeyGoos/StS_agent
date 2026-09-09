@@ -94,24 +94,50 @@ path; multi-upgrade and other domains/counts remain separate evidence targets.
 For console fixtures, check automatic-upgrade relics and actual card eligibility:
 Molten Egg upgraded the added Bashes; unupgraded Defend skills supplied this case.
 
-## Next acceptance case: one card enchantment
+## Implemented: one card enchantment
 
-Generic event interactions now take priority over longer-run orchestration; the
-[roadmap](../ROADMAP.md) owns that order. Card enchantment is the next concrete
-implementation target. Sapphire Seed's observed Plant and Nourish option enchants
-a card with Sown and remains unsupported. Retained metadata-only inspection of
-the pinned game also shows `FieldOfManSizedHoles.EnterYourHole` requesting exactly
-one card through `CardSelectCmd.FromDeckForEnchantment`, applying `CardCmd.Enchant`
-and finishing the event. The current generic hooks do not bind that request.
+The shared `CardSelectCmd.FromDeckForEnchantment` request and
+`NDeckEnchantSelectScreen` now form a `card_enchant_v1` child of the existing
+`generic_event_v7` parent. No event-name admission rule is added. Sapphire Seed's
+observed Plant and Nourish branch is the representative live target. Pinned
+metadata also confirms `FieldOfManSizedHoles.EnterYourHole` requests one card,
+applies an enchantment and finishes the event.
 
-The smallest acceptance case is to bind that shared request and its actual native
-selector, choose one eligible original card once, verify the requested enchantment
-on that exact card, then resume the parent through Proceed and verify core map
-readiness. Check existing enchantments, ineligible/changed targets, failed tasks
-and cleanup at the relevant boundaries. Reuse existing parent ownership,
-transport and selection mechanisms where their semantics apply. Enchantment
-identity/effects need explicit observations; an upgrade-level check is insufficient.
-This is a selected implementation target, not implemented or live-tested support.
+The initial scope is `min_select = max_select = 1`, `preview_confirm`, and
+2–64 eligible allocated candidates. Every offered candidate must be previously
+unenchanted; stacking, replacement, multiple selection and cancellation are
+unsupported. The request binds canonical enchantment identity, public key,
+positive integer amount, preferences, player/run, exact original cards and tasks.
+The native command copies and sorts its input by deck position, so screen admission
+checks those exact originals in deck order rather than requiring the same list object.
+
+Selection uses the shared direct holder input. Before confirmation, the adapter
+verifies the before-card original and the after-card enchanted preview clone,
+including owner, card key, upgrade level, enchantment key and amount. It retains
+the preview containers, holders, card nodes, clone and enchantment identities
+across reads. Completion requires the exact selected original to gain the requested
+enchantment, with unchanged card key, upgrade level, deck order and all unselected
+cards/enchantments. The first observed effect identity must remain stable.
+The selector/request/parent tasks must complete successfully and the overlay must
+close before the child resolves. Uncertain mutations are never retried.
+
+The new child wire version keeps the existing selection actions and candidate
+shape. Ready and resolved payloads append
+`"enchantment": {"key": "SOWN", "amount": 1}`; waiting/unsupported observations
+use `null`. Receipts and failures carry `card_enchant_v1` without that field.
+The resolved descriptor reports the exact verified effect on the selected original;
+selected-card fields retain its original key/upgrade level. Native object identities
+are never serialized. The host binds the descriptor for the whole child and
+rejects version, cardinality, key or amount changes. Existing child versions retain
+their wire shapes.
+
+Native fixtures cover distinct event identities, copied/sorted request lists,
+preview and effect replacement, collateral changes, failed/delayed completion and
+unsupported request shapes. Native-to-Python checks cover selection through
+Proceed/map return, a later allocated target, delayed completion and wrong effects.
+These are offline results. The live acceptance case remains: Plant and Nourish,
+one eligible original, exact Sown preview/effect, then Proceed and the shared
+client's independently checked core map decision.
 
 ## Separate remaining questions
 

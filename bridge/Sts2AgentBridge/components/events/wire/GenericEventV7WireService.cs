@@ -30,6 +30,7 @@ public sealed class GenericEventV7WireService : IDisposable
     private GenericEventV7Child? _child;
     private GenericEventV7Observation? _previous;
     private CardSelectionV1Candidate[]? _domain;
+    private CardSelectionV1EnchantmentEffect? _enchantment;
     private bool _inside, _interfered, _disposed, _childResolved, _previewSeen;
     private string? _failure;
     private int _reads, _attempts, _parentAttempts, _ordinal, _history;
@@ -92,7 +93,7 @@ public sealed class GenericEventV7WireService : IDisposable
                 {
                     Require(child.Ordinal == _ordinal + 1);
                     _child = child; _ordinal = child.Ordinal;
-                    _domain = null; _itemDomain = null; _childAccepted.Clear(); _history = 0; _previewSeen = false;
+                    _domain = null; _enchantment = null; _itemDomain = null; _childAccepted.Clear(); _history = 0; _previewSeen = false;
                 }
                 else Require(SameChild(child, _child));
                 var tagged = _session.ReadChild(child.ParentDecisionId, child.ParentActionId, child.Ordinal);
@@ -109,7 +110,7 @@ public sealed class GenericEventV7WireService : IDisposable
                 if (_child is not null)
                 {
                     Require(_childResolved || parent.Status == "unsupported");
-                    _child = null; _childResolved = false; _domain = null;
+                    _child = null; _childResolved = false; _domain = null; _enchantment = null;
                 }
                 if (parent.Status == "ready") Publish(parent.DecisionId, parent.LegalActions);
             }
@@ -178,7 +179,8 @@ public sealed class GenericEventV7WireService : IDisposable
         finally { Array.Clear(bytes); }
     }
 
-    private byte[] EncodeChild(object value) => _child!.Kind == "item" ? EncodeItem(value) : _child.Operation == "transform"
+    private byte[] EncodeChild(object value) => _child!.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
+        ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value) : _child.Operation == "transform"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value) : CardSelectionV1WireCodec.Encode(value);
     private static byte[] EncodeItem(object value) {
         ItemWireV1Envelope envelope=value switch {
@@ -288,6 +290,14 @@ public sealed class GenericEventV7WireService : IDisposable
         _previous = p;
     }
 
+    private void ValidateEnchantment(CardSelectionV1EnchantmentEffect? value)
+    {
+        if (_child!.Operation != "enchant") { Require(value is null); return; }
+        Require(value is { Amount: > 0 } && value.Key is { Length: > 0 and <= 128 } && value.Key.All(c => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_'));
+        _enchantment ??= value;
+        Require(_enchantment!.Key == value!.Key && _enchantment.Amount == value.Amount);
+    }
+
     private void ValidateChild(object value)
     {
         Require(_child is not null);
@@ -299,6 +309,7 @@ public sealed class GenericEventV7WireService : IDisposable
             ValidateHistory(p.PriorResults);
             if (p.Status == "ready")
             {
+                ValidateEnchantment(p.Enchantment);
                 Require(p.Operation == _child!.Operation && p.MinSelect == _child.MinSelect && p.MaxSelect == _child.MaxSelect &&
                     p.CommitMode == _child.CommitMode && p.Candidates.Count == _child.DomainCount);
                 Require(p.PriorResults.Count == _childAccepted.Count);
@@ -347,6 +358,7 @@ public sealed class GenericEventV7WireService : IDisposable
         }
         else if (value is CardSelectionV1ResolvedResult done)
         {
+            ValidateEnchantment(done.Enchantment);
             Require(done.SessionNonce == _nonce && done.Operation == _child!.Operation && _domain is not null &&
                 done.SelectedCards.Count >= _child.MinSelect && done.SelectedCards.Count <= _child.MaxSelect &&
                 done.PriorResults.Count == _childAccepted.Count && _childAccepted.Count > 0);

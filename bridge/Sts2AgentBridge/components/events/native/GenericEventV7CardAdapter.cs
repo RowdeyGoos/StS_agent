@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Linq;
 using Sts2AgentBridge.Successors.GenericEventReleaseV5;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,10 +24,10 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
 
     private readonly GenericEventV7Binding _binding;
     private readonly CardSelectionV1ParentContext _context;
-    private readonly NDeckUpgradeSelectScreen _screen;
+    private readonly NCardGridSelectionScreen _screen;
     private readonly NCardGrid _grid;
     private readonly Control _previewContainer;
-    private readonly NUpgradePreview _preview;
+    private readonly Control _preview;
     private readonly NConfirmButton _confirm;
     private readonly Action _confirmDispatch;
     private readonly Task<IEnumerable<CardModel>> _completionTask;
@@ -40,11 +41,12 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
     private CardSelectionV1TaskState _taskState = CardSelectionV1TaskState.Incomplete;
     private object[] _taskResult = Array.Empty<object>();
     private bool _disposed;
+    private object[]? _enchantPreviewBindings;
 
     internal GenericEventV7CardAdapter(
         GenericEventV7Binding binding,
         CardSelectionV1ParentContext context,
-        NDeckUpgradeSelectScreen screen)
+        NCardGridSelectionScreen screen)
     {
         _binding = binding ?? throw new ArgumentNullException(nameof(binding));
         _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -55,7 +57,7 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
                 out CandidateBinding[] candidateBindings,
                 out CardSelectionV1NativeCandidate[] candidates,
                 out Control previewContainer,
-                out NUpgradePreview preview,
+                out Control preview,
                 out NConfirmButton confirm,
                 out _))
             throw new InvalidOperationException("Event selector binding is unsupported.");
@@ -75,7 +77,7 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
 
     internal static bool IsReady(
         GenericEventV7Binding binding,
-        NDeckUpgradeSelectScreen screen,
+        NCardGridSelectionScreen screen,
         out GenericEventDiagnosticCode diagnostic)
     {
         diagnostic = GenericEventDiagnosticCode.PrepareBinding;
@@ -103,6 +105,11 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
             !TryCopyDeck(out CardSelectionV1DeckCard[] deck))
             return Unsupported();
         SnapshotTask();
+        if (!selectorClosed && _context.Operation == CardSelectionV1Operation.Enchant &&
+            (!EnchantmentScreenMatches(_binding, _screen) ||
+             _taskState == CardSelectionV1TaskState.Incomplete && _binding.Originals.Any(c =>
+                 c.Enchantment is not null || !_binding.EnchantmentModel!.CanEnchant(c))))
+            return Unsupported();
 
         bool selectorTop = !selectorClosed;
         CardSelectionV1Phase phase;
@@ -179,7 +186,7 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
             _completionTask,
             previewIdentity,
             CardSelectionV1ParentKind.Event,
-            CardSelectionV1Operation.Upgrade,
+            _context.Operation,
             1,
             1,
             CardSelectionV1CommitMode.PreviewConfirm,
@@ -198,7 +205,8 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
             deck,
             Array.Empty<CardSelectionV1Replacement>(),
             null,
-            confirm);
+            confirm,
+            _context.Enchantment);
     }
 
     private bool TryBoundForeground(out bool selectorClosed)
@@ -239,12 +247,12 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
 
     private static bool TryPrepareSurface(
         GenericEventV7Binding binding,
-        NDeckUpgradeSelectScreen screen,
+        NCardGridSelectionScreen screen,
         out NCardGrid grid,
         out CandidateBinding[] bindings,
         out CardSelectionV1NativeCandidate[] candidates,
         out Control previewContainer,
-        out NUpgradePreview preview,
+        out Control preview,
         out NConfirmButton confirm,
         out GenericEventDiagnosticCode diagnostic)
     {
@@ -257,7 +265,10 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
         diagnostic = GenericEventDiagnosticCode.PrepareBinding;
         if (!binding.Ready) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareScreen;
-        if (!ValidExact(screen) || !screen.IsVisibleInTree()) return false;
+        if (!(binding.Operation == CardSelectionV1Operation.Enchant
+            ? screen.GetType() == typeof(NDeckEnchantSelectScreen) && EnchantmentScreenMatches(binding, screen)
+            : screen.GetType() == typeof(NDeckUpgradeSelectScreen)) ||
+            !Valid(screen) || !screen.IsVisibleInTree()) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareExternalSelector;
         if (CardSelectCmd.Selector is not null) return false;
         diagnostic = GenericEventDiagnosticCode.PrepareDeck;
@@ -273,18 +284,20 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
         diagnostic = GenericEventDiagnosticCode.PrepareCandidates;
         if (!TryCreateBindings(holders, binding.EligibleOriginals, out bindings, out candidates)) return false;
         diagnostic = GenericEventDiagnosticCode.PreparePreviewNodes;
+        bool enchant = binding.Operation == CardSelectionV1Operation.Enchant;
         previewContainer = RequiredNode<Control>(screen,
-            "%UpgradeSinglePreviewContainer");
-        preview = RequiredNode<NUpgradePreview>(previewContainer, "UpgradePreview");
+            enchant ? "%EnchantSinglePreviewContainer" : "%UpgradeSinglePreviewContainer");
+        preview = enchant ? RequiredNode<NEnchantPreview>(previewContainer, "EnchantPreview") :
+            RequiredNode<NUpgradePreview>(previewContainer, "UpgradePreview");
         confirm = RequiredNode<NConfirmButton>(previewContainer, "Confirm");
         diagnostic = GenericEventDiagnosticCode.PreparePreviewState;
-        return ValidExact(preview) && ValidExact(confirm) &&
-            !previewContainer.Visible && preview.Card is null;
+        return PreviewTypeValid(preview, enchant) && ValidExact(confirm) &&
+            !previewContainer.Visible && (enchant || ((NUpgradePreview)preview).Card is null);
     }
 
     private static bool InitialForeground(
         GenericEventV7Binding binding,
-        NDeckUpgradeSelectScreen screen) =>
+        NCardGridSelectionScreen screen) =>
         ReferenceEquals(MegaCrit.Sts2.Core.Nodes.NRun.Instance, binding.Run) &&
         ReferenceEquals(binding.Run.EventRoom, binding.Room) &&
         ReferenceEquals(MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom.Instance,
@@ -312,20 +325,26 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
         identity = null;
         originals = Array.Empty<object>();
         confirm = null;
-        if (!Valid(_previewContainer) || !ValidExact(_preview) ||
+        bool enchant = _context.Operation == CardSelectionV1Operation.Enchant;
+        if (!Valid(_previewContainer) || !PreviewTypeValid(_preview, enchant) ||
             !ValidExact(_confirm) ||
             !ReferenceEquals(_screen.GetNodeOrNull<Control>(
-                "%UpgradeSinglePreviewContainer"), _previewContainer) ||
-            !ReferenceEquals(_previewContainer.GetNodeOrNull<NUpgradePreview>(
-                "UpgradePreview"), _preview) ||
-            !ReferenceEquals(_previewContainer.GetNodeOrNull<NConfirmButton>(
-                "Confirm"), _confirm))
+                enchant ? "%EnchantSinglePreviewContainer" : "%UpgradeSinglePreviewContainer"), _previewContainer) ||
+            !ReferenceEquals(_previewContainer.GetNodeOrNull<Control>(
+                enchant ? "EnchantPreview" : "UpgradePreview"), _preview) ||
+            !ReferenceEquals(_previewContainer.GetNodeOrNull<NConfirmButton>("Confirm"), _confirm) ||
+            enchant && !EnchantmentScreenMatches(_binding, _screen))
             return false;
         open = _previewContainer.Visible && _previewContainer.IsVisibleInTree();
         if (!open) return true;
         identity = _preview;
-        CardModel? original = _preview.Card;
-        if (original is not null) originals = new object[] { original };
+        if (enchant)
+        {
+            if (!TryEnchantPreview(out CardModel original)) return false;
+            originals = new object[] { original };
+        }
+        else if (((NUpgradePreview)_preview).Card is { } original)
+            originals = new object[] { original };
         confirm = new CardSelectionV1NativeControl(
             _confirm, _confirm.IsVisibleInTree(), _confirm.IsEnabled, _confirmDispatch);
         return true;
@@ -504,9 +523,53 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
                 return false;
             }
             copied.Add(new CardSelectionV1DeckCard(
-                card, card.Id.Entry, card.CurrentUpgradeLevel));
+                card, card.Id.Entry, card.CurrentUpgradeLevel,
+                _context.Operation == CardSelectionV1Operation.Enchant ? GenericEventV7Binding.CopyEnchantment(card) : null));
         }
         deck = copied.ToArray();
+        return true;
+    }
+
+    private static bool PreviewTypeValid(Control preview, bool enchant) =>
+        Valid(preview) && preview.GetType() == (enchant ? typeof(NEnchantPreview) : typeof(NUpgradePreview));
+
+    private static object? Field(object obj, string name) =>
+        obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)?.GetValue(obj);
+
+    private static bool EnchantmentScreenMatches(GenericEventV7Binding b, NCardGridSelectionScreen screen) =>
+        b.Enchantment is { } requested && b.EnchantmentModel is { } model &&
+        ReferenceEquals(requested.Identity, model) && model.Id.Entry == requested.Key &&
+        ReferenceEquals(Field(screen, "_enchantment"), model) &&
+        Field(screen, "_enchantmentAmount") is int amount && amount == requested.Amount &&
+        Field(screen, "_prefs") is MegaCrit.Sts2.Core.CardSelection.CardSelectorPrefs prefs && b.SamePrefs(prefs);
+
+    private bool TryEnchantPreview(out CardModel original)
+    {
+        original = null!;
+        if (Field(_preview, "_before") is not Control before ||
+            Field(_preview, "_after") is not Control after || !Valid(before) || !Valid(after))
+            return false;
+        var originals = before.GetChildren();
+        var previews = after.GetChildren();
+        if (originals.Count != 1 || previews.Count != 1 ||
+            originals[0] is not NPreviewCardHolder originalHolder || !ValidExact(originalHolder) ||
+            previews[0] is not NPreviewCardHolder previewHolder || !ValidExact(previewHolder) ||
+            originalHolder.CardModel is not CardModel card || previewHolder.CardModel is not CardModel clone ||
+            !ReferenceEquals(originalHolder.CardNode?.Model, card) || !ReferenceEquals(previewHolder.CardNode?.Model, clone) ||
+            !_binding.Originals.Any(c => ReferenceEquals(c, card)) || ReferenceEquals(card, clone) ||
+            _binding.Player.Deck.Cards.Any(c => ReferenceEquals(c, clone)) ||
+            !ReferenceEquals(clone.Owner, _binding.Player) || !ReferenceEquals(clone.RunState, _binding.RunState) ||
+            card.Enchantment is not null || !clone.IsEnchantmentPreview ||
+            clone.Id.Entry != card.Id.Entry || clone.CurrentUpgradeLevel != card.CurrentUpgradeLevel ||
+            GenericEventV7Binding.CopyEnchantment(clone) is not { } effect ||
+            effect.Key != _context.Enchantment!.Key || effect.Amount != _context.Enchantment.Amount)
+            return false;
+        object[] bindings = { before, after, originalHolder, originalHolder.CardNode!,
+            previewHolder, previewHolder.CardNode!, card, clone, effect.Identity };
+        _enchantPreviewBindings ??= bindings;
+        if (bindings.Where((value,i) => !ReferenceEquals(value,_enchantPreviewBindings[i])).Any())
+            return false;
+        original = card;
         return true;
     }
 
@@ -564,7 +627,7 @@ public sealed class GenericEventV7CardAdapter : ICardSelectionV1NativeAdapter
         CardSelectionV1SurfaceStatus.Unsupported,
         null, null, null, null, null, null, null, null, null, null,
         CardSelectionV1ParentKind.Event,
-        CardSelectionV1Operation.Upgrade,
+        _context.Operation,
         1, 1,
         CardSelectionV1CommitMode.PreviewConfirm,
         CardSelectionV1Phase.Transient,

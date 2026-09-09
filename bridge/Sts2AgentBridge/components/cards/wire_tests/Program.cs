@@ -288,7 +288,7 @@ internal static class Program
         CardSelectionV1Observation observation = Construct<CardSelectionV1Observation>(
             Hex('1', 32), "ready", "preview", "transform", "preview_confirm",
             1, 8, Hex('e'), candidates, Enumerable.Range(0, 8).ToArray(),
-            new[] { "confirm" }, history);
+            new[] { "confirm" }, history, null!);
         Type codec = typeof(CardSelectionV1WireProtocol).Assembly.GetType(
             "Sts2AgentBridge.Successors.CardSelectionV1.Wire.CardSelectionV1WireCodec", true)!;
         MethodInfo encode = codec.GetMethod("Encode", BindingFlags.Static | BindingFlags.Public)!
@@ -327,7 +327,7 @@ internal static class Program
             CardSelectionV1Observation preview = (CardSelectionV1Observation)session.ReadChild();
             var onlySelected = preview.Candidates.Where(item => item.Selected).ToArray();
             CardSelectionV1ResolvedResult missingConfirm = Construct<CardSelectionV1ResolvedResult>(
-                Hex('1', 32), "upgrade", onlySelected, preview.PriorResults);
+                Hex('1', 32), "upgrade", onlySelected, preview.PriorResults, null!);
             InvokeValidationReject(service, "ValidateChildRead", missingConfirm,
                 "smith resolved without confirm");
         }
@@ -385,7 +385,7 @@ internal static class Program
         IReadOnlyList<CardSelectionV1Candidate> candidates) =>
         Construct<CardSelectionV1Observation>(value.SessionNonce, value.Status, value.Phase,
             value.Operation, value.CommitMode, value.MinSelect, value.MaxSelect, decision,
-            candidates, value.SelectedSlots, value.LegalActions, value.PriorResults);
+            candidates, value.SelectedSlots, value.LegalActions, value.PriorResults, null!);
 
     private static void InvokeValidationReject(
         CardSelectionV1WireService service, string method, object value, string message)

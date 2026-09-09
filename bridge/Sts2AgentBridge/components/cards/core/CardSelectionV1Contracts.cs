@@ -29,6 +29,7 @@ public enum CardSelectionV1Operation
     Remove = 2,
     Upgrade = 3,
     Transform = 4,
+    Enchant = 5,
 }
 
 public enum CardSelectionV1CommitMode
@@ -87,7 +88,8 @@ public sealed class CardSelectionV1ParentContext
         int minSelect,
         int maxSelect,
         CardSelectionV1CommitMode commitMode,
-        int expectedDomainCount = 0)
+        int expectedDomainCount = 0,
+        CardSelectionV1Enchantment? enchantment = null)
     {
         SessionNonce = sessionNonce;
         ParentKind = parentKind;
@@ -105,6 +107,7 @@ public sealed class CardSelectionV1ParentContext
         MaxSelect = maxSelect;
         CommitMode = commitMode;
         ExpectedDomainCount = expectedDomainCount;
+        Enchantment = enchantment;
     }
 
     public string SessionNonce { get; }
@@ -123,6 +126,7 @@ public sealed class CardSelectionV1ParentContext
     public int MaxSelect { get; }
     public CardSelectionV1CommitMode CommitMode { get; }
     public int ExpectedDomainCount { get; }
+    public CardSelectionV1Enchantment? Enchantment { get; }
 }
 
 public sealed class CardSelectionV1NativeControl
@@ -186,15 +190,26 @@ public sealed class CardSelectionV1NativeCandidate
     public Action SelectDispatch { get; }
 }
 
+// Native identity stays private to the adapter/session; only key and amount are public.
+public sealed record CardSelectionV1Enchantment(object Identity, string Key, int Amount)
+{
+    public static bool Same(CardSelectionV1Enchantment? a, CardSelectionV1Enchantment? b) =>
+        a is null || b is null ? a is null && b is null :
+        ReferenceEquals(a.Identity, b.Identity) && a.Key == b.Key && a.Amount == b.Amount;
+}
+
 public sealed class CardSelectionV1DeckCard
 {
-    public CardSelectionV1DeckCard(object modelIdentity, string stableKey, int upgradeLevel)
+    public CardSelectionV1DeckCard(object modelIdentity, string stableKey, int upgradeLevel,
+        CardSelectionV1Enchantment? enchantment = null)
     {
         ModelIdentity = modelIdentity;
         StableKey = stableKey;
         UpgradeLevel = upgradeLevel;
+        Enchantment = enchantment;
     }
 
+    public CardSelectionV1Enchantment? Enchantment { get; }
     public object ModelIdentity { get; }
     public string StableKey { get; }
     public int UpgradeLevel { get; }
@@ -260,7 +275,8 @@ public sealed class CardSelectionV1SurfaceCapture
         IReadOnlyList<CardSelectionV1DeckCard> deck,
         IReadOnlyList<CardSelectionV1Replacement> replacements,
         CardSelectionV1NativeControl? previewControl,
-        CardSelectionV1NativeControl? confirmControl)
+        CardSelectionV1NativeControl? confirmControl,
+        CardSelectionV1Enchantment? enchantment = null)
     {
         Status = status;
         ParentReceiptIdentity = parentReceiptIdentity;
@@ -294,6 +310,7 @@ public sealed class CardSelectionV1SurfaceCapture
         _replacements = Copy(replacements);
         PreviewControl = previewControl;
         ConfirmControl = confirmControl;
+        Enchantment = enchantment;
     }
 
     public CardSelectionV1SurfaceStatus Status { get; }
@@ -328,6 +345,7 @@ public sealed class CardSelectionV1SurfaceCapture
     public IReadOnlyList<CardSelectionV1Replacement> Replacements => _replacements;
     public CardSelectionV1NativeControl? PreviewControl { get; }
     public CardSelectionV1NativeControl? ConfirmControl { get; }
+    public CardSelectionV1Enchantment? Enchantment { get; }
 
     private static ReadOnlyCollection<T> Copy<T>(IReadOnlyList<T> source)
     {
@@ -381,6 +399,13 @@ public sealed class CardSelectionV1ActionResult
     public string Result { get; }
 }
 
+public sealed class CardSelectionV1EnchantmentEffect
+{
+    internal CardSelectionV1EnchantmentEffect(string key, int amount) { Key = key; Amount = amount; }
+    public string Key { get; }
+    public int Amount { get; }
+}
+
 public sealed class CardSelectionV1Observation : ICardSelectionV1ReadValue
 {
     private readonly ReadOnlyCollection<CardSelectionV1Candidate> _candidates;
@@ -400,7 +425,8 @@ public sealed class CardSelectionV1Observation : ICardSelectionV1ReadValue
         IReadOnlyList<CardSelectionV1Candidate> candidates,
         IReadOnlyList<int> selectedSlots,
         IReadOnlyList<string> legalActions,
-        IReadOnlyList<CardSelectionV1ActionResult> priorResults)
+        IReadOnlyList<CardSelectionV1ActionResult> priorResults,
+        CardSelectionV1Enchantment? enchantment = null)
     {
         Version = CardSelectionV1Limits.Version;
         SessionNonce = sessionNonce;
@@ -416,6 +442,7 @@ public sealed class CardSelectionV1Observation : ICardSelectionV1ReadValue
         _selectedSlots = Copy(selectedSlots);
         _legalActions = Copy(legalActions);
         _priorResults = Copy(priorResults);
+        Enchantment = enchantment is null ? null : new CardSelectionV1EnchantmentEffect(enchantment.Key, enchantment.Amount);
     }
 
     public string Version { get; }
@@ -432,6 +459,7 @@ public sealed class CardSelectionV1Observation : ICardSelectionV1ReadValue
     public IReadOnlyList<int> SelectedSlots => _selectedSlots;
     public IReadOnlyList<string> LegalActions => _legalActions;
     public IReadOnlyList<CardSelectionV1ActionResult> PriorResults => _priorResults;
+    public CardSelectionV1EnchantmentEffect? Enchantment { get; }
 
     internal static CardSelectionV1Observation Fixed(
         string nonce,
@@ -459,7 +487,8 @@ public sealed class CardSelectionV1ResolvedResult : ICardSelectionV1ReadValue
         string sessionNonce,
         string operation,
         IReadOnlyList<CardSelectionV1Candidate> selectedCards,
-        IReadOnlyList<CardSelectionV1ActionResult> priorResults)
+        IReadOnlyList<CardSelectionV1ActionResult> priorResults,
+        CardSelectionV1Enchantment? enchantment = null)
     {
         Version = CardSelectionV1Limits.Version;
         SessionNonce = sessionNonce;
@@ -469,6 +498,7 @@ public sealed class CardSelectionV1ResolvedResult : ICardSelectionV1ReadValue
         Operation = operation;
         _selectedCards = Copy(selectedCards);
         _priorResults = Copy(priorResults);
+        Enchantment = enchantment is null ? null : new CardSelectionV1EnchantmentEffect(enchantment.Key, enchantment.Amount);
     }
 
     public string Version { get; }
@@ -479,6 +509,7 @@ public sealed class CardSelectionV1ResolvedResult : ICardSelectionV1ReadValue
     public string Operation { get; }
     public IReadOnlyList<CardSelectionV1Candidate> SelectedCards => _selectedCards;
     public IReadOnlyList<CardSelectionV1ActionResult> PriorResults => _priorResults;
+    public CardSelectionV1EnchantmentEffect? Enchantment { get; }
 
     private static ReadOnlyCollection<T> Copy<T>(IReadOnlyList<T> source)
     {

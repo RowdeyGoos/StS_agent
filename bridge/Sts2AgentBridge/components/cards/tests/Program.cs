@@ -14,6 +14,9 @@ internal static class Program
         try
         {
             EventOperationsAtOneAndTwo();
+            Throws<ArgumentException>(() => new Fixture(CardSelectionV1Operation.Enchant, 1, 1,
+                CardSelectionV1CommitMode.PreviewConfirm).Session(),
+                "legacy context cannot admit enchantment without its descriptor");
             CheeseTwoOfEightAuto();
             PreviewModesAndRestGuard();
             InitialAdmissionGuards();
@@ -39,9 +42,12 @@ internal static class Program
         }
     }
 
+    // The original families support these multi-card modes. Enchant uses a
+    // separate single-card preview contract exercised by native event fixtures.
     private static void EventOperationsAtOneAndTwo()
     {
-        foreach (CardSelectionV1Operation operation in Enum.GetValues<CardSelectionV1Operation>())
+        foreach (CardSelectionV1Operation operation in new[] { CardSelectionV1Operation.Add, CardSelectionV1Operation.Remove,
+            CardSelectionV1Operation.Upgrade, CardSelectionV1Operation.Transform })
         foreach (int count in new[] { 1, 2 })
         {
             var fixture = new Fixture(operation, count, count,
@@ -381,7 +387,8 @@ internal static class Program
 
     private static void EffectPrefixAndSelectionMonotonicity()
     {
-        foreach (CardSelectionV1Operation operation in Enum.GetValues<CardSelectionV1Operation>())
+        foreach (CardSelectionV1Operation operation in new[] { CardSelectionV1Operation.Add, CardSelectionV1Operation.Remove,
+            CardSelectionV1Operation.Upgrade, CardSelectionV1Operation.Transform })
         {
             var partial = new Fixture(operation, 2, 2,
                 CardSelectionV1CommitMode.AutoAtMax);
@@ -624,9 +631,11 @@ internal static class Program
         ExactProperties(typeof(CardSelectionV1ActionResult), "ActionId", "DecisionId", "Result");
         ExactProperties(typeof(CardSelectionV1DispatchReceipt), "ActionId", "DecisionId", "Outcome", "ParentOrdinal", "SessionNonce", "Version");
         ExactProperties(typeof(CardSelectionV1ApplyFailure), "Outcome", "ParentOrdinal", "SessionNonce", "Version");
-        ExactProperties(typeof(CardSelectionV1Observation), "Candidates", "CommitMode", "DecisionId", "LegalActions", "MaxSelect", "MinSelect", "Operation", "ParentOrdinal", "Phase", "PriorResults", "SelectedSlots", "SessionNonce", "Status", "Version");
-        ExactProperties(typeof(CardSelectionV1ResolvedResult), "Operation", "ParentOrdinal", "Phase", "PriorResults", "SelectedCards", "SessionNonce", "Status", "Version");
-        foreach (Type type in new[] { typeof(CardSelectionV1Candidate), typeof(CardSelectionV1ActionResult), typeof(CardSelectionV1DispatchReceipt), typeof(CardSelectionV1ApplyFailure), typeof(CardSelectionV1Observation), typeof(CardSelectionV1ResolvedResult) })
+        ExactProperties(typeof(CardSelectionV1Observation), "Candidates", "CommitMode", "DecisionId", "Enchantment", "LegalActions", "MaxSelect", "MinSelect", "Operation", "ParentOrdinal", "Phase", "PriorResults", "SelectedSlots", "SessionNonce", "Status", "Version");
+        ExactProperties(typeof(CardSelectionV1ResolvedResult), "Enchantment", "Operation", "ParentOrdinal", "Phase", "PriorResults", "SelectedCards", "SessionNonce", "Status", "Version");
+        ExactProperties(typeof(CardSelectionV1EnchantmentEffect), "Amount", "Key");
+        True(first.Enchantment is null, "legacy observations have no enchantment descriptor");
+        foreach (Type type in new[] { typeof(CardSelectionV1EnchantmentEffect), typeof(CardSelectionV1Candidate), typeof(CardSelectionV1ActionResult), typeof(CardSelectionV1DispatchReceipt), typeof(CardSelectionV1ApplyFailure), typeof(CardSelectionV1Observation), typeof(CardSelectionV1ResolvedResult) })
             foreach (PropertyInfo property in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
                 False(property.PropertyType == typeof(object), "no opaque public output property");
         Pass();

@@ -145,6 +145,7 @@ internal static partial class Program
         PatchOwnership();
         LifecycleTests();
         Check(_checks==745,"preserved predecessor assertion count");
+        EnchantmentTests();
         UpgradeHolderInputTests();
         MultiUpgradeTests();
         TransformTests();
@@ -235,6 +236,114 @@ internal static partial class Program
         }
         LifecycleNegatives();
     }
+    private static void EnchantmentTests()
+    {
+        foreach(string name in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
+        using(var f=new Fixture(name,enchant:true))
+        {
+            var c=f.Start();
+            Check(c.Status=="child"&&c.Child!.ContractVersion=="card_enchant_v1"&&c.Child.Operation=="enchant","enchant child admission");
+            f.Finish(c);
+            Check(f.Cards[0].Enchantment is {Amount:1} e&&e.Id.Entry=="SOWN"&&f.Cards.Skip(1).All(card=>card.Enchantment is null),"exact enchant effect");
+            var p=f.Session.Read();Check(p.Phase=="proceed"&&p.ParentReconciled==1,"enchant parent resumed");
+            Check(f.Session.Apply(p.DecisionId,"choose:0").Outcome=="accepted"&&f.Session.Read().Status=="complete","enchant map handoff");
+        }
+        using(var f=new Fixture("ENCHANT_AMOUNT_THREE",enchant:true,enchantAmount:3))
+        {
+            Fixture.ApplyEnchantment(f.Cards[2],2,"OTHER");
+            var existing=f.Cards[2].Enchantment;var c=f.Start();f.Finish(c);
+            Check(f.Cards[0].Enchantment?.Amount==3&&ReferenceEquals(f.Cards[2].Enchantment,existing)&&existing!.Amount==2,"positive request amount and unchanged existing enchantment");
+        }
+        using(var f=new Fixture("ENCHANT_ELIGIBILITY_CHANGED",enchant:true))
+        {
+            var c=f.Start();f.Enchantment.Eligible=_=>false;
+            Check(IsUnsupported(f,c)&&f.SelectCalls==0,"native enchant eligibility rechecked");
+        }
+        using(var f=new Fixture("ENCHANT_REQUEST_MISMATCH",enchant:true,mismatchRequest:true))
+        {
+            var c=f.Start();f.SelectConfirm(c);
+            Check(IsUnsupported(f,c),"native request result must match selected original");
+        }
+        foreach(string mutation in new[]{"wrong_amount","wrong_key","wrong_card","extra_effect","upgrade","remove","fault"})
+        using(var f=new Fixture("ENCHANT_EFFECT",enchant:true,faultAfter:mutation=="fault"))
+        {
+            f.AfterEffect=()=>{switch(mutation){
+                case "wrong_amount":f.Cards[0].Enchantment!.Amount=2;break;
+                case "wrong_key":f.Cards[0].Enchantment!.Id.Entry="OTHER";break;
+                case "wrong_card":f.Cards[0].Enchantment!.Card=f.Cards[1];break;
+                case "extra_effect":Fixture.ApplyEnchantment(f.Cards[2],1);break;
+                case "upgrade":f.Cards[0].CurrentUpgradeLevel++;break;
+                case "remove":f.Player.Deck.Cards.RemoveAt(2);break;
+            }};
+            var c=f.Start();f.SelectConfirm(c);Check(IsUnsupported(f,c),"reject enchant effect "+mutation);
+            Check(f.ConfirmCalls==1,"uncertain enchant is never retried");
+        }
+        foreach(string mutation in new[]{"original","amount","key","clone_is_original","preview_flag","owner","holder"})
+        using(var f=new Fixture("ENCHANT_PREVIEW",enchant:true))
+        {
+            f.AfterEnchantPreview=()=>{
+                var h=(NPreviewCardHolder)f.EnchantAfter.Children[0];var clone=h.CardNode.Model!;
+                switch(mutation){
+                    case "original":((NPreviewCardHolder)f.EnchantBefore.Children[0]).CardNode.Model=f.Cards[1];break;
+                    case "amount":clone.Enchantment!.Amount=2;break;
+                    case "key":clone.Enchantment!.Id.Entry="OTHER";break;
+                    case "clone_is_original":h.CardNode.Model=f.Cards[0];break;
+                    case "preview_flag":clone.IsEnchantmentPreview=false;break;
+                    case "owner":clone.Owner=new Player();break;
+                    case "holder":f.EnchantAfter.Children.Clear();break;
+                }
+            };
+            var c=f.Start();var child=c.Child!;
+            var o=(CardSelectionV1Observation)f.Session.ReadCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal).Value;
+            f.Session.ApplyCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal,o.DecisionId,"select:0");
+            Check(IsUnsupported(f,c)&&f.ConfirmCalls==0,"reject enchant preview "+mutation);
+        }
+        foreach(string mutation in new[]{"holder","card","clone","enchantment","before_container"})
+        using(var f=new Fixture("ENCHANT_REPLACED_PREVIEW",enchant:true))
+        {
+            var c=f.Start();var child=c.Child!;
+            var o=(CardSelectionV1Observation)f.Session.ReadCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal).Value;
+            f.Session.ApplyCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal,o.DecisionId,"select:0");
+            o=(CardSelectionV1Observation)f.Session.ReadCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal).Value;
+            Check(o.Status=="ready"&&o.Phase=="preview","enchant preview published");
+            var holder=(NPreviewCardHolder)f.EnchantAfter.Children[0];
+            switch(mutation){
+                case "holder":f.EnchantAfter.Children[0]=new NPreviewCardHolder{CardNode=holder.CardNode};break;
+                case "card":holder.CardNode=new NCard{Model=holder.CardNode.Model};break;
+                case "clone":
+                    var copy=new CardModel{Owner=f.Player,IsEnchantmentPreview=true};copy.Id.Entry=holder.CardNode.Model!.Id.Entry;
+                    Fixture.ApplyEnchantment(copy,1);holder.CardNode.Model=copy;break;
+                case "enchantment":Fixture.ApplyEnchantment(holder.CardNode.Model!,1);break;
+                case "before_container":
+                    var before=new Control();before.Children.Add(f.EnchantBefore.Children[0]);f.EnchantPreview.Setup(before,f.EnchantAfter);break;
+            }
+            f.Session.ApplyCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal,o.DecisionId,"confirm");
+            Check(IsUnsupported(f,c)&&f.ConfirmCalls==0,"retained enchant preview "+mutation);
+        }
+        using(var f=new Fixture("ENCHANT_REPLACED_EFFECT",enchant:true,effectDelayed:true))
+        {
+            var c=f.Start();f.SelectConfirm(c);var child=c.Child!;
+            Check(f.Session.ReadCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal).Value is CardSelectionV1Observation {Status:"waiting"},"enchantment first effect observed");
+            Fixture.ApplyEnchantment(f.Cards[0],1);f.Gate.SetResult();
+            Check(IsUnsupported(f,c),"same-value replacement effect rejected");
+        }
+        using(var f=new Fixture("ENCHANT_EXISTING",enchant:true))
+        {Fixture.ApplyEnchantment(f.Cards[0],1);Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"stacking unavailable");}
+        using(var f=new Fixture("ENCHANT_AMOUNT",enchant:true,enchantAmount:0))
+        {Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"invalid request amount");}
+        using(var f=new Fixture("ENCHANT_COUNT",enchant:true,count:2,domain:3))
+        {Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"multi enchant unavailable");}
+        using(var f=new Fixture("ENCHANT_PREFS",enchant:true,mismatchPrefs:true))
+        {Check(f.Start().Status=="unsupported"&&f.SelectCalls==0,"enchant prefs exact");}
+        using(var f=new Fixture("ENCHANT_DELAY",enchant:true,effectDelayed:true))
+        {
+            var c=f.Start();f.SelectConfirm(c);var child=c.Child!;
+            Check(f.Session.ReadCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal).Value is CardSelectionV1Observation {Status:"waiting"},"effect waits for parent task");
+            f.Gate.SetResult();
+            Check(f.Session.ReadCardChild(child.ParentDecisionId,child.ParentActionId,child.Ordinal).Value is CardSelectionV1ResolvedResult,"enchantment callback completes");
+        }
+    }
+
     private static void LifecycleNegatives()
     {
         using(var f=new RewardFixture("INVALID_INITIAL",2,2,8))
@@ -332,12 +441,21 @@ internal static partial class Program
         private readonly Control _previewContainer=new(){Visible=false};
         private readonly NUpgradePreview _preview=new();
         private readonly NConfirmButton _confirm=new();
+        internal readonly Control EnchantBefore=new(),EnchantAfter=new();
+        internal readonly NEnchantPreview EnchantPreview=new();
+        internal readonly EnchantmentModel Enchantment=new();
+        internal NDeckEnchantSelectScreen? EnchantScreen;
+        internal Action? AfterEffect, AfterEnchantPreview;
+        private readonly bool _enchant;
+        private readonly int _enchantAmount;
         internal GenericEventV7Session Session;
         internal int OptionCalls,SelectCalls,ConfirmCalls;
-        internal Fixture(string name,bool manual=false,int count=1,bool cancelable=false,bool delayed=false,bool shortcut=false,bool wrongRun=false,bool mutateBefore=false,bool faultAfter=false,bool requestDelayed=false,bool effectDelayed=false,bool secondRequest=false,bool mismatchRequest=false,bool catchRequestFault=false,bool mismatchPrefs=false,bool wrongPlayer=false,bool throwingGetter=false,int domain=2)
+        internal Fixture(string name,bool manual=false,int count=1,bool cancelable=false,bool delayed=false,bool shortcut=false,bool wrongRun=false,bool mutateBefore=false,bool faultAfter=false,bool requestDelayed=false,bool effectDelayed=false,bool secondRequest=false,bool mismatchRequest=false,bool catchRequestFault=false,bool mismatchPrefs=false,bool wrongPlayer=false,bool throwingGetter=false,int domain=2,bool enchant=false,int enchantAmount=1)
         {
+            _enchant=enchant;_enchantAmount=enchantAmount;
+            Enchantment.Id.Entry="SOWN"; EnchantPreview.Setup(EnchantBefore,EnchantAfter);
             Cards=Enumerable.Range(0,domain+1).Select(i=>new CardModel{IsUpgradable=i<domain}).ToArray();
-            for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);}
+            for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);if(enchant)Cards[i].Owner=Player;}
             Model=name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
             Model.Owner=Player;
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};
@@ -350,9 +468,13 @@ internal static partial class Program
                 if(mutateBefore)Cards[2].CurrentUpgradeLevel++;
                 if(throwingGetter)Player.ThrowRunState=true;
                 IEnumerable<CardModel> selected;
-                try {selected=await CardSelectCmd.FromDeckForUpgrade(wrongPlayer?new Player():Player,new CardSelectorPrefs(count,count,cancelable,manual));}
+                try {selected=enchant
+                    ? await CardSelectCmd.FromDeckForEnchantment(Cards.Take(domain).Reverse().ToArray(),Enchantment,enchantAmount,new CardSelectorPrefs(count,count,cancelable,manual))
+                    : await CardSelectCmd.FromDeckForUpgrade(wrongPlayer?new Player():Player,new CardSelectorPrefs(count,count,cancelable,manual));}
                 catch when(catchRequestFault) {selected=new[]{Cards[0]};}
-                foreach(var card in mismatchRequest?new[]{Cards[0]}:selected)card.CurrentUpgradeLevel++;
+                foreach(var card in mismatchRequest?new[]{Cards[0]}:selected)
+                    if(enchant)ApplyEnchantment(card,enchantAmount);else card.CurrentUpgradeLevel++;
+                AfterEffect?.Invoke();
                 if(effectDelayed)await Gate.Task;
                 if(secondRequest)await CardSelectCmd.FromDeckForUpgrade(Player,new CardSelectorPrefs(1,1));
                 if(faultAfter)throw new InvalidOperationException("fixture callback failure");
@@ -371,7 +493,17 @@ internal static partial class Program
                 if(catchRequestFault)throw new InvalidOperationException("fixture request failure");
                 return mismatchRequest?new[]{Cards[1]}:values;
             };
-            NDeckUpgradeSelectScreen.Factory=(cards,prefs,run)=>CreateScreen(cards);
+            NDeckUpgradeSelectScreen.Factory=(cards,prefs,run)=>(NDeckUpgradeSelectScreen)CreateScreen(cards);
+            CardSelectCmd.EnchantHandler=async(cards,model,amount,prefs)=>{
+                if(requestDelayed)await Gate.Task;
+                var screen=NDeckEnchantSelectScreen.ShowScreen(cards.OrderBy(c=>Player.Deck.Cards.IndexOf(c)).ToList(),model,amount,mismatchPrefs?prefs with {UnpoweredPreviews=true}:prefs);
+                var values=await screen.CardsSelected();
+                return mismatchRequest?new[]{Cards[1]}:values;
+            };
+            NDeckEnchantSelectScreen.Factory=(cards,model,amount,prefs)=>{
+                var screen=(NDeckEnchantSelectScreen)CreateScreen(cards);
+                screen.Setup(model,amount,prefs);EnchantScreen=screen;return screen;
+            };
             Session=new GenericEventV7Session(new PinnedGenericEventV7NativeAdapter(),new string('a',32));
         }
         internal void AddOption(EventOption option)
@@ -384,21 +516,31 @@ internal static partial class Program
             Room.Layout.OptionButtons.Clear();
             AddOption(new EventOption{TextKey="PROCEED",IsProceed=true,Callback=()=>{OptionCalls++;Map.IsOpen=true;Map.IsTravelEnabled=true;return Task.CompletedTask;}});
         }
-        private NDeckUpgradeSelectScreen CreateScreen(IReadOnlyList<CardModel> cards)
+        private NCardGridSelectionScreen CreateScreen(IReadOnlyList<CardModel> cards)
         {
-            var screen=new NDeckUpgradeSelectScreen{SelectionTask=_selected.Task};var grid=new NCardGrid();
+            NCardGridSelectionScreen screen=_enchant?new NDeckEnchantSelectScreen{SelectionTask=_selected.Task}:new NDeckUpgradeSelectScreen{SelectionTask=_selected.Task};var grid=new NCardGrid();
             int rows=(cards.Count+3)/4;float content=rows*300+(rows-1)*40;float scrollHeight=content+400;
             grid.Size=new Vector2(1000,scrollHeight+100);grid.Bind("%ScrollContainer",new Control{Size=new Vector2(1000,scrollHeight),Position=new Vector2(0,50)});
             foreach(var card in cards)
             {
                 var material=new ShaderMaterial();var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{CardHighlight=new NCardHighlight{Material=material}},Hitbox=new MultiDerivedHitbox()};
-                holder.Selected=()=>{SelectCalls++;material.Width=BitConverter.Int32BitsToSingle(CardSelectionV1NativeRules.SelectedWidthBits);_preview.Card=card;_previewContainer.Visible=true;};
+                holder.Selected=()=>{SelectCalls++;material.Width=BitConverter.Int32BitsToSingle(CardSelectionV1NativeRules.SelectedWidthBits);_preview.Card=card;_previewContainer.Visible=true;
+                    if(_enchant){
+                        var clone=new CardModel{Owner=Player,IsEnchantmentPreview=true,CurrentUpgradeLevel=card.CurrentUpgradeLevel};
+                        clone.Id.Entry=card.Id.Entry;ApplyEnchantment(clone,_enchantAmount);
+                        EnchantBefore.Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=card}});
+                        EnchantAfter.Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=clone}});
+                        AfterEnchantPreview?.Invoke();
+                    }};
                 grid.CurrentlyDisplayedCardHolders.Add(holder);
             }
             screen.Bind("%CardGrid",grid);_previewContainer.Bind("UpgradePreview",_preview);_previewContainer.Bind("Confirm",_confirm);screen.Bind("%UpgradeSinglePreviewContainer",_previewContainer);
+            if(_enchant){_previewContainer.Bind("EnchantPreview",EnchantPreview);screen.Bind("%EnchantSinglePreviewContainer",_previewContainer);}
             _confirm.Clicked=()=>{ConfirmCalls++;Overlays.Screens.Clear();screen.Visible=false;_selected.SetResult(new[]{_preview.Card!});};
             Overlays.Screens.Add(screen);return screen;
         }
+        internal static void ApplyEnchantment(CardModel card,int amount,string key="SOWN")
+        {var effect=new EnchantmentModel{Card=card,Amount=amount};effect.Id.Entry=key;card.Enchantment=effect;}
         internal GenericEventV7Observation Start()
         {
             var value=Session.Read();Check(value.Status=="ready","ready native option");

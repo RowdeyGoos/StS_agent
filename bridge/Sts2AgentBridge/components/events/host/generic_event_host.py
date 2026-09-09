@@ -119,12 +119,14 @@ def _decode(body: Any) -> dict[str, Any]:
                 _require(c['contract_version'] == 'item_v1' and type(c['offer_count']) is int and c['offer_count'] == 1)
             else:
                 _require(c['kind'] == 'card_selection' and c['contract_version'] ==
-                         ('card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
-                _require((c['operation'] in ('upgrade', 'remove', 'transform') and c['commit_mode'] == 'preview_confirm') or
+                         ('card_enchant_v1' if c['operation'] == 'enchant' else 'card_transform_v2' if c['operation'] == 'transform' else 'card_selection_v1'))
+                _require((c['operation'] in ('upgrade', 'remove', 'transform', 'enchant') and c['commit_mode'] == 'preview_confirm') or
                          (c['operation'] == 'add' and c['commit_mode'] in ('auto_at_max', 'explicit_confirm')))
                 _require(type(c['min_select']) is int and type(c['max_select']) is int and
                          1 <= c['min_select'] <= c['max_select'] <= 8)
                 _require(_integer(c['domain_count'], 64) and c['domain_count'] > c['max_select'])
+                if c['operation'] == 'enchant':
+                    _require(c['min_select'] == c['max_select'] == 1)
                 if c['operation'] == 'upgrade':
                     _require(c['min_select'] == c['max_select'])
         return v
@@ -195,6 +197,7 @@ class _Controller:
         self.child_receipts: list[tuple[str, str]] = []
         self.child_history: list[dict[str, Any]] = []
         self.child_shape = None
+        self.enchantment = None
         self.preview_seen = False
         self.child_parents: set[tuple[str, str]] = set()
         self.completed_children: set[tuple[str, str]] = set()
@@ -361,6 +364,7 @@ class _Controller:
             self.child_receipts = []
             self.child_history = []
             self.child_shape = None
+            self.enchantment = None
             self.preview_seen = False
             self.child_done = False
         _require(self.child == c and not self.child_done)
@@ -368,10 +372,39 @@ class _Controller:
     def card_parse(self, p: Any) -> None:
         _require(type(p) is dict and type(p.get('schema_version')) is int and p['schema_version'] == 1)
         try:
-            (self.transform if self.child is not None and self.child['operation'] == 'transform' else self.card)._validate_envelope(p)
+            if self.child is not None and self.child['operation'] == 'enchant':
+                self.enchant_parse(p)
+            else:
+                (self.transform if self.child is not None and self.child['operation'] == 'transform' else self.card)._validate_envelope(p)
         except Exception:
             raise _Stop('invalid_response') from None
         _require(p.get('session_nonce') == self.nonce)
+
+    def enchant_parse(self, p: dict[str, Any]) -> None:
+        # The version owns the one-card policy and exact new enchantment metadata.
+        # Reuse only the common selection envelope validation after normalization.
+        _require(p.get('version') == 'card_enchant_v1')
+        normalized = dict(p)
+        normalized['version'] = 'card_transform_v2'
+        if p.get('kind') in ('child_observation', 'child_resolved'):
+            _require(tuple(p)[-1] == 'enchantment')
+            effect = normalized.pop('enchantment')
+            if p.get('status') in ('ready', 'resolved'):
+                _require(p.get('operation') == 'enchant' and type(effect) is dict and
+                         tuple(effect) == ('key', 'amount') and self.transform._stable_key(effect['key']) and
+                         type(effect['amount']) is int and 1 <= effect['amount'] <= 2_147_483_647)
+                normalized['operation'] = 'transform'
+                if p['kind'] == 'child_observation':
+                    _require(p['min_select'] == p['max_select'] == 1 and p['commit_mode'] == 'preview_confirm')
+                else:
+                    _require(len(p['selected_cards']) == 1)
+                if self.enchantment is None:
+                    _require(p['kind'] == 'child_observation' and p['phase'] == 'selecting')
+                    self.enchantment = dict(effect)
+                _require(effect == self.enchantment)
+            else:
+                _require(effect is None)
+        self.transform._validate_envelope(normalized)
 
     def child_read(self, p: Any) -> str:
         if self.child['kind'] == 'item':
