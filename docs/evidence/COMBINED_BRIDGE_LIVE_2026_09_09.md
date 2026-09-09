@@ -1644,3 +1644,33 @@ three eligible cards, normal map-room entry, `ancient TANX CLAWS`, console close
 and relic option untouched. The same release remains installed; cleanup is pending
 after the batch. No uncertain mutation was retried and no profile/save/history/
 Cloud filesystem content was accessed.
+
+### Claws three-card transformation passed
+
+The user prepared a fresh Claws option. Fresh exact running-process,
+release/source/owned package and authenticated health/manifest checks passed on
+the unchanged fifteenth installation. The unchanged reviewed `--count 3` policy
+selected **unupgraded Strike originals at slots 0, 1 and 2**, explicitly requested
+Preview below the maximum, Confirmed and selected Proceed. `card_transform_v3`
+resolved with exactly those selected originals and selected/previewed/committed
+history. Native preview, transformation journal and deck checks verified the
+replacement effects. Replacement names are not exposed by this public payload,
+so no particular output-card name is asserted from the result.
+
+All **seven actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **5/5/5**, one completed card child, zero item children, 30 event reads.
+A fresh core-map read passed with two candidates. Policy time: **2.637 seconds**.
+Diagnostics: parent-ready/child-ready/parent-ready/map-ready. Parent effects remain
+`unverified`. This demonstrates partial optional transformation with explicit
+preview; it does not establish every deck size or preview layout.
+Result: `/private/tmp/sts-claws-three-live-20260909-result.json`, SHA-256
+`fc65a1237214fd69d03ad6e1b6f80ec58a4093032e73b595179a8384f011a710`.
+
+The **six-card maximum** is next, using the unchanged reviewed policy with
+`--count 6`. It selects six originals, requires automatic native preview at max,
+then Confirms once and verifies completion/map. Its 105 completed checks and
+independent review are reused. Prepare a fresh Profile 3 run with at least six
+eligible cards, normal map-room entry, `ancient TANX CLAWS`, console closed and
+relic option untouched. The same release remains installed; cleanup is pending
+after the batch. No uncertain mutation was retried and no profile/save/history/
+Cloud filesystem content was accessed.

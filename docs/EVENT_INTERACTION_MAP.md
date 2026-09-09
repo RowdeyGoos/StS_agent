@@ -28,7 +28,7 @@ transformation and a fresh core map. [Mixed card/item sets](GENERIC_EVENTS.md#im
 now have packaged offline implementation for Lost Coffer's card-plus-potion
 shape and other bounded interleavings. Ancient entry/dialogue and optional
 Sea Glass/Claws selectors are packaged. Sea Glass has zero/partial/full live
-acceptance; Claws zero-selection also passed, with nonzero branches pending.
+acceptance; Claws zero/partial selection also passed, with the maximum-count branch pending.
 See [current evidence](STATUS.md).
 [Choose-one cards and bundles](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles)
 now have packaged offline support for LeadPaperweight/MassiveScroll and ScrollBoxes.
