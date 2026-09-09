@@ -694,7 +694,10 @@ through reconciliation and map return. Lost input/replies are never retried.
 Native fixtures, strict C#/Python integration and production-boundary checks cover
 choose/Skip with and without the extra, delayed completion, changed controls/decks,
 extra-card substitution/rollback, mismatched task results and lost replies.
-**Live acceptance is pending** for both HeftyTablet branches.
+**HeftyTablet choose has representative live acceptance**: Cruelty (unupgraded)
+plus Injury, one completed card child and three reconciled actions through a fresh
+actionable map. **Skip remains pending**. See the
+[live evidence](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#heftytablet-choose-passed).
 
 ## Implemented offline: inactive combat layouts and result acknowledgment
 

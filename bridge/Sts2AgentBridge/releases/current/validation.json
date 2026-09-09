@@ -4,7 +4,7 @@
   "evidence_limits": {
     "autonomous_full_run": false,
     "current_package_installed": true,
-    "current_package_live_tested": false,
+    "current_package_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
   },
@@ -15,14 +15,54 @@
   },
   "installation": {
     "cleanup": "pending normal quit after live testing",
-    "live_input_sent": false,
+    "live_input_sent": true,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
     "pre_install_runtime": "passed: fresh exact game process stopped and bridge port closed",
     "state_sha256": "265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1",
     "status": "installed"
   },
-  "live_results": [],
+  "live_results": [
+    {
+      "additional_cards": [
+        {
+          "key": "INJURY",
+          "slot": 0,
+          "upgrade_level": 0
+        }
+      ],
+      "case": "Neow/HeftyTablet choose",
+      "event": {
+        "child_accepted": 1,
+        "child_attempted": 1,
+        "child_episodes": 1,
+        "child_reconciled": 1,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 11,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 3
+      },
+      "map_handoff": {
+        "candidate_count": 2,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-hefty-choose-live-corrected-20260909-result.json",
+      "result_sha256": "bdbe657ebf4db7ba213dfd22fd8f2dbe4e7674b70d9f08cea5e60489136bc7a7",
+      "seconds": 1.436,
+      "selected_card": "CRUELTY",
+      "status": "passed",
+      "upgrade_level": 0
+    }
+  ],
   "release_manifest_sha256": "c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57",
   "schema_version": 1,
   "source_commit": "b7d474070b89978747d64f30dae5f76668cbf084",

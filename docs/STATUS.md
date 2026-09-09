@@ -136,9 +136,9 @@ passed in 370.071 seconds**, including 7,788 native assertions, 125 host tests,
 450 C#/Python cases (388 native), 809 shared bridge checks, reproducible packaging
 and owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-_el21wpf`.
 The **fourteenth installation is active**, installed state
-`265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1`, awaiting manual
-Profile 3 setup. Fresh stopped-process/closed-port checks and read-only installed
-package/configuration verification passed; no live input has been sent on it.
+`265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1`. HeftyTablet choose passed: **Cruelty** plus **Injury**,
+three reconciled actions and a fresh actionable map in **1.436 seconds**.
+The same package remains installed for the Skip branch; cleanup is pending.
 
 The thirteenth installation is cleaned up. Its first HeftyTablet read stopped with
 `invalid_response` and zero actions; pinned metadata exposed a results hook that
@@ -147,7 +147,8 @@ The correction preserves exact concrete runtime ownership. The release gate now
 compares the production postfix and fixture declaration with actual pinned game
 metadata; the corrected positive and both prior-binary negatives passed separately.
 Normal quit, exact quarantine/purge and **429 unchanged base files with zero overlays**
-passed before reinstalling. HeftyTablet choose/Skip live acceptance remains pending.
+passed before reinstalling. HeftyTablet choose has representative live acceptance;
+Skip and the other new interaction families remain pending.
 The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#fourteenth-installation-results-return-correction)
 retains the correction, failed attempt, cleanup and current installation bindings.
 

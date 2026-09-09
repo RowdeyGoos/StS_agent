@@ -1314,3 +1314,32 @@ its 32 completed frozen-view checks and semantic review are reused.
 No live input has been sent on this installation. Cleanup is pending after testing.
 No profile/save/history/Cloud filesystem content was accessed. Separate
 implementation, review, preparation and user-wait times were not measured.
+
+### HeftyTablet choose passed
+
+On the fourteenth installation and corrected release recorded above, the user
+confirmed the prepared event was ready. Fresh exact running-process verification,
+release/source/owned installation checks and authenticated health/manifest passed.
+The unchanged reviewed policy chose the exact HeftyTablet relic option, selected
+**Cruelty (upgrade level 0)**, and selected Proceed. No initial dialogue was needed.
+The native child verified the selected original and one appended **Injury**;
+`card_offer_v2` resolved with selected index 0 and `collected` history.
+
+All **three actions reconciled**: two parent and one child attempted/accepted/
+reconciled, one completed card child, no item child, 11 event reads. A separate
+fresh core-map observation passed with two candidates. Elapsed policy time:
+**1.436 seconds**. Parent effects remain `unverified`; this demonstrates the
+observed selected/extra-card outcome, not automatic-grant provenance or every
+optional-offer branch. No uncertain input was retried.
+
+Result: `/private/tmp/sts-hefty-choose-live-corrected-20260909-result.json`, SHA-256
+`bdbe657ebf4db7ba213dfd22fd8f2dbe4e7674b70d9f08cea5e60489136bc7a7`.
+The diagnostic sequence included `pending_task_failed` before successful completion.
+Source inspection shows that label is assigned before checking task failure and
+can remain on a pending-child capture; this was not a terminal host failure.
+The successful resolved receipts and map check establish this case's outcome.
+
+The same installation remains active for a fresh HeftyTablet **Skip** setup;
+normal quit and cleanup remain pending after the live batch. The unchanged policy
+already contains the reviewed Skip branch, so its completed checks/review are
+reused. No profile/save/history/Cloud filesystem content was accessed.
