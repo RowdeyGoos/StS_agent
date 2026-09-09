@@ -18,7 +18,11 @@ strict standalone removal v1 remains unchanged. All **71 combined release groups
 passed in **160.077 seconds**, including **4,614 native assertions**, **221 event
 integration cases**, reproducible packaging and owned installation/cleanup fixtures.
 The accepted package is published at `/private/tmp/sts-unified-bridge-release`.
-It has not been installed or live-tested. The next live case is
+The eighth live attempt accepted Combine Strikes but stopped at
+`prepare_candidates` before admitting a child (zero card actions). The user saw
+five selectable Strikes; the exact failing candidate predicate remains unresolved.
+Normal quit, owned quarantine/purge and the 429-file base check passed; no
+campaign remains installed. The uncompleted live case is
 **Amalgamator/CombineStrikes**: select two of at least three eligible Strikes,
 confirm removal, observe the Ultimate Strike grant and verify a fresh core map.
 See [generic semantics](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
@@ -29,7 +33,7 @@ passed Abyssal Baths (Immerse, two Lingers, Exit/Proceed/map) and Grave/Confront
 (SoulsPower on Neow's Fury, exact preview/effect and map). One earlier Grave setup
 stopped before any action; its exact cause remains unresolved. All seven live
 installations were cleaned up: 429 unchanged base files and zero overlays. No
-campaign remains installed. The
+previous campaign remains installed. The
 [seventh-installation record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions)
 retains those exact release identities and evidence; they are not live acceptance
 of the new removal package.
@@ -169,8 +173,9 @@ Single-card enchantment now has live acceptance through Sapphire Seed Plant and
 Nourish. The [all-event research map](EVENT_INTERACTION_MAP.md) now accounts for
 all 68 pinned types, with branch families, concrete blockers and ancient pickup
 paths. Repeated-page progress is the first implemented increment from that map,
-with offline acceptance. Append-only additions before selectors are also implemented
-offline. Deck changes after selection, such as removal-plus-grant, are the next concrete gap;
+with live acceptance through Abyssal Baths. Append-only additions before selectors
+passed Grave/Confront. Removal followed by one appended grant is packaged and
+installed for Amalgamator testing; event card/multiple rewards remain a concrete gap;
 the static inventory itself adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior

@@ -602,3 +602,61 @@ projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 All seven installations are now cleaned up. No profile/save/history/Cloud
 filesystem data was accessed. Live flows were timed above; documentation and
 user setup/quit wait were not separately timed.
+
+## Eighth installation: removal followed by one appended grant
+
+The user requested testing of the new removal-parent-grant feature. The accepted
+package was reused without rebuilding or repeating its 71 passed release groups.
+The canonical manager verified stopped process/closed listener, the pinned base
+build and owned artifacts/configuration; installation passed.
+
+- Source commit: `3a354b0a65d6a96b16eacf340eee56e3e1370229`.
+- Release manifest SHA-256:
+  `f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9`.
+- DLL: 802816 bytes,
+  `e15a31cb8c397a061f92b1e655e73ef839effc5dda62f91378b84c8a367f3978`.
+- Installed state:
+  `92ae69702afc34acb85c7da9af9dd043c4309685e471c9c8f14335ebb8fb5cf6`.
+
+The ephemeral provider `/private/tmp/sts-amalgamator-live-20260909.py` reuses the
+existing authenticated client, generic host and read-only core map check. It
+chooses Amalgamator's exact Combine Strikes option, the first two native-eligible
+slots, pauses eight seconds on the exact preview, confirms once and proceeds to
+the map. It additionally checks for one separately reported Ultimate Strike
+parent addition; the public metadata remains explicitly unverified for provenance.
+Native upgrades caused by relics are recorded without assuming level zero.
+
+Provider compilation, exact five-action sequence, wrong event/preview rejection
+and duplicate-confirm rejection passed locally without credentials or transport.
+The pinned native `GenerateInitialOptions`/`EventModel.OptionKey` methods confirmed
+the stable option key. The live case requires at least three eligible Strikes and
+normal room entry through the map before console event creation, following the
+previous setup evidence. Manual Profile 3 setup is pending. No live input has been
+sent; installation remains active and cleanup is pending the test and normal quit.
+
+After the user confirmed readiness, installed-release identity and authenticated
+health/manifest preflight passed. Combine Strikes (`choose:0`) was attempted and
+accepted, but the parent never reconciled: diagnostics changed from `parent_ready`
+to `prepare_candidates`. The bounded host stopped with `unsupported_state` after
+**258 reads and 17.801 seconds**. Parent attempted/accepted/reconciled counts were
+**1/1/0**; all child counts were **0**, with no completed child or map handoff.
+No card selection or removal confirmation was dispatched, and no mutation was
+retried. Effects remain `unverified`.
+
+The user reported **five selectable Strikes** visible after the stop. This confirms
+the reported setup had enough targets; it does not isolate which holder/model,
+highlight, visibility or enabled-state check failed within `TryCreateBindings`.
+The failure preceded the new removal-plus-grant behavior and provides no live
+acceptance of it. No runtime safeguard was changed. The sanitized result is
+`/private/tmp/sts-amalgamator-live-20260909-result.json`; credentials were cleared
+and not recorded. Normal quit has been requested for owned cleanup.
+
+The user confirmed normal quit. Owned quarantine verified stopped process,
+closed listener and exact ownership, returning state
+`b937fe89febdfb7ae35913fc1a0f0569290ccbfdfc492b206c66596002e74ec7`.
+Purge returned the campaign to **absent**, removing four generated files.
+Post-cleanup base verification passed: **429 unchanged files, zero overlays**,
+projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+All eight installations are cleaned up. No profile/save/history/Cloud filesystem
+data was accessed. The next correction should isolate the failing candidate
+admission predicate before another removal-parent-grant live attempt.

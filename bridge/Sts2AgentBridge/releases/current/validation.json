@@ -6,7 +6,7 @@
     "autonomous_full_run": false,
     "changed_surviving_cards_supported": false,
     "current_package_installed": false,
-    "current_package_live_tested": false,
+    "current_package_live_tested": true,
     "maximum_post_removal_grants": 1,
     "multiple_post_removal_grants_supported": false,
     "native_fixture_objects_are_inert": true,
@@ -24,6 +24,21 @@
     "resolved_finding": "Clone exclusions apply only to new grant identities outside SelectionDeck; legitimate baseline cards from previous transforms remain admissible.",
     "scope": "Full real deck capture, selected-removal and survivor invariants, bounded monotonic suffix, ownership, task/overlay completion, legacy-v1 compatibility, public v2 semantics and host lineage",
     "status": "passed"
+  },
+  "live_attempt": {
+    "child_attempted": 0,
+    "cleanup": "passed: owned quarantine/purge; 429 unchanged base files, zero overlays",
+    "code": "unsupported_state",
+    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eighth-installation-removal-followed-by-one-appended-grant",
+    "native_diagnostic": "prepare_candidates",
+    "parent_accepted": 1,
+    "parent_attempted": 1,
+    "parent_reconciled": 0,
+    "quarantine_state_sha256": "b937fe89febdfb7ae35913fc1a0f0569290ccbfdfc492b206c66596002e74ec7",
+    "reads": 258,
+    "seconds": 17.801,
+    "status": "failed",
+    "user_observation": "Five selectable Strikes after Combine Strikes"
   },
   "next_live_case": "Amalgamator/CombineStrikes with at least three eligible Strikes: select two, confirm their exact removal preview, observe Ultimate Strike in separate unverified parent_additions, and independently verify a fresh core map. Native game body has not been executed by these fixtures.",
   "package": {
@@ -54,7 +69,7 @@
   "source_state": "All 294 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release/native/integration elapsed times are retained from actual gate results. Implementation, independent review, documentation and package publication were not separately timed. No user setup wait or live campaign occurred.",
+  "timing_limits": "Final release/native/integration elapsed times are retained from actual gate results. Implementation, independent review, documentation and package publication were not separately timed. The first Amalgamator live attempt took 17.801 seconds and stopped before child admission. User setup/quit wait was not separately timed.",
   "validation": {
     "check_groups": 71,
     "corrections": "Review found session-wide clone records could reject legitimate baseline cards from earlier transforms; baseline membership now takes precedence and targeted registry-state regressions pass. Updated all dependent fixture projects, cross-assembly key validation and expected wire versions. An initial release gate caught a legacy reflection fixture missing the new optional constructor argument; its targeted check passed after correction. Another gate stopped in the compiler with an internal MissingMethodException; unchanged source/settings passed the final full gate and reproducibility pair. No runtime safeguards, checks or analyzers were disabled.",
