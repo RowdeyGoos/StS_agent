@@ -3,15 +3,15 @@
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "combat_choice_live_completed": false,
-    "combat_reward_map_live_tested": false,
+    "combat_choice_live_completed": true,
+    "combat_reward_map_live_tested": true,
     "exact_live_round_pair_retained": false,
-    "host_correction_live_tested": false
+    "host_correction_live_tested": true
   },
   "evidence_reused": {
     "native_binary_and_package_identical": true,
     "prior_release_manifest_sha256": "731a8cf1c51ecdb5cfa4ef574085122c70606c62eea4a896312fb05506f6c755",
-    "scope": "Unchanged native adapters and published package bytes. Live Sapphire Seed single-upgrade and event-to-core map result applies to this same native binary; changed combat host awaits live retest."
+    "scope": "Unchanged native adapters and published package bytes. Live Sapphire Seed single-upgrade and event-to-core map result applies to this same native binary; changed combat host subsequently passed the third-installation retest."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
@@ -19,6 +19,25 @@
     "status": "passed"
   },
   "live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
+  "live_retest": {
+    "actionable_map_returns": 2,
+    "choice_selected_counts": [
+      2,
+      0
+    ],
+    "cleanup": "Normal quit, stopped process/closed listener, exact quarantine/purge; 429 unchanged base files, zero overlays.",
+    "combat_victories": 2,
+    "flow_seconds": [
+      12.881,
+      16.518
+    ],
+    "host_wait_trace": "Accepted end-turn, original-round ready snapshot and exact next-round progression retained in successful retest; failed-attempt exact round pair remains unavailable.",
+    "reward_policies": [
+      "first-card",
+      "skip-card"
+    ],
+    "status": "passed"
+  },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       785590,

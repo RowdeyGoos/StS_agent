@@ -109,13 +109,12 @@ See the [bridge guide](../bridge/Sts2AgentBridge/README.md#installation-client-a
 for policy flags, bounds and shared-client pacing. Native combat/reward/choice
 adapters are unchanged by this composition.
 
-The September 9 live batch reached a Neow's Fury chooser, but combat orchestration
-stopped at a round-transition check before selecting. The missing end-turn wait
-described above was separately reproduced; the exact live round pair was not retained.
-The corrected wait has regression and integration coverage; its live retest is
-pending. The remaining batch includes Neow's Fury zero and positive choices, a
-suitable multi-card caller, combat resume and combat-to-rewards-to-map with both
-card policies. The separate Sapphire Seed event-to-core map check has passed;
-see the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md). This feature
-does not establish unassisted native completion, generic-event optional selection
-or a full run.
+The September 9 live retest completed Neow's Fury with two selected cards from
+six available and zero selected from seven available. Both native tasks reported
+`selection_verified`; both combats resumed and ended in victory without UI input
+inside the flows. The corrected host waited through original-round snapshots
+after accepted end-turn without premature reconciliation. First-card and skip-card
+reward policies each verified effects and returned to an actionable map. See the
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) for counts, the earlier
+failed attempt and cleanup. Exhaust/fixed-count callers, generic-event optional
+selection, other selector domains and full runs are separate evidence targets.

@@ -1,8 +1,9 @@
 # Combined bridge live batch
 
-Status: generic single-upgrade and core map return passed on the second
-installation. Combat orchestration stopped before chooser input; combat-choice
-and reward/map completion remain unverified. Both live installations were cleaned up. The user authorized live testing after feature preparation and
+Status: representative batch completed. Generic single-upgrade/event-to-map and
+both combat/choice/reward/map flows passed; all three installations were cleaned
+up. Off-screen upgrade was not exercised because its larger-deck setup was not
+established. The user authorized live testing after feature preparation and
 confirmed manual readiness on Profile 3.
 
 ## First installation and event attempt
@@ -92,8 +93,8 @@ passed with a fresh owned state:
 `050f6a250dd2f4241bff666922dee80ce77ff2f97fdb0d7687177c25b67e626b`.
 Post-install verification found 429 unchanged base files plus exactly two overlay
 files. Client release/ownership/configuration preflight passed without reading
-credential contents. This installation remains active on disk, awaiting manual
-relaunch; cleanup is pending. No corrected-binary live result exists yet.
+credential contents. At preparation this installation awaited manual relaunch;
+its subsequent live result and completed cleanup are recorded below.
 
 ## Second live attempt: generic upgrade and core map passed
 
@@ -181,6 +182,73 @@ Stopped-game/closed-listener checks passed before installing with fresh state
 `3599640917195929280b307348fd83cd7a7d3e9d9602821d11a25be45feb6b00`.
 Post-install verification found the pinned 429 base files plus exactly two
 overlay files. Release and client ownership/configuration preflight passed
-without reading credential contents. This third installation is awaiting manual
-relaunch and still requires cleanup. The corrected combat wait has not yet been
-live-tested; the same native binary's generic upgrade/map result remains valid.
+without reading credential contents. At preparation this third installation
+awaited manual relaunch. Its completed live retest and cleanup follow; the same
+native binary's generic upgrade/map result remains valid.
+
+## Third live attempt: both combat/choice/reward/map paths passed
+
+The user manually relaunched. Exact running process, authenticated health,
+compatible manifest and public main-menu checks passed for the release and fresh
+installed state above. UI confirmed Profile 3. Continue resumed the start of the
+native monster encounter at 80/80 HP, gold 161 and deck count 12. This was a fresh
+process/combat, with no adoption of the preceding failed operation.
+
+Both runs used the existing authenticated `BridgeClient`, combat and reward
+hosts, original public response validation and `run_combat_map`. A bounded test
+wrapper retained sanitized action/round/chooser summaries, without raw responses
+or credentials. No UI or console input assisted either combat/chooser/reward flow.
+
+| Observation | Two-card / first-card | Zero-card / skip-card |
+| --- | --- | --- |
+| Combat attempted / accepted / reconciled | 21 / 14 / 14 | 24 / 17 / 17 |
+| Combat reads / choice probes | 91 / 67 | 121 / 92 |
+| Confirmed no-mutation stale rejections | 7 | 7 |
+| Neow's Fury min / max / available cards | 0 / 2 / 6 | 0 / 2 / 7 |
+| Choice attempted / accepted / reconciled | 3 / 3 / 3 | 1 / 1 / 1 |
+| Choice reads / selected count | 4 / 2 | 2 / 0 |
+| Native choice result | selection_verified | selection_verified |
+| Combat result / terminal round / HP | victory / 4 / 76 of 80 | victory / 5 / 75 of 80 |
+| Reward attempted / accepted / reconciled | 4 / 4 / 4 | 4 / 4 / 4 |
+| Reward reads / stale rejections | 11 / 0 | 11 / 0 |
+| Verified gold change | 161 → 175 (+14) | 175 → 193 (+18) |
+| Verified card reward / deck change | RAMPAGE / 12 → 13 | one skipped / 13 → 13 |
+| Fresh map reads / actionable candidates | 1 / 2 | 1 / 1 |
+| Complete flow elapsed seconds | 12.881 | 16.518 |
+
+The positive choice selected slots 0 and 1, then confirmed the exact set. The
+zero choice confirmed the empty set despite seven available candidates. Each
+choice completed before combat resumed. The trace also retained accepted
+end-turn followed by an original-round ready observation and subsequent exact
+next-round progression, exercising the corrected wait without early
+reconciliation or redispatch. Known stale receipts were rejected without mutation
+and handled by the existing bounded controller.
+
+Between flows, a fresh map decision advertised monster column 3, row 8 and a rest
+site. The bridge selected the monster once, then read a complete map observation
+for that exact destination before starting the second combat. Both complete
+flows resolved at stage `map` with no error. The bounded summaries were read from
+`/private/tmp/sts-combat-map-live-result.json` and
+`/private/tmp/sts-combat-map-zero-live-result.json`; this table retains the durable
+result without introducing a live corpus.
+
+This demonstrates positive/multiple and optional-zero **discard** selection for
+one caller, combat continuation and both supported reward policies. It does not
+establish exhaust or fixed-count callers, generic optional selection, off-screen
+upgrade, every event branch, strategic quality or a complete autonomous run.
+Unchanged module evidence from September 8 was reused. No new code or build was
+needed for this retest; the accepted source/package bindings remain unchanged.
+
+## Final cleanup
+
+Normal application quit succeeded. Runtime checks confirmed a stopped game and
+closed listener with three process and two port samples. The exact installed
+state was quarantined to
+`cba1467a54bf9c17d56188b7c11e4b60adfdada73de9e1fa4142d06dc393db0b`.
+Purge removed four owned generated files and returned the campaign to `absent`.
+Post-cleanup verification passed: 429 unchanged base files, zero overlays,
+projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem data was read. Credentials stayed within
+the existing client's read lease and were cleared after each invocation. The
+user-waived unmodded relaunch was not repeated. Setup, user-wait, documentation
+and cleanup phase totals were not captured; measured flow/gate times are above.

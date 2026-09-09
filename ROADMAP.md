@@ -6,16 +6,15 @@ process. Completed packets and old campaign instructions are historical referenc
 
 ## Immediate priorities
 
-1. **Test the accumulated features live after generic event work.** The user has
-   requested the combined live batch next. Sapphire Seed single-upgrade and
-   the event-to-core map check have passed live. The [combat discard/exhaust choices](docs/COMBAT_CHOICES.md) with bounded combat
-   resume are implemented offline. `combat-map` now also composes combat, gold/card
-   rewards and map readiness, with both first-card and skip-card policy fixtures.
-   Generic upgrades now also accept allocated holders beyond the viewport.
-   The next live attempts should cover the corrected combat end-turn wait,
-   Neow's Fury zero/positive choices, a suitable multi-card caller, both reward
-   policies and a Sapphire Seed–style off-screen upgrade.
-   Reuse the [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
+1. **Close the remaining concrete live gap.** The combined batch passed Sapphire
+   Seed single-upgrade/event-to-map and two combat/choice/reward/map flows:
+   Neow's Fury selected two cards and zero cards, with first-card and skip-card
+   rewards respectively. The corrected end-turn wait passed. Off-screen generic
+   upgrade remains unverified because the console setup did not establish a larger
+   deck. First establish one known allocated off-screen upgrade target, then
+   verify its exact preview/effect. Reuse the
+   [combined batch](docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) and
+   [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
    evidence for unchanged paths; do not repeat every module.
 2. **Use the generalized transformation path in useful play.** All eligible,
    allocated holders now use direct input, with identity/preview/completion
@@ -26,7 +25,7 @@ process. Completed packets and old campaign instructions are historical referenc
    representative caller first. Prioritize observed gaps over hypothetical
    capability combinations or another event-name allowlist.
 4. **Compose supported interactions into longer live runs.** The one-combat
-   reward/map host path now exists offline. After the combined live batch, test
+   reward/map host path has now passed live with both reward policies. Test
    remaining handoffs, elite continuation and unsupported surfaces with targeted setups.
    Keep run-completion, branch coverage and strategic-quality claims separate.
 
@@ -37,7 +36,8 @@ that experiment to obtain a different geometric proof.
 ## Remaining generic interaction work
 
 - Generic-event optional/zero-card selection and native cancellation. Combat
-  discard/exhaust grid choices now have a separate implementation and offline evidence.
+  discard/exhaust grid choices have a separate implementation; Neow's Fury zero
+  and two-card discard choices now have live evidence.
 - Variable-count upgrading where a real native early-completion path exists.
 - Selecting cards outside the allocated holder set, including scrolling/rebinding.
 - Multiple-item offer sets, repeated/custom interactions and event combat.

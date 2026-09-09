@@ -9,41 +9,21 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The release with the corrected combat end-turn wait is **installed and awaiting
-manual relaunch**. Accepted release:
+The combined live batch is complete and all three installations are cleaned up.
+The current accepted release is
 `fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb`.
-Current installed state:
-`3599640917195929280b307348fd83cd7a7d3e9d9602821d11a25be45feb6b00`.
-The final gate passed 71 groups in 146.105 seconds. Native DLL/package bytes are
-unchanged from the live-tested generic upgrade. Current installation verified
-429 unchanged base files, exactly two overlay files and client ownership; the
-installer created the mods parent. Cleanup is pending for this installation.
-Next setup: launch manually, select Profile 3 and stop at the main menu. Reverify
-runtime and this current state before acting; prior installation hashes are historical.
+Its final gate passed 71 groups in 146.105 seconds. The corrected combat host
+completed two combats with native Neow's Fury choices (two cards and zero cards),
+both card-reward policies and fresh actionable map checks, without UI assistance
+inside either flow. The same native DLL also passed Sapphire Seed single-upgrade
+and event-to-core map return on the preceding installation.
 
-The corrected generic upgrade passed the second live attempt: Sapphire Seed
-completed one verified card child and all four actions, then the fresh core map
-check passed. The following combat stopped at an end-turn transition with a
-Neow's Fury chooser visible, before any chooser input or reward stage. This
-installation was normally quit, quarantined and purged; the pinned base passed
-post-cleanup verification. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
-retains exact counters, identities and remaining limits.
-
-The new combat host's missing same-round end-turn wait was reproduced and
-corrected using the prior tested polling behavior. Its bounded wait now services
-nested choices without reconciling or redispatching the pending end-turn early.
-The host correction awaits live testing; native package bytes are unchanged.
-
-The first combined live attempt stopped before generic upgrade child admission
-and was cleaned up. Sapphire Seed/Consume was accepted; its 11-card selector
-appeared, but no card input or upgrade was attempted. The intended larger-deck
-console setup was not established. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
-retains exact counts, setup limits, installation identity and verified cleanup.
-A derived-hitbox compatibility defect was separately reproduced in the
-single-upgrade adapter and corrected with exact identity/input guards retained.
-The corrected path subsequently passed; the first attempt did not retain the
-exact diagnostic needed to prove its failure cause. Combat-choice/reward/map
-live checks remain pending.
+Normal quit, stopped process/closed listener, exact quarantine/purge and the
+unchanged 429-file base with zero overlays passed after the final test. There is
+no current installed campaign. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
+retains the exact source/release/state identities, separate action counts,
+corrections, setup assistance and remaining limits. Off-screen upgrade remains
+unverified: the earlier console setup did not establish a larger deck.
 
 The September 8 unified module smoke is complete and its three installations are cleaned up.
 Representative paths covered combat (one UI-assisted chooser), rewards, map, shop,
@@ -65,8 +45,8 @@ before any new authorized live operation.
 | Capability | Evidence and practical limit |
 | --- | --- |
 | Combat, rewards and map | Bounded live observation/control, combat completion, reward progression and fresh reward/map entry; no complete autonomous run |
-| Combat → rewards → map | One shared-client command, gold/card choose-or-skip policies, separate stage/effect counts and request pacing; both policies pass shared-socket fixtures, no live composition result |
-| Combat discard/exhaust choices | Optional zero, fixed and variable counts up to eight in native/host fixtures; shared combat resume and failure accounting tested offline; live testing deferred |
+| Combat → rewards → map | One shared-client command, gold/card choose-or-skip policies, separate stage/effect counts and request pacing; both policies completed live with combat victory and actionable map return |
+| Combat discard/exhaust choices | Optional zero, fixed and variable counts up to eight in native/host fixtures; Neow's Fury zero and two-card choices plus combat resume live-demonstrated; exhaust/fixed-count callers remain fixture-only |
 | Rest and shop | Standalone heal/Proceed, older Smith upgrade-one, one bounded shop purchase/close/map path live-demonstrated |
 | Generic event parent/children | Shared native discovery and orchestration; successful bounded paths through Dense Vegetation, Cheese, Potion Courier and Aroma |
 | Card rewards | Positive variable counts up to eight in native/controller fixtures; Cheese/Gorge add-two live in release v5 |
@@ -118,9 +98,9 @@ Neow's Fury surface identified in pinned source. Zero confirmation, positive and
 multiple selection, deselection, deferred completion, exact task results and
 cleanup have offline coverage. The shared listener fixture resumes the original
 combat action after child completion; failures retain separate counts. See
-[combat choices](COMBAT_CHOICES.md) for scope and limits. This new batch has no
-live result. The user has requested a combined live batch after the generic
-event work; the roadmap identifies its representative cases.
+[combat choices](COMBAT_CHOICES.md) for scope and limits. The combined live batch
+completed zero and two-card Neow's Fury choices, resumed both combats and won.
+Other caller/count combinations retain their narrower offline evidence.
 
 `combat-map` now carries one victorious combat through gold/card rewards to an
 independently validated actionable map. Standalone `rewards` uses the same bounded
@@ -128,8 +108,9 @@ reward host. Uncollected unsupported rewards stop the flow; defeat never starts
 reward actions. Stage summaries preserve prior combat/choice/reward evidence on
 later failure. Shared-client pacing prevents a fast multi-stage flow from
 exhausting the existing listener burst allowance. Actual shared-socket fixtures
-cover both first-card and native skip-card policies. The composition uses the existing combat/reward/map adapters; this is host
-orchestration, not a new live result.
+and the September 9 live batch cover both first-card and native skip-card policies. The live flows independently
+verified gold/card effects and an actionable map after each victory. The
+composition uses the existing combat/reward/map adapters.
 
 Only `apps/bridge/` is a production composition. The old four feature apps and
 separate original production project are retired. Use one checker with focused

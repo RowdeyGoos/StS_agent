@@ -147,7 +147,8 @@ as soon as the native control permits it; the default `first-select` fills the
 selection to its maximum. Parent combat and child selection have separate
 attempted/accepted/reconciled counts, retained on failure. Supported native
 surfaces, protocol semantics and limits are in [combat choices](../../docs/COMBAT_CHOICES.md).
-These additions await live testing.
+Neow's Fury zero and two-card selection with combat resume passed in the
+[September 9 live batch](../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md).
 
 Use `--capability combat-map` to finish one combat, resolve its gold/card rewards,
 and verify an actionable map with the same client. Defeat stops before rewards.
@@ -162,7 +163,8 @@ its final `stage` and `code`. A failure never erases earlier reconciled actions 
 combat chooser results. Reward gold/card totals count only verified transitions.
 Reward bounds are 45 seconds, 512 reads, 17 accepted/25 attempted actions and eight
 known no-mutation stale rejections. Existing combat and map bounds also apply.
-These composed paths have offline shared-socket coverage and await live testing.
+Both reward policies have shared-socket coverage and completed live from combat
+through verified reward effects to an actionable map in that batch.
 
 The shared client spaces exchanges by at least 60 ms, below the listener's
 20-per-second authenticated allowance. Pacing consumes the existing exchange
