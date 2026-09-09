@@ -62,6 +62,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
         if (args[0].StartsWith("P_", StringComparison.Ordinal)) return RunRepeatedPage(args[0]);
         if (args[0].StartsWith("V_", StringComparison.Ordinal)) return RunVariableTransform(args[0]);
         if (args[0].StartsWith("T_", StringComparison.Ordinal)) return RunTransform(args[0]);
+        if (args[0].StartsWith("CR_", StringComparison.Ordinal)) return RunCardReward(args[0]);
         if (args[0].StartsWith("I_", StringComparison.Ordinal)) return RunItem(args[0]);
         bool enchanting = args[0].StartsWith("ENCHANT_", StringComparison.Ordinal);
         bool multiUpgrading = MultiCases.TryGetValue(args[0], out var multiConfig);

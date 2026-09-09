@@ -19,9 +19,11 @@ process. Completed packets and old campaign instructions are historical referenc
    Append-only additions before selectors have live acceptance through Grave of
    the Forgotten/Confront and verified SoulsPower selection. Removal followed by
    one appended grant has live acceptance through Amalgamator/CombineStrikes,
-   exact two-card removal, separate grant observation and fresh core map. Fixed multi-card enchantment and 2–8 potion/relic reward sets are now implemented
-   with offline evidence and await the planned batch live session. Next address
-   event card rewards, full-inventory/nested pickup handling and remaining narrow
+   exact two-card removal, separate grant observation and fresh core map. Fixed
+   multi-card enchantment, 2–8 potion/relic reward sets and ordinary singleton
+   card reward menus (choose or Skip/dismiss) now have offline evidence and await
+   the planned batch live session. Next address broader card-reward sets,
+   full-inventory/nested pickup handling and remaining narrow
    selector additions; then layout/combat and custom/terminal dependencies. This
    research grouping is not a fixed implementation order. Use a concrete branch
    and observable outcome for each increment, reusing matching accepted evidence.
@@ -43,7 +45,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
-include broader deck changes after selectors and other pre-selector mutations, event card rewards and broader reward/pickup
+include broader deck changes after selectors and other pre-selector mutations, broader card-reward sets and reward/pickup
 composition, ancient/combat layouts, embedded combat, optional
 and sequential pickup selectors, generic-deck transformations, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.

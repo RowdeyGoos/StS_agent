@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -22,7 +23,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens;
 using NativeHook = MegaCrit.Sts2.Core.Hooks.Hook;
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
-// Explicit, exclusive twenty-method observational patch scope. Originals always run.
+// Explicit, exclusive observational patch scope. Originals always run.
 public sealed class GenericEventV7Hooks : IDisposable
 {
     private const string Owner = "sts2agent.generic_event_v7";
@@ -66,7 +67,9 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(NRewardsScreen).GetMethod(nameof(NRewardsScreen.ShowScreen),new[]{typeof(RewardsSet),typeof(bool),typeof(IRunState)})!,
             typeof(NRewardButton).GetMethod("GetReward",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null)!,
             typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromDeckForEnchantment),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!,
-            typeof(NDeckEnchantSelectScreen).GetMethod(nameof(NDeckEnchantSelectScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!
+            typeof(NDeckEnchantSelectScreen).GetMethod(nameof(NDeckEnchantSelectScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(EnchantmentModel),typeof(int),typeof(CardSelectorPrefs)})!,
+            typeof(NCardRewardSelectionScreen).GetMethod(nameof(NCardRewardSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardCreationResult>),typeof(IReadOnlyList<CardRewardAlternative>)})!,
+            typeof(NCardRewardSelectionScreen).GetMethod(nameof(NCardRewardSelectionScreen.OptionSelected),Type.EmptyTypes)!
         };
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
@@ -81,7 +84,9 @@ public sealed class GenericEventV7Hooks : IDisposable
         if (!targets[18].IsPublic || !targets[18].IsStatic || targets[18].IsGenericMethod || targets[18].ReturnType != typeof(Task<IEnumerable<CardModel>>) ||
             !targets[19].IsPublic || !targets[19].IsStatic || targets[19].IsGenericMethod || targets[19].ReturnType != typeof(NDeckEnchantSelectScreen))
             throw new InvalidOperationException("Enchantment hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen"};
+        if(!targets[20].IsStatic||!targets[20].IsPublic||targets[20].ReturnType!=typeof(NCardRewardSelectionScreen)||
+            targets[21].IsStatic||!targets[21].IsPublic||targets[21].ReturnType!=typeof(Task<int?>))throw new InvalidOperationException("Card reward hook signature mismatch.");
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask"};
         _installed=this;
         try
         {
@@ -293,6 +298,26 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ItemCollectionFinalizer(Exception? __exception,State? __state)
     {if(__exception is not null&&__state?.Binding is {} b)FailItem(b);}
+    private static void CardMenuPrefix(IReadOnlyList<CardCreationResult> __0,IReadOnlyList<CardRewardAlternative> __1,out State __state) {
+        var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(item?.CardReward is not {} reward){FailItem(item?.Binding);return;}
+        try{if(!item.Context()||!item.CollectionEntered)throw new InvalidOperationException();reward.MenuEntering(__0,__1);}catch{FailItem(item.Binding);}
+    }
+    private static void CardMenuPostfix(NCardRewardSelectionScreen __result,State? __state) {
+        if(__state?.Item is not {} item||item.Binding.Failed)return;
+        try{item.CardReward!.MenuEntered(__result);}catch{FailItem(item.Binding);}
+    }
+    private static void CardMenuFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
+    private static void CardMenuTaskPrefix(NCardRewardSelectionScreen __instance,out State __state) {
+        var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(item?.CardReward is not {} reward){FailItem(item?.Binding);return;}
+        try{if(!item.Context())throw new InvalidOperationException();reward.TaskEntering(__instance);}catch{FailItem(item.Binding);}
+    }
+    private static void CardMenuTaskPostfix(Task<int?> __result,State? __state) {
+        if(__state?.Item is not {} item||item.Binding.Failed)return;
+        try{item.CardReward!.TaskEntered(__result);}catch{FailItem(item.Binding);}
+    }
+    private static void CardMenuTaskFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
     private static void EnchantRequestPrefix(IReadOnlyList<CardModel> __0, EnchantmentModel __1, int __2, CardSelectorPrefs __3, out State __state)
     {
         __state = new State { Previous=Request.Value };

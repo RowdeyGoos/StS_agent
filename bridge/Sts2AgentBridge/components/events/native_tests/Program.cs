@@ -36,6 +36,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--pre-selector-additions"})){PreSelectorAdditionTests();Console.WriteLine("pre-selector addition checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--item-set"})){ItemSetTests();Console.WriteLine("item-set checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--multi-enchantment"})){MultiEnchantmentTests();Console.WriteLine("multi-enchantment checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--card-reward"})){CardRewardTests();Console.WriteLine("card-reward checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -161,6 +162,7 @@ internal static partial class Program
         RemovalLayoutTests();
         MultiEnchantmentTests();
         ItemSetTests();
+        CardRewardTests();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)

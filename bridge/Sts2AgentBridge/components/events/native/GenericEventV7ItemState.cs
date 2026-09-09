@@ -21,6 +21,7 @@ internal sealed class GenericEventV7ItemState
     internal int Position;
     internal int OfferCount=>Entries?.Length??1;
     internal Reward? Reward;
+    internal GenericEventV7CardRewardAdapter? CardReward;
     internal object? Model;
     internal string Key=string.Empty;
     internal int Index, NativeIndex;
@@ -39,6 +40,11 @@ internal sealed class GenericEventV7ItemState
         var list=Set.Rewards;
         if(list is null||list.Count is <1 or >8)return false;
         Rewards=list;
+        if(list.Count==1&&list[0].GetType()==typeof(CardReward)) {
+            Reward=list[0];Index=NativeIndex=Reward.RewardsSetIndex;
+            if(!ReferenceEquals(Reward.Player,Binding.Player)||Reward.ParentRewardSet is not null||!Reward.IsPopulated||Reward.SuccessfullySelected)return false;
+            Entries=new[]{this};CardReward=new GenericEventV7CardRewardAdapter(this,(CardReward)Reward);return Domain();
+        }
         var entries=new GenericEventV7ItemState[list.Count];
         var identities=new HashSet<object>(ReferenceEqualityComparer.Instance);
         for(int i=0;i<list.Count;i++) {
@@ -65,8 +71,9 @@ internal sealed class GenericEventV7ItemState
     }
     private bool LocalDomain() {
         if(!Context()||Reward is null||!ReferenceEquals(Reward.Player,Binding.Player)||
-            Reward.ParentRewardSet is not null||Reward.RewardsSetIndex!=NativeIndex||!Reward.IsPopulated||
+            Reward.ParentRewardSet is not null||Reward.RewardsSetIndex!=NativeIndex||(CardReward is null&&!Reward.IsPopulated)||
             Reward.SuccessfullySelected&&!Dispatched)return false;
+        if(CardReward is not null)return CardReward.Domain();
         return Kind==ItemV1ItemKind.Potion&&Reward is PotionReward p&&p.Potion is PotionModel potion&&ReferenceEquals(potion,Model)&&potion.Id.Entry==Key||
             Kind==ItemV1ItemKind.Relic&&Reward is RelicReward r&&r.Relic is RelicModel relic&&ReferenceEquals(relic,Model)&&relic.Id.Entry==Key;
     }

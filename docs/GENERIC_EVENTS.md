@@ -341,10 +341,65 @@ budgets still apply; the set has a shared 256-read local bound.
 
 Offline native and C#/Python fixtures cover two potions, mixed sets, eight relics,
 delayed tasks, late changes to completed claims/slots, malformed public history,
-lost replies and cleanup interference. These two new capabilities are implemented
+lost replies and cleanup interference. These capabilities are implemented
 in source; the current accepted release and its live evidence still describe the
 previous removal build. Packaging and live acceptance will follow the planned
 batch test session.
+
+## Implemented: ordinary event card reward menus
+
+`card_reward_v1` adds a `card_reward` child for one populated, unlinked, exact
+`CardReward` in an owned nonterminal `RewardsSet.Offer`. The representative pinned
+caller is **BrainLeech/Rip** (canonical RewardCount one); **TheFutureOfPotions/Trade**
+also offers one reward and upgrades its generated cards before opening the screen.
+These are source-backed acceptance candidates; neither caller has live acceptance
+for this increment. The Cheese add-card grid remains a separate interaction.
+
+The child first advertises `open` on the exact native reward button. Observational
+hooks retain the resulting `NCardRewardSelectionScreen`, its original generated
+`CardCreationResult` list and the actual task returned by `OptionSelected()`.
+That returned async task is distinct from the screen's retained completion source.
+Once native holders are clickable, `choose:N` selects one of 1–5 original offers;
+slots are zero-based menu positions, even when keys repeat. Input uses the exact
+allocated holder and the existing native Pressed signal mechanism.
+
+The ordinary default Skip alternative is supported only when native reward/set
+legality and its enabled, visible control permit it. Alternative type, identifier,
+post-selection behavior and default callback identity are retained. **Skip only
+closes the card menu**: it leaves the root reward uncollected. The child then
+advertises `dismiss` on the exact enabled root Proceed button, which finishes the
+owned reward set. An interrupted menu returning null is not a successful Skip.
+
+Choosing verifies the exact task-result slot, removal of only that offer from the
+generated list, and insertion of the original offered card into the deck. The
+insertion position is retained once observed; baseline cards keep identity,
+relative order, key, level, enchantment and player/run ownership. A sole chosen
+offer legitimately leaves `IsPopulated` false. Skip/dismiss verifies no deck change
+and no successful collection. Both paths require the original collection, Offer
+and Chosen tasks to succeed and all owned overlays to close before parent resume.
+The reward baseline is the actual deck at generated-screen binding; preceding
+automatic parent effects are not independently verified by this child.
+
+The child descriptor contains `ordinal`, `parent_decision_id`, `parent_action_id`,
+`kind: card_reward`, `contract_version: card_reward_v1` and `offer_count: 1`.
+Read fields, in order, are `version`, `session_nonce`, `status`, `phase`,
+`decision_id`, `cards`, `can_skip`, `legal_actions`, `prior_results` and
+`selected_slot`. Ready `choose` cards expose `slot`, `key` and `upgrade_level`;
+other phases have an empty list. Receipts contain `version`, `session_nonce`,
+`decision_id`, `action_id` and `outcome`. Ordered history records `opened` then
+`collected`, or `opened`, `skipped`, `dismissed`. Only final resolution exposes
+the selected slot (null for Skip). One menu counts as one card child, including
+a verified Skip/dismiss; it uses at most three actions and 256 reads. The wire and
+host validate lineage, versions, stable offers, receipts and history. Lost replies
+stop without retry. Older consumers reject the new child descriptor.
+
+Offline native fixtures and the actual C#/Python path cover single and five-card
+menus, duplicate-key originals, both outcomes, delayed/deferred completion,
+changed targets/owners/deck effects, native Skip legality, nondefault alternatives,
+malformed replies, lost replies and rollback of either new hook. This code is
+not yet packaged or live-accepted. Multiple card rewards in one set, mixed card/item
+sets, repeated offers within one option, SpecialCardReward, reroll/multiple picks,
+hook-substituted cards and nested pickup selectors remain unsupported.
 
 ## Separate remaining questions
 
@@ -357,7 +412,7 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, event card rewards and broader reward/pickup composition, ancient and
+changes after selectors, other pre-selector deck mutations, broader card-reward sets and reward/pickup composition, ancient and
 combat layouts, optional/sequential pickup children and custom
 surfaces are distinct gaps. WoodCarvings uses a generic deck selector before a
 fixed-result transformation; it does not enter the supported transform screen.

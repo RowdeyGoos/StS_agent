@@ -29,7 +29,8 @@
   <Compile Include="../../../components/events/core/GenericEventV7Contracts.cs" />
   <Compile Include="../../../components/events/core/GenericEventV7ItemChildSession.cs" />
   <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />
-  <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
+  <Compile Include="../../../components/events/core/GenericEventV7CardRewardSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
   <Compile Include="../../../components/events/transform_core/CardTransformV2Journal.cs" />
   <Compile Include="../../../components/events/transform_core/CardTransformV2NativeContracts.cs" />
   <Compile Include="../../../components/events/transform_core/CardTransformV2Session.cs" />

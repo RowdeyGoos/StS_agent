@@ -9,19 +9,25 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Two further generic-event features are implemented in the checkout and await
-batch live testing: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8)
-and multiple potion/relic rewards (`item_set_v1`, 2–8 entries in one owned set).
-The latter verifies each collection separately and retains earlier claims through
-final event completion. Both have focused native and C#/Python fixture coverage;
-they are **not yet packaged or live-accepted**. The accepted release below retains
-its original source and evidence. See [generic semantics](GENERIC_EVENTS.md#implemented-fixed-multi-card-enchantment)
-for the new scope and remaining reward/pickup limits.
-The final focused event check passed **15 groups in 125.218 seconds**, including
-**5,066 native assertions** and **238 integration cases** (176 using the actual
-native adapters). The affected standalone card core passed 17 checks, and the
-combined production build passed in **1.579 seconds**. One independent semantic
-review completed after regressions for retained item effects and reentrant cleanup.
+Three further generic-event features are implemented in the checkout and await
+batch live testing: fixed multi-card enchantment (`card_enchant_v2`, counts 2–8),
+multiple potion/relic rewards (`item_set_v1`, 2–8 entries in one owned set), and
+ordinary singleton card reward menus (`card_reward_v1`, 1–5 offers). The new card
+reward child verifies one exact choice, or native Skip followed by explicit root
+dismissal, before resuming the event. BrainLeech/Rip is the representative pinned
+caller for the next live batch. Multiple/mixed card-reward sets and broader pickup
+composition remain gaps. These features are **not yet packaged or live-accepted**;
+the accepted release below retains its original source and evidence. See
+[generic semantics](GENERIC_EVENTS.md#implemented-ordinary-event-card-reward-menus).
+
+The final focused event check passed **15 groups in 147.881 seconds**, including
+**5,346 native assertions** and **268 integration cases** (206 using the actual
+native adapters). The new menu accounts for 280 added native assertions and 30
+added integration cases. The shared bridge passed **112 checks**, and the combined
+production build passed in **1.666 seconds**. That build evidence was reused after
+test-project fixes: all 122 transitive production source/settings files, three
+pinned references and the SDK remained identical. One independent semantic review
+completed, including the rejected-receipt correction found during integration.
 These are current-source development checks, not a release or live campaign.
 
 Generic removal followed by one appended event grant is implemented and packaged.
@@ -215,9 +221,10 @@ all 68 pinned types, with branch families, concrete blockers and ancient pickup
 paths. Repeated-page progress is the first implemented increment from that map,
 with live acceptance through Abyssal Baths. Append-only additions before selectors
 passed Grave/Confront. Removal followed by one appended grant passed
-Amalgamator/CombineStrikes live. Multiple potion/relic rewards and fixed multi-card
-enchantment are the next implemented batch; event card rewards, full-inventory
-handling and nested pickup composition remain concrete gaps;
+Amalgamator/CombineStrikes live. Multiple potion/relic rewards, fixed multi-card
+enchantment and ordinary singleton card reward menus form the next implemented
+batch. Broader card-reward sets, full-inventory handling and nested pickup
+composition remain concrete gaps;
 the static inventory itself adds no live acceptance.
 The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
@@ -227,7 +234,7 @@ observable behavior to test.
 ## Current exclusions
 
 The [research map](EVENT_INTERACTION_MAP.md) identifies concrete gaps in
-deck changes after selectors and other pre-selector deck mutations, event card rewards and broader reward/pickup composition,
+deck changes after selectors and other pre-selector deck mutations, broader card-reward sets and reward/pickup composition,
 ancient/combat layouts, embedded combat, optional/sequential
 pickup selectors, generic-deck transformation and custom/terminal surfaces.
 Unallocated holder support remains limited. Variable upgrades, true native

@@ -103,4 +103,48 @@ internal static partial class GenericEventV7NativeIntegrationHost
         }
         return 4;
     }
+
+    private static int RunCardReward(string scenario) {
+        if(!new[]{"CR_ONE","CR_FIVE","CR_SKIP","CR_OFFER","CR_COLLECTION","CR_CHOICE","CR_DEFERRED","CR_WRONG","CR_OWNER","CR_DISABLED"}.Contains(scenario))return 2;
+        using var f=new Program.CardRewardFixture(scenario=="CR_ONE"?1:scenario=="CR_FIVE"?5:3) {
+            DelayOffer=scenario=="CR_OFFER",DelayCollection=scenario=="CR_COLLECTION",DelayChoice=scenario=="CR_CHOICE",
+            DeferInput=scenario=="CR_DEFERRED",WrongInsertion=scenario=="CR_WRONG"
+        };
+        if(scenario=="CR_DISABLED")f.Skip.IsEnabled=false;
+        Program.RetireBeforeChosen(f.World.Room.Layout);
+        int baseline=f.World.Player.Deck.Cards.Count;
+        using var wire=new GenericEventV7WireService(new string('e',32),f.Session);
+        bool released=false;
+        for(int count=0;count<2200;count++) {
+            string? line=ReadLineBounded();if(line is null)return 0;
+            using var doc=JsonDocument.Parse(line);var request=doc.RootElement;
+            if(!request.EnumerateObject().Select(p=>p.Name).SequenceEqual(new[]{"method","route","body"}))return 3;
+            byte[]? body=request.GetProperty("body").ValueKind==JsonValueKind.Null?null:Convert.FromBase64String(request.GetProperty("body").GetString()!);
+            byte[] response=wire.Handle(request.GetProperty("method").GetString(),request.GetProperty("route").GetString(),body);
+            Console.WriteLine(JsonSerializer.Serialize(new {
+                body=Convert.ToBase64String(response),map_open=f.World.Map.IsOpen,overlay_count=f.World.Overlays.ScreenCount,
+                opens=f.Opens,choices=f.Choices,skips=f.Skips,dismisses=f.Dismisses,
+                added_slots=f.World.Player.Deck.Cards.Skip(baseline).Select(c=>Array.FindIndex(f.Cards,o=>ReferenceEquals(o,c))).ToArray()
+            }));
+            using var reply=JsonDocument.Parse(response);var value=reply.RootElement;
+            if(!released&&value.GetProperty("kind").GetString()=="decision"&&value.GetProperty("child").ValueKind==JsonValueKind.Object) {
+                var payload=value.GetProperty("payload");
+                if(scenario=="CR_OWNER"&&payload.GetProperty("phase").GetString()=="choose") {
+                    released=true;f.World.Player.Deck.Cards[0].Owner=new MegaCrit.Sts2.Core.Entities.Players.Player();
+                }
+                if(payload.GetProperty("status").GetString()=="waiting") {
+                    if(scenario=="CR_DISABLED"&&f.Opens==1){released=true;f.Skip.IsEnabled=true;}
+                    if(f.Choices==1) {
+                        released=true;
+                        if(scenario=="CR_OFFER")f.OfferGate.SetResult();
+                        if(scenario=="CR_COLLECTION")f.CollectionGate.SetResult();
+                        if(scenario=="CR_CHOICE")f.ChoiceGate.SetResult();
+                        if(scenario=="CR_DEFERRED")f.PendingInput!();
+                    }
+                }
+            }
+            if(body is not null)Array.Clear(body);Array.Clear(response);
+        }
+        return 4;
+    }
 }

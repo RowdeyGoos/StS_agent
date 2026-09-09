@@ -49,12 +49,14 @@
     <Compile Include="../../../components/events/core/GenericEventV7ChildSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7Contracts.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7ItemChildSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7CardRewardSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7Binding.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CardAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7Hooks.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7ItemAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7CardRewardAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7ItemState.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7MultiUpgradeAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7MultiUpgradeState.cs" />

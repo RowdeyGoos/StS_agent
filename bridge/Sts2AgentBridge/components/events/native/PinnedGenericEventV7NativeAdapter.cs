@@ -78,6 +78,10 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!item.Ready){diagnostic=GenericEventDiagnosticCode.PendingRequestTask;return Fixed("waiting");}
                 if(!item.Domain()||!item.Overlay())return Fixed("unsupported");
                 if(!item.TryButton(out _)){diagnostic=GenericEventDiagnosticCode.PrepareCandidates;return Fixed("waiting");}
+                if(item.CardReward is not null) {
+                    b.Admission??=new GenericEventV7RewardAdmission(new object());
+                    return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
+                }
                 if(!GenericEventV7ItemAdapter.Slots(b.Player,out _,out var slots)||
                     slots.Count(s=>s.ModelIdentity is null)<item.Entries!.Count(e=>e.Kind==Sts2AgentBridge.Successors.ItemV1.ItemV1ItemKind.Potion))return Fixed("unsupported");
                 b.Admission??=new GenericEventV7ItemAdmission(new object(),item.OfferCount);
@@ -170,11 +174,12 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         var b=_pending;
         if(b?.Item is {} item)
         {
-            if(_childCreated||!item.Ready||b.Admission is not GenericEventV7ItemAdmission admission||
+            if(_childCreated||!item.Ready||b.Admission is not {} admission||
                 !ReferenceEquals(admission.Identity,admissionIdentity)||!item.TryButton(out _)||
                 !_screens.Add(item.Screen!)||!_itemIdentities.Add(item.Set)||!_itemIdentities.Add(item.Reward!))
                 throw new InvalidOperationException("Unowned or repeated item child.");
             _childCreated=true;
+            if(item.CardReward is {} menuReward) {menuReward.Start();return new GenericEventV7CardRewardSession(b.Nonce,menuReward);}
             if(item.OfferCount>1) {
                 var set=new GenericEventV7ItemSetAdapter(item);
                 try{return new GenericEventV7ItemSetSession(b.Nonce,set);}catch{set.Dispose();throw;}

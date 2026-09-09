@@ -68,9 +68,9 @@ public sealed class GenericEventV7Child
         Kind = "card_selection";
         ContractVersion = GenericEventV7Families.ContractVersion(operation,maxSelect);
     }
-    public GenericEventV7Child(int ordinal, string parentDecisionId, string parentActionId, int offerCount) {
+    public GenericEventV7Child(int ordinal, string parentDecisionId, string parentActionId, int offerCount, bool cardReward=false) {
         Ordinal=ordinal; ParentDecisionId=parentDecisionId; ParentActionId=parentActionId;
-        Kind="item"; ContractVersion=offerCount==1?"item_v1":"item_set_v1"; OfferCount=offerCount;
+        Kind=cardReward?"card_reward":"item"; ContractVersion=cardReward?"card_reward_v1":offerCount==1?"item_v1":"item_set_v1"; OfferCount=offerCount;
         Operation=""; CommitMode="";
     }
     public string Kind { get; }

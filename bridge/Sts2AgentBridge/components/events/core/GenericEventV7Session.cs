@@ -80,6 +80,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 _card = _native.CreateChild(admission.Identity);
                 _child = admission switch {
                     GenericEventV7CardAdmission c => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
+                    GenericEventV7RewardAdmission => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,1,true),
                     GenericEventV7ItemAdmission i => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,i.OfferCount),
                     _ => null };
                 if (_child is null || !TypedChild()) return Stop();
@@ -163,6 +164,12 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         {
             if (!Lineage(parentDecisionId,parentActionId,childOrdinal)) { _unsupported = true; return ChildFailure(); }
             if (!TypedChild()) { _unsupported = true; return ChildFailure(); }
+            if(_card is IGenericEventV7RewardChildSession reward) {
+                var read=reward.Read();_childReconciled=_completedChildActions+read.PriorResults.Count;
+                if(read.Status=="unsupported")_unsupported=true;
+                if(read.Status=="resolved"){if(!_resolvedDelivered)_completedCardChildren++;_resolvedDelivered=true;}
+                return new GenericEventV7RewardChildRead(read);
+            }
             if (_card is IGenericEventV7ItemChildSession item) {
                 var itemValue=item.Read();
                 if(itemValue is GenericEventV7ItemSetRead set) {
@@ -234,20 +241,27 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
     public GenericEventV7ChildApply ApplyChild(string? parentDecisionId, string? parentActionId,
         int childOrdinal, string? decisionId, string? actionId)
     {
-        if (!Enter()) return ApplyFailure("unsupported");
+        if (!Enter()) return ApplyFailure("unsupported",decisionId,actionId);
         try
         {
             if (!Lineage(parentDecisionId,parentActionId,childOrdinal) || _resolvedDelivered ||
                 _attempted + _childAttempted >= 52)
-            { _unsupported = true; return ApplyFailure("unsupported"); }
-            if (!TypedChild()) { _unsupported = true; return ApplyFailure("unsupported"); }
+            { _unsupported = true; return ApplyFailure("unsupported",decisionId,actionId); }
+            if (!TypedChild()) { _unsupported = true; return ApplyFailure("unsupported",decisionId,actionId); }
+            if(_card is IGenericEventV7RewardChildSession reward) {
+                var read=reward.Read();
+                if(read.Status!="ready"||read.DecisionId!=decisionId||!read.LegalActions.Contains(actionId??""))return ApplyFailure("rejected",decisionId,actionId);
+                _childAttempted++;var outcome=reward.Apply(decisionId,actionId);
+                if(outcome.Outcome=="accepted")_childAccepted++;else _unsupported=true;
+                return new GenericEventV7RewardChildApply(outcome);
+            }
             if (_card is IGenericEventV7ItemChildSession item) {
-                if (_itemReceipt is not null) return ApplyFailure("rejected");
+                if (_itemReceipt is not null) return ApplyFailure("rejected",decisionId,actionId);
                 var itemRead=item.Read();
                 var current=itemRead is GenericEventV7ItemSetRead {Status:"ready"} set&&set.Collected.Count==_itemResults.Count
                     ? set.Current as ItemV1Observation : itemRead as ItemV1Observation;
                 if (current is null || current.Status != "ready" || current.DecisionId != decisionId ||
-                    current.Offers.Count != 1 || !current.LegalActions.Contains(actionId ?? "")) return ApplyFailure("rejected");
+                    current.Offers.Count != 1 || !current.LegalActions.Contains(actionId ?? "")) return ApplyFailure("rejected",decisionId,actionId);
                 _itemPublished=current; _childAttempted++;
                 var outcome=item.Apply(decisionId,actionId);
                 if (outcome is ItemV1DispatchReceipt receipt && receipt.SessionNonce == _nonce &&
@@ -259,14 +273,14 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             var observation = ((IGenericEventV7CardChildSession)_card!).Read() as CardSelectionV1Observation;
             if (observation is null || observation.DecisionId != decisionId ||
                 !observation.LegalActions.Contains(actionId ?? ""))
-                return ApplyFailure("rejected");
+                return ApplyFailure("rejected",decisionId,actionId);
             _childAttempted++;
             var result = ((IGenericEventV7CardChildSession)_card).Apply(decisionId, actionId);
             if (result is CardSelectionV1DispatchReceipt) _childAccepted++;
             else _unsupported = true;
             return new GenericEventV7CardApply(ChildContract(), result);
         }
-        catch { _unsupported = true; return ApplyFailure("unsupported"); }
+        catch { _unsupported = true; return ApplyFailure("unsupported",decisionId,actionId); }
         finally { _inside = false; }
     }
     private bool Lineage(string? decision,string? action,int ordinal) => !_unsupported &&
@@ -274,13 +288,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         action == _child.ParentActionId && ordinal == _child.Ordinal;
     private string ChildContract() => _child?.ContractVersion ?? "card_selection_v1";
     private bool TypedChild() => _card is not null && _child is not null && _card.ContractVersion == ChildContract() &&
-        (_child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
+        (_child.Kind == "card_reward" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
             _card is IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession);
-    private GenericEventV7ChildRead ChildFailure() => _child?.Kind == "item"
+    private GenericEventV7ChildRead ChildFailure() => _child?.Kind=="card_reward" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null)) : _child?.Kind == "item"
         ? new GenericEventV7ItemRead(_child!.OfferCount>1 ? new GenericEventV7ItemSetRead(_nonce,"unsupported",_child.OfferCount,Array.AsReadOnly(_itemResults.ToArray()),null) : ItemV1Observation.Fixed(_nonce,"unsupported"),ChildContract())
         : new GenericEventV7CardRead(ChildContract(),CardSelectionV1Observation.Fixed(
             _nonce,"unsupported","unsupported",Array.Empty<CardSelectionV1ActionResult>()));
-    private GenericEventV7ChildApply ApplyFailure(string outcome) => _child?.Kind == "item"
+    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind=="card_reward" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome)) : _child?.Kind == "item"
         ? new GenericEventV7ItemApply(new ItemV1ApplyFailure(_nonce,outcome),ChildContract())
         : new GenericEventV7CardApply(ChildContract(),new CardSelectionV1ApplyFailure(_nonce,outcome));
     private void Reconcile(string result)

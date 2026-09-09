@@ -28,6 +28,7 @@ class Exchange:
         self.native = native
         self.transform = native and scenario.startswith(('T_', 'V_'))
         self.variable_transform = native and scenario.startswith('V_')
+        self.card_reward = native and scenario.startswith("CR_")
         self.item = native and scenario.startswith('I_')
         self.repeated_page = native and scenario.startswith('P_')
         self.process = subprocess.Popen([dotnet, str(fixture), scenario],
@@ -87,6 +88,8 @@ class Exchange:
             expected += ('preview_holder_count', 'selected_originals')
         if self.repeated_page:
             expected = ('body', 'map_open', 'chosen_calls', 'linger_calls', 'control_calls')
+        if self.card_reward:
+            expected=("body","map_open","overlay_count","opens","choices","skips","dismisses","added_slots")
         assert tuple(value) == expected, value
         self.telemetry.append({k: value[k] for k in value if k != 'body'})
         response = bytearray(base64.b64decode(value['body'], validate=True))
@@ -954,6 +957,10 @@ def main() -> int:
         native_checks += added
 
     if args.native_fixture is not None:
+        from generic_event_card_reward_cases import run_card_reward_cases
+        added=run_card_reward_cases(args,host,Exchange)
+        checks+=added
+        native_checks+=added
         from generic_event_item_cases import run_item_cases
         added = run_item_cases(args, host, Exchange, completed_history)
         checks += added

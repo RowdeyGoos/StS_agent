@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 
 namespace Godot
 {
+    public enum Error {Ok,Failed}
+
     public class GodotObject
     {
         public bool InstanceValid { get; set; } = true;
@@ -207,7 +209,7 @@ namespace MegaCrit.Sts2.Core.Nodes.CommonUi
 {
     using Godot;
     public class NClickableControl : Control { private bool _enabled=true; public bool IsEnabled { get=>FixtureTrace.Read(this,"enabled",_enabled);set=>_enabled=value; } }
-    public sealed class NProceedButton : Control { public bool IsEnabled { get; set; } public void ForceClick() { } }
+    public sealed class NProceedButton : Control { public bool IsEnabled { get; set; } public Action? Clicked; public void ForceClick() => Clicked?.Invoke(); }
     public class NConfirmButton : Control
     {
         public bool IsEnabled { get; set; } = true;
@@ -240,6 +242,10 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
         protected bool InputClickable => _isClickable;
         private NCard _cardNode=null!; public NCard CardNode {get=>FixtureTrace.Read(this,"card",_cardNode);set=>_cardNode=value;}
         public virtual CardModel CardModel=>CardNode.Model;
+        public static class SignalName { public const string Pressed="Pressed"; }
+        public Action? RewardPressed;
+        public Godot.Error EmitSignal(string name,NCardHolder holder){if(name!=SignalName.Pressed||!ReferenceEquals(holder,this))return Godot.Error.Failed;RewardPressed?.Invoke();return Godot.Error.Ok;}
+
     }
     public class NPreviewCardHolder:NCardHolder { }
     public class NGridCardHolder : NCardHolder
@@ -494,6 +500,13 @@ namespace MegaCrit.Sts2.Core.Rewards
         public virtual bool IsPopulated {get;set;}=true;
         public bool SuccessfullySelected {get;set;}
     }
+    public class CardReward:Reward {
+        private List<MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult> _cards=new();
+        public bool CanSkip {get;set;}=true;
+        public override bool IsPopulated {get=>_cards.Count>0;set{}}
+        public IEnumerable<CardModel> Cards=>System.Linq.Enumerable.Select(_cards,x=>x.Card);
+        public void Setup(List<MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult> cards)=>_cards=cards;
+    }
     public sealed class PotionReward:Reward { public PotionModel Potion {get;set;}=null!;public PotionModel? ClaimedPotion {get;set;} }
     public sealed class RelicReward:Reward { public RelicModel Relic {get;set;}=null!;public RelicModel? ClaimedRelic {get;set;} }
     public class RewardsSet
@@ -514,6 +527,9 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens
     using MegaCrit.Sts2.Core.Runs;
     public class NRewardsScreen:Control
     {
+        private MegaCrit.Sts2.Core.Nodes.CommonUi.NProceedButton? _proceedButton;
+        public void BindProceed(MegaCrit.Sts2.Core.Nodes.CommonUi.NProceedButton button){_proceedButton=button;Bind("ProceedButton",button);}
+        public bool ProceedBound=>_proceedButton is not null;
         public static Func<RewardsSet,bool,IRunState,NRewardsScreen>? Factory;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public static NRewardsScreen ShowScreen(RewardsSet set,bool terminal,IRunState run)=>Factory!(set,terminal,run);
@@ -536,5 +552,37 @@ namespace MegaCrit.Sts2.Core.Nodes.Rewards
         public Task ForeignGetReward()=>GetReward();
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         private Task GetReward()=>Handler();
+    }
+}
+
+namespace MegaCrit.Sts2.Core.Entities.Rewards { public enum PostAlternateCardRewardAction {None,Skip} }
+namespace MegaCrit.Sts2.Core.Entities.CardRewardAlternatives {
+    using MegaCrit.Sts2.Core.Entities.Rewards;
+    public class CardRewardAlternative {
+        public string OptionId {get;}
+        public Func<Task> OnSelect {get;set;}
+        public PostAlternateCardRewardAction AfterSelected {get;set;}
+        public CardRewardAlternative(string id,PostAlternateCardRewardAction after){OptionId=id;AfterSelected=after;OnSelect=()=>Task.CompletedTask;}
+    }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection {
+    using Godot;
+    using MegaCrit.Sts2.Core.Models;
+    using MegaCrit.Sts2.Core.Entities.Cards;
+    using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
+    using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+    public class NCardRewardAlternativeButton:Control {public bool IsEnabled {get;set;}=true;public Action? Clicked;public void ForceClick()=>Clicked?.Invoke();}
+    public class NCardRewardSelectionScreen:Control {
+        private IReadOnlyList<CardCreationResult> _options=Array.Empty<CardCreationResult>();
+        private IReadOnlyList<CardRewardAlternative> _extraOptions=Array.Empty<CardRewardAlternative>();
+        private TaskCompletionSource<int?> _completionSource=new();
+        public static Func<IReadOnlyList<CardCreationResult>,IReadOnlyList<CardRewardAlternative>,NCardRewardSelectionScreen>? Factory;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static NCardRewardSelectionScreen ShowScreen(IReadOnlyList<CardCreationResult> options,IReadOnlyList<CardRewardAlternative> alternatives){var screen=Factory!(options,alternatives);screen._options=options;screen._extraOptions=alternatives;return screen;}
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public async Task<int?> OptionSelected(){_completionSource=new();return await _completionSource.Task;}
+        public void Complete(int? slot)=>_completionSource.SetResult(slot);
+        public bool HasOptions=>_options.Count>0||_extraOptions.Count>0;
+        public NCardHolder? GetCardHolder(CardModel model)=>System.Linq.Enumerable.FirstOrDefault(System.Linq.Enumerable.OfType<NGridCardHolder>(GetNodeOrNull<Control>("UI/CardRow")!.Children),h=>ReferenceEquals(h.CardModel,model));
     }
 }
