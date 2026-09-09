@@ -61,6 +61,44 @@
       "selected_card": "CRUELTY",
       "status": "passed",
       "upgrade_level": 0
+    },
+    {
+      "additional_cards": [
+        {
+          "key": "INJURY",
+          "slot": 0,
+          "upgrade_level": 0
+        }
+      ],
+      "case": "Neow/HeftyTablet Skip",
+      "event": {
+        "child_accepted": 1,
+        "child_attempted": 1,
+        "child_episodes": 1,
+        "child_reconciled": 1,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 10,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 3
+      },
+      "map_handoff": {
+        "candidate_count": 3,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-hefty-skip-live-20260909-result.json",
+      "result_sha256": "94986e6a39f42c7683e1845b34246664055fc80b35c1d9d46bc4dc6795e18257",
+      "seconds": 1.006,
+      "selected_card": null,
+      "status": "passed"
     }
   ],
   "release_manifest_sha256": "c73fde6c7877b4bba71fdab3a11e2d9b05a5e64e49ffbbd470b38e27b3e31d57",

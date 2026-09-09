@@ -138,7 +138,9 @@ and owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-_el2
 The **fourteenth installation is active**, installed state
 `265480ccd6e8029ff097518a4412a236373316a22eeb4a5e0f2b6fb8129b9ed1`. HeftyTablet choose passed: **Cruelty** plus **Injury**,
 three reconciled actions and a fresh actionable map in **1.436 seconds**.
-The same package remains installed for the Skip branch; cleanup is pending.
+**Skip also passed**: Injury only, three reconciled actions and a fresh actionable
+map in **1.006 seconds**. The same package remains installed for the remaining
+live batch; Sea Glass zero-selection is next and cleanup is pending.
 
 The thirteenth installation is cleaned up. Its first HeftyTablet read stopped with
 `invalid_response` and zero actions; pinned metadata exposed a results hook that
@@ -147,8 +149,8 @@ The correction preserves exact concrete runtime ownership. The release gate now
 compares the production postfix and fixture declaration with actual pinned game
 metadata; the corrected positive and both prior-binary negatives passed separately.
 Normal quit, exact quarantine/purge and **429 unchanged base files with zero overlays**
-passed before reinstalling. HeftyTablet choose has representative live acceptance;
-Skip and the other new interaction families remain pending.
+passed before reinstalling. Both HeftyTablet branches have representative live
+acceptance; the other new interaction families remain pending.
 The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#fourteenth-installation-results-return-correction)
 retains the correction, failed attempt, cleanup and current installation bindings.
 

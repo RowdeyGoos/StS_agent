@@ -1343,3 +1343,43 @@ The same installation remains active for a fresh HeftyTablet **Skip** setup;
 normal quit and cleanup remain pending after the live batch. The unchanged policy
 already contains the reviewed Skip branch, so its completed checks/review are
 reused. No profile/save/history/Cloud filesystem content was accessed.
+
+### HeftyTablet Skip passed
+
+The user confirmed a fresh HeftyTablet setup on the same fourteenth installation.
+Fresh exact running-process, release/source/owned installation and authenticated
+health/manifest checks passed. The unchanged reviewed policy chose the exact relic
+option, dispatched native **Skip once**, then Proceed. The child resolved as
+`card_offer_v2`, selected index null, with `skipped` history and exactly one
+additional **Injury (upgrade level 0)**. No offered card was added.
+
+All **three actions reconciled**: two parent and one child attempted/accepted/
+reconciled, one completed card child, zero item children, ten event reads. A fresh
+core-map read passed with three candidates. Policy time: **1.006 seconds**.
+Parent effects remain `unverified`; both observed HeftyTablet branches now have
+representative live acceptance. The transient diagnostic sequence matches the
+previous choose case and its documented nonterminal label behavior.
+
+Result: `/private/tmp/sts-hefty-skip-live-20260909-result.json`, SHA-256
+`94986e6a39f42c7683e1845b34246664055fc80b35c1d9d46bc4dc6795e18257`.
+The bridge remains installed for the remaining batch; cleanup is pending after
+live testing. No profile/save/history/Cloud filesystem content was accessed.
+
+The next bounded policy is prepared at `/private/tmp/sts-seaglass-live-20260909.py`,
+SHA-256 `6351761f495671d8f388205fe0c32047d239e8e858935188af5b359d27422de3`. Its **96 frozen-view
+checks passed** and independent semantic review found no blockers. It reuses the
+existing unified client, source/state/authentication validation, generic event host
+and fresh core-map verifier. It requires exact
+`OROBAS.pages.INITIAL.options.SEA_GLASS`, `card_add_v2`, min zero/max fifteen,
+exactly fifteen offers and explicit confirmation. Counts zero, three and fifteen
+are supported by the policy; **zero is the next live case**. Selection uses lowest
+advertised unselected slots and requires exact selected-card identities in the
+resolved child, plus matching action counts and one completed child. Zero requires
+an explicitly confirmed empty result. No uncertain input is retried.
+
+Pinned Orobas metadata and the shared option-key builder establish this key and
+`ancient OROBAS SEA_GLASS` setup. Sea Glass has character-specific pool variants;
+this test makes no pool/color claim. Enter a room from the map normally, invoke
+the console command, close the console and leave the relic option untouched.
+No further build/install is needed; the accepted release is unchanged. This policy
+has not yet run live. Separate policy preparation/review times were not measured.
