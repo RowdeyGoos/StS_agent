@@ -1,8 +1,9 @@
 # Combined bridge live batch
 
 Status: representative batch completed. Generic single-upgrade/event-to-map and
-both combat/choice/reward/map flows passed; all three installations were cleaned
-up. Off-screen upgrade was not exercised because its larger-deck setup was not
+both combat/choice/reward/map flows passed; those three installations were cleaned
+up. The fourth installation is also now cleaned up; a fifth is prepared for a
+revised skill-card setup. Off-screen upgrade was not exercised because its larger-deck setup was not
 established. The user authorized live testing after feature preparation and
 confirmed manual readiness on Profile 3.
 
@@ -252,3 +253,121 @@ No profile/save/history/Cloud filesystem data was read. Credentials stayed withi
 the existing client's read lease and were cleared after each invocation. The
 user-waived unmodded relaunch was not repeated. Setup, user-wait, documentation
 and cleanup phase totals were not captured; measured flow/gate times are above.
+
+## Fourth installation: user-prepared off-screen upgrade setup
+
+The user requested console card additions and offered to prepare the deck. They
+reported that removing one card after additions can refresh a stale visual deck
+count. This is a setup hypothesis, not yet a verified explanation of the first
+attempt. The actual upgrade selector domain and an allocated off-screen target
+will be verified before selection.
+
+The existing accepted release/package was reused without source changes or
+another build. Fresh stopped-game/closed-listener checks passed (three process,
+two port samples). Installation created the owned mods parent and state
+`57e94a0b2bb1a7095657c59eae4636ee9a1b4892aa1a7b2c9e9a319ec31f924d`.
+Overlay verification passed: 429 unchanged pinned base files plus exactly two
+overlay files. Release/client ownership and configuration preflight passed
+without reading credential contents. Manual launch and user deck preparation on
+Profile 3 are pending; this fourth installation requires cleanup after its test.
+
+### Fourth installation: read-only event admission stopped
+
+After manual readiness, exact running process, authenticated health and compatible
+manifest checks passed. UI showed Sapphire Seed's initial Consume/Plant options,
+a 24-card deck, HP 75/80 and gold 193. The user supplied this setup; the assistant
+did not add/remove cards or open this event. No selector had yet been opened.
+
+The existing generic host stopped after one read with `unsupported_state` and
+native diagnostic `parent_unavailable`. Parent and child attempted/accepted/
+reconciled counts were all zero, with no child episodes, no actions, no map check
+and `effects: none_attempted`. Elapsed controller time was 0.377 seconds. The
+bounded result is `/private/tmp/sts-offscreen-upgrade-live-result.json`.
+
+The parent adapter checks map travel state among several readiness predicates.
+The initial UI also showed a Proceed control beside the event choices. Console
+room creation retaining map state is a possible setup explanation, not a proven
+cause; this diagnostic does not identify the exact predicate. No runtime guard
+was removed, no failed session was retried and no input was dispatched.
+
+Normal quit succeeded; stopped-game/closed-listener checks passed with three
+process and two port samples. The same unchanged validated installation remains
+on disk for a fresh manual process. Its exact installed state above remains the
+cleanup identity; final quarantine/purge is still pending. Next setup is manual
+launch at the main menu, then a verified fresh native room before console event
+entry. The 24-card counter alone does not establish the upgrade selector domain.
+
+### Fourth installation: fresh room, counter refresh and two test-wrapper results
+
+Manual relaunch showed Profile 3. Runtime and authenticated compatible-build
+checks passed. Continue resumed the previous reward screen at HP 75/80, gold 175
+and deck count 13; the user's console setup had not survived the quit. The existing
+reward host used `skip-card`: four attempted/accepted/reconciled actions, five
+reads, gold +18, one skipped card reward and unchanged deck count 13. A native
+map action entered treasure column 2, row 9 and was separately reconciled.
+
+Controlled console setup issued twelve `card BASH Deck` commands, all visibly
+reported successful. The displayed counter stayed at 13. One
+`remove_card BASH Deck` reported success and refreshed the counter to 24. Then
+`event SAPPHIRE_SEED` opened initial event choices without the extra Proceed
+control seen in the preceding unsupported setup. This demonstrates the user's
+counter-refresh workaround; it does not establish the added cards' eligibility.
+
+The first wrapper incorrectly checked for child kind `card` instead of the actual
+`card_selection`. It therefore used the default first-legal policy and selected
+slot 0, confirmed and returned to an actionable map. Parent and child counts each
+were 2 / 2 / 2, with one completed card child, 13 event reads, one map read and one
+candidate, no error, 1.446 seconds. Result:
+`/private/tmp/sts-offscreen-upgrade-retest-result.json`. This was an ordinary
+upgrade, not the intended off-screen test. The production host was unchanged.
+
+The wrapper child-kind check was corrected and locally exercised with a later
+selection and exact preview confirmation. Native map entry to monster column 2,
+row 10 was accepted and reconciled, then a fresh console Sapphire Seed was opened.
+Consume was accepted and its selector admitted. The actual domain contained eight
+unupgraded cards: two Strikes, four Defends, Neow's Fury and Twin Strike. No Bash
+was present. UI showed the same eight-card, two-row grid while the top counter
+still showed 24. Thus no off-screen target was available in this admitted domain.
+
+The test-only provider's 20-second inspection-input timeout expired before any
+card dispatch. It returned `provider_failed`: parent 1 / 1 / 0, one child episode,
+child 0 / 0 / 0, two reads, zero completed children, latest effect unverified and
+no map check, 20.160 seconds. A subsequent input reached an already-finished
+process and caused no game action. Result:
+`/private/tmp/sts-offscreen-upgrade-target-result.json`. The pending event was not
+retried, adopted or manually completed.
+
+Normal quit and stopped/closed-listener checks passed (three process/two port
+samples). Quarantine state:
+`52c19e85ed49f1f9ca2cf553b9adf3b8857d71f4c8b7e043d1fbea268df01770`.
+Purge removed four owned files and returned the campaign to absent. Base
+verification passed: 429 unchanged files, zero overlays, the same pinned
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`
+projection. No profile/save/history/Cloud filesystem data was read.
+
+The user then suggested that an automatic attack-upgrade relic had upgraded the
+added Bashes. This is a plausible eligibility explanation to verify through
+visible relic/card state; neither the displayed counter nor this attempt proves
+it. Narrow metadata-only inspection confirmed `IsUpgradable` compares current
+and maximum upgrade levels, and that deck `remove_card` returns after its first
+matching removal. It did not execute game code or inspect user files.
+
+## Fifth installation: skill-card setup prepared
+
+The same accepted package was reused without a production change or new release
+gate. Fresh installed state:
+`ed59694f0015caa4c07309af8e9eab3fe459aa95d249efc555cfc6961b8e3537`.
+Overlay verification passed: 429 unchanged base files and exactly two overlays.
+Release and client ownership/configuration preflight passed without credential
+content access. The installer created the mods parent. Manual launch is pending;
+cleanup remains required for this installation.
+
+The revised ephemeral provider uses actual kind `card_selection`, requires at
+least 21 eligible candidates and chooses slot 20 only if it is an unupgraded
+`DEFEND_IRONCLAD`. It verifies selected slot 20 before confirmation and uses the
+unchanged host's native preview/effect checks. The timed inspection-input pause
+was removed. Local provider checks cover the actual child kind, later target,
+preview confirmation and rejection of an eight-card domain. Planned setup adds
+Defend skills after opening the event, checks visible upgrade states and the
+allocated off-screen premise, then runs the bounded controller. This remains a
+prepared experiment, not a successful off-screen result.

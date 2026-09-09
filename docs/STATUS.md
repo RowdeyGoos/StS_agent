@@ -9,21 +9,40 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-The combined live batch is complete and all three installations are cleaned up.
-The current accepted release is
+The representative combined live batch passed. Its first four installations are
+cleaned up. A fifth installation of the unchanged accepted release is prepared
+for the off-screen upgrade test:
 `fcf7e2999df081cfdd07e8364c48c5646c6dc34fa7198bf911be816d489a1bdb`.
-Its final gate passed 71 groups in 146.105 seconds. The corrected combat host
-completed two combats with native Neow's Fury choices (two cards and zero cards),
-both card-reward policies and fresh actionable map checks, without UI assistance
-inside either flow. The same native DLL also passed Sapphire Seed single-upgrade
-and event-to-core map return on the preceding installation.
+Current installed state:
+`ed59694f0015caa4c07309af8e9eab3fe459aa95d249efc555cfc6961b8e3537`.
+The pinned 429-file base, exactly two overlay files and client ownership preflight
+passed. Manual launch on Profile 3 at the main menu is pending; this installation
+still requires cleanup.
 
-Normal quit, stopped process/closed listener, exact quarantine/purge and the
-unchanged 429-file base with zero overlays passed after the final test. There is
-no current installed campaign. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
-retains the exact source/release/state identities, separate action counts,
-corrections, setup assistance and remaining limits. Off-screen upgrade remains
-unverified: the earlier console setup did not establish a larger deck.
+The fourth installation reproduced the stale counter: twelve `card BASH Deck`
+additions left 13 displayed, and one `remove_card BASH Deck` refreshed it to 24.
+A later native upgrade selector contained only eight cards and no Bash. The user
+identified automatic attack upgrading by a relic as a possible explanation;
+verify the relic and card upgrade states rather than treating the counter as an
+eligible-card count. Next setup uses unupgraded `DEFEND_IRONCLAD` skills after
+opening Sapphire Seed from a fresh native room, with actual eligibility checked
+before input. The prepared test provider requires at least 21 candidates and
+selects slot 20 only if it is an unupgraded Defend; it has no timed input pause.
+
+The fourth installation's first event read stopped with `parent_unavailable`
+before any input. After relaunch/native room entry, an ordinary upgrade/map flow
+passed, but the test wrapper's wrong child-kind check selected slot 0 instead of
+the intended later target. A corrected wrapper subsequently admitted the eight-card
+selector but its inspection timer expired before card input. The pending event
+was not completed manually; normal quit, exact quarantine/purge and unchanged
+base verification passed. [The live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
+retains exact counts, setup limits and cleanup identities. Off-screen upgrade is
+still unverified; no production bridge source change was needed for these attempts.
+
+The accepted release's 71-group gate passed in 146.105 seconds. Its corrected
+combat host completed Neow's Fury two-card and zero-card choices, both reward
+policies and fresh actionable maps without UI assistance inside those flows.
+The same native DLL passed Sapphire Seed single-upgrade and event-to-core map.
 
 The September 8 unified module smoke is complete and its three installations are cleaned up.
 Representative paths covered combat (one UI-assisted chooser), rewards, map, shop,
