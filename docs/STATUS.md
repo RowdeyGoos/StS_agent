@@ -129,14 +129,16 @@ identities remain in [release history](../bridge/Sts2AgentBridge/releases/histor
 
 ## Next work
 
-The [roadmap](../ROADMAP.md#immediate-priorities) owns the next smoke-test gaps.
+The user prioritized generic event coverage before longer-run orchestration.
+Single-card enchantment is the next implementation target; it remains unsupported.
+The [roadmap](../ROADMAP.md#immediate-priorities) owns the priority order.
 The [generic event guide](GENERIC_EVENTS.md) distinguishes implemented behavior
 from remaining native coverage. Reuse completed evidence when choosing the next
 observable behavior to test.
 
 ## Current exclusions
 
-Generic-event optional/zero selection, variable upgrades, multiple-item sets, incomplete holder
+Generic-event enchantments, optional/zero selection, variable upgrades, multiple-item sets, incomplete holder
 coverage, custom/repeated interactions and event combat remain generic gaps.
 Variable transformation has offline evidence but no variable-count live case.
 Elite continuation and complete room/run composition remain broader open evidence

@@ -13,6 +13,7 @@ owns the latest operational result and [roadmap](../ROADMAP.md) owns priorities.
 | Item rewards | Singleton potion/relic children in native fixtures; Potion Courier/Ransack potion collection live | Broader relic/caller evidence and multiple-offer sets |
 | Add cards | Positive variable counts up to eight in fixtures; Cheese/Gorge two-of-eight live | Other callers/domains/counts are not all live-proven |
 | Upgrade cards | Fixed counts 1–8, exact preview mapping and allocated off-screen holder selection in native-to-Python fixtures; Smith and Sapphire Seed single upgrades live, including Sapphire Seed off-screen slot 20 of 23 | Multi-upgrade live evidence, variable counts and unallocated holders |
+| Enchant cards | Unsupported; Sapphire Seed Plant option observed, Field of Man-Sized Holes fixed-single shared request confirmed in pinned source | Next implementation target: exact selection/enchantment verification and event resumption |
 | Remove cards | Positive variable counts up to eight, preview confirmation and exact remaining-deck reconciliation in native fixtures | Live caller evidence, optional selection and unallocated holders |
 | Transform cards | Fixed counts and positive variable counts up to eight in G7 fixtures; Aroma/Let Go fixed-one live | Variable-count live evidence, optional selection and unallocated holders |
 | Optional/zero selection and repeated choices | Unsupported by the current generic implementation | Cancellation, bounds and loop ownership need explicit semantics |

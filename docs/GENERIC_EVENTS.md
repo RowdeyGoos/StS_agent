@@ -94,6 +94,25 @@ path; multi-upgrade and other domains/counts remain separate evidence targets.
 For console fixtures, check automatic-upgrade relics and actual card eligibility:
 Molten Egg upgraded the added Bashes; unupgraded Defend skills supplied this case.
 
+## Next acceptance case: one card enchantment
+
+Generic event interactions now take priority over longer-run orchestration; the
+[roadmap](../ROADMAP.md) owns that order. Card enchantment is the next concrete
+implementation target. Sapphire Seed's observed Plant and Nourish option enchants
+a card with Sown and remains unsupported. Retained metadata-only inspection of
+the pinned game also shows `FieldOfManSizedHoles.EnterYourHole` requesting exactly
+one card through `CardSelectCmd.FromDeckForEnchantment`, applying `CardCmd.Enchant`
+and finishing the event. The current generic hooks do not bind that request.
+
+The smallest acceptance case is to bind that shared request and its actual native
+selector, choose one eligible original card once, verify the requested enchantment
+on that exact card, then resume the parent through Proceed and verify core map
+readiness. Check existing enchantments, ineligible/changed targets, failed tasks
+and cleanup at the relevant boundaries. Reuse existing parent ownership,
+transport and selection mechanisms where their semantics apply. Enchantment
+identity/effects need explicit observations; an upgrade-level check is insufficient.
+This is a selected implementation target, not implemented or live-tested support.
+
 ## Separate remaining questions
 
 An allocated off-screen holder can accept direct input. A card without an

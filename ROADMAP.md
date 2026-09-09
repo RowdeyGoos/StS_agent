@@ -6,23 +6,29 @@ process. Completed packets and old campaign instructions are historical referenc
 
 ## Immediate priorities
 
-1. **Compose supported interactions into longer live runs.** The combined batch
-   now covers Neow's Fury two-card and zero-card choices, combat resume, both
-   reward policies, event/map handoff and an allocated off-screen single upgrade.
-   Test remaining handoffs, elite continuation and unsupported surfaces with
-   targeted setups. Keep run-completion, branch coverage and strategic-quality
-   claims separate. Reuse the
+1. **Expand generic event interactions first.** The user identified event
+   coverage as the current obstacle and prioritized it ahead of longer-run
+   orchestration. Start with generic **single-card enchantment**, an observed gap
+   in Sapphire Seed's Plant and Nourish branch. Pinned source also confirms
+   Field of Man-Sized Holes/EnterYourHole uses the shared deck-enchantment
+   selector and applies an enchantment before finishing. The smallest acceptance
+   case is one eligible card selected, its exact enchantment effect verified,
+   then event continuation and a fresh actionable map. Extend the existing
+   generic parent/child machinery; do not add event-name admission rules.
+2. **Address the next demonstrated event blocker.** Consider optional/zero
+   selection and cancellation, repeated/custom choices, multiple-item sets,
+   variable upgrades and event combat. Establish a representative native caller
+   before choosing the next implementation. Reuse completed fixture/live evidence;
+   no fixed implementation order is implied for unobserved combinations.
+3. **Compose supported interactions into longer live runs after event coverage.**
+   The combined batch covers Neow's Fury two-card and zero-card choices, combat
+   resume, both reward policies, event/map handoff and an allocated off-screen
+   single upgrade. Reuse the
    [combined batch](docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) and
-   [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
-   evidence for unchanged paths.
-2. **Use the generalized transformation path in useful play.** All eligible,
-   allocated holders use direct input, with identity/preview/completion checks.
-   The [generic handler guide](docs/GENERIC_EVENTS.md) describes its evidence and
-   remaining native questions. Do not repeat the card16 experiment merely to
-   obtain another geometric proof.
-3. **Expand the next interaction that blocks useful play.** Establish a real
-   representative caller first. Prioritize observed gaps over hypothetical
-   capability combinations or another event-name allowlist.
+   [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md).
+   Then test remaining handoffs and elite continuation. Use generalized
+   transformation in useful play; do not repeat the card16 geometry experiment.
+   Keep run-completion, branch coverage and strategic-quality claims separate.
 
 Allocated off-screen transformation and single-upgrade holders each have a
 representative live result. Further tests should address new behavior, such as
@@ -30,6 +36,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 ## Remaining generic interaction work
 
+- Card enchantments, starting with the shared fixed-single deck selector above.
 - Generic-event optional/zero-card selection and native cancellation. Combat
   discard/exhaust grid choices have a separate implementation; Neow's Fury zero
   and two-card discard choices now have live evidence.
