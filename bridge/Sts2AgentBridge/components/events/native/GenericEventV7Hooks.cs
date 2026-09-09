@@ -79,7 +79,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         };
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
-        if(!targets[27].IsPublic||!targets[27].IsStatic||targets[27].IsGenericMethod||targets[27].ReturnType!=typeof(NSimpleCardsViewScreen))throw new InvalidOperationException("Results screen signature mismatch.");
+        if(!targets[27].IsPublic||!targets[27].IsStatic||targets[27].IsGenericMethod||targets[27].ReturnType!=typeof(NCardsViewScreen))throw new InvalidOperationException("Results screen signature mismatch.");
         Type[] offerReturns={typeof(Task<CardModel>),typeof(NChooseACardSelectionScreen),typeof(Task<IEnumerable<CardModel>>),typeof(NChooseABundleSelectionScreen)};
         for(int i=23;i<27;i++)
             if(!targets[i].IsPublic||!targets[i].IsStatic||targets[i].IsGenericMethod||targets[i].ReturnType!=offerReturns[i-23])
@@ -747,7 +747,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             b.RequestSeen=true;b.Results=new GenericEventV7ResultsAdapter(b,__0);
         }catch{b.Failed=true;}
     }
-    private static void ResultsScreenPostfix(NSimpleCardsViewScreen __result,State? __state) {
+    private static void ResultsScreenPostfix(NCardsViewScreen __result,State? __state) {
         if(__state?.Binding is not {} b||b.Failed)return;try{b.Results!.BindScreen(__result);}catch{b.Failed=true;}
     }
     private static void ResultsScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);

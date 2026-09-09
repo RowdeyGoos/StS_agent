@@ -36,7 +36,7 @@ internal sealed class GenericEventV7ResultsAdapter:IGenericEventV7ResultsAdapter
     private static object? Field(object obj,Type type,string name)=>type.GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)?.GetValue(obj);
     internal bool OwnsCapstone()=>!_disposed&&ReferenceEquals(NCapstoneContainer.Instance,_container)&&Valid(_container)&&
         (_container.CurrentCapstoneScreen is null||Screen is not null&&ReferenceEquals(_container.CurrentCapstoneScreen,Screen));
-    internal void BindScreen(NSimpleCardsViewScreen result){
+    internal void BindScreen(NCardsViewScreen result){
         Require(Screen is null&&ReferenceEquals(NCapstoneContainer.Instance,_container)&&_container.CurrentCapstoneScreen is NSimpleCardsViewScreen&&ReferenceEquals(_container.CurrentCapstoneScreen,result));
         Screen=(NSimpleCardsViewScreen)_container.CurrentCapstoneScreen!;
         Require(Screen.GetType()==typeof(NSimpleCardsViewScreen)&&Valid(Screen)&&ReferenceEquals(Field(Screen,typeof(NSimpleCardsViewScreen),"_cardResults"),Results));

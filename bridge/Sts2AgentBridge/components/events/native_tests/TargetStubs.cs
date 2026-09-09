@@ -696,7 +696,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens {
         public static Func<List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult>,MegaCrit.Sts2.Core.Localization.LocString,NSimpleCardsViewScreen>? Factory;
         public void Setup(List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult> results,MegaCrit.Sts2.Core.Nodes.GodotExtensions.NButton confirm){_cardResults=results;_cards=System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(results,r=>r.cardAdded));_confirmButton=confirm;Bind("ConfirmButton",confirm);}
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-        public static NSimpleCardsViewScreen ShowScreen(List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult> results,MegaCrit.Sts2.Core.Localization.LocString text)=>Factory!(results,text);
+        public static NCardsViewScreen ShowScreen(List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult> results,MegaCrit.Sts2.Core.Localization.LocString text)=>Factory!(results,text);
     }
 }
 namespace MegaCrit.Sts2.Core.Nodes.Rooms {public class NCombatRoom:Godot.Control {}}

@@ -177,7 +177,8 @@ class Gate:
         repeated = second / "artifacts/bin/Sts2AgentBridge/release/Sts2AgentBridgeUnified.dll"
         require(read_regular(candidate) == read_regular(repeated), "nonreproducible_binary")
         verifier = self.build("apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj")
-        self.run("production_surface", [self.dotnet, str(verifier), str(candidate)])
+        self.run("production_surface", [self.dotnet, str(verifier), str(candidate), str(self.refs / "sts2.dll"),
+            str(self.build("components/events/native_tests/GenericEventV7.Native.Tests.csproj"))])
         self.run("production_surface_rejections", [sys.executable, "-B", str(app / "verifier/negative_fixtures.py"),
             self.dotnet, str(verifier), str(candidate), str(self.build("apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj"))])
         self.run("package", [sys.executable, "-B", str(app / "package/package_fixtures.py"), str(candidate)])
