@@ -660,3 +660,63 @@ projection `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 All eight installations are cleaned up. No profile/save/history/Cloud filesystem
 data was accessed. The next correction should isolate the failing candidate
 admission predicate before another removal-parent-grant live attempt.
+
+### Reproduced removal-hitbox compatibility correction
+
+Removal still required the hitbox's exact runtime type to be
+`NClickableControl`, unlike the corrected single/multi-upgrade, transformation
+and reward adapters. Reusing `MultiDerivedHitbox` throughout `RemovalFixture`
+reproduced the defect before correction: the native executable stopped at
+`removal admitted` in `/private/tmp/sts-removal-hitbox-before`.
+
+The correction replaces only the two exact-hitbox-type predicates with the
+existing instance-validity predicate. Static `NClickableControl` typing, exact
+holder-to-hitbox identity, holder/card/model/highlight/material identity,
+visibility, enabled state, preview membership, task completion and exact
+deck-effect reconciliation remain enforced. New stale-decision cases prove that
+replacement, disabled, hidden and destroyed hitboxes dispatch no selection or
+confirmation and leave the deck unchanged. The complete native executable passed
+**4,638 checks** in `/private/tmp/sts-removal-hitbox-after`. The new cases run after
+the retained legacy groups; their original assertion-count checks are unchanged.
+One independent semantic review found no blockers.
+
+A narrow read-only scan of the same pinned `sts2.dll` confirmed that
+`NCardHolder.ConnectSignals` retrieves `%Hitbox` as `NClickableControl`, and that
+`NDeckCardSelectScreen` still uses the inspected shared grid, selection highlights
+and original-card preview. This establishes the compatibility defect, not the
+exact cause of the eighth installation's coarse `prepare_candidates` failure.
+The planned broader diagnostic expansion was unnecessary for this reproduced
+correction. A fresh Amalgamator live attempt remains necessary.
+
+## Ninth installation: corrected removal hitboxes
+
+The corrected combined release passed all **71 groups in 161.809 seconds**,
+including **4,638 native checks**, **221 event integration cases** (159 production
+native), reproducibility, packaging and owned installation/cleanup fixtures.
+All 294 source/test inputs match source commit
+`93ffbb9c441fa05a71d3f666f109c1313f995623` byte-for-byte.
+
+- Release manifest SHA-256:
+  `5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d`.
+- Source inventory:
+  `b2cc26cb8ccfe4076328cb817fb45be77b64a68c33686682addb86bb946baeee`.
+- DLL: 802816 bytes,
+  `4e38a6121adf1a57e6eca5d34ae71f28dcf4f767c3c76a6487f2cf4c2fc78319`.
+- Installed state:
+  `d492bdf9406a4f23fe1d13b4b3fa794e64c50c1f198152e44f76afafd8e9de03`.
+
+The old package was retained at
+`/private/tmp/sts-unified-bridge-release-before-removal-hitbox-20260909`.
+Canonical publication and installation passed, including exact package/source
+identity, stopped process/closed listener, pinned base build and owned files.
+The new package occupies `/private/tmp/sts-unified-bridge-release`.
+
+The existing bounded Amalgamator provider is prepared at
+`/private/tmp/sts-amalgamator-live-20260909-hitbox.py` with the new release/state
+identities and a fresh exclusive result path. Selection policy is unchanged.
+Compilation, exact sequence and wrong-event/preview/duplicate-confirm rejection
+checks passed without credentials or live transport. Manual Profile 3 setup is
+pending; no live input has been sent on this release. Installation remains active
+and cleanup follows the live attempt and normal quit. Native and integration
+checks took 20.332 and 77.185 seconds respectively; implementation, review,
+packaging and user wait were not separately timed.

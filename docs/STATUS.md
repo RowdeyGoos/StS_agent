@@ -9,22 +9,32 @@ priorities. Historical acceptance ledgers retain exact artifact identities.
 Main includes the integrated generic-handler work. Use the user's current checkout
 and inspect Git state; do not switch to the historical 23cf worktree.
 
-Generic removal followed by one appended event grant is implemented and packaged
-in accepted release `f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9`.
-The new `card_remove_v2` child verifies selected removals and unchanged ordered
-survivors, separately reporting the appended card as an unverified parent effect.
-It retains the complete actual deck and waits for successful native completion;
-strict standalone removal v1 remains unchanged. All **71 combined release groups**
-passed in **160.077 seconds**, including **4,614 native assertions**, **221 event
-integration cases**, reproducible packaging and owned installation/cleanup fixtures.
-The accepted package is published at `/private/tmp/sts-unified-bridge-release`.
-The eighth live attempt accepted Combine Strikes but stopped at
-`prepare_candidates` before admitting a child (zero card actions). The user saw
-five selectable Strikes; the exact failing candidate predicate remains unresolved.
-Normal quit, owned quarantine/purge and the 429-file base check passed; no
-campaign remains installed. The uncompleted live case is
-**Amalgamator/CombineStrikes**: select two of at least three eligible Strikes,
-confirm removal, observe the Ultimate Strike grant and verify a fresh core map.
+Generic removal followed by one appended event grant is implemented and packaged.
+The current accepted release is
+`5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d`,
+with a reproduced removal-selector compatibility correction: derived native
+hitboxes are accepted while exact reference identity, liveness, visibility,
+enabled state and all preview/task/deck-effect checks remain enforced.
+All **71 combined release groups** passed in **161.809 seconds**, including
+**4,638 native assertions**, **221 event integration cases**, reproducible
+packaging and owned installation/cleanup fixtures. The package is published at
+`/private/tmp/sts-unified-bridge-release` and installed for the ninth live campaign.
+No live input has been sent on this release; manual Profile 3 setup is pending.
+The next case is **Amalgamator/CombineStrikes**: select two of at least three
+eligible Strikes, confirm removal, observe Ultimate Strike and verify a fresh
+core map. The `card_remove_v2` child verifies exact selected removals and unchanged
+ordered survivors, separately reporting the appended card as an unverified parent
+effect. Strict standalone removal v1 remains unchanged.
+
+The eighth installation used release
+`f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9`.
+It accepted Combine Strikes but stopped at `prepare_candidates` before admitting
+a child (zero card actions); the user saw five selectable Strikes. The derived
+hitbox defect was subsequently reproduced offline, but the coarse diagnostic
+does not establish that it caused the live stop. Normal quit, owned cleanup and
+the 429-file base check passed. The
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eighth-installation-removal-followed-by-one-appended-grant)
+retains the failed attempt and correction; Amalgamator live acceptance remains open.
 See [generic semantics](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
 and the [release record](../bridge/Sts2AgentBridge/releases/current/validation.json).
 

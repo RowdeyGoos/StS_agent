@@ -1,12 +1,12 @@
 {
-  "change": "Versioned card_remove_v2 child: exact selected removal and ordered unchanged survivors with one fresh appended parent grant, reported separately as unverified",
+  "change": "Generic removal retains derived NClickableControl hitboxes, preserving exact reference identity and native legality",
   "date": "2026-09-09",
   "evidence_limits": {
     "automatic_addition_provenance_verified": false,
     "autonomous_full_run": false,
     "changed_surviving_cards_supported": false,
-    "current_package_installed": false,
-    "current_package_live_tested": true,
+    "current_package_installed": true,
+    "current_package_live_tested": false,
     "maximum_post_removal_grants": 1,
     "multiple_post_removal_grants_supported": false,
     "native_fixture_objects_are_inert": true,
@@ -15,40 +15,29 @@
   },
   "evidence_reused": {
     "historical_live_evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md",
-    "pinned_event_research": "../../../../docs/evidence/event_interactions_2026_09_09/inventory.json",
-    "prior_release_manifest_sha256": "65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9",
-    "scope": "Retained pinned Amalgamator IL confirms FromDeckForRemoval, awaited RemoveFromDeck, UltimateStrike/UltimateDefend creation and deck Add before SetEventFinished. Original research/live identities remain unchanged. The corrected Python integration assertions reused unchanged compiled fixtures during development; all current release groups subsequently ran."
+    "prior_release_manifest_sha256": "f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9",
+    "scope": "Existing sibling derived-hitbox compatibility correction and pinned native control/preview behavior informed this narrow change. Prior Amalgamator stop remains at its original identity, with no removal-parent-grant live acceptance. One complete final gate ran against the corrected inputs."
   },
   "independent_semantic_review": {
     "blocking_findings": [],
-    "resolved_finding": "Clone exclusions apply only to new grant identities outside SelectionDeck; legitimate baseline cards from previous transforms remain admissible.",
-    "scope": "Full real deck capture, selected-removal and survivor invariants, bounded monotonic suffix, ownership, task/overlay completion, legacy-v1 compatibility, public v2 semantics and host lineage",
+    "scope": "Two hitbox predicates; statically typed native controls; retained reference identity, liveness, enabled/visible state and untouched preview/task/deck-effect checks; zero-input mutation regressions",
     "status": "passed"
   },
-  "live_attempt": {
-    "child_attempted": 0,
-    "cleanup": "passed: owned quarantine/purge; 429 unchanged base files, zero overlays",
-    "code": "unsupported_state",
-    "evidence": "../../../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#eighth-installation-removal-followed-by-one-appended-grant",
-    "native_diagnostic": "prepare_candidates",
-    "parent_accepted": 1,
-    "parent_attempted": 1,
-    "parent_reconciled": 0,
-    "quarantine_state_sha256": "b937fe89febdfb7ae35913fc1a0f0569290ccbfdfc492b206c66596002e74ec7",
-    "reads": 258,
-    "seconds": 17.801,
-    "status": "failed",
-    "user_observation": "Five selectable Strikes after Combine Strikes"
+  "installation": {
+    "cleanup": "pending_live_attempt_and_normal_quit",
+    "live_input_sent": false,
+    "state_sha256": "d492bdf9406a4f23fe1d13b4b3fa794e64c50c1f198152e44f76afafd8e9de03",
+    "status": "installed"
   },
   "next_live_case": "Amalgamator/CombineStrikes with at least three eligible Strikes: select two, confirm their exact removal preview, observe Ultimate Strike in separate unverified parent_additions, and independently verify a fresh core map. Native game body has not been executed by these fixtures.",
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       803510,
-      "46815e66bcaac9c344a16b0e203e55b17376643309194406ebebed9a5a553d10"
+      "70bf5b64f2f921c41dc19eb8bbcde6326605813384b6884b5f2fdffa5dc33ed4"
     ],
     "Sts2AgentBridgeUnified.dll": [
       802816,
-      "e15a31cb8c397a061f92b1e655e73ef839effc5dda62f91378b84c8a367f3978"
+      "4e38a6121adf1a57e6eca5d34ae71f28dcf4f767c3c76a6487f2cf4c2fc78319"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -56,31 +45,31 @@
     ]
   },
   "package_directory": "/private/tmp/sts-unified-bridge-release",
-  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-removal-parent-grant-20260909",
+  "previous_package_directory": "/private/tmp/sts-unified-bridge-release-before-removal-hitbox-20260909",
   "production": {
     "bytes": 802816,
-    "sha256": "e15a31cb8c397a061f92b1e655e73ef839effc5dda62f91378b84c8a367f3978"
+    "sha256": "4e38a6121adf1a57e6eca5d34ae71f28dcf4f767c3c76a6487f2cf4c2fc78319"
   },
   "release_manifest": "bridge.json",
-  "release_manifest_sha256": "f1563b68b94fa62b64d387205b1e35a002085b7cefcc1016ca15ce5821ee32b9",
+  "release_manifest_sha256": "5869376503308299efe15cddec8b237848967314b0ae6f5a0cc9eb7fa55ec25d",
   "schema_version": 1,
-  "source_commit": "3a354b0a65d6a96b16eacf340eee56e3e1370229",
-  "source_inventory_sha256": "d0b78c7adf0ea51f3fdbaddac740ec17d1c8c2f233dbc08b49e90f1b972b6dd5",
+  "source_commit": "93ffbb9c441fa05a71d3f666f109c1313f995623",
+  "source_inventory_sha256": "b2cc26cb8ccfe4076328cb817fb45be77b64a68c33686682addb86bb946baeee",
   "source_state": "All 294 accepted source/test inputs verified byte-for-byte at the recorded commit",
   "status": "passed",
   "target": "bridge",
-  "timing_limits": "Final release/native/integration elapsed times are retained from actual gate results. Implementation, independent review, documentation and package publication were not separately timed. The first Amalgamator live attempt took 17.801 seconds and stopped before child admission. User setup/quit wait was not separately timed.",
+  "timing_limits": "Final release gate: 161.809 seconds; native run: 20.332 seconds; event integration: 77.185 seconds. Implementation, source inspection, independent review, packaging and user setup wait were not separately timed. No live input has been sent on this release.",
   "validation": {
     "check_groups": 71,
-    "corrections": "Review found session-wide clone records could reject legitimate baseline cards from earlier transforms; baseline membership now takes precedence and targeted registry-state regressions pass. Updated all dependent fixture projects, cross-assembly key validation and expected wire versions. An initial release gate caught a legacy reflection fixture missing the new optional constructor argument; its targeted check passed after correction. Another gate stopped in the compiler with an internal MissingMethodException; unchanged source/settings passed the final full gate and reproducibility pair. No runtime safeguards, checks or analyzers were disabled.",
+    "corrections": "Before-fix fixture using derived hitboxes failed at removal admitted. After-fix test initially reached a retained legacy assertion-count guard because new cases were placed in the legacy group; moved only the new cases after existing groups and preserved every original count. Focused native execution and the single final release gate passed.",
     "event_integration_cases": 221,
-    "event_integration_seconds": 76.828,
+    "event_integration_seconds": 77.185,
     "host_tests": 125,
-    "native_assertions": 4614,
-    "native_tests_seconds": 19.264,
+    "native_assertions": 4638,
+    "native_tests_seconds": 20.332,
     "production_native_integration_cases": 159,
-    "release_gate_seconds": 160.077,
-    "scope": "Strict legacy-v1 extra-card rejection; exact survivors plus one appended grant; immediate/delayed Chosen completion; pre-selector plus post-removal additions; wrong owner/run, stale clone grants, missing/reordered/replaced/enchantment-mutated survivors, incomplete selected removal, selected reappearance, premature/interleaved/duplicate/multiple/oversize grants, grant identity/value changes while pending, callback failure; version discrimination and malformed public grant metadata; native-to-Python Proceed/map flows; complete production regression, reproducibility, package and owned installation/cleanup fixtures",
-    "scratch": "/private/tmp/sts-bridge-e_hjm2hx"
+    "release_gate_seconds": 161.809,
+    "scope": "Derived-hitbox removal families and fixed-two removal-plus-grant; stale decision with replaced, disabled, hidden or destroyed hitbox sends zero card input and leaves the deck unchanged; full native/host/production integration, reproducibility, package and owned installation/cleanup checks",
+    "scratch": "/private/tmp/sts-bridge-lgcfbovd"
   }
 }
