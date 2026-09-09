@@ -137,8 +137,14 @@ passed in 371.191 seconds**, including **7,896 native assertions**, 125 host tes
 owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-n2fi2egq`.
 The **fifteenth installation is active**, installed state
 `1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`, awaiting a fresh
-Profile 3 Sea Glass zero-card setup. Fresh stopped-process/closed-port and read-only
-installed package/configuration checks passed. No live input has been sent on it.
+Profile 3 Sea Glass setup for a **read-only startup check**. The corrected-release
+retry stopped on its first event read with `invalid_response`, **zero actions**,
+and a stopped listener; the relic option remained untouched. The user then quit
+normally. Fresh stopped-process/closed-port and unchanged owned-install checks
+passed. The same validated build remains installed; no live input has been sent
+on it. The raw first frame was not retained, so initialization exceptions and the
+500 ms frame-work timeout are hypotheses, not established causes. The next check
+records bounded response shape/timing before further changes.
 
 Both HeftyTablet branches passed on preceding release `c73fde6c`: choose added
 **Cruelty plus Injury** (1.436 seconds); Skip added **Injury only** (1.006 seconds).

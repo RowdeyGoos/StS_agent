@@ -4,7 +4,7 @@
   "evidence_limits": {
     "autonomous_full_run": false,
     "current_package_installed": true,
-    "current_package_live_tested": false,
+    "current_package_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
   },
@@ -14,15 +14,47 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after live testing",
+    "cleanup": "pending after read-only startup experiment; game quit normally, exact process stopped and listener closed; same installation retained",
     "live_input_sent": false,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
     "pre_install_runtime": "passed: fresh exact game process stopped and bridge port closed",
+    "pre_restart_verification": "passed: fresh stopped process/closed listener and unchanged owned installation",
     "state_sha256": "1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9",
     "status": "installed"
   },
-  "live_results": [],
+  "live_results": [
+    {
+      "case": "Orobas/SeaGlass zero corrected release",
+      "diagnosis": "Unresolved: first event response invalid before any action; raw first frame not retained. Router exception and frame-work timeout remain distinguishable hypotheses.",
+      "event": {
+        "child_accepted": 0,
+        "child_attempted": 0,
+        "child_episodes": 0,
+        "child_reconciled": 0,
+        "code": "invalid_response",
+        "completed_card_children": 0,
+        "completed_item_children": 0,
+        "effects": "none_attempted",
+        "parent_accepted": 0,
+        "parent_attempted": 0,
+        "parent_reconciled": 0,
+        "reads": 1,
+        "schema_version": 1,
+        "status": "failed",
+        "total_attempted": 0
+      },
+      "map_handoff": {
+        "status": "not_attempted"
+      },
+      "read_only_followup": "ConnectionRefusedError; listener stopped",
+      "result_path": "/private/tmp/sts-seaglass-zero-live-corrected-20260909-result.json",
+      "result_sha256": "45e64b1315c521450bd3b09e48c450d2ae15adc09bd16277f2830085a30fa6a8",
+      "seconds": 0.694,
+      "status": "failed",
+      "user_visible_setup": "Sea Glass relic option, untouched"
+    }
+  ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",
   "schema_version": 1,
   "source_commit": "23cbff0d38a18b866c94531f8b23a57b3bb030e0",

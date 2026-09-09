@@ -1466,3 +1466,42 @@ its 96 completed checks and independent review are reused. No live input has bee
 sent on this installation; normal quit/cleanup remain pending after testing.
 No profile/save/history/Cloud filesystem content was accessed. Separate
 implementation/review/preparation/user-wait elapsed times were not measured.
+
+### Corrected Sea Glass startup stopped with zero actions
+
+On release `c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5`
+and the fifteenth installation, the user confirmed readiness. Fresh exact running
+process, accepted source/state/owned package and authenticated health/manifest
+checks passed. The unchanged zero-card policy stopped on its **first event read**
+with `invalid_response`, **zero parent/child actions attempted, accepted or
+reconciled**, no child admission and no map read. Elapsed policy time: **0.694
+seconds**. The user confirmed the **Sea Glass relic option** remained visible.
+Result: `/private/tmp/sts-seaglass-zero-live-corrected-20260909-result.json`, SHA-256
+`45e64b1315c521450bd3b09e48c450d2ae15adc09bd16277f2830085a30fa6a8`.
+
+One read-only diagnostic request received `ConnectionRefusedError`, establishing
+that the listener had stopped; it sent no game actions. The first raw HTTP frame
+was not retained, so this evidence does not distinguish a router/module exception
+from an empty response after the existing **500 ms** frame-work result budget.
+The elapsed total includes preflight and is not a measurement of native hook
+initialization. Neither hypothesis is established; the geometry correction itself
+was not exercised. No source/package change or timeout relaxation follows from
+this observation alone.
+
+The user quit normally. Fresh stopped-process/closed-port checks passed (three
+process samples, two port samples); read-only owned installation verification
+passed without credential access. The **same fifteenth installation is retained**
+for one fresh-process read-only startup experiment, with cleanup pending afterward.
+This is not a handoff within the failed native host: the old game process ended.
+No uncertain game mutation is being retried.
+
+Diagnostic `/private/tmp/sts-seaglass-startup-diagnostic-20260909.py`, SHA-256
+`afee7ce3282c4a2dc69d02a31691706f0ebfcec1dfde0fcda38238d721bf731c`, is prepared and syntax-checked without a
+live request. It uses the existing release/state/credential/client checks and
+health/manifest checks, then makes **one event GET with no POST**. It records only
+response length, a bounded HTTP/error category, exact Sea Glass option readiness
+and timing, and clears credential/response buffers. It will distinguish absent
+bytes from a structured bridge-stopped response if the failure repeats. A ready
+result can precede the already reviewed zero-selection policy; no new build,
+installation or release gate is needed. No profile/save/history/Cloud filesystem
+content was accessed.
