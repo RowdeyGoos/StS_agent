@@ -1967,3 +1967,41 @@ Prepare a fresh Profile 3 run with at least one free potion slot, enter a room
 normally from the map, run `ancient NEOW LOST_COFFER`, close the console and leave
 the relic option untouched. The Skip policy has not run live yet. No source/build/
 install change is needed; separate preparation/review times were not measured.
+
+### Lost Coffer card Skip and final dismissal passed
+
+Fresh running-process, reviewed policy hash, release/source/owned installation
+and authenticated health/manifest checks passed on the unchanged fifteenth
+installation. The policy selected Lost Coffer, collected **Skill Potion**, opened
+the card reward, **Skipped**, sent one **dismiss**, then selected Proceed.
+`mixed_reward_set_v1` resolved with exact potion-collected and card-skipped typed
+settlements. Native checks retained the potion identity/slot and unchanged card
+baseline through final root Proceed, successful Offer/Chosen tasks and closure.
+
+All **six actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **4/4/4**, one completed mixed card child, zero separate item children and
+fourteen event reads. One fresh core-map read passed with three candidates.
+Policy time: **1.631 seconds**. Diagnostics: parent-ready/pending-offers/parent-ready/
+map-ready. Parent effects remain `unverified`. Lost Coffer now has representative
+choose/automatic-closure and Skip/explicit-dismissal live acceptance.
+Result: `/private/tmp/sts-lostcoffer-skip-live-20260910-result.json`, SHA-256
+`6d0ee99ffeefc214fa5c0f2e05b1b45e1ed748060884e97d60c5f63eb6daaa80`.
+
+The same package remains installed for PunchOff/Nab's inactive combat layout.
+Cleanup remains pending after the batch. No uncertain mutation was retried and no
+profile/save/history/Cloud filesystem content was accessed.
+
+Punch Off policy `/private/tmp/sts-punchoff-live-20260910.py`, SHA-256
+`73d22fd80f7483dffac37dbe9ce8d71719328304cb427982867cdbb7f5da4f3e`, passed **18 frozen-view checks** and
+independent semantic review with no blockers. Pinned metadata confirms exact
+`PUNCH_OFF.pages.INITIAL.options.NAB` (option IL21): Nab adds Injury (IL38),
+then offers a singleton generated RelicReward (IL298–308) and finishes (IL410).
+No fixed relic key or combat-start command is supplied by that callback.
+The policy binds the advertised relic key, collects it once, requires the matching
+resolved `item_v1` receipt, one reconciled child action and a fresh map. It does
+not certify the automatic Injury grant; verified item collection has narrower scope.
+
+Prepare a fresh Profile 3 run, enter a room normally from the map, run
+`event PUNCH_OFF`, close the console and leave the initial choices untouched.
+The test chooses Nab only. The policy has not run live yet. No source/build/install
+change is needed; separate preparation/review times were not measured.

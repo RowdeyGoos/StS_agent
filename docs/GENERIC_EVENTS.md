@@ -484,7 +484,8 @@ admitted set was ordered potion then card, despite card-first callback construct
 The first policy stopped before child input because it assumed construction order.
 The corrected potion→card path passed live: Mazaleth's Gift, unupgraded Shrug It
 Off, five reconciled actions and fresh map in 1.919 seconds. Card Skip/final
-dismissal remains pending live acceptance.
+dismissal also passed: Skill Potion collected, no card addition, six reconciled
+actions and fresh map in 1.631 seconds.
 
 Entries retain the admitted native reward-list order; callers must use exposed
 `offer_kinds` rather than infer order from callback construction. Cards use

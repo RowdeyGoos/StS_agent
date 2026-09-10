@@ -165,8 +165,10 @@ package remains installed. **Lost Coffer's potion→card path passed** after the
 policy-order correction: Mazaleth's Gift plus unupgraded Shrug It Off, five
 reconciled actions and fresh map in **1.919 seconds**. The prior policy-order
 failure sent no child inputs; its accepted parent remained unresolved and normal
-quit preceded this fresh test. Lost Coffer's card-Skip/final-dismiss branch is next.
-Final cleanup remains pending after the batch.
+quit preceded this fresh test. **Lost Coffer card Skip/final dismissal passed**:
+Skill Potion collected, no card added, six reconciled actions and fresh map in
+**1.631 seconds**. PunchOff/Nab's inactive combat layout is next. Final cleanup
+remains pending after the batch.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

@@ -619,6 +619,54 @@
         }
       ],
       "status": "passed"
+    },
+    {
+      "case": "Neow/LostCoffer Skip",
+      "event": {
+        "child_accepted": 4,
+        "child_attempted": 4,
+        "child_episodes": 1,
+        "child_reconciled": 4,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 14,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 6
+      },
+      "map_handoff": {
+        "candidate_count": 3,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-lostcoffer-skip-live-20260910-result.json",
+      "result_sha256": "6d0ee99ffeefc214fa5c0f2e05b1b45e1ed748060884e97d60c5f63eb6daaa80",
+      "seconds": 1.631,
+      "settled": [
+        {
+          "key": "SKILL_POTION",
+          "kind": "potion",
+          "offer_index": 0,
+          "result": "collected",
+          "selected_slot": null,
+          "upgrade_level": null
+        },
+        {
+          "key": null,
+          "kind": "card",
+          "offer_index": 1,
+          "result": "skipped",
+          "selected_slot": null,
+          "upgrade_level": null
+        }
+      ],
+      "status": "passed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",
