@@ -24,12 +24,13 @@ process. Completed packets and old campaign instructions are historical referenc
    Sea Glass and Claws zero/partial/full selection, card offers, bundles, inactive
    Punch Off/Nab and Pandora's Box results acknowledgment. These are no longer
    an untested feature queue; [current status](docs/STATUS.md) owns exact limits.
-   Then address full-inventory/nested pickups, broader selector grant composition
-   and custom/terminal dependencies. Use a concrete branch and observable outcome
-   for each increment, reusing matching accepted evidence.
+   Broader selector grant composition and custom/terminal dependencies follow.
+   Use a concrete branch and observable outcome for each increment, reusing
+   matching accepted evidence.
 3. **Compose supported interactions into longer live runs after event coverage.**
-   The combined batch covers Neow's Fury two-card and zero-card choices, combat
-   resume, both reward policies, event/map handoff and an allocated off-screen
+   The combined batch covers Neow's Fury two-card and zero-card choices,
+   resumption of combat after those choices, both reward policies, event/map
+   handoff and an allocated off-screen
    single upgrade. Reuse the
    [combined batch](docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) and
    [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md).

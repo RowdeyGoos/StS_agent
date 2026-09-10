@@ -26,8 +26,10 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 
 - Combat: [agent flow](AGENT_FLOW.md), [card representation](CARD_REPRESENTATION.md),
   [Ironclad cards](IRONCLAD_CARDS.md), [Overgrowth hard pool](OVERGROWTH_HARD_V1.md).
-- Latest integration result: [unified bridge smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md).
-  Status links to older evidence when it supports a current capability.
+- Latest live results: [combined September 9–10 batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md).
+  [Status](STATUS.md) also records newer offline-validated work awaiting live tests.
+  The [September 8 unified smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) remains
+  earlier supporting evidence.
 - Build identity: [game manifest guide](../manifests/game-builds/README.md),
   [current bridge release](../bridge/Sts2AgentBridge/releases/current/README.md).
 - Historical contracts, plans, reviews and results: [archive index](archive/README.md).

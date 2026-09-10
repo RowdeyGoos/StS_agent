@@ -143,11 +143,17 @@ another input adapter. Their generic parent effect summary remains `unverified`.
 **“Candidate” below means no specific missing interaction was found in that
 branch group. It is not a claim of runtime support or full-branch acceptance.**
 Existing cardinality, allocated-holder, ownership and effect checks still apply.
-Representative live results remain limited to Dense Vegetation, Cheese, Potion
-Courier, Aroma and Sapphire Seed paths recorded in the coverage page. No new live
-acceptance is claimed by this research.
+At the original research checkpoint, representative live results covered Dense
+Vegetation, Cheese, Potion Courier, Aroma and Sapphire Seed. Later acceptance is
+recorded in [coverage](EVENT_COVERAGE.md) and [status](STATUS.md); this static
+research does not itself add live acceptance.
 
 ## Interaction families and concrete blockers
+
+The tables below preserve the original research baseline. “Gap” and references
+to the then-current bridge describe that checkpoint, not today’s missing features.
+Use [planning implications](#planning-implications), [coverage](EVENT_COVERAGE.md)
+and [status](STATUS.md) for what has since been implemented and tested.
 
 Counts are distinct event types with an identified dependency, overlap across
 rows, include named ancient pickup paths, and do not measure encounter frequency
@@ -218,7 +224,7 @@ only one branch of an event; other branches can remain candidates.
 | `EndlessConveyor` | Underdocks | **ObserveChef / Leave** → options, automatic deck effects. Automatic upgrades or finish.<br>**GrabSomethingOffTheBelt repeatedly** → options, repeated options. Dish callback then new dish/Leave; recurring dish keys can collide with previously seen structures.<br>**JellyLiver / SuspiciousCondiment / other dishes** → transform selector, item reward, automatic deck effects. Fixed-one transform, singleton potion, or automatic card/HP/gold/upgrade effects; each dish returns to the belt page. | `repeat_progress` |
 | `FakeMerchant` | Shared | **Merchant inventory / leave** → custom shop. NFakeMerchant owns merchant inventory and a custom Proceed button; no ordinary option list.<br>**FoulPotionThrown** → custom shop, event combat, reward set. Triggers combat with up to the explicitly constructed relic rewards; shouldResume=false. | `event_combat`, `fake_merchant`, `multiple_rewards` |
 | `FieldOfManSizedHoles` | Hive | **EnterYourHole** → options, enchant selector. Fixed-one PerfectFit; player overload forwards to the supported list overload.<br>**Resist** → options, removal selector, automatic deck effects. Canonical fixed-two removal followed by Normality curse additions. | `composite_deck` |
-| `GraveOfTheForgotten` | Glory | **Accept** → options. Direct ForgottenSoul grant.<br>**Confront** → options, enchant selector, automatic deck effects. Adds Decay before fixed-one SoulsPower selection; current pre-dispatch deck check rejects that changed deck. | `composite_deck` |
+| `GraveOfTheForgotten` | Glory | **Accept** → options. Direct ForgottenSoul grant.<br>**Confront** → options, enchant selector, automatic deck effects. Adds Decay before fixed-one SoulsPower selection; research-baseline pre-dispatch deck check rejected that changed deck. | `composite_deck` |
 | `HungryForMushrooms` | Glory | **BigMushroom / FragrantMushroom** → options, automatic deck effects. Direct relic choices; FragrantMushroom AfterObtained performs automatic upgrades, not a selector. | Candidate; caller validation remains |
 | `InfestedAutomaton` | Hive | **Study / TouchCore** → options, automatic deck effects. Generate/add/preview cards automatically. | Candidate; caller validation remains |
 | `JungleMazeAdventure` | Overgrowth | **SoloQuest (DontNeedHelp) / JoinForces (SafetyInNumbers)** → options. Ordinary choices with HP/gold effects and synchronized presentation; multiplayer timing remains untested. | Candidate; caller validation remains |
@@ -230,7 +236,7 @@ only one branch of an event; other branches can remain candidates.
 | `Orobas` | Hive ancient | **Generated relic options / inherited Done** → ancient layout/options, enchant selector, card reward, reward set, add-card grid, optional selection. ElectricShrymp enchant-one; GlassEye five-card-reward set; SeaGlass one optional 15-card grid combining rarity lists; remaining options automatic/passive. | `ancient_layout`, `event_card_rewards`, `multiple_rewards`, `optional_select` |
 | `Pael` | Hive ancient | **Generated relic options / inherited Done** → ancient layout/options, enchant selector, removal selector. PaelsGrowth enchant-one; PaelsTooth remove-five; remaining fixed relic options automatic/passive. | `ancient_layout` |
 | `PotionCourier` | Shared | **Ransack** → options, item reward. Singleton potion; representative live acceptance.<br>**GrabPotions** → options, item reward, reward set. Canonical three FoulPotion rewards in one OfferCustom. | `multiple_rewards` |
-| `PunchOff` | Underdocks | **Nab** → options, item reward, automatic deck effects. Injury then singleton relic reward; Combat layout blocks entry before this branch.<br>**TakeThem → Fight** → options, event combat, reward set. Combat layout; relic and potion extra rewards; shouldResume=false. | `combat_layout`, `event_combat`, `multiple_rewards` |
+| `PunchOff` | Underdocks | **Nab** → options, item reward, automatic deck effects. Injury then singleton relic reward; Combat layout blocked entry at the research baseline.<br>**TakeThem → Fight** → options, event combat, reward set. Combat layout; relic and potion extra rewards; shouldResume=false. | `combat_layout`, `event_combat`, `multiple_rewards` |
 | `RanwidTheElder` | Shared | **GivePotion / GiveGold / GiveRelic** → options. The offered potion/relic identity is already encoded in an option; discard/pay/remove then obtain a relic. No inventory-selection overlay is requested. | Candidate; caller validation remains |
 | `Reflections` | Glory | **TouchAMirror / Shatter** → options, automatic deck effects. Automatic downgrade/upgrade or card copies and BadLuck; no deck selector. | Candidate; caller validation remains |
 | `RelicTrader` | Shared | **Top / Middle / Bottom / Done** → options. One indexed trade removes and grants a relic then Done; this is not a repeating trade loop. | Candidate; caller validation remains |
@@ -251,7 +257,7 @@ only one branch of an event; other branches can remain candidates.
 | `Tezcatara` | Hive ancient | **Generated relic options / inherited Done** → ancient layout/options, removal selector, upgrade selector, reward set. BiiigHug remove-four; YummyCookie upgrade-four; ToyBox custom relic reward set; remaining options automatic/passive. | `ancient_layout`, `multiple_rewards` |
 | `TheArchitect` | Special / not in inspected pools | **AdvanceDialogue → WinRun** → combat layout, dialogue, terminal outcome. Combat layout; dialogue options lead to WinRun/act-change readiness rather than an event-to-map exit. Not in the ordinary event pools. | `combat_layout`, `terminal_event` |
 | `TheFutureOfPotions` | Shared | **Generated potion options → Trade / Done** → options, card reward. Discard indexed potion, offer rarity-specific card reward with an AfterGenerated upgrade callback, then Done. | `event_card_rewards` |
-| `TheLanternKey` | Hive | **ReturnTheKey** → options. Gold and finish; Combat layout blocks initial parent admission.<br>**KeepTheKey → Fight** → options, event combat, special card reward. Combat layout; SpecialCardReward extra; shouldResume=false. | `combat_layout`, `event_combat`, `special_card_rewards` |
+| `TheLanternKey` | Hive | **ReturnTheKey** → options. Gold and finish; Combat layout blocked initial parent admission at the research baseline.<br>**KeepTheKey → Fight** → options, event combat, special card reward. Combat layout; SpecialCardReward extra; shouldResume=false. | `combat_layout`, `event_combat`, `special_card_rewards` |
 | `TheLegendsWereTrue` | Shared | **NabTheMap** → options, automatic deck effects. Automatic card grant.<br>**SlowlyFindAnExit** → options, item reward. Damage then singleton potion reward. | Candidate; caller validation remains |
 | `ThisOrThat` | Shared | **Plain / Ornate** → options, automatic deck effects. Damage/gold or direct relic plus Clumsy. | Candidate; caller validation remains |
 | `TinkerTime` | Glory | **ChooseCardType → Attack / Skill / Power → RiderChosen** → options, automatic deck effects. Ordinary option pages construct the card, select a rider through options, then add/preview it. No card-selection overlay. | Candidate; caller validation remains |
@@ -264,7 +270,7 @@ only one branch of an event; other branches can remain candidates.
 | `WelcomeToWongos` | Shared | **BuyBargainBin / BuyFeaturedItem / BuyMysteryBox / Leave** → options, automatic deck effects. Ordinary purchase options and direct relic grants; Leave automatically downgrades a card. No shop surface or repeated purchase loop. | Candidate; caller validation remains |
 | `Wellspring` | Overgrowth | **Bottle** → options, item reward. Singleton potion.<br>**Bathe** → options, removal selector, automatic deck effects. Fixed-one removal then conditional Guilty additions. Pure-removal outcome is only a subset. | `composite_deck` |
 | `WhisperingHollow` | Overgrowth | **Hug** → options, transform selector. Fixed-one random transform then damage.<br>**Gold** → options, reward set. Gold payment then two potion rewards. | `multiple_rewards` |
-| `WoodCarvings` | Overgrowth | **Snake** → options, enchant selector. Fixed-one Slither.<br>**Bird / Torus** → options, generic deck selector → transform. FromDeckGeneric uses NDeckCardSelectScreen and then TransformTo<Peck/ToricToughness>; current transformation request/screen hook pair does not cover it. | `generic_deck_transform` |
+| `WoodCarvings` | Overgrowth | **Snake** → options, enchant selector. Fixed-one Slither.<br>**Bird / Torus** → options, generic deck selector → transform. FromDeckGeneric uses NDeckCardSelectScreen and then TransformTo<Peck/ToricToughness>; research-baseline transformation request/screen hook pair did not cover it. | `generic_deck_transform` |
 | `ZenWeaver` | Hive | **BreathingTechniques** → options, automatic deck effects. Pay and add fixed cards.<br>**EmotionalAwareness / ArachnidAcupuncture** → options, removal selector. Fixed-one / fixed-two removal, followed by gold payment. | Candidate; caller validation remains |
 
 ## Ancient relic pickup paths

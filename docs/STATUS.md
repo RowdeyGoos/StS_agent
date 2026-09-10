@@ -5,12 +5,18 @@ Updated 2026-09-10. This page owns current capability and operational evidence;
 
 ## Checkout and current operation
 
-Use the current checkout. The representative September 9–10 live batch is complete
-and **no test bridge remains installed**. Normal quit, owned quarantine/purge and
+Use the current checkout. The latest implementation is `f3a1100`: owned item
+rewards during event combat resumption. It and the preceding event-combat
+increments are built and offline-validated, but are not yet packaged into an
+accepted release or live-tested.
+
+The representative September 9–10 live batch is complete. Its last verified
+cleanup recorded **no test bridge installed**. Normal quit, owned quarantine/purge and
 **429 unchanged base files with zero overlays** passed. Earlier installations were
 also cleaned up. Exact attempts, corrections, timings and cleanup identities stay
 in the [combined live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md), rather
-than being repeated as a development queue here.
+than being repeated as a development queue here. This is recorded cleanup
+evidence, not a fresh process or installation check.
 
 The retained accepted release is
 `c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5`, built from
@@ -114,6 +120,7 @@ Paths in the first column are relative to `bridge/Sts2AgentBridge/`.
 | `components/cards/combat/`, `components/cards/combat_native/`, `apps/bridge/client/combat_host.py` | Combat selector protocol, native binding and bounded combat/choice host |
 | `components/events/native/GenericEventV7Hooks.cs`, `GenericEventV7Binding.cs` | Owned native discovery and parent/child identity |
 | `components/events/native/PinnedGenericEventV7NativeAdapter.cs` | Parent capture and child integration |
+| `components/events/native/GenericEventV7CombatHandoff.cs`, `apps/bridge/runtime/BridgeRouter.cs` | Event/combat/resume ownership and retained item children |
 | `components/events/native/GenericEventV7TransformState.cs` | Native transformation effect observations |
 | `components/events/host/generic_event_host.py`, `card_transform_host.py` | Bounded orchestration and replaceable decisions |
 | `components/events/native/GenericEventV7TransformAdapter.cs` | Generalized direct input for eligible allocated holders |
