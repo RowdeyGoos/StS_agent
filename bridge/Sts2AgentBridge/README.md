@@ -70,6 +70,39 @@ checks. `all` is the default. `sources` checks the complete explicit source grap
 producer/client integration. `build` compiles only the one production DLL.
 A narrow correction can run its individual existing fixture directly.
 
+List exact check names without an SDK or build, then select only the relevant
+checks during development. Repeat `--check` to select more than one:
+
+```bash
+.venv/bin/python -B bridge/Sts2AgentBridge/check.py --component events --list-checks
+.venv/bin/python -B bridge/Sts2AgentBridge/check.py --component events \
+  --check test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj \
+  --dotnet /ABS/dotnet --game-data-dir /ABS/data_sts2_macos_arm64
+.venv/bin/python -B bridge/Sts2AgentBridge/check.py --component events \
+  --check events:host_native --event-group offers \
+  --dotnet /ABS/dotnet --game-data-dir /ABS/data_sts2_macos_arm64
+```
+
+`--event-group` selects related integration cases; repeat it to combine groups.
+The listing includes the available groups. Unknown check names fail before any
+check executes. Selected checks build their required fixtures automatically and
+record their selection in `result.json`; they do not produce a release manifest.
+Selection is explicit, not automatic dependency-impact analysis: include the
+affected host, native and shared-router checks for changes crossing those boundaries.
+
+Event integration runs up to four isolated Python workers by default, each still
+starting and disposing a fresh C# process for every scenario. Related baseline
+and comparison cases remain together. The larger `reward_sets` group is scheduled
+as four independent parts; selecting that group still runs all its cases.
+When both are selected, the native event regression suite overlaps integration
+after their fixtures have been built. This adds one C# test process alongside
+the integration workers. Failures stop the peer suite and prevent release output;
+logs remain separate for each check. Builds and other check groups stay sequential.
+Use `--jobs 1` to disable both kinds of overlap for serial diagnosis, or
+`--jobs N` (1–8) to bound integration concurrency. The full event matrix runs when
+`--event-group` is omitted. Per-check timings can overlap, so their sum need not
+equal the full gate's elapsed time.
+
 The checker pins .NET SDK **9.0.303** and read-only `sts2.dll`, `GodotSharp.dll`
 and `0Harmony.dll` identities. It uses no NuGet feeds and isolates outputs under
 `/private/tmp/sts-bridge-*`. Native fixtures use inert game objects; target-game
@@ -87,6 +120,11 @@ Once behavior is stable, run:
 .venv/bin/python -B bridge/Sts2AgentBridge/check.py --suite release \
   --dotnet /ABS/dotnet --game-data-dir /ABS/data_sts2_macos_arm64
 ```
+
+The release suite always runs all checks and all event integration groups;
+`--check` and `--event-group` are rejected. Use focused checks while correcting a
+feature, then one complete gate for its stable release candidate. Parallel
+integration changes scheduling, not release coverage or native ownership checks.
 
 This runs the integrated checks, verifies a reproducible production binary, checks
 its compiled entry point/dependency surface, compares the results-screen hook and

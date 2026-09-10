@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import argparse
 import base64
+from concurrent.futures import ProcessPoolExecutor
+import multiprocessing
+import os
 import importlib.util
 import json
 from pathlib import Path
@@ -21,6 +24,27 @@ def load(path: Path) -> Any:
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def read_reply(stream: Any, selector: Any) -> bytearray:
+    """Read one bounded fixture frame without a syscall for each byte."""
+    line = bytearray()
+    deadline = time.monotonic() + 5.0
+    while b'\n' not in line:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0 or not selector.select(timeout=remaining):
+            raise AssertionError('inert driver response deadline')
+        part = os.read(stream.fileno(), min(65536, 100_001 - len(line)))
+        if not part:
+            raise AssertionError('inert driver EOF')
+        line.extend(part)
+        if len(line) > 100_000:
+            raise AssertionError('inert driver response size')
+    # The driver emits exactly one response per request, never a second frame
+    # or trailing bytes. Do not silently swallow data read beyond the newline.
+    if line.index(b'\n') != len(line) - 1:
+        raise AssertionError('inert driver response framing')
+    return line
 
 
 class Exchange:
@@ -56,20 +80,7 @@ class Exchange:
         assert self.process.stdin is not None and self.process.stdout is not None
         self.process.stdin.write(command)
         self.process.stdin.flush()
-        # No unbounded readline or target process: one inert reply is at most 100 KiB.
-        line = bytearray()
-        deadline = time.monotonic() + 5.0
-        while not line.endswith(b'\n'):
-            remaining = deadline - time.monotonic()
-            if remaining <= 0 or not self.selector.select(timeout=remaining):
-                raise AssertionError('inert driver response deadline')
-            part = self.process.stdout.read(1)
-            if not part:
-                raise AssertionError('inert driver EOF')
-            line.extend(part)
-            if len(line) > 100_000:
-                raise AssertionError('inert driver response size')
-        value = json.loads(line)
+        value = json.loads(read_reply(self.process.stdout, self.selector))
         expected = (('body', 'event_type', 'upgraded_cards', 'map_open', 'overlay_count',
                      'chosen_calls', 'select_calls', 'confirm_calls', 'preview_calls',
                      'baseline_keys', 'baseline_levels', 'remaining_originals',
@@ -106,34 +117,52 @@ class Exchange:
         return response
 
     def close(self) -> None:
-        if self.process.stdin is not None:
-            self.process.stdin.close()
         try:
-            code = self.process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            self.process.kill()
-            self.process.wait(timeout=5)
-            raise AssertionError('inert driver shutdown timeout') from None
-        self.selector.close()
-        assert self.process.stderr is not None
-        stderr = self.process.stderr.read()
-        assert code == 0 and not stderr, (code, stderr)
-        assert not any(any(b) for b in self.buffers), 'host did not clear buffers'
+            if self.process.stdin is not None:
+                self.process.stdin.close()
+            try:
+                code = self.process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+                self.process.wait(timeout=5)
+                raise AssertionError('inert driver shutdown timeout') from None
+            assert self.process.stderr is not None
+            stderr = self.process.stderr.read()
+            assert code == 0 and not stderr, (code, stderr)
+            assert not any(any(b) for b in self.buffers), 'host did not clear buffers'
+        finally:
+            self.selector.close()
+            for stream in (self.process.stdin, self.process.stdout, self.process.stderr):
+                if stream is not None:
+                    stream.close()
 
     @property
     def posts(self) -> int:
         return sum(method == 'POST' for method, _ in self.calls)
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dotnet', required=True)
-    parser.add_argument('--fixture', type=Path, required=True)
-    parser.add_argument('--host', type=Path, required=True)
-    parser.add_argument('--native-fixture', type=Path)
-    args = parser.parse_args()
+GROUPS = (
+    'wire', 'pre_add', 'repeated_pages', 'upgrades', 'enchantments', 'removals',
+    'rewards', 'multi_upgrades', 'transforms', 'reward_sets', 'card_rewards',
+    'items', 'variable_transforms', 'offers', 'surfaces',
+)
+
+
+def integration_tasks(groups: list[str]) -> list[tuple[str, str | None]]:
+    if __package__:
+        from .generic_event_card_reward_set_cases import REWARD_SET_PARTS
+    else:
+        from generic_event_card_reward_set_cases import REWARD_SET_PARTS
+    return [(group, part) for group in groups
+            for part in (REWARD_SET_PARTS if group == 'reward_sets' else (None,))]
+
+
+def run_group(args: argparse.Namespace, group: str, part: str | None = None) -> dict:
+    """Keep related baseline/comparison cases together in one isolated worker."""
+    start = time.monotonic()
     host = load(args.host)
     checks = 0
+    native_checks = 0
 
     def run(scenario: str = 'HELD_OUT_991', wrapper: Callable | None = None,
             provider: Callable | None = None, clock: Callable = lambda: 1.0) -> tuple[dict, Exchange]:
@@ -179,125 +208,6 @@ def main() -> int:
                 seen.add(ordinal)
         assert (len(cards), len(items)) == (expected, expected_items), (result, cards, items)
 
-    baseline_reads = 0
-    for scenario in ('FOREST_ARCHIVE', 'CLOCKWORK_GARDEN', 'HELD_OUT_991', 'delayed'):
-        result, ex = run(scenario)
-        assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1])
-        assert {k: result[k] for k in ('parent_attempted', 'parent_accepted', 'parent_reconciled',
-                                      'child_episodes', 'child_attempted', 'child_accepted',
-                                      'child_reconciled', 'total_attempted')} == {
-            'parent_attempted': 3, 'parent_accepted': 3, 'parent_reconciled': 3,
-            'child_episodes': 1, 'child_attempted': 3, 'child_accepted': 3,
-            'child_reconciled': 3, 'total_attempted': 6}, result
-        assert ex.posts == 6 and ex.telemetry[-1] == {
-            'parent_dispatches': 3, 'card_dispatches': 3,
-            'before_child_effects': 1, 'disposed_children': 1,
-            'remaining_keys': ['Card_0', 'Card_1', 'Card_2'],
-            'remaining_levels': [1, 0, 0]}, ex.telemetry
-        decisions = [v for v in ex.envelopes if v['kind'] == 'decision']
-        phases = [v['parent']['phase'] for v in decisions]
-        assert 'choose_option' in phases and 'proceed' in phases and phases[-1] == 'map_handoff'
-        resolutions = [i for i, v in enumerate(decisions) if v['payload'] and v['payload']['kind'] == 'child_resolved']
-        assert len(resolutions) == 1 and decisions[resolutions[0]]['parent']['status'] == 'child'
-        assert decisions[resolutions[0] + 1]['parent']['prior_results'][0]['result'] == 'child_completed'
-        child_actions = [v['payload']['action_id'] for v in ex.envelopes
-                         if v['kind'] == 'action' and v['child']]
-        assert child_actions == ['select:0', 'preview', 'confirm'], child_actions
-        assert any(t['before_child_effects'] == 1 and t['card_dispatches'] == 0 for t in ex.telemetry)
-        if not baseline_reads:
-            baseline_reads = result['reads']
-        if scenario == 'delayed':
-            assert result['reads'] > baseline_reads, (scenario, result)
-        checks += 1
-
-    result, ex = run('early_delta')
-    assert result['code'] == 'unsupported_state' and result['effects'] == 'unverified', result
-    assert result['parent_reconciled'] == 0 and ex.posts == 4
-    assert not any(v['payload'] and v['payload'].get('kind') == 'child_resolved' for v in ex.envelopes)
-    checks += 1
-
-    for scenario, code in (('uncertain', 'uncertain_action'), ('unsupported', 'unsupported_state'),
-                           ('never_child', 'unsupported_state')):
-        result, ex = run(scenario)
-        assert result['status'] == 'failed' and result['code'] == code, result
-        assert result['parent_attempted'] == 1 and result['effects'] == 'unverified', result
-        assert ex.posts == 1 and ex.telemetry[-1]['parent_dispatches'] == 1, ex.telemetry
-        assert ex.telemetry[-1]['card_dispatches'] == 0
-        checks += 1
-
-    def lost_post(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-        response = ex.request(method, route, body)
-        if method == 'POST':
-            response[:] = b'\0' * len(response)
-            raise host.TransportFailure()
-        return response
-    result, ex = run(wrapper=lost_post)
-    assert result['code'] == 'transport_failure' and result['parent_attempted'] == 1, result
-    assert result['parent_accepted'] == 0 and result['effects'] == 'unverified'
-    assert ex.posts == 1 and ex.telemetry[-1]['parent_dispatches'] == 1
-    checks += 1
-
-    def wrong_lineage(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-        if method == 'POST' and ex.posts == 1:
-            value = json.loads(body)
-            value['child']['parent_decision_id'] = 'f' * 64
-            body[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
-        return ex.request(method, route, body)
-    result, ex = run(wrapper=wrong_lineage)
-    assert result['status'] == 'failed' and result['code'] == 'invalid_request', result
-    assert ex.posts == 2 and ex.telemetry[-1]['card_dispatches'] == 0
-    checks += 1
-
-    for mutation in ('descriptor', 'unknown_key', 'receipt', 'resolved_card'):
-        changed = False
-        def tamper(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-            nonlocal changed
-            response = ex.request(method, route, body)
-            value = json.loads(response)
-            if not changed:
-                if mutation == 'descriptor' and method == 'GET' and value['child']:
-                    value['child']['domain_count'] = 4
-                    changed = True
-                elif mutation == 'unknown_key' and method == 'GET':
-                    value['unknown'] = True
-                    changed = True
-                elif mutation == 'receipt' and method == 'POST':
-                    value['payload']['decision_id'] = 'e' * 64
-                    changed = True
-                elif mutation == 'resolved_card' and value['payload'] and value['payload'].get('kind') == 'child_resolved':
-                    value['payload']['selected_cards'][0]['slot'] = 2
-                    changed = True
-                if changed:
-                    response[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
-            return response
-        result, ex = run(wrapper=tamper)
-        assert changed and result['code'] == 'invalid_response', (mutation, result)
-        expected_posts = {'descriptor': 1, 'unknown_key': 0, 'receipt': 1, 'resolved_card': 4}[mutation]
-        assert ex.posts == expected_posts, (mutation, ex.posts)
-        checks += 1
-
-    provider_calls = 0
-    def immutable(view: Any) -> str:
-        nonlocal provider_calls
-        provider_calls += 1
-        view.payload['candidates'][0]['rendered_text'] = 'changed'
-        return 'choose:0'
-    result, ex = run(provider=immutable)
-    assert result['code'] == 'provider_failed' and ex.posts == 0 and provider_calls == 1
-    checks += 1
-
-    now = 1.0
-    def late_post(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-        nonlocal now
-        response = ex.request(method, route, body)
-        if method == 'POST':
-            now = 32.0
-        return response
-    result, ex = run(wrapper=late_post, clock=lambda: now)
-    assert result['code'] == 'deadline_exceeded' and result['parent_attempted'] == 1, result
-    assert result['parent_accepted'] == 0 and ex.posts == 1
-    checks += 1
-
     def planned(actions: tuple[str, ...]) -> Callable:
         next_action = iter(actions)
         def choose(view: Any) -> str:
@@ -306,290 +216,408 @@ def main() -> int:
             return next(next_action)
         return choose
 
-    removal_configs = (
-        ('removal_fixed', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
-        ('removal_variable_min', 1, 3, 5, ('select:3', 'preview', 'confirm')),
-        ('removal_variable_two', 1, 3, 5, ('select:3', 'select:1', 'preview', 'confirm')),
-        ('removal_reverse', 1, 3, 5, ('select:3', 'select:1', 'select:0', 'confirm')),
-        ('removal_eight', 8, 8, 9, tuple(f'select:{i}' for i in range(8, 0, -1)) + ('confirm',)),
-        ('removal_delayed', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
-        ('removal_delayed_completion', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
-    )
-    removal_reads = 0
-    for scenario, minimum, maximum, domain, actions in removal_configs:
-        result, ex = run(scenario, provider=planned(actions))
-        assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1])
-        assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 3
-        assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == len(actions)
-        assert result['child_episodes'] == 1 and ex.posts == len(actions) + 3
-        selected = {int(a[7:]) for a in actions if a.startswith('select:')}
-        remaining = [f'Card_{i}' for i in range(domain) if i not in selected]
-        assert ex.telemetry[-1]['remaining_keys'] == remaining, (scenario, ex.telemetry[-1])
-        assert ex.telemetry[-1]['remaining_levels'] == [0] * len(remaining)
-        actual_actions = tuple(v['payload']['action_id'] for v in ex.envelopes if v['kind'] == 'action' and v['child'])
-        assert actual_actions == actions, (scenario, actual_actions)
-        decisions = [v for v in ex.envelopes if v['kind'] == 'decision']
-        child_decisions = [v for v in decisions if v['child']]
-        assert all((v['child']['operation'], v['child']['min_select'], v['child']['max_select'],
-                    v['child']['domain_count'], v['child']['commit_mode']) ==
-                   ('remove', minimum, maximum, domain, 'preview_confirm') for v in child_decisions)
-        assert any(v['payload']['phase'] == 'preview' for v in child_decisions)
-        resolved = [i for i, v in enumerate(decisions) if v['payload'] and v['payload'].get('kind') == 'child_resolved']
-        assert len(resolved) == 1
-        done = decisions[resolved[0]]['payload']
-        assert {c['slot'] for c in done['selected_cards']} == selected
-        assert all(c['key'] == f"Card_{c['slot']}" and c['upgrade_level'] == 0 for c in done['selected_cards'])
-        assert decisions[resolved[0] + 1]['parent']['prior_results'][0]['result'] == 'child_completed'
-        if not removal_reads:
-            removal_reads = result['reads']
-        if scenario in ('removal_delayed', 'removal_delayed_completion'):
-            assert result['reads'] > removal_reads, (scenario, result)
-        checks += 1
+    if group == 'wire':
+        baseline_reads = 0
+        for scenario in ('FOREST_ARCHIVE', 'CLOCKWORK_GARDEN', 'HELD_OUT_991', 'delayed'):
+            result, ex = run(scenario)
+            assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1])
+            assert {k: result[k] for k in ('parent_attempted', 'parent_accepted', 'parent_reconciled',
+                                          'child_episodes', 'child_attempted', 'child_accepted',
+                                          'child_reconciled', 'total_attempted')} == {
+                'parent_attempted': 3, 'parent_accepted': 3, 'parent_reconciled': 3,
+                'child_episodes': 1, 'child_attempted': 3, 'child_accepted': 3,
+                'child_reconciled': 3, 'total_attempted': 6}, result
+            assert ex.posts == 6 and ex.telemetry[-1] == {
+                'parent_dispatches': 3, 'card_dispatches': 3,
+                'before_child_effects': 1, 'disposed_children': 1,
+                'remaining_keys': ['Card_0', 'Card_1', 'Card_2'],
+                'remaining_levels': [1, 0, 0]}, ex.telemetry
+            decisions = [v for v in ex.envelopes if v['kind'] == 'decision']
+            phases = [v['parent']['phase'] for v in decisions]
+            assert 'choose_option' in phases and 'proceed' in phases and phases[-1] == 'map_handoff'
+            resolutions = [i for i, v in enumerate(decisions) if v['payload'] and v['payload']['kind'] == 'child_resolved']
+            assert len(resolutions) == 1 and decisions[resolutions[0]]['parent']['status'] == 'child'
+            assert decisions[resolutions[0] + 1]['parent']['prior_results'][0]['result'] == 'child_completed'
+            child_actions = [v['payload']['action_id'] for v in ex.envelopes
+                             if v['kind'] == 'action' and v['child']]
+            assert child_actions == ['select:0', 'preview', 'confirm'], child_actions
+            assert any(t['before_child_effects'] == 1 and t['card_dispatches'] == 0 for t in ex.telemetry)
+            if not baseline_reads:
+                baseline_reads = result['reads']
+            if scenario == 'delayed':
+                assert result['reads'] > baseline_reads, (scenario, result)
+            checks += 1
 
-    result, ex = run('removal_early_delta', provider=planned(('select:3', 'select:1', 'confirm')))
-    assert result['code'] == 'unsupported_state' and result['effects'] == 'unverified', result
-    assert result['parent_reconciled'] == 0 and ex.posts == 4
-    assert not any(v['payload'] and v['payload'].get('kind') == 'child_resolved' for v in ex.envelopes)
-    checks += 1
-    result, ex = run('admission_changed')
-    assert result['code'] == 'unsupported_state' and result['parent_accepted'] == 1, result
-    assert ex.posts == 1 and ex.telemetry[-1]['card_dispatches'] == 0
-    checks += 1
-
-    for mutation in ('operation', 'zero_min', 'max_nine', 'domain_shortcut', 'changed_count', 'duplicate_result'):
-        changed = False
-        child_reads = 0
-        def corrupt_removal(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-            nonlocal changed, child_reads
-            response = ex.request(method, route, body)
-            value = json.loads(response)
-            if method == 'GET' and value['child']:
-                child_reads += 1
-                if not changed:
-                    if mutation == 'operation':
-                        value['child']['operation'] = 'transform'
-                        changed = True
-                    elif mutation == 'zero_min':
-                        value['child']['min_select'] = 0
-                        changed = True
-                    elif mutation == 'max_nine':
-                        value['child']['max_select'] = 9
-                        changed = True
-                    elif mutation == 'domain_shortcut':
-                        value['child']['domain_count'] = value['child']['max_select']
-                        changed = True
-                    elif mutation == 'changed_count' and child_reads == 2:
-                        value['child']['max_select'] = 3
-                        changed = True
-                    elif mutation == 'duplicate_result' and value['payload']['kind'] == 'child_resolved':
-                        value['payload']['selected_cards'][1] = value['payload']['selected_cards'][0]
-                        changed = True
-                    if changed:
-                        response[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
-            return response
-        result, ex = run('removal_fixed', wrapper=corrupt_removal,
-                         provider=planned(('select:3', 'select:1', 'confirm')))
-        assert changed and result['code'] == 'invalid_response', (mutation, result)
-        assert ex.posts == (4 if mutation == 'duplicate_result' else 2 if mutation == 'changed_count' else 1)
-        checks += 1
-
-    for lost_action in ('select:3', 'confirm'):
-        def lose_child_response(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-            response = ex.request(method, route, body)
-            if method == 'POST' and json.loads(body)['action_id'] == lost_action:
-                response[:] = b'\0' * len(response)
-                raise host.TransportFailure()
-            return response
-        result, ex = run('removal_fixed', wrapper=lose_child_response,
-                         provider=planned(('select:3', 'select:1', 'confirm')))
-        attempted = 1 if lost_action == 'select:3' else 3
-        assert result['code'] == 'transport_failure' and result['effects'] == 'unverified', result
-        assert result['parent_accepted'] == 1 and result['parent_reconciled'] == 0
-        assert result['child_attempted'] == attempted and result['child_accepted'] == attempted - 1
-        assert ex.posts == attempted + 1 and ex.telemetry[-1]['card_dispatches'] == attempted
-        if lost_action == 'confirm':
-            assert ex.telemetry[-1]['remaining_keys'] == ['Card_0', 'Card_2', 'Card_4']
-        else:
-            assert len(ex.telemetry[-1]['remaining_keys']) == 5
-        checks += 1
-
-    mixed_actions = ('select:0', 'preview', 'confirm', 'select:2', 'select:1', 'confirm')
-    result, ex = run('mixed_families', provider=planned(mixed_actions))
-    assert result['status'] == 'resolved' and result['child_episodes'] == 2, (result, ex.envelopes[-1])
-    assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 3
-    assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == 6
-    assert result['total_attempted'] == 9 and ex.posts == 9
-    assert ex.telemetry[-1]['disposed_children'] == 2 and ex.telemetry[-1]['card_dispatches'] == 6
-    assert ex.telemetry[-1]['remaining_keys'] == ['Card_0'] and ex.telemetry[-1]['remaining_levels'] == [1]
-    child_frames = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
-    by_ordinal = {ordinal: [v for v in child_frames if v['child']['ordinal'] == ordinal] for ordinal in (1, 2)}
-    assert all(v['child']['operation'] == 'upgrade' and v['child']['min_select'] == v['child']['max_select'] == 1 for v in by_ordinal[1])
-    assert all(v['child']['operation'] == 'remove' and v['child']['min_select'] == v['child']['max_select'] == 2 for v in by_ordinal[2])
-    assert by_ordinal[1][0]['child']['parent_decision_id'] != by_ordinal[2][0]['child']['parent_decision_id']
-    assert all(sum(v['payload']['kind'] == 'child_resolved' for v in frames) == 1 for frames in by_ordinal.values())
-    assert [r['result'] for r in ex.envelopes[-1]['parent']['prior_results']] == ['child_completed', 'child_completed', 'map_handoff']
-    checks += 1
-
-    reward_cases = (
-        ('reward_auto_fixed', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
-        ('reward_auto_variable', 1, 3, 5, 'auto_at_max', ('select:3', 'select:1', 'select:0')),
-        ('reward_explicit_fixed', 2, 2, 5, 'explicit_confirm', ('select:3', 'select:1', 'confirm')),
-        ('reward_explicit_variable_min', 1, 3, 5, 'explicit_confirm', ('select:3', 'confirm')),
-        ('reward_explicit_variable_max', 1, 3, 5, 'explicit_confirm', ('select:3', 'select:1', 'select:0', 'confirm')),
-        ('reward_auto_sorted', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
-        ('reward_auto_eight', 8, 8, 9, 'auto_at_max', tuple(f'select:{i}' for i in range(8, 0, -1))),
-        ('reward_explicit_eight', 8, 8, 9, 'explicit_confirm', tuple(f'select:{i}' for i in range(8, 0, -1)) + ('confirm',)),
-        ('reward_auto_delayed_creation', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
-        ('reward_auto_partial', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
-        ('reward_explicit_delayed_completion', 2, 2, 5, 'explicit_confirm', ('select:3', 'select:1', 'confirm')),
-    )
-    for scenario, minimum, maximum, domain, mode, actions in reward_cases:
-        result, ex = run(scenario, provider=planned(actions))
-        assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1])
-        assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 3
-        assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == len(actions)
-        assert result['child_episodes'] == 1 and ex.posts == len(actions) + 3
-        slots = {int(a[7:]) for a in actions if a.startswith('select:')}
-        offer_keys = {f"Offer_{domain - 1 - i if 'sorted' in scenario else i}" for i in slots}
-        final_keys = ex.telemetry[-1]['remaining_keys']
-        assert final_keys[:2] == ['Base_0', 'Base_1'] and set(final_keys[2:]) == offer_keys
-        assert len(final_keys) == len(slots) + 2 and ex.telemetry[-1]['remaining_levels'] == [0] * len(final_keys)
-        children = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
-        assert all((v['child']['operation'], v['child']['min_select'], v['child']['max_select'], v['child']['commit_mode'], v['child']['domain_count']) ==
-                   ('add', minimum, maximum, mode, domain) for v in children)
-        assert all(v['payload']['phase'] != 'preview' for v in children)
-        done = [v['payload'] for v in children if v['payload']['kind'] == 'child_resolved']
-        assert len(done) == 1 and {c['key'] for c in done[0]['selected_cards']} == offer_keys
-        assert {c['slot'] for c in done[0]['selected_cards']} == slots
-        assert tuple(r['action_id'] for r in done[0]['prior_results']) == actions
-        assert done[0]['prior_results'][-1]['result'] == ('selected' if mode == 'auto_at_max' else 'committed')
-        if scenario == 'reward_auto_delayed_creation':
-            assert any(v['kind'] == 'decision' and v['parent']['status'] == 'waiting' for v in ex.envelopes)
-        if scenario in ('reward_auto_partial', 'reward_explicit_delayed_completion'):
-            assert any(v['payload']['status'] == 'waiting' for v in children)
-            assert any(len(t['remaining_keys']) == 3 for t in ex.telemetry)
-        checks += 1
-
-    for scenario in ('reward_auto_empty', 'reward_auto_partial_terminal'):
-        result, ex = run(scenario, provider=planned(('select:3', 'select:1')))
-        assert result['status'] == 'failed' and result['code'] == 'unsupported_state', (scenario, result)
-        assert result['effects'] == 'unverified' and result['parent_reconciled'] == 0
-        assert ex.posts == 3 and result['child_accepted'] == 2
+        result, ex = run('early_delta')
+        assert result['code'] == 'unsupported_state' and result['effects'] == 'unverified', result
+        assert result['parent_reconciled'] == 0 and ex.posts == 4
         assert not any(v['payload'] and v['payload'].get('kind') == 'child_resolved' for v in ex.envelopes)
         checks += 1
 
-    for scenario, actions in (('reward_auto_fixed', ('select:3', 'select:1')),
-                              ('reward_explicit_fixed', ('select:3', 'select:1', 'confirm'))):
-        def lose_reward_final(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+        for scenario, code in (('uncertain', 'uncertain_action'), ('unsupported', 'unsupported_state'),
+                               ('never_child', 'unsupported_state')):
+            result, ex = run(scenario)
+            assert result['status'] == 'failed' and result['code'] == code, result
+            assert result['parent_attempted'] == 1 and result['effects'] == 'unverified', result
+            assert ex.posts == 1 and ex.telemetry[-1]['parent_dispatches'] == 1, ex.telemetry
+            assert ex.telemetry[-1]['card_dispatches'] == 0
+            checks += 1
+
+        def lost_post(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
             response = ex.request(method, route, body)
-            if method == 'POST' and json.loads(body)['action_id'] == actions[-1]:
+            if method == 'POST':
                 response[:] = b'\0' * len(response)
                 raise host.TransportFailure()
             return response
-        result, ex = run(scenario, wrapper=lose_reward_final, provider=planned(actions))
-        assert result['code'] == 'transport_failure' and result['effects'] == 'unverified', result
-        assert result['child_attempted'] == len(actions) and result['child_accepted'] == len(actions) - 1
-        assert result['parent_accepted'] == 1 and result['parent_reconciled'] == 0
-        assert ex.posts == len(actions) + 1 and len(ex.telemetry[-1]['remaining_keys']) == 4
+        result, ex = run(wrapper=lost_post)
+        assert result['code'] == 'transport_failure' and result['parent_attempted'] == 1, result
+        assert result['parent_accepted'] == 0 and result['effects'] == 'unverified'
+        assert ex.posts == 1 and ex.telemetry[-1]['parent_dispatches'] == 1
         checks += 1
 
-    three_actions = ('select:0', 'preview', 'confirm', 'select:2', 'select:1', 'confirm', 'select:3', 'select:1', 'confirm')
-    result, ex = run('mixed_three', provider=planned(three_actions))
-    assert result['status'] == 'resolved' and result['child_episodes'] == 3, (result, ex.envelopes[-1])
-    assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 4
-    assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == 9
-    assert result['total_attempted'] == 13 and ex.posts == 13 and ex.telemetry[-1]['disposed_children'] == 3
-    assert ex.telemetry[-1]['remaining_keys'] == ['Card_0', 'Offer_1', 'Offer_3']
-    assert ex.telemetry[-1]['remaining_levels'] == [1, 0, 0]
-    frames = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
-    for ordinal, operation in ((1, 'upgrade'), (2, 'remove'), (3, 'add')):
-        episode = [v for v in frames if v['child']['ordinal'] == ordinal]
-        assert episode and all(v['child']['operation'] == operation for v in episode)
-        assert sum(v['payload']['kind'] == 'child_resolved' for v in episode) == 1
-    assert [r['result'] for r in ex.envelopes[-1]['parent']['prior_results']] == ['child_completed'] * 3 + ['map_handoff']
-    checks += 1
+        def wrong_lineage(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+            if method == 'POST' and ex.posts == 1:
+                value = json.loads(body)
+                value['child']['parent_decision_id'] = 'f' * 64
+                body[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
+            return ex.request(method, route, body)
+        result, ex = run(wrapper=wrong_lineage)
+        assert result['status'] == 'failed' and result['code'] == 'invalid_request', result
+        assert ex.posts == 2 and ex.telemetry[-1]['card_dispatches'] == 0
+        checks += 1
 
-    result, ex = run('mixed_multi_three', provider=planned(('select:1', 'select:0', 'confirm',
-                                                          'select:2', 'select:0', 'confirm',
-                                                          'select:3', 'select:1', 'confirm')))
-    assert result['status'] == 'resolved' and result['completed_card_children'] == 3, result
-    assert result['child_episodes'] == 3 and result['child_reconciled'] == 9 and result['parent_reconciled'] == 4
-    assert ex.posts == 13 and ex.telemetry[-1]['remaining_keys'] == ['Card_1', 'Offer_1', 'Offer_3']
-    assert ex.telemetry[-1]['remaining_levels'] == [1, 0, 0]
-    checks += 1
+        for mutation in ('descriptor', 'unknown_key', 'receipt', 'resolved_card'):
+            changed = False
+            def tamper(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+                nonlocal changed
+                response = ex.request(method, route, body)
+                value = json.loads(response)
+                if not changed:
+                    if mutation == 'descriptor' and method == 'GET' and value['child']:
+                        value['child']['domain_count'] = 4
+                        changed = True
+                    elif mutation == 'unknown_key' and method == 'GET':
+                        value['unknown'] = True
+                        changed = True
+                    elif mutation == 'receipt' and method == 'POST':
+                        value['payload']['decision_id'] = 'e' * 64
+                        changed = True
+                    elif mutation == 'resolved_card' and value['payload'] and value['payload'].get('kind') == 'child_resolved':
+                        value['payload']['selected_cards'][0]['slot'] = 2
+                        changed = True
+                    if changed:
+                        response[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
+                return response
+            result, ex = run(wrapper=tamper)
+            assert changed and result['code'] == 'invalid_response', (mutation, result)
+            expected_posts = {'descriptor': 1, 'unknown_key': 0, 'receipt': 1, 'resolved_card': 4}[mutation]
+            assert ex.posts == expected_posts, (mutation, ex.posts)
+            checks += 1
 
-    for scenario, count in (('upgrade_multi_two', 2), ('upgrade_multi_eight', 8)):
-        actions = tuple(f'select:{i}' for i in range(count, 0, -1)) + ('confirm',)
-        result, ex = run(scenario, provider=planned(actions))
+        provider_calls = 0
+        def immutable(view: Any) -> str:
+            nonlocal provider_calls
+            provider_calls += 1
+            view.payload['candidates'][0]['rendered_text'] = 'changed'
+            return 'choose:0'
+        result, ex = run(provider=immutable)
+        assert result['code'] == 'provider_failed' and ex.posts == 0 and provider_calls == 1
+        checks += 1
+
+        now = 1.0
+        def late_post(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+            nonlocal now
+            response = ex.request(method, route, body)
+            if method == 'POST':
+                now = 32.0
+            return response
+        result, ex = run(wrapper=late_post, clock=lambda: now)
+        assert result['code'] == 'deadline_exceeded' and result['parent_attempted'] == 1, result
+        assert result['parent_accepted'] == 0 and ex.posts == 1
+        checks += 1
+        removal_configs = (
+            ('removal_fixed', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
+            ('removal_variable_min', 1, 3, 5, ('select:3', 'preview', 'confirm')),
+            ('removal_variable_two', 1, 3, 5, ('select:3', 'select:1', 'preview', 'confirm')),
+            ('removal_reverse', 1, 3, 5, ('select:3', 'select:1', 'select:0', 'confirm')),
+            ('removal_eight', 8, 8, 9, tuple(f'select:{i}' for i in range(8, 0, -1)) + ('confirm',)),
+            ('removal_delayed', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
+            ('removal_delayed_completion', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
+        )
+        removal_reads = 0
+        for scenario, minimum, maximum, domain, actions in removal_configs:
+            result, ex = run(scenario, provider=planned(actions))
+            assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1])
+            assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 3
+            assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == len(actions)
+            assert result['child_episodes'] == 1 and ex.posts == len(actions) + 3
+            selected = {int(a[7:]) for a in actions if a.startswith('select:')}
+            remaining = [f'Card_{i}' for i in range(domain) if i not in selected]
+            assert ex.telemetry[-1]['remaining_keys'] == remaining, (scenario, ex.telemetry[-1])
+            assert ex.telemetry[-1]['remaining_levels'] == [0] * len(remaining)
+            actual_actions = tuple(v['payload']['action_id'] for v in ex.envelopes if v['kind'] == 'action' and v['child'])
+            assert actual_actions == actions, (scenario, actual_actions)
+            decisions = [v for v in ex.envelopes if v['kind'] == 'decision']
+            child_decisions = [v for v in decisions if v['child']]
+            assert all((v['child']['operation'], v['child']['min_select'], v['child']['max_select'],
+                        v['child']['domain_count'], v['child']['commit_mode']) ==
+                       ('remove', minimum, maximum, domain, 'preview_confirm') for v in child_decisions)
+            assert any(v['payload']['phase'] == 'preview' for v in child_decisions)
+            resolved = [i for i, v in enumerate(decisions) if v['payload'] and v['payload'].get('kind') == 'child_resolved']
+            assert len(resolved) == 1
+            done = decisions[resolved[0]]['payload']
+            assert {c['slot'] for c in done['selected_cards']} == selected
+            assert all(c['key'] == f"Card_{c['slot']}" and c['upgrade_level'] == 0 for c in done['selected_cards'])
+            assert decisions[resolved[0] + 1]['parent']['prior_results'][0]['result'] == 'child_completed'
+            if not removal_reads:
+                removal_reads = result['reads']
+            if scenario in ('removal_delayed', 'removal_delayed_completion'):
+                assert result['reads'] > removal_reads, (scenario, result)
+            checks += 1
+
+        result, ex = run('removal_early_delta', provider=planned(('select:3', 'select:1', 'confirm')))
+        assert result['code'] == 'unsupported_state' and result['effects'] == 'unverified', result
+        assert result['parent_reconciled'] == 0 and ex.posts == 4
+        assert not any(v['payload'] and v['payload'].get('kind') == 'child_resolved' for v in ex.envelopes)
+        checks += 1
+        result, ex = run('admission_changed')
+        assert result['code'] == 'unsupported_state' and result['parent_accepted'] == 1, result
+        assert ex.posts == 1 and ex.telemetry[-1]['card_dispatches'] == 0
+        checks += 1
+
+        for mutation in ('operation', 'zero_min', 'max_nine', 'domain_shortcut', 'changed_count', 'duplicate_result'):
+            changed = False
+            child_reads = 0
+            def corrupt_removal(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+                nonlocal changed, child_reads
+                response = ex.request(method, route, body)
+                value = json.loads(response)
+                if method == 'GET' and value['child']:
+                    child_reads += 1
+                    if not changed:
+                        if mutation == 'operation':
+                            value['child']['operation'] = 'transform'
+                            changed = True
+                        elif mutation == 'zero_min':
+                            value['child']['min_select'] = 0
+                            changed = True
+                        elif mutation == 'max_nine':
+                            value['child']['max_select'] = 9
+                            changed = True
+                        elif mutation == 'domain_shortcut':
+                            value['child']['domain_count'] = value['child']['max_select']
+                            changed = True
+                        elif mutation == 'changed_count' and child_reads == 2:
+                            value['child']['max_select'] = 3
+                            changed = True
+                        elif mutation == 'duplicate_result' and value['payload']['kind'] == 'child_resolved':
+                            value['payload']['selected_cards'][1] = value['payload']['selected_cards'][0]
+                            changed = True
+                        if changed:
+                            response[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
+                return response
+            result, ex = run('removal_fixed', wrapper=corrupt_removal,
+                             provider=planned(('select:3', 'select:1', 'confirm')))
+            assert changed and result['code'] == 'invalid_response', (mutation, result)
+            assert ex.posts == (4 if mutation == 'duplicate_result' else 2 if mutation == 'changed_count' else 1)
+            checks += 1
+
+        for lost_action in ('select:3', 'confirm'):
+            def lose_child_response(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+                response = ex.request(method, route, body)
+                if method == 'POST' and json.loads(body)['action_id'] == lost_action:
+                    response[:] = b'\0' * len(response)
+                    raise host.TransportFailure()
+                return response
+            result, ex = run('removal_fixed', wrapper=lose_child_response,
+                             provider=planned(('select:3', 'select:1', 'confirm')))
+            attempted = 1 if lost_action == 'select:3' else 3
+            assert result['code'] == 'transport_failure' and result['effects'] == 'unverified', result
+            assert result['parent_accepted'] == 1 and result['parent_reconciled'] == 0
+            assert result['child_attempted'] == attempted and result['child_accepted'] == attempted - 1
+            assert ex.posts == attempted + 1 and ex.telemetry[-1]['card_dispatches'] == attempted
+            if lost_action == 'confirm':
+                assert ex.telemetry[-1]['remaining_keys'] == ['Card_0', 'Card_2', 'Card_4']
+            else:
+                assert len(ex.telemetry[-1]['remaining_keys']) == 5
+            checks += 1
+
+        mixed_actions = ('select:0', 'preview', 'confirm', 'select:2', 'select:1', 'confirm')
+        result, ex = run('mixed_families', provider=planned(mixed_actions))
+        assert result['status'] == 'resolved' and result['child_episodes'] == 2, (result, ex.envelopes[-1])
+        assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 3
+        assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == 6
+        assert result['total_attempted'] == 9 and ex.posts == 9
+        assert ex.telemetry[-1]['disposed_children'] == 2 and ex.telemetry[-1]['card_dispatches'] == 6
+        assert ex.telemetry[-1]['remaining_keys'] == ['Card_0'] and ex.telemetry[-1]['remaining_levels'] == [1]
+        child_frames = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
+        by_ordinal = {ordinal: [v for v in child_frames if v['child']['ordinal'] == ordinal] for ordinal in (1, 2)}
+        assert all(v['child']['operation'] == 'upgrade' and v['child']['min_select'] == v['child']['max_select'] == 1 for v in by_ordinal[1])
+        assert all(v['child']['operation'] == 'remove' and v['child']['min_select'] == v['child']['max_select'] == 2 for v in by_ordinal[2])
+        assert by_ordinal[1][0]['child']['parent_decision_id'] != by_ordinal[2][0]['child']['parent_decision_id']
+        assert all(sum(v['payload']['kind'] == 'child_resolved' for v in frames) == 1 for frames in by_ordinal.values())
+        assert [r['result'] for r in ex.envelopes[-1]['parent']['prior_results']] == ['child_completed', 'child_completed', 'map_handoff']
+        checks += 1
+
+        reward_cases = (
+            ('reward_auto_fixed', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
+            ('reward_auto_variable', 1, 3, 5, 'auto_at_max', ('select:3', 'select:1', 'select:0')),
+            ('reward_explicit_fixed', 2, 2, 5, 'explicit_confirm', ('select:3', 'select:1', 'confirm')),
+            ('reward_explicit_variable_min', 1, 3, 5, 'explicit_confirm', ('select:3', 'confirm')),
+            ('reward_explicit_variable_max', 1, 3, 5, 'explicit_confirm', ('select:3', 'select:1', 'select:0', 'confirm')),
+            ('reward_auto_sorted', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
+            ('reward_auto_eight', 8, 8, 9, 'auto_at_max', tuple(f'select:{i}' for i in range(8, 0, -1))),
+            ('reward_explicit_eight', 8, 8, 9, 'explicit_confirm', tuple(f'select:{i}' for i in range(8, 0, -1)) + ('confirm',)),
+            ('reward_auto_delayed_creation', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
+            ('reward_auto_partial', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
+            ('reward_explicit_delayed_completion', 2, 2, 5, 'explicit_confirm', ('select:3', 'select:1', 'confirm')),
+        )
+        for scenario, minimum, maximum, domain, mode, actions in reward_cases:
+            result, ex = run(scenario, provider=planned(actions))
+            assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1])
+            assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 3
+            assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == len(actions)
+            assert result['child_episodes'] == 1 and ex.posts == len(actions) + 3
+            slots = {int(a[7:]) for a in actions if a.startswith('select:')}
+            offer_keys = {f"Offer_{domain - 1 - i if 'sorted' in scenario else i}" for i in slots}
+            final_keys = ex.telemetry[-1]['remaining_keys']
+            assert final_keys[:2] == ['Base_0', 'Base_1'] and set(final_keys[2:]) == offer_keys
+            assert len(final_keys) == len(slots) + 2 and ex.telemetry[-1]['remaining_levels'] == [0] * len(final_keys)
+            children = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
+            assert all((v['child']['operation'], v['child']['min_select'], v['child']['max_select'], v['child']['commit_mode'], v['child']['domain_count']) ==
+                       ('add', minimum, maximum, mode, domain) for v in children)
+            assert all(v['payload']['phase'] != 'preview' for v in children)
+            done = [v['payload'] for v in children if v['payload']['kind'] == 'child_resolved']
+            assert len(done) == 1 and {c['key'] for c in done[0]['selected_cards']} == offer_keys
+            assert {c['slot'] for c in done[0]['selected_cards']} == slots
+            assert tuple(r['action_id'] for r in done[0]['prior_results']) == actions
+            assert done[0]['prior_results'][-1]['result'] == ('selected' if mode == 'auto_at_max' else 'committed')
+            if scenario == 'reward_auto_delayed_creation':
+                assert any(v['kind'] == 'decision' and v['parent']['status'] == 'waiting' for v in ex.envelopes)
+            if scenario in ('reward_auto_partial', 'reward_explicit_delayed_completion'):
+                assert any(v['payload']['status'] == 'waiting' for v in children)
+                assert any(len(t['remaining_keys']) == 3 for t in ex.telemetry)
+            checks += 1
+
+        for scenario in ('reward_auto_empty', 'reward_auto_partial_terminal'):
+            result, ex = run(scenario, provider=planned(('select:3', 'select:1')))
+            assert result['status'] == 'failed' and result['code'] == 'unsupported_state', (scenario, result)
+            assert result['effects'] == 'unverified' and result['parent_reconciled'] == 0
+            assert ex.posts == 3 and result['child_accepted'] == 2
+            assert not any(v['payload'] and v['payload'].get('kind') == 'child_resolved' for v in ex.envelopes)
+            checks += 1
+
+        for scenario, actions in (('reward_auto_fixed', ('select:3', 'select:1')),
+                                  ('reward_explicit_fixed', ('select:3', 'select:1', 'confirm'))):
+            def lose_reward_final(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+                response = ex.request(method, route, body)
+                if method == 'POST' and json.loads(body)['action_id'] == actions[-1]:
+                    response[:] = b'\0' * len(response)
+                    raise host.TransportFailure()
+                return response
+            result, ex = run(scenario, wrapper=lose_reward_final, provider=planned(actions))
+            assert result['code'] == 'transport_failure' and result['effects'] == 'unverified', result
+            assert result['child_attempted'] == len(actions) and result['child_accepted'] == len(actions) - 1
+            assert result['parent_accepted'] == 1 and result['parent_reconciled'] == 0
+            assert ex.posts == len(actions) + 1 and len(ex.telemetry[-1]['remaining_keys']) == 4
+            checks += 1
+
+        three_actions = ('select:0', 'preview', 'confirm', 'select:2', 'select:1', 'confirm', 'select:3', 'select:1', 'confirm')
+        result, ex = run('mixed_three', provider=planned(three_actions))
+        assert result['status'] == 'resolved' and result['child_episodes'] == 3, (result, ex.envelopes[-1])
+        assert result['parent_attempted'] == result['parent_accepted'] == result['parent_reconciled'] == 4
+        assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == 9
+        assert result['total_attempted'] == 13 and ex.posts == 13 and ex.telemetry[-1]['disposed_children'] == 3
+        assert ex.telemetry[-1]['remaining_keys'] == ['Card_0', 'Offer_1', 'Offer_3']
+        assert ex.telemetry[-1]['remaining_levels'] == [1, 0, 0]
+        frames = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
+        for ordinal, operation in ((1, 'upgrade'), (2, 'remove'), (3, 'add')):
+            episode = [v for v in frames if v['child']['ordinal'] == ordinal]
+            assert episode and all(v['child']['operation'] == operation for v in episode)
+            assert sum(v['payload']['kind'] == 'child_resolved' for v in episode) == 1
+        assert [r['result'] for r in ex.envelopes[-1]['parent']['prior_results']] == ['child_completed'] * 3 + ['map_handoff']
+        checks += 1
+
+        result, ex = run('mixed_multi_three', provider=planned(('select:1', 'select:0', 'confirm',
+                                                              'select:2', 'select:0', 'confirm',
+                                                              'select:3', 'select:1', 'confirm')))
+        assert result['status'] == 'resolved' and result['completed_card_children'] == 3, result
+        assert result['child_episodes'] == 3 and result['child_reconciled'] == 9 and result['parent_reconciled'] == 4
+        assert ex.posts == 13 and ex.telemetry[-1]['remaining_keys'] == ['Card_1', 'Offer_1', 'Offer_3']
+        assert ex.telemetry[-1]['remaining_levels'] == [1, 0, 0]
+        checks += 1
+
+        for scenario, count in (('upgrade_multi_two', 2), ('upgrade_multi_eight', 8)):
+            actions = tuple(f'select:{i}' for i in range(count, 0, -1)) + ('confirm',)
+            result, ex = run(scenario, provider=planned(actions))
+            assert result['status'] == 'resolved' and result['completed_card_children'] == 1, result
+            assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == count + 1
+            assert ex.posts == count + 4
+            assert ex.telemetry[-1]['remaining_levels'] == [0] + [1] * count
+            children = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
+            assert all(v['child']['operation'] == 'upgrade' and v['child']['min_select'] == v['child']['max_select'] == count for v in children)
+            assert all('preview' not in v['payload'].get('legal_actions', []) for v in children)
+            checks += 1
+
+        for scenario, code in (('later_unsupported', 'unsupported_state'), ('later_uncertain', 'uncertain_action'), ('cleanup_failure', 'unsupported_state')):
+            result, ex = run(scenario)
+            assert result['status'] == 'failed' and result['code'] == code, result
+            completed_history(result, ex, 1)
+            assert result['child_episodes'] == 1 and result['child_reconciled'] == 3
+            assert ex.posts == (5 if scenario == 'later_uncertain' else 4)
+            checks += 1
+
+        result, ex = run('repeat_terminal')
         assert result['status'] == 'resolved' and result['completed_card_children'] == 1, result
-        assert result['child_attempted'] == result['child_accepted'] == result['child_reconciled'] == count + 1
-        assert ex.posts == count + 4
-        assert ex.telemetry[-1]['remaining_levels'] == [0] + [1] * count
-        children = [v for v in ex.envelopes if v['kind'] == 'decision' and v['child']]
-        assert all(v['child']['operation'] == 'upgrade' and v['child']['min_select'] == v['child']['max_select'] == count for v in children)
-        assert all('preview' not in v['payload'].get('legal_actions', []) for v in children)
+        assert ex.posts == 6
         checks += 1
 
-    for scenario, code in (('later_unsupported', 'unsupported_state'), ('later_uncertain', 'uncertain_action'), ('cleanup_failure', 'unsupported_state')):
-        result, ex = run(scenario)
-        assert result['status'] == 'failed' and result['code'] == code, result
-        completed_history(result, ex, 1)
-        assert result['child_episodes'] == 1 and result['child_reconciled'] == 3
-        assert ex.posts == (5 if scenario == 'later_uncertain' else 4)
-        checks += 1
+        for change in ('skip', 'regress', 'terminal_payload'):
+            changed = False
+            def corrupt_cumulative(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+                nonlocal changed
+                response = ex.request(method, route, body)
+                value = json.loads(response)
+                if method == 'GET' and not changed:
+                    if change == 'skip':
+                        value['parent']['completed_card_children'] = 1
+                        changed = True
+                    elif change == 'regress' and value['parent']['completed_card_children'] == 1:
+                        value['parent']['completed_card_children'] = 0
+                        changed = True
+                    elif change == 'terminal_payload' and value['payload'] and value['payload'].get('kind') == 'child_resolved':
+                        value['payload']['selected_cards'][0]['slot'] = 2
+                        changed = True
+                    if changed:
+                        response[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
+                return response
+            result, ex = run(wrapper=corrupt_cumulative)
+            assert changed and result['code'] == 'invalid_response', (change, result)
+            assert result['completed_card_children'] == (1 if change == 'regress' else 0), result
+            assert ex.posts == (0 if change == 'skip' else 4)
+            checks += 1
 
-    result, ex = run('repeat_terminal')
-    assert result['status'] == 'resolved' and result['completed_card_children'] == 1, result
-    assert ex.posts == 6
-    checks += 1
-
-    for change in ('skip', 'regress', 'terminal_payload'):
-        changed = False
-        def corrupt_cumulative(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-            nonlocal changed
-            response = ex.request(method, route, body)
-            value = json.loads(response)
-            if method == 'GET' and not changed:
-                if change == 'skip':
-                    value['parent']['completed_card_children'] = 1
-                    changed = True
-                elif change == 'regress' and value['parent']['completed_card_children'] == 1:
-                    value['parent']['completed_card_children'] = 0
-                    changed = True
-                elif change == 'terminal_payload' and value['payload'] and value['payload'].get('kind') == 'child_resolved':
-                    value['payload']['selected_cards'][0]['slot'] = 2
-                    changed = True
-                if changed:
+        for change in ('invent_item', 'reclassify_card'):
+            changed = False
+            def corrupt_family_count(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
+                nonlocal changed
+                response = ex.request(method, route, body)
+                value = json.loads(response)
+                if method == 'GET' and not changed and (change == 'invent_item' or value['parent']['completed_card_children'] == 1):
+                    value['parent']['completed_item_children'] = 1
+                    if change == 'reclassify_card':
+                        value['parent']['completed_card_children'] = 0
                     response[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
-            return response
-        result, ex = run(wrapper=corrupt_cumulative)
-        assert changed and result['code'] == 'invalid_response', (change, result)
-        assert result['completed_card_children'] == (1 if change == 'regress' else 0), result
-        assert ex.posts == (0 if change == 'skip' else 4)
-        checks += 1
+                    changed = True
+                return response
+            result, ex = run(wrapper=corrupt_family_count)
+            assert changed and result['code'] == 'invalid_response', (change, result)
+            assert result['completed_item_children'] == 0, result
+            assert result['completed_card_children'] == (change == 'reclassify_card'), result
+            assert ex.posts == (0 if change == 'invent_item' else 4)
+            checks += 1
 
-    for change in ('invent_item', 'reclassify_card'):
-        changed = False
-        def corrupt_family_count(ex: Exchange, method: str, route: str, body: bytearray | None) -> bytearray:
-            nonlocal changed
-            response = ex.request(method, route, body)
-            value = json.loads(response)
-            if method == 'GET' and not changed and (change == 'invent_item' or value['parent']['completed_card_children'] == 1):
-                value['parent']['completed_item_children'] = 1
-                if change == 'reclassify_card':
-                    value['parent']['completed_card_children'] = 0
-                response[:] = json.dumps(value, separators=(',', ':')).encode('ascii')
-                changed = True
-            return response
-        result, ex = run(wrapper=corrupt_family_count)
-        assert changed and result['code'] == 'invalid_response', (change, result)
-        assert result['completed_item_children'] == 0, result
-        assert result['completed_card_children'] == (change == 'reclassify_card'), result
-        assert ex.posts == (0 if change == 'invent_item' else 4)
-        checks += 1
-
-    native_checks = 0
-    if args.native_fixture is not None:
+    if group == 'pre_add':
         for scenario in ('ENCHANT_PRE_ADD', 'U_PRE_ADD', 'T_PRE_ADD', 'ENCHANT_POST_ADD', 'ENCHANT_PRE_ADD_OWNER'):
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
             count = 2 if scenario.startswith(('U_', 'T_')) else 1
@@ -624,6 +652,8 @@ def main() -> int:
                 assert result['effects'] == 'unverified', result
             checks += 1
             native_checks += 1
+
+    if group == 'repeated_pages':
         for scenario in ('P_REPEAT', 'P_REVISIT', 'P_DELAY', 'P_FAULT', 'P_STALE', 'P_DANGER', 'P_BOUND'):
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
             def repeat_provider(view):
@@ -656,6 +686,8 @@ def main() -> int:
                 assert any(e['kind'] == 'decision' and e['parent']['status'] == 'waiting' for e in native.envelopes)
             checks += 1
             native_checks += 1
+
+    if group == 'upgrades':
         event_types = set()
         for scenario in ('FIRST_EVENT', 'ANOTHER_EVENT', 'HELD_OUT_EVENT', 'DELAYED', 'ALLOCATED_UPGRADE'):
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
@@ -691,6 +723,8 @@ def main() -> int:
             checks += 1
             native_checks += 1
         assert len(event_types) == 3, event_types
+
+    if group == 'enchantments':
         for scenario in ('ENCHANT_FIRST', 'ENCHANT_DELAY', 'ENCHANT_ALLOCATED', 'ENCHANT_WRONG_EFFECT'):
             native = Exchange(args.dotnet, args.native_fixture, scenario, native=True)
             slot = 19 if scenario == 'ENCHANT_ALLOCATED' else 0
@@ -717,6 +751,22 @@ def main() -> int:
                            for p in payloads if p.get('status') in ('ready', 'resolved'))
             checks += 1
             native_checks += 1
+        for scenario, count in [('ENCHANT_MULTI_TWO',2),('ENCHANT_MULTI_EIGHT',8)]:
+            ex=Exchange(args.dotnet,args.native_fixture,scenario,native=True)
+            try:
+                result=host.run_event(ex.request,provider=planned(tuple(f'select:{19-i}' for i in range(count))+('confirm',)),clock=lambda:1.0,sleep=lambda _:None)
+            finally:
+                ex.close()
+            assert result['status']=='resolved' and result['completed_card_children']==1, (scenario,result,ex.envelopes[-1])
+            assert result['child_accepted']==result['child_reconciled']==count+1
+            end=ex.telemetry[-1]
+            assert end['remaining_originals']==list(range(20)) and end['confirm_calls']==1
+            assert end['enchantment_keys']==[None]*(20-count)+['STEADY']*count
+            assert end['enchantment_amounts']==[None]*(20-count)+[1]*count
+            assert all(v['child']['contract_version']=='card_enchant_v2' for v in ex.envelopes if v['child'])
+            checks+=1;native_checks+=1
+
+    if group == 'removals':
         removal_types = set()
         native_removal_cases = (
             ('R_POST_ADD', 2, 2, 5, ('select:3', 'select:1', 'confirm')),
@@ -774,6 +824,8 @@ def main() -> int:
             checks += 1
             native_checks += 1
         assert len(removal_types) == 3, removal_types
+
+    if group == 'rewards':
         reward_types = set()
         native_reward_cases = (
             ('A_DERIVED', 2, 2, 5, 'auto_at_max', ('select:3', 'select:1')),
@@ -858,7 +910,7 @@ def main() -> int:
             checks += 1
             native_checks += 1
 
-
+    if group == 'multi_upgrades':
         multi_types = set()
         multi_baseline_reads = 0
         multi_cases = (('U_FIRST', 2, 5), ('U_ANOTHER', 2, 5), ('U_HELD_OUT', 2, 5),
@@ -938,63 +990,86 @@ def main() -> int:
         checks += 1
         native_checks += 1
 
-
-
-    if args.native_fixture is not None:
-        for scenario, count in [('ENCHANT_MULTI_TWO',2),('ENCHANT_MULTI_EIGHT',8)]:
-            ex=Exchange(args.dotnet,args.native_fixture,scenario,native=True)
-            try:
-                result=host.run_event(ex.request,provider=planned(tuple(f'select:{19-i}' for i in range(count))+('confirm',)),clock=lambda:1.0,sleep=lambda _:None)
-            finally:
-                ex.close()
-            assert result['status']=='resolved' and result['completed_card_children']==1, (scenario,result,ex.envelopes[-1])
-            assert result['child_accepted']==result['child_reconciled']==count+1
-            end=ex.telemetry[-1]
-            assert end['remaining_originals']==list(range(20)) and end['confirm_calls']==1
-            assert end['enchantment_keys']==[None]*(20-count)+['STEADY']*count
-            assert end['enchantment_amounts']==[None]*(20-count)+[1]*count
-            assert all(v['child']['contract_version']=='card_enchant_v2' for v in ex.envelopes if v['child'])
-            checks+=1;native_checks+=1
-
-    if args.native_fixture is not None:
+    if group == 'transforms':
         from generic_event_transform_cases import run_transform_cases
         added = run_transform_cases(args, host, Exchange, planned, completed_history)
         checks += added
         native_checks += added
 
-    if args.native_fixture is not None:
+    if group == 'reward_sets':
         from generic_event_card_reward_set_cases import run_card_reward_set_cases
-        added=run_card_reward_set_cases(args,host,Exchange)
+        added=run_card_reward_set_cases(args,host,Exchange,part=part)
         checks+=added
         native_checks+=added
+
+    if group == 'card_rewards':
         from generic_event_card_reward_cases import run_card_reward_cases
         added=run_card_reward_cases(args,host,Exchange)
         checks+=added
         native_checks+=added
+
+    if group == 'items':
         from generic_event_item_cases import run_item_cases
         added = run_item_cases(args, host, Exchange, completed_history)
         checks += added
         native_checks += added
 
-    if args.native_fixture is not None:
+    if group == 'variable_transforms':
         from generic_event_variable_transform_cases import run_variable_transform_cases
         added = run_variable_transform_cases(args, host, Exchange, planned, completed_history)
         checks += added
         native_checks += added
 
+    if group == 'offers':
         from generic_event_offer_cases import run_offer_cases
         added=run_offer_cases(args,host,Exchange)
         checks+=added
         native_checks+=added
 
+    if group == 'surfaces':
         from generic_event_surface_cases import run_surface_cases
         added=run_surface_cases(args,host,Exchange)
         checks+=added
         native_checks+=added
 
+    assert checks > 0, ('empty integration group', group)
+    return {'group': group, 'part': part, 'check_count': checks, 'production_native_checks': native_checks,
+            'seconds': round(time.monotonic() - start, 3)}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--dotnet', required=True)
+    parser.add_argument('--fixture', type=Path, required=True)
+    parser.add_argument('--host', type=Path, required=True)
+    parser.add_argument('--native-fixture', type=Path)
+    parser.add_argument('--group', action='append', choices=GROUPS,
+                        help='Run only these related cases; repeat to select several groups.')
+    parser.add_argument('--jobs', type=int, choices=range(1, 9), default=4,
+                        help='Maximum isolated integration workers (default: 4; serial: 1).')
+    args = parser.parse_args()
+    groups = list(dict.fromkeys(args.group or (GROUPS if args.native_fixture else ('wire',))))
+    if any(group != 'wire' for group in groups) and args.native_fixture is None:
+        parser.error('native groups require --native-fixture')
+    start = time.monotonic()
+    tasks = integration_tasks(groups)
+    workers = min(args.jobs, len(tasks))
+    if workers == 1:
+        results = [run_group(args, group, part) for group, part in tasks]
+    else:
+        # Spawned Python workers have separate module state; every Exchange still
+        # launches and disposes a fresh C# fixture, including real Harmony hooks.
+        with ProcessPoolExecutor(max_workers=workers,
+                                 mp_context=multiprocessing.get_context('spawn')) as pool:
+            results = list(pool.map(run_group, [args] * len(tasks),
+                                    [group for group, _ in tasks], [part for _, part in tasks]))
+    assert [(row['group'], row['part']) for row in results] == tasks
     print(json.dumps({'schema_version': 1, 'status': 'passed',
-                      'suite': 'generic_event_v7_integration', 'check_count': checks,
-                      'production_native_checks': native_checks}, separators=(',', ':')))
+                      'suite': 'generic_event_v7_integration',
+                      'check_count': sum(row['check_count'] for row in results),
+                      'production_native_checks': sum(row['production_native_checks'] for row in results),
+                      'jobs': workers, 'groups': results,
+                      'seconds': round(time.monotonic() - start, 3)}, separators=(',', ':')))
     return 0
 
 

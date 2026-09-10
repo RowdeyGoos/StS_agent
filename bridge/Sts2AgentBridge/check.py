@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import xml.etree.ElementTree as ET
 
@@ -24,6 +27,11 @@ class Gate:
                  game_data: Path | None, *, release: bool = False) -> None:
         self.targets, self.scratch, self.dotnet = targets, scratch, dotnet
         self.component = "all"
+        self.only: set[str] = set()
+        self.list_only = False
+        self.available: list[str] = []
+        self.jobs = 4
+        self.event_groups: list[str] = []
         self.files = collect_sources(ROOT, targets)
         self.summary = validate_sources(self.files, targets, release=release)
         self.source = scratch / "source/bridge/Sts2AgentBridge"
@@ -41,6 +49,10 @@ class Gate:
             "PYTHONPATH": str(self.source),
         }
         self.checks: dict[str, dict] = {}
+        self._lock = threading.Lock()
+        self._active: dict[int, subprocess.Popen] = {}
+        self._aborted = False
+        self._next_log = 0
         self.outputs: dict[str, Path] = {}
         self.refs = scratch / "references"
         self.refs.mkdir()
@@ -54,17 +66,77 @@ class Gate:
 
     def run(self, name: str, command: list[str], cwd: Path | None = None) -> str:
         start = time.monotonic()
-        result = subprocess.run(command, cwd=cwd or self.source, env=self.env,
-                                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT, timeout=240, check=False)
-        log = self.scratch / f"log-{len(self.checks) + 1:03}.txt"
-        log.write_bytes(result.stdout)
-        self.checks[name] = {"status": "passed" if result.returncode == 0 else "failed",
-                             "seconds": round(time.monotonic() - start, 3), "log": log.name}
-        if result.returncode:
-            print(result.stdout.decode(errors="replace")[-5000:], file=sys.stderr)
+        # A check may own Python workers and C# children. Bound and terminate the
+        # whole process group on timeout/interruption, not only its coordinator.
+        with self._lock:
+            require(not self._aborted, "gate_aborted")
+            self._next_log += 1
+            log = self.scratch / f"log-{self._next_log:03}.txt"
+            process = subprocess.Popen(command, cwd=cwd or self.source, env=self.env,
+                                       stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT, start_new_session=True)
+            self._active[process.pid] = process
+        timed_out = False
+        try:
+            output, _ = process.communicate(timeout=240)
+        except BaseException as error:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            output, _ = process.communicate()
+            if not isinstance(error, subprocess.TimeoutExpired):
+                raise
+            timed_out = True
+        finally:
+            with self._lock:
+                self._active.pop(process.pid, None)
+        log.write_bytes(output)
+        passed = process.returncode == 0 and not timed_out
+        row = {"status": "passed" if passed else "failed",
+               "seconds": round(time.monotonic() - start, 3), "log": log.name}
+        if timed_out:
+            row["failure"] = "timeout"
+        with self._lock:
+            self.checks[name] = row
+        if not passed:
+            print(output.decode(errors="replace")[-5000:], file=sys.stderr)
             raise ValueError(f"check_failed:{name}:{log}")
-        return result.stdout.decode().strip()
+        return output.decode().strip()
+
+    def run_parallel(self, commands: list[tuple[str, list[str]]]) -> None:
+        """Overlap only prepared, isolated event executables; builds stay serial."""
+        if self.jobs == 1 or len(commands) < 2:
+            for name, command in commands:
+                self.run(name, command)
+            return
+        pool = ThreadPoolExecutor(max_workers=2)
+        try:
+            futures = [pool.submit(self.run, name, command) for name, command in commands]
+            for future in as_completed(futures):
+                future.result()
+        except BaseException:
+            # Hold the spawn lock so a queued worker cannot start after abort.
+            # Each active check owns its entire process group, including C# children.
+            with self._lock:
+                self._aborted = True
+                for pid in self._active:
+                    try:
+                        os.killpg(pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+            raise
+        finally:
+            pool.shutdown(wait=True, cancel_futures=True)
+
+    def selected(self, name: str) -> bool:
+        if name not in self.available:
+            self.available.append(name)
+        return not self.list_only and (not self.only or name in self.only)
+
+    def python_check(self, name: str, command: list[str], cwd: Path | None = None) -> None:
+        if self.selected(name):
+            self.run(name, command, cwd)
 
     def python(self) -> None:
         folders = sorted({str(Path(p).parent) for p in self.files if p.endswith(".py")
@@ -72,22 +144,22 @@ class Gate:
         for folder in folders:
             if not self.affected(folder):
                 continue
-            self.run(folder, [sys.executable, "-B", "-m", "unittest", "discover",
+            self.python_check(folder, [sys.executable, "-B", "-m", "unittest", "discover",
                               "-s", str(self.source / folder), "-p", "test_*.py"],
                      cwd=self.source / Path(folder).parent)
         for target in self.targets:
             app = self.source / "apps" / target
             if self.component not in ("all", "host", "core"):
                 continue
-            self.run("client", [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(app / "client_tests"), "-p", "test_*.py"])
-            self.run("core_client", [sys.executable, "-B", str(self.source / "tools/probe_live_fixtures.py")])
-            self.run("reward_codec", [sys.executable, "-B", str(self.source / "tools/apply_reward_live_fixtures.py")])
+            self.python_check("client", [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(app / "client_tests"), "-p", "test_*.py"])
+            self.python_check("core_client", [sys.executable, "-B", str(self.source / "tools/probe_live_fixtures.py")])
+            self.python_check("reward_codec", [sys.executable, "-B", str(self.source / "tools/apply_reward_live_fixtures.py")])
             for script in sorted(app.glob("client_tests/*_fixtures.py")):
-                self.run(str(script.relative_to(self.source)), [sys.executable, "-B", str(script)])
+                self.python_check(str(script.relative_to(self.source)), [sys.executable, "-B", str(script)])
             for script in sorted(app.glob("operations/*_fixtures.py")):
                 if script.name == "verify_clean_install_fixtures.py":
                     continue  # Requires the actual candidate; run in release().
-                self.run(str(script.relative_to(self.source)), [sys.executable, "-B", str(script)])
+                self.python_check(str(script.relative_to(self.source)), [sys.executable, "-B", str(script)])
 
     def build(self, project: str) -> Path:
         if project in self.outputs:
@@ -119,11 +191,15 @@ class Gate:
         return any(name.startswith("components/" + part + "/") for part in names)
 
     def behavior(self) -> None:
-        require(self.run("sdk", [self.dotnet, "--version"]) == SDK_VERSION, "sdk_identity")
+        event_commands: list[tuple[str, list[str]]] = []
+        if not self.list_only:
+            require(self.run("sdk", [self.dotnet, "--version"]) == SDK_VERSION, "sdk_identity")
         for project in sorted(p for p in self.files if p.endswith(".csproj") and self.affected(p)):
             tree = ET.fromstring(self.files[project])
             folder = Path(project).parent.name
             if tree.findtext(".//OutputType") != "Exe" or not (folder == "tests" or folder.endswith("_tests")):
+                continue
+            if not self.selected("test:" + project):
                 continue
             dependencies, _ = project_closure(self.files, project)
             require(all(node.attrib.get("Include") not in ("sts2", "GodotSharp")
@@ -133,18 +209,28 @@ class Gate:
             if folder == "operator_tests":
                 command += ["--fixture-root", str(self.scratch.with_name(
                     self.scratch.name + "-" + Path(project).stem + "-operator"))]
-            self.run("test:" + project, command)
-        if self.component in ("all", "events"):
-            self.run("events:host_native", [sys.executable, "-B", str(self.source / "components/events/integration_tests/test_generic_event_integration.py"),
+            if project == "components/events/native_tests/GenericEventV7.Native.Tests.csproj":
+                event_commands.append(("test:" + project, command))
+            else:
+                self.run("test:" + project, command)
+        if self.component in ("all", "events") and self.selected("events:host_native"):
+            command = [sys.executable, "-B", str(self.source / "components/events/integration_tests/test_generic_event_integration.py"),
                 "--dotnet", self.dotnet, "--fixture", str(self.build("components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj")),
-                "--native-fixture", str(self.build("components/events/integration/GenericEventV7.Native.Integration.csproj")),
-                "--host", str(self.source / "components/events/host/generic_event_host.py")])
+                "--host", str(self.source / "components/events/host/generic_event_host.py"), "--jobs", str(self.jobs)]
+            if set(self.event_groups) != {"wire"}:
+                command += ["--native-fixture", str(self.build("components/events/integration/GenericEventV7.Native.Integration.csproj"))]
+            for group in self.event_groups:
+                command += ["--group", group]
+            event_commands.append(("events:host_native", command))
+        self.run_parallel(event_commands)
         if self.component in ("all", "cards"):
-            self.run("cards:combat_host_native", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_combat_choice.py"),
-                self.dotnet, str(self.build("components/cards/combat_tests/CombatCardChoice.Tests.csproj"))])
-            self.run("cards:host_wire", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_cross_language.py"),
-                "--dotnet", self.dotnet, "--fixture", str(self.build("components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj"))])
-        if self.component in ("all", "host", "core"):
+            if self.selected("cards:combat_host_native"):
+                self.run("cards:combat_host_native", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_combat_choice.py"),
+                    self.dotnet, str(self.build("components/cards/combat_tests/CombatCardChoice.Tests.csproj"))])
+            if self.selected("cards:host_wire"):
+                self.run("cards:host_wire", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_cross_language.py"),
+                    "--dotnet", self.dotnet, "--fixture", str(self.build("components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj"))])
+        if self.component in ("all", "host", "core") and self.selected("shared_client:socket"):
             self.run("shared_client:socket", [sys.executable, "-B", str(self.source / "apps/bridge/client_tests/socket_integration.py"),
                 self.dotnet, str(self.build("apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj"))])
 
@@ -196,6 +282,14 @@ def main() -> int:
     parser.add_argument("--target", choices=["bridge"], default="bridge")
     parser.add_argument("--component", choices=["all", "host", "core", "items", "rooms", "cards", "events"], default="all")
     parser.add_argument("--suite", choices=["sources", "python", "build", "test", "release"], default="test")
+    parser.add_argument("--check", action="append", default=[],
+                        help="Run an exact check name; repeat to select several. Development only.")
+    parser.add_argument("--list-checks", action="store_true", help="List selectable checks without running them.")
+    parser.add_argument("--jobs", type=int, choices=range(1, 9), default=4,
+                        help="Maximum isolated event integration workers (default: 4).")
+    from components.events.integration_tests.test_generic_event_integration import GROUPS
+    parser.add_argument("--event-group", action="append", choices=GROUPS, default=[],
+                        help="Narrow --check events:host_native to related cases. Development only.")
     parser.add_argument("--dotnet", type=Path)
     parser.add_argument("--game-data-dir", type=Path)
     parser.add_argument("--scratch", type=Path, help="New disposable output directory; created exclusively.")
@@ -203,11 +297,15 @@ def main() -> int:
     require(sys.version_info >= (3, 10), "python_310")
     targets = ["bridge"]
     require(args.suite != "release" or args.component == "all", "release_requires_all_components")
+    require(not (args.check or args.list_checks or args.event_group) or args.suite in ("python", "test"),
+            "selection_requires_development_suite")
+    require(not args.event_group or (args.suite == "test" and args.component in ("all", "events")
+            and "events:host_native" in args.check), "event_group_requires_integration_check")
     files = collect_sources(ROOT, targets)
     if args.suite == "sources":
         print(json.dumps({"status": "passed", **validate_sources(files, targets)}))
         return 0
-    if args.suite != "python":
+    if args.suite != "python" and not args.list_checks:
         require(args.dotnet is not None and args.game_data_dir is not None, "sdk_and_references_required")
     if args.scratch is None:
         scratch = Path(tempfile.mkdtemp(prefix="sts-bridge-", dir="/private/tmp"))
@@ -218,7 +316,19 @@ def main() -> int:
     start = time.monotonic()
     gate = Gate(targets, scratch, str(args.dotnet.resolve(strict=True)) if args.dotnet else None,
                 args.game_data_dir, release=args.suite == "release")
-    gate.component = args.component
+    gate.component, gate.only = args.component, set(args.check)
+    gate.jobs, gate.event_groups = args.jobs, args.event_group
+    # Discover names before running anything, so typos cannot become an empty pass.
+    gate.list_only = True
+    gate.python()
+    if args.suite != "python":
+        gate.behavior()
+    unknown = gate.only - set(gate.available)
+    require(not unknown, "unknown_check:" + ",".join(sorted(unknown)))
+    if args.list_checks:
+        print(json.dumps({"checks": gate.available, "event_groups": GROUPS}))
+        return 0
+    gate.list_only = False
     print(json.dumps({"status": "running", "scratch": str(scratch), "suite": args.suite, "targets": targets}), flush=True)
     try:
         if args.suite == "release":
@@ -242,6 +352,8 @@ def main() -> int:
         result = {"status": "passed", "suite": args.suite, "targets": targets,
                   "seconds": round(time.monotonic() - start, 3), "source": gate.summary,
                   "checks": gate.checks, "release_manifests": manifests,
+                  "component": args.component, "selected_checks": args.check,
+                  "event_groups": args.event_group, "integration_jobs": args.jobs,
                   "target_game_executed": False, "live_campaign_started": False}
         (scratch / "result.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
         print(json.dumps({k: v for k, v in result.items() if k != "checks"} | {"check_groups": len(gate.checks), "scratch": str(scratch)}))
