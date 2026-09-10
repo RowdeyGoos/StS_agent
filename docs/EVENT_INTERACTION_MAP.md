@@ -39,7 +39,8 @@ preview/Confirm and map return); required single-card v1 offers remain pending.
 [Inactive combat layouts and result acknowledgment](GENERIC_EVENTS.md#implemented-offline-inactive-combat-layouts-and-result-acknowledgment)
 now have packaged support: PunchOff/Nab passed live with Meal Ticket collection
 and map return (automatic Injury unverified); Darv/PandorasBox-style results
-confirmation remains pending live acceptance. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-offline-optional-card-offers-and-one-appended-grant)
+confirmation passed with nine displayed cards, Confirm and map return. Automatic
+transformations and normal Darv pool eligibility remain unverified. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-offline-optional-card-offers-and-one-appended-grant)
 now also have unreleased offline support for HeftyTablet's choose/Skip plus Injury
 shape; grant provenance remains unverified. Embedded combat execution and
 resumption, full-inventory handling and nested pickup composition remain gaps. The preceding five tested

@@ -138,7 +138,7 @@ The offline increments above are packaged in corrected release
 passed in 371.191 seconds**, including **7,896 native assertions**, 125 host tests,
 450 C#/Python cases (388 native), 809 shared checks, reproducible packaging and
 owned installation/cleanup fixtures. Evidence: `/private/tmp/sts-bridge-n2fi2egq`.
-The **fifteenth installation is active**, installed state
+The **fifteenth installation is cleaned up**; its recorded installed state was
 `1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`.
 **Sea Glass zero-card selection passed**: the 15-card grid admitted, Confirm
 returned an empty result with unchanged deck, and all three actions reconciled
@@ -171,8 +171,12 @@ Skill Potion collected, no card added, six reconciled actions and fresh map in
 singleton-index assumption: Meal Ticket collected at native index three, three
 reconciled actions and fresh map in **1.278 seconds**. This demonstrates the
 inactive combat-layout noncombat branch; automatic Injury remains unverified.
-Darv/Pandora's Box results acknowledgment is next. The same bridge remains
-installed; final cleanup is pending after the batch.
+**Darv/Pandora's Box results acknowledgment passed**: nine displayed cards retained
+through Confirm, three reconciled actions and fresh map in **0.677 seconds**.
+Preceding automatic transformations remain unverified. The representative feature
+batch is complete. **Final cleanup passed**: normal quit, stopped process/closed
+ports, exact owned quarantine/purge, **429 unchanged base files and zero overlays**.
+No test bridge remains installed.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

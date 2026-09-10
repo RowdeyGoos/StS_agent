@@ -1,9 +1,21 @@
 {
   "change": "Remove inferred whole-grid layout requirements from generic event add-card selectors; retain exact native ownership, clickability and task/deck outcomes",
+  "cleanup": {
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "generated_files_removed": 4,
+    "installed_state_sha256": "1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9",
+    "overlay_count": 0,
+    "phase": "absent",
+    "port_samples": 2,
+    "process_samples": 3,
+    "quarantined_state_sha256": "a8312177a7c66a6485e356ba1f62900582e8d152c5b270da1282530cab9b834c",
+    "status": "passed"
+  },
   "date": "2026-09-09",
   "evidence_limits": {
     "autonomous_full_run": false,
-    "current_package_installed": true,
+    "current_package_installed": false,
     "current_package_live_tested": true,
     "native_fixture_objects_are_inert": true,
     "profile_save_history_cloud_files_accessed": false
@@ -14,14 +26,14 @@
     "status": "passed"
   },
   "installation": {
-    "cleanup": "pending normal quit after live batch; Sea Glass and Claws zero/partial/full passed",
+    "cleanup": "passed: normal quit, stopped process/closed ports, exact quarantine/purge, 429 unchanged base files and zero overlays",
     "live_input_sent": true,
     "mods_parent_created": true,
     "post_install_verification": "passed: owned package/configuration metadata and content, credential not read",
     "pre_install_runtime": "passed: fresh exact game process stopped and bridge port closed",
     "pre_restart_verification": "passed: fresh stopped process/closed listener and unchanged owned installation",
     "state_sha256": "1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9",
-    "status": "installed"
+    "status": "cleaned_up"
   },
   "live_results": [
     {
@@ -730,6 +742,83 @@
       "result_path": "/private/tmp/sts-punchoff-nativeindex-live-20260910-result.json",
       "result_sha256": "9011cd198c795aa3daf2e7cd4644b106313d9715e03394b2f962479b469c694f",
       "seconds": 1.278,
+      "status": "passed"
+    },
+    {
+      "cards": [
+        {
+          "key": "JUGGERNAUT",
+          "slot": 0,
+          "upgrade_level": 0
+        },
+        {
+          "key": "CINDER",
+          "slot": 1,
+          "upgrade_level": 0
+        },
+        {
+          "key": "BREAKTHROUGH",
+          "slot": 2,
+          "upgrade_level": 0
+        },
+        {
+          "key": "IMPERVIOUS",
+          "slot": 3,
+          "upgrade_level": 0
+        },
+        {
+          "key": "UPPERCUT",
+          "slot": 4,
+          "upgrade_level": 0
+        },
+        {
+          "key": "UPPERCUT",
+          "slot": 5,
+          "upgrade_level": 0
+        },
+        {
+          "key": "HELLRAISER",
+          "slot": 6,
+          "upgrade_level": 0
+        },
+        {
+          "key": "OFFERING",
+          "slot": 7,
+          "upgrade_level": 0
+        },
+        {
+          "key": "RUPTURE",
+          "slot": 8,
+          "upgrade_level": 0
+        }
+      ],
+      "case": "Darv/PandorasBox",
+      "event": {
+        "child_accepted": 1,
+        "child_attempted": 1,
+        "child_episodes": 1,
+        "child_reconciled": 1,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 5,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 3
+      },
+      "map_handoff": {
+        "candidate_count": 1,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-pandora-live-20260910-result.json",
+      "result_sha256": "1fb88d51f448b2f533991f7bd98e86da0cad494f08f948e9f79af47575499f30",
+      "seconds": 0.677,
       "status": "passed"
     }
   ],

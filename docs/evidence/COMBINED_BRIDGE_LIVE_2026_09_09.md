@@ -2086,3 +2086,51 @@ Prepare a fresh Profile 3 run with its basic Strikes/Defends retained, enter a r
 normally from the map, run `ancient DARV PANDORAS_BOX`, close the console and leave
 the relic option untouched. The policy has not run live yet. No source/build/install
 change is needed; separate preparation/review times were not measured.
+
+### Pandora's Box results acknowledgment passed
+
+Fresh running-process, reviewed policy hash, release/source/owned installation
+and authenticated health/manifest checks passed on the unchanged fifteenth
+installation. The policy selected Darv/Pandora's Box, acknowledged its nine-card
+results screen with one Confirm, then selected Proceed. `card_results_v1` resolved
+with the same displayed cards and one acknowledged receipt. The unupgraded cards
+were Juggernaut, Cinder, Breakthrough, Impervious, Uppercut, Uppercut, Hellraiser,
+Offering and Rupture. Native ownership checks retained the exact displayed models
+and post-show deck through capstone closure and Chosen completion.
+
+All **three actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **1/1/1**, one completed card child, zero item children, five event reads.
+One fresh core-map read passed with one candidate. Policy time: **0.677 seconds**.
+The previously explained transient `pending_task_failed` diagnostic appeared;
+no terminal failure occurred. Parent effects and the preceding automatic
+transformations remain **unverified**. The console DebugOption supplied this route;
+normal Darv pool eligibility is not established by the test.
+Result: `/private/tmp/sts-pandora-live-20260910-result.json`, SHA-256
+`1fb88d51f448b2f533991f7bd98e86da0cad494f08f948e9f79af47575499f30`.
+
+The representative batch is complete. Normal quit was requested for owned removal
+and unchanged-base verification. The fifteenth installation remains installed
+until that cleanup completes. No uncertain mutation was retried and no profile/
+save/history/Cloud filesystem content was accessed.
+
+### Fifteenth installation cleanup complete (2026-09-10)
+
+The user confirmed normal quit. Fresh `require-stopped` passed with three stopped-
+process samples and two closed-port samples. Exact owned quarantine passed from
+installed state `1af40d941099a2dc21ef6964a2943b136d05cac580fbac5764c5a09782cd0dd9`
+to quarantined state
+`a8312177a7c66a6485e356ba1f62900582e8d152c5b270da1282530cab9b834c`.
+Exact purge passed, removed four generated files, and reported phase **absent**.
+The base check passed with **429 unchanged files and zero overlays**, base SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No test bridge remains installed. The accepted release package, manifest, original
+source identity and per-case evidence remain retained. No profile/save/history/
+Cloud filesystem content was accessed.
+
+The batch established representative Sea Glass and Claws zero/partial/full paths,
+Scroll Boxes bundle choice, Lead Paperweight choose/Skip without an extra grant,
+Lost Coffer choose/Skip with potion collection and final dismissal when needed,
+Punch Off's inactive noncombat Nab path, and Pandora's Box results acknowledgment.
+Hefty Tablet choose/Skip retains its preceding-release acceptance. Normal ancient
+pool eligibility, unverified automatic effects, nested pickups, active event combat
+and broader layouts/branches are not established by these controlled tests.

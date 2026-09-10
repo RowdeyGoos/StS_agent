@@ -777,6 +777,13 @@ entire post-show deck to remain unchanged in model/order/key/upgrade/enchantment
 and ownership. The result list must contain 1–64 successful, unique models
 currently present exactly once in the deck. The existing 512-card deck limit applies.
 
+**Darv/Pandora's Box has representative live acknowledgment acceptance**: nine
+result cards, one Confirm, three reconciled actions and fresh map in 0.677 seconds.
+The exact displayed cards and post-show deck were retained through closure; this
+does not certify the preceding automatic transformations or normal Darv pool
+eligibility. The console DebugOption supplied the tested route. See the
+[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#pandoras-box-results-acknowledgment-passed).
+
 The descriptor uses `kind: card_results`, `contract_version: card_results_v1`,
 parent lineage/ordinal and `offer_count` for the result-card count. Payload fields
 are `version`, `session_nonce`, `status`, `phase`, `decision_id`, `cards`,
