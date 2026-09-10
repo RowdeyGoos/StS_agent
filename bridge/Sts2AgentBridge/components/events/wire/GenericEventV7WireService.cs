@@ -198,7 +198,7 @@ public sealed class GenericEventV7WireService : IDisposable
         ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value,_child.MaxSelect>1) : _child.Operation == "remove"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardRemoveV2WireCodec.Encode(value) : _child.Operation == "transform" || _child.ContractVersion=="card_add_v2"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value,_child.ContractVersion) : CardSelectionV1WireCodec.Encode(value);
-    private static byte[] EncodeItem(object value) {
+    public static byte[] EncodeItem(object value) {
         if(value is GenericEventV7ItemSetRead set) {
             using var stream=new System.IO.MemoryStream();
             using(var w=new Utf8JsonWriter(stream)) {

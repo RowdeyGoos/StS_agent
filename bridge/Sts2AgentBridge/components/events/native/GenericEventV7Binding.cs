@@ -61,6 +61,8 @@ internal sealed class GenericEventV7Binding
     internal CardSelectorPrefs Prefs;
     internal bool Failed,Closed,ChosenSeen,RequestSeen,ScreenSeen;
     internal Task? ChosenTask;
+    internal Task? ItemParentTask=>Combat?.Resumes==true?Combat.ResumeTask:ChosenTask;
+    internal bool ItemContextValid()=>Combat?.Resumes==true?GenericEventV7Hooks.OwnsResume(this)&&Combat.ItemContextValid():!Closed&&GenericEventV7Hooks.Owns(this)&&ContextValid(false);
     internal Task<IEnumerable<CardModel>>? RequestTask;
     internal NCardGridSelectionScreen? Screen;
     internal CardSelectionV1Operation Operation=CardSelectionV1Operation.Upgrade;

@@ -120,6 +120,13 @@ internal sealed class NativeBridgeModule : IBridgeModule
                 _cleanup = eventWire.Dispose;
                 _handle = request =>
                 {
+                    if(CoreBridgeModule.IsResumeItem(request)) {
+                        var value=request.IsPost?native.ApplyResumeItem(request.Decision,request.Action):native.ReadResumeItem();
+                        byte[] itemBody=GenericEventV7WireService.EncodeItem(value);
+                        using var itemJson=JsonDocument.Parse(itemBody);
+                        string? status=Text(itemJson.RootElement,"status");
+                        return new(itemBody,Terminal:status is not ("ready" or "waiting" or "accepted" or "resolved"));
+                    }
                     byte[]? command = request.IsPost ? GenericEventTransportServiceBody.Build(request.Decision!, request.Action!,
                         request.ChildOrdinal, request.ParentDecision, request.ParentAction) : null;
                     byte[] body;

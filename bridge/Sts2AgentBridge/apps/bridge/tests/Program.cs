@@ -27,18 +27,19 @@ internal static class Program
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
             if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
             if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
+            if (args.SequenceEqual(new[] { "--serve-resume-items" })) return Serve(eventResume:true,resumeItems:true);
             if (args.SequenceEqual(new[] { "--serve-event-resume" })) return Serve(eventResume:true);
-            EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
+            EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
         catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
-    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false)
+    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false)
     {
         var fixture = eventResume?new CoreFixture{CombatReady=true,MapReady=true}:combat ? CombatScenario() : new CoreFixture { Reject = true, MapReady = true };
         fixture.RewardScenario = rewards;
-        var (runtime, port) = Start((capability, _) => eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture);
+        var (runtime, port) = Start((capability, _) => resumeItems?new ResumeItemModule(fixture):eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture);
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
@@ -104,6 +105,58 @@ internal static class Program
             } else Check(!done.Terminal&&owner.Disposed&&!core.HasPendingAction&&Body(done).Contains("resumed"),"verified callback and cleanup release pending combat");
             router.Dispose();
         }
+    }
+    private static void ResumeItemRouting()
+    {
+        foreach(var mode in new[]{"complete","terminal","premature_complete","chooser"}) {
+            string phase="combat";var f=mode=="chooser"?CombatScenario():new CoreFixture{CombatReady=true};
+            var core=Core(f);var module=new FakeModule(Capability.Events){Complete=true,CombatScope=()=>phase=="combat",CombatResume=()=>phase,EventNonce=Nonce};
+            using var router=new BridgeRouter(core,(_,_)=>module);
+            var item=Request(Capability.Core,CoreBridgeModule.ResumeItemRead);
+            router.Handle(Request(Capability.Events,"/probe/generic-event-v7/public/decision"));
+            int calls=module.Calls;
+            Check(Body(router.Handle(item)).Contains("capability_busy")&&module.Calls==calls,"item cannot be adopted during combat");
+            if(mode=="chooser"){f.Stage=1;router.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute));}
+            phase="item";module.Complete=mode=="premature_complete";module.Terminal=mode=="terminal";
+            var response=router.Handle(item);
+            if(mode=="chooser")Check(Body(response).Contains("capability_busy")&&module.Calls==calls,"active combat chooser blocks resume items");
+            else if(mode is "terminal" or "premature_complete")Check(response.Terminal&&!module.Disposed,"child failure or premature parent release stops");
+            else {
+                Check(!response.Terminal&&module.Calls==calls+1&&!module.Disposed&&core.HasPendingAction,"item retains event and combat owners");
+                Check(Body(router.Handle(Request(Capability.Core,"/probe/v0/public/map-decision"))).Contains("capability_busy"),"map blocked during item");
+                Check(Body(router.Handle(Request(Capability.Items,"/probe/item-v1/public/item-decision"))).Contains("capability_busy"),"standalone item cannot replace resume child");
+                phase="resumed";
+                Check(!router.Handle(Request(Capability.Core,CoreBridgeModule.EventCombatRoute)).Terminal&&module.Disposed&&!core.HasPendingAction,"only resume verification releases item parent");
+            }
+        }
+        Check(BridgeRequestParser.TryParse(Head(CoreBridgeModule.ResumeItemRead),out _),"resume item GET grammar");
+        Check(BridgeRequestParser.TryParse(Head(CoreBridgeModule.ResumeItemAction,"collect:7"),out var parsed)&&parsed.IsPost,"resume item POST grammar");
+        Check(!BridgeRequestParser.TryParse(Head(CoreBridgeModule.ResumeItemAction,"collect:256"),out _),"bounded resume item index");
+        Check(!BridgeRequestParser.TryParse(Head(CoreBridgeModule.ResumeItemAction,"end_turn"),out _),"resume item rejects combat command");
+        Check(!BridgeRequestParser.TryParse(Head("/probe/event-combat-v1/public/decision"),out _),"old continuation protocol not silently broadened");
+    }
+    private sealed class ResumeItemModule(CoreFixture core) : IBridgeModule
+    {
+        private bool _collected,_resolved;
+        private readonly Sts2AgentBridge.Successors.ItemV1.ItemV1Offer[] _offers={new(7,"potion","RESUME_POTION",true)};
+        private readonly string?[] _slots={null,null};
+        private readonly string[] _actions={"collect:7"};
+        public Capability Capability=>Capability.Events;
+        public bool Owns(BridgeRequest r)=>r.Capability==Capability.Events;
+        private string DecisionId=>Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.ComputeDecisionId(Nonce,_offers,_slots,_actions);
+        public ModuleReply Handle(BridgeRequest r) {
+            if(!CoreBridgeModule.IsResumeItem(r))return new("{\"status\":\"resolved\"}"u8.ToArray(),Complete:true,EventDiagnostic:true,
+                CombatScope:()=>core.CombatAccepted==0,CombatResume:()=>core.CombatAccepted==0?"combat":_resolved?"resumed":"item",EventNonce:Nonce);
+            object value;
+            if(r.IsPost) {
+                Check(!_collected&&r.Decision==DecisionId&&r.Action=="collect:7","socket exact resume collection command");_collected=true;
+                value=new Sts2AgentBridge.Successors.ItemV1.ItemV1DispatchReceipt(Nonce,DecisionId,"collect:7");
+            } else if(_collected) {
+                _resolved=true;value=new Sts2AgentBridge.Successors.ItemV1.ItemV1ResolvedResult(Nonce,DecisionId,"collect:7",7,"potion","RESUME_POTION");
+            } else value=new Sts2AgentBridge.Successors.ItemV1.ItemV1Observation(Nonce,"ready",DecisionId,_offers,_slots,_actions);
+            return new(Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7WireService.EncodeItem(value));
+        }
+        public void Dispose(){}
     }
     private static void Ownership()
     {

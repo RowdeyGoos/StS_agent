@@ -40,6 +40,13 @@ internal sealed class BridgeRouter : IDisposable
             if (request.IsMetadata) return Wrap(_core.Handle(request));
             if(_resumingCombat) {
                 if(request.Capability!=Capability.Core)return Busy();
+                if(CoreBridgeModule.IsResumeItem(request)) {
+                    if(!_core.CanServiceResumeItem())return Busy();
+                    var itemReply=_active!.Handle(request);
+                    // Child completion never disposes the callback observer or releases combat ownership.
+                    if(itemReply.Complete||itemReply.EventResumed) {Array.Clear(itemReply.Body);return Fail();}
+                    return Wrap(itemReply);
+                }
                 var combatReply=_core.Handle(request);
                 try {
                     if(combatReply.EventResumed) {

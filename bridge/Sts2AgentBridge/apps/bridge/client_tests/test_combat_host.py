@@ -199,7 +199,7 @@ class CombatHostTests(unittest.TestCase):
                 if route == host.EVENT_COMBAT_READ:
                     probes.append(route)
                     status = 'combat' if len(probes) == 1 else 'waiting' if mode == 'timeout' else 'resumed'
-                    result = encoded(dict(schema_version=1, protocol='event_combat_v1',
+                    result = encoded(dict(schema_version=1, protocol='event_combat_v2',
                         session_nonce='b'*32 if mode == 'wrong_nonce' else 'a'*32, status='unsupported' if mode == 'fault' else status))
                 elif method == 'POST':
                     posts.append(json.loads(body)); buffers.append(body)

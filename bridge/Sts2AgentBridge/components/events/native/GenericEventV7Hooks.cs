@@ -40,6 +40,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private readonly List<MethodInfo> _methods = new();
     private readonly Dictionary<MethodInfo,MethodInfo[]> _patchMethods = new();
     private GenericEventV7CombatHandoff? _resume;
+    private readonly HashSet<MethodInfo> _resumeItems=new();
     private bool _disposed;
     private bool _installationComplete;
     private readonly Action? _cleanupProbe;
@@ -109,6 +110,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         {
             for (int i=0;i<targets.Length;i++)
             {
+                if(i is >=15 and <=17)_resumeItems.Add(targets[i]);
                 _methods.Add(targets[i]);
                 var methods=new[]{Hook(names[i]+"Prefix"),Hook(names[i]+"Postfix"),Hook(names[i]+"Finalizer")};
                 _patchMethods.Add(targets[i],methods);
@@ -188,7 +190,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         _cleanupProbe?.Invoke();
         if(!ExactPatches())throw new InvalidOperationException("Hook ownership changed during combat transfer cleanup.");
         foreach(var method in _methods.ToArray()) {
-            if(method==_resume.ResumeMethod)continue;
+            if(method==_resume.ResumeMethod||_resumeItems.Contains(method))continue;
             foreach(var patch in _patchMethods[method])_harmony.Unpatch(method,patch);
             if(AllPatches(method).Any(p=>p.owner==Owner&&_patchMethods[method].Contains(p.PatchMethod)))
                 throw new InvalidOperationException("Event hooks remain active during combat.");
@@ -200,18 +202,26 @@ public sealed class GenericEventV7Hooks : IDisposable
         if(_disposed||Environment.CurrentManagedThreadId!=_thread||!ExactPatches())return "unsupported";
         return _resume?.ResumeStatus()??"unsupported";
     }
-    private static void ResumePrefix(EventModel __instance,AbstractRoom __0,out GenericEventV7CombatHandoff? __state)
-    {
-        __state=_installed?._resume;
-        try {
-            if(__state is null||_installed is null||Environment.CurrentManagedThreadId!=_installed._thread||!_installed.ExactPatches())throw new InvalidOperationException();
-            __state.EnterResume(__instance,__0);
-        }catch{__state?.FailResume();}
+    internal static bool OwnsResume(GenericEventV7Binding binding)=>_installed is { _disposed:false } h&&
+        Environment.CurrentManagedThreadId==h._thread&&h.ExactPatches()&&h._resume?.Owns(binding)==true;
+    internal object ReadResumeItem()=>CheckedResume().ReadItem();
+    internal object ApplyResumeItem(string? decision,string? action)=>CheckedResume().ApplyItem(decision,action);
+    private GenericEventV7CombatHandoff CheckedResume() {
+        if(_resume is null||!OwnsResume(_resume.Binding))throw new InvalidOperationException("Resume owner unavailable.");
+        return _resume;
     }
-    private static void ResumePostfix(Task __result,GenericEventV7CombatHandoff? __state)
-    {try{__state?.CaptureResumeTask(__result);}catch{__state?.FailResume();}}
-    private static void ResumeFinalizer(Exception? __exception,GenericEventV7CombatHandoff? __state)
-    {if(__exception is not null)__state?.FailResume();}
+    private static void ResumePrefix(EventModel __instance,AbstractRoom __0,out State __state)
+    {
+        var resume=_installed?._resume;__state=new State{Previous=Parent.Value,Binding=resume?.Binding};
+        try {
+            if(resume is null||_installed is null||Environment.CurrentManagedThreadId!=_installed._thread||!_installed.ExactPatches()||Parent.Value is not null)throw new InvalidOperationException();
+            resume.EnterResume(__instance,__0);Parent.Value=resume.Binding;
+        }catch{resume?.FailResume();}
+    }
+    private static void ResumePostfix(Task __result,State? __state)
+    {try{__state?.Binding?.Combat?.CaptureResumeTask(__result);}catch{__state?.Binding?.Combat?.FailResume();}finally{RestoreParent(__state);}}
+    private static void ResumeFinalizer(Exception? __exception,State? __state)
+    {if(__exception is not null)__state?.Binding?.Combat?.FailResume();RestoreParent(__state);}
     internal static void Close(GenericEventV7Binding binding)
     {
         binding.Closed = true;
@@ -286,6 +296,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void FailItem(GenericEventV7Binding? binding)
     {
         if(binding is not null)binding.Failed=true;
+        if(_installed?._resume is {} resume&&resume.Started)resume.FailResume();
         if(_armed is not null&&!ReferenceEquals(_armed,binding))_armed.Failed=true;
     }
     internal static IDisposable EnterItemCollection(GenericEventV7ItemState item)
@@ -306,7 +317,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         if(b is null){FailItem(null);return;}
         try
         {
-            if(!Owns(b)||b.Closed||b.RequestSeen||Request.Value is not null||!b.ContextValid(false)||
+            if(!b.ItemContextValid()||b.RequestSeen||Request.Value is not null||
                 !ReferenceEquals(__instance.Player,b.Player)||RewardsSet.testSelector is not null)
             {FailItem(b);return;}
             b.RequestSeen=true;b.Item=new GenericEventV7ItemState(b,__instance);Request.Value=b;
@@ -327,7 +338,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         if(b is null){FailItem(null);return;}
         try
         {
-            if(!Owns(b)||b.Closed||!ReferenceEquals(Parent.Value,b)||b.Item is not {} item||b.ScreenSeen||item.ScreenEntered||
+            if(!b.ItemContextValid()||!ReferenceEquals(Parent.Value,b)||b.Item is not {} item||b.ScreenSeen||item.ScreenEntered||
                 !ReferenceEquals(item.Set,__0)||__1||!ReferenceEquals(__2,b.RunState)||!item.BindDomain())
             {FailItem(b);return;}
             item.ScreenEntered=true;b.ScreenSeen=true;
@@ -851,6 +862,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         if (_disposed) return;
         if (Environment.CurrentManagedThreadId != _thread) throw new InvalidOperationException("Hook cleanup requires owner thread.");
         if (_armed is not null) { _armed.Failed=true; _armed.Closed=true; _armed.MultiUpgrade?.Close(); _armed.Transform?.Close(); _armed=null; }
+        _resume?.DisposeItem();
         UnpatchOwn();
         if (HasOwnedHooks())
             throw new InvalidOperationException("Owned hooks remain installed.");

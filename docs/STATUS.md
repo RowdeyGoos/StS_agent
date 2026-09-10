@@ -49,7 +49,8 @@ the selected child effect and map return are verified.
 | Bundles | Scroll Boxes three-card bundle, native preview/Confirm and map return passed |
 | Inactive combat layout | Punch Off/Nab and Meal Ticket collection passed; this does not demonstrate its combat branch |
 | Non-resuming event combat | Implemented offline in the checkout; exact combat ownership transfer, protocol v9 destination and event/combat/reward/map host composition; not released or live-demonstrated |
-| Event combat resumption | Implemented offline: exact resume Task/new event node, retained cleanup ownership, training expiry as event return, and combat/event/map composition; no interactive resume children or live acceptance |
+| Event combat resumption | Implemented offline: exact resume Task/new event node, retained cleanup ownership, training expiry as event return, and combat/event/map composition; no live acceptance |
+| Resume-time item rewards | Implemented offline: owned potion/relic collection and 2–8 ordered item entries, exact task/inventory retention and host accounting; Setting1 potion is the pending live caller; nested selectors remain unsupported |
 | Initial event-option policy | `--event-option` chooses an exact legal first option and stops if absent/illegal; subsequent actions use first-legal policy |
 | Results acknowledgment | Pandora's Box nine-card screen Confirm/map passed; preceding automatic transformations are not certified |
 | Reduced headless/actor stack | Structural backend and cloning pipeline accepted; no target-game fidelity or learned live-policy claim |
@@ -60,24 +61,28 @@ disposal; uncertain mutations or failed disposal stop the host. There are no
 mutation retries. `event-map`, `combat-map` and `event-combat-map` preserve prior
 stage evidence if a later stage fails. The legacy public-screen reader is not a map-readiness probe.
 
-Checkout validation for event-combat resumption and option targeting passed:
-15 focused event groups in 311.784 seconds (7,987 native assertions, 128 host
-tests, 450 C#/Python cases), 10 host groups in 10.2 seconds (856 shared assertions,
-38 client tests and socket integration including event resume), and the production
-build in 1.582 seconds. The focused resume suite contributes 66 native checks,
-including callback timing, wrong identities, failure/cancellation and cleanup
-interference. An independent semantic review found no remaining blockers after
-the cleanup correction. These are offline development results, not a new release
-or live acceptance. [The contract](GENERIC_EVENTS.md#implemented-offline-event-combat-resumption)
+Checkout validation for resume-time item rewards passed: 15 event groups in
+319.562 seconds (8,085 native checks, 128 event-host tests and 450 C#/Python
+cases), 10 shared-host groups in 10.682 seconds (872 shared assertions, 44 client
+tests and socket integration), and the production build in 1.599 seconds.
+The focused resume suite covers 164 checks, including single/set rewards,
+delayed callbacks, full inventory, unowned screens, collection failures and
+post-result task/inventory replacement. After the final client cleanup correction,
+all 44 client tests and the affected socket integration were rerun successfully;
+unchanged C# fixture evidence was reused. The socket test sends a real resume-item
+POST through the shared listener and then verifies event release/map access.
+Independent semantic review findings were corrected and covered by regressions.
+These are offline development results, not a new release or live acceptance.
+[The contract](GENERIC_EVENTS.md#implemented-offline-event-combat-resumption)
 describes ownership, host composition and remaining limits.
 
 ## Next work and remaining limits
 
 The user prioritizes generic event coverage before longer-run orchestration.
 Pending live cases: Dense Vegetation’s Fight page after Rest through rewards/map,
-and Battleworn Dummy Setting2/training expiry through resumed Proceed/map.
-Next implementation: interactive resume children, such as Setting1’s potion
-offer; extra-reward event entries also remain unsupported. Further work includes
+and Battleworn Dummy Setting2/training expiry plus Setting1’s potion reward through
+resumed Proceed/map. Next implementation: extra-reward event entries or a concrete
+nested resume-time pickup selector. Further work includes
 full potion inventories, nested pickups, broader deck changes around selectors,
 custom screens (Crystal Sphere/Fake Merchant), special rewards, abandonment
 confirmation and terminal progression. See the [research map](EVENT_INTERACTION_MAP.md)

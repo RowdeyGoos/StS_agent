@@ -45,8 +45,9 @@ now have HeftyTablet choose/Skip plus Injury live acceptance; grant provenance
 remains unverified. [Non-resuming event combat](GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat)
 is now implemented in the checkout, with Dense Vegetation’s Fight page after Rest
 as its pending live case. [Event resumption](GENERIC_EVENTS.md#implemented-offline-event-combat-resumption)
-is also implemented offline, with Battleworn Dummy Setting2/training expiry as
-pending live cases. Interactive resume children, extra combat rewards,
+is also implemented offline, including owned item rewards, with Battleworn Dummy
+Setting1/potion and Setting2/training expiry as pending live cases. Resume-time
+selectors, extra combat rewards,
 full-inventory handling and nested pickups remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
@@ -317,10 +318,10 @@ selection, card offers/bundles, inactive combat layout and results acknowledgmen
 now have representative live acceptance.
 
 Event-combat exit and callback-verified resumption are now implemented offline.
-Remaining feature work includes interactive children during resume, extra combat
+Remaining feature work includes selectors during resume, extra combat
 rewards, full-inventory/nested pickup composition, broader deck changes around
 selectors, and custom or terminal surfaces. Battleworn Dummy Setting1’s potion
-offer is a concrete next resume-child candidate.
+offer is implemented offline and remains a concrete pending live case.
 Additional fixed counts and held-out callers may need validation rather than new
 adapters. No sequential-selector caller was established by the corrected Sea Glass
 research. [Roadmap](../ROADMAP.md) owns ordering; the static census does not measure

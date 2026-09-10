@@ -13,7 +13,7 @@ using MegaCrit.Sts2.Core.Nodes;
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
 // An entry callback is not a completed combat. This lease certifies only the
-// exact non-resuming combat that the owned event requested.
+// exact combat requested by the event and any owned resume-time item child.
 internal sealed class GenericEventV7CombatHandoff
 {
     private readonly GenericEventV7Binding _binding;
@@ -26,6 +26,56 @@ internal sealed class GenericEventV7CombatHandoff
     private readonly EventRoom? _eventRoom;
     private Task? _resumeTask;
     private bool _resumeSeen;
+    private NEventRoom? _resumedNode;
+    private IGenericEventV7ItemChildSession? _item;
+    private bool _itemResolved;
+    private GenericEventV7ItemCompletion? _settledCompletion;
+    private Sts2AgentBridge.Successors.ItemV1.ItemV1PotionSlotBinding[]? _settledSlots;
+    private int _settledCapacity;
+    private void SettleItem() {
+        _settledCompletion=_itemCompletion!();
+        if(!GenericEventV7ItemAdapter.Slots(_binding.Player,out _settledCapacity,out var slots))throw new InvalidOperationException("Settled inventory unavailable.");
+        _settledSlots=slots.ToArray();_itemResolved=true;
+    }
+    private bool SettlementValid(GenericEventV7ItemCompletion now) {
+        if(_settledCompletion is not {} old||!ReferenceEquals(now.Collection?.Identity,old.Collection?.Identity)||
+            !ReferenceEquals(now.Offer?.Identity,old.Offer?.Identity)||!ReferenceEquals(now.Chosen?.Identity,old.Chosen?.Identity)||
+            !GenericEventV7ItemAdapter.Slots(_binding.Player,out int capacity,out var slots)||capacity!=_settledCapacity||slots.Count!=_settledSlots!.Length)return false;
+        for(int i=0;i<slots.Count;i++)if(!ReferenceEquals(slots[i].ModelIdentity,_settledSlots[i].ModelIdentity)||slots[i].StableKey!=_settledSlots[i].StableKey)return false;
+        return true;
+    }
+    private Func<GenericEventV7ItemCompletion>? _itemCompletion;
+    internal GenericEventV7Binding Binding=>_binding;
+    internal bool Started=>_resumeSeen;
+    internal Task? ResumeTask=>_resumeTask;
+    internal bool Owns(GenericEventV7Binding binding)=>_resumeSeen&&ReferenceEquals(binding,_binding);
+    internal bool ItemContextValid() {
+        var run=RunManager.Instance?.DebugOnlyGetState();
+        return _resumeSeen&&!_binding.Failed&&ReferenceEquals(run,_binding.RunState)&&ReferenceEquals(NRun.Instance,_binding.Run)&&
+            (ReferenceEquals(run!.CurrentRoom,_eventRoom)||ReferenceEquals(run.CurrentRoom,_room))&&
+            ReferenceEquals(_binding.EventModel.Owner,_binding.Player)&&ReferenceEquals(_binding.Player.RunState,run)&&
+            ReferenceEquals(_eventRoom!.LocalMutableEvent,_binding.EventModel)&&
+            GodotObject.IsInstanceValid(_binding.Run)&&GodotObject.IsInstanceValid(_binding.Map)&&GodotObject.IsInstanceValid(_binding.Overlays)&&
+            ReferenceEquals(MegaCrit.Sts2.Core.Nodes.Screens.Map.NMapScreen.Instance,_binding.Map)&&
+            ReferenceEquals(_binding.Run.GlobalUi?.Overlays,_binding.Overlays)&&ReferenceEquals(_binding.Run.GlobalUi?.MapScreen,_binding.Map)&&
+            !_binding.Map.IsOpen&&!_binding.Map.IsTraveling&&!_binding.Map.IsTravelEnabled&&GenericEventV7Binding.CapstoneReady()&&
+            MegaCrit.Sts2.Core.Commands.CardSelectCmd.Selector is null&&
+            (_resumeTask is null||!_resumeTask.IsFaulted&&!_resumeTask.IsCanceled)&&
+            (_resumedNode is null||ReferenceEquals(NEventRoom.Instance,_resumedNode)&&ReferenceEquals(_binding.Run.EventRoom,_resumedNode)&&
+                ReferenceEquals(_binding.EventModel.Node,_resumedNode)&&GodotObject.IsInstanceValid(_resumedNode)&&_resumedNode.CustomEventNode is null);
+    }
+    internal object ReadItem() {
+        if(ResumeStatus()!="item"||_item is null)throw new InvalidOperationException("Resume item unavailable.");
+        var value=_item.Read();
+        if(value is Sts2AgentBridge.Successors.ItemV1.ItemV1ResolvedResult||value is GenericEventV7ItemSetRead {Status:"resolved"})SettleItem();
+        return value;
+    }
+    internal object ApplyItem(string? decision,string? action) {
+        if(ResumeStatus()!="item"||_item is null||_itemResolved)throw new InvalidOperationException("Resume item unavailable.");
+        return _item.Apply(decision,action);
+    }
+    internal void DisposeItem(){_item?.Dispose();_item=null;}
+
     internal MethodInfo ResumeMethod {
         get {
             var method=_binding.EventModel.GetType().GetMethod("Resume",BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic,
@@ -98,8 +148,36 @@ internal sealed class GenericEventV7CombatHandoff
             return ReferenceEquals(run!.CurrentRoom,_eventRoom)?"waiting":"unsupported";
         }
         if(_resumeTask is null||_resumeTask.IsFaulted||_resumeTask.IsCanceled)return "unsupported";
-        if(_binding.Overlays.ScreenCount!=0||!GenericEventV7Binding.CapstoneReady())return "unsupported";
+        if(!ItemContextValid())return "unsupported";
+        if(_binding.Item is {} reward) {
+            if(!reward.Overlay()||reward.FailedTask)return "unsupported";
+            if(_item is null) {
+                if(!reward.Ready)return "waiting";
+                if(!reward.Domain()||reward.HasCards)return "unsupported";
+                string nodeStatus=NodeStatus();
+                if(nodeStatus!="resumed")return nodeStatus;
+                if(reward.OfferCount>1) {
+                    var adapter=new GenericEventV7ItemSetAdapter(reward);
+                    _item=new GenericEventV7ItemSetSession(_binding.Nonce,adapter);
+                    _itemCompletion=()=>adapter.CaptureCompletion(reward.OfferCount-1);
+                }else {
+                    var adapter=new GenericEventV7ItemAdapter(reward);
+                    _item=new GenericEventV7ItemChildSession(_binding.Nonce,adapter);_itemCompletion=adapter.CaptureCompletion;
+                }
+            }
+            if(!_itemResolved)return "item";
+            // A resolved child remains subject to its inventory/task/context evidence until handoff.
+            var completion=_itemCompletion!();
+            if(!SettlementValid(completion)||!completion.OwnershipValid||!completion.EffectStillValid||!completion.ScreenClosed||
+                completion.Collection?.State!=GenericEventV7ItemTaskState.Succeeded||completion.Offer?.State!=GenericEventV7ItemTaskState.Succeeded||
+                completion.Chosen?.State!=GenericEventV7ItemTaskState.Succeeded)return "unsupported";
+        } else if(_binding.Overlays.ScreenCount!=0)return "unsupported";
         if(!_resumeTask.IsCompletedSuccessfully)return "waiting";
+        if(_binding.Overlays.ScreenCount!=0)return "unsupported";
+        return NodeStatus();
+    }
+    private string NodeStatus() {
+        var run=RunManager.Instance?.DebugOnlyGetState();
         var node=NEventRoom.Instance;
         if(!ReferenceEquals(run!.CurrentRoom,_eventRoom))return ReferenceEquals(run.CurrentRoom,_room)?"waiting":"unsupported";
         if(node is null||ReferenceEquals(node,_binding.Room))return "waiting";
@@ -110,7 +188,8 @@ internal sealed class GenericEventV7CombatHandoff
             !ReferenceEquals(MegaCrit.Sts2.Core.Nodes.Screens.Map.NMapScreen.Instance,_binding.Map)||
             !ReferenceEquals(_binding.Run.GlobalUi?.Overlays,_binding.Overlays)||!ReferenceEquals(_binding.Run.GlobalUi?.MapScreen,_binding.Map)||
             _binding.Map.IsOpen||_binding.Map.IsTraveling||_binding.Map.IsTravelEnabled)return "unsupported";
-        return "resumed";
+        if(_resumedNode is not null&&!ReferenceEquals(_resumedNode,node))return "unsupported";
+        _resumedNode=node;return "resumed";
     }
     internal bool SameCombat()
     {

@@ -16,8 +16,8 @@ import reward_host
 import probe_live
 
 
-def combat(reward_policy=None, event_resume=False):
-    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-event-resume' if event_resume else '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
+def combat(reward_policy=None, event_resume=False, resume_items=False):
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-resume-items' if resume_items else '--serve-event-resume' if event_resume else '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     try:
         port = json.loads(process.stdout.readline())['port']
@@ -28,7 +28,8 @@ def combat(reward_policy=None, event_resume=False):
                 result=run_combat(client.exchange,event_resume_nonce='0123456789abcdef0123456789abcdef')
                 assert result['status']=='resolved' and result['outcome']=='event_resumed', result
                 assert result['attempted']==result['accepted']==result['reconciled']==1, result
-                assert result['resume_reads']==2 and result['native_terminal_outcome'] is None, result
+                assert result['resume_reads']==(3 if resume_items else 2) and result['native_terminal_outcome'] is None, result
+                if resume_items: assert result['resume_items'][0]['attempted']==result['resume_items'][0]['accepted']==result['resume_items'][0]['reconciled']==1, result
                 assert verify_map_handoff(client.exchange)['status']=='passed'
             elif reward_policy:
                 flow = run_combat_map(client.exchange, combat_host, reward_host, reward_policy=reward_policy)
@@ -95,7 +96,8 @@ def main():
         combat('first-card')
         combat('skip-card')
         combat(event_resume=True)
-        print('{"status":"passed","suite":"unified_python_socket","capability_clients":7,"original_client":true,"stale_refresh":true,"combat_choice_resume":true,"combat_reward_map_policies":2,"event_combat_resume":true}')
+        combat(event_resume=True,resume_items=True)
+        print('{"status":"passed","suite":"unified_python_socket","capability_clients":7,"original_client":true,"stale_refresh":true,"combat_choice_resume":true,"combat_reward_map_policies":2,"event_combat_resume":true,"resume_item_post":true}')
     finally:
         if process.poll() is None:
             process.kill(); process.wait()

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -108,6 +109,95 @@ internal static partial class Program
             Check(poll()==(mode is "sync" or "sync_override" or "ending" or "delayed"?"resumed":"unsupported"),"resume exact completion or stop: "+mode);
         }
     }
+    private static void ResumeItemCases()
+    {
+        foreach(var mode in new[]{"potion","relic","set","delayed","full","wrong_set","foreign_offer","nested","fault","revoke","duplicate","moved","offer_task","collection_task"}) {
+            using var f=new Fixture("RESUME_ITEMS");
+            var run=(RunState)f.Player.RunState;
+            var original=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};run.CurrentRoom=original;f.Model.Node=f.Room;
+            var encounter=new EncounterModel();
+            var state=new MegaCrit.Sts2.Core.Combat.CombatState{Encounter=encounter,RunState=run};state.Players.Add(f.Player);
+            var room=new MegaCrit.Sts2.Core.Rooms.CombatRoom{CombatState=state,ParentEventId=f.Model.Id,ShouldResumeParentEventAfterCombat=true};
+            RunManager.Instance=new(){State=run};MegaCrit.Sts2.Core.Combat.CombatManager.Instance=new(){State=null};
+            f.Model.CombatEntry=(_,_,_)=>{run.CurrentRoom=room;MegaCrit.Sts2.Core.Combat.CombatManager.Instance.State=state;NCombatRoom.Instance=new();NCombatRoom.Instance.SetVisuals(room);};
+            f.Room.Layout.OptionButtons[0].Option.Callback=()=>{f.Model.EnterCombatWithoutExitingEvent(encounter,Array.Empty<MegaCrit.Sts2.Core.Rewards.Reward>(),true);return Task.CompletedTask;};
+            var ready=f.Session.Read();Check(f.Session.Apply(ready.DecisionId,"choose:0").Outcome=="accepted","resume reward combat dispatch");
+            Check(f.Session.Read().Phase=="combat_resume_handoff","resume reward combat lease");
+            var set=new MegaCrit.Sts2.Core.Rewards.RewardsSet{Player=f.Player,DisallowSkipping=true};
+            var potion=new PotionModel();potion.Id.Entry="RESUME_POTION";
+            var relic=new RelicModel();relic.Id.Entry="RESUME_RELIC";
+            var p=new MegaCrit.Sts2.Core.Rewards.PotionReward{Player=f.Player,Potion=potion,RewardsSetIndex=7};
+            var r=new MegaCrit.Sts2.Core.Rewards.RelicReward{Player=f.Player,Relic=relic,RewardsSetIndex=8};
+            if(mode=="relic")set.Rewards.Add(r);else set.Rewards.Add(p);
+            if(mode=="set")set.Rewards.Add(r);
+            if(mode=="full")for(int i=0;i<f.Player.PotionSlots.Count;i++)f.Player.PotionSlots[i]=new PotionModel();
+            var screenDone=new TaskCompletionSource();var creation=new TaskCompletionSource();var resumeDone=new TaskCompletionSource();
+            var buttons=new List<MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton>();
+            MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen.Factory=(s,_,_)=>{
+                var screen=new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen();
+                foreach(var reward in s.Rewards) {
+                    var button=new MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton{Reward=reward};buttons.Add(button);screen.Children.Add(button);
+                    button.Handler=()=>{
+                        if(mode=="fault")return Task.FromException(new Exception("collection fault"));
+                        reward.SuccessfullySelected=true;
+                        if(reward is MegaCrit.Sts2.Core.Rewards.PotionReward pr){pr.ClaimedPotion=pr.Potion;f.Player.PotionSlots[0]=pr.Potion;}
+                        else ((MegaCrit.Sts2.Core.Rewards.RelicReward)reward).ClaimedRelic=relic;
+                        if(s.Rewards.All(x=>x.SuccessfullySelected)){f.Overlays.Screens.Clear();screenDone.SetResult();}
+                        if(mode=="nested")f.Overlays.Screens.Add(new Control());
+                        return Task.CompletedTask;
+                    };
+                }
+                f.Overlays.Screens.Add(screen);return screen;
+            };
+            set.OfferHandler=async()=>{
+                if(mode=="delayed")await creation.Task;
+                MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen.ShowScreen(mode=="wrong_set"?new(){Player=f.Player}:set,false,run);
+                await screenDone.Task;
+            };
+            f.Model.ResumeCallback=async _=>{
+                if(mode!="foreign_offer")await set.Offer();
+                if(mode=="delayed")await resumeDone.Task;
+            };
+            run.CurrentRoom=original;_=f.Model.Resume(room);
+            var node=new NEventRoom();f.Run.EventRoom=node;NEventRoom.Instance=node;f.Model.Node=node;
+            if(mode=="foreign_offer")_=set.Offer();
+            if(mode=="delayed"){Check(f.Adapter.CombatResume!()=="waiting","delayed owned reward generation waits");creation.SetResult();}
+            if(mode is "wrong_set" or "foreign_offer") {Check(f.Adapter.CombatResume!()=="unsupported","unowned resume reward stops");continue;}
+            if(mode=="full") {
+                bool failed=false;try{failed=f.Adapter.CombatResume!()=="unsupported";}catch{failed=true;}
+                Check(failed&&buttons.Sum(b=>b.ForceClickCalls)==0,"full inventory stops before collection");continue;
+            }
+            Check(f.Adapter.CombatResume!()=="item","owned resume reward advertised");
+            for(int i=0;i<set.Rewards.Count;i++) {
+                var value=f.Adapter.ReadResumeItem();
+                var offer=value is GenericEventV7ItemSetRead sr?sr.Current:value;
+                Check(offer is Sts2AgentBridge.Successors.ItemV1.ItemV1Observation {Status:"ready"},"resume item ready");
+                var o=(Sts2AgentBridge.Successors.ItemV1.ItemV1Observation)offer!;
+                Check(f.Adapter.ApplyResumeItem(o.DecisionId,o.LegalActions[0]) is Sts2AgentBridge.Successors.ItemV1.ItemV1DispatchReceipt,"resume item accepted");
+                if(mode=="duplicate")Check(f.Adapter.ApplyResumeItem(o.DecisionId,o.LegalActions[0]) is Sts2AgentBridge.Successors.ItemV1.ItemV1ApplyFailure,"duplicate item cannot dispatch twice");
+                if(mode is "fault" or "nested") {Check(f.Adapter.CombatResume!()=="unsupported","fault or nested pickup stops");break;}
+                if(mode=="delayed") {
+                    Check(f.Adapter.ReadResumeItem() is Sts2AgentBridge.Successors.ItemV1.ItemV1Observation {Status:"waiting"},"item effect waits for resume task");resumeDone.SetResult();
+                }
+                if(i==set.Rewards.Count-1) {
+                    var done=f.Adapter.ReadResumeItem();
+                    Check(done is Sts2AgentBridge.Successors.ItemV1.ItemV1ResolvedResult||done is GenericEventV7ItemSetRead {Status:"resolved",Collected.Count:2},"all item effects and callback reconciled");
+                }
+            }
+            if(mode is "fault" or "nested")continue;
+            if(mode=="revoke")f.Player.PotionSlots[0]=null;
+            if(mode=="moved"){f.Player.PotionSlots[0]=null;f.Player.PotionSlots[1]=potion;}
+            if(mode is "offer_task" or "collection_task") {
+                var hooks=(GenericEventV7Hooks)typeof(PinnedGenericEventV7NativeAdapter).GetField("_hooks",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(f.Adapter)!;
+                var lease=(GenericEventV7CombatHandoff)typeof(GenericEventV7Hooks).GetField("_resume",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(hooks)!;
+                if(mode=="offer_task")lease.Binding.Item!.OfferTask=Task.FromResult(123);
+                else lease.Binding.Item!.CollectionTask=Task.FromResult(123);
+            }
+            Check(f.Adapter.CombatResume!()==(mode is "revoke" or "moved" or "offer_task" or "collection_task"?"unsupported":"resumed"),"post-result evidence retained until handoff");
+            Check(buttons.All(b=>b.ForceClickCalls==1),"exactly one input per reward");
+            MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen.Factory=null;
+        }
+    }
     private static int _checks;
     static void Check(bool okay,string name){_checks++;if(!okay)throw new Exception(name);}
     static void Main(string[] args)
@@ -122,7 +212,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--optional-events"})){OptionalEventTests();Console.WriteLine("optional event checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-offers"})){OfferTests();Console.WriteLine("card offer checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
-        if(args.SequenceEqual(new[]{"--combat-resume"})){CombatResumeCases();Console.WriteLine("combat resume checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--combat-resume"})){CombatResumeCases();ResumeItemCases();Console.WriteLine("combat resume checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -256,7 +346,7 @@ internal static partial class Program
         CardRewardTests();
         CardRewardSetTests();
         CombatHandoffCases();
-        CombatResumeCases();
+        CombatResumeCases();ResumeItemCases();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)

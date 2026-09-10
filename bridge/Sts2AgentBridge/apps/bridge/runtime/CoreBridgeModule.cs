@@ -15,7 +15,10 @@ internal sealed class CoreBridgeModule : IDisposable
     private readonly string _correlation;
     private readonly IPublicScreenService _screen;
     private string? _pendingPath, _pendingDecision;
-    internal const string EventCombatRoute="/probe/event-combat-v1/public/decision";
+    internal const string EventCombatRoute="/probe/event-combat-v2/public/decision";
+    internal const string ResumeItemRead="/probe/event-combat-v2/public/item-decision", ResumeItemAction="/probe/event-combat-v2/public/item-action";
+    internal static bool IsResumeItem(BridgeRequest request)=>request.Path is ResumeItemRead or ResumeItemAction;
+    internal bool CanServiceResumeItem()=>_combatResume is not null&&!_choice.IsActive&&_combatResume()=="item";
     private Func<bool>? _combatScope;
     private Func<string>? _combatResume;
     private string? _eventNonce;
@@ -31,7 +34,7 @@ internal sealed class CoreBridgeModule : IDisposable
         _pendingPath=_pendingDecision=null;_combatScope=null;_combatResume=null;_eventNonce=null;
     }
     private ModuleReply ResumeRead(string status) => new(JsonSerializer.SerializeToUtf8Bytes(new {
-        schema_version=1,protocol="event_combat_v1",session_nonce=_eventNonce,status
+        schema_version=1,protocol="event_combat_v2",session_nonce=_eventNonce,status
     }), EventResumed:status=="resumed");
     private readonly CombatCardChoiceService _choice;
     private readonly IPublicCombatDecisionService _combatRead;
@@ -62,6 +65,8 @@ internal sealed class CoreBridgeModule : IDisposable
         "/probe/v0/public/reward-action" => PublicRewardActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         "/probe/v0/public/map-action" => PublicMapActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         "/probe/v0/public/room-action" => PublicRoomActionRequest.TryCreate(r.Decision!, r.Action!, out _),
+        ResumeItemAction => Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsCanonicalDecisionId(r.Decision)&&
+            Sts2AgentBridge.Successors.ItemWireV1.ItemWireV1Protocol.IsCanonicalActionId(r.Action,out _),
         CombatCardChoiceService.ActionRoute => CombatCardChoiceService.IsAction(r.Decision, r.Action),
         _ => false,
     };
@@ -79,13 +84,13 @@ internal sealed class CoreBridgeModule : IDisposable
         if(r.Path==EventCombatRoute) {
             if(_combatResume is null||r.IsPost)return Fault();
             string resumed=_combatResume();
-            if(resumed is not ("combat" or "waiting" or "resumed")||resumed=="resumed"&&_choice.IsActive)return Fault();
+            if(resumed is not ("combat" or "waiting" or "item" or "resumed")||(resumed is "resumed" or "item")&&_choice.IsActive)return Fault();
             return ResumeRead(resumed);
         }
         if(_combatScope is not null) {
             if(_combatResume is not null) {
                 string resumed=_combatResume();
-                if(resumed is not ("combat" or "waiting" or "resumed"))return Fault();
+                if(resumed is not ("combat" or "waiting" or "item" or "resumed"))return Fault();
                 if(resumed!="combat") {
                     if(r.Path=="/probe/v0/public/combat-decision")return new(CanonicalProbeEncoder.EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot.Waiting()));
                     if(r.Path==CombatCardChoiceService.DecisionRoute) {var choice=_choice.Read();return new(choice.Body,Terminal:choice.Terminal);}

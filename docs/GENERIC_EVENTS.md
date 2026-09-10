@@ -853,14 +853,15 @@ unverified effects.
 
 The original event module remains the cleanup owner during combat. After the
 owned choice task and exact combat entry reconcile, ordinary event hooks are
-removed while the exact resume hook remains. Ownership is rechecked immediately
+removed while the exact resume hook and three item observation hooks remain. Ownership is rechecked immediately
 before unpatching; interference or cleanup failure stops the bridge. Core combat
 and combat-choice routes use the same native legality and action bounds as before.
-Other capability routes remain blocked.
+Other capability routes remain blocked; only the owned resume-item routes below
+can service an interactive resume callback.
 
-The read-only `/probe/event-combat-v1/public/decision` route returns schema 1,
-protocol `event_combat_v1`, the initial event `session_nonce`, and status
-`combat`, `waiting` or `resumed`. It is available only during an owned resuming
+The read-only `/probe/event-combat-v2/public/decision` route returns schema 1,
+protocol `event_combat_v2`, the initial event `session_nonce`, and status
+`combat`, `waiting`, `item` or `resumed`. It is available only during an owned resuming
 combat. An ending fight or room transition waits for the callback; a late combat
 POST is rejected before dispatch as stale. Unknown identities and callback
 fault/cancellation stop the host. No uncertain action is retried.
@@ -891,11 +892,47 @@ replacement. For the representative setup use
 `--capability event-combat-map`. This is a reusable host policy, not a native
 event allowlist or a strategic policy.
 
-This batch is **unreleased and not live-demonstrated**. Resume callbacks requiring
-interactive reward/pickup screens remain unsupported (for example a successful
-Setting1 potion offer, or a Setting3 relic that opens a selector). Passive callback
-completion does not certify its automatic rewards/upgrades. Extra combat rewards,
-recursive combat/resume cycles and terminal run progression remain separate work.
+### Owned item rewards during resumption
+
+A successful **Battleworn Dummy Setting1** callback awaits a generated potion
+through `RewardsCmd.OfferCustom`. The bridge now observes that callback's exact
+`RewardsSet.Offer`, screen creation and collection tasks. Its async scope carries
+through delayed generation; a reward screen found outside that scope is not adopted.
+Item context uses the retained run/player/logical event room and replacement event
+node. The original Chosen task is preserved; the item completion witness is the
+actual Resume task.
+
+Continuation status `item` permits GET
+`/probe/event-combat-v2/public/item-decision` and POST
+`/probe/event-combat-v2/public/item-action`. The POST uses the existing authenticated
+decision/action headers, canonical item decision digest and `collect:<index>` action.
+The payload reuses `item_v1` for one potion/relic or `item_set_v1` for 2–8 ordered
+item entries, including retained collected rows. These are child routes under the
+retained event owner, not standalone item sessions. A child result cannot release
+combat ownership; only the subsequent verified continuation and successful cleanup
+can do so. The earlier unreleased continuation v1 route is retired; generic parent
+protocol v9 and its routes are unchanged.
+
+Collection requires available potion capacity and the exact owned reward/button.
+The existing item sessions verify the claimed model, exact potion insertion, collection
+and Offer tasks, Resume completion and closed screen. Through the final handoff,
+the bridge retains successful task identities and settled potion slots/capacity;
+changing them stops the host. Faulted/canceled callbacks, duplicate/unowned offers,
+foreign overlays, nested pickup selectors and card rewards stop this path.
+
+The combat host services one resume Offer within both its remaining combat budget
+and a 30-second/128-read item bound. Each native reward is dispatched at most once.
+Its `resume_items` summary preserves attempted/accepted/reconciled counts and
+collected public item keys, including partial progress on failure. Every retained
+history row is type-validated before another input. Lost or malformed receipts are
+never retried.
+
+This batch is **unreleased and not live-demonstrated**. Setting1's potion offer is
+the source-backed live candidate; single relics and ordered item sets extend the
+same mechanism and currently have fixture evidence only. A Setting3 relic that
+opens a selector remains unsupported. Passive callback completion does not certify
+its automatic rewards/upgrades. Extra combat rewards, recursive combat/resume
+cycles and terminal run progression remain separate work.
 
 ## Separate remaining questions
 
@@ -908,7 +945,7 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader pickup composition, resume-time children/extra-reward event combat, repeated/nested pickup children and custom
+changes after selectors, other pre-selector deck mutations, broader pickup composition, resume-time selectors/extra-reward event combat, repeated/nested pickup children and custom
 surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
 is implemented above; Bird passed live, while Torus remains a branch candidate.
 

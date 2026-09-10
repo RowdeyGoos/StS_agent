@@ -34,8 +34,7 @@ internal sealed class GenericEventV7ItemState
     internal bool ScreenEntered,CollectionEntered,Dispatched,Closed;
     internal GenericEventV7ItemState(GenericEventV7Binding binding,RewardsSet set)
     { Binding=binding;Set=set;DisallowSkipping=set.DisallowSkipping; }
-    internal bool Context()=>!Closed&&!Binding.Failed&&!Binding.Closed&&GenericEventV7Hooks.Owns(Binding)&&
-        Binding.ContextValid(false)&&ReferenceEquals(Set.Player,Binding.Player)&&Set.DisallowSkipping==DisallowSkipping&&RewardsSet.testSelector is null;
+    internal bool Context()=>!Closed&&!Binding.Failed&&Binding.ItemContextValid()&&ReferenceEquals(Set.Player,Binding.Player)&&Set.DisallowSkipping==DisallowSkipping&&RewardsSet.testSelector is null;
     internal bool BindDomain()
     {
         if(!Context())return false;
@@ -43,6 +42,7 @@ internal sealed class GenericEventV7ItemState
         if(list is null||list.Count is <1 or >8)return false;
         Rewards=list;
         int cardCount=list.FindAll(r=>r is not null&&r.GetType()==typeof(CardReward)).Count;
+        if(Binding.Combat?.Resumes==true&&cardCount>0)return false;
         if(cardCount>0&&GenericEventV7Binding.CopyDeck(Binding.Player).Length>512-cardCount)return false;
         var entries=new GenericEventV7ItemState[list.Count];
         var identities=new HashSet<object>(ReferenceEqualityComparer.Instance);
@@ -124,7 +124,7 @@ internal sealed class GenericEventV7ItemState
         if(Button is null)Button=result;
         return ReferenceEquals(Button,result);
     }
-    internal bool Ready=>!Dispatched&&OfferTask is not null&&Binding.ChosenTask is not null&&Screen is not null;
+    internal bool Ready=>!Dispatched&&OfferTask is not null&&Binding.ItemParentTask is not null&&Screen is not null;
     internal bool FailedTask=>OfferTask?.IsFaulted==true||OfferTask?.IsCanceled==true||CollectionTask?.IsFaulted==true||CollectionTask?.IsCanceled==true;
     internal static bool ValidKey(string key)=>key.Length is >=1 and <=128&&System.Linq.Enumerable.All(key,c=>c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
 }

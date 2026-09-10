@@ -36,6 +36,8 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private bool _childCreated,_disposed;
     public Func<bool>? CombatScope {get;private set;}
     public Func<string>? CombatResume {get;private set;}
+    public object ReadResumeItem()=>_hooks.ReadResumeItem();
+    public object ApplyResumeItem(string? decision,string? action)=>_hooks.ApplyResumeItem(decision,action);
     private DialogueBinding? _dialogue,_pendingDialogue;
     private readonly Dictionary<NEventOptionButton,OptionBinding> _options=new();
     private readonly HashSet<object> _screens=new(ReferenceEqualityComparer.Instance);

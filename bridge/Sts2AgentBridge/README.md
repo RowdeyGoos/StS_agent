@@ -14,7 +14,7 @@ Read [current status](../../docs/STATUS.md) for evidence and
 | Module | Existing interface |
 | --- | --- |
 | Core combat, rewards, map, rest/basic rooms | `/probe/v0/health`, `/probe/v0/manifest`, `/probe/v0/public/*` |
-| Event combat continuation | `/probe/event-combat-v1/public/decision` (read-only, while owned) |
+| Event combat continuation | `/probe/event-combat-v2/public/decision`; owned child `/probe/event-combat-v2/public/item-decision` and `item-action` |
 | Combat discard/exhaust choice | `/probe/combat-choice-v1/public/decision` and `action` |
 | Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
 | Shop and standard room flows | `/probe/room-flows-v1/public/decision` and `action` |
@@ -193,16 +193,20 @@ stage. `--choice-policy` and `--reward-policy` have the same meaning as in
 `combat-map`. The default event policy chooses the first legal option: for the
 pending Dense Vegetation live case, prepare its Fight page after Rest. Returning
 to an event after combat is also supported in the checkout when its exact resume
-callback completes without an interactive child. For `combat_resume_handoff`,
+callback completes, including an owned potion/relic reward or ordered item set.
+For `combat_resume_handoff`,
 the host verifies the original callback and new event node, then runs one fresh
 event session through Proceed/map. Training expiry is reported as `event_resumed`,
-not victory. Its result retains `combat`, `resumed_event` and `map_handoff` inside
-`combat_flow`. Resume-time reward/selector UI and extra combat rewards remain
-unsupported.
+not victory. Item collection counts/results are retained in `combat.resume_items`.
+Its result retains `combat`, `resumed_event` and `map_handoff` inside
+`combat_flow`. Resume-time card rewards, nested pickup selectors and extra combat
+rewards remain unsupported.
 
 Use `--event-option BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2` with
-`--capability event-combat-map` for the pending Battleworn Dummy case. This reusable
-option chooses the exact legal first parent option, then uses first-legal actions;
+`--capability event-combat-map` for the pending Battleworn Dummy case.
+Use `SETTING_1` instead for the potion-reward branch, with a free potion slot.
+The host collects the owned reward, waits for callback completion and then runs
+Proceed/map. This reusable option chooses the exact legal first parent option, then uses first-legal actions;
 a missing/illegal requested option stops before input. It also works with `events`
 and `event-map`. Automatic upgrade effects are not certified by callback completion.
 

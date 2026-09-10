@@ -86,7 +86,7 @@ internal static class BridgeRequestParser
             core.HostState != ParsedHostState.Exact || core.HasOrigin || core.AuthorizationCount != 1 ||
             core.AuthorizationValueLength != 71 || !head.Slice(core.AuthorizationValueOffset, 7).SequenceEqual("Bearer "u8)) return false;
         bool action = core.RouteTarget is ParsedRouteTarget.PublicCombatAction or ParsedRouteTarget.PublicRewardAction or
-            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction;
+            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction or ParsedRouteTarget.EventResumeItemAction;
         if (action ? !core.IsPost || core.DecisionIdCount != 1 || core.ActionIdCount != 1 :
             !core.IsGet || core.DecisionIdCount != 0 || core.ActionIdCount != 0) return false;
         request = new(Capability.Core, path, action, core.AuthorizationValueOffset + 7, 64,

@@ -68,7 +68,7 @@ internal sealed class GenericEventV7ItemAdapter : IGenericEventV7ItemNativeAdapt
             bool owned=Owned()&&_state.Dispatched&&_state.CollectionEntered;
             bool effect=owned&&Effect(Pending());
             return new GenericEventV7ItemCompletion(owned,effect,owned&&_state.Binding.Overlays.ScreenCount==0,
-                Witness(_state.CollectionTask),Witness(_state.OfferTask),Witness(_state.Binding.ChosenTask));
+                Witness(_state.CollectionTask),Witness(_state.OfferTask),Witness(_state.Binding.ItemParentTask));
         }
         catch{_state.Binding.Failed=true;return new GenericEventV7ItemCompletion(false,false,false,null,null,null);}
     }
@@ -122,14 +122,14 @@ internal sealed class GenericEventV7ItemSetAdapter : IGenericEventV7ItemSetNativ
     internal GenericEventV7ItemSetAdapter(GenericEventV7ItemState root) {
         _root=root;
         if(!root.Domain()||!root.Ready||!GenericEventV7ItemAdapter.Slots(root.Binding.Player,out _capacity,out var slots))throw new InvalidOperationException("Item set unavailable.");
-        _baseline=slots.ToArray();_offerTask=root.OfferTask!;_chosenTask=root.Binding.ChosenTask!;
+        _baseline=slots.ToArray();_offerTask=root.OfferTask!;_chosenTask=root.Binding.ItemParentTask!;
         if(slots.Count(x=>x.ModelIdentity is null)<root.Entries!.Count(e=>e.Kind==ItemV1ItemKind.Potion))throw new InvalidOperationException("Item-set capacity unavailable.");
         foreach(var entry in root.Entries!){entry.Screen=root.Screen;entry.OfferTask=root.OfferTask;}
     }
     public int OfferCount=>_root.OfferCount;
     private bool Owned()=>!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&_root.Domain()&&_root.Overlay()&&
-        ReferenceEquals(_root.OfferTask,_offerTask)&&ReferenceEquals(_root.Binding.ChosenTask,_chosenTask)&&
-        _root.Entries!.All(e=>!e.FailedTask&&ReferenceEquals(e.OfferTask,_offerTask))&&_root.Binding.ChosenTask is {IsFaulted:false,IsCanceled:false}&&Inventory();
+        ReferenceEquals(_root.OfferTask,_offerTask)&&ReferenceEquals(_root.Binding.ItemParentTask,_chosenTask)&&
+        _root.Entries!.All(e=>!e.FailedTask&&ReferenceEquals(e.OfferTask,_offerTask))&&_root.Binding.ItemParentTask is {IsFaulted:false,IsCanceled:false}&&Inventory();
     private bool Inventory() {
         if(!GenericEventV7ItemAdapter.Slots(_root.Binding.Player,out int capacity,out var slots)||capacity!=_capacity||slots.Count!=_baseline.Length)return false;
         var seen=new HashSet<object>(ReferenceEqualityComparer.Instance);
