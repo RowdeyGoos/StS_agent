@@ -1827,3 +1827,17 @@ correct the setup. This establishes the setup mismatch, not the exact native
 predicate behind the diagnostic. The same reviewed Skip policy and unchanged
 release will be used only after fresh readiness; no mutation was sent in this
 stopped attempt.
+
+### Corrected-setup attempt found listener unavailable
+
+After the user requested another attempt, fresh running-process and unchanged
+policy hash checks passed. The same policy verified release/source/installed state
+but hit `ConnectionRefusedError` before obtaining a bridge response. No decisions,
+native diagnostics or live actions were recorded. Time: **0.035 seconds**.
+The running game therefore did not have an accepting bridge listener at the
+connection attempt; this did not exercise the corrected event setup or Skip.
+Normal quit was requested so stopped state can be verified before a same-build
+relaunch. No rebuild, source edit or uncertain mutation retry was performed.
+The fifteenth installation remains installed; cleanup is pending.
+Result: `/private/tmp/sts-leadpaperweight-skip-fresh-live-20260910-result.json`, SHA-256
+`827b4da42b78a4d61aa09425260f2f1b8311f129a5af9eb34f135c28db0063bf`.

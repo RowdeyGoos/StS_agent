@@ -503,6 +503,15 @@
       "result_sha256": "3b9ae96533b9d40e03ba6005045b82c5dafe92d5be8403bb341bce0748916a89",
       "seconds": 0.561,
       "status": "failed"
+    },
+    {
+      "case": "Neow/LeadPaperweight Skip",
+      "exception_type": "ConnectionRefusedError",
+      "live_input_sent": false,
+      "result_path": "/private/tmp/sts-leadpaperweight-skip-fresh-live-20260910-result.json",
+      "result_sha256": "827b4da42b78a4d61aa09425260f2f1b8311f129a5af9eb34f135c28db0063bf",
+      "seconds": 0.035,
+      "status": "failed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",

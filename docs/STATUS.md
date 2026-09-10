@@ -160,7 +160,10 @@ fresh map in **1.054 seconds**. The subsequent **Skip attempt stopped before any
 action** with `unsupported_state` / `parent_unavailable` in **0.561 seconds**.
 The user confirmed they had omitted the fresh-run setup and is preparing it now;
 the precise native admission condition is not established. Skip remains untested.
-The same package remains installed, with cleanup pending.
+The same package remains installed, with cleanup pending. A user-requested attempt
+after setup correction then hit `ConnectionRefusedError` before any input
+(**0.035 seconds**). Normal quit and a same-build restart are pending; no source
+or package change is indicated by this connection failure.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only
