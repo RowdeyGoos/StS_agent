@@ -482,8 +482,9 @@ passed to `RewardsCmd.OfferCustom`. Lost Coffer is offered by Neow; reaching tha
 pickup through Neow can now use the ancient layout support below. The live
 admitted set was ordered potion then card, despite card-first callback construction.
 The first policy stopped before child input because it assumed construction order.
-The mixed-set fixtures cover the shared reward surface; a full live Lost Coffer
-route remains unverified.
+The corrected potion→card path passed live: Mazaleth's Gift, unupgraded Shrug It
+Off, five reconciled actions and fresh map in 1.919 seconds. Card Skip/final
+dismissal remains pending live acceptance.
 
 Entries retain the admitted native reward-list order; callers must use exposed
 `offer_kinds` rather than infer order from callback construction. Cards use
@@ -526,8 +527,10 @@ eight mixed entries, choose/Skip/final dismissal, actual collection/Offer/Chosen
 delays, failed collections, retained deck/inventory/task changes, insufficient
 capacity, malformed replies, lost replies and item reentry/cleanup interference.
 The production response classifier and shared request parser are included in
-these checks. This source increment is unreleased and has no live acceptance;
-the current release and previous live evidence retain their original identities.
+these checks. The current combined release has the representative Lost Coffer
+choose/collect acceptance above; broader orders, counts and branches retain offline
+evidence. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#lost-coffer-potion-and-card-collection-passed)
+retains exact release and result bindings.
 
 ## Implemented: generic deck transformation selectors
 

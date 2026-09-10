@@ -1928,3 +1928,42 @@ Same-build relaunch is ready: fresh Profile 3 run, one free potion slot, normal
 map-room entry, `ancient NEOW LOST_COFFER`, console closed, relic option untouched.
 No source/build/install change was made. Separate preparation/review times were
 not measured. Cleanup remains pending; verified shutdown is not removal.
+
+### Lost Coffer potion and card collection passed
+
+Following verified normal shutdown, manual relaunch and fresh user setup, exact
+running-process, unchanged reviewed policy hash, release/source/owned installation
+and authenticated health/manifest checks passed. The corrected policy selected
+Lost Coffer, collected **Mazaleth's Gift**, opened the card reward and chose
+**unupgraded Shrug It Off at slot zero**, then selected Proceed.
+`mixed_reward_set_v1` resolved with exact ordered typed potion/card settlements.
+Native collection, inventory, card insertion, retained baseline and task checks
+verified both rewards. Native automatic closure applied; no dismiss was sent.
+
+All **five actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **3/3/3**, one completed mixed card child, zero separate item children and
+thirteen event reads. One fresh core-map read passed with three candidates.
+Policy time: **1.919 seconds**. Diagnostics: parent-ready/pending-offers/parent-ready/
+map-ready. Parent effects remain `unverified`. This establishes the concrete
+potion→card choice path, not arbitrary reward orders, counts or full-inventory
+replacement. The preceding policy-order failure remains recorded above.
+Result: `/private/tmp/sts-lostcoffer-potionfirst-live-20260910-result.json`, SHA-256
+`0e52a5d3cadf69c255a28ea58f6e1b5014dc41505398a7ccf3a4ffce2b83940e`.
+
+The same accepted package remains installed for Lost Coffer's card-Skip branch,
+which requires final dismissal. Cleanup remains pending after the batch. No
+uncertain mutation was retried and no profile/save/history/Cloud filesystem content
+was accessed.
+
+Skip policy `/private/tmp/sts-lostcoffer-skip-live-20260910.py`, SHA-256
+`679d744748cb902bdffa7273e7617c5231f882f6d66bc598badc8dce23c9a672`, passed **47 frozen-view checks** and
+independent semantic review with no blockers. It requires potion-first order,
+`collect:0` → `open:1` → `skip:1` → `dismiss`, exact potion-collected/card-skipped
+settlements, four reconciled child actions and map return. Native root Proceed,
+Offer/Chosen completion, overlay closure and retained potion/deck ownership remain
+checked. Premature parent continuation is rejected.
+
+Prepare a fresh Profile 3 run with at least one free potion slot, enter a room
+normally from the map, run `ancient NEOW LOST_COFFER`, close the console and leave
+the relic option untouched. The Skip policy has not run live yet. No source/build/
+install change is needed; separate preparation/review times were not measured.

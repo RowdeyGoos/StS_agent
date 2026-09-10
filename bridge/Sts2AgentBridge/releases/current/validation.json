@@ -571,6 +571,54 @@
       "result_sha256": "310dc65f9640d37f08344d6c47242d84a2d204e8f97e648463a8e0f009883983",
       "seconds": 0.356,
       "status": "failed"
+    },
+    {
+      "case": "Neow/LostCoffer",
+      "event": {
+        "child_accepted": 3,
+        "child_attempted": 3,
+        "child_episodes": 1,
+        "child_reconciled": 3,
+        "code": null,
+        "completed_card_children": 1,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 13,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 5
+      },
+      "map_handoff": {
+        "candidate_count": 3,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-lostcoffer-potionfirst-live-20260910-result.json",
+      "result_sha256": "0e52a5d3cadf69c255a28ea58f6e1b5014dc41505398a7ccf3a4ffce2b83940e",
+      "seconds": 1.919,
+      "settled": [
+        {
+          "key": "MAZALETHS_GIFT",
+          "kind": "potion",
+          "offer_index": 0,
+          "result": "collected",
+          "selected_slot": null,
+          "upgrade_level": null
+        },
+        {
+          "key": "SHRUG_IT_OFF",
+          "kind": "card",
+          "offer_index": 1,
+          "result": "collected",
+          "selected_slot": 0,
+          "upgrade_level": 0
+        }
+      ],
+      "status": "passed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",

@@ -161,13 +161,12 @@ relaunch**: no selected or additional card, unchanged deck, three reconciled act
 and fresh map in **1.443 seconds**. Its earlier setup-mismatch attempt sent zero
 actions; the subsequent connection-refused attempt also sent none. Normal quit
 and stopped-process/closed-port checks preceded the successful relaunch. The same
-package remains installed. Lost Coffer stopped at `provider_failed` after one
-accepted parent action and zero child inputs (**0.356 seconds**). A read-only
-observation showed potion→card order; the test policy had assumed card→potion.
-The corrected potion-first policy passed 37 focused checks and independent review;
-production already supports both orders. Normal quit and stopped-process/closed-port
-checks passed; same-build relaunch is ready. Lost Coffer live acceptance and final
-cleanup remain pending.
+package remains installed. **Lost Coffer's potion→card path passed** after the
+policy-order correction: Mazaleth's Gift plus unupgraded Shrug It Off, five
+reconciled actions and fresh map in **1.919 seconds**. The prior policy-order
+failure sent no child inputs; its accepted parent remained unresolved and normal
+quit preceded this fresh test. Lost Coffer's card-Skip/final-dismiss branch is next.
+Final cleanup remains pending after the batch.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

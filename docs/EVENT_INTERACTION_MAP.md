@@ -25,8 +25,9 @@ now live-demonstrated three menus with choose/Skip/choose, final dismissal and m
 now have offline original-preview and exact-effect coverage for the WoodCarvings
 Bird/Torus interaction shape; Bird also passed live with exact preview, verified
 transformation and a fresh core map. [Mixed card/item sets](GENERIC_EVENTS.md#implemented-offline-mixed-carditem-reward-sets)
-now have packaged offline implementation for Lost Coffer's card-plus-potion
-shape and other bounded interleavings. Ancient entry/dialogue and optional
+now have packaged implementation for Lost Coffer's card-plus-potion shape and
+other bounded interleavings. Lost Coffer potion→card collection passed live with
+Mazaleth's Gift, Shrug It Off and map return; Skip/final dismissal remains pending. Ancient entry/dialogue and optional
 Sea Glass/Claws selectors are packaged. Sea Glass has zero/partial/full live
 acceptance; Claws zero/partial/full selection also passed.
 See [current evidence](STATUS.md).
