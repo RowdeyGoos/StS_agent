@@ -1848,3 +1848,42 @@ state are retained for relaunch; this is not removal/cleanup. Prepare a fresh
 Profile 3 run after manual relaunch, enter a room normally from the map, run
 `ancient NEOW LEAD_PAPERWEIGHT`, close the console and leave the relic option
 untouched. The unchanged reviewed Skip policy remains ready.
+
+### Lead Paperweight Skip passed after relaunch (2026-09-10)
+
+After manual relaunch and fresh user setup, the exact running-process check and
+unchanged reviewed policy hash passed. Release/source/owned installation and
+authenticated health/manifest checks passed on the unchanged fifteenth installation.
+The policy selected Lead Paperweight, Skipped the Dark Shackles/Prolong menu, then
+selected Proceed. `card_offer_v2` resolved with null selected index, no additional
+cards and one skipped receipt. Native selector/request/task and retained deck
+checks verified the unchanged deck from child admission.
+
+All **three actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **1/1/1**, one completed card child, zero item children and eleven event reads.
+One fresh core-map read passed with three candidates. Policy time: **1.443 seconds**.
+The previously explained transient `pending_task_failed` diagnostic appeared;
+no terminal failure occurred. Parent effects remain `unverified`. Lead Paperweight
+now has choose and Skip live acceptance without an extra grant. The earlier
+zero-action admission and connection failures remain recorded above.
+Result: `/private/tmp/sts-leadpaperweight-skip-relaunch-live-20260910-result.json`, SHA-256
+`c8511f8a491d344323ee6729fed11c76a5ba1565bee39ad92c6404d4512ccc27`.
+
+The same accepted package remains installed for Lost Coffer's mixed card/potion
+reward case. Cleanup remains pending after the batch. No uncertain mutation was
+retried and no profile/save/history/Cloud filesystem content was accessed.
+
+Lost Coffer policy `/private/tmp/sts-lostcoffer-live-20260910.py`, SHA-256
+`df424ceea970c1c0b31beb9b7527b28022d9d035109e6dd5302aee23c8997f3b`, passed **37 frozen-view checks** and
+independent semantic review with no blockers. Pinned metadata confirms exact
+`NEOW.pages.INITIAL.options.LOST_COFFER` and ordered three-card CardReward (IL66),
+PotionReward (IL83), then OfferCustom (IL100). The policy requires
+`mixed_reward_set_v1` with exactly card then potion, opens the card menu, chooses
+slot zero once, collects the potion once, and requires exact typed settlements,
+three reconciled child actions, one completed mixed child and a fresh map. Native
+admission checks potion capacity and retains card/potion/task ownership throughout.
+
+Prepare a fresh Profile 3 run with **at least one free potion slot**, enter a room
+normally from the map, run `ancient NEOW LOST_COFFER`, close the console and leave
+the relic option untouched. The policy has not run live yet. No source/build/install
+change is needed; separate policy preparation/review times were not measured.

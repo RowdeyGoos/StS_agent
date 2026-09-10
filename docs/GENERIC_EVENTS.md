@@ -692,7 +692,8 @@ generic, with no event/relic allowlist. Other optional requests may add no extra
 LeadPaperweight also uses `canSkip=true` with no appended grant. Its choose branch
 has representative live acceptance: unupgraded Dramatic Entrance, no additional
 card, three reconciled actions and fresh map in 1.054 seconds. Its no-grant Skip
-branch remains pending. The
+branch also passed after same-build relaunch: unchanged deck, no selected/additional
+card, three reconciled actions and fresh map in 1.443 seconds. The
 [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#lead-paperweight-choice-passed)
 retains the release and result binding.
 

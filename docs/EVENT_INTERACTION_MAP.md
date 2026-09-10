@@ -74,7 +74,7 @@ IL324–340. Skip therefore still adds Injury. The original inventory and hashes
 retained. LeadPaperweight/MassiveScroll also pass `canSkip=true` and use
 `card_offer_v2`, with no appended grant expected. Lead Paperweight choice now has
 live acceptance: one Dramatic Entrance, no extra card and map return. Its Skip
-branch remains pending. The required `card_offer_v1`
+branch also passed with unchanged deck and map return. The required `card_offer_v1`
 contract has no identified caller in the bounded retained-caller inspection.
 
 ## What the research changes

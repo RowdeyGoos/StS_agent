@@ -156,15 +156,13 @@ Claws now has zero/partial/full live coverage. **Scroll Boxes bundle selection p
 unupgraded Havoc, Cinder and Feel No Pain, exact preview/Confirm, four reconciled
 actions and fresh map in **0.841 seconds**. **Lead Paperweight choice also passed**:
 unupgraded Dramatic Entrance, no additional card, three reconciled actions and
-fresh map in **1.054 seconds**. The subsequent **Skip attempt stopped before any
-action** with `unsupported_state` / `parent_unavailable` in **0.561 seconds**.
-The user confirmed they had omitted the fresh-run setup and is preparing it now;
-the precise native admission condition is not established. Skip remains untested.
-The same package remains installed, with cleanup pending. A user-requested attempt
-after setup correction then hit `ConnectionRefusedError` before any input
-(**0.035 seconds**). Normal quit is verified (three stopped-process samples and two closed-port
-samples); same-build relaunch is ready. No source or package change is indicated
-by this connection failure.
+fresh map in **1.054 seconds**. **Lead Paperweight Skip passed after same-build
+relaunch**: no selected or additional card, unchanged deck, three reconciled actions
+and fresh map in **1.443 seconds**. Its earlier setup-mismatch attempt sent zero
+actions; the subsequent connection-refused attempt also sent none. Normal quit
+and stopped-process/closed-port checks preceded the successful relaunch. The same
+package remains installed; Lost Coffer's mixed card/potion reward is next, and
+cleanup remains pending after the batch.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only
