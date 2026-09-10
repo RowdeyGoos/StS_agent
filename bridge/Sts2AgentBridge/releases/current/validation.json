@@ -667,6 +667,33 @@
         }
       ],
       "status": "passed"
+    },
+    {
+      "case": "PunchOff/Nab",
+      "event": {
+        "child_accepted": 0,
+        "child_attempted": 0,
+        "child_episodes": 1,
+        "child_reconciled": 0,
+        "code": "provider_failed",
+        "completed_card_children": 0,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 1,
+        "parent_attempted": 1,
+        "parent_reconciled": 0,
+        "reads": 5,
+        "schema_version": 1,
+        "status": "failed",
+        "total_attempted": 1
+      },
+      "map_handoff": {
+        "status": "not_attempted"
+      },
+      "result_path": "/private/tmp/sts-punchoff-live-20260910-result.json",
+      "result_sha256": "bbcaaa017c0cc8aacaca7e641697b0ff2c562dbec61ec243bf14d486ca91b0a6",
+      "seconds": 0.516,
+      "status": "failed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",

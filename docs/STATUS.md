@@ -167,8 +167,13 @@ reconciled actions and fresh map in **1.919 seconds**. The prior policy-order
 failure sent no child inputs; its accepted parent remained unresolved and normal
 quit preceded this fresh test. **Lost Coffer card Skip/final dismissal passed**:
 Skill Potion collected, no card added, six reconciled actions and fresh map in
-**1.631 seconds**. PunchOff/Nab's inactive combat layout is next. Final cleanup
-remains pending after the batch.
+**1.631 seconds**. PunchOff/Nab admitted its inactive combat layout and relic
+child, but its test policy stopped before collection: it assumed offer index zero,
+while the public Meal Ticket reward had index three. Parent accepted once, zero
+child inputs, **0.516 seconds**. The policy is corrected to bind the advertised
+index and passed 26 focused checks plus independent review. Normal quit and
+stopped-process/closed-port checks passed; same-build relaunch is ready. Full
+Punch Off acceptance and final cleanup remain pending.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

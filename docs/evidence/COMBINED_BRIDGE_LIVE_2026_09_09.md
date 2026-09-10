@@ -2005,3 +2005,42 @@ Prepare a fresh Profile 3 run, enter a room normally from the map, run
 `event PUNCH_OFF`, close the console and leave the initial choices untouched.
 The test chooses Nab only. The policy has not run live yet. No source/build/install
 change is needed; separate preparation/review times were not measured.
+
+### Punch Off test-policy singleton-index mismatch
+
+Fresh running-process, reviewed policy hash, release/source/owned installation
+and authenticated health/manifest checks passed. Nab was attempted and accepted
+once, but remained unreconciled. Its item child was admitted; the policy stopped
+with `provider_failed` before any child input. No relic was collected and map
+handoff was not attempted. Five event reads; time **0.516 seconds**. Diagnostics
+were parent-ready/pending-chosen-completion/child-ready. Automatic parent effects,
+including Injury, remain unverified.
+Result: `/private/tmp/sts-punchoff-live-20260910-result.json`, SHA-256
+`bbcaaa017c0cc8aacaca7e641697b0ff2c562dbec61ec243bf14d486ca91b0a6`.
+
+One read-only public decision check observed an `item_v1` singleton **Meal Ticket**,
+native offer index **3**, with legal `collect:3`. The policy incorrectly assumed
+singleton meant index zero. The bridge's public view already supports the actual
+index. Read-only time: **0.166 seconds**.
+Result: `/private/tmp/sts-punchoff-read-20260910-result.json`, SHA-256
+`46cf50ec11a14dd798a278e42207c46c62058bf90150225c56d512c6a96412fb`.
+
+The user confirmed normal quit before another attempt. No uncertain mutation was
+retried; no profile/save/history/Cloud filesystem content was accessed. Original
+policy is preserved at `/private/tmp/sts-punchoff-indexzero-live-20260910.py` with
+its original hash. Only the ephemeral policy changes; the production package
+remains unchanged and installed. Final cleanup remains pending.
+
+Stopped-state validation passed with **three stopped-process samples and two
+closed-port samples**. Corrected policy `/private/tmp/sts-punchoff-live-20260910.py`,
+SHA-256 `9c6e96bb751c7f2143513eb73d459a6a2ccefde8a5bf032110551337c6414c9c`,
+passed **26 frozen-view checks**, including indices 0, 1, 3 and 7, and independent
+semantic review with no blockers. Singleton admission preserves the native
+`Reward.RewardsSetIndex` (bounded 0–255); multi-entry sets instead use list positions.
+The corrected policy binds the advertised index to both its collection action
+and resolved result, retaining exact relic identity and one-action accounting.
+
+Same-build relaunch is ready: fresh Profile 3 run, normal map-room entry,
+`event PUNCH_OFF`, console closed and initial choices untouched. No production
+source/build/install change was made. Separate preparation/review times were not
+measured. Verified shutdown is not removal; final cleanup remains pending.
