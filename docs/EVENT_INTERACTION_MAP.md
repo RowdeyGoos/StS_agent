@@ -24,7 +24,7 @@ entries have offline choose/Skip/final-dismissal coverage; Colorful Philosophers
 now live-demonstrated three menus with choose/Skip/choose, final dismissal and map. [Fixed-one generic deck transformations](GENERIC_EVENTS.md#implemented-generic-deck-transformation-selectors)
 now have offline original-preview and exact-effect coverage for the WoodCarvings
 Bird/Torus interaction shape; Bird also passed live with exact preview, verified
-transformation and a fresh core map. [Mixed card/item sets](GENERIC_EVENTS.md#implemented-offline-mixed-carditem-reward-sets)
+transformation and a fresh core map. [Mixed card/item sets](GENERIC_EVENTS.md#implemented-mixed-carditem-reward-sets)
 now have packaged implementation for Lost Coffer's card-plus-potion shape and
 other bounded interleavings. Lost Coffer potion→card collection passed live with
 Mazaleth's Gift, Shrug It Off and map return. Skip/final dismissal also passed
@@ -32,17 +32,17 @@ with Skill Potion collected, no card addition and map return. Ancient entry/dial
 Sea Glass/Claws selectors are packaged. Sea Glass has zero/partial/full live
 acceptance; Claws zero/partial/full selection also passed.
 See [current evidence](STATUS.md).
-[Choose-one cards and bundles](GENERIC_EVENTS.md#implemented-offline-choose-one-cards-and-bundles)
+[Choose-one cards and bundles](GENERIC_EVENTS.md#implemented-choose-one-cards-and-bundles)
 now have packaged support for LeadPaperweight/MassiveScroll and ScrollBoxes.
 Scroll Boxes has representative live acceptance (one three-card bundle, exact
 preview/Confirm and map return); required single-card v1 offers remain pending.
-[Inactive combat layouts and result acknowledgment](GENERIC_EVENTS.md#implemented-offline-inactive-combat-layouts-and-result-acknowledgment)
+[Inactive combat layouts and result acknowledgment](GENERIC_EVENTS.md#implemented-inactive-combat-layouts-and-result-acknowledgment)
 now have packaged support: PunchOff/Nab passed live with Meal Ticket collection
 and map return (automatic Injury unverified); Darv/PandorasBox-style results
 confirmation passed with nine displayed cards, Confirm and map return. Automatic
-transformations and normal Darv pool eligibility remain unverified. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-offline-optional-card-offers-and-one-appended-grant)
-now also have unreleased offline support for HeftyTablet's choose/Skip plus Injury
-shape; grant provenance remains unverified. Embedded combat execution and
+transformations and normal Darv pool eligibility remain unverified. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-optional-card-offers-and-one-appended-grant)
+now have HeftyTablet choose/Skip plus Injury live acceptance; grant provenance
+remains unverified. Embedded combat execution and
 resumption, full-inventory handling and nested pickup composition remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
@@ -305,33 +305,20 @@ can bring additional pickup callbacks and are not exhaustively enumerated here.
 
 ## Planning implications
 
-The research supports a discussion around these coherent increments:
+The original inventory and gap matrix above retain the research baseline, not a
+current implementation checklist. Current accepted families and limits are in
+[status](STATUS.md). Repeated pages, bounded deck compositions, ordinary/mixed
+rewards, fixed-two enchantment, generic transformation, ancient options, optional
+selection, card offers/bundles, inactive combat layout and results acknowledgment
+now have representative live acceptance.
 
-1. **Make ordinary parent/child composition reliable.** Cover repeated option
-   progress and deck changes around selectors. Each has a small representative
-   caller and both affect paths that superficially look supported today.
-2. **Expand the shared event reward flow.** Card rewards and multiple reward
-   entries have direct ordinary-event callers. Reuse core reward machinery where
-   its ownership/lifecycle semantics match; include return-to-event and nested
-   pickup behavior explicitly rather than assuming a singleton-item extension is
-   sufficient.
-3. **Add the narrow selector gaps.** Two-card enchantment and Wood Carvings'
-   generic deck transformation have concrete ordinary-event callers. Fixed-count
-   removal/upgrade/transform paths that already fit need held-out native/live
-   validation, not another implementation.
-4. **Handle the other event layouts and combat lifecycle.** Ancient layout and
-   combat layout are different admissions. Then cover non-resuming combat,
-   resuming combat, and ancient pickup children: optional selection, bundles,
-   ChooseACard and sequential children. These dependencies affect any proposed
-   feature ordering.
-5. **Give custom and terminal surfaces explicit adapters.** Crystal Sphere,
-   Fake Merchant, the abandonment popup, card-results acknowledgment and The
-   Architect have different legal inputs and completion states.
-
-This is an evidence-based grouping for the next planning discussion, not a fixed
-release schedule or a coverage-percentage promise. Priorities can favor common
-pool membership, small acceptance cases, or full-run blockers; the static census
-alone does not establish frequency or effort.
+Remaining feature work is event-combat execution/resumption, full-inventory and
+nested pickup composition, broader deck changes around selectors, and custom or
+terminal surfaces. Battleworn Dummy is the next concrete combat-return candidate.
+Additional fixed counts and held-out callers may need validation rather than new
+adapters. No sequential-selector caller was established by the corrected Sea Glass
+research. [Roadmap](../ROADMAP.md) owns ordering; the static census does not measure
+encounter frequency or remaining implementation effort.
 
 ## Earlier assumptions to retire or narrow
 

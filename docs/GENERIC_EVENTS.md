@@ -472,7 +472,7 @@ Mixed card/item sets use the versioned extension below. Repeated
 Offers within one option, SpecialCardReward, rerolls/multiple picks, substituted
 cards and nested pickup selectors remain separate gaps.
 
-## Implemented offline: mixed card/item reward sets
+## Implemented: mixed card/item reward sets
 
 `mixed_reward_set_v1` extends the existing set session to **2–8 ordinary card,
 potion and relic rewards in one owned nonterminal RewardsSet**, with at least one
@@ -573,7 +573,7 @@ failure and a lost confirmation reply without retry. The Bird case now has repre
 eligible cards remains a distinct branch candidate. The live summary does not
 expose the replacement key; the user separately confirmed Peck in the deck.
 
-## Implemented offline: ancient dialogue and optional selections
+## Implemented: ancient dialogue and optional selections
 
 The shared parent admits the pinned `NAncientEventLayout` alongside ordinary
 `NEventLayout`. While native dialogue remains, it exposes one `choose:0` action
@@ -640,7 +640,7 @@ and lost replies without retry. This is offline evidence, not live acceptance or
 support for every ancient pickup. Full inventory,
 nested pickups, cancellation and empty candidate domains remain outside this change.
 
-## Implemented offline: choose-one cards and bundles
+## Implemented: choose-one cards and bundles
 
 Two native selection surfaces now compose with the same event parent, including
 ancient dialogue/options and Proceed/map. **Neow/ScrollBoxes** is the pinned bundle
@@ -687,7 +687,7 @@ cancellation, extra grants/copies, card substitution or nested pickups. Optional
 choose-one offers and one extra grant now have the separate v2 contract below.
 Native direct menus with more than three choices are rejected.
 
-## Implemented offline: optional card offers and one appended grant
+## Implemented: optional card offers and one appended grant
 
 `card_offer_v2` extends the direct ChooseACard family only when the owned native
 request has `canSkip=true`. **Neow/HeftyTablet** is the representative caller:
@@ -745,7 +745,7 @@ Cruelty (unupgraded) plus Injury; Skip added Injury only. Each completed one car
 child and reconciled three actions through a fresh actionable map. See the
 [live evidence](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#heftytablet-skip-passed).
 
-## Implemented offline: inactive combat layouts and result acknowledgment
+## Implemented: inactive combat layouts and result acknowledgment
 
 The parent now admits the pinned `NCombatEventLayout` while `HasCombatStarted`
 is false and its native embedded room remains valid and unchanged. Ordinary
@@ -799,8 +799,8 @@ Acknowledgment counts as a completed card child, but parent effects remain
 transformation. Wire and host checks reject a fabricated `card_effect_verified`
 claim for that acknowledgment. Card inspection, nested/sequential result screens,
 results inside an existing pickup/selector child and alternative result screens
-remain unsupported. Both new paths have offline native/C#/Python and production
-boundary evidence; no live launch or installation was performed.
+remain unsupported. Both paths have native/C#/Python and production-boundary
+evidence plus the representative live acceptance described above.
 
 ## Separate remaining questions
 

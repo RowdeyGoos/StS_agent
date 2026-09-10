@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 2026-09-09. This file owns priorities; [current status](docs/STATUS.md)
+Updated 2026-09-10. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -12,33 +12,15 @@ process. Completed packets and old campaign instructions are historical referenc
    Sapphire Seed Plant and Nourish, exact Sown effect and fresh actionable map.
    Keep extending the shared parent/child machinery from representative native
    interactions; do not add event-name admission rules.
-2. **Implement the next generic increments from the completed event research.** The
-   [all-event map](docs/EVENT_INTERACTION_MAP.md) classifies all 68 pinned types and
-   exposes previously missing composition and surface gaps. Repeated ordinary pages
-   now have live acceptance through Abyssal Baths' two-Linger path and fresh map.
-   Append-only additions before selectors have live acceptance through Grave of
-   the Forgotten/Confront and verified SoulsPower selection. Removal followed by
-   one appended grant has live acceptance through Amalgamator/CombineStrikes,
-   exact two-card removal, separate grant observation and fresh core map. Fixed-two
-   enchantment has Prickly Sponge live acceptance; Potion Courier/Grab Potions
-   demonstrated a three-potion reward set. Brain Leech/Rip passed an ordinary
-   singleton card reward; Colorful Philosophers passed three card menus with
-   choose/Skip/choose and final dismissal. Other menu counts/outcomes retain offline
-   evidence. Fixed-one generic deck transformation
-   now has WoodCarvings/Bird live acceptance; Torus remains a branch candidate. Mixed card/item sets
-   now have unreleased native/C#/Python implementation, with Lost Coffer's
-   card-plus-potion pickup as the concrete shape. Ancient layout/dialogue, optional
-   Sea Glass add selection and Claws transformation now also have unreleased offline
-   implementation. Choose-one cards (LeadPaperweight/MassiveScroll) and bundles
-   (ScrollBoxes) now also have unreleased native/C#/Python support. Validate these
-   together in the next live batch. Inactive combat-layout options and automatic
-   card-results acknowledgment are also implemented offline (PunchOff/Nab and
-   Darv/PandorasBox shapes). Optional card offers and one appended grant now also
-   have offline support for HeftyTablet's choose/Skip plus Injury branches.
-   Next address full-inventory/nested pickups, broader selector grant composition,
-   embedded combat execution/resumption and custom/terminal dependencies. This
-   research grouping is not a fixed implementation order. Use a concrete branch
-   and observable outcome for each increment, reusing matching accepted evidence.
+2. **Implement event-combat handoff/resumption next.** Start with a concrete
+   Battleworn Dummy branch, retaining event ownership across combat and return.
+   The completed live batch now covers mixed card/item rewards, ancient options,
+   Sea Glass and Claws zero/partial/full selection, card offers, bundles, inactive
+   Punch Off/Nab and Pandora's Box results acknowledgment. These are no longer
+   an untested feature queue; [current status](docs/STATUS.md) owns exact limits.
+   Then address full-inventory/nested pickups, broader selector grant composition
+   and custom/terminal dependencies. Use a concrete branch and observable outcome
+   for each increment, reusing matching accepted evidence.
 3. **Compose supported interactions into longer live runs after event coverage.**
    The combined batch covers Neow's Fury two-card and zero-card choices, combat
    resume, both reward policies, event/map handoff and an allocated off-screen
@@ -65,8 +47,7 @@ Keep representative held-out/live coverage for implemented families separate fro
 new implementation. Variable upgrades, true native cancellation, enchantment
 stacking/replacement and unallocated-holder mechanisms need a concrete caller or
 setup before becoming priorities. Claws and Sea Glass establish optional selection
-through ancient pickup paths; these optional selectors are implemented offline
-and need live acceptance. They do not establish variable-count upgrades.
+through ancient pickup paths; these optional selectors have zero/partial/full live acceptance. They do not establish variable-count upgrades.
 
 ## Headless and learning direction
 
