@@ -694,6 +694,43 @@
       "result_sha256": "bbcaaa017c0cc8aacaca7e641697b0ff2c562dbec61ec243bf14d486ca91b0a6",
       "seconds": 0.516,
       "status": "failed"
+    },
+    {
+      "case": "PunchOff/Nab",
+      "event": {
+        "child_accepted": 1,
+        "child_attempted": 1,
+        "child_episodes": 1,
+        "child_reconciled": 1,
+        "code": null,
+        "completed_card_children": 0,
+        "completed_item_children": 1,
+        "effects": "unverified",
+        "parent_accepted": 2,
+        "parent_attempted": 2,
+        "parent_reconciled": 2,
+        "reads": 7,
+        "schema_version": 1,
+        "status": "resolved",
+        "total_attempted": 3
+      },
+      "item_result": {
+        "key": "MEAL_TICKET",
+        "kind": "relic",
+        "offer_index": 3,
+        "result": "collected",
+        "version": "item_v1"
+      },
+      "map_handoff": {
+        "candidate_count": 1,
+        "code": null,
+        "reads": 1,
+        "status": "passed"
+      },
+      "result_path": "/private/tmp/sts-punchoff-nativeindex-live-20260910-result.json",
+      "result_sha256": "9011cd198c795aa3daf2e7cd4644b106313d9715e03394b2f962479b469c694f",
+      "seconds": 1.278,
+      "status": "passed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",

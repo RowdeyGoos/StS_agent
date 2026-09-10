@@ -756,7 +756,10 @@ is another source-backed noncombat candidate. Layout admission does not implemen
 combat execution or return from combat. If a choice starts combat, this handler
 stops as unsupported rather than reporting a map handoff. Native options do not
 expose a reliable pre-choice combat flag, so this increment does not classify
-all combat-starting choices in advance. Actual live acceptance is pending.
+all combat-starting choices in advance. **PunchOff/Nab passed live**: Meal Ticket
+collected at native singleton index three, three reconciled actions and fresh map
+in 1.278 seconds. Automatic Injury is not certified by the relic child. This
+demonstrates the inactive noncombat branch, not combat execution/resumption.
 
 The `card_results_v1` child acknowledges the pinned `NSimpleCardsViewScreen`
 opened by an owned event callback. **Darv/PandorasBox** supplies the inspected

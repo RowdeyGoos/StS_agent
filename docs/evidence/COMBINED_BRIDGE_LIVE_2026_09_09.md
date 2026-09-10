@@ -2044,3 +2044,45 @@ Same-build relaunch is ready: fresh Profile 3 run, normal map-room entry,
 `event PUNCH_OFF`, console closed and initial choices untouched. No production
 source/build/install change was made. Separate preparation/review times were not
 measured. Verified shutdown is not removal; final cleanup remains pending.
+
+### Punch Off Nab and relic collection passed
+
+After verified shutdown, manual relaunch and fresh user setup, running-process,
+reviewed corrected policy hash, release/source/owned installation and authenticated
+health/manifest checks passed on the unchanged fifteenth installation. The policy
+selected exact Nab, collected **Meal Ticket at native offer index three** using
+`collect:3`, then selected Proceed. `item_v1` resolved with matching index, relic
+key and collected result. Native item task/claim ownership checks verified pickup.
+
+All **three actions reconciled**: parent attempted/accepted/reconciled **2/2/2**,
+child **1/1/1**, one completed item child, zero card children, seven event reads.
+One fresh core-map read passed with one candidate. Policy time: **1.278 seconds**.
+Diagnostics: parent-ready/pending-chosen-completion/child-ready/parent-ready/map-ready.
+Parent effects remain `unverified`; no automatic Injury verification is claimed.
+This demonstrates the inactive combat-layout Nab path, not combat execution or
+resumption. The preceding index-assumption failure is retained above.
+Result: `/private/tmp/sts-punchoff-nativeindex-live-20260910-result.json`, SHA-256
+`9011cd198c795aa3daf2e7cd4644b106313d9715e03394b2f962479b469c694f`.
+
+The same package remains installed for Darv/Pandora's Box results acknowledgment.
+Cleanup remains pending after the batch. No uncertain mutation was retried and no
+profile/save/history/Cloud filesystem content was accessed.
+
+Pandora policy `/private/tmp/sts-pandora-live-20260910.py`, SHA-256
+`9dff66d3f6c6c936a20da7c68a2d55db590f4a73ad852b08e7558df998e3e630`, passed **32 frozen-view checks** and
+independent semantic review with no blockers. Pinned Darv metadata includes
+Pandora's Box in AllPossibleOptions on INITIAL. Console `ancient DARV PANDORAS_BOX`
+validates that list and sets DebugOption, bypassing normal random pool selection.
+Normal Darv pool eligibility remains unresolved. The callback transforms eligible
+basic Strikes/Defends, then opens NSimpleCardsViewScreen at IL245 only for nonempty
+results and a local owner.
+
+The policy selects exact `DARV.pages.INITIAL.options.PANDORAS_BOX`, requires
+`card_results_v1` with 1–64 displayed cards, Confirms once, and requires the same
+resolved cards, one acknowledged receipt, one completed child and a fresh map.
+Native checks retain the post-show deck and capstone/task ownership. This tests
+acknowledgment; preceding automatic transformations remain unverified.
+Prepare a fresh Profile 3 run with its basic Strikes/Defends retained, enter a room
+normally from the map, run `ancient DARV PANDORAS_BOX`, close the console and leave
+the relic option untouched. The policy has not run live yet. No source/build/install
+change is needed; separate preparation/review times were not measured.
