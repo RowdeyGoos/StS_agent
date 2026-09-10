@@ -136,7 +136,7 @@ After installation and the user's requested game setup, use one client:
   --expected-state-sha256 <current-owned-state-hash> --capability events
 ```
 
-Capabilities are `events`, `event-map`, `combat`, `combat-map`, `combat-choice`,
+Capabilities are `events`, `event-map`, `event-combat-map`, `combat`, `combat-map`, `combat-choice`,
 `rewards`, `cards`, `items`, `shop`, `room-event` and `core`.
 The feature modes run their bounded controller; `core` observes one `--route` or
 submits an advertised action with `--decision` and `--action`. A core accepted
@@ -174,15 +174,29 @@ The shared client spaces exchanges by at least 60 ms, below the listener's
 budget; an expired wait or connection cannot send a request. Server rate limits
 remain unchanged and rate-limited/uncertain requests are never retried.
 
-Use `--capability event-map` for the next event-to-core handoff test. After a
-resolved event it polls `/probe/v0/public/map-decision` within a five-second
+Use `--capability event-map` to verify an event-to-map handoff. After an event
+resolved with destination `map_handoff` it polls `/probe/v0/public/map-decision` within a five-second
 window and 100-read cap, accepting only a validated actionable map. An in-flight
 exchange can extend elapsed time by its existing two-second transport limit;
 responses arriving after the polling deadline cannot pass. It selects no map node.
 Only a `waiting` map response permits another read; errors, unsupported responses,
 uncertainty or interruption stop the check. The result retains the full `event`
 summary and a separate `map_handoff` status/read count even when that check fails.
-A failed event never starts the map check. The existing `events` mode is unchanged.
+A failed event or `combat_handoff` destination never starts the map check.
+
+The checkout also supports `--capability event-combat-map` for a non-resuming
+fight started by an owned event choice with no event-supplied extra rewards. It
+requires `combat_handoff`, then uses the existing combat/rewards/map controllers.
+The result preserves `event` and `combat_flow`; the latter retains each downstream
+stage. `--choice-policy` and `--reward-policy` have the same meaning as in
+`combat-map`. The default event policy chooses the first legal option: for the
+pending Dense Vegetation live case, prepare its Fight page after Rest. Returning
+to an event after combat (such as Battleworn Dummy) remains unsupported.
+
+This feature is not in the retained accepted release and has no live result yet.
+Parent responses now identify protocol `generic_event_v8` over the existing v7
+routes. The `events` mode stops at its reported `destination`; combat entry alone
+is not a completed fight. See [event combat semantics](../../docs/GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat).
 
 `/probe/v0/public/screen` recognizes only main menu/settings; its unsupported
 result during a run is not a map diagnostic. Use the map decision route above.

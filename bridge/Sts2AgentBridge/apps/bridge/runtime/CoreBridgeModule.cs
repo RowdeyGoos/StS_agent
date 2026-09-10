@@ -15,7 +15,10 @@ internal sealed class CoreBridgeModule : IDisposable
     private readonly string _correlation;
     private readonly IPublicScreenService _screen;
     private string? _pendingPath, _pendingDecision;
-    internal bool HasPendingAction => _pendingPath is not null || _choice.IsActive;
+    private Func<bool>? _combatScope;
+    private readonly Action? _beginCombat;
+    internal bool HasPendingAction => _pendingPath is not null || _choice.IsActive || _combatScope is not null;
+    internal void BindCombatScope(Func<bool> scope) {if(HasPendingAction||!scope())throw new InvalidOperationException("Invalid combat transfer.");_beginCombat?.Invoke();_combatScope=scope;}
     private readonly CombatCardChoiceService _choice;
     private readonly IPublicCombatDecisionService _combatRead;
     private readonly IPublicCombatActionService _combatApply;
@@ -30,9 +33,9 @@ internal sealed class CoreBridgeModule : IDisposable
         IPublicRewardDecisionService rewardRead, IPublicRewardActionService rewardApply,
         IPublicMapDecisionService mapRead, IPublicMapActionService mapApply,
         IPublicRoomDecisionService roomRead, IPublicRoomActionService roomApply,
-        CombatCardChoiceService? choice = null)
+        CombatCardChoiceService? choice = null, Action? beginCombat = null)
     {
-        _correlation = correlation; _screen = screen;
+        _correlation = correlation; _screen = screen; _beginCombat=beginCombat;
         _combatRead = combatRead; _combatApply = combatApply;
         _rewardRead = rewardRead; _rewardApply = rewardApply;
         _mapRead = mapRead; _mapApply = mapApply;
@@ -58,6 +61,10 @@ internal sealed class CoreBridgeModule : IDisposable
                 .Replace("\"bridge_version\":\"0.8.0\"", "\"bridge_version\":\"1.0.0\"")
                 .Replace("\"harmony_patches\":false", "\"harmony_patches\":true"))); }
             finally { Array.Clear(old); }
+        }
+        if(_combatScope is not null) {
+            if(!_combatScope())return Fault();
+            if(r.Path is not ("/probe/v0/public/combat-decision" or "/probe/v0/public/combat-action" or CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute))return Busy();
         }
         if (r.Path is CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute)
         {
@@ -117,6 +124,7 @@ internal sealed class CoreBridgeModule : IDisposable
         {
             using var json = JsonDocument.Parse(body);
             var root = json.RootElement;
+            if(!r.IsPost && r.Path=="/probe/v0/public/combat-decision" && root.GetProperty("status").GetString()=="complete")_combatScope=null;
             if (r.IsPost)
             {
                 if (root.GetProperty("status").GetString() != "accepted")

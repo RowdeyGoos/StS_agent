@@ -75,10 +75,12 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(NChooseACardSelectionScreen).GetMethod(nameof(NChooseACardSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<CardModel>),typeof(bool)})!,
             typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromChooseABundleScreen),new[]{typeof(Player),typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!,
             typeof(NChooseABundleSelectionScreen).GetMethod(nameof(NChooseABundleSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!,
-            typeof(NSimpleCardsViewScreen).GetMethod(nameof(NSimpleCardsViewScreen.ShowScreen),new[]{typeof(List<CardPileAddResult>),typeof(MegaCrit.Sts2.Core.Localization.LocString)})!
+            typeof(NSimpleCardsViewScreen).GetMethod(nameof(NSimpleCardsViewScreen.ShowScreen),new[]{typeof(List<CardPileAddResult>),typeof(MegaCrit.Sts2.Core.Localization.LocString)})!,
+            typeof(EventModel).GetMethod("EnterCombatWithoutExitingEvent",BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic,null,new[]{typeof(EncounterModel),typeof(IReadOnlyList<Reward>),typeof(bool)},null)!
         };
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
+        if(targets[28].IsStatic||targets[28].IsGenericMethod||targets[28].ReturnType!=typeof(void))throw new InvalidOperationException("Combat entry signature mismatch.");
         if(!targets[27].IsPublic||!targets[27].IsStatic||targets[27].IsGenericMethod||targets[27].ReturnType!=typeof(NCardsViewScreen))throw new InvalidOperationException("Results screen signature mismatch.");
         Type[] offerReturns={typeof(Task<CardModel>),typeof(NChooseACardSelectionScreen),typeof(Task<IEnumerable<CardModel>>),typeof(NChooseABundleSelectionScreen)};
         for(int i=23;i<27;i++)
@@ -99,7 +101,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             targets[21].IsStatic||!targets[21].IsPublic||targets[21].ReturnType!=typeof(Task<int?>))throw new InvalidOperationException("Card reward hook signature mismatch.");
         if(!targets[22].IsStatic||!targets[22].IsPublic||targets[22].IsGenericMethod||targets[22].ReturnType!=typeof(Task<IEnumerable<CardModel>>))
             throw new InvalidOperationException("Generic deck hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen","ResultsScreen"};
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen","ResultsScreen","CombatEntry"};
         _installed=this;
         try
         {
@@ -202,6 +204,17 @@ public sealed class GenericEventV7Hooks : IDisposable
         internal GenericEventV7ItemState? Item;
         internal bool Restored;
     }
+    private static void CombatEntryPrefix(EventModel __instance,EncounterModel __0,IReadOnlyList<Reward> __1,bool __2,out State __state)
+    {
+        __state=new State {Binding=Parent.Value};
+        if(__state.Binding is not {} b){if(_armed is not null)_armed.Failed=true;return;}
+        try {
+            if(!Owns(b)||!ReferenceEquals(b.EventModel,__instance)||b.Combat is not null)throw new InvalidOperationException();
+            b.Combat=new GenericEventV7CombatHandoff(b,__0,__1,__2);
+        }catch {b.Failed=true;}
+    }
+    private static void CombatEntryPostfix(State? __state) {if(__state?.Binding?.Combat is {} combat)combat.Returned=true;}
+    private static void CombatEntryFinalizer(Exception? __exception,State? __state) {if(__exception is not null&&__state?.Binding is {} b)b.Failed=true;}
     private static void ChosenPrefix(EventOption __instance, out State __state)
     {
         __state = new State {Previous=Parent.Value};

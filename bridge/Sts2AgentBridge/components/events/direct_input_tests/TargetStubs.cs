@@ -130,8 +130,14 @@ namespace MegaCrit.Sts2.Core.Models
     using MegaCrit.Sts2.Core.Entities.Players;
     public sealed class ModelId { private string _entry=string.Empty; public string Entry { get=>FixtureTrace.Read(this,"key",_entry); set=>_entry=value; } }
     public class AncientEventModel:EventModel {}
+    public class EncounterModel {}
     public class EventModel
     {
+        public ModelId Id {get;}=new();
+        public Action<EncounterModel,IReadOnlyList<MegaCrit.Sts2.Core.Rewards.Reward>,bool>? CombatEntry;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public void EnterCombatWithoutExitingEvent(EncounterModel encounter,IReadOnlyList<MegaCrit.Sts2.Core.Rewards.Reward> rewards,bool resume)=>CombatEntry?.Invoke(encounter,rewards,resume);
+
         public Player? Owner { get; set; }
         public bool IsFinished { get; set; }
     }
@@ -443,8 +449,9 @@ namespace MegaCrit.Sts2.Core.CardSelection {
     }
 }
 namespace MegaCrit.Sts2.Core.Runs {
- public interface IRunState{} public sealed class FixtureRunState:IRunState{}
+ public interface IRunState{} public sealed class FixtureRunState:RunState{}
  public class RunState:IRunState {
+  public object? CurrentRoom {get;set;}
   public Func<MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Models.CardModel>? CloneOverride;
   [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
   public MegaCrit.Sts2.Core.Models.CardModel CloneCard(MegaCrit.Sts2.Core.Models.CardModel card) { if(CloneOverride is not null)return CloneOverride(card);var clone=new MegaCrit.Sts2.Core.Models.CardModel {Owner=card.Owner,CurrentUpgradeLevel=card.CurrentUpgradeLevel};clone.Id.Entry=card.Id.Entry;return clone; }
@@ -736,10 +743,17 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens {
         public static NCardsViewScreen ShowScreen(List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult> results,MegaCrit.Sts2.Core.Localization.LocString text)=>Factory!(results,text);
     }
 }
-namespace MegaCrit.Sts2.Core.Nodes.Rooms {public class NCombatRoom:Godot.Control {}}
+namespace MegaCrit.Sts2.Core.Nodes.Rooms {public class NCombatRoom:Godot.Control {public static NCombatRoom? Instance {get;set;} private object? _visuals;public void SetVisuals(object value)=>_visuals=value;}}
 namespace MegaCrit.Sts2.Core.Nodes.Events {
     public class NCombatEventLayout:NEventLayout {
         public bool HasCombatStarted {get;set;}
         public MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom? EmbeddedCombatRoom {get;set;}=new();
     }
 }
+
+namespace MegaCrit.Sts2.Core.Combat {
+ public sealed class CombatState {public MegaCrit.Sts2.Core.Models.EncounterModel Encounter {get;set;}=new();public MegaCrit.Sts2.Core.Runs.IRunState RunState {get;set;}=null!;public List<MegaCrit.Sts2.Core.Entities.Players.Player> Players {get;}=new();}
+ public sealed class CombatManager {public static CombatManager? Instance {get;set;}=new();public CombatState? State;public bool IsInProgress=true,IsOverOrEnding;public CombatState? DebugOnlyGetState()=>State;}
+}
+namespace MegaCrit.Sts2.Core.Runs {public sealed class RunManager {public static RunManager? Instance {get;set;}=new();public RunState? State;public RunState? DebugOnlyGetState()=>State;}}
+namespace MegaCrit.Sts2.Core.Rooms {public sealed class CombatRoom {public MegaCrit.Sts2.Core.Combat.CombatState CombatState {get;set;}=null!;public MegaCrit.Sts2.Core.Models.EncounterModel Encounter=>CombatState.Encounter;public bool ShouldResumeParentEventAfterCombat;public MegaCrit.Sts2.Core.Models.ModelId? ParentEventId;}}

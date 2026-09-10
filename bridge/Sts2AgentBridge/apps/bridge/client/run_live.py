@@ -53,12 +53,25 @@ def run_event_map(request, host, *, clock=time.monotonic, sleep=time.sleep):
     """Keep event evidence even if the subsequent core observation fails."""
     event = host.run_event(request, provider=host.first_legal, clock=clock, sleep=sleep)
     handoff = ({'status': 'not_attempted', 'reads': 0, 'candidate_count': 0, 'code': None}
-               if event['status'] != 'resolved' else
+               if event['status'] != 'resolved' or event.get('destination','map_handoff')!='map_handoff' else
                verify_map_handoff(request, clock=clock, sleep=sleep))
     return {'schema_version': 1,
             'status': 'resolved' if handoff['status'] == 'passed' else 'failed',
             'event': event, 'map_handoff': handoff,
-            'code': event['code'] if event['status'] != 'resolved' else handoff['code']}
+            'code': event['code'] if event['status'] != 'resolved' else (handoff['code'] if handoff['status'] != 'not_attempted' else 'event_destination_not_map')}
+
+
+def run_event_combat_map(request, events, combat, rewards, *, event_provider=None,
+                         choice_provider=None, reward_policy='first-card', clock=time.monotonic, sleep=time.sleep):
+    """Complete one non-resuming event combat without treating entry as victory."""
+    event=events.run_event(request,provider=event_provider or events.first_legal,clock=clock,sleep=sleep)
+    flow={'status':'not_attempted','code':None}
+    if event['status']=='resolved' and event.get('destination')=='combat_handoff':
+        flow=run_combat_map(request,combat,rewards,choice_provider=choice_provider,
+                            reward_policy=reward_policy,clock=clock,sleep=sleep)
+    code=event.get('code') if event['status']!='resolved' else (flow.get('code') if flow['status']!='not_attempted' else 'event_combat_not_entered')
+    return {'schema_version':1,'status':'resolved' if flow['status']=='resolved' else 'failed',
+            'code':code,'event':event,'combat_flow':flow}
 
 
 def run_combat_map(request, combat, rewards, *, choice_provider=None, reward_policy='first-card',
@@ -111,7 +124,7 @@ def main():
     parser.add_argument('--release-manifest', type=Path, required=True)
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
-    parser.add_argument('--capability', choices=['events', 'event-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
+    parser.add_argument('--capability', choices=['events', 'event-map', 'event-combat-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
     parser.add_argument('--choice-policy', choices=['first-select', 'minimum'], default='first-select',
                         help='Combat chooser policy; minimum confirms as soon as native controls allow it.')
     parser.add_argument('--reward-policy', choices=['first-card', 'skip-card'], default='first-card',
@@ -144,6 +157,12 @@ def main():
             else:
                 result = (host.run_combat(client.exchange, choice_provider=provider) if args.capability == 'combat' else
                           host.run_choice(client.exchange, provider=provider))
+        elif args.capability == 'event-combat-map':
+            events=load('unified_event_host','components/events/host/generic_event_host.py')
+            combat=load('unified_combat_host','apps/bridge/client/combat_host.py')
+            rewards=load('unified_reward_host','apps/bridge/client/reward_host.py')
+            provider=combat.minimum_select if args.choice_policy=='minimum' else combat.first_select
+            result=run_event_combat_map(client.exchange,events,combat,rewards,choice_provider=provider,reward_policy=args.reward_policy)
         elif args.capability in ('events', 'event-map'):
             host = load('unified_event_host', 'components/events/host/generic_event_host.py')
             result = (run_event_map(client.exchange, host) if args.capability == 'event-map' else

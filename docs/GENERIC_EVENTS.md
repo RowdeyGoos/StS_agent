@@ -226,7 +226,7 @@ Molten Egg upgraded the added Bashes; unupgraded Defend skills supplied this cas
 
 The shared `CardSelectCmd.FromDeckForEnchantment` request and
 `NDeckEnchantSelectScreen` now form a `card_enchant_v1` child of the existing
-`generic_event_v7` parent. No event-name admission rule is added. Sapphire Seed's
+`generic_event_v8` parent. No event-name admission rule is added. Sapphire Seed's
 observed Plant and Nourish branch is the representative live target. Pinned
 metadata also confirms `FieldOfManSizedHoles.EnterYourHole` requests one card,
 applies an enchantment and finishes the event.
@@ -752,11 +752,11 @@ is false and its native embedded room remains valid and unchanged. Ordinary
 options and existing children use the same ownership and completion rules.
 **PunchOff/Nab** is the representative interaction: Injury is added before the
 singleton relic reward, then Proceed returns to map. **TheLanternKey/ReturnTheKey**
-is another source-backed noncombat candidate. Layout admission does not implement
-combat execution or return from combat. If a choice starts combat, this handler
-stops as unsupported rather than reporting a map handoff. Native options do not
-expose a reliable pre-choice combat flag, so this increment does not classify
-all combat-starting choices in advance. **PunchOff/Nab passed live**: Meal Ticket
+is another source-backed noncombat candidate. Layout admission alone does not
+certify combat entry. The separate non-resuming handoff below admits a narrow
+combat path; other entries stop as unsupported. Native options do not expose a
+reliable pre-choice combat flag, so unsupported entries may stop after the
+authorized choice has started combat. **PunchOff/Nab passed live**: Meal Ticket
 collected at native singleton index three, three reconciled actions and fresh map
 in 1.278 seconds. Automatic Injury is not certified by the relic child. This
 demonstrates the inactive noncombat branch, not combat execution/resumption.
@@ -802,6 +802,46 @@ results inside an existing pickup/selector child and alternative result screens
 remain unsupported. Both paths have native/C#/Python and production-boundary
 evidence plus the representative live acceptance described above.
 
+## Implemented offline: non-resuming event combat
+
+The checkout observes the owned, non-generic
+`EventModel.EnterCombatWithoutExitingEvent` call. It admits only an empty extra
+reward list with `shouldResumeParentEventAfterCombat=false`, outside any child
+selector. No event-name rule is used. **Dense Vegetation’s Fight page after Rest**
+is the representative live acceptance case; prepare that page before using the
+first-legal host policy.
+
+The native entry method returns `void` and starts room entry through a discarded
+task. Its return and the successful option callback are therefore insufficient.
+The bridge waits for a live, in-progress combat and binds the exact run, player,
+encounter, logical combat room, parent event ID and `NCombatRoom` node, including
+its native `_visuals` room reference. A mismatch stops the session. This observes
+combat entry, not victory or automatic parent effects.
+
+Parent protocol `generic_event_v8` adds `complete/combat_handoff` and its matching
+history result. The existing `/probe/generic-event-v7/` routes remain stable;
+older protocol clients reject the new version. `map_handoff` still requires an
+accepted Proceed. The Python summary exposes `destination`, so `event-map` cannot
+mistake an entered fight for a returned map.
+
+The unified router disposes the event module before transferring its exact combat
+scope to core. Failed cleanup stops the host. Transfer clears the combat reader’s
+previous terminal cache and records the witnessed new combat. Until core observes
+that same combat’s terminal result, only combat and combat-choice routes (plus
+metadata) are admitted. Changed identities stop the host; they are never retried.
+
+`event-combat-map` composes this entry with the existing bounded combat, reward
+and map controllers. It preserves separate `event` and `combat_flow` summaries;
+the latter retains combat, rewards and map results even when a later stage fails.
+Defeat does not start rewards. Existing reward coverage remains gold/card only;
+other reward surfaces stop with the preceding evidence intact.
+
+This feature is **unreleased and not live-demonstrated**. Resuming entries such as
+Battleworn Dummy, event-supplied extra rewards, and arbitrary embedded combat
+branches remain unsupported. Battleworn Dummy replaces its event node and starts
+a discarded resume task; normal fight completion alone cannot certify resumed
+event effects or readiness. That is the next separate increment.
+
 ## Separate remaining questions
 
 An allocated off-screen holder can accept direct input. A card without an
@@ -813,7 +853,7 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader pickup composition, combat execution/resumption, repeated/nested pickup children and custom
+changes after selectors, other pre-selector deck mutations, broader pickup composition, resuming/extra-reward event combat, repeated/nested pickup children and custom
 surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
 is implemented above; Bird passed live, while Torus remains a branch candidate.
 

@@ -1,4 +1,4 @@
-# Generic event v7 wire
+# Generic event v8 wire
 
 GET `/probe/generic-event-v7/public/decision` has no body. POST
 `/probe/generic-event-v7/public/action` is a canonical UTF-8 JSON object with
@@ -8,7 +8,7 @@ Actions are the advertised `choose:0..7` or frozen card actions / `collect:i` it
 supply operation, preferences, candidates or native identities.
 
 Every response has ordered keys `schema_version` (1), `protocol`
-(`generic_event_v7`), `session_nonce` (32 lowercase hex), `kind`, `parent`,
+(`generic_event_v8`), `session_nonce` (32 lowercase hex), `kind`, `parent`,
 `child`, `payload`. Decision IDs are64 lowercase hex. Duplicate/unknown keys,
 wrong types, nonmatching publication or lineage, reused decisions and malformed
 requests invalidate the session before further dispatch. Responses are bounded
@@ -24,7 +24,16 @@ Candidates contain `index`, `action_id`, `stable_id`, `rendered_text`, `enabled`
 `is_dangerous`, `is_proceed`, `discovery`. Discovery is `deferred` for an ordinary
 choice and `none` for Proceed. Counts are monotonic; parent history is an immutable
 prefix of matching accepted receipts, with `option_transition`, `child_completed`
-or `map_handoff` results. Ordinary transitions do not certify HP/gold effects.
+or `map_handoff` / `combat_handoff` results. Ordinary transitions do not certify HP/gold effects.
+
+The routes retain their v7 names; the response protocol and parent receipt version
+are v8. A complete parent has phase `map_handoff` after an accepted Proceed, or
+`combat_handoff` after an accepted non-Proceed choice without a child. Its final
+history row must match that phase and the latest accepted parent receipt, with
+all parent actions reconciled. Combat entry certifies only the exact in-progress
+non-resuming combat requested by that choice, not victory. Event-supplied extra
+rewards and resumed event callbacks are unsupported. The unified core retains
+combat ownership until that same combat has a terminal observation.
 
 `stable_id` is a public option key, not a session-wide action reservation. It can
 reappear on a later page, including with identical text. A settled page with fresh

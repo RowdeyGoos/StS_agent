@@ -15,6 +15,6 @@ internal static class CoreNativeFactory
             new PublicRewardDecisionService(reward), new PublicRewardActionService(new PinnedPublicRewardActionApplier(reward)),
             new PublicMapDecisionService(map), new PublicMapActionService(new PinnedPublicMapActionApplier(map)),
             new PublicRoomDecisionService(room), new PublicRoomActionService(new PinnedPublicRoomActionApplier(room)),
-            new CombatCardChoiceService(PinnedCombatCardChoiceAdapter.TryCreate, nonce));
+            new CombatCardChoiceService(PinnedCombatCardChoiceAdapter.TryCreate, nonce), combat.BeginObservedCombat);
     }
 }

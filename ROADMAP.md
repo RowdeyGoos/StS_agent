@@ -12,8 +12,12 @@ process. Completed packets and old campaign instructions are historical referenc
    Sapphire Seed Plant and Nourish, exact Sown effect and fresh actionable map.
    Keep extending the shared parent/child machinery from representative native
    interactions; do not add event-name admission rules.
-2. **Implement event-combat handoff/resumption next.** Start with a concrete
-   Battleworn Dummy branch, retaining event ownership across combat and return.
+2. **Validate non-resuming event combat, then implement resumption.** The checkout
+   now supports owned event entry into a non-resuming fight and the existing
+   combat/rewards/map flow. Dense Vegetation’s Fight page after Rest is the
+   representative live case. Then tackle Battleworn Dummy, retaining event
+   ownership across combat and return; its discarded resume task and replaced
+   event node need a separate completion witness.
    The completed live batch now covers mixed card/item rewards, ancient options,
    Sea Glass and Claws zero/partial/full selection, card offers, bundles, inactive
    Punch Off/Nab and Pandora's Box results acknowledgment. These are no longer
@@ -40,7 +44,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
 include broader deck changes after selectors and other pre-selector mutations, broader pickup
-composition, embedded combat execution/resumption, repeated/nested pickup selectors, and custom/terminal
+composition, resuming/extra-reward event combat, repeated/nested pickup selectors, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.
 
 Keep representative held-out/live coverage for implemented families separate from

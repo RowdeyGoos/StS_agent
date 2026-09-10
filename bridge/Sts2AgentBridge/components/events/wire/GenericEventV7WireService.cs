@@ -32,6 +32,7 @@ public sealed class GenericEventV7WireService : IDisposable
     private GenericEventV7RewardSettlement[] _rewardSettled=Array.Empty<GenericEventV7RewardSettlement>();
     private readonly List<ItemV1ResolvedResult> _itemSetHistory=new();
     private string? _decision, _lastParentDecision, _lastParentAction;
+    private bool _lastParentProceed;
     private string[] _legal = Array.Empty<string>();
     private GenericEventV7Child? _child;
     private GenericEventV7Observation? _previous;
@@ -142,7 +143,8 @@ public sealed class GenericEventV7WireService : IDisposable
                 result.DecisionId == request.Decision && result.ActionId == request.Action &&
                 result.Outcome is "accepted" or "unsupported" or "stale_decision" or "illegal_action" or "uncertain" or "budget_exhausted");
             if (result.Outcome == "accepted")
-            { _lastParentDecision = result.DecisionId; _lastParentAction = result.ActionId; }
+            { _lastParentDecision = result.DecisionId; _lastParentAction = result.ActionId;
+                _lastParentProceed = _previous!.Candidates.Single(c => c.ActionId == request.Action).IsProceed; }
             else _failure = "unsupported";
             return GenericEventV7WireCodec.Action(_nonce, null, result, null);
         }
@@ -260,7 +262,7 @@ public sealed class GenericEventV7WireService : IDisposable
     {
         Require(p.Version == GenericEventV7Limits.Version && p.SessionNonce == _nonce);
         Require((p.Status, p.Phase) is ("ready", "choose_option") or ("ready", "proceed") or
-            ("waiting", "waiting") or ("child", "child") or ("complete", "map_handoff") or
+            ("waiting", "waiting") or ("child", "child") or ("complete", "map_handoff") or ("complete", "combat_handoff") or
             ("unsupported", "unsupported"));
         Require(p.ParentAttempted >= 0 && p.ParentAttempted <= _parentAttempts &&
             p.ParentReconciled >= 0 && p.ParentReconciled <= p.ParentAccepted &&
@@ -288,7 +290,7 @@ public sealed class GenericEventV7WireService : IDisposable
         Require(p.PriorResults.Count == p.ParentReconciled && p.PriorResults.Count <= 12);
         foreach (GenericEventV7PriorResult r in p.PriorResults)
             Require(Hex(r.DecisionId, 64) && ParentAction(r.ActionId) &&
-                r.Result is "option_transition" or "child_completed" or "map_handoff");
+                r.Result is "option_transition" or "child_completed" or "map_handoff" or "combat_handoff");
         if (_previous is not null)
         {
             Require(p.ParentAttempted >= _previous.ParentAttempted && p.ParentAccepted >= _previous.ParentAccepted &&
@@ -317,7 +319,10 @@ public sealed class GenericEventV7WireService : IDisposable
                 p.Candidates.All(c => !c.IsProceed));
         }
         else Require(p.DecisionId == "" && p.Candidates.Count == 0 && p.LegalActions.Count == 0);
-        if (p.Status == "complete") Require(p.PriorResults.Count > 0 && p.PriorResults[^1].Result == "map_handoff");
+        if (p.Status == "complete") Require(p.PriorResults.Count > 0 && p.PriorResults[^1].Result == p.Phase &&
+            p.ParentAttempted == p.ParentAccepted && p.ParentAccepted == p.ParentReconciled &&
+            p.PriorResults[^1].DecisionId == _lastParentDecision && p.PriorResults[^1].ActionId == _lastParentAction &&
+            _lastParentProceed == (p.Phase == "map_handoff"));
         _previous = p;
     }
 

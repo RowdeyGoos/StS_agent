@@ -34,6 +34,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private Player? _player;
     private GenericEventV7Binding? _pending;
     private bool _childCreated,_disposed;
+    public Func<bool>? CombatScope {get;private set;}
     private DialogueBinding? _dialogue,_pendingDialogue;
     private readonly Dictionary<NEventOptionButton,OptionBinding> _options=new();
     private readonly HashSet<object> _screens=new(ReferenceEqualityComparer.Instance);
@@ -60,6 +61,11 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             if(b.Failed) return Fixed("unsupported");
             diagnostic=GenericEventDiagnosticCode.PendingOwnership;
             if(!GenericEventV7Hooks.Owns(b)) return Fixed("unsupported");
+            if(b.Combat is {} combat) {
+                var status=combat.Capture();
+                if(status=="combat")CombatScope=combat.SameCombat;
+                return Fixed(status);
+            }
             diagnostic=GenericEventDiagnosticCode.PendingContext;
             if(!b.ContextValid(b.Option.IsProceed)) return Fixed("unsupported");
             diagnostic=GenericEventDiagnosticCode.PendingTaskFailed;

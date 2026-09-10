@@ -19,8 +19,9 @@ Its final **71 release groups passed in 371.191 seconds**: 7,896 native assertio
 125 host tests, 450 C#/Python cases (388 native), 809 shared checks, reproducible
 packaging and owned installation/cleanup fixtures. The
 [current release record](../bridge/Sts2AgentBridge/releases/current/README.md)
-retains manifest and validation evidence. Later documentation does not repin those
-accepted build inputs.
+retains manifest and validation evidence. Later checkout changes do not repin
+those accepted build inputs. The new
+non-resuming event-combat feature below is not in this retained release.
 
 ## Current capability and evidence
 
@@ -46,20 +47,31 @@ the selected child effect and map return are verified.
 | Optional card offers | Lead Paperweight choose/Skip without extra cards passed; Hefty Tablet choose/Skip plus Injury passed on preceding release `c73fde6c` |
 | Required card offers | `card_offer_v1` has fixtures; no required-choice caller identified in the bounded retained inspection (Lead Paperweight/Massive Scroll allow Skip and use v2) |
 | Bundles | Scroll Boxes three-card bundle, native preview/Confirm and map return passed |
-| Inactive combat layout | Punch Off/Nab and Meal Ticket collection passed; starting/resuming event combat remains unsupported |
+| Inactive combat layout | Punch Off/Nab and Meal Ticket collection passed; this does not demonstrate its combat branch |
+| Non-resuming event combat | Implemented offline in the checkout; exact combat ownership transfer, protocol v8 destination and event/combat/reward/map host composition; not released or live-demonstrated |
 | Results acknowledgment | Pandora's Box nine-card screen Confirm/map passed; preceding automatic transformations are not certified |
 | Reduced headless/actor stack | Structural backend and cloning pipeline accepted; no target-game fidelity or learned live-policy claim |
 
 One production bridge in `apps/bridge/` combines shared components and original
 core adapters. Modules remain exclusive until native reconciliation and successful
 disposal; uncertain mutations or failed disposal stop the host. There are no
-mutation retries. `event-map` and `combat-map` preserve prior stage evidence if a
-later stage fails. The legacy public-screen reader is not a map-readiness probe.
+mutation retries. `event-map`, `combat-map` and `event-combat-map` preserve prior
+stage evidence if a later stage fails. The legacy public-screen reader is not a map-readiness probe.
+
+Checkout validation for non-resuming event combat passed: 15 focused event groups
+in 314.171 seconds (7,921 native assertions, 127 host tests, 450 C#/Python cases),
+10 host groups in 9.656 seconds (824 shared assertions, 35 client tests and socket
+integration), and the production build in 1.657 seconds. An independent semantic
+review found no remaining blockers. These are offline development results, not a
+new release or live acceptance. [The contract](GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat)
+describes exact ownership and remaining limits.
 
 ## Next work and remaining limits
 
 The user prioritizes generic event coverage before longer-run orchestration.
-Next: one concrete event-combat handoff/resumption path. Further work includes
+Next live case: Dense Vegetation’s Fight page after Rest, through victory,
+existing rewards and an actionable map. Next implementation: event resumption
+(Battleworn Dummy); extra-reward event entries also remain unsupported. Further work includes
 full potion inventories, nested pickups, broader deck changes around selectors,
 custom screens (Crystal Sphere/Fake Merchant), special rewards, abandonment
 confirmation and terminal progression. See the [research map](EVENT_INTERACTION_MAP.md)

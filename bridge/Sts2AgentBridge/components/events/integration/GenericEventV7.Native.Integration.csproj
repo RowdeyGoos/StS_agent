@@ -45,6 +45,7 @@
     <Compile Include="../native_tests/Program.cs" Link="Inert/Program.cs" />
     <Compile Include="../native_tests/TargetStubs.cs" Link="Inert/TargetStubs.cs" />
     <Compile Include="../native/GenericEventV7Binding.cs" Link="Actual/GenericEventV7Binding.cs" />
+    <Compile Include="../native/GenericEventV7CombatHandoff.cs" Link="Actual/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Actual/GenericEventV7CardAdapter.cs" />
     <Compile Include="../native/GenericEventV7RewardAdapter.cs" Link="Actual/GenericEventV7RewardAdapter.cs" />
     <Compile Include="../native/GenericEventV7RemovalAdapter.cs" Link="Actual/GenericEventV7RemovalAdapter.cs" />

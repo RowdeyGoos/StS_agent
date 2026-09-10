@@ -27,7 +27,7 @@ internal static class Program
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
             if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
             if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
-            EventBoundaryTests.Run(Check); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
+            EventBoundaryTests.Run(Check); EventCombatTransfer(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
@@ -44,6 +44,35 @@ internal static class Program
         while (!stop.IsCompleted && DateTime.UtcNow < until) { runtime.DrainFrame(); Thread.Sleep(1); }
         Stop(runtime);
         return 0;
+    }
+    private static void EventCombatTransfer()
+    {
+        foreach(var mode in new[]{"complete","changed","dispose_failure","invalid_transfer"}) {
+            bool valid=mode!="invalid_transfer";int begins=0;
+            var f=CombatScenario();f.Stage=0;
+            var core=new CoreBridgeModule(Nonce,f,f,f,f,f,f,f,f,f,f.Choice,()=>{begins++;});
+            var eventModule=new FakeModule(Capability.Events){Complete=true,FailDispose=mode=="dispose_failure",CombatScope=()=>valid};
+            var router=new BridgeRouter(core,(_,_)=>eventModule);
+            var events=Request(Capability.Events,"/probe/generic-event-v7/public/decision");
+            var reply=router.Handle(events);
+            if(mode is "dispose_failure" or "invalid_transfer") {
+                Check(reply.Terminal&&begins==0,"failed transfer cannot arm combat: "+mode);
+                Check(router.Handle(events).Terminal,"failed transfer cannot restart event");
+                eventModule.FailDispose=false;router.Dispose();continue;
+            }
+            Check(!reply.Terminal&&eventModule.Disposed&&begins==1&&core.HasPendingAction,"clean event transfers once and resets combat observation");
+            Check(Body(router.Handle(events)).Contains("capability_busy"),"combat scope blocks a new event");
+            Check(Body(router.Handle(Request(Capability.Core,"/probe/v0/public/reward-decision"))).Contains("capability_busy"),"rewards blocked until combat terminal");
+            if(mode=="changed") {
+                valid=false;Check(router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision")).Terminal,"changed combat latches host failure");
+                valid=true;Check(router.Handle(events).Terminal,"restoring identity does not retry failed handoff");
+            } else {
+                Check(!router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision")).Terminal&&core.HasPendingAction,"ready combat retains scope");
+                f.Stage=3;Check(Body(router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision"))).Contains("complete")&&!core.HasPendingAction,"matching combat terminal releases scope");
+                Check(!router.Handle(Request(Capability.Core,"/probe/v0/public/reward-decision")).Terminal,"reward observation admitted after matching terminal");
+            }
+            router.Dispose();
+        }
     }
     private static void Ownership()
     {
@@ -243,12 +272,13 @@ internal static class Program
         public Capability Capability => capability;
         internal bool Complete, Terminal, OwnItems, Disposed, FailDispose, AutoComplete;
         internal int Calls, Posts, DisposeAttempts;
+        internal Func<bool>? CombatScope;
         public bool Owns(BridgeRequest request) => request.Capability == capability || OwnItems && request.Capability == Capability.Items;
         public ModuleReply Handle(BridgeRequest request)
         {
             Calls++; if (request.IsPost) Posts++;
             if (AutoComplete && Calls >= 2) Complete = true;
-            return new(Encoding.ASCII.GetBytes("{\"status\":\"" + (Complete ? "resolved" : request.IsPost ? "accepted" : "ready") + "\"}"), Complete, Terminal, EventDiagnostic: capability == Capability.Events);
+            return new(Encoding.ASCII.GetBytes("{\"status\":\"" + (Complete ? "resolved" : request.IsPost ? "accepted" : "ready") + "\"}"), Complete, Terminal, EventDiagnostic: capability == Capability.Events, CombatScope: CombatScope);
         }
         public void Dispose() { DisposeAttempts++; if (FailDispose) throw new InvalidOperationException(); Disposed = true; }
     }

@@ -30,6 +30,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="TargetStubs.cs" />
     <Compile Include="../native/GenericEventV7Binding.cs" Link="Native/GenericEventV7Binding.cs" />
+    <Compile Include="../native/GenericEventV7CombatHandoff.cs" Link="Native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Native/GenericEventV7CardAdapter.cs" />
     <Compile Include="../native/GenericEventV7Hooks.cs" Link="Native/GenericEventV7Hooks.cs" />
     <Compile Include="../native/PinnedGenericEventV7NativeAdapter.cs" Link="Native/PinnedGenericEventV7NativeAdapter.cs" />

@@ -100,7 +100,7 @@ class Exchange:
         self.telemetry.append({k: value[k] for k in value if k != 'body'})
         response = bytearray(base64.b64decode(value['body'], validate=True))
         envelope = json.loads(response)
-        assert envelope['protocol'] == 'generic_event_v7', envelope
+        assert envelope['protocol'] == 'generic_event_v8', envelope
         self.envelopes.append(envelope)
         self.buffers.append(response)
         return response

@@ -1,6 +1,6 @@
 # Event interaction research map
 
-Updated 2026-09-09. This is the static event-to-interaction research overview for
+Updated 2026-09-10. This is the static event-to-interaction research overview for
 Slay the Spire 2 v0.107.1 / Steam build 23811903. [Coverage](EVENT_COVERAGE.md)
 owns implemented and live evidence; [roadmap](../ROADMAP.md) owns priorities.
 The [research record and reproducible scanner](evidence/event_interactions_2026_09_09/README.md)
@@ -9,7 +9,7 @@ retain the pinned source identity, scope and validation. The
 contains all 68 types, 105 branch groups, pool references, source method tokens
 and positive IL callsite offsets, plus immediate relic interactions.
 
-Implementation update, later on September 9: [repeated ordinary pages](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages)
+Current implementation overview (September 10): [repeated ordinary pages](GENERIC_EVENTS.md#implemented-repeated-ordinary-option-pages)
 and [pre-selector append increment](GENERIC_EVENTS.md#implemented-appended-cards-before-a-selector)
 now have representative live acceptance. [Removal followed by one appended grant](GENERIC_EVENTS.md#implemented-removal-followed-by-one-appended-grant)
 now has representative live acceptance through Amalgamator/CombineStrikes,
@@ -42,8 +42,10 @@ and map return (automatic Injury unverified); Darv/PandorasBox-style results
 confirmation passed with nine displayed cards, Confirm and map return. Automatic
 transformations and normal Darv pool eligibility remain unverified. [Optional card offers and one appended grant](GENERIC_EVENTS.md#implemented-optional-card-offers-and-one-appended-grant)
 now have HeftyTablet choose/Skip plus Injury live acceptance; grant provenance
-remains unverified. Embedded combat execution and
-resumption, full-inventory handling and nested pickup composition remain gaps. The preceding five tested
+remains unverified. [Non-resuming event combat](GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat)
+is now implemented in the checkout, with Dense Vegetation’s Fight page after Rest
+as its pending live case. Resuming/extra-reward combat, full-inventory handling
+and nested pickup composition remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
 The inventory and gap matrix below retain the original research comparison at

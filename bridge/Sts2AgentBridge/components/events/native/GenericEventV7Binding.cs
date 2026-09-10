@@ -55,6 +55,7 @@ internal sealed class GenericEventV7Binding
     internal CardSelectionV1DeckCard[] SelectionDeck {get;private set;}
     private bool _selectionDeckBound;
     internal readonly object? EmbeddedRoom;
+    internal GenericEventV7CombatHandoff? Combat;
     internal GenericEventV7ResultsAdapter? Results;
     internal GenericEventV7OfferAdapter? Offer;
     internal CardSelectorPrefs Prefs;

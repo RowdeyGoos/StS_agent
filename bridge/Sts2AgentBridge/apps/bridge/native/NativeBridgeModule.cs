@@ -129,7 +129,7 @@ internal sealed class NativeBridgeModule : IBridgeModule
                     var classification = GenericEventTerminalClassifier.Classify(route, GenericEventReleaseSelection.Generic, _nonce, 200, body);
                     return Checked(body, (int)classification, root => !request.IsPost && Text(root, "kind") == "decision" &&
                         root.TryGetProperty("parent", out var parent) && parent.ValueKind == JsonValueKind.Object &&
-                        Text(parent, "status") == "complete" && Text(parent, "phase") == "map_handoff") with { Diagnostic = native.LastDiagnostic, EventDiagnostic = true };
+                        Text(parent, "status") == "complete" && Text(parent, "phase") is "map_handoff" or "combat_handoff") with { Diagnostic = native.LastDiagnostic, EventDiagnostic = true, CombatScope=native.CombatScope };
                 };
     }
     private static string? Text(JsonElement value, string name) =>

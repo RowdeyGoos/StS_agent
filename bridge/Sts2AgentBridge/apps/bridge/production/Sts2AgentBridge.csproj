@@ -56,6 +56,7 @@
     <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7Binding.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CardAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7Hooks.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7ItemAdapter.cs" />

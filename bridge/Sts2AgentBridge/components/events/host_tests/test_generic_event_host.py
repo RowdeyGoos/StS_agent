@@ -17,7 +17,7 @@ D = ['%064x' % i for i in range(1, 12)]
 
 
 def env(kind='decision', parent=None, child=None, payload=None):
-    return dict(schema_version=1, protocol='generic_event_v7', session_nonce=N,
+    return dict(schema_version=1, protocol='generic_event_v8', session_nonce=N,
                 kind=kind, parent=parent, child=child, payload=payload)
 
 
@@ -45,7 +45,7 @@ def prior(decision=D[0], result='option_transition'):
 
 def receipt(decision=D[0], child=None, action='choose:0', outcome='accepted'):
     if child is None:
-        payload = dict(version='generic_event_v7', session_nonce=N, decision_id=decision, action_id=action, outcome=outcome)
+        payload = dict(version='generic_event_v8', session_nonce=N, decision_id=decision, action_id=action, outcome=outcome)
     else:
         payload = dict(schema_version=1, kind='child_receipt', version=child['contract_version'],
                        session_nonce=N, parent_ordinal=1, decision_id=decision, action_id=action, outcome=outcome)
@@ -69,6 +69,12 @@ def child_payload(phase='selecting', decision=D[2], history=None):
                 min_select=1, max_select=1, decision_id=decision,
                 candidates=[card(0, selected), card(1)], selected_slots=[0] if selected else [],
                 legal_actions=['confirm'] if selected else ['select:0', 'select:1'], prior_results=history or [])
+
+
+def combat_entry():
+    done = parent('complete', history=[prior(result='combat_handoff')], pa=1, pr=1)
+    done['phase'] = 'combat_handoff'
+    return [('GET', env(parent=parent())), ('POST', receipt()), ('GET', env(parent=done))]
 
 
 def ordinary():
@@ -163,6 +169,24 @@ def run(script, **kwargs):
 
 
 class GenericHostTests(unittest.TestCase):
+    def test_combat_entry_is_a_distinct_destination(self):
+        script = Script(combat_entry())
+        result = run(script)
+        self.assertEqual((result['status'], result['destination'], result['parent_reconciled']),
+                         ('resolved', 'combat_handoff', 1), result)
+        self.assertTrue(all(not any(buf) for buf in script.buffers))
+
+    def test_terminal_history_and_proceed_must_match_destination(self):
+        for mode in ['history', 'proceed', 'map_phase']:
+            rows = combat_entry()
+            if mode == 'history': rows[-1][1]['parent']['prior_results'][0]['result'] = 'option_transition'
+            if mode == 'proceed': rows[0] = ('GET', env(parent=parent(proceed=True)))
+            if mode == 'map_phase': rows[-1][1]['parent']['phase'] = 'map_handoff'
+            script = Script(rows)
+            result = run(script)
+            self.assertEqual(result['status'], 'failed', (mode, result))
+            self.assertEqual(sum(method == 'POST' for method, _, _ in script.calls), 1)
+
     def test_ordinary_page_and_explicit_proceed(self):
         script = Script(ordinary())
         result = run(script)

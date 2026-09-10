@@ -8,8 +8,8 @@ import unittest
 ROOT = Path(__file__).absolute().parents[3]
 sys.path[:0] = [str(ROOT / 'apps/bridge/client'), str(ROOT / 'components/events/host_tests'),
                str(ROOT / 'tools')]
-from run_live import run_event_map, verify_map_handoff
-from test_generic_event_host import host, Script, upgrade, ordinary
+from run_live import run_event_map, run_event_combat_map, verify_map_handoff
+from test_generic_event_host import host, Script, upgrade, ordinary, combat_entry
 import apply_map_live as maps
 
 
@@ -51,6 +51,41 @@ class EventMapTests(unittest.TestCase):
         result = run_event_map(request, host, clock=clock, sleep=clock.sleep)
         self.assertTrue(all(not any(b) for b in buffers + event.buffers))
         return result, event, calls
+
+    def test_event_map_does_not_confuse_combat_entry_with_map(self):
+        result, event, calls = self.run_flow([READY], combat_entry())
+        self.assertEqual(result['code'], 'event_destination_not_map')
+        self.assertEqual(result['event']['destination'], 'combat_handoff')
+        self.assertEqual(calls, [])
+
+    def test_event_combat_chain_preserves_each_stage(self):
+        from types import SimpleNamespace
+        for mode in ['success', 'defeat', 'combat_failure', 'reward_failure', 'map_failure', 'ordinary']:
+            rows = ordinary() if mode == 'ordinary' else combat_entry()
+            event = Script(rows)
+            calls = []
+            fight = dict(status='failed' if mode == 'combat_failure' else 'resolved',
+                         outcome='defeat' if mode == 'defeat' else 'victory',
+                         code='combat_stop' if mode == 'combat_failure' else None, accepted=3)
+            loot = dict(status='failed' if mode == 'reward_failure' else 'resolved',
+                        code='reward_stop' if mode == 'reward_failure' else None, accepted=2)
+            def combat_run(*args, **kwargs): calls.append('combat'); return fight
+            def reward_run(*args, **kwargs): calls.append('rewards'); return loot
+            def request(method, route, body):
+                if event.rows: return event(method, route, body)
+                calls.append('map')
+                return bytearray(json.dumps(maps._MAP_UNSUPPORTED if mode == 'map_failure' else READY).encode())
+            clock = Clock()
+            result = run_event_combat_map(request, host,
+                SimpleNamespace(run_combat=combat_run, first_select=lambda _: None),
+                SimpleNamespace(run_rewards=reward_run), clock=clock, sleep=clock.sleep)
+            self.assertEqual(result['event']['status'], 'resolved')
+            self.assertEqual(result['status'], 'resolved' if mode == 'success' else 'failed', result)
+            expected = [] if mode == 'ordinary' else ['combat'] if mode in ['defeat', 'combat_failure'] else ['combat', 'rewards'] if mode == 'reward_failure' else ['combat', 'rewards', 'map']
+            self.assertEqual(calls, expected, mode)
+            if mode != 'ordinary': self.assertEqual(result['combat_flow']['combat'], fight)
+            if mode in ['success', 'reward_failure', 'map_failure']: self.assertEqual(result['combat_flow']['rewards'], loot)
+            self.assertTrue(all(not any(buf) for buf in event.buffers))
 
     def test_completed_child_then_waiting_then_actionable_map(self):
         result, event, calls = self.run_flow([maps._MAP_WAITING, READY])

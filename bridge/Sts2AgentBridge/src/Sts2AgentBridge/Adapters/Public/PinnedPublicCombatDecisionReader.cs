@@ -21,6 +21,10 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
     private bool _observedCombatInProgress;
     private PublicCombatDecisionSnapshot? _terminalSnapshot;
 
+    // Called only after the unified event transfer certifies an in-progress
+    // exact combat. Do not reuse a prior encounter's terminal observation.
+    public void BeginObservedCombat() {_terminalSnapshot=null;_observedCombatInProgress=true;}
+
     public PublicCombatDecisionSnapshot Read()
     {
         CombatManager? manager = CombatManager.Instance;

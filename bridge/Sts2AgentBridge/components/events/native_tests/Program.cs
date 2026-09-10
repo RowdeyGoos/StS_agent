@@ -28,6 +28,41 @@ using Sts2AgentBridge.Successors.GenericEventV7.Native;
 
 internal static partial class Program
 {
+    private static void CombatHandoffCases()
+    {
+        foreach(var mode in new[]{"ok","resume","extra","wrong_encounter","wrong_player","wrong_parent","wrong_run","wrong_visuals","delayed"}) {
+            using var f=new Fixture("COMBAT");
+            var encounter=new EncounterModel();
+            var state=new MegaCrit.Sts2.Core.Combat.CombatState {Encounter=encounter,RunState=f.Player.RunState};
+            state.Players.Add(mode=="wrong_player"?new Player():f.Player);
+            var room=new MegaCrit.Sts2.Core.Rooms.CombatRoom {CombatState=state,ParentEventId=mode=="wrong_parent"?new ModelId():f.Model.Id};
+            NCombatRoom.Instance=new();NCombatRoom.Instance.SetVisuals(mode=="wrong_visuals"?new object():room);
+            var run=(RunState)f.Player.RunState;
+            MegaCrit.Sts2.Core.Runs.RunManager.Instance=new(){State=mode=="wrong_run"?new RunState():run};
+            MegaCrit.Sts2.Core.Combat.CombatManager.Instance=new(){State=null};
+            f.Model.CombatEntry=(e,rewards,resume)=>{
+                if(mode!="delayed") {run.CurrentRoom=room;MegaCrit.Sts2.Core.Combat.CombatManager.Instance.State=state;}
+                if(mode=="wrong_encounter")state.Encounter=new EncounterModel();
+            };
+            f.Room.Layout.OptionButtons[0].Option.Callback=()=>{f.Model.EnterCombatWithoutExitingEvent(encounter,
+                mode=="extra"?new MegaCrit.Sts2.Core.Rewards.Reward[]{new MegaCrit.Sts2.Core.Rewards.Reward()}:Array.Empty<MegaCrit.Sts2.Core.Rewards.Reward>(),mode=="resume");return Task.CompletedTask;};
+            var ready=f.Session.Read();Check(f.Session.Apply(ready.DecisionId,"choose:0").Outcome=="accepted","combat entry dispatch");
+            var result=f.Session.Read();
+            if(mode=="delayed") {Check(result.Status=="waiting","entry waits for actual combat");run.CurrentRoom=room;MegaCrit.Sts2.Core.Combat.CombatManager.Instance.State=state;result=f.Session.Read();}
+            if(mode is "ok" or "delayed")Check(result.Status=="complete"&&result.Phase=="combat_handoff"&&result.ParentReconciled==1&&result.ChildEpisodes==0,"exact combat transfer");
+            else Check(result.Status=="unsupported"&&result.ParentAccepted==1&&result.ParentReconciled==0,"combat mismatch stopped "+mode);
+            if(mode=="ok") {
+                var scope=f.Adapter.CombatScope!;
+                Check(scope(),"transferred combat remains bound after parent reconciliation");
+                var node=NCombatRoom.Instance;NCombatRoom.Instance=new();NCombatRoom.Instance.SetVisuals(room);
+                Check(!scope(),"replacement node rejects transfer");NCombatRoom.Instance=node;
+                state.RunState=new RunState();Check(!scope(),"replacement run rejects transfer");state.RunState=run;
+                state.Encounter=new EncounterModel();Check(!scope(),"replacement encounter rejects transfer");state.Encounter=encounter;
+                room.ShouldResumeParentEventAfterCombat=true;Check(!scope(),"late resume cannot broaden transfer");room.ShouldResumeParentEventAfterCombat=false;
+                Check(scope(),"original exact combat retained");
+            }
+        }
+    }
     private static int _checks;
     static void Check(bool okay,string name){_checks++;if(!okay)throw new Exception(name);}
     static void Main(string[] args)
@@ -174,6 +209,7 @@ internal static partial class Program
         ItemSetTests();
         CardRewardTests();
         CardRewardSetTests();
+        CombatHandoffCases();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)
@@ -454,6 +490,7 @@ internal static partial class Program
     private sealed class HeldOutEvent:EventModel{}
     internal sealed class Fixture:IDisposable
     {
+        internal readonly PinnedGenericEventV7NativeAdapter Adapter=new();
         internal readonly Player Player=new();
         internal readonly CardModel[] Cards;
         internal readonly EventModel Model;
@@ -527,7 +564,7 @@ internal static partial class Program
                 var screen=(NDeckEnchantSelectScreen)CreateScreen(cards);
                 screen.Setup(model,amount,prefs);EnchantScreen=screen;return screen;
             };
-            Session=new GenericEventV7Session(new PinnedGenericEventV7NativeAdapter(),new string('a',32));
+            Session=new GenericEventV7Session(Adapter,new string('a',32));
         }
         internal void AddOption(EventOption option)
         {

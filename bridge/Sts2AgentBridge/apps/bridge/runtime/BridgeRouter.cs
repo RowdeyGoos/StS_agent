@@ -10,7 +10,7 @@ namespace Sts2AgentBridge.Unified;
 
 internal readonly record struct ModuleReply(byte[] Body, bool Complete = false, bool Terminal = false,
     GenericEventDiagnosticCode Diagnostic = GenericEventDiagnosticCode.NotCaptured, bool EventDiagnostic = false,
-    bool StaleWithoutMutation = false);
+    bool StaleWithoutMutation = false, Func<bool>? CombatScope = null);
 internal readonly record struct BridgeReply(byte[] Response, bool Terminal, bool StaleWithoutMutation = false);
 
 internal interface IBridgeModule : IDisposable
@@ -58,6 +58,7 @@ internal sealed class BridgeRouter : IDisposable
                     // may be created until its hooks and bindings have actually been released.
                     _active.Dispose();
                     _active = null;
+                    if(reply.CombatScope is not null)_core.BindCombatScope(reply.CombatScope);
                 }
                 return Wrap(reply);
             }

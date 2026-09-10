@@ -17,6 +17,7 @@
     <Compile Include="GenericEventV7RewardAdapter.cs" />
     <Compile Include="GenericEventV7RemovalAdapter.cs" />
     <Compile Include="GenericEventV7Binding.cs" />
+    <Compile Include="GenericEventV7CombatHandoff.cs" />
     <Compile Include="GenericEventV7CardAdapter.cs" />
     <Compile Include="GenericEventV7Hooks.cs" />
     <Compile Include="PinnedGenericEventV7NativeAdapter.cs" />

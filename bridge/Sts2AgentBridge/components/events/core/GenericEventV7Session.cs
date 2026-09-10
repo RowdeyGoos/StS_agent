@@ -26,6 +26,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
     private IGenericEventV7ChildSession? _card;
     private GenericEventV7Child? _child;
     private bool _resolvedDelivered;
+    private string _destination="map_handoff";
     private int _completedCardChildren, _completedItemChildren;
     private ItemV1Observation? _itemPublished;
     private ItemV1DispatchReceipt? _itemReceipt;
@@ -56,7 +57,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
     {
         if (++_reads > GenericEventV7Limits.MaximumHostReads) _unsupported = true;
         if (_unsupported) return Observation("unsupported", "unsupported");
-        if (_complete) return Observation("complete", "map_handoff");
+        if (_complete) return Observation("complete", _destination);
         if (_card is not null)
         {
             if (!_resolvedDelivered) return Observation("child", "child");
@@ -97,6 +98,10 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 { Reconcile("map_handoff"); _complete = true; return Observation("complete", "map_handoff"); }
                 if (capture.Status is "waiting" or "parent") return Observation("waiting", "waiting");
                 return Stop();
+            }
+            if (capture.Status == "combat" && !_proceed && capture.ChildIdentity is null && capture.Admission is null) {
+                Reconcile("combat_handoff"); _destination="combat_handoff"; _complete=true;
+                return Observation("complete",_destination);
             }
             if (capture.Status == "waiting") return Observation("waiting", "waiting");
             if (capture.Status != "parent") return Stop();
