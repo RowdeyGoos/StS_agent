@@ -476,6 +476,33 @@
       "result_sha256": "f7ce7cca140938176d5773dba560e5618466eab11772507a1ba342fef89f31f7",
       "seconds": 1.054,
       "status": "passed"
+    },
+    {
+      "case": "Neow/LeadPaperweight Skip",
+      "event": {
+        "child_accepted": 0,
+        "child_attempted": 0,
+        "child_episodes": 0,
+        "child_reconciled": 0,
+        "code": "unsupported_state",
+        "completed_card_children": 0,
+        "completed_item_children": 0,
+        "effects": "none_attempted",
+        "parent_accepted": 0,
+        "parent_attempted": 0,
+        "parent_reconciled": 0,
+        "reads": 1,
+        "schema_version": 1,
+        "status": "failed",
+        "total_attempted": 0
+      },
+      "map_handoff": {
+        "status": "not_attempted"
+      },
+      "result_path": "/private/tmp/sts-leadpaperweight-skip-live-20260910-result.json",
+      "result_sha256": "3b9ae96533b9d40e03ba6005045b82c5dafe92d5be8403bb341bce0748916a89",
+      "seconds": 0.561,
+      "status": "failed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",

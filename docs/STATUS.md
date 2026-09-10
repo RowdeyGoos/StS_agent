@@ -1,6 +1,6 @@
 # Current integration status
 
-Updated 2026-09-09. This is the single current capability/evidence and operational
+Updated 2026-09-10. This is the single current capability/evidence and operational
 handoff page. [AGENTS.md](../AGENTS.md) owns workflow; [roadmap](../ROADMAP.md) owns
 priorities. Historical acceptance ledgers retain exact artifact identities.
 
@@ -156,8 +156,11 @@ Claws now has zero/partial/full live coverage. **Scroll Boxes bundle selection p
 unupgraded Havoc, Cinder and Feel No Pain, exact preview/Confirm, four reconciled
 actions and fresh map in **0.841 seconds**. **Lead Paperweight choice also passed**:
 unupgraded Dramatic Entrance, no additional card, three reconciled actions and
-fresh map in **1.054 seconds**. Its Skip branch without a grant is next; the same
-package remains installed and cleanup is pending after the batch.
+fresh map in **1.054 seconds**. The subsequent **Skip attempt stopped before any
+action** with `unsupported_state` / `parent_unavailable` in **0.561 seconds**.
+The user confirmed they had omitted the fresh-run setup and is preparing it now;
+the precise native admission condition is not established. Skip remains untested.
+The same package remains installed, with cleanup pending.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

@@ -1803,3 +1803,27 @@ Prepare a fresh Profile 3 run, enter a room from the map normally, run
 `ancient NEOW LEAD_PAPERWEIGHT`, close the console and leave the relic option
 untouched. This Skip policy has not run live. No source/build/install change is
 needed. Separate policy preparation/review times were not measured.
+
+### Lead Paperweight Skip admission stopped (2026-09-10)
+
+Fresh exact running-process and the unchanged reviewed policy hash passed, as did
+release/source/owned installation and authenticated health/manifest checks. The
+first event read returned `unsupported_state` with diagnostic `parent_unavailable`.
+**Zero parent or child actions were attempted, accepted or reconciled**; no child
+was admitted and map handoff was not attempted. Effects are `none_attempted`.
+Policy time: **0.561 seconds**. The user confirmed the relic option is visible.
+
+The diagnostic covers multiple parent admission checks (world/map/overlay,
+layout and binding identity); it does not identify which prerequisite failed.
+This is not the earlier `invalid_response` startup failure and does not exercise
+Skip or its deck outcome. No retry or source/build change was made. The fifteenth
+installation remains active; setup context is being clarified and cleanup is
+pending. No profile/save/history/Cloud filesystem content was accessed.
+Result: `/private/tmp/sts-leadpaperweight-skip-live-20260910-result.json`, SHA-256
+`3b9ae96533b9d40e03ba6005045b82c5dafe92d5be8403bb341bce0748916a89`.
+
+The user subsequently confirmed they had forgotten to start a fresh run and will
+correct the setup. This establishes the setup mismatch, not the exact native
+predicate behind the diagnostic. The same reviewed Skip policy and unchanged
+release will be used only after fresh readiness; no mutation was sent in this
+stopped attempt.
