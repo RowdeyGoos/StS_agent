@@ -479,11 +479,15 @@ potion and relic rewards in one owned nonterminal RewardsSet**, with at least on
 card and one item. The pinned concrete caller is **LostCoffer.AfterObtained**:
 its generated list contains a three-card CardReward followed by a PotionReward,
 passed to `RewardsCmd.OfferCustom`. Lost Coffer is offered by Neow; reaching that
-pickup through Neow can now use the ancient layout support below. The mixed-set
-fixtures cover the shared reward surface; a full live Lost Coffer route remains
-unverified.
+pickup through Neow can now use the ancient layout support below. The live
+admitted set was ordered potion then card, despite card-first callback construction.
+The first policy stopped before child input because it assumed construction order.
+The mixed-set fixtures cover the shared reward surface; a full live Lost Coffer
+route remains unverified.
 
-Entries retain generated-list order. Cards use `open:N`, `choose:N:S` and legal
+Entries retain the admitted native reward-list order; callers must use exposed
+`offer_kinds` rather than infer order from callback construction. Cards use
+`open:N`, `choose:N:S` and legal
 `skip:N`; items use `collect:N` through the existing item adapter and exact native
 collection task. Each item settles after its collection succeeds and its exact
 model/claim effect is verified. Offer and Chosen completion belong to the whole

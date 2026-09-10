@@ -1887,3 +1887,44 @@ Prepare a fresh Profile 3 run with **at least one free potion slot**, enter a ro
 normally from the map, run `ancient NEOW LOST_COFFER`, close the console and leave
 the relic option untouched. The policy has not run live yet. No source/build/install
 change is needed; separate policy preparation/review times were not measured.
+
+### Lost Coffer test-policy order mismatch (2026-09-10)
+
+Fresh running-process, reviewed policy hash, release/source/owned installation and
+authenticated health/manifest checks passed. The parent relic action was attempted
+and accepted once, but remained unreconciled. One mixed child was admitted; the
+policy rejected its initial view with `provider_failed`. **Zero child inputs**
+were attempted, accepted or reconciled. No card choice or potion collection was
+sent, and map handoff was not attempted. Time: **0.356 seconds**. Parent effects
+remain unverified; the accepted pickup is not recorded as completed.
+Result: `/private/tmp/sts-lostcoffer-live-20260910-result.json`, SHA-256
+`310dc65f9640d37f08344d6c47242d84a2d204e8f97e648463a8e0f009883983`.
+
+One read-only public decision check then observed `mixed_reward_set_v1`, two
+offers, **potion then card**, phase collect, index zero and legal `collect:0`.
+The policy's card-first assumption was wrong. The callback's construction order
+alone did not establish the final offered order; no production bridge defect is
+established by this result. Read-only check time: **0.202 seconds**.
+Result: `/private/tmp/sts-lostcoffer-read-20260910-result.json`, SHA-256
+`27162bf66d7f0ae50de34fec491fb17540a392e2a1b7bfa3f2944c697280197e`.
+
+The user quit normally before a new attempt. No uncertain mutation was retried,
+and no profile/save/history/Cloud filesystem content was accessed. The original
+policy is preserved at `/private/tmp/sts-lostcoffer-cardfirst-live-20260910.py` with
+its original hash. The corrected test will use the observed potion-first order;
+the production package remains unchanged and final cleanup is pending.
+
+Normal shutdown was verified with **three stopped-process samples and two closed-port
+samples**. The corrected policy `/private/tmp/sts-lostcoffer-live-20260910.py`, SHA-256
+`b10c1de95d3d7c9b3272fea8c2e81816ad62dc0f8e7a25bcb6da29d867b416a0`, passed **37 frozen-view checks** and
+independent semantic review with no blockers. Retained metadata also confirms
+`RewardsSet.GenerateWithoutOffering` sorts rewards at IL355 by ascending
+`Reward.RewardsSetIndex`; construction order is not final offered order.
+The corrected policy requires `collect:0` → `open:1` → `choose:1:0`, exact typed
+potion/card settlements, three reconciled child actions and a fresh map. The full
+native ownership and retained-effects checks remain unchanged.
+
+Same-build relaunch is ready: fresh Profile 3 run, one free potion slot, normal
+map-room entry, `ancient NEOW LOST_COFFER`, console closed, relic option untouched.
+No source/build/install change was made. Separate preparation/review times were
+not measured. Cleanup remains pending; verified shutdown is not removal.

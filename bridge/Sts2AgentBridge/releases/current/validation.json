@@ -544,6 +544,33 @@
       "seconds": 1.443,
       "selected_index": null,
       "status": "passed"
+    },
+    {
+      "case": "Neow/LostCoffer",
+      "event": {
+        "child_accepted": 0,
+        "child_attempted": 0,
+        "child_episodes": 1,
+        "child_reconciled": 0,
+        "code": "provider_failed",
+        "completed_card_children": 0,
+        "completed_item_children": 0,
+        "effects": "unverified",
+        "parent_accepted": 1,
+        "parent_attempted": 1,
+        "parent_reconciled": 0,
+        "reads": 2,
+        "schema_version": 1,
+        "status": "failed",
+        "total_attempted": 1
+      },
+      "map_handoff": {
+        "status": "not_attempted"
+      },
+      "result_path": "/private/tmp/sts-lostcoffer-live-20260910-result.json",
+      "result_sha256": "310dc65f9640d37f08344d6c47242d84a2d204e8f97e648463a8e0f009883983",
+      "seconds": 0.356,
+      "status": "failed"
     }
   ],
   "release_manifest_sha256": "c6670ae435c0d1ba33af202d89b693fa7bfd469da988a2b3462d09e1cdfd0eb5",
