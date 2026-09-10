@@ -29,7 +29,7 @@ internal static class GenericEventTerminalClassifier
             using var document = JsonDocument.Parse(body, new JsonDocumentOptions { MaxDepth = 12 });
             var root = document.RootElement;
             if (!Bounded(root) || !Keys(root, "schema_version", "protocol", "session_nonce", "kind", "parent", "child", "payload") ||
-                root.GetProperty("schema_version").GetInt32() != 1 || Text(root,"protocol") != "generic_event_v8" || Text(root,"session_nonce") != nonce)
+                root.GetProperty("schema_version").GetInt32() != 1 || Text(root,"protocol") != "generic_event_v9" || Text(root,"session_nonce") != nonce)
                 return TerminalClassification.Invalid;
             canonical = JsonSerializer.SerializeToUtf8Bytes(root);
             if (!body.AsSpan().SequenceEqual(canonical)) return TerminalClassification.Invalid;
@@ -45,7 +45,7 @@ internal static class GenericEventTerminalClassifier
                 if (route == GenericEventTransportRoute.ParentPost)
                 {
                     if (!Null(child) || !Keys(payload,"version","session_nonce","decision_id","action_id","outcome") ||
-                        Text(payload,"version") != "generic_event_v8") return TerminalClassification.Invalid;
+                        Text(payload,"version") != "generic_event_v9") return TerminalClassification.Invalid;
                 }
                 else if (!Null(child) && Text(child,"kind")=="item") return Item(payload,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_results") return Results(payload,child,nonce,true);
@@ -87,7 +87,7 @@ internal static class GenericEventTerminalClassifier
             }
             if (!Null(child) || !Null(payload)) return TerminalClassification.Invalid;
             return status switch {
-                "complete" when phase is "map_handoff" or "combat_handoff" => TerminalClassification.Terminal,
+                "complete" when phase is "map_handoff" or "combat_handoff" or "combat_resume_handoff" => TerminalClassification.Terminal,
                 "unsupported" => TerminalClassification.Terminal,
                 "ready" or "waiting" => TerminalClassification.NonTerminal,
                 _ => TerminalClassification.Invalid };

@@ -8,7 +8,7 @@ import unittest
 ROOT = Path(__file__).absolute().parents[3]
 sys.path[:0] = [str(ROOT / 'apps/bridge/client'), str(ROOT / 'components/events/host_tests'),
                str(ROOT / 'tools')]
-from run_live import run_event_map, run_event_combat_map, verify_map_handoff
+from run_live import run_event_map, run_event_combat_map, event_option_policy, verify_map_handoff
 from test_generic_event_host import host, Script, upgrade, ordinary, combat_entry
 import apply_map_live as maps
 
@@ -51,6 +51,43 @@ class EventMapTests(unittest.TestCase):
         result = run_event_map(request, host, clock=clock, sleep=clock.sleep)
         self.assertTrue(all(not any(b) for b in buffers + event.buffers))
         return result, event, calls
+
+    def test_resumed_event_then_map_preserves_both_event_sessions(self):
+        from types import SimpleNamespace
+        for mode in ['success', 'resume_failure', 'event_failure', 'map_failure']:
+            first = Script(combat_entry(True)); second = Script(ordinary())
+            resumed = False; calls = []
+            def combat_run(*args, **kwargs):
+                nonlocal resumed
+                self.assertEqual(kwargs['event_resume_nonce'], 'a'*32)
+                resumed = True; calls.append('combat')
+                return dict(status='failed' if mode == 'resume_failure' else 'resolved',
+                            code='resume_stop' if mode == 'resume_failure' else None, outcome='event_resumed')
+            def request(method, route, body):
+                if not resumed: return first(method, route, body)
+                if second.rows:
+                    if mode == 'event_failure': raise OSError('stopped')
+                    return second(method, route, body)
+                calls.append('map')
+                return bytearray(json.dumps(maps._MAP_UNSUPPORTED if mode == 'map_failure' else READY).encode())
+            clock = Clock()
+            result = run_event_combat_map(request, host, SimpleNamespace(run_combat=combat_run,first_select=None),
+                SimpleNamespace(), clock=clock,sleep=clock.sleep)
+            self.assertEqual(result['status'], 'resolved' if mode == 'success' else 'failed', result)
+            self.assertEqual(result['event']['destination'], 'combat_resume_handoff')
+            flow=result['combat_flow']
+            self.assertEqual(flow['combat']['outcome'], 'event_resumed')
+            self.assertEqual(calls, ['combat','map'] if mode in ['success','map_failure'] else ['combat'])
+            if mode == 'map_failure': self.assertEqual(flow['resumed_event']['status'], 'resolved')
+            self.assertTrue(all(not any(buf) for buf in first.buffers+second.buffers))
+
+    def test_explicit_option_never_falls_back_before_requested_choice(self):
+        from test_generic_event_host import run
+        for key, expected in [('UNREGISTERED.option','resolved'),('MISSING','failed')]:
+            script=Script(ordinary())
+            result=host.run_event(script,provider=event_option_policy(host,key))
+            self.assertEqual(result['status'],expected,result)
+            if key=='MISSING': self.assertFalse(any(method=='POST' for method,_,_ in script.calls))
 
     def test_event_map_does_not_confuse_combat_entry_with_map(self):
         result, event, calls = self.run_flow([READY], combat_entry())

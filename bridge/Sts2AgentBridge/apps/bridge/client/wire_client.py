@@ -7,6 +7,7 @@ import socket
 import time
 
 ROUTES = {
+    "/probe/event-combat-v1/public/decision": False,
     "/probe/v0/health": False, "/probe/v0/manifest": False, "/probe/v0/public/screen": False,
     **{f"/probe/v0/public/{family}-{operation}": operation == "action"
        for family in ("combat", "reward", "map", "room") for operation in ("decision", "action")},

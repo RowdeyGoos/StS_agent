@@ -262,7 +262,7 @@ public sealed class GenericEventV7WireService : IDisposable
     {
         Require(p.Version == GenericEventV7Limits.Version && p.SessionNonce == _nonce);
         Require((p.Status, p.Phase) is ("ready", "choose_option") or ("ready", "proceed") or
-            ("waiting", "waiting") or ("child", "child") or ("complete", "map_handoff") or ("complete", "combat_handoff") or
+            ("waiting", "waiting") or ("child", "child") or ("complete", "map_handoff") or ("complete", "combat_handoff") or ("complete", "combat_resume_handoff") or
             ("unsupported", "unsupported"));
         Require(p.ParentAttempted >= 0 && p.ParentAttempted <= _parentAttempts &&
             p.ParentReconciled >= 0 && p.ParentReconciled <= p.ParentAccepted &&
@@ -290,7 +290,7 @@ public sealed class GenericEventV7WireService : IDisposable
         Require(p.PriorResults.Count == p.ParentReconciled && p.PriorResults.Count <= 12);
         foreach (GenericEventV7PriorResult r in p.PriorResults)
             Require(Hex(r.DecisionId, 64) && ParentAction(r.ActionId) &&
-                r.Result is "option_transition" or "child_completed" or "map_handoff" or "combat_handoff");
+                r.Result is "option_transition" or "child_completed" or "map_handoff" or "combat_handoff" or "combat_resume_handoff");
         if (_previous is not null)
         {
             Require(p.ParentAttempted >= _previous.ParentAttempted && p.ParentAccepted >= _previous.ParentAccepted &&

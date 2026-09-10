@@ -18,6 +18,7 @@ using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Rewards;
 using MegaCrit.Sts2.Core.Nodes.Screens;
 using NativeHook = MegaCrit.Sts2.Core.Hooks.Hook;
@@ -38,6 +39,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private readonly Harmony _harmony = new(Owner);
     private readonly List<MethodInfo> _methods = new();
     private readonly Dictionary<MethodInfo,MethodInfo[]> _patchMethods = new();
+    private GenericEventV7CombatHandoff? _resume;
     private bool _disposed;
     private bool _installationComplete;
     private readonly Action? _cleanupProbe;
@@ -171,6 +173,45 @@ public sealed class GenericEventV7Hooks : IDisposable
         foreach(var method in _methods)
             foreach(var patch in _patchMethods[method]) _harmony.Unpatch(method,patch);
     }
+    private void WatchResume(GenericEventV7CombatHandoff combat)
+    {
+        var method=combat.ResumeMethod;
+        if(_resume is not null||Harmony.GetPatchInfo(method)?.Owners.Count>0)throw new InvalidOperationException("Resume hook already owned.");
+        _resume=combat;
+        var patches=new[]{Hook("ResumePrefix"),Hook("ResumePostfix"),Hook("ResumeFinalizer")};
+        _methods.Add(method);_patchMethods.Add(method,patches);
+        _harmony.Patch(method,new HarmonyMethod(patches[0]),new HarmonyMethod(patches[1]),finalizer:new HarmonyMethod(patches[2]));
+    }
+    internal void PauseForCombat()
+    {
+        if(_resume is null||_armed is not null||!ExactPatches())throw new InvalidOperationException("Resume transfer unavailable.");
+        _cleanupProbe?.Invoke();
+        if(!ExactPatches())throw new InvalidOperationException("Hook ownership changed during combat transfer cleanup.");
+        foreach(var method in _methods.ToArray()) {
+            if(method==_resume.ResumeMethod)continue;
+            foreach(var patch in _patchMethods[method])_harmony.Unpatch(method,patch);
+            if(AllPatches(method).Any(p=>p.owner==Owner&&_patchMethods[method].Contains(p.PatchMethod)))
+                throw new InvalidOperationException("Event hooks remain active during combat.");
+            _methods.Remove(method);_patchMethods.Remove(method);
+        }
+    }
+    internal string ResumeStatus()
+    {
+        if(_disposed||Environment.CurrentManagedThreadId!=_thread||!ExactPatches())return "unsupported";
+        return _resume?.ResumeStatus()??"unsupported";
+    }
+    private static void ResumePrefix(EventModel __instance,AbstractRoom __0,out GenericEventV7CombatHandoff? __state)
+    {
+        __state=_installed?._resume;
+        try {
+            if(__state is null||_installed is null||Environment.CurrentManagedThreadId!=_installed._thread||!_installed.ExactPatches())throw new InvalidOperationException();
+            __state.EnterResume(__instance,__0);
+        }catch{__state?.FailResume();}
+    }
+    private static void ResumePostfix(Task __result,GenericEventV7CombatHandoff? __state)
+    {try{__state?.CaptureResumeTask(__result);}catch{__state?.FailResume();}}
+    private static void ResumeFinalizer(Exception? __exception,GenericEventV7CombatHandoff? __state)
+    {if(__exception is not null)__state?.FailResume();}
     internal static void Close(GenericEventV7Binding binding)
     {
         binding.Closed = true;
@@ -211,6 +252,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         try {
             if(!Owns(b)||!ReferenceEquals(b.EventModel,__instance)||b.Combat is not null)throw new InvalidOperationException();
             b.Combat=new GenericEventV7CombatHandoff(b,__0,__1,__2);
+            if(__2)_installed!.WatchResume(b.Combat);
         }catch {b.Failed=true;}
     }
     private static void CombatEntryPostfix(State? __state) {if(__state?.Binding?.Combat is {} combat)combat.Returned=true;}

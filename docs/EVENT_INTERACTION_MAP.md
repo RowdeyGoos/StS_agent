@@ -44,8 +44,10 @@ transformations and normal Darv pool eligibility remain unverified. [Optional ca
 now have HeftyTablet choose/Skip plus Injury live acceptance; grant provenance
 remains unverified. [Non-resuming event combat](GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat)
 is now implemented in the checkout, with Dense Vegetation’s Fight page after Rest
-as its pending live case. Resuming/extra-reward combat, full-inventory handling
-and nested pickup composition remain gaps. The preceding five tested
+as its pending live case. [Event resumption](GENERIC_EVENTS.md#implemented-offline-event-combat-resumption)
+is also implemented offline, with Battleworn Dummy Setting2/training expiry as
+pending live cases. Interactive resume children, extra combat rewards,
+full-inventory handling and nested pickups remain gaps. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
 The inventory and gap matrix below retain the original research comparison at
@@ -314,9 +316,11 @@ rewards, fixed-two enchantment, generic transformation, ancient options, optiona
 selection, card offers/bundles, inactive combat layout and results acknowledgment
 now have representative live acceptance.
 
-Remaining feature work is event-combat execution/resumption, full-inventory and
-nested pickup composition, broader deck changes around selectors, and custom or
-terminal surfaces. Battleworn Dummy is the next concrete combat-return candidate.
+Event-combat exit and callback-verified resumption are now implemented offline.
+Remaining feature work includes interactive children during resume, extra combat
+rewards, full-inventory/nested pickup composition, broader deck changes around
+selectors, and custom or terminal surfaces. Battleworn Dummy Setting1’s potion
+offer is a concrete next resume-child candidate.
 Additional fixed counts and held-out callers may need validation rather than new
 adapters. No sequential-selector caller was established by the corrected Sea Glass
 research. [Roadmap](../ROADMAP.md) owns ordering; the static census does not measure

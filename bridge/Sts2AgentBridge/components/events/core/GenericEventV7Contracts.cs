@@ -6,7 +6,7 @@ namespace Sts2AgentBridge.Successors.GenericEventV7;
 
 public static class GenericEventV7Limits
 {
-    public const string Version = "generic_event_v8";
+    public const string Version = "generic_event_v9";
     public const int MaximumCandidates = 8;
     public const int MaximumParentActions = 12;
     public const int MaximumChildEpisodes = 4;

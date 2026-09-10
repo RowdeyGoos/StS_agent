@@ -226,7 +226,7 @@ Molten Egg upgraded the added Bashes; unupgraded Defend skills supplied this cas
 
 The shared `CardSelectCmd.FromDeckForEnchantment` request and
 `NDeckEnchantSelectScreen` now form a `card_enchant_v1` child of the existing
-`generic_event_v8` parent. No event-name admission rule is added. Sapphire Seed's
+`generic_event_v9` parent. No event-name admission rule is added. Sapphire Seed's
 observed Plant and Nourish branch is the representative live target. Pinned
 metadata also confirms `FieldOfManSizedHoles.EnterYourHole` requests one card,
 applies an enchantment and finishes the event.
@@ -818,7 +818,7 @@ encounter, logical combat room, parent event ID and `NCombatRoom` node, includin
 its native `_visuals` room reference. A mismatch stops the session. This observes
 combat entry, not victory or automatic parent effects.
 
-Parent protocol `generic_event_v8` adds `complete/combat_handoff` and its matching
+Parent protocol `generic_event_v9` includes `complete/combat_handoff` and its matching
 history result. The existing `/probe/generic-event-v7/` routes remain stable;
 older protocol clients reject the new version. `map_handoff` still requires an
 accepted Proceed. The Python summary exposes `destination`, so `event-map` cannot
@@ -836,11 +836,66 @@ the latter retains combat, rewards and map results even when a later stage fails
 Defeat does not start rewards. Existing reward coverage remains gold/card only;
 other reward surfaces stop with the preceding evidence intact.
 
-This feature is **unreleased and not live-demonstrated**. Resuming entries such as
-Battleworn Dummy, event-supplied extra rewards, and arbitrary embedded combat
-branches remain unsupported. Battleworn Dummy replaces its event node and starts
-a discarded resume task; normal fight completion alone cannot certify resumed
-event effects or readiness. That is the next separate increment.
+This feature is **unreleased and not live-demonstrated**. The resuming path below
+adds a separate callback witness; event-supplied extra rewards and arbitrary
+embedded combat branches remain unsupported.
+
+## Implemented offline: event combat resumption
+
+The same entry observer now admits `shouldResumeParentEventAfterCombat=true`
+with no event-supplied extra rewards. It binds the original logical `EventRoom`
+and the concrete `EventModel.Resume(AbstractRoom): Task` declaration before the
+fight can end. The initial event session resolves to `combat_resume_handoff`,
+with matching history and a retained session nonce, rather than claiming map
+return or victory. **Battleworn Dummy Setting2** and **training time expiry** are
+the representative pending live cases. Setting2’s automatic upgrades remain
+unverified effects.
+
+The original event module remains the cleanup owner during combat. After the
+owned choice task and exact combat entry reconcile, ordinary event hooks are
+removed while the exact resume hook remains. Ownership is rechecked immediately
+before unpatching; interference or cleanup failure stops the bridge. Core combat
+and combat-choice routes use the same native legality and action bounds as before.
+Other capability routes remain blocked.
+
+The read-only `/probe/event-combat-v1/public/decision` route returns schema 1,
+protocol `event_combat_v1`, the initial event `session_nonce`, and status
+`combat`, `waiting` or `resumed`. It is available only during an owned resuming
+combat. An ending fight or room transition waits for the callback; a late combat
+POST is rejected before dispatch as stale. Unknown identities and callback
+fault/cancellation stop the host. No uncertain action is retried.
+
+`EventRoom.Resume` is not a completion witness: it starts callbacks without
+awaiting them and creates the replacement event node immediately. The bridge
+instead requires exactly one callback on the original mutable event, with the
+exact exited combat room, and retains the returned Task. Success also requires
+the original logical event room, run and player, the new `NEventRoom` matching
+that event’s Node, and no active overlay/capstone. A new node alone cannot finish
+a pending callback. An unresolved combat chooser blocks release. Successful
+module disposal precedes clearing the core combat scope and pending action.
+
+`event-combat-map` now handles both destinations. For `combat_resume_handoff`, the
+combat host polls the nonce-bound continuation route within its existing
+300-second/4096-loop bound, preserving attempted/accepted/reconciled actions.
+A successful return is `event_resumed`; training expiry is never labeled victory.
+Then one fresh event session runs through Proceed, followed by the existing
+five-second actionable-map check. The composite retains `event`, plus
+`combat_flow.combat`, `resumed_event` and `map_handoff` even if a later stage fails.
+Another combat from that resumed session is not recursively driven in this batch.
+
+`--event-option` selects one exact, currently legal first parent option by its
+stable ID, then falls back to the existing first-legal policy. A missing, locked
+or ambiguous requested option stops before input; the bridge does not guess a
+replacement. For the representative setup use
+`--event-option BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2` with
+`--capability event-combat-map`. This is a reusable host policy, not a native
+event allowlist or a strategic policy.
+
+This batch is **unreleased and not live-demonstrated**. Resume callbacks requiring
+interactive reward/pickup screens remain unsupported (for example a successful
+Setting1 potion offer, or a Setting3 relic that opens a selector). Passive callback
+completion does not certify its automatic rewards/upgrades. Extra combat rewards,
+recursive combat/resume cycles and terminal run progression remain separate work.
 
 ## Separate remaining questions
 
@@ -853,7 +908,7 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader pickup composition, resuming/extra-reward event combat, repeated/nested pickup children and custom
+changes after selectors, other pre-selector deck mutations, broader pickup composition, resume-time children/extra-reward event combat, repeated/nested pickup children and custom
 surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
 is implemented above; Bird passed live, while Torus remains a branch candidate.
 

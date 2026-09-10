@@ -14,7 +14,7 @@ from typing import Any, Callable, Mapping
 
 DECISION_ROUTE = '/probe/generic-event-v7/public/decision'
 ACTION_ROUTE = '/probe/generic-event-v7/public/action'
-VERSION = 'generic_event_v8'
+VERSION = 'generic_event_v9'
 _FIELDS = ('parent_attempted', 'parent_accepted', 'parent_reconciled',
            'child_episodes', 'child_attempted', 'child_accepted', 'child_reconciled')
 _PARENT = ('status', 'phase', 'decision_id', 'candidates', 'legal_actions',
@@ -278,7 +278,7 @@ class _Controller:
         _keys(p, _PARENT)
         _require(p['status'] in ('ready', 'waiting', 'child', 'unsupported', 'complete'))
         phases = {'ready': ('choose_option', 'proceed'), 'waiting': ('waiting',),
-                  'child': ('child',), 'unsupported': ('unsupported',), 'complete': ('map_handoff', 'combat_handoff')}
+                  'child': ('child',), 'unsupported': ('unsupported',), 'complete': ('map_handoff', 'combat_handoff', 'combat_resume_handoff')}
         _require(p['phase'] in phases[p['status']])
         _require(p['effects'] in ('none_attempted', 'unverified', 'card_effect_verified', 'item_effect_verified'))
         _require(_integer(p['completed_card_children'], 4) and
@@ -293,14 +293,14 @@ class _Controller:
         for i, row in enumerate(history):
             _keys(row, ('decision_id', 'action_id', 'result'))
             _require((row['decision_id'], row['action_id']) == self.parent_receipts[i])
-            _require(row['result'] in ('option_transition', 'child_completed', 'map_handoff', 'combat_handoff'))
+            _require(row['result'] in ('option_transition', 'child_completed', 'map_handoff', 'combat_handoff', 'combat_resume_handoff'))
             owner = self.parent_receipts[i]
             if row['result'] == 'child_completed':
                 _require(owner in self.child_parents and (i < len(self.parent_history) or self.child_done))
             if row['result'] == 'map_handoff':
                 _require(i == len(self.parent_receipts) - 1 and self.last_proceed and p['status'] == 'complete')
-            if row['result'] == 'combat_handoff':
-                _require(i == len(self.parent_receipts) - 1 and not self.last_proceed and owner not in self.child_parents and p['status'] == 'complete' and p['phase'] == 'combat_handoff')
+            if row['result'] in ('combat_handoff', 'combat_resume_handoff'):
+                _require(i == len(self.parent_receipts) - 1 and not self.last_proceed and owner not in self.child_parents and p['status'] == 'complete' and p['phase'] == row['result'])
             if row['result'] == 'option_transition':
                 _require(owner not in self.child_parents and not (i == len(self.parent_receipts) - 1 and self.last_proceed))
         completed_history = [(row['decision_id'], row['action_id']) for row in history
@@ -869,6 +869,7 @@ class _Controller:
                     self.effects = response['parent']['effects']
                     result = self.summary('resolved', None)
                     result['destination'] = response['parent']['phase']
+                    result['session_nonce'] = self.nonce
                     return result
             if status == 'unsupported':
                 raise _Stop('unsupported_state')

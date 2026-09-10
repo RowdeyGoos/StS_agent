@@ -63,6 +63,51 @@ internal static partial class Program
             }
         }
     }
+    private static void CombatResumeCases()
+    {
+        foreach(var mode in new[]{"sync","sync_override","ending","delayed","cleanup_interference","wrong_model","wrong_room","fault","cancel","duplicate","overlay","wrong_node","changed_combat"}) {
+            using var f=new Fixture(mode=="sync_override"?"RESUME_OVERRIDE":"RESUME");
+            var run=(RunState)f.Player.RunState;
+            var original=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};run.CurrentRoom=original;f.Model.Node=f.Room;
+            var encounter=new EncounterModel();
+            var state=new MegaCrit.Sts2.Core.Combat.CombatState{Encounter=encounter,RunState=run};state.Players.Add(f.Player);
+            var combatRoom=new MegaCrit.Sts2.Core.Rooms.CombatRoom{CombatState=state,ParentEventId=f.Model.Id,ShouldResumeParentEventAfterCombat=true};
+            RunManager.Instance=new(){State=run};MegaCrit.Sts2.Core.Combat.CombatManager.Instance=new(){State=null};
+            f.Model.CombatEntry=(_,_,_)=>{run.CurrentRoom=combatRoom;MegaCrit.Sts2.Core.Combat.CombatManager.Instance.State=state;NCombatRoom.Instance=new();NCombatRoom.Instance.SetVisuals(combatRoom);};
+            f.Room.Layout.OptionButtons[0].Option.Callback=()=>{f.Model.EnterCombatWithoutExitingEvent(encounter,Array.Empty<MegaCrit.Sts2.Core.Rewards.Reward>(),true);return Task.CompletedTask;};
+            var ready=f.Session.Read();Check(f.Session.Apply(ready.DecisionId,"choose:0").Outcome=="accepted","resume combat dispatch");
+            if(mode=="cleanup_interference") {
+                var target=typeof(EventOption).GetMethod("Chosen")!;
+                var owned=HarmonyLib.Harmony.GetPatchInfo(target)!.Prefixes.Single().PatchMethod;
+                var foreign=new HarmonyLib.Harmony("fixture.resume.cleanup");bool injected=false;
+                var hooks=typeof(PinnedGenericEventV7NativeAdapter).GetField("_hooks",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance)!.GetValue(f.Adapter);
+                typeof(GenericEventV7Hooks).GetField("_cleanupProbe",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance)!.SetValue(hooks,(Action)(()=>{if(!injected){injected=true;foreign.Patch(target,prefix:new HarmonyLib.HarmonyMethod(owned));}}));
+                try {
+                    var stopped=f.Session.Read();Check(stopped.Status=="unsupported","foreign reuse at pause boundary stops transfer");
+                    var patches=HarmonyLib.Harmony.GetPatchInfo(target)!;
+                    Check(patches.Prefixes.Any(p=>p.owner=="fixture.resume.cleanup")&&patches.Prefixes.Any(p=>p.owner=="sts2agent.generic_event_v7"),"pause failure preserves both cleanup owners");
+                }finally{foreign.Unpatch(target,HarmonyLib.HarmonyPatchType.All,"fixture.resume.cleanup");}
+                continue;
+            }
+            var entry=f.Session.Read();Check(entry.Status=="complete"&&entry.Phase=="combat_resume_handoff"&&entry.ParentReconciled==1,"resumable combat entry distinct: "+entry.Status+"/"+entry.Phase+"/"+f.Adapter.LastDiagnostic);
+            var poll=f.Adapter.CombatResume!;
+            Check(poll()=="combat","same training combat observed");
+            Check(HarmonyLib.Harmony.GetPatchInfo(typeof(EventOption).GetMethod("Chosen"))?.Owners.Count is null or 0,"ordinary event hooks released for combat");
+            if(mode=="changed_combat") {NCombatRoom.Instance=new();Check(poll()=="unsupported","unrelated combat node stops");continue;}
+            if(mode=="ending") {MegaCrit.Sts2.Core.Combat.CombatManager.Instance.IsOverOrEnding=true;Check(poll()=="waiting","training expiry is not normal combat victory");}
+            var gate=new TaskCompletionSource();
+            f.Model.ResumeCallback=room=>mode=="fault"?Task.FromException(new Exception()):mode=="cancel"?Task.FromCanceled(new System.Threading.CancellationToken(true)):mode=="delayed"||mode=="overlay"?gate.Task:Task.CompletedTask;
+            run.CurrentRoom=original;
+            if(mode=="wrong_model")_=new EventModel().Resume(combatRoom);
+            else _=f.Model.Resume(mode=="wrong_room"?new MegaCrit.Sts2.Core.Rooms.CombatRoom():combatRoom);
+            if(mode=="duplicate")_=f.Model.Resume(combatRoom);
+            if(mode=="sync")Check(poll()=="waiting","successful synchronous callback waits for new node");
+            var node=new NEventRoom();f.Run.EventRoom=node;NEventRoom.Instance=node;f.Model.Node=mode=="wrong_node"?new NEventRoom():node;
+            if(mode=="delayed") {Check(poll()=="waiting","new node alone does not finish callback");gate.SetResult();}
+            if(mode=="overlay") f.Overlays.Screens.Add(new Control());
+            Check(poll()==(mode is "sync" or "sync_override" or "ending" or "delayed"?"resumed":"unsupported"),"resume exact completion or stop: "+mode);
+        }
+    }
     private static int _checks;
     static void Check(bool okay,string name){_checks++;if(!okay)throw new Exception(name);}
     static void Main(string[] args)
@@ -77,6 +122,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--optional-events"})){OptionalEventTests();Console.WriteLine("optional event checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-offers"})){OfferTests();Console.WriteLine("card offer checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--combat-resume"})){CombatResumeCases();Console.WriteLine("combat resume checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -210,6 +256,7 @@ internal static partial class Program
         CardRewardTests();
         CardRewardSetTests();
         CombatHandoffCases();
+        CombatResumeCases();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)
@@ -488,6 +535,10 @@ internal static partial class Program
     private sealed class FirstEvent:EventModel{}
     private sealed class SecondEvent:EventModel{}
     private sealed class HeldOutEvent:EventModel{}
+    private sealed class ResumeEvent:EventModel {
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public override Task Resume(MegaCrit.Sts2.Core.Rooms.AbstractRoom room)=>ResumeCallback?.Invoke(room)??Task.CompletedTask;
+    }
     internal sealed class Fixture:IDisposable
     {
         internal readonly PinnedGenericEventV7NativeAdapter Adapter=new();
@@ -516,7 +567,7 @@ internal static partial class Program
             Enchantment.Id.Entry="SOWN"; EnchantPreview.Setup(EnchantBefore,EnchantAfter);
             Cards=Enumerable.Range(0,domain+1).Select(i=>new CardModel{IsUpgradable=i<domain}).ToArray();
             for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);if(enchant)Cards[i].Owner=Player;}
-            Model=name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
+            Model=name=="RESUME_OVERRIDE"?new ResumeEvent():name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
             Model.Owner=Player;
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};
             NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;

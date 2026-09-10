@@ -30,7 +30,7 @@ def main():
         ("operator", "generic_event_v8"),
         ("state", manager.GENERIC_V8_STATE_ROOT_NAME),
         ("overlay", manager.GENERIC_V8_OVERLAY_ROOT_NAME),
-        ("operator", "generic_event_v8"),
+        ("operator", "generic_event_v7"),
         ("state", manager.GENERIC_V7_STATE_ROOT_NAME),
         ("overlay", manager.GENERIC_V7_OVERLAY_ROOT_NAME),
         ("operator", "generic_event_v6"),

@@ -192,6 +192,33 @@ class CombatHostTests(unittest.TestCase):
         self.assertEqual(len(posts),1)
         self.assertTrue(all(not any(b) for b in buffers))
 
+    def test_owned_resume_reconciles_pending_training_action_without_victory(self):
+        for mode in ['resume', 'stale', 'wrong_nonce', 'fault', 'timeout']:
+            probes = []; posts = []; buffers = []; now = [0.0]
+            def request(method, route, body):
+                if route == host.EVENT_COMBAT_READ:
+                    probes.append(route)
+                    status = 'combat' if len(probes) == 1 else 'waiting' if mode == 'timeout' else 'resumed'
+                    result = encoded(dict(schema_version=1, protocol='event_combat_v1',
+                        session_nonce='b'*32 if mode == 'wrong_nonce' else 'a'*32, status='unsupported' if mode == 'fault' else status))
+                elif method == 'POST':
+                    posts.append(json.loads(body)); buffers.append(body)
+                    result = encoded(dict(schema_version=1, status='rejected' if mode == 'stale' else 'accepted',
+                        mutation_state='none' if mode == 'stale' else 'queued', reason='stale_decision' if mode == 'stale' else 'accepted', **posts[-1]))
+                else:
+                    self.assertEqual(route, host.COMBAT_READ)
+                    result = bytearray(_FIXTURE_COMBAT)
+                buffers.append(result); return result
+            result = host.run_combat(request, event_resume_nonce='a'*32,clock=lambda:now[0],sleep=lambda _:now.__setitem__(0,now[0]+100))
+            if mode in ['resume', 'stale']:
+                self.assertEqual((result['status'], result['outcome'], result['accepted'], result['reconciled']),
+                    ('resolved', 'event_resumed', 0 if mode == 'stale' else 1, 0 if mode == 'stale' else 1), result)
+                self.assertIsNone(result['native_terminal_outcome'])
+            else:
+                self.assertEqual(result['code'], 'combat_timeout' if mode == 'timeout' else 'invalid_event_resume', result)
+            self.assertEqual(len(posts), 0 if mode in ['wrong_nonce', 'fault'] else 1)
+            self.assertTrue(all(not any(b) for b in buffers))
+
     def test_unexpected_rounds_remain_terminal(self):
         for end_turn, following in [(True,4),(True,7),(False,4),(False,6)]:
             posts = []; reads = 0

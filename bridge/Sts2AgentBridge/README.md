@@ -14,6 +14,7 @@ Read [current status](../../docs/STATUS.md) for evidence and
 | Module | Existing interface |
 | --- | --- |
 | Core combat, rewards, map, rest/basic rooms | `/probe/v0/health`, `/probe/v0/manifest`, `/probe/v0/public/*` |
+| Event combat continuation | `/probe/event-combat-v1/public/decision` (read-only, while owned) |
 | Combat discard/exhaust choice | `/probe/combat-choice-v1/public/decision` and `action` |
 | Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
 | Shop and standard room flows | `/probe/room-flows-v1/public/decision` and `action` |
@@ -191,12 +192,25 @@ The result preserves `event` and `combat_flow`; the latter retains each downstre
 stage. `--choice-policy` and `--reward-policy` have the same meaning as in
 `combat-map`. The default event policy chooses the first legal option: for the
 pending Dense Vegetation live case, prepare its Fight page after Rest. Returning
-to an event after combat (such as Battleworn Dummy) remains unsupported.
+to an event after combat is also supported in the checkout when its exact resume
+callback completes without an interactive child. For `combat_resume_handoff`,
+the host verifies the original callback and new event node, then runs one fresh
+event session through Proceed/map. Training expiry is reported as `event_resumed`,
+not victory. Its result retains `combat`, `resumed_event` and `map_handoff` inside
+`combat_flow`. Resume-time reward/selector UI and extra combat rewards remain
+unsupported.
+
+Use `--event-option BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2` with
+`--capability event-combat-map` for the pending Battleworn Dummy case. This reusable
+option chooses the exact legal first parent option, then uses first-legal actions;
+a missing/illegal requested option stops before input. It also works with `events`
+and `event-map`. Automatic upgrade effects are not certified by callback completion.
 
 This feature is not in the retained accepted release and has no live result yet.
-Parent responses now identify protocol `generic_event_v8` over the existing v7
+Parent responses now identify protocol `generic_event_v9` over the existing v7
 routes. The `events` mode stops at its reported `destination`; combat entry alone
-is not a completed fight. See [event combat semantics](../../docs/GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat).
+is not a completed fight. See [event combat](../../docs/GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat)
+and [resumption semantics](../../docs/GENERIC_EVENTS.md#implemented-offline-event-combat-resumption).
 
 `/probe/v0/public/screen` recognizes only main menu/settings; its unsupported
 result during a run is not a map diagnostic. Use the map decision route above.

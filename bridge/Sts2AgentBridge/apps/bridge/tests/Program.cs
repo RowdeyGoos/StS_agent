@@ -27,17 +27,18 @@ internal static class Program
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
             if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
             if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
-            EventBoundaryTests.Run(Check); EventCombatTransfer(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
+            if (args.SequenceEqual(new[] { "--serve-event-resume" })) return Serve(eventResume:true);
+            EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
         catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
-    private static int Serve(bool combat = false, bool rewards = false)
+    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false)
     {
-        var fixture = combat ? CombatScenario() : new CoreFixture { Reject = true, MapReady = true };
+        var fixture = eventResume?new CoreFixture{CombatReady=true,MapReady=true}:combat ? CombatScenario() : new CoreFixture { Reject = true, MapReady = true };
         fixture.RewardScenario = rewards;
-        var (runtime, port) = Start((capability, _) => new FakeModule(capability) { AutoComplete = true }, fixture);
+        var (runtime, port) = Start((capability, _) => eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture);
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
@@ -71,6 +72,36 @@ internal static class Program
                 f.Stage=3;Check(Body(router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision"))).Contains("complete")&&!core.HasPendingAction,"matching combat terminal releases scope");
                 Check(!router.Handle(Request(Capability.Core,"/probe/v0/public/reward-decision")).Terminal,"reward observation admitted after matching terminal");
             }
+            router.Dispose();
+        }
+    }
+    private static void EventCombatResume()
+    {
+        foreach(var mode in new[]{"resume","dispose_failure","chooser","bad_nonce","unsupported","terminal_before_resume"}) {
+            string phase="combat";var f=mode is "chooser" or "terminal_before_resume"?CombatScenario():new CoreFixture{CombatReady=true};
+            var core=Core(f);
+            var owner=new FakeModule(Capability.Events){Complete=true,CombatScope=()=>phase=="combat",CombatResume=()=>phase,EventNonce=mode=="bad_nonce"?"bad":Nonce};
+            var router=new BridgeRouter(core,(_,_)=>owner);
+            var eventRead=Request(Capability.Events,"/probe/generic-event-v7/public/decision");
+            var entry=router.Handle(eventRead);
+            if(mode=="bad_nonce") {Check(entry.Terminal&&!owner.Disposed,"invalid resume nonce retains cleanup owner");router.Dispose();continue;}
+            Check(!entry.Terminal&&!owner.Disposed&&core.HasPendingAction,"resume hook owner retained through combat");
+            if(mode=="chooser") {f.Stage=1;router.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute));}
+            else if(mode=="terminal_before_resume") {f.Stage=3;router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision"));Check(core.HasPendingAction,"victory alone cannot release event owner");}
+            else router.Handle(new(Capability.Core,"/probe/v0/public/combat-action",true,0,64,Decision,"end_turn"));
+            phase="waiting";
+            Check(!router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision")).Terminal,"room-switch race waits for owned resume");
+            int applies=f.CombatAccepted;
+            var stale=router.Handle(new(Capability.Core,"/probe/v0/public/combat-action",true,0,64,Decision,"end_turn"));
+            Check(!stale.Terminal&&stale.StaleWithoutMutation&&f.CombatAccepted==applies,"room-switch POST rejected without mutation");
+            Check(Body(router.Handle(eventRead)).Contains("capability_busy"),"event cannot restart while resume is pending");
+            Check(Body(router.Handle(Request(Capability.Core,CoreBridgeModule.EventCombatRoute))).Contains("waiting"),"continuation callable through pending combat action");
+            phase=mode=="unsupported"?"unsupported":"resumed";owner.FailDispose=mode=="dispose_failure";
+            var done=router.Handle(Request(Capability.Core,CoreBridgeModule.EventCombatRoute));
+            if(mode is "chooser" or "dispose_failure" or "unsupported") {
+                Check(done.Terminal&&!owner.Disposed,"unresolved chooser, failed callback or cleanup cannot resume: "+mode);
+                owner.FailDispose=false;
+            } else Check(!done.Terminal&&owner.Disposed&&!core.HasPendingAction&&Body(done).Contains("resumed"),"verified callback and cleanup release pending combat");
             router.Dispose();
         }
     }
@@ -273,12 +304,13 @@ internal static class Program
         internal bool Complete, Terminal, OwnItems, Disposed, FailDispose, AutoComplete;
         internal int Calls, Posts, DisposeAttempts;
         internal Func<bool>? CombatScope;
+        internal Func<string>? CombatResume; internal string? EventNonce;
         public bool Owns(BridgeRequest request) => request.Capability == capability || OwnItems && request.Capability == Capability.Items;
         public ModuleReply Handle(BridgeRequest request)
         {
             Calls++; if (request.IsPost) Posts++;
             if (AutoComplete && Calls >= 2) Complete = true;
-            return new(Encoding.ASCII.GetBytes("{\"status\":\"" + (Complete ? "resolved" : request.IsPost ? "accepted" : "ready") + "\"}"), Complete, Terminal, EventDiagnostic: capability == Capability.Events, CombatScope: CombatScope);
+            return new(Encoding.ASCII.GetBytes("{\"status\":\"" + (Complete ? "resolved" : request.IsPost ? "accepted" : "ready") + "\"}"), Complete, Terminal, EventDiagnostic: capability == Capability.Events, CombatScope: CombatScope, CombatResume: CombatResume, EventNonce: EventNonce);
         }
         public void Dispose() { DisposeAttempts++; if (FailDispose) throw new InvalidOperationException(); Disposed = true; }
     }

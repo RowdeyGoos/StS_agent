@@ -16,14 +16,21 @@ import reward_host
 import probe_live
 
 
-def combat(reward_policy=None):
-    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
+def combat(reward_policy=None, event_resume=False):
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-event-resume' if event_resume else '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     try:
         port = json.loads(process.stdout.readline())['port']
         client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
         try:
-            if reward_policy:
+            if event_resume:
+                assert json.loads(client.exchange('GET','/probe/generic-event-v7/public/decision'))['status']=='resolved'
+                result=run_combat(client.exchange,event_resume_nonce='0123456789abcdef0123456789abcdef')
+                assert result['status']=='resolved' and result['outcome']=='event_resumed', result
+                assert result['attempted']==result['accepted']==result['reconciled']==1, result
+                assert result['resume_reads']==2 and result['native_terminal_outcome'] is None, result
+                assert verify_map_handoff(client.exchange)['status']=='passed'
+            elif reward_policy:
                 flow = run_combat_map(client.exchange, combat_host, reward_host, reward_policy=reward_policy)
                 assert flow['status'] == 'resolved' and flow['map_handoff']['candidate_count'] == 1, flow
                 loot = flow['rewards']
@@ -34,10 +41,11 @@ def combat(reward_policy=None):
                 result = flow['combat']
             else:
                 result = run_combat(client.exchange)
-            assert result['status'] == 'resolved' and result['outcome'] == 'victory', result
-            assert result['attempted'] == result['accepted'] == result['reconciled'] == 2, result
-            assert len(result['choices']) == 1 and result['choices'][0]['selected_count'] == 1, result
-            assert result['choices'][0]['accepted'] == result['choices'][0]['reconciled'] == 1, result
+            if not event_resume:
+                assert result['status'] == 'resolved' and result['outcome'] == 'victory', result
+                assert result['attempted'] == result['accepted'] == result['reconciled'] == 2, result
+                assert len(result['choices']) == 1 and result['choices'][0]['selected_count'] == 1, result
+                assert result['choices'][0]['accepted'] == result['choices'][0]['reconciled'] == 1, result
         finally:
             client.close()
         process.stdin.write('stop\n'); process.stdin.flush()
@@ -86,7 +94,8 @@ def main():
         combat()
         combat('first-card')
         combat('skip-card')
-        print('{"status":"passed","suite":"unified_python_socket","capability_clients":7,"original_client":true,"stale_refresh":true,"combat_choice_resume":true,"combat_reward_map_policies":2}')
+        combat(event_resume=True)
+        print('{"status":"passed","suite":"unified_python_socket","capability_clients":7,"original_client":true,"stale_refresh":true,"combat_choice_resume":true,"combat_reward_map_policies":2,"event_combat_resume":true}')
     finally:
         if process.poll() is None:
             process.kill(); process.wait()

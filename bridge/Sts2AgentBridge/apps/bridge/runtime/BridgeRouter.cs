@@ -10,7 +10,7 @@ namespace Sts2AgentBridge.Unified;
 
 internal readonly record struct ModuleReply(byte[] Body, bool Complete = false, bool Terminal = false,
     GenericEventDiagnosticCode Diagnostic = GenericEventDiagnosticCode.NotCaptured, bool EventDiagnostic = false,
-    bool StaleWithoutMutation = false, Func<bool>? CombatScope = null);
+    bool StaleWithoutMutation = false, Func<bool>? CombatScope = null, Func<string>? CombatResume = null, string? EventNonce = null, bool EventResumed = false);
 internal readonly record struct BridgeReply(byte[] Response, bool Terminal, bool StaleWithoutMutation = false);
 
 internal interface IBridgeModule : IDisposable
@@ -27,7 +27,7 @@ internal sealed class BridgeRouter : IDisposable
     private readonly CoreBridgeModule _core;
     private IBridgeModule? _active;
     private int _sessions;
-    private bool _failed, _disposed;
+    private bool _failed, _disposed, _resumingCombat;
 
     internal BridgeRouter(CoreBridgeModule core, Func<Capability, string, IBridgeModule> factory)
     { _core = core; _factory = factory; }
@@ -38,6 +38,17 @@ internal sealed class BridgeRouter : IDisposable
         try
         {
             if (request.IsMetadata) return Wrap(_core.Handle(request));
+            if(_resumingCombat) {
+                if(request.Capability!=Capability.Core)return Busy();
+                var combatReply=_core.Handle(request);
+                try {
+                    if(combatReply.EventResumed) {
+                        _active!.Dispose();_active=null;
+                        _core.ReleaseEventCombat();_resumingCombat=false;
+                    }
+                    return Wrap(combatReply);
+                }catch{Array.Clear(combatReply.Body);throw;}
+            }
             if (_active is not null && !_active.Owns(request)) return Busy();
             if (_active is null && request.Capability != Capability.Core)
             {
@@ -56,9 +67,14 @@ internal sealed class BridgeRouter : IDisposable
                 {
                     // Keep the cleanup owner if disposal fails. No replacement native session
                     // may be created until its hooks and bindings have actually been released.
-                    _active.Dispose();
-                    _active = null;
-                    if(reply.CombatScope is not null)_core.BindCombatScope(reply.CombatScope);
+                    if(reply.CombatResume is not null) {
+                        if(reply.CombatScope is null)throw new InvalidOperationException("Missing event combat scope.");
+                        _core.BindCombatScope(reply.CombatScope,reply.CombatResume,reply.EventNonce);
+                        _resumingCombat=true;
+                    } else {
+                        _active.Dispose();_active=null;
+                        if(reply.CombatScope is not null)_core.BindCombatScope(reply.CombatScope);
+                    }
                 }
                 return Wrap(reply);
             }

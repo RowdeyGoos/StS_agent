@@ -12,12 +12,13 @@ process. Completed packets and old campaign instructions are historical referenc
    Sapphire Seed Plant and Nourish, exact Sown effect and fresh actionable map.
    Keep extending the shared parent/child machinery from representative native
    interactions; do not add event-name admission rules.
-2. **Validate non-resuming event combat, then implement resumption.** The checkout
-   now supports owned event entry into a non-resuming fight and the existing
-   combat/rewards/map flow. Dense Vegetation’s Fight page after Rest is the
-   representative live case. Then tackle Battleworn Dummy, retaining event
-   ownership across combat and return; its discarded resume task and replaced
-   event node need a separate completion witness.
+2. **Validate event combat and extend resume-time children next.** The checkout
+   supports non-resuming combat/rewards/map and callback-verified combat/event/map.
+   Pending live cases are Dense Vegetation’s Fight page after Rest and Battleworn
+   Dummy Setting2/training expiry. Exact initial-option selection is reusable
+   through `--event-option`. Next implement interactive children during event
+   resume (Setting1 potion offer or a Setting3 pickup selector), then extra combat
+   rewards and full-inventory/nested pickups.
    The completed live batch now covers mixed card/item rewards, ancient options,
    Sea Glass and Claws zero/partial/full selection, card offers, bundles, inactive
    Punch Off/Nab and Pandora's Box results acknowledgment. These are no longer
@@ -44,7 +45,7 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
 include broader deck changes after selectors and other pre-selector mutations, broader pickup
-composition, resuming/extra-reward event combat, repeated/nested pickup selectors, and custom/terminal
+composition, resume-time children/extra-reward event combat, repeated/nested pickup selectors, and custom/terminal
 surfaces. Plan shared capabilities from those dependencies, not event-name rules.
 
 Keep representative held-out/live coverage for implemented families separate from

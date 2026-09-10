@@ -49,16 +49,52 @@ def verify_map_handoff(request, *, clock=time.monotonic, sleep=time.sleep):
     return {'status': 'failed', 'reads': reads, 'candidate_count': 0, 'code': code}
 
 
-def run_event_map(request, host, *, clock=time.monotonic, sleep=time.sleep):
+def run_event_map(request, host, *, event_provider=None, clock=time.monotonic, sleep=time.sleep):
     """Keep event evidence even if the subsequent core observation fails."""
-    event = host.run_event(request, provider=host.first_legal, clock=clock, sleep=sleep)
+    event = host.run_event(request, provider=event_provider or host.first_legal, clock=clock, sleep=sleep)
     handoff = ({'status': 'not_attempted', 'reads': 0, 'candidate_count': 0, 'code': None}
-               if event['status'] != 'resolved' or event.get('destination','map_handoff')!='map_handoff' else
+               if event['status'] != 'resolved' or event.get('destination')!='map_handoff' else
                verify_map_handoff(request, clock=clock, sleep=sleep))
     return {'schema_version': 1,
             'status': 'resolved' if handoff['status'] == 'passed' else 'failed',
             'event': event, 'map_handoff': handoff,
             'code': event['code'] if event['status'] != 'resolved' else (handoff['code'] if handoff['status'] != 'not_attempted' else 'event_destination_not_map')}
+
+
+def event_option_policy(host, stable_id):
+    """Select one explicitly requested first parent option, then use advertised actions."""
+    used = False
+    def choose(view):
+        nonlocal used
+        if used or stable_id is None or view.kind != 'parent': return host.first_legal(view)
+        matches = [c['action_id'] for c in view.payload['candidates']
+                   if c['stable_id'] == stable_id and c['action_id'] in view.payload['legal_actions']]
+        if len(matches) != 1: raise ValueError('Requested event option is not uniquely legal.')
+        used = True
+        return matches[0]
+    return choose
+
+
+def run_resuming_event_combat(request, event, events, combat, *, event_provider=None,
+                              choice_provider=None, clock=time.monotonic, sleep=time.sleep):
+    """One witnessed event resume; no reward or victory assumption for training expiry."""
+    fight = combat.run_combat(request, choice_provider=choice_provider or combat.first_select,
+                              event_resume_nonce=event['session_nonce'], clock=clock, sleep=sleep)
+    resumed = {'status': 'not_attempted', 'code': None}
+    handoff = {'status': 'not_attempted', 'reads': 0, 'candidate_count': 0, 'code': None}
+    code = fight['code']
+    if fight['status'] == 'resolved':
+        if fight['outcome'] != 'event_resumed': code = 'event_not_resumed'
+        else:
+            resumed = events.run_event(request, provider=event_provider or events.first_legal, clock=clock, sleep=sleep)
+            code = resumed['code']
+            if resumed['status'] == 'resolved':
+                if resumed.get('destination') != 'map_handoff': code = 'event_resume_destination_unsupported'
+                else:
+                    handoff = verify_map_handoff(request, clock=clock, sleep=sleep)
+                    code = handoff['code']
+    return {'status': 'resolved' if handoff['status'] == 'passed' else 'failed', 'code': code,
+            'combat': fight, 'resumed_event': resumed, 'map_handoff': handoff}
 
 
 def run_event_combat_map(request, events, combat, rewards, *, event_provider=None,
@@ -69,6 +105,9 @@ def run_event_combat_map(request, events, combat, rewards, *, event_provider=Non
     if event['status']=='resolved' and event.get('destination')=='combat_handoff':
         flow=run_combat_map(request,combat,rewards,choice_provider=choice_provider,
                             reward_policy=reward_policy,clock=clock,sleep=sleep)
+    elif event['status']=='resolved' and event.get('destination')=='combat_resume_handoff':
+        flow=run_resuming_event_combat(request,event,events,combat,event_provider=event_provider,
+            choice_provider=choice_provider,clock=clock,sleep=sleep)
     code=event.get('code') if event['status']!='resolved' else (flow.get('code') if flow['status']!='not_attempted' else 'event_combat_not_entered')
     return {'schema_version':1,'status':'resolved' if flow['status']=='resolved' else 'failed',
             'code':code,'event':event,'combat_flow':flow}
@@ -125,6 +164,7 @@ def main():
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
     parser.add_argument('--capability', choices=['events', 'event-map', 'event-combat-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
+    parser.add_argument('--event-option', help='Exact stable ID of the first parent option; absence or illegality stops before input.')
     parser.add_argument('--choice-policy', choices=['first-select', 'minimum'], default='first-select',
                         help='Combat chooser policy; minimum confirms as soon as native controls allow it.')
     parser.add_argument('--reward-policy', choices=['first-card', 'skip-card'], default='first-card',
@@ -162,11 +202,12 @@ def main():
             combat=load('unified_combat_host','apps/bridge/client/combat_host.py')
             rewards=load('unified_reward_host','apps/bridge/client/reward_host.py')
             provider=combat.minimum_select if args.choice_policy=='minimum' else combat.first_select
-            result=run_event_combat_map(client.exchange,events,combat,rewards,choice_provider=provider,reward_policy=args.reward_policy)
+            result=run_event_combat_map(client.exchange,events,combat,rewards,event_provider=event_option_policy(events,args.event_option),choice_provider=provider,reward_policy=args.reward_policy)
         elif args.capability in ('events', 'event-map'):
             host = load('unified_event_host', 'components/events/host/generic_event_host.py')
-            result = (run_event_map(client.exchange, host) if args.capability == 'event-map' else
-                      host.run_event(client.exchange, provider=host.first_legal))
+            provider = event_option_policy(host,args.event_option)
+            result = (run_event_map(client.exchange, host,event_provider=provider) if args.capability == 'event-map' else
+                      host.run_event(client.exchange, provider=provider))
         elif args.capability == 'cards':
             host = load('unified_card_host', 'components/cards/host/card_selection_host.py')
             result = host.run_card_selection(client.exchange)

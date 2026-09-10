@@ -99,8 +99,9 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 if (capture.Status is "waiting" or "parent") return Observation("waiting", "waiting");
                 return Stop();
             }
-            if (capture.Status == "combat" && !_proceed && capture.ChildIdentity is null && capture.Admission is null) {
-                Reconcile("combat_handoff"); _destination="combat_handoff"; _complete=true;
+            if (capture.Status is ("combat" or "combat_resume") && !_proceed && capture.ChildIdentity is null && capture.Admission is null) {
+                _destination=capture.Status=="combat_resume"?"combat_resume_handoff":"combat_handoff";
+                Reconcile(_destination); _complete=true;
                 return Observation("complete",_destination);
             }
             if (capture.Status == "waiting") return Observation("waiting", "waiting");

@@ -16,6 +16,7 @@ CHOICE_READ = '/probe/combat-choice-v1/public/decision'
 CHOICE_ACTION = '/probe/combat-choice-v1/public/action'
 COMBAT_READ = '/probe/v0/public/combat-decision'
 COMBAT_ACTION = '/probe/v0/public/combat-action'
+EVENT_COMBAT_READ = '/probe/event-combat-v1/public/decision'
 
 
 class Stop(Exception):
@@ -220,7 +221,7 @@ def run_choice(request, *, provider=first_select, clock=time.monotonic, sleep=ti
     return controller.summary('failed', code)
 
 
-def run_combat(request, *, choice_provider=first_select, clock=time.monotonic, sleep=time.sleep):
+def run_combat(request, *, choice_provider=first_select, event_resume_nonce=None, clock=time.monotonic, sleep=time.sleep):
     """One combat, preserving attempted/accepted/reconciled counts on every exit."""
     attempted = accepted = reconciled = reads = choice_probes = stale = 0
     choices = []
@@ -228,13 +229,35 @@ def run_combat(request, *, choice_provider=first_select, clock=time.monotonic, s
     pending = None
     first_round = None
     outcome = None
+    resume_reads = 0
+    terminal_seen = None
     def check():
         require(clock() < deadline, 'combat_timeout')
     try:
+        require(event_resume_nonce is None or type(event_resume_nonce) is str and re.fullmatch('[0-9a-f]{32}', event_resume_nonce), 'event_resume_nonce')
         while True:
             check()
             require(reads < 4096, 'combat_read_limit')
             reads += 1
+            if event_resume_nonce is not None:
+                resume_reads += 1
+                resume_body = request('GET', EVENT_COMBAT_READ, None)
+                try:
+                    check()
+                    resume = decode(resume_body)
+                    require(set(resume) == {'schema_version', 'protocol', 'session_nonce', 'status'} and
+                            resume['protocol'] == 'event_combat_v1' and resume['session_nonce'] == event_resume_nonce and
+                            resume['status'] in ('combat', 'waiting', 'resumed'), 'invalid_event_resume')
+                    resume_status = resume['status']
+                finally:
+                    if type(resume_body) is bytearray: resume_body[:] = b'\0' * len(resume_body)
+                if resume_status == 'resumed':
+                    if pending is not None: reconciled += 1
+                    outcome = 'event_resumed'
+                    break
+                if resume_status == 'waiting' or terminal_seen is not None:
+                    sleep(min(0.05, max(0, deadline - clock())))
+                    continue
             body = request('GET', COMBAT_READ, None)
             try:
                 check()
@@ -242,10 +265,14 @@ def run_combat(request, *, choice_provider=first_select, clock=time.monotonic, s
                     value = None
                 elif body.startswith(probe._COMBAT_COMPLETE_PREFIX):
                     terminal = probe._validate_combat_terminal(memoryview(body))
-                    require(accepted > 0, 'combat_already_complete')
+                    require(accepted > 0 or event_resume_nonce is not None, 'combat_already_complete')
                     if pending is not None:
                         reconciled += 1
+                        pending = None
                     outcome = terminal['outcome']
+                    if event_resume_nonce is not None and outcome == 'victory':
+                        terminal_seen = outcome
+                        continue
                     break
                 else:
                     value = probe._validate_combat(memoryview(body), 'heuristic')
@@ -318,6 +345,8 @@ def run_combat(request, *, choice_provider=first_select, clock=time.monotonic, s
         code = 'invalid_response'
     except Exception:
         code = 'transport_failure'
-    return dict(schema_version=1, status='resolved' if code is None else 'failed', code=code,
-                attempted=attempted, accepted=accepted, reconciled=reconciled, reads=reads,
-                stale_rejections=stale, choice_probes=choice_probes, choices=choices, outcome=outcome)
+    result = dict(schema_version=1, status='resolved' if code is None else 'failed', code=code,
+                  attempted=attempted, accepted=accepted, reconciled=reconciled, reads=reads,
+                  stale_rejections=stale, choice_probes=choice_probes, choices=choices, outcome=outcome)
+    if event_resume_nonce is not None: result.update(resume_reads=resume_reads, native_terminal_outcome=terminal_seen)
+    return result

@@ -15,10 +15,24 @@ internal sealed class CoreBridgeModule : IDisposable
     private readonly string _correlation;
     private readonly IPublicScreenService _screen;
     private string? _pendingPath, _pendingDecision;
+    internal const string EventCombatRoute="/probe/event-combat-v1/public/decision";
     private Func<bool>? _combatScope;
+    private Func<string>? _combatResume;
+    private string? _eventNonce;
     private readonly Action? _beginCombat;
     internal bool HasPendingAction => _pendingPath is not null || _choice.IsActive || _combatScope is not null;
-    internal void BindCombatScope(Func<bool> scope) {if(HasPendingAction||!scope())throw new InvalidOperationException("Invalid combat transfer.");_beginCombat?.Invoke();_combatScope=scope;}
+    internal void BindCombatScope(Func<bool> scope,Func<string>? resume=null,string? eventNonce=null) {
+        if(HasPendingAction||!scope()||resume is not null&&(eventNonce is not {Length:32}||!System.Linq.Enumerable.All(eventNonce,c=>c is >= '0' and <= '9' or >= 'a' and <= 'f')))
+            throw new InvalidOperationException("Invalid combat transfer.");
+        _beginCombat?.Invoke();_combatScope=scope;_combatResume=resume;_eventNonce=eventNonce;
+    }
+    internal void ReleaseEventCombat() {
+        if(_combatResume is null||_choice.IsActive)throw new InvalidOperationException("Unresolved event combat chooser.");
+        _pendingPath=_pendingDecision=null;_combatScope=null;_combatResume=null;_eventNonce=null;
+    }
+    private ModuleReply ResumeRead(string status) => new(JsonSerializer.SerializeToUtf8Bytes(new {
+        schema_version=1,protocol="event_combat_v1",session_nonce=_eventNonce,status
+    }), EventResumed:status=="resumed");
     private readonly CombatCardChoiceService _choice;
     private readonly IPublicCombatDecisionService _combatRead;
     private readonly IPublicCombatActionService _combatApply;
@@ -62,7 +76,27 @@ internal sealed class CoreBridgeModule : IDisposable
                 .Replace("\"harmony_patches\":false", "\"harmony_patches\":true"))); }
             finally { Array.Clear(old); }
         }
+        if(r.Path==EventCombatRoute) {
+            if(_combatResume is null||r.IsPost)return Fault();
+            string resumed=_combatResume();
+            if(resumed is not ("combat" or "waiting" or "resumed")||resumed=="resumed"&&_choice.IsActive)return Fault();
+            return ResumeRead(resumed);
+        }
         if(_combatScope is not null) {
+            if(_combatResume is not null) {
+                string resumed=_combatResume();
+                if(resumed is not ("combat" or "waiting" or "resumed"))return Fault();
+                if(resumed!="combat") {
+                    if(r.Path=="/probe/v0/public/combat-decision")return new(CanonicalProbeEncoder.EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot.Waiting()));
+                    if(r.Path==CombatCardChoiceService.DecisionRoute) {var choice=_choice.Read();return new(choice.Body,Terminal:choice.Terminal);}
+                    // A combat-to-event switch can occur between a ready read and POST.
+                    // This reply proves no command was queued; the host may observe resume.
+                    if(r.IsPost&&r.Path=="/probe/v0/public/combat-action")return new(JsonSerializer.SerializeToUtf8Bytes(new {
+                        schema_version=1,status="rejected",mutation_state="none",decision_id=r.Decision,action_id=r.Action,reason="stale_decision"
+                    }),StaleWithoutMutation:true);
+                    return Busy();
+                }
+            }
             if(!_combatScope())return Fault();
             if(r.Path is not ("/probe/v0/public/combat-decision" or "/probe/v0/public/combat-action" or CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute))return Busy();
         }
@@ -124,7 +158,7 @@ internal sealed class CoreBridgeModule : IDisposable
         {
             using var json = JsonDocument.Parse(body);
             var root = json.RootElement;
-            if(!r.IsPost && r.Path=="/probe/v0/public/combat-decision" && root.GetProperty("status").GetString()=="complete")_combatScope=null;
+            if(!r.IsPost && r.Path=="/probe/v0/public/combat-decision" && root.GetProperty("status").GetString()=="complete"&&_combatResume is null)_combatScope=null;
             if (r.IsPost)
             {
                 if (root.GetProperty("status").GetString() != "accepted")

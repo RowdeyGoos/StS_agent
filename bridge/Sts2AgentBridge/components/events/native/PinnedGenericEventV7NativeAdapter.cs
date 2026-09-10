@@ -35,6 +35,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private GenericEventV7Binding? _pending;
     private bool _childCreated,_disposed;
     public Func<bool>? CombatScope {get;private set;}
+    public Func<string>? CombatResume {get;private set;}
     private DialogueBinding? _dialogue,_pendingDialogue;
     private readonly Dictionary<NEventOptionButton,OptionBinding> _options=new();
     private readonly HashSet<object> _screens=new(ReferenceEqualityComparer.Instance);
@@ -63,7 +64,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             if(!GenericEventV7Hooks.Owns(b)) return Fixed("unsupported");
             if(b.Combat is {} combat) {
                 var status=combat.Capture();
-                if(status=="combat")CombatScope=combat.SameCombat;
+                if(status is "combat" or "combat_resume") {CombatScope=combat.SameCombat;if(combat.Resumes)CombatResume=_hooks.ResumeStatus;}
                 return Fixed(status);
             }
             diagnostic=GenericEventDiagnosticCode.PendingContext;
@@ -282,7 +283,9 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         }
         if(_pending is null||_pending.Failed||_pending.ChosenTask?.IsCompletedSuccessfully!=true)
             throw new InvalidOperationException("Parent callback is incomplete.");
+        bool resume=_pending.Combat?.Resumes==true;
         GenericEventV7Hooks.Close(_pending);_pending=null;_childCreated=false;
+        if(resume)_hooks.PauseForCombat();
     }
     public void Dispose()
     {

@@ -117,6 +117,10 @@ namespace MegaCrit.Sts2.Core.Models
     public class EncounterModel {}
     public class EventModel
     {
+        public MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom? Node {get;set;}
+        public Func<MegaCrit.Sts2.Core.Rooms.AbstractRoom,Task>? ResumeCallback;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public virtual Task Resume(MegaCrit.Sts2.Core.Rooms.AbstractRoom room)=>ResumeCallback?.Invoke(room)??Task.CompletedTask;
         public ModelId Id {get;}=new();
         public Action<EncounterModel,IReadOnlyList<MegaCrit.Sts2.Core.Rewards.Reward>,bool>? CombatEntry;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
@@ -719,4 +723,4 @@ namespace MegaCrit.Sts2.Core.Combat {
  public sealed class CombatManager {public static CombatManager? Instance {get;set;}=new();public CombatState? State;public bool IsInProgress=true,IsOverOrEnding;public CombatState? DebugOnlyGetState()=>State;}
 }
 namespace MegaCrit.Sts2.Core.Runs {public sealed class RunManager {public static RunManager? Instance {get;set;}=new();public RunState? State;public RunState? DebugOnlyGetState()=>State;}}
-namespace MegaCrit.Sts2.Core.Rooms {public sealed class CombatRoom {public MegaCrit.Sts2.Core.Combat.CombatState CombatState {get;set;}=null!;public MegaCrit.Sts2.Core.Models.EncounterModel Encounter=>CombatState.Encounter;public bool ShouldResumeParentEventAfterCombat;public MegaCrit.Sts2.Core.Models.ModelId? ParentEventId;}}
+namespace MegaCrit.Sts2.Core.Rooms {public class AbstractRoom {} public sealed class EventRoom:AbstractRoom {public MegaCrit.Sts2.Core.Models.EventModel LocalMutableEvent {get;set;}=null!;} public sealed class CombatRoom:AbstractRoom {public MegaCrit.Sts2.Core.Combat.CombatState CombatState {get;set;}=null!;public MegaCrit.Sts2.Core.Models.EncounterModel Encounter=>CombatState.Encounter;public bool ShouldResumeParentEventAfterCombat;public MegaCrit.Sts2.Core.Models.ModelId? ParentEventId;}}
