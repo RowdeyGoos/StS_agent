@@ -162,8 +162,9 @@ The user confirmed they had omitted the fresh-run setup and is preparing it now;
 the precise native admission condition is not established. Skip remains untested.
 The same package remains installed, with cleanup pending. A user-requested attempt
 after setup correction then hit `ConnectionRefusedError` before any input
-(**0.035 seconds**). Normal quit and a same-build restart are pending; no source
-or package change is indicated by this connection failure.
+(**0.035 seconds**). Normal quit is verified (three stopped-process samples and two closed-port
+samples); same-build relaunch is ready. No source or package change is indicated
+by this connection failure.
 
 A preceding fresh-process attempt on this same release stopped before any action
 with `invalid_response`. After normal quit and verified stopped state, one read-only

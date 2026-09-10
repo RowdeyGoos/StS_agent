@@ -1841,3 +1841,10 @@ relaunch. No rebuild, source edit or uncertain mutation retry was performed.
 The fifteenth installation remains installed; cleanup is pending.
 Result: `/private/tmp/sts-leadpaperweight-skip-fresh-live-20260910-result.json`, SHA-256
 `827b4da42b78a4d61aa09425260f2f1b8311f129a5af9eb34f135c28db0063bf`.
+
+The user confirmed normal quit. `require-stopped` passed with **three stopped-process
+samples and two closed-port samples**. The same accepted package and installed
+state are retained for relaunch; this is not removal/cleanup. Prepare a fresh
+Profile 3 run after manual relaunch, enter a room normally from the map, run
+`ancient NEOW LEAD_PAPERWEIGHT`, close the console and leave the relic option
+untouched. The unchanged reviewed Skip policy remains ready.
