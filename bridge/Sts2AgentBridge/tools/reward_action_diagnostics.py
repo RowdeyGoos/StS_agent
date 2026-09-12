@@ -7,8 +7,9 @@ from typing import Any
 
 _REASONS = frozenset(("accepted", "stale_decision", "invalid_action", "already_applied", "action_limit_reached"))
 _RECEIPT_KEYS = ("schema_version", "status", "mutation_state", "decision_id", "action_id", "reason")
-_ACTION_KINDS = frozenset(("claim_gold", "open_card", "choose_card", "skip_card", "proceed"))
-_CODES = frozenset(("none", "failure", "interrupted", "internal_failure", "invalid_invocation", "invalid_decision_provider", "invalid_effective_uid", "non_absolute_user_profile", "non_canonical_user_profile", "unsafe_identity", "credential_read_failed", "credential_shape", "health_response_mismatch", "manifest_response_mismatch", "reward_not_ready", "reward_response_mismatch", "reward_action_response_mismatch", "reward_action_budget_exhausted", "post_reward_state_timeout", "post_reward_state_unsupported", "reward_decision_not_advanced", "gold_claim_reconciliation_failed", "card_open_reconciliation_failed", "card_choice_reconciliation_failed", "card_skip_reconciliation_failed", "reward_proceed_reconciliation_failed", "reward_revision_mismatch"))
+_ACTION_KINDS = frozenset(("claim_gold", "claim_special_card", "collect_item", "discard_potion", "open_card", "choose_card", "skip_card", "proceed"))
+_CODES = frozenset(("none", "failure", "interrupted", "internal_failure", "invalid_invocation", "invalid_decision_provider", "invalid_effective_uid", "non_absolute_user_profile", "non_canonical_user_profile", "unsafe_identity", "credential_read_failed", "credential_shape", "health_response_mismatch", "manifest_response_mismatch", "reward_not_ready", "reward_response_mismatch", "reward_action_response_mismatch", "reward_action_budget_exhausted", "post_reward_state_timeout", "post_reward_state_unsupported", "reward_decision_not_advanced", "gold_claim_reconciliation_failed", "special_card_claim_reconciliation_failed", "item_claim_reconciliation_failed", "potion_discard_reconciliation_failed", "potion_replacement_unavailable",
+        "potion_inventory_full", "unresolved_reward", "card_open_reconciliation_failed", "card_choice_reconciliation_failed", "card_skip_reconciliation_failed", "reward_proceed_reconciliation_failed", "reward_revision_mismatch"))
 _STAGES = frozenset(("none", "pre_action", "transport", "http_envelope", "receipt", "reconciliation", "internal", "interrupted"))
 _CLASSIFICATIONS = frozenset(("none", "action_not_attempted", "transport_deadline", "transport_failure", "transport_receive_mismatch", "transport_empty_response", "transport_other", "http_response_oversize", "http_malformed_envelope", "http_429_rate_limited", "http_503_retryable_backend", "http_500_backend_fault", "receipt_malformed", "receipt_rejected", "receipt_not_exactly_accepted", "reconciliation_failed", "internal_failure", "interrupted"))
 _CODES = _CODES | frozenset((
@@ -175,7 +176,8 @@ def _valid_action(value: object) -> bool:
         return True
     return isinstance(value, str) and (
         len(value) == 7 and value.startswith("claim:") and value[-1] in "01234567"
-        or len(value) == 6 and value.startswith("open:") and value[-1] in "01234567"
+        or len(value) == 6 and value.startswith(("open:", "take:")) and value[-1] in "01234567"
+        or len(value) == 9 and value.startswith(("collect:", "discard:")) and value[-1] in "01234567"
         or len(value) == 8 and value.startswith("choose:") and value[-1] in "01234"
     )
 

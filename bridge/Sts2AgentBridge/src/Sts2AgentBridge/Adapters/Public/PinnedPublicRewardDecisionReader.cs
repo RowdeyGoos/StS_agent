@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -14,7 +15,7 @@ using Sts2AgentBridge.Core.Public;
 
 namespace Sts2AgentBridge.Adapters.Public;
 
-public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionReader
+public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionReader, IDisposable
 {
     private const int MaximumTraversedNodes = 2048;
     private const int MaximumRewards = 8;
@@ -22,13 +23,43 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
 
     private readonly PinnedPublicRewardInteractionSession _session = new();
 
+    private readonly Func<bool>? _nestedScope;
+    private readonly NRewardsScreen? _nestedScreen;
+    private readonly Func<bool>? _nestedClosed;
+    public PinnedPublicRewardDecisionReader() { }
+    internal PinnedPublicRewardDecisionReader(NRewardsScreen screen,Func<bool> scope,Func<bool> closed) {_nestedScreen=screen;_nestedScope=scope;_nestedClosed=closed;_session.ForceRewardOrdinals=true;}
     internal PinnedPublicRewardInteractionSession InteractionSession => _session;
+
+    public void Dispose()
+    {
+        bool pendingDiscard=_session.Pending?.Discard is not null;
+        _session.FailClosed();
+        if(pendingDiscard)throw new InvalidOperationException("Unresolved potion discard at cleanup.");
+    }
 
     public PublicRewardDecisionSnapshot Read()
     {
-        if (_session.IsUnsupported)
+        if (_nestedScope is not null && !_nestedScope())return FailClosed();
+        if (_session.IsUnsupported || !_session.SettledItemsValid())
         {
-            return PublicRewardDecisionSnapshot.Unsupported();
+            return FailClosed();
+        }
+
+        if(_nestedClosed?.Invoke()==true) {
+            if(_session.Pending is {} nestedPending)ReconcileNestedClosed(nestedPending);
+            if(_session.IsUnsupported)return FailClosed();
+            return _session.Pending is null?PublicRewardDecisionSnapshot.Complete(ProjectPlayer(_session.Player!),_session.DecisionRevision):PublicRewardDecisionSnapshot.Waiting();
+        }
+        var proceeding=_session.Pending;
+        if(proceeding?.Kind==PublicRewardActionKind.Proceed &&
+            (!proceeding.UnclaimedPotionsValid()||proceeding.ProceedTask is null||proceeding.ProceedTask.IsFaulted||proceeding.ProceedTask.IsCanceled))return FailClosed();
+
+        if(_session.Pending?.Discard is {} discard) {
+            var state=discard.Read();
+            if(state<0)return FailClosed();
+            if(state==0)return PublicRewardDecisionSnapshot.Waiting();
+            _session.ResolveClaim(ProjectPlayer(_session.Player!));
+            return ReadParent(discard.Screen);
         }
 
         NRun? run = NRun.Instance;
@@ -62,6 +93,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
                 {
                     return FailClosed();
                 }
+                if(!pendingAtMap.ProceedTask!.IsCompletedSuccessfully)return PublicRewardDecisionSnapshot.Waiting();
                 _session.ResolveProceed(projected);
             }
             else
@@ -74,6 +106,11 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
         }
 
         NOverlayStack? overlays = globalUi.Overlays;
+        if(proceeding?.Kind==PublicRewardActionKind.Proceed && proceeding.UnclaimedPotions.Count>0 &&
+            overlays is not null && overlays.ScreenCount>0 &&
+            (overlays.ScreenCount!=1||!ReferenceEquals(overlays.Peek(),proceeding.ParentScreen)))return FailClosed();
+        if (_session.Pending?.Item is not null && (overlays is null || overlays.ScreenCount != (_nestedScreen is null?1:2) ||
+            !ReferenceEquals(overlays.Peek(),_session.Pending.ParentScreen)))return FailClosed();
         if (overlays is null || !GodotObject.IsInstanceValid(overlays) || overlays.ScreenCount == 0)
         {
             return PublicRewardDecisionSnapshot.Waiting();
@@ -104,6 +141,24 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
         return PublicRewardDecisionSnapshot.Waiting();
     }
 
+    // Offer completion can free the screen/buttons before the next read. The
+    // owned nested caller verifies its collection Task; use retained effect data.
+    private void ReconcileNestedClosed(PinnedPublicRewardPendingMutation pending) {
+        var target=pending.ParentTarget;var player=_session.Player;
+        if(target is null||player is null){FailClosed();return;}
+        var after=ProjectPlayer(player);
+        bool good=pending.Kind switch {
+            PublicRewardActionKind.ClaimGold=>target.Reward is GoldReward gold&&target.Reward.SuccessfullySelected&&gold.Amount==target.Projection.GoldAmount&&SameHealth(after,pending.BeforePlayer)&&after.DeckCount==pending.BeforePlayer.DeckCount&&(long)after.Gold==(long)pending.BeforePlayer.Gold+target.Projection.GoldAmount,
+            PublicRewardActionKind.CollectItem=>target.Reward.SuccessfullySelected&&pending.Item?.Completed==true&&SamePlayer(after,pending.BeforePlayer),
+            PublicRewardActionKind.ChooseCard=>target.Reward.SuccessfullySelected&&pending.CardTarget is {} card&&SameHealth(after,pending.BeforePlayer)&&after.Gold==pending.BeforePlayer.Gold&&after.DeckCount==pending.BeforePlayer.DeckCount+1&&CountCardCopies(player,card.Model.Id.Entry)==pending.ChosenCardCopiesBefore+1,
+            PublicRewardActionKind.SkipCard=>!target.Reward.SuccessfullySelected&&SamePlayer(after,pending.BeforePlayer),
+            _=>false};
+        if(!good){FailClosed();return;}
+        if(pending.Kind==PublicRewardActionKind.CollectItem)_session.SettleItem(pending.Item!);
+        if(pending.Kind==PublicRewardActionKind.ChooseCard)_session.ResolveChoice(after);
+        else if(pending.Kind==PublicRewardActionKind.SkipCard)_session.ResolveSkip(after);
+        else _session.ResolveClaim(after);
+    }
     private PublicRewardDecisionSnapshot Reconcile(
         PinnedPublicRewardPendingMutation pending,
         Node top)
@@ -111,12 +166,47 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
         return pending.Kind switch
         {
             PublicRewardActionKind.ClaimGold => ReconcileClaim(pending, top),
+            PublicRewardActionKind.ClaimSpecialCard => ReconcileSpecialCard(pending, top),
+            PublicRewardActionKind.CollectItem => ReconcileItem(pending, top),
             PublicRewardActionKind.OpenCard => ReconcileOpen(pending, top),
             PublicRewardActionKind.ChooseCard => ReconcileChoice(pending, top),
             PublicRewardActionKind.SkipCard => ReconcileSkip(pending, top),
             PublicRewardActionKind.Proceed => PublicRewardDecisionSnapshot.Waiting(),
             _ => FailClosed(),
         };
+    }
+
+    private PublicRewardDecisionSnapshot ReconcileItem(PinnedPublicRewardPendingMutation pending, Node top)
+    {
+        var target=pending.ParentTarget;var item=pending.Item;
+        if(target is null||item is null||!ReferenceEquals(top,pending.ParentScreen)||top is not NRewardsScreen screen||
+            !ReferenceEquals(target.Button.Reward,target.Reward))return FailClosed();
+        if(!target.Reward.SuccessfullySelected) {
+            if(!ContainsNode(screen,target.Button)||(!item.Valid(false)&&!item.Valid(true)))return FailClosed();
+            return PublicRewardDecisionSnapshot.Waiting();
+        }
+        var player=ProjectPlayer(target.Reward.Player);
+        if(!item.Completed||!SamePlayer(player,pending.BeforePlayer))return FailClosed();
+        _session.SettleItem(item);_session.ResolveClaim(player);
+        return ReadParent(screen);
+    }
+
+    private PublicRewardDecisionSnapshot ReconcileSpecialCard(PinnedPublicRewardPendingMutation pending, Node top)
+    {
+        var target=pending.ParentTarget;
+        if(target is null||pending.SpecialCard is null||!ReferenceEquals(top,pending.ParentScreen)||top is not NRewardsScreen screen ||
+            !ReferenceEquals(target.Button.Reward,target.Reward)||target.Reward.ParentRewardSet is not null)
+            return FailClosed();
+        if(!target.Reward.SuccessfullySelected) {
+            // The insertion may precede reward completion. Never dispatch again.
+            if(!ContainsNode(screen,target.Button)||(!pending.SpecialCard.Valid(target.Reward,false)&&!pending.SpecialCard.Valid(target.Reward,true)))return FailClosed();
+            return PublicRewardDecisionSnapshot.Waiting();
+        }
+        var after=ProjectPlayer(target.Reward.Player);
+        if(!pending.SpecialCard.Valid(target.Reward,true)||!SameHealth(after,pending.BeforePlayer)||
+            after.Gold!=pending.BeforePlayer.Gold||after.DeckCount!=pending.BeforePlayer.DeckCount+1)return FailClosed();
+        _session.ResolveClaim(after);
+        return ReadParent(screen);
     }
 
     private PublicRewardDecisionSnapshot ReconcileClaim(
@@ -223,6 +313,10 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
 
     private PublicRewardDecisionSnapshot ReadParent(NRewardsScreen screen)
     {
+        if(_nestedScreen is not null) {
+            if(!ReferenceEquals(screen,_nestedScreen))return FailClosed();
+            if(_nestedClosed!.Invoke())return PublicRewardDecisionSnapshot.Complete(ProjectPlayer(_session.Player!),_session.DecisionRevision);
+        }
         if (!GodotObject.IsInstanceValid(screen) || !screen.IsVisibleInTree())
         {
             return PublicRewardDecisionSnapshot.Waiting();
@@ -259,12 +353,26 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             {
                 legalActions.Add(PublicRewardActionRequest.ClaimGoldActionIdFor(target.Slot));
             }
+            else if (target.Projection.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic)
+            {
+                if(new PinnedPublicItemRewardClaim(target.Reward).HasCapacity)
+                    legalActions.Add(PublicRewardActionRequest.CollectItemActionIdFor(target.Slot));
+            }
+            else if (target.Reward.GetType() == typeof(SpecialCardReward))
+            {
+                legalActions.Add(PublicRewardActionRequest.ClaimSpecialCardActionIdFor(target.Slot));
+            }
             else if (target.Reward is CardReward)
             {
                 legalActions.Add(PublicRewardActionRequest.OpenCardActionIdFor(target.Slot));
             }
         }
-        legalActions.Add(PublicRewardActionRequest.ProceedActionId);
+        if(_nestedScreen is null && _session.UsesItemIndices && targets.Any(t=>t.Projection.Kind==PublicRewardKind.Potion&&!t.Reward.SuccessfullySelected) &&
+            PinnedPublicItemRewardClaim.Slots(player,out var belt)&&belt.Length>0&&belt.All(p=>p is not null)&&
+            MegaCrit.Sts2.Core.Combat.CombatManager.Instance?.IsInProgress==false && PinnedPublicPotionDiscard.SingleplayerQueue()) {
+            for(int slot=0;slot<belt.Length;slot++)if(_session.CanDiscard(player,slot))legalActions.Add("discard:"+slot);
+        }
+        if(_nestedScreen is null)legalActions.Add(PublicRewardActionRequest.ProceedActionId);
 
         PublicRewardPlayer projectedPlayer = ProjectPlayer(player);
         var snapshot = new PublicRewardDecisionSnapshot(
@@ -274,13 +382,19 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             projectedPlayer,
             rewards,
             legalActions,
-            _session.DecisionRevision);
+            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(player), _session.CapacityRewards);
         snapshot = snapshot with
         {
             DecisionId = PublicRewardDecisionIdentity.Compute(snapshot),
         };
         _session.PublishParent(snapshot, screen, player, targets);
         return snapshot;
+    }
+
+    private string?[]? PotionKeys(Player player) {
+        if(!_session.UsesItemIndices)return null;
+        if(!PinnedPublicItemRewardClaim.Slots(player,out var slots))throw new InvalidOperationException("Potion inventory unavailable.");
+        return slots.Select(PinnedPublicItemRewardClaim.Key).ToArray();
     }
 
     private PublicRewardDecisionSnapshot ReadChild(NCardRewardSelectionScreen screen)
@@ -333,7 +447,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             projectedPlayer,
             new[] { parentTarget.Projection with { CardSelectionCanSkip = skipAvailable } },
             legalActions,
-            _session.DecisionRevision);
+            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(cardReward.Player), _session.CapacityRewards);
         snapshot = snapshot with
         {
             DecisionId = PublicRewardDecisionIdentity.Compute(snapshot),
@@ -483,17 +597,19 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             }
             unsorted[insertion + 1] = current;
         }
+        _session.BindRewardDomain(unsorted);
         Player? player = null;
         int previousIndex = -1;
         for (int slot = 0; slot < unsorted.Count; slot++)
         {
             (NRewardButton button, Reward reward) = unsorted[slot];
             if (!reward.IsPopulated || reward.RewardsSetIndex < 0 ||
-                reward.RewardsSetIndex == previousIndex)
+                _session.RewardIndex(reward) == previousIndex)
             {
                 return false;
             }
-            previousIndex = reward.RewardsSetIndex;
+            previousIndex = _session.RewardIndex(reward);
+            int rewardIndex=previousIndex;
             if (player is null)
             {
                 player = reward.Player;
@@ -514,13 +630,39 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
                     button,
                     reward,
                     new PublicRewardItem(
-                        reward.RewardsSetIndex,
+                        rewardIndex,
                         PublicRewardKind.Gold,
                         reward.SuccessfullySelected,
                         gold.Amount,
                         Array.Empty<string>(),
                         false),
                     Array.Empty<CardModel>()));
+                continue;
+            }
+
+            if (reward.GetType() == typeof(PotionReward) || reward.GetType() == typeof(RelicReward))
+            {
+                var model=PinnedPublicItemRewardClaim.Model(reward);var key=PinnedPublicItemRewardClaim.Key(model);
+                if(!PinnedPublicItemRewardClaim.ValidKey(key)||reward.ParentRewardSet is not null)return false;
+                if(!reward.SuccessfullySelected)_=new PinnedPublicItemRewardClaim(reward);
+                targets.Add(new PinnedPublicRewardParentTarget(slot,button,reward,
+                    new PublicRewardItem(rewardIndex,model is PotionModel?PublicRewardKind.Potion:PublicRewardKind.Relic,
+                        reward.SuccessfullySelected,0,Array.Empty<string>(),false,key,PinnedPublicItemRewardClaim.CapacityGain(reward)),Array.Empty<CardModel>()));
+                continue;
+            }
+
+            if (reward.GetType() == typeof(SpecialCardReward))
+            {
+                var card=PinnedPublicSpecialCardClaim.Card(reward);
+                if(card is null||reward.ParentRewardSet is not null||!ReferenceEquals(card.Owner,reward.Player)||
+                    !ReferenceEquals(card.RunState,reward.Player.RunState))return false;
+                if(!reward.SuccessfullySelected) {
+                    var baseline=new PinnedPublicSpecialCardClaim(reward.Player,card);
+                    if(!baseline.Valid(reward,false))return false;
+                }
+                targets.Add(new PinnedPublicRewardParentTarget(slot,button,reward,
+                    new PublicRewardItem(rewardIndex,PublicRewardKind.SpecialCard,reward.SuccessfullySelected,
+                        0,new[]{card.Id.Entry},false),new[]{card}));
                 continue;
             }
 
@@ -547,7 +689,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
                     button,
                     reward,
                     new PublicRewardItem(
-                        reward.RewardsSetIndex,
+                        rewardIndex,
                         PublicRewardKind.Card,
                         reward.SuccessfullySelected,
                         0,
@@ -562,7 +704,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
                 button,
                 reward,
                 new PublicRewardItem(
-                    reward.RewardsSetIndex,
+                    rewardIndex,
                     PublicRewardKind.Unsupported,
                     reward.SuccessfullySelected,
                     0,
@@ -646,7 +788,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
         return true;
     }
 
-    private static bool ContainsNode(Node root, Node candidate)
+    internal static bool ContainsNode(Node root, Node candidate)
     {
         var pending = new List<Node> { root };
         for (int cursor = 0; cursor < pending.Count; cursor++)

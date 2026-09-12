@@ -22,6 +22,7 @@ internal sealed class GenericEventV7ItemAdapter : IGenericEventV7ItemNativeAdapt
         _state=state;
         if(!state.Ready||!state.TryButton(out _)||!Slots(state.Binding.Player,out _capacity,out var slots))throw new InvalidOperationException("Item unavailable.");
         _baseline=slots.ToArray();
+        if(_capacity+state.CapacityGain>8)throw new InvalidOperationException("Potion capacity bound.");
         if(state.Kind==ItemV1ItemKind.Potion&&!slots.Exists(s=>s.ModelIdentity is null))throw new InvalidOperationException("Potion capacity unavailable.");
     }
     private bool Owned()=>!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&_state.Domain()&&_state.Overlay()&&!_state.FailedTask;
@@ -51,7 +52,9 @@ internal sealed class GenericEventV7ItemAdapter : IGenericEventV7ItemNativeAdapt
             !ReferenceEquals(pending.PlayerIdentity,_state.Binding.Player)||!ReferenceEquals(pending.RewardIdentity,_state.Reward)||
             !ReferenceEquals(pending.OfferedModelIdentity,_state.Model)||pending.Kind!=_state.Kind)
             throw new InvalidOperationException("Item ownership lost.");
-        return Pending();
+        var current=Pending();
+        if(_state.CapacityGain>0&&!CapacityEffect(current,false))throw new InvalidOperationException("Capacity pickup changed inventory.");
+        return current;
     }
     private ItemV1PendingCapture Pending()
     {
@@ -75,7 +78,7 @@ internal sealed class GenericEventV7ItemAdapter : IGenericEventV7ItemNativeAdapt
     private bool Effect(ItemV1PendingCapture p)
     {
         if(!p.SuccessfullySelected||!ReferenceEquals(p.ClaimedModelIdentity,_state.Model)||p.ClaimedStableKey!=_state.Key)return false;
-        if(_state.Kind==ItemV1ItemKind.Relic)return true;
+        if(_state.Kind==ItemV1ItemKind.Relic)return _state.CapacityGain==0||CapacityEffect(p,true);
         if(p.PotionCapacity!=_capacity||p.PotionSlots.Count!=_baseline.Length)return false;
         int inserted=0;
         for(int i=0;i<_baseline.Length;i++)
@@ -85,6 +88,20 @@ internal sealed class GenericEventV7ItemAdapter : IGenericEventV7ItemNativeAdapt
             if(!ReferenceEquals(before.ModelIdentity,now.ModelIdentity)||before.StableKey!=now.StableKey)return false;
         }
         return inserted==1;
+    }
+    private bool CapacityEffect(ItemV1PendingCapture current,bool complete)
+    {
+        int gain=current.PotionCapacity-_capacity;
+        if(current.PotionSlots.Count!=current.PotionCapacity ||
+            (complete?gain!=_state.CapacityGain:gain!=0&&gain!=_state.CapacityGain))return false;
+        for(int i=0;i<current.PotionSlots.Count;i++) {
+            var now=current.PotionSlots[i];
+            if(i>=_baseline.Length) {if(now.ModelIdentity is not null||now.StableKey is not null)return false;}
+            else if(!ReferenceEquals(now.ModelIdentity,_baseline[i].ModelIdentity)||now.StableKey!=_baseline[i].StableKey)return false;
+        }
+        if(complete && (_state.Model is not RelicModel relic || !ReferenceEquals(relic.Owner,_state.Binding.Player)||
+            _state.Binding.Player.Relics.Count(r=>ReferenceEquals(r,relic))!=1))return false;
+        return true;
     }
     private bool SameBaseline(int capacity,IReadOnlyList<ItemV1PotionSlotBinding> slots)
     {
@@ -123,7 +140,7 @@ internal sealed class GenericEventV7ItemSetAdapter : IGenericEventV7ItemSetNativ
         _root=root;
         if(!root.Domain()||!root.Ready||!GenericEventV7ItemAdapter.Slots(root.Binding.Player,out _capacity,out var slots))throw new InvalidOperationException("Item set unavailable.");
         _baseline=slots.ToArray();_offerTask=root.OfferTask!;_chosenTask=root.Binding.ItemParentTask!;
-        if(slots.Count(x=>x.ModelIdentity is null)<root.Entries!.Count(e=>e.Kind==ItemV1ItemKind.Potion))throw new InvalidOperationException("Item-set capacity unavailable.");
+        if(!root.CapacityPlan())throw new InvalidOperationException("Item-set capacity unavailable.");
         foreach(var entry in root.Entries!){entry.Screen=root.Screen;entry.OfferTask=root.OfferTask;}
     }
     public int OfferCount=>_root.OfferCount;
@@ -131,10 +148,10 @@ internal sealed class GenericEventV7ItemSetAdapter : IGenericEventV7ItemSetNativ
         ReferenceEquals(_root.OfferTask,_offerTask)&&ReferenceEquals(_root.Binding.ItemParentTask,_chosenTask)&&
         _root.Entries!.All(e=>!e.FailedTask&&ReferenceEquals(e.OfferTask,_offerTask))&&_root.Binding.ItemParentTask is {IsFaulted:false,IsCanceled:false}&&Inventory();
     private bool Inventory() {
-        if(!GenericEventV7ItemAdapter.Slots(_root.Binding.Player,out int capacity,out var slots)||capacity!=_capacity||slots.Count!=_baseline.Length)return false;
+        if(!GenericEventV7ItemAdapter.Slots(_root.Binding.Player,out int capacity,out var slots)||!_root.CapacityMatches(_capacity,capacity)||slots.Count!=capacity)return false;
         var seen=new HashSet<object>(ReferenceEqualityComparer.Instance);
         for(int i=0;i<slots.Count;i++) {
-            var before=_baseline[i];var now=slots[i];
+            var before=i<_baseline.Length?_baseline[i]:new ItemV1PotionSlotBinding(null,null);var now=slots[i];
             if(ReferenceEquals(before.ModelIdentity,now.ModelIdentity)&&before.StableKey==now.StableKey)continue;
             if(before.ModelIdentity is not null||now.ModelIdentity is null||!seen.Add(now.ModelIdentity)||
                 !_root.Entries!.Any(e=>e.Kind==ItemV1ItemKind.Potion&&e.Dispatched&&ReferenceEquals(e.Model,now.ModelIdentity)&&e.Key==now.StableKey))return false;

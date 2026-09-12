@@ -56,6 +56,8 @@ internal sealed class GenericEventV7Binding
     private bool _selectionDeckBound;
     internal readonly object? EmbeddedRoom;
     internal GenericEventV7CombatHandoff? Combat;
+    internal GenericEventV7SphereSession? Sphere;
+    internal GenericEventV7AbandonPopup? Abandon;
     internal GenericEventV7ResultsAdapter? Results;
     internal GenericEventV7OfferAdapter? Offer;
     internal CardSelectorPrefs Prefs;
@@ -131,14 +133,25 @@ internal sealed class GenericEventV7Binding
         other.PretendCardsCanBePlayed==Prefs.PretendCardsCanBePlayed && ReferenceEquals(other.ShouldGlowGold,Prefs.ShouldGlowGold);
     internal bool MatchesChildBinding()=>!Failed && !Closed && GenericEventV7Hooks.Owns(this) && ContextValid(false) && MatchesOffers() && AddedCardInvariantsValid();
     internal bool ContextValid(bool exit)=>
-        !Closed && ReferenceEquals(NRun.Instance,Run) && ReferenceEquals(Run.EventRoom,Room) &&
+        !Closed && (MegaCrit.Sts2.Core.Nodes.CommonUi.NModalContainer.Instance?.OpenModal is null || Abandon?.OwnsModal==true) && ReferenceEquals(NRun.Instance,Run) && ReferenceEquals(Run.EventRoom,Room) &&
         ReferenceEquals(NEventRoom.Instance,Room) && ReferenceEquals(NMapScreen.Instance,Map) &&
         ReferenceEquals(Run.GlobalUi?.MapScreen,Map) && ReferenceEquals(Run.GlobalUi?.Overlays,Overlays) &&
         ReferenceEquals(Room.Layout,Layout) && ReferenceEquals(EventModel.Owner,Player) &&
         ReferenceEquals(Player.RunState,RunState) && Option.TextKey==OptionKey &&
         Valid(Run)&&Valid(Room)&&Valid(Map)&&Valid(Overlays)&&Valid(Layout) &&
         (exit || Room.IsVisibleInTree()) && Room.CustomEventNode is null && CombatLayoutReady(Room) && ReferenceEquals(Room.EmbeddedCombatRoom,EmbeddedRoom) && CapstoneReady(Results) &&
-        CardSelectCmd.Selector is null && (exit || !Map.IsOpen && !Map.IsTravelEnabled && !Map.IsTraveling);
+        CardSelectCmd.Selector is null && (exit || !Map.IsOpen && !Map.IsTraveling &&
+            (!Map.IsTravelEnabled || Option.IsProceed && FinishedProceed(Layout,EventModel,Option)));
+    internal static bool FinishedProceed(NEventLayout layout,EventModel model,EventOption? expected=null) {
+        if(!model.IsFinished||!ReferenceEquals(model.Node,layout)||
+            RunManager.Instance?.DebugOnlyGetState() is not {} run||!ReferenceEquals(model.Owner?.RunState,run)||
+            run.CurrentRoom is not MegaCrit.Sts2.Core.Rooms.EventRoom room||!ReferenceEquals(room.LocalMutableEvent,model))return false;
+        var buttons=layout.OptionButtons.Take(2).ToArray();
+        if(buttons.Length!=1)return false;
+        var button=buttons[0];
+        return Valid(button)&&ReferenceEquals(button.Event,model)&&button.Option is {IsProceed:true} option&&
+            (expected is null||ReferenceEquals(option,expected));
+    }
     internal static bool CombatLayoutReady(NEventRoom room)=>room.Layout is NCombatEventLayout combat?
         combat.GetType()==typeof(NCombatEventLayout)&&!combat.HasCombatStarted&&combat.EmbeddedCombatRoom is {} embedded&&GodotObject.IsInstanceValid(embedded)&&ReferenceEquals(room.EmbeddedCombatRoom,embedded):room.EmbeddedCombatRoom is null;
     internal static bool CapstoneReady(GenericEventV7ResultsAdapter? results=null) {
@@ -166,7 +179,7 @@ internal sealed class GenericEventV7Binding
         }
         catch { return false; }
     }
-    private static bool SameDeckCard(CardSelectionV1DeckCard a,CardSelectionV1DeckCard b)=>
+    internal static bool SameDeckCard(CardSelectionV1DeckCard a,CardSelectionV1DeckCard b)=>
         ReferenceEquals(a.ModelIdentity,b.ModelIdentity) && a.StableKey==b.StableKey &&
         a.UpgradeLevel==b.UpgradeLevel && CardSelectionV1Enchantment.Same(a.Enchantment,b.Enchantment);
     // Non-enchantment child codecs omit enchantments. Keep those identities

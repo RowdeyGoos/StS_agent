@@ -69,7 +69,8 @@ internal static class GenericEventTransportRequestParser
     internal static bool ParentActionValue(ReadOnlySpan<byte> value)=>value.Length==8&&value[..7].SequenceEqual("choose:"u8)&&value[7] is >=(byte)'0' and <=(byte)'7';
     internal static bool ChildAction(ReadOnlySpan<byte> value)
     {
-        if(value.SequenceEqual("preview"u8)||value.SequenceEqual("confirm"u8)||RewardAction(value))return true;
+        if(value.Length<=32 && Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7SphereRules.Action(Encoding.ASCII.GetString(value)))return true;
+        if(value.SequenceEqual("cancel"u8)||value.SequenceEqual("confirm_abandon"u8)||value.SequenceEqual("preview"u8)||value.SequenceEqual("confirm"u8)||RewardAction(value))return true;
         bool item=value.StartsWith("collect:"u8);
         int prefix=item?8:7;
         if(!item&&!value.StartsWith("select:"u8)||value.Length<=prefix||value.Length>prefix+(item?3:2))return false;

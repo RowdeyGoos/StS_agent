@@ -19,6 +19,9 @@ public enum PublicRewardActionKind
     ChooseCard = 3,
     SkipCard = 4,
     Proceed = 5,
+    ClaimSpecialCard = 6,
+    CollectItem = 7,
+    DiscardPotion = 8,
 }
 
 public readonly record struct PublicRewardActionRequest(
@@ -26,7 +29,8 @@ public readonly record struct PublicRewardActionRequest(
     string ActionId,
     PublicRewardActionKind Kind,
     int RewardSlot,
-    int CardSlot)
+    int CardSlot,
+    int PotionSlot = -1)
 {
     // Preserved until all shared protocol fixtures have migrated. It is never
     // advertised by the granular reward reader.
@@ -76,6 +80,21 @@ public readonly record struct PublicRewardActionRequest(
                 -1);
             return true;
         }
+        if (TryParseSlot(actionId, "discard:", 7, out int potionSlot))
+        {
+            request = new(decisionId, actionId, PublicRewardActionKind.DiscardPotion, -1, -1, potionSlot);
+            return true;
+        }
+        if (TryParseSlot(actionId, "collect:", 7, out rewardSlot))
+        {
+            request = new(decisionId, actionId, PublicRewardActionKind.CollectItem, rewardSlot, -1);
+            return true;
+        }
+        if (TryParseSlot(actionId, "take:", 7, out rewardSlot))
+        {
+            request = new(decisionId, actionId, PublicRewardActionKind.ClaimSpecialCard, rewardSlot, -1);
+            return true;
+        }
         if (TryParseSlot(actionId, "open:", 7, out rewardSlot))
         {
             request = new PublicRewardActionRequest(
@@ -102,6 +121,12 @@ public readonly record struct PublicRewardActionRequest(
 
     public static string ClaimGoldActionIdFor(int rewardSlot) =>
         ActionIdFor("claim:", rewardSlot, 7, nameof(rewardSlot));
+
+    public static string CollectItemActionIdFor(int rewardSlot) =>
+        ActionIdFor("collect:", rewardSlot, 7, nameof(rewardSlot));
+
+    public static string ClaimSpecialCardActionIdFor(int rewardSlot) =>
+        ActionIdFor("take:", rewardSlot, 7, nameof(rewardSlot));
 
     public static string OpenCardActionIdFor(int rewardSlot) =>
         ActionIdFor("open:", rewardSlot, 7, nameof(rewardSlot));

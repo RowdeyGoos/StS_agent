@@ -81,6 +81,13 @@ class EventMapTests(unittest.TestCase):
             if mode == 'map_failure': self.assertEqual(flow['resumed_event']['status'], 'resolved')
             self.assertTrue(all(not any(buf) for buf in first.buffers+second.buffers))
 
+    def test_abandon_confirmation_requires_explicit_policy(self):
+        from types import SimpleNamespace
+        view=SimpleNamespace(kind='abandon_confirmation',payload={'legal_actions':['cancel','confirm_abandon']})
+        self.assertEqual(event_option_policy(host,None)(view),'cancel')
+        self.assertEqual(event_option_policy(host,None,'confirm')(view),'confirm_abandon')
+        with self.assertRaises(ValueError):event_option_policy(host,None,'unknown')
+
     def test_explicit_option_never_falls_back_before_requested_choice(self):
         from test_generic_event_host import run
         for key, expected in [('UNREGISTERED.option','resolved'),('MISSING','failed')]:

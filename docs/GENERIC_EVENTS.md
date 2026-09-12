@@ -226,7 +226,7 @@ Molten Egg upgraded the added Bashes; unupgraded Defend skills supplied this cas
 
 The shared `CardSelectCmd.FromDeckForEnchantment` request and
 `NDeckEnchantSelectScreen` now form a `card_enchant_v1` child of the existing
-`generic_event_v9` parent. No event-name admission rule is added. Sapphire Seed's
+`generic_event_v10` parent. No event-name admission rule is added. Sapphire Seed's
 observed Plant and Nourish branch is the representative live target. Pinned
 metadata also confirms `FieldOfManSizedHoles.EnterYourHole` requests one card,
 applies an enchantment and finishes the event.
@@ -312,19 +312,21 @@ retains its exact reward/model identity, native type index and control. Public
 `collect:N` indexes are zero-based **list positions** within the set: the game's
 `RewardsSetIndex` identifies a type and can repeat for two potions or two relics.
 Duplicate offered model identities, linked rewards, unsupported reward types,
-foreign controls and changed list membership/order are rejected. All potion
-entries must fit in the initially free slots before the first collection; this
-increment does not add discard/replace/skip behavior for full inventory.
+foreign controls and changed list membership/order are rejected. Before the first
+collection, an ordered capacity plan requires each potion to fit in an initially
+free slot or a slot supplied by a preceding pinned Potion Belt. A later belt cannot
+rescue an earlier full-inventory potion. Discard/replace/skip remain unsupported
+for these item children.
 
 Each entry uses the existing `item_v1` observation/action/effect checks. Its
 collection task must succeed before advancing. Completed entries retain their
 selected flag, exact claim, collection task and potion slot across subsequent
-entries. The initial potion inventory and capacity remain fixed apart from the
-verified insertions. The last collection also waits for the original Offer and
+entries. Original potion slots remain fixed apart from verified insertions; the
+known capacity pickup below may append empty slots. The last collection also waits for the original Offer and
 Chosen tasks and automatic closure of the owned reward screen. Native rewards
 stay in the list after collection; removed/freed completed buttons are allowed.
-Relic substitution, nested pickup selectors and inventory-changing pickup effects
-remain unsupported by the existing exact-effect boundary.
+Relic substitution, nested pickup selectors and other inventory-changing pickup
+effects remain unsupported by the existing exact-effect boundary.
 
 The versioned read envelope contains, in order, `version`, `session_nonce`,
 `status`, `offer_count`, `collected` and `current`. `collected` is an immutable
@@ -350,6 +352,37 @@ reconciled. See the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#po
 Other counts, relic-containing sets and full-inventory behavior retain their
 narrower evidence or remain gaps. [Current status](STATUS.md) owns the release and
 installation identity.
+
+## Implemented offline: event Potion Belt capacity pickup
+
+Owned singleton, ordered item-set and mixed card/item rewards now support the
+pinned `PotionBelt` pickup, including item rewards opened by the owned Resume
+callback. The shared native recognizer requires the exact native type, stable
+`POTION_BELT` key and `PotionSlots` value two. Static inspection establishes its
+`AfterObtained` → `GainMaxPotionCount` → empty-slot append path; the representative
+offline case starts with three occupied slots, collects the belt and then two
+potions, and reaches event Proceed/map. A natural event offer has not been
+live-demonstrated for this capacity path.
+
+Admission simulates the original reward order using initially free slots and
+preceding known +2 grants, bounded to eight slots. Each belt must initially be
+unowned. Collection must finish with the exact relic owned once by the player,
+exactly two appended empty slots and unchanged original potion identities. Pending
+collection may expose the original or expected enlarged capacity; another entry
+cannot start until collection and its exact effect reconcile. Later entries use
+fresh potion-slot baselines, and every settled belt, capacity gain and collected
+potion remains checked through set completion. Resume-time rewards retain the
+final inventory and ownership through the continuation handoff.
+
+The existing `item_v1`, `item_set_v1` and `mixed_reward_set_v1` wire contracts stay
+unchanged. The next entry's ordinary `potion_slots` includes newly available slots;
+relic results still certify the claimed model, with capacity verified by the native
+completion adapter. These event children collect in order and do not inherit the
+terminal controller's skip, discard or priority policy. Other capacity effects,
+nested pickup selectors and a potion that cannot fit at its position remain
+unsupported. Offline fixtures cover singleton/two-belt sets, card choose/Skip,
+delayed and lost receipts, wrong growth/slot contents, foreign or lost relic
+ownership and resume-time retention. See [current validation](STATUS.md).
 
 ## Implemented: ordinary event card reward menus
 
@@ -496,11 +529,12 @@ model/claim effect is verified. Offer and Chosen completion belong to the whole
 set. If any card was skipped, the exact root Proceed control provides one final
 `dismiss`, including when the last entry is an item. Otherwise native automatic
 closure applies. Item Skip and full-inventory replacement are not part of this
-contract; enough potion slots must be free for the whole set before first input.
+contract. The ordered capacity plan must fit every potion, allowing slots from
+a preceding pinned Potion Belt while preserving the original reward order.
 
 The admission deck remains fixed through leading items. Only verified card
-insertions advance its baseline. Initial potion slots plus verified insertions,
-settled item claims, assigned slots and collection task identities remain valid
+insertions advance its baseline. Initial potion slots plus verified insertions and
+known capacity gains, settled item claims, assigned slots and collection task identities remain valid
 across later menus and collections. An item pickup that changes the deck, an
 unexpected inventory change during a card menu, a cleared prior claim, changed
 slot/task, early future entry or failed parent task stops the episode. Nested
@@ -805,9 +839,9 @@ evidence plus the representative live acceptance described above.
 ## Implemented offline: non-resuming event combat
 
 The checkout observes the owned, non-generic
-`EventModel.EnterCombatWithoutExitingEvent` call. It admits only an empty extra
-reward list with `shouldResumeParentEventAfterCombat=false`, outside any child
-selector. No event-name rule is used. **Dense Vegetation’s Fight page after Rest**
+`EventModel.EnterCombatWithoutExitingEvent` call. It admits zero to eight supported special-card, potion or relic extra rewards
+(at most one special-card entry)
+with `shouldResumeParentEventAfterCombat=false`, outside any child selector. No event-name rule is used. **Dense Vegetation’s Fight page after Rest**
 is the representative live acceptance case; prepare that page before using the
 first-legal host policy.
 
@@ -818,7 +852,7 @@ encounter, logical combat room, parent event ID and `NCombatRoom` node, includin
 its native `_visuals` room reference. A mismatch stops the session. This observes
 combat entry, not victory or automatic parent effects.
 
-Parent protocol `generic_event_v9` includes `complete/combat_handoff` and its matching
+Parent protocol `generic_event_v10` includes `complete/combat_handoff` and its matching
 history result. The existing `/probe/generic-event-v7/` routes remain stable;
 older protocol clients reject the new version. `map_handoff` still requires an
 accepted Proceed. The Python summary exposes `destination`, so `event-map` cannot
@@ -833,12 +867,202 @@ metadata) are admitted. Changed identities stop the host; they are never retried
 `event-combat-map` composes this entry with the existing bounded combat, reward
 and map controllers. It preserves separate `event` and `combat_flow` summaries;
 the latter retains combat, rewards and map results even when a later stage fails.
-Defeat does not start rewards. Existing reward coverage remains gold/card only;
-other reward surfaces stop with the preceding evidence intact.
+Defeat does not start rewards. Reward coverage includes gold, ordinary card choices, direct special-card
+grants and exact potion/relic collection; other reward surfaces stop with the preceding evidence intact.
 
 This feature is **unreleased and not live-demonstrated**. The resuming path below
-adds a separate callback witness; event-supplied extra rewards and arbitrary
+adds a separate callback witness. Resuming entry with extra rewards and arbitrary
 embedded combat branches remain unsupported.
+
+### Extra special-card reward
+
+**The Lantern Key → Keep the Key → Fight** is the concrete caller for this
+increment. Pinned static IL shows `TheLanternKey.Fight` creates one
+`SpecialCardReward` per player and passes it into the shared combat entry method.
+`CombatRoom.AddExtraReward` retains that reward; `RewardsSet.WithRewardsFromRoom`
+adds the same object to the room-end reward list. `SpecialCardReward.OnSelect`
+adds its specified mutable card directly with `CardPileCmd.Add`; it opens no card
+chooser. These are source observations, not live execution.
+
+For the supported single-player entry, the lease captures each unlinked, populated,
+uncollected special reward and its card, owner, key and upgrade level. It requires
+the exact ordered extra-reward list in the entered combat room and rechecks it
+through the combat terminal observation. Resuming combat with extra rewards and
+enchanted extra cards remain unsupported.
+No event-name registration is used.
+
+The existing public reward routes now project `kind: special_card`, one public
+card key and the native `take:<slot>` / `claim_special_card` action. Ready payloads
+containing a special card use **schema 2**, unless part of a schema-3 item session
+below. Ordinary ready payloads, waiting, completion and action receipts retain schema 1. The decision digest includes the
+new reward kind and action. Older consumers reject the extension before input.
+Both `first-card` and `skip-card` collect the specified special card; those policy
+names continue to govern ordinary card-choice menus.
+
+Before input, the core reader retains the exact reward, button and card identities.
+One native button click reserves the decision. Reconciliation requires the same
+reward screen, successful native selection, exactly one insertion of the specified
+card, unchanged health/gold, and the original deck cards in their original order
+with unchanged ownership, keys, upgrades and enchantments. A same-key substitute,
+extra card, changed survivor, premature map return or foreign screen cannot pass.
+Insertion before selection completion waits without another click; lost input
+receipts are never retried. The host reports verified grants separately in
+`rewards.claimed_special_cards`, preserving them if a later stage fails.
+
+Combat and reward stages establish their own native identities. This does not add
+an independent proof of historical event provenance across the handoff, certify
+unrelated automatic effects, or establish full-run play. The pending live case is
+The Lantern Key's Fight page through victory, special-card collection and map.
+
+### Extra potion/relic rewards and mixed collection
+
+**Punch Off → Take Them → Fight** is the concrete caller. Pinned static IL shows
+`PunchOff.Fight` supplies an unpopulated `RelicReward` and `PotionReward` to the
+non-resuming combat entry. The game populates those entries later. Potion entries
+share native reward index 2; relic entries share index 3. These are static source
+observations, not a live demonstration of that branch.
+
+The combat lease retains up to eight exact unlinked, uncollected reward objects
+with at most one special-card entry
+and the original ordered room list. Deferred item generation is allowed until a
+model first appears; that model and public key are then retained. The lease rejects
+replacement entries, changed indices, duplicate models, wrong players and already
+owned relics. Special-card extras retain their populated-card rules above.
+
+The existing core reward reader and controller also collect potion/relic rewards
+on ordinary terminal reward screens. A screen containing items uses **ready schema
+4** for its entire reward session, including ordinary card children and empty
+parents after collection. Every reward row appends `item_key`, a bounded public
+model key for `potion`/`relic` and null for other kinds. Item rows have empty cards,
+null gold and no Skip flag. `collect:0` through `collect:7` use action kind
+`collect_item`. Waiting, completion and action receipts remain schema 1.
+
+In schema 3/4, `reward_index` is a session ordinal bound to the original native
+reward object; `reward_slot` remains the current visible slot used by actions.
+This permits repeated potion/relic entries with identical native indices and keys.
+Visible removal or reordering cannot rename an entry or introduce a new reward.
+Legacy sessions preserve their native indices and original decision digests.
+The complete reward-screen domain is still bounded to eight entries, including
+ordinary gold/card rewards; the combat lease’s extra-entry limit does not raise
+that screen limit.
+
+Before collection the bridge binds the exact reward, button, player and offered
+model. Reconciliation requires native selection and the exact claimed model,
+one insertion in a previously empty potion slot or one locally owned relic,
+unchanged survivor inventories/deck and unchanged public HP/max-HP/gold/deck count.
+A delayed completion waits without another click. Settled items remain checked
+until verified reward completion, after which normal later potion use is allowed.
+Lost dispatch, mismatched effects, replaced ownership and nested selectors stop
+without retry. Full potion inventories withhold collection. The default policy
+reports `potion_inventory_full`; explicit skip and replacement policies are described below. The Potion Belt capacity effect below is supported. Other relic pickup effects
+that alter these baselines or open a selector remain unsupported.
+
+Both card policies collect items before special/ordinary cards and record only
+verified pickups in `rewards.collected_items` as kind, public key and reward index.
+Prior verified effects survive later stage failures. This is offline development
+coverage; Punch Off through victory, both extra pickups and map remains a pending
+live case, and random relic pickup effects may reach the unsupported boundary.
+
+### Terminal Potion Belt capacity pickup
+
+The terminal reward adapter recognizes the pinned native `PotionBelt` model and
+its `PotionSlots` value of two. Pinned static IL shows `AfterObtained` calling
+`PlayerCmd.GainMaxPotionCount`, which appends empty slots to the player's belt.
+A supported pickup preserves every original potion object/key and appends exactly
+two null slots, with at most eight total. Collection must also retain the exact
+claimed relic and unchanged survivor relics, deck and public player values.
+A same-key model of another type does not acquire this permission. Other values,
+filled new slots, changed survivors, unexpected growth/shrinkage and pickup selectors
+remain unsupported. Oversized growth is withheld before input.
+
+A reward session containing this model uses **ready schema 5** throughout its
+parent and card-child decisions. Each reward row appends `potion_capacity_gain`
+after `item_key`: two for Potion Belt, zero for other rows. Inventory/actions
+retain schema 4's fields. Decision identity uses `reward_v5` and binds the declared
+gain. Waiting, completion and receipt payloads stay schema 1; schema 1–4 decoding
+remains supported for existing sessions.
+
+When a potion is blocked, the shared reward controller collects an available
+capacity-grant relic before stopping for a full inventory or discarding a potion.
+The ordinary gold and card policies still apply. After exact gain reconciliation,
+it refreshes legal actions and collects potions into the new slots. `skip-all`
+continues to leave potion rewards. Verified gains are reported separately in
+`rewards.potion_capacity_gains` with key, reward index, and before/after capacity.
+A lost receipt never counts the gain; a later pickup failure retains an earlier
+verified gain.
+
+Previously collected potions remain bound during growth and afterward. Existing
+original inventory potions remain eligible for explicit replacement; newly added
+slots and collected potions are excluded from that original-inventory set. A settled
+capacity grant must persist until reward completion, including when no potion was
+collected before the belt. Custom event and resume-time item rewards use the
+[ordered capacity contract](#implemented-offline-event-potion-belt-capacity-pickup)
+above. Nested pickup selectors remain unsupported. Evidence is static inspection
+and offline fixtures, not live gameplay.
+
+### Terminal potion reward policies
+
+The shared client accepts `--potion-policy stop-on-full` (default), `skip-full`,
+`skip-all`, or `replace-first` for `rewards`, `combat-map` and the non-resuming path of
+`event-combat-map`. The representative case is Punch Off’s terminal potion reward
+with a full inventory, alongside gold, cards and its relic reward.
+
+`skip-full` collects each potion while its collection action remains legal. Once
+capacity is exhausted, it leaves the remaining potions visible and finishes other
+rewards. `skip-all` leaves every uncollected potion even when capacity is available.
+Both policies preserve the ordinary first-card/Skip choice policy and relic collection.
+They use the native terminal Proceed operation; no potion reward click, discard,
+replacement or fabricated skip action is sent for a left-behind potion.
+
+The host keeps uncollected potion identities until Proceed. Disappearance,
+replacement, or selection without a corresponding controller action stops the flow.
+A stale decision refreshes through the existing bounded path; uncertain mutations
+are never retried. Before Proceed, the native adapter captures the exact unclaimed
+models, potion slots, survivor relics and deck. It requires unchanged inventory and
+unclaimed offers, successful completion of the exact native Proceed task and map
+return before completing the reward session. Pinned static IL shows terminal
+Proceed runs normal reward skipping; `PotionReward.OnSkipped` records a skipped
+choice without collecting or discarding a potion. That observation is not a live test.
+
+The reward summary includes `potion_policy` and `skipped_potions`, each with public
+key, stable reward index and reason (`inventory_full` or `policy`). These are
+recorded only after verified reward exit. Lost receipts, failed/pending exit tasks,
+changed inventory or failed exit reconciliation leave this list empty while
+preserving earlier verified collections. A later map-read failure retains the
+completed reward summary.
+
+`replace-first` collects rewards that fit, handles the ordinary card choice, then
+replaces the first advertised eligible original inventory potion when capacity is
+full. It sends `discard:0` through `discard:7` as a separate action, verifies the
+removal, then sends the waiting reward's collection action. Only potion objects
+present in the same slot at initial reward-session binding are eligible. Newly
+collected potions are protected; if no original potion remains eligible, the host
+stops with `potion_replacement_unavailable` without leaving the pending offer.
+The summary's `discarded_potions` records each verified slot and original public key;
+if later collection fails, the verified discard remains recorded independently.
+
+Ready schema 4 extends schema 3 with `potion_slots` (0–8 public keys or nulls) and
+`potion_slot` on every legal action (null except for `discard_potion`). Full inventory
+plus an unclaimed potion offer is required for any discard action. Ready decisions
+bind this inventory under the `reward_v4` identity domain. Schema 1–3 decoding remains
+supported; action receipts, waiting and completion remain schema 1. At most 17 legal
+actions and 17 accepted mutations fit the existing eight-reward session budget.
+
+Native discard uses the same `DiscardPotionGameAction` and queue as the potion
+popup, restricted to the pinned single-player queue. Its `BeforeExecuted` guard
+rechecks the exact slot/model/owner, native removal permission, unchanged inventory
+and deck, live offer button, screen, queue and out-of-combat state. The guard expires
+after five seconds and remains attached if the session fails or is disposed before
+execution, preventing a late slot lookup from deleting a replacement object.
+Reconciliation requires exact removal, the native removed flag, successful completion
+of the same action task and no action exception; unexpected effects or nested screens
+stop without retry. Cleanup with an unresolved discard fails explicitly.
+Static inspection of the pinned game establishes this queue path; fixtures establish
+the adapter and wire checks. Neither is a live demonstration of replacement.
+
+This is offline coverage. The policies do not apply to custom event rewards or
+resume-time item children, which retain their capacity checks. Selectors opened by
+pickup effects remain unsupported.
 
 ## Implemented offline: event combat resumption
 
@@ -913,7 +1137,8 @@ combat ownership; only the subsequent verified continuation and successful clean
 can do so. The earlier unreleased continuation v1 route is retired; generic parent
 protocol v9 and its routes are unchanged.
 
-Collection requires available potion capacity and the exact owned reward/button.
+Collection requires the exact owned reward/button and an ordered capacity plan:
+each potion must fit using initially free slots or a preceding pinned Potion Belt.
 The existing item sessions verify the claimed model, exact potion insertion, collection
 and Offer tasks, Resume completion and closed screen. Through the final handoff,
 the bridge retains successful task identities and settled potion slots/capacity;
@@ -927,12 +1152,154 @@ collected public item keys, including partial progress on failure. Every retaine
 history row is type-validated before another input. Lost or malformed receipts are
 never retried.
 
-This batch is **unreleased and not live-demonstrated**. Setting1's potion offer is
+This batch is **released and not live-demonstrated**. Setting1's potion offer is
 the source-backed live candidate; single relics and ordered item sets extend the
 same mechanism and currently have fixture evidence only. A Setting3 relic that
 opens a selector remains unsupported. Passive callback completion does not certify
-its automatic rewards/upgrades. Extra combat rewards, recursive combat/resume
+its automatic rewards/upgrades. Extra potion/relic combat rewards are implemented above; recursive combat/resume
 cycles and terminal run progression remain separate work.
+
+## Implemented offline: Fake Merchant custom screen
+
+The shared event adapter now supports the pinned `NFakeMerchant` inventory flow:
+open the initially closed inventory, buy zero to six offered relics, close it,
+then use its native Proceed control to reach the map. This is the first custom
+screen implementation. It uses existing parent choices, `choose:N` actions and
+event/map composition; no additional listener, route or protocol version is needed.
+
+The public choices are `FAKE_MERCHANT.OPEN`,
+`FAKE_MERCHANT.BUY.<slot>.<item_key>.<displayed_price>`,
+`FAKE_MERCHANT.CLOSE` and `FAKE_MERCHANT.LEAVE`. Buy choices publish the visible
+relic key and price and are legal only while the exact native slot is stocked,
+visible, enabled and affordable. The default first-legal policy buys affordable
+offers in native slot order, then closes and leaves. A choice provider can select
+specific advertised offers or close without buying. The complete six-purchase
+path consumes nine parent actions.
+
+Entry binds the custom screen, its event, player, logical room, inventory model
+and native controls. The six relic slots and entries retain their exact identities,
+models, prices and each `MerchantEntry._player` owner. Open and close wait for
+native inventory/control transitions. Purchases dispatch once through the slot's
+native selection input and wait for that entry's `PurchaseCompleted` callback.
+Success requires the exact gold debit, unstocked entry and newly owned relic;
+original cards, potions, capacity and retained relic identities/keys remain checked
+through map return. New logical option identities are issued only after that
+verified effect, allowing the parent to distinguish progress when Godot reuses
+inventory nodes. Foreign overlays, combat entry, changed ownership or incompatible
+pickup effects stop the flow. An unresolved mutation makes cleanup fail, including
+repeated disposal attempts; detaching a callback never certifies cancellation.
+
+The retained target's `FakeMerchant.BeforeEventStarted` creates six relic entries.
+`NMerchantSlot` selection invokes the entry purchase, whose completion callback
+follows the gold debit, relic acquisition and post-purchase callback. This static
+binding inspection used the same pinned game assembly
+`e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
+It establishes the intended native path, not live execution evidence.
+
+This batch is **released and not live-demonstrated**. Already-open entry and
+Fake Merchant's `FoulPotionThrown` combat branch are outside this path. Crystal
+Sphere is implemented below. Nested
+pickup selectors and terminal run progression remain separate work. See
+[current validation](STATUS.md) for offline test and build results.
+
+## Implemented offline: Crystal Sphere
+
+The shared event owner supports both native entry choices (`UncoverFuture` and
+`PaymentPlan`) into `NCrystalSphereScreen`. The smallest complete acceptance case
+is entry, a legal tool state, all allotted reveals, earned reward resolution and
+native map return. The original event callback remains owned throughout; reaching
+zero divinations alone does not complete the event.
+
+The dedicated `crystal_sphere_v1` child publishes an 11×11 row-major fog mask,
+remaining divinations, selected small/big tool and legal actions. `reveal:N` uses
+slot `y * 11 + x`; small reveals one cell and big reveals the bounded 3×3 area.
+It publishes no hidden item models, positions, textures or RNG state. This first
+projection also omits revealed-item artwork/geometry; it supports a simple legal
+reveal policy rather than strategic board inference. The default policy chooses
+the big tool and then the first legal hidden cell.
+
+Each reveal invokes the exact native screen handler once and retains its Task.
+Completion checks the exact fog/count/tool delta, cell/control identities and
+unchanged unrelated player inventory. Native curse additions are witnessed through
+the scoped `AddCursesToDeck` callback and its successful returned card identities;
+an arbitrary appended Doubt does not count as that result. Tool selection uses the
+native button. Neither path inspects or generates board rewards speculatively.
+
+After the game actually offers earned rewards, the child exposes gold, card,
+potion and relic rows through the existing public reward reader/applier. Cards
+include their actual upgrade levels. Advertised actions are `reward:claim:N`,
+`reward:collect:N`, `reward:open:N`, `reward:choose:N`, `reward:skip_card` and, when
+needed, native reward-screen `dismiss`. Repeated reward indices retain stable
+session ordinals. Collection and menu Tasks, exact gold/card/item effects and
+unchanged unrelated inventory are reconciled before another action. Automatically
+freed reward screens reconcile from retained models and results without traversing
+retired Godot nodes.
+
+Only successful reward completion and the original event callback admit the
+parent `CRYSTAL_SPHERE.LEAVE` choice. Its native exit must finish with a fresh map. The native game retains the completed
+sphere overlay when opening that map; parent-owned disposal removes only that exact
+sole overlay through `NOverlayStack.Remove`, then verifies the empty stack, actionable
+map and unchanged inventory before releasing ownership. Failed removal is never retried. A resolved sphere child is
+not itself transport completion and is not counted as a completed card/item child;
+its episode and action history remain tracked with parent effects `unverified`.
+Lost mutation replies are never retried; unresolved disposal remains a failure.
+The child is bounded to 40 actions and 512 native reads, within the existing host
+and parent limits.
+
+The **Uncover Future/reveal/gold reward/map path passed live**, including exact
+completed-overlay cleanup and an independent actionable-map check. Payment Plan
+also passed in the subsequent multi-case session with two parent and eight child
+actions reconciled. Explicit tool-switch variants and card/potion/relic reward
+branches retain offline coverage. See the [live record](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md). Static bindings use the
+same pinned game assembly as the Fake Merchant inspection above. Admission requires
+entry through an owned ordinary event choice; adopting an already-open sphere,
+full-potion replacement and nested pickup selectors remain outside this path.
+See [current validation](STATUS.md) and the
+[wire contract](../bridge/Sts2AgentBridge/components/events/wire/schema.md).
+
+## Implemented offline: Trial abandonment confirmation
+
+Trial's Reject page mixes Accept with Double Down. In the pinned native code,
+Double Down has `IsProceed=true`, `DisableOnChosen=false` and a lethal predicate,
+but its exact callback only creates `NAbandonRunConfirmPopup` in `NModalContainer`.
+It preserves the buttons and sets `WasChosen` before creating the popup. The bridge
+recognizes only the single-cast private `OnChosen` delegate targeting
+`Trial.DoubleDown` on the same model for this exception. Public candidates retain
+the native flags and use discovery `abandon_confirmation`; other lethal options
+remain blocked. This is a narrow native exception to ordinary deferred discovery,
+not a general permission to dispatch lethal choices.
+
+The owned child `abandon_confirmation_v1` offers Cancel first and explicit
+`confirm_abandon`. Cancellation checks unchanged deck, HP, gold, potions, relics,
+run/event ownership and the post-click option presentation, including exact
+buttons, options, callbacks and labels. After native modal closure, the same
+buttons receive fresh bridge bindings and a new decision; old receipts cannot be
+reused. Cancel does not undo native `WasChosen` or earlier event effects.
+
+Confirmation uses the popup's native Yes button in singleplayer and captures its
+exact `RunManager.AbandonInternal` task. Resolution requires successful completion,
+the same manager/run/player, `IsAbandoned=true`, player HP exactly zero and the
+owned modal closed. Parent phase and final history result become `run_abandoned`.
+This does not assert main-menu arrival, saved-history contents or map readiness.
+Completed outcomes are checked again before reconciliation and owner release;
+pending tasks, lost callbacks, replaced state and uncertain actions stop cleanup.
+There are no mutation retries or direct save/profile operations.
+
+The parent protocol is `generic_event_v10`; route names remain unchanged. The
+bundled client defaults to cancellation; `--abandon-policy confirm` explicitly
+selects termination. Use `--capability events` for this terminal path rather than a
+stage whose acceptance condition requires a map. Native fixtures and C#/Python
+integration cover cancellation through subsequent Accept/Proceed/map, immediate
+and delayed confirmation, stale controls, task failures, changed completion,
+lost receipts and malformed outcomes. Live coverage remains open.
+
+Source inspection used pinned `sts2.dll` SHA-256
+`e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
+The same bounded inspection found that ordinary relic reward rolls select rarities
+2/3/4, while identified pickup selector relics use shop/ancient rarities 5/7.
+Small Capsule and Toy Box therefore do not establish the proposed ordinary random
+reward → nested-selector case. A concrete shop pickup is a more relevant next
+composition target; nested pickup selectors remain unsupported.
 
 ## Separate remaining questions
 
@@ -945,9 +1312,10 @@ layout restrictions and need their own evidence.
 The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
 for all 68 pinned types and concrete callers for the remaining work. Repeated-page
 progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader pickup composition, resume-time selectors/extra-reward event combat, repeated/nested pickup children and custom
-surfaces are distinct gaps. WoodCarvings’ generic deck transformation selector
-is implemented above; Bird passed live, while Torus remains a branch candidate.
+changes after selectors, other pre-selector deck mutations, broader pickup
+composition, resume-time selectors/card rewards, repeated/nested pickup children,
+and terminal surfaces are distinct gaps. WoodCarvings’ generic deck
+transformation selector is implemented above; Bird passed live, while Torus remains a branch candidate.
 
 Choose the next feature from those source-backed callers. Positive variable
 transformation and optional Claws selections are implemented. Claws zero-selection

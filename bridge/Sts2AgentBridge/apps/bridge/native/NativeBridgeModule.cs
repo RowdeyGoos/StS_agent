@@ -29,6 +29,9 @@ internal sealed class NativeBridgeModule : IBridgeModule
     private Action? _cleanup;
     private RoomFlowSelection _roomSelection;
     private bool _initialized, _disposed;
+    private ReadStageTrace? _readTrace;
+    public void SetReadTrace(ReadStageTrace? trace)=>_readTrace=trace;
+    private void Stage(int value)=>_readTrace?.Mark(value);
     internal NativeBridgeModule(Capability capability, string nonce) { Capability = capability; _nonce = nonce; }
     public bool Owns(BridgeRequest request) => request.Capability == Capability ||
         Capability == Capability.Rooms && _roomSelection == RoomFlowSelection.Event && request.Capability == Capability.Items;
@@ -43,6 +46,7 @@ internal sealed class NativeBridgeModule : IBridgeModule
         switch (Capability)
         {
             case Capability.Events:
+                Stage(4);
                 if (!PinnedGenericEventHarmonyGuard.Verify()) throw new InvalidOperationException("Native dependency mismatch.");
                 InitializeEvents();
                 break;
@@ -112,10 +116,13 @@ internal sealed class NativeBridgeModule : IBridgeModule
     private void InitializeEvents()
     {
                 _cleanup = GenericEventV7Hooks.RecoverFailedInstallation;
-                var native = new PinnedGenericEventV7NativeAdapter();
+                Stage(5);
+                var native = new PinnedGenericEventV7NativeAdapter(incrementalHooks:true,readStage:Stage);
                 _cleanup = native.Dispose;
+                Stage(9);
                 var events = new GenericEventV7Session(native, _nonce);
                 _cleanup = events.Dispose;
+                Stage(10);
                 var eventWire = new GenericEventV7WireService(_nonce, events);
                 _cleanup = eventWire.Dispose;
                 _handle = request =>
@@ -130,13 +137,14 @@ internal sealed class NativeBridgeModule : IBridgeModule
                     byte[]? command = request.IsPost ? GenericEventTransportServiceBody.Build(request.Decision!, request.Action!,
                         request.ChildOrdinal, request.ParentDecision, request.ParentAction) : null;
                     byte[] body;
+                    Stage(11);
                     try { body = eventWire.Handle(request.Method, request.Path, command); }
                     finally { if (command is not null) Array.Clear(command); }
                     var route = request.IsPost ? request.IsChild ? GenericEventTransportRoute.ChildPost : GenericEventTransportRoute.ParentPost : GenericEventTransportRoute.DecisionGet;
                     var classification = GenericEventTerminalClassifier.Classify(route, GenericEventReleaseSelection.Generic, _nonce, 200, body);
                     return Checked(body, (int)classification, root => !request.IsPost && Text(root, "kind") == "decision" &&
                         root.TryGetProperty("parent", out var parent) && parent.ValueKind == JsonValueKind.Object &&
-                        Text(parent, "status") == "complete" && Text(parent, "phase") is "map_handoff" or "combat_handoff" or "combat_resume_handoff") with { Diagnostic = native.LastDiagnostic, EventDiagnostic = true, CombatScope=native.CombatScope, CombatResume=native.CombatResume, EventNonce=_nonce };
+                        Text(parent, "status") == "complete" && Text(parent, "phase") is "map_handoff" or "combat_handoff" or "combat_resume_handoff" or "run_abandoned") with { Diagnostic = native.LastDiagnostic, EventDiagnostic = true, CombatScope=native.CombatScope, CombatResume=native.CombatResume, CombatResumeDiagnostic=()=>native.CombatResumeDiagnostic, EventNonce=_nonce };
                 };
     }
     private static string? Text(JsonElement value, string name) =>

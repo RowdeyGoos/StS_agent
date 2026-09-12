@@ -11,16 +11,18 @@ internal static partial class GenericEventV7NativeIntegrationHost
 {
     private static int RunItem(string scenario)
     {
-        if (!new[] { "I_COMBAT", "I_COMBAT_STARTED", "I_COMBAT_REPLACED", "I_SET_TWO", "I_SET_MIXED", "I_SET_EIGHT", "I_SET_COLLECTION", "I_SET_OFFER", "I_SET_CHOSEN", "I_SET_LATE_SLOT", "I_FIRST", "I_ANOTHER", "I_HELD_OUT", "I_RELIC", "I_INDEX255",
+        if (!new[] { "I_SET_CAPACITY", "I_SET_CAPACITY_DELAY", "I_SET_CAPACITY_TWO_BELTS", "I_COMBAT", "I_COMBAT_STARTED", "I_COMBAT_REPLACED", "I_SET_TWO", "I_SET_MIXED", "I_SET_EIGHT", "I_SET_COLLECTION", "I_SET_OFFER", "I_SET_CHOSEN", "I_SET_LATE_SLOT", "I_FIRST", "I_ANOTHER", "I_HELD_OUT", "I_RELIC", "I_INDEX255",
             "I_DELAYED_CREATION", "I_DELAYED_COLLECTION", "I_DELAYED_OFFER", "I_DELAYED_CHOSEN",
             "I_REPEAT", "I_MIXED", "I_MIXED_VARIABLE", "I_RELIC_FIRST", "I_RELIC_ANOTHER", "I_FULL", "I_EXTRA",
             "I_HIDDEN", "I_LINKED", "I_TERMINAL", "I_TASK_FAULT", "I_LATE_CLAIM", "I_LATE_SLOT",
             "I_RELEASE_DISABLED", "I_DERIVED", "I_REPLACED_BUTTON" }.Contains(scenario)) return 2;
-        bool creation = scenario == "I_DELAYED_CREATION", collection = scenario is "I_DELAYED_COLLECTION" or "I_SET_COLLECTION",
+        bool creation = scenario == "I_DELAYED_CREATION", collection = scenario is "I_SET_CAPACITY_DELAY" or "I_DELAYED_COLLECTION" or "I_SET_COLLECTION",
             offer = scenario is "I_DELAYED_OFFER" or "I_SET_OFFER" or "I_LATE_CLAIM" or "I_LATE_SLOT", chosen = scenario is "I_DELAYED_CHOSEN" or "I_SET_CHOSEN";
         string name = scenario is "I_FIRST" or "I_RELIC_FIRST" ? "FIRST_ITEM" : scenario is "I_ANOTHER" or "I_RELIC_ANOTHER" ? "ANOTHER_ITEM" : "HELD_OUT_ITEM";
-        string kind = scenario.StartsWith("I_COMBAT",StringComparison.Ordinal)?"relic":scenario is "I_SET_EIGHT" or "I_RELIC" or "I_REPEAT" or "I_RELIC_FIRST" or "I_RELIC_ANOTHER" ? "relic" : "potion";
+        string kind = scenario.StartsWith("I_SET_CAPACITY",StringComparison.Ordinal)?"relic":scenario.StartsWith("I_COMBAT",StringComparison.Ordinal)?"relic":scenario is "I_SET_EIGHT" or "I_RELIC" or "I_REPEAT" or "I_RELIC_FIRST" or "I_RELIC_ANOTHER" ? "relic" : "potion";
         string[]? kinds=scenario.StartsWith("I_SET_",StringComparison.Ordinal)?
+            scenario=="I_SET_CAPACITY_TWO_BELTS"?new[]{"relic","relic","potion","potion","potion","potion"}:
+            scenario.StartsWith("I_SET_CAPACITY",StringComparison.Ordinal)?new[]{"relic","potion","potion"}:
             scenario=="I_SET_EIGHT"?Enumerable.Repeat("relic",8).ToArray():
             scenario=="I_SET_MIXED"?new[]{"potion","potion","relic","relic"}:new[]{"potion","potion"}:null;
         using var fixture = new Program.ItemFixture(name, kind, index: kinds is not null?(kind=="potion"?2:3):scenario == "I_INDEX255" ? 255 : 7,
@@ -29,6 +31,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             mixed: scenario is "I_MIXED" or "I_MIXED_VARIABLE",
             transformMinimum: scenario == "I_MIXED_VARIABLE" ? 1 : null,
             transformMaximum: scenario == "I_MIXED_VARIABLE" ? 3 : 1,itemKinds:kinds);
+        if(scenario.StartsWith("I_SET_CAPACITY",StringComparison.Ordinal))Program.ConfigureEventCapacity(fixture,scenario=="I_SET_CAPACITY_TWO_BELTS"?new[]{0,1}:new[]{0});
         if(scenario.StartsWith("I_COMBAT",StringComparison.Ordinal)) {
             var layout=new MegaCrit.Sts2.Core.Nodes.Events.NCombatEventLayout();layout.OptionButtons.AddRange(fixture.Room.Layout.OptionButtons);fixture.Room.Layout=layout;
             var callback=layout.OptionButtons[0].Option.Callback;
@@ -65,6 +68,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
                 map_open = fixture.Map.IsOpen, overlay_count = fixture.Overlays.ScreenCount,
                 chosen_calls = fixture.OptionCalls, collect_calls = fixture.CollectCalls,
                 completion_valid = fixture.CompletionValid, item_completions = fixture.ItemCompletions,
+                potion_capacity=fixture.Player.MaxPotionCount,potion_keys=fixture.Player.PotionSlots.Select(p=>p?.Id.Entry).ToArray(),
                 baseline_keys = keys, baseline_levels = levels,
                 remaining_keys = fixture.Player.Deck.Cards.Select(c => c.Id.Entry).ToArray(),
                 remaining_levels = fixture.Player.Deck.Cards.Select(c => c.CurrentUpgradeLevel).ToArray(),
@@ -158,12 +162,16 @@ internal static partial class GenericEventV7NativeIntegrationHost
     }
 
     private static int RunCardRewardSet(string scenario) {
-        if(!new[]{"MR_COFFER","MR_SKIP","MR_FIRST","MR_EIGHT","MR_COLLECTION","MR_OFFER","MR_CHOSEN","MR_LATE_SLOT","CRS_TWO","CRS_THREE","CRS_EIGHT","CRS_MIXED","CRS_SKIP","CRS_OFFER","CRS_COLLECTION","CRS_CHOSEN","CRS_DEFERRED","CRS_OWNER","CRS_CLAIM","CRS_DECK","CRS_WRONG","CRS_DISMISS_DISABLED"}.Contains(scenario))return 2;
-        string[]? kinds=scenario.StartsWith("MR_",StringComparison.Ordinal)?scenario=="MR_EIGHT"?new[]{"card","relic","card","potion","relic","card","potion","relic"}:
+        if(!new[]{"MR_CAPACITY","MR_CAPACITY_SKIP","MR_COFFER","MR_SKIP","MR_FIRST","MR_EIGHT","MR_COLLECTION","MR_OFFER","MR_CHOSEN","MR_LATE_SLOT","CRS_TWO","CRS_THREE","CRS_EIGHT","CRS_MIXED","CRS_SKIP","CRS_OFFER","CRS_COLLECTION","CRS_CHOSEN","CRS_DEFERRED","CRS_OWNER","CRS_CLAIM","CRS_DECK","CRS_WRONG","CRS_DISMISS_DISABLED"}.Contains(scenario))return 2;
+        string[]? kinds=scenario.StartsWith("MR_",StringComparison.Ordinal)?scenario.StartsWith("MR_CAPACITY",StringComparison.Ordinal)?new[]{"relic","card","potion","potion"}:scenario=="MR_EIGHT"?new[]{"card","relic","card","potion","relic","card","potion","relic"}:
             scenario is "MR_FIRST" or "MR_COLLECTION" or "MR_LATE_SLOT"?new[]{"potion","card","potion"}:new[]{"card","potion"}:null;
         using var f=new Program.CardRewardSetFixture(scenario=="CRS_TWO"?2:scenario is "CRS_EIGHT" or "CRS_SKIP"?8:3,chosenDelay:scenario is "CRS_CHOSEN" or "MR_CHOSEN",kinds:kinds) {
             DelayOffer=scenario is "CRS_OFFER" or "MR_OFFER" or "MR_LATE_SLOT",DelayCollection=scenario is "CRS_COLLECTION" or "MR_COLLECTION",DeferInput=scenario=="CRS_DEFERRED",WrongInsertion=scenario=="CRS_WRONG"
         };
+        if(scenario.StartsWith("MR_CAPACITY",StringComparison.Ordinal)) {
+            Program.FillEventBelt(f.World.Player);f.BeforeScreen=()=>((RelicReward)f.AllRewards[0]).Relic=new MegaCrit.Sts2.Core.Models.Relics.PotionBelt();
+            f.AfterItemCollection=reward=>Program.ApplyBeltPickup(f.World.Player,reward);
+        }
         if(scenario=="CRS_DISMISS_DISABLED")f.Dismiss.IsEnabled=false;
         Program.RetireBeforeChosen(f.World.Room.Layout);
         var baseline=f.World.Player.Deck.Cards.ToArray();

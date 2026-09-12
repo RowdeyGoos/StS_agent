@@ -6,6 +6,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../components/items/native/PinnedPotionCapacity.cs" />
       <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
   <Compile Include="../../../components/cards/combat_native/PinnedCombatCardChoiceAdapter.cs" />
 <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
@@ -71,6 +72,9 @@
     <Compile Include="../../../components/events/native/GenericEventV7RewardAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7TransformAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7TransformState.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7MerchantScreen.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7SphereSession.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7AbandonPopup.cs" />
     <Compile Include="../../../components/events/native/PinnedGenericEventV7NativeAdapter.cs" />
     <Compile Include="../../../components/events/transform_core/CardTransformV2Journal.cs" />
     <Compile Include="../../../components/events/transform_core/CardTransformV2NativeContracts.cs" />
@@ -112,6 +116,8 @@
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardActionApplier.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardDecisionReader.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicPotionDiscard.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomActionApplier.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomDecisionReader.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs" />

@@ -33,9 +33,12 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private EventModel? _event;
     private Player? _player;
     private GenericEventV7Binding? _pending;
+    private GenericEventV7MerchantScreen? _merchant;
+    private Exception? _customCleanupError;
     private bool _childCreated,_disposed;
     public Func<bool>? CombatScope {get;private set;}
     public Func<string>? CombatResume {get;private set;}
+    public GenericEventV7ResumeDiagnostic CombatResumeDiagnostic=>_hooks.ResumeDiagnostic;
     public object ReadResumeItem()=>_hooks.ReadResumeItem();
     public object ApplyResumeItem(string? decision,string? action)=>_hooks.ApplyResumeItem(decision,action);
     private DialogueBinding? _dialogue,_pendingDialogue;
@@ -46,7 +49,11 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private readonly HashSet<object> _commandTasks=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _itemIdentities=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _tasks=new(ReferenceEqualityComparer.Instance);
-    public PinnedGenericEventV7NativeAdapter()=>_hooks=new GenericEventV7Hooks();
+    public PinnedGenericEventV7NativeAdapter():this(false){}
+    private readonly Action<int>? _readStage;
+    public PinnedGenericEventV7NativeAdapter(bool incrementalHooks,Action<int>? readStage=null) {
+        _readStage=readStage;_hooks=new GenericEventV7Hooks(incrementalHooks,readStage);
+    }
     private static GenericEventV7NativeCapture Fixed(string status)=>new(status,false,Array.Empty<GenericEventV7NativeOption>());
     public GenericEventDiagnosticCode LastDiagnostic { get; private set; }
     public GenericEventV7NativeCapture Capture()
@@ -58,14 +65,36 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     {
         diagnostic=GenericEventDiagnosticCode.CaptureDisposed;
         if(_disposed) return Fixed("unsupported");
+        _readStage?.Invoke(12);
+        if(!_hooks.PrepareNext()){diagnostic=GenericEventDiagnosticCode.ParentWaiting;return Fixed("preparing");}
+        _readStage?.Invoke(13);
+        if(_pending is null&&MegaCrit.Sts2.Core.Nodes.CommonUi.NModalContainer.Instance?.OpenModal is not null)return Fixed("unsupported");
+        if(_merchant is not null)return _merchant.Capture();
+        if(_pending is null&&NRun.Instance is {} customRun&&customRun.EventRoom is {} customRoom&&
+            customRoom.CustomEventNode is MegaCrit.Sts2.Core.Nodes.Events.Custom.NFakeMerchant merchant) {
+            _merchant=new GenericEventV7MerchantScreen(customRun,customRoom,merchant);return _merchant.Capture();
+        }
         if(_pending is { } b)
         {
             diagnostic=GenericEventDiagnosticCode.PendingBindingFailed;
             if(b.Failed) return Fixed("unsupported");
+            diagnostic=GenericEventV7Hooks.OwnershipDiagnostic(b);
+            if(diagnostic!=GenericEventDiagnosticCode.NotCaptured)return Fixed("unsupported");
             diagnostic=GenericEventDiagnosticCode.PendingOwnership;
-            if(!GenericEventV7Hooks.Owns(b)) return Fixed("unsupported");
+            if(b.Abandon is {} popup) {
+                if(b.ChosenTask is null||!b.ChosenTask.IsCompleted)return Fixed("waiting");
+                if(popup.Read().Status!="ready")return Fixed("unsupported");
+                b.Admission??=new GenericEventV7AbandonAdmission(new object());
+                return new("child",false,Array.Empty<GenericEventV7NativeOption>(),popup.Screen,b.Admission);
+            }
+            if(b.Sphere is {} sphere) {
+                if(!sphere.Admitted)return Fixed("waiting");
+                if(sphere.Completed)return sphere.CaptureExit();
+                b.Admission??=new GenericEventV7SphereAdmission(new object());
+                return new("child",false,Array.Empty<GenericEventV7NativeOption>(),sphere.Screen,b.Admission);
+            }
             if(b.Combat is {} combat) {
-                var status=combat.Capture();
+                var status=combat.Capture(out diagnostic);
                 if(status is "combat" or "combat_resume") {CombatScope=combat.SameCombat;if(combat.Resumes)CombatResume=_hooks.ResumeStatus;}
                 return Fixed(status);
             }
@@ -107,13 +136,11 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!item.Domain()||!item.Overlay())return Fixed("unsupported");
                 if(!item.TryButton(out _)){diagnostic=GenericEventDiagnosticCode.PrepareCandidates;return Fixed("waiting");}
                 if(item.HasCards) {
-                    if(item.IsMixed&&(!GenericEventV7ItemAdapter.Slots(b.Player,out _,out var mixedSlots)||
-                        mixedSlots.Count(s=>s.ModelIdentity is null)<item.Entries!.Count(e=>e.CardReward is null&&e.Kind==Sts2AgentBridge.Successors.ItemV1.ItemV1ItemKind.Potion)))return Fixed("unsupported");
+                    if(item.IsMixed&&!item.CapacityPlan())return Fixed("unsupported");
                     b.Admission??=new GenericEventV7RewardAdmission(new object(),item.OfferCount,item.IsMixed);
                     return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
                 }
-                if(!GenericEventV7ItemAdapter.Slots(b.Player,out _,out var slots)||
-                    slots.Count(s=>s.ModelIdentity is null)<item.Entries!.Count(e=>e.Kind==Sts2AgentBridge.Successors.ItemV1.ItemV1ItemKind.Potion))return Fixed("unsupported");
+                if(!item.CapacityPlan())return Fixed("unsupported");
                 b.Admission??=new GenericEventV7ItemAdmission(new object(),item.OfferCount);
                 diagnostic=GenericEventDiagnosticCode.ChildReady;
                 return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
@@ -158,13 +185,14 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         var run=NRun.Instance; var room=run?.EventRoom;var map=run?.GlobalUi?.MapScreen;var overlays=run?.GlobalUi?.Overlays;
         if(!Exact(run)||!Exact(room)||!Exact(map)||!Exact(overlays)||
             !ReferenceEquals(NEventRoom.Instance,room)||!ReferenceEquals(NMapScreen.Instance,map)||
-            map!.IsOpen||map.IsTravelEnabled||map.IsTraveling||overlays!.ScreenCount!=0||
+            map!.IsOpen||map.IsTraveling||overlays!.ScreenCount!=0||
             !room!.IsVisibleInTree()||room.CustomEventNode is not null||!GenericEventV7Binding.CombatLayoutReady(room)||!GenericEventV7Binding.CapstoneReady()||
             CardSelectCmd.Selector is not null) return Fixed("unsupported");
         NEventLayout? layout=room.Layout;
         if(!SupportedLayout(layout)||!layout!.IsVisibleInTree()) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
         var options=new List<GenericEventV7NativeOption>(); EventModel? model=null;Player? player=null;
         if(layout is NAncientEventLayout ancient) {
+            if(map!.IsTravelEnabled)return Fixed("unsupported");
             var frame=DialogueBinding.Capture(ancient);model=frame.Model;player=model.Owner;
             if(player is null||!BindWorld(run!,room,map!,overlays!,layout,model,player))return Fixed("unsupported");
             if(_pendingDialogue is {} pending) {
@@ -191,15 +219,18 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             if(!ReferenceEquals(bound.Option,option))return Fixed("unsupported");
             bool dangerous=option.WillKillPlayer is Func<Player,bool> predicate&&predicate(owner);
             options.Add(new GenericEventV7NativeOption(bound,option.TextKey,label.Text,
-                button.IsVisibleInTree()&&button.IsEnabled&&!option.IsLocked,dangerous,option.IsProceed));
+                button.IsVisibleInTree()&&button.IsEnabled&&!option.IsLocked,dangerous,option.IsProceed,dangerous&&GenericEventV7AbandonPopup.IsConfirmation(option,current)));
         }
         if(model is null||player is null) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
+        if(map!.IsTravelEnabled&&!GenericEventV7Binding.FinishedProceed(layout,model))return Fixed("unsupported");
         if(!BindWorld(run!,room,map!,overlays!,layout,model,player))return Fixed("unsupported");
         diagnostic=GenericEventDiagnosticCode.ParentReady;
         return new GenericEventV7NativeCapture("parent",model.IsFinished,options);
     }
     public void Dispatch(object candidateIdentity,string nonce,string decisionId,string actionId)
     {
+        if(_pending?.Sphere is {Completed:true} sphere){sphere.DispatchExit(candidateIdentity);return;}
+        if(_merchant is not null){_merchant.Dispatch(candidateIdentity);return;}
         if(candidateIdentity is DialogueBinding dialogue) {
             if(_disposed||_pending is not null||_pendingDialogue is not null||!ReferenceEquals(dialogue,_dialogue)||
                 Capture().Options.All(o=>!ReferenceEquals(o.Identity,dialogue)))throw new InvalidOperationException("Unowned ancient dialogue.");
@@ -221,6 +252,14 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     public IGenericEventV7ChildSession CreateChild(object admissionIdentity)
     {
         var b=_pending;
+        if(b?.Abandon is {} popup) {
+            if(_childCreated||b.Admission is not GenericEventV7AbandonAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||popup.Read().Status!="ready")throw new InvalidOperationException("Unowned popup child.");
+            _childCreated=true;return popup;
+        }
+        if(b?.Sphere is {} sphere) {
+            if(_childCreated||b.Admission is not GenericEventV7SphereAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||!sphere.Admitted)throw new InvalidOperationException("Unowned sphere child.");
+            _childCreated=true;return sphere;
+        }
         if(b?.Results is {} results) {
             if(_childCreated||b.Admission is not GenericEventV7ResultsAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||
                 results.Capture().Status!="ready"||!_screens.Add(results.Screen!)||!_tasks.Add(b.ChosenTask!))throw new InvalidOperationException("Unowned results child.");
@@ -279,22 +318,34 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     }
     public void CompleteParent()
     {
+        if(_merchant is not null){_merchant.CompleteParent();return;}
         if(_pendingDialogue is {} dialogue) {
             if(!dialogue.Completed)throw new InvalidOperationException("Ancient dialogue is incomplete.");
             _pendingDialogue=null;return;
         }
         if(_pending is null||_pending.Failed||_pending.ChosenTask?.IsCompletedSuccessfully!=true)
             throw new InvalidOperationException("Parent callback is incomplete.");
+        if(_pending.Sphere is {Completed:true,Exited:false})return;
+        if(_pending.Sphere is {Exited:true} exitedSphere)exitedSphere.DisposeOwner();
+        if(_pending.Abandon is {} popup) {
+            popup.VerifyCompletion();
+            // Cancellation retains the native option controls. Publish new bindings
+            // only after the owned popup has verified its unchanged return.
+            if(!popup.Abandoned)_options.Clear();
+        }
         bool resume=_pending.Combat?.Resumes==true;
         GenericEventV7Hooks.Close(_pending);_pending=null;_childCreated=false;
         if(resume)_hooks.PauseForCombat();
     }
     public void Dispose()
     {
+        if(_customCleanupError is not null)throw new InvalidOperationException("Custom screen cleanup previously failed.",_customCleanupError);
         if(_disposed)return;
         if(System.Environment.CurrentManagedThreadId!=_thread)throw new InvalidOperationException("Owner thread cleanup required.");
+        Exception? customCleanup=null;try{_merchant?.Dispose();_pending?.Sphere?.DisposeOwner();_pending?.Abandon?.DisposeOwner();}catch(Exception error){customCleanup=error;_customCleanupError=error;}
         if(_pending is not null)GenericEventV7Hooks.Close(_pending);
         _hooks.Dispose();_disposed=true;
+        if(customCleanup is not null)throw new InvalidOperationException("Custom screen cleanup failed.",customCleanup);
     }
     private bool BindWorld(NRun run,NEventRoom room,NMapScreen map,NOverlayStack overlays,NEventLayout layout,EventModel model,Player player) {
         if(_run is null){_run=run;_room=room;_map=map;_overlays=overlays;_layout=layout;_embeddedRoom=room.EmbeddedCombatRoom;_event=model;_player=player;}

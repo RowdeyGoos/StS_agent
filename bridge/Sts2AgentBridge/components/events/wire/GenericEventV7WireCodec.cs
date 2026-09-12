@@ -75,6 +75,31 @@ internal static class GenericEventV7WireCodec
         w.WriteEndObject();
     });
 
+    internal static byte[] Abandon(object value)=>Encode(w=>{
+        w.WriteStartObject();w.WriteString("version","abandon_confirmation_v1");
+        if(value is GenericEventV7RewardRead p){
+            w.WriteString("session_nonce",p.SessionNonce);w.WriteString("status",p.Status);w.WriteString("phase",p.Phase);w.WriteString("decision_id",p.DecisionId);
+            w.WriteString("consequence","run_abandoned");Strings(w,"legal_actions",p.LegalActions);
+            w.WriteStartArray("prior_results");foreach(var h in p.PriorResults){w.WriteStartObject();w.WriteString("decision_id",h.DecisionId);w.WriteString("action_id",h.ActionId);w.WriteString("result",h.Result);w.WriteEndObject();}w.WriteEndArray();
+        }else if(value is GenericEventV7RewardReceipt r){w.WriteString("session_nonce",r.SessionNonce);w.WriteString("decision_id",r.DecisionId);w.WriteString("action_id",r.ActionId);w.WriteString("outcome",r.Outcome);}else throw new InvalidOperationException();
+        w.WriteEndObject();
+    });
+    internal static byte[] Sphere(object value)=>Encode(w=>{
+        w.WriteStartObject();w.WriteString("version","crystal_sphere_v1");
+        if(value is GenericEventV7RewardRead p) {
+            w.WriteString("session_nonce",p.SessionNonce);w.WriteString("status",p.Status);w.WriteString("phase",p.Phase);w.WriteString("decision_id",p.DecisionId);
+            w.WritePropertyName("board");
+            if(p.Sphere is not {} b)w.WriteNullValue();else {
+                w.WriteStartObject();w.WriteNumber("divinations",b.Divinations);w.WriteString("tool",b.Tool);
+                w.WriteStartArray("hidden");foreach(bool hidden in b.Hidden)w.WriteBooleanValue(hidden);w.WriteEndArray();
+                w.WriteStartArray("rewards");foreach(var r in b.Rewards){w.WriteStartObject();w.WriteNumber("slot",r.Slot);w.WriteString("kind",r.Kind);w.WriteString("key",r.Key);w.WriteNumber("amount",r.Amount);
+                    w.WriteStartArray("cards");foreach(var c in r.Cards){w.WriteStartObject();w.WriteNumber("slot",c.Slot);w.WriteString("key",c.Key);w.WriteNumber("upgrade_level",c.UpgradeLevel);w.WriteEndObject();}w.WriteEndArray();w.WriteEndObject();}w.WriteEndArray();w.WriteEndObject();
+            }
+            Strings(w,"legal_actions",p.LegalActions);
+            w.WriteStartArray("prior_results");foreach(var h in p.PriorResults){w.WriteStartObject();w.WriteString("decision_id",h.DecisionId);w.WriteString("action_id",h.ActionId);w.WriteString("result",h.Result);w.WriteEndObject();}w.WriteEndArray();
+        }else if(value is GenericEventV7RewardReceipt r){w.WriteString("session_nonce",r.SessionNonce);w.WriteString("decision_id",r.DecisionId);w.WriteString("action_id",r.ActionId);w.WriteString("outcome",r.Outcome);}else throw new InvalidOperationException();
+        w.WriteEndObject();
+    });
     internal static byte[] CardResults(object value) => Encode(w=>{
         w.WriteStartObject();w.WriteString("version","card_results_v1");
         if(value is GenericEventV7RewardRead p) {
@@ -145,7 +170,7 @@ internal static class GenericEventV7WireCodec
         w.WriteStartObject("child"); w.WriteNumber("ordinal", c.Ordinal);
         w.WriteString("parent_decision_id", c.ParentDecisionId); w.WriteString("parent_action_id", c.ParentActionId);
         w.WriteString("kind", c.Kind); w.WriteString("contract_version", c.ContractVersion);
-        if (c.Kind is "item" or "card_reward" or "card_offer" or "card_results") { w.WriteNumber("offer_count", c.OfferCount); w.WriteEndObject(); return; }
+        if (c.Kind is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation") { w.WriteNumber("offer_count", c.OfferCount); w.WriteEndObject(); return; }
         w.WriteString("operation", c.Operation); w.WriteNumber("min_select", c.MinSelect);
         w.WriteNumber("max_select", c.MaxSelect); w.WriteString("commit_mode", c.CommitMode);
         w.WriteNumber("domain_count", c.DomainCount); w.WriteEndObject();

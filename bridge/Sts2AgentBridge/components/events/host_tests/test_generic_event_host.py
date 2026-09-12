@@ -17,7 +17,7 @@ D = ['%064x' % i for i in range(1, 12)]
 
 
 def env(kind='decision', parent=None, child=None, payload=None):
-    return dict(schema_version=1, protocol='generic_event_v9', session_nonce=N,
+    return dict(schema_version=1, protocol='generic_event_v10', session_nonce=N,
                 kind=kind, parent=parent, child=child, payload=payload)
 
 
@@ -45,7 +45,7 @@ def prior(decision=D[0], result='option_transition'):
 
 def receipt(decision=D[0], child=None, action='choose:0', outcome='accepted'):
     if child is None:
-        payload = dict(version='generic_event_v9', session_nonce=N, decision_id=decision, action_id=action, outcome=outcome)
+        payload = dict(version='generic_event_v10', session_nonce=N, decision_id=decision, action_id=action, outcome=outcome)
     else:
         payload = dict(schema_version=1, kind='child_receipt', version=child['contract_version'],
                        session_nonce=N, parent_ordinal=1, decision_id=decision, action_id=action, outcome=outcome)

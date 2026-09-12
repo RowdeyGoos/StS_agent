@@ -1,6 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><DefineConstants>$(DefineConstants);TERMINAL_REWARD_TESTS</DefineConstants></PropertyGroup>
   <ItemGroup>
+    <Compile Include="MerchantScreenFixtures.cs" />
+    <Compile Include="MerchantScreenStubs.cs" />
+    <Compile Include="SphereStubs.cs" />
+    <Compile Include="AbandonPopupStubs.cs" />
+    <Compile Include="SphereFixtures.cs" /><Compile Include="AbandonPopupFixtures.cs" />
+    <Compile Include="EventCapacityFixtures.cs" />
+    <Compile Include="../../items/native/PinnedPotionCapacity.cs" />
     <Compile Include="CardRewardFixtures.cs" />
     <Compile Include="CardRewardSetFixtures.cs" />
     <Compile Include="PostRemovalAdditionFixtures.cs" />
@@ -28,11 +35,27 @@
     <Compile Include="../native/GenericEventV7RewardAdapter.cs" Link="Native/GenericEventV7RewardAdapter.cs" />
     <Compile Include="../native/GenericEventV7RemovalAdapter.cs" Link="Native/GenericEventV7RemovalAdapter.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="SpecialCardFixtures.cs" />
+    <Compile Include="EmbeddedCombatFixtures.cs" />
+    <Compile Include="CombatItemFixtures.cs" />
+    <Compile Include="PotionDiscardFixtures.cs" />
+    <Compile Include="PotionCapacityFixtures.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardAction.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardDecisionReader.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardActionApplier.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicPotionDiscard.cs" />
     <Compile Include="TargetStubs.cs" />
     <Compile Include="../native/GenericEventV7Binding.cs" Link="Native/GenericEventV7Binding.cs" />
     <Compile Include="../native/GenericEventV7CombatHandoff.cs" Link="Native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Native/GenericEventV7CardAdapter.cs" />
     <Compile Include="../native/GenericEventV7Hooks.cs" Link="Native/GenericEventV7Hooks.cs" />
+    <Compile Include="../native/GenericEventV7MerchantScreen.cs" />
+    <Compile Include="../native/GenericEventV7SphereSession.cs" />
+    <Compile Include="../native/GenericEventV7AbandonPopup.cs" />
     <Compile Include="../native/PinnedGenericEventV7NativeAdapter.cs" Link="Native/PinnedGenericEventV7NativeAdapter.cs" />
     <Compile Include="../../cards/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
     <ProjectReference Include="../core/GenericEventV7.Core.csproj" />

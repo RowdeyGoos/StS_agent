@@ -52,6 +52,9 @@ class Exchange:
         self.native = native
         self.transform = native and scenario.startswith(('T_', 'V_'))
         self.variable_transform = native and scenario.startswith('V_')
+        self.merchant=native and scenario.startswith("FM_")
+        self.abandon=native and scenario.startswith("AB_")
+        self.sphere=native and scenario.startswith("CS_")
         self.results_surface=native and scenario.startswith("S_")
         self.card_offer = native and scenario.startswith("O_")
         self.card_reward = native and scenario.startswith(("CR_","CRS_","MR_"))
@@ -92,8 +95,8 @@ class Exchange:
             expected += ("enchantment_keys", "enchantment_amounts")
         if self.item:
             expected = ('body', 'event_type', 'map_open', 'overlay_count', 'chosen_calls',
-                        'collect_calls', 'completion_valid', 'item_completions', 'baseline_keys', 'baseline_levels',
-                        'remaining_keys', 'remaining_levels')
+                        'collect_calls', 'completion_valid', 'item_completions', 'potion_capacity', 'potion_keys',
+                        'baseline_keys', 'baseline_levels', 'remaining_keys', 'remaining_levels')
         if self.transform:
             expected += ('transform_originals', 'transform_final_keys', 'transform_final_levels',
                          'transform_batches', 'transform_completion_valid')
@@ -107,11 +110,16 @@ class Exchange:
             expected=("body","map_open","overlay_count","choices","confirms","selected","deck")
         if self.results_surface:
             expected=("body","map_open","capstone_open","confirms","chosen_calls","deck")
+        if self.merchant:
+            expected=("body","map_open","opens","closes","leaves","purchases","gold","relics")
+        if self.sphere:
+            expected=("body","map_open","reveals","tools","leaves","purchases","choices","skips","gold","deck")
+        if self.abandon:expected=("body","map_open","abandons","cancels","hp","modal_open")
         assert tuple(value) == expected, value
         self.telemetry.append({k: value[k] for k in value if k != 'body'})
         response = bytearray(base64.b64decode(value['body'], validate=True))
         envelope = json.loads(response)
-        assert envelope['protocol'] == 'generic_event_v9', envelope
+        assert envelope['protocol'] == 'generic_event_v10', envelope
         self.envelopes.append(envelope)
         self.buffers.append(response)
         return response
@@ -128,7 +136,8 @@ class Exchange:
                 raise AssertionError('inert driver shutdown timeout') from None
             assert self.process.stderr is not None
             stderr = self.process.stderr.read()
-            assert code == 0 and not stderr, (code, stderr)
+            self.cleanup_failed=(self.merchant or self.sphere or self.abandon) and code==9
+            assert (code == 0 or self.cleanup_failed) and not stderr, (code, stderr)
             assert not any(any(b) for b in self.buffers), 'host did not clear buffers'
         finally:
             self.selector.close()

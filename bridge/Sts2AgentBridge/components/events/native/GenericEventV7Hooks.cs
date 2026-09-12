@@ -1,3 +1,5 @@
+using G = Sts2AgentBridge.Successors.GenericEventReleaseV5.GenericEventDiagnosticCode;
+using D = Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7ResumeDiagnostic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +33,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static GenericEventV7Hooks? _installed;
     private static GenericEventV7Binding? _armed;
     [ThreadStatic] private static GenericEventV7MultiUpgradeState? PreviewScope;
+    internal static readonly AsyncLocal<GenericEventV7SphereSession?> SphereClick=new();
     private static readonly AsyncLocal<GenericEventV7Binding?> Dispatch = new();
     private static readonly AsyncLocal<GenericEventV7Binding?> Parent = new();
     private static readonly AsyncLocal<GenericEventV7Binding?> Request = new();
@@ -45,9 +48,17 @@ public sealed class GenericEventV7Hooks : IDisposable
     private bool _installationComplete;
     private readonly Action? _cleanupProbe;
     private readonly int _thread = Environment.CurrentManagedThreadId;
+    private MethodInfo[] _targets=Array.Empty<MethodInfo>();
+    private string[] _names=Array.Empty<string>();
+    private int _nextPatch;
+    private readonly Action<int>? _afterPatch;
+    private bool _installationFailed;
     public GenericEventV7Hooks() : this(null,null) { }
-    internal GenericEventV7Hooks(Action<int>? afterPatch,Action? cleanupProbe)
+    private readonly Action<int>? _readStage;
+    public GenericEventV7Hooks(bool incremental,Action<int>? readStage=null) : this(null,null,incremental,readStage) { }
+    internal GenericEventV7Hooks(Action<int>? afterPatch,Action? cleanupProbe,bool incremental=false,Action<int>? readStage=null)
     {
+        _readStage=readStage;_readStage?.Invoke(6);
         _cleanupProbe=cleanupProbe;
         if (_installed is not null) throw new InvalidOperationException("Generic event hooks already owned.");
         var targets = new[] {
@@ -79,10 +90,17 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromChooseABundleScreen),new[]{typeof(Player),typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!,
             typeof(NChooseABundleSelectionScreen).GetMethod(nameof(NChooseABundleSelectionScreen.ShowScreen),new[]{typeof(IReadOnlyList<IReadOnlyList<CardModel>>)})!,
             typeof(NSimpleCardsViewScreen).GetMethod(nameof(NSimpleCardsViewScreen.ShowScreen),new[]{typeof(List<CardPileAddResult>),typeof(MegaCrit.Sts2.Core.Localization.LocString)})!,
-            typeof(EventModel).GetMethod("EnterCombatWithoutExitingEvent",BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic,null,new[]{typeof(EncounterModel),typeof(IReadOnlyList<Reward>),typeof(bool)},null)!
+            typeof(EventModel).GetMethod("EnterCombatWithoutExitingEvent",BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic,null,new[]{typeof(EncounterModel),typeof(IReadOnlyList<Reward>),typeof(bool)},null)!,
+            typeof(MegaCrit.Sts2.Core.Nodes.Events.Custom.CrystalSphere.NCrystalSphereScreen).GetMethod("ShowScreen")!,
+            typeof(CardPileCmd).GetMethod("AddCursesToDeck")!,
+            typeof(NAbandonRunConfirmPopup).GetMethod("Create",new[]{typeof(MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NMainMenu)})!,
+            typeof(RunManager).GetMethod("AbandonInternal",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null)!
         };
+        _readStage?.Invoke(7);
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
             throw new InvalidOperationException("Hook targets unavailable or already patched.");
+        if(!targets[31].IsPublic||!targets[31].IsStatic||targets[31].IsGenericMethod||targets[31].ReturnType!=typeof(NAbandonRunConfirmPopup)||
+            !targets[32].IsPrivate||targets[32].IsStatic||targets[32].IsGenericMethod||targets[32].ReturnType!=typeof(Task))throw new InvalidOperationException("Abandon popup signature mismatch.");
         if(targets[28].IsStatic||targets[28].IsGenericMethod||targets[28].ReturnType!=typeof(void))throw new InvalidOperationException("Combat entry signature mismatch.");
         if(!targets[27].IsPublic||!targets[27].IsStatic||targets[27].IsGenericMethod||targets[27].ReturnType!=typeof(NCardsViewScreen))throw new InvalidOperationException("Results screen signature mismatch.");
         Type[] offerReturns={typeof(Task<CardModel>),typeof(NChooseACardSelectionScreen),typeof(Task<IEnumerable<CardModel>>),typeof(NChooseABundleSelectionScreen)};
@@ -104,23 +122,44 @@ public sealed class GenericEventV7Hooks : IDisposable
             targets[21].IsStatic||!targets[21].IsPublic||targets[21].ReturnType!=typeof(Task<int?>))throw new InvalidOperationException("Card reward hook signature mismatch.");
         if(!targets[22].IsStatic||!targets[22].IsPublic||targets[22].IsGenericMethod||targets[22].ReturnType!=typeof(Task<IEnumerable<CardModel>>))
             throw new InvalidOperationException("Generic deck hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen","ResultsScreen","CombatEntry"};
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen","ResultsScreen","CombatEntry","SphereScreen","SphereCurse","AbandonPopup","AbandonTask"};
+        _targets=targets;_names=names;_afterPatch=afterPatch;
         _installed=this;
+        if(!incremental)InstallNext(targets.Length);
+    }
+    // Each production read installs at most one hook. No binding may be armed
+    // until all targets are installed and exact ownership is checked again.
+    internal bool PrepareNext()
+    {
+        if(_disposed||_installationFailed||Environment.CurrentManagedThreadId!=_thread||!ReferenceEquals(_installed,this))
+            throw new InvalidOperationException("Hook preparation unavailable.");
+        if(_installationComplete)return true;
+        InstallNext(1);
+        return _installationComplete;
+    }
+    private void InstallNext(int count)
+    {
         try
         {
-            for (int i=0;i<targets.Length;i++)
+            if(!ExactPatches())throw new InvalidOperationException("Partial hook ownership changed.");
+            for (int end=Math.Min(_targets.Length,_nextPatch+count);_nextPatch<end;_nextPatch++)
             {
+                int i=_nextPatch;var targets=_targets;var names=_names;
+                if(Harmony.GetPatchInfo(targets[i])?.Owners.Count>0)throw new InvalidOperationException("Hook target acquired during preparation.");
                 if(i is >=15 and <=17)_resumeItems.Add(targets[i]);
                 _methods.Add(targets[i]);
                 var methods=new[]{Hook(names[i]+"Prefix"),Hook(names[i]+"Postfix"),Hook(names[i]+"Finalizer")};
                 _patchMethods.Add(targets[i],methods);
+                _readStage?.Invoke(8);
                 _harmony.Patch(targets[i],new HarmonyMethod(methods[0]),new HarmonyMethod(methods[1]),finalizer:new HarmonyMethod(methods[2]));
-                afterPatch?.Invoke(i+1);
+                _afterPatch?.Invoke(i+1);
             }
-            _installationComplete=true;
+            if(!ExactPatches())throw new InvalidOperationException("Hook ownership changed during preparation.");
+            _installationComplete=_nextPatch==_targets.Length;
         }
         catch(Exception installationError)
         {
+            _installationFailed=true;
             try
             {
                 UnpatchOwn();
@@ -139,18 +178,23 @@ public sealed class GenericEventV7Hooks : IDisposable
     {
         var failed=_installed;
         if(failed is null)return;
-        if(failed._installationComplete)throw new InvalidOperationException("An active successful hook lease owns cleanup.");
+        if(!failed._installationFailed)throw new InvalidOperationException("An active hook lease owns cleanup.");
         failed.Dispose();
     }
     private static MethodInfo Hook(string name) => typeof(GenericEventV7Hooks).GetMethod(name,BindingFlags.Static|BindingFlags.NonPublic)!;
     internal static void Arm(GenericEventV7Binding binding)
     {
-        if (_installed is null || _installed._disposed || Environment.CurrentManagedThreadId != _installed._thread || _armed is not null)
+        if (_installed is null || _installed._disposed || !_installed._installationComplete || Environment.CurrentManagedThreadId != _installed._thread || _armed is not null)
             throw new InvalidOperationException("Generic event hook reservation unavailable.");
         _armed = binding;
     }
-    internal static bool Owns(GenericEventV7Binding binding) => ReferenceEquals(_armed,binding) &&
-        _installed is not null && !_installed._disposed && Environment.CurrentManagedThreadId==_installed._thread && _installed.ExactPatches();
+    internal static bool Owns(GenericEventV7Binding binding)=>OwnershipDiagnostic(binding)==G.NotCaptured;
+    internal static G OwnershipDiagnostic(GenericEventV7Binding binding) {
+        if(!ReferenceEquals(_armed,binding))return G.PendingOwnerBinding;
+        if(_installed is null||_installed._disposed)return G.PendingOwnerHooks;
+        if(Environment.CurrentManagedThreadId!=_installed._thread)return G.PendingOwnerThread;
+        return _installed.ExactPatches()?G.NotCaptured:G.PendingOwnerPatches;
+    }
     private bool ExactPatches() => _methods.All(method =>
     {
         var info=Harmony.GetPatchInfo(method);var hooks=_patchMethods[method];
@@ -197,10 +241,20 @@ public sealed class GenericEventV7Hooks : IDisposable
             _methods.Remove(method);_patchMethods.Remove(method);
         }
     }
+    private D _resumeDiagnostic;
+    internal D ResumeDiagnostic=>_resumeDiagnostic!=D.none?_resumeDiagnostic:_resume?.ResumeDiagnostic??D.hooks_owner;
+    private void RecordResumeFailure(D diagnostic)
+    {
+        if(_resumeDiagnostic!=D.none)return;
+        var prior=_resume?.ResumeDiagnostic??D.none;
+        _resumeDiagnostic=prior==D.none?diagnostic:prior;
+    }
     internal string ResumeStatus()
     {
-        if(_disposed||Environment.CurrentManagedThreadId!=_thread||!ExactPatches())return "unsupported";
-        return _resume?.ResumeStatus()??"unsupported";
+        try {
+            if(_disposed||Environment.CurrentManagedThreadId!=_thread||!ExactPatches()||_resume is null){RecordResumeFailure(D.hooks_owner);return "unsupported";}
+            return _resume.ResumeStatus();
+        }catch{RecordResumeFailure(D.read_exception);return "unsupported";}
     }
     internal static bool OwnsResume(GenericEventV7Binding binding)=>_installed is { _disposed:false } h&&
         Environment.CurrentManagedThreadId==h._thread&&h.ExactPatches()&&h._resume?.Owns(binding)==true;
@@ -214,14 +268,17 @@ public sealed class GenericEventV7Hooks : IDisposable
     {
         var resume=_installed?._resume;__state=new State{Previous=Parent.Value,Binding=resume?.Binding};
         try {
-            if(resume is null||_installed is null||Environment.CurrentManagedThreadId!=_installed._thread||!_installed.ExactPatches()||Parent.Value is not null)throw new InvalidOperationException();
+            if(resume is null||_installed is null||Environment.CurrentManagedThreadId!=_installed._thread||!_installed.ExactPatches()){
+                resume?.FailResume(D.callback_owner);throw new InvalidOperationException();
+            }
+            if(Parent.Value is not null){resume.FailResume(ReferenceEquals(Parent.Value,resume.Binding)?D.callback_parent_retained:D.callback_parent);throw new InvalidOperationException();}
             resume.EnterResume(__instance,__0);Parent.Value=resume.Binding;
         }catch{resume?.FailResume();}
     }
     private static void ResumePostfix(Task __result,State? __state)
-    {try{__state?.Binding?.Combat?.CaptureResumeTask(__result);}catch{__state?.Binding?.Combat?.FailResume();}finally{RestoreParent(__state);}}
+    {try{__state?.Binding?.Combat?.CaptureResumeTask(__result);}catch{__state?.Binding?.Combat?.FailResume(D.callback_task);}finally{RestoreParent(__state);}}
     private static void ResumeFinalizer(Exception? __exception,State? __state)
-    {if(__exception is not null)__state?.Binding?.Combat?.FailResume();RestoreParent(__state);}
+    {if(__exception is not null)__state?.Binding?.Combat?.FailResume(D.callback_exception);RestoreParent(__state);}
     internal static void Close(GenericEventV7Binding binding)
     {
         binding.Closed = true;
@@ -296,7 +353,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void FailItem(GenericEventV7Binding? binding)
     {
         if(binding is not null)binding.Failed=true;
-        if(_installed?._resume is {} resume&&resume.Started)resume.FailResume();
+        if(_installed?._resume is {} resume&&resume.Started)resume.FailResume(D.item_callback);
         if(_armed is not null&&!ReferenceEquals(_armed,binding))_armed.Failed=true;
     }
     internal static IDisposable EnterItemCollection(GenericEventV7ItemState item)
@@ -311,10 +368,51 @@ public sealed class GenericEventV7Hooks : IDisposable
         internal ItemScope(GenericEventV7ItemState item)=>_item=item;
         public void Dispose(){if(!ReferenceEquals(CollectionScope.Value,_item))FailItem(_item.Binding);CollectionScope.Value=null;}
     }
+    private static readonly AsyncLocal<GenericEventV7AbandonPopup?> PopupDispatch=new();
+    internal static IDisposable EnterPopup(GenericEventV7AbandonPopup popup) {
+        if(PopupDispatch.Value is not null||!Owns(popup.Binding))throw new InvalidOperationException("Popup dispatch ownership unavailable.");
+        PopupDispatch.Value=popup;return new PopupScope(popup);
+    }
+    private sealed class PopupScope : IDisposable {
+        private readonly GenericEventV7AbandonPopup _popup;
+        internal PopupScope(GenericEventV7AbandonPopup popup)=>_popup=popup;
+        public void Dispose(){if(!ReferenceEquals(PopupDispatch.Value,_popup))_popup.Binding.Failed=true;PopupDispatch.Value=null;}
+    }
+    private static void AbandonPopupPrefix(MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NMainMenu? __0,out State __state) {
+        var b=Parent.Value;__state=new State{Binding=b};if(b is null){if(_armed is not null)_armed.Failed=true;return;}
+        try{if(__0 is not null||!Owns(b)||b.RequestSeen||!b.ContextValid(false))throw new InvalidOperationException();b.Abandon=new(b);b.RequestSeen=true;}
+        catch{b.Failed=true;}
+    }
+    private static void AbandonPopupPostfix(MegaCrit.Sts2.Core.Nodes.CommonUi.NAbandonRunConfirmPopup __result,State? __state) {
+        if(__state?.Binding is {} b&&!b.Failed)try{b.Abandon!.Created(__result);}catch{b.Failed=true;}
+    }
+    private static void AbandonPopupFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
+    private static void AbandonTaskPrefix(RunManager __instance,out State __state) {
+        var popup=PopupDispatch.Value;__state=new State{Binding=popup?.Binding};
+        if(popup is null){if(_armed is not null)_armed.Failed=true;return;}
+        try{popup.EnterAbandon(__instance);}catch{popup.Binding.Failed=true;}
+    }
+    private static void AbandonTaskPostfix(Task __result,State? __state) {
+        if(__state?.Binding is {} b&&!b.Failed)try{b.Abandon!.Returned(__result);}catch{b.Failed=true;}
+    }
+    private static void AbandonTaskFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
+    private static void SphereCursePrefix(IEnumerable<CardModel> __0,Player __1,out State __state){
+        var sphere=SphereClick.Value;__state=new State{Binding=sphere?.Binding};if(sphere is null)return;
+        try{if(!ReferenceEquals(_armed?.Sphere,sphere))throw new InvalidOperationException();sphere.CurseEntering(__1);}catch{FailItem(sphere.Binding);}
+    }
+    private static void SphereCursePostfix(Task<IEnumerable<CardPileAddResult>> __result,State? __state){try{__state?.Binding?.Sphere?.CurseReturned(__result);}catch{FailItem(__state?.Binding);}}
+    private static void SphereCurseFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
+    private static void SphereScreenPrefix(MegaCrit.Sts2.Core.Events.Custom.CrystalSphereEvent.CrystalSphereMinigame __0,out State __state) {
+        var b=Parent.Value;__state=new State{Binding=b};
+        try{if(b is null||!Owns(b)||b.Sphere is not null||b.RequestSeen||!b.ContextValid(false))throw new InvalidOperationException();b.Sphere=new(b,__0);}catch{FailItem(b);}
+    }
+    private static void SphereScreenPostfix(State? __state){try{__state?.Binding?.Sphere?.ScreenShown();}catch{FailItem(__state?.Binding);}}
+    private static void SphereScreenFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
     private static void ItemOfferPrefix(RewardsSet __instance,out State __state)
     {
         var b=Parent.Value;__state=new State{Binding=b,Previous=Request.Value};
         if(b is null){FailItem(null);return;}
+        if(b.Sphere is {} sphere){try{sphere.OfferEntered(__instance);Request.Value=b;}catch{FailItem(b);}return;}
         try
         {
             if(!b.ItemContextValid()||b.RequestSeen||Request.Value is not null||
@@ -326,6 +424,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ItemOfferPostfix(Task __result,State? __state)
     {
+        if(__state?.Binding?.Sphere is {} sphere){try{sphere.Offering(__result);}catch{FailItem(__state.Binding);}RestoreRequest(__state);return;}
         if(__state?.Binding is {} b&&!b.Failed)
         {if(b.Item is not {} item||item.OfferTask is not null||__result is null)FailItem(b);else item.OfferTask=__result;}
         RestoreRequest(__state);
@@ -336,6 +435,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     {
         var b=Request.Value;__state=new State{Binding=b};
         if(b is null){FailItem(null);return;}
+        if(b.Sphere is {} sphere){try{sphere.RewardScreenEntering(__0,__1,__2);}catch{FailItem(b);}return;}
         try
         {
             if(!b.ItemContextValid()||!ReferenceEquals(Parent.Value,b)||b.Item is not {} item||b.ScreenSeen||item.ScreenEntered||
@@ -348,6 +448,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void ItemScreenPostfix(NRewardsScreen __result,State? __state)
     {
         if(__state?.Binding is not {} b||b.Failed)return;
+        if(b.Sphere is {} sphere){try{sphere.RewardsShown(__result);}catch{FailItem(b);}return;}
         try
         {
             if(b.Item is not {} item||!item.ScreenEntered||item.Screen is not null||__result is null||
@@ -361,6 +462,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void ItemCollectionPrefix(NRewardButton __instance,out State __state)
     {
         var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(_armed?.Sphere is {} sphere){__state.Binding=_armed;try{sphere.CollectionEntering(__instance);}catch{FailItem(_armed);}return;}
         if(item is null){FailItem(null);return;}
         try
         {
@@ -372,6 +474,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ItemCollectionPostfix(Task __result,State? __state)
     {
+        if(__state?.Binding?.Sphere is {} sphere){try{sphere.CollectionReturned(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Binding is {} b&&!b.Failed)
         {if(__state?.Item is not {} item||!item.CollectionEntered||item.CollectionTask is not null||__result is null)FailItem(b);else item.CollectionTask=__result;}
     }
@@ -379,20 +482,24 @@ public sealed class GenericEventV7Hooks : IDisposable
     {if(__exception is not null&&__state?.Binding is {} b)FailItem(b);}
     private static void CardMenuPrefix(IReadOnlyList<CardCreationResult> __0,IReadOnlyList<CardRewardAlternative> __1,out State __state) {
         var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(_armed?.Sphere is {} sphere){__state.Binding=_armed;try{sphere.MenuEntering();}catch{FailItem(_armed);}return;}
         if(item?.CardReward is not {} reward){FailItem(item?.Binding);return;}
         try{if(!item.Context()||!item.CollectionEntered)throw new InvalidOperationException();reward.MenuEntering(__0,__1);}catch{FailItem(item.Binding);}
     }
     private static void CardMenuPostfix(NCardRewardSelectionScreen __result,State? __state) {
+        if(__state?.Binding?.Sphere is {} sphere){try{sphere.MenuShown(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Item is not {} item||item.Binding.Failed)return;
         try{item.CardReward!.MenuEntered(__result);}catch{FailItem(item.Binding);}
     }
     private static void CardMenuFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
     private static void CardMenuTaskPrefix(NCardRewardSelectionScreen __instance,out State __state) {
         var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(_armed?.Sphere is {} sphere){__state.Binding=_armed;try{sphere.MenuTaskEntering(__instance);}catch{FailItem(_armed);}return;}
         if(item?.CardReward is not {} reward){FailItem(item?.Binding);return;}
         try{if(!item.Context())throw new InvalidOperationException();reward.TaskEntering(__instance);}catch{FailItem(item.Binding);}
     }
     private static void CardMenuTaskPostfix(Task<int?> __result,State? __state) {
+        if(__state?.Binding?.Sphere is {} sphere){try{sphere.MenuTaskReturned(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Item is not {} item||item.Binding.Failed)return;
         try{item.CardReward!.TaskEntered(__result);}catch{FailItem(item.Binding);}
     }

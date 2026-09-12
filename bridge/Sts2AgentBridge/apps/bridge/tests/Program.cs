@@ -1,3 +1,4 @@
+using Sts2AgentBridge.Successors.GenericEventReleaseV5;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,25 +26,31 @@ internal static class Program
         try
         {
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
+            if (args.SequenceEqual(new[] { "--serve-read-timeout" })) return Serve(readTimeout:true);
             if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
             if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
+            if (args.SequenceEqual(new[] { "--serve-capacity-potions" })) return Serve(true,true,capacityPotions:true);
+            if (args.SequenceEqual(new[] { "--serve-replace-potions" })) return Serve(true,true,replacePotions:true);
+            if (args.SequenceEqual(new[] { "--serve-full-potions" })) return Serve(true,true,fullPotions:true);
+            if (args.SequenceEqual(new[] { "--serve-combat-items" })) return Serve(true,true,itemRewards:true);
+            if (args.SequenceEqual(new[] { "--serve-special-card" })) return Serve(true,true,specialCard:true);
             if (args.SequenceEqual(new[] { "--serve-resume-items" })) return Serve(eventResume:true,resumeItems:true);
             if (args.SequenceEqual(new[] { "--serve-event-resume" })) return Serve(eventResume:true);
-            EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
+            EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
         catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
-    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false)
+    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false,bool specialCard=false,bool itemRewards=false,bool fullPotions=false,bool replacePotions=false,bool capacityPotions=false,bool readTimeout=false)
     {
         var fixture = eventResume?new CoreFixture{CombatReady=true,MapReady=true}:combat ? CombatScenario() : new CoreFixture { Reject = true, MapReady = true };
-        fixture.RewardScenario = rewards;
+        fixture.RewardScenario = rewards;fixture.SpecialCardScenario=specialCard;fixture.ItemRewardScenario=itemRewards;fixture.FullPotionScenario=fullPotions;fixture.ReplacePotionScenario=replacePotions;fixture.CapacityPotionScenario=capacityPotions;
         var (runtime, port) = Start((capability, _) => resumeItems?new ResumeItemModule(fixture):eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture);
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
-        while (!stop.IsCompleted && DateTime.UtcNow < until) { runtime.DrainFrame(); Thread.Sleep(1); }
+        while (!stop.IsCompleted && DateTime.UtcNow < until) { if(!readTimeout)runtime.DrainFrame(); Thread.Sleep(1); }
         Stop(runtime);
         return 0;
     }
@@ -267,6 +274,13 @@ internal static class Program
     }
     private static void Parser()
     {
+        string lineage="X-Sts2-Child-Ordinal: 1\r\nX-Sts2-Parent-Decision-Id: "+Decision+"\r\nX-Sts2-Parent-Action-Id: choose:0\r\n";
+        foreach(string action in new[]{"cancel","confirm_abandon","tool:small","tool:big","reveal:0","reveal:120","reward:claim:7","reward:collect:7","reward:open:7","reward:choose:4","reward:skip_card","dismiss"}) {
+            Check(BridgeRequestParser.TryParse(Head("/probe/generic-event-v7/public/action",action,extra:lineage),out var parsed)&&parsed.IsPost,"sphere child header "+action);
+            Check(!BridgeRequestParser.TryParse(Head("/probe/generic-event-v7/public/action",action),out _),"sphere action not parent "+action);
+        }
+        foreach(string action in new[]{"tool:huge","reveal:121","reveal:00","reward:claim:8","reward:choose:5","reward:open:00","tool:big\r\nOrigin: evil"})
+            Check(!BridgeRequestParser.TryParse(Head("/probe/generic-event-v7/public/action",action,extra:lineage),out _),"sphere header bounded "+action);
         foreach (string path in new[] { "/probe/combat-choice-v1/public/decision", "/probe/v0/public/map-decision", "/probe/item-v1/public/item-decision", "/probe/room-flows-v1/public/decision", "/card-selection-v1/parent", "/probe/generic-event-v7/public/decision" })
             Check(BridgeRequestParser.TryParse(Head(path), out _), "existing route grammar " + path);
         Check(!BridgeRequestParser.TryParse(Head("/probe/v0/public/map-decision", extra: "Origin: https://example.com\r\n"), out _), "origin rejected");
@@ -283,7 +297,7 @@ internal static class Program
         int port = ((IPEndPoint)listener.LocalEndpoint).Port;
         Check(runtime.StartForTests(listener), "shared listener starts"); return (runtime, port);
     }
-    private static string Exchange(BridgeTransportRuntime runtime, int port, byte[] request)
+    private static string Exchange(BridgeTransportRuntime runtime, int port, byte[] request, bool drain = true)
     {
         var task = Task.Run(() =>
         {
@@ -297,11 +311,64 @@ internal static class Program
             return Encoding.UTF8.GetString(bytes.ToArray());
         });
         var deadline = DateTime.UtcNow.AddSeconds(5);
-        while (!task.IsCompleted && DateTime.UtcNow < deadline) { runtime.DrainFrame(); Thread.Sleep(1); }
+        while (!task.IsCompleted && DateTime.UtcNow < deadline) { if(drain) runtime.DrainFrame(); Thread.Sleep(1); }
         Check(task.IsCompleted, "bounded socket exchange"); return task.GetAwaiter().GetResult();
     }
     private static void Stop(BridgeTransportRuntime runtime)
     { Check(runtime.StopTransportAndJoin(), "listener joined"); Check(runtime.DisposeServiceOnOwnerFrame(), "owner-frame cleanup"); Check(runtime.IsFullyStopped, "fully stopped"); }
+    private static void ResumeDiagnostics() {
+        foreach(var code in Enum.GetValues<GenericEventDiagnosticCode>()) {
+            var text=GenericEventDiagnosticCodec.Encode(code);
+            Check(GenericEventDiagnosticCodec.Normalize(code)==code&&System.Text.RegularExpressions.Regex.IsMatch(text,"^[a-z_]{1,33}$"),"closed bounded diagnostic vocabulary");
+            if(code!=GenericEventDiagnosticCode.DiagnosticUnavailable)Check(text!="diagnostic_unavailable","defined diagnostic has explicit wire mapping");
+        }
+        Check(GenericEventDiagnosticCodec.Normalize((GenericEventDiagnosticCode)999)==GenericEventDiagnosticCode.DiagnosticUnavailable,"unknown diagnostic normalized");
+
+        foreach(var code in new[]{Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7ResumeDiagnostic.callback_parent_retained,
+            (Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7ResumeDiagnostic)999}) {
+            var core=Core(new());core.BindCombatScope(()=>true,()=>"unsupported",Nonce,()=>code);
+            var reply=core.Handle(Request(Capability.Core,"/probe/event-combat-v2/public/decision"));
+            using var body=JsonDocument.Parse(reply.Body);
+            Check(reply.Terminal&&body.RootElement.GetProperty("code").GetString()=="backend_fault","resume diagnostic remains terminal backend failure");
+            Check(body.RootElement.GetProperty("resume_diagnostic").GetString()==(code==(Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7ResumeDiagnostic)999?"diagnostic_unavailable":"callback_parent_retained"),"closed resume vocabulary including unknown enum");
+            Array.Clear(reply.Body);core.Dispose();
+        }
+    }
+    private static void ReadDispatchFailures()
+    {
+        foreach(var mode in new[]{"before", "after", "stages", "fault", "post", "unauthenticated"})
+        {
+            int created=0;FakeModule? module=null;
+            var (runtime,port)=Start((capability,_)=>{
+                created++;
+                if(mode=="after")Thread.Sleep(700);
+                if(mode=="fault")throw new InvalidOperationException("private exception text");
+                return module=new FakeModule(capability){ReadWork=mode=="stages"?trace=>{trace!.Mark(4);Thread.Sleep(100);trace.Mark(8);Thread.Sleep(600);}:null};
+            });
+            string path=mode=="post"?"/probe/generic-event-v7/public/action":"/probe/generic-event-v7/public/decision";
+            string reply=Exchange(runtime,port,Head(path,mode=="post"?"choose:0":null,
+                mode=="unauthenticated"?new string('c',64):null),drain:mode is "after" or "stages" or "fault");
+            if(mode is "before" or "after" or "stages") {
+                string code=mode=="before"?"dispatch_timeout_before_claim":"dispatch_timeout_after_claim";
+                Check(reply.Contains("\"code\":\""+code+"\"")&&!reply.Contains(Token)&&!reply.Contains("private exception text"),"bounded authenticated read diagnostic: "+mode);
+                Check(runtime.IsTerminalOrStopping,"diagnostic does not permit continuation");
+                using var parsed=JsonDocument.Parse(reply.Split("\r\n\r\n",2)[1]);
+                var stages=parsed.RootElement.GetProperty("stages").EnumerateArray().ToArray();
+                string active=mode=="before"?"dispatch":mode=="after"?"module_create":"hook_install";
+                Check(stages.Count(x=>x.GetProperty("active").GetBoolean())==1&&stages.Single(x=>x.GetProperty("active").GetBoolean()).GetProperty("stage").GetString()==active,"snapshot identifies active initialization stage");
+                Check(stages.Length<=15&&stages.All(x=>x.GetProperty("elapsed_ms").GetInt32() is >=0 and <=3000),"timings bounded");
+                if(mode=="stages")Check(stages.Single(x=>x.GetProperty("stage").GetString()=="harmony_guard").GetProperty("elapsed_ms").GetInt32()>=50,"completed stage duration retained");
+            } else if(mode=="post")Check(reply==""&&runtime.IsTerminalOrStopping,"post timeout remains silent and terminal");
+            else if(mode=="unauthenticated")Check(reply==""&&!runtime.IsTerminalOrStopping,"unauthenticated request gets no diagnostic");
+            else Check(reply.Contains("bridge_stopped")&&!reply.Contains("private exception text")&&runtime.IsTerminalOrStopping,"router fault remains bounded and terminal");
+            if(mode is "before" or "post" or "unauthenticated")Check(created==0,"unclaimed work creates no native module");
+            Stop(runtime);
+            Check(module is null||module.Disposed,"late module cleaned on owner frame");
+        }
+        foreach(var status in Enum.GetValues<OwnedByteDispatchStatus>())
+            Check(BridgeTransportRuntime.ReadDispatchFailure(status).StartsWith("dispatch_",StringComparison.Ordinal),"closed dispatch vocabulary");
+        Check(BridgeTransportRuntime.ReadDispatchFailure((OwnedByteDispatchStatus)999)=="dispatch_invalid_result","unknown dispatch cannot inject text");
+    }
     private static void SocketHandoff()
     {
         var modules = new List<FakeModule>();
@@ -356,12 +423,16 @@ internal static class Program
         public Capability Capability => capability;
         internal bool Complete, Terminal, OwnItems, Disposed, FailDispose, AutoComplete;
         internal int Calls, Posts, DisposeAttempts;
+        private ReadStageTrace? _trace;
+        internal Action<ReadStageTrace?>? ReadWork;
+        public void SetReadTrace(ReadStageTrace? trace)=>_trace=trace;
         internal Func<bool>? CombatScope;
         internal Func<string>? CombatResume; internal string? EventNonce;
         public bool Owns(BridgeRequest request) => request.Capability == capability || OwnItems && request.Capability == Capability.Items;
         public ModuleReply Handle(BridgeRequest request)
         {
             Calls++; if (request.IsPost) Posts++;
+            else ReadWork?.Invoke(_trace);
             if (AutoComplete && Calls >= 2) Complete = true;
             return new(Encoding.ASCII.GetBytes("{\"status\":\"" + (Complete ? "resolved" : request.IsPost ? "accepted" : "ready") + "\"}"), Complete, Terminal, EventDiagnostic: capability == Capability.Events, CombatScope: CombatScope, CombatResume: CombatResume, EventNonce: EventNonce);
         }
@@ -372,7 +443,7 @@ internal static class Program
         IPublicRoomDecisionService, IPublicRoomActionService
     {
         internal CombatCardChoiceService? Choice; internal bool Scenario; internal int Stage;
-        internal bool RewardScenario, RewardWaited, Skipped; internal int RewardStep;
+        internal bool RewardScenario, RewardWaited, Skipped, SpecialCardScenario, ItemRewardScenario, FullPotionScenario, ReplacePotionScenario, CapacityPotionScenario; internal int RewardStep;
         internal bool MapComplete, MapReady, Reject, Fault, CombatReady; internal int Applies, CombatAccepted;
         PublicScreenReadResult IPublicScreenService.Read() => PublicScreenReadResult.BackendFault();
         PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(Scenario ? ScenarioSnapshot() : CombatReady
@@ -391,6 +462,92 @@ internal static class Program
         private PublicRewardDecisionSnapshot RewardSnapshot()
         {
             if (Stage != 3 || !RewardWaited) { RewardWaited = true; return PublicRewardDecisionSnapshot.Waiting(); }
+            if(CapacityPotionScenario) {
+                var p=new PublicRewardPlayer(80,80,RewardStep==0?99:113,RewardStep>=6&&!Skipped?11:10);
+                if(RewardStep==7)return PublicRewardDecisionSnapshot.Complete(p,7);
+                var all=new[]{new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),
+                    new PublicRewardItem(1,PublicRewardKind.Card,RewardStep==6&&!Skipped,0,new[]{"ANGER","BASH"},true),
+                    new PublicRewardItem(2,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(3,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(4,PublicRewardKind.Relic,false,0,Array.Empty<string>(),false,"POTION_BELT",2)};
+                var rows=all.Where(r=>RewardStep==5?r.RewardIndex==1:
+                    r.RewardIndex switch {0=>RewardStep==0,1=>true,2=>RewardStep<3,3=>RewardStep<4,_=>RewardStep<2}).ToArray();
+                string[] capacityActions=RewardStep switch {
+                    0=>new[]{"claim:0","open:1","collect:4","discard:0","discard:1","proceed"},
+                    1=>new[]{"open:0","collect:3","discard:0","discard:1","proceed"},
+                    2=>new[]{"open:0","collect:1","collect:2","proceed"},
+                    3=>new[]{"open:0","collect:1","proceed"},4=>new[]{"open:0","proceed"},
+                    5=>new[]{"choose:0","choose:1","skip_card"},_=>new[]{"proceed"}};
+                string?[] belt=RewardStep<2?new[]{"OLD_0","OLD_1"}:new[]{"OLD_0","OLD_1",RewardStep>=3?"POTION":null,RewardStep>=4?"POTION":null};
+                return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==5?"card_reward":"rewards",p,rows,capacityActions,RewardStep,true,belt,true);
+            }
+            if(ReplacePotionScenario) {
+                var p=new PublicRewardPlayer(80,80,RewardStep==0?99:113,RewardStep>=4&&!Skipped?11:10);
+                if(RewardStep==9)return PublicRewardDecisionSnapshot.Complete(p,9);
+                var all=new[]{new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),
+                    new PublicRewardItem(1,PublicRewardKind.Card,false,0,new[]{"ANGER","BASH"},true),
+                    new PublicRewardItem(2,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(3,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(4,PublicRewardKind.Relic,false,0,Array.Empty<string>(),false,"RELIC")};
+                var rows=all.Where(r=>RewardStep==3?r.RewardIndex==1:
+                    r.RewardIndex switch {0=>RewardStep==0,1=>RewardStep<4,2=>RewardStep<6,3=>RewardStep<8,_=>RewardStep<2}).ToArray();
+                string[] replacementActions=RewardStep switch {
+                    0=>new[]{"claim:0","open:1","collect:4","discard:0","discard:1","proceed"},
+                    1=>new[]{"open:0","collect:3","discard:0","discard:1","proceed"},
+                    2=>new[]{"open:0","discard:0","discard:1","proceed"},
+                    3=>new[]{"choose:0","choose:1","skip_card"},
+                    4=>new[]{"discard:0","discard:1","proceed"},
+                    5=>new[]{"collect:0","collect:1","proceed"},
+                    6=>new[]{"discard:1","proceed"},7=>new[]{"collect:0","proceed"},_=>new[]{"proceed"}};
+                string?[] belt={RewardStep==5?null:RewardStep>=6?"POTION":"OLD_0",RewardStep==7?null:RewardStep>=8?"POTION":"OLD_1"};
+                return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==3?"card_reward":"rewards",p,rows,replacementActions,RewardStep,true,belt);
+            }
+            if(FullPotionScenario) {
+                var fullPlayer=new PublicRewardPlayer(80,80,RewardStep==0?99:113,RewardStep>=4&&!Skipped?11:10);
+                if(RewardStep==5)return PublicRewardDecisionSnapshot.Complete(fullPlayer,5);
+                var all=new[]{new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),
+                    new PublicRewardItem(1,PublicRewardKind.Card,RewardStep==4&&!Skipped,0,new[]{"ANGER","BASH"},true),
+                    new PublicRewardItem(2,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(3,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(4,PublicRewardKind.Relic,false,0,Array.Empty<string>(),false,"RELIC")};
+                var rows=all.Where(r=>RewardStep==3?r.RewardIndex==1:r.RewardIndex is 1 or 2 or 3 || RewardStep==0 || RewardStep==1&&r.RewardIndex==4).ToArray();
+                string[] fullActions=RewardStep switch {
+                    0=>new[]{"claim:0","open:1","collect:4","proceed"},
+                    1=>new[]{"open:0","collect:3","proceed"},2=>new[]{"open:0","proceed"},
+                    3=>new[]{"choose:0","choose:1","skip_card"},_=>new[]{"proceed"}};
+                return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==3?"card_reward":"rewards",fullPlayer,rows,fullActions,RewardStep,true);
+            }
+            if(ItemRewardScenario) {
+                var itemPlayer=new PublicRewardPlayer(80,80,RewardStep==0?99:113,RewardStep>=6&&!Skipped?11:10);
+                if(RewardStep==7)return PublicRewardDecisionSnapshot.Complete(itemPlayer,7);
+                var all=new[]{new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),
+                    new PublicRewardItem(1,PublicRewardKind.Card,RewardStep==6&&!Skipped,0,new[]{"ANGER","BASH"},true),
+                    new PublicRewardItem(2,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(3,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
+                    new PublicRewardItem(4,PublicRewardKind.Relic,false,0,Array.Empty<string>(),false,"RELIC")};
+                var rows=all.Where(r=>RewardStep==0 || r.RewardIndex==1 || RewardStep<=r.RewardIndex-1).ToArray();
+                string[] itemActions=RewardStep switch {
+                    0=>new[]{"claim:0","open:1","collect:2","collect:3","collect:4","proceed"},
+                    1=>new[]{"open:0","collect:1","collect:2","collect:3","proceed"},
+                    2=>new[]{"open:0","collect:1","collect:2","proceed"},
+                    3=>new[]{"open:0","collect:1","proceed"},4=>new[]{"open:0","proceed"},
+                    5=>new[]{"choose:0","choose:1","skip_card"},_=>new[]{"proceed"}};
+                return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==5?"card_reward":"rewards",itemPlayer,rows,itemActions,RewardStep,true);
+            }
+            if(SpecialCardScenario) {
+                var specialPlayer=new PublicRewardPlayer(80,80,RewardStep==0?99:113,
+                    10+(RewardStep>=2?1:0)+(RewardStep>=4&&!Skipped?1:0));
+                if(RewardStep==5)return PublicRewardDecisionSnapshot.Complete(specialPlayer,5);
+                var ordinary=new PublicRewardItem(1,PublicRewardKind.Card,RewardStep==4&&!Skipped,0,new[]{"ANGER","BASH"},true);
+                var special=new PublicRewardItem(4,PublicRewardKind.SpecialCard,RewardStep>=2,0,new[]{"LANTERN_KEY"},false);
+                var rows=RewardStep==0?new[]{new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),ordinary,special}:
+                    RewardStep==3?new[]{ordinary}:new[]{ordinary,special};
+                string[] specialActions=RewardStep switch {
+                    0=>new[]{"claim:0","open:1","take:2","proceed"},1=>new[]{"open:0","take:1","proceed"},
+                    2=>new[]{"open:0","proceed"},3=>new[]{"choose:0","choose:1","skip_card"},_=>new[]{"proceed"}};
+                return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==3?"card_reward":"rewards",
+                    specialPlayer,rows,specialActions,RewardStep);
+            }
             var player = new PublicRewardPlayer(80,80,RewardStep == 0 ? 99 : 113,RewardStep >= 3 && !Skipped ? 11 : 10);
             if (RewardStep == 4) return PublicRewardDecisionSnapshot.Complete(player,4);
             var card = new PublicRewardItem(1,PublicRewardKind.Card,RewardStep == 3 && !Skipped,0,new[] { "ANGER","BASH" },true);
@@ -400,7 +557,7 @@ internal static class Program
             return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep == 2 ? "card_reward" : "rewards",player,rewards,actions,RewardStep);
         }
         PublicRewardDecisionReadResult IPublicRewardDecisionService.Read() => PublicRewardDecisionReadResult.FromSnapshot(RewardScenario ? RewardSnapshot() : PublicRewardDecisionSnapshot.Waiting());
-        PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : MapReady || RewardScenario && RewardStep == 4
+        PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : MapReady || RewardScenario && RewardStep == (CapacityPotionScenario?7:ReplacePotionScenario?9:FullPotionScenario?5:ItemRewardScenario?7:SpecialCardScenario?5:4)
             ? new(PublicDecisionStatus.Ready, Decision, "map", null, new[] { new PublicMapCandidate(0,2,3,"monster") }, new[] { "select:0" })
             : PublicMapDecisionSnapshot.Waiting());
         PublicRoomDecisionReadResult IPublicRoomDecisionService.Read() => PublicRoomDecisionReadResult.FromSnapshot(PublicRoomDecisionSnapshot.Waiting());

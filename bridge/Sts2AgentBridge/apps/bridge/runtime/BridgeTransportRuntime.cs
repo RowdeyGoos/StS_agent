@@ -1,4 +1,6 @@
 using Sts2AgentBridge.Successors.GenericEventReleaseV5;
+using Sts2AgentBridge.Successors.GenericEventReleaseV10;
+using Sts2AgentBridge.Successors.CardSelectionReleaseV1;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -473,19 +475,38 @@ internal sealed class BridgeTransportRuntime : IDisposable
                 return;
             }
 
+            var readTrace=request.IsPost?null:new ReadStageTrace();
             OwnedByteDispatchResult dispatch = _frameQueue.Submit(() =>
             {
                 serviceMayHaveRun = true;
 #if BRIDGE_TEST_SEAM
                 if (!request.IsPost) Interlocked.Increment(ref _readSubmissionCountForTests);
 #endif
-                BridgeReply reply = (_service ?? throw new InvalidOperationException("Service unavailable.")).Handle(request);
+                BridgeReply reply = (_service ?? throw new InvalidOperationException("Service unavailable.")).Handle(request,readTrace);
                 staleWithoutMutation = reply.StaleWithoutMutation;
                 return new OwnedServiceResponse(reply.Terminal ? 503 : 200, reply.Response);
             });
             body = dispatch.Value;
             if (dispatch.Status != OwnedByteDispatchStatus.Success || body is null)
-            { terminalAfterCleanup = true; LatchTerminal(); return; }
+            {
+                terminalAfterCleanup = true; LatchTerminal();
+                // Report only a closed transport category, never exception text or
+                // native data. A read failure still terminates the owner; a timed-out
+                // callback may still be running and is never retried or handed off.
+                if (!request.IsPost)
+                {
+                    Zero(body);
+                    body = JsonSerializer.SerializeToUtf8Bytes(new {
+                        schema_version = 1, kind = "error", code = ReadDispatchFailure(dispatch.Status), stages=readTrace!.Snapshot()
+                    });
+                    response = request.Capability == Capability.Events
+                        ? GenericEventTransportHttpEncoder.Wrap(body)
+                        : CardSelectionTransportHttpEncoder.Wrap(body);
+                    await SendAllAsync(socket, response, lifetime.Token).ConfigureAwait(false);
+                    sent = true;
+                }
+                return;
+            }
             terminalBody = dispatch.StatusCode == 503;
 #if BRIDGE_TEST_SEAM
             if (parsed.IsPost && DropNextPostResponseForTests)
@@ -543,6 +564,16 @@ internal sealed class BridgeTransportRuntime : IDisposable
             if (terminalAfterCleanup) TryPublishTerminal();
         }
     }
+
+    internal static string ReadDispatchFailure(OwnedByteDispatchStatus status) => status switch
+    {
+        OwnedByteDispatchStatus.Unavailable => "dispatch_unavailable",
+        OwnedByteDispatchStatus.Busy => "dispatch_busy",
+        OwnedByteDispatchStatus.TimedOutBeforeClaim => "dispatch_timeout_before_claim",
+        OwnedByteDispatchStatus.TimedOutAfterClaim => "dispatch_timeout_after_claim",
+        OwnedByteDispatchStatus.Fault => "dispatch_fault",
+        _ => "dispatch_invalid_result"
+    };
 
 #if BRIDGE_TEST_SEAM
     private int _readSubmissionCountForTests;

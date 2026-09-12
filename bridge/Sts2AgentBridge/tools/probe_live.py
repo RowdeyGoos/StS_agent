@@ -478,8 +478,11 @@ def _build_action_request(
         and action_id.startswith("claim:")
         and action_id[6] in "01234567"
         or len(action_id) == 6
-        and action_id.startswith("open:")
+        and action_id.startswith(("open:", "take:"))
         and action_id[5] in "01234567"
+        or len(action_id) == 9
+        and action_id.startswith(("collect:", "discard:"))
+        and action_id[8] in "01234567"
         or len(action_id) == 8
         and action_id.startswith("choose:")
         and action_id[7] in "01234"

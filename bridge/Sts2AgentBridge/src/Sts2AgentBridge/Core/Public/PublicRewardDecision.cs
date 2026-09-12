@@ -17,6 +17,9 @@ public enum PublicRewardKind
     Gold = 1,
     Card = 2,
     Unsupported = 3,
+    SpecialCard = 4,
+    Potion = 5,
+    Relic = 6,
 }
 
 public readonly record struct PublicRewardItem(
@@ -25,7 +28,9 @@ public readonly record struct PublicRewardItem(
     bool SuccessfullySelected,
     int GoldAmount,
     IReadOnlyList<string> Cards,
-    bool CardSelectionCanSkip);
+    bool CardSelectionCanSkip,
+    string? ItemKey = null,
+    int PotionCapacityGain = 0);
 
 public readonly record struct PublicRewardDecisionSnapshot(
     PublicDecisionStatus Status,
@@ -34,7 +39,10 @@ public readonly record struct PublicRewardDecisionSnapshot(
     PublicRewardPlayer Player,
     IReadOnlyList<PublicRewardItem> Rewards,
     IReadOnlyList<string> LegalActions,
-    int DecisionRevision = 0)
+    int DecisionRevision = 0,
+    bool ItemRewards = false,
+    IReadOnlyList<string?>? PotionSlots = null,
+    bool CapacityRewards = false)
 {
     public static PublicRewardDecisionSnapshot Waiting() => new(
         PublicDecisionStatus.Waiting,
@@ -76,6 +84,10 @@ public static class PublicRewardDecisionIdentity
         }
 
         var builder = new StringBuilder(512);
+        if(snapshot.PotionSlots is not null) {
+            Append(builder,snapshot.CapacityRewards?"reward_v5":"reward_v4");Append(builder,snapshot.PotionSlots.Count);
+            foreach(var potion in snapshot.PotionSlots)Append(builder,potion??string.Empty);
+        }else if(snapshot.ItemRewards)Append(builder,"reward_v3");
         Append(builder, snapshot.ScreenKind);
         Append(builder, snapshot.DecisionRevision);
         Append(builder, snapshot.Player.Hp);
@@ -85,6 +97,8 @@ public static class PublicRewardDecisionIdentity
         Append(builder, snapshot.Rewards.Count);
         foreach (PublicRewardItem reward in snapshot.Rewards)
         {
+            if(reward.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic)Append(builder,reward.ItemKey??string.Empty);
+            if(snapshot.CapacityRewards)Append(builder,reward.PotionCapacityGain);
             Append(builder, reward.RewardIndex);
             Append(builder, (int)reward.Kind);
             Append(builder, reward.SuccessfullySelected ? 1 : 0);

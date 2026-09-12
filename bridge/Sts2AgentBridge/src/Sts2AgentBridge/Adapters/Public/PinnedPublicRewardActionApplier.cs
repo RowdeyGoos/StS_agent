@@ -47,8 +47,11 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
         {
             PublicRewardActionKind.ClaimGold => ApplyParentReward(request, snapshot, claimGold: true),
             PublicRewardActionKind.OpenCard => ApplyParentReward(request, snapshot, claimGold: false),
+            PublicRewardActionKind.ClaimSpecialCard => ApplyParentReward(request, snapshot, claimGold: false),
+            PublicRewardActionKind.CollectItem => ApplyParentReward(request, snapshot, claimGold: false),
             PublicRewardActionKind.ChooseCard => ApplyCardChoice(request, snapshot),
             PublicRewardActionKind.SkipCard => ApplyCardSkip(request, snapshot),
+            PublicRewardActionKind.DiscardPotion => ApplyDiscard(request,snapshot),
             PublicRewardActionKind.Proceed => ApplyProceed(request, snapshot),
             _ => Result(PublicRewardActionApplyOutcome.InvalidAction, request),
         };
@@ -70,15 +73,25 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
             !ReferenceEquals(target.Button.Reward, target.Reward) ||
             target.Reward.SuccessfullySelected ||
             claimGold && target.Reward is not GoldReward ||
-            !claimGold && target.Reward is not CardReward)
+            !claimGold && request.Kind == PublicRewardActionKind.OpenCard && target.Reward is not CardReward ||
+            request.Kind == PublicRewardActionKind.ClaimSpecialCard && target.Reward.GetType() != typeof(SpecialCardReward) ||
+            request.Kind == PublicRewardActionKind.CollectItem && target.Reward.GetType() != typeof(PotionReward) && target.Reward.GetType() != typeof(RelicReward))
         {
             return Result(PublicRewardActionApplyOutcome.StaleDecision, request);
         }
 
+        PinnedPublicSpecialCardClaim? special=null;
+        if(request.Kind == PublicRewardActionKind.ClaimSpecialCard) {
+            special=new PinnedPublicSpecialCardClaim(target.Reward.Player,target.OfferedCards[0]);
+            if(!special.Valid(target.Reward,false))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+        }
+        PinnedPublicItemRewardClaim? item=null;
+        if(request.Kind==PublicRewardActionKind.CollectItem) {
+            item=new PinnedPublicItemRewardClaim(target.Reward);
+            if(!item.HasCapacity||!item.Valid(false))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+        }
         var pending = new PinnedPublicRewardPendingMutation(
-            claimGold ? PublicRewardActionKind.ClaimGold : PublicRewardActionKind.OpenCard,
-            snapshot.Player,
-            target);
+            request.Kind, snapshot.Player, target, specialCard:special, parentScreen:screen, item:item);
         PublicRewardActionApplyOutcome? reservationFailure =
             _session.Begin(request.DecisionId, pending);
         if (reservationFailure.HasValue)
@@ -189,6 +202,24 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
         return Result(PublicRewardActionApplyOutcome.Accepted, request);
     }
 
+    private PublicRewardActionApplyResult ApplyDiscard(PublicRewardActionRequest request,PublicRewardDecisionSnapshot snapshot)
+    {
+        var player=_session.Player;
+        if(player is null||!_session.CanDiscard(player,request.PotionSlot))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+        PinnedPublicRewardParentTarget? target=null;NRewardsScreen? screen=null;
+        for(int slot=0;slot<snapshot.Rewards.Count;slot++)if(snapshot.Rewards[slot].Kind==PublicRewardKind.Potion&&!snapshot.Rewards[slot].SuccessfullySelected) {
+            if(!_session.TryGetParentTarget(request.DecisionId,slot,out screen,out target))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+            break;
+        }
+        if(target is null||screen is null||!IsTop(screen))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+        var discard=new PinnedPublicPotionDiscard(target,screen,request.PotionSlot);
+        var pending=new PinnedPublicRewardPendingMutation(PublicRewardActionKind.DiscardPotion,snapshot.Player,discard:discard);
+        var failure=_session.Begin(request.DecisionId,pending);
+        if(failure.HasValue)return Result(failure.Value,request);
+        discard.Dispatch();
+        return Result(PublicRewardActionApplyOutcome.Accepted,request);
+    }
+
     private PublicRewardActionApplyResult ApplyProceed(
         PublicRewardActionRequest request,
         PublicRewardDecisionSnapshot snapshot)
@@ -199,9 +230,20 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
             return Result(PublicRewardActionApplyOutcome.StaleDecision, request);
         }
 
+        var unclaimed=new System.Collections.Generic.List<PinnedPublicItemRewardClaim>();
+        for(int slot=0;slot<snapshot.Rewards.Count;slot++) {
+            var reward=snapshot.Rewards[slot];
+            if(reward.Kind!=PublicRewardKind.Potion||reward.SuccessfullySelected)continue;
+            if(!_session.TryGetParentTarget(request.DecisionId,slot,out var currentScreen,out var target)||target is null||
+                !ReferenceEquals(currentScreen,screen)||!ReferenceEquals(target.Button.Reward,target.Reward))
+                return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+            var potion=new PinnedPublicItemRewardClaim(target.Reward);
+            if(!potion.Unclaimed)return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+            unclaimed.Add(potion);
+        }
         var pending = new PinnedPublicRewardPendingMutation(
             PublicRewardActionKind.Proceed,
-            snapshot.Player);
+            snapshot.Player, parentScreen:screen, unclaimedPotions:unclaimed);
         PublicRewardActionApplyOutcome? reservationFailure =
             _session.Begin(request.DecisionId, pending);
         if (reservationFailure.HasValue)
@@ -209,7 +251,7 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
             return Result(reservationFailure.Value, request);
         }
 
-        _ = RunManager.Instance.ProceedFromTerminalRewardsScreen();
+        pending.ProceedTask = RunManager.Instance!.ProceedFromTerminalRewardsScreen();
         return Result(PublicRewardActionApplyOutcome.Accepted, request);
     }
 

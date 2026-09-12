@@ -189,6 +189,81 @@ class RewardHostTests(unittest.TestCase):
         self.assertEqual((result['code'],result['claimed_gold'],wire.posts),('reward_disappeared',14,1))
 
 
+class SpecialRewardWire:
+    def __init__(self):
+        self.state = _parent()
+        self.state['schema_version'] = 2
+        self.state['rewards'] = [dict(reward_slot=0, reward_index=4, kind='special_card',
+                                     successfully_selected=False, gold_amount=None, cards=['LANTERN_KEY'], card_selection_can_skip=False)]
+        self.state['legal_actions'] = [dict(action_id='take:0', kind='claim_special_card', reward_slot=0, card_slot=None),
+                                      dict(action_id='proceed', kind='proceed', reward_slot=None, card_slot=None)]
+        self.posts = 0
+        self.corrupt = lambda value, method: value
+
+    def request(self, method, route, body=None):
+        if method == 'POST':
+            request = json.loads(body)
+            assert request == dict(decision_id=self.state['decision_id'], action_id='take:0' if self.posts == 0 else 'proceed')
+            self.posts += 1
+            response = dict(schema_version=1, status='accepted', mutation_state='applied', **request, reason='accepted')
+            if self.posts == 1:
+                self.state['player']['deck_count'] += 1
+                self.state['rewards'][0]['successfully_selected'] = True
+                self.state['legal_actions'].pop(0)
+                self.state['decision_id'] = 'd' * 64
+                self.state['decision_revision'] = 1
+            else:
+                self.state = dict(schema_version=1,status='complete',decision_kind='reward',actionable=False,
+                                  decision_id=None,screen_kind='map',player=_player(deck_count=11),rewards=[],legal_actions=[])
+        else:
+            response = copy.deepcopy(self.state)
+        value = self.corrupt(response, method)
+        if isinstance(value, BaseException): raise value
+        return encode(value)
+
+
+class SpecialRewardTests(unittest.TestCase):
+    def run_wire(self, wire, policy='first-card'):
+        clock = Clock()
+        return host.run_rewards(wire.request, policy=policy, clock=clock, sleep=clock.sleep)
+
+    def test_direct_claim_for_both_card_policies(self):
+        for policy in ('first-card', 'skip-card'):
+            wire=SpecialRewardWire(); result=self.run_wire(wire,policy)
+            self.assertEqual(result['status'],'resolved',result)
+            self.assertEqual((result['attempted'],result['accepted'],result['reconciled']),(2,2,2))
+            self.assertEqual(result['claimed_special_cards'],['LANTERN_KEY'])
+            self.assertEqual((result['selected_cards'],result['skipped_card_rewards']),([],0))
+
+    def test_schema_and_shape_rejected_before_input(self):
+        for mutation in ('schema','many_cards','skip','wrong_kind','gold','missing_action'):
+            wire=SpecialRewardWire(); reward=wire.state['rewards'][0]
+            if mutation=='schema':wire.state['schema_version']=1
+            elif mutation=='many_cards':reward['cards'].append('BASH')
+            elif mutation=='skip':reward['card_selection_can_skip']=True
+            elif mutation=='gold':reward['gold_amount']=1
+            elif mutation=='wrong_kind':wire.state['legal_actions'][0]['kind']='open_card'
+            else:wire.state['legal_actions'].pop(0)
+            self.assertEqual(self.run_wire(wire)['status'],'failed',mutation)
+            self.assertEqual(wire.posts,0)
+
+    def test_effect_failure_and_lost_receipt_keep_accounting(self):
+        for mutation in ('no_grant','not_collected','replacement','lost','late_map_failure'):
+            wire=SpecialRewardWire()
+            def corrupt(value,method):
+                if mutation=='lost' and method=='POST':return OSError('lost')
+                if mutation=='late_map_failure' and wire.posts==2:return OSError('lost map')
+                if method=='GET' and wire.posts==1:
+                    if mutation=='no_grant':value['player']['deck_count']-=1
+                    if mutation=='not_collected':value['rewards'][0]['successfully_selected']=False
+                    if mutation=='replacement':value['rewards'][0]['cards']=['BASH']
+                return value
+            wire.corrupt=corrupt;result=self.run_wire(wire)
+            self.assertEqual(result['status'],'failed',result)
+            self.assertEqual(wire.posts,2 if mutation=='late_map_failure' else 1)
+            self.assertEqual(result['claimed_special_cards'],['LANTERN_KEY'] if mutation=='late_map_failure' else [])
+
+
 class CombatMapTests(unittest.TestCase):
     def test_stages_preserve_partial_results_and_do_not_advance_after_failure(self):
         for failure in [None,'combat','defeat','rewards','map']:
@@ -219,6 +294,95 @@ class CombatMapTests(unittest.TestCase):
             else:
                 self.assertEqual(result['rewards']['reconciled'],4)
                 self.assertEqual(result['rewards']['claimed_gold'],14)
+
+
+class ItemRewardWire:
+    def __init__(self, count=3):
+        self.state = _parent()
+        self.state['schema_version'] = 3
+        self.state['rewards'] = [dict(reward_slot=i, reward_index=i, kind='potion' if i < 2 else 'relic',
+            successfully_selected=False, gold_amount=None,
+            cards=[], card_selection_can_skip=False, item_key='POTION' if i < 2 else 'RELIC') for i in range(count)]
+        self.actions()
+        self.posts = 0
+        self.corrupt = lambda value, method: value
+
+    def actions(self):
+        self.state['legal_actions'] = [dict(action_id='collect:'+str(i), kind='collect_item', reward_slot=i, card_slot=None)
+            for i, row in enumerate(self.state['rewards']) if not row['successfully_selected']]
+        self.state['legal_actions'].append(dict(action_id='proceed',kind='proceed',reward_slot=None,card_slot=None))
+
+    def request(self, method, route, body=None):
+        if method == 'POST':
+            request = json.loads(body)
+            action = self.state['legal_actions'][0]['action_id']
+            assert request == dict(decision_id=self.state['decision_id'],action_id=action)
+            self.posts += 1
+            response = dict(schema_version=1,status='accepted',mutation_state='applied',**request,reason='accepted')
+            if action == 'proceed':
+                self.state = dict(schema_version=1,status='complete',decision_kind='reward',actionable=False,
+                    decision_id=None,screen_kind='map',player=_player(),rewards=[],legal_actions=[])
+            else:
+                self.state['rewards'].pop(0)
+                for i, row in enumerate(self.state['rewards']): row['reward_slot'] = i
+                self.actions()
+                self.state['decision_revision'] = self.posts
+                self.state['decision_id'] = format(self.posts,'064x')
+        else:
+            response = copy.deepcopy(self.state)
+        value = self.corrupt(response,method)
+        if isinstance(value,BaseException): raise value
+        return encode(value)
+
+
+class ItemRewardTests(unittest.TestCase):
+    run_wire = SpecialRewardTests.run_wire
+    def test_repeated_items_compact_and_keep_distinct_identity(self):
+        for policy in ('first-card','skip-card'):
+            wire=ItemRewardWire(); result=self.run_wire(wire,policy)
+            self.assertEqual(result['status'],'resolved',result)
+            self.assertEqual((result['attempted'],result['accepted'],result['reconciled']),(4,4,4))
+            self.assertEqual(result['collected_items'],[
+                dict(kind='potion',key='POTION',reward_index=0),dict(kind='potion',key='POTION',reward_index=1),
+                dict(kind='relic',key='RELIC',reward_index=2)])
+
+    def test_item_schema_rejection_and_full_inventory(self):
+        for mutation in ('schema','key','missing_key','card','gold','skip','wrong_kind','action_bound','duplicate_index','full'):
+            wire=ItemRewardWire(); row=wire.state['rewards'][0]
+            if mutation=='schema':wire.state['schema_version']=2
+            elif mutation=='key':row['item_key']='unsafe/key'
+            elif mutation=='missing_key':del row['item_key']
+            elif mutation=='card':row['cards']=['BASH']
+            elif mutation=='gold':row['gold_amount']=5
+            elif mutation=='skip':row['card_selection_can_skip']=True
+            elif mutation=='wrong_kind':wire.state['legal_actions'][0]['kind']='claim_gold'
+            elif mutation=='action_bound':wire.state['legal_actions'][0]['action_id']='collect:8'
+            elif mutation=='duplicate_index':wire.state['rewards'][1]['reward_index']=0
+            else:wire.state['legal_actions'].pop(0)
+            result=self.run_wire(wire)
+            self.assertEqual(result['status'],'failed',mutation)
+            self.assertEqual(wire.posts,0,mutation)
+            if mutation=='full':self.assertEqual(result['code'],'potion_inventory_full')
+
+    def test_item_effect_failure_and_lost_receipts(self):
+        for mutation in ('lost','changed_key','player_change','disappeared','reoffered','late_loss'):
+            wire=ItemRewardWire(); initial=copy.deepcopy(wire.state['rewards'][0])
+            def corrupt(value,method):
+                if mutation=='lost' and method=='POST':return OSError('lost')
+                if mutation=='late_loss' and wire.posts==2:return OSError('lost')
+                if method=='GET' and wire.posts==1:
+                    if mutation=='changed_key':value['rewards'][0]['item_key']='OTHER'
+                    if mutation=='player_change':value['player']['gold']+=1
+                    if mutation=='disappeared':value['rewards']=[];value['legal_actions']=value['legal_actions'][-1:]
+                    if mutation=='reoffered':
+                        value['rewards'].insert(0,initial)
+                        for i,row in enumerate(value['rewards']):row['reward_slot']=i
+                        value['legal_actions']=[dict(action_id='collect:0',kind='collect_item',reward_slot=0,card_slot=None),value['legal_actions'][-1]]
+                return value
+            wire.corrupt=corrupt;result=self.run_wire(wire)
+            self.assertEqual(result['status'],'failed',mutation)
+            self.assertEqual(wire.posts,2 if mutation=='late_loss' else 1,mutation)
+            self.assertEqual(len(result['collected_items']),1 if mutation in ('changed_key','disappeared','late_loss') else 0, (mutation,result))
 
 
 if __name__ == '__main__': unittest.main()

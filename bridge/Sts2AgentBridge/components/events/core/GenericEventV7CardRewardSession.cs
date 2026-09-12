@@ -19,7 +19,9 @@ public sealed record GenericEventV7RewardRead(string SessionNonce,string Status,
     IReadOnlyList<GenericEventV7RewardCard> Cards,bool CanSkip,IReadOnlyList<string> LegalActions,
     IReadOnlyList<GenericEventV7PriorResult> PriorResults,int? SelectedSlot,
     int OfferCount=1,int OfferIndex=0,IReadOnlyList<GenericEventV7RewardSettlement>? Settled=null,
-    IReadOnlyList<string>? OfferKinds=null,Sts2AgentBridge.Successors.ItemV1.ItemV1Observation? Item=null,IReadOnlyList<GenericEventV7Offer>? Offers=null,IReadOnlyList<GenericEventV7RewardCard>? AdditionalCards=null);
+    IReadOnlyList<string>? OfferKinds=null,Sts2AgentBridge.Successors.ItemV1.ItemV1Observation? Item=null,IReadOnlyList<GenericEventV7Offer>? Offers=null,IReadOnlyList<GenericEventV7RewardCard>? AdditionalCards=null,GenericEventV7SphereView? Sphere=null);
+public sealed record GenericEventV7SphereView(int Divinations,string Tool,IReadOnlyList<bool> Hidden,IReadOnlyList<GenericEventV7SphereReward> Rewards);
+public sealed record GenericEventV7SphereReward(int Slot,string Kind,string Key,int Amount,IReadOnlyList<GenericEventV7RewardCard> Cards);
 public sealed record GenericEventV7RewardReceipt(string SessionNonce,string DecisionId,string ActionId,string Outcome);
 public sealed record GenericEventV7RewardChildRead(GenericEventV7RewardRead Value,string Version="card_reward_v1"):GenericEventV7ChildRead(Version);
 public sealed record GenericEventV7RewardChildApply(GenericEventV7RewardReceipt Value,string Version="card_reward_v1"):GenericEventV7ChildApply(Version);
@@ -92,4 +94,11 @@ public sealed class GenericEventV7CardRewardSession : IGenericEventV7RewardChild
         _failed=true;_inside=true;_interfered=false;
         try{_adapter.Dispose();if(_interfered)throw new InvalidOperationException("Reentrant reward cleanup.");_disposed=true;}finally{_inside=false;}
     }
+}
+
+public static class GenericEventV7SphereRules {
+    public static bool Action(string? action)=>action is "tool:small" or "tool:big" or "dismiss" or "reward:skip_card" ||
+        Enumerable.Range(0,121).Any(i=>action=="reveal:"+i)||
+        Enumerable.Range(0,8).Any(i=>action=="reward:claim:"+i||action=="reward:collect:"+i||action=="reward:open:"+i)||
+        Enumerable.Range(0,5).Any(i=>action=="reward:choose:"+i);
 }

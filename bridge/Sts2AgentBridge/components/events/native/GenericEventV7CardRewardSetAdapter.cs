@@ -32,7 +32,7 @@ internal sealed class GenericEventV7CardRewardSetAdapter : IGenericEventV7MixedR
         _deck=GenericEventV7Binding.CopyDeck(root.Binding.Player);
         if(root.IsMixed) {
             OfferKinds=Array.AsReadOnly(root.Entries!.Select(e=>e.CardReward is not null?"card":e.Kind==ItemV1ItemKind.Potion?"potion":"relic").ToArray());
-            if(!GenericEventV7ItemAdapter.Slots(root.Binding.Player,out _capacity,out var slots)||slots.Count(s=>s.ModelIdentity is null)<OfferKinds.Count(k=>k=="potion"))throw new InvalidOperationException("Mixed reward capacity unavailable.");
+            if(!GenericEventV7ItemAdapter.Slots(root.Binding.Player,out _capacity,out var slots)||!root.CapacityPlan())throw new InvalidOperationException("Mixed reward capacity unavailable.");
             _inventory=slots.ToArray();
         }
         _offer=root.OfferTask!;_chosen=root.Binding.ChosenTask!;
@@ -88,10 +88,10 @@ internal sealed class GenericEventV7CardRewardSetAdapter : IGenericEventV7MixedR
     }
     private bool Inventory() {
         if(_inventory is null)return true;
-        if(!GenericEventV7ItemAdapter.Slots(_root.Binding.Player,out int capacity,out var slots)||capacity!=_capacity||slots.Count!=_inventory.Length)return false;
+        if(!GenericEventV7ItemAdapter.Slots(_root.Binding.Player,out int capacity,out var slots)||!_root.CapacityMatches(_capacity,capacity)||slots.Count!=capacity)return false;
         var seen=new HashSet<object>(ReferenceEqualityComparer.Instance);
         for(int i=0;i<slots.Count;i++) {
-            var before=_inventory[i];var now=slots[i];
+            var before=i<_inventory.Length?_inventory[i]:new ItemV1PotionSlotBinding(null,null);var now=slots[i];
             if(ReferenceEquals(before.ModelIdentity,now.ModelIdentity)&&before.StableKey==now.StableKey)continue;
             if(before.ModelIdentity is not null||now.ModelIdentity is null||!seen.Add(now.ModelIdentity)||
                 !_root.Entries!.Any(e=>e.CardReward is null&&e.Kind==ItemV1ItemKind.Potion&&e.Dispatched&&ReferenceEquals(e.Model,now.ModelIdentity)&&e.Key==now.StableKey))return false;

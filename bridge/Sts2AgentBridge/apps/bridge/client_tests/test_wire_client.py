@@ -9,6 +9,34 @@ from run_live import core_summary
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_sphere_actions_require_event_child_and_canonical_bounds(self):
+        route = '/probe/generic-event-v7/public/action'
+        token = bytearray(b'a' * 64)
+        lineage = dict(ordinal=1, parent_decision_id='c' * 64, parent_action_id='choose:0')
+        def request(action, path=route, child=lineage):
+            value = dict(decision_id='b' * 64, action_id=action)
+            if path == route: value['child'] = child
+            return build_request('POST', path, bytearray(json.dumps(value).encode()), token)
+        actions = ['tool:small', 'tool:big', 'reward:skip_card']
+        actions += [f'reward:{kind}:{i}' for kind in ('claim', 'collect', 'open') for i in range(8)]
+        actions += [f'reward:choose:{i}' for i in range(5)]
+        for action in actions:
+            self.assertIn(('X-Sts2-Action-Id: ' + action + '\r\n').encode(), request(action))
+            for path in ('/probe/v0/public/reward-action', '/card-selection-v1/child/action'):
+                with self.assertRaises(ValueError): request(action, path)
+            with self.assertRaises(ValueError): request(action, child=None)
+        for action in ('tool:huge', 'reward:claim:8', 'reward:choose:5', 'reward:open:00',
+                       'reward:discard:0', 'tool:big\r\nOrigin: evil'):
+            with self.assertRaises(ValueError): request(action)
+
+    def test_abandon_actions_encode_with_exact_event_lineage(self):
+        for action in ('cancel','confirm_abandon'):
+            value=dict(decision_id='b'*64,action_id=action,child=dict(ordinal=1,parent_decision_id='c'*64,parent_action_id='choose:1'))
+            request=build_request('POST','/probe/generic-event-v7/public/action',bytearray(json.dumps(value).encode()),bytearray(b'a'*64))
+            self.assertIn(('X-Sts2-Action-Id: '+action+'\r\n').encode(),request)
+            self.assertIn(b'X-Sts2-Child-Ordinal: 1\r\n',request)
+            self.assertIn(b'X-Sts2-Parent-Action-Id: choose:1\r\n',request)
+
     def test_pacing_covers_reads_and_writes_without_bursting(self):
         clock = FakeClock()
         opened, sent = [], []

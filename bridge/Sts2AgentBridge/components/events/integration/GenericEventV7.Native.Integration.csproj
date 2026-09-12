@@ -7,6 +7,21 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardAction.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardDecisionReader.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardActionApplier.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicPotionDiscard.cs" />
+    <Compile Include="../native_tests/MerchantScreenFixtures.cs" />
+    <Compile Include="../native_tests/MerchantScreenStubs.cs" />
+    <Compile Include="../native_tests/SphereStubs.cs" />
+    <Compile Include="../native_tests/AbandonPopupStubs.cs" />
+    <Compile Include="../native_tests/SphereFixtures.cs" /><Compile Include="../native_tests/AbandonPopupFixtures.cs" />
+    <Compile Include="../native_tests/EventCapacityFixtures.cs" />
+    <Compile Include="../../items/native/PinnedPotionCapacity.cs" />
     <Compile Include="../../../apps/bridge/compatibility/GenericEventTerminalClassifier.cs" />
     <Compile Include="../transport/GenericEventTransportContracts.cs" />
     <Compile Include="../transport/GenericEventTransportProtocol.cs" />
@@ -50,6 +65,9 @@
     <Compile Include="../native/GenericEventV7RewardAdapter.cs" Link="Actual/GenericEventV7RewardAdapter.cs" />
     <Compile Include="../native/GenericEventV7RemovalAdapter.cs" Link="Actual/GenericEventV7RemovalAdapter.cs" />
     <Compile Include="../native/GenericEventV7Hooks.cs" Link="Actual/GenericEventV7Hooks.cs" />
+    <Compile Include="../native/GenericEventV7MerchantScreen.cs" />
+    <Compile Include="../native/GenericEventV7SphereSession.cs" />
+    <Compile Include="../native/GenericEventV7AbandonPopup.cs" />
     <Compile Include="../native/PinnedGenericEventV7NativeAdapter.cs" Link="Actual/PinnedGenericEventV7NativeAdapter.cs" />
     <Compile Include="../../cards/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
     <ProjectReference Include="../core/GenericEventV7.Core.csproj" />

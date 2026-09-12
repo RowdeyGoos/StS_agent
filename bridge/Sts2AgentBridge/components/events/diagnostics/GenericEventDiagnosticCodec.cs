@@ -3,7 +3,7 @@ namespace Sts2AgentBridge.Successors.GenericEventReleaseV5;
 internal static class GenericEventDiagnosticCodec
 {
     internal static GenericEventDiagnosticCode Normalize(GenericEventDiagnosticCode value) =>
-        value is >= GenericEventDiagnosticCode.NotCaptured and <= GenericEventDiagnosticCode.GeometryNoneEligible ? value : GenericEventDiagnosticCode.DiagnosticUnavailable;
+        value is >= GenericEventDiagnosticCode.NotCaptured and <= GenericEventDiagnosticCode.CombatWaitingEnd ? value : GenericEventDiagnosticCode.DiagnosticUnavailable;
     internal static string Encode(GenericEventDiagnosticCode value) => value switch
     {
         GenericEventDiagnosticCode.NotCaptured => "none",
@@ -121,6 +121,23 @@ internal static class GenericEventDiagnosticCodec
         GenericEventDiagnosticCode.GeometryInitiallySelected => "geometry_initially_selected",
         GenericEventDiagnosticCode.GeometryCandidateInvisible => "geometry_candidate_invisible",
         GenericEventDiagnosticCode.GeometryNoneEligible => "geometry_none_eligible",
+        GenericEventDiagnosticCode.PendingOwnerBinding => "pending_owner_binding",
+        GenericEventDiagnosticCode.PendingOwnerHooks => "pending_owner_hooks",
+        GenericEventDiagnosticCode.PendingOwnerThread => "pending_owner_thread",
+        GenericEventDiagnosticCode.PendingOwnerPatches => "pending_owner_patches",
+        GenericEventDiagnosticCode.CombatWaitingCallback => "combat_waiting_callback",
+        GenericEventDiagnosticCode.CombatCallbackFailed => "combat_callback_failed",
+        GenericEventDiagnosticCode.CombatRunOwner => "combat_run_owner",
+        GenericEventDiagnosticCode.CombatWaitingRoom => "combat_waiting_room",
+        GenericEventDiagnosticCode.CombatRewards => "combat_rewards",
+        GenericEventDiagnosticCode.CombatEncounter => "combat_encounter",
+        GenericEventDiagnosticCode.CombatState => "combat_state",
+        GenericEventDiagnosticCode.CombatParent => "combat_parent",
+        GenericEventDiagnosticCode.CombatPlayers => "combat_players",
+        GenericEventDiagnosticCode.CombatWaitingNode => "combat_waiting_node",
+        GenericEventDiagnosticCode.CombatIdentity => "combat_identity",
+        GenericEventDiagnosticCode.CombatReady => "combat_ready",
+        GenericEventDiagnosticCode.CombatWaitingEnd => "combat_waiting_end",
         _ => "diagnostic_unavailable",
     };
 }

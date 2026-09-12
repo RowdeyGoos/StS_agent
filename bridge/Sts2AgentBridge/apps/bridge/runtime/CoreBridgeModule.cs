@@ -1,3 +1,4 @@
+using ResumeDiagnostic = Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7ResumeDiagnostic;
 using System;
 using System.Text;
 using System.Text.Json;
@@ -21,17 +22,18 @@ internal sealed class CoreBridgeModule : IDisposable
     internal bool CanServiceResumeItem()=>_combatResume is not null&&!_choice.IsActive&&_combatResume()=="item";
     private Func<bool>? _combatScope;
     private Func<string>? _combatResume;
+    private Func<ResumeDiagnostic>? _resumeDiagnostic;
     private string? _eventNonce;
-    private readonly Action? _beginCombat;
+    private readonly Action? _beginCombat, _cleanupRewards;
     internal bool HasPendingAction => _pendingPath is not null || _choice.IsActive || _combatScope is not null;
-    internal void BindCombatScope(Func<bool> scope,Func<string>? resume=null,string? eventNonce=null) {
+    internal void BindCombatScope(Func<bool> scope,Func<string>? resume=null,string? eventNonce=null,Func<ResumeDiagnostic>? resumeDiagnostic=null) {
         if(HasPendingAction||!scope()||resume is not null&&(eventNonce is not {Length:32}||!System.Linq.Enumerable.All(eventNonce,c=>c is >= '0' and <= '9' or >= 'a' and <= 'f')))
             throw new InvalidOperationException("Invalid combat transfer.");
-        _beginCombat?.Invoke();_combatScope=scope;_combatResume=resume;_eventNonce=eventNonce;
+        _beginCombat?.Invoke();_combatScope=scope;_combatResume=resume;_eventNonce=eventNonce;_resumeDiagnostic=resumeDiagnostic;
     }
     internal void ReleaseEventCombat() {
         if(_combatResume is null||_choice.IsActive)throw new InvalidOperationException("Unresolved event combat chooser.");
-        _pendingPath=_pendingDecision=null;_combatScope=null;_combatResume=null;_eventNonce=null;
+        _pendingPath=_pendingDecision=null;_combatScope=null;_combatResume=null;_eventNonce=null;_resumeDiagnostic=null;
     }
     private ModuleReply ResumeRead(string status) => new(JsonSerializer.SerializeToUtf8Bytes(new {
         schema_version=1,protocol="event_combat_v2",session_nonce=_eventNonce,status
@@ -50,9 +52,9 @@ internal sealed class CoreBridgeModule : IDisposable
         IPublicRewardDecisionService rewardRead, IPublicRewardActionService rewardApply,
         IPublicMapDecisionService mapRead, IPublicMapActionService mapApply,
         IPublicRoomDecisionService roomRead, IPublicRoomActionService roomApply,
-        CombatCardChoiceService? choice = null, Action? beginCombat = null)
+        CombatCardChoiceService? choice = null, Action? beginCombat = null, Action? cleanupRewards = null)
     {
-        _correlation = correlation; _screen = screen; _beginCombat=beginCombat;
+        _correlation = correlation; _screen = screen; _beginCombat=beginCombat; _cleanupRewards=cleanupRewards;
         _combatRead = combatRead; _combatApply = combatApply;
         _rewardRead = rewardRead; _rewardApply = rewardApply;
         _mapRead = mapRead; _mapApply = mapApply;
@@ -84,13 +86,13 @@ internal sealed class CoreBridgeModule : IDisposable
         if(r.Path==EventCombatRoute) {
             if(_combatResume is null||r.IsPost)return Fault();
             string resumed=_combatResume();
-            if(resumed is not ("combat" or "waiting" or "item" or "resumed")||(resumed is "resumed" or "item")&&_choice.IsActive)return Fault();
+            if(resumed is not ("combat" or "waiting" or "item" or "resumed")||(resumed is "resumed" or "item")&&_choice.IsActive)return ResumeFault();
             return ResumeRead(resumed);
         }
         if(_combatScope is not null) {
             if(_combatResume is not null) {
                 string resumed=_combatResume();
-                if(resumed is not ("combat" or "waiting" or "item" or "resumed"))return Fault();
+                if(resumed is not ("combat" or "waiting" or "item" or "resumed"))return ResumeFault();
                 if(resumed!="combat") {
                     if(r.Path=="/probe/v0/public/combat-decision")return new(CanonicalProbeEncoder.EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot.Waiting()));
                     if(r.Path==CombatCardChoiceService.DecisionRoute) {var choice=_choice.Read();return new(choice.Body,Terminal:choice.Terminal);}
@@ -190,7 +192,17 @@ internal sealed class CoreBridgeModule : IDisposable
         }
         catch { Array.Clear(body); throw; }
     }
+    private ModuleReply ResumeFault() {
+        ResumeDiagnostic diagnostic;
+        try{diagnostic=_resumeDiagnostic?.Invoke()??ResumeDiagnostic.diagnostic_unavailable;}
+        catch{diagnostic=ResumeDiagnostic.diagnostic_unavailable;}
+        string code=Enum.IsDefined(typeof(ResumeDiagnostic),diagnostic)?diagnostic.ToString():"diagnostic_unavailable";
+        return new(JsonSerializer.SerializeToUtf8Bytes(new {
+            schema_version=1,code="backend_fault",retryable=false,mutation_state="none",
+            correlation_id=_correlation,resume_diagnostic=code
+        }),Terminal:true);
+    }
     private ModuleReply Fault() => new(CanonicalProbeEncoder.EncodeErrorBody(ProbeErrorKind.BackendFault, _correlation), Terminal: true);
     private static ModuleReply Busy() => new("{\"schema_version\":1,\"kind\":\"error\",\"code\":\"capability_busy\"}"u8.ToArray());
-    public void Dispose() => _choice.Dispose();
+    public void Dispose() { try { _cleanupRewards?.Invoke(); } finally { _choice.Dispose(); } }
 }

@@ -47,8 +47,15 @@ is now implemented in the checkout, with Dense Vegetation’s Fight page after R
 as its pending live case. [Event resumption](GENERIC_EVENTS.md#implemented-offline-event-combat-resumption)
 is also implemented offline, including owned item rewards, with Battleworn Dummy
 Setting1/potion and Setting2/training expiry as pending live cases. Resume-time
-selectors, extra combat rewards,
-full-inventory handling and nested pickups remain gaps. The preceding five tested
+selectors and nested pickups remain gaps. Terminal special-card/potion/relic
+combat extras and explicit potion skip/replacement policies are implemented offline;
+known Potion Belt capacity growth now also has offline support in custom event
+and resume-time item rewards. Item skip/discard policies on those screens and
+nested pickup effects remain gaps. [Fake Merchant](GENERIC_EVENTS.md#implemented-offline-fake-merchant-custom-screen)
+now has offline inventory open/purchase/close/map support; its combat branch remains
+separate. [Crystal Sphere](GENERIC_EVENTS.md#implemented-offline-crystal-sphere) now
+has tool/reveal, earned-reward and map-exit support, with a representative
+Uncover Future/gold/map live result including exact overlay cleanup. The preceding five tested
 increments have representative live acceptance; broader branches retain narrower
 evidence.
 The inventory and gap matrix below retain the original research comparison at
@@ -105,9 +112,11 @@ contract has no identified caller in the bounded retained-caller inspection.
   Claws requests zero-to-six transformations; Sea Glass uses one optional
   15-card grid; Scroll Boxes chooses a bundle. The research baseline rejected
   `NAncientEventLayout`; the current checkout admits its dialogue and options.
-- **Named custom cases are now identified.** Crystal Sphere needs a cell-reveal
-  minigame, Fake Merchant a custom merchant surface, Wood Carvings a generic deck
-  selector followed by a fixed-result transformation, and Trial an abandon popup.
+- **Named custom cases are now identified.** Crystal Sphere now has offline
+  cell-reveal/reward support; Fake Merchant has offline custom merchant support. Wood Carvings’
+  generic deck selector and fixed-result transformation are implemented, while
+  Trial now has an offline owned abandon popup: cancellation return and explicit
+  confirmed abandonment, with its native lethal/Proceed flags retained.
   The Architect ends in run/act progression rather than an ordinary map return.
 - **Five event types request combat.** Battleworn Dummy explicitly resumes the
   event afterward; Dense Vegetation, Fake Merchant, Punch Off and The Lantern Key
@@ -324,10 +333,15 @@ selection, card offers/bundles, inactive combat layout and results acknowledgmen
 now have representative live acceptance.
 
 Event-combat exit and callback-verified resumption are now implemented offline.
-Remaining feature work includes selectors during resume, extra combat
-rewards, full-inventory/nested pickup composition, broader deck changes around
-selectors, and custom or terminal surfaces. Battleworn Dummy Setting1’s potion
-offer is implemented offline and remains a concrete pending live case.
+The Lantern Key’s extra special card and Punch Off’s deferred potion/relic combat
+rewards are implemented offline, including repeated-item and mixed collection;
+see [current status](STATUS.md).
+Remaining feature work includes selectors during resume, custom-event
+full-inventory policies beyond known Potion Belt grants, nested pickup composition, broader deck changes around
+selectors and The Architect’s terminal progression. Trial’s owned abandonment
+popup is implemented offline and needs live validation. Crystal Sphere and Fake
+Merchant inventory/leave have representative live results; the merchant combat
+branch remains separate. Battleworn Dummy Setting1’s potion offer passed live.
 Additional fixed counts and held-out callers may need validation rather than new
 adapters. No sequential-selector caller was established by the corrected Sea Glass
 research. [Roadmap](../ROADMAP.md) owns ordering; the static census does not measure

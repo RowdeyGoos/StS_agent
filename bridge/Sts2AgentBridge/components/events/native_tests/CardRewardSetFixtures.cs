@@ -35,6 +35,7 @@ internal static partial class Program {
         internal int Dismisses;
         internal bool DelayOffer=false,DelayCollection=false,WrongInsertion=false,FaultCollection=false,DeferInput=false;
         internal Action? PendingInput=null,BeforeScreen=null;
+        internal Action<Reward>? AfterItemCollection;
         internal CardRewardSetFixture(int count=3,bool chosenDelay=false,string[]? kinds=null) {
             count=kinds?.Length??count;
             World=new ItemFixture("CARD_REWARD_SET","relic",delayedChosen:chosenDelay);World.Set.DisallowSkipping=false;
@@ -83,6 +84,7 @@ internal static partial class Program {
                 World.Screen.Children.Remove(Buttons[index]);Buttons[index].InstanceValid=false;
             }
             }
+            if(AllRewards[index] is not CardReward)AfterItemCollection?.Invoke(AllRewards[index]);
             if(AllRewards[index].SuccessfullySelected){World.Screen.Children.Remove(Buttons[index]);Buttons[index].InstanceValid=false;}
             bool all=AllRewards.All(r=>r.SuccessfullySelected);
             if(all){World.Overlays.Screens.Clear();World.Screen.Visible=false;}

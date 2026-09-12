@@ -27,6 +27,7 @@ internal sealed class GenericEventV7ItemState
     internal object? Model;
     internal string Key=string.Empty;
     internal int Index, NativeIndex;
+    internal int CapacityGain;
     internal ItemV1ItemKind Kind;
     internal NRewardsScreen? Screen;
     internal NRewardButton? Button;
@@ -73,6 +74,7 @@ internal sealed class GenericEventV7ItemState
         {Kind=ItemV1ItemKind.Relic;Model=relic;Key=relic.Id.Entry;}
         else return false;
         if(!ValidKey(Key))return false;
+        CapacityGain=Sts2AgentBridge.Items.Native.PinnedPotionCapacity.Gain(Model);
         Reward=reward;Index=NativeIndex=reward.RewardsSetIndex;
         return true;
     }
@@ -81,6 +83,14 @@ internal sealed class GenericEventV7ItemState
             Reward.ParentRewardSet is not null||Reward.RewardsSetIndex!=NativeIndex||(CardReward is null&&!Reward.IsPopulated)||
             Reward.SuccessfullySelected&&!Dispatched)return false;
         if(CardReward is not null)return CardReward.Domain();
+        if(CapacityGain!=Sts2AgentBridge.Items.Native.PinnedPotionCapacity.Gain(Model))return false;
+        if(CapacityGain>0) {
+            var capacityRelic=(RelicModel)Model!;
+            int owned=System.Linq.Enumerable.Count(Binding.Player.Relics,r=>ReferenceEquals(r,capacityRelic));
+            bool absent=capacityRelic.Owner is null&&owned==0;
+            bool acquired=ReferenceEquals(capacityRelic.Owner,Binding.Player)&&owned==1;
+            if(!Dispatched?!absent:Reward.SuccessfullySelected?!acquired:!absent&&!acquired)return false;
+        }
         return Kind==ItemV1ItemKind.Potion&&Reward is PotionReward p&&p.Potion is PotionModel potion&&ReferenceEquals(potion,Model)&&potion.Id.Entry==Key||
             Kind==ItemV1ItemKind.Relic&&Reward is RelicReward r&&r.Relic is RelicModel relic&&ReferenceEquals(relic,Model)&&relic.Id.Entry==Key;
     }
@@ -92,6 +102,31 @@ internal sealed class GenericEventV7ItemState
             if(!ReferenceEquals(root.Rewards[i],e.Reward)||!e.LocalDomain())return false;
         }
         return true;
+    }
+    // Preserve the native order. A later capacity grant cannot rescue an earlier
+    // full-inventory potion; no pickup is sent for an impossible sequence.
+    internal bool CapacityPlan()
+    {
+        if(!GenericEventV7ItemAdapter.Slots(Binding.Player,out int capacity,out var slots))return false;
+        int free=System.Linq.Enumerable.Count(slots,s=>s.ModelIdentity is null);
+        foreach(var entry in (Root??this).Entries!) {
+            if(entry.CardReward is not null)continue;
+            if(entry.CapacityGain>0) {capacity+=entry.CapacityGain;free+=entry.CapacityGain;if(capacity>8)return false;}
+            if(entry.Kind==ItemV1ItemKind.Potion && --free<0)return false;
+        }
+        return true;
+    }
+    internal bool CapacityMatches(int baseline,int current)
+    {
+        int settled=baseline,pending=0;
+        foreach(var entry in (Root??this).Entries!) {
+            if(entry.CapacityGain==0)continue;
+            if(entry.Dispatched&&entry.CollectionEntered) {
+                if(entry.Reward!.SuccessfullySelected)settled+=entry.CapacityGain;
+                else pending+=entry.CapacityGain;
+            }
+        }
+        return current<=8&&(current==settled||current==settled+pending);
     }
     internal bool Overlay()=>Binding.Overlays.ScreenCount==0||Binding.Overlays.ScreenCount==1&&ReferenceEquals(Binding.Overlays.Peek(),Screen);
     internal bool TryButton(out NRewardButton? result)

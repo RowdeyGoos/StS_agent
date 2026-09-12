@@ -41,7 +41,9 @@ def build_request(method: str, route: str, body: bytearray | None, token: bytear
         require(type(value) is dict and set(value) == expected, "action_fields")
         require(type(value["decision_id"]) is str and re.fullmatch("[0-9a-f]{64}", value["decision_id"]), "decision")
         require(type(value["action_id"]) is str and (re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
-                route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:card:(?:[0-9]|[12][0-9]|3[01])|inventory:close)", value["action_id"])), "action")
+                route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:card:(?:[0-9]|[12][0-9]|3[01])|inventory:close)", value["action_id"]) or
+                event and type(value.get("child")) is dict and re.fullmatch(
+                    r"(?:tool:(?:small|big)|reward:(?:(?:claim|collect|open):[0-7]|choose:[0-4]|skip_card))", value["action_id"])), "action")
         fields = "X-Sts2-Decision-Id: " + value["decision_id"] + "\r\nX-Sts2-Action-Id: " + value["action_id"] + "\r\n"
         child = value.get("child")
         if child is not None:

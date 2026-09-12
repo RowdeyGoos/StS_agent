@@ -23,14 +23,41 @@ Read [current status](../../docs/STATUS.md) for evidence and
 
 All routes use one authenticated loopback listener at `127.0.0.1:43117` and one
 owner-frame queue. Native feature sessions are created only when their route is
-requested. The current session owns its parent and child operations until the
+requested. Generic events prepare their 31 observational hooks across successive
+reads, one target per read. Preparation returns the existing waiting response;
+no option is published or armed until installation finishes. The session allows
+at most 32 preparation reads, preserves exclusive partial ownership and checks
+for foreign patches before every step. Partial installation is cleaned up by the
+same module owner. The 500 ms frame-result deadline is unchanged. The current session owns its parent and child operations until the
 native result reconciles and disposal succeeds; another capability receives
 `capability_busy`. The standard event parent retains its item-child route.
 Core actions likewise fence unrelated operations until their decision reconciles.
 
 Clean completion releases the module and keeps the host available for the next
 capability. An uncertain mutation, failed response delivery or failed cleanup
-stops the host. There are no automatic mutation retries. Process-wide limits are
+stops the host. There are no automatic mutation retries.
+Authenticated reads that fail in the owner-frame queue now return a terminal
+`kind: error` with one fixed code: `dispatch_unavailable`, `dispatch_busy`,
+`dispatch_timeout_before_claim`, `dispatch_timeout_after_claim`, `dispatch_fault`
+or `dispatch_invalid_result`. Failed read replies also carry up to 15 fixed-name
+stage timings, each capped at 3,000 ms, with the active stage at snapshot time.
+They measure time between markers (including compilation or called work), not
+CPU profiling or the exact instant of deadline expiry. They are per-read and
+contain no game state or request fields. These diagnostics contain no exception/native data
+and do not authorize retry or handoff; the host still stops and cleans up any
+late callback. POST failure behavior and queue deadlines are unchanged.
+
+Event-combat resumption failures retain terminal `backend_fault` and add a closed
+`resume_diagnostic` value identifying the rejected callback, task, ownership,
+layout, UI, travel or item-settlement boundary. The native observer preserves the
+first failure. Unknown enum values normalize to `diagnostic_unavailable`; no
+native values or exception text are emitted. This metadata does not relax guards
+or permit retry. Event diagnostic headers separately distinguish ownership
+predicates from combat-entry callback, run, rewards, encounter, state, parent,
+player and node checks. These closed labels report the actual evaluated boundary;
+a combat rejection is not inferred to be an ownership failure.
+
+Process-wide limits are
 16,384 reads, 512 action reservations and 64 feature sessions, with the existing
 stricter limits inside each module.
 
@@ -52,6 +79,14 @@ This does not support cards without allocated holders or certify every selector.
 The upgrade extension has a live Sapphire Seed single-upgrade result for
 off-screen Defend slot 20 in a 23-card eligible domain; see the
 [combined batch](../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md).
+
+Crystal Sphere is implemented in the working checkout through the existing generic
+event controller. Enter using an advertised ordinary event choice; the default
+policy selects the big tool, reveals legal cells, resolves earned rewards and uses
+the native Leave/map path. Custom providers receive `crystal_sphere` child views.
+See the [sphere contract](../../docs/GENERIC_EVENTS.md#implemented-offline-crystal-sphere)
+for the public projection and limits. The September 12 Uncover Future/gold/map case passed live, including exact
+completed-overlay cleanup; other branches retain offline coverage.
 
 ## Development checks
 
@@ -192,7 +227,7 @@ surfaces, protocol semantics and limits are in [combat choices](../../docs/COMBA
 Neow's Fury zero and two-card selection with combat resume passed in the
 [September 9 live batch](../../docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md).
 
-Use `--capability combat-map` to finish one combat, resolve its gold/card rewards,
+Use `--capability combat-map` to finish one combat, resolve its gold/card/item rewards,
 and verify an actionable map with the same client. Defeat stops before rewards.
 The default `--reward-policy first-card` claims gold and chooses the first legal
 card; `skip-card` uses the native card skip. `--capability rewards` starts directly
@@ -223,8 +258,19 @@ uncertainty or interruption stop the check. The result retains the full `event`
 summary and a separate `map_handoff` status/read count even when that check fails.
 A failed event or `combat_handoff` destination never starts the map check.
 
+The checkout's first custom screen is Fake Merchant. Start with its inventory
+closed and use `--capability events` or `event-map`. The default first-legal policy
+opens the inventory, buys affordable relic offers in slot order, closes and leaves;
+a choice provider may select specific published offers or close without buying.
+The full six-purchase path needs nine parent actions. This is offline-tested,
+support; the combat branch remains separate. Crystal Sphere now supports its
+owned tool/reveal, earned-reward and native map-exit path described above.
+See the [custom-screen contract](../../docs/GENERIC_EVENTS.md#implemented-offline-fake-merchant-custom-screen).
+
 The checkout also supports `--capability event-combat-map` for a non-resuming
-fight started by an owned event choice with no event-supplied extra rewards. It
+fight started by an owned event choice with zero to eight special-card, potion or
+relic extra rewards, with at most one special card (The Lantern Key and Punch Off
+Fight branches). It
 requires `combat_handoff`, then uses the existing combat/rewards/map controllers.
 The result preserves `event` and `combat_flow`; the latter retains each downstream
 stage. `--choice-policy` and `--reward-policy` have the same meaning as in
@@ -237,19 +283,52 @@ the host verifies the original callback and new event node, then runs one fresh
 event session through Proceed/map. Training expiry is reported as `event_resumed`,
 not victory. Item collection counts/results are retained in `combat.resume_items`.
 Its result retains `combat`, `resumed_event` and `map_handoff` inside
-`combat_flow`. Resume-time card rewards, nested pickup selectors and extra combat
-rewards remain unsupported.
+`combat_flow`. The reward controller collects a special card directly with the native reward
+button; both card policies do this and record `rewards.claimed_special_cards`.
+The same controller collects potions/relics with `collect:<slot>` and records
+verified pickups in `rewards.collected_items`. Repeated rewards retain distinct
+session identities even when visible slots compact. Item sessions use ready schema
+5 with `item_key`, `potion_capacity_gain` and public potion slots; special-card sessions use schema 2. Ordinary sessions
+and all waiting/completion/receipt payloads retain schema 1. Full potion inventories
+stop with `potion_inventory_full` by default. Resume-time card rewards, nested pickup selectors and relic effects beyond the known Potion Belt capacity
+gain remain unsupported. See the [item reward contract](../../docs/GENERIC_EVENTS.md#extra-potionrelic-rewards-and-mixed-collection).
+
+For terminal rewards, add `--potion-policy skip-full` to collect potions that fit
+and leave the rest while completing other rewards. Use `skip-all` to leave every
+potion reward, or the default `stop-on-full` to stop when one cannot be collected.
+This works with `rewards`, `combat-map` and non-resuming `event-combat-map`, with
+either card policy. `rewards.skipped_potions` reports the key, reward index and
+reason only after verified native Proceed/map completion.
+Use `--potion-policy replace-first` to discard the first eligible original inventory
+potion when full, verify its removal, then collect the waiting reward. Each removal
+is recorded in `rewards.discarded_potions`; newly collected potions are protected.
+Replacement is restricted to single-player terminal reward screens. Custom event and resume-time item screens retain
+their capacity checks. See the [policy contract](../../docs/GENERIC_EVENTS.md#terminal-potion-reward-policies).
+
+Terminal Potion Belt rewards can now add two verified empty slots. When a waiting
+potion does not fit, the controller collects an available Potion Belt before
+stopping or replacing a potion. Its reward session uses ready schema 5 with
+`potion_capacity_gain`; verified gains appear in `rewards.potion_capacity_gains`.
+Existing potions and the gained capacity remain checked through reward completion.
+This is offline-tested support for the pinned Potion Belt effect, bounded to eight
+slots. See the [capacity contract](../../docs/GENERIC_EVENTS.md#terminal-potion-belt-capacity-pickup).
+
+Owned custom event rewards and resume-time item rewards also support Potion Belt
+pickup in singleton, ordered item-set and mixed card/item flows. Each potion must
+fit at its original position using initially free slots or preceding belt gains.
+These children keep their existing wire contracts and collect order, with no item
+skip/discard policy. See the [event capacity contract](../../docs/GENERIC_EVENTS.md#implemented-offline-event-potion-belt-capacity-pickup).
 
 Use `--event-option BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2` with
-`--capability event-combat-map` for the pending Battleworn Dummy case.
+`--capability event-combat-map` for the Battleworn Dummy training case.
 Use `SETTING_1` instead for the potion-reward branch, with a free potion slot.
 The host collects the owned reward, waits for callback completion and then runs
 Proceed/map. This reusable option chooses the exact legal first parent option, then uses first-legal actions;
 a missing/illegal requested option stops before input. It also works with `events`
 and `event-map`. Automatic upgrade effects are not certified by callback completion.
 
-This feature is not in the retained accepted release and has no live result yet.
-Parent responses now identify protocol `generic_event_v9` over the existing v7
+Both training expiry and victory/potion resumption passed live through map return.
+Parent responses now identify protocol `generic_event_v10` over the existing v7
 routes. The `events` mode stops at its reported `destination`; combat entry alone
 is not a completed fight. See [event combat](../../docs/GENERIC_EVENTS.md#implemented-offline-non-resuming-event-combat)
 and [resumption semantics](../../docs/GENERIC_EVENTS.md#implemented-offline-event-combat-resumption).
@@ -288,3 +367,14 @@ see the [documentation archive](../../docs/archive/README.md#original-bytes-and-
 Old operator/launch workflows are historical, while the actual core exchange/
 manifest helper is compatibility-tested against the unified listener. Use the
 entry points above for current work.
+
+## Trial abandonment popup
+
+The event client supports Trial Reject → Double Down via an owned
+`abandon_confirmation_v1` child. `--abandon-policy cancel` is the default;
+`--abandon-policy confirm` explicitly ends the run. `--capability events` reports
+`destination: run_abandoned` only after the exact native task completes and the
+terminal state is verified. Map stages still require a map handoff. Parent wire
+protocol is `generic_event_v10`, with unchanged route names. This feature has
+offline validation; no live abandonment test has been performed. See the
+[contract](../../docs/GENERIC_EVENTS.md#implemented-offline-trial-abandonment-confirmation).

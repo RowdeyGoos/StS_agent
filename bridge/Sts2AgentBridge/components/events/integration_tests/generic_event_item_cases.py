@@ -24,10 +24,10 @@ def run_item_cases(args: Any, host: Any, exchange_type: Any, completed_history: 
     def item_decisions(ex: Any) -> list[dict]:
         return [v for v in ex.envelopes if v['kind'] == 'decision' and v['child'] and v['child']['kind'] == 'item']
 
-    for scenario, count in [('I_SET_TWO', 2), ('I_SET_MIXED', 4), ('I_SET_EIGHT', 8),
+    for scenario, count in [('I_SET_CAPACITY', 3), ('I_SET_CAPACITY_DELAY', 3), ('I_SET_CAPACITY_TWO_BELTS', 6), ('I_SET_TWO', 2), ('I_SET_MIXED', 4), ('I_SET_EIGHT', 8),
                             ('I_SET_COLLECTION', 2), ('I_SET_OFFER', 2), ('I_SET_CHOSEN', 2)]:
         result, ex = run(scenario)
-        assert result['status']=='resolved', (scenario, result, ex.envelopes[-1])
+        assert result['status']=='resolved', (scenario, result, ex.envelopes[-1:])
         assert result['child_episodes']==result['completed_item_children']==1
         assert result['child_attempted']==result['child_accepted']==result['child_reconciled']==count
         assert result['parent_accepted']==result['parent_reconciled']==2
@@ -36,6 +36,9 @@ def run_item_cases(args: Any, host: Any, exchange_type: Any, completed_history: 
         done=[v['payload'] for v in item_decisions(ex) if v['payload']['status']=='resolved']
         assert len(done)==1 and done[0]['version']=='item_set_v1' and done[0]['current'] is None
         assert [x['offer_index'] for x in done[0]['collected']]==list(range(count))
+        if scenario.startswith('I_SET_CAPACITY'):
+            assert ex.telemetry[-1]['potion_capacity']==(7 if count==6 else 5)
+            assert ex.telemetry[-1]['potion_keys'][:3]==['OLD_0','OLD_1','OLD_2']
         checks+=1
 
     result, ex=run('I_SET_LATE_SLOT')
@@ -76,17 +79,19 @@ def run_item_cases(args: Any, host: Any, exchange_type: Any, completed_history: 
         if method=='POST' and json.loads(body)['action_id']=='collect:1':
             lost=True;response[:]=b'\0'*len(response);raise host.TransportFailure()
         return response
-    result,ex=run('I_SET_TWO',lose_second)
-    assert lost and result['code']=='transport_failure' and result['child_accepted']==1 and result['child_reconciled']==1 and result['completed_item_children']==0
-    assert ex.telemetry[-1]['collect_calls']==2
-    checks+=1
+    for scenario in ('I_SET_TWO','I_SET_CAPACITY'):
+        lost=False
+        result,ex=run(scenario,lose_second)
+        assert lost and result['code']=='transport_failure' and result['child_accepted']==1 and result['child_reconciled']==1 and result['completed_item_children']==0
+        assert ex.telemetry[-1]['collect_calls']==2
+        checks+=1
 
     types, relic_types = set(), set()
     for scenario in ('I_FIRST', 'I_ANOTHER', 'I_HELD_OUT', 'I_RELIC', 'I_INDEX255',
                      'I_DELAYED_CREATION', 'I_DELAYED_COLLECTION', 'I_DELAYED_OFFER', 'I_DELAYED_CHOSEN',
                      'I_REPEAT', 'I_MIXED', 'I_MIXED_VARIABLE', 'I_RELIC_FIRST', 'I_RELIC_ANOTHER', 'I_RELEASE_DISABLED', 'I_DERIVED'):
         result, ex = run(scenario)
-        assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1])
+        assert result['status'] == 'resolved', (scenario, result, ex.envelopes[-1:] )
         items = 2 if scenario in ('I_REPEAT', 'I_MIXED', 'I_MIXED_VARIABLE') else 1
         cards = 2 if scenario in ('I_MIXED', 'I_MIXED_VARIABLE') else 0
         completed_history(result, ex, cards, items)
@@ -148,7 +153,7 @@ def run_item_cases(args: Any, host: Any, exchange_type: Any, completed_history: 
     for scenario in ('I_FULL', 'I_EXTRA', 'I_HIDDEN', 'I_LINKED', 'I_TERMINAL',
                      'I_TASK_FAULT', 'I_LATE_CLAIM', 'I_LATE_SLOT', 'I_REPLACED_BUTTON'):
         result, ex = run(scenario)
-        assert result['code'] == 'unsupported_state', (scenario, result, ex.envelopes[-1])
+        assert result['code'] == 'unsupported_state', (scenario, result, ex.envelopes[-1:] )
         assert result['completed_item_children'] == result['completed_card_children'] == 0
         assert result['parent_reconciled'] == result['child_reconciled'] == 0
         after_collect = scenario in ('I_TASK_FAULT', 'I_LATE_CLAIM', 'I_LATE_SLOT')

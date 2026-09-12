@@ -6,7 +6,7 @@ namespace Sts2AgentBridge.Successors.GenericEventV7;
 
 public static class GenericEventV7Limits
 {
-    public const string Version = "generic_event_v9";
+    public const string Version = "generic_event_v10";
     public const int MaximumCandidates = 8;
     public const int MaximumParentActions = 12;
     public const int MaximumChildEpisodes = 4;
@@ -31,7 +31,7 @@ public interface IGenericEventV7Session : IDisposable
 public sealed class GenericEventV7Candidate
 {
     public GenericEventV7Candidate(int index, string actionId, string stableId,
-        string renderedText, bool enabled, bool isDangerous, bool isProceed)
+        string renderedText, bool enabled, bool isDangerous, bool isProceed, bool opensAbandonConfirmation=false)
     {
         Index = index;
         ActionId = actionId;
@@ -39,7 +39,7 @@ public sealed class GenericEventV7Candidate
         RenderedText = renderedText;
         Enabled = enabled;
         IsDangerous = isDangerous;
-        IsProceed = isProceed;
+        IsProceed = isProceed; OpensAbandonConfirmation=opensAbandonConfirmation;
     }
     public int Index { get; }
     public string ActionId { get; }
@@ -48,7 +48,8 @@ public sealed class GenericEventV7Candidate
     public bool Enabled { get; }
     public bool IsDangerous { get; }
     public bool IsProceed { get; }
-    public string Discovery => IsProceed ? "none" : "deferred";
+    public bool OpensAbandonConfirmation {get;}
+    public string Discovery => OpensAbandonConfirmation?"abandon_confirmation":IsProceed ? "none" : "deferred";
 }
 
 public sealed class GenericEventV7Child
@@ -80,6 +81,12 @@ public sealed class GenericEventV7Child
     public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7ResultsAdmission results) {
         if(!results.IsSupported)throw new ArgumentException("Results bounds.");
         Ordinal=ordinal;ParentDecisionId=decision;ParentActionId=action;Kind="card_results";ContractVersion="card_results_v1";OfferCount=results.CardCount;Operation="";CommitMode="";
+    }
+    public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7SphereAdmission sphere) {
+        Ordinal=ordinal;ParentDecisionId=decision;ParentActionId=action;Kind="crystal_sphere";ContractVersion="crystal_sphere_v1";OfferCount=121;Operation="";CommitMode="";
+    }
+    public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7AbandonAdmission popup) {
+        Ordinal=ordinal;ParentDecisionId=decision;ParentActionId=action;Kind="abandon_confirmation";ContractVersion="abandon_confirmation_v1";OfferCount=2;Operation="";CommitMode="";
     }
     public string Kind { get; }
     public string ContractVersion { get; }

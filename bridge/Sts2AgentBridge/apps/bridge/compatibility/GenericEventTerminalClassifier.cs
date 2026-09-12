@@ -29,7 +29,7 @@ internal static class GenericEventTerminalClassifier
             using var document = JsonDocument.Parse(body, new JsonDocumentOptions { MaxDepth = 12 });
             var root = document.RootElement;
             if (!Bounded(root) || !Keys(root, "schema_version", "protocol", "session_nonce", "kind", "parent", "child", "payload") ||
-                root.GetProperty("schema_version").GetInt32() != 1 || Text(root,"protocol") != "generic_event_v9" || Text(root,"session_nonce") != nonce)
+                root.GetProperty("schema_version").GetInt32() != 1 || Text(root,"protocol") != "generic_event_v10" || Text(root,"session_nonce") != nonce)
                 return TerminalClassification.Invalid;
             canonical = JsonSerializer.SerializeToUtf8Bytes(root);
             if (!body.AsSpan().SequenceEqual(canonical)) return TerminalClassification.Invalid;
@@ -45,9 +45,11 @@ internal static class GenericEventTerminalClassifier
                 if (route == GenericEventTransportRoute.ParentPost)
                 {
                     if (!Null(child) || !Keys(payload,"version","session_nonce","decision_id","action_id","outcome") ||
-                        Text(payload,"version") != "generic_event_v9") return TerminalClassification.Invalid;
+                        Text(payload,"version") != "generic_event_v10") return TerminalClassification.Invalid;
                 }
                 else if (!Null(child) && Text(child,"kind")=="item") return Item(payload,nonce,true);
+                else if (!Null(child) && Text(child,"kind")=="abandon_confirmation") return Abandon(payload,nonce,true);
+                else if (!Null(child) && Text(child,"kind")=="crystal_sphere") return Sphere(payload,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_results") return Results(payload,child,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_offer") return Offer(payload,child,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_reward") return Reward(payload,child,nonce,true);
@@ -74,6 +76,8 @@ internal static class GenericEventTerminalClassifier
             if (status == "child")
             {
                 if (!Null(child) && Text(child,"kind")=="item") return Text(child,"contract_version")=="item_set_v1" ? ItemSet(payload,child,nonce) : Item(payload,nonce,false);
+                if (!Null(child) && Text(child,"kind")=="abandon_confirmation") return Abandon(payload,nonce,false);
+                if (!Null(child) && Text(child,"kind")=="crystal_sphere") return Sphere(payload,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_results") return Results(payload,child,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_offer") return Offer(payload,child,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_reward") return Reward(payload,child,nonce,false);
@@ -87,7 +91,7 @@ internal static class GenericEventTerminalClassifier
             }
             if (!Null(child) || !Null(payload)) return TerminalClassification.Invalid;
             return status switch {
-                "complete" when phase is "map_handoff" or "combat_handoff" or "combat_resume_handoff" => TerminalClassification.Terminal,
+                "complete" when phase is "map_handoff" or "combat_handoff" or "combat_resume_handoff" or "run_abandoned" => TerminalClassification.Terminal,
                 "unsupported" => TerminalClassification.Terminal,
                 "ready" or "waiting" => TerminalClassification.NonTerminal,
                 _ => TerminalClassification.Invalid };
@@ -96,13 +100,15 @@ internal static class GenericEventTerminalClassifier
         finally { if(canonical is not null) Array.Clear(canonical); }
     }
     private static bool Child(JsonElement value) {
-        bool item=Text(value,"kind") is "item" or "card_reward" or "card_offer" or "card_results";
+        bool item=Text(value,"kind") is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation";
         if(!Keys(value,item?new[]{"ordinal","parent_decision_id","parent_action_id","kind","contract_version","offer_count"}:
             new[]{"ordinal","parent_decision_id","parent_action_id","kind","contract_version","operation","min_select","max_select","commit_mode","domain_count"}) ||
             value.GetProperty("ordinal").GetInt32() is <1 or >4 || !Hex(Text(value,"parent_decision_id"),64) ||
             !GenericEventTransportRequestParser.ParentActionValue(Encoding.ASCII.GetBytes(Text(value,"parent_action_id")??"")))return false;
         if(item) {
             int count=value.GetProperty("offer_count").GetInt32();
+            if(Text(value,"kind")=="abandon_confirmation")return count==2&&Text(value,"contract_version")=="abandon_confirmation_v1";
+            if(Text(value,"kind")=="crystal_sphere")return count==121&&Text(value,"contract_version")=="crystal_sphere_v1";
             if(Text(value,"kind")=="card_results")return count is >=1 and <=64&&Text(value,"contract_version")=="card_results_v1";
             if(Text(value,"kind")=="card_offer")return count is >=1 and <=5&&(Text(value,"contract_version")!="card_offer_v2"||count<=3)&&Text(value,"contract_version") is "card_offer_v1" or "card_offer_v2" or "bundle_offer_v1";
             string version=Text(value,"kind")=="item" ? (count==1?"item_v1":"item_set_v1") : (count==1?"card_reward_v1":"card_reward_set_v1");
@@ -140,6 +146,44 @@ internal static class GenericEventTerminalClassifier
         return TerminalClassification.NonTerminal;
     }
 
+    private static TerminalClassification Abandon(JsonElement p,string nonce,bool apply) {
+        if(p.ValueKind!=JsonValueKind.Object||Text(p,"version")!="abandon_confirmation_v1"||Text(p,"session_nonce")!=nonce)return TerminalClassification.Invalid;
+        if(apply) {
+            if(!Keys(p,"version","session_nonce","decision_id","action_id","outcome")||!Hex(Text(p,"decision_id"),64)||Text(p,"action_id") is not ("cancel" or "confirm_abandon"))return TerminalClassification.Invalid;
+            return Text(p,"outcome")=="accepted"?TerminalClassification.NonTerminal:Text(p,"outcome") is "rejected" or "unsupported" or "uncertain"?TerminalClassification.Terminal:TerminalClassification.Invalid;
+        }
+        if(!Keys(p,"version","session_nonce","status","phase","decision_id","consequence","legal_actions","prior_results")||Text(p,"consequence")!="run_abandoned")return TerminalClassification.Invalid;
+        var actions=p.GetProperty("legal_actions");var history=p.GetProperty("prior_results");
+        if(actions.ValueKind!=JsonValueKind.Array||history.ValueKind!=JsonValueKind.Array||history.GetArrayLength()>1)return TerminalClassification.Invalid;
+        foreach(var h in history.EnumerateArray())if(!Keys(h,"decision_id","action_id","result")||!Hex(Text(h,"decision_id"),64)||Text(h,"action_id") is not ("cancel" or "confirm_abandon")||Text(h,"result")!=(Text(h,"action_id")=="cancel"?"cancelled":"abandoned"))return TerminalClassification.Invalid;
+        string? status=Text(p,"status"),phase=Text(p,"phase");
+        if(status=="ready")return phase=="confirm"&&Hex(Text(p,"decision_id"),64)&&history.GetArrayLength()==0&&actions.EnumerateArray().Select(a=>a.GetString()).SequenceEqual(new[]{"cancel","confirm_abandon"})?TerminalClassification.NonTerminal:TerminalClassification.Invalid;
+        if(Text(p,"decision_id")!=""||actions.GetArrayLength()!=0)return TerminalClassification.Invalid;
+        if(status=="resolved")return history.GetArrayLength()==1&&phase==Text(history[0],"result")?TerminalClassification.NonTerminal:TerminalClassification.Invalid;
+        return status==phase&&status is "waiting" or "unsupported"?(status=="unsupported"?TerminalClassification.Terminal:TerminalClassification.NonTerminal):TerminalClassification.Invalid;
+    }
+    private static TerminalClassification Sphere(JsonElement p,string nonce,bool apply) {
+        if(p.ValueKind!=JsonValueKind.Object||Text(p,"version")!="crystal_sphere_v1"||Text(p,"session_nonce")!=nonce)return TerminalClassification.Invalid;
+        if(apply){
+            if(!Keys(p,"version","session_nonce","decision_id","action_id","outcome")||!Hex(Text(p,"decision_id"),64)||!GenericEventV7SphereRules.Action(Text(p,"action_id")))return TerminalClassification.Invalid;
+            return Text(p,"outcome")=="accepted"?TerminalClassification.NonTerminal:Text(p,"outcome") is "rejected" or "unsupported" or "uncertain"?TerminalClassification.Terminal:TerminalClassification.Invalid;
+        }
+        if(!Keys(p,"version","session_nonce","status","phase","decision_id","board","legal_actions","prior_results"))return TerminalClassification.Invalid;
+        var b=p.GetProperty("board");var actions=p.GetProperty("legal_actions");var history=p.GetProperty("prior_results");
+        if(actions.ValueKind!=JsonValueKind.Array||history.ValueKind!=JsonValueKind.Array||history.GetArrayLength()>40)return TerminalClassification.Invalid;
+        foreach(var h in history.EnumerateArray())if(!Keys(h,"decision_id","action_id","result")||!Hex(Text(h,"decision_id"),64)||!GenericEventV7SphereRules.Action(Text(h,"action_id"))||Text(h,"result")!="completed")return TerminalClassification.Invalid;
+        string? status=Text(p,"status"),phase=Text(p,"phase");
+        if(status!="ready")return Null(b)&&actions.GetArrayLength()==0&&Text(p,"decision_id")==""&&((status,phase) is ("waiting","waiting") or ("resolved","complete") or ("unsupported","unsupported"))?(status=="unsupported"?TerminalClassification.Terminal:TerminalClassification.NonTerminal):TerminalClassification.Invalid;
+        if(phase is not ("board" or "rewards" or "cards")||!Hex(Text(p,"decision_id"),64)||!Keys(b,"divinations","tool","hidden","rewards")||b.GetProperty("divinations").GetInt32() is <0 or >20||Text(b,"tool") is not ("small" or "big"))return TerminalClassification.Invalid;
+        var fog=b.GetProperty("hidden");var rewards=b.GetProperty("rewards");if(fog.ValueKind!=JsonValueKind.Array||fog.GetArrayLength()!=121||fog.EnumerateArray().Any(v=>v.ValueKind is not (JsonValueKind.True or JsonValueKind.False))||rewards.ValueKind!=JsonValueKind.Array||rewards.GetArrayLength()>8)return TerminalClassification.Invalid;
+        if(actions.GetArrayLength() is <1 or >123||actions.EnumerateArray().Any(a=>!GenericEventV7SphereRules.Action(a.GetString())))return TerminalClassification.Invalid;
+        int slot=0;foreach(var r in rewards.EnumerateArray()) {
+            if(!Keys(r,"slot","kind","key","amount","cards")||r.GetProperty("slot").GetInt32()!=slot++||Text(r,"kind") is not ("gold" or "card" or "potion" or "relic")||r.GetProperty("amount").GetInt32()<0||Text(r,"key")!=""&&!Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsStableKey(Text(r,"key")))return TerminalClassification.Invalid;
+            var cards=r.GetProperty("cards");if(cards.ValueKind!=JsonValueKind.Array||cards.GetArrayLength()>5)return TerminalClassification.Invalid;
+            int index=0;foreach(var c in cards.EnumerateArray())if(!Keys(c,"slot","key","upgrade_level")||c.GetProperty("slot").GetInt32()!=index++||!Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsStableKey(Text(c,"key"))||c.GetProperty("upgrade_level").GetInt32()<0)return TerminalClassification.Invalid;
+        }
+        return TerminalClassification.NonTerminal;
+    }
     private static TerminalClassification Results(JsonElement p,JsonElement child,string nonce,bool apply) {
         if(p.ValueKind!=JsonValueKind.Object||Text(p,"version")!="card_results_v1"||Text(p,"session_nonce")!=nonce)return TerminalClassification.Invalid;
         if(apply) {

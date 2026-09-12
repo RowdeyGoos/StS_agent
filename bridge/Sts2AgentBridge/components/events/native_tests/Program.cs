@@ -31,7 +31,7 @@ internal static partial class Program
 {
     private static void CombatHandoffCases()
     {
-        foreach(var mode in new[]{"ok","resume","extra","wrong_encounter","wrong_player","wrong_parent","wrong_run","wrong_visuals","delayed"}) {
+        foreach(var mode in new[]{"ok","resume","extra","wrong_encounter","wrong_player","wrong_parent","wrong_run","wrong_visuals","delayed","changed_rewards","wrong_state","callback_fault","callback_wait","missing_node","ending_wait"}) {
             using var f=new Fixture("COMBAT");
             var encounter=new EncounterModel();
             var state=new MegaCrit.Sts2.Core.Combat.CombatState {Encounter=encounter,RunState=f.Player.RunState};
@@ -44,11 +44,23 @@ internal static partial class Program
             f.Model.CombatEntry=(e,rewards,resume)=>{
                 if(mode!="delayed") {run.CurrentRoom=room;MegaCrit.Sts2.Core.Combat.CombatManager.Instance.State=state;}
                 if(mode=="wrong_encounter")state.Encounter=new EncounterModel();
+                if(mode=="changed_rewards")room.ExtraRewards[new Player()]=new List<MegaCrit.Sts2.Core.Rewards.Reward>();
+                if(mode=="wrong_state")state.RunState=new RunState();
+                if(mode=="missing_node")NCombatRoom.Instance=null;
+                if(mode=="ending_wait")MegaCrit.Sts2.Core.Combat.CombatManager.Instance.IsOverOrEnding=true;
             };
             f.Room.Layout.OptionButtons[0].Option.Callback=()=>{f.Model.EnterCombatWithoutExitingEvent(encounter,
-                mode=="extra"?new MegaCrit.Sts2.Core.Rewards.Reward[]{new MegaCrit.Sts2.Core.Rewards.Reward()}:Array.Empty<MegaCrit.Sts2.Core.Rewards.Reward>(),mode=="resume");return Task.CompletedTask;};
+                mode=="extra"?new MegaCrit.Sts2.Core.Rewards.Reward[]{new MegaCrit.Sts2.Core.Rewards.Reward()}:Array.Empty<MegaCrit.Sts2.Core.Rewards.Reward>(),mode=="resume");return mode=="callback_fault"?Task.FromException(new Exception()):mode=="callback_wait"?f.Gate.Task:Task.CompletedTask;};
             var ready=f.Session.Read();Check(f.Session.Apply(ready.DecisionId,"choose:0").Outcome=="accepted","combat entry dispatch");
             var result=f.Session.Read();
+            var expected=mode switch {
+                "ok"=>"CombatReady","delayed"=>"CombatWaitingRoom","wrong_encounter"=>"CombatEncounter",
+                "wrong_player"=>"CombatPlayers","wrong_parent"=>"CombatParent","wrong_run"=>"CombatRunOwner",
+                "wrong_visuals"=>"CombatIdentity","changed_rewards"=>"CombatRewards","wrong_state"=>"CombatState",
+                "callback_fault"=>"CombatCallbackFailed","callback_wait"=>"CombatWaitingCallback",
+                "missing_node"=>"CombatWaitingNode","ending_wait"=>"CombatWaitingEnd",_=>null};
+            if(expected is not null)Check(f.Adapter.LastDiagnostic.ToString()==expected,"combat result reports its actual boundary: "+mode);
+            if(mode is "callback_wait" or "missing_node" or "ending_wait") {Check(result.Status=="waiting","diagnostic preserves waiting outcome");continue;}
             if(mode=="delayed") {Check(result.Status=="waiting","entry waits for actual combat");run.CurrentRoom=room;MegaCrit.Sts2.Core.Combat.CombatManager.Instance.State=state;result=f.Session.Read();}
             if(mode is "ok" or "delayed")Check(result.Status=="complete"&&result.Phase=="combat_handoff"&&result.ParentReconciled==1&&result.ChildEpisodes==0,"exact combat transfer");
             else Check(result.Status=="unsupported"&&result.ParentAccepted==1&&result.ParentReconciled==0,"combat mismatch stopped "+mode);
@@ -64,12 +76,32 @@ internal static partial class Program
             }
         }
     }
+    private static void OwnershipDiagnosticCases()
+    {
+        using var f=new Fixture("OWNER_DIAGNOSTIC");_=f.Start();
+        var binding=(GenericEventV7Binding)typeof(PinnedGenericEventV7NativeAdapter).GetField("_pending",BindingFlags.NonPublic|BindingFlags.Instance)!.GetValue(f.Adapter)!;
+        var owner=typeof(PinnedGenericEventV7NativeAdapter).GetField("_hooks",BindingFlags.NonPublic|BindingFlags.Instance)!.GetValue(f.Adapter)!;
+        Check(GenericEventV7Hooks.Owns(binding)&&GenericEventV7Hooks.OwnershipDiagnostic(binding).ToString()=="NotCaptured","valid ownership unchanged");
+        var threaded=Task.Run(()=>GenericEventV7Hooks.OwnershipDiagnostic(binding)).GetAwaiter().GetResult();
+        Check(threaded.ToString()=="PendingOwnerThread","wrong owner thread has exact diagnostic");
+        var disposed=typeof(GenericEventV7Hooks).GetField("_disposed",BindingFlags.NonPublic|BindingFlags.Instance)!;
+        disposed.SetValue(owner,true);
+        try{Check(!GenericEventV7Hooks.Owns(binding)&&GenericEventV7Hooks.OwnershipDiagnostic(binding).ToString()=="PendingOwnerHooks","disposed hook owner reported");}
+        finally{disposed.SetValue(owner,false);}
+        var target=typeof(EventOption).GetMethod("Chosen")!;var patch=HarmonyLib.Harmony.GetPatchInfo(target)!.Prefixes.Single().PatchMethod;
+        var foreign=new HarmonyLib.Harmony("fixture.ownership.diagnostic");foreign.Patch(target,prefix:new HarmonyLib.HarmonyMethod(patch));
+        try{Check(!GenericEventV7Hooks.Owns(binding)&&GenericEventV7Hooks.OwnershipDiagnostic(binding).ToString()=="PendingOwnerPatches","foreign patch ownership reported");}
+        finally{foreign.Unpatch(target,HarmonyLib.HarmonyPatchType.All,"fixture.ownership.diagnostic");}
+        Check(GenericEventV7Hooks.Owns(binding),"exact original patches retained after foreign cleanup");
+        GenericEventV7Hooks.Close(binding);
+        Check(!GenericEventV7Hooks.Owns(binding)&&GenericEventV7Hooks.OwnershipDiagnostic(binding).ToString()=="PendingOwnerBinding","unarmed binding reported");
+    }
     private static void CombatResumeCases()
     {
-        foreach(var mode in new[]{"sync","sync_override","ending","delayed","cleanup_interference","wrong_model","wrong_room","fault","cancel","duplicate","overlay","wrong_node","changed_combat"}) {
+        foreach(var mode in new[]{"sync","sync_override","exited","exited_foreign_player","exited_wrong_owner","exited_wrong_event","exited_wrong_state","exited_wrong_current","ending","delayed","cleanup_interference","wrong_model","wrong_room","fault","cancel","duplicate","overlay","wrong_node","outer_room_node","freed_layout","replaced_layout","retained_parent","map_open","traveling","travel_enabled","changed_combat","read_exception","finished_travel","finished_open","finished_traveling"}) {
             using var f=new Fixture(mode=="sync_override"?"RESUME_OVERRIDE":"RESUME");
             var run=(RunState)f.Player.RunState;
-            var original=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};run.CurrentRoom=original;f.Model.Node=f.Room;
+            var original=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};run.CurrentRoom=original;f.Model.Node=f.Room.Layout;
             var encounter=new EncounterModel();
             var state=new MegaCrit.Sts2.Core.Combat.CombatState{Encounter=encounter,RunState=run};state.Players.Add(f.Player);
             var combatRoom=new MegaCrit.Sts2.Core.Rooms.CombatRoom{CombatState=state,ParentEventId=f.Model.Id,ShouldResumeParentEventAfterCombat=true};
@@ -93,28 +125,115 @@ internal static partial class Program
             var entry=f.Session.Read();Check(entry.Status=="complete"&&entry.Phase=="combat_resume_handoff"&&entry.ParentReconciled==1,"resumable combat entry distinct: "+entry.Status+"/"+entry.Phase+"/"+f.Adapter.LastDiagnostic);
             var poll=f.Adapter.CombatResume!;
             Check(poll()=="combat","same training combat observed");
+            if(mode=="read_exception") {
+                f.Player.ThrowRunState=true;
+                try {
+                    Check(poll()=="unsupported","resume getter exception returns terminal status");
+                    Check(f.Adapter.CombatResumeDiagnostic.ToString()=="read_exception","resume getter exception exposes bounded diagnostic");
+                }finally{f.Player.ThrowRunState=false;}
+                continue;
+            }
             Check(HarmonyLib.Harmony.GetPatchInfo(typeof(EventOption).GetMethod("Chosen"))?.Owners.Count is null or 0,"ordinary event hooks released for combat");
             if(mode=="changed_combat") {NCombatRoom.Instance=new();Check(poll()=="unsupported","unrelated combat node stops");continue;}
             if(mode=="ending") {MegaCrit.Sts2.Core.Combat.CombatManager.Instance.IsOverOrEnding=true;Check(poll()=="waiting","training expiry is not normal combat victory");}
             var gate=new TaskCompletionSource();
             f.Model.ResumeCallback=room=>mode=="fault"?Task.FromException(new Exception()):mode=="cancel"?Task.FromCanceled(new System.Threading.CancellationToken(true)):mode=="delayed"||mode=="overlay"?gate.Task:Task.CompletedTask;
             run.CurrentRoom=original;
+            if(mode.StartsWith("exited",StringComparison.Ordinal)) {
+                state.Players.Clear();MegaCrit.Sts2.Core.Combat.CombatManager.Instance.State=null;
+                if(mode=="exited_foreign_player")state.Players.Add(new Player());
+                if(mode=="exited_wrong_owner")f.Model.Owner=new Player();
+                if(mode=="exited_wrong_event")original.LocalMutableEvent=new EventModel();
+                if(mode=="exited_wrong_state")combatRoom.CombatState=new MegaCrit.Sts2.Core.Combat.CombatState();
+                if(mode=="exited_wrong_current")run.CurrentRoom=combatRoom;
+            }
+            var parentContext=(System.Threading.AsyncLocal<GenericEventV7Binding?>)typeof(GenericEventV7Hooks).GetField("Parent",BindingFlags.NonPublic|BindingFlags.Static)!.GetValue(null)!;
+            if(mode=="retained_parent") {
+                var owner=typeof(PinnedGenericEventV7NativeAdapter).GetField("_hooks",BindingFlags.NonPublic|BindingFlags.Instance)!.GetValue(f.Adapter)!;
+                var lease=(GenericEventV7CombatHandoff)typeof(GenericEventV7Hooks).GetField("_resume",BindingFlags.NonPublic|BindingFlags.Instance)!.GetValue(owner)!;
+                parentContext.Value=lease.Binding;
+            }
             if(mode=="wrong_model")_=new EventModel().Resume(combatRoom);
             else _=f.Model.Resume(mode=="wrong_room"?new MegaCrit.Sts2.Core.Rooms.CombatRoom():combatRoom);
+            if(mode=="retained_parent")parentContext.Value=null;
             if(mode=="duplicate")_=f.Model.Resume(combatRoom);
+            if(mode=="map_open")f.Map.IsOpen=true;
+            if(mode=="traveling")f.Map.IsTraveling=true;
+            if(mode=="travel_enabled"||mode.StartsWith("finished_",StringComparison.Ordinal))f.Map.IsTravelEnabled=true;
+            if(mode.StartsWith("finished_",StringComparison.Ordinal))f.Model.IsFinished=true;
+            if(mode=="finished_open")f.Map.IsOpen=true;
+            if(mode=="finished_traveling")f.Map.IsTraveling=true;
             if(mode=="sync")Check(poll()=="waiting","successful synchronous callback waits for new node");
-            var node=new NEventRoom();f.Run.EventRoom=node;NEventRoom.Instance=node;f.Model.Node=mode=="wrong_node"?new NEventRoom():node;
+            var node=new NEventRoom();f.Run.EventRoom=node;NEventRoom.Instance=node;f.Model.Node=mode=="wrong_node"?new MegaCrit.Sts2.Core.Nodes.Events.NEventLayout():mode=="outer_room_node"?node:node.Layout;
+            if(mode=="freed_layout")node.Layout.InstanceValid=false;
+            if(mode=="replaced_layout") {
+                Check(poll()=="resumed","exact new room and inner layout bind together");
+                node.Layout=new MegaCrit.Sts2.Core.Nodes.Events.NEventLayout();f.Model.Node=node.Layout;
+            }
             if(mode=="delayed") {Check(poll()=="waiting","new node alone does not finish callback");gate.SetResult();}
             if(mode=="overlay") f.Overlays.Screens.Add(new Control());
-            Check(poll()==(mode is "sync" or "sync_override" or "ending" or "delayed"?"resumed":"unsupported"),"resume exact completion or stop: "+mode);
+            Check(poll()==(mode is "sync" or "sync_override" or "exited" or "ending" or "delayed" or "finished_travel"?"resumed":"unsupported"),"resume exact completion or stop: "+mode);
+            var expectedDiagnostic=mode switch {
+                "retained_parent"=>"callback_parent_retained","map_open" or "finished_open"=>"context_map_open","traveling" or "finished_traveling"=>"context_traveling","travel_enabled"=>"context_travel_enabled",
+                "wrong_node" or "outer_room_node" or "freed_layout"=>"node_layout","replaced_layout"=>"context_node",
+                "duplicate" or "wrong_room"=>"callback_entry","fault" or "cancel"=>"resume_task",_=>null};
+            if(expectedDiagnostic is not null)Check(f.Adapter.CombatResumeDiagnostic.ToString()==expectedDiagnostic,"first exact resumption diagnostic retained: "+mode);
+            if(mode=="finished_travel") {
+                // Native resume creates a new room; the router disposes the old owner
+                // before a fresh event adapter independently binds its sole Proceed.
+                var option=new EventOption{TextKey="PROCEED",IsProceed=true,Callback=()=>{f.OptionCalls++;f.Map.IsOpen=true;return Task.CompletedTask;}};
+                var button=new NEventOptionButton{Option=option,Event=f.Model};button.Bind("%Text",new MegaRichTextLabel{Text="Proceed"});node.Layout.OptionButtons.Add(button);
+                f.Session.Dispose();
+                using var native=new PinnedGenericEventV7NativeAdapter();using var session=new GenericEventV7Session(native,new string('d',32));
+                var proceed=session.Read();Check(proceed.Status=="ready"&&proceed.Phase=="proceed","fresh owner admits exact finished Proceed with enabled travel");
+                Check(session.Apply(proceed.DecisionId,"choose:0").Outcome=="accepted","finished Proceed dispatch accepted");
+                var complete=session.Read();Check(complete.Status=="complete"&&complete.Phase=="map_handoff"&&f.OptionCalls==1&&f.Map.IsOpen,"finished Proceed reconciles map exactly once");
+            }
+            if(mode=="retained_parent") {
+                var owner=typeof(PinnedGenericEventV7NativeAdapter).GetField("_hooks",BindingFlags.NonPublic|BindingFlags.Instance)!.GetValue(f.Adapter)!;
+                var disposed=typeof(GenericEventV7Hooks).GetField("_disposed",BindingFlags.NonPublic|BindingFlags.Instance)!;
+                disposed.SetValue(owner,true);
+                try {
+                    Check(poll()=="unsupported","later hook ownership failure stays terminal");
+                    Check(f.Adapter.CombatResumeDiagnostic.ToString()==expectedDiagnostic,"later hook ownership failure preserves first handoff diagnostic");
+                }finally{disposed.SetValue(owner,false);}
+            }
+
+        }
+    }
+    private static void FinishedProceedCases()
+    {
+        foreach(var mode in new[]{"unfinished","non_proceed","extra","wrong_room","wrong_node","open","traveling","reservation_unfinished","reservation_non_proceed","reservation_open","reservation_traveling","reservation_layout"}) {
+            using var f=new Fixture("FINISHED_TRAVEL");
+            var run=(RunState)f.Player.RunState;RunManager.Instance=new(){State=run};
+            run.CurrentRoom=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};f.Model.Node=f.Room.Layout;f.Model.IsFinished=true;f.Map.IsTravelEnabled=true;
+            var button=f.Room.Layout.OptionButtons[0];var option=button.Option;option.IsProceed=true;
+            option.Callback=()=>{f.OptionCalls++;f.Map.IsOpen=true;return Task.CompletedTask;};
+            bool reservation=mode.StartsWith("reservation_",StringComparison.Ordinal);
+            if(reservation)Check(f.Session.Read().Status=="ready","finished enabled parent initially ready");
+            switch(mode) {
+                case "unfinished":case "reservation_unfinished":f.Model.IsFinished=false;break;
+                case "non_proceed":case "reservation_non_proceed":option.IsProceed=false;break;
+                case "extra":f.Room.Layout.OptionButtons.Add(button);break;
+                case "wrong_room":run.CurrentRoom=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=new EventModel()};break;
+                case "wrong_node":case "reservation_layout":f.Model.Node=new MegaCrit.Sts2.Core.Nodes.Events.NEventLayout();break;
+                case "open":case "reservation_open":f.Map.IsOpen=true;break;
+                case "traveling":case "reservation_traveling":f.Map.IsTraveling=true;break;
+            }
+            if(reservation) {
+                bool rejected=false;
+                try{_=new GenericEventV7Binding(f.Run,f.Player,f.Room,f.Map,f.Overlays,f.Room.Layout,f.Model,option,button,new string('e',32),"decision","choose:0");}catch{rejected=true;}
+                Check(rejected,"reservation rechecks finished Proceed and closed nontraveling map: "+mode);
+            }else Check(f.Session.Read().Status=="unsupported","enabled travel exception stays narrow: "+mode);
+            Check(f.OptionCalls==0,"invalid finished travel setup sends no input");
         }
     }
     private static void ResumeItemCases()
     {
-        foreach(var mode in new[]{"potion","relic","set","delayed","full","wrong_set","foreign_offer","nested","fault","revoke","duplicate","moved","offer_task","collection_task"}) {
+        foreach(var mode in new[]{"capacity","capacity_owner","capacity_shrink","potion","relic","set","delayed","full","wrong_set","foreign_offer","nested","fault","revoke","duplicate","moved","offer_task","collection_task","finished_potion"}) {
             using var f=new Fixture("RESUME_ITEMS");
             var run=(RunState)f.Player.RunState;
-            var original=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};run.CurrentRoom=original;f.Model.Node=f.Room;
+            var original=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};run.CurrentRoom=original;f.Model.Node=f.Room.Layout;
             var encounter=new EncounterModel();
             var state=new MegaCrit.Sts2.Core.Combat.CombatState{Encounter=encounter,RunState=run};state.Players.Add(f.Player);
             var room=new MegaCrit.Sts2.Core.Rooms.CombatRoom{CombatState=state,ParentEventId=f.Model.Id,ShouldResumeParentEventAfterCombat=true};
@@ -130,6 +249,10 @@ internal static partial class Program
             var r=new MegaCrit.Sts2.Core.Rewards.RelicReward{Player=f.Player,Relic=relic,RewardsSetIndex=8};
             if(mode=="relic")set.Rewards.Add(r);else set.Rewards.Add(p);
             if(mode=="set")set.Rewards.Add(r);
+            if(mode.StartsWith("capacity")) {
+                relic=new MegaCrit.Sts2.Core.Models.Relics.PotionBelt();r.Relic=relic;
+                FillEventBelt(f.Player);set.Rewards.Clear();set.Rewards.Add(r);set.Rewards.Add(p);
+            }
             if(mode=="full")for(int i=0;i<f.Player.PotionSlots.Count;i++)f.Player.PotionSlots[i]=new PotionModel();
             var screenDone=new TaskCompletionSource();var creation=new TaskCompletionSource();var resumeDone=new TaskCompletionSource();
             var buttons=new List<MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton>();
@@ -140,8 +263,8 @@ internal static partial class Program
                     button.Handler=()=>{
                         if(mode=="fault")return Task.FromException(new Exception("collection fault"));
                         reward.SuccessfullySelected=true;
-                        if(reward is MegaCrit.Sts2.Core.Rewards.PotionReward pr){pr.ClaimedPotion=pr.Potion;f.Player.PotionSlots[0]=pr.Potion;}
-                        else ((MegaCrit.Sts2.Core.Rewards.RelicReward)reward).ClaimedRelic=relic;
+                        if(reward is MegaCrit.Sts2.Core.Rewards.PotionReward pr){pr.ClaimedPotion=pr.Potion;f.Player.PotionSlots[mode.StartsWith("capacity")?f.Player.PotionSlots.FindIndex(p=>p is null):0]=pr.Potion;}
+                        else {((MegaCrit.Sts2.Core.Rewards.RelicReward)reward).ClaimedRelic=relic;if(mode.StartsWith("capacity"))ApplyBeltPickup(f.Player,reward);}
                         if(s.Rewards.All(x=>x.SuccessfullySelected)){f.Overlays.Screens.Clear();screenDone.SetResult();}
                         if(mode=="nested")f.Overlays.Screens.Add(new Control());
                         return Task.CompletedTask;
@@ -155,11 +278,12 @@ internal static partial class Program
                 await screenDone.Task;
             };
             f.Model.ResumeCallback=async _=>{
+                if(mode=="finished_potion"){f.Model.IsFinished=true;f.Map.IsTravelEnabled=true;}
                 if(mode!="foreign_offer")await set.Offer();
                 if(mode=="delayed")await resumeDone.Task;
             };
             run.CurrentRoom=original;_=f.Model.Resume(room);
-            var node=new NEventRoom();f.Run.EventRoom=node;NEventRoom.Instance=node;f.Model.Node=node;
+            var node=new NEventRoom();f.Run.EventRoom=node;NEventRoom.Instance=node;f.Model.Node=node.Layout;
             if(mode=="foreign_offer")_=set.Offer();
             if(mode=="delayed"){Check(f.Adapter.CombatResume!()=="waiting","delayed owned reward generation waits");creation.SetResult();}
             if(mode is "wrong_set" or "foreign_offer") {Check(f.Adapter.CombatResume!()=="unsupported","unowned resume reward stops");continue;}
@@ -185,6 +309,8 @@ internal static partial class Program
                 }
             }
             if(mode is "fault" or "nested")continue;
+            if(mode=="capacity_owner")f.Player.Relics.Remove(relic);
+            if(mode=="capacity_shrink"){f.Player.PotionSlots.RemoveAt(f.Player.PotionSlots.Count-1);f.Player.MaxPotionCount--;}
             if(mode=="revoke")f.Player.PotionSlots[0]=null;
             if(mode=="moved"){f.Player.PotionSlots[0]=null;f.Player.PotionSlots[1]=potion;}
             if(mode is "offer_task" or "collection_task") {
@@ -193,7 +319,8 @@ internal static partial class Program
                 if(mode=="offer_task")lease.Binding.Item!.OfferTask=Task.FromResult(123);
                 else lease.Binding.Item!.CollectionTask=Task.FromResult(123);
             }
-            Check(f.Adapter.CombatResume!()==(mode is "revoke" or "moved" or "offer_task" or "collection_task"?"unsupported":"resumed"),"post-result evidence retained until handoff");
+            string finalStatus;try{finalStatus=f.Adapter.CombatResume!();}catch{finalStatus="unsupported";}
+            Check(finalStatus==(mode is "capacity_owner" or "capacity_shrink" or "revoke" or "moved" or "offer_task" or "collection_task"?"unsupported":"resumed"),"post-result evidence retained until handoff");
             Check(buttons.All(b=>b.ForceClickCalls==1),"exactly one input per reward");
             MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen.Factory=null;
         }
@@ -202,17 +329,28 @@ internal static partial class Program
     static void Check(bool okay,string name){_checks++;if(!okay)throw new Exception(name);}
     static void Main(string[] args)
     {
+        if(args.SequenceEqual(new[]{"--abandon-popup"})){AbandonPopupCases();Console.WriteLine("abandon popup checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--sphere"})){SphereCases();Console.WriteLine("sphere checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--merchant-screen"})){MerchantScreenCases();Console.WriteLine("merchant screen checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--reward-surface"})){RewardSurfaceTests();RewardTests();Console.WriteLine("reward surface checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--baseline"})){BaselineRetirement();return;}
         if(args.SequenceEqual(new[]{"--pre-selector-additions"})){PreSelectorAdditionTests();Console.WriteLine("pre-selector addition checks: "+_checks);return;}
-        if(args.SequenceEqual(new[]{"--item-set"})){ItemSetTests();Console.WriteLine("item-set checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--event-capacity"})){EventCapacityCases();ResumeItemCases();Console.WriteLine("event capacity checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--item-set"})){ItemSetTests();EventCapacityCases();Console.WriteLine("item-set checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--multi-enchantment"})){MultiEnchantmentTests();Console.WriteLine("multi-enchantment checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-reward-set"})){CardRewardSetTests();Console.WriteLine("card-reward-set checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-reward"})){CardRewardTests();Console.WriteLine("card-reward checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--optional-events"})){OptionalEventTests();Console.WriteLine("optional event checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-offers"})){OfferTests();Console.WriteLine("card offer checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
-        if(args.SequenceEqual(new[]{"--combat-resume"})){CombatResumeCases();ResumeItemCases();Console.WriteLine("combat resume checks: "+_checks);return;}
+#if TERMINAL_REWARD_TESTS
+        if(args.SequenceEqual(new[]{"--combat-items"})){CombatItemCases();Console.WriteLine("combat item checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--embedded-combat"})){EmbeddedCombatCases();SpecialCardCases();Console.WriteLine("embedded combat checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--special-card"})){SpecialCardCases();Console.WriteLine("special card checks: "+_checks);return;}
+#endif
+        if(args.SequenceEqual(new[]{"--incremental-hooks"})){IncrementalHooks();PatchOwnership();Console.WriteLine("incremental hook checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--combat-handoff"})){CombatHandoffCases();OwnershipDiagnosticCases();Console.WriteLine("combat handoff checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--combat-resume"})){CombatResumeCases();FinishedProceedCases();ResumeItemCases();Console.WriteLine("combat resume checks: "+_checks);return;}
         if(args.Length!=0)throw new ArgumentException("Unknown fixture mode.");
         foreach(string identity in new[]{"FIRST_EVENT","ANOTHER_EVENT","HELD_OUT_EVENT"})
             foreach(bool manual in new[]{false,true})
@@ -325,6 +463,7 @@ internal static partial class Program
         PatchOwnership();
         LifecycleTests();
         Check(_checks==745,"preserved predecessor assertion count");
+        IncrementalHooks();
         RewardSurfaceTests();
         EnchantmentTests();
         UpgradeHolderInputTests();
@@ -342,11 +481,14 @@ internal static partial class Program
         RemovalHitboxTests();
         RemovalLayoutTests();
         MultiEnchantmentTests();
-        ItemSetTests();
+        ItemSetTests();EventCapacityCases();MerchantScreenCases();SphereCases();AbandonPopupCases();
         CardRewardTests();
         CardRewardSetTests();
-        CombatHandoffCases();
-        CombatResumeCases();ResumeItemCases();
+        CombatHandoffCases();OwnershipDiagnosticCases();
+#if TERMINAL_REWARD_TESTS
+        EmbeddedCombatCases();SpecialCardCases();CombatItemCases();
+#endif
+        CombatResumeCases();FinishedProceedCases();ResumeItemCases();
         Console.WriteLine("generic native checks: "+_checks);
     }
     internal static void RetireButton(NEventLayout layout,NEventOptionButton button)
@@ -588,6 +730,64 @@ internal static partial class Program
     private static async Task Orphan(Fixture f)
     {await f.Gate.Task;await CardSelectCmd.FromDeckForUpgrade(f.Player,new CardSelectorPrefs(1,1));}
     private static void ForeignPrefix(){}
+    private sealed class PreparingNative:IGenericEventV7NativeAdapter {
+        internal bool Preparing=true;internal int Dispatches;
+        private readonly object _option=new();
+        public GenericEventV7NativeCapture Capture()=>Preparing?new("preparing",false,Array.Empty<GenericEventV7NativeOption>()):
+            new("parent",false,new[]{new GenericEventV7NativeOption(_option,"INITIAL","Choice",true,false,false)});
+        public void Dispatch(object identity,string nonce,string decision,string action)=>Dispatches++;
+        public IGenericEventV7ChildSession CreateChild(object identity)=>throw new InvalidOperationException();
+        public void CompleteParent(){}
+        public void Dispose(){}
+    }
+    private static void IncrementalHooks()
+    {
+        using(var native=new PreparingNative())using(var session=new GenericEventV7Session(native,new string('a',32))) {
+            for(int i=0;i<34;i++)Check(session.Read().Status=="waiting","preparation has bounded initial waiting window");
+            Check(session.Read().Status=="unsupported"&&native.Dispatches==0,"preparation read limit stops without mutation");
+        }
+        foreach(bool pending in new[]{false,true}) {
+            using var native=new PreparingNative{Preparing=false};using var session=new GenericEventV7Session(native,new string('a',32));
+            var ready=session.Read();
+            if(pending)Check(session.Apply(ready.DecisionId,"choose:0").Outcome=="accepted","fixture pending action");
+            native.Preparing=true;
+            Check(session.Read().Status=="unsupported","cannot reenter preparation after ready or action");
+        }
+
+        var target=typeof(EventOption).GetMethod(nameof(EventOption.Chosen))!;
+        int installed=0;
+        using(var hooks=new GenericEventV7Hooks(n=>installed=n,null,true)) {
+            Check(installed==0,"deferred construction installs no hooks");
+            bool protectedLease=false;try{GenericEventV7Hooks.RecoverFailedInstallation();}catch(InvalidOperationException){protectedLease=true;}
+            Check(protectedLease,"partial active lease cannot be stolen by recovery");
+            for(int i=1;i<=33;i++) {
+                bool ready=hooks.PrepareNext();
+                Check(installed==i&&ready==(i==33),"exactly one target installed per read");
+                if(!ready){bool blocked=false;try{GenericEventV7Hooks.Arm(null!);}catch(InvalidOperationException){blocked=true;}Check(blocked,"partial installation cannot arm input");}
+            }
+            Check(hooks.PrepareNext()&&installed==33,"ready does not reinstall hooks");
+        }
+        Check(HarmonyLib.Harmony.GetPatchInfo(target)?.Owners.Count is null or 0,"full preparation cleanup");
+        using(var hooks=new GenericEventV7Hooks(true)){Check(!hooks.PrepareNext(),"partial preparation waiting");}
+        Check(HarmonyLib.Harmony.GetPatchInfo(target)?.Owners.Count is null or 0,"partial preparation cleanup");
+        using(var f=new Fixture("DEFERRED",incrementalHooks:true)) {
+            for(int i=0;i<32;i++)Check(f.Session.Read().Status=="waiting"&&f.OptionCalls==0,"no native option before preparation ready");
+            Check(f.Session.Read().Status=="ready","prepared event becomes ready");
+        }
+        var prefix=typeof(Program).GetMethod(nameof(ForeignPrefix),BindingFlags.NonPublic|BindingFlags.Static)!;
+        var foreign=new HarmonyLib.Harmony("fixture.prepare.foreign");
+        foreach(var contested in new[]{target,typeof(CardSelectCmd).GetMethod(nameof(CardSelectCmd.FromDeckForUpgrade),new[]{typeof(Player),typeof(CardSelectorPrefs)})!})
+        using(var hooks=new GenericEventV7Hooks(true)) {
+            hooks.PrepareNext();foreign.Patch(contested,prefix:new HarmonyLib.HarmonyMethod(prefix));
+            try {
+                bool failed=false;try{hooks.PrepareNext();}catch(InvalidOperationException){failed=true;}
+                Check(failed,"ownership intrusion stops next preparation step");
+                Check(HarmonyLib.Harmony.GetPatchInfo(contested)!.Prefixes.Any(p=>p.owner=="fixture.prepare.foreign"),"rollback preserves foreign patch");
+                bool retry=false;try{hooks.PrepareNext();}catch(InvalidOperationException){retry=true;}
+                Check(retry,"failed preparation cannot retry");
+            }finally{foreign.Unpatch(contested,prefix);}
+        }
+    }
     private static void PatchOwnership()
     {
         var target=typeof(EventOption).GetMethod(nameof(EventOption.Chosen))!;
@@ -631,7 +831,7 @@ internal static partial class Program
     }
     internal sealed class Fixture:IDisposable
     {
-        internal readonly PinnedGenericEventV7NativeAdapter Adapter=new();
+        internal readonly PinnedGenericEventV7NativeAdapter Adapter;
         internal readonly Player Player=new();
         internal readonly CardModel[] Cards;
         internal readonly EventModel Model;
@@ -651,13 +851,14 @@ internal static partial class Program
         private readonly int _enchantAmount;
         internal GenericEventV7Session Session;
         internal int OptionCalls,SelectCalls,ConfirmCalls;
-        internal Fixture(string name,bool manual=false,int count=1,bool cancelable=false,bool delayed=false,bool shortcut=false,bool wrongRun=false,bool mutateBefore=false,bool faultAfter=false,bool requestDelayed=false,bool effectDelayed=false,bool secondRequest=false,bool mismatchRequest=false,bool catchRequestFault=false,bool mismatchPrefs=false,bool wrongPlayer=false,bool throwingGetter=false,int domain=2,bool enchant=false,int enchantAmount=1)
+        internal Fixture(string name,bool manual=false,int count=1,bool cancelable=false,bool delayed=false,bool shortcut=false,bool wrongRun=false,bool mutateBefore=false,bool faultAfter=false,bool requestDelayed=false,bool effectDelayed=false,bool secondRequest=false,bool mismatchRequest=false,bool catchRequestFault=false,bool mismatchPrefs=false,bool wrongPlayer=false,bool throwingGetter=false,int domain=2,bool enchant=false,int enchantAmount=1,bool incrementalHooks=false)
         {
+            Adapter=new PinnedGenericEventV7NativeAdapter(incrementalHooks);
             _enchant=enchant;_enchantAmount=enchantAmount;
             Enchantment.Id.Entry="SOWN"; EnchantPreview.Setup(EnchantBefore,EnchantAfter);
             Cards=Enumerable.Range(0,domain+1).Select(i=>new CardModel{IsUpgradable=i<domain}).ToArray();
             for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);if(enchant)Cards[i].Owner=Player;}
-            Model=name=="RESUME_OVERRIDE"?new ResumeEvent():name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
+            Model=name=="ABANDON"?new MegaCrit.Sts2.Core.Models.Events.Trial():name=="RESUME_OVERRIDE"?new ResumeEvent():name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
             Model.Owner=Player;
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};
             NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;

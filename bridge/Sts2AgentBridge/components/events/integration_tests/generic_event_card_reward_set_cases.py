@@ -128,18 +128,18 @@ def run_mixed_reward_set_cases(args: Any, host: Any, exchange_type: Any, *, part
     def run(scenario='MR_COFFER',wrapper=None):
         ex=exchange_type(args.dotnet,args.native_fixture,scenario,native=True)
         def choose(view):
-            if scenario=='MR_SKIP' and view.payload.get('phase')=='choose':return 'skip:0'
+            if scenario in ('MR_SKIP','MR_CAPACITY_SKIP') and view.payload.get('phase')=='choose':return 'skip:'+str(view.payload['offer_index'])
             return host.first_legal(view)
         try:
             result=host.run_event(ex.request if wrapper is None else lambda m,r,b:wrapper(ex,m,r,b),provider=choose,clock=lambda:1.0,sleep=lambda _:None)
         finally:ex.close()
         return result,ex
     if part is None or part == 'mixed_native':
-        for scenario in ('MR_COFFER','MR_SKIP','MR_FIRST','MR_EIGHT','MR_COLLECTION','MR_OFFER','MR_CHOSEN'):
+        for scenario in ('MR_CAPACITY','MR_CAPACITY_SKIP','MR_COFFER','MR_SKIP','MR_FIRST','MR_EIGHT','MR_COLLECTION','MR_OFFER','MR_CHOSEN'):
             result,ex=run(scenario)
             assert result['status']=='resolved',(scenario,result,ex.envelopes[-1])
-            kinds=['card','relic','card','potion','relic','card','potion','relic'] if scenario=='MR_EIGHT' else ['potion','card','potion'] if scenario in ('MR_FIRST','MR_COLLECTION') else ['card','potion']
-            count=len(kinds);actions=sum(2 if k=='card' else 1 for k in kinds)+int(scenario=='MR_SKIP')
+            kinds=['relic','card','potion','potion'] if scenario.startswith('MR_CAPACITY') else ['card','relic','card','potion','relic','card','potion','relic'] if scenario=='MR_EIGHT' else ['potion','card','potion'] if scenario in ('MR_FIRST','MR_COLLECTION') else ['card','potion']
+            count=len(kinds);actions=sum(2 if k=='card' else 1 for k in kinds)+int(scenario in ('MR_SKIP','MR_CAPACITY_SKIP'))
             assert result['child_attempted']==result['child_accepted']==result['child_reconciled']==actions
             assert result['completed_card_children']==result['child_episodes']==1 and result['completed_item_children']==0 and result['parent_reconciled']==2
             children=[v for v in ex.envelopes if v['kind']=='decision' and v['child']]
@@ -149,8 +149,8 @@ def run_mixed_reward_set_cases(args: Any, host: Any, exchange_type: Any, *, part
             assert [r['kind'] for r in done[0]['settled']]==kinds
             assert sum(v['payload']['phase']=='collect' for v in children)>=kinds.count('potion')+kinds.count('relic')
             end=ex.telemetry[-1]
-            assert end['map_open'] and end['overlay_count']==0 and end['opens']==kinds.count('card') and end['dismisses']==int(scenario=='MR_SKIP')
-            assert end['added_slots']==[10*i for i,k in enumerate(kinds) if k=='card' and scenario!='MR_SKIP']
+            assert end['map_open'] and end['overlay_count']==0 and end['opens']==kinds.count('card') and end['dismisses']==int(scenario in ('MR_SKIP','MR_CAPACITY_SKIP'))
+            assert end['added_slots']==[10*i for i,k in enumerate(kinds) if k=='card' and scenario not in ('MR_SKIP','MR_CAPACITY_SKIP')]
             checks+=1
         result,ex=run('MR_LATE_SLOT')
         assert result['code']=='unsupported_state' and result['completed_card_children']==0 and result['child_reconciled']==4,(result,ex.envelopes[-1])

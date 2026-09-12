@@ -312,14 +312,19 @@ public static class CanonicalProbeEncoder
         if (snapshot.Status != PublicDecisionStatus.Ready || (!parent && !child) ||
             !PublicRewardDecisionIdentity.IsCanonical(snapshot.DecisionId) ||
             snapshot.DecisionRevision < 0 || snapshot.Rewards.Count > 8 ||
-            parent && snapshot.LegalActions.Count is < 1 or > 9 ||
+            parent && (snapshot.LegalActions.Count < 1 || snapshot.LegalActions.Count > (snapshot.PotionSlots is null ? 9 : 17)) ||
             child && (snapshot.Rewards.Count != 1 || snapshot.LegalActions.Count is < 1 or > 6))
         {
             throw new ArgumentException("Reward decision exceeds the bounded contract.", nameof(snapshot));
         }
 
         var builder = new StringBuilder(1024);
-        builder.Append("{\"schema_version\":1,\"status\":\"ready\",\"decision_kind\":\"reward\",\"actionable\":true,\"decision_id\":\"");
+        bool special = System.Linq.Enumerable.Any(snapshot.Rewards, r => r.Kind == PublicRewardKind.SpecialCard);
+        builder.Append("{\"schema_version\":");
+        bool items = snapshot.PotionSlots is not null || snapshot.ItemRewards || System.Linq.Enumerable.Any(snapshot.Rewards, r => r.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic);
+        if(snapshot.CapacityRewards&&snapshot.PotionSlots is null)throw new ArgumentException("Capacity schema needs potion slots.",nameof(snapshot));
+        builder.Append(snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
+        builder.Append(",\"status\":\"ready\",\"decision_kind\":\"reward\",\"actionable\":true,\"decision_id\":\"");
         builder.Append(snapshot.DecisionId);
         builder.Append("\",\"decision_revision\":");
         builder.Append(snapshot.DecisionRevision.ToString(CultureInfo.InvariantCulture));
@@ -348,6 +353,9 @@ public static class CanonicalProbeEncoder
             builder.Append(",\"kind\":\"");
             builder.Append(reward.Kind == PublicRewardKind.Gold ? "gold" :
                 reward.Kind == PublicRewardKind.Card ? "card" :
+                reward.Kind == PublicRewardKind.SpecialCard ? "special_card" :
+                reward.Kind == PublicRewardKind.Potion ? "potion" :
+                reward.Kind == PublicRewardKind.Relic ? "relic" :
                 reward.Kind == PublicRewardKind.Unsupported ? "unsupported" :
                 throw new ArgumentException("Unsupported reward kind.", nameof(snapshot)));
             builder.Append("\",\"successfully_selected\":");
@@ -361,9 +369,10 @@ public static class CanonicalProbeEncoder
                 }
                 AppendNonNegative(builder, reward.GoldAmount);
             }
-            else if (reward.Kind == PublicRewardKind.Card)
+            else if (reward.Kind is PublicRewardKind.Card or PublicRewardKind.SpecialCard)
             {
-                if (reward.GoldAmount != 0 || reward.Cards.Count == 0)
+                if (reward.GoldAmount != 0 || reward.Cards.Count == 0 ||
+                    reward.Kind == PublicRewardKind.SpecialCard && (!parent || reward.Cards.Count != 1 || reward.CardSelectionCanSkip))
                 {
                     throw new ArgumentException("Invalid card reward projection.", nameof(snapshot));
                 }
@@ -389,6 +398,20 @@ public static class CanonicalProbeEncoder
             }
             builder.Append("],\"card_selection_can_skip\":");
             builder.Append(reward.CardSelectionCanSkip ? "true" : "false");
+            if(reward.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic) {
+                if(!parent||string.IsNullOrEmpty(reward.ItemKey)||reward.ItemKey.Length>128||
+                    !System.Linq.Enumerable.All(reward.ItemKey,c=>char.IsAsciiLetterOrDigit(c)||c=='_'))
+                    throw new ArgumentException("Invalid item reward key.",nameof(snapshot));
+            }else if(reward.ItemKey is not null)throw new ArgumentException("Unexpected item reward key.",nameof(snapshot));
+            if(reward.PotionCapacityGain!=0 && (!snapshot.CapacityRewards || reward.Kind!=PublicRewardKind.Relic || reward.ItemKey!="POTION_BELT" || reward.PotionCapacityGain!=2))
+                throw new ArgumentException("Invalid capacity reward.",nameof(snapshot));
+            if(items) {
+                builder.Append(",\"item_key\":");
+                if(reward.ItemKey is null)builder.Append("null");else AppendJsonString(builder,reward.ItemKey);
+            }
+            if(snapshot.CapacityRewards) {
+                builder.Append(",\"potion_capacity_gain\":");AppendNonNegative(builder,reward.PotionCapacityGain);
+            }
             builder.Append('}');
         }
         builder.Append("],\"legal_actions\":[");
@@ -396,6 +419,7 @@ public static class CanonicalProbeEncoder
         Span<bool> seenCardSlots = stackalloc bool[5];
         bool seenSkip = false;
         bool seenProceed = false;
+        var actionIds=new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal);
         for (int index = 0; index < snapshot.LegalActions.Count; index++)
         {
             if (index != 0)
@@ -403,6 +427,7 @@ public static class CanonicalProbeEncoder
                 builder.Append(',');
             }
             string actionId = snapshot.LegalActions[index];
+            if(!actionIds.Add(actionId))throw new ArgumentException("Duplicate reward action.",nameof(snapshot));
             if (!PublicRewardActionRequest.TryCreate(
                     snapshot.DecisionId,
                     actionId,
@@ -441,9 +466,25 @@ public static class CanonicalProbeEncoder
             {
                 builder.Append(action.CardSlot.ToString(CultureInfo.InvariantCulture));
             }
+            if(snapshot.PotionSlots is not null) {
+                builder.Append(",\"potion_slot\":");
+                if(action.PotionSlot<0)builder.Append("null");else AppendNonNegative(builder,action.PotionSlot);
+            }
             builder.Append('}');
         }
-        builder.Append("]}");
+        builder.Append(']');
+        if(snapshot.PotionSlots is {} potions) {
+            if(potions.Count>8)throw new ArgumentException("Potion slot bound.",nameof(snapshot));
+            builder.Append(",\"potion_slots\":[");
+            for(int i=0;i<potions.Count;i++) {
+                if(i>0)builder.Append(',');
+                var key=potions[i];
+                if(key is null)builder.Append("null");
+                else {if(key.Length is <1 or >128 || !System.Linq.Enumerable.All(key,c=>char.IsAsciiLetterOrDigit(c)||c=='_'))throw new ArgumentException("Invalid potion key.",nameof(snapshot));AppendJsonString(builder,key);}
+            }
+            builder.Append(']');
+        }
+        builder.Append('}');
 
         if (parent && !seenProceed || child && !RewardChildActionsAreComplete(
                 snapshot,
@@ -1065,6 +1106,9 @@ public static class CanonicalProbeEncoder
     private static string RewardActionKind(PublicRewardActionKind kind) => kind switch
     {
         PublicRewardActionKind.ClaimGold => "claim_gold",
+        PublicRewardActionKind.ClaimSpecialCard => "claim_special_card",
+        PublicRewardActionKind.CollectItem => "collect_item",
+        PublicRewardActionKind.DiscardPotion => "discard_potion",
         PublicRewardActionKind.OpenCard => "open_card",
         PublicRewardActionKind.ChooseCard => "choose_card",
         PublicRewardActionKind.SkipCard => "skip_card",
@@ -1083,7 +1127,15 @@ public static class CanonicalProbeEncoder
     {
         switch (action.Kind)
         {
+            case PublicRewardActionKind.DiscardPotion:
+                if(!parent||snapshot.PotionSlots is not {} potions||potions.Count==0||potions.Count>8||
+                    System.Linq.Enumerable.Any(potions,p=>p is null)||action.PotionSlot<0||action.PotionSlot>=potions.Count||
+                    !System.Linq.Enumerable.Any(snapshot.Rewards,r=>r.Kind==PublicRewardKind.Potion&&!r.SuccessfullySelected))
+                    throw new ArgumentException("Invalid potion discard action.",nameof(snapshot));
+                return;
             case PublicRewardActionKind.ClaimGold:
+            case PublicRewardActionKind.ClaimSpecialCard:
+            case PublicRewardActionKind.CollectItem:
             case PublicRewardActionKind.OpenCard:
                 if (!parent || action.RewardSlot < 0 ||
                     action.RewardSlot >= snapshot.Rewards.Count ||
@@ -1092,9 +1144,13 @@ public static class CanonicalProbeEncoder
                     throw new ArgumentException("Invalid parent reward action.", nameof(snapshot));
                 }
                 PublicRewardItem reward = snapshot.Rewards[action.RewardSlot];
+                if(action.Kind==PublicRewardActionKind.CollectItem && reward.PotionCapacityGain>0 && (snapshot.PotionSlots is null || snapshot.PotionSlots.Count+reward.PotionCapacityGain>8))
+                    throw new ArgumentException("Capacity gain exceeds slot bound.",nameof(snapshot));
                 bool kindMatches = action.Kind == PublicRewardActionKind.ClaimGold
                     ? reward.Kind == PublicRewardKind.Gold
-                    : reward.Kind == PublicRewardKind.Card;
+                    : action.Kind == PublicRewardActionKind.ClaimSpecialCard
+                        ? reward.Kind == PublicRewardKind.SpecialCard : action.Kind == PublicRewardActionKind.CollectItem
+                            ? reward.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic : reward.Kind == PublicRewardKind.Card;
                 if (!kindMatches || reward.SuccessfullySelected)
                 {
                     throw new ArgumentException("Reward action does not match its slot.", nameof(snapshot));

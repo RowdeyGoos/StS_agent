@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import socket
 import sys
 from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from dataclasses import dataclass
@@ -166,6 +167,9 @@ class Socket:
         if self.exchange.send_error is not None:
             raise self.exchange.send_error
 
+    def shutdown(self, how: int) -> None:
+        self.transcript.check(how == socket.SHUT_WR and self.request is not None, "diagnostic_write_shutdown")
+
     def recv(self, maximum: int) -> bytes:
         owner = self.transcript
         owner.check(maximum == 1024, "diagnostic_receive_bound")
@@ -214,7 +218,7 @@ def _privacy_gate(stdout: str, stderr: str) -> dict[str, object]:
     _require(type(payload["schema_version"]) is int and payload["schema_version"] == 1,
              "diagnostic_output_version")
     _require(payload["status"] in ("passed", "failed")
-             and payload["action_category"] in ("none", "claim_gold", "open_card", "choose_card", "skip_card", "proceed"),
+             and payload["action_category"] in ("none", "claim_gold", "collect_item", "discard_potion", "claim_special_card", "open_card", "choose_card", "skip_card", "proceed"),
              "diagnostic_output_enum")
     _require(payload["code"] in {
         "none", "failure", "interrupted", "internal_failure", "invalid_invocation",
@@ -222,7 +226,7 @@ def _privacy_gate(stdout: str, stderr: str) -> dict[str, object]:
         "reward_action_response_too_large", "reward_action_empty_response",
         "reward_action_transport_failure", "reward_action_transport_timeout",
         "reward_action_transport_mismatch", "reward_response_mismatch",
-        "reward_action_budget_exhausted",
+        "reward_action_budget_exhausted", "special_card_claim_reconciliation_failed", "item_claim_reconciliation_failed", "potion_inventory_full", "potion_replacement_unavailable", "potion_discard_reconciliation_failed", "unresolved_reward",
     }, "diagnostic_output_code")
     stage_classes = {
         "none": {"none"}, "pre_action": {"action_not_attempted"},
@@ -366,6 +370,51 @@ def operation() -> dict[str, object]:
     _check(_one(after=_complete()), counts=(1, 1, 1), stage="none", classification="none",
            code="none", exit_code=0, receipt=_receipt_facts())
     checks.append("exact_success_request_receipt_and_mutable_cleanup")
+    special = factory._parent(_IDS[0], 0)
+    special["schema_version"] = 2
+    special["rewards"] = [{"reward_slot": 0, "reward_index": 4, "kind": "special_card",
+        "successfully_selected": False, "gold_amount": None, "cards": ["LANTERN_KEY"], "card_selection_can_skip": False}]
+    special["legal_actions"] = [{"action_id": "take:0", "kind": "claim_special_card", "reward_slot": 0, "card_slot": None}, special["legal_actions"][-1]]
+    exchanges = _base()
+    exchanges[-1] = Exchange(_request(_GET_REWARD), _http(_body(special)))
+    exchanges.append(Exchange(_request(_POST_REWARD, _IDS[0], "take:0"), _known_http("429")))
+    _check(exchanges, stage="http_envelope", classification="http_429_rate_limited", action="claim_special_card")
+    after = json.loads(_body(special))
+    after["decision_id"] = _IDS[1]
+    after["decision_revision"] = 1
+    after["rewards"][0]["successfully_selected"] = True
+    after["legal_actions"] = [after["legal_actions"][-1]]
+    # Native acceptance without the expected deck increment must retain both
+    # receipt bindings and the specific reconciliation failure.
+    _check(exchanges[:-1] + [Exchange(_request(_POST_REWARD, _IDS[0], "take:0"), _http(_receipt_body(0, "take:0"))),
+        Exchange(_request(_GET_REWARD), _http(_body(after)))], counts=(1,1,0), stage="reconciliation",
+        classification="reconciliation_failed", code="special_card_claim_reconciliation_failed",
+        receipt=_receipt_facts(), action="claim_special_card")
+    checks.append("special_card_action_diagnostics")
+    item = factory._parent(_IDS[0], 0)
+    item["schema_version"] = 3
+    item["rewards"] = [{"reward_slot": 0, "reward_index": 0, "kind": "potion",
+        "successfully_selected": False, "gold_amount": None, "cards": [], "card_selection_can_skip": False, "item_key": "POTION"}]
+    item["legal_actions"] = [{"action_id": "collect:0", "kind": "collect_item", "reward_slot": 0, "card_slot": None}, item["legal_actions"][-1]]
+    exchanges = _base()
+    exchanges[-1] = Exchange(_request(_GET_REWARD), _http(_body(item)))
+    _check(exchanges + [Exchange(_request(_POST_REWARD, _IDS[0], "collect:0"), _known_http("429"))],
+        stage="http_envelope", classification="http_429_rate_limited", action="collect_item")
+    after = json.loads(_body(item))
+    after["decision_id"] = _IDS[1]
+    after["decision_revision"] = 1
+    after["rewards"][0]["successfully_selected"] = True
+    after["rewards"][0]["item_key"] = "OTHER"
+    after["legal_actions"] = [after["legal_actions"][-1]]
+    _check(exchanges + [Exchange(_request(_POST_REWARD, _IDS[0], "collect:0"), _http(_receipt_body(0, "collect:0"))),
+        Exchange(_request(_GET_REWARD), _http(_body(after)))], counts=(1,1,0), stage="reconciliation",
+        classification="reconciliation_failed", code="item_claim_reconciliation_failed",
+        receipt=_receipt_facts(), action="collect_item")
+    full = json.loads(_body(item))
+    full["legal_actions"] = full["legal_actions"][-1:]
+    _check(exchanges[:-1] + [Exchange(_request(_GET_REWARD), _http(_body(full)))],
+        counts=(0,0,0), stage="pre_action", classification="action_not_attempted", code="potion_inventory_full", action="none")
+    checks.append("item_action_diagnostics")
     for reason in ("stale_decision", "invalid_action", "already_applied", "action_limit_reached"):
         _check(_one(_http(_receipt_body(status="rejected", mutation_state="none", reason=reason))),
                classification="receipt_rejected", receipt=_receipt_facts(reason))

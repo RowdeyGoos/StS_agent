@@ -87,6 +87,10 @@ internal static partial class GenericEventV7NativeIntegrationHost
     private static int Main(string[] args)
     {
         if (args.Length != 1) return 2;
+        if (args[0].StartsWith("AB_",StringComparison.Ordinal)||args[0].StartsWith("FM_",StringComparison.Ordinal)||args[0].StartsWith("CS_",StringComparison.Ordinal)) {
+            try{return args[0].StartsWith("AB_",StringComparison.Ordinal)?RunAbandon(args[0]):args[0].StartsWith("CS_",StringComparison.Ordinal)?RunSphere(args[0]):RunMerchant(args[0]);}
+            catch(InvalidOperationException error) when(error.Message=="Custom screen cleanup failed."){return 9;}
+        }
         if (args[0].StartsWith("S_",StringComparison.Ordinal))return RunResults(args[0]);
         if (args[0].StartsWith("O_",StringComparison.Ordinal))return RunOffers(args[0]);
         if (args[0].StartsWith("P_", StringComparison.Ordinal)) return RunRepeatedPage(args[0]);
@@ -99,8 +103,16 @@ internal static partial class GenericEventV7NativeIntegrationHost
         bool multiUpgrading = MultiCases.TryGetValue(args[0], out var multiConfig);
         bool removing = RemovalCases.TryGetValue(args[0], out var config);
         bool adding = RewardCases.TryGetValue(args[0], out var rewardConfig);
-        if (!enchanting && !multiUpgrading && !removing && !adding && !new[] { "FIRST_EVENT", "ANOTHER_EVENT", "HELD_OUT_EVENT", "DELAYED", "ALLOCATED_UPGRADE" }.Contains(args[0])) return 2;
-        var upgrade = removing || adding || multiUpgrading ? null : new Program.Fixture(args[0], delayed: args[0] == "DELAYED", domain: args[0] is "ALLOCATED_UPGRADE" or "ENCHANT_ALLOCATED" ? 20 : 2, enchant: enchanting, effectDelayed: args[0] == "ENCHANT_DELAY");
+        if (!enchanting && !multiUpgrading && !removing && !adding && !new[] { "FIRST_EVENT", "ANOTHER_EVENT", "HELD_OUT_EVENT", "DELAYED", "ALLOCATED_UPGRADE", "INCREMENTAL", "FINISHED_TRAVEL" }.Contains(args[0])) return 2;
+        var upgrade = removing || adding || multiUpgrading ? null : new Program.Fixture(args[0], delayed: args[0] == "DELAYED", domain: args[0] is "ALLOCATED_UPGRADE" or "ENCHANT_ALLOCATED" ? 20 : 2, enchant: enchanting, effectDelayed: args[0] == "ENCHANT_DELAY",incrementalHooks:args[0]=="INCREMENTAL");
+        if(args[0]=="FINISHED_TRAVEL") {
+            var f=upgrade!;var run=(MegaCrit.Sts2.Core.Runs.RunState)f.Player.RunState;
+            MegaCrit.Sts2.Core.Runs.RunManager.Instance=new(){State=run};
+            run.CurrentRoom=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};
+            f.Model.Node=f.Room.Layout;f.Model.IsFinished=true;f.Map.IsTravelEnabled=true;
+            var option=f.Room.Layout.OptionButtons[0].Option;option.IsProceed=true;
+            option.Callback=()=>{f.OptionCalls++;f.Map.IsOpen=true;return System.Threading.Tasks.Task.CompletedTask;};
+        }
         if (args[0] == "ENCHANT_WRONG_EFFECT") upgrade!.AfterEffect = () => upgrade.Cards[0].Enchantment!.Amount++;
         var removal = removing ? new Program.RemovalFixture(config.Name, config.Min, config.Max, config.Domain,
             delayedCreation: config.Creation, delayedCompletion: config.Completion,enchant:enchanting) : null;

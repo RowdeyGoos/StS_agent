@@ -27,6 +27,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
     private GenericEventV7Child? _child;
     private bool _resolvedDelivered;
     private string _destination="map_handoff";
+    private bool _abandoned;
     private int _completedCardChildren, _completedItemChildren;
     private ItemV1Observation? _itemPublished;
     private ItemV1DispatchReceipt? _itemReceipt;
@@ -62,12 +63,16 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         {
             if (!_resolvedDelivered) return Observation("child", "child");
             _card.Dispose(); _card = null;
-            _effects = (_child!.Kind=="card_results"||_child.ContractVersion=="card_offer_v2")?"unverified":_child.Kind == "item" ? "item_effect_verified" : "card_effect_verified";
+            _effects = (_child!.Kind is "card_results" or "crystal_sphere" or "abandon_confirmation"||_child.ContractVersion=="card_offer_v2")?"unverified":_child.Kind == "item" ? "item_effect_verified" : "card_effect_verified";
             _child = null;
-            Reconcile("child_completed");
+            Reconcile(_abandoned?"run_abandoned":"child_completed");
+            if(_abandoned){_destination="run_abandoned";_complete=true;return Observation("complete",_destination);}
         }
         GenericEventV7NativeCapture capture = _native.Capture();
         if (_unsupported || capture.Status == "unsupported") return Stop();
+        if(capture.Status=="preparing")
+            return !_pending&&_published is null&&_attempted==0&&_reads<=34
+                ? Observation("waiting","waiting") : Stop();
         if (capture.Status == "parent" && !ValidParent(capture)) return Stop();
         if (_pending)
         {
@@ -81,6 +86,8 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 _card = _native.CreateChild(admission.Identity);
                 _child = admission switch {
                     GenericEventV7CardAdmission c => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
+                    GenericEventV7AbandonAdmission a => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,a),
+                    GenericEventV7SphereAdmission s => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,s),
                     GenericEventV7ResultsAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r),
                     GenericEventV7OfferAdmission o => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,o.OfferCount,o.Bundle?"bundle_offer_v1":o.CanSkip?"card_offer_v2":"card_offer_v1"),
                     GenericEventV7RewardAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r.OfferCount,true,r.Mixed),
@@ -127,7 +134,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         foreach (var option in capture.Options)
             if (option.Identity is null || !identities.Add(option.Identity) || option.StableId.Length is < 1 or > 96 || option.StableId.Any(c => c < ' ' || c > '~') ||
                 option.RenderedText.Length == 0 || Encoding.UTF8.GetByteCount(option.RenderedText) > 1024 || option.RenderedText.Any(c => char.IsControl(c) && c != '\n' && c != '\t') || !ids.Add(option.StableId) ||
-                capture.EventFinished != option.IsProceed) return false;
+                capture.EventFinished != (option.IsProceed&&!option.OpensAbandonConfirmation)) return false;
         return !capture.EventFinished || capture.Options.Count == 1;
     }
     public GenericEventV7ApplyResult Apply(string? decisionId, string? actionId)
@@ -142,7 +149,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             for (int i = 0; i < _published.Options.Count; i++) if (actionId == "choose:" + i) index = i;
             if (index < 0) return Result(decisionId, actionId, "illegal_action");
             GenericEventV7NativeOption selected = _published.Options[index];
-            if (!selected.Enabled || selected.Dangerous)
+            if (!selected.Enabled || selected.Dangerous&&!selected.OpensAbandonConfirmation)
                 return Result(decisionId, actionId, "illegal_action");
             if (_attempted >= 12 || _attempted + _childAttempted >= 52)
             { _unsupported = true; return Result(decisionId, actionId, "budget_exhausted"); }
@@ -151,7 +158,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 recapture.Options.Count != _published.Options.Count ||
                 recapture.Options.Where((x,i) => !ReferenceEquals(x.Identity,_published.Options[i].Identity)).Any())
             { _unsupported = true; return Result(decisionId, actionId, "unsupported"); }
-            _pending = true; _proceed = selected.IsProceed; _pendingReads = 0;
+            _pending = true; _proceed = selected.IsProceed&&!selected.OpensAbandonConfirmation; _pendingReads = 0;
             _pendingDecision = decisionId!; _pendingAction = actionId!;
             foreach (var option in _published.Options) _retiredOptions.Add(option.Identity);
             _attempted++; _effects = "unverified";
@@ -175,7 +182,8 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             if(_card is IGenericEventV7RewardChildSession reward) {
                 var read=reward.Read();_childReconciled=_completedChildActions+read.PriorResults.Count;
                 if(read.Status=="unsupported")_unsupported=true;
-                if(read.Status=="resolved"){if(!_resolvedDelivered)_completedCardChildren++;_resolvedDelivered=true;}
+                if(read.Status=="resolved"&&_child!.Kind=="abandon_confirmation")_abandoned=read.Phase=="abandoned";
+                if(read.Status=="resolved"){if(!_resolvedDelivered&&_child!.Kind is not ("crystal_sphere" or "abandon_confirmation"))_completedCardChildren++;_resolvedDelivered=true;}
                 return new GenericEventV7RewardChildRead(read,ChildContract());
             }
             if (_card is IGenericEventV7ItemChildSession item) {
@@ -296,13 +304,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         action == _child.ParentActionId && ordinal == _child.Ordinal;
     private string ChildContract() => _child?.ContractVersion ?? "card_selection_v1";
     private bool TypedChild() => _card is not null && _child is not null && _card.ContractVersion == ChildContract() &&
-        (_child.Kind is "card_reward" or "card_offer" or "card_results" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
+        (_child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
             _card is IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession);
-    private GenericEventV7ChildRead ChildFailure() => _child?.Kind is "card_reward" or "card_offer" or "card_results" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildRead ChildFailure() => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemRead(_child!.OfferCount>1 ? new GenericEventV7ItemSetRead(_nonce,"unsupported",_child.OfferCount,Array.AsReadOnly(_itemResults.ToArray()),null) : ItemV1Observation.Fixed(_nonce,"unsupported"),ChildContract())
         : new GenericEventV7CardRead(ChildContract(),CardSelectionV1Observation.Fixed(
             _nonce,"unsupported","unsupported",Array.Empty<CardSelectionV1ActionResult>()));
-    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind is "card_reward" or "card_offer" or "card_results" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemApply(new ItemV1ApplyFailure(_nonce,outcome),ChildContract())
         : new GenericEventV7CardApply(ChildContract(),new CardSelectionV1ApplyFailure(_nonce,outcome));
     private void Reconcile(string result)
@@ -322,8 +330,8 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             {
                 var c = _published.Options[i]; string action = "choose:"+i;
                 bool enabled = c.Enabled;
-                candidates.Add(new GenericEventV7Candidate(i,action,c.StableId,c.RenderedText,enabled,c.Dangerous,c.IsProceed));
-                if (enabled && !c.Dangerous) actions.Add(action);
+                candidates.Add(new GenericEventV7Candidate(i,action,c.StableId,c.RenderedText,enabled,c.Dangerous,c.IsProceed,c.OpensAbandonConfirmation));
+                if (enabled && (!c.Dangerous||c.OpensAbandonConfirmation)) actions.Add(action);
             }
         return new GenericEventV7Observation(_nonce,status,phase,status=="ready"?_decision:"",candidates,actions,
             status=="child"?_child:null,_history,_attempted,_accepted,_reconciled,_episodes,
@@ -335,7 +343,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         foreach (var x in capture.Options)
             b.Append('|').Append(x.StableId.Length).Append(':').Append(x.StableId)
 
-                .Append(x.Enabled?'1':'0').Append(x.Dangerous?'1':'0').Append(x.IsProceed?'1':'0');
+                .Append(x.Enabled?'1':'0').Append(x.Dangerous?'1':'0').Append(x.IsProceed?'1':'0').Append(x.OpensAbandonConfirmation?'1':'0');
         return b.ToString();
     }
     private static string DecisionStamp(GenericEventV7NativeCapture capture) => Stamp(capture) + string.Concat(capture.Options.Select(x => "|" + x.RenderedText.Length + ":" + x.RenderedText));

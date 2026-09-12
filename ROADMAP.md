@@ -1,32 +1,33 @@
 # Roadmap
 
-Updated 2026-09-10. This file owns priorities; [current status](docs/STATUS.md)
+Updated 2026-09-12. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
 ## Immediate priorities
 
-1. **Expand generic event interactions first.** The user identified event
-   coverage as the current obstacle and prioritized it ahead of longer-run
-   orchestration. Generic **single-card enchantment** now has live acceptance:
-   Sapphire Seed Plant and Nourish, exact Sown effect and fresh actionable map.
-   Keep extending the shared parent/child machinery from representative native
-   interactions; do not add event-name admission rules.
-2. **Validate event combat and extend remaining combat/pickup children.** The checkout
-   supports non-resuming combat/rewards/map and callback-verified combat/event/map.
-   Pending live cases are Dense Vegetation’s Fight page after Rest and Battleworn
-   Dummy Setting2/training expiry and Setting1's potion reward. Owned resume-time
-   potion/relic collection and ordered item sets are implemented offline; exact
-   initial-option selection is reusable through `--event-option`. Next address
-   extra combat rewards or a concrete nested pickup selector (such as a suitable
-   Setting3 relic), then full-inventory pickup handling.
-   The completed live batch now covers mixed card/item rewards, ancient options,
-   Sea Glass and Claws zero/partial/full selection, card offers, bundles, inactive
-   Punch Off/Nab and Pandora's Box results acknowledgment. These are no longer
-   an untested feature queue; [current status](docs/STATUS.md) owns exact limits.
-   Broader selector grant composition and custom/terminal dependencies follow.
-   Use a concrete branch and observable outcome for each increment, reusing
-   matching accepted evidence.
+1. **Add custom screens first within generic event coverage.** The user selected
+   custom screens as the next priority. Fake Merchant's inventory open, relic
+   purchase, close and map path and Crystal Sphere's cell reveals, earned rewards
+   and map exit are implemented. Crystal Sphere’s Uncover Future/gold/map path
+   passed live, including completed-overlay cleanup. Fake Merchant’s inventory/two-purchase/leave path and
+   Crystal Sphere Payment Plan also passed in one game process. Additional reward
+   variants retain narrower evidence.
+   Trial’s abandon popup is implemented offline with cancellation and explicitly
+   confirmed terminal abandonment. Live coverage is still open.
+   Hidden sphere item models remain private; no strategic-quality claim is made.
+2. **Extend remaining pickup children after representative event coverage.**
+   Battleworn Dummy training expiry and victory/potion resumption, Dense
+   Vegetation combat, Lantern Key special-card rewards and Punch Off potion/relic
+   rewards now passed through map return. The multi-case batch is complete and
+   cleanup is verified. The checkout
+   supports combat/rewards/map, callback-verified resumption, extra special-card
+   and potion/relic rewards, terminal potion policies and known capacity growth.
+   [Current status](docs/STATUS.md) owns exact implementation limits and pending
+   live cases. Next, identify a concrete shop pickup selector
+   or resume-time card reward, then broader selector composition and terminal
+   dependencies. Use a concrete branch and observable outcome for each increment,
+   reusing matching accepted evidence.
 3. **Compose supported interactions into longer live runs after event coverage.**
    The combined batch covers Neow's Fury two-card and zero-card choices,
    resumption of combat after those choices, both reward policies, event/map
@@ -47,8 +48,8 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
 include broader deck changes after selectors and other pre-selector mutations, broader pickup
-composition, resume-time selectors/extra-reward event combat, repeated/nested pickup selectors, and custom/terminal
-surfaces. Plan shared capabilities from those dependencies, not event-name rules.
+composition, resume-time selectors/card rewards, repeated/nested pickup selectors,
+Fake Merchant combat and The Architect’s terminal progression. Plan shared capabilities from those dependencies, not event-name rules.
 
 Keep representative held-out/live coverage for implemented families separate from
 new implementation. Variable upgrades, true native cancellation, enchantment

@@ -24,7 +24,7 @@ def main():
         ("operator", "generic_event_v10"),
         ("state", manager.GENERIC_V10_STATE_ROOT_NAME),
         ("overlay", manager.GENERIC_V10_OVERLAY_ROOT_NAME),
-        ("operator", "generic_event_v9"),
+        ("operator", "generic_event_v10"),
         ("state", manager.GENERIC_V9_STATE_ROOT_NAME),
         ("overlay", manager.GENERIC_V9_OVERLAY_ROOT_NAME),
         ("operator", "generic_event_v8"),

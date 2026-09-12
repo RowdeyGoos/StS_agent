@@ -31,6 +31,8 @@ namespace Godot
     public class CanvasItem : Node { }
     public class Control : CanvasItem
     {
+        public enum MouseFilterEnum { Stop, Pass, Ignore }
+        public MouseFilterEnum MouseFilter {get;set;}=MouseFilterEnum.Ignore;
         public Vector2 Size { get; set; }
         public Vector2 Position { get; set; }
     }
@@ -117,7 +119,12 @@ namespace MegaCrit.Sts2.Core.Models
     public class EncounterModel {}
     public class EventModel
     {
-        public MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom? Node {get;set;}
+        private MegaCrit.Sts2.Core.Combat.CombatState? _combatStateForCombatLayout;
+        private EncounterModel? _mutableEncounter;
+        public int LayoutType {get;set;}
+        public void SetPreparedCombat(MegaCrit.Sts2.Core.Combat.CombatState state){_combatStateForCombatLayout=state;_mutableEncounter=state.Encounter;}
+
+        public Godot.Control? Node {get;set;}
         public Func<MegaCrit.Sts2.Core.Rooms.AbstractRoom,Task>? ResumeCallback;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public virtual Task Resume(MegaCrit.Sts2.Core.Rooms.AbstractRoom room)=>ResumeCallback?.Invoke(room)??Task.CompletedTask;
@@ -129,8 +136,9 @@ namespace MegaCrit.Sts2.Core.Models
         public Player? Owner { get; set; }
         public bool IsFinished { get; set; }
     }
-    public class PotionModel { public ModelId Id {get;}=new(); }
-    public class RelicModel { public ModelId Id {get;}=new(); }
+    public class PotionModel { public MegaCrit.Sts2.Core.Entities.Players.Player? Owner; public bool IsQueued, HasBeenRemovedFromState; public ModelId Id {get;}=new(); }
+    public class FixtureDynamicVar {public int IntValue {get;set;}=2;}
+    public class RelicModel {public System.Collections.Generic.Dictionary<string,FixtureDynamicVar> DynamicVars {get;}=new();public Player? Owner {get;set;} public ModelId Id {get;}=new(); }
     public class AbstractModel {}
     public class EnchantmentModel
     {
@@ -161,7 +169,8 @@ namespace MegaCrit.Sts2.Core.Entities.Players
 {
     using MegaCrit.Sts2.Core.Models;
     public sealed class Deck : MegaCrit.Sts2.Core.Entities.Cards.CardPile {}
-    public sealed class Player { public int MaxPotionCount {get;set;}=3; public List<PotionModel?> PotionSlots {get;}=new(){null,null,null}; public Deck Deck { get; } = new(); private MegaCrit.Sts2.Core.Runs.IRunState _run=new MegaCrit.Sts2.Core.Runs.FixtureRunState(); public bool ThrowRunState {get;set;} public MegaCrit.Sts2.Core.Runs.IRunState RunState {get=>ThrowRunState?throw new InvalidOperationException("fixture getter"):_run;set=>_run=value;} }
+    public sealed class Creature { public int CurrentHp=80,MaxHp=80; }
+    public sealed class Player { public bool CanRemovePotions=true; public List<RelicModel> Relics {get;}=new(); public Creature Creature {get;}=new();public int Gold {get;set;}=99; public int MaxPotionCount {get;set;}=3; public List<PotionModel?> PotionSlots {get;}=new(){null,null,null}; public Deck Deck { get; } = new(); private MegaCrit.Sts2.Core.Runs.IRunState _run=new MegaCrit.Sts2.Core.Runs.FixtureRunState(); public bool ThrowRunState {get;set;} public MegaCrit.Sts2.Core.Runs.IRunState RunState {get=>ThrowRunState?throw new InvalidOperationException("fixture getter"):_run;set=>_run=value;} }
 }
 
 namespace MegaCrit.Sts2.Core.Entities.RestSite
@@ -174,11 +183,12 @@ namespace MegaCrit.Sts2.Core.Events
 {
     public sealed class EventOption {
         public string TextKey { get; set; } = string.Empty;
-        public bool IsProceed {get;set;} public bool IsLocked {get;set;}
+        public bool IsProceed {get;set;} public bool IsLocked {get;set;} public bool DisableOnChosen {get;set;} public bool WasChosen {get;set;}
         public Func<MegaCrit.Sts2.Core.Entities.Players.Player,bool>? WillKillPlayer {get;set;}
         public Func<Task> Callback {get;set;}=()=>Task.CompletedTask;
+        private Func<Task> OnChosen=>Callback;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-        public Task Chosen()=>Callback();
+        public Task Chosen(){WasChosen=true;return Callback();}
     }
 }
 
@@ -205,9 +215,15 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.Map
 namespace MegaCrit.Sts2.Core.Nodes.Screens.Overlays
 {
     using Godot;
+    public interface IOverlayScreen { }
     public sealed class NOverlayStack : Node
     {
-        public List<object> Screens { get; } = new();
+        public static NOverlayStack? Instance=>MegaCrit.Sts2.Core.Nodes.NRun.Instance?.GlobalUi.Overlays;
+        private readonly List<object> _overlays=new();
+        public List<object> Screens => _overlays;
+        public Action<IOverlayScreen>? OnRemove;
+        public int RemoveCalls;
+        public void Remove(IOverlayScreen screen){RemoveCalls++;if(OnRemove is not null){OnRemove(screen);return;}Screens.Remove(screen);((Godot.GodotObject)screen).InstanceValid=false;}
         public int ScreenCount => Screens.Count;
         public object? Peek() => Screens.Count == 0 ? null : Screens[^1];
     }
@@ -219,7 +235,7 @@ namespace MegaCrit.Sts2.Core.Nodes
     using MegaCrit.Sts2.Core.Nodes.Rooms;
     using MegaCrit.Sts2.Core.Nodes.Screens.Map;
     using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
-    public sealed class GlobalUiState { public MegaCrit.Sts2.Core.Nodes.Screens.Capstones.NCapstoneContainer CapstoneContainer {get;set;}=new(); public NMapScreen MapScreen { get; set; } = null!; public NOverlayStack Overlays { get; set; } = null!; }
+    public sealed class GlobalUiState : Godot.GodotObject { public MegaCrit.Sts2.Core.Nodes.Screens.Capstones.NCapstoneContainer CapstoneContainer {get;set;}=new(); public NMapScreen MapScreen { get; set; } = null!; public NOverlayStack Overlays { get; set; } = null!; }
     public sealed class NRun : Node
     {
         public static NRun? Instance { get; set; }
@@ -434,7 +450,7 @@ namespace MegaCrit.Sts2.Core.CardSelection {
     }
 }
 namespace MegaCrit.Sts2.Core.Runs {
- public interface IRunState{} public sealed class FixtureRunState:RunState{}
+ public interface IRunState{ MegaCrit.Sts2.Core.Rooms.AbstractRoom? CurrentRoom=>this is RunState run?run.CurrentRoom as MegaCrit.Sts2.Core.Rooms.AbstractRoom:null; } public sealed class FixtureRunState:RunState{}
  public class RunState:IRunState {
   public object? CurrentRoom {get;set;}
   public Func<MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Models.CardModel>? CloneOverride;
@@ -547,6 +563,8 @@ namespace MegaCrit.Sts2.Core.Rewards
         public virtual bool IsPopulated {get;set;}=true;
         public bool SuccessfullySelected {get;set;}
     }
+    public class GoldReward:Reward {public int Amount {get;set;}}
+    public class SpecialCardReward:Reward {private CardModel _card;public SpecialCardReward(CardModel card,Player player){_card=card;Player=player;RewardsSetIndex=4;} public void ReplaceCard(CardModel card)=>_card=card;}
     public class CardReward:Reward {
         private List<MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult> _cards=new();
         public bool CanSkip {get;set;}=true;
@@ -722,5 +740,43 @@ namespace MegaCrit.Sts2.Core.Combat {
  public sealed class CombatState {public MegaCrit.Sts2.Core.Models.EncounterModel Encounter {get;set;}=new();public MegaCrit.Sts2.Core.Runs.IRunState RunState {get;set;}=null!;public List<MegaCrit.Sts2.Core.Entities.Players.Player> Players {get;}=new();}
  public sealed class CombatManager {public static CombatManager? Instance {get;set;}=new();public CombatState? State;public bool IsInProgress=true,IsOverOrEnding;public CombatState? DebugOnlyGetState()=>State;}
 }
-namespace MegaCrit.Sts2.Core.Runs {public sealed class RunManager {public static RunManager? Instance {get;set;}=new();public RunState? State;public RunState? DebugOnlyGetState()=>State;}}
-namespace MegaCrit.Sts2.Core.Rooms {public class AbstractRoom {} public sealed class EventRoom:AbstractRoom {public MegaCrit.Sts2.Core.Models.EventModel LocalMutableEvent {get;set;}=null!;} public sealed class CombatRoom:AbstractRoom {public MegaCrit.Sts2.Core.Combat.CombatState CombatState {get;set;}=null!;public MegaCrit.Sts2.Core.Models.EncounterModel Encounter=>CombatState.Encounter;public bool ShouldResumeParentEventAfterCombat;public MegaCrit.Sts2.Core.Models.ModelId? ParentEventId;}}
+namespace MegaCrit.Sts2.Core.Runs {public sealed class RunManager {
+        public bool IsAbandoned;
+        public MegaCrit.Sts2.Core.Multiplayer.Game.INetGameService NetService {get;set;}=new MegaCrit.Sts2.Core.Multiplayer.Game.FixtureNetService();
+        public Func<Task>? AbandonHandler;
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private Task AbandonInternal()=>AbandonHandler?.Invoke()??Task.CompletedTask;
+        public void Abandon()=>AbandonInternal();
+public MegaCrit.Sts2.Core.GameActions.Multiplayer.ActionQueueSynchronizer ActionQueueSynchronizer {get;set;}=new();public static RunManager? Instance {get;set;}=new();public RunState? State;public RunState? DebugOnlyGetState()=>State;public Func<Task>? ProceedHandler;public int ProceedCalls;public Task ProceedFromTerminalRewardsScreen(){ProceedCalls++;if(ProceedHandler is not null)return ProceedHandler();MegaCrit.Sts2.Core.Nodes.NRun.Instance!.GlobalUi.MapScreen.IsOpen=true;return Task.CompletedTask;}}}
+namespace MegaCrit.Sts2.Core.Rooms {public class AbstractRoom {} public sealed class EventRoom:AbstractRoom {public MegaCrit.Sts2.Core.Models.EventModel LocalMutableEvent {get;set;}=null!;} public sealed class CombatRoom:AbstractRoom {public Dictionary<Player,List<MegaCrit.Sts2.Core.Rewards.Reward>> ExtraRewards {get;}=new();public MegaCrit.Sts2.Core.Combat.CombatState CombatState {get;set;}=null!;public MegaCrit.Sts2.Core.Models.EncounterModel Encounter=>CombatState.Encounter;public bool ShouldCreateCombat=true;public bool ShouldResumeParentEventAfterCombat;public MegaCrit.Sts2.Core.Models.ModelId? ParentEventId;}}
+
+namespace MegaCrit.Sts2.Core.Multiplayer.Game {
+ public interface INetGameService { int Type {get;} }
+ public sealed class FixtureNetService:INetGameService {public int Type {get;set;}=1;}
+}
+namespace MegaCrit.Sts2.Core.GameActions {
+ public class GameAction {
+  public int State;public Exception? Exception;public event Action<GameAction>? BeforeExecuted;
+  public readonly TaskCompletionSource Completion=new();public Task CompletionTask=>Completion.Task;
+  public void Start(){State=2;BeforeExecuted?.Invoke(this);}
+  public void Finish(){State=5;Completion.SetResult();}
+ }
+ public sealed class DiscardPotionGameAction:GameAction {
+  public readonly MegaCrit.Sts2.Core.Entities.Players.Player Player;public readonly uint Slot;
+  public int DiscardCalls;
+  public DiscardPotionGameAction(MegaCrit.Sts2.Core.Entities.Players.Player player,uint slot,bool combat){Player=player;Slot=slot;}
+  public void Remove(){DiscardCalls++;var potion=Player.PotionSlots[(int)Slot]!;Player.PotionSlots[(int)Slot]=null;potion.HasBeenRemovedFromState=true;}
+  public void Execute(){Start();Remove();Finish();}
+ }
+}
+namespace MegaCrit.Sts2.Core.GameActions.Multiplayer {
+ public sealed class ActionQueueSynchronizer {
+  private MegaCrit.Sts2.Core.Multiplayer.Game.INetGameService _netService=new MegaCrit.Sts2.Core.Multiplayer.Game.FixtureNetService();
+  public void SetNetwork(int type)=>_netService=new MegaCrit.Sts2.Core.Multiplayer.Game.FixtureNetService{Type=type};
+  public Action<MegaCrit.Sts2.Core.GameActions.DiscardPotionGameAction>? Handler;
+  public readonly List<MegaCrit.Sts2.Core.GameActions.DiscardPotionGameAction> Actions=new();
+  public void RequestEnqueue(MegaCrit.Sts2.Core.GameActions.DiscardPotionGameAction action){Actions.Add(action);if(Handler is {} handler)handler(action);else action.Execute();}
+ }
+}
+
+namespace MegaCrit.Sts2.Core.Models.Relics { public sealed class PotionBelt:RelicModel {public PotionBelt(){Id.Entry="POTION_BELT";DynamicVars["PotionSlots"]=new();}} }

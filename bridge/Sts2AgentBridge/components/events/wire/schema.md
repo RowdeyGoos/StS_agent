@@ -1,4 +1,4 @@
-# Generic event v9 wire
+# Generic event v10 wire
 
 GET `/probe/generic-event-v7/public/decision` has no body. POST
 `/probe/generic-event-v7/public/action` is a canonical UTF-8 JSON object with
@@ -8,7 +8,7 @@ Actions are the advertised `choose:0..7` or frozen card actions / `collect:i` it
 supply operation, preferences, candidates or native identities.
 
 Every response has ordered keys `schema_version` (1), `protocol`
-(`generic_event_v9`), `session_nonce` (32 lowercase hex), `kind`, `parent`,
+(`generic_event_v10`), `session_nonce` (32 lowercase hex), `kind`, `parent`,
 `child`, `payload`. Decision IDs are64 lowercase hex. Duplicate/unknown keys,
 wrong types, nonmatching publication or lineage, reused decisions and malformed
 requests invalidate the session before further dispatch. Responses are bounded
@@ -22,12 +22,13 @@ A `decision` response's parent has ordered fields:
 
 Candidates contain `index`, `action_id`, `stable_id`, `rendered_text`, `enabled`,
 `is_dangerous`, `is_proceed`, `discovery`. Discovery is `deferred` for an ordinary
-choice and `none` for Proceed. Counts are monotonic; parent history is an immutable
+choice, `none` for map Proceed, or `abandon_confirmation` for the
+explicit popup exception described below. Counts are monotonic; parent history is an immutable
 prefix of matching accepted receipts, with `option_transition`, `child_completed`
 or `map_handoff` / `combat_handoff` / `combat_resume_handoff` results. Ordinary transitions do not certify HP/gold effects.
 
 The routes retain their v7 names; the response protocol and parent receipt version
-are v9. A complete parent has phase `map_handoff` after an accepted Proceed, or
+are v10. A complete parent has phase `map_handoff` after an accepted Proceed, or
 `combat_handoff` or `combat_resume_handoff` after an accepted non-Proceed choice
 without a child. Its final
 history row must match that phase and the latest accepted parent receipt, with
@@ -36,15 +37,24 @@ combat requested by that choice, not victory. The non-resuming path releases
 ownership after that same combat’s terminal observation. The resuming path keeps
 the event cleanup owner until its exact callback Task and replacement event node
 are verified, then disposes that owner before releasing core combat ownership.
-Event-supplied extra rewards and interactive resume children remain unsupported.
+Non-resuming entry admits zero to eight exact extra special-card, potion or relic
+rewards (at most one special card), including deferred item generation. Core terminal item reward sessions
+use ready schema 4 (`item_key`, session-ordinal `reward_index`, `collect:<slot>`,
+public `potion_slots` and explicit `discard:<slot>` actions under replacement policy).
+Sessions containing a terminal Potion Belt reward use schema 5, adding the declared
+`potion_capacity_gain` to reward rows;
+see the [reward contract](../../../../../docs/GENERIC_EVENTS.md#extra-potionrelic-rewards-and-mixed-collection).
+Resuming entry still admits no extra rewards. Owned potion/relic resume children use the continuation routes below.
 
 The Python resolved event summary includes `destination` and `session_nonce`.
-For `combat_resume_handoff`, GET `/probe/event-combat-v1/public/decision` returns
-exact fields `schema_version` (1), `protocol` (`event_combat_v1`), `session_nonce`
-and `status` (`combat`, `waiting`, `resumed`). It accepts no action headers or body.
+For `combat_resume_handoff`, GET `/probe/event-combat-v2/public/decision` returns
+exact fields `schema_version` (1), `protocol` (`event_combat_v2`), `session_nonce`
+and `status` (`combat`, `waiting`, `item`, `resumed`). It accepts no action headers or body.
 This endpoint is unavailable outside an owned resuming combat. `resumed` requires
 a successful callback and cleanup; it is not a victory or an effect certificate.
-Other fields and phases of the parent/child wire retain their existing contracts.
+Status `item` admits the owned continuation `item-decision` and `item-action`
+routes under the same v2 prefix, using the existing item child contracts. Other
+fields and phases of the parent/child wire retain their existing contracts.
 
 `stable_id` is a public option key, not a session-wide action reservation. It can
 reappear on a later page, including with identical text. A settled page with fresh
@@ -111,3 +121,54 @@ Fixed multi-upgrades automatically open preview at max; no variable or early
 preview capability is admitted. Transform selection uses its separate card_transform_v2 effect contract.
 
 Transform payloads use `card_transform_v2`; other card families retain `card_selection_v1`, and item children retain `item_v1`. The operation-to-version binding applies to all child observations, resolutions, receipts and failures. Transform admission is 1<=min<=max<=8, preview_confirm, domain>max<=64. Variable transformation additionally requires native manual confirmation. Preview below max requires an accepted explicit preview action; only selection at max may open preview automatically. Native journal witnesses never enter payloads.
+
+## Crystal Sphere child
+
+The new descriptor uses `kind: crystal_sphere`, `contract_version: crystal_sphere_v1`
+and `offer_count: 121` after the common lineage fields. The outer protocol remains
+`generic_event_v10`; existing child versions retain their semantics.
+
+Payload keys are ordered `version`, `session_nonce`, `status`, `phase`,
+`decision_id`, `board`, `legal_actions`, `prior_results`. Ready phases are `board`,
+`rewards` and `cards`. Ready `board` has ordered `divinations` (0..20), `tool`
+(`small`/`big`), `hidden` (121 booleans, slot y*11+x) and `rewards` (0..8 rows).
+Reward rows have `slot`, `kind` (gold/card/potion/relic), `key`, `amount`, `cards`;
+card rows have `slot`, `key`, `upgrade_level` (0..5 cards per offer). No hidden item
+content or RNG state is published. Board phase has positive divinations and no
+reward rows; reward/card phases have zero divinations.
+
+Actions are the advertised `tool:small`, `tool:big`, `reveal:0..120`,
+`reward:claim:0..7`, `reward:collect:0..7`, `reward:open:0..7`,
+`reward:choose:0..4`, `reward:skip_card` or `dismiss`. There are at most 123 legal
+actions per ready payload and 40 accepted child actions. Histories contain the
+matching `decision_id`, `action_id`, `result: completed` receipts. Non-ready
+payloads have null board, empty decision and no legal actions; waiting/unsupported
+phases match status, while resolved uses `complete`.
+
+The host validates each public board transition against the accepted tool/reveal
+receipt. Small clears one cell; big clears the bounded 3×3 neighborhood; revealing
+decrements divinations exactly once. The sphere episode contributes to child
+history and reconciliation, but not `completed_card_children` or
+`completed_item_children`; effects remain `unverified`. Its resolved payload is
+nonterminal: parent native Leave must still reconcile map handoff and cleanup.
+
+## Abandonment confirmation
+
+`abandon_confirmation_v1` uses kind `abandon_confirmation` and `offer_count: 2`.
+The payload keys are `version`, `session_nonce`, `status`, `phase`, `decision_id`,
+`consequence`, `legal_actions`, `prior_results`. Consequence is `run_abandoned`.
+Ready phase `confirm` advertises exactly `cancel`, `confirm_abandon`, in that order.
+Each child accepts at most one action; its correlated result is `cancelled` or
+`abandoned`. Waiting and unsupported phases expose no action. Receipts use the
+ordinary version/nonce/decision/action/outcome fields.
+
+The narrowly identified native Trial DoubleDown callback publishes discovery
+`abandon_confirmation`, retaining its native dangerous and Proceed flags. It
+belongs to an unfinished choice page and does not count as map Proceed. Other
+dangerous choices remain illegal. Cancellation revalidates the retained parent
+presentation and inventory before publishing a fresh decision for those same
+controls. The previous decision remains retired. Confirmed abandonment completes
+the parent with phase and final history result `run_abandoned`, after child
+reconciliation. It does not increment card/item completion counts or certify a map
+handoff. Overall effects remain `unverified`. Native cleanup revalidates the
+completed outcome; pending or uncertain abandonment cannot release a clean owner.
