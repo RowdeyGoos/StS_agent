@@ -37,49 +37,11 @@ Improve named mechanics against the pinned game before treating larger training
 runs as evidence of useful play. [Roadmap](../ROADMAP.md#headless-and-learning-direction)
 owns priorities, and [AGENTS.md](../AGENTS.md) owns proportionate validation.
 
-## First card-upgrade profile
+## Gameplay development
 
-`CombatV0Backend(card_profile="strike_upgrade_v1")` supports ordinary Strike+
-at 9 damage and 1 energy. The default backend still uses the original reduced
-rules and rejects upgraded cards. The opt-in profile has distinct content, rules,
-backend and projection identities; snapshot restore requires the same profile.
-See the [pinned source check](evidence/strike_upgrade_2026_09_13.md) for evidence
-and limits. Other card upgrades remain unsupported.
-
-The current entry point is programmatic. Select one persistent instance at an
-idle, living combat boundary, preview it, then upgrade it without changing its ID:
-
-```python
-from game.backends.headless.combat_v0_backend import CombatV0Backend
-from game.engine.card_upgrades import preview_card_upgrade, upgrade_persistent_card
-from game.engine.headless_state import WorldState
-
-backend = CombatV0Backend(card_profile="strike_upgrade_v1")
-manifest = backend.manifest()
-world = WorldState.create(
-    seed=43, current_hp=80, max_hp=80, gold=0,
-    deck_definition_ids=("strike", "strike", "defend"),
-    map_node_definitions=(),
-    content_fingerprint=manifest.content_fingerprint,
-    rules_fingerprint=manifest.rules_fingerprint,
-)
-target_id = world.master_deck[0].instance_id
-preview = preview_card_upgrade(world, target_id)  # cost=1, base_damage=9
-upgrade_persistent_card(world, target_id)
-launch = world.create_combat_launch("simple__starter")
-decision = backend.reset(launch)
-```
-
-Use the existing bound candidate requests to play. On completion,
-`world.apply_combat_resolution(launch, backend.resolution)` applies combat HP;
-the next launch retains the permanent upgraded deck. For world snapshots, build
-`WorldSnapshotCodec` with this manifest's content/rules fingerprints. Restore
-combat snapshots into another backend constructed with the same card profile.
-
-The public `headless_v0` card record and actor encoder already distinguish the
-upgraded flag. Private instance IDs remain outside policy views. The optional
-legacy combat encoder adds a `Strike+` name and has different dimensions from
-legacy checkpoints. The reduced run composer, collector, rest-site choices and
-training artifact acceptance have not been extended to this profile. Their
-integration is separate backlog work; this slice establishes card execution,
-persistence and replay, not full-run or native combat fidelity.
+Use the [headless game engine](HEADLESS_ENGINE.md) to implement and test rules.
+The earlier experimental `strike_upgrade_v1` backend option has been removed;
+Strike upgrades now belong to ordinary game definitions and instance state.
+The actor and reduced public backend remain consumers with their existing fixed
+capability boundaries. Adding game content does not require extending their
+projections, vocabulary, dataset pins or training pipeline in the same change.

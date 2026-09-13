@@ -15,6 +15,7 @@ do not falsify hashes, bypass runtime safeguards or broaden user-data access.
    | Task | Read next |
    | --- | --- |
    | Live bridge or generic events | [Current status](docs/STATUS.md), then relevant source/contract; [live guide](docs/LIVE_DEVELOPMENT.md) before build/install/live work |
+   | Headless game rules or architecture | [Headless engine](docs/HEADLESS_ENGINE.md), affected `game/headless/` source and tests |
    | Combat simulator or RL | Relevant sections of [project context](docs/PROJECT_CONTEXT.md), affected source and tests |
    | Headless actor/data | [Headless actor guide](docs/HEADLESS_ACTOR.md), then affected source/schema and tests |
    | Architecture or priorities | [Decisions](DECISIONS.md) and [roadmap](ROADMAP.md) |
@@ -121,7 +122,10 @@ evidence or bypass a failing runtime safeguard.
 - Preserve stable enemy slots, legal-action masks and the simple combat path.
 - Keep canonical subpackage imports and installed `sts-*` commands; no flat aliases
   or root CLI wrappers.
-- Observation/action changes require checking `game/simulation/core.py`,
+- Implement game logic in `game/headless/`, which must not import adapters, public
+  contracts, encoders or training. Game-content changes do not require projection
+  or policy changes unless that consumer integration is explicitly in scope.
+- Changes to supported observation/action adapters require checking `game/simulation/core.py`,
   `encoding.py`, `actions.py`, `action_features.py` and affected baselines,
   demo formatting and tests. Update only affected consumers.
 - Preserve public/privileged separation and distinguish synthetic, released and

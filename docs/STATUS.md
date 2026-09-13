@@ -118,7 +118,7 @@ the selected child effect and map return are verified.
 | Initial event-option policy | `--event-option` chooses an exact legal first option and stops if absent/illegal; subsequent actions use first-legal policy |
 | Results acknowledgment | Pandora's Box nine-card screen Confirm/map passed; preceding automatic transformations are not certified |
 | Reduced headless/actor stack | Structural backend and cloning pipeline accepted; no target-game fidelity or learned live-policy claim |
-| Headless Strike+ slice | Opt-in `strike_upgrade_v1`: same-instance upgrade, public flag, 9 damage at cost 1, replay and two-combat persistence. [Source check and limits](evidence/strike_upgrade_2026_09_13.md); [remaining implementation tasks](HEADLESS_FULL_GAME_IMPLEMENTATION.md). Other upgrades and rest-site selection remain unsupported. |
+| Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): content-owned card rules and upgrades, combat execution, owned run state, map/reward/room primitives and JSON continuation. Legacy experiment APIs consume the same combat rules. Native full-run fidelity remains open; [remaining tasks](HEADLESS_FULL_GAME_IMPLEMENTATION.md). |
 
 One production bridge in `apps/bridge/` combines shared components and original
 core adapters. Modules remain exclusive until native reconciliation and successful

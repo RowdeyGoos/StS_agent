@@ -341,3 +341,21 @@ def test_heuristic_uses_body_slam_lethal_and_avoids_it_at_zero_block() -> None:
         choose_heuristic_action(env, observation, env.get_action_mask())
     )
     assert observation["hand"][productive_action[1]] == "Strike"
+
+
+def test_new_game_catalog_content_does_not_expand_legacy_card_vocabulary():
+    """A game-only card must not invalidate the frozen research representation."""
+    import subprocess
+    import sys
+
+    result = subprocess.run([sys.executable, "-c", '''
+from game.headless.cards import ironclad
+from game.headless.cards.base import CardDefinition, CardSpec
+ironclad.DEFINITIONS += (CardDefinition("new", (CardSpec("New card", 1, "skill"),), ()),)
+from game.headless.cards.catalog import DEFAULT_CARDS
+assert DEFAULT_CARDS.create("new").name == "New card"
+from game.simulation.card import CARD_SPECS
+from game.simulation import card_records
+assert tuple(CARD_SPECS) == ("Strike", "Defend", "Bash", "Pommel Strike", "Shrug It Off", "Iron Wave", "Body Slam", "Slimed")
+'''], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr

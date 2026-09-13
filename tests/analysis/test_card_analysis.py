@@ -63,7 +63,7 @@ def test_trace_analyzer_recognizes_body_slam_lethal() -> None:
     assert missed_lethal.recommended_action == ("play", body_index)
 
 
-def test_oracle_clone_preserves_new_stateless_card_types() -> None:
+def test_oracle_clone_owns_mutable_card_instances() -> None:
     env = CombatEnv(
         deck_factory=lambda: [BodySlamCard(), StrikeCard()],
         enemy_factory=lambda: SimpleEnemy(max_hp=7),
@@ -79,9 +79,19 @@ def test_oracle_clone_preserves_new_stateless_card_types() -> None:
         type(card) for card in env.player.hand
     ]
     assert all(
-        cloned_card is original_card
+        cloned_card is not original_card
+        and cloned_card.definition is original_card.definition
+        and cloned_card.instance_id == original_card.instance_id
         for cloned_card, original_card in zip(cloned.player.hand, env.player.hand)
     )
+
+    cloned_strike = next(card for card in cloned.player.hand if card.name == "Strike")
+    original_strike = next(card for card in env.player.hand if card.name == "Strike")
+    cloned_strike.upgrade()
+    assert original_strike.upgrade_level == 0
+    assert cloned_strike.upgrade_level == 1
+    cloned.player.deck.discard_card(StrikeCard())
+    assert cloned.player.deck._allocated_ids != env.player.deck._allocated_ids
 
 
 def test_oracle_bound_falls_back_for_dynamic_body_slam_damage() -> None:

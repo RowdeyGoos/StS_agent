@@ -10,6 +10,8 @@ from .actions import CombatAction, validate_action
 from .card import Card, create_starter_deck, get_card_spec
 from .deck import Deck
 from .encoding import ObservationEncoder
+from game.headless.core.combat import CombatEngine
+from game.headless.core.actions import PlayCard, EndTurn
 from .enemy import EncounterFactory, Enemy, SimpleEnemy
 from .player import Player
 from .status import modify_attack_damage_for_statuses
@@ -19,7 +21,7 @@ from .utils import apply_damage_to_block_and_hp, make_rng
 Observation = dict[str, Any]
 
 
-class CombatEnv:
+class CombatEnv(CombatEngine):
     """Single-player combat environment with RL-friendly observations and actions.
 
     Rewards use simple shaping:
@@ -44,13 +46,14 @@ class CombatEnv:
         incoming_damage_shaping_scale: float = 0.5,
         record_trajectory: bool = True,
     ) -> None:
-        self.rng = make_rng(seed)
-        self.deck_factory = deck_factory
-        self.enemy_factory = enemy_factory or SimpleEnemy
-        self.encounter_factory = encounter_factory
-        self.player_max_hp = player_max_hp
-        self.energy_per_turn = energy_per_turn
-        self.cards_per_turn = cards_per_turn
+        super().__init__(
+            seed=0 if seed is None else seed, deck_factory=deck_factory,
+            enemy_factory=enemy_factory, encounter_factory=encounter_factory,
+            player_max_hp=player_max_hp, energy_per_turn=energy_per_turn,
+            cards_per_turn=cards_per_turn,
+        )
+        if seed is None:
+            self.rng = make_rng()  # Preserve the legacy unseeded constructor API.
         self.hp_loss_penalty_scale = hp_loss_penalty_scale
         self.incoming_damage_shaping_scale = incoming_damage_shaping_scale
         self.record_trajectory = record_trajectory
@@ -59,20 +62,10 @@ class CombatEnv:
             max_enemy_count=max_enemy_count,
         )
 
-        self.player: Player | None = None
-        self.enemies: list[Enemy] | None = None
-        self.turn = 0
-        self.done = False
-        self.winner: str | None = None
         self.last_observation: Observation | None = None
         self.episode_reward = 0.0
         self.episode_step_count = 0
         self.episode_transitions: list[TransitionRecord] = []
-
-        # TODO: Add relic hooks that can modify reset, draw, and turn transitions.
-        # TODO: Add potion hooks and action support.
-        # TODO: Add richer multi-enemy targeting and corresponding action masking.
-        # TODO: Add batched/vectorized multi-environment rollout helpers.
 
     @property
     def enemy(self) -> Enemy | None:
@@ -86,20 +79,10 @@ class CombatEnv:
 
     def reset(self, seed: int | None = None) -> Observation:
         """Reset combat and return the initial observation."""
-        if seed is not None:
-            self.rng = make_rng(seed)
-
-        self.player = self._build_player()
-        self.enemies = self._build_encounter()
-        self.turn = 1
-        self.done = False
-        self.winner = None
+        CombatEngine.reset(self, seed)
         self.episode_reward = 0.0
         self.episode_step_count = 0
         self.episode_transitions = []
-
-        self.player.start_turn(draw_count=self.cards_per_turn)
-        self._refresh_persistent_statuses()
         self.last_observation = self.get_observation()
         return self.last_observation
 
@@ -117,74 +100,23 @@ class CombatEnv:
         assert self.enemies is not None
         assert self.last_observation is not None
 
-        info: dict[str, Any] = {}
         previous_observation = self.last_observation
-
         if action[0] == "play":
-            hand_index = action[1]
-            target_index = self._resolve_target_index(action)
-            target_enemy = self.enemies[target_index]
-            card = self.player.play_card(hand_index, target_enemy)
-            info["played_card"] = card.name
-            info["target_enemy_index"] = target_index
-            info["target_enemy_name"] = target_enemy.name
-
-            self._refresh_persistent_statuses()
-            reward = self._update_terminal_state()
-            next_observation = self.get_observation()
-            return self._finalize_step(
-                action=action,
-                previous_observation=previous_observation,
-                next_observation=next_observation,
-                reward=reward,
-                info=info,
-            )
-
-        self.player.end_turn()
-        enemy_actions: list[dict[str, Any]] = []
-        for enemy_index, enemy in enumerate(self.enemies):
-            if not enemy.is_alive:
-                continue
-
-            enemy.start_turn()
-            executed_intent = enemy.execute_intent(self.player)
-            enemy_actions.append(
-                {
-                    "enemy_index": enemy_index,
-                    "enemy_name": enemy.name,
-                    "intent": executed_intent.as_dict(),
-                }
-            )
-            self._refresh_persistent_statuses()
-
-            reward = self._update_terminal_state()
-            if self.done:
-                info["enemy_actions"] = enemy_actions
-                if len(enemy_actions) == 1:
-                    info["enemy_action"] = enemy_actions[0]["intent"]
-                next_observation = self.get_observation()
-                return self._finalize_step(
-                    action=action,
-                    previous_observation=previous_observation,
-                    next_observation=next_observation,
-                    reward=reward,
-                    info=info,
-                )
-
-        info["enemy_actions"] = enemy_actions
-        if len(enemy_actions) == 1:
-            info["enemy_action"] = enemy_actions[0]["intent"]
-
-        self.turn += 1
-        self.player.start_turn(draw_count=self.cards_per_turn)
-        self._refresh_persistent_statuses()
-        next_observation = self.get_observation()
+            target_slot = self._resolve_target_index(action)
+            card = self.player.hand[action[1]]
+            command = PlayCard(card.instance_id, target_slot if card.spec.uses_target else None)
+        else:
+            command = EndTurn()
+        result = CombatEngine.apply(self, command)
+        info = dict(result.details)
+        if action[0] == "play":
+            # Legacy diagnostics give even untargeted cards a canonical enemy slot.
+            info["target_enemy_index"] = target_slot
+            info["target_enemy_name"] = self.enemies[target_slot].name
+        reward = (1.0 if self.winner == "player" else -1.0) if self.done else 0.0
         return self._finalize_step(
-            action=action,
-            previous_observation=previous_observation,
-            next_observation=next_observation,
-            reward=0.0,
-            info=info,
+            action=action, previous_observation=previous_observation,
+            next_observation=self.get_observation(), reward=reward, info=info,
         )
 
     def step_discrete(self, action_index: int) -> tuple[Observation, float, bool, dict[str, Any]]:
@@ -200,28 +132,18 @@ class CombatEnv:
 
         assert self.player is not None
 
-        living_enemy_indices = self._living_enemy_indices()
-        actions: list[CombatAction] = [("end_turn",)]
-        for hand_index, card in enumerate(self.player.hand):
-            if card.cost > self.player.energy:
+        actions: list[CombatAction] = []
+        living = self._living_enemy_indices()
+        for command in self.legal_actions():
+            if isinstance(command, EndTurn):
+                actions.append(("end_turn",))
                 continue
-            card_spec = get_card_spec(card.name)
-
-            if not card_spec.uses_target:
-                if self.encoder.max_enemy_count == 1 and len(living_enemy_indices) == 1:
-                    actions.append(("play", hand_index))
-                    continue
-
-                if living_enemy_indices:
-                    actions.append(("play", hand_index, living_enemy_indices[0]))
-                continue
-
-            if self.encoder.max_enemy_count == 1 and len(living_enemy_indices) == 1:
-                actions.append(("play", hand_index))
-                continue
-
-            for enemy_index in living_enemy_indices:
-                actions.append(("play", hand_index, enemy_index))
+            index = next(i for i, card in enumerate(self.player.hand) if card.instance_id == command.instance_id)
+            if self.encoder.max_enemy_count == 1 and len(living) == 1:
+                actions.append(("play", index))
+            else:
+                target = command.target_slot if command.target_slot is not None else living[0]
+                actions.append(("play", index, target))
         return actions
 
     def get_action_mask(self) -> tuple[int, ...]:
@@ -348,21 +270,8 @@ class CombatEnv:
             enemy_hp=sum(enemy.hp for enemy in self._living_enemies()),
         )
 
-    def _build_player(self) -> Player:
-        deck = Deck(self.deck_factory(), rng=self.rng)
-        return Player(
-            deck=deck,
-            max_hp=self.player_max_hp,
-            energy_per_turn=self.energy_per_turn,
-        )
-
     def _build_encounter(self) -> list[Enemy]:
-        if self.encounter_factory is not None:
-            encounter = list(self.encounter_factory(self.rng))
-        else:
-            encounter = [self.enemy_factory()]
-        if not encounter:
-            raise ValueError("Encounter factory must create at least one enemy.")
+        encounter = super()._build_encounter()
         if len(encounter) > self.encoder.max_enemy_count:
             raise ValueError(
                 f"Encounter has {len(encounter)} enemies, exceeding max_enemy_count="
@@ -409,38 +318,6 @@ class CombatEnv:
             return living_enemy_indices[0]
 
         raise ValueError("Multi-enemy encounters require explicit target indices.")
-
-    def _update_terminal_state(self) -> float:
-        assert self.player is not None
-
-        if not self._living_enemies():
-            self.done = True
-            self.winner = "player"
-            return 1.0
-
-        if self.player.hp <= 0:
-            self.done = True
-            self.winner = "enemy"
-            return -1.0
-
-        return 0.0
-
-    def _refresh_persistent_statuses(self) -> None:
-        """Clear any persistent statuses whose source is no longer alive."""
-        assert self.player is not None
-
-        has_living_shrinker = any(
-            enemy.is_alive and enemy.name == "Shrinker Beetle"
-            for enemy in (self.enemies or [])
-        )
-        if not has_living_shrinker:
-            shrink_stacks = self.player.statuses.get("shrink")
-            if shrink_stacks > 0:
-                self.player.statuses.decrement("shrink", shrink_stacks)
-
-    def _ensure_ready(self) -> None:
-        if self.player is None or self.enemies is None:
-            raise RuntimeError("CombatEnv is not initialized. Call reset() before use.")
 
     def _finalize_step(
         self,

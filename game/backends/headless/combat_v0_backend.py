@@ -10,7 +10,7 @@ validated launch plus accepted decision-scoped candidate history.
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from hashlib import sha256
 import json
 from typing import Any, Mapping, Sequence
@@ -33,12 +33,6 @@ from game.backends.headless.scenarios import (
     SCENARIO_SCHEMA,
     CombatScenario,
     scenario_from_id,
-)
-from game.content.card_upgrades import (
-    BASE_CARD_PROFILE,
-    STRIKE_UPGRADE_PROFILE,
-    STRIKE_UPGRADE_CONTENT_FINGERPRINT,
-    validate_card_profile,
 )
 from game.content.reduced_v0 import (
     CONTENT_FINGERPRINT,
@@ -74,7 +68,6 @@ from game.engine.headless_state import (
     CombatResolution,
     PersistentCardInstance,
 )
-from game.simulation.card import StrikeCard
 from game.simulation.env_factory import CombatEnvFactory
 
 
@@ -220,62 +213,6 @@ def _manifest() -> BackendManifest:
 _BACKEND_MANIFEST = _manifest()
 
 
-def _manifest_for_profile(card_profile: str) -> BackendManifest:
-    validate_card_profile(card_profile)
-    if card_profile == BASE_CARD_PROFILE:
-        return _BACKEND_MANIFEST
-    version = f"{BACKEND_VERSION}_{card_profile}"
-    rules_version = f"{RULES_VERSION}_{card_profile}"
-    rules_fingerprint = _fingerprint(
-        "combat_v0_backend.upgrade_rules.v1",
-        {
-            "base_rules": RULES_FINGERPRINT,
-            "content": STRIKE_UPGRADE_CONTENT_FINGERPRINT,
-            "profile": card_profile,
-        },
-    )
-    backend_fingerprint = _fingerprint(
-        "combat_v0_backend.upgrade_backend.v1",
-        {
-            "base_backend": BACKEND_FINGERPRINT,
-            "rules": rules_fingerprint,
-            "version": version,
-        },
-    )
-    projection_version = f"{COMBAT_PROJECTION_VERSION}_{card_profile}"
-    projection_fingerprint = _fingerprint(
-        "combat_v0_backend.upgrade_projection.v1",
-        {
-            "base_projection": _BACKEND_MANIFEST.evidence[2].fingerprint,
-            "version": projection_version,
-            "variants": [["Strike+", "strike", True, 1]],
-        },
-    )
-    return replace(
-        _BACKEND_MANIFEST,
-        backend_version=version,
-        backend_fingerprint=backend_fingerprint,
-        content_version=card_profile,
-        content_fingerprint=STRIKE_UPGRADE_CONTENT_FINGERPRINT,
-        rules_version=rules_version,
-        rules_fingerprint=rules_fingerprint,
-        evidence=(
-            ComponentEvidence("backend", EvidenceLabel.COMBAT_V0, version, backend_fingerprint),
-            ComponentEvidence(
-                "content", EvidenceLabel.STRUCTURAL_FIXTURE,
-                card_profile, STRIKE_UPGRADE_CONTENT_FINGERPRINT,
-            ),
-            ComponentEvidence(
-                "projection", EvidenceLabel.COMBAT_V0,
-                projection_version, projection_fingerprint,
-            ),
-            ComponentEvidence(
-                "rules", EvidenceLabel.COMBAT_V0, rules_version, rules_fingerprint,
-            ),
-        ),
-    )
-
-
 @dataclass(frozen=True, slots=True)
 class _BuiltState:
     environment: Any
@@ -289,9 +226,7 @@ class _BuiltState:
 class CombatV0Backend:
     """A deterministic, combat-only implementation of ``headless_v0``."""
 
-    def __init__(self, *, card_profile: str = BASE_CARD_PROFILE) -> None:
-        self._manifest = _manifest_for_profile(card_profile)
-        self._card_profile = card_profile
+    def __init__(self) -> None:
         self._launch: CombatLaunchSpec | None = None
         self._accepted_candidate_ids: tuple[str, ...] = ()
         self._environment: Any = None
@@ -328,14 +263,14 @@ class CombatV0Backend:
         return self._resolution
 
     def manifest(self) -> BackendManifest:
-        return self._manifest
+        return _BACKEND_MANIFEST
 
     def reset(
         self,
         configuration: CombatScenario | CombatLaunchSpec | Mapping[str, Any] | str | None,
     ) -> DecisionState:
         """Start from a standalone scenario or a composer-issued launch."""
-        launch = _configuration_to_launch(configuration, card_profile=self._card_profile)
+        launch = _configuration_to_launch(configuration)
         built = self._rebuild(launch, ())
         self._install(launch, (), built)
         return built.decision
@@ -454,7 +389,7 @@ class CombatV0Backend:
             raise RuntimeError("Combat backend is not initialized.")
         descriptor = {
             "accepted_candidate_ids": list(self._accepted_candidate_ids),
-            "backend_fingerprint": self._manifest.backend_fingerprint,
+            "backend_fingerprint": BACKEND_FINGERPRINT,
             "launch": self._launch.to_dict(),
             "snapshot_version": SNAPSHOT_VERSION,
         }
@@ -467,7 +402,7 @@ class CombatV0Backend:
 
     def restore(self, snapshot: Mapping[str, Any]) -> DecisionState:
         """Atomically restore and verify exact continuation by deterministic replay."""
-        launch, history = _parse_snapshot(snapshot, card_profile=self._card_profile)
+        launch, history = _parse_snapshot(snapshot)
         built = self._rebuild(launch, history)
         self._install(launch, history, built)
         return built.decision
@@ -487,7 +422,7 @@ class CombatV0Backend:
         launch: CombatLaunchSpec,
         history: Sequence[str],
     ) -> _BuiltState:
-        environment = _build_environment(launch, card_profile=self._card_profile)
+        environment = _build_environment(launch)
         events: tuple[PublicEvent, ...] = ()
         diagnostics: Mapping[str, Any] | None = None
         consumed: list[str] = []
@@ -495,7 +430,7 @@ class CombatV0Backend:
             if environment.done:
                 raise CombatV0BackendError("Replay history continues after terminal combat.")
             scope = _public_scope(sequence)
-            mapping = generate_combat_candidates(environment, scope, card_profile=self._card_profile)
+            mapping = generate_combat_candidates(environment, scope)
             try:
                 legacy_action = mapping.action_for(candidate_id)
             except InvalidCombatCandidateError as error:
@@ -505,11 +440,9 @@ class CombatV0Backend:
             candidate = next(
                 item for item in mapping.candidates if item.candidate_id == candidate_id
             )
-            observation = project_combat_observation(
-                environment.get_observation(), scope, card_profile=self._card_profile
-            )
+            observation = project_combat_observation(environment.get_observation(), scope)
             decision = DecisionState.create(
-                **_decision_identity(launch.run_id, sequence, self._manifest),
+                **_decision_identity(launch.run_id, sequence),
                 status=DecisionStatus.ACTIONABLE,
                 phase=DecisionPhase.COMBAT,
                 observation=observation,
@@ -579,7 +512,7 @@ class CombatV0Backend:
                 scope,
             )
             decision = DecisionState.create(
-                **_decision_identity(launch.run_id, sequence, self._manifest),
+                **_decision_identity(launch.run_id, sequence),
                 status=DecisionStatus.TERMINAL,
                 phase=DecisionPhase.TERMINAL,
                 observation=observation,
@@ -590,10 +523,6 @@ class CombatV0Backend:
                 {
                     "accepted_candidate_ids": list(history),
                     "launch": launch.to_dict(),
-                    **(
-                        {"backend_fingerprint": self._manifest.backend_fingerprint}
-                        if self._card_profile != BASE_CARD_PROFILE else {}
-                    ),
                 },
             )
             resolution = CombatResolution(
@@ -607,12 +536,10 @@ class CombatV0Backend:
                 environment, decision, None, resolution, events, diagnostics
             )
 
-        mapping = generate_combat_candidates(environment, scope, card_profile=self._card_profile)
-        observation = project_combat_observation(
-            environment.get_observation(), scope, card_profile=self._card_profile
-        )
+        mapping = generate_combat_candidates(environment, scope)
+        observation = project_combat_observation(environment.get_observation(), scope)
         decision = DecisionState.create(
-            **_decision_identity(launch.run_id, sequence, self._manifest),
+            **_decision_identity(launch.run_id, sequence),
             status=DecisionStatus.ACTIONABLE,
             phase=DecisionPhase.COMBAT,
             observation=observation,
@@ -638,14 +565,15 @@ class CombatV0Backend:
         self._legacy_diagnostics = built.legacy_diagnostics
 
 
-def _decision_identity(
-    run_id: str, sequence: int, manifest: BackendManifest = _BACKEND_MANIFEST,
-) -> dict[str, Any]:
+def _decision_identity(run_id: str, sequence: int) -> dict[str, Any]:
     return {
-        **{name: getattr(manifest, name) for name in (
-            "backend_id", "backend_version", "backend_fingerprint",
-            "content_version", "content_fingerprint", "rules_version", "rules_fingerprint",
-        )},
+        "backend_id": BACKEND_ID,
+        "backend_version": BACKEND_VERSION,
+        "backend_fingerprint": BACKEND_FINGERPRINT,
+        "content_version": CONTENT_VERSION,
+        "content_fingerprint": CONTENT_FINGERPRINT,
+        "rules_version": RULES_VERSION,
+        "rules_fingerprint": RULES_FINGERPRINT,
         "run_id": run_id,
         "decision_sequence": sequence,
     }
@@ -663,7 +591,6 @@ def _public_scope(decision_ordinal: int) -> PublicScope:
 
 def _configuration_to_launch(
     configuration: CombatScenario | CombatLaunchSpec | Mapping[str, Any] | str | None,
-    *, card_profile: str = BASE_CARD_PROFILE,
 ) -> CombatLaunchSpec:
     if configuration is None:
         configuration = scenario_from_id("simple__starter")
@@ -679,7 +606,7 @@ def _configuration_to_launch(
                 "Configuration mapping must be a strict scenario or combat launch."
             )
     if isinstance(configuration, CombatLaunchSpec):
-        _validate_launch(configuration, card_profile=card_profile)
+        _validate_launch(configuration)
         return configuration
     if not isinstance(configuration, CombatScenario):
         raise TypeError("configuration must be a scenario or CombatLaunchSpec.")
@@ -750,23 +677,15 @@ def _normalize_standalone_seed(seed: int) -> int:
     return seed % _COMBAT_SEED_MODULUS
 
 
-def _validate_launch(
-    launch: CombatLaunchSpec, *, card_profile: str = BASE_CARD_PROFILE,
-) -> None:
-    validate_card_profile(card_profile)
+def _validate_launch(launch: CombatLaunchSpec) -> None:
     if not isinstance(launch, CombatLaunchSpec):
         raise TypeError("launch must be a CombatLaunchSpec.")
     scenario_from_id(launch.scenario_id)
     unknown = set(launch.combat_settings) - _SUPPORTED_SETTING_KEYS
     if unknown:
         raise CombatV0BackendError(f"Unsupported combat settings: {sorted(unknown)!r}.")
-    if any(
-        card.upgraded and not (
-            card_profile == STRIKE_UPGRADE_PROFILE and card.definition_id == "strike"
-        )
-        for card in launch.ordered_deck
-    ):
-        raise CombatV0BackendError("This card profile cannot materialize these upgraded cards.")
+    if any(card.upgraded for card in launch.ordered_deck):
+        raise CombatV0BackendError("combat_v0 cannot materialize upgraded persistent cards.")
     for card in launch.ordered_deck:
         if card.definition_id not in REWARDABLE_CARD_DEFINITION_IDS:
             raise CombatV0BackendError(
@@ -774,10 +693,8 @@ def _validate_launch(
             )
 
 
-def _build_environment(
-    launch: CombatLaunchSpec, *, card_profile: str = BASE_CARD_PROFILE,
-) -> Any:
-    _validate_launch(launch, card_profile=card_profile)
+def _build_environment(launch: CombatLaunchSpec) -> Any:
+    _validate_launch(launch)
     scenario = scenario_from_id(launch.scenario_id)
     settings = dict(launch.combat_settings)
     record_trajectory = _setting_bool(
@@ -817,24 +734,13 @@ def _build_environment(
         deck=scenario.deck,
     )
     environment = factory()
-    if card_profile == STRIKE_UPGRADE_PROFILE:
-        vocabulary = dict(environment.encoder.card_name_to_id)
-        vocabulary["Strike+"] = max(vocabulary.values()) + 1
-        environment.encoder = replace(environment.encoder, card_name_to_id=vocabulary)
+    definition_ids = tuple(card.definition_id for card in launch.ordered_deck)
 
     def materialize_launch_deck() -> list[Any]:
-        cards = []
-        for instance in launch.ordered_deck:
-            card = (
-                StrikeCard(upgraded=True) if instance.upgraded else
-                materialize_card_definition(_CARD_DEFINITIONS[instance.definition_id])
-            )
-            # Private identity follows the object through draw, play and reshuffle.
-            # Public references continue to come exclusively from public scope.
-            if card_profile == STRIKE_UPGRADE_PROFILE:
-                card.persistent_instance_id = instance.instance_id
-            cards.append(card)
-        return cards
+        return [
+            materialize_card_definition(_CARD_DEFINITIONS[definition_id])
+            for definition_id in definition_ids
+        ]
 
     environment.deck_factory = materialize_launch_deck
     environment.energy_per_turn = _setting_int(
@@ -945,7 +851,6 @@ def _environment_outcome(environment: Any) -> CombatOutcome:
 
 def _parse_snapshot(
     snapshot: Mapping[str, Any],
-    *, card_profile: str = BASE_CARD_PROFILE,
 ) -> tuple[CombatLaunchSpec, tuple[str, ...]]:
     if not isinstance(snapshot, Mapping):
         raise CombatV0BackendError("Snapshot must be an object.")
@@ -961,7 +866,7 @@ def _parse_snapshot(
     descriptor = {key: snapshot[key] for key in expected if key != "descriptor_hash"}
     if snapshot["snapshot_version"] != SNAPSHOT_VERSION:
         raise CombatV0BackendError("Snapshot version is incompatible.")
-    if snapshot["backend_fingerprint"] != _manifest_for_profile(card_profile).backend_fingerprint:
+    if snapshot["backend_fingerprint"] != BACKEND_FINGERPRINT:
         raise CombatV0BackendError("Snapshot backend fingerprint is incompatible.")
     if snapshot["descriptor_hash"] != _fingerprint(
         "combat_v0_backend.snapshot_descriptor.v1", descriptor
@@ -979,5 +884,5 @@ def _parse_snapshot(
         launch = CombatLaunchSpec.from_dict(launch_payload)
     except ValueError as error:
         raise CombatV0BackendError("Snapshot launch is invalid.") from error
-    _validate_launch(launch, card_profile=card_profile)
+    _validate_launch(launch)
     return launch, tuple(history_payload)

@@ -51,27 +51,28 @@ any metadata reader without depending on those temporary files.
 
 ## Implemented boundary and limits
 
-[Card rules](../../game/engine/card_upgrades.py) preview and upgrade exactly one
-persistent Strike at an idle, living combat boundary, preserving its ID and deck
-position without RNG or ID allocation. This programmatic operation is not a
-rest-site action or proof that an arbitrary game upgrade source is legal.
+The original implementation at `7ca5f77` used an opt-in `strike_upgrade_v1`
+profile in the combat adapter. That unreleased profile was retired in the
+subsequent [game-engine refactor](../HEADLESS_ENGINE.md). The native source anchors
+above remain unchanged; they support card values, not the refactor's other rules.
 
-[CombatV0Backend](../../game/backends/headless/combat_v0_backend.py) opts in with
-`card_profile="strike_upgrade_v1"`. Its content, rules, backend and projection
-identities differ from the unchanged default profile. The public contract already
-supports `upgraded`; the existing public actor encoder already encodes that flag.
-The optional legacy combat encoder adds a `Strike+` vocabulary entry only within
-this profile. Existing legacy checkpoint dimensions are not compatible with that
-expanded encoder. Accepted datasets and snapshots still require matching pins.
+[Card definitions](../../game/headless/cards/ironclad.py) own Strike's base and
+upgraded values. [Run deck rules](../../game/headless/run/deck.py) preview and
+upgrade one persistent instance between rooms, preserving its ID and position
+without RNG or ID allocation. The direct operation is not a rest-site action or
+proof that an arbitrary game upgrade source is legal.
 
-The [regression cases](../../tests/backends/headless/test_strike_upgrade.py) cover
-same-ID mutation among duplicate cards, preview immutability, base/upgraded damage
-and energy, public flags and legal masks, target selection, private identity
-exclusion, discard/reshuffle, search cloning, stale action rejection, atomic
-unsupported upgrades, profile separation, exact snapshot continuation and two
-completed combats with the same permanent deck.
+The [direct regression cases](../../tests/headless/test_game_engine.py) cover
+same-ID mutation among duplicates, preview immutability, base/upgraded damage and
+cost, typed legal actions, discard/reshuffle, branch isolation, invalid-operation
+atomicity, JSON continuation and two combats with the same permanent deck.
+An injected three-level card also proves that resolved cost/effect changes do not
+require projection, encoder or per-feature profile registration.
 
+The legacy public backend keeps its base content and rejects upgraded combat
+launches. Public upgraded-card integration is deferred; no new actor/checkpoint
+compatibility or full-game protocol capability is claimed by these direct tests.
 Enemy rules, RNG, damage/status ordering, relic/enchantment hooks and the remaining
-card pool still use the reduced simulator's evidence level. This isolated source
-check does not establish their native parity, a full run, upgrade-card selection
-UI, reward upgrades or training readiness for this profile.
+card pool retain the reduced simulator's evidence level. This isolated source
+check does not establish their native parity, a full run, upgrade selection UI,
+reward upgrades or training readiness for upgraded cards.

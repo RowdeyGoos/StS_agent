@@ -1,9 +1,10 @@
 # StS Agent
 
 Research toward a functional, eventually near-optimal Slay the Spire 2 agent.
-The repository contains three complementary systems:
+The repository contains these complementary systems:
 
-- A deterministic combat simulator for RL experiments, traces and exact small-combat search.
+- An independent headless game engine for implementing cards, combat and persistent run rules.
+- Combat research adapters for RL experiments, traces and exact small-combat search.
 - A reduced headless run environment with public decision contracts, datasets and
   a deterministic behavior-cloning smoke. Progression rules are structural fixtures.
 - A live-game bridge with bounded combat, reward, map, shop, rest and generic
@@ -29,6 +30,19 @@ pip install -e .
 
 For only the pure-Python simulator, `pip install -e .` is sufficient.
 `requirements.txt` adds Gymnasium, PyTorch and Optuna.
+
+## Implementing the game
+
+Start with [`game/headless/`](game/headless/) and the [engine guide](docs/HEADLESS_ENGINE.md).
+Game rules run directly through `CombatEngine` and `RunEngine`, without public
+projections, encoders or training. Cards own their effect/upgrade definitions;
+content catalogs and mutable instances are separate. The older experiment APIs
+consume the same combat engine. Full target-game content and progression remain
+unfinished; see the [feature backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md).
+
+```bash
+PYTHONPATH=. python -m pytest -q tests/headless
+```
 
 ## Combat experiments
 
@@ -102,7 +116,8 @@ also has focused native fixtures. Complete autonomous runs remain an open target
 
 | Location | Purpose |
 | --- | --- |
-| `game/simulation/` | Combat rules, observations, action encoding and factories |
+| `game/headless/` | Canonical game rules, content, combat, persistent state and private continuation |
+| `game/simulation/` | Combat research compatibility, observations, encoding, shaping and factories |
 | `game/agents/`, `game/training/` | Policies, persistence, collectors and training |
 | `game/contracts/`, `game/backends/`, `game/data/` | Full-game interfaces, reduced backend and artifacts |
 | `game/analysis/`, `game/cli/` | Evaluation, inspection and installed commands |
