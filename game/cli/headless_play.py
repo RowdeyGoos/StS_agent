@@ -10,6 +10,7 @@ from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
 from game.headless.run.actions import (
     ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion,
+    BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
 )
 from game.headless.run.engine import RunEngine
 
@@ -34,7 +35,22 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     if upgrades:
         bash = next((c.instance_id for c in engine.state.deck if c.definition.definition_id == "bash"), None)
         return next((a for a in upgrades if a.instance_id == bash), upgrades[0])
-    for kind in (LeaveRewards, LeaveRest, UsePotion):
+    if engine.state.pending and engine.state.pending.get("kind") == "shop":
+        # Buy one affordable card, remove a starter, then leave; this is only
+        # an example policy, never a restriction on the room's legal purchases.
+        offers = engine.state.pending["offers"]
+        bought_card = any(o["kind"] == "card" and o["sold"] for o in offers)
+        if not bought_card:
+            for offer in offers:
+                if offer["kind"] == "card" and BuyShopItem(offer["offer_id"]) in actions:
+                    return BuyShopItem(offer["offer_id"])
+        if BeginShopRemoval() in actions:
+            return BeginShopRemoval()
+        removals = [a for a in actions if isinstance(a, ChooseShopRemoval) and a.instance_id is not None]
+        if removals:
+            strikes = {c.instance_id for c in engine.state.deck if c.definition.definition_id == "strike"}
+            return next((a for a in removals if a.instance_id in strikes), removals[0])
+    for kind in (LeaveRewards, LeaveRest, LeaveShop, UsePotion):
         if found := next((a for a in actions if isinstance(a, kind)), None):
             return found
     plays = [a for a in actions if isinstance(a, PlayCard)]
@@ -90,6 +106,8 @@ def main(argv=None):
                       "route": args.route, "path": args.path, "seed": state.seed,
                       "phase": state.phase.value, "hp": state.hp, "max_hp": state.max_hp,
                       "gold": state.gold, "combats_completed": state.combats_completed,
+                      "shop_purchases": sum(t["action"] == "BuyShopItem" for t in trace),
+                      "shop_removals": state.shop_removals_used,
                       "act_completion": None if state.act_completion is None else asdict(state.act_completion),
                       "deck_size": len(state.deck), "relics": [r.definition_id for r in state.relics], "upgraded_cards": [c.instance_id for c in state.deck if c.upgrade_level],
                       "potions_used": sum(t["action"] == "UsePotion" for t in trace),

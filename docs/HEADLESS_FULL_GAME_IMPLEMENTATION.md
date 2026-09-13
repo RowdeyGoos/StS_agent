@@ -21,6 +21,12 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — first shop:** repeatable card/relic/potion purchases, one card
+  sale, cancelable permanent deck removal with A0 escalation, sold-out state,
+  affordability/inventory checks and JSON continuation are implemented. The Act 1
+  route can visit or bypass the shop. Stock and basis-point RNG are authored;
+  full pools, discounts, restock and pickup selectors remain HF-35 work.
+  [Evidence](evidence/first_shop_2026_09_13.md).
 - **2026-09-13 — first boss and explicit act completion:** Vantom A0, Slippery,
   generated unplayable Wounds, Sword Boomerang, Impervious/Offering/Fiend Fire
   and their upgrades,
@@ -920,6 +926,16 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-35 — Implement shops and repeatable purchases
 
+- **Partial:** the first supported merchant has exact offer IDs, repeat purchases,
+  one sale, sold-out state, card/relic/potion acquisition, full-slot/affordability
+  rejection and a cancelable exact-card removal service. A0 removal is 75 + 25
+  per previous successful removal, once per shop. Its optional Act 1 node and all
+  shop decisions restore exactly. Native base costs and variation bands are
+  verified; stock composition and discrete variation sampling are authored.
+  Remaining: complete native pool generation, discounts/restock modifiers,
+  colorless stock, pickup child selectors and event-owned merchants. See
+  [first-shop evidence](evidence/first_shop_2026_09_13.md).
+
 - **Depends on:** HF-01/05/07/24/26/33; HF-29/30 for normal entry.
 - **Implement:** shop inventory generation and display, prices/sales/discounts,
   cards/relics/potions, repeat purchases, sold-out/restock rules, card-removal service
@@ -1207,25 +1223,22 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The authored route now includes an elite, a boss and an explicit Act 1 end. The
-next useful batch is **HF-35: a first shop**, providing real deck-building and
-inventory decisions on the route:
+The authored Act 1 route now includes an elite, an optional shop, a boss and an
+explicit act end. The next useful batch is **HF-36: a first treasure room**, adding
+another ordinary room family through existing relic acquisition rules:
 
-1. Verify native A0 stock categories, prices, removal cost/escalation, sold-out
-   behavior and exit legality in the pinned assembly. Keep generation restricted
-   to implemented cards, potions and simple pickup relics initially; label authored
-   sampling separately from native prices and purchase behavior.
-2. Implement owned shop stock and exact purchase commands in `game/headless/run/`.
-   Purchases spend gold once, grant the selected instance through existing inventory
-   rules, and mark only that stock entry sold. Reject insufficient gold, occupied
-   potion slots, duplicate relics and stale purchase IDs before mutation.
-3. Add a cancelable master-deck removal selection using exact instance IDs. Verify
-   eligibility, costs and whether the service can be used again before implementing
-   that policy; reuse permanent deck operations rather than combat exhaust.
-4. Add an optional shop stop to the authored Act 1 route. Exercise repeat purchases,
-   removal, skipping/leaving, affordability boundaries and JSON restore before and
-   after each operation. Native map generation, treasure/events, remaining encounters,
-   complete content pools and later acts remain separate implementation work.
+1. Verify the pinned native chest choices, ordinary A0 reward contents, skip/leave
+   behavior and empty-pool behavior. Identify modifiers explicitly and leave
+   unsupported modifiers out of the first restricted room definition.
+2. Add owned chest state and open/claim/leave commands in a small room rule module.
+   Reuse relic acquisition and unowned-pool filtering; apply pickup effects once.
+   Keep pending choices as plain data and stock generation separate from rewards.
+3. Add an authored treasure node to `overgrowth-act1`. Test opening, declining,
+   claiming, duplicate rejection, pool depletion and continuation into the next
+   room, with exact JSON restore before and after each decision.
+4. Then implement one source-verified Overgrowth event (HF-39), followed by remaining
+   encounter families and native map/pool generation. Shops still need the HF-35
+   modifiers and full content listed above; later acts remain separate work.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

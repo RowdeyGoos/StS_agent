@@ -51,6 +51,8 @@ class RunState:
     potions: list[PotionInstance | None] = field(default_factory=lambda: [None] * 3)
     next_item_id: int = 0
     potion_drop_chance: int = 40
+    next_shop_id: int = 0
+    shop_removals_used: int = 0
 
     def allocate_item_id(self) -> str:
         result = f"run.item.{self.next_item_id}"
@@ -106,6 +108,10 @@ class RunState:
             raise ValueError("Invalid run phase.")
         if self.config is not None and not isinstance(self.config, RunConfig):
             raise ValueError("Invalid run configuration.")
+        if (type(self.next_shop_id) is not int or self.next_shop_id < 0
+                or type(self.shop_removals_used) is not int
+                or not 0 <= self.shop_removals_used <= self.next_shop_id):
+            raise ValueError("Invalid shop counters.")
         if type(self.next_item_id) is not int or self.next_item_id < 0:
             raise ValueError("Invalid item allocator.")
         if type(self.potion_drop_chance) is not int or not 0 <= self.potion_drop_chance <= 100 or self.potion_drop_chance % 10:
