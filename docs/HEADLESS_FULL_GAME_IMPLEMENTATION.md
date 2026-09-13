@@ -21,6 +21,13 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — Tablet of Truth and Morphic Grove:** repeated maximum-HP costs,
+  automatic random/all-card upgrades, all-gold payment and two-card transformations
+  now work through the generated route. Morphic Grove entry eligibility and owned
+  historical conditions extend event-queue replay. Both definitions have complete
+  option coverage within the implemented card/power scope; broader transformation
+  pools and modifiers remain open. [Evidence](evidence/overgrowth_events_2026_09_13.md).
+
 - **2026-09-13 — complete A0 Overgrowth encounter roster:** all 22 native pool
   entries and 29 monster types are implemented, including all three elites/bosses,
   mixed groups, summons, revival and required powers/status cards. Every encounter
@@ -913,7 +920,9 @@ Dependencies and acceptance cases are in the linked task.
   the same normal queue. The supported all-unlocked event pool shuffles once,
   skips visited definitions and allows repetition after an exhausted full pass.
   Queue cursor/assignments restore and roll back with failed unknown entry.
-  All-seen discovery is explicit; first-run/unlock filters, conditional event
+  Morphic Grove now checks 100 gold and two transformable cards; owned entry
+  conditions permit eligibility replay after later resource/deck changes.
+  All-seen discovery is explicit; first-run/unlock filters, additional conditional
   eligibility, full event content, modifying relics and RNG parity remain open.
 
 - **Depends on:** HF-01/04/05/29 and the selected content implementations.
@@ -1319,29 +1328,30 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The next Act 1 batch is **expanding Neow and the reachable event catalog**:
+The next Act 1 batch is **event reward bundles and further native content**:
 
-1. Extend `run/ancient.py` with native three-offer generation: two positives plus
-   one curse. Inspect pinned Neow exclusions and unlock predicates first. Add each
-   required relic/card effect beside its content, with persistent pickup choices
-   when needed. Keep the fixed two-positive profile and post-Ancient start explicit
-   fixtures; do not label a restricted offer pool as the full native distribution.
-2. Add the first missing Overgrowth/shared event from the retained inventory to
-   `events/catalog.py` and `RunConfig.event_pool`. Reuse deck selectors/inventory
-   operations and give every option an exact effect/restore regression. Unsupported
-   content must reject atomically rather than reroll a replacement event.
-3. Extend `events/progression.py` with declared unlock epochs and event-specific
-   `IsAllowed` rules as their first content callers arrive. Preserve native visited
-   skipping and full-pass repetition fallback. Test ineligible candidates, exhausted
-   pools, owned cursor/assignments and rollback after failed room construction.
-4. Continue HF-18/24–27/31–36/39–43 for the remaining Ironclad card, relic, potion,
-   reward, shop and event catalog. Verify the added content through acquisition,
-   its next combat/room and installed continuation. Map/relic modifiers remain
-   separate content tasks; visual coordinate postprocessing does not change room
-   progression.
+1. Implement Whispering Hollow with its native entry predicate and both branches:
+   one-card transformation followed by damage, or gold payment followed by two
+   potion rewards. Add an owned pending reward bundle for multiple potions with
+   claim/skip/full-inventory behavior; reuse the existing potion inventory commands.
+   Inspect pinned amounts and reward-generation rules before implementation.
+2. Reuse that reward bundle for Wellspring's Bottle branch. Implement its Bathe
+   removal and conditional Guilty additions together with the curse's complete
+   combat behavior. Do not mark an event complete by offering only its simpler
+   branch or treating a curse as an inert deck entry.
+3. Expand Neow toward native three-offer generation: two positives plus one curse.
+   Inspect exclusions/unlock predicates, implement required relic/card effects,
+   and keep the fixed two-positive and post-Ancient profiles explicit fixtures.
+   Remaining full-offer distribution and native RNG parity are separate from
+   implementing the individual effects.
+4. Continue HF-18/24–27/31–36/39–43 for remaining Ironclad card, relic, potion,
+   reward, shop and event content. Add eligibility predicates beside each event and
+   extend plain entry conditions only when a concrete predicate requires them.
+   Preserve native full-pass fallback, unsupported-content rollback, per-decision
+   continuation and installed acquisition-to-next-room checks.
 
-Current starting-choice/event-queue source anchors and validation:
-[Neow and event progression evidence](evidence/neow_event_progression_2026_09_13.md).
+Current event content and eligibility evidence:
+[Tablet of Truth and Morphic Grove](evidence/overgrowth_events_2026_09_13.md).
 Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
