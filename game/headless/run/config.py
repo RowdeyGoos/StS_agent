@@ -10,10 +10,12 @@ class RunConfig:
     reward_cards: tuple[str, ...] = ("pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit", "uppercut", "shockwave")
     reward_potions: tuple[str, ...] = ("fire_potion", "block_potion")
 
+    reward_relics: tuple[str, ...] = ("strawberry", "pear", "mango")
+
     def __post_init__(self):
         if self.character != "ironclad" or type(self.ascension) is not int or self.ascension != 0:
             raise ValueError("Only Ironclad Ascension 0 is implemented.")
-        for name in ("reward_cards", "reward_potions"):
+        for name in ("reward_cards", "reward_potions", "reward_relics"):
             values = tuple(getattr(self, name))
             if not values or any(not isinstance(v, str) or not v for v in values) or len(values) != len(set(values)):
                 raise ValueError("Reward pools must contain distinct definition IDs.")

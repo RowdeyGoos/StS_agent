@@ -192,7 +192,9 @@ class Enemy(ABC):
             player.add_card_to_discard(SlimedCard())
 
         if tick_statuses:
+            from game.headless.powers.lifecycle import after_owner_side_turn_end
             self.statuses.on_turn_end()
+            after_owner_side_turn_end(self)
         self.advance_intent()
         return current_intent
 

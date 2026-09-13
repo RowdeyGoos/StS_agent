@@ -24,6 +24,11 @@ class ClaimPotion:
 
 
 @dataclass(frozen=True, slots=True)
+class ClaimRelic:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
 class LeaveRewards:
     pass
 

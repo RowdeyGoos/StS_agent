@@ -2,7 +2,8 @@
 
 from game.headless.run.deck import add_card
 from game.headless.run.state import RunPhase
-from game.headless.run.inventory import add_potion
+from game.headless.run.inventory import add_potion, add_relic
+from game.headless.encounters.catalog import ENCOUNTERS
 
 
 def begin_reward(state, cards, *, gold: int, card_ids, offer_count: int = 3) -> None:
@@ -53,8 +54,13 @@ def _reward(state):
     return state.pending
 
 
-def begin_combat_rewards(state, cards) -> None:
-    """A0 hallway amounts with explicitly restricted, project-sampled pools.
+def eligible_relics(state):
+    owned = {r.definition_id for r in state.relics}
+    return tuple(r for r in state.config.reward_relics if r not in owned)
+
+
+def begin_combat_rewards(state, cards, *, encounter_id=None) -> None:
+    """A0 encounter amounts with explicitly restricted, project-sampled pools.
 
     Draw once on entry. Reading choices and restoring a pending reward never
     rerolls it. Named Python streams do not reproduce native seeds/draw order.
@@ -62,12 +68,19 @@ def begin_combat_rewards(state, cards) -> None:
     state.require_between_rooms()
     if state.config is None:
         raise ValueError("Combat rewards require declared content pools.")
+    encounter = None if encounter_id is None else ENCOUNTERS[encounter_id]
+    relic_pool = eligible_relics(state) if encounter is not None and encounter.gives_relic else ()
+    if encounter is not None and encounter.gives_relic and not relic_pool:
+        raise ValueError("Restricted relic pool exhausted.")
+    low, high = (10, 20) if encounter is None else encounter.gold_range
     dropped = state.rng.randint("potion_drop", 0, 99) < state.potion_drop_chance
     state.potion_drop_chance += -10 if dropped else 10
-    gold = state.rng.randint("reward_gold", 10, 20)
+    gold = state.rng.randint("reward_gold", low, high)
     potion = state.rng.choice("reward_potion", state.config.reward_potions) if dropped else None
     begin_reward(state, cards, gold=gold, card_ids=state.config.reward_cards)
-    state.pending.update(combat_reward=True, potion=potion, potion_claimed=False)
+    relic = state.rng.choice("reward_relic", relic_pool) if relic_pool else None
+    state.pending.update(combat_reward=True, encounter_id=encounter_id, potion=potion,
+                         potion_claimed=False, relic=relic, relic_claimed=False)
 
 
 def claim_potion(state):
@@ -83,6 +96,15 @@ def leave_combat_rewards(state) -> None:
     reward = _reward(state)
     if not reward.get("combat_reward"):
         raise ValueError("No combat rewards are active.")
-    # Ordinary hallway rewards may be left unclaimed; they are then forfeited.
+    # Combat rewards may be left unclaimed; they are then forfeited.
     state.pending = None
     state.phase = RunPhase.ROUTE
+
+
+def claim_relic(state):
+    reward = _reward(state)
+    if not reward.get("combat_reward") or reward["relic"] is None or reward["relic_claimed"]:
+        raise ValueError("Relic reward is unavailable.")
+    relic = add_relic(state, reward["relic"])
+    reward["relic_claimed"] = True
+    return relic

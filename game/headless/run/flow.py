@@ -4,7 +4,7 @@ from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
 from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
-    ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, LeaveRewards,
+    ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
 )
 from game.headless.run import rest_site, rewards
@@ -39,6 +39,8 @@ def legal_actions(engine) -> tuple:
             actions.append(ChooseRewardCard(None))
         if reward["potion"] is not None and not reward["potion_claimed"] and None in state.potions:
             actions.append(ClaimPotion())
+        if reward["relic"] is not None and not reward["relic_claimed"]:
+            actions.append(ClaimRelic())
         actions.append(LeaveRewards())
     elif state.phase is RunPhase.ROOM and state.pending.get("kind") == "rest_site":
         stage = state.pending["stage"]
@@ -63,17 +65,19 @@ def apply(engine, action):
         # Resolve content before moving the cursor, so unsupported rooms cannot
         # strand an otherwise usable run or consume the launch RNG.
         node = engine.graph.node(action.node_id)
-        if node.kind == "combat":
+        if node.kind in ("combat", "elite"):
             if node.encounter_id not in ENCOUNTERS:
                 raise ValueError("Unsupported encounter.")
             encounter = ENCOUNTERS[node.encounter_id]
+            if encounter.room_kind != node.kind:
+                raise ValueError("Map room and encounter kind disagree.")
         elif node.kind not in ("rest", "slice_end", "terminal"):
             raise ValueError("Unsupported room.")
         previous_node, previous_pending = state.current_node_id, state.pending
         engine.choose_node(action.node_id)
-        if node.kind == "combat":
+        if node.kind in ("combat", "elite"):
             try:
-                return engine.start_combat(encounter_factory=encounter)
+                return engine.start_combat(encounter_id=node.encounter_id)
             except Exception:
                 # start_combat builds independently before committing. Restore
                 # the preceding navigation too if encounter construction fails.
@@ -100,6 +104,8 @@ def apply(engine, action):
         return rewards.claim_gold(state)
     if isinstance(action, ChooseRewardCard):
         return rewards.choose_card(state, engine.cards, action.definition_id)
+    if isinstance(action, ClaimRelic):
+        return rewards.claim_relic(state)
     if isinstance(action, ClaimPotion):
         return rewards.claim_potion(state)
     if isinstance(action, LeaveRewards):

@@ -34,6 +34,7 @@ class RunState:
     next_card_id: int = 0
     combats_completed: int = 0
     current_node_id: str | None = None
+    active_encounter_id: str | None = None
     visited_nodes: list[str] = field(default_factory=list)
     # Pending gameplay data contains values, never callback closures or wire DTOs.
     pending: dict | None = None
@@ -70,6 +71,9 @@ class RunState:
             raise ValueError("Selected map node requires a different room.")
 
     def validate(self) -> None:
+        if self.active_encounter_id is not None and (not isinstance(self.active_encounter_id, str)
+                or not self.active_encounter_id or self.phase is not RunPhase.COMBAT):
+            raise ValueError("Encounter identity requires an active combat.")
         if type(self.max_hp) is not int or self.max_hp <= 0 or type(self.hp) is not int or not 0 <= self.hp <= self.max_hp:
             raise ValueError("Invalid run HP.")
         if type(self.gold) is not int or self.gold < 0:
