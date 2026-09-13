@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from game.headless.core.deck import Deck
+from game.headless.core.selection import PendingCardPlay
 from game.headless.powers.status import StatusCollection, modify_attack_damage_for_statuses
 from game.headless.core.utils import apply_damage_to_block_and_hp
 
@@ -30,6 +31,7 @@ class Player:
         self.energy = 0
         self.strength = 0
         self.statuses = StatusCollection()
+        self.pending_play: PendingCardPlay | None = None
         # Alias to the owning combat's enemy slots, rebound by reset/restore/clone.
         # Isolated Player rule fixtures can leave this unset.
         self.combat_enemies: list[Enemy] | None = None
@@ -65,6 +67,8 @@ class Player:
 
     def end_turn(self) -> None:
         """End the player's turn by discarding the current hand."""
+        if self.pending_play is not None:
+            raise ValueError("Resolve the pending card choice first.")
         self.deck.discard_hand()
         self.statuses.on_turn_end()
 
@@ -116,6 +120,8 @@ class Player:
 
     def play_card(self, hand_index: int, enemy: Enemy) -> Card:
         """Play a card from the hand against the current enemy."""
+        if self.pending_play is not None:
+            raise ValueError("Resolve the pending card choice first.")
         try:
             card = self.hand[hand_index]
         except IndexError as exc:
@@ -126,11 +132,42 @@ class Player:
 
         self.energy -= card.cost
         card = self.deck.pop_card_from_hand(hand_index)
-        card.play(self, enemy)
+        self.deck.in_play.append(card)
+        result = card.play(self, enemy)
+        if result is not None:
+            index, _ = result
+            slot = None if not card.spec.uses_target or enemy is None else self.combat_enemies.index(enemy)
+            self.pending_play = PendingCardPlay(index, slot)
+        else:
+            self._finish_card_play()
+        return card
 
+    def pending_options(self) -> tuple[str, ...]:
+        if self.pending_play is None:
+            return ()
+        card = self.deck.in_play[0]
+        effect = card.definition.effects[self.pending_play.effect_index]
+        return tuple(c.instance_id for c in effect.eligible(self))
+
+    def choose_combat_card(self, instance_id: str) -> None:
+        if instance_id not in self.pending_options():
+            raise ValueError("Illegal combat card choice.")
+        pending = self.pending_play
+        card = self.deck.in_play[0]
+        effect = card.definition.effects[pending.effect_index]
+        selected = next(c for c in self.hand if c.instance_id == instance_id)
+        effect.resolve(self, selected)
+        target = None if pending.target_slot is None else self.combat_enemies[pending.target_slot]
+        self.pending_play = None
+        result = card.play(self, target, start_effect=pending.effect_index + 1)
+        if result is not None:
+            self.pending_play = PendingCardPlay(result[0], pending.target_slot)
+        else:
+            self._finish_card_play()
+
+    def _finish_card_play(self) -> None:
+        card = self.deck.in_play.pop()
         if card.exhausts:
             self.deck.exhaust_card(card)
         else:
             self.deck.discard_card(card)
-
-        return card

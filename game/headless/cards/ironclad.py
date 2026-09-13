@@ -1,7 +1,7 @@
 """Implemented Ironclad cards. Add each verified card family in this layer."""
 
 from game.headless.cards.base import Card, CardDefinition, CardSpec
-from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock
+from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock, SelectHandCard
 from game.headless.powers.status import VULNERABLE
 
 STRIKE = CardDefinition("strike", (
@@ -35,7 +35,17 @@ BODY_SLAM = CardDefinition("body_slam", (
     CardSpec("Body Slam+", 0, "attack", damage_equals_player_block=True),
 ), (DealDamage(),))
 
-DEFINITIONS = (STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE, BODY_SLAM)
+ARMAMENTS = CardDefinition("armaments", (
+    CardSpec("Armaments", 1, "skill", block_gain=5, uses_target=False),
+    CardSpec("Armaments+", 1, "skill", block_gain=5, uses_target=False),
+), (GainBlock(), SelectHandCard("upgrade", upgraded_mode="all")))
+TRUE_GRIT = CardDefinition("true_grit", (
+    CardSpec("True Grit", 1, "skill", block_gain=7, uses_target=False),
+    CardSpec("True Grit+", 1, "skill", block_gain=9, uses_target=False),
+), (GainBlock(), SelectHandCard("exhaust", mode="random")))
+
+DEFINITIONS = (STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE,
+               BODY_SLAM, ARMAMENTS, TRUE_GRIT)
 
 # Existing constructor names are retained for callers and old experiment configs.
 class StrikeCard(Card):

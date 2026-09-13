@@ -20,4 +20,13 @@ class EndTurn:
     pass
 
 
-CombatAction = PlayCard | EndTurn
+@dataclass(frozen=True, slots=True)
+class ChooseCombatCard:
+    instance_id: str
+
+    def __post_init__(self):
+        if not isinstance(self.instance_id, str) or not self.instance_id:
+            raise ValueError("A combat choice requires an exact card instance ID.")
+
+
+CombatAction = PlayCard | EndTurn | ChooseCombatCard

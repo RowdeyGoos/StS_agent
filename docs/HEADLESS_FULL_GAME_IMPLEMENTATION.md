@@ -64,7 +64,7 @@ into validation of changed code.
 - HF-04/08 have working foundations, not complete full-game coverage. HF-06 has
   ordered immediate card effects, not a general trigger/continuation system.
   Cancelable single-card rest-site smithing is implemented; event/reward and
-  nested combat selectors remain HF-16/31/33/34 work. The test-only direct
+  more complex combat selectors remain HF-16/31/33/34 work. The test-only direct
   between-room upgrade operation does not establish source legality.
 
 ## Scope and definition of complete
@@ -442,6 +442,11 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-07 — Suspend and resume nested decisions
 
+- **Status:** first combat parent → hand-choice → effect-suffix path is implemented,
+  including sequential choices and JSON continuation. Reward/event children,
+  autoplay/replay and general trigger chains remain open; extend the existing
+  `core/selection.py` and card effect mechanism when those callers arrive.
+
 - **Depends on:** HF-04/06.
 - **Implement:** extend game-owned pending state and resolution in `game/headless/`
   to retain serializable parent/effect continuations. Drive automatic work to the next
@@ -533,7 +538,7 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-13 — Execute upgraded and modified card instances
 
 - **Status:** partial. Immutable definitions, mutable instances, arbitrary per-card
-  levels and the verified first upgrades of all seven current Ironclad cards are
+  levels and the verified first upgrades of all nine current Ironclad cards are
   implemented. See [starter evidence](evidence/strike_upgrade_2026_09_13.md) and
   [reward-card evidence](evidence/slice_combat_content_2026_09_13.md). Rest-site
   selection works. Other card families, temporary modifiers and other upgrade
@@ -582,6 +587,15 @@ Dependencies and acceptance cases are in the linked task.
   Differential and affected baselines/demo formatting.
 
 ### HF-16 — Support decisions inside card resolution
+
+- **Status:** first callers implemented: Armaments (one/all combat upgrades) and
+  True Grit (random/chosen exhaustion), with zero/one auto-selection, exact hand
+  IDs, mandatory single choices and restoration while suspended. Both are in the
+  six-card slice reward pool and support Smith. See the
+  [source and acceptance evidence](evidence/combat_card_choices_2026_09_13.md).
+  Next: add a source-verified caller for discard/draw-pile selection or variable
+  counts; optionality, ordered bundles, offered cards and replay/autoplay remain
+  unimplemented. Do not replace the current mechanism just to anticipate them.
 
 - **Depends on:** HF-07/13/14/15.
 - **Implement:** first add one target-game card that asks for a hand/discard/draw-pile

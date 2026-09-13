@@ -1,6 +1,6 @@
 """Direct gameplay command dispatch; room and content rules stay in their modules."""
 
-from game.headless.core.actions import EndTurn, PlayCard
+from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
 from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
@@ -19,6 +19,8 @@ def legal_actions(engine) -> tuple:
     actions = []
     if state.phase is RunPhase.COMBAT:
         actions.extend(combat.legal_actions())
+        if combat.player.pending_play is not None:
+            return tuple(actions)
         if not combat.done:
             for potion in state.potions:
                 if potion is None:
@@ -81,7 +83,7 @@ def apply(engine, action):
         if node.kind == "rest":
             rest_site.begin_rest_site(state)
         return node
-    if isinstance(action, (PlayCard, EndTurn, UsePotion)):
+    if isinstance(action, (PlayCard, ChooseCombatCard, EndTurn, UsePotion)):
         if isinstance(action, UsePotion):
             slot = potion_slot(state, action.instance_id)
             POTIONS[state.potions[slot].definition_id].use(engine.combat, action.target_slot)

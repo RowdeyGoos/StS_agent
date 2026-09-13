@@ -101,10 +101,28 @@ content catalog. New effects belong in that content family or shared game rules
 when multiple cards need them. Display names do not dispatch behavior. A test can
 inject a `CardCatalog` containing an entirely new card without touching any adapter.
 Upgrade levels are per definition; they are not globally limited to a boolean.
-All seven playable Ironclad definitions in the current pool have one implemented
+All nine playable Ironclad definitions in the current pool have one implemented
 upgrade: [starter-card evidence](evidence/strike_upgrade_2026_09_13.md) and
 [reward-card/encounter evidence](evidence/slice_combat_content_2026_09_13.md).
 Slimed costs one, draws one and exhausts; it cannot be upgraded.
+
+Armaments gives 5 block, then upgrades one eligible hand card for this combat;
+Armaments+ upgrades all eligible hand cards. True Grit gives 7 block and exhausts
+a random remaining hand card; True Grit+ gives 9 block and lets the player choose.
+Empty selections do nothing and a single eligible card resolves automatically.
+With multiple eligible cards, `ChooseCombatCard(instance_id)` is the only legal
+command until the choice resolves. These selections require exactly one card;
+there is no cancel command. See the [source checks](evidence/combat_card_choices_2026_09_13.md).
+
+The resolving card stays in `Deck.in_play`, outside the selectable hand and
+reshuffleable discard pile. `Player.pending_play` stores only its effect index
+and target slot; the immutable catalog supplies eligibility and resolution rules.
+Selecting resumes the ordered effect suffix, then discards/exhausts the source
+once. Later effects can request another choice through the same mechanism.
+Temporary upgrades keep their instance IDs and last through combat reshuffles;
+the persistent master deck is unaffected. Random hand selection uses an owned
+`Deck.selection_rng`, forked without consuming deck/enemy RNG. This is deterministic
+Python sampling, not the native run's `CombatCardSelection` seed sequence.
 
 Game commands describe intent, not network authority. External adapters still own
 public references, stale request bindings, information filtering and representation
@@ -139,7 +157,7 @@ applies Burning Blood's capped 6 HP heal once, then generates a hallway reward
 bundle. Ordinary loss ends the run without victory healing or rewards.
 
 Rewards contain 10–20 gold, three distinct offers sampled from Pommel Strike,
-Shrug It Off, Iron Wave and Body Slam, and a possible Fire or Block Potion.
+Shrug It Off, Iron Wave, Body Slam, Armaments and True Grit, and a possible Fire or Block Potion.
 Potion drop chance starts at 40%, changing by ten percentage points down after a
 drop or up after a miss. The integer odds and named Python streams are
 project-authored sampling; they do not reproduce native RNG or full pool/rarity
@@ -151,7 +169,7 @@ At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
 `Smith` opens a plain-data, cancelable selection of implemented upgrades.
 `ChooseUpgrade(instance_id)` commits one exact card; `ChooseUpgrade(None)` returns
 to the rest options without spending the action. Only one rest/smith action can
-be completed. All seven current Ironclad cards can be upgraded once. Pommel
+be completed. All nine current Ironclad cards can be upgraded once. Pommel
 Strike+ deals 10 and draws 2; Shrug It Off+ gives 11 block and draws 1; Iron Wave+
 gives 7 block then deals 7; Body Slam+ costs zero and still scales with current
 block. Unsupported cards and further upgrade levels remain excluded explicitly.
@@ -193,8 +211,10 @@ its encoder size does not configure game capacity. See the
 
 Private run snapshots now use `headless_run_state_v2`, including configuration,
 items, allocator, potion odds, encounter references and every pending decision.
-The earlier private v1 format is rejected rather than assigning invented item
-or progression defaults. Public reduced fixture schemas are unchanged.
+Nested combat records now use `headless_combat_state_v2`, including the in-play
+pile, pending continuation and selection RNG. Earlier private v1 formats are rejected rather than assigning invented item
+or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
+and brute-force oracle do not support combat choices or these two new cards.
 Snapshots bind card values/effect composition and item values automatically,
 and restore RNG aliases and exact piles. Use the same game-rule implementation
 when restoring: these are development continuation records, not release provenance
