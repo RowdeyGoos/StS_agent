@@ -14,6 +14,7 @@ from game.headless.run.config import RunConfig
 from game.headless.run.inventory import add_relic
 from game.headless.potions.base import POTIONS
 from game.headless.relics.base import RELICS
+from game.headless.encounters.catalog import ENCOUNTERS
 
 
 class RunEngine:
@@ -27,6 +28,8 @@ class RunEngine:
         if config is not None:
             for card_id in config.reward_cards:
                 cards.definition(card_id)
+            if any(r not in RELICS or r == "burning_blood" for r in config.reward_relics):
+                raise ValueError("Unsupported relic reward pool.")
             if any(p not in POTIONS for p in config.reward_potions):
                 raise ValueError("Unsupported potion reward pool.")
         if self.state.hp == 0:
@@ -65,8 +68,26 @@ class RunEngine:
         self.state.require_between_rooms()
         return upgrade_card(self.state, instance_id)
 
-    def start_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5) -> CombatEngine:
-        self.state.require_room_entry("combat")
+    def start_combat(self, *, encounter_id: str | None = None, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5) -> CombatEngine:
+        if encounter_id is None and encounter_factory is not None:
+            registered = next((name for name, definition in ENCOUNTERS.items() if definition is encounter_factory or definition.factory is encounter_factory), None)
+            if registered is not None:
+                encounter_id, encounter_factory = registered, None
+        room_kind = "combat"
+        if encounter_id is not None:
+            if encounter_id not in ENCOUNTERS or encounter_factory is not None or enemy_factory is not None:
+                raise ValueError("Unsupported or ambiguous encounter.")
+            encounter_factory = ENCOUNTERS[encounter_id]
+            room_kind = encounter_factory.room_kind
+            if encounter_factory.gives_relic:
+                from game.headless.run.rewards import eligible_relics
+                if self.state.config is None or not eligible_relics(self.state):
+                    raise ValueError("The restricted elite relic pool has no available reward.")
+        self.state.require_room_entry(room_kind)
+        if self.state.pending is not None and self.graph is not None:
+            selected_id = self.graph.node(self.state.current_node_id).encounter_id
+            if selected_id is not None and selected_id != encounter_id:
+                raise ValueError("Combat must match the selected encounter.")
         # Build against an independent stream snapshot, committing only on success.
         rng = GameRandomService(self.state.seed)
         rng.restore(self.state.rng.snapshot())
@@ -81,12 +102,15 @@ class RunEngine:
         self.state.rng = rng
         self.state.pending = None
         self.state.phase = RunPhase.COMBAT
+        self.state.active_encounter_id = encounter_id
         self.combat = combat
         return combat
 
     def finish_combat(self) -> None:
         if self.state.phase is not RunPhase.COMBAT or self.combat is None or not self.combat.done:
             raise ValueError("The owned combat is not finished.")
+        encounter_id = self.state.active_encounter_id
+        self.state.active_encounter_id = None
         self.state.hp = self.combat.player.hp
         self.state.combats_completed += 1
         self.state.phase = RunPhase.ROUTE if self.combat.winner == "player" else RunPhase.DEFEAT
@@ -96,7 +120,7 @@ class RunEngine:
                 RELICS[relic.definition_id].after_combat_victory(self.state)
             if self.state.config is not None:
                 from game.headless.run.rewards import begin_combat_rewards
-                begin_combat_rewards(self.state, self.cards)
+                begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id)
 
     def available_nodes(self) -> tuple[str, ...]:
         self.state.require_between_rooms()

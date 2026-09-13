@@ -22,9 +22,10 @@ def overgrowth_route_map():
         MapNode("fuzzy_after_slimes", "combat", ("camp",), "overgrowth_fuzzy"),
         MapNode("fuzzy", "combat", ("slimes_after_fuzzy",), "overgrowth_fuzzy"),
         MapNode("slimes_after_fuzzy", "combat", ("camp",), "overgrowth_slimes"),
-        MapNode("camp", "rest", ("mawler", "nibbits")),
+        MapNode("camp", "rest", ("mawler", "nibbits", "byrdonis")),
         MapNode("mawler", "combat", ("slice_end",), "overgrowth_mawler"),
         MapNode("nibbits", "combat", ("slice_end",), "overgrowth_nibbits"),
+        MapNode("byrdonis", "elite", ("slice_end",), "overgrowth_byrdonis"),
         MapNode("slice_end", "slice_end", ()),
     ), "fight_1")
 

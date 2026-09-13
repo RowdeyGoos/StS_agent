@@ -53,8 +53,10 @@ reward pools are explicitly restricted; `slice_complete` is not full-game victor
 Use `--rest-choice rest` for the healing path and `--trace` to print every command.
 The optional `--route overgrowth` plays four combats with two branches: choose
 whether slimes or Fuzzy Wurm comes second, fight the other third, rest/smith, then
-choose Mawler or paired Nibbits. `--path left|right` controls the demo's branch
-preference. This is an authored route toward Act 1, still without elites or a boss.
+choose Mawler, paired Nibbits or the Byrdonis elite. Elite rewards include 35–45
+gold and a relic from Strawberry/Pear/Mango, which permanently raises maximum HP
+and heals on pickup. `--path right` selects the elite; `left` selects Mawler.
+This is an authored route toward Act 1, still without a boss.
 
 Without reinstalling the console entry point, run
 `PYTHONPATH=. python -m game.cli.headless_play` with the same arguments.

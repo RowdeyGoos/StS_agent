@@ -9,7 +9,8 @@ from types import MappingProxyType
 SHRINK = "shrink"
 VULNERABLE = "vulnerable"
 WEAK = "weak"
-SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK)
+TERRITORIAL = "territorial"
+SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL)
 STATUS_STACK_SCALE = 5.0
 
 
@@ -25,6 +26,7 @@ STATUS_DEFINITIONS = MappingProxyType({
     SHRINK: StatusDefinition(name=SHRINK, duration_tick_side=None),
     VULNERABLE: StatusDefinition(name=VULNERABLE),
     WEAK: StatusDefinition(name=WEAK),
+    TERRITORIAL: StatusDefinition(name=TERRITORIAL, duration_tick_side=None),
 })
 
 

@@ -282,11 +282,14 @@ def test_corrupt_pending_smith_rejected_without_changing_live_engine():
 
 
 def test_failed_encounter_construction_preserves_route_and_rng(monkeypatch):
-    from game.headless.run import flow
+    from game.headless.run import flow, engine as engine_module
+    from game.headless.encounters.base import EncounterDefinition
     def broken_encounter(rng):
         rng.randint(1, 100)
         raise ValueError("Synthetic construction failure")
-    monkeypatch.setattr(flow, "ENCOUNTERS", {"overgrowth_nibbit": broken_encounter})
+    catalog = {"overgrowth_nibbit": EncounterDefinition(broken_encounter)}
+    monkeypatch.setattr(flow, "ENCOUNTERS", catalog)
+    monkeypatch.setattr(engine_module, "ENCOUNTERS", catalog)
     engine = RunEngine.ironclad_slice(seed=2)
     assert_rejected(engine, ChooseNode("fight_1"))
 

@@ -147,7 +147,7 @@ def test_encounter_cycles_restore_and_branch_rng_remains_owned(encounter):
 
 
 @pytest.mark.parametrize("first_branch", ["slimes", "fuzzy"])
-@pytest.mark.parametrize("last_branch", ["mawler", "nibbits"])
+@pytest.mark.parametrize("last_branch", ["mawler", "nibbits", "byrdonis"])
 @pytest.mark.parametrize("rest_choice", ["rest", "smith"])
 def test_every_authored_path_four_combats_rewards_and_restore(first_branch, last_branch, rest_choice):
     run = RunEngine.ironclad_slice(seed=2, route="overgrowth")
@@ -169,7 +169,10 @@ def test_every_authored_path_four_combats_rewards_and_restore(first_branch, last
     assert run.state.visited_nodes == ["fight_1", first_branch,
         "fuzzy_after_slimes" if first_branch == "slimes" else "slimes_after_fuzzy",
         "camp", last_branch, "slice_end"]
-    assert len(run.state.deck) == 14 and 139 <= run.state.gold <= 179
+    assert len(run.state.deck) == 14
+    low, high = (164, 204) if last_branch == "byrdonis" else (139, 179)
+    assert low <= run.state.gold <= high
+    assert len(run.state.relics) == (2 if last_branch == "byrdonis" else 1)
     assert sum(c.upgrade_level for c in run.state.deck) == (rest_choice == "smith")
     assert run.legal_actions() == ()
 

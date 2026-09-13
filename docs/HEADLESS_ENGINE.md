@@ -45,7 +45,7 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`run/state.py`](../game/headless/run/state.py), [`run/engine.py`](../game/headless/run/engine.py) | Persistent state and owned combat handoff |
 | [`run/config.py`](../game/headless/run/config.py), [`run/actions.py`](../game/headless/run/actions.py), [`run/flow.py`](../game/headless/run/flow.py) | Declared character/difficulty/pools and direct run command legality/dispatch |
 | [`run/deck.py`](../game/headless/run/deck.py), [`run/rewards.py`](../game/headless/run/rewards.py), [`run/rooms.py`](../game/headless/run/rooms.py) | Persistent mutations, reward resolution and room transitions |
-| [`run/rest_site.py`](../game/headless/run/rest_site.py), [`run/inventory.py`](../game/headless/run/inventory.py), [`relics/`](../game/headless/relics/), [`potions/`](../game/headless/potions/) | Rest/smith decisions, owned item acquisition/removal, victory healing and potion effects |
+| [`run/rest_site.py`](../game/headless/run/rest_site.py), [`run/inventory.py`](../game/headless/run/inventory.py), [`relics/`](../game/headless/relics/), [`potions/`](../game/headless/potions/) | Rest/smith decisions, owned item acquisition/removal, victory healing, permanent max-HP pickup effects and potion effects |
 | [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored map navigation and the existing primitive event effects |
 | [`core/rng.py`](../game/headless/core/rng.py), [`core/snapshots.py`](../game/headless/core/snapshots.py), [`run/snapshots.py`](../game/headless/run/snapshots.py) | Owned RNG streams and private JSON continuation |
 | `game/simulation/`, `game/backends/`, `game/contracts/`, actor/data/training packages | Compatibility, encoding, public-information policy and external consumption |
@@ -181,15 +181,16 @@ The route contains four combats and runs as follows:
 1. Solo Nibbit.
 2. Choose slimes or Fuzzy Wurm; then fight the other as the third combat.
 3. Rest or Smith.
-4. Choose solo Mawler or paired Nibbits, collect rewards and reach `slice_complete`.
+4. Choose solo Mawler, paired Nibbits or the Byrdonis elite, collect rewards and
+   reach `slice_complete`.
 
-The two independent forks give four paths. Direct `ChooseNode` commands select
+The two forks give six paths. Direct `ChooseNode` commands select
 any legal path; `--path left|right` makes the demo consistently choose the first
 or last branch. The graph and visited history already survive run snapshots,
-so this route adds no new continuation format. Sibling/visited nodes cannot be
+while the active encounter ID preserves its reward kind. Sibling/visited nodes cannot be
 entered, and death stops progression without healing or rewards. The default
 `first-slice` route remains the smaller two-combat example. Neither authored
-route implements native map generation, complete encounter pools, elites or bosses.
+route implements native map generation, complete encounter pools or bosses.
 
 Fuzzy Wurm has 55–57 A0 HP and cycles attack 4 → gain 7 Strength → attack 4,
 then repeats; Strength accumulates. Paired Nibbits retain front/back slots:
@@ -201,7 +202,14 @@ can happen once. Its branch rolls consume Python RNG even with one legal move.
 Native branch order is retained, but native RNG sequence parity remains open.
 See the [source and route acceptance](evidence/overgrowth_routes_2026_09_13.md).
 
-Rewards contain 10–20 gold, three distinct offers sampled from Pommel Strike,
+Byrdonis has 81–84 A0 HP, opens with Swoop 17, then alternates Peck 3×3 and
+Swoop. Its Territorial 1 adds one Strength after each completed enemy-side turn,
+so the first Peck deals 4×3 before other modifiers. The power uses an owner-side
+lifecycle rule; it does not trigger at the end of the opposing side or once per
+other enemy. Dead owners do not trigger.
+
+Hallway rewards contain 10–20 gold; Byrdonis rewards contain 35–45 gold and one
+relic. Both have three distinct offers sampled from Pommel Strike,
 Shrug It Off, Iron Wave, Body Slam, Armaments, True Grit, Uppercut and Shockwave, and a possible Fire or Block Potion.
 Potion drop chance starts at 40%, changing by ten percentage points down after a
 drop or up after a miss. The integer odds and named Python streams are
@@ -209,6 +217,16 @@ project-authored sampling; they do not reproduce native RNG or full pool/rarity
 generation. Rewards can be claimed independently or forfeited by leaving.
 A full potion inventory requires discarding an owned potion before claiming
 another; slots never shift and discarded IDs are never reused.
+
+The restricted elite relic pool is Strawberry (+7 max HP), Pear (+10) and Mango
+(+14), sampled uniformly from unowned entries. `ClaimRelic()` applies the maximum
+HP increase and heals the same amount once; restoring does not apply it again.
+Removing the relic does not reverse the permanent gain. Pickup is currently
+supported outside combat only. A depleted pool rejects elite entry before moving
+the map cursor or consuming RNG. This explicit content limit is not a native
+relic-pool exhaustion rule. Native rarity weighting, upgraded card offers and
+full elite reward pools remain open. See the
+[first elite source and acceptance evidence](evidence/first_elite_2026_09_13.md).
 
 At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
 `Smith` opens a plain-data, cancelable selection of implemented upgrades.
@@ -254,11 +272,12 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v2`, including configuration,
-items, allocator, potion odds, encounter references and every pending decision.
+Private run snapshots now use `headless_run_state_v3`, including configuration,
+items, allocator, potion odds, active/reward encounter IDs, relic claim state and
+every pending decision.
 Nested combat records now use `headless_combat_state_v3`, including the in-play
 pile, pending continuation, selection RNG and power duration flags. Earlier combat
-v1/v2 and run v1 formats are rejected rather than assigning invented item
+v1/v2 and run v1/v2 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

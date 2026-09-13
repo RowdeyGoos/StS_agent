@@ -11,6 +11,7 @@ from game.headless.cards.ironclad import create_starter_deck
 from game.headless.core.actions import CombatAction, ChooseCombatCard, EndTurn, PlayCard
 from game.headless.core.deck import Deck
 from game.headless.core.player import Player
+from game.headless.powers.lifecycle import after_owner_side_turn_end
 from game.headless.core.utils import make_rng
 from game.headless.monsters.base import EncounterFactory, Enemy
 from game.headless.monsters.overgrowth import SimpleEnemy
@@ -109,6 +110,7 @@ class CombatEngine:
             return CombatResult(self.done, self.winner, details)
 
         self.player.end_turn()
+        after_owner_side_turn_end(self.player)
         enemy_actions = []
         for slot, enemy in enumerate(self.enemies):
             if not enemy.is_alive:
@@ -128,6 +130,7 @@ class CombatEngine:
             self.player.statuses.after_enemy_side_turn_end()
             for enemy in self._living_enemies():
                 enemy.statuses.after_enemy_side_turn_end()
+                after_owner_side_turn_end(enemy)
             self.turn += 1
             self.player.start_turn(draw_count=self.cards_per_turn)
             self._refresh_persistent_statuses()

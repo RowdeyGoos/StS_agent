@@ -21,6 +21,12 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — first elite and pickup relics:** Byrdonis A0 and Territorial
+  now run on an optional Overgrowth path, with elite gold, one restricted relic
+  reward and permanent Strawberry/Pear/Mango pickup effects. All six paths retain
+  four combats; this is still `slice_complete`, not an Act 1 finish.
+  [Source evidence and limits](evidence/first_elite_2026_09_13.md).
+
 - **2026-09-13 — M1 combat content completed for its declared pool:** all four
   reward-card upgrades and Slimed's draw are implemented; solo Nibbit and the four
   included slime variants now have native source checks and full-cycle/branch
@@ -700,6 +706,11 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-22 — Implement all target elite encounters
 
+- **Partial:** `HF-22/overgrowth_byrdonis` is implemented at A0: verified HP,
+  Swoop opening, alternating attacks, Territorial owner-side Strength, optional
+  route and elite reward handoff. Other Overgrowth elites (Bygone Effigy and
+  Phrog Parasite), other acts and ascension variants remain open.
+
 - **Depends on:** HF-01/19 and the elite's card/status mechanics. Integrate the
   resulting definition with HF-30/31 when run sampling/rewards are available.
 - **Implement:** one `HF-22/<encounter_id>` ticket per elite, including phase/counter
@@ -728,6 +739,10 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-24 — Add relic inventory, lifecycle hooks and the starter relic
 
+- **Partial:** run-owned item identities, Burning Blood victory healing and
+  max-HP pickup hooks are implemented. General ordered triggers, counters,
+  charges and pickup selectors remain open.
+
 - **Depends on:** HF-01/04/06/09/11.
 - **Implement:** introduce relic definition/instance state, acquisition/removal,
   counters, charges, disabled state and ordered hooks. Wire the pinned Ironclad
@@ -740,6 +755,10 @@ Dependencies and acceptance cases are in the linked task.
   Progression, Replay and Differential.
 
 ### HF-25 — Complete reachable relic content and interactions
+
+- **Partial:** Strawberry, Pear and Mango permanently gain 7/10/14 max HP and
+  heal by the same amount on pickup. Restore never replays the effect; removal
+  does not reverse it. Other relics and combat-time acquisition remain open.
 
 - **Depends on:** HF-01/24 and mechanic-specific tasks.
 - **Implement:** per-ID relic tickets covering combat triggers, persistent counters,
@@ -822,6 +841,12 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-31 — Generate real combat and room rewards
 
+- **Partial:** source-checked hallway 10–20 and elite 35–45 gold, three card
+  offers, potion rolls and an elite relic are implemented. Card/potion/relic
+  pools and Python sampling are explicitly restricted; native rarity/upgrade
+  chances, full pools and native RNG parity remain open. Owned relics are
+  excluded; the restricted pool rejects exhausted elite entry without a roll.
+
 - **Depends on:** HF-01/04/05/30; applicable HF-18/25/27 content.
 - **Implement:** extend [game rewards] for actual gold ranges/modifiers, card count,
   rarity and upgrade chances, pool exclusions, persistent rarity/drop state,
@@ -834,6 +859,10 @@ Dependencies and acceptance cases are in the linked task.
   Content, Progression, State and Differential.
 
 ### HF-32 — Resolve mixed rewards and nested pickup effects
+
+- **Partial:** gold/card/potion/relic claims and forfeits are independent.
+  Simple relic pickup commits once with persistent HP and exact ownership.
+  Multiple entries of one kind and nested pickup selectors remain open.
 
 - **Depends on:** HF-07/24/26/31; HF-33 for pickup selectors.
 - **Implement:** gold, card, relic, potion and special reward entries, including
@@ -1156,19 +1185,23 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The authored Overgrowth route now covers four normal combats with two branching
-choices. The next useful batch is **HF-22: one verified Overgrowth elite**, with
-its required mechanics and supported reward handoff:
+The authored Overgrowth route now includes Byrdonis and its elite rewards. The next
+useful batch is **HF-23 plus HF-37: one verified Overgrowth boss and an explicit
+Act 1 completion boundary**, using the existing combat and encounter metadata:
 
-1. Inspect the pinned elite inventory and select one concrete encounter. Verify
-   A0 HP, opening/cycle/conditional moves and every required power or lifecycle rule.
-2. Implement that encounter using the current combat engine, adding game rules
-   only for its actual behavior. Exercise victory, defeat and every special branch.
-3. Extend the authored route with an optional elite path and its source-checked
-   reward behavior. Do not silently substitute hallway rewards for elite rewards.
-4. Validate JSON continuation and record exact covered content. A first boss and
-   real act completion follow; shops, events, treasure, native maps/pools and full
-   reachable content remain necessary for unrestricted Act 1.
+1. Inspect the pinned Overgrowth boss pool (Ceremonial Beast, Vantom, The Kin)
+   and select one concrete encounter. Verify A0 HP, opening/conditional moves,
+   required powers and the true encounter victory condition before implementation.
+2. Implement only the mechanics that boss needs in the existing rule modules;
+   keep phases/counters as owned data. Cover each phase transition, lethal edge,
+   defeat and JSON continuation on both sides of any special transition.
+3. Extend the authored route through that boss and its verified reward/exit flow.
+   Add explicit act completion state; do not label an Act 1 finish full-game
+   victory or reuse the current `slice_complete` marker for a different meaning.
+4. Demonstrate a complete legal route with persistent deck/items/HP and restore
+   at every decision. Keep the declared content pool explicit. Shops, events,
+   treasure, other encounters, native maps/pools and all reachable content remain
+   necessary for unrestricted Act 1; later acts remain separate work.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

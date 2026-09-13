@@ -8,7 +8,7 @@ from dataclasses import asdict
 
 from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
 from game.headless.run.actions import (
-    ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, LeaveRewards,
+    ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion,
 )
 from game.headless.run.engine import RunEngine
@@ -20,7 +20,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     nodes = [a for a in actions if isinstance(a, ChooseNode)]
     if nodes:
         return nodes[0] if path == "left" else nodes[-1]
-    for kind in (ChooseCombatCard, ClaimGold, ClaimPotion):
+    for kind in (ChooseCombatCard, ClaimGold, ClaimPotion, ClaimRelic):
         if found := next((a for a in actions if isinstance(a, kind)), None):
             return found
     choices = [a for a in actions if isinstance(a, ChooseRewardCard) and a.definition_id is not None]
@@ -90,7 +90,7 @@ def main(argv=None):
                       "route": args.route, "path": args.path, "seed": state.seed,
                       "phase": state.phase.value, "hp": state.hp, "max_hp": state.max_hp,
                       "gold": state.gold, "combats_completed": state.combats_completed,
-                      "deck_size": len(state.deck), "upgraded_cards": [c.instance_id for c in state.deck if c.upgrade_level],
+                      "deck_size": len(state.deck), "relics": [r.definition_id for r in state.relics], "upgraded_cards": [c.instance_id for c in state.deck if c.upgrade_level],
                       "potions_used": sum(t["action"] == "UsePotion" for t in trace),
                       "commands": len(trace), "restore_verified": args.verify_restore,
                       **({"trace": trace} if args.trace else {})}, indent=2))
