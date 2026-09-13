@@ -82,6 +82,13 @@ class GameRandomService:
         stream.request_count += 1
         return result
 
+    def random(self, stream_name: str) -> float:
+        """Draw a uniform value in [0, 1) from an owned stream."""
+        stream = self._get_stream(stream_name)
+        result = stream.rng.random()
+        stream.request_count += 1
+        return result
+
     def shuffle(self, stream_name: str, values: MutableSequence[T]) -> None:
         """Shuffle a mutable sequence in place using one named stream."""
         if not isinstance(values, MutableSequence):

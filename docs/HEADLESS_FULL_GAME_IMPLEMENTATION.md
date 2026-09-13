@@ -27,6 +27,10 @@ into validation of changed code.
   has combat/restore/outcome coverage. Native map and encounter generation, later
   acts and ascension variants remain open.
   [Evidence and roster](evidence/overgrowth_roster_2026_09_13.md).
+- A generated restricted Act 1 route now provides 15 map rows plus a boss,
+  multiple entrances and owned encounter queues with native bag/tag exclusions.
+  Base topology is implemented; pruning, unknown outcomes and Ancient choices
+  remain open. [Map/progression evidence](evidence/generated_act1_2026_09_13.md).
 - **2026-09-13 — Aroma of Chaos:** mandatory one-card transformation/upgrade
   choices, automatic zero/one resolution and exact continuation are implemented.
   Permanent transforms preserve position, allocate a fresh unupgraded card and
@@ -870,6 +874,13 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-29 — Generate and expose target maps
 
+- **Partial:** generated A0 base topology now provides seven noncrossing paths,
+  15 rows plus a boss, multiple entrances, coordinates and native base room
+  placement constraints. Exact topology/room identities restore without rerolls.
+  Native duplicate-path pruning, coordinate postprocessing, unknown-node semantics
+  and map-changing effects remain open. The named restricted profile substitutes
+  supported event rooms and starts after the unimplemented Ancient choice.
+
 - **Depends on:** HF-01/04/05/28.
 - **Implement:** extend [game map] beyond authored DAG navigation to target topology,
   coordinates/edges, starting destinations, room placement constraints, visible
@@ -882,6 +893,13 @@ Dependencies and acceptance cases are in the linked task.
   Differential, including generation distributions.
 
 ### HF-30 — Select encounters, events and room outcomes from real pools
+
+- **Partial:** run-owned A0 queues draw three distinct weak fights, then the
+  normal pool, plus separate refillable elite bags and one boss. Consecutive
+  identity/tag exclusions follow the pinned source, including fallback when no
+  candidate qualifies. Node assignments advance only on successful combat entry.
+  All-seen discovery is explicit; first-run overrides, native event eligibility,
+  unknown-room rolls and global RNG parity remain open.
 
 - **Depends on:** HF-01/04/05/29 and the selected content implementations.
 - **Implement:** persistent pool state for act-specific easy/hard encounters,
@@ -905,7 +923,9 @@ Dependencies and acceptance cases are in the linked task.
   offers, potion rolls and an elite relic are implemented. Card/potion/relic
   pools and Python sampling are explicitly restricted; native rarity/upgrade
   chances, full pools and native RNG parity remain open. Owned relics are
-  excluded; the restricted pool rejects exhausted elite entry without a roll.
+  excluded; authored routes reject exhausted elite entry without a roll, while
+  generated routes explicitly opt in to stackable Circlet fallback. Exact claimed
+  reward item IDs persist across continuation.
 
 - **Depends on:** HF-01/04/05/30; applicable HF-18/25/27 content.
 - **Implement:** extend [game rewards] for actual gold ranges/modifiers, card count,
@@ -1284,27 +1304,31 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The Overgrowth A0 combat roster is complete. The next batch toward a complete
-Act 1 is **HF-29/30: native map topology and encounter progression**, using the
-existing 22-entry encounter catalog:
+The next Act 1 batch is **native map pruning and unknown-room resolution**, building
+on the generated base map and owned encounter queues now in place:
 
-1. Inspect pinned Overgrowth room count, map generation, guaranteed room positions,
-   edge restrictions and first-three weak-fight selection. Record native discovery
-   settings explicitly; support a declared unlocked-content configuration.
-2. Generate an owned seeded Act 1 map through `map/graph.py`, retaining the small
-   authored routes as fixtures. Validate connectivity, reachable choices, room
-   frequencies/restrictions and exact JSON restore without generation rerolls.
-3. Add run-owned weak/normal/elite/boss encounter histories and selection rules.
-   Reference catalog IDs; do not duplicate monster data. Restore must preserve
-   used pools and the next encounter decision. Test exclusions and no-repeat rules.
-4. Drive a full-length map through existing combat, reward and room lifecycles.
-   Keep unsupported event/item/card content excluded by an explicit pool setting;
-   never silently replace an unsupported event with a harmless room. Record this
-   as restricted-content Act 1 progression until HF-18/24–27/31–36/39–43 close the
-   remaining Ironclad cards, relics, potions, rewards, shops and event branches.
-5. Add native reference traces for multi-room seeds, installed execution and exact
-   continuation at map/room/boss decisions. Full native RNG parity is HF-05;
-   later acts and higher ascensions remain separate from the A0 Act 1 milestone.
+1. Port pinned `MapPathPruning.PruneAndRepair` (duplicate segment classification,
+   pruning and room-count repair) without mixing it into encounter selection.
+   Preserve reachability, fixed rows and node identities. Verify representative
+   duplicate/overlapping segments and room-count constraints. Coordinate-only
+   centering/spreading/straightening can remain a separate presentation task.
+2. Represent native unknown points explicitly and resolve combat/shop/treasure/
+   event outcomes only at entry using run-owned odds/counters. Feed any resulting
+   combat through the existing normal encounter queue. Reject unsupported
+   native-mode content without rerolling or consuming state.
+3. Add native event eligibility and depletion alongside the existing encounter
+   queues. Keep the supported event substitution profile selectable for complete
+   restricted runs; do not label its with-replacement events as native sampling.
+4. Implement one source-checked Ancient starting choice, then wire its persistent
+   effect through the initial inventory and first room. Discovery and first-run
+   settings must be declared inputs; never read the user's profile.
+5. Validate a full-length seeded trace through rooms and boss with exact restore,
+   plus installed CLI execution. Expand Ironclad cards/items/events through their
+   existing HF-18/24–27/31–36/39–43 tasks toward complete native Act 1 content.
+
+Current generated profile, source anchors and limitations:
+[generated Act 1 evidence](evidence/generated_act1_2026_09_13.md).
+Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

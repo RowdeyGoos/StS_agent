@@ -1,4 +1,4 @@
-"""Play restricted authored routes using direct game commands and no RL stack."""
+"""Play restricted authored or generated routes with direct game commands."""
 
 from __future__ import annotations
 
@@ -77,9 +77,14 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
 def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="first-slice", path="left", boss=None, elite=None, hallway=None):
     if path not in ("left", "right"):
         raise ValueError("Unknown demo path preference.")
-    engine = RunEngine.ironclad_slice(seed=seed, route=route, boss=boss, elite=elite, hallway=hallway)
+    if route == "overgrowth-generated":
+        if any(value is not None for value in (boss, elite, hallway)):
+            raise ValueError("Generated routes select encounters from owned queues.")
+        engine = RunEngine.ironclad_act1(seed=seed)
+    else:
+        engine = RunEngine.ironclad_slice(seed=seed, route=route, boss=boss, elite=elite, hallway=hallway)
     trace = []
-    for _ in range(500):
+    for _ in range(2000):
         if not engine.legal_actions():
             return engine, trace
         action = choose_demo_action(engine, rest_choice, path)
@@ -94,7 +99,7 @@ def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="firs
         engine.apply(action)
         if verify_restore and json.loads(json.dumps(engine.snapshot())) != json.loads(json.dumps(clone.snapshot())):
             raise AssertionError("Restored continuation differs.")
-    raise RuntimeError("Demo exceeded its 500-command bound.")
+    raise RuntimeError("Demo exceeded its 2000-command bound.")
 
 
 def main(argv=None):
@@ -105,7 +110,7 @@ def main(argv=None):
         parser.add_argument("--" + option, choices=tuple(name for name, encounter in ENCOUNTERS.items() if encounter.room_kind == kind),
                             help="Replace this encounter on the authored Act 1 route.")
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--route", choices=tuple(ROUTES), default="first-slice")
+    parser.add_argument("--route", choices=(*ROUTES, "overgrowth-generated"), default="first-slice")
     parser.add_argument("--path", choices=("left", "right"), default="left",
                         help="Demo preference for the first or last available branch.")
     parser.add_argument("--rest-choice", choices=("rest", "smith"), default="smith")
@@ -114,7 +119,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     engine, trace = play_slice(seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path, boss=args.boss, elite=args.elite, hallway=args.hallway)
     state = engine.state
-    print(json.dumps({"scope": "restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route"),
+    print(json.dumps({"scope": "restricted_ironclad_a0_generated_act1" if args.route == "overgrowth-generated" else ("restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route")),
+                      "map_profile": engine.graph.generation,
+                      "rooms_visited": len(state.visited_nodes),
                       "route": args.route, "path": args.path, "seed": state.seed,
                       "phase": state.phase.value, "hp": state.hp, "max_hp": state.max_hp,
                       "gold": state.gold, "combats_completed": state.combats_completed,

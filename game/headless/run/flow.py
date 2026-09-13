@@ -78,10 +78,13 @@ def apply(engine, action):
         # Resolve content before moving the cursor, so unsupported rooms cannot
         # strand an otherwise usable run or consume the launch RNG.
         node = engine.graph.node(action.node_id)
+        encounter_id = None
         if node.kind in ("combat", "elite", "boss"):
-            if node.encounter_id not in ENCOUNTERS:
+            from game.headless.encounters.progression import encounter_at
+            encounter_id = encounter_at(state, node)
+            if encounter_id not in ENCOUNTERS:
                 raise ValueError("Unsupported encounter.")
-            encounter = ENCOUNTERS[node.encounter_id]
+            encounter = ENCOUNTERS[encounter_id]
             if encounter.room_kind != node.kind:
                 raise ValueError("Map room and encounter kind disagree.")
         elif node.kind == "event":
@@ -102,7 +105,7 @@ def apply(engine, action):
                 if node.kind == "shop":
                     shop.begin(state, engine.cards)
                     return node
-                return engine.start_combat(encounter_id=node.encounter_id)
+                return engine.start_combat(encounter_id=encounter_id)
             except Exception:
                 # Room construction builds independently before committing. Restore
                 # the preceding navigation too if encounter construction fails.
