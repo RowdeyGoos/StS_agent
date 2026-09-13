@@ -5,12 +5,12 @@ from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.events.catalog import EVENTS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
-    ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
+    ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
     OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
 )
-from game.headless.run import rest_site, rewards, shop, treasure, events
+from game.headless.run import rest_site, rewards, shop, treasure, events, ancient
 from game.headless.run.inventory import discard_potion, potion_slot
 from game.headless.run.state import RunPhase
 
@@ -19,6 +19,8 @@ def legal_actions(engine) -> tuple:
     state, combat = engine.state, engine.combat
     if state.phase in (RunPhase.VICTORY, RunPhase.DEFEAT, RunPhase.SLICE_COMPLETE, RunPhase.ACT_COMPLETE):
         return ()
+    if state.phase is RunPhase.ROOM and state.pending.get("kind") == "ancient":
+        return ancient.legal_actions(state)
     actions = []
     if state.phase is RunPhase.COMBAT:
         actions.extend(combat.legal_actions())
@@ -74,12 +76,15 @@ def apply(engine, action):
     if action not in legal_actions(engine):
         raise ValueError(f"Illegal run action: {action!r}")
     state = engine.state
+    if isinstance(action, ChooseAncientRelic):
+        return ancient.choose(state, action)
     if isinstance(action, ChooseNode):
         # Unknown resolution and room construction form one transaction. Native
         # outcome odds commit only with a usable room; failures restore navigation,
         # RNG and the unresolved map point together.
         previous_node, previous_pending = state.current_node_id, state.pending
         previous_rng, previous_unknown = state.rng, state.unknown_rooms
+        previous_events = state.event_progression
         node = engine.choose_node(action.node_id)
         try:
             if node.kind in ("combat", "elite", "boss"):
@@ -104,6 +109,7 @@ def apply(engine, action):
         except Exception:
             state.current_node_id, state.pending = previous_node, previous_pending
             state.rng, state.unknown_rooms = previous_rng, previous_unknown
+            state.event_progression = previous_events
             state.visited_nodes.pop()
             raise
     if isinstance(action, (PlayCard, ChooseCombatCard, EndTurn, UsePotion)):

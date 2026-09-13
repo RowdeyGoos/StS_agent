@@ -42,6 +42,7 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`core/player.py`](../game/headless/core/player.py), [`core/deck.py`](../game/headless/core/deck.py) | Combat player state, card zones and owned generated-card identities |
 | [`monsters/`](../game/headless/monsters/), [`encounters/`](../game/headless/encounters/) | Monster behavior and separate seeded encounter composition |
 | [`powers/status.py`](../game/headless/powers/status.py) | Implemented status rules and damage modifiers |
+| [`run/ancient.py`](../game/headless/run/ancient.py), [`events/progression.py`](../game/headless/events/progression.py) | Restricted starting choices and owned unique-event queue progression |
 | [`run/state.py`](../game/headless/run/state.py), [`run/engine.py`](../game/headless/run/engine.py) | Persistent state and owned combat handoff |
 | [`run/config.py`](../game/headless/run/config.py), [`run/actions.py`](../game/headless/run/actions.py), [`run/flow.py`](../game/headless/run/flow.py) | Declared character/difficulty/pools and direct run command legality/dispatch |
 | [`run/deck.py`](../game/headless/run/deck.py), [`run/rewards.py`](../game/headless/run/rewards.py), [`run/rooms.py`](../game/headless/run/rooms.py) | Persistent mutations, reward resolution and room transitions |
@@ -186,7 +187,7 @@ increasing its blocked odds. Unknown combats consume the normal encounter queue.
 `state.unknown_rooms` owns resolved outcomes and odds; `run/unknown_rooms.py` exposes
 `room_node(state, graph, node_id)` for the effective visited room. Reading the map
 never draws or exposes an unvisited outcome. Failed room construction rolls back
-navigation, odds, outcome identity and RNG together.
+navigation, odds, outcome identity, event queue and RNG together.
 
 The earlier base-map fixture remains selectable through
 `RunEngine.ironclad_act1(map_profile="overgrowth_a0_base_restricted_v1")`; it keeps
@@ -201,11 +202,16 @@ choices and failed construction do not consume encounter entries. Queues,
 assignments, topology and RNG persist through JSON continuation.
 
 This profile explicitly assumes all encounters have been seen and skips native
-first-run overrides. It starts after the unimplemented row-zero Ancient choice.
-Event outcomes still use `RunConfig.event_pool`, sampling the supported Jungle Maze
-Adventure/Aroma of Chaos definitions with replacement at entry. Full native event
-eligibility/depletion is open. Card, item, shop and reward pools retain their
-restrictions. Unknown-room modifying relics, tutorial overrides and native RNG
+first-run overrides. By default it retains the post-Ancient fixture start; the
+optional Neow start below adds the first supported rewards. The event profile
+`supported_events_all_unlocked_v1` shuffles `RunConfig.event_pool` once. Both
+supported definitions inherit native unconditional eligibility. On event entry,
+the queue skips previously visited definitions; after a full exhausted pass it
+permits repetition, matching the native fallback. `state.event_progression` owns
+queue order, cursor and node assignments. Restore checks these against visited
+room outcomes. Reads and failed room construction never advance the queue.
+Full event content, unlock epochs and conditional eligibility remain open. Card,
+item, shop and reward pools retain their restrictions. Unknown-room modifying relics, tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
 `RunConfig.relic_fallback="circlet"`, preventing exhausted fruit-relic rewards
 from blocking a later elite; authored routes retain their existing rejection rule.
@@ -214,6 +220,38 @@ Each claimed reward records its exact item instance, including repeated Circlets
 Every path has 16 room visits before Act 1 completion if survived. This is a
 full-length **restricted-content** route, not yet complete native Act 1 fidelity.
 [Source anchors, checks and remaining work](evidence/map_pruning_unknowns_2026_09_13.md).
+
+## Neow starting choice
+
+```python
+from game.headless.run.ancient import PROFILE as NEOW_PROFILE
+from game.headless.run.actions import ChooseAncientRelic
+from game.headless.run.engine import RunEngine
+
+run = RunEngine.ironclad_act1(seed=2, ancient_profile=NEOW_PROFILE)
+run.apply(ChooseAncientRelic("nutritious_oyster"))
+# 91/91 HP; the next legal choices are the generated map entrances.
+```
+
+```bash
+sts-headless-play --route overgrowth-generated --ancient neow --seed 2 --rest-choice rest --verify-restore
+```
+
+The `neow_pickups_restricted_v1` profile offers Golden Pearl (+150 gold) and
+Nutritious Oyster (+11 maximum/current HP), using the ordinary owned relic pickup
+rules. Selection is mandatory before map entry and grants exactly one relic.
+`run/ancient.py` owns the pending start and acquisition history; it stores no
+callbacks. JSON restore resumes either the unchosen start or the selected run
+without granting the reward again. Effects carry into the first combat. Removing
+an obtained relic does not reverse its upon-pickup effect.
+
+These are fixed supported positive choices, **not native Neow's complete offer
+generation** (two randomized positives and one curse). Remaining Neow relics,
+curse exclusions, modifiers, dialogue and unlock behavior are still content tasks.
+`ancient_profile=None` (the factory default), or omitting `--ancient`, explicitly
+retains the earlier post-Ancient fixture. The demo chooses Golden Pearl; callers
+can select either legal action. No profile/save data is read.
+See [source and continuation evidence](evidence/neow_event_progression_2026_09_13.md).
 
 ## Complete Overgrowth encounter roster at A0
 
@@ -302,8 +340,9 @@ See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md
 `run/events.py` owns lifecycle and
 dispatch. The older primitive event fixture still uses `run/rooms.py`; native
 content is not dispatched by its synthetic option dictionary. Native event pool
-weights, eligibility/repeat tracking, multiplayer voting and the rest of the
-Overgrowth event catalog remain open. See [source and validation evidence](evidence/first_event_2026_09_13.md).
+unlock filters, conditional eligibility, multiplayer voting and the rest of the
+Overgrowth event catalog remain open; the generated route now has owned
+unique-event progression and exhausted-pool repetition. See [source and validation evidence](evidence/first_event_2026_09_13.md).
 
 ## Treasure rooms
 
@@ -513,10 +552,11 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v11`, including configuration,
+Private run snapshots now use `headless_run_state_v12`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
-encounter queues/assignments, unknown-room odds/outcomes and exact claimed reward item IDs,
+encounter/event queues and assignments, optional Ancient start/selection history,
+unknown-room odds/outcomes and exact claimed reward item IDs,
 shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.
 Nested combat records now use `headless_combat_state_v5`, including the in-play

@@ -60,11 +60,15 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None):
+    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None):
         """Generate a full-length A0 map with declared restricted content pools."""
         from game.headless.map.overgrowth import generate_overgrowth_map, PROFILE
         from game.headless.encounters.progression import EncounterProgression
         from game.headless.run.unknown_rooms import UnknownRooms
+        from game.headless.events.progression import EventProgression
+        from game.headless.run import ancient
+        if ancient_profile not in (None, ancient.PROFILE):
+            raise ValueError("Unsupported Ancient start profile.")
         config = RunConfig(ascension=ascension, relic_fallback="circlet")
         config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
         engine = cls(seed=seed, gold=99, config=config)
@@ -72,7 +76,10 @@ class RunEngine:
         engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)
         if engine.graph.generation == PROFILE:
             engine.state.unknown_rooms = UnknownRooms()
+            engine.state.event_progression = EventProgression.generate(engine.state.rng, config.event_pool)
         add_relic(engine.state, "burning_blood")
+        if ancient_profile is not None:
+            ancient.begin(engine.state, profile=ancient_profile)
         return engine
 
     def legal_actions(self) -> tuple:
@@ -161,8 +168,9 @@ class RunEngine:
         node = self.graph.node(node_id)
         if node.kind == "unknown":
             from game.headless.run.unknown_rooms import prepare_unknown
-            rng, unknown, node = prepare_unknown(self.state, self.graph, node)
+            rng, unknown, progression, node = prepare_unknown(self.state, self.graph, node)
             self.state.rng, self.state.unknown_rooms = rng, unknown
+            self.state.event_progression = progression
         self.state.current_node_id = node_id
         self.state.visited_nodes.append(node_id)
         self.state.pending = {"kind": "node", "node_id": node_id, "room_kind": node.kind}

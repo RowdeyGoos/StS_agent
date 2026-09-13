@@ -120,3 +120,8 @@ class LeaveEvent:
 class ChooseEventCard:
     event_instance_id: int
     card_instance_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseAncientRelic:
+    definition_id: str
