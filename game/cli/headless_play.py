@@ -11,7 +11,7 @@ from game.headless.run.actions import (
     ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
-    OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, LeaveEvent,
+    OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
 )
 from game.headless.run.engine import RunEngine
 
@@ -27,7 +27,11 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
             return found
     event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]
     if event_choices:
-        return next((a for a in event_choices if a.option_id == "join_forces"), event_choices[0])
+        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control")), event_choices[0])
+    event_cards = [a for a in actions if isinstance(a, ChooseEventCard)]
+    if event_cards:
+        bash = next((c.instance_id for c in engine.state.deck if c.definition.definition_id == "bash"), None)
+        return next((a for a in event_cards if a.card_instance_id == bash), event_cards[0])
     choices = [a for a in actions if isinstance(a, ChooseRewardCard) and a.definition_id is not None]
     if choices:
         return next((a for a in choices if a.definition_id == "pommel_strike"), choices[0])

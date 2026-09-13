@@ -1,12 +1,13 @@
 """Scripted event lifecycle; individual choices and effects belong to content."""
 
+from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.rng import GameRandomService
 from game.headless.events.catalog import EVENTS
-from game.headless.run.actions import ChooseEventOption, LeaveEvent
+from game.headless.run.actions import ChooseEventOption, ChooseEventCard, LeaveEvent
 from game.headless.run.state import RunPhase
 
 
-def begin(state, definition_id):
+def begin(state, definition_id, *, cards=DEFAULT_CARDS):
     state.require_room_entry("event")
     if definition_id not in EVENTS:
         raise ValueError("Unsupported event.")
@@ -14,8 +15,8 @@ def begin(state, definition_id):
     rng.restore(state.rng.snapshot())
     pending = {"kind": "scripted_event", "definition_id": definition_id,
                "event_instance_id": state.next_event_id, "stage": "options",
-               "data": EVENTS[definition_id].generate(rng)}
-    EVENTS[definition_id].validate(pending)
+               "data": EVENTS[definition_id].generate(rng, state=state, cards=cards)}
+    EVENTS[definition_id].validate(pending, state=state, cards=cards)
     state.rng = rng
     state.next_event_id += 1
     state.pending, state.phase = pending, RunPhase.ROOM
@@ -30,20 +31,30 @@ def _pending(state):
 def legal_actions(state):
     pending = _pending(state)
     instance_id = pending["event_instance_id"]
+    if pending["stage"] == "select_card":
+        return tuple(ChooseEventCard(instance_id, card_id) for card_id in pending["data"]["eligible"])
     if pending["stage"] == "resolved":
         return (LeaveEvent(instance_id),)
     return tuple(ChooseEventOption(instance_id, option) for option in EVENTS[pending["definition_id"]].options(pending))
 
 
-def choose(state, instance_id, option_id):
+def choose(state, instance_id, option_id, *, cards=DEFAULT_CARDS):
     pending = _pending(state)
     definition = EVENTS[pending["definition_id"]]
     if (type(instance_id) is not int or instance_id != pending["event_instance_id"]
             or option_id not in definition.options(pending)):
         raise ValueError("Stale or unavailable event choice.")
-    definition.choose(state, pending, option_id)
+    definition.choose(state, pending, option_id, cards=cards)
     if state.hp == 0:
         state.phase = RunPhase.DEFEAT
+
+
+def select_card(state, event_instance_id, card_instance_id, *, cards=DEFAULT_CARDS):
+    pending = _pending(state)
+    if (type(event_instance_id) is not int or event_instance_id != pending["event_instance_id"]
+            or pending["stage"] != "select_card"):
+        raise ValueError("Stale or unavailable event card choice.")
+    EVENTS[pending["definition_id"]].select_card(state, pending, card_instance_id, cards=cards)
 
 
 def leave(state, instance_id):
@@ -53,7 +64,7 @@ def leave(state, instance_id):
     state.pending, state.phase = None, RunPhase.ROUTE
 
 
-def validate_event(state, graph):
+def validate_event(state, graph, *, cards=DEFAULT_CARDS):
     pending = state.pending
     if set(pending) != {"kind", "definition_id", "event_instance_id", "stage", "data"}:
         raise ValueError("Invalid event state fields.")
@@ -66,4 +77,4 @@ def validate_event(state, graph):
         node = None if state.current_node_id is None else graph.node(state.current_node_id)
         if node is None or node.kind != "event" or node.event_id != pending["definition_id"]:
             raise ValueError("Event differs from its room.")
-    EVENTS[pending["definition_id"]].validate(pending, defeated=state.phase is RunPhase.DEFEAT)
+    EVENTS[pending["definition_id"]].validate(pending, state=state, cards=cards, defeated=state.phase is RunPhase.DEFEAT)

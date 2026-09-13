@@ -17,7 +17,7 @@ from game.headless.shops.catalog import fingerprint as shop_fingerprint
 from game.headless.treasure.catalog import fingerprint as treasure_fingerprint
 from game.headless.events.catalog import EVENTS, fingerprint as event_fingerprint
 
-SCHEMA = "headless_run_state_v7"
+SCHEMA = "headless_run_state_v8"
 
 
 def _item_definitions():
@@ -201,7 +201,7 @@ def _validate_pending(state, cards, graph):
                     raise ValueError("Invalid relic offer or ownership.")
     elif kind == "scripted_event":
         from game.headless.run.events import validate_event
-        validate_event(state, graph)
+        validate_event(state, graph, cards=cards)
     elif kind == "treasure":
         from game.headless.run.treasure_validation import validate_treasure
         validate_treasure(state, graph)

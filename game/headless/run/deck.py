@@ -30,3 +30,30 @@ def remove_card(state: RunState, instance_id: str) -> Card:
     card = find_card(state, instance_id)
     state.deck.remove(card)
     return card
+
+
+def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *, stream="card.transform") -> Card:
+    """Replace an exact master-deck card in place with a fresh base-level instance.
+
+    The caller owns source eligibility and pool composition. Validate all content
+    before drawing; failed transformations preserve the card, allocator and RNG.
+    """
+    from game.headless.core.rng import GameRandomService
+    state.validate()
+    original = find_card(state, instance_id)
+    pool = tuple(replacement_pool)
+    if not pool or len(set(pool)) != len(pool):
+        raise ValueError("Transformation requires a distinct replacement pool.")
+    definitions = [cards.definition(name) for name in pool if name != original.definition.definition_id]
+    if not definitions:
+        raise ValueError("Transformation cannot reproduce the original definition.")
+    for definition in definitions:
+        definition.spec_at(0)
+    rng = GameRandomService(state.seed)
+    rng.restore(state.rng.snapshot())
+    definition = rng.choice(stream, definitions)
+    index = state.deck.index(original)
+    replacement = Card(definition, instance_id=state.allocate_card_id())
+    state.deck[index] = replacement
+    state.rng = rng
+    return replacement

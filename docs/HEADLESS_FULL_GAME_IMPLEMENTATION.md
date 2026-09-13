@@ -21,6 +21,12 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — Aroma of Chaos:** mandatory one-card transformation/upgrade
+  choices, automatic zero/one resolution and exact continuation are implemented.
+  Permanent transforms preserve position, allocate a fresh unupgraded card and
+  exclude the original from a restricted Ironclad pool. The right Act 1 branch
+  uses Aroma. Broader pools and transformation hooks remain open.
+  [Evidence](evidence/aroma_of_chaos_2026_09_13.md).
 - **2026-09-13 — first ordinary event:** native Jungle Maze Adventure now offers
   Solo Quest (18 damage then larger gold) or Join Forces (smaller gold, no damage),
   with entry-time offers, exact event identities, terminal defeat and continuation.
@@ -1040,6 +1046,13 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-40 — Compose event selectors, card offers and deck mutations
 
+- **Partial:** Aroma of Chaos implements mandatory transform/upgrade selection,
+  zero/one automatic resolution, no cancel and exact event/deck continuation.
+  Shared permanent transformation has owned RNG/IDs and explicit candidate pools.
+  Source/replacement coverage is restricted to implemented Ironclad cards; other
+  pools, modifiers, removal/enchantment, offers and nested children remain open.
+  See [Aroma evidence](evidence/aroma_of_chaos_2026_09_13.md).
+
 - **Depends on:** HF-07/32/33/39.
 - **Implement:** event-owned removal, upgrade, transformation, enchantment, offered
   cards and bundles. Cover mutations before selection, mutations after selection,
@@ -1254,27 +1267,22 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The authored Act 1 route now includes an ordinary event, treasure, an elite
-option, an optional shop and a boss. The next useful batch is **HF-40: event-owned
-card selection with Aroma of Chaos**, building on permanent upgrades and adding
-transformation:
+The authored Act 1 route now covers two events, treasure, an optional shop, one
+elite and one boss. The next useful batch is **HF-22: a second Overgrowth elite**
+to broaden combat coverage beyond Byrdonis:
 
-1. Verify Aroma of Chaos's two native options, selection counts/eligibility,
-   automatic and cancel behavior, upgrade handling and resulting event pages.
-   Its membership in Overgrowth and upgrade/transformation callers have been
-   located; detailed card-selection semantics still need inspection.
-2. Implement permanent transformation through shared deck operations: preserve
-   the exact selected original, determine replacement identity and upgrade rules
-   from native source, and use an explicit supported replacement pool initially.
-   Keep authored pool/RNG restrictions visible; do not add projection plumbing.
-3. Extend event-owned pending data for the actual card selection and continuation.
-   Keep cost/effect order with the event definition; reuse existing upgrade rules.
-   Verify duplicate cards, unavailable selections, transformation exclusions,
-   exact JSON restore during choices, and completion only once.
-4. Offer this event on an authored Act 1 branch and teach the example player its
-   decisions. Validate permanent results in the next combat and installed CLI.
-   Full event/map generation, global relic bags, remaining encounters/content and
-   later acts stay separate assignments.
+1. Inspect the pinned Overgrowth elite pool and select one encounter. Record its
+   exact member IDs, A0 HP/intent values, opening move and transition rules before
+   implementing it; do not substitute Slay the Spire 1 behavior.
+2. Implement the enemy in its content module, reusing existing damage, block,
+   powers and stable slots. Add only the shared rule primitive required by its
+   verified behavior. Keep unsupported powers or variants explicit.
+3. Register the encounter and add an authored elite branch, retaining Byrdonis.
+   Reuse elite rewards and the run lifecycle; add no projection or encoding work.
+4. Verify every intent transition, relevant multi-hit/power interaction, victory
+   and defeat, JSON continuation inside combat and installed route execution.
+   Update the supported-content list and evidence. Native procedural maps,
+   encounter selection, global relic bags and later acts stay separate tasks.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

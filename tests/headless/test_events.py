@@ -145,7 +145,7 @@ def test_map_event_identity_is_explicit(mutation):
 
 def test_entry_generation_failure_is_atomic(monkeypatch):
     run = maze(enter=False); before = snap(run)
-    def fail(self,rng):
+    def fail(self,rng,**kwargs):
         rng.randint("event.jungle_maze",0,100)
         raise ValueError("Failed content generation")
     monkeypatch.setattr(JungleMazeAdventure,"generate",fail)
@@ -193,7 +193,7 @@ def test_invalid_event_context_restore_is_atomic(mutation):
 @pytest.mark.parametrize("path", ["left","right"])
 def test_event_route_restores_through_every_decision(path):
     run,trace = play_slice(seed=2,route="overgrowth-act1",path=path,rest_choice="rest",verify_restore=True)
-    assert "jungle_maze" in run.state.visited_nodes
+    assert ("jungle_maze" if path == "left" else "aroma") in run.state.visited_nodes
     choices = [t for t in trace if t["action"] == "ChooseEventOption"]
-    assert len(choices) == 1 and choices[0]["option_id"] == "join_forces"
+    assert len(choices) == 1 and choices[0]["option_id"] == ("join_forces" if path == "left" else "maintain_control")
     assert run.state.phase in (RunPhase.ACT_COMPLETE,RunPhase.DEFEAT)
