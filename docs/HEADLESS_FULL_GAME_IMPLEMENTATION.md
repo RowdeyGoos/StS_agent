@@ -21,6 +21,13 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — Byrdonis Nest/Hatch:** Eat gains 7 maximum/current HP; Take adds
+  an egg enabling a rest-site Hatch. Byrdpip pickup replaces all eggs with fresh
+  Byrd Swoops, with exact ownership and JSON continuation. Event-pet eligibility
+  is persisted. Finesse/Flash of Steel provide the explicit supported colorless
+  transformation pool. Generated events now number eleven.
+  [Evidence](evidence/byrdonis_nest_2026_09_13.md).
+
 - **2026-09-13 — Sapphire Seed/Sown:** Eat heals before a permanent upgrade;
   Plant grants a permanent first-play energy enchantment. Owned card modifiers
   survive upgrades and JSON continuation, and fresh transformations remove them.
@@ -1011,6 +1018,10 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-34 — Implement actual rest-site options
 
+- **Partial:** normal rest/smith and Byrdonis Egg's Hatch now share the one-action
+  rest lifecycle. Hatch grants Byrdpip and transforms all eggs; declined hatching
+  preserves future availability. Other relic/character options remain open.
+
 - **Depends on:** HF-01/07/11/13/33; HF-24/25 for modifier-driven options.
 - **Implement:** extend [game rooms] with pinned rest healing/rounding and smithing,
   legal card selection, one-use/leave semantics, disabled choices and additional
@@ -1361,27 +1372,23 @@ The next Act 1 batch should cover **remaining event content and its permanent ef
    terminal/resume policy and special rewards. Extend the existing owned event
    combat path with the concrete parent continuation. Accept victory, defeat,
    reward completion and restore inside both the child and resumed parent.
-2. **HF-43 / Byrdonis Nest:** implement Eat's +7 maximum HP and Take's Byrdonis
-   Egg together with the egg's rest-site option and hatch result. Native entry
-   excludes existing event pets. Inspect those dependencies before registration;
-   accept acquisition, rest-site choice, hatch and subsequent combat continuation.
-3. **HF-40 / additional enchantment event:** choose a remaining Overgrowth caller,
+2. **HF-40 / additional enchantment event:** choose a remaining Overgrowth caller,
    inspect its exact enchantment, eligibility and upgrade interaction, then extend
    the existing per-card enchantment catalog. Accept selection, upgrades, repeated
    plays, transform/removal and save/restore through the next combat.
-4. **HF-43 / Luminous Choir:** inspect and implement each required curse/relic
+3. **HF-43 / Luminous Choir:** inspect and implement each required curse/relic
    before adding both event branches. Reuse master-deck lifetime and owned relic
    counters where applicable; do not generalize from names without source evidence.
-5. **HF-24–27 / pool completion:** add native potion and curse content to replace
-   the current Fire/Block and Guilty/Clumsy subpools; verify actual reward weights,
+4. **HF-24–27 / pool completion:** add native potion and curse content to replace
+   the current Fire/Block, Guilty/Clumsy and Finesse/Flash of Steel subpools; verify actual reward weights,
    unlocks, exclusions and prevention/replacement hooks separately from RNG parity.
-6. **HF-28 / Neow:** expand native three-offer generation, including the negative
+5. **HF-28 / Neow:** expand native three-offer generation, including the negative
    offer and required relic/card effects. Preserve the explicit two-positive and
    post-Ancient fixtures. Full-offer distribution remains a separate acceptance case.
 
 Each event assignment must pin its native branches, implement dependencies, test
 entry predicates and exhausted-pool fallback, and verify installed acquisition
-through the next room. Current content coverage: [Sapphire Seed](evidence/sapphire_seed_2026_09_13.md);
+through the next room. Current content coverage: [Byrdonis Nest](evidence/byrdonis_nest_2026_09_13.md);
 event-combat coverage: [Dense Vegetation](evidence/dense_vegetation_2026_09_13.md).
 Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 

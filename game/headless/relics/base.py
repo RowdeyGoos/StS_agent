@@ -15,8 +15,17 @@ class RelicDefinition:
     evolve_after_elites: int = 0
     evolves_into: str | None = None
     allow_duplicates: bool = False
+    adds_pet: bool = False
+    pickup_transform: tuple[str, str] | None = None
 
-    def after_obtained(self, state) -> None:
+    def after_obtained(self, state, *, cards=None) -> None:
+        if self.pickup_transform is not None:
+            from game.headless.run.deck import replace_card
+            source, target = self.pickup_transform
+            definition = cards.definition(target)
+            for card in tuple(state.deck):
+                if card.definition.definition_id == source:
+                    replace_card(state, card.instance_id, definition)
         state.gold += self.pickup_gold
         state.max_hp += self.pickup_max_hp
         state.hp = min(state.max_hp, state.hp + self.pickup_max_hp)
@@ -37,6 +46,7 @@ class RelicInstance:
 
 
 RELICS = MappingProxyType({
+    "byrdpip": RelicDefinition("byrdpip", adds_pet=True, allow_duplicates=True, pickup_transform=("byrdonis_egg", "byrd_swoop")),
     "sword_of_stone": RelicDefinition("sword_of_stone", evolve_after_elites=5, evolves_into="sword_of_jade", allow_duplicates=True),
     "sword_of_jade": RelicDefinition("sword_of_jade", combat_strength=3, allow_duplicates=True),
     "golden_pearl": RelicDefinition("golden_pearl", pickup_gold=150),

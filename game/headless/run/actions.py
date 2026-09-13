@@ -44,6 +44,11 @@ class Smith:
 
 
 @dataclass(frozen=True, slots=True)
+class Hatch:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
 class ChooseUpgrade:
     instance_id: str | None  # None cancels and returns to the rest options.
 

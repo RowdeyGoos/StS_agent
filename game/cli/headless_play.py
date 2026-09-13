@@ -9,7 +9,7 @@ from dataclasses import asdict
 from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
 from game.headless.run.actions import (
     ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
-    Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion,
+    Rest, Smith, Hatch, ChooseUpgrade, LeaveRest, UsePotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
     OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
 )
@@ -27,7 +27,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
             return found
     event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]
     if event_choices:
-        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water", "rest", "plant")
+        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water", "rest", "plant", "take")
                      or a.option_id.startswith(("claim_potion_", "overcome_"))), event_choices[0])
     event_cards = [a for a in actions if isinstance(a, ChooseEventCard)]
     if event_cards:
@@ -36,6 +36,8 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     choices = [a for a in actions if isinstance(a, ChooseRewardCard) and a.definition_id is not None]
     if choices:
         return next((a for a in choices if a.definition_id == "pommel_strike"), choices[0])
+    if Hatch() in actions:
+        return Hatch()
     if Smith() in actions and rest_choice == "smith":
         return Smith()
     if Rest() in actions:

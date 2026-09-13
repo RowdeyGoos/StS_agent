@@ -204,12 +204,13 @@ assignments, topology and RNG persist through JSON continuation.
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. By default it retains the post-Ancient fixture start; the
 optional Neow start below adds the first supported rewards. The event profile
-`supported_events_all_unlocked_v5` shuffles `RunConfig.event_pool` once. The
+`supported_events_all_unlocked_v6` shuffles `RunConfig.event_pool` once. The
 generated pool contains Jungle Maze Adventure, Aroma of Chaos, Morphic Grove and
-Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue, Dense Vegetation and Sapphire Seed.
+Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue, Dense Vegetation, Sapphire Seed and Byrdonis Nest.
 Morphic Grove requires at least 100 gold and two transformable cards; Whispering
 Hollow requires 44 gold; Slippery Bridge requires floor greater than six and a
-removable card. The other definitions inherit unconditional native eligibility. On event entry,
+removable card. Byrdonis Nest excludes an owned event pet or Byrdonis Egg. The
+other definitions inherit unconditional native eligibility. On event entry,
 the queue skips previously visited or ineligible definitions; after a full
 exhausted pass it permits the current candidate even if visited or ineligible,
 matching the native fallback. `state.event_progression` owns queue order, cursor,
@@ -385,7 +386,7 @@ See [pinned source and validation](evidence/overgrowth_events_2026_09_13.md).
 
 ## Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue
 
-These four definitions form part of the ten-event default generated pool. Each
+These four definitions form part of the eleven-event default generated pool. Each
 owns plain pending data, exact commands and JSON continuation; authored fixtures
 retain their explicit pools. Shared `events/potion_rewards.py` and
 `events/deck_choice.py` handle acquisition and mandatory single-card selections.
@@ -455,7 +456,7 @@ full reward-pool fidelity remain open. See [source and validation](evidence/dens
 adds Sown to one eligible card. Both resolve zero/one candidates automatically;
 multiple candidates use exact `ChooseEventCard` commands with no cancel. Upgraded
 cards are valid Plant targets and keep their upgrades and identity. The demo
-chooses Plant. Generated event content now totals ten definitions.
+chooses Plant.
 
 `enchantments/base.py` owns explicit definitions and plain per-card instances:
 definition ID, positive amount and a combat trigger flag. `Card.enchantment`
@@ -481,6 +482,43 @@ Other enchantments, card duplication effects and native RNG parity remain open.
 The source check also corrected Guilty: keyword 4 is Unplayable, not Ethereal.
 Guilty now discards/reshuffles normally until its five-combat expiry; Clumsy retains
 both Unplayable and Ethereal. See [source and validation](evidence/sapphire_seed_2026_09_13.md).
+
+## Byrdonis Nest and Hatch
+
+`eat` gains 7 maximum and current HP; `take` adds an unplayable Byrdonis Egg to
+the permanent deck. The egg is not Ethereal or Eternal: it discards normally,
+cannot upgrade or receive Sown, and can be removed or transformed. Owning an egg
+or a relic with `adds_pet` excludes Nest during ordinary event selection. The
+native exhausted-pool fallback can still repeat it.
+
+An egg enables `Hatch` alongside normal rest/smith options. Hatching consumes that
+rest site's action, grants an owned Byrdpip relic and replaces **every** permanent
+egg in place with a fresh base Byrd Swoop. Other cards retain identity, upgrades
+and enchantments. Repeated acquisition keeps independently owned Byrdpip relics.
+Choosing Rest or Smith instead preserves the egg for a later site; canceling
+Smith restores Hatch availability. The demo prefers Take and Hatch.
+
+Byrd Swoop is a zero-cost attack dealing 14 damage, or 18 upgraded. It uses player
+Strength/Weak and target modifiers and does not exhaust. Native Byrdpip's actor
+provides the attack animation; its idle move loop has no combat effect and enemy
+player targeting excludes it. The headless engine retains relic/gameplay state
+without a cosmetic actor or skin. In-combat Byrdpip acquisition remains unsupported;
+the implemented hatch acquires it outside combat.
+
+Egg, Byrd Swoop and colorless cards transform into the explicit supported pool
+`finesse` / `flash_of_steel`, excluding the original definition. Finesse costs zero,
+gains 4/7 block and draws one; Flash of Steel costs zero, deals 5/8 damage and draws
+one. They are implemented transformation targets, not additions to the Ironclad
+combat-reward pool. Native full colorless content and sampling remain open.
+All three existing transformation events share these family rules.
+
+Content stays in `cards/event_cards.py` and `events/byrdonis_nest.py`; owned hatch
+state lives in `run/hatching.py`. The relic pickup uses shared deterministic deck
+replacement and the owning engine's card catalog. Pending snapshots bind original
+cards and prior relic IDs to the fresh grant; missing content and malformed results
+reject without partial mutation. Run schema v17 and event profile v6 reject older
+private state; combat schema remains v7 with the updated card fingerprint.
+See [source and validation](evidence/byrdonis_nest_2026_09_13.md).
 
 ## Treasure rooms
 
@@ -690,7 +728,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v16`, including configuration,
+Private run snapshots now use `headless_run_state_v17`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,

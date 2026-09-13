@@ -227,7 +227,7 @@ def test_entry_predicates_skip_ineligible_events(gold,floor,expected):
 @pytest.mark.parametrize('seed,path',[(0,'left'),(2,'right'),(4,'left'),(7,'right'),(9,'left')])
 def test_expanded_generated_routes_restore_every_decision(seed,path):
     run=RunEngine.ironclad_act1(seed=seed)
-    assert len(run.state.config.event_pool)==10
+    assert len(run.state.config.event_pool)==11
     for _ in range(500):
         if run.state.phase is RunPhase.ACT_COMPLETE:break
         if run.state.phase is RunPhase.COMBAT:win(run)

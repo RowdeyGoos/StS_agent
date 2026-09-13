@@ -57,3 +57,13 @@ def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *
     state.deck[index] = replacement
     state.rng = rng
     return replacement
+
+
+def replace_card(state: RunState, instance_id: str, definition) -> Card:
+    """Deterministic fresh replacement in place, for explicit content results."""
+    definition.spec_at(0)
+    original = find_card(state, instance_id)
+    index = state.deck.index(original)
+    result = Card(definition, instance_id=state.allocate_card_id())
+    state.deck[index] = result
+    return result

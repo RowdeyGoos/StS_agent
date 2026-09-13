@@ -54,6 +54,6 @@ def choose_upgrade(state, instance_id: str | None):
 
 
 def leave(state) -> None:
-    _pending(state, "resolved")
+    _pending(state, "hatched" if state.pending and state.pending.get("stage") == "hatched" else "resolved")
     state.pending = None
     state.phase = RunPhase.ROUTE
