@@ -73,7 +73,7 @@ class RunEngine:
         config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
         if (map_profile or PROFILE) == PROFILE:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
-                                                     "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation"))
+                                                     "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed"))
         engine = cls(seed=seed, gold=99, config=config)
         engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
         engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)

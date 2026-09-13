@@ -25,7 +25,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v15"
+SCHEMA = "headless_run_state_v16"
 
 
 def _restore_event_combat(record):

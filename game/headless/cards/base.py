@@ -87,6 +87,7 @@ class Card:
         self.upgrade_level = upgrade_level
         self.instance_id = instance_id
         self.combats_seen = 0
+        self.enchantment = None
 
     @property
     def spec(self) -> CardSpec:

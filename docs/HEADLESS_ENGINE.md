@@ -204,9 +204,9 @@ assignments, topology and RNG persist through JSON continuation.
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. By default it retains the post-Ancient fixture start; the
 optional Neow start below adds the first supported rewards. The event profile
-`supported_events_all_unlocked_v4` shuffles `RunConfig.event_pool` once. The
+`supported_events_all_unlocked_v5` shuffles `RunConfig.event_pool` once. The
 generated pool contains Jungle Maze Adventure, Aroma of Chaos, Morphic Grove and
-Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue and Dense Vegetation.
+Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue, Dense Vegetation and Sapphire Seed.
 Morphic Grove requires at least 100 gold and two transformable cards; Whispering
 Hollow requires 44 gold; Slippery Bridge requires floor greater than six and a
 removable card. The other definitions inherit unconditional native eligibility. On event entry,
@@ -385,7 +385,7 @@ See [pinned source and validation](evidence/overgrowth_events_2026_09_13.md).
 
 ## Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue
 
-These four definitions form part of the nine-event default generated pool. Each
+These four definitions form part of the ten-event default generated pool. Each
 owns plain pending data, exact commands and JSON continuation; authored fixtures
 retain their explicit pools. Shared `events/potion_rewards.py` and
 `events/deck_choice.py` handle acquisition and mandatory single-card selections.
@@ -395,8 +395,8 @@ retain their explicit pools. Shared `events/potion_rewards.py` and
   including lethal damage. Zero/one candidates resolve automatically.
 - **Wellspring:** `bottle` offers one optional potion. `bathe` removes one chosen
   card and adds Guilty, including when the original deck is empty. Guilty is
-  unplayable and Ethereal; its master-deck instance disappears after five completed
-  combats. Clumsy is also unplayable/Ethereal and has no expiry.
+  unplayable and is discarded normally at turn end; its master-deck instance disappears after five completed
+  combats. Clumsy is unplayable/Ethereal and has no expiry.
 - **Slippery Bridge:** `overcome_N` removes the currently offered card;
   `hold_on_N` pays 3, then 4, then 5 damage and so on to reroll. The first offer
   prefers nonbasic cards. Later offers exclude the previous definition and all
@@ -448,6 +448,39 @@ existing event fork. The demo chooses Rest, then Fight. Resuming events, extra
 special rewards and temporary training rules remain separate follow-ups; this
 module currently supports the native non-resuming flow only. Native RNG and
 full reward-pool fidelity remain open. See [source and validation](evidence/dense_vegetation_2026_09_13.md).
+
+## Sapphire Seed and Sown
+
+`eat` heals 9 HP, capped, before a mandatory one-card upgrade. `plant` permanently
+adds Sown to one eligible card. Both resolve zero/one candidates automatically;
+multiple candidates use exact `ChooseEventCard` commands with no cancel. Upgraded
+cards are valid Plant targets and keep their upgrades and identity. The demo
+chooses Plant. Generated event content now totals ten definitions.
+
+`enchantments/base.py` owns explicit definitions and plain per-card instances:
+definition ID, positive amount and a combat trigger flag. `Card.enchantment`
+survives upgrades, permanent deck snapshots and combat copies. Sown grants 1
+energy after the first completed play each combat, after any card selector and
+before after-card enemy hooks. It does not reduce the cost needed to play the
+card. Replaying it after a reshuffle gives no further energy. The permanent
+instance remains untriggered; each fresh combat copies it independently. Combat
+snapshot/search clones preserve the current trigger state.
+
+Native eligibility excludes status/curse/quest cards, unplayable permanent cards
+and any already enchanted card; Sown cannot stack. The existing internal `block`
+category is a native skill and remains eligible. Ethereal alone does not prevent
+enchantment. Transforming an enchanted card produces a fresh unenchanted card;
+removal removes its enchantment along with that owned card.
+
+When a card kills the final enemy, Sown records its trigger but gives no energy.
+If the player dies during the card, the enchantment hook is skipped. Pending and
+resolved event snapshots validate the original deck and exact upgrade/enchantment
+result. Earlier private schemas reject rather than inventing missing state.
+Other enchantments, card duplication effects and native RNG parity remain open.
+
+The source check also corrected Guilty: keyword 4 is Unplayable, not Ethereal.
+Guilty now discards/reshuffles normally until its five-combat expiry; Clumsy retains
+both Unplayable and Ethereal. See [source and validation](evidence/sapphire_seed_2026_09_13.md).
 
 ## Treasure rooms
 
@@ -657,7 +690,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v15`, including configuration,
+Private run snapshots now use `headless_run_state_v16`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
@@ -666,12 +699,14 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v6`, including the in-play
+Nested combat records now use `headless_combat_state_v7`, including the in-play
 pile, pending continuation, selection/target RNG, power duration flags, player
-card-play counts, exact power applier slots and monster phase/spawn counters.
+card-play counts, exact power applier slots, monster phase/spawn counters and
+per-card enchantment trigger state. Permanent card records retain enchantments
+with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v5 and run v1–v14 formats are rejected rather than assigning invented item
+v1–v6 and run v1–v15 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

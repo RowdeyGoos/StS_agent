@@ -17,18 +17,22 @@ from game.headless.monsters.base import Intent
 from game.headless.monsters.catalog import DEFAULT_MONSTERS
 from game.headless.powers.status import StatusCollection
 
-SCHEMA = "headless_combat_state_v6"
+from game.headless.enchantments import base as enchantments
+
+SCHEMA = "headless_combat_state_v7"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
 
 def card_record(card) -> dict:
+    enchantments.validate(card)
     return {"definition_id": card.definition.definition_id,
-            "instance_id": card.instance_id, "upgrade_level": card.upgrade_level, "combats_seen": card.combats_seen}
+            "instance_id": card.instance_id, "upgrade_level": card.upgrade_level, "combats_seen": card.combats_seen,
+            "enchantment": enchantments.record(card)}
 
 
 def restore_card(record, cards=DEFAULT_CARDS):
-    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen"}:
+    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "enchantment"}:
         raise ValueError("Invalid card state fields.")
     if not isinstance(record["instance_id"], str) or not record["instance_id"]:
         raise ValueError("Invalid card instance ID.")
@@ -37,6 +41,8 @@ def restore_card(record, cards=DEFAULT_CARDS):
     if type(count) is not int or not 0 <= count < max(1, card.definition.combat_lifetime):
         raise ValueError("Invalid card combat lifetime.")
     card.combats_seen = count
+    card.enchantment = enchantments.restore(record["enchantment"])
+    enchantments.validate(card)
     return card
 
 

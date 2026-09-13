@@ -186,6 +186,10 @@ class Player:
             self._finish_card_play()
 
     def _finish_card_play(self) -> None:
+        card = self.deck.in_play[0]
+        if card.enchantment is not None:
+            from game.headless.enchantments.base import ENCHANTMENTS
+            ENCHANTMENTS[card.enchantment.definition_id].on_play(card.enchantment, self)
         if self.combat_enemies is not None:
             for enemy in tuple(self.combat_enemies):
                 if enemy.is_alive:

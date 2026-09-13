@@ -91,5 +91,5 @@ class AromaOfChaos:
         if data["choice"] == "maintain_control":
             if selected != card.instance_id or card.upgrade_level < 1 or result["source_definition"] != card.definition.definition_id:
                 raise ValueError("Invalid Aroma upgrade result.")
-        elif card.upgrade_level != 0 or card.combats_seen != 0 or card.definition.definition_id not in replacement_pool(result["source_definition"], self.transform_pool) or card.definition.definition_id == result["source_definition"] or any(c.instance_id == selected for c in state.deck):
+        elif card.upgrade_level != 0 or card.combats_seen != 0 or card.enchantment is not None or card.definition.definition_id not in replacement_pool(result["source_definition"], self.transform_pool) or card.definition.definition_id == result["source_definition"] or any(c.instance_id == selected for c in state.deck):
             raise ValueError("Invalid Aroma transformation result.")

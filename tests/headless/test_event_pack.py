@@ -104,7 +104,7 @@ def test_bathe_removes_one_then_grants_fresh_guilty(count):
     finish(run)
 
 
-def test_guilty_is_ethereal_unplayable_and_expires_after_five_completed_fights():
+def test_guilty_is_unplayable_not_ethereal_and_expires_after_five_completed_fights():
     run=start('wellspring',card_ids=['strike'])
     run.apply(opt(run,'bathe'));finish(run)
     identity=run.state.deck[0].instance_id
@@ -113,7 +113,8 @@ def test_guilty_is_ethereal_unplayable_and_expires_after_five_completed_fights()
         assert not any(isinstance(a,PlayCard) and a.instance_id==identity for a in run.legal_actions())
         if count==1:
             step(run,EndTurn())
-            assert any(c.instance_id==identity for c in run.combat.player.deck.exhaust_pile)
+            assert not run.combat.player.deck.exhaust_pile
+            assert any(c.instance_id==identity for c in run.combat.player.hand)
         clone=RunEngine();clone.restore(saved(run));win(run);win(clone)
         assert saved(run)==saved(clone)
         if count<5:assert run.state.deck[0].combats_seen==count
@@ -226,7 +227,7 @@ def test_entry_predicates_skip_ineligible_events(gold,floor,expected):
 @pytest.mark.parametrize('seed,path',[(0,'left'),(2,'right'),(4,'left'),(7,'right'),(9,'left')])
 def test_expanded_generated_routes_restore_every_decision(seed,path):
     run=RunEngine.ironclad_act1(seed=seed)
-    assert len(run.state.config.event_pool)==9
+    assert len(run.state.config.event_pool)==10
     for _ in range(500):
         if run.state.phase is RunPhase.ACT_COMPLETE:break
         if run.state.phase is RunPhase.COMBAT:win(run)

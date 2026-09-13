@@ -115,7 +115,7 @@ class MorphicGrove:
                 if not isinstance(result, dict) or set(result) != {"instance_id", "definition_id"}:
                     raise ValueError("Invalid Morphic result.")
                 card = next((c for c in state.deck if c.instance_id == result["instance_id"]), None)
-                if (card is None or card.instance_id in original or card.upgrade_level != 0 or card.combats_seen != 0
+                if (card is None or card.instance_id in original or card.upgrade_level != 0 or card.combats_seen != 0 or card.enchantment is not None
                         or card.definition.definition_id != result["definition_id"]
                         or result["definition_id"] not in replacement_pool(definitions[source], self.transform_pool)
                         or result["definition_id"] == definitions[source]):

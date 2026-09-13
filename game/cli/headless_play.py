@@ -27,7 +27,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
             return found
     event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]
     if event_choices:
-        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water", "rest")
+        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water", "rest", "plant")
                      or a.option_id.startswith(("claim_potion_", "overcome_"))), event_choices[0])
     event_cards = [a for a in actions if isinstance(a, ChooseEventCard)]
     if event_cards:
