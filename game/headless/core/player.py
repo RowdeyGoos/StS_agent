@@ -70,7 +70,6 @@ class Player:
         if self.pending_play is not None:
             raise ValueError("Resolve the pending card choice first.")
         self.deck.discard_hand()
-        self.statuses.on_turn_end()
 
     def gain_block(self, amount: int) -> None:
         """Increase player block."""
@@ -106,7 +105,7 @@ class Player:
 
     def apply_status(self, status_name: str, stacks: int) -> None:
         """Apply a status effect to the player."""
-        self.statuses.add(status_name, stacks)
+        self.statuses.add(status_name, stacks, skip_first_tick=True)
 
     def gain_strength(self, amount: int) -> None:
         """Increase player strength."""

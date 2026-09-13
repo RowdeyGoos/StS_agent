@@ -33,6 +33,7 @@ class CardSpec:
         return (
             self.base_damage <= 0 and self.block_gain <= 0 and self.draw_count <= 0
             and not self.damage_equals_player_block and self.applies_status_name is None
+            and self.applies_status_stacks <= 0
         )
 
 

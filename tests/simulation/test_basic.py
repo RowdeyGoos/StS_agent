@@ -147,7 +147,7 @@ def test_defend_gets_positive_reward_for_reducing_projected_incoming_damage() ->
     assert isclose(info["incoming_damage_reduction_bonus"], 0.03125)
 
 
-def test_player_vulnerable_expires_before_enemy_attacks_if_it_reaches_zero() -> None:
+def test_player_vulnerable_skips_first_enemy_side_tick() -> None:
     env = CombatEnv(seed=0)
     env.reset()
     assert env.player is not None
@@ -156,10 +156,12 @@ def test_player_vulnerable_expires_before_enemy_attacks_if_it_reaches_zero() -> 
     observation, reward, done, info = env.step(("end_turn",))
 
     assert done is False
-    assert observation["player"]["statuses"]["vulnerable"] == 0
-    assert observation["player"]["hp"] == 74
-    assert info["player_hp_lost"] == 6
-    assert isclose(reward, -0.075)
+    # Native player debuffs skip their first enemy-side duration tick.
+    # See docs/evidence/weak_and_area_debuffs_2026_09_13.md.
+    assert observation["player"]["statuses"]["vulnerable"] == 1
+    assert observation["player"]["hp"] == 71
+    assert info["player_hp_lost"] == 9
+    assert isclose(reward, -0.1125)
     assert info["incoming_damage_reduction_bonus"] == 0.0
 
 

@@ -101,7 +101,7 @@ content catalog. New effects belong in that content family or shared game rules
 when multiple cards need them. Display names do not dispatch behavior. A test can
 inject a `CardCatalog` containing an entirely new card without touching any adapter.
 Upgrade levels are per definition; they are not globally limited to a boolean.
-All nine playable Ironclad definitions in the current pool have one implemented
+All eleven playable Ironclad definitions in the current pool have one implemented
 upgrade: [starter-card evidence](evidence/strike_upgrade_2026_09_13.md) and
 [reward-card/encounter evidence](evidence/slice_combat_content_2026_09_13.md).
 Slimed costs one, draws one and exhausts; it cannot be upgraded.
@@ -123,6 +123,23 @@ Temporary upgrades keep their instance IDs and last through combat reshuffles;
 the persistent master deck is unaffected. Random hand selection uses an owned
 `Deck.selection_rng`, forked without consuming deck/enemy RNG. This is deterministic
 Python sampling, not the native run's `CombatCardSelection` seed sequence.
+
+Uppercut costs 2, deals 13 damage, then applies 1 Weak and 1 Vulnerable;
+its upgrade applies 2 of each without increasing damage. Shockwave costs 2,
+applies 3 Weak then 3 Vulnerable to each living enemy in slot order, and exhausts;
+its upgrade applies 5 of each. Both are in the eight-card restricted reward pool.
+Weak multiplies attack damage by 0.75 regardless of stack count. Strength is
+added first and Weak/Vulnerable fractions are combined before rounding down.
+Enemy intents retain an authored damage amount privately so execution does not
+multiply an already rounded preview a second time. Non-attack damage is unaffected.
+
+Weak and Vulnerable tick once after the complete enemy side, for player and
+enemies alike. A new player debuff skips its first tick; adding stacks to an
+existing power preserves its current skip flag. Removing the final stack clears
+that flag. Snapshot continuation and search cloning retain this owned duration
+state. This corrects the old player-Vulnerable owner-turn approximation; the
+reduced Shrink rule and unsupported power/relic modifiers remain separate work.
+See the [native source and acceptance evidence](evidence/weak_and_area_debuffs_2026_09_13.md).
 
 Game commands describe intent, not network authority. External adapters still own
 public references, stale request bindings, information filtering and representation
@@ -157,7 +174,7 @@ applies Burning Blood's capped 6 HP heal once, then generates a hallway reward
 bundle. Ordinary loss ends the run without victory healing or rewards.
 
 Rewards contain 10–20 gold, three distinct offers sampled from Pommel Strike,
-Shrug It Off, Iron Wave, Body Slam, Armaments and True Grit, and a possible Fire or Block Potion.
+Shrug It Off, Iron Wave, Body Slam, Armaments, True Grit, Uppercut and Shockwave, and a possible Fire or Block Potion.
 Potion drop chance starts at 40%, changing by ten percentage points down after a
 drop or up after a miss. The integer odds and named Python streams are
 project-authored sampling; they do not reproduce native RNG or full pool/rarity
@@ -169,7 +186,7 @@ At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
 `Smith` opens a plain-data, cancelable selection of implemented upgrades.
 `ChooseUpgrade(instance_id)` commits one exact card; `ChooseUpgrade(None)` returns
 to the rest options without spending the action. Only one rest/smith action can
-be completed. All nine current Ironclad cards can be upgraded once. Pommel
+be completed. All eleven current Ironclad cards can be upgraded once. Pommel
 Strike+ deals 10 and draws 2; Shrug It Off+ gives 11 block and draws 1; Iron Wave+
 gives 7 block then deals 7; Body Slam+ costs zero and still scales with current
 block. Unsupported cards and further upgrade levels remain excluded explicitly.
@@ -211,10 +228,13 @@ its encoder size does not configure game capacity. See the
 
 Private run snapshots now use `headless_run_state_v2`, including configuration,
 items, allocator, potion odds, encounter references and every pending decision.
-Nested combat records now use `headless_combat_state_v2`, including the in-play
-pile, pending continuation and selection RNG. Earlier private v1 formats are rejected rather than assigning invented item
+Nested combat records now use `headless_combat_state_v3`, including the in-play
+pile, pending continuation, selection RNG and power duration flags. Earlier combat
+v1/v2 and run v1 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
-and brute-force oracle do not support combat choices or these two new cards.
+and brute-force oracle do not support combat choices, Weak or the new card families.
+The legacy status encoder retains its two-name vocabulary; new powers are exposed
+as active status entries by direct game inspection.
 Snapshots bind card values/effect composition and item values automatically,
 and restore RNG aliases and exact piles. Use the same game-rule implementation
 when restoring: these are development continuation records, not release provenance

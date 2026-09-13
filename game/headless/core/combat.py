@@ -114,7 +114,7 @@ class CombatEngine:
             if not enemy.is_alive:
                 continue
             enemy.start_turn()
-            executed = enemy.execute_intent(self.player)
+            executed = enemy.execute_intent(self.player, tick_statuses=False)
             enemy_actions.append({"enemy_index": slot, "enemy_name": enemy.name, "intent": executed.as_dict()})
             self._refresh_persistent_statuses()
             self._check_terminal()
@@ -124,6 +124,10 @@ class CombatEngine:
         if len(enemy_actions) == 1:
             details["enemy_action"] = enemy_actions[0]["intent"]
         if not self.done:
+            # Weak/Vulnerable tick once after the whole enemy side, on both sides.
+            self.player.statuses.after_enemy_side_turn_end()
+            for enemy in self._living_enemies():
+                enemy.statuses.after_enemy_side_turn_end()
             self.turn += 1
             self.player.start_turn(draw_count=self.cards_per_turn)
             self._refresh_persistent_statuses()

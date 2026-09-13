@@ -17,7 +17,7 @@ from game.headless.monsters.base import Intent
 from game.headless.monsters.catalog import DEFAULT_MONSTERS
 from game.headless.powers.status import StatusCollection
 
-SCHEMA = "headless_combat_state_v2"
+SCHEMA = "headless_combat_state_v3"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -65,6 +65,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
             raise ValueError(f"Monster type is not in the supplied catalog: {kind}.")
         enemy_rows.append({
             "type": kind, "rng": rng_ref(enemy.rng), "statuses": dict(enemy.statuses._counts),
+            "skip_status_tick": sorted(enemy.statuses._skip_next_tick),
             "state": {name: _json_value(value) for name, value in vars(enemy).items() if name not in ("rng", "statuses")},
         })
     deck = engine.player.deck
@@ -78,7 +79,8 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "pending_play": None if engine.player.pending_play is None else asdict(engine.player.pending_play),
         "turn": engine.turn, "done": engine.done, "winner": engine.winner,
         "config": {"player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
-        "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts)},
+        "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
+                   "skip_status_tick": sorted(engine.player.statuses._skip_next_tick)},
         "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
@@ -102,12 +104,17 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             if type(index) is not int or not 0 <= index < len(rngs):
                 raise ValueError("Invalid RNG reference.")
             return rngs[index]
-        def statuses(values):
+        def statuses(values, skipped):
             result = StatusCollection()
             for name, count in values.items():
                 if type(count) is not int or count < 0:
                     raise ValueError("Invalid status count.")
                 result.add(name, count)
+            if not isinstance(skipped, list) or len(set(skipped)) != len(skipped) or any(
+                name not in ("weak", "vulnerable") or not result.get(name) for name in skipped
+            ):
+                raise ValueError("Invalid power duration flags.")
+            result._skip_next_tick = set(skipped)
             return result
         deck = Deck.__new__(Deck)
         source_deck = snapshot["deck"]
@@ -132,7 +139,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             setattr(player, name, value)
         if not 0 <= player.hp <= player.max_hp or player.max_hp == 0:
             raise ValueError("Invalid player HP.")
-        player.statuses = statuses(snapshot["player"]["statuses"])
+        player.statuses = statuses(snapshot["player"]["statuses"], snapshot["player"]["skip_status_tick"])
         enemies = []
         for row in snapshot["enemies"]:
             kind = monsters[row["type"]]
@@ -155,7 +162,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
                     raise ValueError("Invalid negative monster state value.")
                 setattr(enemy, name, value)
             enemy.rng = rng_at(row["rng"])
-            enemy.statuses = statuses(row["statuses"])
+            enemy.statuses = statuses(row["statuses"], row["skip_status_tick"])
             if type(enemy.hp) is not int or not 0 <= enemy.hp <= enemy.max_hp or enemy.max_hp <= 0:
                 raise ValueError("Invalid enemy HP.")
             enemy.intent  # Verify required behavior fields before installation.
