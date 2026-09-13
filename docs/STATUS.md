@@ -118,7 +118,7 @@ the selected child effect and map return are verified.
 | Initial event-option policy | `--event-option` chooses an exact legal first option and stops if absent/illegal; subsequent actions use first-legal policy |
 | Results acknowledgment | Pandora's Box nine-card screen Confirm/map passed; preceding automatic transformations are not certified |
 | Reduced headless/actor stack | Structural backend and cloning pipeline accepted; no target-game fidelity or learned live-policy claim |
-| Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): content-owned card rules and upgrades, combat execution, owned run state, map/reward/room primitives and JSON continuation. Legacy experiment APIs consume the same combat rules. Native full-run fidelity remains open; [remaining tasks](HEADLESS_FULL_GAME_IMPLEMENTATION.md). |
+| Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): playable restricted Ironclad A0 two-combat slice with rewards, rest/smith, Burning Blood, Fire/Block Potions and JSON continuation at every decision. `sts-headless-play` exercises the loop. Legacy experiment APIs consume the same combat rules. Native full-run fidelity remains open; [evidence and limits](evidence/first_vertical_slice_2026_09_13.md), [remaining tasks](HEADLESS_FULL_GAME_IMPLEMENTATION.md). |
 
 One production bridge in `apps/bridge/` combines shared components and original
 core adapters. Modules remain exclusive until native reconciliation and successful

@@ -43,7 +43,9 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`monsters/`](../game/headless/monsters/), [`encounters/`](../game/headless/encounters/) | Monster behavior and separate seeded encounter composition |
 | [`powers/status.py`](../game/headless/powers/status.py) | Implemented status rules and damage modifiers |
 | [`run/state.py`](../game/headless/run/state.py), [`run/engine.py`](../game/headless/run/engine.py) | Persistent state and owned combat handoff |
+| [`run/config.py`](../game/headless/run/config.py), [`run/actions.py`](../game/headless/run/actions.py), [`run/flow.py`](../game/headless/run/flow.py) | Declared character/difficulty/pools and direct run command legality/dispatch |
 | [`run/deck.py`](../game/headless/run/deck.py), [`run/rewards.py`](../game/headless/run/rewards.py), [`run/rooms.py`](../game/headless/run/rooms.py) | Persistent mutations, reward resolution and room transitions |
+| [`run/rest_site.py`](../game/headless/run/rest_site.py), [`run/inventory.py`](../game/headless/run/inventory.py), [`relics/`](../game/headless/relics/), [`potions/`](../game/headless/potions/) | Rest/smith decisions, owned item acquisition/removal, victory healing and potion effects |
 | [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored map navigation and the existing primitive event effects |
 | [`core/rng.py`](../game/headless/core/rng.py), [`core/snapshots.py`](../game/headless/core/snapshots.py), [`run/snapshots.py`](../game/headless/run/snapshots.py) | Owned RNG streams and private JSON continuation |
 | `game/simulation/`, `game/backends/`, `game/contracts/`, actor/data/training packages | Compatibility, encoding, public-information policy and external consumption |
@@ -54,6 +56,27 @@ package may import only itself and the standard library. Existing symbols such a
 game classes. There is one combat implementation, not two simulators to maintain.
 
 ## Use and extend the game directly
+
+The complete first vertical slice is available through direct game commands:
+
+```python
+from game.headless.run.actions import ChooseNode
+from game.headless.run.engine import RunEngine
+
+run = RunEngine.ironclad_slice(seed=2, ascension=0)
+run.apply(ChooseNode("fight_1"))
+actions = run.legal_actions()  # PlayCard, EndTurn, and any owned usable potion
+# Choose and apply one of these commands; continue through rewards/rest/map.
+snapshot = run.snapshot()
+restored = RunEngine()
+restored.restore(snapshot)  # Also accepts json.loads(json.dumps(snapshot)).
+assert restored.legal_actions() == actions
+```
+
+Run the complete deterministic example from the [README](../README.md#implementing-the-game).
+Seed 2 exercises a potion acquired after the first fight and used in the second.
+The example player is a CLI consumer, separate from the rules. The following
+lower-level API remains useful for isolated rule tests:
 
 ```python
 from game.headless.core.actions import PlayCard
@@ -86,8 +109,8 @@ public references, stale request bindings, information filtering and representat
 limits. A new action family may eventually require adapter work, but that work is
 not a prerequisite for implementing or testing its game rule.
 
-Add relics, potions, selectors and other families when implementing their first
-verified behavior. Keep their rules beside their content; add explicit lifecycle
+Extend relics, potions, selectors and other families with verified behavior.
+Keep their rules beside their content; add explicit lifecycle
 operations in the core as needed. Do not put card-name switches, global mutable
 registries, live-service dependencies or callback closures into saved game state.
 Do not scaffold empty plugin frameworks or guess all future hooks now.
@@ -107,16 +130,42 @@ They are not the implementation destination for new game content. Replacing that
 consumer with a generic adapter over `RunEngine` is deferred integration work,
 not an invitation to maintain two evolving rule sets.
 
+The first slice starts Ironclad with 80 HP, 99 gold, the ten-card starter deck,
+Burning Blood and three empty potion slots. Its authored route is Nibbit →
+rest site → Overgrowth slimes → `slice_complete`. Each victory returns combat HP,
+applies Burning Blood's capped 6 HP heal once, then generates a hallway reward
+bundle. Ordinary loss ends the run without victory healing or rewards.
+
+Rewards contain 10–20 gold, three distinct offers sampled from Pommel Strike,
+Shrug It Off, Iron Wave and Body Slam, and a possible Fire or Block Potion.
+Potion drop chance starts at 40%, changing by ten percentage points down after a
+drop or up after a miss. The integer odds and named Python streams are
+project-authored sampling; they do not reproduce native RNG or full pool/rarity
+generation. Rewards can be claimed independently or forfeited by leaving.
+A full potion inventory requires discarding an owned potion before claiming
+another; slots never shift and discarded IDs are never reused.
+
+At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
+`Smith` opens a plain-data, cancelable selection of implemented upgrades.
+`ChooseUpgrade(instance_id)` commits one exact card; `ChooseUpgrade(None)` returns
+to the rest options without spending the action. Only one rest/smith action can
+be completed. Unsupported upgrades are excluded explicitly; the three starter
+cards have upgrades, while the four reward cards currently have base levels only.
+Fire Potion deals 20 damage through enemy block without attack modifiers; Block
+Potion gives 12 block. Both are combat-only and cost no energy. Their use consumes
+the exact owned instance before checking combat completion. See the
+[native rule evidence and scope](evidence/first_vertical_slice_2026_09_13.md).
+
 This is a partial game model. Native RNG parity, full status/hook ordering,
-draw-prevention/after-draw hooks, other card-zone mechanics, relics, potions,
+draw-prevention/after-draw hooks, other card-zone mechanics, remaining items,
 complex selections, shops, procedural maps,
 all content and complete target-game progression remain in the
 [implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md). `RunEngine`
-provides direct combat, map and room/reward primitives; it does not yet generate
-or automatically orchestrate a native full run. Rest/event amounts are explicit
-caller-supplied synthetic values. A map node must be resolved before navigation
-can continue. Combat copies the persistent deck; its current persistent result
-is HP. Permanent combat-produced deck changes need their own explicit rules.
+orchestrates the restricted slice, not a complete native run. Other ascensions
+reject explicitly. Generic `RunEngine()` retains the isolated primitive setup
+without automatic starter items; its older `run/rooms.py` rest/event amounts
+remain caller-supplied synthetic values. Combat copies the persistent deck;
+permanent combat-produced deck changes need their own explicit rules.
 
 Ordinary draws stop at the native ten-card hand limit, checked before each draw
 and any needed reshuffle. Overflow stays in its current piles; a full-hand draw
@@ -124,7 +173,11 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private snapshots bind schema and card values/effect composition automatically,
+Private run snapshots now use `headless_run_state_v2`, including configuration,
+items, allocator, potion odds, encounter references and every pending decision.
+The earlier private v1 format is rejected rather than assigning invented item
+or progression defaults. Public reduced fixture schemas are unchanged.
+Snapshots bind card values/effect composition and item values automatically,
 and restore RNG aliases and exact piles. Use the same game-rule implementation
 when restoring: these are development continuation records, not release provenance
 certificates. Unknown monster state types reject until their content family has a
@@ -140,7 +193,10 @@ policy, transport or artifact code.
 Run `PYTHONPATH=. python -m pytest -q tests/headless` for direct gameplay cases.
 They include an unlisted card with three levels, changed cost/damage, two combats,
 JSON continuation, RNG aliasing, invalid-operation atomicity, branch isolation,
-rewards, rooms, map navigation and an import-boundary check. Existing simulation,
+rewards, rooms, map navigation and an import-boundary check.
+[`test_vertical_slice.py`](../tests/headless/test_vertical_slice.py) covers both
+complete routes with JSON restore before each command, item legality, exact
+persistent identities, canceled smithing, defeat and malformed snapshots. Existing simulation,
 search and headless adapter tests cover compatibility. Broaden checks when a shared
 rule or consumer actually changes; bridge builds and historical frozen-evidence
 repinning are not part of ordinary card implementation.
