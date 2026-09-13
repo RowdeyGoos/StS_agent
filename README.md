@@ -78,6 +78,22 @@ Leaving the boss rewards records `act_complete` for Act 1; it does not declare
 full-game victory. The simple demo player can lose on this route. Boss rewards
 use a restricted rare-card pool: Impervious, Offering and Fiend Fire.
 
+All **22 native Overgrowth encounters** are implemented at A0: 16 hallway/easy
+encounters, three elites and three bosses, covering 29 monster types including
+minions and all Ruby Raider variants. The authored Act 1 route accepts optional
+`--hallway`, `--elite` and `--boss` encounter IDs (listed by `--help`):
+
+```bash
+sts-headless-play --route overgrowth-act1 --path right --rest-choice rest --seed 2 --elite overgrowth_phrog_parasite --boss overgrowth_ceremonial_beast --verify-restore
+sts-headless-play --route overgrowth-act1 --path left --rest-choice rest --seed 2 --hallway overgrowth_fogmog --boss overgrowth_the_kin --verify-restore
+```
+
+Hallway overrides replace the left fourth-fight branch; elite overrides replace
+the right fourth-fight branch. Boss selection replaces the final fight. These
+options exercise content on the existing five-fight route; native map generation,
+encounter selection and full card/item/event pools remain unfinished.
+[Complete roster and validation](docs/evidence/overgrowth_roster_2026_09_13.md).
+
 Without reinstalling the console entry point, run
 `PYTHONPATH=. python -m game.cli.headless_play` with the same arguments.
 

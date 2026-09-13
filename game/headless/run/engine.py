@@ -43,7 +43,7 @@ class RunEngine:
         self.state.validate()
 
     @classmethod
-    def ironclad_slice(cls, *, seed: int = 0, ascension: int = 0, route: str = "first-slice"):
+    def ironclad_slice(cls, *, seed: int = 0, ascension: int = 0, route: str = "first-slice", boss=None, elite=None, hallway=None):
         """Native starter inventory on a named, restricted authored route."""
         from game.headless.run.scenarios import ROUTES
         if route not in ROUTES:
@@ -51,8 +51,11 @@ class RunEngine:
         config = RunConfig(ascension=ascension)
         if route == "overgrowth-act1":
             config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
+        overrides = {name: value for name, value in (("boss", boss), ("elite", elite), ("hallway", hallway)) if value is not None}
+        if overrides and route != "overgrowth-act1":
+            raise ValueError("Encounter overrides require the authored Act 1 route.")
         engine = cls(seed=seed, max_hp=80, gold=99, config=config,
-                     graph=ROUTES[route]())
+                     graph=ROUTES[route](**overrides))
         add_relic(engine.state, "burning_blood")
         return engine
 

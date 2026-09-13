@@ -72,3 +72,54 @@ def build_overgrowth_hard_v1_encounter(rng: Random) -> list[Enemy]:
         )
     )
     return list(encounter_builder(rng))
+
+
+def build_overgrowth_normal_slimes(rng):
+    small = (LeafSlimeSmall, TwigSlimeSmall) if rng.choice((False, True)) else (TwigSlimeSmall, LeafSlimeSmall)
+    return [TwigSlimeMedium(rng), LeafSlimeMedium(rng), *(kind(rng) for kind in small)]
+
+
+def build_overgrowth_flyconid(rng):
+    from game.headless.monsters.overgrowth_normal import Flyconid
+    medium = rng.choice((LeafSlimeMedium, TwigSlimeMedium))
+    return [medium(rng), Flyconid(rng)]
+
+
+def build_overgrowth_inklets(rng):
+    from game.headless.monsters.overgrowth_normal import Inklet
+    return [Inklet(rng), Inklet(rng, middle=True), Inklet(rng)]
+
+
+def build_overgrowth_ruby_raiders(rng):
+    from game.headless.monsters.ruby_raiders import (
+        AxeRubyRaider, AssassinRubyRaider, BruteRubyRaider, CrossbowRubyRaider, TrackerRubyRaider,
+    )
+    candidates = [AxeRubyRaider, AssassinRubyRaider, BruteRubyRaider, CrossbowRubyRaider, TrackerRubyRaider]
+    selected = []
+    for _ in range(3):
+        kind = rng.choice(candidates)
+        candidates.remove(kind)
+        selected.append(kind)
+    return [kind(rng) for kind in selected]
+
+
+def build_overgrowth_strangler(rng):
+    from game.headless.monsters.overgrowth_normal import SlitheringStrangler, SnappingJaxfruit
+    variant = rng.randrange(3)
+    if variant == 0:
+        kinds = [SnappingJaxfruit]
+    elif variant == 1:
+        kinds = [rng.choice((LeafSlimeMedium, TwigSlimeMedium))]
+    else:
+        kinds = [rng.choice((LeafSlimeSmall, TwigSlimeSmall)) for _ in range(2)]
+    return [*(kind(rng) for kind in kinds), SlitheringStrangler(rng)]
+
+
+def build_overgrowth_jaxfruit(rng):
+    from game.headless.monsters.overgrowth_normal import SnappingJaxfruit, Flyconid
+    return [SnappingJaxfruit(rng), Flyconid(rng)]
+
+
+def build_overgrowth_kin(rng):
+    from game.headless.monsters.kin import KinFollower, KinPriest
+    return [KinFollower(rng, starts_with_dance=True), KinFollower(rng), KinPriest(rng)]

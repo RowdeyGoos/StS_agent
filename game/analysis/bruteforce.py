@@ -412,6 +412,8 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
         cloned_player = copy(source_player)
         cloned_player.deck = cloned_deck
         cloned_player.statuses = cloned_player_statuses
+        cloned_player.power_sources = source_player.power_sources.copy()
+        memo[id(source_player)] = cloned_player
         cloned_env.player = cloned_player
 
     if env.enemies is not None:
@@ -429,6 +431,8 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
     cloned_env.enemies = deepcopy(env.enemies, memo)
     if cloned_env.player is not None:
         cloned_env.player.combat_enemies = cloned_env.enemies
+        for enemy in cloned_env.enemies or ():
+            enemy.combat_player = cloned_env.player
     cloned_env.episode_transitions = []
     cloned_env.record_trajectory = False
     cloned_env.last_observation = cloned_env.get_observation()
@@ -635,6 +639,8 @@ def _combat_state_key(
         player.energy,
         player.strength,
         _freeze(player.statuses),
+        player.cards_played_this_turn,
+        _freeze(player.power_sources),
         tuple(card_registry.key(card) for card in deck.draw_pile),
         tuple(card_registry.key(card) for card in deck.discard_pile),
         tuple(card_registry.key(card) for card in deck.exhaust_pile),
@@ -647,7 +653,7 @@ def _combat_state_key(
                 sorted(
                     (attribute_name, _freeze(attribute_value))
                     for attribute_name, attribute_value in vars(enemy).items()
-                    if attribute_name != "rng"
+                    if attribute_name not in ("rng", "combat_player")
                 )
             ),
         )

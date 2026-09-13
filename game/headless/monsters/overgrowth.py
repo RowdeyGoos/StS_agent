@@ -84,6 +84,8 @@ class Nibbit(Enemy):
 class ShrinkerBeetle(Enemy):
     """Shrinker Beetle from the Overgrowth easy encounter pool."""
 
+    APPLIED_PLAYER_POWERS = ("shrink",)
+
     OPENING_INTENT = Intent(
         kind="debuff",
         value=1,

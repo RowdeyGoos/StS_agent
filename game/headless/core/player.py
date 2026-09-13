@@ -32,6 +32,8 @@ class Player:
         self.strength = 0
         self.statuses = StatusCollection()
         self.pending_play: PendingCardPlay | None = None
+        self.cards_played_this_turn = 0
+        self.power_sources: dict[str, int] = {}
         # Alias to the owning combat's enemy slots, rebound by reset/restore/clone.
         # Isolated Player rule fixtures can leave this unset.
         self.combat_enemies: list[Enemy] | None = None
@@ -50,6 +52,7 @@ class Player:
         """Start the player's turn by clearing block, resetting energy, and drawing."""
         self.block = 0
         self.energy = self.energy_per_turn
+        self.cards_played_this_turn = 0
         self.draw_cards(draw_count)
 
     def draw_cards(self, count: int) -> list[Card]:
@@ -69,13 +72,21 @@ class Player:
         """End the player's turn by discarding the current hand."""
         if self.pending_play is not None:
             raise ValueError("Resolve the pending card choice first.")
+        for card in tuple(self.hand):
+            if card.spec.end_turn_damage:
+                self.take_damage(card.spec.end_turn_damage, is_attack=False)
+                if not self.is_alive:
+                    return
+            if card.spec.ethereal:
+                self.hand.remove(card)
+                self.deck.exhaust_card(card)
         self.deck.discard_hand()
 
-    def gain_block(self, amount: int) -> None:
+    def gain_block(self, amount: int, *, powered: bool = False) -> None:
         """Increase player block."""
         if amount < 0:
             raise ValueError("Block gain cannot be negative.")
-        self.block += amount
+        self.block += amount * 3 // 4 if powered and self.statuses.get("frail") else amount
 
     def take_damage(
         self,
@@ -103,9 +114,11 @@ class Player:
         )
         return previous_hp - self.hp
 
-    def apply_status(self, status_name: str, stacks: int) -> None:
+    def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the player."""
         self.statuses.add(status_name, stacks, skip_first_tick=True)
+        if source is not None and self.combat_enemies is not None and status_name in ("shrink", "constrict"):
+            self.power_sources.setdefault(status_name, self.combat_enemies.index(source))
 
     def gain_strength(self, amount: int) -> None:
         """Increase player strength."""
@@ -116,6 +129,9 @@ class Player:
     def add_card_to_discard(self, card: Card) -> None:
         """Add a card directly to the discard pile."""
         self.deck.discard_card(card)
+
+    def card_cost(self, card):
+        return card.cost + (self.statuses.get("tangled") if card.spec.kind == "attack" and card.cost >= 0 else 0)
 
     def play_card(self, hand_index: int, enemy: Enemy) -> Card:
         """Play a card from the hand against the current enemy."""
@@ -128,10 +144,13 @@ class Player:
 
         if card.cost < 0:
             raise ValueError(f"{card.name} is unplayable.")
-        if card.cost > self.energy:
+        if self.card_cost(card) > self.energy:
             raise ValueError(f"Not enough energy to play {card.name}.")
 
-        self.energy -= card.cost
+        if self.statuses.get("ringing") and self.cards_played_this_turn:
+            raise ValueError("Ringing permits only one card this turn.")
+        self.energy -= self.card_cost(card)
+        self.cards_played_this_turn += 1
         card = self.deck.pop_card_from_hand(hand_index)
         self.deck.in_play.append(card)
         result = card.play(self, enemy)
@@ -167,6 +186,10 @@ class Player:
             self._finish_card_play()
 
     def _finish_card_play(self) -> None:
+        if self.combat_enemies is not None:
+            for enemy in tuple(self.combat_enemies):
+                if enemy.is_alive:
+                    enemy.after_player_card(self)
         card = self.deck.in_play.pop()
         if card.exhausts:
             self.deck.exhaust_card(card)

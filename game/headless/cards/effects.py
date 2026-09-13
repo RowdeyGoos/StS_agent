@@ -16,7 +16,7 @@ class DealDamage:
 class GainBlock:
     def apply(self, card, player, target) -> None:
         if not player.combat_is_ending:
-            player.gain_block(card.spec.block_gain)
+            player.gain_block(card.spec.block_gain, powered=True)
 
 
 @dataclass(frozen=True, slots=True)

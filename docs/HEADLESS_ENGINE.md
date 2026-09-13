@@ -156,6 +156,54 @@ operations in the core as needed. Do not put card-name switches, global mutable
 registries, live-service dependencies or callback closures into saved game state.
 Do not scaffold empty plugin frameworks or guess all future hooks now.
 
+## Complete Overgrowth encounter roster at A0
+
+All 22 encounters in pinned `Overgrowth.GenerateAllEncounters` are registered in
+`encounters/catalog.py`. The native-ID mapping is an explicit census: 16 normal/
+easy encounters, three elites and three bosses, with 29 monster types including
+summons. Every encounter can be constructed directly, restored during combat and
+handed through the existing rewards/act-completion lifecycle. Native encounter
+pool selection, discovery restrictions and procedural map generation remain open.
+See the [roster, native anchors and validation](evidence/overgrowth_roster_2026_09_13.md).
+
+The additional content includes Cubex Construct, Flyconid, Fogmog/Eye With Teeth,
+Inklets, five Ruby Raiders, Slithering Strangler, Snapping Jaxfruit, Vine Shambler,
+Bygone Effigy, Phrog Parasite/Wrigglers, Ceremonial Beast and Kin followers/priest.
+Mixed groups preserve native member order and authored opening roles. Ruby Raiders
+select three distinct variants; normal slimes have four members. Flyconid retains
+its native move cooldowns, including the source's first-branch fallback when all
+weights are zero. The engine continues to use seeded Python RNG, without native
+seed/draw parity claims.
+
+Rules added for these encounters:
+
+- Frail multiplies powered card block by 0.75; potion block is unchanged. Artifact
+  prevents and consumes one debuff application. Shrink, Weak, Vulnerable and Slow
+  damage multipliers combine before the final floor.
+- Constrict deals blockable non-attack damage at player-side end and clears on
+  its recorded applier's death. Shrink also retains its actual applier slot.
+- Tangled increases attack-card costs for the next player turn. Ringing allows
+  only the first card started that turn, including skills; both expire at
+  player-side end. Slow counts completed cards and resets on the enemy turn.
+- Ceremonial Beast applies Plow 150, then attacks/gains Strength. Positive HP
+  damage crossing that threshold removes Plow/Strength and interrupts with a
+  stun, followed by Beast Cry, Stomp and Crush.
+- Phrog's death appends four owned Wriggler slots before victory or the next hit
+  can proceed. Their initial stun and alternating slot roles survive restore.
+- Eye With Teeth remains in its slot while dead, clears debuffs, cannot be hit
+  during revival and spends its next turn restoring HP. Secondary minions do
+  not keep a fight alive after the last primary enemy dies. Summons do not join
+  an enemy turn already in progress.
+- Dazed exhausts from hand at turn end; Infection deals three blockable damage
+  per copy remaining in hand. Generated cards stay in combat, outside the master
+  deck, and dead-player/ended-combat rules stop subsequent effects.
+
+Use `RunEngine.ironclad_slice(route="overgrowth-act1", boss=..., elite=...,
+hallway=...)` or the matching installed CLI flags to substitute any registered
+encounter of that room kind. Defaults preserve the earlier route. The route still
+has five fights; a complete native Act 1 requires map/progression and remaining
+content work, not another enemy backend.
+
 ## Ordinary events
 
 The Act 1 route offers Jungle Maze Adventure on the left and Aroma of Chaos on
@@ -303,7 +351,7 @@ so the first Peck deals 4×3 before other modifiers. The power uses an owner-sid
 lifecycle rule; it does not trigger at the end of the opposing side or once per
 other enemy. Dead owners do not trigger.
 
-Hallway rewards contain 10–20 gold; Byrdonis rewards contain 35–45 gold and one
+Hallway rewards contain 10–20 gold; all three elite encounters reward 35–45 gold and one
 relic. Both have three distinct offers sampled from Pommel Strike,
 Shrug It Off, Iron Wave, Body Slam, Armaments, True Grit, Uppercut and Shockwave, and a possible Fire or Block Potion.
 Potion drop chance starts at 40%, changing by ten percentage points down after a
@@ -406,14 +454,17 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v8`, including configuration,
+Private run snapshots now use `headless_run_state_v9`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection,
 shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.
-Nested combat records now use `headless_combat_state_v4`, including the in-play
-pile, pending continuation, selection/target RNG and power duration flags. Earlier combat
-v1/v2/v3 and run v1/v2/v3/v4/v5/v6/v7 formats are rejected rather than assigning invented item
+Nested combat records now use `headless_combat_state_v5`, including the in-play
+pile, pending continuation, selection/target RNG, power duration flags, player
+card-play counts, exact power applier slots and monster phase/spawn counters.
+Creature context references are rebound from owned state, never serialized.
+Earlier combat
+v1/v2/v3/v4 and run v1/v2/v3/v4/v5/v6/v7/v8 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

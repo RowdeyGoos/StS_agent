@@ -21,6 +21,12 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — complete A0 Overgrowth encounter roster:** all 22 native pool
+  entries and 29 monster types are implemented, including all three elites/bosses,
+  mixed groups, summons, revival and required powers/status cards. Every encounter
+  has combat/restore/outcome coverage. Native map and encounter generation, later
+  acts and ascension variants remain open.
+  [Evidence and roster](evidence/overgrowth_roster_2026_09_13.md).
 - **2026-09-13 — Aroma of Chaos:** mandatory one-card transformation/upgrade
   choices, automatic zero/one resolution and exact continuation are implemented.
   Permanent transforms preserve position, allocate a fresh unupgraded card and
@@ -564,8 +570,10 @@ Dependencies and acceptance cases are in the linked task.
   stacking preserves the existing flag. Private snapshot v3 and oracle clones/keys
   retain duration state. Uppercut and Shockwave are verified first callers. See
   [source and acceptance evidence](evidence/weak_and_area_debuffs_2026_09_13.md).
-  Remaining: Frail and other powers, prevention/immunity, source-owned lifetimes,
-  temporary attributes and general triggered hooks.
+  Overgrowth also implements Frail, Artifact, Constrict/Shrink source ownership,
+  Tangled, Ringing, Slow, Plow, Illusion, Infested and Minion behavior.
+  Remaining: other power families, temporary attributes and general triggered
+  hooks beyond these native callers.
 - **Depends on:** HF-04/06/11.
 - **Implement:** replace the two-status limitation with supported, typed status/power
   definitions and instance state. Cover application, stacking/replacement, removal,
@@ -689,6 +697,12 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-19 — Generalize enemy behavior and combat entity lifecycle
 
+- **Partial:** all Overgrowth callers now support owned move/cooldown counters,
+  appended summon slots, immediate per-hit death reactions, secondary minion
+  cleanup and illusion revival. Context aliases rebind on restore/search clone;
+  Phrog child slots and Eye/Beast phases are validated. Other acts' entity
+  mechanics remain open.
+
 - **Depends on:** HF-04/05/06/11/12.
 - **Implement:** extend [game monsters] for history-dependent/random move selection,
   visible intent updates, enemy-specific counters, phases, summoned entities,
@@ -707,7 +721,8 @@ Dependencies and acceptance cases are in the linked task.
   repeat constraint and slime slot order are corrected. Fuzzy Wurm, solo Mawler,
   paired Nibbit opening roles and their encounter compositions are also verified;
   the authored `overgrowth` route exercises these through four fights and two
-  branch decisions. Native RNG parity and Shrinker Beetle remain open.
+  branch decisions. Shrinker Beetle is now source-checked, including owned-source removal and final
+  multiplier rounding. Native RNG parity and ascension variants remain open.
   See [initial evidence](evidence/slice_combat_content_2026_09_13.md) and
   [expanded encounters/route](evidence/overgrowth_routes_2026_09_13.md).
 - **Depends on:** HF-02/05 and relevant HF-11/12/19 rules.
@@ -723,9 +738,10 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-21 — Complete normal encounters across every target act
 
-- **Status:** five explicit encounter definitions are available to direct routes:
-  solo Nibbit, weak slimes, solo Fuzzy Wurm, solo Mawler and paired Nibbits.
-  Remaining Overgrowth encounters and complete native pool selection are open.
+- **Status:** all 16 native Overgrowth normal/easy encounter entries are implemented
+  at A0, including mixed and variable compositions. The complete 22-entry census
+  includes elites/bosses; see [roster evidence](evidence/overgrowth_roster_2026_09_13.md).
+  Other acts and native pool selection remain open.
 
 - **Depends on:** HF-01/19 and each enemy's implemented mechanics. HF-30 later
   integrates these encounter definitions into run sampling.
@@ -740,10 +756,10 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-22 — Implement all target elite encounters
 
-- **Partial:** `HF-22/overgrowth_byrdonis` is implemented at A0: verified HP,
-  Swoop opening, alternating attacks, Territorial owner-side Strength, optional
-  route and elite reward handoff. Other Overgrowth elites (Bygone Effigy and
-  Phrog Parasite), other acts and ascension variants remain open.
+- **Partial across the full game; Overgrowth A0 complete:** Byrdonis, Bygone
+  Effigy and Phrog Parasite have verified moves, required powers, summon/death
+  rules and elite reward handoff. Other acts and ascension variants remain open.
+  See [roster evidence](evidence/overgrowth_roster_2026_09_13.md).
 
 - **Depends on:** HF-01/19 and the elite's card/status mechanics. Integrate the
   resulting definition with HF-30/31 when run sampling/rewards are available.
@@ -758,9 +774,10 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-23 — Implement all target boss encounters
 
-- **Partial:** `HF-23/overgrowth_vantom` is implemented at A0: 173 HP, Slippery 8,
-  four-move cycle, Strength growth and generated Wounds, with boss rewards and
-  act completion. Ceremonial Beast, The Kin, other acts and ascensions remain open.
+- **Partial across the full game; Overgrowth A0 complete:** Vantom, Ceremonial
+  Beast and The Kin have verified moves, phase/minion rules, boss rewards and
+  exact boss-ID act completion. Other acts and ascension variants remain open.
+  See [roster evidence](evidence/overgrowth_roster_2026_09_13.md).
 
 - **Depends on:** HF-01/19 and the boss's mechanics. HF-30/31/37 consume the
   resulting encounter; they are not prerequisites for implementing its combat.
@@ -1267,22 +1284,27 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The authored Act 1 route now covers two events, treasure, an optional shop, one
-elite and one boss. The next useful batch is **HF-22: a second Overgrowth elite**
-to broaden combat coverage beyond Byrdonis:
+The Overgrowth A0 combat roster is complete. The next batch toward a complete
+Act 1 is **HF-29/30: native map topology and encounter progression**, using the
+existing 22-entry encounter catalog:
 
-1. Inspect the pinned Overgrowth elite pool and select one encounter. Record its
-   exact member IDs, A0 HP/intent values, opening move and transition rules before
-   implementing it; do not substitute Slay the Spire 1 behavior.
-2. Implement the enemy in its content module, reusing existing damage, block,
-   powers and stable slots. Add only the shared rule primitive required by its
-   verified behavior. Keep unsupported powers or variants explicit.
-3. Register the encounter and add an authored elite branch, retaining Byrdonis.
-   Reuse elite rewards and the run lifecycle; add no projection or encoding work.
-4. Verify every intent transition, relevant multi-hit/power interaction, victory
-   and defeat, JSON continuation inside combat and installed route execution.
-   Update the supported-content list and evidence. Native procedural maps,
-   encounter selection, global relic bags and later acts stay separate tasks.
+1. Inspect pinned Overgrowth room count, map generation, guaranteed room positions,
+   edge restrictions and first-three weak-fight selection. Record native discovery
+   settings explicitly; support a declared unlocked-content configuration.
+2. Generate an owned seeded Act 1 map through `map/graph.py`, retaining the small
+   authored routes as fixtures. Validate connectivity, reachable choices, room
+   frequencies/restrictions and exact JSON restore without generation rerolls.
+3. Add run-owned weak/normal/elite/boss encounter histories and selection rules.
+   Reference catalog IDs; do not duplicate monster data. Restore must preserve
+   used pools and the next encounter decision. Test exclusions and no-repeat rules.
+4. Drive a full-length map through existing combat, reward and room lifecycles.
+   Keep unsupported event/item/card content excluded by an explicit pool setting;
+   never silently replace an unsupported event with a harmless room. Record this
+   as restricted-content Act 1 progression until HF-18/24–27/31–36/39–43 close the
+   remaining Ironclad cards, relics, potions, rewards, shops and event branches.
+5. Add native reference traces for multi-room seeds, installed execution and exact
+   continuation at map/room/boss decisions. Full native RNG parity is HF-05;
+   later acts and higher ascensions remain separate from the A0 Act 1 milestone.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py
