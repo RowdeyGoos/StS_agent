@@ -3,7 +3,7 @@
 from copy import deepcopy
 from dataclasses import dataclass
 
-from game.headless.events.transformation import TRANSFORM_POOL, check_content
+from game.headless.events.transformation import TRANSFORM_POOL, CURSE_POOL, check_content, replacement_pool
 from game.headless.run.deck import transform_card
 
 
@@ -62,7 +62,8 @@ class MorphicGrove:
         trial = deepcopy(state)
         results = []
         for identity in selected:
-            card = transform_card(trial, cards, identity, self.transform_pool, stream="event.morphic_transform")
+            source = next(c.definition.definition_id for c in trial.deck if c.instance_id == identity)
+            card = transform_card(trial, cards, identity, replacement_pool(source, self.transform_pool), stream="event.morphic_transform")
             results.append({"instance_id": card.instance_id, "definition_id": card.definition.definition_id})
         state.deck, state.rng, state.next_card_id = trial.deck, trial.rng, trial.next_card_id
         state.gold = 0
@@ -87,7 +88,7 @@ class MorphicGrove:
         if not isinstance(definitions, dict) or set(definitions) != set(original):
             raise ValueError("Invalid Morphic source definitions.")
         for name in definitions.values():
-            if not isinstance(name, str) or name not in (*self.transform_pool, "strike", "defend", "bash"):
+            if not isinstance(name, str) or name not in (*self.transform_pool, "strike", "defend", "bash", *CURSE_POOL):
                 raise ValueError("Unsupported Morphic source definition.")
         if any(c.instance_id in definitions and c.definition.definition_id != definitions[c.instance_id] for c in state.deck):
             raise ValueError("Morphic original definitions differ from the deck.")
@@ -114,9 +115,9 @@ class MorphicGrove:
                 if not isinstance(result, dict) or set(result) != {"instance_id", "definition_id"}:
                     raise ValueError("Invalid Morphic result.")
                 card = next((c for c in state.deck if c.instance_id == result["instance_id"]), None)
-                if (card is None or card.instance_id in original or card.upgrade_level != 0
+                if (card is None or card.instance_id in original or card.upgrade_level != 0 or card.combats_seen != 0
                         or card.definition.definition_id != result["definition_id"]
-                        or result["definition_id"] not in self.transform_pool
+                        or result["definition_id"] not in replacement_pool(definitions[source], self.transform_pool)
                         or result["definition_id"] == definitions[source]):
                     raise ValueError("Morphic result differs from the deck.")
                 expected[original.index(source)] = card.instance_id

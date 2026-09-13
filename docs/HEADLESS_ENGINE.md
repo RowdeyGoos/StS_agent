@@ -204,10 +204,12 @@ assignments, topology and RNG persist through JSON continuation.
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. By default it retains the post-Ancient fixture start; the
 optional Neow start below adds the first supported rewards. The event profile
-`supported_events_all_unlocked_v2` shuffles `RunConfig.event_pool` once. The
+`supported_events_all_unlocked_v3` shuffles `RunConfig.event_pool` once. The
 generated pool contains Jungle Maze Adventure, Aroma of Chaos, Morphic Grove and
-Tablet of Truth. Morphic Grove requires at least 100 gold and two transformable
-cards; the others inherit unconditional native eligibility. On event entry,
+Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue.
+Morphic Grove requires at least 100 gold and two transformable cards; Whispering
+Hollow requires 44 gold; Slippery Bridge requires floor greater than six and a
+removable card. The other definitions inherit unconditional native eligibility. On event entry,
 the queue skips previously visited or ineligible definitions; after a full
 exhausted pass it permits the current candidate even if visited or ineligible,
 matching the native fallback. `state.event_progression` owns queue order, cursor,
@@ -332,10 +334,12 @@ ID and base upgrade level, excluding its original definition. Candidate validati
 precedes an owned RNG draw; failed transforms preserve deck, allocator and RNG.
 
 The explicit transformation pool contains the 12 implemented nonstarter Ironclad
-cards. Aroma currently accepts only those cards and Strike/Defend/Bash in the
-master deck; missing catalog content or unsupported source cards reject entry
-atomically. Status/curse/colorless pools, Eternal and transformation hooks remain
-open. The demo chooses Maintain Control, prioritizing Bash. Selector candidates
+cards. Aroma, Morphic Grove and Whispering Hollow accept those cards,
+Strike/Defend/Bash and the supported curses Guilty/Clumsy in the master deck.
+Curse transformations use their own two-card subpool, exclude the original
+definition and reset the replacement lifetime. Missing catalog content or
+unsupported sources reject entry atomically. Full curse/colorless pools, Eternal
+and transformation hooks remain open. The demo chooses Maintain Control, prioritizing Bash. Selector candidates
 and resolved results are plain saved data checked against the permanent deck.
 See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md).
 
@@ -378,6 +382,42 @@ The event modules own their content rules. Shared pool validation lives in
 callbacks. The demo chooses Smash and Loner. Full transformation pools, Eternal
 and other item/card modifiers remain open.
 See [pinned source and validation](evidence/overgrowth_events_2026_09_13.md).
+
+## Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue
+
+These four definitions extend the default generated pool to eight events. Each
+owns plain pending data, exact commands and JSON continuation; authored fixtures
+retain their explicit pools. Shared `events/potion_rewards.py` and
+`events/deck_choice.py` handle acquisition and mandatory single-card selections.
+
+- **Whispering Hollow:** `gold` pays an entry-time price of 26–44 gold for two
+  optional potion rewards. `hug` transforms one chosen card, then deals 9 damage,
+  including lethal damage. Zero/one candidates resolve automatically.
+- **Wellspring:** `bottle` offers one optional potion. `bathe` removes one chosen
+  card and adds Guilty, including when the original deck is empty. Guilty is
+  unplayable and Ethereal; its master-deck instance disappears after five completed
+  combats. Clumsy is also unplayable/Ethereal and has no expiry.
+- **Slippery Bridge:** `overcome_N` removes the currently offered card;
+  `hold_on_N` pays 3, then 4, then 5 damage and so on to reroll. The first offer
+  prefers nonbasic cards. Later offers exclude the previous definition and all
+  skipped instances, falling back to all removable cards when needed. Repeated
+  pages retain distinct command identities. A lethal hold still records its reroll.
+- **Sunken Statue:** `dive_into_water` grants 101–121 entry-time gold before dealing
+  7 damage. `grab_sword` grants Sword of Stone. Each owned sword tracks elite wins
+  independently and becomes a new Sword of Jade after five. Each Jade grants
+  3 Strength at combat start; repeated event rewards can yield duplicate swords.
+
+Potion bundles expose `claim_potion_N` and `finish_rewards`. Full inventory removes
+claim actions until `DiscardPotion` frees a slot; finishing skips unclaimed items.
+Discarding a claimed potion never makes its reward claimable again. The supported
+reward pool is uniformly sampled Fire/Block Potions, **not the full native potion
+distribution**. Curse transformations likewise use only Guilty/Clumsy. Curse
+prevention/replacement, Eternal, additional item hooks and native RNG parity remain
+open. Empty-deck Slippery Bridge fallback is explicitly unsupported.
+
+`run/lifecycle.py` handles master-deck expiry and elite relic evolution after
+combat; combat copies do not age the persistent cards. The demo chooses Gold,
+Bottle, Overcome and Dive. See [source and validation](evidence/event_pack_2026_09_13.md).
 
 ## Treasure rooms
 
@@ -587,19 +627,20 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v13`, including configuration,
+Private run snapshots now use `headless_run_state_v14`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
 unknown-room odds/outcomes and exact claimed reward item IDs,
 shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
-act-completion record and every pending decision.
-Nested combat records now use `headless_combat_state_v5`, including the in-play
+act-completion record and every pending decision. Card combat lifetimes and
+independent relic evolution counters are explicit owned data.
+Nested combat records now use `headless_combat_state_v6`, including the in-play
 pile, pending continuation, selection/target RNG, power duration flags, player
 card-play counts, exact power applier slots and monster phase/spawn counters.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1/v2/v3/v4 and run v1/v2/v3/v4/v5/v6/v7/v8/v9/v10 formats are rejected rather than assigning invented item
+v1–v5 and run v1–v13 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

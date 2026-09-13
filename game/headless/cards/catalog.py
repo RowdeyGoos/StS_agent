@@ -47,7 +47,7 @@ class CardCatalog:
                 if not is_dataclass(effect):
                     raise ValueError("Snapshotable card effects must be immutable dataclass values.")
                 effects.append([type(effect).__module__ + "." + type(effect).__qualname__, asdict(effect)])
-            rows.append([definition.definition_id, [asdict(level) for level in definition.levels], effects])
+            rows.append([definition.definition_id, [asdict(level) for level in definition.levels], effects, definition.combat_lifetime])
         return sha256(json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
     def __deepcopy__(self, memo):

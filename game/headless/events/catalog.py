@@ -8,8 +8,17 @@ from game.headless.events.jungle_maze import JungleMazeAdventure
 from game.headless.events.morphic_grove import MorphicGrove
 from game.headless.events.tablet_of_truth import TabletOfTruth
 
-EVENTS = MappingProxyType({"jungle_maze_adventure": JungleMazeAdventure(), "aroma_of_chaos": AromaOfChaos(),
-                           "morphic_grove": MorphicGrove(), "tablet_of_truth": TabletOfTruth()})
+from game.headless.events.whispering_hollow import WhisperingHollow
+from game.headless.events.wellspring import Wellspring
+from game.headless.events.slippery_bridge import SlipperyBridge
+from game.headless.events.sunken_statue import SunkenStatue
+
+EVENTS = MappingProxyType({
+    "jungle_maze_adventure": JungleMazeAdventure(), "aroma_of_chaos": AromaOfChaos(),
+    "morphic_grove": MorphicGrove(), "tablet_of_truth": TabletOfTruth(),
+    "whispering_hollow": WhisperingHollow(), "wellspring": Wellspring(),
+    "slippery_bridge": SlipperyBridge(), "sunken_statue": SunkenStatue(),
+})
 
 
 def fingerprint():

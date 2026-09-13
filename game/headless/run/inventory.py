@@ -5,7 +5,7 @@ from game.headless.relics.base import RELICS, RelicInstance
 
 
 def add_relic(state, definition_id: str):
-    if definition_id not in RELICS or (not RELICS[definition_id].stackable and any(r.definition_id == definition_id for r in state.relics)):
+    if definition_id not in RELICS or (not RELICS[definition_id].stackable and not RELICS[definition_id].allow_duplicates and any(r.definition_id == definition_id for r in state.relics)):
         raise ValueError("Unsupported or already owned relic.")
     if RELICS[definition_id].pickup_max_hp and (state.phase.value == "combat" or state.hp <= 0):
         raise ValueError("Max-HP relic pickup requires a living run outside combat.")

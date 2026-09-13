@@ -11,6 +11,10 @@ class RelicDefinition:
     pickup_max_hp: int = 0
     stackable: bool = False
     pickup_gold: int = 0
+    combat_strength: int = 0
+    evolve_after_elites: int = 0
+    evolves_into: str | None = None
+    allow_duplicates: bool = False
 
     def after_obtained(self, state) -> None:
         state.gold += self.pickup_gold
@@ -29,9 +33,12 @@ class RelicDefinition:
 class RelicInstance:
     definition_id: str
     instance_id: str
+    counter: int = 0
 
 
 RELICS = MappingProxyType({
+    "sword_of_stone": RelicDefinition("sword_of_stone", evolve_after_elites=5, evolves_into="sword_of_jade", allow_duplicates=True),
+    "sword_of_jade": RelicDefinition("sword_of_jade", combat_strength=3, allow_duplicates=True),
     "golden_pearl": RelicDefinition("golden_pearl", pickup_gold=150),
     "nutritious_oyster": RelicDefinition("nutritious_oyster", pickup_max_hp=11),
     "circlet": RelicDefinition("circlet", stackable=True),

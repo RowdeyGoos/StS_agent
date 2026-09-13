@@ -72,7 +72,8 @@ class RunEngine:
         config = RunConfig(ascension=ascension, relic_fallback="circlet")
         config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
         if (map_profile or PROFILE) == PROFILE:
-            config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth"))
+            config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
+                                                     "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue"))
         engine = cls(seed=seed, gold=99, config=config)
         engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
         engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)
@@ -133,6 +134,7 @@ class RunEngine:
                               cards_per_turn=cards_per_turn)
         combat.reset()
         combat.player.hp = self.state.hp
+        combat.player.strength += sum(RELICS[r.definition_id].combat_strength for r in self.state.relics)
         if self.state.encounter_progression is not None:
             if self.graph is None or self.state.pending is None or self.state.current_node_id in self.state.encounter_progression.assignments:
                 raise ValueError("Generated encounters require a new selected map room.")
@@ -153,6 +155,9 @@ class RunEngine:
         self.state.combats_completed += 1
         self.state.phase = RunPhase.ROUTE if self.combat.winner == "player" else RunPhase.DEFEAT
         self.combat = None
+        from game.headless.run.lifecycle import after_combat
+        after_combat(self.state, won=self.state.phase is RunPhase.ROUTE,
+                     elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite")
         if self.state.phase is RunPhase.ROUTE:
             for relic in self.state.relics:
                 RELICS[relic.definition_id].after_combat_victory(self.state)

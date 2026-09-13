@@ -111,6 +111,8 @@ class RunState:
             raise ValueError("Persistent card identities must be present and unique.")
         for card in self.deck:
             card.definition.spec_at(card.upgrade_level)
+            if type(card.combats_seen) is not int or not 0 <= card.combats_seen < max(1, card.definition.combat_lifetime):
+                raise ValueError("Invalid persistent card combat lifetime.")
         if type(self.next_card_id) is not int or self.next_card_id < 0 or type(self.combats_completed) is not int or self.combats_completed < 0:
             raise ValueError("Invalid run counters.")
         if (self.hp == 0) != (self.phase is RunPhase.DEFEAT):
@@ -150,7 +152,9 @@ class RunState:
                 raise ValueError("Item identity exceeds its allocator.")
         if any(not isinstance(r, RelicInstance) or r.definition_id not in RELICS for r in self.relics):
             raise ValueError("Unsupported relic.")
-        nonstackable = [r.definition_id for r in self.relics if not RELICS[r.definition_id].stackable]
+        nonstackable = [r.definition_id for r in self.relics if not RELICS[r.definition_id].stackable and not RELICS[r.definition_id].allow_duplicates]
+        if any(type(r.counter) is not int or not 0 <= r.counter < max(1, RELICS[r.definition_id].evolve_after_elites) for r in self.relics):
+            raise ValueError("Invalid relic progression counter.")
         if len(set(nonstackable)) != len(nonstackable):
             raise ValueError("Duplicate relic definition.")
         if any(p is not None and (not isinstance(p, PotionInstance) or p.definition_id not in POTIONS) for p in self.potions):

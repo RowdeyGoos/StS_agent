@@ -21,6 +21,12 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — four-event pack:** Whispering Hollow, Wellspring, Slippery Bridge
+  and Sunken Statue now include both branches, potion reward bundles, permanent
+  removal, complete Guilty expiry and independent Sword of Stone/Jade progression.
+  Generated events now number eight, with native gold/floor predicates. Potion
+  rewards and curse transformations retain explicit supported subpools.
+  [Evidence](evidence/event_pack_2026_09_13.md).
 - **2026-09-13 — Tablet of Truth and Morphic Grove:** repeated maximum-HP costs,
   automatic random/all-card upgrades, all-gold payment and two-card transformations
   now work through the generated route. Morphic Grove entry eligibility and owned
@@ -1110,8 +1116,10 @@ Dependencies and acceptance cases are in the linked task.
 - **Partial:** Aroma of Chaos implements mandatory transform/upgrade selection,
   zero/one automatic resolution, no cancel and exact event/deck continuation.
   Shared permanent transformation has owned RNG/IDs and explicit candidate pools.
-  Source/replacement coverage is restricted to implemented Ironclad cards; other
-  pools, modifiers, removal/enchantment, offers and nested children remain open.
+  Whispering Hollow adds transformation then damage; Wellspring and Slippery
+  Bridge add removal. Potion reward bundles handle claim/discard/skip. Supported
+  curse transformations preserve their family and reset lifetime. Full pools,
+  modifiers, enchantment, card offers and further nested children remain open.
   See [Aroma evidence](evidence/aroma_of_chaos_2026_09_13.md).
 
 - **Depends on:** HF-07/32/33/39.
@@ -1328,30 +1336,31 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The next Act 1 batch is **event reward bundles and further native content**:
+The next Act 1 batch should cover **event combat and its permanent rewards**:
 
-1. Implement Whispering Hollow with its native entry predicate and both branches:
-   one-card transformation followed by damage, or gold payment followed by two
-   potion rewards. Add an owned pending reward bundle for multiple potions with
-   claim/skip/full-inventory behavior; reuse the existing potion inventory commands.
-   Inspect pinned amounts and reward-generation rules before implementation.
-2. Reuse that reward bundle for Wellspring's Bottle branch. Implement its Bathe
-   removal and conditional Guilty additions together with the curse's complete
-   combat behavior. Do not mark an event complete by offering only its simpler
-   branch or treating a curse as an inert deck entry.
-3. Expand Neow toward native three-offer generation: two positives plus one curse.
-   Inspect exclusions/unlock predicates, implement required relic/card effects,
-   and keep the fixed two-positive and post-Ancient profiles explicit fixtures.
-   Remaining full-offer distribution and native RNG parity are separate from
-   implementing the individual effects.
-4. Continue HF-18/24–27/31–36/39–43 for remaining Ironclad card, relic, potion,
-   reward, shop and event content. Add eligibility predicates beside each event and
-   extend plain entry conditions only when a concrete predicate requires them.
-   Preserve native full-pass fallback, unsupported-content rollback, per-decision
-   continuation and installed acquisition-to-next-room checks.
+1. **HF-41 / Dense Vegetation:** inspect the pinned encounter and both branches;
+   add an owned event-to-combat transition, native reward handling and the correct
+   non-resuming map exit. Reuse ordinary combat/reward engines. Accept victory,
+   defeat, exact continuation at every child and no duplicate launch or grant.
+2. **HF-43 / Byrdonis Nest:** inspect all choices and implement its granted card's
+   complete combat behavior before registering the event. Accept acquisition,
+   deck selection, next-combat behavior and restoration after each decision.
+3. **HF-40 / Sapphire Seed:** implement its concrete enchantment and selection
+   semantics together, with serializable per-card modification state. Accept
+   upgraded/unupgraded targets, ineligible cards and next-combat effects.
+4. **HF-43 / Luminous Choir:** inspect and implement each required curse/relic
+   before adding both event branches. Reuse master-deck lifetime and owned relic
+   counters where applicable; do not generalize from names without source evidence.
+5. **HF-24–27 / pool completion:** add native potion and curse content to replace
+   the current Fire/Block and Guilty/Clumsy subpools; verify actual reward weights,
+   unlocks, exclusions and prevention/replacement hooks separately from RNG parity.
+6. **HF-28 / Neow:** expand native three-offer generation, including the negative
+   offer and required relic/card effects. Preserve the explicit two-positive and
+   post-Ancient fixtures. Full-offer distribution remains a separate acceptance case.
 
-Current event content and eligibility evidence:
-[Tablet of Truth and Morphic Grove](evidence/overgrowth_events_2026_09_13.md).
+Each event assignment must pin its native branches, implement dependencies, test
+entry predicates and exhausted-pool fallback, and verify installed acquisition
+through the next room. Current coverage: [four-event pack](evidence/event_pack_2026_09_13.md).
 Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json

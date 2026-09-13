@@ -37,7 +37,10 @@ def legal_actions(state):
         return tuple(ChooseEventCard(instance_id, card_id) for card_id in pending["data"]["eligible"])
     if pending["stage"] == "resolved":
         return (LeaveEvent(instance_id),)
-    return tuple(ChooseEventOption(instance_id, option) for option in EVENTS[pending["definition_id"]].options(pending))
+    options = EVENTS[pending["definition_id"]].options(pending)
+    if pending["stage"] == "potion_rewards" and None not in state.potions:
+        options = tuple(o for o in options if not o.startswith("claim_potion_"))
+    return tuple(ChooseEventOption(instance_id, option) for option in options)
 
 
 def choose(state, instance_id, option_id, *, cards=DEFAULT_CARDS):
@@ -57,6 +60,8 @@ def select_card(state, event_instance_id, card_instance_id, *, cards=DEFAULT_CAR
             or pending["stage"] != "select_card"):
         raise ValueError("Stale or unavailable event card choice.")
     EVENTS[pending["definition_id"]].select_card(state, pending, card_instance_id, cards=cards)
+    if state.hp == 0:
+        state.phase = RunPhase.DEFEAT
 
 
 def leave(state, instance_id):
