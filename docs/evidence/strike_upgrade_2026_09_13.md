@@ -1,4 +1,4 @@
-# Strike upgrade source check, 2026-09-13
+# Starter-card upgrade source checks, 2026-09-13
 
 The first HF-13 slice implements ordinary Ironclad Strike at 6 damage and Strike+
 at 9 damage, both costing 1 energy and targeting one enemy. The permanent upgrade
@@ -26,7 +26,8 @@ size guards. It did not load or execute game types. Selected roots were
 `MegaCrit.Sts2.Core.Models.Cards.StrikeIronclad`, `DefendIronclad`, `Bash`, followed
 by `MegaCrit.Sts2.Core.Localization.DynamicVars.DynamicVar` and
 `MegaCrit.Sts2.Core.Models.CardModel`. Only Strike and its immediate shared helpers
-support the implementation claim here; the other cards remain unsupported upgrades.
+supported the initial implementation claim. Defend and Bash were inspected for
+the subsequent batch described below, using the same retained output.
 The scanner build passed with no warnings or errors. Raw selected IL remains in
 `/private/tmp/sts-headless-hf13-native/il.json` and `helpers.json` while scratch
 storage exists. It is not a runtime fixture or a committed game-source dump.
@@ -76,3 +77,37 @@ Enemy rules, RNG, damage/status ordering, relic/enchantment hooks and the remain
 card pool retain the reduced simulator's evidence level. This isolated source
 check does not establish their native parity, a full run, upgrade selection UI,
 reward upgrades or training readiness for upgraded cards.
+
+## Defend and Bash follow-up
+
+Inspected for the basic-upgrade batch based on `a550ce8`. The retained assembly's
+SHA-256 was recomputed and matched the pin above and the scanner output. This
+reuses the existing bounded static scan; no native types were loaded or executed.
+Both classes directly inherit `CardModel` and have no `get_MaxUpgradeLevel`
+override, so the inspected one-level limit also applies to them.
+
+| Method | Token | Relevant offsets and finding |
+| --- | --- | --- |
+| `DefendIronclad..ctor` | 100691449 | Cost 1 at offset 1, passed to `CardModel..ctor` at 6. |
+| `DefendIronclad.get_CanonicalVars` | 100691452 | Block 5 at 0, passed to `BlockVar..ctor` at 7. |
+| `DefendIronclad.OnUpgrade` | 100691454 | Gets Block at 6; supplies 3 at 11; `UpgradeValueBy` at 17 makes block 8. No cost change. |
+| `DefendIronclad+<OnPlay>d__7.MoveNext` | 100709842 | Gets the owner's creature at 18–23 and Block at 29–34, then calls `CreatureCmd.GainBlock` at 46. No enemy selection. |
+| `Bash..ctor` | 100690899 | Cost 2 at offset 1, passed to `CardModel..ctor` at 6. |
+| `Bash.get_CanonicalVars` | 100690901 | Damage 8 at 8 → `DamageVar..ctor` at 15; Vulnerable 2 at 23 → `PowerVar<VulnerablePower>..ctor` at 29. |
+| `Bash.OnUpgrade` | 100690903 | Damage +2 at 11/17; Vulnerable +1 (`Decimal.One`) at 33/38. No cost change. |
+| `Bash+<OnPlay>d__5.MoveNext` | 100709572 | Requires a target at 28–43; reads Damage.BaseValue at 59, builds the targeted attack at 64–86 and awaits execution (113/198). Only then reads Vulnerable.BaseValue at 232 and calls `PowerCmd.Apply<VulnerablePower>` at 250. |
+
+Thus Defend+ gains 8 block for 1 energy; Bash+ deals 10 damage before applying
+3 Vulnerable for 2 energy. The only production changes are their additional
+`CardSpec` levels in [Ironclad definitions](../../game/headless/cards/ironclad.py).
+The shared effects and upgrade/persistence mechanisms are unchanged.
+
+[Direct card tests](../../tests/headless/test_card_upgrades.py) distinguish base
+and upgraded block, exact enemy targeting, damage-before-Vulnerable ordering and
+energy costs. They also cover rejected targeting, preview and second-upgrade
+atomicity, duplicate identity, RNG/allocator conservation, discard/reshuffle,
+JSON continuation and persistence through two completed combats for each card.
+The follow-up Strike in the Bash case is a regression for the existing simulator's
+Vulnerable interaction; this inspection does not certify the full native power
+lifecycle, damage modifiers, lethal-target behavior, relic hooks or upgrade-source
+legality. Public upgraded-card integration remains deferred.

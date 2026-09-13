@@ -27,10 +27,11 @@ into validation of changed code.
   projections, contracts, encoders, bridge or training packages. `CombatEnv` consumes
   these combat rules through its existing research interface. See the
   [engine guide](HEADLESS_ENGINE.md) for architecture, extension examples and limits.
-- **HF-13 is partial:** same-instance Strike → Strike+ executes at cost 1 and damage
-  9, with direct preview, isolated combat instances, JSON continuation and persistence
-  through two fights. Definitions support per-card upgrade levels; the other native
-  upgrades and general temporary modifiers remain unimplemented. The
+- **HF-13 is partial:** Strike+ deals 9 damage at cost 1; Defend+ gives 8 block
+  at cost 1; Bash+ deals 10 damage then applies 3 Vulnerable at cost 2. Direct tests
+  cover preview, duplicate identity, targeting/order, JSON continuation and
+  persistence through two fights. Other card upgrades and general temporary
+  modifiers remain unimplemented. The
   [pinned source check](evidence/strike_upgrade_2026_09_13.md) owns the native evidence.
 - The earlier `strike_upgrade_v1` adapter experiment at `7ca5f77` is retired.
   Gameplay changes no longer need per-feature profiles or projection changes.
@@ -502,9 +503,9 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-13 — Execute upgraded and modified card instances
 
 - **Status:** partial. Immutable definitions, mutable instances, arbitrary per-card
-  levels and Strike's verified first upgrade are implemented. See the
-  [source evidence](evidence/strike_upgrade_2026_09_13.md). Other native upgrades,
-  temporary modifiers and upgrade-source selection remain open.
+  levels and the verified first upgrades of Strike, Defend and Bash are implemented.
+  See the [source evidence](evidence/strike_upgrade_2026_09_13.md). Other native
+  upgrades, temporary modifiers and upgrade-source selection remain open.
 - **Depends on:** HF-01/02 for each rule and existing HF-04 state; coordinate
   persistent mutation with HF-33. No public contract dependency.
 - **Implement:** add verified levels to [game cards]; add instance fields and
@@ -1084,24 +1085,19 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-Implement **HF-13/Defend+** directly in the game engine:
+**HF-13/Defend+ and Bash+ are complete** for direct gameplay. The definition-only
+change uses existing effects, owned upgrades and continuation. Rest-site upgrade
+selection remains HF-34; the remaining card upgrades remain HF-13/17 work.
 
-1. Inspect the pinned Defend constructor, base block, upgrade override and block
-   command. Retain exact source anchors and limits before choosing expected values.
-2. Add its verified next level to `game/headless/cards/ironclad.py`. The existing
-   block effect, instance upgrade, catalog and snapshot machinery should suffice.
-3. Test base/upgraded block and cost, one upgraded instance among duplicates,
-   preview immutability, RNG conservation, discard/reshuffle, JSON continuation and
-   persistence into a second combat. Its untargeted action stays unique with
-   multiple enemies. Unsupported additional levels reject without mutation.
-4. Update the coverage/evidence record and HF-13 progress. Run the direct card
-   tests plus relevant shared-rule regressions. Rest-site upgrade selection remains
-   a separate HF-34 slice.
+Next, implement **HF-14/hand-limit behavior**:
 
-No changes to `combat_projection.py`, contract manifests, encoder vocabularies,
-training or bridge packaging belong in that assignment. If a future card needs a
-new game rule, implement that rule with the card as its first caller, then defer
-public integration until the rule is established.
+1. Inspect the pinned draw operation and hand-cap rules, including full-hand draws,
+   multi-draw overflow and reshuffle timing. Establish expected cases from that source.
+2. Implement the verified rule in `game/headless/core/deck.py` and the relevant
+   draw operation. Preserve card identity, zones and the required RNG consumption.
+3. Test draws below/at/beyond the limit and across reshuffles, including JSON
+   continuation. Keep encoder capacity separate from the actual game rule.
+4. Update HF-14 progress and retain the exact native source anchors and limits.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

@@ -10,10 +10,13 @@ STRIKE = CardDefinition("strike", (
 ), (DealDamage(),))
 DEFEND = CardDefinition("defend", (
     CardSpec("Defend", 1, "block", block_gain=5, uses_target=False),
+    CardSpec("Defend+", 1, "block", block_gain=8, uses_target=False),
 ), (GainBlock(),))
 BASH = CardDefinition("bash", (
     CardSpec("Bash", 2, "attack", base_damage=8,
              applies_status_name=VULNERABLE, applies_status_stacks=2),
+    CardSpec("Bash+", 2, "attack", base_damage=10,
+             applies_status_name=VULNERABLE, applies_status_stacks=3),
 ), (DealDamage(), ApplyTargetStatus()))
 POMMEL_STRIKE = CardDefinition("pommel_strike", (
     CardSpec("Pommel Strike", 1, "attack", base_damage=9, draw_count=1),
