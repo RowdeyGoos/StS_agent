@@ -1,5 +1,7 @@
 """Validation of private merchant continuation data, separate from execution."""
 
+from game.headless.run.unknown_rooms import room_node
+
 from game.headless.run.shop import eligible_removals, removal_price
 from game.headless.run.state import RunPhase
 from game.headless.shops.catalog import SHOP_ID, SLOTS, price
@@ -17,7 +19,7 @@ def validate_shop(state, cards, graph):
     if (type(pending["shop_id"]) is not int or pending["shop_id"] < 0
             or pending["shop_id"] != state.next_shop_id - 1):
         raise ValueError("Invalid owned shop identity.")
-    if graph is not None and (state.current_node_id is None or graph.node(state.current_node_id).kind != "shop"):
+    if graph is not None and (state.current_node_id is None or room_node(state, graph, state.current_node_id).kind != "shop"):
         raise ValueError("Shop differs from its selected room.")
     if (type(pending["removal_used"]) is not bool or type(pending["removals_on_entry"]) is not int
             or not 0 <= pending["removals_on_entry"] <= pending["shop_id"]

@@ -29,8 +29,8 @@ into validation of changed code.
   [Evidence and roster](evidence/overgrowth_roster_2026_09_13.md).
 - A generated restricted Act 1 route now provides 15 map rows plus a boss,
   multiple entrances and owned encounter queues with native bag/tag exclusions.
-  Base topology is implemented; pruning, unknown outcomes and Ancient choices
-  remain open. [Map/progression evidence](evidence/generated_act1_2026_09_13.md).
+  Base topology, native duplicate-path pruning/repair and unknown-room base odds
+  are implemented; Ancient choices and full event eligibility remain open. [Map/progression evidence](evidence/generated_act1_2026_09_13.md).
 - **2026-09-13 — Aroma of Chaos:** mandatory one-card transformation/upgrade
   choices, automatic zero/one resolution and exact continuation are implemented.
   Permanent transforms preserve position, allocate a fresh unupgraded card and
@@ -877,9 +877,10 @@ Dependencies and acceptance cases are in the linked task.
 - **Partial:** generated A0 base topology now provides seven noncrossing paths,
   15 rows plus a boss, multiple entrances, coordinates and native base room
   placement constraints. Exact topology/room identities restore without rerolls.
-  Native duplicate-path pruning, coordinate postprocessing, unknown-node semantics
-  and map-changing effects remain open. The named restricted profile substitutes
-  supported event rooms and starts after the unimplemented Ancient choice.
+  Native duplicate-path pruning/repair and unresolved unknown map markers are
+  implemented. Coordinate postprocessing and map-changing effects remain open.
+  The default profile starts after the unimplemented Ancient choice; the earlier
+  base profile remains an explicit fixture.
 
 - **Depends on:** HF-01/04/05/28.
 - **Implement:** extend [game map] beyond authored DAG navigation to target topology,
@@ -898,8 +899,10 @@ Dependencies and acceptance cases are in the linked task.
   normal pool, plus separate refillable elite bags and one boss. Consecutive
   identity/tag exclusions follow the pinned source, including fallback when no
   candidate qualifies. Node assignments advance only on successful combat entry.
-  All-seen discovery is explicit; first-run overrides, native event eligibility,
-  unknown-room rolls and global RNG parity remain open.
+  Unknown rooms now use source-checked base odds, accumulation/reset and shop
+  exclusions, selecting one owned outcome on entry. Their combat outcomes consume
+  the same normal queue. All-seen discovery is explicit; first-run overrides,
+  native event eligibility/depletion, modifying relics and RNG parity remain open.
 
 - **Depends on:** HF-01/04/05/29 and the selected content implementations.
 - **Implement:** persistent pool state for act-specific easy/hard encounters,
@@ -1304,30 +1307,28 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The next Act 1 batch is **native map pruning and unknown-room resolution**, building
-on the generated base map and owned encounter queues now in place:
+The next Act 1 batch is **an Ancient starting choice and native event-pool
+progression**, using the existing pruned map and unknown-room resolver:
 
-1. Port pinned `MapPathPruning.PruneAndRepair` (duplicate segment classification,
-   pruning and room-count repair) without mixing it into encounter selection.
-   Preserve reachability, fixed rows and node identities. Verify representative
-   duplicate/overlapping segments and room-count constraints. Coordinate-only
-   centering/spreading/straightening can remain a separate presentation task.
-2. Represent native unknown points explicitly and resolve combat/shop/treasure/
-   event outcomes only at entry using run-owned odds/counters. Feed any resulting
-   combat through the existing normal encounter queue. Reject unsupported
-   native-mode content without rerolling or consuming state.
-3. Add native event eligibility and depletion alongside the existing encounter
-   queues. Keep the supported event substitution profile selectable for complete
-   restricted runs; do not label its with-replacement events as native sampling.
-4. Implement one source-checked Ancient starting choice, then wire its persistent
-   effect through the initial inventory and first room. Discovery and first-run
-   settings must be declared inputs; never read the user's profile.
-5. Validate a full-length seeded trace through rooms and boss with exact restore,
-   plus installed CLI execution. Expand Ironclad cards/items/events through their
-   existing HF-18/24–27/31–36/39–43 tasks toward complete native Act 1 content.
+1. Inspect one pinned Ironclad-compatible Ancient's offers and implement its
+   starting choice with an owned pending decision. Apply its persistent effect
+   through normal inventory/deck rules, then unlock first-row map choices. Keep
+   the post-Ancient fixture start explicit and separately selectable.
+2. Add declared unlock/discovery inputs and native event eligibility/depletion.
+   Select events only when an unknown resolves to an event. Persist the offered
+   event and remaining pool; failed unsupported content must not trigger rerolls.
+   Keep the existing supported-with-replacement profile as a restricted fixture.
+3. Implement the first missing reachable event definitions needed by that pool,
+   with explicit supported coverage. Reuse selectors and inventory effects; do
+   not copy gameplay rules into projections or training adapters.
+4. Add room/choice/restore traces through the Ancient, ordinary encounters, unknown
+   outcomes and boss, then verify installed execution. Continue the existing
+   HF-18/24–27/31–36/39–43 card/item/reward/shop/event tasks toward full native
+   Ironclad Act 1 coverage. Map/relic modifiers remain separate content tasks;
+   coordinate centering/spreading/straightening does not change room progression.
 
-Current generated profile, source anchors and limitations:
-[generated Act 1 evidence](evidence/generated_act1_2026_09_13.md).
+Current map-pruning/unknown-outcome source anchors and validation:
+[map and unknown-room evidence](evidence/map_pruning_unknowns_2026_09_13.md).
 Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json

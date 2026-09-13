@@ -1,5 +1,7 @@
 """Validate exact chest continuation without rerolling or reapplying rewards."""
 
+from game.headless.run.unknown_rooms import room_node
+
 from game.headless.run.state import RunPhase
 from game.headless.treasure.catalog import ORDINARY_CHEST
 
@@ -14,7 +16,7 @@ def validate_treasure(state, graph):
     if (type(pending["treasure_id"]) is not int or pending["treasure_id"] < 0
             or pending["treasure_id"] != state.next_treasure_id - 1):
         raise ValueError("Invalid owned treasure identity.")
-    if graph is not None and (state.current_node_id is None or graph.node(state.current_node_id).kind != "treasure"):
+    if graph is not None and (state.current_node_id is None or room_node(state, graph, state.current_node_id).kind != "treasure"):
         raise ValueError("Treasure differs from its room.")
     relic_id = pending["relic_id"]
     if relic_id == ORDINARY_CHEST.fallback_relic:

@@ -1,15 +1,12 @@
-"""Pinned A0 base topology with explicitly restricted event substitution.
-
-Seven paths, rows 1–15 and boss row 16. Native pruning/visual postprocessing,
-unknown-room rolls and the row-zero Ancient are not implemented by this profile.
-"""
+"""Pinned A0 topology; selectable base fixture or pruned unknown-room map."""
 
 from collections import deque
 from math import log, pi, sin, sqrt
 
 from game.headless.map.graph import MapGraph, MapNode
 
-PROFILE = "overgrowth_a0_base_restricted_v1"
+BASE_PROFILE = "overgrowth_a0_base_restricted_v1"
+PROFILE = "overgrowth_a0_pruned_restricted_v2"
 ROWS = 15
 WIDTH = 7
 
@@ -25,10 +22,13 @@ def _gaussian_count(rng, mean, low, high):
     raise RuntimeError("Map count sampling exceeded its bound.")
 
 
-def generate_overgrowth_map(rng, *, event_pool):
+def generate_overgrowth_map(rng, *, event_pool, profile=PROFILE):
     from game.headless.events.catalog import EVENTS
     if not event_pool or len(set(event_pool)) != len(event_pool) or any(e not in EVENTS for e in event_pool):
         raise ValueError("Generated maps require an explicit supported event pool.")
+    if profile not in (BASE_PROFILE, PROFILE):
+        raise ValueError("Unsupported generated map profile.")
+    unknown_kind = "event" if profile == BASE_PROFILE else "unknown"
     rest_count = _gaussian_count(rng, 7, 6, 7)
     event_count = _gaussian_count(rng, 12, 10, 14)
     edges = {}
@@ -72,7 +72,7 @@ def generate_overgrowth_map(rng, *, event_pool):
         siblings = {child for parent in parents[point] for child in edges[parent]} - {point}
         return not any(kinds[s] == kind for s in siblings)
 
-    queue = deque(["rest"] * rest_count + ["shop"] * 3 + ["elite"] * 5 + ["event"] * event_count)
+    queue = deque(["rest"] * rest_count + ["shop"] * 3 + ["elite"] * 5 + [unknown_kind] * event_count)
     for _ in range(3):
         unassigned = sorted(p for p, kind in kinds.items() if kind is None)
         rng.shuffle("act1.map", unassigned)
@@ -86,6 +86,22 @@ def generate_overgrowth_map(rng, *, event_pool):
         if not queue:
             break
     # Native generation also fills unassigned points with ordinary combat.
+    kinds.update((point, kind or "combat") for point, kind in kinds.items())
+    if profile == PROFILE:
+        from game.headless.map.pruning import prune_and_repair
+        root, boss = (0, 3), (16, 3)
+        edges[root], parents[root], kinds[root] = set(starts), set(), "ancient"
+        for point in starts:
+            parents[point].add(root)
+        edges[boss], parents[boss], kinds[boss] = set(), set(), "boss"
+        for point in tuple(edges):
+            if point[0] == ROWS:
+                edges[point].add(boss)
+                parents[boss].add(point)
+        prune_and_repair(edges, parents, kinds, root, rng,
+                         {"rest": rest_count, "unknown": event_count, "shop": 3, "elite": 5}, valid)
+        starts = sorted(edges.pop(root))
+        del edges[boss], kinds[root], kinds[boss]
     def identity(point):
         return f"act1.{point[0]}.{point[1]}"
     nodes = []
@@ -96,12 +112,12 @@ def generate_overgrowth_map(rng, *, event_pool):
         nodes.append(MapNode(identity(point), kind, children, event_id=event_id, row=point[0], column=point[1]))
     nodes.append(MapNode("act1.boss", "boss", (), row=16, column=3))
     entries = tuple(identity(p) for p in sorted(starts))
-    return MapGraph(tuple(nodes), entries[0], entries, PROFILE)
+    return MapGraph(tuple(nodes), entries[0], entries, profile)
 
 
 def validate_generated_map(graph):
     """Reject malformed private layouts without regenerating or consuming RNG."""
-    if graph.generation != PROFILE:
+    if graph.generation not in (BASE_PROFILE, PROFILE):
         raise ValueError("Unsupported generated map profile.")
     points = {}
     for node in graph.nodes:
@@ -112,10 +128,13 @@ def validate_generated_map(graph):
         expected_id = "act1.boss" if node.row == 16 else f"act1.{node.row}.{node.column}"
         if node.node_id != expected_id:
             raise ValueError("Generated map identity differs from its coordinates.")
-        if node.kind not in ("combat", "elite", "boss", "rest", "treasure", "shop", "event") or node.encounter_id is not None:
+        extra_kind = "event" if graph.generation == BASE_PROFILE else "unknown"
+        if node.kind not in ("combat", "elite", "boss", "rest", "treasure", "shop", extra_kind) or node.encounter_id is not None:
             raise ValueError("Generated maps use run-owned encounter queues.")
         if node.kind == "event" and node.event_id is None:
             raise ValueError("Restricted generated event requires its definition.")
+        if node.kind == "unknown" and node.event_id is not None:
+            raise ValueError("Unknown map points cannot contain an eventual event.")
         required = {1: "combat", 9: "treasure", 15: "rest", 16: "boss"}.get(node.row)
         if required and node.kind != required or not required and node.kind in ("treasure", "boss"):
             raise ValueError("Invalid fixed map row.")
@@ -125,12 +144,12 @@ def validate_generated_map(graph):
     if len(bosses) != 1 or bosses[0].next_node_ids or bosses[0].column != 3:
         raise ValueError("Generated map requires one final boss.")
     entries = tuple(n.node_id for n in sorted(graph.nodes, key=lambda n: n.column) if n.row == 1)
-    if graph.entry_node_ids != entries or len(entries) < 2:
+    if graph.entry_node_ids != entries or len(entries) < (2 if graph.generation == BASE_PROFILE else 1):
         raise ValueError("Generated map entrances differ from its first row.")
     for node in graph.nodes:
         if node.row < 16 and not node.next_node_ids:
             raise ValueError("Generated path ends before its boss.")
-        if node.row not in (1, 9, 15, 16) and node.kind in ("rest", "elite", "shop", "event"):
+        if node.row not in (1, 9, 15, 16) and node.kind in ("rest", "elite", "shop", "event", "unknown"):
             siblings = {child for parent in graph.nodes if node.node_id in parent.next_node_ids
                         for child in parent.next_node_ids} - {node.node_id}
             if any(graph.node(sibling).kind == node.kind for sibling in siblings):
