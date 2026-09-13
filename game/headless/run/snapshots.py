@@ -22,7 +22,16 @@ from game.headless.run.unknown_rooms import UnknownRooms, RoomOutcome, room_node
 from game.headless.events.progression import EventProgression
 from game.headless.run.ancient import AncientStart
 
-SCHEMA = "headless_run_state_v14"
+from game.headless.events.combat import EventCombatRecord
+from game.headless.run import event_combat
+
+SCHEMA = "headless_run_state_v15"
+
+
+def _restore_event_combat(record):
+    if not isinstance(record, dict) or set(record) != {"event_instance_id", "definition_id", "node_id", "encounter_id", "combat_number", "outcome", "rewards_left"}:
+        raise ValueError("Invalid event combat state fields.")
+    return EventCombatRecord(**record)
 
 
 def _restore_relic(record):
@@ -48,6 +57,7 @@ def capture_run(engine) -> dict:
                   "next_card_id": state.next_card_id, "combats_completed": state.combats_completed,
                   "current_node_id": state.current_node_id,
                   "act_completion": None if state.act_completion is None else asdict(state.act_completion),
+                  "event_combats": [asdict(record) for record in state.event_combats],
                   "active_encounter_id": state.active_encounter_id, "visited_nodes": list(state.visited_nodes),
                   "pending": deepcopy(state.pending),
                   "config": None if state.config is None else asdict(state.config),
@@ -99,6 +109,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             phase=RunPhase(payload["phase"]), next_card_id=payload["next_card_id"],
             combats_completed=payload["combats_completed"], current_node_id=payload["current_node_id"],
             active_encounter_id=payload["active_encounter_id"],
+            event_combats=[_restore_event_combat(record) for record in payload["event_combats"]],
             act_completion=None if payload["act_completion"] is None else ActCompletion(**payload["act_completion"]),
             visited_nodes=list(payload["visited_nodes"]), pending=deepcopy(payload["pending"]),
             ancient_start=None if payload["ancient_start"] is None else AncientStart(**deepcopy(payload["ancient_start"])),
@@ -146,7 +157,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 previous = node_id
             if state.phase is RunPhase.COMBAT and state.current_node_id is not None:
                 node = room_node(state, graph, state.current_node_id)
-                selected = encounter_at(state, node)
+                selected = event_combat.encounter_at_current_room(state) or encounter_at(state, node)
                 if selected is not None and selected != state.active_encounter_id:
                     raise ValueError("Active encounter differs from its selected room.")
             if previous != state.current_node_id:
@@ -165,6 +176,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Combat maximum HP differs from the run.")
         elif state.phase is RunPhase.COMBAT:
             raise ValueError("Combat phase requires its owned combat.")
+        event_combat.validate(state, graph)
         _validate_pending(state, cards, graph)
         result = RunEngine.__new__(RunEngine)
         result.cards, result.graph, result.state, result.combat = cards, graph, state, combat
@@ -174,6 +186,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
 
 
 def _validate_progression(state, graph):
+    event_combat.validate(state, graph)
     from game.headless.map.overgrowth import PROFILE
     if state.ancient_start is not None:
         if not isinstance(state.ancient_start, AncientStart):
@@ -210,7 +223,7 @@ def _validate_progression(state, graph):
         state.encounter_progression.validate(graph, state.visited_nodes,
             pending_node=state.pending is not None and state.pending.get("kind") == "node",
             room_kinds={node_id: room_node(state, graph, node_id).kind for node_id in state.visited_nodes})
-        if len(state.encounter_progression.assignments) != state.combats_completed + (state.phase is RunPhase.COMBAT):
+        if len(state.encounter_progression.assignments) + len(state.event_combats) != state.combats_completed + (state.phase is RunPhase.COMBAT):
             raise ValueError("Encounter history differs from completed/active combats.")
 
 
@@ -247,7 +260,8 @@ def _validate_pending(state, cards, graph):
             encounter = None if encounter_id is None else ENCOUNTERS[encounter_id]
             low, high = (10, 20) if encounter is None else encounter.gold_range
             if graph is not None and state.current_node_id is not None:
-                if encounter_at(state, room_node(state, graph, state.current_node_id)) != encounter_id:
+                selected = event_combat.encounter_at_current_room(state) or encounter_at(state, room_node(state, graph, state.current_node_id))
+                if selected != encounter_id:
                     raise ValueError("Reward encounter differs from its room.")
             pool = state.config.boss_reward_cards if state.config is not None and encounter is not None and encounter.room_kind == "boss" else (() if state.config is None else state.config.reward_cards)
             if (pending["combat_reward"] is not True or state.config is None

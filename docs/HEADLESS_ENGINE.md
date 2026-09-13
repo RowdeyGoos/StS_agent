@@ -204,9 +204,9 @@ assignments, topology and RNG persist through JSON continuation.
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. By default it retains the post-Ancient fixture start; the
 optional Neow start below adds the first supported rewards. The event profile
-`supported_events_all_unlocked_v3` shuffles `RunConfig.event_pool` once. The
+`supported_events_all_unlocked_v4` shuffles `RunConfig.event_pool` once. The
 generated pool contains Jungle Maze Adventure, Aroma of Chaos, Morphic Grove and
-Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue.
+Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue and Dense Vegetation.
 Morphic Grove requires at least 100 gold and two transformable cards; Whispering
 Hollow requires 44 gold; Slippery Bridge requires floor greater than six and a
 removable card. The other definitions inherit unconditional native eligibility. On event entry,
@@ -385,7 +385,7 @@ See [pinned source and validation](evidence/overgrowth_events_2026_09_13.md).
 
 ## Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue
 
-These four definitions extend the default generated pool to eight events. Each
+These four definitions form part of the nine-event default generated pool. Each
 owns plain pending data, exact commands and JSON continuation; authored fixtures
 retain their explicit pools. Shared `events/potion_rewards.py` and
 `events/deck_choice.py` handle acquisition and mandatory single-card selections.
@@ -418,6 +418,36 @@ open. Empty-deck Slippery Bridge fallback is explicitly unsupported.
 `run/lifecycle.py` handles master-deck expiry and elite relic evolution after
 combat; combat copies do not age the persistent cards. The demo chooses Gold,
 Bottle, Overcome and Dive. See [source and validation](evidence/event_pack_2026_09_13.md).
+
+## Dense Vegetation and event combat
+
+Dense Vegetation has two initial choices. `trudge_on` loses 8 HP, then grants an
+entry-time 61–99 gold roll, including after lethal damage. `rest` heals 30% maximum
+HP, truncated and capped, using the shared rest calculation. Rest exposes only
+`fight`; it cannot be repeated or followed by leaving the event.
+
+Fight launches four Wrigglers without the Phrog spawn stun. Slots 0/2 open with
+Bite and 1/3 with Wriggle; all alternate thereafter. Victory uses the ordinary
+hallway reward bundle (10–20 gold, three supported card offers and the ordinary
+potion roll), then returns to the map. The event does not resume. Defeat is
+terminal. Burning Blood, persistent curse ageing and potion use follow the same
+combat lifecycle; this is not an elite victory for Sword of Stone.
+
+`events/combat.py` defines plain requests/history records, and
+`run/event_combat.py` owns the transfer. Both map and event fights use the same
+combat construction and reward modules. `RunState.event_combats` tracks these
+extra fights separately from normal encounter assignments, so event fights do
+not consume the hallway/elite queues or add map visits. Its records bind the
+original event identity, node, encounter, combat number, outcome and reward exit.
+Construction failure preserves the healed event and RNG; duplicate launch,
+missing owner/configuration and invalid history reject. Dense Vegetation requires
+`RunConfig` even in a directly initialized fixture, so both branches are usable.
+
+The default generated pool includes this event; authored routes retain their
+existing event fork. The demo chooses Rest, then Fight. Resuming events, extra
+special rewards and temporary training rules remain separate follow-ups; this
+module currently supports the native non-resuming flow only. Native RNG and
+full reward-pool fidelity remain open. See [source and validation](evidence/dense_vegetation_2026_09_13.md).
 
 ## Treasure rooms
 
@@ -627,20 +657,21 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v14`, including configuration,
+Private run snapshots now use `headless_run_state_v15`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
 unknown-room odds/outcomes and exact claimed reward item IDs,
 shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision. Card combat lifetimes and
-independent relic evolution counters are explicit owned data.
+independent relic evolution counters are explicit owned data. Event combat history
+binds each fight to its event/node identity, combat number, outcome and reward exit.
 Nested combat records now use `headless_combat_state_v6`, including the in-play
 pile, pending continuation, selection/target RNG, power duration flags, player
 card-play counts, exact power applier slots and monster phase/spawn counters.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v5 and run v1–v13 formats are rejected rather than assigning invented item
+v1–v5 and run v1–v14 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

@@ -49,9 +49,10 @@ def choose(state, instance_id, option_id, *, cards=DEFAULT_CARDS):
     if (type(instance_id) is not int or instance_id != pending["event_instance_id"]
             or option_id not in definition.options(pending)):
         raise ValueError("Stale or unavailable event choice.")
-    definition.choose(state, pending, option_id, cards=cards)
+    result = definition.choose(state, pending, option_id, cards=cards)
     if state.hp == 0:
         state.phase = RunPhase.DEFEAT
+    return result
 
 
 def select_card(state, event_instance_id, card_instance_id, *, cards=DEFAULT_CARDS):

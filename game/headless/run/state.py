@@ -14,6 +14,7 @@ from game.headless.encounters.progression import EncounterProgression
 from game.headless.run.unknown_rooms import UnknownRooms
 from game.headless.events.progression import EventProgression
 from game.headless.run.ancient import AncientStart
+from game.headless.events.combat import EventCombatRecord
 
 
 class RunPhase(str, Enum):
@@ -64,6 +65,7 @@ class RunState:
     unknown_rooms: UnknownRooms | None = None
     event_progression: EventProgression | None = None
     ancient_start: AncientStart | None = None
+    event_combats: list[EventCombatRecord] = field(default_factory=list)
 
     def allocate_item_id(self) -> str:
         result = f"run.item.{self.next_item_id}"

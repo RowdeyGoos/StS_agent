@@ -100,6 +100,8 @@ def leave_combat_rewards(state) -> None:
         raise ValueError("No combat rewards are active.")
     # Combat rewards may be left unclaimed; they are then forfeited.
     encounter_id = reward["encounter_id"]
+    from game.headless.run.event_combat import leave_rewards
+    leave_rewards(state, encounter_id)
     state.pending = None
     if encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "boss":
         from game.headless.run.state import ActCompletion

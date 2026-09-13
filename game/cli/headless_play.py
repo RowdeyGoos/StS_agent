@@ -27,7 +27,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
             return found
     event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]
     if event_choices:
-        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water")
+        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water", "rest")
                      or a.option_id.startswith(("claim_potion_", "overcome_"))), event_choices[0])
     event_cards = [a for a in actions if isinstance(a, ChooseEventCard)]
     if event_cards:
@@ -111,7 +111,7 @@ def main(argv=None):
     from game.headless.run.scenarios import ROUTES
     from game.headless.encounters.catalog import ENCOUNTERS
     for option, kind in (("boss", "boss"), ("elite", "elite"), ("hallway", "combat")):
-        parser.add_argument("--" + option, choices=tuple(name for name, encounter in ENCOUNTERS.items() if encounter.room_kind == kind),
+        parser.add_argument("--" + option, choices=tuple(name for name, encounter in ENCOUNTERS.items() if encounter.room_kind == kind and encounter.event_id is None),
                             help="Replace this encounter on the authored Act 1 route.")
     parser.add_argument("--ancient", choices=("neow",), help="Begin generated Act 1 with the restricted Neow pickup choices.")
     parser.add_argument("--seed", type=int, default=0)

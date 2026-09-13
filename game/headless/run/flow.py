@@ -126,7 +126,12 @@ def apply(engine, action):
     if isinstance(action, DiscardPotion):
         return discard_potion(state, action.instance_id)
     if isinstance(action, ChooseEventOption):
-        return events.choose(state, action.event_instance_id, action.option_id, cards=engine.cards)
+        from game.headless.events.combat import EventCombatRequest
+        result = events.choose(state, action.event_instance_id, action.option_id, cards=engine.cards)
+        if isinstance(result, EventCombatRequest):
+            from game.headless.run.event_combat import start
+            return start(engine, result)
+        return result
     if isinstance(action, ChooseEventCard):
         return events.select_card(state, action.event_instance_id, action.card_instance_id, cards=engine.cards)
     if isinstance(action, LeaveEvent):

@@ -20,9 +20,13 @@ def _pending(state, stage):
     return state.pending
 
 
+def heal_amount(state) -> int:
+    return min(state.max_hp * 3 // 10, state.max_hp - state.hp)
+
+
 def heal(state) -> int:
     pending = _pending(state, "options")
-    amount = min(state.max_hp * 3 // 10, state.max_hp - state.hp)
+    amount = heal_amount(state)
     state.hp += amount
     pending["stage"] = "resolved"
     return amount
