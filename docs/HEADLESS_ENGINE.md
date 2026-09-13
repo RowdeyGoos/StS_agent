@@ -78,7 +78,8 @@ content catalog. New effects belong in that content family or shared game rules
 when multiple cards need them. Display names do not dispatch behavior. A test can
 inject a `CardCatalog` containing an entirely new card without touching any adapter.
 Upgrade levels are per definition; they are not globally limited to a boolean.
-Only Strike's first upgrade currently has implemented native source evidence.
+Strike, Defend and Bash each have one implemented upgrade with
+[native source evidence](evidence/strike_upgrade_2026_09_13.md).
 
 Game commands describe intent, not network authority. External adapters still own
 public references, stale request bindings, information filtering and representation
