@@ -31,8 +31,13 @@ class Intent:
     status_name: str | None = None
     status_stacks: int = 0
     slimed_added: int = 0
+    # Execution keeps the authored amount; the displayed amount is rounded.
+    # Excluded from public as_dict, included in private dataclass continuation.
+    base_attack_damage: int | None = None
 
     def __post_init__(self) -> None:
+        if self.base_attack_damage is not None and (type(self.base_attack_damage) is not int or self.base_attack_damage < 0):
+            raise ValueError("Authored intent damage must be nonnegative or absent.")
         if self.attack_damage < 0:
             raise ValueError("Intent attack damage cannot be negative.")
         if self.attack_count < 0:
@@ -163,7 +168,7 @@ class Enemy(ABC):
     def advance_intent(self) -> None:
         """Advance to the next intent in the enemy's cycle."""
 
-    def execute_intent(self, player: Player) -> Intent:
+    def execute_intent(self, player: Player, *, tick_statuses: bool = True) -> Intent:
         """Execute the current intent and advance to the next one."""
         from game.headless.cards.status import SlimedCard
 
@@ -171,9 +176,9 @@ class Enemy(ABC):
 
         for _hit_index in range(current_intent.attack_count):
             player.take_damage(
-                current_intent.attack_damage,
-                attacker_statuses=None,
-                attacker_strength=0,
+                current_intent.attack_damage if current_intent.base_attack_damage is None else current_intent.base_attack_damage,
+                attacker_statuses=None if current_intent.base_attack_damage is None else self.statuses,
+                attacker_strength=0 if current_intent.base_attack_damage is None else self.strength,
             )
             if not player.is_alive:
                 return current_intent
@@ -186,7 +191,8 @@ class Enemy(ABC):
         for _ in range(current_intent.slimed_added):
             player.add_card_to_discard(SlimedCard())
 
-        self.statuses.on_turn_end()
+        if tick_statuses:
+            self.statuses.on_turn_end()
         self.advance_intent()
         return current_intent
 
@@ -216,6 +222,7 @@ class Enemy(ABC):
             value=resolved_value,
             move_name=template.move_name,
             attack_damage=resolved_attack_damage,
+            base_attack_damage=template.attack_damage,
             attack_count=template.attack_count,
             block_gain=template.block_gain,
             strength_gain=template.strength_gain,

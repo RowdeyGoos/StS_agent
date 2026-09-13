@@ -78,3 +78,20 @@ class SelectHandCard:
         for candidate in selected:
             self.resolve(player, candidate)
         return None
+
+
+@dataclass(frozen=True, slots=True)
+class ApplyDebuffs:
+    names: tuple[str, ...]
+    all_enemies: bool = False
+
+    def apply(self, card, player, target):
+        if player.combat_is_ending:
+            return
+        targets = player.combat_enemies if self.all_enemies else (target,)
+        if targets is None:
+            raise ValueError("Area effects require an owning combat.")
+        for enemy in targets:
+            if enemy is not None and enemy.is_alive:
+                for name in self.names:
+                    enemy.apply_status(name, card.spec.applies_status_stacks)

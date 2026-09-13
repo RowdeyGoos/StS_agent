@@ -407,6 +407,7 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
 
         cloned_player_statuses = copy(source_player.statuses)
         cloned_player_statuses._counts = source_player.statuses._counts.copy()
+        cloned_player_statuses._skip_next_tick = source_player.statuses._skip_next_tick.copy()
         cloned_player = copy(source_player)
         cloned_player.deck = cloned_deck
         cloned_player.statuses = cloned_player_statuses
@@ -416,6 +417,7 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
         for enemy in env.enemies:
             cloned_statuses = copy(enemy.statuses)
             cloned_statuses._counts = enemy.statuses._counts.copy()
+            cloned_statuses._skip_next_tick = enemy.statuses._skip_next_tick.copy()
             memo[id(enemy.statuses)] = cloned_statuses
             for attribute_value in vars(enemy).values():
                 dataclass_parameters = getattr(
@@ -663,7 +665,7 @@ def _freeze(value: Any) -> Hashable:
     if value is None or isinstance(value, (bool, int, float, str, bytes)):
         return value
     if isinstance(value, StatusCollection):
-        return (_type_name(value), tuple(sorted(value._counts.items())))
+        return (_type_name(value), tuple(sorted(value._counts.items())), tuple(sorted(value._skip_next_tick)))
     if isinstance(value, Mapping):
         return tuple(
             sorted(

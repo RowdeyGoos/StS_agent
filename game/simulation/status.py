@@ -8,6 +8,9 @@ from game.headless.powers.status import (
     SHRINK,
     VULNERABLE,
     STATUS_STACK_SCALE,
-    SUPPORTED_STATUS_NAMES,
+
     STATUS_DEFINITIONS,
 )
+
+# Frozen legacy encoder vocabulary; broader powers use direct game commands.
+SUPPORTED_STATUS_NAMES = (SHRINK, VULNERABLE)

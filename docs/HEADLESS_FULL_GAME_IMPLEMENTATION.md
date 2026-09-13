@@ -519,10 +519,13 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-12 — Implement status and power lifecycles
 
-- **Known follow-up:** the pinned `VulnerablePower.AfterSideTurnEnd` ticks at the
-  enemy-side boundary and uses `SkipNextDurationTick`. Bash-applied enemy duration
-  is covered in M1; the broader player/source application timing still needs
-  explicit side/lifetime state instead of the reduced owner-turn approximation.
+- **Status:** Weak's 0.75 attack multiplier and the shared Weak/Vulnerable enemy-side
+  duration boundary are implemented. Fresh player debuffs skip one duration tick;
+  stacking preserves the existing flag. Private snapshot v3 and oracle clones/keys
+  retain duration state. Uppercut and Shockwave are verified first callers. See
+  [source and acceptance evidence](evidence/weak_and_area_debuffs_2026_09_13.md).
+  Remaining: Frail and other powers, prevention/immunity, source-owned lifetimes,
+  temporary attributes and general triggered hooks.
 - **Depends on:** HF-04/06/11.
 - **Implement:** replace the two-status limitation with supported, typed status/power
   definitions and instance state. Cover application, stacking/replacement, removal,
@@ -538,7 +541,7 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-13 — Execute upgraded and modified card instances
 
 - **Status:** partial. Immutable definitions, mutable instances, arbitrary per-card
-  levels and the verified first upgrades of all nine current Ironclad cards are
+  levels and the verified first upgrades of all eleven current Ironclad cards are
   implemented. See [starter evidence](evidence/strike_upgrade_2026_09_13.md) and
   [reward-card evidence](evidence/slice_combat_content_2026_09_13.md). Rest-site
   selection works. Other card families, temporary modifiers and other upgrade
@@ -591,7 +594,7 @@ Dependencies and acceptance cases are in the linked task.
 - **Status:** first callers implemented: Armaments (one/all combat upgrades) and
   True Grit (random/chosen exhaustion), with zero/one auto-selection, exact hand
   IDs, mandatory single choices and restoration while suspended. Both are in the
-  six-card slice reward pool and support Smith. See the
+  eight-card slice reward pool and support Smith. See the
   [source and acceptance evidence](evidence/combat_card_choices_2026_09_13.md).
   Next: add a source-verified caller for discard/draw-pile selection or variable
   counts; optionality, ordered bundles, offered cards and replay/autoplay remain
@@ -1146,18 +1149,17 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The direct Defend+/Bash+ slice and ordinary ten-card draw cap are complete. The
-next useful slice is **HF-11/12: verify and complete Weak's attack modifier and
-turn lifetime**, using one pinned native caller:
+Weak, Uppercut, Shockwave and combat hand choices are implemented. The next
+useful batch is **HF-19/20/21: broaden the verified Overgrowth normal encounters**:
 
-1. Inspect the pinned Weak power, attack modifier order and turn-duration rules.
-   Select one real card or enemy interaction that applies it.
-2. Implement the verified status in `game/headless/powers/` with the required
-   lifecycle operation and its first caller. Keep modifier ownership in game rules.
-3. Test modifier order/rounding, multi-hit behavior, reapplication, expiration and
-   JSON continuation against independently derived expected cases.
-4. Update coverage and retain source anchors. Extend consumer vocabularies only
-   when that separate integration is selected.
+1. Select one existing partial enemy and its actual encounter from the pinned
+   target. Verify HP, opening move, branch weights/constraints and A0 values.
+2. Implement missing behavior beside that enemy, introducing a lifecycle or power
+   operation only when this concrete encounter requires it.
+3. Exercise the encounter through the direct run loop with owned RNG, stable
+   slots, rewards and JSON continuation at every decision.
+4. Record source anchors and mark the exact covered content; procedural full-act
+   routing, elite/boss content and native RNG parity remain separate tasks.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

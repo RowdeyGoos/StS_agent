@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Mapping
+from types import MappingProxyType
 
 SHRINK = "shrink"
 VULNERABLE = "vulnerable"
-SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE)
+WEAK = "weak"
+SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK)
 STATUS_STACK_SCALE = 5.0
 
 
@@ -16,13 +18,14 @@ class StatusDefinition:
     """Static behavior metadata for one status effect."""
 
     name: str
-    decrements_at_end_of_owner_turn: bool = True
+    duration_tick_side: str | None = "enemy"
 
 
-STATUS_DEFINITIONS: dict[str, StatusDefinition] = {
-    SHRINK: StatusDefinition(name=SHRINK, decrements_at_end_of_owner_turn=False),
+STATUS_DEFINITIONS = MappingProxyType({
+    SHRINK: StatusDefinition(name=SHRINK, duration_tick_side=None),
     VULNERABLE: StatusDefinition(name=VULNERABLE),
-}
+    WEAK: StatusDefinition(name=WEAK),
+})
 
 
 @dataclass(slots=True)
@@ -30,14 +33,19 @@ class StatusCollection:
     """Mutable status stack storage for a combatant."""
 
     _counts: dict[str, int] = field(default_factory=dict)
+    _skip_next_tick: set[str] = field(default_factory=set)
 
-    def add(self, status_name: str, stacks: int) -> None:
+    def add(self, status_name: str, stacks: int, *, skip_first_tick: bool = False) -> None:
         """Add stacks of a supported status effect."""
         _require_supported_status(status_name)
-        if stacks < 0:
+        if type(stacks) is not int or stacks < 0:
             raise ValueError("Status stacks cannot be negative.")
         if stacks == 0:
             return
+        # Native stacking preserves the existing duration flag; only a new
+        # player debuff skips its first enemy-side duration tick.
+        if skip_first_tick and self.get(status_name) == 0 and status_name in (WEAK, VULNERABLE):
+            self._skip_next_tick.add(status_name)
         self._counts[status_name] = self.get(status_name) + stacks
 
     def get(self, status_name: str) -> int:
@@ -55,16 +63,25 @@ class StatusCollection:
             self._counts[status_name] = remaining
             return
         self._counts.pop(status_name, None)
+        self._skip_next_tick.discard(status_name)
 
     def on_turn_end(self) -> None:
-        """Apply end-of-turn decay rules to the status set."""
-        for status_name, definition in STATUS_DEFINITIONS.items():
-            if definition.decrements_at_end_of_owner_turn and self.get(status_name) > 0:
-                self.decrement(status_name)
+        """Compatibility alias for an isolated enemy's end-of-turn tick."""
+        self.after_enemy_side_turn_end()
+
+    def after_enemy_side_turn_end(self) -> None:
+        for name, definition in STATUS_DEFINITIONS.items():
+            if definition.duration_tick_side != "enemy":
+                continue
+            if name in self._skip_next_tick:
+                self._skip_next_tick.remove(name)
+            elif self.get(name):
+                self.decrement(name)
 
     def as_dict(self) -> dict[str, int]:
-        """Return a fixed-shape public dict for observations."""
-        return {status_name: self.get(status_name) for status_name in SUPPORTED_STATUS_NAMES}
+        """Keep legacy zero fields; include additional implemented active powers."""
+        return {name: self.get(name) for name in SUPPORTED_STATUS_NAMES
+                if name in (SHRINK, VULNERABLE) or self.get(name)}
 
 
 def get_status_amount(
@@ -91,10 +108,16 @@ def modify_attack_damage_for_statuses(
     modified_damage = max(0, base_damage + attacker_strength)
     if attacker_statuses is not None and get_status_amount(attacker_statuses, SHRINK) > 0:
         modified_damage = (modified_damage * 7) // 10
+    # Keep fractions until all verified multipliers are combined. The earlier
+    # Shrink approximation above remains a separate, reduced-content rule.
+    numerator, denominator = 1, 1
+    if attacker_statuses is not None and get_status_amount(attacker_statuses, WEAK) > 0:
+        numerator *= 3
+        denominator *= 4
     if get_status_amount(target_statuses, VULNERABLE) > 0:
-        modified_damage = (modified_damage * 3) // 2
-
-    return modified_damage
+        numerator *= 3
+        denominator *= 2
+    return modified_damage * numerator // denominator
 
 
 def _require_supported_status(status_name: str) -> None:
@@ -102,5 +125,5 @@ def _require_supported_status(status_name: str) -> None:
         raise ValueError(f"Unsupported status effect: {status_name!r}")
 
 
-# TODO: Add more status effects such as Weak, Frail, and poison.
+# TODO: Add more status effects such as Frail and poison.
 # TODO: Add richer status hooks for start-of-turn, card-play, and damage events.

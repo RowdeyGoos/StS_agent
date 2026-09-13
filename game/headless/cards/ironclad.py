@@ -1,8 +1,8 @@
 """Implemented Ironclad cards. Add each verified card family in this layer."""
 
 from game.headless.cards.base import Card, CardDefinition, CardSpec
-from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock, SelectHandCard
-from game.headless.powers.status import VULNERABLE
+from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock, SelectHandCard, ApplyDebuffs
+from game.headless.powers.status import VULNERABLE, WEAK
 
 STRIKE = CardDefinition("strike", (
     CardSpec("Strike", 1, "attack", base_damage=6),
@@ -44,8 +44,17 @@ TRUE_GRIT = CardDefinition("true_grit", (
     CardSpec("True Grit+", 1, "skill", block_gain=9, uses_target=False),
 ), (GainBlock(), SelectHandCard("exhaust", mode="random")))
 
+UPPERCUT = CardDefinition("uppercut", (
+    CardSpec("Uppercut", 2, "attack", base_damage=13, applies_status_stacks=1),
+    CardSpec("Uppercut+", 2, "attack", base_damage=13, applies_status_stacks=2),
+), (DealDamage(), ApplyDebuffs((WEAK, VULNERABLE))))
+SHOCKWAVE = CardDefinition("shockwave", (
+    CardSpec("Shockwave", 2, "skill", applies_status_stacks=3, exhausts=True, uses_target=False),
+    CardSpec("Shockwave+", 2, "skill", applies_status_stacks=5, exhausts=True, uses_target=False),
+), (ApplyDebuffs((WEAK, VULNERABLE), all_enemies=True),))
+
 DEFINITIONS = (STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE,
-               BODY_SLAM, ARMAMENTS, TRUE_GRIT)
+               BODY_SLAM, ARMAMENTS, TRUE_GRIT, UPPERCUT, SHOCKWAVE)
 
 # Existing constructor names are retained for callers and old experiment configs.
 class StrikeCard(Card):
