@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol
 
+from game.headless.core.selection import HandChoice
+
 if TYPE_CHECKING:
     from game.headless.core.player import Player
     from game.headless.monsters.base import Enemy
@@ -37,7 +39,7 @@ class CardSpec:
 class CardEffect(Protocol):
     """One rule operation. Complex cards can supply their own immutable effect."""
 
-    def apply(self, card: Card, player: Player, target: Enemy | None) -> None: ...
+    def apply(self, card: Card, player: Player, target: Enemy | None) -> HandChoice | None: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,9 +110,12 @@ class Card:
         self.preview_upgrade()
         self.upgrade_level += 1
 
-    def play(self, player: Player, enemy: Enemy | None) -> None:
-        for effect in self.definition.effects:
-            effect.apply(self, player, enemy)
+    def play(self, player: Player, enemy: Enemy | None, *, start_effect: int = 0):
+        for index in range(start_effect, len(self.definition.effects)):
+            result = self.definition.effects[index].apply(self, player, enemy)
+            if isinstance(result, HandChoice):
+                return index, result
+        return None
 
     def __repr__(self) -> str:
         return f"{self.name}(cost={self.cost}, exhausts={self.exhausts})"

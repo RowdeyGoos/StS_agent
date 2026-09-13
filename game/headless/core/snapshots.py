@@ -11,12 +11,14 @@ from random import Random
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.deck import Deck
 from game.headless.core.player import Player
+from game.headless.core.selection import PendingCardPlay
+from game.headless.cards.effects import SelectHandCard
 from game.headless.monsters.base import Intent
 from game.headless.monsters.catalog import DEFAULT_MONSTERS
 from game.headless.powers.status import StatusCollection
 
-SCHEMA = "headless_combat_state_v1"
-PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand")
+SCHEMA = "headless_combat_state_v2"
+PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
 
@@ -73,10 +75,11 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
                 raise ValueError("Card definition does not match the supplied catalog.")
     return {
         "schema": SCHEMA, "cards": cards.snapshot_fingerprint(), "rngs": rngs, "combat_rng": rng_ref(engine.rng),
+        "pending_play": None if engine.player.pending_play is None else asdict(engine.player.pending_play),
         "turn": engine.turn, "done": engine.done, "winner": engine.winner,
         "config": {"player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts)},
-        "deck": {"rng": rng_ref(deck.rng), "next_instance_id": deck._next_instance_id,
+        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
     }
@@ -109,6 +112,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         deck = Deck.__new__(Deck)
         source_deck = snapshot["deck"]
         deck.rng = rng_at(source_deck["rng"])
+        deck.selection_rng = rng_at(source_deck["selection_rng"])
         deck._next_instance_id = source_deck["next_instance_id"]
         if type(deck._next_instance_id) is not int or deck._next_instance_id < 0:
             raise ValueError("Invalid card allocator.")
@@ -167,6 +171,28 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         if player.max_hp != config["player_max_hp"]:
             raise ValueError("Player maximum HP differs from the combat configuration.")
         player.combat_enemies = enemies
+        pending = snapshot["pending_play"]
+        if pending is None:
+            if deck.in_play:
+                raise ValueError("In-play cards require a pending continuation.")
+        else:
+            if not isinstance(pending, dict) or set(pending) != {"effect_index", "target_slot"}:
+                raise ValueError("Invalid pending card play fields.")
+            if winner is not None or len(deck.in_play) != 1:
+                raise ValueError("Pending choice requires one resolving card in active combat.")
+            card = deck.in_play[0]
+            index, slot = pending["effect_index"], pending["target_slot"]
+            if type(index) is not int or not 0 <= index < len(card.definition.effects):
+                raise ValueError("Invalid pending effect index.")
+            if card.spec.uses_target:
+                if type(slot) is not int or not 0 <= slot < len(enemies):
+                    raise ValueError("Invalid pending target slot.")
+            elif slot is not None:
+                raise ValueError("Untargeted pending play cannot have a target.")
+            effect = card.definition.effects[index]
+            if not isinstance(effect, SelectHandCard) or effect.mode_for(card) != "choose" or len(effect.eligible(player)) <= 1:
+                raise ValueError("Pending effect does not require a hand choice.")
+            player.pending_play = PendingCardPlay(index, slot)
         return {**config, "rng": rng_at(snapshot["combat_rng"]), "player": player,
                 "enemies": enemies, "turn": snapshot["turn"], "done": snapshot["done"], "winner": winner}
     except (KeyError, TypeError, AttributeError, IndexError) as error:

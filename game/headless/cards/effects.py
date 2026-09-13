@@ -32,3 +32,49 @@ class ApplyTargetStatus:
             raise ValueError("Status application requires its target and status rule.")
         if target.is_alive and not player.combat_is_ending:
             target.apply_status(card.spec.applies_status_name, card.spec.applies_status_stacks)
+
+
+@dataclass(frozen=True, slots=True)
+class SelectHandCard:
+    """Select and modify hand instances; the resolving card is in its own pile."""
+
+    operation: str
+    mode: str = "choose"
+    upgraded_mode: str = "choose"
+
+    def __post_init__(self):
+        if self.operation not in ("upgrade", "exhaust") or any(
+            m not in ("choose", "random", "all") for m in (self.mode, self.upgraded_mode)
+        ):
+            raise ValueError("Unsupported hand selection rule.")
+
+    def mode_for(self, card):
+        return self.upgraded_mode if card.upgraded else self.mode
+
+    def eligible(self, player):
+        return tuple(c for c in player.hand if self.operation != "upgrade" or
+                     c.upgrade_level + 1 < len(c.definition.levels))
+
+    def resolve(self, player, selected):
+        if self.operation == "upgrade":
+            selected.upgrade()
+        else:
+            player.hand.remove(selected)
+            player.deck.exhaust_card(selected)
+
+    def apply(self, card, player, target):
+        from game.headless.core.selection import HandChoice
+        if player.combat_is_ending:
+            return None
+        eligible = self.eligible(player)
+        if not eligible:
+            return None
+        mode = self.mode_for(card)
+        if mode == "choose" and len(eligible) > 1:
+            return HandChoice(tuple(c.instance_id for c in eligible))
+        selected = (player.deck.selection_rng.choice(eligible),) if mode == "random" else (
+            eligible if mode == "all" else eligible[:1]
+        )
+        for candidate in selected:
+            self.resolve(player, candidate)
+        return None

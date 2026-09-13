@@ -6,7 +6,7 @@ import argparse
 import json
 from dataclasses import asdict
 
-from game.headless.core.actions import EndTurn, PlayCard
+from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
 from game.headless.run.actions import (
     ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion,
@@ -17,7 +17,7 @@ from game.headless.run.engine import RunEngine
 def choose_demo_action(engine, rest_choice="smith"):
     """A deterministic example player, not an engine rule or trained policy."""
     actions = engine.legal_actions()
-    for kind in (ChooseNode, ClaimGold, ClaimPotion):
+    for kind in (ChooseCombatCard, ChooseNode, ClaimGold, ClaimPotion):
         if found := next((a for a in actions if isinstance(a, kind)), None):
             return found
     choices = [a for a in actions if isinstance(a, ChooseRewardCard) and a.definition_id is not None]

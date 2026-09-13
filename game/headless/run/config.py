@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class RunConfig:
     character: str = "ironclad"
     ascension: int = 0
-    reward_cards: tuple[str, ...] = ("pommel_strike", "shrug_it_off", "iron_wave", "body_slam")
+    reward_cards: tuple[str, ...] = ("pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit")
     reward_potions: tuple[str, ...] = ("fire_potion", "block_potion")
 
     def __post_init__(self):

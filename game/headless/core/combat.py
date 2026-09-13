@@ -8,7 +8,7 @@ from typing import Callable, Sequence
 
 from game.headless.cards.base import Card
 from game.headless.cards.ironclad import create_starter_deck
-from game.headless.core.actions import CombatAction, EndTurn, PlayCard
+from game.headless.core.actions import CombatAction, ChooseCombatCard, EndTurn, PlayCard
 from game.headless.core.deck import Deck
 from game.headless.core.player import Player
 from game.headless.core.utils import make_rng
@@ -74,6 +74,8 @@ class CombatEngine:
         self._ensure_ready()
         if self.done:
             return ()
+        if self.player.pending_play is not None:
+            return tuple(ChooseCombatCard(i) for i in self.player.pending_options())
         actions: list[CombatAction] = [EndTurn()]
         for card in self.player.hand:
             if card.cost > self.player.energy:
@@ -91,6 +93,11 @@ class CombatEngine:
         if action not in self.legal_actions():
             raise ValueError(f"Illegal action for current state: {action!r}")
         details = {}
+        if isinstance(action, ChooseCombatCard):
+            self.player.choose_combat_card(action.instance_id)
+            self._refresh_persistent_statuses()
+            self._check_terminal()
+            return CombatResult(self.done, self.winner, {"selected_card": action.instance_id})
         if isinstance(action, PlayCard):
             hand_index = next(i for i, card in enumerate(self.player.hand) if card.instance_id == action.instance_id)
             target = None if action.target_slot is None else self.enemies[action.target_slot]
