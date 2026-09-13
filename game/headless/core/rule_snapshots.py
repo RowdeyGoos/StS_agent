@@ -4,6 +4,8 @@ from dataclasses import asdict
 from copy import deepcopy
 from game.headless.core.card_state import CombatRules
 from game.headless.powers.ironclad import POWER_NAMES
+from game.headless.powers.colorless import NAMES, INSTANCED, name
+from game.headless.core.choice_snapshots import validate_selection, valid_power
 
 TASK_ARITIES = {
     "iteration": 1,
@@ -16,7 +18,18 @@ TASK_ARITIES = {
     "autoplay_draw": 2,
     "exhaust": 1,
     "block": 2,
-    "attack": 6,
+    "attack": 7,
+    "random_hit": 2,
+    "after_card_power": 2,
+    "after_card_enemies": 1,
+    "mayhem": 0,
+    "cleanup_turn": 0,
+    "selected": 4,
+    "energy": 1,
+    "after_draw": 0,
+    "start_power": 1,
+    "early_end": 1,
+    "catastrophe": 1,
     "status": 3,
     "pillage": 0,
     "generate": 4,
@@ -41,6 +54,11 @@ def restore_rules(record, player):
         "exhausted_this_turn",
         "max_hp_gained",
         "ethereal_draws",
+        "skills_started",
+        "plays_finished",
+        "power_sequence",
+        "gold_gained",
+        "potion_slots",
     ):
         if type(getattr(r, key)) is not int or getattr(r, key) < 0:
             raise ValueError("Invalid rule counter.")
@@ -49,14 +67,17 @@ def restore_rules(record, player):
     if r.attacks_finished > r.attacks_started:
         raise ValueError("Invalid attack history.")
     if not isinstance(r.powers, dict) or any(
-        k not in POWER_NAMES or type(v) is not int or v < 0 for k, v in r.powers.items()
+        not valid_power(k, r.power_sequence) or type(v) is not int or v < 0 for k, v in r.powers.items()
     ):
         raise ValueError("Invalid player power state.")
     if not isinstance(r.auxiliaries, dict) or any(
-        k not in ("crimson_mantle", "inferno", "block_gains") or type(v) is not int or v < 0
+        (k not in ("crimson_mantle", "inferno", "block_gains") and k.removesuffix(".ready") not in r.powers)
+        or type(v) is not int
+        or v < 0
         for k, v in r.auxiliaries.items()
     ):
         raise ValueError("Invalid auxiliary power state.")
+    validate_selection(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
     if not isinstance(r.plays, dict) or set(r.plays) != set(in_play):
         raise ValueError("Play ownership mismatch.")
@@ -71,19 +92,21 @@ def restore_rules(record, player):
             "destination",
             "effect_index",
         }
-        if not isinstance(frame, dict) or set(frame) - {"blocks_gained"} != required:
+        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity"} != required:
             raise ValueError("Invalid play frame.")
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
             or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "remaining", "rupture"))
-            or frame["remaining"] < 1
+            or not 1 <= frame["remaining"] <= 2 + in_play[identity].combat_state.replay_count
         ):
             raise ValueError("Invalid play resources.")
+        if "calamity" in frame and (type(frame["calamity"]) is not int or frame["calamity"] < 0):
+            raise ValueError("Invalid captured Calamity.")
         if "blocks_gained" in frame and (
             type(frame["blocks_gained"]) is not int or frame["blocks_gained"] < 0
         ):
             raise ValueError("Invalid block history.")
-        if frame["destination"] not in ("powers", "exhaust_pile", "discard_pile"):
+        if frame["destination"] not in ("powers", "exhaust_pile", "discard_pile", "draw_pile"):
             raise ValueError("Invalid resolved pile.")
         if type(frame["effect_index"]) is not int or not 0 <= frame["effect_index"] < len(
             in_play[identity].definition.effects
@@ -118,31 +141,53 @@ def restore_rules(record, player):
         if any(type(v) not in (int, bool, str, type(None)) for v in task):
             raise ValueError("Task must contain plain values.")
         op, *args = task
-        if op in ("iteration", "effect", "after_play", "repeat", "finish", "attack"):
+        if op in (
+            "iteration",
+            "effect",
+            "after_play",
+            "repeat",
+            "finish",
+            "attack",
+            "random_hit",
+            "after_card_power",
+            "after_card_enemies",
+        ):
             if args[0] not in r.plays:
                 raise ValueError("Task has no owning play.")
         elif op in ("autoplay", "exhaust", "ethereal") and args[0] in r.plays:
             raise ValueError("Queued movement cannot remove an active play.")
         elif op in ("autoplay", "exhaust", "ethereal") and args[0] not in player.deck._allocated_ids:
             raise ValueError("Task references an unallocated card.")
+        if op == "random_hit" and (type(args[1]) is not int or args[1] < 0):
+            raise ValueError("Invalid random attack.")
+        if op == "after_card_power" and not valid_power(args[1], r.power_sequence):
+            raise ValueError("Invalid card hook.")
+        if op == "selected" and (
+            args[0] not in player.deck._allocated_ids
+            or args[0] in r.plays
+            or args[1] not in ("move", "exhaust", "transform")
+            or args[2] not in ("hand", "draw_pile")
+            or args[3] not in ("", "free_this_turn", "free_until_played")
+        ):
+            raise ValueError("Invalid selected-card work.")
         if op == "effect" and (
             type(args[1]) is not int or not 0 <= args[1] < len(known[args[0]].definition.effects)
         ):
             raise ValueError("Invalid queued effect.")
-        if op == "end_power" and args[0] not in POWER_NAMES:
+        if op in ("end_power", "early_end", "start_power") and not valid_power(args[0], r.power_sequence):
             raise ValueError("Invalid end power.")
         if op == "status":
             slot, name, amount = args
             if (
                 type(slot) is not int
                 or not 0 <= slot < len(player.combat_enemies)
-                or name not in ("strength", "vulnerable", "weak", "mangle")
+                or name not in ("strength", "vulnerable", "weak", "mangle", "dark_shackles")
                 or type(amount) is not int
                 or amount < 0
             ):
                 raise ValueError("Invalid queued status.")
         if op == "attack":
-            _, slot, area, expression, factor, gain = args
+            _, slot, area, expression, factor, gain, vigor = args
             if (
                 type(area) is not bool
                 or (
@@ -151,11 +196,18 @@ def restore_rules(record, player):
                 or (not area and slot is None)
             ):
                 raise ValueError("Invalid queued attack target.")
-            if expression not in ("base", "exhaust", "vulnerable", "strikes", "block") or any(
-                type(v) is not int or v < 0 for v in (factor, gain)
-            ):
+            if expression not in (
+                "base",
+                "exhaust",
+                "vulnerable",
+                "strikes",
+                "block",
+                "plays",
+                "draw_pile",
+                "debuffs",
+            ) or any(type(v) is not int or v < 0 for v in (factor, gain, vigor)):
                 raise ValueError("Invalid queued attack expression.")
-        if op in ("draw", "autoplay_draw", "block", "generate", "stampede") and (
+        if op in ("draw", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
             type(args[0]) is not int or args[0] < 0
         ):
             raise ValueError("Invalid queued amount.")
@@ -175,13 +227,17 @@ def restore_rules(record, player):
         ] + [["after_play", identity]]
         if control != expected:
             raise ValueError("Invalid interrupted play continuation.")
-        if identity == player.deck.in_play[-1].instance_id and r.tasks[: len(expected)] != expected:
+        if (
+            r.selection is None
+            and identity == player.deck.in_play[-1].instance_id
+            and r.tasks[: len(expected)] != expected
+        ):
             raise ValueError("Pending selector has unexpected work before its continuation.")
     if [t[1] for t in r.tasks if t[0] == "after_play"] != [
         c.instance_id for c in reversed(player.deck.in_play)
     ]:
         raise ValueError("Nested plays must finish before their parents.")
-    if bool(r.tasks) != bool(r.plays):
+    if r.selection is None and bool(r.tasks) != bool(r.plays):
         # Pending start/end autoplay can leave outer turn work plus nested plays;
         # externally observable work always suspends at a card selector.
         raise ValueError("Unowned pending combat work.")

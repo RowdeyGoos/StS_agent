@@ -15,7 +15,7 @@ def begin(state, cards):
     rng.restore(state.rng.snapshot())
     owned = {r.definition_id for r in state.relics}
     offers = []
-    sale_slot = rng.choice("shop.stock", [i for i, s in enumerate(SLOTS) if s.kind == "card"])
+    sale_slot = rng.choice("shop.stock", [i for i, s in enumerate(SLOTS) if s.kind == "card" and s.sale_eligible])
     for index, slot in enumerate(SLOTS):
         pool = [(name, cost) for name, cost in slot.items if slot.kind != "relic" or name not in owned]
         if not pool:

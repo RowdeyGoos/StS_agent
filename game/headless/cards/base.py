@@ -31,6 +31,7 @@ class CardSpec:
     end_turn_damage: int = 0
     innate: bool = False
     x_cost: bool = False
+    retain: bool = False
 
     @property
     def is_dead_card(self) -> bool:
@@ -56,6 +57,7 @@ class CardDefinition:
     rarity: str = "special"
     pool: str = "special"
     strike: bool = False
+    defend: bool = False
     generate_in_combat: bool = True
 
     def __post_init__(self) -> None:

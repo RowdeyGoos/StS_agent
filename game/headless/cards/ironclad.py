@@ -56,7 +56,7 @@ SWORD_BOOMERANG = CardDefinition("sword_boomerang", (
 ), (RandomEnemyAttack(hits=3, upgraded_hits=4),))
 
 STRIKE = replace(STRIKE, pool="ironclad", rarity="basic", strike=True)
-DEFEND = replace(DEFEND, pool="ironclad", rarity="basic", strike=False)
+DEFEND = replace(DEFEND, pool="ironclad", rarity="basic", defend=True)
 BASH = replace(BASH, pool="ironclad", rarity="basic", strike=False)
 POMMEL_STRIKE = replace(POMMEL_STRIKE, pool="ironclad", rarity="common", strike=True)
 SHRUG_IT_OFF = replace(SHRUG_IT_OFF, pool="ironclad", rarity="common", strike=False)

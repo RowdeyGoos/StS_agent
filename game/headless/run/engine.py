@@ -88,7 +88,10 @@ class RunEngine:
 
     def apply(self, action):
         from game.headless.run.flow import apply
-        return apply(self, action)
+        result = apply(self, action)
+        if self.combat is not None:
+            self.sync_combat_loot()
+        return result
 
     def preview_upgrade(self, instance_id: str):
         self.state.require_between_rooms()
@@ -148,11 +151,25 @@ class RunEngine:
         combat.reset()
         combat.player.hp = self.state.hp
         combat.player.strength += sum(RELICS[r.definition_id].combat_strength for r in self.state.relics)
+        combat.player.rules.potion_slots = self.state.potions.count(None)
+        if self.state.config is not None:
+            combat.player.rules.potion_pool = list(self.state.config.reward_potions)
         return rng, combat
+
+    def sync_combat_loot(self):
+        from game.headless.run.inventory import add_potion
+        r = self.combat.player.rules
+        self.state.gold += r.gold_gained
+        r.gold_gained = 0
+        for potion in r.potions_generated:
+            add_potion(self.state, potion)
+        r.potions_generated.clear()
+        r.potion_slots = self.state.potions.count(None)
 
     def finish_combat(self) -> None:
         if self.state.phase is not RunPhase.COMBAT or self.combat is None or not self.combat.done:
             raise ValueError("The owned combat is not finished.")
+        self.sync_combat_loot()
         encounter_id = self.state.active_encounter_id
         self.state.active_encounter_id = None
         self.state.max_hp = self.combat.player.max_hp

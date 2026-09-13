@@ -83,7 +83,7 @@ class Player:
 
     def end_turn(self) -> None:
         """End the player's turn by discarding the current hand."""
-        if self.pending_play is not None:
+        if self.pending_play is not None or self.rules.selection is not None:
             raise ValueError("Resolve the pending card choice first.")
         from game.headless.powers.ironclad import end_turn
 
@@ -95,9 +95,15 @@ class Player:
             raise ValueError("Block gain cannot be negative.")
         from game.headless.powers.ironclad import block_multiplier, record_block, after_block
 
-        if not amount:
+        if not amount and not powered:
             return
-        gain = amount * block_multiplier(self, powered)
+        if powered:
+            if self.rules.powers.get("no_block") and self.deck.in_play:
+                return
+            amount += self.rules.powers.get("dexterity", 0)
+            if self.deck.in_play and self.deck.in_play[-1].definition.defend:
+                amount += self.rules.powers.get("fasten", 0)
+        gain = max(0, amount) * block_multiplier(self, powered)
         if powered and self.statuses.get("frail"):
             gain = gain * 3 // 4
         self.block += gain
@@ -141,6 +147,8 @@ class Player:
         damage = previous_hp - self.hp
         from game.headless.powers.ironclad import after_hp_loss
 
+        if damage and is_attack and self.rules.powers.pop("the_gambit", 0):
+            self.hp = 0
         if damage:
             after_hp_loss(self, damage)
         if (
@@ -181,7 +189,7 @@ class Player:
     def play_card(self, hand_index: int, enemy) -> Card:
         from game.headless.core.resolution import start_play, drain
 
-        if self.pending_play is not None:
+        if self.pending_play is not None or self.rules.selection is not None:
             raise ValueError("Resolve the pending card choice first.")
         card = self.hand[hand_index]
         if (card.cost < 0 and not card.spec.x_cost) or self.card_cost(card) > self.energy:

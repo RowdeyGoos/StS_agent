@@ -199,4 +199,4 @@ def test_shockwave_belongs_only_to_supported_colorless_content_pools():
     assert 'shockwave' not in TRANSFORM_POOL
     assert 'shockwave' in COLORLESS_POOL
     assert replacement_pool('shockwave', TRANSFORM_POOL) == COLORLESS_POOL
-    assert all(name != 'shockwave' for slot in SLOTS for name, _ in slot.items)
+    assert any(name == 'shockwave' for slot in SLOTS for name, _ in slot.items)

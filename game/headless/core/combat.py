@@ -8,7 +8,7 @@ from typing import Callable, Sequence
 
 from game.headless.cards.base import Card
 from game.headless.cards.ironclad import create_starter_deck
-from game.headless.core.actions import CombatAction, ChooseCombatCard, EndTurn, PlayCard
+from game.headless.core.actions import CombatAction, ChooseCombatCard, ConfirmCombatSelection, EndTurn, PlayCard
 from game.headless.core.deck import Deck
 from game.headless.core.player import Player
 from game.headless.powers.lifecycle import after_owner_side_turn_end
@@ -80,6 +80,9 @@ class CombatEngine:
         self._ensure_ready()
         if self.done:
             return ()
+        if self.player.rules.selection is not None:
+            from game.headless.core.choices import actions
+            return actions(self.player)
         if self.player.pending_play is not None:
             return tuple(ChooseCombatCard(i) for i in self.player.pending_options())
         actions: list[CombatAction] = [EndTurn()]
@@ -101,13 +104,17 @@ class CombatEngine:
         if action not in self.legal_actions():
             raise ValueError(f"Illegal action for current state: {action!r}")
         details = {}
-        if isinstance(action, ChooseCombatCard):
-            self.player.choose_combat_card(action.instance_id)
+        if isinstance(action, (ChooseCombatCard, ConfirmCombatSelection)):
+            if self.player.rules.selection is not None:
+                from game.headless.core.choices import confirm, toggle
+                confirm(self.player) if isinstance(action, ConfirmCombatSelection) else toggle(self.player, action.instance_id)
+            else:
+                self.player.choose_combat_card(action.instance_id)
             self._refresh_persistent_statuses()
             self._check_terminal()
-            if self.player.rules.turn_ending and self.player.pending_play is None and not self.done:
+            if self.player.rules.turn_ending and self.player.pending_play is None and self.player.rules.selection is None and not self.done:
                 return self._finish_turn()
-            return CombatResult(self.done, self.winner, {"selected_card": action.instance_id})
+            return CombatResult(self.done, self.winner, {"selected_card": getattr(action, "instance_id", None)})
         if isinstance(action, PlayCard):
             hand_index = next(i for i, card in enumerate(self.player.hand) if card.instance_id == action.instance_id)
             target = None if action.target_slot is None else self.enemies[action.target_slot]
@@ -120,7 +127,7 @@ class CombatEngine:
 
         self.player.end_turn()
         self._check_terminal()
-        if self.player.pending_play is not None or self.done:
+        if self.player.pending_play is not None or self.player.rules.selection is not None or self.done:
             return CombatResult(self.done, self.winner, {"enemy_actions": []})
         return self._finish_turn()
 

@@ -137,10 +137,11 @@ class RandomEnemyAttack:
     def apply(self, card, player, target):
         if player.combat_enemies is None:
             raise ValueError("Random attacks require an owning combat.")
+        vigor = player.rules.powers.pop("vigor", 0)
         for _ in range(self.upgraded_hits if card.upgraded else self.hits):
             if player.combat_is_ending:
                 break
             living = [e for e in player.combat_enemies if e.is_alive]
             enemy = player.deck.target_rng.choice(living)
-            enemy.take_damage(card.spec.base_damage, attacker_statuses=player.statuses,
+            enemy.take_damage(card.spec.base_damage + card.combat_state.extra_damage + vigor, attacker_statuses=player.statuses,
                               attacker_strength=player.strength)

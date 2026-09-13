@@ -7,6 +7,8 @@ from game.headless.core.resolution import push, move_out
 def clone_to(p, card, pile):
     clone = deepcopy(card)
     clone.instance_id = None
+    # A new instance has no completed-play history of its own.
+    clone.combat_state.return_next_turn = False
     p.deck._ensure_identity(clone)
     if pile == "hand" and len(p.hand) >= 10:
         pile = "discard_pile"
@@ -116,8 +118,9 @@ def apply_operation(operation, card, p, target, amount):
             if operation == "second_wind":
                 tasks.append(["block", card.spec.block_gain, True])
         if operation == "fiend_fire":
+            vigor = r.powers.pop("vigor", 0)
             tasks += [
-                ["attack", card.instance_id, p.combat_enemies.index(target), False, "base", 0, 0]
+                ["attack", card.instance_id, p.combat_enemies.index(target), False, "base", 0, 0, vigor]
                 for _ in hand
             ]
         elif operation == "stoke":

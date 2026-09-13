@@ -7,6 +7,7 @@ def after_owner_side_turn_end(owner):
     if owner.is_alive:
         if not hasattr(owner, "rules"):
             owner.statuses.decrement("mangle", owner.statuses.get("mangle"))
+            owner.statuses.decrement("dark_shackles", owner.statuses.get("dark_shackles"))
         if hasattr(owner, "power_sources"):
             amount = owner.statuses.get("constrict")
             if amount:

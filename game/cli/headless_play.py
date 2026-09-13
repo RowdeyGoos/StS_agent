@@ -6,7 +6,7 @@ import argparse
 import json
 from dataclasses import asdict
 
-from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
+from game.headless.core.actions import ChooseCombatCard, ConfirmCombatSelection, EndTurn, PlayCard
 from game.headless.run.actions import (
     ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, Hatch, ChooseUpgrade, LeaveRest, UsePotion,
@@ -22,7 +22,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     nodes = [a for a in actions if isinstance(a, ChooseNode)]
     if nodes:
         return nodes[0] if path == "left" else nodes[-1]
-    for kind in (ChooseAncientRelic, ChooseCombatCard, ClaimGold, ClaimPotion, ClaimRelic, OpenChest, ClaimTreasureRelic):
+    for kind in (ChooseAncientRelic, ConfirmCombatSelection, ChooseCombatCard, ClaimGold, ClaimPotion, ClaimRelic, OpenChest, ClaimTreasureRelic):
         if found := next((a for a in actions if isinstance(a, kind)), None):
             return found
     event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]

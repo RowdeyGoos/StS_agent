@@ -21,6 +21,8 @@ class Deck:
         # Fork without consuming shuffle/enemy RNG. Native seed parity is separate.
         self.selection_rng = Random(0)
         self.selection_rng.setstate(rng.getstate())
+        self.potion_rng = Random(0)
+        self.potion_rng.setstate(rng.getstate())
         self.generation_rng = Random(0)
         self.generation_rng.setstate(rng.getstate())
         self.target_rng = Random(0)
@@ -37,13 +39,14 @@ class Deck:
         self.hand: list[Card] = []
         self.in_play: list[Card] = []
         self.powers: list[Card] = []
+        self.offered: list[Card] = []
         self.owner = None
         self.shuffle_draw_pile()
         innate = [c for c in self.draw_pile if c.spec.innate]
         self.draw_pile = [c for c in self.draw_pile if not c.spec.innate] + innate
 
     def all_cards(self):
-        return [c for name in ("draw_pile", "discard_pile", "hand", "exhaust_pile", "in_play", "powers") for c in getattr(self, name)]
+        return [c for name in ("draw_pile", "discard_pile", "hand", "exhaust_pile", "in_play", "powers", "offered") for c in getattr(self, name)]
 
     def shuffle_draw_pile(self) -> None:
         """Shuffle the draw pile in place."""

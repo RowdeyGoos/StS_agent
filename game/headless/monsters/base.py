@@ -130,6 +130,7 @@ class Enemy(ABC):
         is_attack: bool = True,
         attacker_statuses: StatusCollection | None = None,
         attacker_strength: int = 0,
+        powered: bool = True,
     ) -> int:
         """Apply incoming damage and return the HP damage taken."""
         incoming_damage = (
@@ -140,7 +141,7 @@ class Enemy(ABC):
                 attacker_strength=attacker_strength,
                 extra_multiplier=self._attack_multiplier(attacker_statuses),
             )
-            if is_attack
+            if is_attack and powered
             else amount
         )
         previous_hp = self.hp
@@ -158,7 +159,7 @@ class Enemy(ABC):
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the enemy."""
-        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle") and self.statuses.get("artifact"):
+        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles") and self.statuses.get("artifact"):
             self.statuses.decrement("artifact")
             return
         self.statuses.add(status_name, stacks)
@@ -211,7 +212,7 @@ class Enemy(ABC):
             player.take_damage(
                 current_intent.attack_damage if current_intent.base_attack_damage is None else current_intent.base_attack_damage,
                 attacker_statuses=None if current_intent.base_attack_damage is None else self.statuses,
-                attacker_strength=-self.statuses.get("mangle") if current_intent.base_attack_damage is None else self.strength - self.statuses.get("mangle"),
+                attacker_strength=-(self.statuses.get("mangle") + self.statuses.get("dark_shackles")) if current_intent.base_attack_damage is None else self.strength - (self.statuses.get("mangle") + self.statuses.get("dark_shackles")),
                 source=self,
             )
             if not player.is_alive or not self.is_alive:
@@ -262,7 +263,7 @@ class Enemy(ABC):
                 template.attack_damage,
                 {},
                 attacker_statuses=self.statuses,
-                attacker_strength=self.strength - self.statuses.get("mangle"),
+                attacker_strength=self.strength - (self.statuses.get("mangle") + self.statuses.get("dark_shackles")),
             )
 
         resolved_value = template.value
