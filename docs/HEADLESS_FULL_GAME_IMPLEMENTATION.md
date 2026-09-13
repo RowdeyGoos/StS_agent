@@ -21,6 +21,14 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — M1 combat content completed for its declared pool:** all four
+  reward-card upgrades and Slimed's draw are implemented; solo Nibbit and the four
+  included slime variants now have native source checks and full-cycle/branch
+  tests. Corrected small/medium/small encounter slots, medium Twig's equal-choice
+  and two-attack limit, and combat-ending effect handling. Tests acquire, smith
+  and play every reward upgrade through the run with JSON continuation.
+  [Evidence and limits](evidence/slice_combat_content_2026_09_13.md) distinguish
+  these source-checked rules from native seed parity or live conformance.
 - **2026-09-13 — M1 implemented with restricted content:**
   `RunEngine.ironclad_slice()` now plays Ironclad A0 through Nibbit → rewards →
   rest or smith → Overgrowth slimes → rewards → `slice_complete`. It includes
@@ -42,8 +50,8 @@ into validation of changed code.
 - **HF-13 is partial:** Strike+ deals 9 damage at cost 1; Defend+ gives 8 block
   at cost 1; Bash+ deals 10 damage then applies 3 Vulnerable at cost 2. Direct tests
   cover preview, duplicate identity, targeting/order, JSON continuation and
-  persistence through two fights. Other card upgrades and general temporary
-  modifiers remain unimplemented. The
+  persistence through two fights. The four reward cards now also have their
+  upgrades; other card families and general temporary modifiers remain open. The
   [pinned source check](evidence/strike_upgrade_2026_09_13.md) owns the native evidence.
 - **HF-14 is partial:** ordinary draws stop at 10 cards before any unnecessary
   reshuffle, preserving overflow, identities and RNG on blocked draws. Direct
@@ -506,6 +514,10 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-12 — Implement status and power lifecycles
 
+- **Known follow-up:** the pinned `VulnerablePower.AfterSideTurnEnd` ticks at the
+  enemy-side boundary and uses `SkipNextDurationTick`. Bash-applied enemy duration
+  is covered in M1; the broader player/source application timing still needs
+  explicit side/lifetime state instead of the reduced owner-turn approximation.
 - **Depends on:** HF-04/06/11.
 - **Implement:** replace the two-status limitation with supported, typed status/power
   definitions and instance state. Cover application, stacking/replacement, removal,
@@ -521,9 +533,11 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-13 — Execute upgraded and modified card instances
 
 - **Status:** partial. Immutable definitions, mutable instances, arbitrary per-card
-  levels and the verified first upgrades of Strike, Defend and Bash are implemented.
-  See the [source evidence](evidence/strike_upgrade_2026_09_13.md). Other native
-  upgrades, temporary modifiers and upgrade-source selection remain open.
+  levels and the verified first upgrades of all seven current Ironclad cards are
+  implemented. See [starter evidence](evidence/strike_upgrade_2026_09_13.md) and
+  [reward-card evidence](evidence/slice_combat_content_2026_09_13.md). Rest-site
+  selection works. Other card families, temporary modifiers and other upgrade
+  sources remain open.
 - **Depends on:** HF-01/02 for each rule and existing HF-04 state; coordinate
   persistent mutation with HF-33. No public contract dependency.
 - **Implement:** add verified levels to [game cards]; add instance fields and
@@ -582,6 +596,13 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-17 — Verify and finish the existing eight card definitions
 
+- **Status:** implemented for the current base/upgrade definitions and supported
+  interactions. Slimed draws one, exhausts and cannot upgrade. Source-checked
+  damage/block/draw order, Body Slam scaling, terminal draws and every reward
+  card's acquisition → smith → next-combat path have direct cases. See the
+  [evidence](evidence/slice_combat_content_2026_09_13.md). Unsupported powers,
+  enchantments and other modifier interactions remain their owning tasks; this
+  is not live differential certification.
 - **Depends on:** HF-02 and the applicable HF-11–15 behavior.
 - **Implement:** separate named cases for Strike, Defend, Bash, Pommel Strike,
   Shrug It Off, Iron Wave, Body Slam and Slimed. Verify costs, targets, effect order,
@@ -624,6 +645,11 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-20 — Verify the existing Overgrowth enemy slice
 
+- **Status:** partial. Solo Nibbit, Leaf/Twig small/medium variants and SlimesWeak
+  composition are source-checked with full-cycle/branch cases. Medium Twig's
+  repeat constraint and slime slot order are corrected. Native RNG parity,
+  paired Nibbit roles, Shrinker Beetle, Fuzzy Wurm Crawler and Mawler remain open.
+  See [evidence](evidence/slice_combat_content_2026_09_13.md).
 - **Depends on:** HF-02/05 and relevant HF-11/12/19 rules.
 - **Implement:** per-enemy tickets for Nibbit, Shrinker Beetle, Fuzzy Wurm Crawler,
   Mawler, Leaf Slime S/M and Twig Slime S/M. Verify HP sampling, opening moves,

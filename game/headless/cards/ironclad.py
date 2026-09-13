@@ -20,15 +20,19 @@ BASH = CardDefinition("bash", (
 ), (DealDamage(), ApplyTargetStatus()))
 POMMEL_STRIKE = CardDefinition("pommel_strike", (
     CardSpec("Pommel Strike", 1, "attack", base_damage=9, draw_count=1),
+    CardSpec("Pommel Strike+", 1, "attack", base_damage=10, draw_count=2),
 ), (DealDamage(), DrawCards()))
 SHRUG_IT_OFF = CardDefinition("shrug_it_off", (
     CardSpec("Shrug It Off", 1, "block", block_gain=8, draw_count=1, uses_target=False),
+    CardSpec("Shrug It Off+", 1, "block", block_gain=11, draw_count=1, uses_target=False),
 ), (GainBlock(), DrawCards()))
 IRON_WAVE = CardDefinition("iron_wave", (
     CardSpec("Iron Wave", 1, "attack", base_damage=5, block_gain=5),
+    CardSpec("Iron Wave+", 1, "attack", base_damage=7, block_gain=7),
 ), (GainBlock(), DealDamage()))
 BODY_SLAM = CardDefinition("body_slam", (
     CardSpec("Body Slam", 1, "attack", damage_equals_player_block=True),
+    CardSpec("Body Slam+", 0, "attack", damage_equals_player_block=True),
 ), (DealDamage(),))
 
 DEFINITIONS = (STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE, BODY_SLAM)

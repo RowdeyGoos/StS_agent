@@ -166,6 +166,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             raise ValueError("Invalid combat configuration.")
         if player.max_hp != config["player_max_hp"]:
             raise ValueError("Player maximum HP differs from the combat configuration.")
+        player.combat_enemies = enemies
         return {**config, "rng": rng_at(snapshot["combat_rng"]), "player": player,
                 "enemies": enemies, "turn": snapshot["turn"], "done": snapshot["done"], "winner": winner}
     except (KeyError, TypeError, AttributeError, IndexError) as error:

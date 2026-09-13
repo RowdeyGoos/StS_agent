@@ -422,6 +422,8 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
                 if dataclass_parameters is not None and dataclass_parameters.frozen:
                     memo[id(attribute_value)] = attribute_value
     cloned_env.enemies = deepcopy(env.enemies, memo)
+    if cloned_env.player is not None:
+        cloned_env.player.combat_enemies = cloned_env.enemies
     cloned_env.episode_transitions = []
     cloned_env.record_trajectory = False
     cloned_env.last_observation = cloned_env.get_observation()

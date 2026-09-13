@@ -63,6 +63,7 @@ class CombatEngine:
             self.rng = make_rng(seed)
         self.player = self._build_player()
         self.enemies = self._build_encounter()
+        self.player.combat_enemies = self.enemies
         self.turn = 1
         self.done = False
         self.winner = None

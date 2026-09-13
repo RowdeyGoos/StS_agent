@@ -176,7 +176,7 @@ class Enemy(ABC):
                 attacker_strength=0,
             )
             if not player.is_alive:
-                break
+                return current_intent
         if current_intent.block_gain > 0:
             self.gain_block(current_intent.block_gain)
         if current_intent.strength_gain > 0:

@@ -15,7 +15,8 @@ class DealDamage:
 @dataclass(frozen=True, slots=True)
 class GainBlock:
     def apply(self, card, player, target) -> None:
-        player.gain_block(card.spec.block_gain)
+        if not player.combat_is_ending:
+            player.gain_block(card.spec.block_gain)
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,4 +30,5 @@ class ApplyTargetStatus:
     def apply(self, card, player, target) -> None:
         if target is None or card.spec.applies_status_name is None:
             raise ValueError("Status application requires its target and status rule.")
-        target.apply_status(card.spec.applies_status_name, card.spec.applies_status_stacks)
+        if target.is_alive and not player.combat_is_ending:
+            target.apply_status(card.spec.applies_status_name, card.spec.applies_status_stacks)
