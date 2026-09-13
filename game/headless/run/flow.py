@@ -2,14 +2,15 @@
 
 from game.headless.core.actions import ChooseCombatCard, EndTurn, PlayCard
 from game.headless.encounters.catalog import ENCOUNTERS
+from game.headless.events.catalog import EVENTS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
     ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
-    OpenChest, ClaimTreasureRelic, LeaveTreasure,
+    OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, LeaveEvent,
 )
-from game.headless.run import rest_site, rewards, shop, treasure
+from game.headless.run import rest_site, rewards, shop, treasure, events
 from game.headless.run.inventory import discard_potion, potion_slot
 from game.headless.run.state import RunPhase
 
@@ -61,6 +62,8 @@ def legal_actions(engine) -> tuple:
             return tuple(actions)
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "treasure":
         actions.extend(treasure.legal_actions(state))
+    if state.phase is RunPhase.ROOM and state.pending.get("kind") == "scripted_event":
+        actions.extend(events.legal_actions(state))
     actions.extend(DiscardPotion(p.instance_id) for p in state.potions if p is not None)
     return tuple(actions)
 
@@ -79,12 +82,18 @@ def apply(engine, action):
             encounter = ENCOUNTERS[node.encounter_id]
             if encounter.room_kind != node.kind:
                 raise ValueError("Map room and encounter kind disagree.")
+        elif node.kind == "event":
+            if node.event_id not in EVENTS:
+                raise ValueError("Unsupported map event.")
         elif node.kind not in ("rest", "shop", "treasure", "slice_end", "terminal"):
             raise ValueError("Unsupported room.")
         previous_node, previous_pending = state.current_node_id, state.pending
         engine.choose_node(action.node_id)
-        if node.kind in ("combat", "elite", "boss", "shop", "treasure"):
+        if node.kind in ("combat", "elite", "boss", "shop", "treasure", "event"):
             try:
+                if node.kind == "event":
+                    events.begin(state, node.event_id)
+                    return node
                 if node.kind == "treasure":
                     treasure.begin(state)
                     return node
@@ -114,6 +123,10 @@ def apply(engine, action):
         return result
     if isinstance(action, DiscardPotion):
         return discard_potion(state, action.instance_id)
+    if isinstance(action, ChooseEventOption):
+        return events.choose(state, action.event_instance_id, action.option_id)
+    if isinstance(action, LeaveEvent):
+        return events.leave(state, action.event_instance_id)
     if isinstance(action, OpenChest):
         return treasure.open_chest(state)
     if isinstance(action, ClaimTreasureRelic):

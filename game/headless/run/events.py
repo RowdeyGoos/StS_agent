@@ -1,0 +1,69 @@
+"""Scripted event lifecycle; individual choices and effects belong to content."""
+
+from game.headless.core.rng import GameRandomService
+from game.headless.events.catalog import EVENTS
+from game.headless.run.actions import ChooseEventOption, LeaveEvent
+from game.headless.run.state import RunPhase
+
+
+def begin(state, definition_id):
+    state.require_room_entry("event")
+    if definition_id not in EVENTS:
+        raise ValueError("Unsupported event.")
+    rng = GameRandomService(state.seed)
+    rng.restore(state.rng.snapshot())
+    pending = {"kind": "scripted_event", "definition_id": definition_id,
+               "event_instance_id": state.next_event_id, "stage": "options",
+               "data": EVENTS[definition_id].generate(rng)}
+    EVENTS[definition_id].validate(pending)
+    state.rng = rng
+    state.next_event_id += 1
+    state.pending, state.phase = pending, RunPhase.ROOM
+
+
+def _pending(state):
+    if state.phase is not RunPhase.ROOM or not state.pending or state.pending.get("kind") != "scripted_event":
+        raise ValueError("No scripted event is active.")
+    return state.pending
+
+
+def legal_actions(state):
+    pending = _pending(state)
+    instance_id = pending["event_instance_id"]
+    if pending["stage"] == "resolved":
+        return (LeaveEvent(instance_id),)
+    return tuple(ChooseEventOption(instance_id, option) for option in EVENTS[pending["definition_id"]].options(pending))
+
+
+def choose(state, instance_id, option_id):
+    pending = _pending(state)
+    definition = EVENTS[pending["definition_id"]]
+    if (type(instance_id) is not int or instance_id != pending["event_instance_id"]
+            or option_id not in definition.options(pending)):
+        raise ValueError("Stale or unavailable event choice.")
+    definition.choose(state, pending, option_id)
+    if state.hp == 0:
+        state.phase = RunPhase.DEFEAT
+
+
+def leave(state, instance_id):
+    pending = _pending(state)
+    if type(instance_id) is not int or instance_id != pending["event_instance_id"] or pending["stage"] != "resolved":
+        raise ValueError("Event cannot be left before resolution.")
+    state.pending, state.phase = None, RunPhase.ROUTE
+
+
+def validate_event(state, graph):
+    pending = state.pending
+    if set(pending) != {"kind", "definition_id", "event_instance_id", "stage", "data"}:
+        raise ValueError("Invalid event state fields.")
+    if pending["definition_id"] not in EVENTS or state.phase not in (RunPhase.ROOM, RunPhase.DEFEAT):
+        raise ValueError("Invalid event definition or phase.")
+    if (type(pending["event_instance_id"]) is not int or pending["event_instance_id"] < 0
+            or pending["event_instance_id"] != state.next_event_id - 1):
+        raise ValueError("Invalid owned event identity.")
+    if graph is not None:
+        node = None if state.current_node_id is None else graph.node(state.current_node_id)
+        if node is None or node.kind != "event" or node.event_id != pending["definition_id"]:
+            raise ValueError("Event differs from its room.")
+    EVENTS[pending["definition_id"]].validate(pending, defeated=state.phase is RunPhase.DEFEAT)

@@ -15,8 +15,9 @@ from game.headless.relics.base import RELICS, RelicInstance
 from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.shops.catalog import fingerprint as shop_fingerprint
 from game.headless.treasure.catalog import fingerprint as treasure_fingerprint
+from game.headless.events.catalog import EVENTS, fingerprint as event_fingerprint
 
-SCHEMA = "headless_run_state_v6"
+SCHEMA = "headless_run_state_v7"
 
 
 def _item_definitions():
@@ -28,7 +29,7 @@ def capture_run(engine) -> dict:
     state = engine.state
     state.validate()
     return {
-        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(), "treasure": treasure_fingerprint(),
+        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(), "treasure": treasure_fingerprint(), "events": event_fingerprint(),
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
@@ -42,7 +43,7 @@ def capture_run(engine) -> dict:
                   "potions": [None if p is None else asdict(p) for p in state.potions],
                   "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance,
                   "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used,
-                  "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
+                  "next_event_id": state.next_event_id, "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
         "graph": None if engine.graph is None else asdict(engine.graph),
         "combat": None if engine.combat is None else engine.combat.snapshot(cards=engine.cards),
     }
@@ -60,6 +61,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Run snapshot shop definitions are incompatible.")
     if snapshot.get("treasure") != treasure_fingerprint():
         raise ValueError("Run snapshot treasure definitions are incompatible.")
+    if snapshot.get("events") != event_fingerprint():
+        raise ValueError("Run snapshot event definitions are incompatible.")
     try:
         payload = snapshot["state"]
         config = None if payload["config"] is None else RunConfig(**payload["config"])
@@ -86,7 +89,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
             next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"],
             next_shop_id=payload["next_shop_id"], shop_removals_used=payload["shop_removals_used"],
-            next_treasure_id=payload["next_treasure_id"], treasure_relics_drawn=deepcopy(payload["treasure_relics_drawn"]),
+            next_event_id=payload["next_event_id"], next_treasure_id=payload["next_treasure_id"], treasure_relics_drawn=deepcopy(payload["treasure_relics_drawn"]),
         )
         state.validate()
         if state.active_encounter_id is not None and state.active_encounter_id not in ENCOUNTERS:
@@ -101,9 +104,11 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Act completion requires a supported boss.")
         graph = snapshot["graph"]
         if graph is not None:
-            graph = MapGraph(tuple(MapNode(n["node_id"], n["kind"], tuple(n["next_node_ids"]), n["encounter_id"]) for n in graph["nodes"]), graph["start_id"])
+            graph = MapGraph(tuple(MapNode(n["node_id"], n["kind"], tuple(n["next_node_ids"]), n["encounter_id"], n["event_id"]) for n in graph["nodes"]), graph["start_id"])
             if any(n.encounter_id is not None and (n.encounter_id not in ENCOUNTERS or n.kind != ENCOUNTERS[n.encounter_id].room_kind) for n in graph.nodes):
                 raise ValueError("Unsupported map encounter.")
+            if any(n.event_id is not None and n.event_id not in EVENTS for n in graph.nodes):
+                raise ValueError("Unsupported map event.")
             if state.act_completion is not None and (state.current_node_id is None or
                     graph.node(state.current_node_id).encounter_id != state.act_completion.boss_encounter_id):
                 raise ValueError("Completed boss differs from its room.")
@@ -194,6 +199,9 @@ def _validate_pending(state, cards, graph):
                 owned = any(r.definition_id == relic for r in state.relics)
                 if relic not in state.config.reward_relics or owned != pending["relic_claimed"]:
                     raise ValueError("Invalid relic offer or ownership.")
+    elif kind == "scripted_event":
+        from game.headless.run.events import validate_event
+        validate_event(state, graph)
     elif kind == "treasure":
         from game.headless.run.treasure_validation import validate_treasure
         validate_treasure(state, graph)

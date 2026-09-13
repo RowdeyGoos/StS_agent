@@ -11,7 +11,7 @@ from game.headless.run.actions import (
     ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
-    OpenChest, ClaimTreasureRelic, LeaveTreasure,
+    OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, LeaveEvent,
 )
 from game.headless.run.engine import RunEngine
 
@@ -25,6 +25,9 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     for kind in (ChooseCombatCard, ClaimGold, ClaimPotion, ClaimRelic, OpenChest, ClaimTreasureRelic):
         if found := next((a for a in actions if isinstance(a, kind)), None):
             return found
+    event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]
+    if event_choices:
+        return next((a for a in event_choices if a.option_id == "join_forces"), event_choices[0])
     choices = [a for a in actions if isinstance(a, ChooseRewardCard) and a.definition_id is not None]
     if choices:
         return next((a for a in choices if a.definition_id == "pommel_strike"), choices[0])
@@ -51,7 +54,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
         if removals:
             strikes = {c.instance_id for c in engine.state.deck if c.definition.definition_id == "strike"}
             return next((a for a in removals if a.instance_id in strikes), removals[0])
-    for kind in (LeaveRewards, LeaveRest, LeaveShop, LeaveTreasure, UsePotion):
+    for kind in (LeaveRewards, LeaveRest, LeaveShop, LeaveTreasure, LeaveEvent, UsePotion):
         if found := next((a for a in actions if isinstance(a, kind)), None):
             return found
     plays = [a for a in actions if isinstance(a, PlayCard)]
@@ -110,6 +113,7 @@ def main(argv=None):
                       "shop_purchases": sum(t["action"] == "BuyShopItem" for t in trace),
                       "shop_removals": state.shop_removals_used,
                       "chests_opened": sum(t["action"] == "OpenChest" for t in trace),
+                      "events_resolved": sum(t["action"] == "ChooseEventOption" for t in trace),
                       "act_completion": None if state.act_completion is None else asdict(state.act_completion),
                       "deck_size": len(state.deck), "relics": [r.definition_id for r in state.relics], "upgraded_cards": [c.instance_id for c in state.deck if c.upgrade_level],
                       "potions_used": sum(t["action"] == "UsePotion" for t in trace),
