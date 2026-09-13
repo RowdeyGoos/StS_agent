@@ -30,7 +30,9 @@ into validation of changed code.
 - A generated restricted Act 1 route now provides 15 map rows plus a boss,
   multiple entrances and owned encounter queues with native bag/tag exclusions.
   Base topology, native duplicate-path pruning/repair and unknown-room base odds
-  are implemented; Ancient choices and full event eligibility remain open. [Map/progression evidence](evidence/generated_act1_2026_09_13.md).
+  are implemented. Optional restricted Neow pickups and a shuffled supported
+  event queue now cover starting rewards and unique-event progression; full
+  Ancient offers and event content/unlock eligibility remain open. [Map/progression evidence](evidence/generated_act1_2026_09_13.md).
 - **2026-09-13 — Aroma of Chaos:** mandatory one-card transformation/upgrade
   choices, automatic zero/one resolution and exact continuation are implemented.
   Permanent transforms preserve position, allocate a fresh unupgraded card and
@@ -860,6 +862,13 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-28 — Initialize declared runs and starting choices
 
+- **Partial:** optional `neow_pickups_restricted_v1` grants Golden Pearl or
+  Nutritious Oyster through owned inventory before unlocking the first map row.
+  Both effects and pending/selected states restore through the first fight and
+  Act 1. `ancient_profile=None` retains the post-Ancient fixture. Native randomized
+  two-positive/one-curse offers, remaining relic effects and unlock/modifier inputs
+  remain open; see [evidence](evidence/neow_event_progression_2026_09_13.md).
+
 - **Depends on:** HF-01/04 and starter content, including HF-24. A first starting
   choice can be implemented with HF-39; HF-43 later completes the offer catalog.
 - **Implement:** extend `RunEngine` initialization with a target run
@@ -879,8 +888,8 @@ Dependencies and acceptance cases are in the linked task.
   placement constraints. Exact topology/room identities restore without rerolls.
   Native duplicate-path pruning/repair and unresolved unknown map markers are
   implemented. Coordinate postprocessing and map-changing effects remain open.
-  The default profile starts after the unimplemented Ancient choice; the earlier
-  base profile remains an explicit fixture.
+  The optional restricted Neow choice precedes map entry; the default post-Ancient
+  start and earlier base-map profile remain explicit fixtures.
 
 - **Depends on:** HF-01/04/05/28.
 - **Implement:** extend [game map] beyond authored DAG navigation to target topology,
@@ -901,8 +910,11 @@ Dependencies and acceptance cases are in the linked task.
   candidate qualifies. Node assignments advance only on successful combat entry.
   Unknown rooms now use source-checked base odds, accumulation/reset and shop
   exclusions, selecting one owned outcome on entry. Their combat outcomes consume
-  the same normal queue. All-seen discovery is explicit; first-run overrides,
-  native event eligibility/depletion, modifying relics and RNG parity remain open.
+  the same normal queue. The supported all-unlocked event pool shuffles once,
+  skips visited definitions and allows repetition after an exhausted full pass.
+  Queue cursor/assignments restore and roll back with failed unknown entry.
+  All-seen discovery is explicit; first-run/unlock filters, conditional event
+  eligibility, full event content, modifying relics and RNG parity remain open.
 
 - **Depends on:** HF-01/04/05/29 and the selected content implementations.
 - **Implement:** persistent pool state for act-specific easy/hard encounters,
@@ -1307,28 +1319,29 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The next Act 1 batch is **an Ancient starting choice and native event-pool
-progression**, using the existing pruned map and unknown-room resolver:
+The next Act 1 batch is **expanding Neow and the reachable event catalog**:
 
-1. Inspect one pinned Ironclad-compatible Ancient's offers and implement its
-   starting choice with an owned pending decision. Apply its persistent effect
-   through normal inventory/deck rules, then unlock first-row map choices. Keep
-   the post-Ancient fixture start explicit and separately selectable.
-2. Add declared unlock/discovery inputs and native event eligibility/depletion.
-   Select events only when an unknown resolves to an event. Persist the offered
-   event and remaining pool; failed unsupported content must not trigger rerolls.
-   Keep the existing supported-with-replacement profile as a restricted fixture.
-3. Implement the first missing reachable event definitions needed by that pool,
-   with explicit supported coverage. Reuse selectors and inventory effects; do
-   not copy gameplay rules into projections or training adapters.
-4. Add room/choice/restore traces through the Ancient, ordinary encounters, unknown
-   outcomes and boss, then verify installed execution. Continue the existing
-   HF-18/24–27/31–36/39–43 card/item/reward/shop/event tasks toward full native
-   Ironclad Act 1 coverage. Map/relic modifiers remain separate content tasks;
-   coordinate centering/spreading/straightening does not change room progression.
+1. Extend `run/ancient.py` with native three-offer generation: two positives plus
+   one curse. Inspect pinned Neow exclusions and unlock predicates first. Add each
+   required relic/card effect beside its content, with persistent pickup choices
+   when needed. Keep the fixed two-positive profile and post-Ancient start explicit
+   fixtures; do not label a restricted offer pool as the full native distribution.
+2. Add the first missing Overgrowth/shared event from the retained inventory to
+   `events/catalog.py` and `RunConfig.event_pool`. Reuse deck selectors/inventory
+   operations and give every option an exact effect/restore regression. Unsupported
+   content must reject atomically rather than reroll a replacement event.
+3. Extend `events/progression.py` with declared unlock epochs and event-specific
+   `IsAllowed` rules as their first content callers arrive. Preserve native visited
+   skipping and full-pass repetition fallback. Test ineligible candidates, exhausted
+   pools, owned cursor/assignments and rollback after failed room construction.
+4. Continue HF-18/24–27/31–36/39–43 for the remaining Ironclad card, relic, potion,
+   reward, shop and event catalog. Verify the added content through acquisition,
+   its next combat/room and installed continuation. Map/relic modifiers remain
+   separate content tasks; visual coordinate postprocessing does not change room
+   progression.
 
-Current map-pruning/unknown-outcome source anchors and validation:
-[map and unknown-room evidence](evidence/map_pruning_unknowns_2026_09_13.md).
+Current starting-choice/event-queue source anchors and validation:
+[Neow and event progression evidence](evidence/neow_event_progression_2026_09_13.md).
 Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json

@@ -101,8 +101,9 @@ def prepare_unknown(state, graph, node):
     unknown = deepcopy(state.unknown_rooms)
     previous = room_node(state, graph, state.current_node_id).kind if state.current_node_id is not None else None
     kind = roll_room(unknown.odds, rng, blocked=blocked_types(graph, node, previous))
-    # Native event eligibility/depletion is a separate content milestone. This
-    # declared profile samples only supported events, with replacement, on entry.
-    event_id = rng.choice("act1.events", state.config.event_pool) if kind == "event" else None
+    if state.event_progression is None:
+        raise ValueError("Unknown room requires an owned event queue.")
+    progression = deepcopy(state.event_progression)
+    event_id = progression.pull(node.node_id) if kind == "event" else None
     unknown.outcomes[node.node_id] = RoomOutcome(kind, event_id)
-    return rng, unknown, replace(node, kind=kind, event_id=event_id)
+    return rng, unknown, progression, replace(node, kind=kind, event_id=event_id)

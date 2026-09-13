@@ -10,8 +10,10 @@ class RelicDefinition:
     victory_heal: int = 0
     pickup_max_hp: int = 0
     stackable: bool = False
+    pickup_gold: int = 0
 
     def after_obtained(self, state) -> None:
+        state.gold += self.pickup_gold
         state.max_hp += self.pickup_max_hp
         state.hp = min(state.max_hp, state.hp + self.pickup_max_hp)
 
@@ -30,6 +32,8 @@ class RelicInstance:
 
 
 RELICS = MappingProxyType({
+    "golden_pearl": RelicDefinition("golden_pearl", pickup_gold=150),
+    "nutritious_oyster": RelicDefinition("nutritious_oyster", pickup_max_hp=11),
     "circlet": RelicDefinition("circlet", stackable=True),
     "burning_blood": RelicDefinition("burning_blood", victory_heal=6),
     "strawberry": RelicDefinition("strawberry", pickup_max_hp=7),

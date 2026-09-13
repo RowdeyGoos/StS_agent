@@ -19,7 +19,10 @@ from game.headless.events.catalog import EVENTS, fingerprint as event_fingerprin
 from game.headless.encounters.progression import EncounterProgression, encounter_at
 from game.headless.run.unknown_rooms import UnknownRooms, RoomOutcome, room_node
 
-SCHEMA = "headless_run_state_v11"
+from game.headless.events.progression import EventProgression
+from game.headless.run.ancient import AncientStart
+
+SCHEMA = "headless_run_state_v12"
 
 
 def _item_definitions():
@@ -43,6 +46,8 @@ def capture_run(engine) -> dict:
                   "pending": deepcopy(state.pending),
                   "config": None if state.config is None else asdict(state.config),
                   "encounter_progression": None if state.encounter_progression is None else asdict(state.encounter_progression),
+                  "ancient_start": None if state.ancient_start is None else asdict(state.ancient_start),
+                  "event_progression": None if state.event_progression is None else asdict(state.event_progression),
                   "unknown_rooms": None if state.unknown_rooms is None else asdict(state.unknown_rooms),
                   "relics": [asdict(r) for r in state.relics],
                   "potions": [None if p is None else asdict(p) for p in state.potions],
@@ -90,6 +95,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             active_encounter_id=payload["active_encounter_id"],
             act_completion=None if payload["act_completion"] is None else ActCompletion(**payload["act_completion"]),
             visited_nodes=list(payload["visited_nodes"]), pending=deepcopy(payload["pending"]),
+            ancient_start=None if payload["ancient_start"] is None else AncientStart(**deepcopy(payload["ancient_start"])),
+            event_progression=None if payload["event_progression"] is None else EventProgression(**deepcopy(payload["event_progression"])),
             config=config, relics=[RelicInstance(**r) for r in payload["relics"]],
             encounter_progression=None if payload["encounter_progression"] is None else EncounterProgression(**deepcopy(payload["encounter_progression"])),
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
@@ -138,7 +145,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                     raise ValueError("Active encounter differs from its selected room.")
             if previous != state.current_node_id:
                 raise ValueError("Map cursor does not match its history.")
-        elif state.current_node_id is not None or state.visited_nodes or state.encounter_progression is not None or state.unknown_rooms is not None:
+        elif state.current_node_id is not None or state.visited_nodes or state.encounter_progression is not None or state.unknown_rooms is not None or state.event_progression is not None or state.ancient_start is not None:
             raise ValueError("Map history has no map.")
         if state.phase is RunPhase.SLICE_COMPLETE and (graph is None or state.current_node_id is None or room_node(state, graph, state.current_node_id).kind != "slice_end"):
             raise ValueError("Slice completion requires its authored ending.")
@@ -162,13 +169,24 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
 
 def _validate_progression(state, graph):
     from game.headless.map.overgrowth import PROFILE
+    if state.ancient_start is not None:
+        if not isinstance(state.ancient_start, AncientStart):
+            raise ValueError("Invalid Ancient start ownership.")
+        state.ancient_start.validate(state, graph)
+    if state.pending is not None and state.pending.get("kind") == "ancient" and state.ancient_start is None:
+        raise ValueError("Ancient choice has no owner.")
     has_unknowns = graph is not None and graph.generation == PROFILE
     if has_unknowns != (state.unknown_rooms is not None):
         raise ValueError("Unknown room state requires its generated map profile.")
+    if has_unknowns != (state.event_progression is not None):
+        raise ValueError("Event progression requires its generated map profile.")
     if has_unknowns:
         if not isinstance(state.unknown_rooms, UnknownRooms) or state.config is None:
             raise ValueError("Invalid unknown room ownership.")
         state.unknown_rooms.validate(state, graph)
+        if not isinstance(state.event_progression, EventProgression):
+            raise ValueError("Invalid event progression ownership.")
+        state.event_progression.validate(state, graph)
     generated = graph is not None and graph.generation is not None
     if generated != (state.encounter_progression is not None):
         raise ValueError("Generated map and encounter progression must be owned together.")
@@ -252,6 +270,10 @@ def _validate_pending(state, cards, graph):
                     raise ValueError("Fallback requires an exhausted restricted relic pool.")
             elif pending["relic_instance_id"] is not None:
                 raise ValueError("Missing relic has a claimed instance.")
+    elif kind == "ancient":
+        if state.ancient_start is None:
+            raise ValueError("Ancient choice has no owner.")
+        state.ancient_start.validate(state, graph)
     elif kind == "scripted_event":
         from game.headless.run.events import validate_event
         validate_event(state, graph, cards=cards)
