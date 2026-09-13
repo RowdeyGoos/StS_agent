@@ -46,6 +46,7 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`run/config.py`](../game/headless/run/config.py), [`run/actions.py`](../game/headless/run/actions.py), [`run/flow.py`](../game/headless/run/flow.py) | Declared character/difficulty/pools and direct run command legality/dispatch |
 | [`run/deck.py`](../game/headless/run/deck.py), [`run/rewards.py`](../game/headless/run/rewards.py), [`run/rooms.py`](../game/headless/run/rooms.py) | Persistent mutations, reward resolution and room transitions |
 | [`run/rest_site.py`](../game/headless/run/rest_site.py), [`run/inventory.py`](../game/headless/run/inventory.py), [`relics/`](../game/headless/relics/), [`potions/`](../game/headless/potions/) | Rest/smith decisions, owned item acquisition/removal, victory healing, permanent max-HP pickup effects and potion effects |
+| [`shops/catalog.py`](../game/headless/shops/catalog.py), [`run/shop.py`](../game/headless/run/shop.py), [`run/shop_validation.py`](../game/headless/run/shop_validation.py) | Authored stock, native base-price bands, purchases, permanent removal and private continuation validation |
 | [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored map navigation and the existing primitive event effects |
 | [`core/rng.py`](../game/headless/core/rng.py), [`core/snapshots.py`](../game/headless/core/snapshots.py), [`run/snapshots.py`](../game/headless/run/snapshots.py) | Owned RNG streams and private JSON continuation |
 | `game/simulation/`, `game/backends/`, `game/contracts/`, actor/data/training packages | Compatibility, encoding, public-information policy and external consumption |
@@ -152,6 +153,33 @@ Keep their rules beside their content; add explicit lifecycle
 operations in the core as needed. Do not put card-name switches, global mutable
 registries, live-service dependencies or callback closures into saved game state.
 Do not scaffold empty plugin frameworks or guess all future hooks now.
+
+## Shops
+
+The `overgrowth-act1` route offers `merchant` or `boss_camp` after its fourth
+fight. `--path left` visits the merchant and then continues to the camp;
+`--path right` bypasses it. The demo buys one affordable card, removes a starter
+if affordable, then leaves. Direct commands can buy any sequence of legal stock.
+
+`BuyShopItem(offer_id)` grants the item through shared acquisition rules, charges
+its displayed price once and marks that exact offer sold. `BeginShopRemoval()`
+opens a master-deck choice; `ChooseShopRemoval(instance_id)` permanently removes
+that instance. `ChooseShopRemoval(None)` cancels for free. Removal costs 75 gold
+plus 25 per previous successful shop removal and is available once per shop.
+All currently implemented cards are removable; native Eternal cards will need
+eligibility support when introduced. `LeaveShop()` returns to the map. While
+selecting a removal, only removal/cancel commands are legal.
+
+Stock is explicitly authored: one common card (Sword Boomerang, Pommel Strike or
+Shrug It Off), one uncommon (Uppercut or Shockwave), one rare (Impervious, Offering
+or Fiend Fire), one unowned Strawberry/Pear/Mango, and Fire and Block Potions.
+An exhausted fruit pool omits that slot. One card is on sale at half its rounded
+price. Native base prices are 50/75/150 for these card rarities, 175/225/275 for
+the three fruits and 50 for either potion. Cards and potions vary by ±5%; relics
+by ±15%. Sampling uses owned `shop.stock` and `shop.prices` streams, with discrete
+basis-point variation; this is not native pool composition, rarity weighting,
+float precision or RNG parity. Shops with discounts, restock relics, colorless
+cards and pickup selectors remain open. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
 
 ## Compatibility and limits
 
@@ -262,7 +290,7 @@ run in `act_complete`. Winning the fight alone leaves the reward decision active
 There is no map shortcut to this outcome, no Act 2 launch or inter-act healing,
 and no claim of full-game victory. The example player is deliberately simple;
 `--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
-currently demonstrates a real boss defeat. This authored five-fight route omits
+currently demonstrates a real boss defeat. This authored five-fight route has an optional restricted shop and omits
 most of a native Act 1 map and its deck-building opportunities. See the
 [boss source and acceptance evidence](evidence/first_boss_2026_09_13.md).
 
@@ -270,7 +298,7 @@ At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
 `Smith` opens a plain-data, cancelable selection of implemented upgrades.
 `ChooseUpgrade(instance_id)` commits one exact card; `ChooseUpgrade(None)` returns
 to the rest options without spending the action. Only one rest/smith action can
-be completed. All eleven current Ironclad cards can be upgraded once. Pommel
+be completed. All fifteen current Ironclad cards can be upgraded once. Pommel
 Strike+ deals 10 and draws 2; Shrug It Off+ gives 11 block and draws 1; Iron Wave+
 gives 7 block then deals 7; Body Slam+ costs zero and still scales with current
 block. Unsupported cards and further upgrade levels remain excluded explicitly.
@@ -295,7 +323,7 @@ alias. Enemy moves stop on player death before later effects or another roll.
 
 This is a partial game model. Native RNG parity, full status/hook ordering,
 draw-prevention/after-draw hooks, other card-zone mechanics, remaining items,
-complex selections, shops, procedural maps,
+complex selections, full merchant pools/modifiers, procedural maps,
 all content and complete target-game progression remain in the
 [implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md). `RunEngine`
 orchestrates the restricted slice, not a complete native run. Other ascensions
@@ -310,12 +338,13 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v4`, including configuration,
-items, allocator, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
+Private run snapshots now use `headless_run_state_v5`, including configuration,
+items, card/item/shop allocators, persistent removal count, owned shop offers and selection,
+shop catalog fingerprint, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.
 Nested combat records now use `headless_combat_state_v4`, including the in-play
 pile, pending continuation, selection/target RNG and power duration flags. Earlier combat
-v1/v2/v3 and run v1/v2/v3 formats are rejected rather than assigning invented item
+v1/v2/v3 and run v1/v2/v3/v4 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

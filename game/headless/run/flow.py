@@ -6,8 +6,9 @@ from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
     ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
+    BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
 )
-from game.headless.run import rest_site, rewards
+from game.headless.run import rest_site, rewards, shop
 from game.headless.run.inventory import discard_potion, potion_slot
 from game.headless.run.state import RunPhase
 
@@ -53,6 +54,10 @@ def legal_actions(engine) -> tuple:
             actions.append(ChooseUpgrade(None))
         elif stage == "resolved":
             actions.append(LeaveRest())
+    if state.phase is RunPhase.ROOM and state.pending.get("kind") == "shop":
+        actions.extend(shop.legal_actions(state))
+        if state.pending["stage"] == "remove":
+            return tuple(actions)
     actions.extend(DiscardPotion(p.instance_id) for p in state.potions if p is not None)
     return tuple(actions)
 
@@ -71,15 +76,18 @@ def apply(engine, action):
             encounter = ENCOUNTERS[node.encounter_id]
             if encounter.room_kind != node.kind:
                 raise ValueError("Map room and encounter kind disagree.")
-        elif node.kind not in ("rest", "slice_end", "terminal"):
+        elif node.kind not in ("rest", "shop", "slice_end", "terminal"):
             raise ValueError("Unsupported room.")
         previous_node, previous_pending = state.current_node_id, state.pending
         engine.choose_node(action.node_id)
-        if node.kind in ("combat", "elite", "boss"):
+        if node.kind in ("combat", "elite", "boss", "shop"):
             try:
+                if node.kind == "shop":
+                    shop.begin(state, engine.cards)
+                    return node
                 return engine.start_combat(encounter_id=node.encounter_id)
             except Exception:
-                # start_combat builds independently before committing. Restore
+                # Room construction builds independently before committing. Restore
                 # the preceding navigation too if encounter construction fails.
                 state.current_node_id, state.pending = previous_node, previous_pending
                 state.visited_nodes.pop()
@@ -100,6 +108,14 @@ def apply(engine, action):
         return result
     if isinstance(action, DiscardPotion):
         return discard_potion(state, action.instance_id)
+    if isinstance(action, BuyShopItem):
+        return shop.buy(state, engine.cards, action.offer_id)
+    if isinstance(action, BeginShopRemoval):
+        return shop.begin_removal(state)
+    if isinstance(action, ChooseShopRemoval):
+        return shop.choose_removal(state, action.instance_id)
+    if isinstance(action, LeaveShop):
+        return shop.leave(state)
     if isinstance(action, ClaimGold):
         return rewards.claim_gold(state)
     if isinstance(action, ChooseRewardCard):

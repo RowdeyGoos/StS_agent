@@ -1,0 +1,64 @@
+"""Validation of private merchant continuation data, separate from execution."""
+
+from game.headless.run.shop import eligible_removals, removal_price
+from game.headless.run.state import RunPhase
+from game.headless.shops.catalog import SHOP_ID, SLOTS, price
+
+
+def validate_shop(state, cards, graph):
+    pending = state.pending
+    expected = {"kind", "catalog_id", "shop_id", "stage", "offers", "removal_used", "removals_on_entry"}
+    if pending.get("stage") == "remove":
+        expected.add("eligible")
+    if set(pending) != expected or pending["catalog_id"] != SHOP_ID:
+        raise ValueError("Invalid shop state fields or catalog.")
+    if state.phase is not RunPhase.ROOM or pending["stage"] not in ("browse", "remove"):
+        raise ValueError("Invalid shop phase.")
+    if (type(pending["shop_id"]) is not int or pending["shop_id"] < 0
+            or pending["shop_id"] != state.next_shop_id - 1):
+        raise ValueError("Invalid owned shop identity.")
+    if graph is not None and (state.current_node_id is None or graph.node(state.current_node_id).kind != "shop"):
+        raise ValueError("Shop differs from its selected room.")
+    if (type(pending["removal_used"]) is not bool or type(pending["removals_on_entry"]) is not int
+            or not 0 <= pending["removals_on_entry"] <= pending["shop_id"]
+            or state.shop_removals_used != pending["removals_on_entry"] + int(pending["removal_used"])):
+        raise ValueError("Invalid shop removal history.")
+    offers = pending["offers"]
+    if not isinstance(offers, list) or len(offers) not in (len(SLOTS), len(SLOTS) - 1):
+        raise ValueError("Invalid shop inventory.")
+    slots, sales = [], 0
+    for offer in offers:
+        if not isinstance(offer, dict) or set(offer) != {"offer_id", "slot", "definition_id", "kind", "on_sale", "price", "sold"}:
+            raise ValueError("Invalid shop offer fields.")
+        index = offer["slot"]
+        if type(index) is not int or not 0 <= index < len(SLOTS):
+            raise ValueError("Unknown shop slot.")
+        slot = SLOTS[index]
+        if offer["offer_id"] != f"shop.{pending['shop_id']}.offer.{index}" or offer["kind"] != slot.kind:
+            raise ValueError("Invalid shop offer identity.")
+        if type(offer["sold"]) is not bool or type(offer["on_sale"]) is not bool or (offer["on_sale"] and slot.kind != "card"):
+            raise ValueError("Invalid shop offer flags.")
+        base = dict(slot.items).get(offer["definition_id"])
+        if base is None:
+            raise ValueError("Unknown shop item.")
+        if slot.kind == "card":
+            cards.definition(offer["definition_id"])
+        if (type(offer["price"]) is not int or not
+                price(base, 10000 - slot.variation * 100, offer["on_sale"]) <= offer["price"] <=
+                price(base, 10000 + slot.variation * 100, offer["on_sale"])):
+            raise ValueError("Invalid shop price.")
+        if slot.kind == "relic" and offer["sold"] and not any(r.definition_id == offer["definition_id"] for r in state.relics):
+            raise ValueError("Purchased shop relic is not owned.")
+        slots.append(index)
+        sales += int(offer["on_sale"])
+    required = [i for i, s in enumerate(SLOTS) if s.kind != "relic"]
+    if slots != sorted(set(slots)) or not set(required) <= set(slots) or sales != 1:
+        raise ValueError("Invalid shop stock composition.")
+    for index, slot in enumerate(SLOTS):
+        if slot.kind == "relic" and index not in slots:
+            if not all(any(r.definition_id == name for r in state.relics) for name, _ in slot.items):
+                raise ValueError("Available relic stock is missing.")
+    if pending["stage"] == "remove":
+        if (pending["removal_used"] or state.gold < removal_price(state) or not pending["eligible"]
+                or pending["eligible"] != list(eligible_removals(state))):
+            raise ValueError("Invalid shop card selection.")

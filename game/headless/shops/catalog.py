@@ -1,0 +1,37 @@
+"""Restricted authored stock with native A0 base costs and price variation bands.
+
+Stock slots and discrete basis-point draws are project-authored, not native shop
+pool/RNG parity. Prices round to even before the card sale's integer halving.
+"""
+
+from dataclasses import asdict, dataclass
+
+SHOP_ID = "supported_merchant_v1"
+
+
+@dataclass(frozen=True, slots=True)
+class StockSlot:
+    kind: str
+    items: tuple[tuple[str, int], ...]
+    variation: int = 5
+
+
+SLOTS = (
+    StockSlot("card", (("sword_boomerang", 50), ("pommel_strike", 50), ("shrug_it_off", 50))),
+    StockSlot("card", (("uppercut", 75), ("shockwave", 75))),
+    StockSlot("card", (("impervious", 150), ("offering", 150), ("fiend_fire", 150))),
+    StockSlot("relic", (("strawberry", 175), ("pear", 225), ("mango", 275)), 15),
+    StockSlot("potion", (("fire_potion", 50),)),
+    StockSlot("potion", (("block_potion", 50),)),
+)
+
+
+def price(base_cost, scale, on_sale=False):
+    rounded = round(base_cost * scale / 10000)
+    return rounded // 2 if on_sale else rounded
+
+
+def fingerprint():
+    # JSON primitives even before serialization, for exact installed continuation.
+    return {"catalog_id": SHOP_ID, "slots": [
+        {**asdict(s), "items": [list(item) for item in s.items]} for s in SLOTS]}

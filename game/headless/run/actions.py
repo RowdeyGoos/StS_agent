@@ -68,3 +68,23 @@ class UsePotion:
 @dataclass(frozen=True, slots=True)
 class DiscardPotion:
     instance_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class BuyShopItem:
+    offer_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class BeginShopRemoval:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseShopRemoval:
+    instance_id: str | None  # None cancels without spending gold or using removal.
+
+
+@dataclass(frozen=True, slots=True)
+class LeaveShop:
+    pass

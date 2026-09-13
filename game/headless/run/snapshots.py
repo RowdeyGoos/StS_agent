@@ -13,8 +13,9 @@ from game.headless.run.config import RunConfig
 from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 from game.headless.encounters.catalog import ENCOUNTERS
+from game.headless.shops.catalog import fingerprint as shop_fingerprint
 
-SCHEMA = "headless_run_state_v4"
+SCHEMA = "headless_run_state_v5"
 
 
 def _item_definitions():
@@ -26,7 +27,7 @@ def capture_run(engine) -> dict:
     state = engine.state
     state.validate()
     return {
-        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(),
+        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(),
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
@@ -38,7 +39,8 @@ def capture_run(engine) -> dict:
                   "config": None if state.config is None else asdict(state.config),
                   "relics": [asdict(r) for r in state.relics],
                   "potions": [None if p is None else asdict(p) for p in state.potions],
-                  "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance},
+                  "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance,
+                  "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used},
         "graph": None if engine.graph is None else asdict(engine.graph),
         "combat": None if engine.combat is None else engine.combat.snapshot(cards=engine.cards),
     }
@@ -52,6 +54,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Run snapshot card definitions are incompatible.")
     if snapshot.get("items") != _item_definitions():
         raise ValueError("Run snapshot item definitions are incompatible.")
+    if snapshot.get("shops") != shop_fingerprint():
+        raise ValueError("Run snapshot shop definitions are incompatible.")
     try:
         payload = snapshot["state"]
         config = None if payload["config"] is None else RunConfig(**payload["config"])
@@ -77,6 +81,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             config=config, relics=[RelicInstance(**r) for r in payload["relics"]],
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
             next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"],
+            next_shop_id=payload["next_shop_id"], shop_removals_used=payload["shop_removals_used"],
         )
         state.validate()
         if state.active_encounter_id is not None and state.active_encounter_id not in ENCOUNTERS:
@@ -184,6 +189,9 @@ def _validate_pending(state, cards, graph):
                 owned = any(r.definition_id == relic for r in state.relics)
                 if relic not in state.config.reward_relics or owned != pending["relic_claimed"]:
                     raise ValueError("Invalid relic offer or ownership.")
+    elif kind == "shop":
+        from game.headless.run.shop_validation import validate_shop
+        validate_shop(state, cards, graph)
     elif kind == "rest_site":
         if state.phase is not RunPhase.ROOM or pending["stage"] not in ("options", "smith", "resolved"):
             raise ValueError("Invalid rest-site phase.")
