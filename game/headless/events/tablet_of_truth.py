@@ -70,7 +70,12 @@ class TabletOfTruth:
         if set(levels) != set(deck) or any(type(v) is not int or not 0 <= v < len(deck[k].definition.levels) for k,v in levels.items()):
             raise ValueError("Invalid Tablet initial deck.")
         max_hp, hp, killed = initial_max, initial_hp, False
+        from types import SimpleNamespace
+        from game.headless.events.potion_context import apply_at
         for index, upgraded in enumerate(data["upgrades"]):
+            resources = SimpleNamespace(hp=hp, max_hp=max_hp, relics=[])
+            apply_at(resources, state, pending, index)
+            hp, max_hp = resources.hp, resources.max_hp
             if killed or not isinstance(upgraded, list) or any(not isinstance(i, str) for i in upgraded):
                 raise ValueError("Invalid Tablet upgrade history.")
             cost = self.costs[index] if index < 4 else max_hp - 1
@@ -83,6 +88,9 @@ class TabletOfTruth:
                 raise ValueError("Invalid Tablet upgraded cards.")
             for identity in upgraded:
                 levels[identity] += 1
+        resources = SimpleNamespace(hp=hp, max_hp=max_hp, relics=[])
+        apply_at(resources, state, pending, count)
+        hp, max_hp = resources.hp, resources.max_hp
         choice = data["choice"]
         if choice == "smash":
             if count != 0: raise ValueError("Smash is only available initially.")
@@ -91,6 +99,9 @@ class TabletOfTruth:
             if not 1 <= count < 5 or killed: raise ValueError("Invalid Tablet give-up.")
         elif choice != (None if count == 0 else f"decipher_{count}"):
             raise ValueError("Invalid Tablet choice.")
+        resources = SimpleNamespace(hp=hp, max_hp=max_hp, relics=[])
+        apply_at(resources, state, pending, 999)
+        hp, max_hp = resources.hp, resources.max_hp
         resolved = choice in ("smash", "give_up") or count == 5 or killed
         if (pending["stage"] != ("resolved" if resolved else "options")
                 or defeated != killed or state.max_hp != max_hp or state.hp != hp

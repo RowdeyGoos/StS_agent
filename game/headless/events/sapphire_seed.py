@@ -79,6 +79,7 @@ class SapphireSeed:
                     card.upgrade() if choice == "eat" else enchant(card)
         else:
             raise ValueError("Invalid Sapphire Seed stage.")
-        expected_hp = min(state.max_hp, data["initial_hp"] + (self.heal if choice == "eat" else 0))
+        from game.headless.events.resources import expected
+        expected_hp = expected(state, pending, [("heal", self.heal if choice == "eat" else 0)]).hp
         if state.hp != expected_hp or [card_record(c) for c in state.deck] != [card_record(c) for c in originals]:
             raise ValueError("Sapphire Seed effects differ from the original deck/HP.")

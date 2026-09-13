@@ -63,7 +63,10 @@ def resolve(p, identity, operation, destination, free):
     if card is None or p.combat_is_ending:
         p.deck.offered.clear()
         return
-    if operation == "exhaust":
+    if operation == "free_combat":
+        card.combat_state.free_this_combat = True
+        card.combat_state.turn_cost_override = None
+    elif operation == "exhaust":
         push(p, ["exhaust", identity])
     elif operation == "discard_redraw":
         move_out(p, card)

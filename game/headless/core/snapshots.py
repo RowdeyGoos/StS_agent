@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v10"
+SCHEMA = "headless_combat_state_v11"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -44,8 +44,12 @@ def restore_card(record, cards=DEFAULT_CARDS):
         raise ValueError("Invalid card combat lifetime.")
     card.combats_seen = count
     values = record["combat_state"]
-    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'free_until_played', 'return_next_turn')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
+    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
         raise ValueError('Invalid transient card state.')
+    if any(type(values[k]) is not int for k in ('override_turn_baseline', 'override_combat_baseline')):
+        raise ValueError('Invalid cost override baselines.')
+    if values['turn_cost_override'] is not None and (type(values['turn_cost_override']) is not int or not 0 <= values['turn_cost_override'] <= 3):
+        raise ValueError('Invalid temporary cost override.')
     card.combat_state = CardState(**values)
     card.enchantment = enchantments.restore(record["enchantment"])
     enchantments.validate(card)
@@ -99,7 +103,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
                    "rules": asdict(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
-        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "next_instance_id": deck._next_instance_id,
+        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
     }
@@ -141,6 +145,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         deck.target_rng = rng_at(source_deck["target_rng"])
         deck.generation_rng = rng_at(source_deck["generation_rng"])
         deck.potion_rng = rng_at(source_deck["potion_rng"])
+        deck.energy_rng = rng_at(source_deck["energy_rng"])
         deck._next_instance_id = source_deck["next_instance_id"]
         if type(deck._next_instance_id) is not int or deck._next_instance_id < 0:
             raise ValueError("Invalid card allocator.")

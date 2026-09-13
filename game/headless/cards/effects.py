@@ -137,6 +137,8 @@ class RandomEnemyAttack:
     def apply(self, card, player, target):
         if player.combat_enemies is None:
             raise ValueError("Random attacks require an owning combat.")
+        from game.headless.potions.powers import begin_attack
+        begin_attack(player, card)
         vigor = player.rules.powers.pop("vigor", 0)
         from game.headless.core.resolution import push
         push(player, *[['random_hit', card.instance_id, vigor] for _ in range(self.upgraded_hits if card.upgraded else self.hits)])

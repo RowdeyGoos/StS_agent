@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from dataclasses import dataclass
+from game.headless.potions.pools import ORDINARY_POTIONS
 
 from game.headless.events import deck_choice, potion_rewards
 from game.headless.run.deck import add_card, remove_card
@@ -10,7 +11,7 @@ from game.headless.run.deck import add_card, remove_card
 @dataclass(frozen=True, slots=True)
 class Wellspring:
     definition_id: str = "wellspring"
-    potion_pool: tuple[str, ...] = ("fire_potion", "block_potion")
+    potion_pool: tuple[str, ...] = ORDINARY_POTIONS
 
     def generate(self, rng, *, state, cards):
         cards.definition("guilty")

@@ -143,6 +143,8 @@ class Player:
             if is_attack
             else amount
         )
+        if is_attack and source is not None and source.is_alive and self.rules.powers.get("thorns"):
+            source.take_damage(self.rules.powers["thorns"], is_attack=False)
         blocked = min(self.block, incoming_damage)
         self.block -= blocked
         from game.headless.powers.damage import resolve_unblocked_damage
@@ -162,10 +164,15 @@ class Player:
         from game.headless.relics.damage import hp_loss_amount, prevent_death, after_damage
         from game.headless.powers.ironclad import after_hp_loss
         amount = hp_loss_amount(self, amount)
+        if amount > 0 and self.rules.powers.get("buffer"):
+            self.rules.powers["buffer"] -= 1
+            amount = 0
         damage = min(self.hp, amount)
         self.hp = max(0, self.hp - amount)
         if amount and attack and self.rules.powers.pop("the_gambit", 0):
             self.hp = 0
+        from game.headless.potions.combat import prevent_death as fairy
+        fairy(self)
         prevent_death(self)
         if amount:
             after_hp_loss(self, amount)

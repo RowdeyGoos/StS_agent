@@ -59,6 +59,9 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     player.deck.in_play.append(card)
     rules = player.rules
     repeats = 1 + card.combat_state.replay_count
+    if rules.powers.get("duplication"):
+        repeats += 1
+        rules.powers["duplication"] -= 1
     if card.enchantment is not None and card.enchantment.definition_id == "glam" and not card.enchantment.triggered:
         repeats += 1
     if card.spec.kind == "attack" and rules.powers.get("one_two_punch"):
@@ -179,6 +182,7 @@ def execute(p, task):
         (identity,) = args
         card = find(p, identity)
         card.combat_state.free_until_played = False
+        card.combat_state.turn_cost_override = None
         context = r.plays.pop(identity)
         p.deck.in_play.remove(card)
         if context["destination"] == "powers":
@@ -303,6 +307,7 @@ def execute(p, task):
         for card in p.deck.all_cards():
             card.combat_state.free_this_turn = False
             card.combat_state.free_until_played = False
+            card.combat_state.turn_cost_override = None
     elif op == "end_power":
         hooks.after_player_end(p, args[0])
         colorless.after_end(p, args[0])
@@ -343,6 +348,22 @@ def execute(p, task):
         living = [e for e in p.combat_enemies if e.is_alive]
         if living and not p.combat_is_ending:
             hit(p, find(p, args[0]), p.deck.target_rng.choice(living), extra=args[1])
+    elif op == "gigantification_begin":
+        from game.headless.potions.powers import begin_attack
+        begin_attack(p, find(p, args[0]), queue_end=False)
+    elif op == "gigantification_end":
+        from game.headless.potions.powers import end_attack
+        end_attack(p, args[0])
+    elif op == "potion_effect":
+        from game.headless.potions.combat import effect
+        effect(p, *args)
+    elif op == "potion_finish":
+        from game.headless.potions.combat import finish
+        finish(p, *args)
+    elif op == "potion_status":
+        _, slot, key, amount = args
+        if not p.combat_is_ending and p.combat_enemies[slot].is_alive:
+            p.combat_enemies[slot].apply_status(key, amount, source=p)
     elif op == "relic_damage":
         from game.headless.relics.damage import damage_hook
         damage_hook(p, *args)

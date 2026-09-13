@@ -436,7 +436,7 @@ def test_panic_button_blocks_card_block_but_not_unpowered_gains():
     assert not c.player.rules.powers.get("no_block")
 
 
-def test_rend_counts_debuff_kinds_not_stacks_and_excludes_temporary_strength_loss():
+def test_rend_counts_negative_strength_once_and_excludes_temporary_wrappers():
     c = fight("rend")
     e = c.enemies[0]
     e.apply_status("weak", 20)
@@ -444,7 +444,9 @@ def test_rend_counts_debuff_kinds_not_stacks_and_excludes_temporary_strength_los
     e.apply_status("dark_shackles", 9)
     e.apply_status("mangle", 10)
     play(c, "card.0")
-    assert e.hp == 963  # floor((15 + 2*5)*1.5)
+    # Weak, Vulnerable and the resulting negative Strength are three debuffs;
+    # Mangle and Shackles' restoration wrappers do not add two more.
+    assert e.hp == 955  # floor((15 + 3*5)*1.5)
 
 
 def test_automation_instances_keep_separate_draw_counters():

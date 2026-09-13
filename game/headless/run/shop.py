@@ -25,7 +25,7 @@ def begin(state, cards):
         pool = [(name, cost) for name, cost in shop_items(state, slot) if slot.kind != "relic" or name not in owned]
         if not pool:
             continue
-        definition_id, base_cost = rng.choice("shop.stock", pool)
+        definition_id, base_cost = stock_choice(state, slot, pool, rng)
         if slot.kind == "card":
             cards.definition(definition_id)
         scale = rng.randint("shop.prices", 10000 - slot.variation * 100, 10000 + slot.variation * 100)
@@ -152,10 +152,19 @@ def refill(state, cards, offer):
     pool = [(name, cost) for name, cost in shop_items(state, slot) if slot.kind != 'relic' or not has(state, name)]
     if not pool:
         return
-    name, base = state.rng.choice('shop.stock', pool)
+    name, base = stock_choice(state, slot, pool, state.rng, restock=True)
     scale = state.rng.randint('shop.prices', 10000-slot.variation*100, 10000+slot.variation*100)
     generation = offer['generation'] + 1
     offer.update(definition_id=name, sold=False, on_sale=False, generation=generation,
                  offer_id=f"shop.{state.pending['shop_id']}.offer.{offer['slot']}.refill.{generation}",
                  base_price=price(base, scale), price=discounted(state, price(base, scale)), upgrade_level=0, enchantment=None)
     modify_offer(state, cards, offer)
+
+
+def stock_choice(state, slot, pool, rng, *, restock=False):
+    from game.headless.potions.pools import ORDINARY_POTIONS, generate
+    if slot.kind != 'potion' or state.config is None or state.config.reward_potions != ORDINARY_POTIONS:
+        return rng.choice('shop.stock', pool)
+    blacklist = {o['definition_id'] for o in state.pending['offers'] if o['kind'] == 'potion' and not o['sold']} if restock else set()
+    name = generate(ORDINARY_POTIONS, rng, stream='shop.stock', blacklist=blacklist)
+    return name, dict(pool)[name]

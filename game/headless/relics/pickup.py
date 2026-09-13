@@ -98,9 +98,10 @@ def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, 
 
 
 def potion_reward(state, source):
+    from game.headless.potions.pools import generate
     pool = state.config.reward_potions if state.config is not None else ("fire_potion", "block_potion")
     state.relic_work.append(
-        dict(source=source, kind="potion_reward", offers=[state.rng.choice("relic.potion_reward", pool)])
+        dict(source=source, kind="potion_reward", offers=[generate(pool, state.rng, stream="relic.potion_reward")])
     )
 
 

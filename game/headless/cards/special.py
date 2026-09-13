@@ -120,11 +120,13 @@ def apply_operation(operation, card, p, target, amount):
             if operation == "second_wind":
                 tasks.append(["block", card.spec.block_gain, True])
         if operation == "fiend_fire":
+            tasks.append(["gigantification_begin", card.instance_id])
             vigor = r.powers.pop("vigor", 0)
             tasks += [
                 ["attack", card.instance_id, p.combat_enemies.index(target), False, "base", 0, 0, vigor]
                 for _ in hand
             ]
+            tasks.append(["gigantification_end", card.instance_id])
         elif operation == "stoke":
             tasks.append(["generate", len(hand), False, card.upgraded, False])
         push(p, *tasks)

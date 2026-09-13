@@ -7,7 +7,8 @@ from game.headless.run.inventory import add_potion
 def generate(rng, pool, count):
     if not pool or any(name not in POTIONS for name in pool):
         raise ValueError("Unsupported event potion pool.")
-    return [{"definition_id": rng.choice("event.potions", pool), "claimed_id": None} for _ in range(count)]
+    from game.headless.potions.pools import generate_many
+    return [{"definition_id": name, "claimed_id": None} for name in generate_many(pool, rng, count, stream="event.potions")]
 
 
 def options(pending):

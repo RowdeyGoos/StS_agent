@@ -47,8 +47,9 @@ def win(run):
 
 @pytest.mark.parametrize('event,choice,count',[('whispering_hollow','gold',2),('wellspring','bottle',1)])
 def test_potion_bundle_full_inventory_claim_discard_skip_and_restore(event,choice,count):
-    run=start(event,gold=150)
+    run=RunEngine(gold=150)
     for _ in range(3):add_potion(run.state,'fire_potion')
+    events.begin(run.state,event)
     step(run,opt(run,choice))
     before=saved(run)
     assert not any(isinstance(a,ChooseEventOption) and a.option_id.startswith('claim_potion_') for a in run.legal_actions())
@@ -73,7 +74,7 @@ def test_whisper_price_is_fixed_and_payment_happens_once():
         run.legal_actions();assert run.state.rng.snapshot()==before
         step(run,opt(run,'gold'))
         assert run.state.gold==44-price
-        assert run.state.rng.request_count('event.potions')==2
+        assert run.state.rng.request_count('event.potions')==4
     assert min(prices)>=26 and max(prices)<=44 and len(prices)>10
 
 

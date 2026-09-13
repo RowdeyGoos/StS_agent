@@ -67,8 +67,9 @@ class RunEngine:
         from game.headless.run import ancient
         if ancient_profile not in (None, ancient.PROFILE):
             raise ValueError("Unsupported Ancient start profile.")
+        from game.headless.potions.pools import ORDINARY_POTIONS
         from game.headless.relics.pools import ORDINARY_RELICS, SHOP_RELICS
-        config = RunConfig(ascension=ascension, relic_fallback="circlet", reward_relics=ORDINARY_RELICS, shop_relics=SHOP_RELICS)
+        config = RunConfig(ascension=ascension, relic_fallback="circlet", reward_relics=ORDINARY_RELICS, shop_relics=SHOP_RELICS, reward_potions=ORDINARY_POTIONS)
         if (map_profile or PROFILE) == PROFILE:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
@@ -163,9 +164,8 @@ class RunEngine:
                               cards_per_turn=cards_per_turn, cards=self.cards)
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
-                     potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None))
-        if self.state.config is not None:
-            combat.player.rules.potion_pool = list(self.state.config.reward_potions)
+                     potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,
+                     potion_pool=self.state.config.reward_potions if self.state.config else None)
         return rng, combat
 
     def sync_combat_loot(self):
@@ -176,8 +176,12 @@ class RunEngine:
         synchronize(self.state, self.combat.player)
         self.state.gold += r.gold_gained
         r.gold_gained = 0
+        from game.headless.potions.base import PotionInstance
+        self.state.potions = [None if item is None else PotionInstance(**item) for item in r.potions]
         for potion in r.potions_generated:
             add_potion(self.state, potion)
+        from dataclasses import asdict
+        r.potions = [None if item is None else asdict(item) for item in self.state.potions]
         r.potions_generated.clear()
         r.potion_slots = self.state.potions.count(None)
         potions_changed(self.combat.player)

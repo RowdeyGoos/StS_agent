@@ -8,6 +8,11 @@ from game.headless.powers.colorless import NAMES, INSTANCED, name
 from game.headless.core.choice_snapshots import validate_selection, valid_power
 
 TASK_ARITIES = {
+    "potion_effect": 2,
+    "potion_finish": 1,
+    "potion_status": 4,
+    "gigantification_end": 1,
+    "gigantification_begin": 1,
     "relic_hook": 3,
     "relic_damage": 5,
     "iteration": 1,
@@ -87,6 +92,8 @@ def restore_rules(record, player):
     validate_relics(r.relics, r.relic_data, player.deck._allocated_ids)
     if r.room_kind not in ("combat", "elite", "boss") or r.round_number < 1:
         raise ValueError("Invalid combat relic room context.")
+    from game.headless.potions.snapshots import validate as validate_potions
+    validate_potions(r, player)
     validate_selection(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
     if not isinstance(r.plays, dict) or set(r.plays) != set(in_play):
@@ -104,16 +111,18 @@ def restore_rules(record, player):
             "effect_index",
             "stage",
         }
-        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity"} != required:
+        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification"} != required:
             raise ValueError("Invalid play frame.")
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
             or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "energy_value", "remaining", "rupture"))
-            or not 1 <= frame["remaining"] <= 2 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
+            or not 1 <= frame["remaining"] <= 3 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
         ):
             raise ValueError("Invalid play resources.")
         if frame["stage"] not in ("effects", "enchantment", "hooks"):
             raise ValueError("Invalid play resolution stage.")
+        if "gigantification" in frame and (type(frame["gigantification"]) is not bool or not frame["gigantification"] or not r.powers.get("gigantification")):
+            raise ValueError("Invalid captured Gigantification.")
         if "calamity" in frame and (type(frame["calamity"]) is not int or frame["calamity"] < 0):
             raise ValueError("Invalid captured Calamity.")
         if "blocks_gained" in frame and (
@@ -166,6 +175,8 @@ def restore_rules(record, player):
             "finish",
             "attack",
             "random_hit",
+            "gigantification_end",
+            "gigantification_begin",
             "after_card_power",
             "after_card_enemies",
             "after_card_enchantment",
@@ -185,7 +196,7 @@ def restore_rules(record, player):
         if op == "selected" and (
             args[0] not in player.deck._allocated_ids
             or args[0] in r.plays
-            or args[1] not in ("move", "exhaust", "transform", "discard_redraw")
+            or args[1] not in ("move", "exhaust", "transform", "discard_redraw", "free_combat")
             or args[2] not in ("hand", "draw_pile")
             or args[3] not in ("", "free_this_turn", "free_until_played")
         ):
