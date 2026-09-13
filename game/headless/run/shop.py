@@ -80,7 +80,7 @@ def buy(state, cards, offer_id):
     elif offer["kind"] == "potion":
         result = add_potion(state, offer["definition_id"])
     else:
-        result = add_relic(state, offer["definition_id"])
+        result = add_relic(state, offer["definition_id"], cards=cards)
     state.gold -= offer["price"]
     offer["sold"] = True
     return result

@@ -1,5 +1,6 @@
 """Private run continuation using plain state records and explicit content catalogs."""
 
+import json
 from copy import deepcopy
 from dataclasses import asdict
 
@@ -25,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v16"
+SCHEMA = "headless_run_state_v17"
 
 
 def _restore_event_combat(record):
@@ -41,8 +42,8 @@ def _restore_relic(record):
 
 
 def _item_definitions():
-    return {"relics": [asdict(v) for v in RELICS.values()],
-            "potions": [asdict(v) for v in POTIONS.values()]}
+    return json.loads(json.dumps({"relics": [asdict(v) for v in RELICS.values()],
+                                  "potions": [asdict(v) for v in POTIONS.values()]}))
 
 
 def capture_run(engine) -> dict:
@@ -304,8 +305,12 @@ def _validate_pending(state, cards, graph):
         from game.headless.run.shop_validation import validate_shop
         validate_shop(state, cards, graph)
     elif kind == "rest_site":
-        if state.phase is not RunPhase.ROOM or pending["stage"] not in ("options", "smith", "resolved"):
+        if state.phase is not RunPhase.ROOM or pending["stage"] not in ("options", "smith", "resolved", "hatched"):
             raise ValueError("Invalid rest-site phase.")
+        if pending["stage"] == "hatched":
+            from game.headless.run.hatching import validate
+            validate(state, cards)
+            return
         if pending["stage"] == "smith":
             from game.headless.run.rest_site import eligible_upgrades
             if not pending["eligible"] or pending["eligible"] != list(eligible_upgrades(state)):

@@ -14,13 +14,14 @@ from game.headless.events.slippery_bridge import SlipperyBridge
 from game.headless.events.sunken_statue import SunkenStatue
 from game.headless.events.dense_vegetation import DenseVegetation
 from game.headless.events.sapphire_seed import SapphireSeed
+from game.headless.events.byrdonis_nest import ByrdonisNest
 
 EVENTS = MappingProxyType({
     "jungle_maze_adventure": JungleMazeAdventure(), "aroma_of_chaos": AromaOfChaos(),
     "morphic_grove": MorphicGrove(), "tablet_of_truth": TabletOfTruth(),
     "whispering_hollow": WhisperingHollow(), "wellspring": Wellspring(),
     "slippery_bridge": SlipperyBridge(), "sunken_statue": SunkenStatue(),
-    "dense_vegetation": DenseVegetation(), "sapphire_seed": SapphireSeed(),
+    "dense_vegetation": DenseVegetation(), "sapphire_seed": SapphireSeed(), "byrdonis_nest": ByrdonisNest(),
 })
 
 

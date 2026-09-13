@@ -6,7 +6,7 @@ from game.headless.events.catalog import EVENTS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
     ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
-    Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
+    Rest, Smith, Hatch, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
     OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
 )
@@ -51,12 +51,15 @@ def legal_actions(engine) -> tuple:
         stage = state.pending["stage"]
         if stage == "options":
             actions.append(Rest())
+            from game.headless.run.hatching import eggs
+            if eggs(state):
+                actions.append(Hatch())
             if rest_site.eligible_upgrades(state):
                 actions.append(Smith())
         elif stage == "smith":
             actions.extend(ChooseUpgrade(c) for c in state.pending["eligible"])
             actions.append(ChooseUpgrade(None))
-        elif stage == "resolved":
+        elif stage in ("resolved", "hatched"):
             actions.append(LeaveRest())
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "shop":
         actions.extend(shop.legal_actions(state))
@@ -139,7 +142,7 @@ def apply(engine, action):
     if isinstance(action, OpenChest):
         return treasure.open_chest(state)
     if isinstance(action, ClaimTreasureRelic):
-        return treasure.claim_relic(state, action.treasure_id)
+        return treasure.claim_relic(state, action.treasure_id, cards=engine.cards)
     if isinstance(action, LeaveTreasure):
         return treasure.leave(state)
     if isinstance(action, BuyShopItem):
@@ -155,13 +158,16 @@ def apply(engine, action):
     if isinstance(action, ChooseRewardCard):
         return rewards.choose_card(state, engine.cards, action.definition_id)
     if isinstance(action, ClaimRelic):
-        return rewards.claim_relic(state)
+        return rewards.claim_relic(state, cards=engine.cards)
     if isinstance(action, ClaimPotion):
         return rewards.claim_potion(state)
     if isinstance(action, LeaveRewards):
         return rewards.leave_combat_rewards(state)
     if isinstance(action, Rest):
         return rest_site.heal(state)
+    if isinstance(action, Hatch):
+        from game.headless.run.hatching import hatch
+        return hatch(state, engine.cards)
     if isinstance(action, Smith):
         return rest_site.begin_smith(state)
     if isinstance(action, ChooseUpgrade):

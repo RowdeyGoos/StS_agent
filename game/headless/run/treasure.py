@@ -57,11 +57,11 @@ def open_chest(state):
     return gold
 
 
-def claim_relic(state, treasure_id):
+def claim_relic(state, treasure_id, *, cards=None):
     pending = _pending(state, "open")
     if type(treasure_id) is not int or treasure_id != pending["treasure_id"]:
         raise ValueError("Stale treasure claim.")
-    relic = add_relic(state, pending["relic_id"])
+    relic = add_relic(state, pending["relic_id"], cards=cards)
     pending["claimed_instance_id"], pending["stage"] = relic.instance_id, "claimed"
     return relic
 

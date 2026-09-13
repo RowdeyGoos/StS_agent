@@ -115,13 +115,18 @@ the supported Fire/Block pool; curse transformations use Guilty/Clumsy. See the
 [event pack evidence](docs/evidence/event_pack_2026_09_13.md). Dense Vegetation
 adds event-triggered combat: Trudge On trades 8 HP for gold, while Rest
 heals 30% maximum HP before a mandatory four-Wriggler fight, ordinary rewards
-and map continuation. Sapphire Seed brings the pool to ten: heal and upgrade one
+and map continuation. Sapphire Seed lets you heal and upgrade one
 card, or give a card Sown for +1 energy on its first completed play each combat.
-See [Sapphire Seed and enchantment evidence](docs/evidence/sapphire_seed_2026_09_13.md). Add `--ancient neow` to begin with
+See [Sapphire Seed and enchantment evidence](docs/evidence/sapphire_seed_2026_09_13.md).
+Byrdonis Nest brings the pool to eleven: gain 7 maximum HP or take an egg, then
+choose Hatch at a rest site to obtain Byrdpip and replace all eggs with Byrd Swoop.
+Egg/Swoop transformations use the explicit Finesse/Flash of Steel colorless pool.
+See [Nest and hatch evidence](docs/evidence/byrdonis_nest_2026_09_13.md). Add `--ancient neow` to begin with
 the restricted Golden Pearl (+150 gold) / Nutritious Oyster (+11 maximum HP)
 choice; omit it for the post-Ancient fixture start. Full Neow offers, event
-content/unlock conditions and map modifiers remain open. The installed seed-2 right/rest demo with `--ancient neow` completes
-this restricted generated Act 1; other choices/seeds can lose. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
+content/unlock conditions and map modifiers remain open. The installed seed-2 right/rest demo with `--ancient neow`
+reaches the boss but loses with the current eleven-event pool; the authored Act 1
+seed-2 left/rest demo still wins. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
 
 
 Without reinstalling the console entry point, run

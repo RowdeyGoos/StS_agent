@@ -111,11 +111,11 @@ def leave_combat_rewards(state) -> None:
         state.phase = RunPhase.ROUTE
 
 
-def claim_relic(state):
+def claim_relic(state, *, cards=None):
     reward = _reward(state)
     if not reward.get("combat_reward") or reward["relic"] is None or reward["relic_claimed"]:
         raise ValueError("Relic reward is unavailable.")
-    relic = add_relic(state, reward["relic"])
+    relic = add_relic(state, reward["relic"], cards=cards)
     reward["relic_claimed"] = True
     reward["relic_instance_id"] = relic.instance_id
     return relic

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from game.headless.events.eligibility import is_allowed, validate_conditions
 
 
-PROFILE = "supported_events_all_unlocked_v5"
+PROFILE = "supported_events_all_unlocked_v6"
 
 
 @dataclass
