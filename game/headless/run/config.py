@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class RunConfig:
     character: str = "ironclad"
     ascension: int = 0
-    reward_cards: tuple[str, ...] = ("pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit", "uppercut", "shockwave")
+    reward_cards: tuple[str, ...] = ("pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit", "uppercut")
     reward_potions: tuple[str, ...] = ("fire_potion", "block_potion")
 
     boss_reward_cards: tuple[str, ...] = ("impervious", "offering", "fiend_fire")

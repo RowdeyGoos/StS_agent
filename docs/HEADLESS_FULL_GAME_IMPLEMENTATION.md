@@ -679,7 +679,7 @@ Dependencies and acceptance cases are in the linked task.
 - **Status:** first callers implemented: Armaments (one/all combat upgrades) and
   True Grit (random/chosen exhaustion), with zero/one auto-selection, exact hand
   IDs, mandatory single choices and restoration while suspended. Both are in the
-  eight-card slice reward pool and support Smith. See the
+  seven-card default slice reward pool and support Smith. See the
   [source and acceptance evidence](evidence/combat_card_choices_2026_09_13.md).
   Next: add a source-verified caller for discard/draw-pile selection or variable
   counts; optionality, ordered bundles, offered cards and replay/autoplay remain
@@ -1380,7 +1380,7 @@ The next Act 1 batch should cover **remaining event content and its permanent ef
    before adding both event branches. Reuse master-deck lifetime and owned relic
    counters where applicable; do not generalize from names without source evidence.
 4. **HF-24–27 / pool completion:** add native potion and curse content to replace
-   the current Fire/Block, Guilty/Clumsy and Finesse/Flash of Steel subpools; verify actual reward weights,
+   the current Fire/Block, Guilty/Clumsy and Finesse/Flash of Steel/Shockwave subpools; verify actual reward weights,
    unlocks, exclusions and prevention/replacement hooks separately from RNG parity.
 5. **HF-28 / Neow:** expand native three-offer generation, including the negative
    offer and required relic/card effects. Preserve the explicit two-positive and

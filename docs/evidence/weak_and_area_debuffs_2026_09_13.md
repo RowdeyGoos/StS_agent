@@ -97,3 +97,35 @@ Elapsed work was approximately ten minutes: source inspection and implementation
 occupied the first four minutes, with review, focused validation and test
 expansion overlapping the next three; documentation, final checks and package
 preparation followed. No user wait or live game launch was required.
+
+## Correction: Shockwave is colorless
+
+The user's correction was verified against the same pinned DLL:
+`ColorlessCardPool.GenerateAllCards` token `100693916` includes Shockwave;
+`IroncladCardPool.GenerateAllCards` token `100693955` excludes it. The earlier
+combat effects remain correct, but the initial pool placement was wrong.
+
+Shockwave now lives with Finesse and Flash of Steel in `cards/colorless.py`.
+It is removed from default Ironclad combat rewards, Ironclad transformations
+and the authored uncommon shop slot. That slot now contains only Uppercut;
+proper colorless merchant slots remain unimplemented. Shockwave joins the
+restricted colorless transformation pool, and transforming Shockwave yields
+another supported colorless card. All three existing transformation events
+use this rule. Explicit custom fixture decks can still contain Shockwave.
+
+Changed event/shop fingerprints reject preceding run snapshots; unchanged
+card rules preserve direct combat compatibility. No public encoding changed.
+
+Correction validation: **197 focused tests passed in 5.11s**, then the broad
+headless/consumer suite passed **1,266 tests in 45.50s**. Compileall and diff checks
+passed. The installed wheel, exercised outside the checkout with `PYTHONPATH`
+unset, excluded Shockwave from default rewards and replayed its transformations
+through Aroma, Morphic Grove and Whispering Hollow with exact JSON continuation.
+Installed seed2/rest demos now yield generated/right/Neow defeat (0/80 HP, 184 gold,
+91 commands), authored/left victory (15/94 HP, 236 gold, 123 commands), and
+authored/right victory (20/104 HP, 332 gold, 121 commands). These seeded outcomes
+change with the corrected pools and do not measure general policy strength.
+
+Correction wheel SHA-256:
+`70f743c275223e9083b3bafafe3b2961a3136b5b74efed646f8caaa2fa2cfc48`.
+Compile/build took 0.40s and disposable installation 0.32s.

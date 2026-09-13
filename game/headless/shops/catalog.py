@@ -18,7 +18,7 @@ class StockSlot:
 
 SLOTS = (
     StockSlot("card", (("sword_boomerang", 50), ("pommel_strike", 50), ("shrug_it_off", 50))),
-    StockSlot("card", (("uppercut", 75), ("shockwave", 75))),
+    StockSlot("card", (("uppercut", 75),)),
     StockSlot("card", (("impervious", 150), ("offering", 150), ("fiend_fire", 150))),
     StockSlot("relic", (("strawberry", 175), ("pear", 225), ("mango", 275)), 15),
     StockSlot("potion", (("fire_potion", 50),)),

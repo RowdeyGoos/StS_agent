@@ -2,12 +2,12 @@
 
 TRANSFORM_POOL = (
     "pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit",
-    "uppercut", "shockwave", "sword_boomerang", "impervious", "offering", "fiend_fire",
+    "uppercut", "sword_boomerang", "impervious", "offering", "fiend_fire",
 )
 
 
 CURSE_POOL = ("guilty", "clumsy")
-COLORLESS_POOL = ("finesse", "flash_of_steel")
+COLORLESS_POOL = ("finesse", "flash_of_steel", "shockwave")
 COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop")
 
 
