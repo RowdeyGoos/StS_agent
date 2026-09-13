@@ -7,7 +7,8 @@ from game.headless.powers.ironclad import POWER_NAMES
 def valid_power(key, sequence):
     if not isinstance(key, str):
         return False
-    if key in POWER_NAMES or key in NAMES - INSTANCED:
+    from game.headless.potions.powers import NAMES as POTION_POWERS
+    if key in POWER_NAMES or key in NAMES - INSTANCED or key in POTION_POWERS:
         return True
     parts = key.split(":")
     return (
@@ -58,7 +59,7 @@ def validate_selection(r, p):
     if not isinstance(s, dict) or set(s) != fields:
         raise ValueError("Invalid selection fields.")
     if (
-        s["operation"] not in ("move", "transform", "exhaust", "discard_redraw")
+        s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat")
         or s["destination"] not in ("hand", "draw_pile")
         or s["free"] not in ("", "free_this_turn", "free_until_played")
         or any(type(s[k]) is not int for k in ("minimum", "maximum"))
@@ -78,6 +79,10 @@ def validate_selection(r, p):
         or not set(s["selected"]) <= set(s["candidates"])
     ):
         raise ValueError("Invalid selection bounds.")
+    if s["source"] in r.potion_uses:
+        from game.headless.potions.selections import validate
+        validate(r, p, s, r.potion_uses[s["source"]]["definition_id"])
+        return
     source = next((c for c in p.deck.in_play if c.instance_id == s["source"]), None)
     if source is None:
         relic = next((v for v in r.relics if v["instance_id"] == s["source"]), None)

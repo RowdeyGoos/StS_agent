@@ -34,7 +34,7 @@ class DenseVegetation:
             gain_gold(state, data["gold"])
             pending["stage"] = "resolved"
         else:
-            state.hp += data["heal"]
+            state.hp = min(state.max_hp, state.hp + data["heal"])
             from game.headless.relics.run_rules import rest_rewards
             rest_rewards(state)
             pending["stage"] = "fight"
@@ -60,5 +60,5 @@ class DenseVegetation:
 
 def expected_heal(state, pending):
     from game.headless.events.resources import expected
-    initial = expected(state, pending)
+    initial = expected(state, pending, potion_changes=False)
     return heal_amount(initial)

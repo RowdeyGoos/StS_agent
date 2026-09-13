@@ -110,6 +110,8 @@ class Enemy(ABC):
         if player is not None and attacker_statuses is player.statuses:
             from game.headless.relics.damage import attack_multiplier
             n *= attack_multiplier(player, player.deck.in_play[-1] if player.deck.in_play else None)
+            from game.headless.potions.powers import attack_multiplier as potion_multiplier
+            n *= potion_multiplier(player, player.deck.in_play[-1] if player.deck.in_play else None)
         return n, d
 
     def start_turn(self) -> None:
@@ -172,10 +174,10 @@ class Enemy(ABC):
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the enemy."""
-        if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles"):
+        if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise"):
             from game.headless.relics.damage import debuff_amount
             stacks = debuff_amount(source, source.deck.in_play[-1] if source.deck.in_play else None, stacks)
-        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles") and self.statuses.get("artifact"):
+        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise") and self.statuses.get("artifact"):
             self.statuses.decrement("artifact")
             return
         self.statuses.add(status_name, stacks)

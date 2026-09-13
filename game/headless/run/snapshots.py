@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v20"
+SCHEMA = "headless_run_state_v21"
 
 
 def _restore_event_combat(record):
@@ -183,8 +183,14 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             if rules.relics != [asdict(r) for r in state.relics]:
                 raise ValueError("Combat relic inventory differs from run ownership.")
             if (rules.potion_capacity != len(state.potions) or rules.potion_slots != state.potions.count(None) or rules.potion_pool != expected_pool
-                    or rules.potions_generated or rules.gold_gained):
+                    or rules.potions_generated or rules.gold_gained
+                    or rules.potions != [None if p is None else asdict(p) for p in state.potions]):
                 raise ValueError("Combat loot differs from its owning run inventory.")
+            for identity in rules.potion_uses:
+                suffix = identity.removeprefix('run.item.')
+                if (not suffix.isdecimal() or identity != f'run.item.{int(suffix)}'
+                        or int(suffix) >= state.next_item_id or any(r.instance_id == identity for r in state.relics)):
+                    raise ValueError('Active potion use has no run-owned identity.')
             if combat.player.max_hp != state.max_hp + combat.player.rules.max_hp_gained:
                 raise ValueError("Combat maximum HP differs from the run.")
         elif state.phase is RunPhase.COMBAT:

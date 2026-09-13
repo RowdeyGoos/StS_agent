@@ -12,6 +12,10 @@ MERCHANT_COSTS = {"common": 175, "uncommon": 225, "rare": 275, "shop": 200}
 
 
 def shop_items(state, slot):
+    from game.headless.potions.pools import ORDINARY_POTIONS, COSTS
+    from game.headless.potions.base import POTIONS
+    if slot.kind == 'potion' and state.config is not None and state.config.reward_potions == ORDINARY_POTIONS:
+        return tuple((name, COSTS[POTIONS[name].rarity]) for name in ORDINARY_POTIONS)
     if slot.kind != "relic" or state.config is None:
         return slot.items
     return tuple((name, MERCHANT_COSTS[RELICS[name].rarity]) for name in state.config.shop_relics)

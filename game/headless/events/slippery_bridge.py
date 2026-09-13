@@ -75,6 +75,8 @@ class SlipperyBridge:
             history.append(offer)
         from game.headless.events.resources import validate
         validate(state, pending, [("damage", self.initial_damage + i) for i in range(len(history)-1)])
+        from game.headless.events.resources import expected
+        hp = expected(state, pending, [("damage", self.initial_damage + i) for i in range(len(history)-1)]).hp
         resolved = data["choice"] == "overcome"
         if (data["choice"] not in (None, "hold_on", "overcome")
                 or data["choice"] is None and len(history) != 1

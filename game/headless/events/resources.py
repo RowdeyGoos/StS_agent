@@ -23,10 +23,11 @@ RESOURCE_RELICS = frozenset(
 
 def capture(state):
     relics = [asdict(r) for r in state.relics if r.definition_id in RESOURCE_RELICS]
-    return {"hp": state.hp, "max_hp": state.max_hp, "gold": state.gold, "relics": relics} if relics else None
+    return {"hp": state.hp, "max_hp": state.max_hp, "gold": state.gold, "relics": relics,
+            "potions": [None if p is None else asdict(p) for p in state.potions]}
 
 
-def expected(state, pending, effects=()):
+def expected(state, pending, effects=(), *, potion_changes=True):
     context = pending.get("resources")
     if context is None:
         data = pending["data"]
@@ -37,7 +38,7 @@ def expected(state, pending, effects=()):
             "relics": [],
         }
     else:
-        if not isinstance(context, dict) or set(context) != {"hp", "max_hp", "gold", "relics"}:
+        if not isinstance(context, dict) or set(context) != {"hp", "max_hp", "gold", "relics", "potions"}:
             raise ValueError("Invalid event resource context.")
         values = deepcopy(context)
         if (
@@ -72,8 +73,12 @@ def expected(state, pending, effects=()):
             key = "initial_" + field
             if key in pending["data"] and pending["data"][key] != values[field]:
                 raise ValueError("Event entry resource copies disagree.")
+    from game.headless.events.potion_context import inventory, apply_at
+    values['potions'] = inventory(state, values.get('potions', [None] * state.potion_capacity))
     result = SimpleNamespace(**values)
-    for operation, amount in effects:
+    for index, (operation, amount) in enumerate(effects):
+        if potion_changes:
+            apply_at(result, state, pending, index)
         if operation == "damage":
             run_rules.damage(result, amount)
         elif operation == "gold":
@@ -94,6 +99,9 @@ def expected(state, pending, effects=()):
                 run_rules.max_hp(result, 5)
         else:
             raise ValueError("Unknown event resource operation.")
+    if potion_changes:
+        apply_at(result, state, pending, len(effects))
+        apply_at(result, state, pending, 999)
     return result
 
 

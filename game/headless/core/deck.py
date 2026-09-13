@@ -21,6 +21,8 @@ class Deck:
         # Fork without consuming shuffle/enemy RNG. Native seed parity is separate.
         self.selection_rng = Random(0)
         self.selection_rng.setstate(rng.getstate())
+        self.energy_rng = Random(0)
+        self.energy_rng.setstate(rng.getstate())
         self.potion_rng = Random(0)
         self.potion_rng.setstate(rng.getstate())
         self.generation_rng = Random(0)

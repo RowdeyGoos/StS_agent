@@ -262,7 +262,7 @@ def test_corrupt_inventory_and_configuration_restore_is_atomic(corruption):
     elif corruption == "allocator": state["next_item_id"] = 1
     elif corruption == "chance": state["potion_drop_chance"] = 110
     elif corruption == "slots": state["potions"].pop()
-    elif corruption == "item_rules": bad["items"]["potions"][0]["damage"] += 1
+    elif corruption == "item_rules": bad["items"]["potions"][0]["effects"][0][0] = "invalid_effect"
     elif corruption == "completion": state["phase"] = "slice_complete"
     with pytest.raises(ValueError):
         engine.restore(bad)

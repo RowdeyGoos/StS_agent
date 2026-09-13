@@ -132,6 +132,8 @@ def damage(state, amount):
         amount = max(0, amount - 1)
     previous = state.hp
     state.hp = max(0, state.hp - amount)
+    from game.headless.potions.use import prevent_death
+    prevent_death(state)
     tail = owned(state, "lizard_tail")
     if not state.hp and tail is not None and not tail.counter:
         counter(state, tail, 1)

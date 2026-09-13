@@ -1,0 +1,362 @@
+{
+  "dll_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "potions": [
+    {
+      "definition_id": "blood_potion",
+      "rarity": "common",
+      "usage": "anytime",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "soldiers_stew",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "ashwater",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "attack_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "beetle_juice",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": true,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "blessing_of_the_forge",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "block_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "bottled_potential",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "clarity",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "colorless_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "cure_all",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "dexterity_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "distilled_chaos",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "droplet_of_precognition",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "duplicator",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "energy_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "entropic_brew",
+      "rarity": "rare",
+      "usage": "anytime",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "explosive_ampoule",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "fairy_in_a_bottle",
+      "rarity": "rare",
+      "usage": "automatic",
+      "targeted": false,
+      "in_combat_generation": false
+    },
+    {
+      "definition_id": "fire_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": true,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "flex_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "fortifier",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "fruit_juice",
+      "rarity": "rare",
+      "usage": "anytime",
+      "targeted": false,
+      "in_combat_generation": false
+    },
+    {
+      "definition_id": "fysh_oil",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "gamblers_brew",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "gigantification_potion",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "heart_of_iron",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "liquid_bronze",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "liquid_memories",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "lucky_tonic",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "mazaleths_gift",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "orobic_acid",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "potion_of_binding",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "powdered_demise",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": true,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "power_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "radiant_tincture",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "regen_potion",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": false
+    },
+    {
+      "definition_id": "shackling_potion",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "ship_in_a_bottle",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "skill_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "snecko_oil",
+      "rarity": "rare",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "speed_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "stable_serum",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "strength_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "swift_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "touch_of_insanity",
+      "rarity": "uncommon",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "vulnerable_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": true,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "weak_potion",
+      "rarity": "common",
+      "usage": "combat",
+      "targeted": true,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "foul_potion",
+      "rarity": "event",
+      "usage": "anytime",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "glowwater_potion",
+      "rarity": "event",
+      "usage": "combat",
+      "targeted": false,
+      "in_combat_generation": true
+    },
+    {
+      "definition_id": "potion_shaped_rock",
+      "rarity": "token",
+      "usage": "combat",
+      "targeted": true,
+      "in_combat_generation": true
+    }
+  ]
+}

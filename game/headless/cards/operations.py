@@ -42,8 +42,9 @@ class Attack:
                         "tangled",
                         "ringing",
                         "shrink",
+                        "demise",
                     )
-                )
+                ) + int(target.strength - target.statuses.get("mangle") - target.statuses.get("dark_shackles") < 0)
                 if target is not None
                 else 0
             ),
@@ -65,6 +66,8 @@ class Attack:
         elif self.hit_expression == "pacts_end" and len(player.deck.exhaust_pile) < 3:
             return
         slot = None if self.all_enemies or target is None else player.combat_enemies.index(target)
+        from game.headless.potions.powers import begin_attack
+        begin_attack(player, card)
         vigor = player.rules.powers.pop("vigor", 0)
         push(
             player,

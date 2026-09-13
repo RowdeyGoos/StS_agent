@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from dataclasses import dataclass
+from game.headless.potions.pools import ORDINARY_POTIONS
 
 from game.headless.core.snapshots import card_record
 from game.headless.events import deck_choice, potion_rewards
@@ -11,7 +12,7 @@ from game.headless.events.transformation import TRANSFORM_POOL, check_content, t
 @dataclass(frozen=True, slots=True)
 class WhisperingHollow:
     definition_id: str = "whispering_hollow"
-    potion_pool: tuple[str, ...] = ("fire_potion", "block_potion")
+    potion_pool: tuple[str, ...] = ORDINARY_POTIONS
     damage: int = 9
 
     def is_allowed(self, conditions):

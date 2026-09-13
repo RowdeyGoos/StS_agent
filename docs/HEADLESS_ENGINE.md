@@ -143,14 +143,15 @@ have independent state; combat changes do not alter the permanent deck.
 
 Hand of Greed transfers fatal gold and Alchemize transfers successfully procured
 potions through the run's owned inventory. Alchemize has a separate saved RNG stream
-and still generates when slots are full. Its declared pool remains the implemented
-Fire/Block Potions (or the run's configured supported potion pool). Discovery and
+and still generates when slots are full. Generated runs now use all ordinary
+Ironclad-accessible potions, filtering Fairy, Fruit Juice and Regen from Alchemize.
+Authored slice fixtures retain their explicit Fire/Block pool. Discovery and
 Calamity use the Ironclad generation catalog. Splash uses other registered character
 pools when present, otherwise the sole Ironclad pool, matching the one-unlocked-character
 case; other characters' card catalogs are not yet implemented. Entropy preserves
 status/curse replacement categories using supported subsets and gives fresh base
 cards without inherited upgrades or combat modifiers. Full native unlock state,
-other-character/potion/status/curse catalogs and RNG parity remain separate work.
+other-character/status/curse catalogs and RNG parity remain separate work.
 
 Armaments gives 5 block, then upgrades one eligible hand card for this combat;
 Armaments+ upgrades all eligible hand cards. True Grit gives 7 block and exhausts
@@ -224,6 +225,57 @@ operations in the core as needed. Do not put card-name switches, global mutable
 registries, live-service dependencies or callback closures into saved game state.
 Do not scaffold empty plugin frameworks or guess all future hooks now.
 
+## Potions
+
+All **51 potion definitions in the solo Ironclad scope** execute against the pinned
+0.107.1 / Steam build 23811903 rules: 45 shared, Blood Potion, Ashwater and Soldier's
+Stew, plus Foul Potion, Glowwater Potion and Potion-Shaped Rock. Other characters'
+12 exclusive potions and Deprecated Potion are outside this scope. Event/token
+potions have executable rules even where their granting event is not implemented;
+Foul's combat and ordinary merchant uses are supported, while Fake Merchant awaits
+that event's implementation.
+
+`potions/base.py` owns immutable content, `combat.py` applies ordered effects,
+`powers.py` owns delayed/resource hooks, and `selections.py` defines card choices.
+`use.py` consumes run-owned instances before effects. Pending use records contain
+only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
+before Reptile Trinket and the final Unceasing Top check. Private snapshots are
+combat v11 and run v21. Legacy RL encoders retain their frozen vocabulary.
+
+- Damage/status/block/stat/energy potions share combat rules, including Artifact,
+  damage caps, Dexterity and temporary Strength/Dexterity expiration.
+- Attack/Skill/Power/Colorless offers can be skipped and grant a card free for the
+  turn. Ashwater, Gambler's Brew, Liquid Memories, Droplet and Touch of Insanity
+  select owned cards. Touch excludes X-cost and locally free cards.
+- Distilled Chaos resumes nested card choices. Bottled Potential shuffles hand,
+  draw and discard together. Snecko Oil uses its own saved cost RNG; its absolute
+  local override replaces earlier discounts and expires on play or turn end.
+- Gigantification triples one complete attack command, including every hit.
+  Duplicator repeats the next card; Soldier's Stew adds replay to existing Strikes.
+  Clarity/Radiance last three future turns; Regen, Ritual, Thorns, Buffer and Demise
+  use their native resource/turn boundaries.
+- Blood Potion, Fruit Juice and Entropic Brew can also be used outside combat.
+  Event potion changes are recorded between resource boundaries, so repeated
+  event decisions and automatic revival remain resumable. Fairy is automatic,
+  consumes the first available Fairy, revives for at least 1 HP (30% max HP), and
+  takes priority over Lizard Tail.
+
+Generated runs, their merchant stock, and the potion-granting events use the full
+ordinary pool. Reward, relic, merchant and Alchemize generators share the rarity
+rule: 65% common, 25% uncommon, 10% rare, then a uniform definition in that rarity.
+Native multi-potion factory calls choose without replacement. Alchemize excludes
+Fairy, Fruit Juice and Regen; Entropic Brew deliberately uses the out-of-combat
+factory even during combat, can generate those three, and fills the slot it freed.
+Potion merchant base prices are 50/75/100 by rarity, with existing price variation,
+discounts and Courier restocking. Authored slice fixtures and explicitly supplied
+small pools retain their declared restricted sampling and stock layout. Native
+seed/RNG parity, unlock progression and other-character potion mechanics remain
+separate work.
+
+See the [finite inventory](../tests/fixtures/headless_potion_scope.json),
+[regressions](../tests/headless/test_potions_complete.py) and
+[source/validation evidence](evidence/potions_2026_09_14.md).
+
 ## Relics
 
 The pinned solo Ironclad/Overgrowth Act 1 acquisition inventory contains **161
@@ -266,9 +318,9 @@ Juzu's unknown-room combat exclusion and Winged Boots' three non-edge travels.
 
 Relic-dependent content includes Sharp, Adroit, Momentum, Royally Approved, Swift,
 Nimble and Glam enchantments, Eternal Greed, Injury, Neow's Fury and Potion-Shaped
-Rock. Ordinary potion generation still uses the configured Fire/Block subset;
+Rock. Generated runs use the complete ordinary potion pool;
 Neow's Bones generates from the implemented modifier-curse subset. Completing
-relic rules does not supply missing potion/curse/foreign-character catalogs or
+relic rules does not supply missing curse/foreign-character catalogs or
 replace the current fixed Neow starting offer profile with native offer generation.
 Event-only relics have executable pickup/combat rules even where their granting
 event has not yet been implemented.
@@ -537,8 +589,8 @@ retain their explicit pools. Shared `events/potion_rewards.py` and
 Potion bundles expose `claim_potion_N` and `finish_rewards`. Full inventory removes
 claim actions until `DiscardPotion` frees a slot; finishing skips unclaimed items.
 Discarding a claimed potion never makes its reward claimable again. The supported
-reward pool is uniformly sampled Fire/Block Potions, **not the full native potion
-distribution**. Curse transformations likewise use only Guilty/Clumsy. Curse
+reward pool now contains all 48 ordinary Ironclad potions, with native rarity
+distribution. Curse transformations likewise use only Guilty/Clumsy. Curse
 prevention/replacement, Eternal, additional item hooks and native RNG parity remain
 open. Empty-deck Slippery Bridge fallback is explicitly unsupported.
 
@@ -820,7 +872,7 @@ be completed. All 85 single-player Ironclad cards can be upgraded once. Pommel
 Strike+ deals 10 and draws 2; Shrug It Off+ gives 11 block and draws 1; Iron Wave+
 gives 7 block then deals 7; Body Slam+ costs zero and still scales with current
 block. Unsupported cards and further upgrade levels remain excluded explicitly.
-Fire Potion deals 20 damage through enemy block without attack modifiers; Block
+Fire Potion deals 20 damage, respecting enemy block and ignoring attack modifiers; Block
 Potion gives 12 block. Both are combat-only and cost no energy. Their use consumes
 the exact owned instance before checking combat completion. See the
 [native rule evidence and scope](evidence/first_vertical_slice_2026_09_13.md).

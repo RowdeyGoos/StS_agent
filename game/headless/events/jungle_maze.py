@@ -47,3 +47,8 @@ class JungleMazeAdventure:
             raise ValueError("Invalid Jungle Maze completion.")
         if defeated and (pending["stage"] != "resolved" or data["choice"] != "solo_quest"):
             raise ValueError("Jungle Maze defeat requires its lethal branch.")
+
+        if state is not None and 'resources' in pending:
+            from game.headless.events.resources import validate
+            effects = [('damage', self.solo_damage), ('gold', data['solo_gold'])] if data['choice'] == 'solo_quest' else [('gold', data['join_gold'])] if data['choice'] == 'join_forces' else []
+            validate(state, pending, effects)

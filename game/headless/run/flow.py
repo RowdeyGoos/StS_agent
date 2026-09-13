@@ -29,13 +29,6 @@ def legal_actions(engine) -> tuple:
         actions.extend(combat.legal_actions())
         if combat.player.pending_play is not None or combat.player.rules.selection is not None:
             return tuple(actions)
-        if not combat.done:
-            for potion in state.potions:
-                if potion is None:
-                    continue
-                definition = POTIONS[potion.definition_id]
-                targets = [i for i, e in enumerate(combat.enemies) if e.is_alive] if definition.targeted else [None]
-                actions.extend(UsePotion(potion.instance_id, target) for target in targets)
     elif state.phase is RunPhase.ROUTE and state.pending is None:
         actions.extend(ChooseNode(n) for n in engine.available_nodes())
     elif state.phase is RunPhase.REWARD and state.pending.get("combat_reward"):
@@ -86,6 +79,8 @@ def legal_actions(engine) -> tuple:
         actions.extend(events.legal_actions(state))
         if state.pending["stage"] == "select_card":
             return tuple(actions)
+    from game.headless.potions.use import actions as potion_actions
+    actions.extend(potion_actions(engine))
     actions.extend(DiscardPotion(p.instance_id) for p in state.potions if p is not None)
     return tuple(actions)
 
@@ -94,6 +89,15 @@ def apply(engine, action):
     if action not in legal_actions(engine):
         raise ValueError(f"Illegal run action: {action!r}")
     state = engine.state
+    if engine.combat is not None:
+        # Run inventory is authoritative between commands (including direct
+        # acquisition through the shared inventory API).
+        from dataclasses import asdict
+        r = engine.combat.player.rules
+        r.potions = [None if p is None else asdict(p) for p in state.potions]
+        r.potion_slots = state.potions.count(None)
+        from game.headless.relics.damage import potions_changed
+        potions_changed(engine.combat.player)
     if state.relic_work:
         from game.headless.relics.pickup import apply as apply_relic_choice
         return apply_relic_choice(state, engine.cards, action)
@@ -133,18 +137,10 @@ def apply(engine, action):
             raise
     if isinstance(action, (PlayCard, ChooseCombatCard, ConfirmCombatSelection, EndTurn, UsePotion)):
         if isinstance(action, UsePotion):
-            slot = potion_slot(state, action.instance_id)
-            POTIONS[state.potions[slot].definition_id].use(engine.combat, action.target_slot)
-            state.potions[slot] = None
-            from game.headless.relics.combat import owned, memory
-            relic = owned(engine.combat.player, "reptile_trinket")
-            if relic is not None and not engine.combat.player.combat_is_ending:
-                p = engine.combat.player
-                p.gain_strength(3)
-                memory(p, relic)["temporary_strength"] = memory(p, relic).get("temporary_strength", 0) + 3
-            from game.headless.relics.plays import hand_emptied
-            hand_emptied(engine.combat.player)
-            result = engine.combat.resolve_external_effect()
+            from game.headless.potions.use import use
+            result = use(engine, action)
+            if engine.combat is None:
+                return result
         else:
             result = engine.combat.apply(action)
         engine.sync_combat_loot()
@@ -152,7 +148,15 @@ def apply(engine, action):
             engine.finish_combat()
         return result
     if isinstance(action, DiscardPotion):
-        return discard_potion(state, action.instance_id)
+        from dataclasses import asdict
+        before = [None if p is None else asdict(p) for p in state.potions]
+        result = discard_potion(state, action.instance_id)
+        from game.headless.events.potion_context import record
+        record(state, before)
+        if engine.combat is not None:
+            from dataclasses import asdict
+            engine.combat.player.rules.potions = [None if p is None else asdict(p) for p in state.potions]
+        return result
     if isinstance(action, ChooseEventOption):
         from game.headless.events.combat import EventCombatRequest
         result = events.choose(state, action.event_instance_id, action.option_id, cards=engine.cards)

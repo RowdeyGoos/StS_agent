@@ -53,7 +53,12 @@ def choose(state, instance_id, option_id, *, cards=DEFAULT_CARDS):
     if (type(instance_id) is not int or instance_id != pending["event_instance_id"]
             or option_id not in definition.options(pending)):
         raise ValueError("Stale or unavailable event choice.")
+    from dataclasses import asdict
+    before = [None if p is None else asdict(p) for p in state.potions]
     result = definition.choose(state, pending, option_id, cards=cards)
+    if option_id.startswith("claim_potion_"):
+        from game.headless.events.potion_context import record
+        record(state, before)
     if state.hp == 0:
         state.phase = RunPhase.DEFEAT
     return result
@@ -78,7 +83,7 @@ def leave(state, instance_id):
 
 def validate_event(state, graph, *, cards=DEFAULT_CARDS):
     pending = state.pending
-    if set(pending) - {"resources"} != {"kind", "definition_id", "event_instance_id", "stage", "data"}:
+    if set(pending) - {"resources", "potion_changes"} != {"kind", "definition_id", "event_instance_id", "stage", "data"}:
         raise ValueError("Invalid event state fields.")
     if pending["definition_id"] not in EVENTS or state.phase not in (RunPhase.ROOM, RunPhase.DEFEAT):
         raise ValueError("Invalid event definition or phase.")
@@ -93,5 +98,7 @@ def validate_event(state, graph, *, cards=DEFAULT_CARDS):
     if (capture(state) is not None) != ("resources" in pending):
         raise ValueError("Event resource context is missing or unexpected.")
     if "resources" in pending:
-        expected(state, pending)
+        initial = expected(state, pending, potion_changes=False)
+        from game.headless.events.potion_context import apply_at
+        apply_at(initial, state, pending, -1)
     EVENTS[pending["definition_id"]].validate(pending, state=state, cards=cards, defeated=state.phase is RunPhase.DEFEAT)

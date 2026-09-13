@@ -9,6 +9,10 @@ class CardState:
     cost_change: int = 0
     combat_cost_change: int = 0
     free_this_turn: bool = False
+    free_this_combat: bool = False
+    turn_cost_override: int | None = None
+    override_turn_baseline: int = 0
+    override_combat_baseline: int = 0
     replay_count: int = 0
     return_next_turn: bool = False
     free_until_played: bool = False
@@ -37,6 +41,8 @@ class CombatRules:
     potion_slots: int = 3
     potion_pool: list[str] = field(default_factory=lambda: ["fire_potion", "block_potion"])
     potions_generated: list[str] = field(default_factory=list)
+    potions: list[dict | None] = field(default_factory=list)
+    potion_uses: dict[str, dict] = field(default_factory=dict)
 
     relics: list[dict] = field(default_factory=list)
     relic_data: dict[str, dict] = field(default_factory=dict)

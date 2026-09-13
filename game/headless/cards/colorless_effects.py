@@ -94,7 +94,8 @@ class ColorlessOperation:
         if op == "return":
             card.combat_state.return_next_turn = True
         elif op == "alchemize":
-            potion = p.deck.potion_rng.choice(r.potion_pool)
+            from game.headless.potions.pools import generate
+            potion = generate(r.potion_pool, p.deck.potion_rng, in_combat=True)
             if r.potion_slots:
                 r.potions_generated.append(potion)
                 r.potion_slots -= 1
@@ -137,6 +138,8 @@ class ColorlessOperation:
             if target is None or not target.is_alive:
                 return
             eligible = not target.statuses.get("minion") and not target.statuses.get("illusion")
+            from game.headless.potions.powers import begin_attack
+            begin_attack(p, card)
             total = hit(p, card, target, extra=r.powers.pop("vigor", 0))
             if op == "hand_of_greed" and eligible and not target.is_alive and p.is_alive:
                 from game.headless.relics.combat import gain_gold
@@ -201,6 +204,8 @@ class ColorlessOperation:
                 ],
             )
         elif op == "volley":
+            from game.headless.potions.powers import begin_attack
+            begin_attack(p, card)
             vigor = r.powers.pop("vigor", 0)
             push(p, *[["random_hit", card.instance_id, vigor] for _ in range(r.plays[card.instance_id]["x"])])
         else:

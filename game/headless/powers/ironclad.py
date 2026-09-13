@@ -54,6 +54,10 @@ def apply_power(p, name, amount, target=None):
     if name in colorless.NAMES:
         colorless.apply(p, name, amount)
         return
+    from game.headless.potions.powers import NAMES as POTION_POWERS
+    if name in POTION_POWERS:
+        p.rules.powers[name] = p.rules.powers.get(name, 0) + amount
+        return
     if name not in POWER_NAMES:
         raise ValueError(f"Unknown player power: {name}")
     r = p.rules
@@ -68,26 +72,32 @@ def card_cost(p, card):
     if card.spec.x_cost:
         return (
             0
-            if (card.combat_state.free_this_turn or card.combat_state.free_until_played)
+            if (card.combat_state.free_this_turn or card.combat_state.free_until_played or card.combat_state.free_this_combat)
             or (card.spec.kind == "attack" and p.rules.powers.get("free_attack"))
             or (card.spec.kind == "skill" and p.rules.powers.get("corruption"))
             else p.energy
         )
     if card.cost < 0:
         return card.cost
-    if card.combat_state.free_this_turn or card.combat_state.free_until_played:
-        return 0
     if card.spec.kind in ("skill", "block") and p.rules.powers.get("corruption"):
         return 0
     if card.spec.kind == "attack" and p.rules.powers.get("free_attack"):
         return 0
-    return max(
-        0,
-        card.cost
-        + card.combat_state.cost_change
-        + card.combat_state.combat_cost_change
-        + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0),
-    )
+    return max(0, local_cost(card, clamp=False) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
+
+
+def local_cost(card, *, clamp=True):
+    """Local cost layers, before combat-wide powers such as Corruption."""
+    v = card.combat_state
+    if card.cost < 0:
+        return card.cost
+    if v.free_this_turn or ((v.free_until_played or v.free_this_combat) and v.turn_cost_override is None):
+        return 0
+    value = card.cost if v.turn_cost_override is None else v.turn_cost_override
+    value += v.cost_change + v.combat_cost_change
+    if v.turn_cost_override is not None:
+        value -= v.override_turn_baseline + v.override_combat_baseline
+    return max(0, value) if clamp else value
 
 
 def after_exhaust(p, card):
@@ -203,6 +213,8 @@ def start_turn(p, draw_count):
     if r.round_number and not r.powers.get("barricade"):
         p.block = min(10, p.block) if has(p, "sturdy_clamp") else 0
     p.energy = (p.energy if r.round_number and has(p, "ice_cream") else 0) + p.energy_per_turn + r.powers.get("pyre", 0)
+    from game.headless.potions.powers import start_turn as potion_start
+    draw_count = potion_start(p, draw_count)
     draw_count = relic_start(p, draw_count)
     p.cards_played_this_turn = 0
     r.player_side = True
@@ -214,6 +226,7 @@ def start_turn(p, draw_count):
     for card in p.deck.all_cards():
         card.combat_state.cost_change = 0
         card.combat_state.free_this_turn = False
+        card.combat_state.turn_cost_override = None
     count = r.powers.get("aggression", 0)
     if count:
         cards = [c for c in p.deck.discard_pile if c.spec.kind == "attack"]
@@ -260,6 +273,8 @@ def end_turn(p):
 
 
 def after_player_end(p, name):
+    from game.headless.potions.powers import after_end
+    after_end(p, name)
     r = p.rules
     if name == "dark_embrace":
         push(p, ["draw", r.ethereal_draws, False])

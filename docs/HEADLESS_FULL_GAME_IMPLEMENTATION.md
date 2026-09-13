@@ -25,7 +25,7 @@ into validation of changed code.
   now has explicit combat/run/acquisition rules, persistent counters and nested
   pickup choices. Generated runs use complete ordinary/merchant relic pools.
   Kaleidoscope requires foreign card catalogs absent from the default environment;
-  potion/curse generation and native pool fidelity retain declared restrictions.
+  curse generation and native pool fidelity retain declared restrictions.
   See [the relic guide](HEADLESS_ENGINE.md#relics) and
   [validation record](evidence/relics_2026_09_13.md). HF-25's reachable solo rule
   implementation is covered; dependent content and differential acceptance remain.
@@ -34,7 +34,7 @@ into validation of changed code.
   definitions, with 11 multiplayer-only exclusions. Shared optional/multiple
   choices, offers, retain, shuffle/draw hooks, independent power instances,
   Hidden Gem replays and combat gold/potions are implemented. Full solo colorless
-  merchant/transform pools are available. Other character catalogs, full potion/
+  merchant/transform pools are available. Other character catalogs, full
   status/curse catalogs and native differential/RNG parity remain open.
   [Evidence](evidence/colorless_complete_2026_09_13.md).
 
@@ -906,6 +906,14 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-26 — Add potion inventory, use, discard and replacement
 
+- **Implemented for solo Ironclad A0:** all 48 ordinary potions plus both event
+  potions and Potion-Shaped Rock; owned consumption, automatic Fairy revival,
+  resumable choices, delayed powers, rarity-based generation and merchant prices.
+  Generated routes and potion-granting events use the full ordinary pool. Authored
+  fixture pools remain explicit. Other-character potions, native unlock/RNG parity
+  and unimplemented granting events remain outside this acceptance.
+  [Guide](HEADLESS_ENGINE.md#potions) · [Evidence](evidence/potions_2026_09_14.md).
+
 - **Depends on:** HF-04/06/07/09/15.
 - **Implement:** potion instances and slots/capacity, legal use contexts and targets,
   consumption timing, discard, acquisition and full-inventory replacement/skip.
@@ -918,6 +926,14 @@ Dependencies and acceptance cases are in the linked task.
   Tests: Contract, State, Combat, Progression and Replay.
 
 ### HF-27 — Complete reachable potion definitions and generation rules
+
+- **Implemented for solo Ironclad A0:** all 48 ordinary potions plus both event
+  potions and Potion-Shaped Rock; owned consumption, automatic Fairy revival,
+  resumable choices, delayed powers, rarity-based generation and merchant prices.
+  Generated routes and potion-granting events use the full ordinary pool. Authored
+  fixture pools remain explicit. Other-character potions, native unlock/RNG parity
+  and unimplemented granting events remain outside this acceptance.
+  [Guide](HEADLESS_ENGINE.md#potions) · [Evidence](evidence/potions_2026_09_14.md).
 
 - **Depends on:** HF-01/26 and the relevant effect/status/card primitives.
 - **Implement:** per-ID cases for damage, block, healing, attributes/statuses,
@@ -1421,7 +1437,7 @@ The next Act 1 batch should cover **remaining event content and its permanent ef
 3. **HF-43 / Luminous Choir:** inspect and implement each required curse/relic
    before adding both event branches. Reuse master-deck lifetime and owned relic
    counters where applicable; do not generalize from names without source evidence.
-4. **HF-24–27 / pool completion:** add native potion and curse content to replace
+4. **HF-24–27 / pool completion:** add remaining curse and foreign-character content to replace
    the current Fire/Block, Guilty/Clumsy and Finesse/Flash of Steel/Shockwave subpools; verify actual reward weights,
    unlocks, exclusions and prevention/replacement hooks separately from RNG parity.
 5. **HF-28 / Neow:** expand native three-offer generation, including the negative

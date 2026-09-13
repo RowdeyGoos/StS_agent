@@ -50,8 +50,11 @@ The [solo Act 1 relic rules](docs/HEADLESS_ENGINE.md#relics) cover the audited
 161-definition inventory, including nested pickup choices, combat triggers,
 shop/rest/reward modifiers and persistent counters. Generated runs use the full
 ordinary/merchant relic pools. The default catalog supports 160 directly;
-Kaleidoscope requires other-character card pools. Potion/curse generation retains
-its declared content subsets.
+Kaleidoscope requires other-character card pools; curse generation retains its
+content subset. All **48 ordinary Ironclad-accessible potions**, both event potions
+and Potion-Shaped Rock are implemented. Generated runs use the complete ordinary
+potion pool, including rarity-based rewards/shops, automatic Fairy revival and
+resumable card choices. See [potion rules and scope](docs/HEADLESS_ENGINE.md#potions).
 
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain
@@ -129,7 +132,7 @@ Morphic Grove (maximum HP or spending all gold to transform two cards), with
 Morphic Grove's native entry conditions. Whispering Hollow, Wellspring, Slippery
 Bridge and Sunken Statue add potion bundles, removal/curse choices, escalating
 damage and a sword that evolves after five elite victories. Potion rewards use
-the supported Fire/Block pool; curse transformations use Guilty/Clumsy. See the
+the complete ordinary Ironclad pool; curse transformations use Guilty/Clumsy. See the
 [event pack evidence](docs/evidence/event_pack_2026_09_13.md). Dense Vegetation
 adds event-triggered combat: Trudge On trades 8 HP for gold, while Rest
 heals 30% maximum HP before a mandatory four-Wriggler fight, ordinary rewards
