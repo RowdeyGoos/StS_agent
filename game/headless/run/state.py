@@ -53,6 +53,7 @@ class RunState:
     potion_drop_chance: int = 40
     next_shop_id: int = 0
     shop_removals_used: int = 0
+    next_event_id: int = 0
     next_treasure_id: int = 0
     treasure_relics_drawn: list[str] = field(default_factory=list)
 
@@ -114,6 +115,8 @@ class RunState:
                 or type(self.shop_removals_used) is not int
                 or not 0 <= self.shop_removals_used <= self.next_shop_id):
             raise ValueError("Invalid shop counters.")
+        if type(self.next_event_id) is not int or self.next_event_id < 0:
+            raise ValueError("Invalid event allocator.")
         from game.headless.treasure.catalog import ORDINARY_CHEST
         if (type(self.next_treasure_id) is not int or self.next_treasure_id < 0
                 or not isinstance(self.treasure_relics_drawn, list)

@@ -48,7 +48,8 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`run/rest_site.py`](../game/headless/run/rest_site.py), [`run/inventory.py`](../game/headless/run/inventory.py), [`relics/`](../game/headless/relics/), [`potions/`](../game/headless/potions/) | Rest/smith decisions, owned item acquisition/removal, victory healing, permanent max-HP pickup effects and potion effects |
 | [`treasure/catalog.py`](../game/headless/treasure/catalog.py), [`run/treasure.py`](../game/headless/run/treasure.py), [`run/treasure_validation.py`](../game/headless/run/treasure_validation.py) | Chest content, gold on opening, optional relic acquisition, pool depletion and private continuation |
 | [`shops/catalog.py`](../game/headless/shops/catalog.py), [`run/shop.py`](../game/headless/run/shop.py), [`run/shop_validation.py`](../game/headless/run/shop_validation.py) | Authored stock, native base-price bands, purchases, permanent removal and private continuation validation |
-| [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored map navigation and the existing primitive event effects |
+| [`events/catalog.py`](../game/headless/events/catalog.py), [`events/jungle_maze.py`](../game/headless/events/jungle_maze.py), [`run/events.py`](../game/headless/run/events.py) | Native event definitions, content-owned choices/effects and owned event lifecycle |
+| [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored navigation with explicit encounter/event IDs and shared primitive effects |
 | [`core/rng.py`](../game/headless/core/rng.py), [`core/snapshots.py`](../game/headless/core/snapshots.py), [`run/snapshots.py`](../game/headless/run/snapshots.py) | Owned RNG streams and private JSON continuation |
 | `game/simulation/`, `game/backends/`, `game/contracts/`, actor/data/training packages | Compatibility, encoding, public-information policy and external consumption |
 
@@ -154,6 +155,30 @@ Keep their rules beside their content; add explicit lifecycle
 operations in the core as needed. Do not put card-name switches, global mutable
 registries, live-service dependencies or callback closures into saved game state.
 Do not scaffold empty plugin frameworks or guess all future hooks now.
+
+## Ordinary events
+
+The Act 1 route visits Jungle Maze Adventure after its third combat, immediately
+before treasure. `ChooseEventOption(event_instance_id, option_id)` chooses
+`solo_quest` or `join_forces`. Solo Quest deals 18 damage, then grants the larger
+gold amount; Join Forces grants the smaller amount without damage. There is no
+initial leave choice. After resolution, `LeaveEvent(event_instance_id)` returns
+to the map. Lethal Solo remains selectable and ends in defeat; the native ordered
+sequence still grants its gold after damage, but no further action is available.
+The demo chooses Join Forces.
+
+Native payouts start at 150/50 with independent float variation from -15 to +15,
+then truncate when acquired. The headless model samples integer payouts 135–164
+and 35–64 once on entry using `event.jungle_maze`; exact native float/RNG parity
+is not claimed. Each event owns its ID, stage, variables and selected outcome.
+Inspection and restore consume no draws, and stale/repeated choices cannot award
+again. Map event IDs and the event catalog are included in private snapshots.
+
+`events/jungle_maze.py` owns the event rules; `run/events.py` owns lifecycle and
+dispatch. The older primitive event fixture still uses `run/rooms.py`; native
+content is not dispatched by its synthetic option dictionary. Native event pool
+weights, eligibility/repeat tracking, multiplayer voting and the rest of the
+Overgrowth event catalog remain open. See [source and validation evidence](evidence/first_event_2026_09_13.md).
 
 ## Treasure rooms
 
@@ -313,9 +338,9 @@ There is no map shortcut to this outcome, no Act 2 launch or inter-act healing,
 and no claim of full-game victory. The example player is deliberately simple;
 `--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
 still demonstrates a boss defeat. With `--path left --rest-choice rest`, the
-installed seed-2 demo now wins this authored Act 1 at 11/94 HP in 121 commands,
-including treasure and shop decisions with exact restore. See the
-[treasure acceptance](evidence/first_treasure_2026_09_13.md). This five-fight route omits
+installed seed-2 demo now wins this authored Act 1 at 11/94 HP in 124 commands,
+including event, treasure and shop decisions with exact restore. See the
+[event acceptance](evidence/first_event_2026_09_13.md). This five-fight route omits
 most of a native Act 1 map and its deck-building opportunities. See the
 [boss source and acceptance evidence](evidence/first_boss_2026_09_13.md).
 
@@ -363,14 +388,14 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v6`, including configuration,
-items, card/item/shop/treasure allocators, depleted treasure offers, chest decisions,
+Private run snapshots now use `headless_run_state_v7`, including configuration,
+items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection,
-shop/treasure catalog fingerprints, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
+shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.
 Nested combat records now use `headless_combat_state_v4`, including the in-play
 pile, pending continuation, selection/target RNG and power duration flags. Earlier combat
-v1/v2/v3 and run v1/v2/v3/v4/v5 formats are rejected rather than assigning invented item
+v1/v2/v3 and run v1/v2/v3/v4/v5/v6 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

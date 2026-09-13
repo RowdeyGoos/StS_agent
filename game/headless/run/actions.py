@@ -103,3 +103,14 @@ class ClaimTreasureRelic:
 @dataclass(frozen=True, slots=True)
 class LeaveTreasure:
     pass
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseEventOption:
+    event_instance_id: int
+    option_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class LeaveEvent:
+    event_instance_id: int

@@ -9,6 +9,7 @@ class MapNode:
     kind: str
     next_node_ids: tuple[str, ...]
     encounter_id: str | None = None
+    event_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,6 +23,8 @@ class MapGraph:
         if len(ids) != len(self.nodes) or self.start_id not in ids:
             raise ValueError("Invalid map identities.")
         for node in self.nodes:
+            if node.event_id is not None and (node.kind != "event" or not isinstance(node.event_id, str) or not node.event_id or node.encounter_id is not None):
+                raise ValueError("Event identity requires an event-only node.")
             if not set(node.next_node_ids) <= ids or len(set(node.next_node_ids)) != len(node.next_node_ids):
                 raise ValueError("Invalid map edges.")
         def visit(node_id, active, visited):

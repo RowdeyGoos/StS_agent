@@ -21,6 +21,13 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — first ordinary event:** native Jungle Maze Adventure now offers
+  Solo Quest (18 damage then larger gold) or Join Forces (smaller gold, no damage),
+  with entry-time offers, exact event identities, terminal defeat and continuation.
+  The authored Act 1 route visits it before treasure; shared-game primitives remain
+  separate from the old event fixtures. Native float/RNG, multiplayer and event
+  generation are still open. [Evidence](evidence/first_event_2026_09_13.md).
+
 - **2026-09-13 — first treasure room:** closed/open/claimed chest decisions,
   automatic 42–52 A0 gold on opening, optional fruit relic, persistent offer
   depletion and repeatable Circlet fallback are implemented. The Act 1 route
@@ -1011,6 +1018,14 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-39 — Add a real event state machine and ordinary choices
 
+- **Partial:** Jungle Maze Adventure is source-verified in Overgrowth and runs
+  through explicit catalog, event/map IDs, owned stage/data, exact choice commands
+  and terminal departure. Both branches, repeat/stale rejection, entry failure,
+  death at the 18-HP boundary and JSON restore are covered. Authored integer gold
+  sampling approximates the native float variation. Event selection weights,
+  availability/no-repeat rules, multiplayer, additional pages/branches and remaining
+  content are open. See [first-event evidence](evidence/first_event_2026_09_13.md).
+
 - **Depends on:** HF-01/05/06/07/11. HF-28 consumes this engine for starting choices;
   a directly initialized event fixture is sufficient for the first implementation.
 - **Implement:** event definitions and instance state for eligibility, pages,
@@ -1239,25 +1254,27 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The authored Act 1 route now includes treasure, an elite option, an optional
-shop and a boss with an explicit act end. The next useful batch is **HF-39: a
-first source-verified ordinary Overgrowth event**:
+The authored Act 1 route now includes an ordinary event, treasure, an elite
+option, an optional shop and a boss. The next useful batch is **HF-40: event-owned
+card selection with Aroma of Chaos**, building on permanent upgrades and adding
+transformation:
 
-1. Select one actual event from the pinned Overgrowth pool whose costs/rewards
-   mainly use existing gold, HP, relic or permanent-deck operations. Verify its
-   initial conditions, branches, decline behavior and terminal transitions before
-   coding; do not rename a primitive synthetic event as native content.
-2. Put immutable event content and its rules in `game/headless/events/`. Persist
-   event identity, stage and exact pending choices as plain game state. Add a
-   small run dispatcher only for the lifecycle decisions needed by that event.
-3. Add an authored event node to `overgrowth-act1`. Exercise each branch, invalid
-   choices, costs at affordability/HP boundaries, duplicate resolution and death
-   where applicable. Restore before and after each decision and continue to the
-   next room through direct commands and the installed CLI.
-4. Keep event sampling explicitly authored until HF-30/39 implements native
-   eligibility, weights and repeat rules. Remaining encounter families, global
-   relic bags, full shop/treasure modifiers, native map generation and later acts
-   stay separate assignments.
+1. Verify Aroma of Chaos's two native options, selection counts/eligibility,
+   automatic and cancel behavior, upgrade handling and resulting event pages.
+   Its membership in Overgrowth and upgrade/transformation callers have been
+   located; detailed card-selection semantics still need inspection.
+2. Implement permanent transformation through shared deck operations: preserve
+   the exact selected original, determine replacement identity and upgrade rules
+   from native source, and use an explicit supported replacement pool initially.
+   Keep authored pool/RNG restrictions visible; do not add projection plumbing.
+3. Extend event-owned pending data for the actual card selection and continuation.
+   Keep cost/effect order with the event definition; reuse existing upgrade rules.
+   Verify duplicate cards, unavailable selections, transformation exclusions,
+   exact JSON restore during choices, and completion only once.
+4. Offer this event on an authored Act 1 branch and teach the example player its
+   decisions. Validate permanent results in the next combat and installed CLI.
+   Full event/map generation, global relic bags, remaining encounters/content and
+   later acts stay separate assignments.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

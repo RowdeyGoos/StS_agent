@@ -56,7 +56,8 @@ whether slimes or Fuzzy Wurm comes second, fight the other third, rest/smith, th
 choose Mawler, paired Nibbits or the Byrdonis elite. Elite rewards include 35–45
 gold and a relic from Strawberry/Pear/Mango, which permanently raises maximum HP
 and heals on pickup. `--path right` selects the elite; `left` selects Mawler.
-Add `--route overgrowth-act1` for a treasure chest after the third fight, followed
+Add `--route overgrowth-act1` for Jungle Maze Adventure and a treasure chest after
+the third fight, followed
 by the fourth fight, an optional shop, a second rest site and Vantom. Opening the
 chest grants 42–52 gold; its relic can be taken or skipped. The restricted fruit
 pool depletes on offers and falls back to Circlet when exhausted. `--path left` visits the shop; `right` bypasses it. The shop sells
@@ -64,6 +65,9 @@ supported cards, a fruit relic and Fire/Block Potions, and removes a chosen deck
 card for 75 gold (25 more per prior shop removal). The demo buys one affordable
 card and removes a starter if it can afford both; direct commands allow any legal
 purchase sequence. Shop choices also support `--verify-restore`.
+Jungle Maze Adventure offers Solo Quest (18 damage for more gold) or Join Forces
+(less gold, no damage). The demo chooses Join Forces. Both payouts are fixed on
+event entry, and event choices support `--verify-restore`.
 This route also offers Sword Boomerang, including its four-hit upgrade.
 Leaving the boss rewards records `act_complete` for Act 1; it does not declare
 full-game victory. The simple demo player can lose on this route. Boss rewards
