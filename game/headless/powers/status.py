@@ -11,7 +11,17 @@ VULNERABLE = "vulnerable"
 WEAK = "weak"
 TERRITORIAL = "territorial"
 SLIPPERY = "slippery"
-SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY)
+FRAIL = "frail"
+ARTIFACT = "artifact"
+CONSTRICT = "constrict"
+TANGLED = "tangled"
+RINGING = "ringing"
+SLOW = "slow"
+PLOW = "plow"
+MINION = "minion"
+ILLUSION = "illusion"
+INFESTED = "infested"
+SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED)
 STATUS_STACK_SCALE = 5.0
 
 
@@ -27,6 +37,9 @@ STATUS_DEFINITIONS = MappingProxyType({
     SHRINK: StatusDefinition(name=SHRINK, duration_tick_side=None),
     VULNERABLE: StatusDefinition(name=VULNERABLE),
     WEAK: StatusDefinition(name=WEAK),
+    FRAIL: StatusDefinition(name=FRAIL),
+    **{name: StatusDefinition(name=name, duration_tick_side=None) for name in
+       (ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED)},
     TERRITORIAL: StatusDefinition(name=TERRITORIAL, duration_tick_side=None),
     SLIPPERY: StatusDefinition(name=SLIPPERY, duration_tick_side=None),
 })
@@ -48,7 +61,7 @@ class StatusCollection:
             return
         # Native stacking preserves the existing duration flag; only a new
         # player debuff skips its first enemy-side duration tick.
-        if skip_first_tick and self.get(status_name) == 0 and status_name in (WEAK, VULNERABLE):
+        if skip_first_tick and self.get(status_name) == 0 and status_name in (WEAK, VULNERABLE, FRAIL):
             self._skip_next_tick.add(status_name)
         self._counts[status_name] = self.get(status_name) + stacks
 
@@ -104,17 +117,18 @@ def modify_attack_damage_for_statuses(
     target_statuses: StatusCollection | Mapping[str, int],
     attacker_statuses: StatusCollection | Mapping[str, int] | None = None,
     attacker_strength: int = 0,
+    extra_multiplier: tuple[int, int] = (1, 1),
 ) -> int:
     """Apply attacker and defender combat modifiers to attack damage."""
     if base_damage < 0:
         raise ValueError("Damage cannot be negative.")
 
     modified_damage = max(0, base_damage + attacker_strength)
+    # Native multipliers combine before the final floor.
+    numerator, denominator = extra_multiplier
     if attacker_statuses is not None and get_status_amount(attacker_statuses, SHRINK) > 0:
-        modified_damage = (modified_damage * 7) // 10
-    # Keep fractions until all verified multipliers are combined. The earlier
-    # Shrink approximation above remains a separate, reduced-content rule.
-    numerator, denominator = 1, 1
+        numerator *= 7
+        denominator *= 10
     if attacker_statuses is not None and get_status_amount(attacker_statuses, WEAK) > 0:
         numerator *= 3
         denominator *= 4
@@ -129,5 +143,5 @@ def _require_supported_status(status_name: str) -> None:
         raise ValueError(f"Unsupported status effect: {status_name!r}")
 
 
-# TODO: Add more status effects such as Frail and poison.
+# TODO: Add remaining status families such as poison.
 # TODO: Add richer status hooks for start-of-turn, card-play, and damage events.

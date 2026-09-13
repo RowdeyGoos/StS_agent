@@ -65,6 +65,8 @@ class CombatEngine:
         self.player = self._build_player()
         self.enemies = self._build_encounter()
         self.player.combat_enemies = self.enemies
+        for enemy in self.enemies:
+            enemy.combat_player = self.player
         self.turn = 1
         self.done = False
         self.winner = None
@@ -79,7 +81,9 @@ class CombatEngine:
             return tuple(ChooseCombatCard(i) for i in self.player.pending_options())
         actions: list[CombatAction] = [EndTurn()]
         for card in self.player.hand:
-            if card.cost < 0 or card.cost > self.player.energy:
+            if self.player.statuses.get("ringing") and self.player.cards_played_this_turn:
+                continue
+            if card.cost < 0 or self.player.card_cost(card) > self.player.energy:
                 continue
             if card.spec.uses_target:
                 actions.extend(PlayCard(card.instance_id, slot) for slot in self._living_enemy_indices())
@@ -111,9 +115,14 @@ class CombatEngine:
 
         self.player.end_turn()
         after_owner_side_turn_end(self.player)
+        self._refresh_persistent_statuses()
+        self._check_terminal()
+        if self.done:
+            return CombatResult(self.done, self.winner, {"enemy_actions": []})
         enemy_actions = []
-        for slot, enemy in enumerate(self.enemies):
-            if not enemy.is_alive:
+        # Summons never steal an existing slot or join a turn already in progress.
+        for slot, enemy in enumerate(tuple(self.enemies)):
+            if not enemy.can_take_turn:
                 continue
             enemy.start_turn()
             executed = enemy.execute_intent(self.player, tick_statuses=False)
@@ -176,11 +185,8 @@ class CombatEngine:
             self.done, self.winner = True, "enemy"
 
     def _refresh_persistent_statuses(self) -> None:
-        # Existing reduced Shrink rule; broader source-owned powers remain content work.
-        if not any(e.is_alive and e.name == "Shrinker Beetle" for e in self.enemies):
-            stacks = self.player.statuses.get("shrink")
-            if stacks:
-                self.player.statuses.decrement("shrink", stacks)
+        from game.headless.core.enemy_lifecycle import settle_enemies
+        settle_enemies(self.player)
 
     def _ensure_ready(self) -> None:
         if self.player is None or self.enemies is None:

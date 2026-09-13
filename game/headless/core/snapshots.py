@@ -17,7 +17,7 @@ from game.headless.monsters.base import Intent
 from game.headless.monsters.catalog import DEFAULT_MONSTERS
 from game.headless.powers.status import StatusCollection
 
-SCHEMA = "headless_combat_state_v4"
+SCHEMA = "headless_combat_state_v5"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -66,7 +66,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         enemy_rows.append({
             "type": kind, "rng": rng_ref(enemy.rng), "statuses": dict(enemy.statuses._counts),
             "skip_status_tick": sorted(enemy.statuses._skip_next_tick),
-            "state": {name: _json_value(value) for name, value in vars(enemy).items() if name not in ("rng", "statuses")},
+            "state": {name: _json_value(value) for name, value in vars(enemy).items() if name not in ("rng", "statuses", "combat_player")},
         })
     deck = engine.player.deck
     pile_rows = {pile: [card_record(card) for card in getattr(deck, pile)] for pile in PILES}
@@ -80,7 +80,8 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "turn": engine.turn, "done": engine.done, "winner": engine.winner,
         "config": {"player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
-                   "skip_status_tick": sorted(engine.player.statuses._skip_next_tick)},
+                   "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
+                   "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
         "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
@@ -111,7 +112,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
                     raise ValueError("Invalid status count.")
                 result.add(name, count)
             if not isinstance(skipped, list) or len(set(skipped)) != len(skipped) or any(
-                name not in ("weak", "vulnerable") or not result.get(name) for name in skipped
+                name not in ("weak", "vulnerable", "frail") or not result.get(name) for name in skipped
             ):
                 raise ValueError("Invalid power duration flags.")
             result._skip_next_tick = set(skipped)
@@ -147,7 +148,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             # Registered constructors define their own state layout. A snapshot
             # can fill those values; it cannot replace methods or inject fields.
             template = kind(rng=Random(0))
-            fields = {name: value for name, value in vars(template).items() if name not in ("rng", "statuses")}
+            fields = {name: value for name, value in vars(template).items() if name not in ("rng", "statuses", "combat_player")}
             if set(row["state"]) != set(fields):
                 raise ValueError("Monster snapshot fields do not match the registered type.")
             enemy = kind.__new__(kind)
@@ -179,6 +180,19 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         if player.max_hp != config["player_max_hp"]:
             raise ValueError("Player maximum HP differs from the combat configuration.")
         player.combat_enemies = enemies
+        count = snapshot["player"]["cards_played_this_turn"]
+        if type(count) is not int or count < 0:
+            raise ValueError("Invalid card play counter.")
+        player.cards_played_this_turn = count
+        sources = snapshot["player"]["power_sources"]
+        if not isinstance(sources, dict) or any(name not in ("shrink", "constrict") or
+                type(slot) is not int or not 0 <= slot < len(enemies) or not enemies[slot].is_alive or
+                not player.statuses.get(name) or name not in enemies[slot].APPLIED_PLAYER_POWERS for name, slot in sources.items()):
+            raise ValueError("Invalid source-owned power.")
+        player.power_sources = dict(sources)
+        for enemy in enemies:
+            enemy.combat_player = player
+            enemy.validate_combat_context(player)
         pending = snapshot["pending_play"]
         if pending is None:
             if deck.in_play:

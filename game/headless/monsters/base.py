@@ -76,6 +76,7 @@ class Enemy(ABC):
 
     # Content-owned exceptions for fields whose type changes during play.
     SNAPSHOT_FIELD_TYPES = MappingProxyType({})
+    APPLIED_PLAYER_POWERS = ()
 
     def __init__(self, name: str, max_hp: int, rng: Random | None = None) -> None:
         self.name = name
@@ -85,11 +86,19 @@ class Enemy(ABC):
         self.strength = 0
         self.statuses = StatusCollection()
         self.rng = rng or Random(0)
+        self.combat_player = None
 
     @property
     def is_alive(self) -> bool:
         """Return whether the enemy is still alive."""
         return self.hp > 0
+
+    @property
+    def can_take_turn(self):
+        return self.is_alive
+
+    def incoming_attack_multiplier(self):
+        return (1, 1)
 
     def start_turn(self) -> None:
         """Clear block at the start of the enemy turn."""
@@ -121,6 +130,7 @@ class Enemy(ABC):
                 self.statuses,
                 attacker_statuses=attacker_statuses,
                 attacker_strength=attacker_strength,
+                extra_multiplier=self.incoming_attack_multiplier(),
             )
             if is_attack
             else amount
@@ -131,10 +141,18 @@ class Enemy(ABC):
             self.block,
             incoming_damage, statuses=self.statuses,
         )
-        return previous_hp - self.hp
+        damage = previous_hp - self.hp
+        self.on_damage_taken(damage, is_attack)
+        if self.combat_player is not None:
+            from game.headless.core.enemy_lifecycle import settle_enemies
+            settle_enemies(self.combat_player)
+        return damage
 
     def apply_status(self, status_name: str, stacks: int) -> None:
         """Apply a status effect to the enemy."""
+        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink") and self.statuses.get("artifact"):
+            self.statuses.decrement("artifact")
+            return
         self.statuses.add(status_name, stacks)
 
     def to_observation(self) -> dict[str, int | str | bool | dict[str, int] | dict[str, int | str | None]]:
@@ -192,7 +210,7 @@ class Enemy(ABC):
         if current_intent.strength_gain > 0:
             self.gain_strength(current_intent.strength_gain)
         if current_intent.status_name is not None and current_intent.status_stacks > 0:
-            player.apply_status(current_intent.status_name, current_intent.status_stacks)
+            player.apply_status(current_intent.status_name, current_intent.status_stacks, source=self)
         for _ in range(current_intent.slimed_added):
             player.add_card_to_discard(SlimedCard())
 
@@ -201,12 +219,29 @@ class Enemy(ABC):
             for definition_id in current_intent.discard_cards:
                 player.add_card_to_discard(DEFAULT_CARDS.create(definition_id))
 
+        self.after_move(player, current_intent)
+
         if tick_statuses:
             from game.headless.powers.lifecycle import after_owner_side_turn_end
             self.statuses.on_turn_end()
             after_owner_side_turn_end(self)
         self.advance_intent()
         return current_intent
+
+    def after_move(self, player, intent):
+        """Content-owned effects after the shared ordered move operations."""
+
+    def on_damage_taken(self, damage, is_attack):
+        """Content-owned phase/death reactions, resolved between individual hits."""
+
+    def after_player_card(self, player):
+        """Content-owned response after a complete card, including its choices."""
+
+    def validate_combat_context(self, player):
+        """Validate saved relationships after all owned creature slots exist."""
+
+    def on_combat_state_changed(self, player):
+        """Resolve source-owned effects after external combat mutations."""
 
     def _resolve_intent(self, template: Intent) -> Intent:
         """Convert a base intent template into its current combat values."""

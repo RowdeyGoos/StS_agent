@@ -27,6 +27,8 @@ class CardSpec:
     applies_status_stacks: int = 0
     exhausts: bool = False
     uses_target: bool = True
+    ethereal: bool = False
+    end_turn_damage: int = 0
 
     @property
     def is_dead_card(self) -> bool:

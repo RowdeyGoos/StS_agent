@@ -148,7 +148,8 @@ def test_new_attacks_use_strength_shrink_vulnerable_and_enemy_block_rules() -> N
 
         player.play_card(0, enemy)
 
-        expected_attack_damage = (((base_damage + 2) * 7) // 10 * 3) // 2
+        # Native Shrink and Vulnerable combine before flooring once.
+        expected_attack_damage = ((base_damage + 2) * 7 * 3) // 20
         assert enemy.hp == 30 - max(0, expected_attack_damage - 2)
 
 

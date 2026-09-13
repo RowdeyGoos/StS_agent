@@ -17,7 +17,7 @@ from game.headless.shops.catalog import fingerprint as shop_fingerprint
 from game.headless.treasure.catalog import fingerprint as treasure_fingerprint
 from game.headless.events.catalog import EVENTS, fingerprint as event_fingerprint
 
-SCHEMA = "headless_run_state_v8"
+SCHEMA = "headless_run_state_v9"
 
 
 def _item_definitions():

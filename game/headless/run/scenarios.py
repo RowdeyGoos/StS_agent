@@ -31,9 +31,15 @@ def overgrowth_route_map():
     ), "fight_1")
 
 
-def overgrowth_act1_map():
+def overgrowth_act1_map(*, boss="overgrowth_vantom", elite="overgrowth_byrdonis", hallway="overgrowth_mawler"):
+    from game.headless.encounters.catalog import ENCOUNTERS
+    for name, kind in ((boss, "boss"), (elite, "elite"), (hallway, "combat")):
+        if name not in ENCOUNTERS or ENCOUNTERS[name].room_kind != kind:
+            raise ValueError("Encounter override differs from its room kind.")
     nodes = tuple(replace(n, next_node_ids=("merchant", "boss_camp")) if n.next_node_ids == ("slice_end",) else n
                   for n in overgrowth_route_map().nodes if n.node_id != "slice_end")
+    nodes = tuple(replace(n, encounter_id=elite) if n.node_id == "byrdonis" else
+                  replace(n, encounter_id=hallway) if n.node_id == "mawler" else n for n in nodes)
     nodes = tuple(replace(n, next_node_ids=("treasure",)) if n.next_node_ids == ("camp",) else n for n in nodes)
     nodes = tuple(replace(n, next_node_ids=("jungle_maze", "aroma")) if n.next_node_ids == ("treasure",) else n for n in nodes)
     return MapGraph((*nodes,
@@ -42,7 +48,7 @@ def overgrowth_act1_map():
                      MapNode("treasure", "treasure", ("camp",)),
                      MapNode("merchant", "shop", ("boss_camp",)),
                      MapNode("boss_camp", "rest", ("vantom",)),
-                     MapNode("vantom", "boss", (), "overgrowth_vantom")), "fight_1")
+                     MapNode("vantom", "boss", (), boss)), "fight_1")
 
 
 ROUTES = MappingProxyType({"first-slice": first_slice_map, "overgrowth": overgrowth_route_map,
