@@ -9,7 +9,7 @@ from game.cli.headless_play import choose_demo_action, play_slice
 from game.headless.core.rng import GameRandomService
 from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.encounters.progression import EncounterProgression, WEAK, NORMAL, ELITES, BOSSES, TAGS
-from game.headless.map.overgrowth import PROFILE, generate_overgrowth_map
+from game.headless.map.overgrowth import BASE_PROFILE as PROFILE, generate_overgrowth_map
 from game.headless.run.actions import ChooseNode, ClaimRelic, LeaveRewards
 from game.headless.run.engine import RunEngine
 from game.headless.run.inventory import add_relic
@@ -41,10 +41,10 @@ def win_fixture(engine):
 
 @pytest.mark.parametrize('seed', range(20))
 def test_full_length_topology_and_owned_queues(seed):
-    run = RunEngine.ironclad_act1(seed=seed)
+    run = RunEngine.ironclad_act1(map_profile=PROFILE, seed=seed)
     graph = run.graph
     assert graph.generation == PROFILE
-    assert graph == RunEngine.ironclad_act1(seed=seed).graph
+    assert graph == RunEngine.ironclad_act1(map_profile=PROFILE, seed=seed).graph
     assert 2 <= len(graph.entry_node_ids) <= 7
     assert set(n.row for n in graph.nodes) == set(range(1, 17))
     assert all(n.kind == 'combat' for n in graph.nodes if n.row == 1)
@@ -91,18 +91,18 @@ def test_map_rng_is_isolated_from_rewards_and_encounter_queues():
     for _ in range(100):
         b.randint('reward_gold', 10, 20)
     assert EncounterProgression.generate(a) == EncounterProgression.generate(b)
-    kwargs = {'event_pool': ('aroma_of_chaos',)}
+    kwargs = {'event_pool': ('aroma_of_chaos',), 'profile': PROFILE}
     assert generate_overgrowth_map(a, **kwargs) == generate_overgrowth_map(b, **kwargs)
     assert all(n.event_id == 'aroma_of_chaos' for n in generate_overgrowth_map(GameRandomService(7), **kwargs).nodes if n.kind == 'event')
     with pytest.raises(ValueError):
-        RunEngine.ironclad_act1(discovery='first_run')
+        RunEngine.ironclad_act1(map_profile=PROFILE, discovery='first_run')
     with pytest.raises(ValueError):
-        RunEngine.ironclad_act1(ascension=1)
+        RunEngine.ironclad_act1(map_profile=PROFILE, ascension=1)
 
 
 @pytest.mark.parametrize('seed,path', [(0,'left'), (1,'right'), (2,'left'), (3,'right'), (4,'left'), (5,'right')])
 def test_full_length_synthetic_route_every_decision_restores(seed, path):
-    run = RunEngine.ironclad_act1(seed=seed)
+    run = RunEngine.ironclad_act1(map_profile=PROFILE, seed=seed)
     encounter_history = []
     for _ in range(500):
         if run.state.phase == RunPhase.COMBAT:
@@ -131,7 +131,7 @@ def test_full_length_synthetic_route_every_decision_restores(seed, path):
 
 
 def test_failed_room_entry_does_not_consume_queue_or_navigation(monkeypatch):
-    run = RunEngine.ironclad_act1(seed=7)
+    run = RunEngine.ironclad_act1(map_profile=PROFILE, seed=7)
     before = saved(run)
     def fail(**kwargs):
         raise ValueError('fixture construction failure')
@@ -145,7 +145,7 @@ def test_failed_room_entry_does_not_consume_queue_or_navigation(monkeypatch):
 
 
 def test_direct_pending_node_restores_without_consuming_encounter():
-    run = RunEngine.ironclad_act1(seed=8)
+    run = RunEngine.ironclad_act1(map_profile=PROFILE, seed=8)
     node = run.choose_node(run.graph.entry_node_ids[0])
     clone = RunEngine(); clone.restore(saved(run))
     assert clone.state.encounter_progression.assignments == {}
@@ -195,7 +195,7 @@ def test_restricted_exhaustion_can_offer_and_claim_multiple_distinct_circlets():
     lambda s: s.__setitem__('schema', 'headless_run_state_v9'),
 ])
 def test_malformed_generated_continuation_rejects_atomically(corrupt):
-    run = RunEngine.ironclad_act1(seed=7)
+    run = RunEngine.ironclad_act1(map_profile=PROFILE, seed=7)
     before = saved(run)
     altered = deepcopy(before); corrupt(altered)
     with pytest.raises(ValueError):
@@ -204,7 +204,7 @@ def test_malformed_generated_continuation_rejects_atomically(corrupt):
 
 
 def test_active_encounter_assignment_cannot_be_changed_on_restore():
-    run = RunEngine.ironclad_act1(seed=7)
+    run = RunEngine.ironclad_act1(map_profile=PROFILE, seed=7)
     step(run, run.legal_actions()[0])
     before = saved(run)
     altered = deepcopy(before)

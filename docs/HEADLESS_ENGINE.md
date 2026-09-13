@@ -168,12 +168,29 @@ actions = run.legal_actions()  # Choices among generated first-row entrances.
 sts-headless-play --route overgrowth-generated --seed 2 --path left --rest-choice rest --verify-restore
 ```
 
-The `overgrowth_a0_base_restricted_v1` profile builds seven noncrossing paths
+The default `overgrowth_a0_pruned_restricted_v2` profile generates seven paths
 through 15 map rows, then a boss on row 16. Row 1 contains ordinary fights,
-row 9 treasure and row 15 rest sites. Room placement applies the pinned early/late,
-consecutive-room and sibling-choice restrictions. The map stores coordinates,
-edges and all starting destinations. Native duplicate-path pruning and visual
-coordinate postprocessing are still open; this is the native **base** topology.
+row 9 treasure and row 15 rest sites. The pinned base placement restrictions
+apply before native duplicate-segment pruning and room-count repair. Equivalent
+room sequences between the same branch/merge points can be removed; shared
+branches retain their connections. Pruning may leave a single first-row entrance.
+Surviving coordinates and node IDs remain stable. Visual centering, spreading
+and path straightening remain open.
+
+Unknown map markers remain `kind="unknown"` with no preselected event identity.
+On entry, owned native base odds select combat, treasure, shop or event exactly
+once: initially 10%, 2%, 3% and the remainder. Unselected enabled types gain their
+base odds; the selected type resets. A shop outcome is excluded after a shop or
+when every next map marker is a shop, without redistributing its probability or
+increasing its blocked odds. Unknown combats consume the normal encounter queue.
+`state.unknown_rooms` owns resolved outcomes and odds; `run/unknown_rooms.py` exposes
+`room_node(state, graph, node_id)` for the effective visited room. Reading the map
+never draws or exposes an unvisited outcome. Failed room construction rolls back
+navigation, odds, outcome identity and RNG together.
+
+The earlier base-map fixture remains selectable through
+`RunEngine.ironclad_act1(map_profile="overgrowth_a0_base_restricted_v1")`; it keeps
+its unpruned topology and explicit supported-event substitutions.
 
 Run-owned encounter queues contain 15 hallway entries (three weak, then twelve
 normal) and 15 elite entries, drawn from refillable bags with consecutive identity/
@@ -185,18 +202,18 @@ assignments, topology and RNG persist through JSON continuation.
 
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. It starts after the unimplemented row-zero Ancient choice.
-Native unknown-room outcome rolls are also open: this profile instead assigns
-visible event rooms from `RunConfig.event_pool`, sampling the supported Jungle Maze
-Adventure/Aroma of Chaos definitions with replacement. They remain identifiable
-as restricted event substitutions, not native unknown-room outcomes. Card, item,
-shop and reward pools retain their documented restrictions. Generated runs opt in
-to `RunConfig.relic_fallback="circlet"`, preventing exhausted fruit-relic rewards
+Event outcomes still use `RunConfig.event_pool`, sampling the supported Jungle Maze
+Adventure/Aroma of Chaos definitions with replacement at entry. Full native event
+eligibility/depletion is open. Card, item, shop and reward pools retain their
+restrictions. Unknown-room modifying relics, tutorial overrides and native RNG
+parity remain unsupported. Generated runs opt in to
+`RunConfig.relic_fallback="circlet"`, preventing exhausted fruit-relic rewards
 from blocking a later elite; authored routes retain their existing rejection rule.
 Each claimed reward records its exact item instance, including repeated Circlets.
 
 Every path has 16 room visits before Act 1 completion if survived. This is a
 full-length **restricted-content** route, not yet complete native Act 1 fidelity.
-[Source anchors, checks and remaining work](evidence/generated_act1_2026_09_13.md).
+[Source anchors, checks and remaining work](evidence/map_pruning_unknowns_2026_09_13.md).
 
 ## Complete Overgrowth encounter roster at A0
 
@@ -481,7 +498,7 @@ alias. Enemy moves stop on player death before later effects or another roll.
 
 This is a partial game model. Native RNG parity, full status/hook ordering,
 draw-prevention/after-draw hooks, other card-zone mechanics, remaining items,
-complex selections, full merchant pools/modifiers, native map pruning/unknown outcomes,
+complex selections, full merchant pools/modifiers, native event eligibility and map modifiers,
 all content and complete target-game progression remain in the
 [implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md). `RunEngine`
 orchestrates the restricted slice, not a complete native run. Other ascensions
@@ -496,10 +513,10 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v10`, including configuration,
+Private run snapshots now use `headless_run_state_v11`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
-encounter queues/assignments and exact claimed reward item IDs,
+encounter queues/assignments, unknown-room odds/outcomes and exact claimed reward item IDs,
 shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.
 Nested combat records now use `headless_combat_state_v5`, including the in-play
@@ -507,7 +524,7 @@ pile, pending continuation, selection/target RNG, power duration flags, player
 card-play counts, exact power applier slots and monster phase/spawn counters.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1/v2/v3/v4 and run v1/v2/v3/v4/v5/v6/v7/v8/v9 formats are rejected rather than assigning invented item
+v1/v2/v3/v4 and run v1/v2/v3/v4/v5/v6/v7/v8/v9/v10 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

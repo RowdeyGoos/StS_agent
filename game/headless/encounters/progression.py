@@ -81,22 +81,23 @@ class EncounterProgression:
         index = sum(ENCOUNTERS[name].room_kind == kind for name in self.assignments.values())
         return queue[index % len(queue)]
 
-    def validate(self, graph, visited_nodes, *, pending_node=False):
+    def validate(self, graph, visited_nodes, *, pending_node=False, room_kinds=None):
         if self.discovery != "all_seen" or self.boss not in BOSSES:
             raise ValueError("Unsupported encounter discovery or boss.")
         _validate_queue(self.normal_queue, ((WEAK, 3), (NORMAL, 12)))
         _validate_queue(self.elite_queue, ((ELITES, 15),))
         if not isinstance(self.assignments, dict):
             raise ValueError("Invalid encounter assignments.")
+        kinds = room_kinds if room_kinds is not None else {n.node_id: n.kind for n in graph.nodes}
         expected_nodes = [node_id for node_id in visited_nodes
-                          if graph.node(node_id).kind in ("combat", "elite", "boss")]
+                          if kinds[node_id] in ("combat", "elite", "boss")]
         if pending_node and expected_nodes and expected_nodes[-1] == visited_nodes[-1]:
             expected_nodes.pop()
         if set(self.assignments) != set(expected_nodes):
             raise ValueError("Encounter assignments differ from visited combat rooms.")
         counts = {"combat": 0, "elite": 0, "boss": 0}
         for node_id in expected_nodes:
-            kind = graph.node(node_id).kind
+            kind = kinds[node_id]
             queue = self.normal_queue if kind == "combat" else self.elite_queue if kind == "elite" else [self.boss]
             if self.assignments[node_id] != queue[counts[kind] % len(queue)]:
                 raise ValueError("Encounter assignment differs from its queue position.")

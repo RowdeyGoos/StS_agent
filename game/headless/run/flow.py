@@ -75,46 +75,37 @@ def apply(engine, action):
         raise ValueError(f"Illegal run action: {action!r}")
     state = engine.state
     if isinstance(action, ChooseNode):
-        # Resolve content before moving the cursor, so unsupported rooms cannot
-        # strand an otherwise usable run or consume the launch RNG.
-        node = engine.graph.node(action.node_id)
-        encounter_id = None
-        if node.kind in ("combat", "elite", "boss"):
-            from game.headless.encounters.progression import encounter_at
-            encounter_id = encounter_at(state, node)
-            if encounter_id not in ENCOUNTERS:
-                raise ValueError("Unsupported encounter.")
-            encounter = ENCOUNTERS[encounter_id]
-            if encounter.room_kind != node.kind:
-                raise ValueError("Map room and encounter kind disagree.")
-        elif node.kind == "event":
-            if node.event_id not in EVENTS:
-                raise ValueError("Unsupported map event.")
-        elif node.kind not in ("rest", "shop", "treasure", "slice_end", "terminal"):
-            raise ValueError("Unsupported room.")
+        # Unknown resolution and room construction form one transaction. Native
+        # outcome odds commit only with a usable room; failures restore navigation,
+        # RNG and the unresolved map point together.
         previous_node, previous_pending = state.current_node_id, state.pending
-        engine.choose_node(action.node_id)
-        if node.kind in ("combat", "elite", "boss", "shop", "treasure", "event"):
-            try:
-                if node.kind == "event":
-                    events.begin(state, node.event_id, cards=engine.cards)
-                    return node
-                if node.kind == "treasure":
-                    treasure.begin(state)
-                    return node
-                if node.kind == "shop":
-                    shop.begin(state, engine.cards)
-                    return node
+        previous_rng, previous_unknown = state.rng, state.unknown_rooms
+        node = engine.choose_node(action.node_id)
+        try:
+            if node.kind in ("combat", "elite", "boss"):
+                from game.headless.encounters.progression import encounter_at
+                encounter_id = encounter_at(state, node)
+                if encounter_id not in ENCOUNTERS or ENCOUNTERS[encounter_id].room_kind != node.kind:
+                    raise ValueError("Unsupported or mismatched encounter.")
                 return engine.start_combat(encounter_id=encounter_id)
-            except Exception:
-                # Room construction builds independently before committing. Restore
-                # the preceding navigation too if encounter construction fails.
-                state.current_node_id, state.pending = previous_node, previous_pending
-                state.visited_nodes.pop()
-                raise
-        if node.kind == "rest":
-            rest_site.begin_rest_site(state)
-        return node
+            if node.kind == "event":
+                if node.event_id not in EVENTS:
+                    raise ValueError("Unsupported map event.")
+                events.begin(state, node.event_id, cards=engine.cards)
+            elif node.kind == "treasure":
+                treasure.begin(state)
+            elif node.kind == "shop":
+                shop.begin(state, engine.cards)
+            elif node.kind == "rest":
+                rest_site.begin_rest_site(state)
+            elif node.kind not in ("slice_end", "terminal"):
+                raise ValueError("Unsupported room.")
+            return node
+        except Exception:
+            state.current_node_id, state.pending = previous_node, previous_pending
+            state.rng, state.unknown_rooms = previous_rng, previous_unknown
+            state.visited_nodes.pop()
+            raise
     if isinstance(action, (PlayCard, ChooseCombatCard, EndTurn, UsePotion)):
         if isinstance(action, UsePotion):
             slot = potion_slot(state, action.instance_id)

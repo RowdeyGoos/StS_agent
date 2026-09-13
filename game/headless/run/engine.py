@@ -60,15 +60,18 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen"):
+    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None):
         """Generate a full-length A0 map with declared restricted content pools."""
-        from game.headless.map.overgrowth import generate_overgrowth_map
+        from game.headless.map.overgrowth import generate_overgrowth_map, PROFILE
         from game.headless.encounters.progression import EncounterProgression
+        from game.headless.run.unknown_rooms import UnknownRooms
         config = RunConfig(ascension=ascension, relic_fallback="circlet")
         config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
         engine = cls(seed=seed, gold=99, config=config)
         engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
-        engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool)
+        engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)
+        if engine.graph.generation == PROFILE:
+            engine.state.unknown_rooms = UnknownRooms()
         add_relic(engine.state, "burning_blood")
         return engine
 
@@ -106,7 +109,8 @@ class RunEngine:
         self.state.require_room_entry(room_kind)
         if self.state.pending is not None and self.graph is not None:
             from game.headless.encounters.progression import encounter_at
-            selected_id = encounter_at(self.state, self.graph.node(self.state.current_node_id))
+            from game.headless.run.unknown_rooms import room_node
+            selected_id = encounter_at(self.state, room_node(self.state, self.graph, self.state.current_node_id))
             if selected_id is not None and selected_id != encounter_id:
                 raise ValueError("Combat must match the selected encounter.")
         # Build against an independent stream snapshot, committing only on success.
@@ -155,6 +159,10 @@ class RunEngine:
         if node_id not in self.available_nodes():
             raise ValueError("Map node is unavailable.")
         node = self.graph.node(node_id)
+        if node.kind == "unknown":
+            from game.headless.run.unknown_rooms import prepare_unknown
+            rng, unknown, node = prepare_unknown(self.state, self.graph, node)
+            self.state.rng, self.state.unknown_rooms = rng, unknown
         self.state.current_node_id = node_id
         self.state.visited_nodes.append(node_id)
         self.state.pending = {"kind": "node", "node_id": node_id, "room_kind": node.kind}

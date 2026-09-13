@@ -102,9 +102,10 @@ sts-headless-play --route overgrowth-generated --seed 2 --path left --rest-choic
 
 It adds 15 map rows plus a boss, branching paths and run-owned encounter queues
 (first three hallway fights weak, then normal encounters; separate elites).
-The declared profile assumes all encounters seen and uses supported event rooms
-and restricted card/item pools. Ancient choices, native path pruning and unknown
-room outcome rolls remain open. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
+The default profile prunes duplicate paths and resolves unknown markers once on
+entry using native base odds. It assumes all encounters seen and uses restricted
+event/card/item pools. Ancient choices, full event eligibility and map modifiers
+remain open. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
 
 
 Without reinstalling the console entry point, run

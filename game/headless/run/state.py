@@ -11,6 +11,7 @@ from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 from game.headless.run.config import RunConfig
 from game.headless.encounters.progression import EncounterProgression
+from game.headless.run.unknown_rooms import UnknownRooms
 
 
 class RunPhase(str, Enum):
@@ -58,6 +59,7 @@ class RunState:
     next_treasure_id: int = 0
     treasure_relics_drawn: list[str] = field(default_factory=list)
     encounter_progression: EncounterProgression | None = None
+    unknown_rooms: UnknownRooms | None = None
 
     def allocate_item_id(self) -> str:
         result = f"run.item.{self.next_item_id}"

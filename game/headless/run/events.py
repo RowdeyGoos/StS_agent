@@ -1,5 +1,7 @@
 """Scripted event lifecycle; individual choices and effects belong to content."""
 
+from game.headless.run.unknown_rooms import room_node
+
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.rng import GameRandomService
 from game.headless.events.catalog import EVENTS
@@ -74,7 +76,7 @@ def validate_event(state, graph, *, cards=DEFAULT_CARDS):
             or pending["event_instance_id"] != state.next_event_id - 1):
         raise ValueError("Invalid owned event identity.")
     if graph is not None:
-        node = None if state.current_node_id is None else graph.node(state.current_node_id)
+        node = None if state.current_node_id is None else room_node(state, graph, state.current_node_id)
         if node is None or node.kind != "event" or node.event_id != pending["definition_id"]:
             raise ValueError("Event differs from its room.")
     EVENTS[pending["definition_id"]].validate(pending, state=state, cards=cards, defeated=state.phase is RunPhase.DEFEAT)
