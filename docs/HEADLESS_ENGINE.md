@@ -224,6 +224,63 @@ operations in the core as needed. Do not put card-name switches, global mutable
 registries, live-service dependencies or callback closures into saved game state.
 Do not scaffold empty plugin frameworks or guess all future hooks now.
 
+## Relics
+
+The pinned solo Ironclad/Overgrowth Act 1 acquisition inventory contains **161
+relic definitions**: 118 shared, 8 Ironclad, 27 Neow, 7 event/evolution definitions
+and Circlet. All have rules in the explicit catalog. **160 can be obtained with
+the default card catalog**; Kaleidoscope validates that at least three other
+character pools are installed before it offers two sets of three foreign cards.
+The default environment has no such character catalogs. Multiplayer-only relics
+and other characters' exclusive relics are outside this scope.
+
+Generated `RunEngine.ironclad_act1()` runs now use all ordinary eligible relics
+for rewards/treasure and the full supported merchant relic pool. Old Coin and The
+Courier are excluded from merchant generation. Authored routes retain their
+explicit smaller `RunConfig` pools. Native rarity weights, shared grab-bag
+consumption across acquisition sources, unlock history and seed parity remain
+separate generation work.
+
+Relic rules live in small modules under `relics/`: `turns.py`, `plays.py` and
+`damage.py` own combat hooks; `run_rules.py` owns shared resource/card mutations;
+`pickup.py` and `neow.py` own acquisition; `rewards.py` and `pools.py` own offers.
+Persistent counters and extra data belong to each run-owned relic instance.
+Combat uses isolated copies and synchronizes counters back to the run; transient
+trigger memory resets on combat entry. None of this adds projections or encoders.
+
+Pickup choices use `ChooseRelicCard`, `ConfirmRelicSelection` and
+`ChooseRelicReward`. Their plain queue can pause over the granting shop, chest,
+reward or rest site. Nested Neow's Bones/Large Capsule rewards finish before their
+following effects; no room entry is legal until acquisition finishes. Failed
+acquisition rolls back resources, IDs, RNG and queued work. `obtain_relic(id)` is
+the between-room API for direct scenarios; ordinary play obtains relics through
+its room actions.
+
+Combat hooks include opening resources, turn/card/exhaust counters, damage and
+block modifiers, first-use/replay effects, reactive draws and potion interactions.
+A reactive draw can interrupt between enemy hits, survive JSON restore, and kill
+the attacker before it acts again. Run hooks include card upgrades/enchantments,
+gold/healing/max HP, potion capacity, Membership/Courier prices and restocking,
+Lift/Dig/extra rest actions, bonus rewards, Silver Crucible's first empty treasure,
+Juzu's unknown-room combat exclusion and Winged Boots' three non-edge travels.
+
+Relic-dependent content includes Sharp, Adroit, Momentum, Royally Approved, Swift,
+Nimble and Glam enchantments, Eternal Greed, Injury, Neow's Fury and Potion-Shaped
+Rock. Ordinary potion generation still uses the configured Fire/Block subset;
+Neow's Bones generates from the implemented modifier-curse subset. Completing
+relic rules does not supply missing potion/curse/foreign-character catalogs or
+replace the current fixed Neow starting offer profile with native offer generation.
+Event-only relics have executable pickup/combat rules even where their granting
+event has not yet been implemented.
+
+See the [scope inventory](../tests/fixtures/headless_relic_scope.json),
+[combat tests](../tests/headless/test_relic_combat.py),
+[run tests](../tests/headless/test_relic_run.py) and
+[source/validation record](evidence/relics_2026_09_13.md). Private combat **v10** and
+run **v20** persist the new state and reject older schemas; public fixture schemas
+are unchanged. This is static-source and synthetic execution evidence, not live
+or exhaustive interaction conformance.
+
 ## Generated full-length Overgrowth route
 
 ```python
@@ -284,9 +341,9 @@ matching the native fallback. `state.event_progression` owns queue order, cursor
 node assignments and plain entry conditions (gold and transformable-card count).
 Restore replays selection against those conditions and visited room outcomes. Reads and failed room construction never advance the queue.
 Remaining event content, unlock epochs and additional eligibility rules remain open. Card,
-item, shop and reward pools retain their restrictions. Unknown-room modifying relics, tutorial overrides and native RNG
+item, shop and reward pools retain their restrictions. Juzu Bracelet and Winged Boots now modify unknown/travel behavior; tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
-`RunConfig.relic_fallback="circlet"`, preventing exhausted fruit-relic rewards
+`RunConfig.relic_fallback="circlet"`, preventing exhausted relic rewards
 from blocking a later elite; authored routes retain their existing rejection rule.
 Each claimed reward records its exact item instance, including repeated Circlets.
 
@@ -319,8 +376,9 @@ without granting the reward again. Effects carry into the first combat. Removing
 an obtained relic does not reverse its upon-pickup effect.
 
 These are fixed supported positive choices, **not native Neow's complete offer
-generation** (two randomized positives and one curse). Remaining Neow relics,
-curse exclusions, modifiers, dialogue and unlock behavior are still content tasks.
+generation** (two randomized positives and one curse). The Neow relic rules are
+implemented separately; complete curse pools, offer exclusions, dialogue and unlock
+behavior remain content tasks.
 `ancient_profile=None` (the factory default), or omitting `--ancient`, explicitly
 retains the earlier post-Ancient fixture. The demo chooses Golden Pearl; callers
 can select either legal action. No profile/save data is read.
@@ -403,7 +461,7 @@ precedes an owned RNG draw; failed transforms preserve deck, allocator and RNG.
 
 The Ironclad transformation pool contains all 80 common/uncommon/rare cards.
 Aroma, Morphic Grove and Whispering Hollow also accept basic and Ancient Ironclad
-sources, implemented colorless/event cards and the supported curses Guilty/Clumsy.
+sources, implemented colorless/event cards and the supported curses Guilty/Clumsy/Injury; Eternal Greed cannot be transformed.
 Giant Rock transforms through the supported colorless pool.
 Curse transformations use their own two-card subpool, exclude the original
 definition and reset the replacement lifetime. Missing catalog content or
@@ -597,7 +655,7 @@ then be taken using `ClaimTreasureRelic(treasure_id)` or declined with
 `LeaveTreasure()`. Leaving a closed chest grants nothing. The example player
 opens the chest and claims its relic; direct commands also permit skipping.
 
-The relic is drawn on room entry from unowned Strawberry/Pear/Mango. A drawn
+The relic is drawn on room entry from the declared reward relic pool (Strawberry/Pear/Mango on the authored route). A drawn
 relic leaves the restricted treasure pool even if the chest or relic is skipped.
 The exhausted pool offers Circlet, which has no pickup effect and permits multiple
 separately owned instances. Ordinary relic definitions still reject duplicates.
@@ -635,7 +693,7 @@ rounded price; colorless cards cannot be the sale slot. Native base prices are
 1.15 multiplier, rounded before variation), 175/225/275 for fruits and 50 per potion. Cards and potions vary by ±5%; relics
 by ±15%. Sampling uses owned `shop.stock` and `shop.prices` streams, with discrete
 basis-point variation; this is not native pool composition, rarity weighting,
-float precision or RNG parity. Shops with discounts, restock relics and pickup selectors remain open. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
+float precision or RNG parity. Membership Card discounts, The Courier restocking and relic pickup selectors now use the shared relic rules. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
 
 ## Compatibility and limits
 
@@ -798,7 +856,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v19`, including configuration,
+Private run snapshots now use `headless_run_state_v20`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
@@ -807,7 +865,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v9`, including the in-play
+Nested combat records now use `headless_combat_state_v10`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

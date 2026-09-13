@@ -58,7 +58,7 @@ class CombatEngine:
         self.done = False
         self.winner: str | None = None
 
-    def reset(self, seed: int | None = None) -> None:
+    def reset(self, seed: int | None = None, *, relics=(), initial_hp=None, room_kind="combat", potion_capacity=3, potion_slots=3) -> None:
         if seed is not None:
             if type(seed) is not int:
                 raise ValueError("Combat seed must be an integer.")
@@ -72,9 +72,12 @@ class CombatEngine:
         self.turn = 1
         self.done = False
         self.winner = None
+        from game.headless.relics.combat import install
+        install(self.player, relics, room_kind=room_kind, hp=initial_hp, potion_capacity=potion_capacity, potion_slots=potion_slots)
         opening_draw = max(self.cards_per_turn, sum(c.spec.innate for c in self.player.deck.draw_pile))
         self.player.start_turn(draw_count=opening_draw)
         self._refresh_persistent_statuses()
+        self._check_terminal()
 
     def legal_actions(self) -> tuple[CombatAction, ...]:
         self._ensure_ready()
@@ -112,6 +115,8 @@ class CombatEngine:
                 self.player.choose_combat_card(action.instance_id)
             self._refresh_persistent_statuses()
             self._check_terminal()
+            if self.player.rules.enemy_turn is not None and not self.done and self.player.pending_play is None and self.player.rules.selection is None:
+                return self._continue_enemy_side()
             if self.player.rules.turn_ending and self.player.pending_play is None and self.player.rules.selection is None and not self.done:
                 return self._finish_turn()
             return CombatResult(self.done, self.winner, {"selected_card": getattr(action, "instance_id", None)})
@@ -140,18 +145,36 @@ class CombatEngine:
         self._check_terminal()
         if self.done:
             return CombatResult(self.done, self.winner, {"enemy_actions": []})
-        enemy_actions = []
-        # Summons never steal an existing slot or join a turn already in progress.
-        for slot, enemy in enumerate(tuple(self.enemies)):
-            if not enemy.can_take_turn:
-                continue
-            enemy.start_turn()
-            executed = enemy.execute_intent(self.player, tick_statuses=False)
-            enemy_actions.append({"enemy_index": slot, "enemy_name": enemy.name, "intent": executed.as_dict()})
+        self.player.rules.enemy_turn = {'limit': len(self.enemies), 'slot': 0, 'move': None, 'actions': []}
+        return self._continue_enemy_side()
+
+    def _continue_enemy_side(self):
+        from game.headless.core.enemy_turn import begin, execute, paused
+        progress = self.player.rules.enemy_turn
+        enemy_actions = progress['actions']
+        details = {}
+        while progress['slot'] < progress['limit']:
+            slot = progress['slot']
+            enemy = self.enemies[slot]
+            if progress['move'] is None:
+                if not enemy.can_take_turn:
+                    progress['slot'] += 1
+                    continue
+                enemy.start_turn()
+                progress['move'] = begin(enemy)
+            execute(enemy, self.player, progress['move'])
             self._refresh_persistent_statuses()
             self._check_terminal()
+            if paused(self.player) and not self.done:
+                return CombatResult(False, None, {'enemy_actions': list(enemy_actions)})
+            from game.headless.monsters.base import Intent
+            executed = Intent(**progress['move']['intent'])
+            enemy_actions.append({'enemy_index': slot, 'enemy_name': enemy.name, 'intent': executed.as_dict()})
+            progress['slot'] += 1
+            progress['move'] = None
             if self.done:
                 break
+        self.player.rules.enemy_turn = None
         details["enemy_actions"] = enemy_actions
         if len(enemy_actions) == 1:
             details["enemy_action"] = enemy_actions[0]["intent"]
@@ -176,6 +199,8 @@ class CombatEngine:
     def resolve_external_effect(self) -> CombatResult:
         """Settle an already validated item effect before run-level handoff."""
         self._ensure_ready()
+        from game.headless.core.resolution import drain
+        drain(self.player)
         self._refresh_persistent_statuses()
         self._check_terminal()
         return CombatResult(self.done, self.winner, {"enemy_actions": []})

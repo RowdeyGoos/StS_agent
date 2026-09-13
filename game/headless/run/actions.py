@@ -130,3 +130,34 @@ class ChooseEventCard:
 @dataclass(frozen=True, slots=True)
 class ChooseAncientRelic:
     definition_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseRelicCard:
+    instance_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class ConfirmRelicSelection:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseRelicReward:
+    index: int | None
+
+
+@dataclass(frozen=True, slots=True)
+class Lift:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class Dig:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseExtraReward:
+    index: int
+    definition_id: str | None

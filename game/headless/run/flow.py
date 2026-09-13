@@ -5,8 +5,8 @@ from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.events.catalog import EVENTS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
-    ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
-    Rest, Smith, Hatch, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
+    ChooseExtraReward, ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
+    Rest, Smith, Hatch, Lift, Dig, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
     OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
 )
@@ -17,6 +17,9 @@ from game.headless.run.state import RunPhase
 
 def legal_actions(engine) -> tuple:
     state, combat = engine.state, engine.combat
+    if state.relic_work:
+        from game.headless.relics.pickup import legal_actions as relic_actions
+        return relic_actions(state)
     if state.phase in (RunPhase.VICTORY, RunPhase.DEFEAT, RunPhase.SLICE_COMPLETE, RunPhase.ACT_COMPLETE):
         return ()
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "ancient":
@@ -46,16 +49,28 @@ def legal_actions(engine) -> tuple:
             actions.append(ClaimPotion())
         if reward["relic"] is not None and not reward["relic_claimed"]:
             actions.append(ClaimRelic())
+        for index, extra in enumerate(reward["extra_rewards"]):
+            if not extra["resolved"]:
+                actions.extend(ChooseExtraReward(index, name) for name in [*extra["offers"], None])
         actions.append(LeaveRewards())
     elif state.phase is RunPhase.ROOM and state.pending.get("kind") == "rest_site":
         stage = state.pending["stage"]
-        if stage == "options":
-            actions.append(Rest())
+        from game.headless.relics.run_rules import has, owned
+        used = state.pending["used"]
+        if stage == "options" or (stage == "hatched" and has(state, "miniature_tent")):
+            if "rest" not in used:
+                actions.append(Rest())
             from game.headless.run.hatching import eggs
-            if eggs(state):
+            if eggs(state) and "hatch" not in used:
                 actions.append(Hatch())
-            if rest_site.eligible_upgrades(state):
+            if rest_site.eligible_upgrades(state) and "smith" not in used:
                 actions.append(Smith())
+            if owned(state, "girya") and owned(state, "girya").counter < 3 and "lift" not in used:
+                actions.append(Lift())
+            if has(state, "shovel") and "dig" not in used:
+                actions.append(Dig())
+            if used:
+                actions.append(LeaveRest())
         elif stage == "smith":
             actions.extend(ChooseUpgrade(c) for c in state.pending["eligible"])
             actions.append(ChooseUpgrade(None))
@@ -79,17 +94,19 @@ def apply(engine, action):
     if action not in legal_actions(engine):
         raise ValueError(f"Illegal run action: {action!r}")
     state = engine.state
+    if state.relic_work:
+        from game.headless.relics.pickup import apply as apply_relic_choice
+        return apply_relic_choice(state, engine.cards, action)
     if isinstance(action, ChooseAncientRelic):
         return ancient.choose(state, action)
     if isinstance(action, ChooseNode):
         # Unknown resolution and room construction form one transaction. Native
         # outcome odds commit only with a usable room; failures restore navigation,
         # RNG and the unresolved map point together.
-        previous_node, previous_pending = state.current_node_id, state.pending
-        previous_rng, previous_unknown = state.rng, state.unknown_rooms
-        previous_events = state.event_progression
-        node = engine.choose_node(action.node_id)
+        from copy import deepcopy
+        before = deepcopy(state)
         try:
+            node = engine.choose_node(action.node_id)
             if node.kind in ("combat", "elite", "boss"):
                 from game.headless.encounters.progression import encounter_at
                 encounter_id = encounter_at(state, node)
@@ -110,16 +127,23 @@ def apply(engine, action):
                 raise ValueError("Unsupported room.")
             return node
         except Exception:
-            state.current_node_id, state.pending = previous_node, previous_pending
-            state.rng, state.unknown_rooms = previous_rng, previous_unknown
-            state.event_progression = previous_events
-            state.visited_nodes.pop()
+            state.__dict__.clear()
+            state.__dict__.update(before.__dict__)
+            engine.combat = None
             raise
     if isinstance(action, (PlayCard, ChooseCombatCard, ConfirmCombatSelection, EndTurn, UsePotion)):
         if isinstance(action, UsePotion):
             slot = potion_slot(state, action.instance_id)
             POTIONS[state.potions[slot].definition_id].use(engine.combat, action.target_slot)
             state.potions[slot] = None
+            from game.headless.relics.combat import owned, memory
+            relic = owned(engine.combat.player, "reptile_trinket")
+            if relic is not None and not engine.combat.player.combat_is_ending:
+                p = engine.combat.player
+                p.gain_strength(3)
+                memory(p, relic)["temporary_strength"] = memory(p, relic).get("temporary_strength", 0) + 3
+            from game.headless.relics.plays import hand_emptied
+            hand_emptied(engine.combat.player)
             result = engine.combat.resolve_external_effect()
         else:
             result = engine.combat.apply(action)
@@ -154,6 +178,8 @@ def apply(engine, action):
         return shop.choose_removal(state, action.instance_id)
     if isinstance(action, LeaveShop):
         return shop.leave(state)
+    if isinstance(action, ChooseExtraReward):
+        return rewards.choose_extra(state, engine.cards, action.index, action.definition_id)
     if isinstance(action, ClaimGold):
         return rewards.claim_gold(state)
     if isinstance(action, ChooseRewardCard):
@@ -164,6 +190,10 @@ def apply(engine, action):
         return rewards.claim_potion(state)
     if isinstance(action, LeaveRewards):
         return rewards.leave_combat_rewards(state)
+    if isinstance(action, Lift):
+        return rest_site.lift(state)
+    if isinstance(action, Dig):
+        return rest_site.dig(state)
     if isinstance(action, Rest):
         return rest_site.heal(state)
     if isinstance(action, Hatch):

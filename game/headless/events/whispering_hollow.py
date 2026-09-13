@@ -38,8 +38,8 @@ class WhisperingHollow:
             pending["stage"] = "potion_rewards"
         else:
             check_content(state, cards, TRANSFORM_POOL)
-            if len(state.deck) <= 1:
-                self._resolve(state, pending, state.deck[0].instance_id if state.deck else None, cards)
+            if len(deck_choice.eligible(state)) <= 1:
+                self._resolve(state, pending, deck_choice.eligible(state)[0].instance_id if deck_choice.eligible(state) else None, cards)
             else:
                 deck_choice.prepare(state, data)
                 data["choice"] = "hug"
@@ -56,8 +56,10 @@ class WhisperingHollow:
         data = pending["data"]
         if data["choice"] is None:
             deck_choice.prepare(state, data)
-        state.deck, state.rng, state.next_card_id = trial.deck, trial.rng, trial.next_card_id
-        state.hp = max(0, state.hp - self.damage)
+        from game.headless.run.deck import commit_trial
+        commit_trial(state, trial)
+        from game.headless.relics.run_rules import damage
+        damage(state, self.damage)
         data.update(choice="hug", eligible=[], selected=identity, result=result)
         pending["stage"] = "resolved"
 
@@ -70,10 +72,11 @@ class WhisperingHollow:
             raise ValueError("Invalid Whispering Hollow data.")
         stage, choice = pending["stage"], data["choice"]
         damaged = choice == "hug" and stage == "resolved"
-        if (state.hp != max(0, data["initial_hp"] - (self.damage if damaged else 0))
-                or state.gold != (max(0,data["initial_gold"]-data["price"]) if choice == "gold" else data["initial_gold"])
-                or defeated != (state.hp == 0)):
-            raise ValueError("Whispering Hollow resources differ from its choice.")
+        from game.headless.events.resources import validate
+        effects = [("cards_added", int(data["selected"] is not None)), ("damage", self.damage)] if damaged else [("spend_gold", data["price"])] if choice == "gold" else []
+        validate(state, pending, effects)
+        if defeated != (state.hp == 0):
+            raise ValueError("Whispering Hollow defeat differs from HP.")
         if choice == "gold" and stage in ("potion_rewards", "resolved"):
             potion_rewards.validate(state, data["rewards"], self.potion_pool, 2)
             if any(data[k] != v for k,v in deck_choice.empty().items()):

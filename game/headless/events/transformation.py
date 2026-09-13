@@ -4,9 +4,10 @@ from game.headless.cards.pools import REWARD_CARDS, ANCIENT_CARDS, COLORLESS_CAR
 
 TRANSFORM_POOL = REWARD_CARDS
 
-CURSE_POOL = ("guilty", "clumsy")
+CURSE_POOL = ("guilty", "clumsy", "injury")
+ETERNAL_SOURCES = ("greed",)
 COLORLESS_POOL = COLORLESS_CARDS
-COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop", "giant_rock")
+COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop", "giant_rock", "neows_fury")
 
 
 def replacement_pool(source, pool):
@@ -20,7 +21,7 @@ def transform(state, cards, identity, pool, *, stream):
 
 
 def check_content(state, cards, pool):
-    sources = (*pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_POOL, *COLORLESS_SOURCES)
+    sources = (*pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_POOL, *ETERNAL_SOURCES, *COLORLESS_SOURCES)
     if any(c.definition.definition_id not in sources for c in state.deck):
         raise ValueError("Transformation requires a supported source card and replacement pool.")
     for name in pool:

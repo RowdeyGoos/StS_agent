@@ -45,6 +45,14 @@ including optional selections, retained hands, delayed powers and combat-generat
 gold/potions. Eleven multiplayer-only colorless cards are excluded. Colorless
 merchant slots and transformations use the full solo pool. See the
 [colorless implementation and limits](docs/HEADLESS_ENGINE.md#colorless-cards).
+
+The [solo Act 1 relic rules](docs/HEADLESS_ENGINE.md#relics) cover the audited
+161-definition inventory, including nested pickup choices, combat triggers,
+shop/rest/reward modifiers and persistent counters. Generated runs use the full
+ordinary/merchant relic pools. The default catalog supports 160 directly;
+Kaleidoscope requires other-character card pools. Potion/curse generation retains
+its declared content subsets.
+
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain
 unfinished; see the [feature backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md).

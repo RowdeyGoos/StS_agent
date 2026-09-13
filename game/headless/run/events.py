@@ -18,6 +18,10 @@ def begin(state, definition_id, *, cards=DEFAULT_CARDS):
     pending = {"kind": "scripted_event", "definition_id": definition_id,
                "event_instance_id": state.next_event_id, "stage": "options",
                "data": EVENTS[definition_id].generate(rng, state=state, cards=cards)}
+    from game.headless.events.resources import capture
+    resource_context = capture(state)
+    if resource_context is not None:
+        pending["resources"] = resource_context
     EVENTS[definition_id].validate(pending, state=state, cards=cards)
     state.rng = rng
     state.next_event_id += 1
@@ -74,7 +78,7 @@ def leave(state, instance_id):
 
 def validate_event(state, graph, *, cards=DEFAULT_CARDS):
     pending = state.pending
-    if set(pending) != {"kind", "definition_id", "event_instance_id", "stage", "data"}:
+    if set(pending) - {"resources"} != {"kind", "definition_id", "event_instance_id", "stage", "data"}:
         raise ValueError("Invalid event state fields.")
     if pending["definition_id"] not in EVENTS or state.phase not in (RunPhase.ROOM, RunPhase.DEFEAT):
         raise ValueError("Invalid event definition or phase.")
@@ -85,4 +89,9 @@ def validate_event(state, graph, *, cards=DEFAULT_CARDS):
         node = None if state.current_node_id is None else room_node(state, graph, state.current_node_id)
         if node is None or node.kind != "event" or node.event_id != pending["definition_id"]:
             raise ValueError("Event differs from its room.")
+    from game.headless.events.resources import capture, expected
+    if (capture(state) is not None) != ("resources" in pending):
+        raise ValueError("Event resource context is missing or unexpected.")
+    if "resources" in pending:
+        expected(state, pending)
     EVENTS[pending["definition_id"]].validate(pending, state=state, cards=cards, defeated=state.phase is RunPhase.DEFEAT)

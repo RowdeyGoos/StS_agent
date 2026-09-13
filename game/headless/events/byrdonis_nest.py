@@ -45,8 +45,8 @@ class ByrdonisNest:
         if (stage, choice) not in (("options", None), ("resolved", "eat"), ("resolved", "take")):
             raise ValueError("Invalid Nest stage.")
         gain = self.max_hp_gain if choice == "eat" else 0
-        if state.max_hp != data["initial_max_hp"] + gain or state.hp != data["initial_hp"] + gain:
-            raise ValueError("Nest HP differs from its choice.")
+        from game.headless.events.resources import validate
+        validate(state, pending, [("max_hp", gain), ("cards_added", int(choice == "take"))])
         expected = list(data["originals"])
         if choice == "take":
             egg = next((c for c in state.deck if c.instance_id == data["egg_id"]), None)

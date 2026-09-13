@@ -47,7 +47,7 @@ def apply_power(p, name, amount, target=None):
             target.apply_status(name, amount, source=p)
         return
     if name == "strength":
-        p.strength += amount
+        p.gain_strength(amount)
         return
     from game.headless.powers import colorless
 
@@ -61,7 +61,7 @@ def apply_power(p, name, amount, target=None):
     if name in ("crimson_mantle", "inferno"):
         r.auxiliaries[name] = r.auxiliaries.get(name, 0) + 1
     if name == "setup_strike":
-        p.strength += amount
+        p.gain_strength(amount)
 
 
 def card_cost(p, card):
@@ -85,6 +85,7 @@ def card_cost(p, card):
         0,
         card.cost
         + card.combat_state.cost_change
+        + card.combat_state.combat_cost_change
         + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0),
     )
 
@@ -103,6 +104,8 @@ def after_exhaust(p, card):
                 tasks.append(["draw", amount, False])
     if card.definition.definition_id == "drum_of_battle":
         p.gain_energy((3 if card.upgraded else 2) * (1 + card.combat_state.replay_count))
+    from game.headless.relics.combat import tasks as relic_tasks
+    tasks += relic_tasks(p, "exhaust_ethereal" if r.auxiliaries.get("exhaust_ethereal") else "exhaust", card.instance_id)
     push(p, *tasks)
     if not p._resolving:
         drain(p)
@@ -147,7 +150,7 @@ def after_hp_loss(p, amount):
     if p.deck.in_play and p.deck.in_play[-1].instance_id in r.plays:
         r.plays[p.deck.in_play[-1].instance_id]["rupture"] += strength
     else:
-        p.strength += strength
+        p.gain_strength(strength)
     inferno = r.powers.get("inferno", 0)
     if inferno:
         for enemy in tuple(p.combat_enemies or ()):
@@ -158,14 +161,17 @@ def after_hp_loss(p, amount):
 def after_play(p, card):
     r = p.rules
     context = r.plays[card.instance_id]
-    p.strength += context["rupture"]
+    p.gain_strength(context["rupture"])
     context["rupture"] = 0
     if card.spec.kind == "attack":
         r.attacks_finished += 1
     r.plays_finished += 1
+    from game.headless.relics.combat import tasks as relic_tasks
     push(
         p,
         *[["after_card_power", card.instance_id, key] for key in r.powers],
+        *relic_tasks(p, "after_play", card.instance_id),
+        ["after_card_enchantment", card.instance_id],
         ["after_card_enemies", card.instance_id],
     )
 
@@ -192,9 +198,12 @@ def after_card_power(p, card, key):
 
 def start_turn(p, draw_count):
     r = p.rules
-    if not r.powers.get("barricade"):
-        p.block = 0
-    p.energy = p.energy_per_turn + r.powers.get("pyre", 0)
+    from game.headless.relics.combat import has, tasks as relic_tasks
+    from game.headless.relics.turns import start_turn as relic_start
+    if r.round_number and not r.powers.get("barricade"):
+        p.block = min(10, p.block) if has(p, "sturdy_clamp") else 0
+    p.energy = (p.energy if r.round_number and has(p, "ice_cream") else 0) + p.energy_per_turn + r.powers.get("pyre", 0)
+    draw_count = relic_start(p, draw_count)
     p.cards_played_this_turn = 0
     r.player_side = True
     r.turn_ending = False
@@ -215,17 +224,28 @@ def start_turn(p, draw_count):
                 p.hand.append(card)
             if card.upgrade_level + 1 < len(card.definition.levels):
                 card.upgrade()
-    p.strength += r.powers.get("demon_form", 0)
+    p.gain_strength(r.powers.get("demon_form", 0))
     from game.headless.powers.colorless import before_draw
 
     before_draw(p)
-    push(p, ["draw", draw_count, True], ["start_powers"], ["mayhem"])
+    push(p, *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], *relic_tasks(p, "after_draw"), *relic_tasks(p, "after_side_start"), ["mayhem"])
     drain(p)
+    if p.pending_play is not None or r.selection is not None:
+        # Native setup may pause while AfterSideTurnStart still completes.
+        from game.headless.relics.combat import execute as execute_relic
+        ready = [t for t in r.tasks if t[0] == "relic_hook" and t[2] == "after_side_start"]
+        for task in ready:
+            r.tasks.remove(task)
+            execute_relic(p, *task[1:])
 
 
 def end_turn(p):
     r = p.rules
     r.turn_ending = True
+    from game.headless.relics.combat import tasks as relic_tasks, memory
+    for relic in r.relics:
+        if relic["definition_id"] == "orichalcum":
+            memory(p, relic)["orichalcum_ready"] = p.block == 0
     tasks = [["block", r.powers["plating"], False]] if r.powers.get("plating") else []
     tasks += [["early_end", key] for key in r.powers]
     tasks += [
@@ -233,6 +253,7 @@ def end_turn(p):
         for c in tuple(p.deck.exhaust_pile)
         if c.definition.definition_id == "howl_from_beyond"
     ]
+    tasks += relic_tasks(p, "before_end")
     tasks += [["stampede", r.powers.get("stampede", 0)], ["discard_hand"]]
     push(p, *tasks)
     drain(p)

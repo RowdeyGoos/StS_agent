@@ -6,15 +6,25 @@ from game.headless.run.actions import OpenChest, ClaimTreasureRelic, LeaveTreasu
 from game.headless.run.inventory import add_relic
 from game.headless.run.state import RunPhase
 from game.headless.treasure.catalog import ORDINARY_CHEST
+from game.headless.relics.pools import treasure_pool
 
 
 def eligible_relics(state):
     excluded = {r.definition_id for r in state.relics} | set(state.treasure_relics_drawn)
-    return tuple(r for r in ORDINARY_CHEST.relic_pool if r not in excluded)
+    return tuple(r for r in treasure_pool(state) if r not in excluded)
 
 
 def begin(state):
     state.require_room_entry("treasure")
+    from game.headless.relics.run_rules import owned
+    crucible = owned(state, "silver_crucible")
+    if crucible is not None:
+        crucible.data["treasures"] += 1
+        if crucible.data["treasures"] == 1:
+            state.pending = {"kind": "treasure", "definition_id": ORDINARY_CHEST.definition_id, "treasure_id": state.next_treasure_id, "stage": "empty", "relic_id": None, "gold": 0, "claimed_instance_id": None}
+            state.next_treasure_id += 1
+            state.phase = RunPhase.ROOM
+            return
     pool = eligible_relics(state)
     rng = GameRandomService(state.seed)
     rng.restore(state.rng.snapshot())
@@ -52,7 +62,8 @@ def legal_actions(state):
 def open_chest(state):
     pending = _pending(state, "closed")
     gold = state.rng.randint("treasure.gold", *ORDINARY_CHEST.gold_range)
-    state.gold += gold
+    from game.headless.relics.run_rules import gain_gold
+    gain_gold(state, gold)
     pending["gold"], pending["stage"] = gold, "open"
     return gold
 

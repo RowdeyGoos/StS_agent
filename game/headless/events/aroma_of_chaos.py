@@ -22,8 +22,8 @@ class AromaOfChaos:
         return ("let_go", "maintain_control") if pending["stage"] == "options" else ()
 
     def eligible(self, state, choice):
-        return tuple(c.instance_id for c in state.deck if choice == "let_go"
-                     or c.upgrade_level + 1 < len(c.definition.levels))
+        return tuple(c.instance_id for c in state.deck if (choice == "let_go" and not c.spec.eternal)
+                     or (choice != "let_go" and c.upgrade_level + 1 < len(c.definition.levels)))
 
     def choose(self, state, pending, option_id, *, cards):
         self.check_content(state, cards)
@@ -57,6 +57,9 @@ class AromaOfChaos:
         data = pending["data"]
         if defeated or not isinstance(data, dict) or set(data) != {"choice", "eligible", "selected_card_id", "result"}:
             raise ValueError("Invalid Aroma state.")
+        from game.headless.events.resources import valid_new_card, validate
+        if "resources" in pending:
+            validate(state, pending, [("cards_added", int(data["choice"] == "let_go" and data["result"] is not None))])
         stage = pending["stage"]
         if stage == "options":
             if data != {"choice": None, "eligible": [], "selected_card_id": None, "result": None}:
@@ -91,5 +94,5 @@ class AromaOfChaos:
         if data["choice"] == "maintain_control":
             if selected != card.instance_id or card.upgrade_level < 1 or result["source_definition"] != card.definition.definition_id:
                 raise ValueError("Invalid Aroma upgrade result.")
-        elif card.upgrade_level != 0 or card.combats_seen != 0 or card.enchantment is not None or card.definition.definition_id not in replacement_pool(result["source_definition"], self.transform_pool) or card.definition.definition_id == result["source_definition"] or any(c.instance_id == selected for c in state.deck):
+        elif not valid_new_card(state, card) or card.combats_seen != 0 or card.definition.definition_id not in replacement_pool(result["source_definition"], self.transform_pool) or card.definition.definition_id == result["source_definition"] or any(c.instance_id == selected for c in state.deck):
             raise ValueError("Invalid Aroma transformation result.")

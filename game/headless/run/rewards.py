@@ -6,11 +6,12 @@ from game.headless.run.inventory import add_potion, add_relic
 from game.headless.encounters.catalog import ENCOUNTERS
 
 
-def begin_reward(state, cards, *, gold: int, card_ids, offer_count: int = 3) -> None:
+def begin_reward(state, cards, *, gold: int, card_ids, offer_count: int = 3, decorate_cards=True) -> None:
     state.require_between_rooms()
     if type(gold) is not int or gold < 0 or type(offer_count) is not int or offer_count <= 0:
         raise ValueError("Invalid reward parameters.")
-    pool = list(card_ids)
+    from game.headless.relics.rewards import extend_pool, decorate
+    pool = extend_pool(state, cards, card_ids)
     if len(pool) != len(set(pool)) or not pool:
         raise ValueError("Reward cards must be a nonempty distinct pool.")
     for card_id in pool:
@@ -18,7 +19,8 @@ def begin_reward(state, cards, *, gold: int, card_ids, offer_count: int = 3) -> 
     # Project-authored sampling, explicitly not a claim of native reward RNG.
     state.rng.shuffle("reward_offer", pool)
     state.pending = {"kind": "reward", "gold": gold, "gold_claimed": False,
-                     "offers": pool[:offer_count], "card_resolved": False}
+                     "offers": pool[:offer_count], "card_resolved": False,
+                     "card_modifiers": decorate(state, cards, pool[:offer_count]) if decorate_cards else {}}
     state.phase = RunPhase.REWARD
 
 
@@ -26,7 +28,8 @@ def claim_gold(state) -> int:
     reward = _reward(state)
     if reward["gold_claimed"]:
         raise ValueError("Gold reward was already claimed.")
-    state.gold += reward["gold"]
+    from game.headless.relics.run_rules import gain_gold
+    gain_gold(state, reward["gold"])
     reward["gold_claimed"] = True
     return reward["gold"]
 
@@ -35,7 +38,7 @@ def choose_card(state, cards, definition_id: str | None):
     reward = _reward(state)
     if reward["card_resolved"] or (definition_id is not None and definition_id not in reward["offers"]):
         raise ValueError("Card reward choice is unavailable.")
-    card = None if definition_id is None else add_card(state, cards.definition(definition_id))
+    card = None if definition_id is None else acquire_card(state, cards, definition_id, reward["card_modifiers"])
     reward["card_resolved"] = True
     return card
 
@@ -60,7 +63,7 @@ def eligible_relics(state):
     return pool or ((state.config.relic_fallback,) if state.config.relic_fallback else ())
 
 
-def begin_combat_rewards(state, cards, *, encounter_id=None) -> None:
+def begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False) -> None:
     """A0 encounter amounts with explicitly restricted, project-sampled pools.
 
     Draw once on entry. Reading choices and restoring a pending reward never
@@ -74,15 +77,21 @@ def begin_combat_rewards(state, cards, *, encounter_id=None) -> None:
     if encounter is not None and encounter.gives_relic and not relic_pool:
         raise ValueError("Restricted relic pool exhausted.")
     low, high = (10, 20) if encounter is None else encounter.gold_range
+    from game.headless.relics.run_rules import has
     dropped = state.rng.randint("potion_drop", 0, 99) < state.potion_drop_chance
-    state.potion_drop_chance += -10 if dropped else 10
-    gold = state.rng.randint("reward_gold", low, high)
+    dropped = dropped or has(state, "white_beast_statue")
+    state.potion_drop_chance = max(0, min(100, state.potion_drop_chance + (-10 if dropped else 10)))
+    gold = state.rng.randint("reward_gold", low, high) + (15 if has(state, "amethyst_aubergine") else 0)
     potion = state.rng.choice("reward_potion", state.config.reward_potions) if dropped else None
     pool = state.config.boss_reward_cards if encounter is not None and encounter.room_kind == "boss" else state.config.reward_cards
-    begin_reward(state, cards, gold=gold, card_ids=pool)
+    begin_reward(state, cards, gold=gold, card_ids=pool, decorate_cards=False)
+    from game.headless.relics.rewards import add_power_option, decorate, extra_rewards, extend_pool
+    add_power_option(state, cards, state.pending["offers"], extend_pool(state, cards, pool))
+    state.pending["card_modifiers"] = decorate(state, cards, state.pending["offers"], upgrade_all=undamaged and has(state, "lava_lamp"))
     relic = state.rng.choice("reward_relic", relic_pool) if relic_pool else None
+    state.pending["relic"] = relic
     state.pending.update(combat_reward=True, encounter_id=encounter_id, potion=potion,
-                         potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None)
+                         potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None, extra_rewards=extra_rewards(state, cards, encounter, undamaged=undamaged))
 
 
 def claim_potion(state):
@@ -119,3 +128,23 @@ def claim_relic(state, *, cards=None):
     reward["relic_claimed"] = True
     reward["relic_instance_id"] = relic.instance_id
     return relic
+
+
+def acquire_card(state, cards, name, modifiers):
+    from game.headless.enchantments.base import restore
+    modifier = modifiers[name]
+    card = add_card(state, cards.definition(name), upgrade_level=modifier['upgrade_level'])
+    if modifier['enchantment'] is not None:
+        card.enchantment = restore(modifier['enchantment'])
+    return card
+
+
+def choose_extra(state, cards, index, name):
+    reward = _reward(state)['extra_rewards'][index]
+    if reward['resolved'] or name is not None and name not in reward['offers']:
+        raise ValueError('Extra reward is unavailable.')
+    result = None
+    if name is not None:
+        result = add_relic(state, name, cards=cards) if reward['kind'] == 'relic' else acquire_card(state, cards, name, reward['modifiers'])
+    reward['resolved'] = True
+    return result

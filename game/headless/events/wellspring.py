@@ -29,8 +29,8 @@ class Wellspring:
             state.rng = trial.rng
             data.update(choice="bottle", rewards=rewards)
             pending["stage"] = "potion_rewards"
-        elif len(state.deck) <= 1:
-            self._resolve(state, pending, state.deck[0].instance_id if state.deck else None, cards)
+        elif len(deck_choice.eligible(state)) <= 1:
+            self._resolve(state, pending, deck_choice.eligible(state)[0].instance_id if deck_choice.eligible(state) else None, cards)
         else:
             deck_choice.prepare(state, data)
             data["choice"] = "bathe"
@@ -49,7 +49,8 @@ class Wellspring:
         data = pending["data"]
         if data["choice"] is None:
             deck_choice.prepare(state, data)
-        state.deck, state.next_card_id = trial.deck, trial.next_card_id
+        from game.headless.run.deck import commit_trial
+        commit_trial(state, trial)
         data.update(choice="bathe", eligible=[], selected=identity, guilty_id=guilty.instance_id)
         pending["stage"] = "resolved"
 
@@ -58,6 +59,9 @@ class Wellspring:
         if defeated or not isinstance(data, dict) or set(data) != {"choice", "rewards", "guilty_id", *deck_choice.empty()}:
             raise ValueError("Invalid Wellspring data.")
         choice, stage = data["choice"], pending["stage"]
+        if 'resources' in pending:
+            from game.headless.events.resources import validate
+            validate(state, pending, [('cards_added', int(choice == 'bathe' and stage == 'resolved'))])
         if choice == "bottle" and stage in ("potion_rewards", "resolved"):
             potion_rewards.validate(state, data["rewards"], self.potion_pool, 1)
             if data["guilty_id"] is not None or any(data[k] != v for k,v in deck_choice.empty().items()):

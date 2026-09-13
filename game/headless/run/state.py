@@ -53,6 +53,9 @@ class RunState:
     pending: dict | None = None
     config: RunConfig | None = None
     relics: list[RelicInstance] = field(default_factory=list)
+    relic_work: list[dict] = field(default_factory=list)
+    free_travels: list[dict] = field(default_factory=list)
+    potion_capacity: int = 3
     potions: list[PotionInstance | None] = field(default_factory=lambda: [None] * 3)
     next_item_id: int = 0
     potion_drop_chance: int = 40
@@ -81,10 +84,12 @@ class RunState:
         return result
 
     def require_between_rooms(self) -> None:
-        if self.phase is not RunPhase.ROUTE or self.pending is not None or self.hp <= 0:
+        if self.phase is not RunPhase.ROUTE or self.pending is not None or self.hp <= 0 or self.relic_work:
             raise ValueError("Operation requires a living run between rooms.")
 
     def require_room_entry(self, kind: str) -> None:
+        if self.relic_work:
+            raise ValueError("Resolve relic acquisition before entering a room.")
         if self.pending is None:
             self.require_between_rooms()
             return
@@ -94,6 +99,8 @@ class RunState:
             raise ValueError("Selected map node requires a different room.")
 
     def validate(self) -> None:
+        if self.phase is RunPhase.COMBAT and self.relic_work:
+            raise ValueError("Combat cannot own unfinished run relic acquisition.")
         from game.headless.core.card_state import CardState
         if any(c.combat_state != CardState() for c in self.deck):
             raise ValueError('Permanent cards cannot retain transient combat modifiers.')
@@ -134,10 +141,10 @@ class RunState:
             raise ValueError("Invalid shop counters.")
         if type(self.next_event_id) is not int or self.next_event_id < 0:
             raise ValueError("Invalid event allocator.")
-        from game.headless.treasure.catalog import ORDINARY_CHEST
+        from game.headless.relics.pools import treasure_pool
         if (type(self.next_treasure_id) is not int or self.next_treasure_id < 0
                 or not isinstance(self.treasure_relics_drawn, list)
-                or any(r not in ORDINARY_CHEST.relic_pool for r in self.treasure_relics_drawn)
+                or any(r not in treasure_pool(self) for r in self.treasure_relics_drawn)
                 or len(set(self.treasure_relics_drawn)) != len(self.treasure_relics_drawn)
                 or len(self.treasure_relics_drawn) > self.next_treasure_id):
             raise ValueError("Invalid treasure counters or depleted pool.")
@@ -145,8 +152,8 @@ class RunState:
             raise ValueError("Invalid item allocator.")
         if type(self.potion_drop_chance) is not int or not 0 <= self.potion_drop_chance <= 100 or self.potion_drop_chance % 10:
             raise ValueError("Invalid potion drop chance.")
-        if len(self.potions) != 3:
-            raise ValueError("The supported inventory has three potion slots.")
+        if type(self.potion_capacity) is not int or self.potion_capacity < 0 or len(self.potions) != self.potion_capacity:
+            raise ValueError("Invalid persistent potion capacity.")
         items = [*self.relics, *(p for p in self.potions if p is not None)]
         item_ids = [item.instance_id for item in items]
         if len(item_ids) != len(set(item_ids)):
@@ -159,8 +166,11 @@ class RunState:
                 raise ValueError("Item identity exceeds its allocator.")
         if any(not isinstance(r, RelicInstance) or r.definition_id not in RELICS for r in self.relics):
             raise ValueError("Unsupported relic.")
+        from game.headless.relics.combat import validate_data
+        for relic in self.relics:
+            validate_data(relic.definition_id, relic.data)
         nonstackable = [r.definition_id for r in self.relics if not RELICS[r.definition_id].stackable and not RELICS[r.definition_id].allow_duplicates]
-        if any(type(r.counter) is not int or not 0 <= r.counter < max(1, RELICS[r.definition_id].evolve_after_elites) for r in self.relics):
+        if any(type(r.counter) is not int or not 0 <= r.counter <= max(RELICS[r.definition_id].counter_limit, RELICS[r.definition_id].evolve_after_elites - 1) for r in self.relics):
             raise ValueError("Invalid relic progression counter.")
         if len(set(nonstackable)) != len(nonstackable):
             raise ValueError("Duplicate relic definition.")

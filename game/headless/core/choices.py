@@ -51,7 +51,8 @@ def confirm(p):
     p.rules.selection = None
     selected = set(s["selected"])
     p.deck.offered[:] = [c for c in p.deck.offered if c.instance_id in selected]
-    push(p, *[["selected", i, s["operation"], s["destination"], s["free"]] for i in s["selected"]])
+    trailing = [["draw", len(s["selected"]), False]] if s["operation"] == "discard_redraw" else []
+    push(p, *[["selected", i, s["operation"], s["destination"], s["free"]] for i in s["selected"]], *trailing)
     # Resolution can be invoked from a nested choice. Its outer drain owns work.
     if not p._resolving:
         drain(p)
@@ -64,6 +65,9 @@ def resolve(p, identity, operation, destination, free):
         return
     if operation == "exhaust":
         push(p, ["exhaust", identity])
+    elif operation == "discard_redraw":
+        move_out(p, card)
+        p.deck.discard_card(card)
     elif operation == "transform":
         from game.headless.cards.colorless_effects import transform
 

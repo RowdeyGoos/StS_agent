@@ -126,9 +126,9 @@ def test_curse_transform_uses_curse_pool_and_resets_lifetime(event,option_id):
     run=start(event,card_ids=['guilty'],gold=150)
     run.state.deck[0].combats_seen=3
     step(run,opt(run,option_id))
-    assert run.state.deck[0].definition.definition_id=='clumsy'
+    assert run.state.deck[0].definition.definition_id in ('clumsy', 'injury')
     assert run.state.deck[0].combats_seen==0
-    assert run.state.deck[0].spec.ethereal and run.state.deck[0].cost==-1
+    assert run.state.deck[0].spec.kind=='curse' and run.state.deck[0].cost==-1
 
 
 def test_bridge_prefers_nonbasic_then_excludes_previous_definition_and_skipped_cards():
@@ -255,8 +255,13 @@ def test_duplicate_swords_have_independent_ids_and_evolve_with_existing_jade():
 
 @pytest.mark.parametrize('event,choice',[('aroma_of_chaos','let_go'),('morphic_grove','group')])
 def test_fresh_transformed_guilty_cannot_restore_with_aged_lifetime(event,choice):
-    run=start(event,card_ids=['clumsy'],gold=150)
-    run.apply(opt(run,choice))
+    for seed in range(20):
+        run=start(event,card_ids=['clumsy'],gold=150,seed=seed)
+        run.apply(opt(run,choice))
+        if run.state.deck[0].definition.definition_id == 'guilty':
+            break
+    else:
+        pytest.fail('No Guilty transform sampled.')
     before=saved(run);bad=deepcopy(before)
     assert bad['state']['deck'][0]['definition_id']=='guilty'
     bad['state']['deck'][0]['combats_seen']=4

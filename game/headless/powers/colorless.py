@@ -99,10 +99,7 @@ def start_power(p, key):
     elif key in ("crimson_mantle", "inferno"):
         from game.headless.powers.ironclad import after_hp_loss
 
-        damage = min(p.hp, r.auxiliaries.get(key, 0))
-        p.hp -= damage
-        if damage:
-            after_hp_loss(p, damage)
+        p.lose_hp(r.auxiliaries.get(key, 0))
         if key == "crimson_mantle" and not p.combat_is_ending:
             p.gain_block(r.powers[key])
 
@@ -132,6 +129,9 @@ def ensure_draw(p, continuation, *, hand=True):
         return False
     if not p.deck.draw_pile and p.deck.discard_pile:
         p.deck._refill_draw_pile()
+        from game.headless.relics.combat import has
+        if has(p, "the_abacus"):
+            p.gain_block(6)
         if p.rules.powers.get("stratagem"):
             push(p, continuation)
             count = p.rules.powers["stratagem"]

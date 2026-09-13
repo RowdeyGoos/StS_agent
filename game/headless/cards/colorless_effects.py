@@ -66,8 +66,9 @@ def hit(p, card, target, *, extra=0):
     from game.headless.powers.damage import resolve_unblocked_damage
 
     amount = card.spec.base_damage + card.combat_state.extra_damage + extra
+    from game.headless.relics.damage import attack_bonus
     incoming = modify_attack_damage_for_statuses(
-        amount, target.statuses, p.statuses, p.strength, target._attack_multiplier(p.statuses)
+        amount + attack_bonus(p, card), target.statuses, p.statuses, p.strength, target._attack_multiplier(p.statuses)
     )
     blocked = min(target.block, incoming)
     # Damage-result totals include block and overkill, after flat HP caps.
@@ -138,7 +139,8 @@ class ColorlessOperation:
             eligible = not target.statuses.get("minion") and not target.statuses.get("illusion")
             total = hit(p, card, target, extra=r.powers.pop("vigor", 0))
             if op == "hand_of_greed" and eligible and not target.is_alive and p.is_alive:
-                r.gold_gained += amount
+                from game.headless.relics.combat import gain_gold
+                gain_gold(p, amount)
             elif op == "fisticuffs" and not p.combat_is_ending:
                 p.gain_block(total, powered=True)
             elif op == "omnislice":

@@ -19,17 +19,18 @@ def hatch(state, cards):
     originals = [card_record(c) for c in state.deck]
     original_relic_ids = [r.instance_id for r in state.relics]
     relic = add_relic(trial, "byrdpip", cards=cards)
-    state.deck, state.next_card_id = trial.deck, trial.next_card_id
-    state.relics, state.next_item_id = trial.relics, trial.next_item_id
+    from game.headless.run.deck import commit_trial
+    commit_trial(state, trial)
     state.pending = {"kind": "rest_site", "stage": "hatched", "originals": originals,
-                     "relic_id": relic.instance_id, "original_relic_ids": original_relic_ids}
+                     "relic_id": relic.instance_id, "original_relic_ids": original_relic_ids, "used": [*state.pending["used"], "hatch"]}
     return relic
 
 
 def validate(state, cards):
     pending = state.pending
-    if set(pending) != {"kind", "stage", "originals", "relic_id", "original_relic_ids"} or not isinstance(pending["originals"], list):
+    if set(pending) != {"kind", "stage", "originals", "relic_id", "original_relic_ids", "used"} or not isinstance(pending["originals"], list):
         raise ValueError("Invalid hatched rest-site state.")
+    from game.headless.events.resources import valid_new_card
     originals = [restore_card(row, cards) for row in pending["originals"]]
     for card in originals:
         validate_enchantment(card, permanent=True)
@@ -49,7 +50,7 @@ def validate(state, cards):
     for original, current in zip(originals, state.deck):
         if original.definition.definition_id == "byrdonis_egg":
             if (current.instance_id in ids or current.definition.definition_id != "byrd_swoop"
-                    or current.upgrade_level or current.combats_seen or current.enchantment is not None):
+                    or not valid_new_card(state, current) or current.combats_seen):
                 raise ValueError("Egg did not become a fresh base Byrd Swoop.")
         elif card_record(current) != card_record(original):
             raise ValueError("Hatch changed an unrelated card.")

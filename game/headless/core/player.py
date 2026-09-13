@@ -101,9 +101,15 @@ class Player:
             if self.rules.powers.get("no_block") and self.deck.in_play:
                 return
             amount += self.rules.powers.get("dexterity", 0)
+            card = self.deck.in_play[-1] if self.deck.in_play else None
+            if card is not None and card.enchantment is not None and card.enchantment.definition_id == "nimble":
+                amount += card.enchantment.amount
             if self.deck.in_play and self.deck.in_play[-1].definition.defend:
                 amount += self.rules.powers.get("fasten", 0)
         gain = max(0, amount) * block_multiplier(self, powered)
+        if powered:
+            from game.headless.relics.damage import block_multiplier as relic_block_multiplier
+            gain *= relic_block_multiplier(self, gain)
         if powered and self.statuses.get("frail"):
             gain = gain * 3 // 4
         self.block += gain
@@ -137,20 +143,11 @@ class Player:
             if is_attack
             else amount
         )
-        previous_hp = self.hp
-        self.hp, self.block = apply_damage_to_block_and_hp(
-            self.hp,
-            self.block,
-            incoming_damage,
-            statuses=self.statuses,
-        )
-        damage = previous_hp - self.hp
-        from game.headless.powers.ironclad import after_hp_loss
-
-        if damage and is_attack and self.rules.powers.pop("the_gambit", 0):
-            self.hp = 0
-        if damage:
-            after_hp_loss(self, damage)
+        blocked = min(self.block, incoming_damage)
+        self.block -= blocked
+        from game.headless.powers.damage import resolve_unblocked_damage
+        remaining = resolve_unblocked_damage(self.statuses, incoming_damage - blocked)
+        damage = self.lose_hp(remaining, unblockable=False, attack=is_attack, source=source)
         if (
             is_attack
             and self.is_alive
@@ -159,6 +156,20 @@ class Player:
             and self.rules.powers.get("flame_barrier")
         ):
             source.take_damage(self.rules.powers["flame_barrier"], is_attack=False)
+        return damage
+
+    def lose_hp(self, amount, *, unblockable=True, attack=False, source=None):
+        from game.headless.relics.damage import hp_loss_amount, prevent_death, after_damage
+        from game.headless.powers.ironclad import after_hp_loss
+        amount = hp_loss_amount(self, amount)
+        damage = min(self.hp, amount)
+        self.hp = max(0, self.hp - amount)
+        if amount and attack and self.rules.powers.pop("the_gambit", 0):
+            self.hp = 0
+        prevent_death(self)
+        if amount:
+            after_hp_loss(self, amount)
+        after_damage(self, amount, unblockable=unblockable, attack=attack, source=source)
         return damage
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
@@ -171,7 +182,8 @@ class Player:
         """Increase player strength."""
         if amount < 0:
             raise ValueError("Strength gain cannot be negative.")
-        self.strength += amount
+        from game.headless.relics.damage import strength_gain
+        self.strength += strength_gain(self, amount)
 
     def add_card_to_discard(self, card: Card) -> None:
         """Add a card directly to the discard pile."""

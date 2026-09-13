@@ -32,6 +32,7 @@ class CardSpec:
     innate: bool = False
     x_cost: bool = False
     retain: bool = False
+    eternal: bool = False
 
     @property
     def is_dead_card(self) -> bool:
@@ -101,7 +102,11 @@ class Card:
 
     @property
     def spec(self) -> CardSpec:
-        return self.definition.spec_at(self.upgrade_level)
+        spec = self.definition.spec_at(self.upgrade_level)
+        if self.enchantment is not None and self.enchantment.definition_id == "royally_approved":
+            from dataclasses import replace
+            return replace(spec, innate=True, retain=True)
+        return spec
 
     @property
     def name(self) -> str:

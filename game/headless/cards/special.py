@@ -48,19 +48,21 @@ def apply_operation(operation, card, p, target, amount):
     if p.combat_is_ending:
         return
     r = p.rules
-    if operation == "clone":
+    if operation == "random_discard_to_hand":
+        choices = list(p.deck.discard_pile)
+        p.deck.selection_rng.shuffle(choices)
+        for chosen in choices[:amount]:
+            move_out(p, chosen)
+            (p.hand if len(p.hand) < 10 else p.deck.discard_pile).append(chosen)
+    elif operation == "clone":
         clone_to(p, card, "discard_pile")
     elif operation == "hp_loss":
-        loss = min(p.hp, amount)
-        p.hp -= loss
-        if loss:
-            from game.headless.powers.ironclad import after_hp_loss
-
-            after_hp_loss(p, loss)
+        p.lose_hp(amount)
     elif operation == "energy":
         p.gain_energy(amount)
     elif operation == "heal":
-        p.hp = min(p.max_hp, p.hp + amount)
+        from game.headless.relics.combat import heal
+        heal(p, amount)
     elif operation == "energy_from_attacks":
         p.gain_energy(sum(c.spec.kind == "attack" for c in p.hand))
     elif operation == "energy_if_exhausted":
@@ -72,7 +74,7 @@ def apply_operation(operation, card, p, target, amount):
         if p.hand:
             push(p, ["exhaust", p.deck.selection_rng.choice(p.hand).instance_id])
     elif operation == "dominate":
-        p.strength += target.statuses.get("vulnerable") if target.is_alive else 0
+        p.gain_strength(target.statuses.get("vulnerable") if target.is_alive else 0)
     elif operation == "double_vulnerable":
         if target.is_alive:
             target.apply_status("vulnerable", target.statuses.get("vulnerable"), source=p)
