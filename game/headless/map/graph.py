@@ -8,6 +8,7 @@ class MapNode:
     node_id: str
     kind: str
     next_node_ids: tuple[str, ...]
+    encounter_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

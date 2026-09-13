@@ -21,6 +21,18 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — M1 implemented with restricted content:**
+  `RunEngine.ironclad_slice()` now plays Ironclad A0 through Nibbit → rewards →
+  rest or smith → Overgrowth slimes → rewards → `slice_complete`. It includes
+  native starter inventory, Burning Blood, Fire/Block Potions, independent reward
+  claims/skips, persistent card upgrades and JSON continuation at every decision.
+  This delivers representative work in HF-04/07/08/09/24/26/28/31/32/34; none of
+  those broad tasks is thereby complete for all content. See the
+  [engine guide](HEADLESS_ENGINE.md) for commands/ownership and the
+  [source evidence](evidence/first_vertical_slice_2026_09_13.md) for native anchors
+  and explicit sampling/content restrictions. The CLI is `sts-headless-play`.
+  Full act progression, native generation, other items and broader selectors
+  remain open. Completing this authored slice is not native run victory.
 - **2026-09-13 — independent game engine:** [game/headless][game package] now owns
   combat, cards, monsters, statuses, persistent deck instances, RNG and private
   continuation, with authored map and basic room/reward operations. It imports no
@@ -43,8 +55,9 @@ into validation of changed code.
   Accepted reduced backend artifacts retain their original behavior and identities.
 - HF-04/08 have working foundations, not complete full-game coverage. HF-06 has
   ordered immediate card effects, not a general trigger/continuation system.
-  Upgrade selection in a rest site, event or reward remains HF-16/31/33/34 work.
-  The direct between-room upgrade operation does not establish source legality.
+  Cancelable single-card rest-site smithing is implemented; event/reward and
+  nested combat selectors remain HF-16/31/33/34 work. The test-only direct
+  between-room upgrade operation does not establish source legality.
 
 ## Scope and definition of complete
 
@@ -253,7 +266,7 @@ the bridge solely for documentation or ordinary headless content work.
 | Milestone | Observable completion | Main tasks |
 | --- | --- | --- |
 | M0: trusted first mechanic | One named combat transition has independent expected legality, effects and post-state against the pinned target | HF-01/02 and necessary game rules in HF-04–17; evaluate HF-51 only if it could change backend direction |
-| M1: persistent gameplay slice | Start a declared run; use a real card upgrade, one relic and one potion; finish two encounters with exact persistent effects and replay | HF-04–17, HF-24/26/28/31/32/34, limited to representative game content |
+| M1: persistent gameplay slice — implemented, restricted content | Start a declared run; use a real card upgrade, one relic and one potion; finish two encounters with exact persistent effects and replay | Representative HF-04–17, HF-24/26/28/31/32/34; evidence and limits above |
 | M2: full-length reduced-content run | Traverse the target act structure, representative rooms and bosses to an actual ending, with explicit restricted-content labeling | HF-19–43 as required by the selected slice, plus HF-08/48 |
 | Consumer integration | Expose completed game capabilities through public choices, collection and training | HF-03/44–47 after the corresponding game rules stabilize |
 | M3: complete Ironclad A0 scope | Every reachable inventory row and decision family is implemented, all identified divergences resolved, full-run conformance accepted | All required HF-01–50 work for A0; no silent pool exclusions |

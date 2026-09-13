@@ -23,6 +23,7 @@ dev = [
 
 [project.scripts]
 sts-headless = "game.cli.headless:main"
+sts-headless-play = "game.cli.headless_play:main"
 sts-train = "game.cli.train:main"
 sts-sweep = "game.cli.sweep:main"
 sts-watch = "game.cli.watch_policy:main"

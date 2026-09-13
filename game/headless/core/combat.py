@@ -125,6 +125,13 @@ class CombatEngine:
         from game.headless.core.snapshots import capture_combat
         return capture_combat(self, cards=cards, monsters=monsters)
 
+    def resolve_external_effect(self) -> CombatResult:
+        """Settle an already validated item effect before run-level handoff."""
+        self._ensure_ready()
+        self._refresh_persistent_statuses()
+        self._check_terminal()
+        return CombatResult(self.done, self.winner, {})
+
     def restore(self, snapshot: dict, *, cards=None, monsters=None) -> None:
         from game.headless.core.snapshots import restore_combat
         # Decoder constructs and validates a separate graph before installation.

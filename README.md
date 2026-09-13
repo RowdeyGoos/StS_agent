@@ -42,7 +42,16 @@ unfinished; see the [feature backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md)
 
 ```bash
 PYTHONPATH=. python -m pytest -q tests/headless
+sts-headless-play --seed 2 --rest-choice smith --verify-restore
 ```
+
+The playable first slice starts Ironclad at Ascension 0, fights Nibbit, collects
+rewards, rests or upgrades a card, then fights Overgrowth slimes and collects the
+second rewards. It includes Burning Blood and Fire/Block Potions. The map and
+reward pools are explicitly restricted; `slice_complete` is not full-game victory.
+Use `--rest-choice rest` for the healing path and `--trace` to print every command.
+Without reinstalling the console entry point, run
+`PYTHONPATH=. python -m game.cli.headless_play` with the same arguments.
 
 ## Combat experiments
 

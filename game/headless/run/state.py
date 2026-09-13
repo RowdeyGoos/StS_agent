@@ -7,6 +7,9 @@ from enum import Enum
 
 from game.headless.cards.base import Card
 from game.headless.core.rng import GameRandomService
+from game.headless.potions.base import POTIONS, PotionInstance
+from game.headless.relics.base import RELICS, RelicInstance
+from game.headless.run.config import RunConfig
 
 
 class RunPhase(str, Enum):
@@ -16,6 +19,7 @@ class RunPhase(str, Enum):
     ROOM = "room"
     VICTORY = "victory"
     DEFEAT = "defeat"
+    SLICE_COMPLETE = "slice_complete"
 
 
 @dataclass
@@ -33,6 +37,16 @@ class RunState:
     visited_nodes: list[str] = field(default_factory=list)
     # Pending gameplay data contains values, never callback closures or wire DTOs.
     pending: dict | None = None
+    config: RunConfig | None = None
+    relics: list[RelicInstance] = field(default_factory=list)
+    potions: list[PotionInstance | None] = field(default_factory=lambda: [None] * 3)
+    next_item_id: int = 0
+    potion_drop_chance: int = 40
+
+    def allocate_item_id(self) -> str:
+        result = f"run.item.{self.next_item_id}"
+        self.next_item_id += 1
+        return result
 
     def allocate_card_id(self) -> str:
         allocated = {card.instance_id for card in self.deck}
@@ -71,3 +85,27 @@ class RunState:
             raise ValueError("Run HP and defeat phase disagree.")
         if not isinstance(self.phase, RunPhase):
             raise ValueError("Invalid run phase.")
+        if self.config is not None and not isinstance(self.config, RunConfig):
+            raise ValueError("Invalid run configuration.")
+        if type(self.next_item_id) is not int or self.next_item_id < 0:
+            raise ValueError("Invalid item allocator.")
+        if type(self.potion_drop_chance) is not int or not 0 <= self.potion_drop_chance <= 100 or self.potion_drop_chance % 10:
+            raise ValueError("Invalid potion drop chance.")
+        if len(self.potions) != 3:
+            raise ValueError("The supported inventory has three potion slots.")
+        items = [*self.relics, *(p for p in self.potions if p is not None)]
+        item_ids = [item.instance_id for item in items]
+        if len(item_ids) != len(set(item_ids)):
+            raise ValueError("Item identities must be unique.")
+        for item in items:
+            if not isinstance(item.instance_id, str) or not item.instance_id.startswith("run.item."):
+                raise ValueError("Invalid owned item identity.")
+            suffix = item.instance_id.removeprefix("run.item.")
+            if not suffix.isdecimal() or str(int(suffix)) != suffix or int(suffix) >= self.next_item_id:
+                raise ValueError("Item identity exceeds its allocator.")
+        if any(not isinstance(r, RelicInstance) or r.definition_id not in RELICS for r in self.relics):
+            raise ValueError("Unsupported relic.")
+        if len({r.definition_id for r in self.relics}) != len(self.relics):
+            raise ValueError("Duplicate relic definition.")
+        if any(p is not None and (not isinstance(p, PotionInstance) or p.definition_id not in POTIONS) for p in self.potions):
+            raise ValueError("Unsupported potion.")
