@@ -2,6 +2,7 @@
 
 from types import MappingProxyType
 from functools import partial
+from game.headless.encounters.events import dense_vegetation
 from game.headless.encounters.base import EncounterDefinition
 from game.headless.monsters.byrdonis import Byrdonis
 from game.headless.monsters.vantom import Vantom
@@ -39,6 +40,7 @@ def vantom_encounter(rng):
 
 
 ENCOUNTERS = MappingProxyType({
+    "dense_vegetation_event": EncounterDefinition(dense_vegetation, event_id="dense_vegetation"),
     "overgrowth_shrinker": EncounterDefinition(partial(solo, ShrinkerBeetle)),
     "overgrowth_crawlers": EncounterDefinition(build_overgrowth_shrinker_fuzzy_encounter),
     "overgrowth_cubex": EncounterDefinition(partial(solo, CubexConstruct)),

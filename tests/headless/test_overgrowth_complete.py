@@ -52,8 +52,8 @@ def fight(encounter, cards=(), hp=10000, draw=0):
 
 
 def test_native_census_is_complete_and_only_a0_content_is_enabled():
-    assert len(NATIVE_OVERGROWTH_ENCOUNTERS) == len(ENCOUNTERS) == 22
-    assert set(NATIVE_OVERGROWTH_ENCOUNTERS.values()) == set(ENCOUNTERS)
+    assert len(NATIVE_OVERGROWTH_ENCOUNTERS) == 22
+    assert set(NATIVE_OVERGROWTH_ENCOUNTERS.values()) == {k for k, v in ENCOUNTERS.items() if v.event_id is None}
     assert len(DEFAULT_MONSTERS) == 30  # 29 native types plus the synthetic SimpleEnemy.
     assert sum(e.room_kind == 'elite' for e in ENCOUNTERS.values()) == 3
     assert sum(e.room_kind == 'boss' for e in ENCOUNTERS.values()) == 3
@@ -73,7 +73,7 @@ def test_every_encounter_runs_twelve_turns_and_restores_every_boundary(encounter
         assert not combat.done
 
 
-@pytest.mark.parametrize('encounter', tuple(ENCOUNTERS))
+@pytest.mark.parametrize('encounter', tuple(NATIVE_OVERGROWTH_ENCOUNTERS.values()))
 def test_every_encounter_can_reach_victory_and_defeat_with_exact_reward_handoff(encounter):
     definition = ENCOUNTERS[encounter]
     graph = MapGraph((MapNode('fight', definition.room_kind, (), encounter),), 'fight')

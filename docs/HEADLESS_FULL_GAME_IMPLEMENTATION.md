@@ -21,6 +21,12 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — Dense Vegetation/event combat:** both initial branches and the
+  mandatory post-rest four-Wriggler fight now reach ordinary rewards/map or defeat.
+  Owned event combat history is separate from normal encounter queues and supports
+  exact continuation through combat/rewards. The generated pool now has nine
+  events. Resuming events and extra special combat rewards remain open.
+  [Evidence](evidence/dense_vegetation_2026_09_13.md).
 - **2026-09-13 — four-event pack:** Whispering Hollow, Wellspring, Slippery Bridge
   and Sunken Statue now include both branches, potion reward bundles, permanent
   removal, complete Guilty expiry and independent Sword of Stone/Jade progression.
@@ -1135,11 +1141,17 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-41 — Run event combat and resume its parent
 
+- **Partial:** Dense Vegetation now transfers into four unstunned Wrigglers,
+  ordinary combat rewards and map exit. Its event/fight/history identities restore
+  separately from normal encounter queues. Victory, defeat, reward skip, repeat
+  events and failed launch rollback are covered. Resuming parents, temporary
+  training and special rewards remain open. [Evidence](evidence/dense_vegetation_2026_09_13.md).
+
 - **Depends on:** HF-07/09/19/31/32/39.
 - **Implement:** event-selected encounters, temporary combat rules/objectives,
   bounded training/expiry where applicable, victory/defeat/escape result handling,
   non-resuming exits and resuming event pages with rewards/selectors. Start with a
-  named Battleworn Dummy or Dense Vegetation branch; add the target's extra special
+  named Battleworn Dummy branch on the existing event combat path; add the target's extra special
   rewards through the common reward engine.
 - **Accept:** training expiry is distinguishable from ordinary combat victory;
   death cannot resume the parent; victory can return through a reward child to the
@@ -1336,15 +1348,16 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The next Act 1 batch should cover **event combat and its permanent rewards**:
+The next Act 1 batch should cover **remaining event content and its permanent effects**:
 
-1. **HF-41 / Dense Vegetation:** inspect the pinned encounter and both branches;
-   add an owned event-to-combat transition, native reward handling and the correct
-   non-resuming map exit. Reuse ordinary combat/reward engines. Accept victory,
-   defeat, exact continuation at every child and no duplicate launch or grant.
-2. **HF-43 / Byrdonis Nest:** inspect all choices and implement its granted card's
-   complete combat behavior before registering the event. Accept acquisition,
-   deck selection, next-combat behavior and restoration after each decision.
+1. **HF-41 / resuming event combat:** select the next native caller and verify its
+   terminal/resume policy and special rewards. Extend the existing owned event
+   combat path with the concrete parent continuation. Accept victory, defeat,
+   reward completion and restore inside both the child and resumed parent.
+2. **HF-43 / Byrdonis Nest:** implement Eat's +7 maximum HP and Take's Byrdonis
+   Egg together with the egg's rest-site option and hatch result. Native entry
+   excludes existing event pets. Inspect those dependencies before registration;
+   accept acquisition, rest-site choice, hatch and subsequent combat continuation.
 3. **HF-40 / Sapphire Seed:** implement its concrete enchantment and selection
    semantics together, with serializable per-card modification state. Accept
    upgraded/unupgraded targets, ineligible cards and next-combat effects.
@@ -1360,7 +1373,7 @@ The next Act 1 batch should cover **event combat and its permanent rewards**:
 
 Each event assignment must pin its native branches, implement dependencies, test
 entry predicates and exhausted-pool fallback, and verify installed acquisition
-through the next room. Current coverage: [four-event pack](evidence/event_pack_2026_09_13.md).
+through the next room. Current event-combat coverage: [Dense Vegetation](evidence/dense_vegetation_2026_09_13.md).
 Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json

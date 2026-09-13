@@ -112,7 +112,10 @@ Morphic Grove's native entry conditions. Whispering Hollow, Wellspring, Slippery
 Bridge and Sunken Statue add potion bundles, removal/curse choices, escalating
 damage and a sword that evolves after five elite victories. Potion rewards use
 the supported Fire/Block pool; curse transformations use Guilty/Clumsy. See the
-[event pack evidence](docs/evidence/event_pack_2026_09_13.md). Add `--ancient neow` to begin with
+[event pack evidence](docs/evidence/event_pack_2026_09_13.md). Dense Vegetation
+brings the generated pool to nine: Trudge On trades 8 HP for gold, while Rest
+heals 30% maximum HP before a mandatory four-Wriggler fight, ordinary rewards
+and map continuation. See [event combat evidence](docs/evidence/dense_vegetation_2026_09_13.md). Add `--ancient neow` to begin with
 the restricted Golden Pearl (+150 gold) / Nutritious Oyster (+11 maximum HP)
 choice; omit it for the post-Ancient fixture start. Full Neow offers, event
 content/unlock conditions and map modifiers remain open. The installed seed-2 right/rest demo with `--ancient neow` completes

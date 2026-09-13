@@ -10,6 +10,7 @@ class EncounterDefinition:
     room_kind: str = "combat"
     gold_range: tuple[int, int] = (10, 20)
     gives_relic: bool = False
+    event_id: str | None = None
 
     def __call__(self, rng):
         return self.factory(rng)

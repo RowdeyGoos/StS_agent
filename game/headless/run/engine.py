@@ -73,7 +73,7 @@ class RunEngine:
         config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
         if (map_profile or PROFILE) == PROFILE:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
-                                                     "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue"))
+                                                     "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation"))
         engine = cls(seed=seed, gold=99, config=config)
         engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
         engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)
@@ -111,6 +111,8 @@ class RunEngine:
             if encounter_id not in ENCOUNTERS or encounter_factory is not None or enemy_factory is not None:
                 raise ValueError("Unsupported or ambiguous encounter.")
             encounter_factory = ENCOUNTERS[encounter_id]
+            if encounter_factory.event_id is not None:
+                raise ValueError("Event encounters require their event combat transition.")
             room_kind = encounter_factory.room_kind
             if encounter_factory.gives_relic:
                 from game.headless.run.rewards import eligible_relics
@@ -123,6 +125,20 @@ class RunEngine:
             selected_id = encounter_at(self.state, room_node(self.state, self.graph, self.state.current_node_id))
             if selected_id is not None and selected_id != encounter_id:
                 raise ValueError("Combat must match the selected encounter.")
+        rng, combat = self._prepare_combat(encounter_factory=encounter_factory, enemy_factory=enemy_factory,
+                                           energy_per_turn=energy_per_turn, cards_per_turn=cards_per_turn)
+        if self.state.encounter_progression is not None:
+            if self.graph is None or self.state.pending is None or self.state.current_node_id in self.state.encounter_progression.assignments:
+                raise ValueError("Generated encounters require a new selected map room.")
+            self.state.encounter_progression.assignments[self.state.current_node_id] = encounter_id
+        self.state.rng = rng
+        self.state.pending = None
+        self.state.phase = RunPhase.COMBAT
+        self.state.active_encounter_id = encounter_id
+        self.combat = combat
+        return combat
+
+    def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5):
         # Build against an independent stream snapshot, committing only on success.
         rng = GameRandomService(self.state.seed)
         rng.restore(self.state.rng.snapshot())
@@ -135,16 +151,7 @@ class RunEngine:
         combat.reset()
         combat.player.hp = self.state.hp
         combat.player.strength += sum(RELICS[r.definition_id].combat_strength for r in self.state.relics)
-        if self.state.encounter_progression is not None:
-            if self.graph is None or self.state.pending is None or self.state.current_node_id in self.state.encounter_progression.assignments:
-                raise ValueError("Generated encounters require a new selected map room.")
-            self.state.encounter_progression.assignments[self.state.current_node_id] = encounter_id
-        self.state.rng = rng
-        self.state.pending = None
-        self.state.phase = RunPhase.COMBAT
-        self.state.active_encounter_id = encounter_id
-        self.combat = combat
-        return combat
+        return rng, combat
 
     def finish_combat(self) -> None:
         if self.state.phase is not RunPhase.COMBAT or self.combat is None or not self.combat.done:
@@ -155,6 +162,8 @@ class RunEngine:
         self.state.combats_completed += 1
         self.state.phase = RunPhase.ROUTE if self.combat.winner == "player" else RunPhase.DEFEAT
         self.combat = None
+        from game.headless.run.event_combat import finish
+        finish(self.state, encounter_id, won=self.state.phase is RunPhase.ROUTE)
         from game.headless.run.lifecycle import after_combat
         after_combat(self.state, won=self.state.phase is RunPhase.ROUTE,
                      elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite")
