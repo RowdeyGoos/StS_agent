@@ -8,6 +8,7 @@ from game.headless.cards.base import Card, CardDefinition
 from game.headless.cards.ironclad import DEFINITIONS as IRONCLAD
 from game.headless.cards.status import DEFINITIONS as STATUSES
 from game.headless.cards.ironclad_rare import DEFINITIONS as RARES
+from game.headless.cards.colorless import DEFINITIONS as COLORLESS
 from game.headless.cards.event_cards import DEFINITIONS as EVENT_CARDS
 
 
@@ -56,4 +57,4 @@ class CardCatalog:
         return self
 
 
-DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *RARES, *EVENT_CARDS))
+DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *RARES, *EVENT_CARDS, *COLORLESS))

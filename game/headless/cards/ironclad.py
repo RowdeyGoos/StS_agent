@@ -48,10 +48,6 @@ UPPERCUT = CardDefinition("uppercut", (
     CardSpec("Uppercut", 2, "attack", base_damage=13, applies_status_stacks=1),
     CardSpec("Uppercut+", 2, "attack", base_damage=13, applies_status_stacks=2),
 ), (DealDamage(), ApplyDebuffs((WEAK, VULNERABLE))))
-SHOCKWAVE = CardDefinition("shockwave", (
-    CardSpec("Shockwave", 2, "skill", applies_status_stacks=3, exhausts=True, uses_target=False),
-    CardSpec("Shockwave+", 2, "skill", applies_status_stacks=5, exhausts=True, uses_target=False),
-), (ApplyDebuffs((WEAK, VULNERABLE), all_enemies=True),))
 
 SWORD_BOOMERANG = CardDefinition("sword_boomerang", (
     CardSpec("Sword Boomerang", 1, "attack", base_damage=3, uses_target=False),
@@ -59,7 +55,7 @@ SWORD_BOOMERANG = CardDefinition("sword_boomerang", (
 ), (RandomEnemyAttack(hits=3, upgraded_hits=4),))
 
 DEFINITIONS = (SWORD_BOOMERANG, STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE,
-               BODY_SLAM, ARMAMENTS, TRUE_GRIT, UPPERCUT, SHOCKWAVE)
+               BODY_SLAM, ARMAMENTS, TRUE_GRIT, UPPERCUT)
 
 # Existing constructor names are retained for callers and old experiment configs.
 class StrikeCard(Card):

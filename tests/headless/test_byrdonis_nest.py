@@ -172,7 +172,7 @@ def test_colorless_cards_draw_after_effect_without_drawing_current_play(name, up
     assert not player.hand and len(player.deck.discard_pile) == 1 and player.energy == 3
 
 
-@pytest.mark.parametrize('source', ['byrdonis_egg', 'byrd_swoop', 'finesse', 'flash_of_steel'])
+@pytest.mark.parametrize('source', ['byrdonis_egg', 'byrd_swoop', 'finesse', 'flash_of_steel', 'shockwave'])
 @pytest.mark.parametrize('event,choice', [('aroma_of_chaos', 'let_go'), ('morphic_grove', 'group'), ('whispering_hollow', 'hug')])
 def test_special_and_colorless_cards_transform_in_correct_pool(source, event, choice):
     run = RunEngine(card_ids=[source], gold=150)
@@ -180,7 +180,7 @@ def test_special_and_colorless_cards_transform_in_correct_pool(source, event, ch
     events.begin(run.state, event)
     step(run, ChooseEventOption(0, choice))
     result = run.state.deck[0]
-    assert result.definition.definition_id in {'finesse', 'flash_of_steel'} - {source}
+    assert result.definition.definition_id in {'finesse', 'flash_of_steel', 'shockwave'} - {source}
     assert result.instance_id != original and result.upgrade_level == 0
     assert not entry_conditions(run.state)['event_pet']
 

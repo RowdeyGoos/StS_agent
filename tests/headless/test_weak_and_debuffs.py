@@ -185,3 +185,18 @@ def test_player_power_ticks_once_after_all_enemies_not_after_each_enemy():
     assert combat.player.statuses.get(VULNERABLE) == 2  # One skipped side tick.
     combat.apply(EndTurn())
     assert combat.player.statuses.get(VULNERABLE) == 1  # One tick, despite two enemies.
+
+
+def test_shockwave_belongs_only_to_supported_colorless_content_pools():
+    from game.headless.cards.colorless import DEFINITIONS as colorless
+    from game.headless.cards.ironclad import DEFINITIONS as ironclad
+    from game.headless.events.transformation import TRANSFORM_POOL, COLORLESS_POOL, replacement_pool
+    from game.headless.run.config import RunConfig
+    from game.headless.shops.catalog import SLOTS
+    assert 'shockwave' in {c.definition_id for c in colorless}
+    assert 'shockwave' not in {c.definition_id for c in ironclad}
+    assert 'shockwave' not in RunConfig().reward_cards
+    assert 'shockwave' not in TRANSFORM_POOL
+    assert 'shockwave' in COLORLESS_POOL
+    assert replacement_pool('shockwave', TRANSFORM_POOL) == COLORLESS_POOL
+    assert all(name != 'shockwave' for slot in SLOTS for name, _ in slot.items)

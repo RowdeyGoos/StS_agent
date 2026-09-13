@@ -130,9 +130,10 @@ the persistent master deck is unaffected. Random hand selection uses an owned
 Python sampling, not the native run's `CombatCardSelection` seed sequence.
 
 Uppercut costs 2, deals 13 damage, then applies 1 Weak and 1 Vulnerable;
-its upgrade applies 2 of each without increasing damage. Shockwave costs 2,
+its upgrade applies 2 of each without increasing damage. Shockwave is colorless and costs 2,
 applies 3 Weak then 3 Vulnerable to each living enemy in slot order, and exhausts;
-its upgrade applies 5 of each. Both are in the eight-card restricted reward pool.
+its upgrade applies 5 of each. Uppercut is in the seven-card default Ironclad
+reward pool; Shockwave is in the restricted colorless transformation pool.
 Weak multiplies attack damage by 0.75 regardless of stack count. Strength is
 added first and Weak/Vulnerable fractions are combined before rounding down.
 Enemy intents retain an authored damage amount privately so execution does not
@@ -506,13 +507,14 @@ without a cosmetic actor or skin. In-combat Byrdpip acquisition remains unsuppor
 the implemented hatch acquires it outside combat.
 
 Egg, Byrd Swoop and colorless cards transform into the explicit supported pool
-`finesse` / `flash_of_steel`, excluding the original definition. Finesse costs zero,
+`finesse` / `flash_of_steel` / `shockwave`, excluding the original definition. Finesse costs zero,
 gains 4/7 block and draws one; Flash of Steel costs zero, deals 5/8 damage and draws
 one. They are implemented transformation targets, not additions to the Ironclad
 combat-reward pool. Native full colorless content and sampling remain open.
 All three existing transformation events share these family rules.
 
-Content stays in `cards/event_cards.py` and `events/byrdonis_nest.py`; owned hatch
+Event content stays in `cards/event_cards.py` and `events/byrdonis_nest.py`;
+colorless definitions live in `cards/colorless.py`. Owned hatch
 state lives in `run/hatching.py`. The relic pickup uses shared deterministic deck
 replacement and the owning engine's card catalog. Pending snapshots bind original
 cards and prior relic IDs to the fresh grant; missing content and malformed results
@@ -558,7 +560,7 @@ eligibility support when introduced. `LeaveShop()` returns to the map. While
 selecting a removal, only removal/cancel commands are legal.
 
 Stock is explicitly authored: one common card (Sword Boomerang, Pommel Strike or
-Shrug It Off), one uncommon (Uppercut or Shockwave), one rare (Impervious, Offering
+Shrug It Off), one uncommon (Uppercut), one rare (Impervious, Offering
 or Fiend Fire), one unowned Strawberry/Pear/Mango, and Fire and Block Potions.
 An exhausted fruit pool omits that slot. One card is on sale at half its rounded
 price. Native base prices are 50/75/150 for these card rarities, 175/225/275 for
@@ -627,7 +629,7 @@ other enemy. Dead owners do not trigger.
 
 Hallway rewards contain 10–20 gold; all three elite encounters reward 35–45 gold and one
 relic. Both have three distinct offers sampled from Pommel Strike,
-Shrug It Off, Iron Wave, Body Slam, Armaments, True Grit, Uppercut and Shockwave, and a possible Fire or Block Potion.
+Shrug It Off, Iron Wave, Body Slam, Armaments, True Grit and Uppercut, and a possible Fire or Block Potion.
 Potion drop chance starts at 40%, changing by ten percentage points down after a
 drop or up after a miss. The integer odds and named Python streams are
 project-authored sampling; they do not reproduce native RNG or full pool/rarity

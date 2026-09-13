@@ -145,7 +145,7 @@ def test_iron_wave_blocks_before_lethal_and_bash_does_not_debuff_dead_target():
         assert combat.enemies[0].statuses.get("vulnerable") == 0
 
 
-@pytest.mark.parametrize("card_id", ["pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit", "uppercut", "shockwave"])
+@pytest.mark.parametrize("card_id", ["pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit", "uppercut"])
 def test_acquire_smith_and_play_each_reward_upgrade_through_real_run_commands(card_id):
     # Find an authored seed offering the requested card, without editing rewards.
     for seed in range(10):
