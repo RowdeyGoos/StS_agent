@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import replace
 
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.combat import CombatEngine
@@ -26,7 +27,7 @@ class RunEngine:
         self.state = RunState(seed, max_hp, max_hp if hp is None else hp, gold, [], GameRandomService(seed))
         self.state.config = config
         if config is not None:
-            for card_id in config.reward_cards:
+            for card_id in (*config.reward_cards, *config.boss_reward_cards):
                 cards.definition(card_id)
             if any(r not in RELICS or r == "burning_blood" for r in config.reward_relics):
                 raise ValueError("Unsupported relic reward pool.")
@@ -47,7 +48,10 @@ class RunEngine:
         from game.headless.run.scenarios import ROUTES
         if route not in ROUTES:
             raise ValueError("Unsupported authored route.")
-        engine = cls(seed=seed, max_hp=80, gold=99, config=RunConfig(ascension=ascension),
+        config = RunConfig(ascension=ascension)
+        if route == "overgrowth-act1":
+            config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
+        engine = cls(seed=seed, max_hp=80, gold=99, config=config,
                      graph=ROUTES[route]())
         add_relic(engine.state, "burning_blood")
         return engine

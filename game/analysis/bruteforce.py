@@ -373,7 +373,7 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
     # one memo entry per source object to preserve shared-RNG identity.
     rng_owners = [env.rng]
     if env.player is not None:
-        rng_owners.extend((env.player.deck.rng, env.player.deck.selection_rng))
+        rng_owners.extend((env.player.deck.rng, env.player.deck.selection_rng, env.player.deck.target_rng))
     if env.enemies is not None:
         rng_owners.extend(enemy.rng for enemy in env.enemies)
     for source_rng in rng_owners:
@@ -393,6 +393,7 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
         cloned_deck._allocated_ids = source_deck._allocated_ids.copy()
         cloned_deck.rng = memo[id(source_deck.rng)]
         cloned_deck.selection_rng = memo[id(source_deck.selection_rng)]
+        cloned_deck.target_rng = memo[id(source_deck.target_rng)]
         cloned_deck.in_play = [deepcopy(card, memo) for card in source_deck.in_play]
         cloned_deck.draw_pile = [
             deepcopy(card, memo) for card in source_deck.draw_pile
@@ -612,7 +613,8 @@ def _combat_state_key(
     player = env.player
     deck = player.deck
 
-    rng_owners = [env.rng, deck.rng, *(enemy.rng for enemy in env.enemies)]
+    rng_owners = [env.rng, deck.rng, deck.selection_rng, deck.target_rng,
+                  *(enemy.rng for enemy in env.enemies)]
     rng_aliases: dict[int, int] = {}
     rng_references: list[int] = []
     rng_state_tokens: list[int] = []

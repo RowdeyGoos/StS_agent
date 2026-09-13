@@ -99,7 +99,7 @@ class Player:
         self.hp, self.block = apply_damage_to_block_and_hp(
             self.hp,
             self.block,
-            incoming_damage,
+            incoming_damage, statuses=self.statuses,
         )
         return previous_hp - self.hp
 
@@ -126,6 +126,8 @@ class Player:
         except IndexError as exc:
             raise IndexError(f"Invalid hand index: {hand_index}.") from exc
 
+        if card.cost < 0:
+            raise ValueError(f"{card.name} is unplayable.")
         if card.cost > self.energy:
             raise ValueError(f"Not enough energy to play {card.name}.")
 

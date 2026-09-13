@@ -10,7 +10,8 @@ SHRINK = "shrink"
 VULNERABLE = "vulnerable"
 WEAK = "weak"
 TERRITORIAL = "territorial"
-SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL)
+SLIPPERY = "slippery"
+SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY)
 STATUS_STACK_SCALE = 5.0
 
 
@@ -27,6 +28,7 @@ STATUS_DEFINITIONS = MappingProxyType({
     VULNERABLE: StatusDefinition(name=VULNERABLE),
     WEAK: StatusDefinition(name=WEAK),
     TERRITORIAL: StatusDefinition(name=TERRITORIAL, duration_tick_side=None),
+    SLIPPERY: StatusDefinition(name=SLIPPERY, duration_tick_side=None),
 })
 
 

@@ -20,6 +20,13 @@ class RunPhase(str, Enum):
     VICTORY = "victory"
     DEFEAT = "defeat"
     SLICE_COMPLETE = "slice_complete"
+    ACT_COMPLETE = "act_complete"
+
+
+@dataclass(frozen=True, slots=True)
+class ActCompletion:
+    act: int
+    boss_encounter_id: str
 
 
 @dataclass
@@ -35,6 +42,7 @@ class RunState:
     combats_completed: int = 0
     current_node_id: str | None = None
     active_encounter_id: str | None = None
+    act_completion: ActCompletion | None = None
     visited_nodes: list[str] = field(default_factory=list)
     # Pending gameplay data contains values, never callback closures or wire DTOs.
     pending: dict | None = None
@@ -71,6 +79,13 @@ class RunState:
             raise ValueError("Selected map node requires a different room.")
 
     def validate(self) -> None:
+        if (self.phase is RunPhase.ACT_COMPLETE) != (self.act_completion is not None):
+            raise ValueError("Act completion requires its terminal record.")
+        if self.act_completion is not None and (not isinstance(self.act_completion, ActCompletion)
+                or type(self.act_completion.act) is not int or self.act_completion.act != 1
+                or not isinstance(self.act_completion.boss_encounter_id, str)
+                or self.combats_completed < 1):
+            raise ValueError("Invalid act completion record.")
         if self.active_encounter_id is not None and (not isinstance(self.active_encounter_id, str)
                 or not self.active_encounter_id or self.phase is not RunPhase.COMBAT):
             raise ValueError("Encounter identity requires an active combat.")

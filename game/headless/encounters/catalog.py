@@ -3,6 +3,7 @@
 from types import MappingProxyType
 from game.headless.encounters.base import EncounterDefinition
 from game.headless.monsters.byrdonis import Byrdonis
+from game.headless.monsters.vantom import Vantom
 from game.headless.encounters.overgrowth import (
     build_overgrowth_slimes_encounter, build_overgrowth_fuzzy_encounter,
     build_overgrowth_mawler_encounter, build_overgrowth_nibbits_encounter,
@@ -18,7 +19,12 @@ def byrdonis_encounter(rng):
     return [Byrdonis(rng)]
 
 
+def vantom_encounter(rng):
+    return [Vantom(rng)]
+
+
 ENCOUNTERS = MappingProxyType({
+    "overgrowth_vantom": EncounterDefinition(vantom_encounter, "boss", (100, 100)),
     "overgrowth_nibbit": EncounterDefinition(nibbit_encounter),
     "overgrowth_slimes": EncounterDefinition(build_overgrowth_slimes_encounter),
     "overgrowth_fuzzy": EncounterDefinition(build_overgrowth_fuzzy_encounter),

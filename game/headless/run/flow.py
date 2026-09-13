@@ -14,7 +14,7 @@ from game.headless.run.state import RunPhase
 
 def legal_actions(engine) -> tuple:
     state, combat = engine.state, engine.combat
-    if state.phase in (RunPhase.VICTORY, RunPhase.DEFEAT, RunPhase.SLICE_COMPLETE):
+    if state.phase in (RunPhase.VICTORY, RunPhase.DEFEAT, RunPhase.SLICE_COMPLETE, RunPhase.ACT_COMPLETE):
         return ()
     actions = []
     if state.phase is RunPhase.COMBAT:
@@ -65,7 +65,7 @@ def apply(engine, action):
         # Resolve content before moving the cursor, so unsupported rooms cannot
         # strand an otherwise usable run or consume the launch RNG.
         node = engine.graph.node(action.node_id)
-        if node.kind in ("combat", "elite"):
+        if node.kind in ("combat", "elite", "boss"):
             if node.encounter_id not in ENCOUNTERS:
                 raise ValueError("Unsupported encounter.")
             encounter = ENCOUNTERS[node.encounter_id]
@@ -75,7 +75,7 @@ def apply(engine, action):
             raise ValueError("Unsupported room.")
         previous_node, previous_pending = state.current_node_id, state.pending
         engine.choose_node(action.node_id)
-        if node.kind in ("combat", "elite"):
+        if node.kind in ("combat", "elite", "boss"):
             try:
                 return engine.start_combat(encounter_id=node.encounter_id)
             except Exception:

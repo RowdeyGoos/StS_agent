@@ -34,8 +34,12 @@ class Intent:
     # Execution keeps the authored amount; the displayed amount is rounded.
     # Excluded from public as_dict, included in private dataclass continuation.
     base_attack_damage: int | None = None
+    discard_cards: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
+        object.__setattr__(self, "discard_cards", tuple(self.discard_cards))
+        if any(not isinstance(c, str) or not c for c in self.discard_cards):
+            raise ValueError("Generated cards require definition IDs.")
         if self.base_attack_damage is not None and (type(self.base_attack_damage) is not int or self.base_attack_damage < 0):
             raise ValueError("Authored intent damage must be nonnegative or absent.")
         if self.attack_damage < 0:
@@ -63,6 +67,7 @@ class Intent:
             "status_name": self.status_name,
             "status_stacks": self.status_stacks,
             "slimed_added": self.slimed_added,
+            **({"discard_cards": list(self.discard_cards)} if self.discard_cards else {}),
         }
 
 
@@ -124,7 +129,7 @@ class Enemy(ABC):
         self.hp, self.block = apply_damage_to_block_and_hp(
             self.hp,
             self.block,
-            incoming_damage,
+            incoming_damage, statuses=self.statuses,
         )
         return previous_hp - self.hp
 
@@ -191,6 +196,11 @@ class Enemy(ABC):
         for _ in range(current_intent.slimed_added):
             player.add_card_to_discard(SlimedCard())
 
+        if current_intent.discard_cards:
+            from game.headless.cards.catalog import DEFAULT_CARDS
+            for definition_id in current_intent.discard_cards:
+                player.add_card_to_discard(DEFAULT_CARDS.create(definition_id))
+
         if tick_statuses:
             from game.headless.powers.lifecycle import after_owner_side_turn_end
             self.statuses.on_turn_end()
@@ -231,6 +241,7 @@ class Enemy(ABC):
             status_name=template.status_name,
             status_stacks=template.status_stacks,
             slimed_added=template.slimed_added,
+            discard_cards=template.discard_cards,
         )
 
     def _behavior_phase_index(self) -> int:

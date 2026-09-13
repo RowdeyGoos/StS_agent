@@ -8,13 +8,13 @@ from game.headless.core.combat import CombatEngine
 from game.headless.core.rng import GameRandomService
 from game.headless.core.snapshots import card_record, restore_card
 from game.headless.map.graph import MapGraph, MapNode
-from game.headless.run.state import RunPhase, RunState
+from game.headless.run.state import RunPhase, RunState, ActCompletion
 from game.headless.run.config import RunConfig
 from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 from game.headless.encounters.catalog import ENCOUNTERS
 
-SCHEMA = "headless_run_state_v3"
+SCHEMA = "headless_run_state_v4"
 
 
 def _item_definitions():
@@ -32,6 +32,7 @@ def capture_run(engine) -> dict:
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
                   "next_card_id": state.next_card_id, "combats_completed": state.combats_completed,
                   "current_node_id": state.current_node_id,
+                  "act_completion": None if state.act_completion is None else asdict(state.act_completion),
                   "active_encounter_id": state.active_encounter_id, "visited_nodes": list(state.visited_nodes),
                   "pending": deepcopy(state.pending),
                   "config": None if state.config is None else asdict(state.config),
@@ -55,7 +56,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         payload = snapshot["state"]
         config = None if payload["config"] is None else RunConfig(**payload["config"])
         if config is not None:
-            for card_id in config.reward_cards:
+            for card_id in (*config.reward_cards, *config.boss_reward_cards):
                 cards.definition(card_id)
             if any(r not in RELICS or r == "burning_blood" for r in config.reward_relics):
                 raise ValueError("Unsupported relic pool.")
@@ -71,6 +72,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             phase=RunPhase(payload["phase"]), next_card_id=payload["next_card_id"],
             combats_completed=payload["combats_completed"], current_node_id=payload["current_node_id"],
             active_encounter_id=payload["active_encounter_id"],
+            act_completion=None if payload["act_completion"] is None else ActCompletion(**payload["act_completion"]),
             visited_nodes=list(payload["visited_nodes"]), pending=deepcopy(payload["pending"]),
             config=config, relics=[RelicInstance(**r) for r in payload["relics"]],
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
@@ -83,11 +85,18 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             from game.headless.run.rewards import eligible_relics
             if state.config is None or not eligible_relics(state):
                 raise ValueError("Active elite requires an available relic reward pool.")
+        if state.act_completion is not None:
+            completed = ENCOUNTERS.get(state.act_completion.boss_encounter_id)
+            if completed is None or completed.room_kind != "boss":
+                raise ValueError("Act completion requires a supported boss.")
         graph = snapshot["graph"]
         if graph is not None:
             graph = MapGraph(tuple(MapNode(n["node_id"], n["kind"], tuple(n["next_node_ids"]), n["encounter_id"]) for n in graph["nodes"]), graph["start_id"])
             if any(n.encounter_id is not None and (n.encounter_id not in ENCOUNTERS or n.kind != ENCOUNTERS[n.encounter_id].room_kind) for n in graph.nodes):
                 raise ValueError("Unsupported map encounter.")
+            if state.act_completion is not None and (state.current_node_id is None or
+                    graph.node(state.current_node_id).encounter_id != state.act_completion.boss_encounter_id):
+                raise ValueError("Completed boss differs from its room.")
             previous = None
             for node_id in state.visited_nodes:
                 if node_id not in graph.available_nodes(previous):
@@ -156,11 +165,12 @@ def _validate_pending(state, cards, graph):
             if graph is not None and state.current_node_id is not None:
                 if graph.node(state.current_node_id).encounter_id != encounter_id:
                     raise ValueError("Reward encounter differs from its room.")
+            pool = state.config.boss_reward_cards if state.config is not None and encounter is not None and encounter.room_kind == "boss" else (() if state.config is None else state.config.reward_cards)
             if (pending["combat_reward"] is not True or state.config is None
                     or type(pending["potion_claimed"]) is not bool
                     or not low <= pending["gold"] <= high
                     or len(pending["offers"]) != 3
-                    or not set(pending["offers"]) <= set(state.config.reward_cards)
+                    or not set(pending["offers"]) <= set(pool)
                     or (pending["potion"] is not None and pending["potion"] not in state.config.reward_potions)
                     or (pending["potion"] is None and pending["potion_claimed"])):
                 raise ValueError("Invalid combat reward bundle.")

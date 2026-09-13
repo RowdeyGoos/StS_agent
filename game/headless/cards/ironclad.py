@@ -1,7 +1,7 @@
 """Implemented Ironclad cards. Add each verified card family in this layer."""
 
 from game.headless.cards.base import Card, CardDefinition, CardSpec
-from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock, SelectHandCard, ApplyDebuffs
+from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock, SelectHandCard, ApplyDebuffs, RandomEnemyAttack
 from game.headless.powers.status import VULNERABLE, WEAK
 
 STRIKE = CardDefinition("strike", (
@@ -53,7 +53,12 @@ SHOCKWAVE = CardDefinition("shockwave", (
     CardSpec("Shockwave+", 2, "skill", applies_status_stacks=5, exhausts=True, uses_target=False),
 ), (ApplyDebuffs((WEAK, VULNERABLE), all_enemies=True),))
 
-DEFINITIONS = (STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE,
+SWORD_BOOMERANG = CardDefinition("sword_boomerang", (
+    CardSpec("Sword Boomerang", 1, "attack", base_damage=3, uses_target=False),
+    CardSpec("Sword Boomerang+", 1, "attack", base_damage=3, uses_target=False),
+), (RandomEnemyAttack(hits=3, upgraded_hits=4),))
+
+DEFINITIONS = (SWORD_BOOMERANG, STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE,
                BODY_SLAM, ARMAMENTS, TRUE_GRIT, UPPERCUT, SHOCKWAVE)
 
 # Existing constructor names are retained for callers and old experiment configs.
