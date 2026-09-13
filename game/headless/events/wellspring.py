@@ -1,0 +1,81 @@
+"""Wellspring potion reward or permanent removal followed by Guilty."""
+
+from copy import deepcopy
+from dataclasses import dataclass
+
+from game.headless.events import deck_choice, potion_rewards
+from game.headless.run.deck import add_card, remove_card
+
+
+@dataclass(frozen=True, slots=True)
+class Wellspring:
+    definition_id: str = "wellspring"
+    potion_pool: tuple[str, ...] = ("fire_potion", "block_potion")
+
+    def generate(self, rng, *, state, cards):
+        cards.definition("guilty")
+        return {"choice": None, "rewards": [], "guilty_id": None, **deck_choice.empty()}
+
+    def options(self, pending):
+        return potion_rewards.options(pending) if pending["stage"] == "potion_rewards" else ("bottle", "bathe") if pending["stage"] == "options" else ()
+
+    def choose(self, state, pending, option_id, *, cards):
+        if pending["stage"] == "potion_rewards":
+            return potion_rewards.choose(state, pending, option_id)
+        data = pending["data"]
+        if option_id == "bottle":
+            trial = deepcopy(state)
+            rewards = potion_rewards.generate(trial.rng, self.potion_pool, 1)
+            state.rng = trial.rng
+            data.update(choice="bottle", rewards=rewards)
+            pending["stage"] = "potion_rewards"
+        elif len(state.deck) <= 1:
+            self._resolve(state, pending, state.deck[0].instance_id if state.deck else None, cards)
+        else:
+            deck_choice.prepare(state, data)
+            data["choice"] = "bathe"
+            pending["stage"] = "select_card"
+
+    def select_card(self, state, pending, identity, *, cards):
+        if identity not in pending["data"]["eligible"]:
+            raise ValueError("Unavailable Wellspring card.")
+        self._resolve(state, pending, identity, cards)
+
+    def _resolve(self, state, pending, identity, cards):
+        trial = deepcopy(state)
+        if identity is not None:
+            remove_card(trial, identity)
+        guilty = add_card(trial, cards.definition("guilty"))
+        data = pending["data"]
+        if data["choice"] is None:
+            deck_choice.prepare(state, data)
+        state.deck, state.next_card_id = trial.deck, trial.next_card_id
+        data.update(choice="bathe", eligible=[], selected=identity, guilty_id=guilty.instance_id)
+        pending["stage"] = "resolved"
+
+    def validate(self, pending, *, state, cards, defeated=False):
+        data = pending["data"]
+        if defeated or not isinstance(data, dict) or set(data) != {"choice", "rewards", "guilty_id", *deck_choice.empty()}:
+            raise ValueError("Invalid Wellspring data.")
+        choice, stage = data["choice"], pending["stage"]
+        if choice == "bottle" and stage in ("potion_rewards", "resolved"):
+            potion_rewards.validate(state, data["rewards"], self.potion_pool, 1)
+            if data["guilty_id"] is not None or any(data[k] != v for k,v in deck_choice.empty().items()):
+                raise ValueError("Bottle has deck effects.")
+        elif choice == "bathe" and stage in ("select_card", "resolved"):
+            if data["rewards"]: raise ValueError("Bathe has potion rewards.")
+            extra = ()
+            if stage == "resolved":
+                guilty = next((c for c in state.deck if c.instance_id == data["guilty_id"]), None)
+                if (guilty is None or guilty.definition.definition_id != "guilty" or guilty.combats_seen
+                        or guilty.instance_id in [r["instance_id"] for r in data["originals"]]):
+                    raise ValueError("Wellspring Guilty grant differs from the deck.")
+                extra = (guilty.instance_id,)
+            elif data["guilty_id"] is not None:
+                raise ValueError("Pending removal already granted Guilty.")
+            deck_choice.validate(state, data, cards, operation="remove", finished=stage=="resolved", extra=extra)
+        elif choice is None and stage == "options":
+            if data["rewards"] or data["guilty_id"] is not None or any(data[k] != v for k,v in deck_choice.empty().items()):
+                raise ValueError("Unchosen Wellspring has results.")
+        else:
+            raise ValueError("Invalid Wellspring stage.")

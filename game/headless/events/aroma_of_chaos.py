@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from game.headless.events.transformation import TRANSFORM_POOL, check_content
+from game.headless.events.transformation import TRANSFORM_POOL, check_content, transform, replacement_pool
 from game.headless.run.deck import find_card, transform_card, upgrade_card
 
 
@@ -44,11 +44,12 @@ class AromaOfChaos:
         self._resolve(state, pending, choice, instance_id, cards)
 
     def _resolve(self, state, pending, choice, instance_id, cards):
-        card = (transform_card(state, cards, instance_id, self.transform_pool, stream="event.aroma_transform")
+        source = find_card(state, instance_id).definition.definition_id
+        card = (transform(state, cards, instance_id, self.transform_pool, stream="event.aroma_transform")
                 if choice == "let_go" else upgrade_card(state, instance_id))
         pending["data"] = {"choice": choice, "eligible": [], "selected_card_id": instance_id,
                            "result": {"instance_id": card.instance_id, "definition_id": card.definition.definition_id,
-                                      "upgrade_level": card.upgrade_level}}
+                                      "upgrade_level": card.upgrade_level, "source_definition": source}}
         pending["stage"] = "resolved"
 
     def validate(self, pending, *, state, cards, defeated=False):
@@ -75,8 +76,11 @@ class AromaOfChaos:
                 raise ValueError("Aroma empty selection has eligible cards.")
             return
         result = data["result"]
-        if not isinstance(result, dict) or set(result) != {"instance_id", "definition_id", "upgrade_level"}:
+        if not isinstance(result, dict) or set(result) != {"instance_id", "definition_id", "upgrade_level", "source_definition"}:
             raise ValueError("Invalid Aroma result.")
+        if not isinstance(result["source_definition"], str):
+            raise ValueError("Invalid Aroma source definition.")
+        cards.definition(result["source_definition"])
         card = find_card(state, result["instance_id"])
         if (type(result["upgrade_level"]) is not int or result["definition_id"] != card.definition.definition_id
                 or result["upgrade_level"] != card.upgrade_level):
@@ -85,7 +89,7 @@ class AromaOfChaos:
         if not isinstance(selected, str) or not selected:
             raise ValueError("Missing original Aroma card identity.")
         if data["choice"] == "maintain_control":
-            if selected != card.instance_id or card.upgrade_level < 1:
+            if selected != card.instance_id or card.upgrade_level < 1 or result["source_definition"] != card.definition.definition_id:
                 raise ValueError("Invalid Aroma upgrade result.")
-        elif card.upgrade_level != 0 or card.definition.definition_id not in self.transform_pool or any(c.instance_id == selected for c in state.deck):
+        elif card.upgrade_level != 0 or card.combats_seen != 0 or card.definition.definition_id not in replacement_pool(result["source_definition"], self.transform_pool) or card.definition.definition_id == result["source_definition"] or any(c.instance_id == selected for c in state.deck):
             raise ValueError("Invalid Aroma transformation result.")

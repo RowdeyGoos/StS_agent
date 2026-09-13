@@ -22,7 +22,13 @@ from game.headless.run.unknown_rooms import UnknownRooms, RoomOutcome, room_node
 from game.headless.events.progression import EventProgression
 from game.headless.run.ancient import AncientStart
 
-SCHEMA = "headless_run_state_v13"
+SCHEMA = "headless_run_state_v14"
+
+
+def _restore_relic(record):
+    if not isinstance(record, dict) or set(record) != {"definition_id", "instance_id", "counter"}:
+        raise ValueError("Invalid relic state fields.")
+    return RelicInstance(**record)
 
 
 def _item_definitions():
@@ -97,7 +103,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             visited_nodes=list(payload["visited_nodes"]), pending=deepcopy(payload["pending"]),
             ancient_start=None if payload["ancient_start"] is None else AncientStart(**deepcopy(payload["ancient_start"])),
             event_progression=None if payload["event_progression"] is None else EventProgression(**deepcopy(payload["event_progression"])),
-            config=config, relics=[RelicInstance(**r) for r in payload["relics"]],
+            config=config, relics=[_restore_relic(r) for r in payload["relics"]],
             encounter_progression=None if payload["encounter_progression"] is None else EncounterProgression(**deepcopy(payload["encounter_progression"])),
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
             next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"],

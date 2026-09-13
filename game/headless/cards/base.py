@@ -50,6 +50,7 @@ class CardDefinition:
     definition_id: str
     levels: tuple[CardSpec, ...]
     effects: tuple[CardEffect, ...]
+    combat_lifetime: int = 0
 
     def __post_init__(self) -> None:
         if not self.definition_id or not self.levels:
@@ -85,6 +86,7 @@ class Card:
         self.definition = definition
         self.upgrade_level = upgrade_level
         self.instance_id = instance_id
+        self.combats_seen = 0
 
     @property
     def spec(self) -> CardSpec:
