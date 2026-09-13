@@ -43,6 +43,7 @@ unfinished; see the [feature backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md)
 ```bash
 PYTHONPATH=. python -m pytest -q tests/headless
 sts-headless-play --seed 2 --rest-choice smith --verify-restore
+sts-headless-play --route overgrowth --path right --seed 2 --rest-choice rest --verify-restore
 ```
 
 The playable first slice starts Ironclad at Ascension 0, fights Nibbit, collects
@@ -50,6 +51,11 @@ rewards, rests or upgrades a card, then fights Overgrowth slimes and collects th
 second rewards. It includes Burning Blood and Fire/Block Potions. The map and
 reward pools are explicitly restricted; `slice_complete` is not full-game victory.
 Use `--rest-choice rest` for the healing path and `--trace` to print every command.
+The optional `--route overgrowth` plays four combats with two branches: choose
+whether slimes or Fuzzy Wurm comes second, fight the other third, rest/smith, then
+choose Mawler or paired Nibbits. `--path left|right` controls the demo's branch
+preference. This is an authored route toward Act 1, still without elites or a boss.
+
 Without reinstalling the console entry point, run
 `PYTHONPATH=. python -m game.cli.headless_play` with the same arguments.
 

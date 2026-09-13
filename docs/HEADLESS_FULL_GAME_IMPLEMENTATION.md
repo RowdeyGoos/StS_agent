@@ -664,9 +664,12 @@ Dependencies and acceptance cases are in the linked task.
 
 - **Status:** partial. Solo Nibbit, Leaf/Twig small/medium variants and SlimesWeak
   composition are source-checked with full-cycle/branch cases. Medium Twig's
-  repeat constraint and slime slot order are corrected. Native RNG parity,
-  paired Nibbit roles, Shrinker Beetle, Fuzzy Wurm Crawler and Mawler remain open.
-  See [evidence](evidence/slice_combat_content_2026_09_13.md).
+  repeat constraint and slime slot order are corrected. Fuzzy Wurm, solo Mawler,
+  paired Nibbit opening roles and their encounter compositions are also verified;
+  the authored `overgrowth` route exercises these through four fights and two
+  branch decisions. Native RNG parity and Shrinker Beetle remain open.
+  See [initial evidence](evidence/slice_combat_content_2026_09_13.md) and
+  [expanded encounters/route](evidence/overgrowth_routes_2026_09_13.md).
 - **Depends on:** HF-02/05 and relevant HF-11/12/19 rules.
 - **Implement:** per-enemy tickets for Nibbit, Shrinker Beetle, Fuzzy Wurm Crawler,
   Mawler, Leaf Slime S/M and Twig Slime S/M. Verify HP sampling, opening moves,
@@ -679,6 +682,10 @@ Dependencies and acceptance cases are in the linked task.
   HF-21/30 complete them. Tests: Combat and Differential.
 
 ### HF-21 — Complete normal encounters across every target act
+
+- **Status:** five explicit encounter definitions are available to direct routes:
+  solo Nibbit, weak slimes, solo Fuzzy Wurm, solo Mawler and paired Nibbits.
+  Remaining Overgrowth encounters and complete native pool selection are open.
 
 - **Depends on:** HF-01/19 and each enemy's implemented mechanics. HF-30 later
   integrates these encounter definitions into run sampling.
@@ -1149,17 +1156,19 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-Weak, Uppercut, Shockwave and combat hand choices are implemented. The next
-useful batch is **HF-19/20/21: broaden the verified Overgrowth normal encounters**:
+The authored Overgrowth route now covers four normal combats with two branching
+choices. The next useful batch is **HF-22: one verified Overgrowth elite**, with
+its required mechanics and supported reward handoff:
 
-1. Select one existing partial enemy and its actual encounter from the pinned
-   target. Verify HP, opening move, branch weights/constraints and A0 values.
-2. Implement missing behavior beside that enemy, introducing a lifecycle or power
-   operation only when this concrete encounter requires it.
-3. Exercise the encounter through the direct run loop with owned RNG, stable
-   slots, rewards and JSON continuation at every decision.
-4. Record source anchors and mark the exact covered content; procedural full-act
-   routing, elite/boss content and native RNG parity remain separate tasks.
+1. Inspect the pinned elite inventory and select one concrete encounter. Verify
+   A0 HP, opening/cycle/conditional moves and every required power or lifecycle rule.
+2. Implement that encounter using the current combat engine, adding game rules
+   only for its actual behavior. Exercise victory, defeat and every special branch.
+3. Extend the authored route with an optional elite path and its source-checked
+   reward behavior. Do not silently substitute hallway rewards for elite rewards.
+4. Validate JSON continuation and record exact covered content. A first boss and
+   real act completion follow; shops, events, treasure, native maps/pools and full
+   reachable content remain necessary for unrestricted Act 1.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

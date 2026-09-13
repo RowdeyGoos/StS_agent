@@ -173,6 +173,34 @@ rest site → Overgrowth slimes → `slice_complete`. Each victory returns comba
 applies Burning Blood's capped 6 HP heal once, then generates a hallway reward
 bundle. Ordinary loss ends the run without victory healing or rewards.
 
+`RunEngine.ironclad_slice(route="overgrowth", seed=2)` uses the same game engine
+and inventories on a longer authored graph. The CLI equivalent is
+`sts-headless-play --route overgrowth --path right --seed 2 --rest-choice rest --verify-restore`.
+The route contains four combats and runs as follows:
+
+1. Solo Nibbit.
+2. Choose slimes or Fuzzy Wurm; then fight the other as the third combat.
+3. Rest or Smith.
+4. Choose solo Mawler or paired Nibbits, collect rewards and reach `slice_complete`.
+
+The two independent forks give four paths. Direct `ChooseNode` commands select
+any legal path; `--path left|right` makes the demo consistently choose the first
+or last branch. The graph and visited history already survive run snapshots,
+so this route adds no new continuation format. Sibling/visited nodes cannot be
+entered, and death stops progression without healing or rewards. The default
+`first-slice` route remains the smaller two-combat example. Neither authored
+route implements native map generation, complete encounter pools, elites or bosses.
+
+Fuzzy Wurm has 55–57 A0 HP and cycles attack 4 → gain 7 Strength → attack 4,
+then repeats; Strength accumulates. Paired Nibbits retain front/back slots:
+front starts with Hesitant Slice, back with Hiss. Both then follow the existing
+Slice → Hiss → Butt cycle, without changing role after the other dies. Mawler
+has 72 HP, opens with Claw 4×2, and samples equally among legal Rip and Tear 14,
+Roar 3 Vulnerable and Claw successors. Attacks cannot repeat immediately; Roar
+can happen once. Its branch rolls consume Python RNG even with one legal move.
+Native branch order is retained, but native RNG sequence parity remains open.
+See the [source and route acceptance](evidence/overgrowth_routes_2026_09_13.md).
+
 Rewards contain 10–20 gold, three distinct offers sampled from Pommel Strike,
 Shrug It Off, Iron Wave, Body Slam, Armaments, True Grit, Uppercut and Shockwave, and a possible Fire or Block Potion.
 Potion drop chance starts at 40%, changing by ten percentage points down after a

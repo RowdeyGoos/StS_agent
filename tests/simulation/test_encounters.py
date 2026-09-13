@@ -24,9 +24,13 @@ from game.simulation.status import SHRINK, VULNERABLE
 from game.simulation.utils import make_rng
 
 
-class _ChooseLastRandom(Random):
-    def choice(self, sequence):
-        return sequence[-1]
+class _MawlerBoundaryRandom(Random):
+    def __init__(self, seed):
+        super().__init__(seed)
+        self.rolls = iter((0.9, 0.1, 0.5))
+
+    def random(self):
+        return next(self.rolls)
 
 
 def test_overgrowth_slimes_encounter_has_canonical_composition() -> None:
@@ -80,16 +84,17 @@ def test_mawler_applies_attack_modifiers_per_hit() -> None:
 
 
 def test_mawler_roar_is_single_use_and_moves_do_not_repeat() -> None:
-    rng = _ChooseLastRandom(0)
+    rng = _MawlerBoundaryRandom(0)
     player = Player(deck=Deck([], rng=make_rng(0)))
     mawler = Mawler(rng)
 
     mawler.execute_intent(player)
     roar_observation = mawler.to_observation()
     assert roar_observation["intent"]["move_name"] == "Roar"
+    # Native branch order is Rip and Tear, Roar, Claw; illegal entries filter out.
     assert roar_observation["behavior_state"]["possible_next_move_names"] == [
-        "Claw",
         "Rip and Tear",
+        "Claw",
     ]
 
     mawler.execute_intent(player)
