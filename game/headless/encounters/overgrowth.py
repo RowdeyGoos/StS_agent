@@ -42,6 +42,11 @@ def build_overgrowth_slimes_encounter(rng: Random) -> list[Enemy]:
     return [first_small(rng), medium_type(rng), last_small(rng)]
 
 
+def build_overgrowth_fuzzy_encounter(rng: Random) -> list[Enemy]:
+    """Native FuzzyWurmCrawlerWeak composition."""
+    return [FuzzyWurmCrawler(rng)]
+
+
 def build_overgrowth_mawler_encounter(rng: Random) -> list[Enemy]:
     """Build the fixed solo Mawler encounter."""
     return [Mawler(rng)]
@@ -49,7 +54,7 @@ def build_overgrowth_mawler_encounter(rng: Random) -> list[Enemy]:
 
 def build_overgrowth_nibbits_encounter(rng: Random) -> list[Enemy]:
     """Build the fixed two-Nibbit encounter."""
-    return [Nibbit(rng), Nibbit(rng)]
+    return [Nibbit(rng, role="front"), Nibbit(rng, role="back")]
 
 
 def build_overgrowth_shrinker_fuzzy_encounter(rng: Random) -> list[Enemy]:

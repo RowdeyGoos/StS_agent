@@ -54,9 +54,14 @@ class Nibbit(Enemy):
         Intent(kind="buff", value=2, move_name="Hiss", strength_gain=2),
     )
 
-    def __init__(self, rng: Random) -> None:
+    def __init__(self, rng: Random, *, role: str = "solo") -> None:
+        # Native role flags choose only the opening move. Subsequent behavior
+        # is fully represented by the cycle index, even after an ally dies.
+        openings = {"solo": 0, "front": 1, "back": 2}
+        if role not in openings:
+            raise ValueError("Unsupported Nibbit encounter role.")
         super().__init__(name="Nibbit", max_hp=rng.randint(42, 46), rng=rng)
-        self._intent_index = 0
+        self._intent_index = openings[role]
 
     @property
     def intent(self) -> Intent:
@@ -123,7 +128,7 @@ class ShrinkerBeetle(Enemy):
 
 
 class FuzzyWurmCrawler(Enemy):
-    """Fuzzy Wurm Crawler from the Overgrowth easy encounter pool."""
+    """Verified A0 solo crawler: attack, inhale +7 Strength, attack, repeat."""
 
     INTENT_CYCLE: tuple[Intent, ...] = (
         Intent(kind="attack", value=4, move_name="Acid Goop", attack_damage=4, attack_count=1),
@@ -154,7 +159,7 @@ class FuzzyWurmCrawler(Enemy):
 
 
 class Mawler(Enemy):
-    """Solo Mawler from the first partial Overgrowth hard benchmark."""
+    """Verified A0 solo Mawler; equal eligible moves, no repeats, one Roar."""
 
     CLAW = Intent(
         kind="attack",
@@ -186,17 +191,22 @@ class Mawler(Enemy):
 
     @property
     def intent(self) -> Intent:
+        if self._current_intent not in self.MOVE_TEMPLATES or (self._roar_used and self._current_intent == self.ROAR):
+            raise ValueError("Invalid Mawler move history.")
         return self._resolve_intent(self._current_intent)
 
     def advance_intent(self) -> None:
         if self._current_intent.move_name == self.ROAR.move_name:
             self._roar_used = True
-        self._current_intent = self.rng.choice(self._candidate_templates())
+        # Native branches draw even with one legal successor. Match the rule
+        # and authored branch order; Python Random is not native seed parity.
+        candidates = self._candidate_templates()
+        self._current_intent = candidates[int(self.rng.random() * len(candidates))]
 
     def _candidate_templates(self) -> tuple[Intent, ...]:
         return tuple(
             template
-            for template in self.MOVE_TEMPLATES
+            for template in (self.RIP_AND_TEAR, self.ROAR, self.CLAW)
             if template.move_name != self._current_intent.move_name
             and not (self._roar_used and template.move_name == self.ROAR.move_name)
         )

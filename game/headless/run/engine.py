@@ -39,11 +39,13 @@ class RunEngine:
         self.state.validate()
 
     @classmethod
-    def ironclad_slice(cls, *, seed: int = 0, ascension: int = 0):
-        """Native starter inventory on a restricted authored two-combat route."""
-        from game.headless.run.scenarios import first_slice_map
+    def ironclad_slice(cls, *, seed: int = 0, ascension: int = 0, route: str = "first-slice"):
+        """Native starter inventory on a named, restricted authored route."""
+        from game.headless.run.scenarios import ROUTES
+        if route not in ROUTES:
+            raise ValueError("Unsupported authored route.")
         engine = cls(seed=seed, max_hp=80, gold=99, config=RunConfig(ascension=ascension),
-                     graph=first_slice_map())
+                     graph=ROUTES[route]())
         add_relic(engine.state, "burning_blood")
         return engine
 
