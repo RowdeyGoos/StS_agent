@@ -56,7 +56,8 @@ def _reward(state):
 
 def eligible_relics(state):
     owned = {r.definition_id for r in state.relics}
-    return tuple(r for r in state.config.reward_relics if r not in owned)
+    pool = tuple(r for r in state.config.reward_relics if r not in owned)
+    return pool or ((state.config.relic_fallback,) if state.config.relic_fallback else ())
 
 
 def begin_combat_rewards(state, cards, *, encounter_id=None) -> None:
@@ -81,7 +82,7 @@ def begin_combat_rewards(state, cards, *, encounter_id=None) -> None:
     begin_reward(state, cards, gold=gold, card_ids=pool)
     relic = state.rng.choice("reward_relic", relic_pool) if relic_pool else None
     state.pending.update(combat_reward=True, encounter_id=encounter_id, potion=potion,
-                         potion_claimed=False, relic=relic, relic_claimed=False)
+                         potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None)
 
 
 def claim_potion(state):
@@ -114,4 +115,5 @@ def claim_relic(state):
         raise ValueError("Relic reward is unavailable.")
     relic = add_relic(state, reward["relic"])
     reward["relic_claimed"] = True
+    reward["relic_instance_id"] = relic.instance_id
     return relic

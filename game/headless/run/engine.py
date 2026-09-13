@@ -59,6 +59,19 @@ class RunEngine:
         add_relic(engine.state, "burning_blood")
         return engine
 
+    @classmethod
+    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen"):
+        """Generate a full-length A0 map with declared restricted content pools."""
+        from game.headless.map.overgrowth import generate_overgrowth_map
+        from game.headless.encounters.progression import EncounterProgression
+        config = RunConfig(ascension=ascension, relic_fallback="circlet")
+        config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
+        engine = cls(seed=seed, gold=99, config=config)
+        engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
+        engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool)
+        add_relic(engine.state, "burning_blood")
+        return engine
+
     def legal_actions(self) -> tuple:
         from game.headless.run.flow import legal_actions
         return legal_actions(self)
@@ -92,7 +105,8 @@ class RunEngine:
                     raise ValueError("The restricted elite relic pool has no available reward.")
         self.state.require_room_entry(room_kind)
         if self.state.pending is not None and self.graph is not None:
-            selected_id = self.graph.node(self.state.current_node_id).encounter_id
+            from game.headless.encounters.progression import encounter_at
+            selected_id = encounter_at(self.state, self.graph.node(self.state.current_node_id))
             if selected_id is not None and selected_id != encounter_id:
                 raise ValueError("Combat must match the selected encounter.")
         # Build against an independent stream snapshot, committing only on success.
@@ -106,6 +120,10 @@ class RunEngine:
                               cards_per_turn=cards_per_turn)
         combat.reset()
         combat.player.hp = self.state.hp
+        if self.state.encounter_progression is not None:
+            if self.graph is None or self.state.pending is None or self.state.current_node_id in self.state.encounter_progression.assignments:
+                raise ValueError("Generated encounters require a new selected map room.")
+            self.state.encounter_progression.assignments[self.state.current_node_id] = encounter_id
         self.state.rng = rng
         self.state.pending = None
         self.state.phase = RunPhase.COMBAT

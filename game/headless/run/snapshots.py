@@ -16,8 +16,9 @@ from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.shops.catalog import fingerprint as shop_fingerprint
 from game.headless.treasure.catalog import fingerprint as treasure_fingerprint
 from game.headless.events.catalog import EVENTS, fingerprint as event_fingerprint
+from game.headless.encounters.progression import EncounterProgression, encounter_at
 
-SCHEMA = "headless_run_state_v9"
+SCHEMA = "headless_run_state_v10"
 
 
 def _item_definitions():
@@ -28,6 +29,7 @@ def _item_definitions():
 def capture_run(engine) -> dict:
     state = engine.state
     state.validate()
+    _validate_progression(state, engine.graph)
     return {
         "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(), "treasure": treasure_fingerprint(), "events": event_fingerprint(),
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
@@ -39,6 +41,7 @@ def capture_run(engine) -> dict:
                   "active_encounter_id": state.active_encounter_id, "visited_nodes": list(state.visited_nodes),
                   "pending": deepcopy(state.pending),
                   "config": None if state.config is None else asdict(state.config),
+                  "encounter_progression": None if state.encounter_progression is None else asdict(state.encounter_progression),
                   "relics": [asdict(r) for r in state.relics],
                   "potions": [None if p is None else asdict(p) for p in state.potions],
                   "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance,
@@ -86,6 +89,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             act_completion=None if payload["act_completion"] is None else ActCompletion(**payload["act_completion"]),
             visited_nodes=list(payload["visited_nodes"]), pending=deepcopy(payload["pending"]),
             config=config, relics=[RelicInstance(**r) for r in payload["relics"]],
+            encounter_progression=None if payload["encounter_progression"] is None else EncounterProgression(**deepcopy(payload["encounter_progression"])),
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
             next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"],
             next_shop_id=payload["next_shop_id"], shop_removals_used=payload["shop_removals_used"],
@@ -104,13 +108,15 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Act completion requires a supported boss.")
         graph = snapshot["graph"]
         if graph is not None:
-            graph = MapGraph(tuple(MapNode(n["node_id"], n["kind"], tuple(n["next_node_ids"]), n["encounter_id"], n["event_id"]) for n in graph["nodes"]), graph["start_id"])
+            graph = MapGraph(tuple(MapNode(**{**n, "next_node_ids": tuple(n["next_node_ids"])}) for n in graph["nodes"]),
+                             graph["start_id"], tuple(graph["entry_node_ids"]), graph["generation"])
+            _validate_progression(state, graph)
             if any(n.encounter_id is not None and (n.encounter_id not in ENCOUNTERS or n.kind != ENCOUNTERS[n.encounter_id].room_kind) for n in graph.nodes):
                 raise ValueError("Unsupported map encounter.")
             if any(n.event_id is not None and n.event_id not in EVENTS for n in graph.nodes):
                 raise ValueError("Unsupported map event.")
             if state.act_completion is not None and (state.current_node_id is None or
-                    graph.node(state.current_node_id).encounter_id != state.act_completion.boss_encounter_id):
+                    encounter_at(state, graph.node(state.current_node_id)) != state.act_completion.boss_encounter_id):
                 raise ValueError("Completed boss differs from its room.")
             previous = None
             for node_id in state.visited_nodes:
@@ -119,11 +125,12 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 previous = node_id
             if state.phase is RunPhase.COMBAT and state.current_node_id is not None:
                 node = graph.node(state.current_node_id)
-                if node.encounter_id is not None and node.encounter_id != state.active_encounter_id:
+                selected = encounter_at(state, node)
+                if selected is not None and selected != state.active_encounter_id:
                     raise ValueError("Active encounter differs from its selected room.")
             if previous != state.current_node_id:
                 raise ValueError("Map cursor does not match its history.")
-        elif state.current_node_id is not None or state.visited_nodes:
+        elif state.current_node_id is not None or state.visited_nodes or state.encounter_progression is not None:
             raise ValueError("Map history has no map.")
         if state.phase is RunPhase.SLICE_COMPLETE and (graph is None or state.current_node_id is None or graph.node(state.current_node_id).kind != "slice_end"):
             raise ValueError("Slice completion requires its authored ending.")
@@ -145,6 +152,27 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Invalid run snapshot.") from error
 
 
+def _validate_progression(state, graph):
+    generated = graph is not None and graph.generation is not None
+    if generated != (state.encounter_progression is not None):
+        raise ValueError("Generated map and encounter progression must be owned together.")
+    if generated:
+        if not isinstance(state.encounter_progression, EncounterProgression) or state.config is None:
+            raise ValueError("Invalid generated run configuration.")
+        if state.phase in (RunPhase.VICTORY, RunPhase.SLICE_COMPLETE):
+            raise ValueError("Generated Act 1 success requires boss act completion.")
+        if state.current_node_id is not None and graph.node(state.current_node_id).kind == "boss":
+            selecting = state.phase is RunPhase.ROUTE and state.pending is not None and state.pending.get("kind") == "node"
+            if not selecting and state.phase not in (RunPhase.COMBAT, RunPhase.REWARD, RunPhase.ACT_COMPLETE, RunPhase.DEFEAT):
+                raise ValueError("Generated boss cannot return to between-room navigation.")
+        if any(n.kind == "event" and n.event_id not in state.config.event_pool for n in graph.nodes):
+            raise ValueError("Generated event differs from its declared pool.")
+        state.encounter_progression.validate(graph, state.visited_nodes,
+            pending_node=state.pending is not None and state.pending.get("kind") == "node")
+        if len(state.encounter_progression.assignments) != state.combats_completed + (state.phase is RunPhase.COMBAT):
+            raise ValueError("Encounter history differs from completed/active combats.")
+
+
 def _validate_pending(state, cards, graph):
     pending = state.pending
     if pending is None:
@@ -160,7 +188,7 @@ def _validate_pending(state, cards, graph):
     elif kind == "reward":
         expected = {"kind", "gold", "gold_claimed", "offers", "card_resolved"}
         if "combat_reward" in pending:
-            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed"}
+            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id"}
         if set(pending) != expected:
             raise ValueError("Invalid reward state fields.")
         if state.phase is not RunPhase.REWARD or type(pending["gold"]) is not int or pending["gold"] < 0:
@@ -178,7 +206,7 @@ def _validate_pending(state, cards, graph):
             encounter = None if encounter_id is None else ENCOUNTERS[encounter_id]
             low, high = (10, 20) if encounter is None else encounter.gold_range
             if graph is not None and state.current_node_id is not None:
-                if graph.node(state.current_node_id).encounter_id != encounter_id:
+                if encounter_at(state, graph.node(state.current_node_id)) != encounter_id:
                     raise ValueError("Reward encounter differs from its room.")
             pool = state.config.boss_reward_cards if state.config is not None and encounter is not None and encounter.room_kind == "boss" else (() if state.config is None else state.config.reward_cards)
             if (pending["combat_reward"] is not True or state.config is None
@@ -196,9 +224,17 @@ def _validate_pending(state, cards, graph):
             if expects_relic != (relic is not None) or (relic is None and pending["relic_claimed"]):
                 raise ValueError("Relic reward does not match encounter kind.")
             if relic is not None:
-                owned = any(r.definition_id == relic for r in state.relics)
-                if relic not in state.config.reward_relics or owned != pending["relic_claimed"]:
+                claimed = next((r for r in state.relics if r.instance_id == pending["relic_instance_id"]), None)
+                if (relic not in (*state.config.reward_relics, state.config.relic_fallback)
+                        or pending["relic_claimed"] != (claimed is not None)
+                        or claimed is not None and claimed.definition_id != relic
+                        or not pending["relic_claimed"] and pending["relic_instance_id"] is not None
+                        or not RELICS[relic].stackable and any(r.definition_id == relic for r in state.relics) != pending["relic_claimed"]):
                     raise ValueError("Invalid relic offer or ownership.")
+                if relic == state.config.relic_fallback and not all(any(r.definition_id == name for r in state.relics) for name in state.config.reward_relics):
+                    raise ValueError("Fallback requires an exhausted restricted relic pool.")
+            elif pending["relic_instance_id"] is not None:
+                raise ValueError("Missing relic has a claimed instance.")
     elif kind == "scripted_event":
         from game.headless.run.events import validate_event
         validate_event(state, graph, cards=cards)

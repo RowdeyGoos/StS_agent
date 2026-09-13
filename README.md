@@ -94,6 +94,19 @@ options exercise content on the existing five-fight route; native map generation
 encounter selection and full card/item/event pools remain unfinished.
 [Complete roster and validation](docs/evidence/overgrowth_roster_2026_09_13.md).
 
+A generated full-length route is also available:
+
+```bash
+sts-headless-play --route overgrowth-generated --seed 2 --path left --rest-choice rest --verify-restore
+```
+
+It adds 15 map rows plus a boss, branching paths and run-owned encounter queues
+(first three hallway fights weak, then normal encounters; separate elites).
+The declared profile assumes all encounters seen and uses supported event rooms
+and restricted card/item pools. Ancient choices, native path pruning and unknown
+room outcome rolls remain open. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
+
+
 Without reinstalling the console entry point, run
 `PYTHONPATH=. python -m game.cli.headless_play` with the same arguments.
 
