@@ -95,3 +95,56 @@ class ApplyDebuffs:
             if enemy is not None and enemy.is_alive:
                 for name in self.names:
                     enemy.apply_status(name, card.spec.applies_status_stacks)
+
+
+@dataclass(frozen=True, slots=True)
+class LoseHp:
+    amount: int
+
+    def apply(self, card, player, target):
+        if not player.combat_is_ending:
+            player.hp = max(0, player.hp - self.amount)
+
+
+@dataclass(frozen=True, slots=True)
+class GainEnergy:
+    amount: int
+
+    def apply(self, card, player, target):
+        if not player.combat_is_ending:
+            player.energy += self.amount
+
+
+@dataclass(frozen=True, slots=True)
+class ExhaustHandAttack:
+    def apply(self, card, player, target):
+        if target is None:
+            raise ValueError("Attack requires a target.")
+        if player.combat_is_ending:
+            return
+        hand = tuple(player.hand)
+        for other in hand:
+            player.hand.remove(other)
+            player.deck.exhaust_card(other)
+        for _ in hand:
+            if not target.is_alive or player.combat_is_ending:
+                break
+            target.take_damage(card.spec.base_damage, attacker_statuses=player.statuses,
+                               attacker_strength=player.strength)
+
+
+@dataclass(frozen=True, slots=True)
+class RandomEnemyAttack:
+    hits: int
+    upgraded_hits: int
+
+    def apply(self, card, player, target):
+        if player.combat_enemies is None:
+            raise ValueError("Random attacks require an owning combat.")
+        for _ in range(self.upgraded_hits if card.upgraded else self.hits):
+            if player.combat_is_ending:
+                break
+            living = [e for e in player.combat_enemies if e.is_alive]
+            enemy = player.deck.target_rng.choice(living)
+            enemy.take_damage(card.spec.base_damage, attacker_statuses=player.statuses,
+                              attacker_strength=player.strength)

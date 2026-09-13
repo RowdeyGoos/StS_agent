@@ -79,7 +79,7 @@ class CombatEngine:
             return tuple(ChooseCombatCard(i) for i in self.player.pending_options())
         actions: list[CombatAction] = [EndTurn()]
         for card in self.player.hand:
-            if card.cost > self.player.energy:
+            if card.cost < 0 or card.cost > self.player.energy:
                 continue
             if card.spec.uses_target:
                 actions.extend(PlayCard(card.instance_id, slot) for slot in self._living_enemy_indices())

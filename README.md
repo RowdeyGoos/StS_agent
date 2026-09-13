@@ -56,7 +56,11 @@ whether slimes or Fuzzy Wurm comes second, fight the other third, rest/smith, th
 choose Mawler, paired Nibbits or the Byrdonis elite. Elite rewards include 35–45
 gold and a relic from Strawberry/Pear/Mango, which permanently raises maximum HP
 and heals on pickup. `--path right` selects the elite; `left` selects Mawler.
-This is an authored route toward Act 1, still without a boss.
+Add `--route overgrowth-act1` to continue through a second rest site and Vantom.
+This route also offers Sword Boomerang, including its four-hit upgrade.
+Leaving the boss rewards records `act_complete` for Act 1; it does not declare
+full-game victory. The simple demo player can lose on this route. Boss rewards
+use a restricted rare-card pool: Impervious, Offering and Fiend Fire.
 
 Without reinstalling the console entry point, run
 `PYTHONPATH=. python -m game.cli.headless_play` with the same arguments.

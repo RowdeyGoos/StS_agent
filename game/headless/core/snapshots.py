@@ -17,7 +17,7 @@ from game.headless.monsters.base import Intent
 from game.headless.monsters.catalog import DEFAULT_MONSTERS
 from game.headless.powers.status import StatusCollection
 
-SCHEMA = "headless_combat_state_v3"
+SCHEMA = "headless_combat_state_v4"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -81,7 +81,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "config": {"player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick)},
-        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "next_instance_id": deck._next_instance_id,
+        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
     }
@@ -120,6 +120,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         source_deck = snapshot["deck"]
         deck.rng = rng_at(source_deck["rng"])
         deck.selection_rng = rng_at(source_deck["selection_rng"])
+        deck.target_rng = rng_at(source_deck["target_rng"])
         deck._next_instance_id = source_deck["next_instance_id"]
         if type(deck._next_instance_id) is not int or deck._next_instance_id < 0:
             raise ValueError("Invalid card allocator.")

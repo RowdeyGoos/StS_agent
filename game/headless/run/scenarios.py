@@ -1,6 +1,7 @@
 """Restricted authored route milestones; not procedural Act 1 or full-run endings."""
 
 from types import MappingProxyType
+from dataclasses import replace
 
 from game.headless.map.graph import MapGraph, MapNode
 
@@ -30,4 +31,12 @@ def overgrowth_route_map():
     ), "fight_1")
 
 
-ROUTES = MappingProxyType({"first-slice": first_slice_map, "overgrowth": overgrowth_route_map})
+def overgrowth_act1_map():
+    nodes = tuple(replace(n, next_node_ids=("boss_camp",)) if n.next_node_ids == ("slice_end",) else n
+                  for n in overgrowth_route_map().nodes if n.node_id != "slice_end")
+    return MapGraph((*nodes, MapNode("boss_camp", "rest", ("vantom",)),
+                     MapNode("vantom", "boss", (), "overgrowth_vantom")), "fight_1")
+
+
+ROUTES = MappingProxyType({"first-slice": first_slice_map, "overgrowth": overgrowth_route_map,
+                          "overgrowth-act1": overgrowth_act1_map})

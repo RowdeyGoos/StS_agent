@@ -101,8 +101,9 @@ content catalog. New effects belong in that content family or shared game rules
 when multiple cards need them. Display names do not dispatch behavior. A test can
 inject a `CardCatalog` containing an entirely new card without touching any adapter.
 Upgrade levels are per definition; they are not globally limited to a boolean.
-All eleven playable Ironclad definitions in the current pool have one implemented
-upgrade: [starter-card evidence](evidence/strike_upgrade_2026_09_13.md) and
+All fifteen implemented Ironclad definitions have one upgrade. The original
+eleven use the starter/hallway pools; Sword Boomerang joins the Act 1 route pool,
+and three rares form the restricted boss pool. Earlier source checks: [starter-card evidence](evidence/strike_upgrade_2026_09_13.md) and
 [reward-card/encounter evidence](evidence/slice_combat_content_2026_09_13.md).
 Slimed costs one, draws one and exhausts; it cannot be upgraded.
 
@@ -190,7 +191,8 @@ or last branch. The graph and visited history already survive run snapshots,
 while the active encounter ID preserves its reward kind. Sibling/visited nodes cannot be
 entered, and death stops progression without healing or rewards. The default
 `first-slice` route remains the smaller two-combat example. Neither authored
-route implements native map generation, complete encounter pools or bosses.
+route implements native map generation or complete encounter pools. The separate
+`overgrowth-act1` route adds a boss as described below.
 
 Fuzzy Wurm has 55–57 A0 HP and cycles attack 4 → gain 7 Strength → attack 4,
 then repeats; Strength accumulates. Paired Nibbits retain front/back slots:
@@ -227,6 +229,42 @@ the map cursor or consuming RNG. This explicit content limit is not a native
 relic-pool exhaustion rule. Native rarity weighting, upgraded card offers and
 full elite reward pools remain open. See the
 [first elite source and acceptance evidence](evidence/first_elite_2026_09_13.md).
+
+`RunEngine.ironclad_slice(route="overgrowth-act1")` extends the four-combat
+Overgrowth route with another Rest/Smith site and Vantom as the fifth combat.
+It retains native starter inventory and extends the eight-card hallway pool with
+Sword Boomerang for this route. Earlier routes retain their original pools.
+Vantom has 173 A0 HP and Slippery 8, and cycles Ink Blot 7 → Inky Lance 6×2 →
+Dismember 26 plus three Wounds in discard → Prepare (+2 Strength). Slippery caps
+each unblocked hit at 1 HP and consumes one stack. Fully blocked/zero hits consume
+none; stacks survive turn boundaries. Attacks and Fire Potion both respect it.
+Sword Boomerang costs 1 and deals 3 damage to a random living enemy three times,
+or four when upgraded. Each hit chooses again, can repeat a target, and consumes
+a Slippery stack independently. It stops rolling targets when combat ends. Its
+owned `Deck.target_rng` is independent of shuffle and hand-selection streams;
+Python sampling is deterministic but does not reproduce native seed sequences.
+The target stream survives JSON restore and isolated analysis cloning.
+Wound cannot be played or upgraded, but can be selected/exhausted by other cards.
+Generated Wounds have combat-owned IDs and never enter the persistent master deck.
+
+Boss rewards contain 100 gold, a possible potion and three rare offers from
+Impervious, Offering and Fiend Fire, with no elite relic. The pool is deliberately
+restricted; full native reward generation remains open. Impervious costs 2 and
+gives 30/40 block. Offering costs 0, loses 6 HP through block, gains 2 energy,
+and draws 3/5 cards. Fiend Fire costs 2, exhausts the other cards in hand, then
+hits its selected enemy for 7/10 per captured card. All three exhaust themselves.
+Fiend Fire resolves each hit separately, including Slippery consumption, and
+stops attacking a dead target. Lethal Offering ends combat before energy or draw.
+
+Leaving boss rewards, including forfeiting them, records
+`ActCompletion(act=1, boss_encounter_id="overgrowth_vantom")` and ends this supported
+run in `act_complete`. Winning the fight alone leaves the reward decision active.
+There is no map shortcut to this outcome, no Act 2 launch or inter-act healing,
+and no claim of full-game victory. The example player is deliberately simple;
+`--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
+currently demonstrates a real boss defeat. This authored five-fight route omits
+most of a native Act 1 map and its deck-building opportunities. See the
+[boss source and acceptance evidence](evidence/first_boss_2026_09_13.md).
 
 At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
 `Smith` opens a plain-data, cancelable selection of implemented upgrades.
@@ -272,12 +310,12 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v3`, including configuration,
-items, allocator, potion odds, active/reward encounter IDs, relic claim state and
-every pending decision.
-Nested combat records now use `headless_combat_state_v3`, including the in-play
-pile, pending continuation, selection RNG and power duration flags. Earlier combat
-v1/v2 and run v1/v2 formats are rejected rather than assigning invented item
+Private run snapshots now use `headless_run_state_v4`, including configuration,
+items, allocator, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
+act-completion record and every pending decision.
+Nested combat records now use `headless_combat_state_v4`, including the in-play
+pile, pending continuation, selection/target RNG and power duration flags. Earlier combat
+v1/v2/v3 and run v1/v2/v3 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

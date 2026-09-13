@@ -21,6 +21,14 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — first boss and explicit act completion:** Vantom A0, Slippery,
+  generated unplayable Wounds, Sword Boomerang, Impervious/Offering/Fiend Fire
+  and their upgrades,
+  restricted boss rewards and `ActCompletion` are implemented. The new authored
+  `overgrowth-act1` route adds a second camp and boss to the existing four fights.
+  [Evidence and limits](evidence/first_boss_2026_09_13.md). This covers representative
+  HF-17/18/23/31/37 work, not a complete native Act 1 or later-act progression.
+
 - **2026-09-13 — first elite and pickup relics:** Byrdonis A0 and Territorial
   now run on an optional Overgrowth path, with elite gold, one restricted relic
   reward and permanent Strawberry/Pear/Mango pickup effects. All six paths retain
@@ -724,6 +732,10 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-23 — Implement all target boss encounters
 
+- **Partial:** `HF-23/overgrowth_vantom` is implemented at A0: 173 HP, Slippery 8,
+  four-move cycle, Strength growth and generated Wounds, with boss rewards and
+  act completion. Ceremonial Beast, The Kin, other acts and ascensions remain open.
+
 - **Depends on:** HF-01/19 and the boss's mechanics. HF-30/31/37 consume the
   resulting encounter; they are not prerequisites for implementing its combat.
 - **Implement:** `HF-23/<encounter_id>` tickets for every selectable boss in every
@@ -841,6 +853,11 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-31 — Generate real combat and room rewards
 
+- **Boss slice:** Vantom awards 100 gold, a potion roll and three rare cards from
+  Impervious/Offering/Fiend Fire. No elite relic is substituted into boss rewards.
+  Native rare-only base odds and scalar/card rules are source-checked; the full
+  rare pool, native upgraded offers and native sampling remain open.
+
 - **Partial:** source-checked hallway 10–20 and elite 35–45 gold, three card
   offers, potion rolls and an elite relic are implemented. Card/potion/relic
   pools and Python sampling are explicitly restricted; native rarity/upgrade
@@ -927,6 +944,11 @@ Dependencies and acceptance cases are in the linked task.
   and Differential.
 
 ### HF-37 — Implement act transitions and real run termination
+
+- **Partial:** leaving the first supported boss reward records Act 1 completion
+  with the exact boss ID and ends at `act_complete`. Reward claims/forfeits restore
+  exactly. Later-act setup, pool reset, inter-act effects and full-run victory
+  are not implemented; `slice_complete` retains its original milestone meaning.
 
 - **Depends on:** HF-23/28/29/31/32. Add event/ancient-specific transition callers
   through HF-42/43 after the base act lifecycle exists.
@@ -1185,23 +1207,25 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The authored Overgrowth route now includes Byrdonis and its elite rewards. The next
-useful batch is **HF-23 plus HF-37: one verified Overgrowth boss and an explicit
-Act 1 completion boundary**, using the existing combat and encounter metadata:
+The authored route now includes an elite, a boss and an explicit Act 1 end. The
+next useful batch is **HF-35: a first shop**, providing real deck-building and
+inventory decisions on the route:
 
-1. Inspect the pinned Overgrowth boss pool (Ceremonial Beast, Vantom, The Kin)
-   and select one concrete encounter. Verify A0 HP, opening/conditional moves,
-   required powers and the true encounter victory condition before implementation.
-2. Implement only the mechanics that boss needs in the existing rule modules;
-   keep phases/counters as owned data. Cover each phase transition, lethal edge,
-   defeat and JSON continuation on both sides of any special transition.
-3. Extend the authored route through that boss and its verified reward/exit flow.
-   Add explicit act completion state; do not label an Act 1 finish full-game
-   victory or reuse the current `slice_complete` marker for a different meaning.
-4. Demonstrate a complete legal route with persistent deck/items/HP and restore
-   at every decision. Keep the declared content pool explicit. Shops, events,
-   treasure, other encounters, native maps/pools and all reachable content remain
-   necessary for unrestricted Act 1; later acts remain separate work.
+1. Verify native A0 stock categories, prices, removal cost/escalation, sold-out
+   behavior and exit legality in the pinned assembly. Keep generation restricted
+   to implemented cards, potions and simple pickup relics initially; label authored
+   sampling separately from native prices and purchase behavior.
+2. Implement owned shop stock and exact purchase commands in `game/headless/run/`.
+   Purchases spend gold once, grant the selected instance through existing inventory
+   rules, and mark only that stock entry sold. Reject insufficient gold, occupied
+   potion slots, duplicate relics and stale purchase IDs before mutation.
+3. Add a cancelable master-deck removal selection using exact instance IDs. Verify
+   eligibility, costs and whether the service can be used again before implementing
+   that policy; reuse permanent deck operations rather than combat exhaust.
+4. Add an optional shop stop to the authored Act 1 route. Exercise repeat purchases,
+   removal, skipping/leaving, affordability boundaries and JSON restore before and
+   after each operation. Native map generation, treasure/events, remaining encounters,
+   complete content pools and later acts remain separate implementation work.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

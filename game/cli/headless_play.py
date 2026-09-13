@@ -43,7 +43,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
         def priority(action):
             card = cards[action.instance_id]
             target_hp = 10**6 if action.target_slot is None else engine.combat.enemies[action.target_slot].hp
-            return (not card.spec.uses_target, target_hp, card.definition.definition_id != "bash")
+            return (card.spec.kind != "attack", target_hp, card.definition.definition_id != "bash")
         return min(plays, key=priority)
     if EndTurn() in actions:
         return EndTurn()
@@ -86,10 +86,11 @@ def main(argv=None):
     args = parser.parse_args(argv)
     engine, trace = play_slice(seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path)
     state = engine.state
-    print(json.dumps({"scope": "restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else "restricted_ironclad_a0_overgrowth_route",
+    print(json.dumps({"scope": "restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route"),
                       "route": args.route, "path": args.path, "seed": state.seed,
                       "phase": state.phase.value, "hp": state.hp, "max_hp": state.max_hp,
                       "gold": state.gold, "combats_completed": state.combats_completed,
+                      "act_completion": None if state.act_completion is None else asdict(state.act_completion),
                       "deck_size": len(state.deck), "relics": [r.definition_id for r in state.relics], "upgraded_cards": [c.instance_id for c in state.deck if c.upgrade_level],
                       "potions_used": sum(t["action"] == "UsePotion" for t in trace),
                       "commands": len(trace), "restore_verified": args.verify_restore,

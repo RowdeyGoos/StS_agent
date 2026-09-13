@@ -77,7 +77,8 @@ def begin_combat_rewards(state, cards, *, encounter_id=None) -> None:
     state.potion_drop_chance += -10 if dropped else 10
     gold = state.rng.randint("reward_gold", low, high)
     potion = state.rng.choice("reward_potion", state.config.reward_potions) if dropped else None
-    begin_reward(state, cards, gold=gold, card_ids=state.config.reward_cards)
+    pool = state.config.boss_reward_cards if encounter is not None and encounter.room_kind == "boss" else state.config.reward_cards
+    begin_reward(state, cards, gold=gold, card_ids=pool)
     relic = state.rng.choice("reward_relic", relic_pool) if relic_pool else None
     state.pending.update(combat_reward=True, encounter_id=encounter_id, potion=potion,
                          potion_claimed=False, relic=relic, relic_claimed=False)
@@ -97,8 +98,14 @@ def leave_combat_rewards(state) -> None:
     if not reward.get("combat_reward"):
         raise ValueError("No combat rewards are active.")
     # Combat rewards may be left unclaimed; they are then forfeited.
+    encounter_id = reward["encounter_id"]
     state.pending = None
-    state.phase = RunPhase.ROUTE
+    if encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "boss":
+        from game.headless.run.state import ActCompletion
+        state.act_completion = ActCompletion(1, encounter_id)
+        state.phase = RunPhase.ACT_COMPLETE
+    else:
+        state.phase = RunPhase.ROUTE
 
 
 def claim_relic(state):

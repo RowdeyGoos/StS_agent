@@ -6,7 +6,8 @@ from game.headless.cards.effects import DrawCards
 SLIMED = CardDefinition("slimed", (
     CardSpec("Slimed", 1, "status", draw_count=1, exhausts=True, uses_target=False),
 ), (DrawCards(),))
-DEFINITIONS = (SLIMED,)
+WOUND = CardDefinition("wound", (CardSpec("Wound", -1, "status", uses_target=False),), ())
+DEFINITIONS = (SLIMED, WOUND)
 
 
 class SlimedCard(Card):

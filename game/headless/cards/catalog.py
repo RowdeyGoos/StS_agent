@@ -7,6 +7,7 @@ import json
 from game.headless.cards.base import Card, CardDefinition
 from game.headless.cards.ironclad import DEFINITIONS as IRONCLAD
 from game.headless.cards.status import DEFINITIONS as STATUSES
+from game.headless.cards.ironclad_rare import DEFINITIONS as RARES
 
 
 @dataclass(frozen=True, slots=True, init=False)
@@ -53,4 +54,4 @@ class CardCatalog:
         return self
 
 
-DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES))
+DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *RARES))

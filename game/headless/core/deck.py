@@ -21,6 +21,8 @@ class Deck:
         # Fork without consuming shuffle/enemy RNG. Native seed parity is separate.
         self.selection_rng = Random(0)
         self.selection_rng.setstate(rng.getstate())
+        self.target_rng = Random(0)
+        self.target_rng.setstate(rng.getstate())
         self._next_instance_id = 0
         self._allocated_ids = {card.instance_id for card in cards if card.instance_id is not None}
         if len(self._allocated_ids) != sum(card.instance_id is not None for card in cards):
