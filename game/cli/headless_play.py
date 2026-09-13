@@ -27,7 +27,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
             return found
     event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]
     if event_choices:
-        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control")), event_choices[0])
+        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up")), event_choices[0])
     event_cards = [a for a in actions if isinstance(a, ChooseEventCard)]
     if event_cards:
         bash = next((c.instance_id for c in engine.state.deck if c.definition.definition_id == "bash"), None)

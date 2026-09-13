@@ -22,7 +22,7 @@ from game.headless.run.unknown_rooms import UnknownRooms, RoomOutcome, room_node
 from game.headless.events.progression import EventProgression
 from game.headless.run.ancient import AncientStart
 
-SCHEMA = "headless_run_state_v12"
+SCHEMA = "headless_run_state_v13"
 
 
 def _item_definitions():

@@ -2,24 +2,17 @@
 
 from dataclasses import dataclass
 
+from game.headless.events.transformation import TRANSFORM_POOL, check_content
 from game.headless.run.deck import find_card, transform_card, upgrade_card
 
 
 @dataclass(frozen=True, slots=True)
 class AromaOfChaos:
     definition_id: str = "aroma_of_chaos"
-    transform_pool: tuple[str, ...] = (
-        "pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit",
-        "uppercut", "shockwave", "sword_boomerang", "impervious", "offering", "fiend_fire",
-    )
+    transform_pool: tuple[str, ...] = TRANSFORM_POOL
 
     def check_content(self, state, cards):
-        # Status/curse/colorless transformation pools and Eternal are not modeled.
-        sources = (*self.transform_pool, "strike", "defend", "bash")
-        if any(c.definition.definition_id not in sources for c in state.deck):
-            raise ValueError("Aroma currently supports only the implemented Ironclad deck cards.")
-        for name in self.transform_pool:
-            cards.definition(name)
+        check_content(state, cards, self.transform_pool)
 
     def generate(self, rng, *, state, cards):
         self.check_content(state, cards)

@@ -204,13 +204,16 @@ assignments, topology and RNG persist through JSON continuation.
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. By default it retains the post-Ancient fixture start; the
 optional Neow start below adds the first supported rewards. The event profile
-`supported_events_all_unlocked_v1` shuffles `RunConfig.event_pool` once. Both
-supported definitions inherit native unconditional eligibility. On event entry,
-the queue skips previously visited definitions; after a full exhausted pass it
-permits repetition, matching the native fallback. `state.event_progression` owns
-queue order, cursor and node assignments. Restore checks these against visited
-room outcomes. Reads and failed room construction never advance the queue.
-Full event content, unlock epochs and conditional eligibility remain open. Card,
+`supported_events_all_unlocked_v2` shuffles `RunConfig.event_pool` once. The
+generated pool contains Jungle Maze Adventure, Aroma of Chaos, Morphic Grove and
+Tablet of Truth. Morphic Grove requires at least 100 gold and two transformable
+cards; the others inherit unconditional native eligibility. On event entry,
+the queue skips previously visited or ineligible definitions; after a full
+exhausted pass it permits the current candidate even if visited or ineligible,
+matching the native fallback. `state.event_progression` owns queue order, cursor,
+node assignments and plain entry conditions (gold and transformable-card count).
+Restore replays selection against those conditions and visited room outcomes. Reads and failed room construction never advance the queue.
+Remaining event content, unlock epochs and additional eligibility rules remain open. Card,
 item, shop and reward pools retain their restrictions. Unknown-room modifying relics, tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
 `RunConfig.relic_fallback="circlet"`, preventing exhausted fruit-relic rewards
@@ -340,9 +343,41 @@ See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md
 `run/events.py` owns lifecycle and
 dispatch. The older primitive event fixture still uses `run/rooms.py`; native
 content is not dispatched by its synthetic option dictionary. Native event pool
-unlock filters, conditional eligibility, multiplayer voting and the rest of the
+unlock filters, additional conditional eligibility, multiplayer voting and the rest of the
 Overgrowth event catalog remain open; the generated route now has owned
 unique-event progression and exhausted-pool repetition. See [source and validation evidence](evidence/first_event_2026_09_13.md).
+
+## Tablet of Truth and Morphic Grove
+
+The default generated Overgrowth route now includes both events. Authored routes
+and the older base-map fixture keep their earlier explicit event pool. Both use
+`ChooseEventOption(event_instance_id, option_id)` and `LeaveEvent`.
+
+**Tablet of Truth:** `smash` heals 20 HP and finishes. `decipher_1` through
+`decipher_4` cost 3, 6, 12 and 24 maximum HP respectively, each upgrading one random
+upgradable deck card. Current HP is capped at the new maximum. After each step,
+`give_up` retains the costs and upgrades and finishes. `decipher_5` pays current
+maximum HP minus one, leaving 1 maximum HP, and upgrades every remaining upgradable
+card. A cost at least equal to maximum HP leaves maximum HP at 1 and kills the
+player without an upgrade. An empty/fully upgraded deck still pays the cost but
+uses no upgrade RNG. Each repeated page and automatic result restores exactly.
+
+**Morphic Grove:** `loner` grants 5 maximum/current HP. `group` spends all current
+gold, then requires two original deck cards. With more than two candidates,
+`ChooseEventCard` nominates one at a time; the first nomination changes no card and
+reveals no transformation. Both replacements resolve together after the second
+nomination, using the same restricted Ironclad pool as Aroma. They retain deck
+positions and receive fresh unupgraded identities. There is no cancel or duplicate
+nomination. If at most two cards exist, all are selected automatically, including
+the zero-card case reachable through native exhausted-pool fallback. A failure
+while preparing either replacement preserves the paid selection, deck and RNG.
+
+The event modules own their content rules. Shared pool validation lives in
+`events/transformation.py`; eligibility entry conditions live in
+`events/eligibility.py`. Pending decisions and results contain plain data, without
+callbacks. The demo chooses Smash and Loner. Full transformation pools, Eternal
+and other item/card modifiers remain open.
+See [pinned source and validation](evidence/overgrowth_events_2026_09_13.md).
 
 ## Treasure rooms
 
@@ -552,10 +587,10 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v12`, including configuration,
+Private run snapshots now use `headless_run_state_v13`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
-encounter/event queues and assignments, optional Ancient start/selection history,
+encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
 unknown-room odds/outcomes and exact claimed reward item IDs,
 shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.

@@ -105,10 +105,14 @@ It adds 15 map rows plus a boss, branching paths and run-owned encounter queues
 The default profile prunes duplicate paths and resolves unknown markers once on
 entry using native base odds. It assumes all encounters seen and uses restricted
 event/card/item pools. Events now use a saved shuffled queue and repeat only after
-the supported unique events are exhausted. Add `--ancient neow` to begin with
+the supported unique events are exhausted. The generated event pool now also
+includes Tablet of Truth (healing or repeated maximum-HP costs for upgrades) and
+Morphic Grove (maximum HP or spending all gold to transform two cards), with
+Morphic Grove's native entry conditions. Add `--ancient neow` to begin with
 the restricted Golden Pearl (+150 gold) / Nutritious Oyster (+11 maximum HP)
 choice; omit it for the post-Ancient fixture start. Full Neow offers, event
-content/unlock conditions and map modifiers remain open. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
+content/unlock conditions and map modifiers remain open. The installed seed-2 right/rest demo with `--ancient neow` completes
+this restricted generated Act 1; other choices/seeds can lose. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
 
 
 Without reinstalling the console entry point, run
