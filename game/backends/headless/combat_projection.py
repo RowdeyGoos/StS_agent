@@ -15,6 +15,11 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Any, Mapping, Sequence
 
+from game.content.card_upgrades import (
+    BASE_CARD_PROFILE,
+    projected_card_name,
+    validate_card_profile,
+)
 from game.contracts.headless_v0 import (
     CombatOutcome,
     DecisionPhase,
@@ -249,13 +254,14 @@ def _project_enemies(value: Any, scope: PublicScope) -> list[dict[str, Any]]:
     return result
 
 
-def _project_hand(value: Any, scope: PublicScope) -> list[dict[str, Any]]:
+def _project_hand(value: Any, scope: PublicScope, card_profile: str) -> list[dict[str, Any]]:
     hand = _require_sequence(value, "observation.hand")
     result: list[dict[str, Any]] = []
     for index, legacy_name in enumerate(hand):
+        base_name, upgraded = projected_card_name(legacy_name, card_profile)
         definition_id = _definition(
             CARD_DEFINITION_IDS,
-            legacy_name,
+            base_name,
             f"observation.hand[{index}]",
         )
         result.append(
@@ -263,8 +269,7 @@ def _project_hand(value: Any, scope: PublicScope) -> list[dict[str, Any]]:
                 "card_ref": combat_card_reference(scope, definition_id, index),
                 "card_definition_id": definition_id,
                 "cost": get_card_spec(legacy_name).cost,
-                # combat_v0 has no upgraded-card representation.
-                "upgraded": False,
+                "upgraded": upgraded,
             }
         )
     return result
@@ -292,6 +297,8 @@ def _public_outcome(
 def project_combat_observation(
     observation: Mapping[str, Any],
     public_scope: PublicScope,
+    *,
+    card_profile: str = BASE_CARD_PROFILE,
 ) -> PublicObservation:
     """Copy one structured ``CombatEnv`` observation into ``headless_v0``.
 
@@ -301,6 +308,7 @@ def project_combat_observation(
     use the hand-reveal ordinal already declared by that scope.
     """
 
+    validate_card_profile(card_profile)
     if not isinstance(public_scope, PublicScope):
         raise CombatProjectionError("public_scope must be a PublicScope.")
     source = _require_mapping(observation, "observation")
@@ -309,7 +317,7 @@ def project_combat_observation(
         _required(source, "enemies", "observation"),
         public_scope,
     )
-    hand = _project_hand(_required(source, "hand", "observation"), public_scope)
+    hand = _project_hand(_required(source, "hand", "observation"), public_scope, card_profile)
     outcome = _public_outcome(player, enemies)
     data = {
         "turn": _required(source, "turn", "observation"),

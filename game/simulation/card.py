@@ -58,14 +58,16 @@ class CardSpec:
 
 
 class StrikeCard(Card):
-    """Starter attack card that deals 6 damage."""
+    """Starter attack: 6 damage, or 9 for its single upgraded variant."""
 
-    def __init__(self) -> None:
-        super().__init__(name="Strike", cost=1)
+    def __init__(self, *, upgraded: bool = False) -> None:
+        if not isinstance(upgraded, bool):
+            raise ValueError("upgraded must be a boolean.")
+        super().__init__(name="Strike+" if upgraded else "Strike", cost=1)
 
     def play(self, player: Player, enemy: Enemy) -> None:
         enemy.take_damage(
-            6,
+            get_card_spec(self.name).base_damage,
             attacker_statuses=player.statuses,
             attacker_strength=player.strength,
         )
@@ -247,8 +249,15 @@ CARD_SPECS: dict[str, CardSpec] = {
 }
 
 
+# Keep the legacy registry and default encoder vocabulary unchanged. The
+# headless upgrade profile explicitly enables this additional variant.
+UPGRADED_STRIKE_SPEC = CardSpec(name="Strike+", cost=1, kind="attack", base_damage=9)
+
+
 def get_card_spec(card_name: str) -> CardSpec:
     """Return static metadata for a known card name."""
+    if card_name == UPGRADED_STRIKE_SPEC.name:
+        return UPGRADED_STRIKE_SPEC
     try:
         return CARD_SPECS[card_name]
     except KeyError as exc:

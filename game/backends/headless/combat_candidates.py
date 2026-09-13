@@ -16,6 +16,11 @@ from game.backends.headless.combat_projection import (
     CARD_DEFINITION_IDS,
     ENEMY_DEFINITION_IDS,
 )
+from game.content.card_upgrades import (
+    BASE_CARD_PROFILE,
+    projected_card_name,
+    validate_card_profile,
+)
 from game.contracts.headless_v0 import (
     ActionRequest,
     CombatEndTurnCandidate,
@@ -126,6 +131,8 @@ class CombatCandidateMapping:
 def generate_combat_candidates(
     environment: CombatEnv,
     public_scope: PublicScope,
+    *,
+    card_profile: str = BASE_CARD_PROFILE,
 ) -> CombatCandidateMapping:
     """Translate every current legal ``CombatEnv`` action exactly once.
 
@@ -134,6 +141,7 @@ def generate_combat_candidates(
     only to call the legacy environment and expires with the returned mapping.
     """
 
+    validate_card_profile(card_profile)
     if not isinstance(environment, CombatEnv):
         raise TypeError("environment must be a CombatEnv.")
     if not isinstance(public_scope, PublicScope):
@@ -148,7 +156,7 @@ def generate_combat_candidates(
     ] = {}
     actions_by_candidate_id: dict[str, CombatAction] = {}
     for action in legal_actions:
-        candidate = _candidate_for_action(environment, public_scope, action)
+        candidate = _candidate_for_action(environment, public_scope, action, card_profile)
         if candidate.candidate_id in candidates_by_id:
             raise CombatCandidateError(
                 "Distinct legacy legal actions mapped to one combat candidate."
@@ -236,6 +244,7 @@ def _candidate_for_action(
     environment: CombatEnv,
     public_scope: PublicScope,
     action: CombatAction,
+    card_profile: str,
 ) -> CombatEndTurnCandidate | CombatPlayCardCandidate:
     if action == ("end_turn",):
         return CombatEndTurnCandidate(public_scope.decision_scope)
@@ -249,7 +258,9 @@ def _candidate_for_action(
         raise CombatCandidateError("Legal play action has no current hand card.") from error
     card_ref = combat_card_reference(
         public_scope,
-        _definition_id(CARD_DEFINITION_IDS, card.name, "card"),
+        _definition_id(
+            CARD_DEFINITION_IDS, projected_card_name(card.name, card_profile)[0], "card"
+        ),
         hand_index,
     )
 

@@ -64,6 +64,13 @@ named mechanics against the pinned game. The accepted cloning smoke proves
 training/artifact plumbing on structural data; scale training when the relevant
 rules and useful evaluation cases justify it.
 
+The [full-game implementation backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md)
+owns the assessment, feature dependencies and observable acceptance cases. Its
+first HF-13 slice supports Strike+ in an opt-in combat profile; remaining upgrades,
+persistent items and progression still need implementation. Headless feature work
+can proceed alongside bridge development using separate file ownership and shared
+pinned-game rule evidence.
+
 Retain these research priorities as evidence-driven options:
 
 - compare action-conditioned and shared-enemy models on matched seeds/budgets;

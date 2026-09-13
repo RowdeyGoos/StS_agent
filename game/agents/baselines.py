@@ -204,6 +204,7 @@ def choose_heuristic_action(
         "Bash": 4,
         "Pommel Strike": 5,
         "Strike": 6,
+        "Strike+": 6,
         "Slimed": 8,
     }
     quiet_ranks = {
@@ -211,6 +212,7 @@ def choose_heuristic_action(
         "Pommel Strike": 2,
         "Iron Wave": 3,
         "Strike": 4,
+        "Strike+": 4,
         "Shrug It Off": 5,
         "Defend": 6,
         "Slimed": 8,
