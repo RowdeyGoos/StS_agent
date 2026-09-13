@@ -20,7 +20,7 @@ using Sts2AgentBridge.Successors.CardSelectionV1;
 using Sts2AgentBridge.Successors.CardTransformV2;
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
-public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAdapter
+public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAdapter, IGenericEventV7AbortableNative
 {
     private readonly GenericEventV7Hooks _hooks;
     private readonly int _thread=System.Environment.CurrentManagedThreadId;
@@ -69,7 +69,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(!_hooks.PrepareNext()){diagnostic=GenericEventDiagnosticCode.ParentWaiting;return Fixed("preparing");}
         _readStage?.Invoke(13);
         if(_pending is null&&MegaCrit.Sts2.Core.Nodes.CommonUi.NModalContainer.Instance?.OpenModal is not null)return Fixed("unsupported");
-        if(_merchant is not null)return _merchant.Capture();
+        if(_merchant is not null){var value=_merchant.Capture();if(value.Status=="combat")CombatScope=_merchant.CombatScope;return value;}
         if(_pending is null&&NRun.Instance is {} customRun&&customRun.EventRoom is {} customRoom&&
             customRoom.CustomEventNode is MegaCrit.Sts2.Core.Nodes.Events.Custom.NFakeMerchant merchant) {
             _merchant=new GenericEventV7MerchantScreen(customRun,customRoom,merchant);return _merchant.Capture();
@@ -81,6 +81,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             diagnostic=GenericEventV7Hooks.OwnershipDiagnostic(b);
             if(diagnostic!=GenericEventDiagnosticCode.NotCaptured)return Fixed("unsupported");
             diagnostic=GenericEventDiagnosticCode.PendingOwnership;
+            if(b.Terminal is {} terminal)return Fixed(terminal.Capture());
             if(b.Abandon is {} popup) {
                 if(b.ChosenTask is null||!b.ChosenTask.IsCompleted)return Fixed("waiting");
                 if(popup.Read().Status!="ready")return Fixed("unsupported");
@@ -136,11 +137,14 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!item.Domain()||!item.Overlay())return Fixed("unsupported");
                 if(!item.TryButton(out _)){diagnostic=GenericEventDiagnosticCode.PrepareCandidates;return Fixed("waiting");}
                 if(item.HasCards) {
-                    if(item.IsMixed&&!item.CapacityPlan())return Fixed("unsupported");
+                    if(item.IsMixed&&!item.CapacityPlan()){b.Admission??=new GenericEventV7ItemPolicyAdmission(new object(),item.OfferCount);return new("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);}
                     b.Admission??=new GenericEventV7RewardAdmission(new object(),item.OfferCount,item.IsMixed);
                     return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
                 }
-                if(!item.CapacityPlan())return Fixed("unsupported");
+                if(!item.CapacityPlan()) {
+                    b.Admission??=new GenericEventV7ItemPolicyAdmission(new object(),item.OfferCount);
+                    return new("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
+                }
                 b.Admission??=new GenericEventV7ItemAdmission(new object(),item.OfferCount);
                 diagnostic=GenericEventDiagnosticCode.ChildReady;
                 return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
@@ -277,6 +281,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 !_screens.Add(item.Screen!)||!_itemIdentities.Add(item.Set)||!_itemIdentities.Add(item.Reward!))
                 throw new InvalidOperationException("Unowned or repeated item child.");
             _childCreated=true;
+            if(b.Admission is GenericEventV7ItemPolicyAdmission)return b.ItemPolicy=new GenericEventV7ItemPolicySession(item);
             if(item.HasCards) {
                 if(item.OfferCount>1)return new GenericEventV7CardRewardSetSession(b.Nonce,new GenericEventV7CardRewardSetAdapter(item));
                 item.CardReward!.Start();return new GenericEventV7CardRewardSession(b.Nonce,item.CardReward);
@@ -316,6 +321,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             :context.AllowOptionalSelection?new GenericEventV7OptionalAddChildSession(context,adapter)
             :new Sts2AgentBridge.Successors.GenericEventV5.GenericEventV5FrozenChildSession(new CardSelectionV1Session(context,adapter)));}catch{adapter.Dispose();throw;}
     }
+    public void AbortPending(){ _merchant?.Abort();if(_pending is {} pending){pending.Failed=true;pending.Terminal?.Abort();pending.ItemPolicy?.Abort();}}
     public void CompleteParent()
     {
         if(_merchant is not null){_merchant.CompleteParent();return;}
@@ -333,6 +339,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             // only after the owned popup has verified its unchanged return.
             if(!popup.Abandoned)_options.Clear();
         }
+        _pending.Terminal?.Dispose();
         bool resume=_pending.Combat?.Resumes==true;
         GenericEventV7Hooks.Close(_pending);_pending=null;_childCreated=false;
         if(resume)_hooks.PauseForCombat();
@@ -342,7 +349,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(_customCleanupError is not null)throw new InvalidOperationException("Custom screen cleanup previously failed.",_customCleanupError);
         if(_disposed)return;
         if(System.Environment.CurrentManagedThreadId!=_thread)throw new InvalidOperationException("Owner thread cleanup required.");
-        Exception? customCleanup=null;try{_merchant?.Dispose();_pending?.Sphere?.DisposeOwner();_pending?.Abandon?.DisposeOwner();}catch(Exception error){customCleanup=error;_customCleanupError=error;}
+        Exception? customCleanup=null;try{_merchant?.Dispose();_pending?.Sphere?.DisposeOwner();_pending?.Abandon?.DisposeOwner();_pending?.Terminal?.Dispose();_pending?.ItemPolicy?.Dispose();}catch(Exception error){customCleanup=error;_customCleanupError=error;}
         if(_pending is not null)GenericEventV7Hooks.Close(_pending);
         _hooks.Dispose();_disposed=true;
         if(customCleanup is not null)throw new InvalidOperationException("Custom screen cleanup failed.",customCleanup);

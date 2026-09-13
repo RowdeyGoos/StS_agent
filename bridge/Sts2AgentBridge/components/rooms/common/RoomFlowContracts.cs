@@ -44,12 +44,14 @@ public static class RoomFlowIdentity
         if (flowKind == "shop" && value is "inventory:close" or "leave") return true;
         string prefix;
         int maximum;
-        if (flowKind == "shop") { prefix = "buy:card:"; maximum = 31; }
+        if (flowKind == "shop") { prefix = value?.StartsWith("buy:relic:", StringComparison.Ordinal) == true ? "buy:relic:" : value?.StartsWith("buy:potion:", StringComparison.Ordinal) == true ? "buy:potion:" : "buy:card:"; maximum = 31; }
         else if (flowKind == "event") { prefix = "choose:"; maximum = 7; }
         else return false;
+        if(flowKind=="shop" && value?.StartsWith("discard:",StringComparison.Ordinal)==true){prefix="discard:";maximum=7;}
+        if(flowKind=="shop" && value?.StartsWith("remove:",StringComparison.Ordinal)==true){prefix="remove:";maximum=511;}
         if (value is null || !value.StartsWith(prefix, StringComparison.Ordinal)) return false;
         ReadOnlySpan<char> digits = value.AsSpan(prefix.Length);
-        if (digits.Length is < 1 or > 2 || (digits.Length > 1 && digits[0] == '0')) return false;
+        if (digits.Length < 1 || digits.Length > (maximum==511?3:2) || (digits.Length > 1 && digits[0] == '0')) return false;
         int index = 0;
         foreach (char c in digits)
         {

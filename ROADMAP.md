@@ -1,43 +1,34 @@
 # Roadmap
 
-Updated 2026-09-12. This file owns priorities; [current status](docs/STATUS.md)
+Updated 2026-09-13. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
 ## Immediate priorities
 
-1. **Add custom screens first within generic event coverage.** The user selected
-   custom screens as the next priority. Fake Merchant's inventory open, relic
-   purchase, close and map path and Crystal Sphere's cell reveals, earned rewards
-   and map exit are implemented. Crystal Sphere’s Uncover Future/gold/map path
-   passed live, including completed-overlay cleanup. Fake Merchant’s inventory/two-purchase/leave path and
-   Crystal Sphere Payment Plan also passed in one game process. Additional reward
-   variants retain narrower evidence.
-   Trial’s abandon popup is implemented offline with cancellation and explicitly
-   confirmed terminal abandonment. Live coverage is still open.
-   Hidden sphere item models remain private; no strategic-quality claim is made.
-2. **Extend remaining pickup children after representative event coverage.**
-   Battleworn Dummy training expiry and victory/potion resumption, Dense
-   Vegetation combat, Lantern Key special-card rewards and Punch Off potion/relic
-   rewards now passed through map return. The multi-case batch is complete and
-   cleanup is verified. The checkout
-   supports combat/rewards/map, callback-verified resumption, extra special-card
-   and potion/relic rewards, terminal potion policies and known capacity growth.
-   [Current status](docs/STATUS.md) owns exact implementation limits and pending
-   live cases. Next, identify a concrete shop pickup selector
-   or resume-time card reward, then broader selector composition and terminal
-   dependencies. Use a concrete branch and observable outcome for each increment,
-   reusing matching accepted evidence.
+1. **Resolve Architect admission before another ending retest.** Native final-act
+   setup now reaches its untouched Proceed, but the bridge returns
+   `unsupported_state` before dispatch. Identify the exact rejected predicate,
+   preserve native ownership and task guards, then verify the complete win path.
+   The implemented terminal task chain has offline coverage; it has not passed live.
+2. **Finish representative coverage of remaining pickup and selector variants.**
+   Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
+   Dummy victory with automatic upgrades, terminal potion policies and assisted
+   Fake Merchant seven-relic collection now have live results. Remaining targets
+   include shop passive/Potion Belt purchases and pickup selectors, capacity-first
+   terminal/event/resume rewards, Sphere tool/reward variants, and a true multi-card
+   upgrade selector. Dummy’s automatic upgrades do not establish selector coverage.
+   The original Merchant reward list can exceed the eight-entry reader limit;
+   handling that full screen is distinct from the demonstrated assisted collection.
+   Choose a concrete native caller and observable outcome before extending a mechanism.
+   [Current status](docs/STATUS.md) owns exact evidence and practical limits.
 3. **Compose supported interactions into longer live runs after event coverage.**
-   The combined batch covers Neow's Fury two-card and zero-card choices,
-   resumption of combat after those choices, both reward policies, event/map
-   handoff and an allocated off-screen
-   single upgrade. Reuse the
+   Reuse the [multi-case results](docs/evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md),
    [combined batch](docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) and
    [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md).
-   Then test remaining handoffs and elite continuation. Use generalized
+   Test remaining handoffs and elite continuation, keeping run completion,
+   branch coverage and strategic quality as separate claims. Use generalized
    transformation in useful play; do not repeat the card16 geometry experiment.
-   Keep run-completion, branch coverage and strategic-quality claims separate.
 
 Allocated off-screen transformation and single-upgrade holders each have a
 representative live result. Further tests should address new behavior, such as
@@ -47,9 +38,10 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
 owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
-include broader deck changes after selectors and other pre-selector mutations, broader pickup
-composition, resume-time selectors/card rewards, repeated/nested pickup selectors,
-Fake Merchant combat and The Architect’s terminal progression. Plan shared capabilities from those dependencies, not event-name rules.
+now require concrete callers for broader deck changes, resume-time card/selector
+rewards and multiple independent children within one callback. The current batch
+implements shop pickup selectors, full-inventory event policies, the initial
+Fake Merchant Foul Potion fight and The Architect’s terminal progression. Plan shared capabilities from those dependencies, not event-name rules.
 
 Keep representative held-out/live coverage for implemented families separate from
 new implementation. Variable upgrades, true native cancellation, enchantment
@@ -63,6 +55,13 @@ Keep the reduced backend and actor pipeline usable while improving fidelity of
 named mechanics against the pinned game. The accepted cloning smoke proves
 training/artifact plumbing on structural data; scale training when the relevant
 rules and useful evaluation cases justify it.
+
+The [headless full-game backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md) breaks
+the remaining simulation work into selectable tasks with dependencies and acceptance
+cases. Start with a pinned mechanic/reference case and one persistent gameplay slice
+(for example HF-13, one executable card upgrade), then full-length reduced-content
+runs, complete reachable Ironclad A0 content, and target-difficulty coverage. This
+headless sequence does not reorder the live-bridge priorities above.
 
 Retain these research priorities as evidence-driven options:
 

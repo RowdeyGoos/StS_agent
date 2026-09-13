@@ -1,4 +1,5 @@
 using System;
+using Sts2AgentBridge.Successors.ItemV1;
 using System.Collections.Generic;
 using Sts2AgentBridge.Successors.RoomFlowsV1;
 
@@ -21,7 +22,15 @@ public sealed class ShopV1Session : IRoomFlowSession
     private PendingAction? _pending;
     private ShopV1ReconciledAction? _priorResult;
     private ShopV1Observation? _completed;
-    private bool _purchaseUsed;
+    private int _purchases, _discards;
+    private readonly HashSet<int> _discardedSlots = new();
+    private readonly HashSet<object> _originalPotions = new(ReferenceEqualityComparer.Instance);
+    private readonly HashSet<object> _purchasedEntries = new(ReferenceEqualityComparer.Instance);
+    private readonly Dictionary<object,ShopV1RestockWitness> _restocked = new(ReferenceEqualityComparer.Instance);
+    private readonly HashSet<object> _purchasedModels = new(ReferenceEqualityComparer.Instance);
+    private bool AvailableGeneration(ShopV1NativeOffer offer) => !_purchasedEntries.Contains(offer.EntryIdentity) ||
+        _restocked.TryGetValue(offer.EntryIdentity,out var witness) && ReferenceEquals(offer.StockModelIdentity,witness.ModelIdentity) &&
+        offer.StableKey==witness.StableKey && offer.DisplayedPrice==witness.Price;
     private bool _closeReconciled;
     private bool _dispatching;
     private bool _inside;
@@ -152,11 +161,15 @@ public sealed class ShopV1Session : IRoomFlowSession
             _priorResult = null;
             _reservations++;
             _reservedDecisionIds.Add(decisionId!);
-            if (pending.Probe.Kind == ShopV1ActionKind.PurchaseCard)
+            if (pending.Probe.Kind is ShopV1ActionKind.PurchaseCard or ShopV1ActionKind.PurchasePotion or ShopV1ActionKind.PurchaseRelic or ShopV1ActionKind.RemoveCard)
             {
-                _purchaseUsed = true;
+                _purchases++;
+                _purchasedEntries.Add(pending.Probe.TargetEntryIdentity!);
+                _restocked.Remove(pending.Probe.TargetEntryIdentity!);
+                if(pending.Probe.TargetModelIdentity is {} purchasedModel)_purchasedModels.Add(purchasedModel);
             }
 
+            if(pending.Probe.Kind==ShopV1ActionKind.DiscardPotion){_discards++;_discardedSlots.Add(pending.Probe.TargetSlot);}
             try
             {
                 _inside = true;
@@ -264,13 +277,15 @@ public sealed class ShopV1Session : IRoomFlowSession
         {
             return false;
         }
-        if (!BindOrMatch(capture, bind) || !ValidDeck(capture.Deck))
+        if (!BindOrMatch(capture, bind) || !ValidDeck(capture.Deck) || !ValidPotions(capture.PotionSlots) || !ValidRelics(capture.Relics))
         {
             return false;
         }
 
         var publicOffers = new List<ShopV1Offer>(capture.Offers.Count);
         var legalActions = new List<string>(capture.Offers.Count + 1);
+        var removalCandidates = new List<ShopV1RemovalCandidate>();
+        ShopV1NativeOffer? removalOffer=null;
         var slots = new HashSet<int>();
         var slotRefs = new HashSet<object>(ReferenceEqualityComparer.Instance);
         var entryRefs = new HashSet<object>(ReferenceEqualityComparer.Instance);
@@ -288,39 +303,58 @@ public sealed class ShopV1Session : IRoomFlowSession
                 offer.SlotIdentity is null || offer.EntryIdentity is null ||
                 offer.ControlIdentity is null || offer.LabelIdentity is null ||
                 !slotRefs.Add(offer.SlotIdentity) || !entryRefs.Add(offer.EntryIdentity) ||
-                !controlRefs.Add(offer.ControlIdentity) || !labelRefs.Add(offer.LabelIdentity))
+                !controlRefs.Add(offer.ControlIdentity) || !labelRefs.Add(offer.LabelIdentity) ||
+                !AvailableGeneration(offer))
             {
                 return false;
             }
 
-            bool supported = offer.Kind == ShopV1OfferKind.Card && offer.Stocked &&
+            if (offer.Kind == ShopV1OfferKind.Removal) { if (removalOffer is not null) return false; removalOffer=offer; }
+            bool removalSupported=offer.Kind==ShopV1OfferKind.Removal && offer.Stocked && offer.PurchaseDispatch is IShopV1RemovalDispatch && offer.OfferedModelIdentity is null;
+            bool supported = removalSupported || (offer.Kind is ShopV1OfferKind.Card or ShopV1OfferKind.Potion or ShopV1OfferKind.Relic) && offer.Stocked &&
                 offer.OfferedModelIdentity is not null && offer.PurchaseDispatch is not null;
-            if (offer.Kind == ShopV1OfferKind.Card)
+            if (offer.Kind == ShopV1OfferKind.Card || (offer.Kind is ShopV1OfferKind.Potion or ShopV1OfferKind.Relic) && (offer.OfferedModelIdentity is not null || offer.PurchaseDispatch is not null))
             {
                 if (offer.OfferedModelIdentity is null || offer.PurchaseDispatch is null ||
-                    !modelRefs.Add(offer.OfferedModelIdentity) ||
-                    ContainsIdentity(capture.Deck, offer.OfferedModelIdentity))
+                    !modelRefs.Add(offer.OfferedModelIdentity) || _purchasedModels.Contains(offer.OfferedModelIdentity) ||
+                    ContainsIdentity(capture.Deck, offer.OfferedModelIdentity) ||
+                    ContainsPotion(capture.PotionSlots, offer.OfferedModelIdentity) ||
+                    ContainsRelic(capture.Relics, offer.OfferedModelIdentity))
                 {
                     return false;
                 }
             }
-            else if (offer.OfferedModelIdentity is not null || offer.PurchaseDispatch is not null)
+            else if (offer.OfferedModelIdentity is not null || offer.PurchaseDispatch is not null && !removalSupported)
             {
                 return false;
             }
 
+            if (offer.PotionCapacityGain != 0 && (offer.PotionCapacityGain != 2 || offer.Kind != ShopV1OfferKind.Relic || offer.StableKey != "POTION_BELT" || !supported)) return false;
             bool affordable = capture.Gold >= offer.DisplayedPrice;
             string kind = KindName(offer.Kind);
             publicOffers.Add(new ShopV1Offer(
                 offer.Slot, kind, offer.StableKey, offer.DisplayedPrice,
-                affordable, offer.Enabled, supported));
-            if (!_closeReconciled && !_purchaseUsed && supported && affordable && offer.Enabled)
+                affordable, offer.Enabled, supported, offer.PotionCapacityGain));
+            if (!_closeReconciled && _purchases < ShopV1Constants.MaximumPurchases && supported && !removalSupported && affordable && offer.Enabled &&
+                (offer.Kind != ShopV1OfferKind.Potion || HasPotionSpace(capture.PotionSlots)) &&
+                (offer.Kind != ShopV1OfferKind.Relic || RelicLegal(capture, offer)))
             {
-                legalActions.Add(ShopV1CanonicalEncoder.PurchaseActionId(offer.Slot));
+                legalActions.Add(ShopV1CanonicalEncoder.PurchaseActionId(offer.Slot, offer.Kind));
             }
             previous = offer;
         }
 
+        if(!_closeReconciled)foreach(var retained in _restocked) {
+            bool seen=false;foreach(var offer in capture.Offers)if(ReferenceEquals(offer.EntryIdentity,retained.Key)&&AvailableGeneration(offer))seen=true;
+            if(!seen)return false;
+        }
+        if (removalOffer?.PurchaseDispatch is IShopV1RemovalDispatch && removalOffer.Stocked) {
+            for(int i=0;i<capture.Deck.Count;i++) if(capture.Deck[i].Removable)
+                removalCandidates.Add(new(i,capture.Deck[i].StableKey,capture.Deck[i].UpgradeLevel));
+            if(removalCandidates.Count>64) return false;
+            if(!_closeReconciled && _purchases<ShopV1Constants.MaximumPurchases && removalOffer.Enabled && capture.Gold>=removalOffer.DisplayedPrice)
+                foreach(var card in removalCandidates)legalActions.Add("remove:"+card.DeckSlot.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
         string phase;
         if (!_closeReconciled)
         {
@@ -330,7 +364,15 @@ public sealed class ShopV1Session : IRoomFlowSession
                 return false;
             }
             phase = "inventory_browse";
-            legalActions.Add("inventory:close");
+            int previousDiscard=-1;
+        foreach(var discard in capture.Discards) {
+            if(discard.Slot<=previousDiscard || discard.Slot>=capture.PotionSlots.Count || discard.Slot<0 || discard.Dispatch is null ||
+                capture.PotionSlots[discard.Slot].ModelIdentity is null || HasPotionSpace(capture.PotionSlots))return false;
+            previousDiscard=discard.Slot;
+            if(_purchases<ShopV1Constants.MaximumPurchases && !_discardedSlots.Contains(discard.Slot) && _discards<8 && _originalPotions.Contains(capture.PotionSlots[discard.Slot].ModelIdentity!))
+                legalActions.Add("discard:"+discard.Slot.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
+        legalActions.Add("inventory:close");
         }
         else
         {
@@ -342,15 +384,16 @@ public sealed class ShopV1Session : IRoomFlowSession
             }
             phase = "room_ready_to_leave";
             publicOffers.Clear();
+            removalCandidates.Clear();
             legalActions.Add("leave");
         }
 
-        var player = new ShopV1Player(capture.Gold, capture.Deck.Count);
+        var player = new ShopV1Player(capture.Gold, capture.Deck.Count, PotionKeys(capture.PotionSlots), RelicKeys(capture.Relics));
         string decisionId = ShopV1CanonicalEncoder.ComputeDecisionId(
-            _sessionNonce, phase, player, publicOffers, legalActions, _priorResult);
+            _sessionNonce, phase, player, publicOffers, legalActions, _priorResult, removalCandidates);
         var observation = new ShopV1Observation(
             _sessionNonce, "ready", phase, decisionId, player,
-            publicOffers, legalActions, _priorResult);
+            publicOffers, legalActions, _priorResult, removalCandidates);
         decision = new PublishedDecision(observation, capture);
         return true;
     }
@@ -372,17 +415,38 @@ public sealed class ShopV1Session : IRoomFlowSession
         int price = 0;
         IShopV1NativeDispatch? purchaseDispatch = null;
 
-        if (ShopV1CanonicalEncoder.TryParsePurchaseAction(actionId, out int slot))
+        if(actionId.StartsWith("discard:",StringComparison.Ordinal) && RoomFlowIdentity.IsActionId("shop",actionId)) {
+            int index=actionId[^1]-'0';
+            if(_discards>=8 || _discardedSlots.Contains(index) || _purchases>=ShopV1Constants.MaximumPurchases || !capture.InventoryOpen || HasPotionSpace(capture.PotionSlots))return null;
+            foreach(var discard in capture.Discards)if(discard.Slot==index)purchaseDispatch=discard.Dispatch;
+            if(purchaseDispatch is null)return null;
+            kind=ShopV1ActionKind.DiscardPotion;targetSlot=index;targetModelIdentity=capture.PotionSlots[index].ModelIdentity;targetKey=capture.PotionSlots[index].StableKey!;
+        }
+        else if (actionId.StartsWith("remove:", StringComparison.Ordinal) && RoomFlowIdentity.IsActionId("shop",actionId))
+        {
+            int deckSlot=int.Parse(actionId.AsSpan(7),System.Globalization.CultureInfo.InvariantCulture);
+            foreach(var offer in capture.Offers) if(offer.Kind==ShopV1OfferKind.Removal) { if(target is not null)return null; target=offer; }
+            if(target is null || target.PurchaseDispatch is not IShopV1RemovalDispatch || !target.Stocked || !target.Visible || !target.Enabled ||
+                _purchases>=ShopV1Constants.MaximumPurchases || _closeReconciled || !AvailableGeneration(target) ||
+                capture.Gold<target.DisplayedPrice || deckSlot>=capture.Deck.Count || !capture.Deck[deckSlot].Removable) return null;
+            kind=ShopV1ActionKind.RemoveCard;targetSlot=target.Slot;targetSlotIdentity=target.SlotIdentity;targetEntryIdentity=target.EntryIdentity;
+            targetModelIdentity=capture.Deck[deckSlot].ModelIdentity;targetKey=capture.Deck[deckSlot].StableKey;price=target.DisplayedPrice;
+            purchaseDispatch=target.PurchaseDispatch;
+        }
+        else if (ShopV1CanonicalEncoder.TryParsePurchaseAction(actionId, out int slot))
         {
             target = current.FindOffer(slot);
-            if (_purchaseUsed || _closeReconciled || target is null ||
-                target.Kind != ShopV1OfferKind.Card || !target.Stocked ||
+            if (_purchases >= ShopV1Constants.MaximumPurchases || _closeReconciled || target is null || !AvailableGeneration(target) ||
+                (target.Kind is not (ShopV1OfferKind.Card or ShopV1OfferKind.Potion or ShopV1OfferKind.Relic)) ||
+                actionId != ShopV1CanonicalEncoder.PurchaseActionId(slot, target.Kind) ||
+                target.Kind == ShopV1OfferKind.Potion && !HasPotionSpace(capture.PotionSlots) ||
+                target.Kind == ShopV1OfferKind.Relic && !RelicLegal(capture, target) || !target.Stocked ||
                 !target.Visible || !target.Enabled || target.PurchaseDispatch is null ||
                 target.OfferedModelIdentity is null || capture.Gold < target.DisplayedPrice)
             {
                 return null;
             }
-            kind = ShopV1ActionKind.PurchaseCard;
+            kind = target.Kind == ShopV1OfferKind.Potion ? ShopV1ActionKind.PurchasePotion : target.Kind == ShopV1OfferKind.Relic ? ShopV1ActionKind.PurchaseRelic : ShopV1ActionKind.PurchaseCard;
             targetSlot = target.Slot;
             targetSlotIdentity = target.SlotIdentity;
             targetEntryIdentity = target.EntryIdentity;
@@ -422,14 +486,18 @@ public sealed class ShopV1Session : IRoomFlowSession
             capture.PlayerIdentity!, capture.MapIdentity!, decisionId, actionId,
             capture.Gold, capture.Deck, targetSlot, targetSlotIdentity,
             targetEntryIdentity, targetModelIdentity, targetKey, price,
-            purchaseDispatch);
+            purchaseDispatch, capture.PotionSlots, capture.Relics, target?.PotionCapacityGain ?? 0);
         return new PendingAction(probe, control);
     }
 
     private void Dispatch(PendingAction pending)
     {
-        if (pending.Probe.Kind == ShopV1ActionKind.PurchaseCard)
+        if (pending.Probe.PurchaseDispatch is not null)
         {
+            if(pending.Probe.Kind==ShopV1ActionKind.RemoveCard) {
+                ShopV1DeckCardBinding? card=null;foreach(var c in pending.Probe.BeforeDeck)if(ReferenceEquals(c.ModelIdentity,pending.Probe.TargetModelIdentity))card=c;
+                ((IShopV1RemovalDispatch)pending.Probe.PurchaseDispatch!).SelectTarget(card!);
+            }
             pending.Probe.PurchaseDispatch!.Invoke();
         }
         else
@@ -470,7 +538,7 @@ public sealed class ShopV1Session : IRoomFlowSession
         if (capture.Status != ShopV1SurfaceStatus.Available ||
             !SameContext(capture, pending.Probe) || capture.Gold < 0 ||
             capture.Deck.Count > ShopV1Constants.MaximumDeckCards ||
-            !ValidDeck(capture.Deck) ||
+            !ValidDeck(capture.Deck) || !ValidPotions(capture.PotionSlots) || !ValidRelics(capture.Relics) ||
             pending.Probe.Kind != ShopV1ActionKind.Leave && !capture.RoomVisible)
         {
             LatchUnsupported();
@@ -479,11 +547,27 @@ public sealed class ShopV1Session : IRoomFlowSession
 
         return pending.Probe.Kind switch
         {
-            ShopV1ActionKind.PurchaseCard => ReconcilePurchase(pending, capture),
+            ShopV1ActionKind.PurchaseCard or ShopV1ActionKind.PurchasePotion or ShopV1ActionKind.PurchaseRelic or ShopV1ActionKind.RemoveCard => ReconcilePurchase(pending, capture),
+            ShopV1ActionKind.DiscardPotion => ReconcileDiscard(pending,capture),
             ShopV1ActionKind.CloseInventory => ReconcileClose(pending, capture),
             ShopV1ActionKind.Leave => ReconcileLeave(pending, capture),
             _ => FailUnsupported(),
         };
+    }
+
+    private IRoomFlowReadValue ReconcileDiscard(PendingAction pending,ShopV1PendingCapture capture) {
+        var probe=pending.Probe;
+        if(!capture.InventoryOpen||!capture.InventoryVisible||capture.ForegroundBlocked||capture.MapOpen||capture.MapTraveling||
+            capture.Gold!=probe.BeforeGold||!SameDeck(probe.BeforeDeck,capture.Deck)||!SameRelics(probe.BeforeRelics,capture.Relics)||
+            capture.PotionSlots.Count!=probe.BeforePotions.Count||capture.Completion is ShopV1Completion.Failed or ShopV1Completion.Invalid)return FailUnsupported();
+        bool removed=capture.PotionSlots[probe.TargetSlot].ModelIdentity is null;
+        for(int i=0;i<capture.PotionSlots.Count;i++) {
+            var before=probe.BeforePotions[i];var after=capture.PotionSlots[i];
+            if(i==probe.TargetSlot&&removed){if(after.StableKey is not null)return FailUnsupported();}
+            else if(!ReferenceEquals(before.ModelIdentity,after.ModelIdentity)||before.StableKey!=after.StableKey)return FailUnsupported();
+        }
+        if(capture.Completion==ShopV1Completion.Succeeded)return removed?Resolve(pending,capture,"discard_potion"):FailUnsupported();
+        return PendingOrTimeout();
     }
 
     private IRoomFlowReadValue ReconcilePurchase(
@@ -505,28 +589,61 @@ public sealed class ShopV1Session : IRoomFlowSession
             return FailUnsupported();
         }
 
+        if(probe.Kind==ShopV1ActionKind.RemoveCard) {
+            bool same=SameDeck(probe.BeforeDeck,capture.Deck), removed=ExactRemoval(probe.BeforeDeck,capture.Deck,probe.TargetModelIdentity!);
+            bool paid=(long)capture.Gold==(long)probe.BeforeGold-probe.DisplayedPrice;
+            if(!SamePotions(probe.BeforePotions,capture.PotionSlots)||!SameRelics(probe.BeforeRelics,capture.Relics)||
+                (!same&&!removed)||capture.Gold!=probe.BeforeGold&&!paid||capture.TargetModelIdentity is not null||
+                removed&&!paid||!capture.TargetStocked&&(!removed||!paid))return FailUnsupported();
+            if(capture.Completion==ShopV1Completion.Succeeded)
+                return removed&&paid&&!capture.TargetStocked?Resolve(pending,capture,"remove_card"):FailUnsupported();
+            return PendingOrTimeout();
+        }
+        bool potionPurchase = probe.Kind == ShopV1ActionKind.PurchasePotion;
+        bool relicPurchase = probe.Kind == ShopV1ActionKind.PurchaseRelic;
         bool deckSame = SameDeck(probe.BeforeDeck, capture.Deck);
-        bool inserted = HasExactInsertion(
-            probe.BeforeDeck, capture.Deck, probe.TargetModelIdentity!, probe.TargetKey);
+        bool pickupDeck = probe.PurchaseDispatch is IShopV1PickupDispatch pickup && pickup.DeckMatches(capture.Deck,capture.Completion==ShopV1Completion.Succeeded);
+        bool potionsSame = SamePotions(probe.BeforePotions, capture.PotionSlots);
+        bool relicsSame = SameRelics(probe.BeforeRelics, capture.Relics);
+        bool capacityExact = PotionCapacityExact(probe.BeforePotions, capture.PotionSlots, probe.PotionCapacityGain);
+        if (relicPurchase ? (!deckSame && !pickupDeck) || (!potionsSame && !capacityExact)
+            : !relicsSame || (potionPurchase ? !deckSame : !potionsSame)) return FailUnsupported();
+        bool inventorySame = relicPurchase ? relicsSame : potionPurchase ? potionsSame : deckSame;
+        bool inserted = relicPurchase
+            ? ExactRelicInsertion(probe.BeforeRelics, capture.Relics, probe.TargetModelIdentity!, probe.TargetKey)
+            : potionPurchase
+                ? HasExactPotionInsertion(probe.BeforePotions, capture.PotionSlots, probe.TargetModelIdentity!, probe.TargetKey)
+                : HasExactInsertion(probe.BeforeDeck, capture.Deck, probe.TargetModelIdentity!, probe.TargetKey);
         bool goldSame = capture.Gold == probe.BeforeGold;
         bool debitExact = (long)capture.Gold == (long)probe.BeforeGold - probe.DisplayedPrice;
+        if (relicPurchase && (inserted && !debitExact || !potionsSame && !inserted)) return FailUnsupported();
         bool targetSame = capture.TargetStocked &&
             ReferenceEquals(capture.TargetModelIdentity, probe.TargetModelIdentity);
         bool targetCleared = !capture.TargetStocked && capture.TargetModelIdentity is null;
+        bool targetRefilled = capture.TargetStocked && capture.TargetModelIdentity is {} refill &&
+            !_purchasedModels.Contains(refill) && !ContainsIdentity(capture.Deck,refill) &&
+            !ContainsPotion(capture.PotionSlots,refill) && !ContainsRelic(capture.Relics,refill);
+        var witness=(probe.PurchaseDispatch as IShopV1RestockDispatch)?.Restocked;
+        bool restockCertified=targetRefilled && witness is not null && ReferenceEquals(witness.ModelIdentity,capture.TargetModelIdentity) &&
+            RoomFlowIdentity.IsStableKey(witness.StableKey) && witness.Price>=0;
+        if(targetRefilled && (!inserted || !debitExact || relicPurchase && !capacityExact))return FailUnsupported();
 
-        if ((!deckSame && !inserted) || (!goldSame && !debitExact) ||
-            (!targetSame && !targetCleared))
+        if (relicPurchase && targetCleared && (!inserted || !debitExact || !capacityExact)) return FailUnsupported();
+
+        if ((!inventorySame && !inserted) || (!goldSame && !debitExact) ||
+            (!targetSame && !targetCleared && !targetRefilled))
         {
             return FailUnsupported();
         }
 
         if (capture.Completion == ShopV1Completion.Succeeded)
         {
-            if (!inserted || !debitExact || !targetCleared)
+            if (!inserted || !debitExact || (!(targetCleared && witness is null) && !restockCertified) || relicPurchase && !capacityExact)
             {
                 return FailUnsupported();
             }
-            return Resolve(pending, capture, "purchase_card");
+            if(restockCertified)_restocked[probe.TargetEntryIdentity!]=witness!;
+            return Resolve(pending, capture, relicPurchase ? "purchase_relic" : potionPurchase ? "purchase_potion" : "purchase_card");
         }
         return PendingOrTimeout();
     }
@@ -536,6 +653,8 @@ public sealed class ShopV1Session : IRoomFlowSession
         ShopV1PendingCapture capture)
     {
         if (!SameDeck(pending.Probe.BeforeDeck, capture.Deck) ||
+            !SamePotions(pending.Probe.BeforePotions, capture.PotionSlots) ||
+            !SameRelics(pending.Probe.BeforeRelics, capture.Relics) ||
             capture.Gold != pending.Probe.BeforeGold ||
             capture.MapOpen || capture.MapTraveling)
         {
@@ -561,6 +680,8 @@ public sealed class ShopV1Session : IRoomFlowSession
         ShopV1PendingCapture capture)
     {
         if (!SameDeck(pending.Probe.BeforeDeck, capture.Deck) ||
+            !SamePotions(pending.Probe.BeforePotions, capture.PotionSlots) ||
+            !SameRelics(pending.Probe.BeforeRelics, capture.Relics) ||
             capture.Gold != pending.Probe.BeforeGold || capture.InventoryOpen)
         {
             return FailUnsupported();
@@ -617,7 +738,7 @@ public sealed class ShopV1Session : IRoomFlowSession
             _published = null;
             _completed = new ShopV1Observation(
                 _sessionNonce, "complete", "complete", string.Empty,
-                new ShopV1Player(capture.Gold, capture.Deck.Count),
+                new ShopV1Player(capture.Gold, capture.Deck.Count, PotionKeys(capture.PotionSlots), RelicKeys(capture.Relics)),
                 Array.Empty<ShopV1Offer>(), Array.Empty<string>(), _priorResult);
             return _completed;
         }
@@ -648,6 +769,7 @@ public sealed class ShopV1Session : IRoomFlowSession
 
     private void LatchOffOwner()
     {
+        if(_pending?.Probe.PurchaseDispatch is IShopV1AbortableDispatch abortable)abortable.Abort();
         _unsupported = true;
         _published = null;
     }
@@ -679,6 +801,7 @@ public sealed class ShopV1Session : IRoomFlowSession
         if (_boundRun is null)
         {
             if (!bind || _closeReconciled || !capture.InventoryOpen) return false;
+            foreach(var potion in capture.PotionSlots)if(potion.ModelIdentity is {} model)_originalPotions.Add(model);
             _boundRun = capture.RunIdentity;
             _boundRoom = capture.RoomIdentity;
             _boundInventoryNode = capture.InventoryNodeIdentity;
@@ -710,12 +833,87 @@ public sealed class ShopV1Session : IRoomFlowSession
         ReferenceEquals(capture.PlayerIdentity, probe.PlayerIdentity) &&
         ReferenceEquals(capture.MapIdentity, probe.MapIdentity);
 
+    private static bool ValidRelics(IReadOnlyList<ShopV1RelicBinding> relics)
+    {
+        if (relics.Count > ShopV1Constants.MaximumRelics) return false;
+        var models = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        foreach (var relic in relics)
+            if (relic is null || relic.ModelIdentity is null || !RoomFlowIdentity.IsStableKey(relic.StableKey) || !models.Add(relic.ModelIdentity)) return false;
+        return true;
+    }
+    private static bool ContainsRelic(IReadOnlyList<ShopV1RelicBinding> relics, object model)
+    { foreach (var relic in relics) if (ReferenceEquals(relic.ModelIdentity, model)) return true; return false; }
+    private static string[] RelicKeys(IReadOnlyList<ShopV1RelicBinding> relics)
+    { var keys = new string[relics.Count]; for (int i=0;i<keys.Length;i++) keys[i]=relics[i].StableKey; return keys; }
+    private static bool SameRelics(IReadOnlyList<ShopV1RelicBinding> before, IReadOnlyList<ShopV1RelicBinding> after)
+    {
+        if (before.Count != after.Count) return false;
+        for (int i=0;i<before.Count;i++) if (!ReferenceEquals(before[i].ModelIdentity,after[i].ModelIdentity) || before[i].StableKey!=after[i].StableKey) return false;
+        return true;
+    }
+    private static bool ExactRelicInsertion(IReadOnlyList<ShopV1RelicBinding> before, IReadOnlyList<ShopV1RelicBinding> after, object model, string key)
+    {
+        if (after.Count != before.Count+1) return false;
+        for (int i=0;i<before.Count;i++) if (!ReferenceEquals(before[i].ModelIdentity,after[i].ModelIdentity) || before[i].StableKey!=after[i].StableKey) return false;
+        return ReferenceEquals(after[before.Count].ModelIdentity,model) && after[before.Count].StableKey==key;
+    }
+    private static bool RelicLegal(ShopV1SurfaceCapture capture, ShopV1NativeOffer offer)
+    {
+        if (capture.Relics.Count >= ShopV1Constants.MaximumRelics || capture.PotionSlots.Count+offer.PotionCapacityGain>ItemV1Constants.MaximumPotionSlots) return false;
+        foreach (var relic in capture.Relics) if (relic.StableKey==offer.StableKey) return false;
+        return true;
+    }
+    private static bool PotionCapacityExact(IReadOnlyList<ItemV1PotionSlotBinding> before, IReadOnlyList<ItemV1PotionSlotBinding> after, int gain)
+    {
+        if (after.Count != before.Count+gain) return false;
+        for (int i=0;i<before.Count;i++) if (!ReferenceEquals(before[i].ModelIdentity,after[i].ModelIdentity) || before[i].StableKey!=after[i].StableKey) return false;
+        for (int i=before.Count;i<after.Count;i++) if (after[i].ModelIdentity is not null || after[i].StableKey is not null) return false;
+        return true;
+    }
+
+    private static bool ValidPotions(IReadOnlyList<ItemV1PotionSlotBinding> slots)
+    {
+        if (slots.Count > ItemV1Constants.MaximumPotionSlots) return false;
+        var models = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        foreach (var slot in slots)
+            if (slot is null || (slot.ModelIdentity is null ? slot.StableKey is not null :
+                !RoomFlowIdentity.IsStableKey(slot.StableKey) || !models.Add(slot.ModelIdentity))) return false;
+        return true;
+    }
+    private static bool ContainsPotion(IReadOnlyList<ItemV1PotionSlotBinding> slots, object identity)
+    { foreach (var slot in slots) if (ReferenceEquals(slot.ModelIdentity, identity)) return true; return false; }
+    private static bool HasPotionSpace(IReadOnlyList<ItemV1PotionSlotBinding> slots)
+    { foreach (var slot in slots) if (slot.ModelIdentity is null) return true; return false; }
+    private static string?[] PotionKeys(IReadOnlyList<ItemV1PotionSlotBinding> slots)
+    { var keys = new string?[slots.Count]; for (int i=0;i<slots.Count;i++) keys[i]=slots[i].StableKey; return keys; }
+    private static bool SamePotions(IReadOnlyList<ItemV1PotionSlotBinding> before, IReadOnlyList<ItemV1PotionSlotBinding> after)
+    {
+        if (before.Count != after.Count) return false;
+        for (int i=0;i<before.Count;i++)
+            if (!ReferenceEquals(before[i].ModelIdentity,after[i].ModelIdentity) || before[i].StableKey!=after[i].StableKey) return false;
+        return true;
+    }
+    private static bool HasExactPotionInsertion(IReadOnlyList<ItemV1PotionSlotBinding> before,
+        IReadOnlyList<ItemV1PotionSlotBinding> after, object model, string key)
+    {
+        if (before.Count != after.Count) return false;
+        int inserted=0;
+        int firstEmpty=-1;
+        for (int i=0;i<before.Count;i++) if (before[i].ModelIdentity is null) { firstEmpty=i; break; }
+        for (int i=0;i<before.Count;i++) {
+            if (i==firstEmpty && ReferenceEquals(after[i].ModelIdentity,model) && after[i].StableKey==key) inserted++;
+            else if (!ReferenceEquals(before[i].ModelIdentity,after[i].ModelIdentity) || before[i].StableKey!=after[i].StableKey) return false;
+        }
+        return inserted==1;
+    }
+
     private static bool ValidDeck(IReadOnlyList<ShopV1DeckCardBinding> deck)
     {
+        var identities=new HashSet<object>(ReferenceEqualityComparer.Instance);
         foreach (ShopV1DeckCardBinding card in deck)
         {
             if (card is null || card.ModelIdentity is null ||
-                !RoomFlowIdentity.IsStableKey(card.StableKey)) return false;
+                !RoomFlowIdentity.IsStableKey(card.StableKey) || card.UpgradeLevel<0 || !identities.Add(card.ModelIdentity)) return false;
         }
         return true;
     }
@@ -736,11 +934,19 @@ public sealed class ShopV1Session : IRoomFlowSession
         if (left.Count != right.Count) return false;
         for (int index = 0; index < left.Count; index++)
         {
-            if (!ReferenceEquals(left[index].ModelIdentity, right[index].ModelIdentity) ||
+            if (left[index].UpgradeLevel!=right[index].UpgradeLevel || left[index].Removable!=right[index].Removable || !ReferenceEquals(left[index].ModelIdentity, right[index].ModelIdentity) ||
                 !string.Equals(left[index].StableKey, right[index].StableKey,
                     StringComparison.Ordinal)) return false;
         }
         return true;
+    }
+
+    private static bool ExactRemoval(IReadOnlyList<ShopV1DeckCardBinding> before,IReadOnlyList<ShopV1DeckCardBinding> after,object target)
+    {
+        if(after.Count!=before.Count-1)return false;
+        var survivors=new List<ShopV1DeckCardBinding>();int removed=0;
+        foreach(var card in before) {if(ReferenceEquals(card.ModelIdentity,target))removed++;else survivors.Add(card);}
+        return removed==1 && SameDeck(survivors,after);
     }
 
     private static bool HasExactInsertion(
@@ -762,6 +968,7 @@ public sealed class ShopV1Session : IRoomFlowSession
                 continue;
             }
             if (beforeIndex >= before.Count ||
+                card.UpgradeLevel!=before[beforeIndex].UpgradeLevel || card.Removable!=before[beforeIndex].Removable ||
                 !ReferenceEquals(card.ModelIdentity, before[beforeIndex].ModelIdentity) ||
                 !string.Equals(card.StableKey, before[beforeIndex].StableKey,
                     StringComparison.Ordinal)) return false;
@@ -808,7 +1015,7 @@ public sealed class ShopV1Session : IRoomFlowSession
                 !string.Equals(x.Kind, y.Kind, StringComparison.Ordinal) ||
                 !string.Equals(x.Key, y.Key, StringComparison.Ordinal)) return false;
         }
-        return SameDeck(left.Capture.Deck, right.Capture.Deck);
+        return SameDeck(left.Capture.Deck, right.Capture.Deck) && SamePotions(left.Capture.PotionSlots, right.Capture.PotionSlots) && SameRelics(left.Capture.Relics, right.Capture.Relics);
     }
 
     private static bool SameSurfaceIdentity(ShopV1SurfaceCapture a, ShopV1SurfaceCapture b)
@@ -829,7 +1036,7 @@ public sealed class ShopV1Session : IRoomFlowSession
             ShopV1NativeOffer y = b.Offers[i];
             if (!ReferenceEquals(x.SlotIdentity, y.SlotIdentity) ||
                 !ReferenceEquals(x.EntryIdentity, y.EntryIdentity) ||
-                !ReferenceEquals(x.OfferedModelIdentity, y.OfferedModelIdentity) ||
+                !ReferenceEquals(x.OfferedModelIdentity, y.OfferedModelIdentity) || !ReferenceEquals(x.StockModelIdentity,y.StockModelIdentity) ||
                 !ReferenceEquals(x.ControlIdentity, y.ControlIdentity) ||
                 !ReferenceEquals(x.LabelIdentity, y.LabelIdentity)) return false;
         }
@@ -842,7 +1049,7 @@ public sealed class ShopV1Session : IRoomFlowSession
 
     private string PendingPhase() => _pending?.Probe.Kind switch
     {
-        ShopV1ActionKind.PurchaseCard => "purchase_waiting",
+        ShopV1ActionKind.PurchaseCard or ShopV1ActionKind.PurchasePotion or ShopV1ActionKind.PurchaseRelic or ShopV1ActionKind.RemoveCard or ShopV1ActionKind.DiscardPotion => "purchase_waiting",
         ShopV1ActionKind.CloseInventory => "close_waiting",
         ShopV1ActionKind.Leave => "leave_waiting",
         _ => "unknown",

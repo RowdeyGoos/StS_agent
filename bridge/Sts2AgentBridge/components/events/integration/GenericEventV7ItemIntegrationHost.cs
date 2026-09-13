@@ -11,7 +11,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
 {
     private static int RunItem(string scenario)
     {
-        if (!new[] { "I_SET_CAPACITY", "I_SET_CAPACITY_DELAY", "I_SET_CAPACITY_TWO_BELTS", "I_COMBAT", "I_COMBAT_STARTED", "I_COMBAT_REPLACED", "I_SET_TWO", "I_SET_MIXED", "I_SET_EIGHT", "I_SET_COLLECTION", "I_SET_OFFER", "I_SET_CHOSEN", "I_SET_LATE_SLOT", "I_FIRST", "I_ANOTHER", "I_HELD_OUT", "I_RELIC", "I_INDEX255",
+        if (!new[] { "I_POLICY_SKIP", "I_POLICY_REPLACE", "I_SET_CAPACITY", "I_SET_CAPACITY_DELAY", "I_SET_CAPACITY_TWO_BELTS", "I_COMBAT", "I_COMBAT_STARTED", "I_COMBAT_REPLACED", "I_SET_TWO", "I_SET_MIXED", "I_SET_EIGHT", "I_SET_COLLECTION", "I_SET_OFFER", "I_SET_CHOSEN", "I_SET_LATE_SLOT", "I_FIRST", "I_ANOTHER", "I_HELD_OUT", "I_RELIC", "I_INDEX255",
             "I_DELAYED_CREATION", "I_DELAYED_COLLECTION", "I_DELAYED_OFFER", "I_DELAYED_CHOSEN",
             "I_REPEAT", "I_MIXED", "I_MIXED_VARIABLE", "I_RELIC_FIRST", "I_RELIC_ANOTHER", "I_FULL", "I_EXTRA",
             "I_HIDDEN", "I_LINKED", "I_TERMINAL", "I_TASK_FAULT", "I_LATE_CLAIM", "I_LATE_SLOT",
@@ -31,6 +31,7 @@ internal static partial class GenericEventV7NativeIntegrationHost
             mixed: scenario is "I_MIXED" or "I_MIXED_VARIABLE",
             transformMinimum: scenario == "I_MIXED_VARIABLE" ? 1 : null,
             transformMaximum: scenario == "I_MIXED_VARIABLE" ? 3 : 1,itemKinds:kinds);
+        if(scenario.StartsWith("I_POLICY_",StringComparison.Ordinal))Program.PreparePolicy(fixture);
         if(scenario.StartsWith("I_SET_CAPACITY",StringComparison.Ordinal))Program.ConfigureEventCapacity(fixture,scenario=="I_SET_CAPACITY_TWO_BELTS"?new[]{0,1}:new[]{0});
         if(scenario.StartsWith("I_COMBAT",StringComparison.Ordinal)) {
             var layout=new MegaCrit.Sts2.Core.Nodes.Events.NCombatEventLayout();layout.OptionButtons.AddRange(fixture.Room.Layout.OptionButtons);fixture.Room.Layout=layout;
@@ -162,12 +163,15 @@ internal static partial class GenericEventV7NativeIntegrationHost
     }
 
     private static int RunCardRewardSet(string scenario) {
-        if(!new[]{"MR_CAPACITY","MR_CAPACITY_SKIP","MR_COFFER","MR_SKIP","MR_FIRST","MR_EIGHT","MR_COLLECTION","MR_OFFER","MR_CHOSEN","MR_LATE_SLOT","CRS_TWO","CRS_THREE","CRS_EIGHT","CRS_MIXED","CRS_SKIP","CRS_OFFER","CRS_COLLECTION","CRS_CHOSEN","CRS_DEFERRED","CRS_OWNER","CRS_CLAIM","CRS_DECK","CRS_WRONG","CRS_DISMISS_DISABLED"}.Contains(scenario))return 2;
-        string[]? kinds=scenario.StartsWith("MR_",StringComparison.Ordinal)?scenario.StartsWith("MR_CAPACITY",StringComparison.Ordinal)?new[]{"relic","card","potion","potion"}:scenario=="MR_EIGHT"?new[]{"card","relic","card","potion","relic","card","potion","relic"}:
+        if(!new[]{"MR_POLICY_SKIP","MR_POLICY_REPLACE","MR_POLICY_CARD_SKIP","MR_CAPACITY","MR_CAPACITY_SKIP","MR_COFFER","MR_SKIP","MR_FIRST","MR_EIGHT","MR_COLLECTION","MR_OFFER","MR_CHOSEN","MR_LATE_SLOT","CRS_TWO","CRS_THREE","CRS_EIGHT","CRS_MIXED","CRS_SKIP","CRS_OFFER","CRS_COLLECTION","CRS_CHOSEN","CRS_DEFERRED","CRS_OWNER","CRS_CLAIM","CRS_DECK","CRS_WRONG","CRS_DISMISS_DISABLED"}.Contains(scenario))return 2;
+        string[]? kinds=scenario.StartsWith("MR_",StringComparison.Ordinal)?scenario.StartsWith("MR_POLICY_",StringComparison.Ordinal)?new[]{"potion","card","potion"}:scenario.StartsWith("MR_CAPACITY",StringComparison.Ordinal)?new[]{"relic","card","potion","potion"}:scenario=="MR_EIGHT"?new[]{"card","relic","card","potion","relic","card","potion","relic"}:
             scenario is "MR_FIRST" or "MR_COLLECTION" or "MR_LATE_SLOT"?new[]{"potion","card","potion"}:new[]{"card","potion"}:null;
         using var f=new Program.CardRewardSetFixture(scenario=="CRS_TWO"?2:scenario is "CRS_EIGHT" or "CRS_SKIP"?8:3,chosenDelay:scenario is "CRS_CHOSEN" or "MR_CHOSEN",kinds:kinds) {
             DelayOffer=scenario is "CRS_OFFER" or "MR_OFFER" or "MR_LATE_SLOT",DelayCollection=scenario is "CRS_COLLECTION" or "MR_COLLECTION",DeferInput=scenario=="CRS_DEFERRED",WrongInsertion=scenario=="CRS_WRONG"
         };
+        if(scenario.StartsWith("MR_POLICY_",StringComparison.Ordinal)) {
+            Program.PreparePolicy(f.World);f.AfterItemCollection=reward=>{if(reward is PotionReward p)p.Potion.Owner=f.World.Player;};
+        }
         if(scenario.StartsWith("MR_CAPACITY",StringComparison.Ordinal)) {
             Program.FillEventBelt(f.World.Player);f.BeforeScreen=()=>((RelicReward)f.AllRewards[0]).Relic=new MegaCrit.Sts2.Core.Models.Relics.PotionBelt();
             f.AfterItemCollection=reward=>Program.ApplyBeltPickup(f.World.Player,reward);

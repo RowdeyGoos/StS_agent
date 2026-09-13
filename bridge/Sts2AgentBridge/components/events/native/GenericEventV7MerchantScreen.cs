@@ -61,6 +61,12 @@ internal sealed class GenericEventV7MerchantScreen : IDisposable
     private Choice? _pending;
     private bool _opened,_closed,_settled,_disposed,_failed,_subscribed,_cleanupFailed;
     private PurchaseStatus? _purchase;
+    private GenericEventV7MerchantFight? _fight;
+    internal Func<bool>? CombatScope=>_fight?.Combat is {} combat?combat.SameCombat:null;
+    internal void Abort(){_failed=true;_fight?.Abort();}
+    private bool FightContext(){try{Domain(false,true);return !_inventory.IsOpen&&ReferenceEquals(_event.Node,_screen)&&MegaCrit.Sts2.Core.Nodes.CommonUi.NModalContainer.Instance?.OpenModal is null;}catch{return false;}}
+    private bool FightOrigin(){try{Domain(false);Baseline(false);return FightContext()&&!_inventory.IsOpen&&!_opened&&_open.IsEnabled&&_open.IsVisibleInTree()&&_blocker.MouseFilter==Control.MouseFilterEnum.Ignore;}catch{return false;}}
+
     private int _thread=System.Environment.CurrentManagedThreadId;
     internal GenericEventV7MerchantScreen(NRun run,NEventRoom room,NFakeMerchant screen)
     {
@@ -79,12 +85,12 @@ internal sealed class GenericEventV7MerchantScreen : IDisposable
     private static T Field<T>(object value,string name)=> (T)(value.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)?.GetValue(value)??throw new InvalidOperationException("Custom merchant binding missing."));
     private void Require(bool value){if(!value){_failed=true;throw new InvalidOperationException("Custom merchant ownership/effect lost.");}}
     private static bool Valid(GodotObject? value)=>value is not null&&GodotObject.IsInstanceValid(value);
-    private void Domain(bool exit)
+    private void Domain(bool exit,bool fight=false)
     {
         Require(!_disposed&&!_failed&&System.Environment.CurrentManagedThreadId==_thread&&
             ReferenceEquals(NRun.Instance,_run)&&ReferenceEquals(_run.EventRoom,_room)&&ReferenceEquals(NEventRoom.Instance,_room)&&
             ReferenceEquals(_room.CustomEventNode,_screen)&&_screen.GetType()==typeof(NFakeMerchant)&&
-            ReferenceEquals(Field<object>(_screen,"_event"),_event)&&!_event.StartedFight&&ReferenceEquals(_event.Owner,_player)&&
+            ReferenceEquals(Field<object>(_screen,"_event"),_event)&&(!_event.StartedFight||fight)&&ReferenceEquals(_event.Owner,_player)&&
             ReferenceEquals(_player.RunState,_state)&&ReferenceEquals(_state.CurrentRoom,_roomModel)&&ReferenceEquals(_roomModel.LocalMutableEvent,_event)&&
             ReferenceEquals(_run.GlobalUi.MapScreen,_map)&&ReferenceEquals(NMapScreen.Instance,_map)&&ReferenceEquals(_run.GlobalUi.Overlays,_overlays)&&
             ReferenceEquals(_screen.Inventory,_inventory)&&ReferenceEquals(_inventory.Inventory,_inventoryModel)&&ReferenceEquals(_event.Inventory,_inventoryModel)&&ReferenceEquals(_inventoryModel.Player,_player)&&
@@ -118,7 +124,11 @@ internal sealed class GenericEventV7MerchantScreen : IDisposable
     private Choice[] Choices()
     {
         if(_closed)return new[]{new Choice("leave",0,"FAKE_MERCHANT.LEAVE",0,_proceed,null,null)};
-        if(!_opened)return new[]{new Choice("open",0,"FAKE_MERCHANT.OPEN",0,_open,null,null)};
+        if(!_opened) {
+            var initialChoices=new List<Choice>{new("open",0,"FAKE_MERCHANT.OPEN",0,_open,null,null)};
+            for(int i=0;i<_potions.Length;i++)if(GenericEventV7MerchantFight.Eligible(_player,i)){initialChoices.Add(new("fight",i,"FAKE_MERCHANT.FOUL_POTION."+i,0,_open,null,_potions[i]));break;}
+            return initialChoices.ToArray();
+        }
         Require(_inventory.IsOpen&&_inventory.IsVisibleInTree());
         var currentSlots=_inventory.GetAllSlots().ToArray();
         Require(currentSlots.Length==6&&currentSlots.All(s=>s is NMerchantRelic)&&currentSlots.Select(s=>s.Entry).Distinct(ReferenceEqualityComparer.Instance).Count()==6);
@@ -143,6 +153,7 @@ internal sealed class GenericEventV7MerchantScreen : IDisposable
         Require(index==6);choices.Add(new Choice("close",0,"FAKE_MERCHANT.CLOSE",0,_back,null,null));return choices.ToArray();
     }
     private bool Enabled(Choice choice)=>_blocker.MouseFilter==Control.MouseFilterEnum.Ignore&&choice.Kind switch {
+        "fight"=>FightOrigin()&&GenericEventV7MerchantFight.Eligible(_player,choice.Slot),
         "open"=>!_inventory.IsOpen&&_open.IsVisibleInTree()&&_open.IsEnabled,
         "close"=>_inventory.IsOpen&&_back.IsVisibleInTree()&&_back.IsEnabled,
         "leave"=>!_inventory.IsOpen&&_proceed.IsVisibleInTree()&&_proceed.IsEnabled&&_map.IsTravelEnabled,
@@ -151,6 +162,7 @@ internal sealed class GenericEventV7MerchantScreen : IDisposable
         _=>false};
     internal GenericEventV7NativeCapture Capture()
     {
+        if(_fight is not null){string status=_fight.Capture();if(status=="combat")_settled=true;return Fixed(status);}
         Domain(_pending?.Kind=="leave");RetainOffers();Baseline(_pending?.Kind=="purchase"&&!_settled);
         if(_pending is {} pending&&!_settled) {
             if(pending.Kind=="purchase") {
@@ -170,14 +182,18 @@ internal sealed class GenericEventV7MerchantScreen : IDisposable
         else Require(current.SequenceEqual(_frame));
         return new("parent",_closed,_frame.Select(c=>new GenericEventV7NativeOption(c,
             c.Kind=="purchase"?$"FAKE_MERCHANT.BUY.{c.Slot}.{c.Key}.{c.Price}":c.Key,
-            c.Kind=="purchase"?$"{c.Key} — {c.Price} gold":c.Kind=="open"?"Open merchant inventory":c.Kind=="close"?"Close merchant inventory":"Leave",Enabled(c),false,_closed)).ToArray());
+            c.Kind=="fight"?"Use Foul Potion to fight the Fake Merchant":c.Kind=="purchase"?$"{c.Key} — {c.Price} gold":c.Kind=="open"?"Open merchant inventory":c.Kind=="close"?"Close merchant inventory":"Leave",Enabled(c),false,_closed)).ToArray());
     }
     private static GenericEventV7NativeCapture Fixed(string status)=>new(status,false,Array.Empty<GenericEventV7NativeOption>());
     internal bool Owns(object identity)=>_frame?.Any(c=>ReferenceEquals(c,identity))==true;
     internal void Dispatch(object identity)
     {
         Require(_pending is null&&Owns(identity));Capture();var choice=(Choice)identity;Require(Enabled(choice));_pending=choice;_settled=false;
-        if(choice.Kind=="purchase") {
+        if(choice.Kind=="fight") {
+            var offers=_inventory.GetAllSlots().Select(s=>s.Entry).OfType<MerchantRelicEntry>().Where(e=>e.IsStocked).Select(e=>e.Model!).ToArray();
+            Require(offers.Length==6&&offers.All(r=>r is not null&&r.Owner is null));
+            _fight=new(_run,_event,_player,choice.Slot,FightOrigin,FightContext,offers);_fight.Dispatch();
+        }else if(choice.Kind=="purchase") {
             var entry=(MerchantRelicEntry)choice.Entry!;entry.PurchaseCompleted+=Purchased;_subscribed=true;
             using var input=new InputEventAction{Action=MegaInput.select,Pressed=true};((NMerchantRelic)choice.Control)._GuiInput(input);
         }else if(choice.Kind=="open")_open.ForceClick();else if(choice.Kind=="close")_back.ForceClick();else _proceed.ForceClick();
@@ -188,7 +204,8 @@ internal sealed class GenericEventV7MerchantScreen : IDisposable
     public void Dispose(){
         if(_cleanupFailed)throw new InvalidOperationException("Custom merchant cleanup previously failed.");
         if(_disposed)return;Require(System.Environment.CurrentManagedThreadId==_thread);
-        bool uncertain=_pending is not null&&!_settled;_cleanupFailed=uncertain;Unsubscribe();_disposed=true;
+        bool uncertain=_pending is not null&&!_settled;
+        try{_fight?.Dispose();}catch{_cleanupFailed=true;throw;}_cleanupFailed=uncertain;Unsubscribe();_disposed=true;
         if(uncertain)throw new InvalidOperationException("Custom merchant input is unresolved; cleanup cannot release ownership.");
     }
 }

@@ -83,6 +83,37 @@ class ResumeItemsTests(unittest.TestCase):
             result=host.run_resume_items(wire.request,NONCE,sleep=lambda _:None)
             self.assertEqual(result['status'],'failed',result)
             self.assertEqual(len(wire.posts),1 if mode=='wrong_receipt' else 0)
+    def test_policy_contract_cannot_replace_accepted_legacy_action(self):
+        wire=Wire(2)
+        def corrupt(v):
+            if wire.index==1:return dict(version='item_policy_v1')
+            return v
+        wire.corrupt=corrupt
+        result=host.run_resume_items(wire.request,NONCE,sleep=lambda _:None)
+        self.assertEqual((result['status'],result['attempted'],result['accepted'],len(wire.posts)),('failed',1,1,1),result)
+        self.assertEqual(result['code'],'resume_item_contract_changed')
+
+    def test_policy_skip_and_replacement(self):
+        for replace in (False,True):
+            actions=['discard:0','collect:0'] if replace else ['skip_remaining']
+            history=[];buffers=[];posts=[]
+            def read():
+                done=len(history)==len(actions)
+                return dict(version='item_policy_v1',session_nonce=NONCE,status='resolved' if done else 'ready',phase='complete' if done else 'items',decision_id='' if done else 'b'*64,
+                    offers=[] if done else [dict(index=0,kind='potion',key='POTION',capacity_gain=0,settled=False)],card_options=[],
+                    potion_slots=[] if done else [None if history else 'OLD'],can_skip=True,legal_actions=[] if done else [actions[len(history)]],prior_results=list(history))
+            def request(method,route,body):
+                if method=='GET':value=read()
+                else:
+                    command=json.loads(body);posts.append(command);buffers.append(body);a=command['action_id']
+                    history.append(dict(**command,result='discarded' if a.startswith('discard:') else 'collected' if a.startswith('collect:') else 'skipped'))
+                    value=dict(version='item_policy_v1',session_nonce=NONCE,**command,outcome='accepted')
+                raw=bytearray(json.dumps(value).encode());buffers.append(raw);return raw
+            result=host.run_resume_items(request,NONCE,potion_policy='replace-first' if replace else 'skip-full',sleep=lambda _:None)
+            self.assertEqual((result['status'],result['attempted'],result['accepted'],result['reconciled']),('resolved',len(actions),len(actions),len(actions)),result)
+            self.assertEqual([p['action_id'] for p in posts],actions)
+            self.assertTrue(all(not any(b) for b in buffers))
+
     def test_parent_deadline_prevents_late_item_action(self):
         wire=Wire(2);now=[299.0]
         def request(*args):

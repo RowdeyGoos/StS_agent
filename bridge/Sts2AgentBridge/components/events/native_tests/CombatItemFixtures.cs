@@ -21,6 +21,7 @@ internal static partial class Program
         SkippedPotionCases();
         PotionDiscardCases();
         PotionCapacityCases();
+        HealingRewardCases();
         foreach(int count in new[]{1,2,3,8})foreach(bool compact in new[]{false,true}) {
             using var f=new CombatItemsFixture(count);
             var reader=f.Reader;var applier=f.Applier;

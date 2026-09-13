@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../components/items/native/PinnedPotionCapacity.cs" />
+    <Compile Include="../../../components/items/native/PinnedPotionDiscard.cs" />
       <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
   <Compile Include="../../../components/cards/combat_native/PinnedCombatCardChoiceAdapter.cs" />
 <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
@@ -73,8 +74,11 @@
     <Compile Include="../../../components/events/native/GenericEventV7TransformAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7TransformState.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7MerchantScreen.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7MerchantFight.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7SphereSession.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7AbandonPopup.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7ItemPolicySession.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7Terminal.cs" />
     <Compile Include="../../../components/events/native/PinnedGenericEventV7NativeAdapter.cs" />
     <Compile Include="../../../components/events/transform_core/CardTransformV2Journal.cs" />
     <Compile Include="../../../components/events/transform_core/CardTransformV2NativeContracts.cs" />
@@ -107,6 +111,11 @@
     <Compile Include="../../../components/rooms/shop/core/ShopV1Contracts.cs" />
     <Compile Include="../../../components/rooms/shop/core/ShopV1Session.cs" />
     <Compile Include="../../../components/rooms/shop/native/PinnedShopV1NativeAdapter.cs" />
+    <Compile Include="../../../components/rooms/shop/native/ShopPotionOwnership.cs" />
+    <Compile Include="../../../components/rooms/shop/native/ShopRelicRules.cs" />
+    <Compile Include="../../../components/rooms/shop/native/PinnedShopRemovalDispatch.cs" />
+    <Compile Include="../../../components/rooms/shop/native/PinnedDeckCardChoice.cs" />
+    <Compile Include="../../../components/rooms/shop/native/PinnedShopPickupDispatch.cs" />
     <Compile Include="../../../components/rooms/wire/RoomFlowWireCodec.cs" />
     <Compile Include="../../../components/rooms/wire/RoomFlowWireService.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatActionApplier.cs" />

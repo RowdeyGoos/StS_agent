@@ -2,262 +2,262 @@
   "checks": {
     "apps/bridge/operations/check_live_runtime_fixtures.py": {
       "log": "log-011.txt",
-      "seconds": 0.055,
+      "seconds": 0.06,
       "status": "passed"
     },
     "apps/bridge/operations/manage_live_campaign_fixtures.py": {
       "log": "log-012.txt",
-      "seconds": 2.877,
+      "seconds": 3.058,
       "status": "passed"
     },
     "apps/bridge/operations/predecessor_conflict_fixtures.py": {
       "log": "log-013.txt",
-      "seconds": 0.833,
+      "seconds": 0.914,
       "status": "passed"
     },
     "build:apps/bridge/production/Sts2AgentBridge.csproj": {
       "log": "log-001.txt",
-      "seconds": 1.433,
+      "seconds": 1.592,
       "status": "passed"
     },
     "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
       "log": "log-015.txt",
-      "seconds": 1.372,
+      "seconds": 1.461,
       "status": "passed"
     },
     "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
       "log": "log-066.txt",
-      "seconds": 1.101,
+      "seconds": 1.214,
       "status": "passed"
     },
     "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
       "log": "log-017.txt",
-      "seconds": 1.121,
+      "seconds": 1.208,
       "status": "passed"
     },
     "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
       "log": "log-019.txt",
-      "seconds": 1.139,
+      "seconds": 1.181,
       "status": "passed"
     },
     "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
       "log": "log-021.txt",
-      "seconds": 1.811,
+      "seconds": 2.001,
       "status": "passed"
     },
     "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
       "log": "log-023.txt",
-      "seconds": 1.933,
+      "seconds": 2.013,
       "status": "passed"
     },
     "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
       "log": "log-025.txt",
-      "seconds": 1.058,
+      "seconds": 1.13,
       "status": "passed"
     },
     "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
       "log": "log-027.txt",
-      "seconds": 1.256,
+      "seconds": 1.326,
       "status": "passed"
     },
     "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
       "log": "log-029.txt",
-      "seconds": 1.277,
+      "seconds": 1.316,
       "status": "passed"
     },
     "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
       "log": "log-031.txt",
-      "seconds": 2.014,
+      "seconds": 2.132,
       "status": "passed"
     },
     "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
       "log": "log-033.txt",
-      "seconds": 1.662,
+      "seconds": 1.847,
       "status": "passed"
     },
     "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
       "log": "log-059.txt",
-      "seconds": 2.529,
+      "seconds": 2.752,
       "status": "passed"
     },
     "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
       "log": "log-058.txt",
-      "seconds": 1.218,
+      "seconds": 1.26,
       "status": "passed"
     },
     "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
       "log": "log-035.txt",
-      "seconds": 1.912,
+      "seconds": 2.076,
       "status": "passed"
     },
     "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
       "log": "log-037.txt",
-      "seconds": 1.72,
+      "seconds": 1.843,
       "status": "passed"
     },
     "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
       "log": "log-038.txt",
-      "seconds": 1.224,
+      "seconds": 1.311,
       "status": "passed"
     },
     "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
       "log": "log-040.txt",
-      "seconds": 1.227,
+      "seconds": 1.378,
       "status": "passed"
     },
     "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
       "log": "log-042.txt",
-      "seconds": 1.134,
+      "seconds": 1.159,
       "status": "passed"
     },
     "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
       "log": "log-044.txt",
-      "seconds": 1.097,
+      "seconds": 1.183,
       "status": "passed"
     },
     "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
       "log": "log-046.txt",
-      "seconds": 3.297,
+      "seconds": 3.493,
       "status": "passed"
     },
     "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
       "log": "log-048.txt",
-      "seconds": 1.328,
+      "seconds": 1.334,
       "status": "passed"
     },
     "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
       "log": "log-050.txt",
-      "seconds": 1.233,
+      "seconds": 1.248,
       "status": "passed"
     },
     "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
       "log": "log-052.txt",
-      "seconds": 2.715,
+      "seconds": 2.755,
       "status": "passed"
     },
     "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
       "log": "log-054.txt",
-      "seconds": 1.978,
+      "seconds": 2.03,
       "status": "passed"
     },
     "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
       "log": "log-056.txt",
-      "seconds": 2.028,
+      "seconds": 2.217,
       "status": "passed"
     },
     "cards:combat_host_native": {
       "log": "log-062.txt",
-      "seconds": 0.188,
+      "seconds": 0.193,
       "status": "passed"
     },
     "cards:host_wire": {
       "log": "log-063.txt",
-      "seconds": 0.126,
+      "seconds": 0.127,
       "status": "passed"
     },
     "clean_install": {
       "log": "log-070.txt",
-      "seconds": 0.074,
+      "seconds": 0.09,
       "status": "passed"
     },
     "client": {
       "log": "log-008.txt",
-      "seconds": 0.285,
+      "seconds": 0.318,
       "status": "passed"
     },
     "components/cards/host_tests": {
       "log": "log-003.txt",
-      "seconds": 0.047,
+      "seconds": 0.05,
       "status": "passed"
     },
     "components/events/host_tests": {
       "log": "log-004.txt",
-      "seconds": 2.411,
+      "seconds": 2.589,
       "status": "passed"
     },
     "components/item_transport/transport_tests": {
       "log": "log-005.txt",
-      "seconds": 0.044,
+      "seconds": 0.061,
       "status": "passed"
     },
     "components/item_wire/host_tests": {
       "log": "log-006.txt",
-      "seconds": 0.05,
+      "seconds": 0.058,
       "status": "passed"
     },
     "core_client": {
       "log": "log-009.txt",
-      "seconds": 0.037,
+      "seconds": 0.042,
       "status": "passed"
     },
     "events:host_native": {
       "log": "log-061.txt",
-      "seconds": 77.095,
+      "seconds": 79.763,
       "status": "passed"
     },
     "package": {
       "log": "log-069.txt",
-      "seconds": 0.067,
+      "seconds": 0.083,
       "status": "passed"
     },
     "package_identity": {
       "log": "log-002.txt",
-      "seconds": 0.028,
+      "seconds": 0.032,
       "status": "passed"
     },
     "package_output": {
       "log": "log-071.txt",
-      "seconds": 0.029,
+      "seconds": 0.036,
       "status": "passed"
     },
     "production_surface": {
       "log": "log-067.txt",
-      "seconds": 0.048,
+      "seconds": 0.051,
       "status": "passed"
     },
     "production_surface_rejections": {
       "log": "log-068.txt",
-      "seconds": 0.078,
+      "seconds": 0.083,
       "status": "passed"
     },
     "reproducible_build": {
       "log": "log-065.txt",
-      "seconds": 1.448,
+      "seconds": 1.657,
       "status": "passed"
     },
     "reward_codec": {
       "log": "log-010.txt",
-      "seconds": 0.039,
+      "seconds": 0.043,
       "status": "passed"
     },
     "sdk": {
       "log": "log-014.txt",
-      "seconds": 0.046,
+      "seconds": 0.051,
       "status": "passed"
     },
     "shared_client:socket": {
       "log": "log-064.txt",
-      "seconds": 29.022,
+      "seconds": 61.822,
       "status": "passed"
     },
     "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
       "log": "log-016.txt",
-      "seconds": 2.616,
+      "seconds": 2.634,
       "status": "passed"
     },
     "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
       "log": "log-018.txt",
-      "seconds": 0.056,
+      "seconds": 0.06,
       "status": "passed"
     },
     "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
       "log": "log-020.txt",
-      "seconds": 0.052,
+      "seconds": 0.054,
       "status": "passed"
     },
     "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
       "log": "log-022.txt",
-      "seconds": 0.039,
+      "seconds": 0.041,
       "status": "passed"
     },
     "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
@@ -267,121 +267,121 @@
     },
     "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
       "log": "log-026.txt",
-      "seconds": 0.024,
+      "seconds": 0.027,
       "status": "passed"
     },
     "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
       "log": "log-028.txt",
-      "seconds": 0.044,
+      "seconds": 0.046,
       "status": "passed"
     },
     "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
       "log": "log-030.txt",
-      "seconds": 0.047,
+      "seconds": 0.05,
       "status": "passed"
     },
     "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
       "log": "log-032.txt",
-      "seconds": 0.054,
+      "seconds": 0.058,
       "status": "passed"
     },
     "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
       "log": "log-034.txt",
-      "seconds": 0.997,
+      "seconds": 1.011,
       "status": "passed"
     },
     "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
       "log": "log-036.txt",
-      "seconds": 0.034,
+      "seconds": 0.037,
       "status": "passed"
     },
     "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
       "log": "log-060.txt",
-      "seconds": 120.847,
+      "seconds": 134.115,
       "status": "passed"
     },
     "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
       "log": "log-039.txt",
-      "seconds": 0.076,
+      "seconds": 0.093,
       "status": "passed"
     },
     "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
       "log": "log-041.txt",
-      "seconds": 0.099,
+      "seconds": 0.098,
       "status": "passed"
     },
     "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
       "log": "log-043.txt",
-      "seconds": 0.027,
+      "seconds": 0.03,
       "status": "passed"
     },
     "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
       "log": "log-045.txt",
-      "seconds": 0.267,
+      "seconds": 0.253,
       "status": "passed"
     },
     "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
       "log": "log-047.txt",
-      "seconds": 6.465,
+      "seconds": 6.459,
       "status": "passed"
     },
     "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
       "log": "log-049.txt",
-      "seconds": 0.034,
+      "seconds": 0.036,
       "status": "passed"
     },
     "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
       "log": "log-051.txt",
-      "seconds": 0.038,
+      "seconds": 0.04,
       "status": "passed"
     },
     "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
       "log": "log-053.txt",
-      "seconds": 0.042,
+      "seconds": 0.044,
       "status": "passed"
     },
     "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
       "log": "log-055.txt",
-      "seconds": 0.036,
+      "seconds": 0.038,
       "status": "passed"
     },
     "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
       "log": "log-057.txt",
-      "seconds": 0.037,
+      "seconds": 0.052,
       "status": "passed"
     },
     "tests/maintenance": {
       "log": "log-007.txt",
-      "seconds": 0.873,
+      "seconds": 1.095,
       "status": "passed"
     }
   },
   "files": {
     "Directory.Build.props": "9434e7b7d98c0ba600f4504c0d2c7f4aecfe3a6249d7f654a897f25d15a42015",
-    "apps/bridge/client/combat_host.py": "f4e3abe39c555ec4d80fd4c2be8957a2484364b157bc7292950471083a0841a4",
-    "apps/bridge/client/reward_host.py": "f758688ff4b3508419bbfe8485b674a1f93b13403e5b49c4642cac55cbdd2704",
-    "apps/bridge/client/run_live.py": "b520efb9546b3875b2216a5bf6954d812ab446f795b563d448d118008e5045a4",
+    "apps/bridge/client/combat_host.py": "406c79052a36067b231dd97aaa604ab3da18e5974a0934026a3885dbdd24ab67",
+    "apps/bridge/client/reward_host.py": "c629dc905479049fd36d29cc86b3b5e09d147ac2e209bd7c33c9e3f90e4b0b5a",
+    "apps/bridge/client/run_live.py": "ce2152650c52cdc0e5b0b6938426b830e092d43ef395cbc2929aa4c39280f160",
     "apps/bridge/client/secure_operator.py": "07cc8640aac259b0748bb842bcd86ec21ee17729b44444475e51de2574cee4f8",
-    "apps/bridge/client/wire_client.py": "62283352206e592ce1b3e6302b8d256915d4fd8c8b317a2aa566430105883c97",
-    "apps/bridge/client_tests/socket_integration.py": "f4946f932f64948a6edbfa8a984b177fadf95170407390f25c276c4cb603624f",
+    "apps/bridge/client/wire_client.py": "b4d50e5dbf0e0d4ae47a7e06e6a8747d33947b7daca0537bde220b0d3281e34f",
+    "apps/bridge/client_tests/socket_integration.py": "038187531307de175aee8f0f442f781d35a3fbb19189644dfec00c736eb74229",
     "apps/bridge/client_tests/test_combat_host.py": "bab37de2508af1f3fbf139894d29beb663afbc1cbd0a4036f382e9f83745161c",
     "apps/bridge/client_tests/test_event_map.py": "282a5b069e27779364254571473106abdc8a88467779f0b6187fdd74c09d1acc",
     "apps/bridge/client_tests/test_potion_capacity.py": "702f89388e3beccc5a170bf29c48e32dfbe716ddcfa5aef11726e4484a91c8f8",
     "apps/bridge/client_tests/test_potion_policy.py": "b3cc27e74cc189638cf1d2c6904f4e0d25f878fced538f29ef3bffa6e742e6a8",
     "apps/bridge/client_tests/test_potion_replacement.py": "56c139e257f5b5f23f78862521c2ba15299dc17a5a874875d85652bb52b48121",
-    "apps/bridge/client_tests/test_resume_items.py": "ebd82ceaf0399262f1b02db3161d572f37b90122e79fcc9234326a63312184ac",
-    "apps/bridge/client_tests/test_reward_host.py": "062761f1208d09c3bb5f277c9afbb64f2297faa684b82d23bcd70eeea5c570ef",
-    "apps/bridge/client_tests/test_wire_client.py": "69aa61bb288fac5639374d431283ea12ca14e649fdd3cb17859594cad0167bd6",
+    "apps/bridge/client_tests/test_resume_items.py": "31e66084fcd25f9a70694ed2c755c25070c981489a5f3415ccc521d6ca5235b0",
+    "apps/bridge/client_tests/test_reward_host.py": "098e59e8b383a5dde5f4e978ae93882fb5940ee5a1ce72397992d0ab693e0fff",
+    "apps/bridge/client_tests/test_wire_client.py": "890f050b9b97e7a8092361e36b208eb80cc0b8cf807646e8df7e9366ffdbd565",
     "apps/bridge/compatibility/CardSelectionTerminalClassifier.cs": "ef104380e97121f262e75ae00ba8a7aca80999d4d3d743c5a470197d59f59323",
-    "apps/bridge/compatibility/GenericEventTerminalClassifier.cs": "1f5d2e3d39633951de8577eb9614468342b380ff65e3d3d7eddbef6ab74d715e",
-    "apps/bridge/compatibility/RoomFlowTerminalClassifier.cs": "c6a554a4fa4e07fcafc34b1841fe4da5072f755d18d828d3da4481803e56d4fa",
+    "apps/bridge/compatibility/GenericEventTerminalClassifier.cs": "d69b3184f62f1be43e009a953d616e708b8ee6cfd50fc472849f197dc0a91a35",
+    "apps/bridge/compatibility/RoomFlowTerminalClassifier.cs": "a7a00403b551c542f30bcee40f6ce600fb8bd5ae9c2942b565a48f91dc623be8",
     "apps/bridge/lifecycle/BridgeBootstrapLifecycle.cs": "90fd3200fcf945dfd1980db2741507ed78d23ea024f754c5cd31b9a6dbd14563",
     "apps/bridge/native/BridgeBootstrapHost.cs": "79c39742ebebcbd709c8480c2ba409c5afdb3f9f0aab86748a3e188568b0267b",
     "apps/bridge/native/BridgeBootstrapSupport.cs": "5bf18186964684508f513d48b15d6d2319de77254fe29f2d02fff6e631134bdc",
     "apps/bridge/native/BridgeGodotFrameConnector.cs": "898cad3191ecf8ced00d001865d1cc1521ba05eec873cb4c66f95438ff807f9a",
     "apps/bridge/native/BridgeModEntry.cs": "6cb472471e8240dccde717762e6756398b59d7d1d20365fc360f3dedbffc2ccb",
     "apps/bridge/native/CoreNativeFactory.cs": "0849a3ec892cebbf8c84250ff5ce4d09abe7f5da7c39c21770eec6f76ce44f68",
-    "apps/bridge/native/NativeBridgeModule.cs": "07215061361f1f6e1bc8e024ab72d4a8dce9db6fa473c244e3ccf47e2c0d1ef0",
+    "apps/bridge/native/NativeBridgeModule.cs": "81176bececabaeba991e77098cc1297c8f8c3a03c93a5a24a14a6a8da083077f",
     "apps/bridge/native/ProductionBridgeRuntimeFactory.cs": "f84148768f05a56999901bc91c819c126d7de104592999d3c5724fce7be0ab6f",
     "apps/bridge/operations/check_live_runtime.py": "38f07735ea825c4adb81336d5cead0e2f91760a40e1e318bf67ecd679cf7b683",
     "apps/bridge/operations/check_live_runtime_fixtures.py": "fd67a0ef5d9f316e8b84a73cfcacf9fa4b8efcd6516c1f2bf1b10b02117f03c2",
@@ -393,20 +393,21 @@
     "apps/bridge/operations/verify_clean_install.py": "e2bface4e786a43caee17538243d5ccdcf74812e6fe2d09bc42b06490068b99d",
     "apps/bridge/operations/verify_clean_install_fixtures.py": "7cb86c5f08d61631b3e249521d98d52b8cf1290036e272e642f286f84d6d9be5",
     "apps/bridge/operator/BridgeOperatorFiles.cs": "0ba6ee35f330675dae24939cb94606a7a039861f0531b185b788cc7eb8d7644e",
-    "apps/bridge/package/identity.json": "9f4e00234f38d22623917b13b9edcbdb56933e029fadbd0f382981f7ed52400f",
+    "apps/bridge/package/identity.json": "2593f828b49cd2ab56ccb90f0a9c52dd5295c1a9fda6c64bc2cc5beec3da286c",
     "apps/bridge/package/package_fixtures.py": "d9d6d98e407d4b95701ebef9f58cf72e09accae250009d05f38bd3af573e78b0",
     "apps/bridge/package/prepare_identity.py": "2b1a916adb786e0b6e8e77751ad46e0b63c020848ef9811af9b3c7c8e46feb1e",
     "apps/bridge/package/publish.py": "c6587be7fd4ed664a1ebfea022314bfa684b970c6c5f1407f65ca0d9b5d98ade",
     "apps/bridge/package/release_package.py": "3f2b677cb1c2fd52d9c4417d6541598cb9f11adbdbde22168ee765d155558369",
-    "apps/bridge/production/Sts2AgentBridge.csproj": "891252928aa22366c7b2061e5635f891ee7d00e56016755c820125df5a8acca9",
+    "apps/bridge/production/Sts2AgentBridge.csproj": "c524d6b0995c7f8dbc2e8be500860ddef353e8d06a96d181f06a8fa03e3e291a",
     "apps/bridge/runtime/BridgeProtocol.cs": "a548dbe169e82d30a6048de84ed125d61389b3c5ffec90b7c8e8dc6ead30ebcb",
     "apps/bridge/runtime/BridgeRouter.cs": "e41ffb9aadc25cadfef571ccf758572b404ece8992202b88efd5c93e6d73a83a",
     "apps/bridge/runtime/BridgeTransportRuntime.cs": "52d2eae261be5318e9f9fcd0c61ee0d761f011cb3fedceec02cd6d456a2a663c",
-    "apps/bridge/runtime/CoreBridgeModule.cs": "b051ede40be6b121e719ddfac6b244de688636dd35822519009dc1382e571735",
+    "apps/bridge/runtime/CoreBridgeModule.cs": "7842df387cc7fe69671b1ed4a6a463a4f1a702306ecad50c21a5175c2c416338",
     "apps/bridge/runtime/OwnedByteFrameQueue.cs": "0dd4b64ab311a83e4e36ea64704f624ccbf871f08da26c26d9bbf45a89e20c6b",
     "apps/bridge/tests/EventBoundaryTests.cs": "ae3d1e3ba4e248cfd2062c777c188479377c2418a8f67958ca496400f5881ae3",
-    "apps/bridge/tests/Program.cs": "819148dfb9225edcd2012fe9291044d7db8bfcc5227a92c575af71eb13d711d9",
-    "apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": "bf616e1dae8a6d4201c0756467528d8e5bd7c629517f2fc65b97bffdc794b788",
+    "apps/bridge/tests/Program.cs": "6ad1dd64a33d7c7f03ea4036e7c75354b9672a220f9319158fd3a9c4e4fd3a93",
+    "apps/bridge/tests/ShopSocketFixture.cs": "02452651c8be805b232d8f4592fdbeef2346503bc50f268fa6f223af2e436d81",
+    "apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": "6f74ccef3d828313c2bb57b14b9f745f812db2c777fe24ed1bb0ad295226fc25",
     "apps/bridge/verifier/MetadataNames.cs": "a3ec3772f809dbbc1aa7c4f341f270c1fd318f92b34fe40c8371f3a6ecad23e5",
     "apps/bridge/verifier/Program.cs": "da88266382b8140b68aa3a5be63d830d6dd688fd98445b1a871bd9f3c48e4fff",
     "apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": "d62463c76d5e0596c5e7e39b43aa38e9d72142f42e74bc854fc64214f6006374",
@@ -415,9 +416,10 @@
     "components/cards/Directory.Build.props": "2b05edd4dbb4532b1e884c6267bf56c732b49415dc43a23245b3d0c3cc30265f",
     "components/cards/combat/CombatCardChoiceService.cs": "a25aae09b2bf0d3478b13cec215bb2fcedcc3ab01380f6b53706a8d3342745dc",
     "components/cards/combat_native/PinnedCombatCardChoiceAdapter.cs": "017ce7cc403c3ace2a6c8ae6dfce67ae5ccb66109ed828f61b44a3edaa5c3d66",
-    "components/cards/combat_tests/CombatCardChoice.Tests.csproj": "659b9774316f4d1b34340e746a6c5f623c8f8511e4b9d43655831aab18fea1e6",
-    "components/cards/combat_tests/Program.cs": "026a87865bd41a584a731ae4d1dc7e320ebdc5e22a90b17068a5ce083e18356b",
-    "components/cards/combat_tests/TargetStubs.cs": "ffd4a3cfbcd2fb4edaf9c38a44720cb3adf0fd32acb596603d779d4e76b0267d",
+    "components/cards/combat_tests/CombatCardChoice.Tests.csproj": "e9b36f367087e3e8476db849947501f33d5550b38f7af60c500871ca809d12ec",
+    "components/cards/combat_tests/CombatIdentityFixtures.cs": "8fa2927ccfbf90865fc4a1a765bb327c155f96820c2587674387fe181da4d9fb",
+    "components/cards/combat_tests/Program.cs": "6f7a54ab057d00e8bd68241806ce5302956cbe590e81151077ca830e38803445",
+    "components/cards/combat_tests/TargetStubs.cs": "faa821d4a635e816932ce9fce73fe14b8df1e04588987efe7125448fe2716a11",
     "components/cards/completion_tests/Program.cs": "1422caf53f0a49c22a4bbcfd70c261137a455dfe209db54e2a8688192d87db58",
     "components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": "4fa907730ee548ec16358accc3d75152bc135fb96500bd736e5412c99ca63971",
     "components/cards/completion_tests/TargetStubs.cs": "70741ed9013935390f2a01477a2ef54a630ec979e7e31fa5560913c896ca82d3",
@@ -461,33 +463,33 @@
     "components/events/Directory.Build.props": "2b05edd4dbb4532b1e884c6267bf56c732b49415dc43a23245b3d0c3cc30265f",
     "components/events/core/GenericEventV5ChildSession.cs": "407385bfb65f288ead96c048c59a635fcf95d5bd7eed8ed93262acfe78934172",
     "components/events/core/GenericEventV7.Core.csproj": "56695841881d62ada232a21ea18db62a72924eab9615ea2278973393934082d2",
-    "components/events/core/GenericEventV7CardRewardSession.cs": "0272f5baac67c3f5669d5a66b93c03d56273fde8d006345544860a1e01f24248",
+    "components/events/core/GenericEventV7CardRewardSession.cs": "5a25c52472003b2acc86ae8c42cb7bcecc34b2ad433da798b962bdb91d26efdf",
     "components/events/core/GenericEventV7CardRewardSetSession.cs": "814c96e8ea1d0dfe2b4756a26b69f882d7c32e5855a7236ead907860c7f4b72f",
     "components/events/core/GenericEventV7ChildSession.cs": "79f5a551ce2e4202ff88ac0f641eb8868caa52b5728cd7a3b4e55e8c2d26d456",
-    "components/events/core/GenericEventV7Contracts.cs": "136eef2f2e72145c877248bbbb0ce9bf6c59cd30384b8e8fcd83c3616b043102",
+    "components/events/core/GenericEventV7Contracts.cs": "93bef5c8d8b9021df87fbd3daf070657b6d4896fdf6824c35330f7b7fa6f5e3e",
     "components/events/core/GenericEventV7ItemChildSession.cs": "a79d58754e2a848823e16ca846488e15c9cfa2455dfa733c92daef80c2342070",
-    "components/events/core/GenericEventV7NativeContracts.cs": "f4e64b8fc793fab5e96423e0841ebe01bda53450d3b5b4037f58143e9c25fdd7",
+    "components/events/core/GenericEventV7NativeContracts.cs": "f63c7b7a5eec1b7f69c5ecbb5deb26d97305545ee8522edf3941c5e97a8d5595",
     "components/events/core/GenericEventV7OfferSession.cs": "4add2fa09c1409bef5f91dd3aa7985250cf569b377c3db78299e46abbc08e1c6",
     "components/events/core/GenericEventV7ResultsSession.cs": "c9f111825ce762d0dbb169cbf9bfefac57f2a6bc89e8637adf9239dedda80082",
-    "components/events/core/GenericEventV7Session.cs": "9f10927b21cbe8bc264e11e709fa67ec650320dcbd164d6c0a5015fe74150c5c",
+    "components/events/core/GenericEventV7Session.cs": "d81660c9f3f54364481c062d286ae30f2244bdc171fbb7e6b9a0c9e83e49fa03",
     "components/events/dependency.json": "ffdc88dd82a55967706e5420e68b56876257caea4d5098d3b4f52a8fdbfab395",
     "components/events/diagnostics/GenericEventDiagnosticCode.cs": "42a17e58d8c408a344631d2e219c00c95b878ed2268085fbfcbb3926bd4c9a68",
     "components/events/diagnostics/GenericEventDiagnosticCodec.cs": "efabae183e2c19babcc254b86dc4a7cfe36c3afc2c474d493aef75b62a056740",
-    "components/events/direct_input_tests/DirectTransformInput.Tests.csproj": "bb3f7dc3fbf9a80a8c02bc5c12fbad564b9930b16c528df8bb5f74bfece6266f",
+    "components/events/direct_input_tests/DirectTransformInput.Tests.csproj": "5bb772541eb20a4ffab4412780e611bce8607104474b968ac565a6aa73e2a128",
     "components/events/direct_input_tests/OffscreenFixtures.cs": "433821312f5f0e53ab2d4da2ef5091de2eb26d1118d5cebdf6d618ee53251aea",
-    "components/events/direct_input_tests/TargetStubs.cs": "35b93542c01ae331ed9e0fa6195254749c9bad175bcdd6a7d77ef09621627d02",
+    "components/events/direct_input_tests/TargetStubs.cs": "b5f550a89be1fd17f0f7ab30c6036139f2995f50fe8d2aa23539e86c8c424a3a",
     "components/events/host/card_transform_host.py": "0cd5a02d8cdf708c61d54838c90f81930a9fc06550fc93f4833d0d5a947d7e65",
-    "components/events/host/generic_event_host.py": "79fda97a38621471a96ba39f2e226fa47fcb501798b2c00ebd3e076ca9644bc8",
+    "components/events/host/generic_event_host.py": "0f165970457d7247f10a5ab5095c12c88fd32155dc8804d82c6e0f4d6254ab12",
     "components/events/host_tests/test_generic_event_completion_host.py": "843783829e1b8cba4722c97cac3af072a9911624f1b1800bff6fa01eba1e96dc",
     "components/events/host_tests/test_generic_event_host.py": "e4c0113ee7740e8bce0145a0120886a16ef855937384801069b88667a08440e1",
-    "components/events/host_tests/test_generic_event_item_host.py": "cc8db4c45e631c5754f052cdeb165c1e960f7b7f147a48bcfa77a57a67f46b00",
+    "components/events/host_tests/test_generic_event_item_host.py": "638c285e51e0996023f5494cdb3f7ccce7f3faa1c48ea7e06ff59a13eef59e72",
     "components/events/host_tests/test_generic_event_removal_host.py": "e469ffc35db3b66f8fc565ea2cd7a910cf29aa468818cc8d857f2d7f17ed9c17",
     "components/events/host_tests/test_generic_event_reward_host.py": "70e3f8fa4cefcb1ce7a357e1cd673fff210fd73ab419a93bfae59fb3759bac14",
     "components/events/host_tests/test_generic_event_transform_host.py": "e689ac3ef8181606e950e55f0e9498c4e2b4683924b5d133e7c0090bda93bd3b",
     "components/events/host_tests/test_variable_transform_host.py": "66808c3840a59424c755863c4da3536d1c3163bf4e9dddb17de71cc4008e299a",
-    "components/events/integration/GenericEventV7.Native.Integration.csproj": "01d5a806e7ca54a8e6842b77437b44f00a63a88a96d8b22cfdf3b1ca1e6fca7b",
+    "components/events/integration/GenericEventV7.Native.Integration.csproj": "c031c0fa4034d28e836da4eabf105bc81b8dbdd8c84238de6d478e3cc6c732de",
     "components/events/integration/GenericEventV7IntegrationHost.cs": "22f0bd93fe09684a46cfd2126377df1984bc7879d840361522665093da0618ac",
-    "components/events/integration/GenericEventV7ItemIntegrationHost.cs": "879d478ed4b0f3b976da1556d27a872a813eddc6dfea99a522b417dca43c6b06",
+    "components/events/integration/GenericEventV7ItemIntegrationHost.cs": "852fbeebb56366c1973c3f9272a9b5ca41fdb9e51fe4fbd1ea38d29231855156",
     "components/events/integration/GenericEventV7NativeIntegrationHost.cs": "efbfd8f6ff5b4a51116bf1c92a5302d995db51565e4dc0624a4befe0acaa9b24",
     "components/events/integration/GenericEventV7OfferIntegrationHost.cs": "6872e8e63bc12ee6b8c772c795c16dc223aa57fd28471cd8f87fa23bbbe26b0b",
     "components/events/integration/GenericEventV7RepeatedPageIntegrationHost.cs": "2fbbc4e596e51bca66544b1e766e18f097ada0cf69c0684171953c897736a014",
@@ -496,26 +498,28 @@
     "components/events/integration/GenericEventV7VariableTransformIntegrationHost.cs": "bfaf7eceb775aad1a162883b7b942ea5c82f8167c79c0ddb3fae0deb754d4df7",
     "components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": "7a9f36939238756d102d7c834140df0bfb834603ad801c5366bdd82e6e65f471",
     "components/events/integration_tests/generic_event_card_reward_cases.py": "3e94c793a8a723cac6fbe54881b9b96f9a6c49b99e2d9c380d13e24eda6bda51",
-    "components/events/integration_tests/generic_event_card_reward_set_cases.py": "34343d6e566c55549f6b5d895c1072142309d9906c3c999848117489fd6d6ed9",
-    "components/events/integration_tests/generic_event_item_cases.py": "ef799cd84b38b143848746fc6a683d28154f14204441181c7d620114a4c0fe12",
+    "components/events/integration_tests/generic_event_card_reward_set_cases.py": "80eef910104f099c8fd3c31efe0a45a350d8cecb453ddaba08b096a45bbed3dd",
+    "components/events/integration_tests/generic_event_item_cases.py": "ef91823f601e010c5661f0ac6237d6dab0bf3415c21fa07f752b3027fa8e2145",
     "components/events/integration_tests/generic_event_offer_cases.py": "1ff0cb4737b5178cd4c7370175006e31eedd72e5e8f8534b5823ff62eb0fb0e7",
-    "components/events/integration_tests/generic_event_surface_cases.py": "22a86879bf3a1b56aa2297e3762093c77c18b577d50b2f7b8f4dcce5033505ba",
+    "components/events/integration_tests/generic_event_surface_cases.py": "78f54c485ab16092a139d125170324d69dc1e45fdec8aaa0260839524157a1ae",
     "components/events/integration_tests/generic_event_transform_cases.py": "f201a8941483574c17edd4907e195ebf77347c35e1114e666a1b37321f384a66",
     "components/events/integration_tests/generic_event_variable_transform_cases.py": "a2a7d0e25f261d5a254a28652cf08c974ef1b3ac26948e95e4c63dd383bc7cfb",
     "components/events/integration_tests/test_generic_event_integration.py": "412db568e7ecd6ebdf5d8b0e8d59bef8bab295bd2d7d5c41ec0fdbd829ccc158",
     "components/events/item_tests/GenericEventV7.Item.Tests.csproj": "0ed427f752e011dc6c1c44fd2334263c0ac5e7e9bd9f13bb07520a8318367d6e",
     "components/events/item_tests/Program.cs": "9bd9d3b2a19840c3688fe4ff93447a0c61d0f4036066b1178be2fad31a7173bc",
-    "components/events/native/GenericEventV7.Native.csproj": "901df3747919f02a80ac2ac6d7edd43d7f762cda1f8860c38ad6d1b1c00382dc",
+    "components/events/native/GenericEventV7.Native.csproj": "ed8b4e058d729dce5c7ed2be9249b73101616f5f525877b6fe5e65ac009e7d75",
     "components/events/native/GenericEventV7AbandonPopup.cs": "259d1aab8fb7d9e7317a77d5d846b6bae930b0ed359e824fd31cdcca31284559",
-    "components/events/native/GenericEventV7Binding.cs": "9d092f246c3266dde9db29d41821905ca4502cfb98956d92b72545308dcc3811",
+    "components/events/native/GenericEventV7Binding.cs": "9cc90cd9d2f7e75a5732d590f2810c8402d02887d5dd366e88568b2b416f353f",
     "components/events/native/GenericEventV7CardAdapter.cs": "71540a5dbb78fe644d562647c729614c298d77533d58868d041ed50f74f73917",
     "components/events/native/GenericEventV7CardRewardAdapter.cs": "660de9ce5dade26dbf2353b0dd63b929da5a72d217ecd82c8d9fec444baf8d87",
     "components/events/native/GenericEventV7CardRewardSetAdapter.cs": "7521be0b2647f6a02a51c492100ee02ec69f405cdd423a3f2b34ffcaa42a3afa",
-    "components/events/native/GenericEventV7CombatHandoff.cs": "8aff12383920edbe8a7b3ca25a4f8a3ff02e7ec5a1b52787316262b554c5754b",
-    "components/events/native/GenericEventV7Hooks.cs": "c9c05385b36aa9142b845db9b899d92041bdeb188b17535099b23bed7d1b46fd",
+    "components/events/native/GenericEventV7CombatHandoff.cs": "95b15c4bfef36a639ed6625d511b2a71a8db53beeb834eb3c20fbe97070c9a64",
+    "components/events/native/GenericEventV7Hooks.cs": "c12241e09ffb6993c89d89ed45c21fad612b74c2d3d7af4c90f87fb8c35e1220",
     "components/events/native/GenericEventV7ItemAdapter.cs": "f7ab7ea22a902baeff589d1eace437b8c6d9bd148ad6084471eb51ccfa83ef36",
+    "components/events/native/GenericEventV7ItemPolicySession.cs": "174b065c21609bfd7b5aa49c35e7187e2bf582741ab1852fe387f195463d2588",
     "components/events/native/GenericEventV7ItemState.cs": "5ada81ce4330fa917408373d8194ac849c8e93d640d725c6baf4611af6b83bb2",
-    "components/events/native/GenericEventV7MerchantScreen.cs": "8694fd5ed785c1ea567d7cd520be0029aa9d6cf4e13e41412fa142753e4bac7f",
+    "components/events/native/GenericEventV7MerchantFight.cs": "e706ea817de6c87043dfadf185b8f551e3299d90e6998f8acdc9e8bb89a49103",
+    "components/events/native/GenericEventV7MerchantScreen.cs": "03e1743ede3ecc1959bcca097518c960ff527cd4bda2cfdde6601f5d0e511b36",
     "components/events/native/GenericEventV7MultiUpgradeAdapter.cs": "73d9a530ca56e0168c36c411569e83a44b2f41cbf3e738b847670db74a8ad60a",
     "components/events/native/GenericEventV7MultiUpgradeState.cs": "fb29c5d3aa5969862ac7a596cf78db34586f65eed3389d3b45b7b4ae0d03eba9",
     "components/events/native/GenericEventV7OfferAdapter.cs": "d6806f6b9c2d3b13943f57426f91762ed92db878bc955b1576b418c0b1f18bce",
@@ -523,34 +527,44 @@
     "components/events/native/GenericEventV7ResultsAdapter.cs": "ead40639774e6d6995561bab551161741116bc475b8439fb7cc5982a0c3f0b8e",
     "components/events/native/GenericEventV7RewardAdapter.cs": "e14c83240e759e7c27e0d5ce2008252d906b871784ed76e3cf198e96cfa77917",
     "components/events/native/GenericEventV7SphereSession.cs": "f5627526d591f08274f6b1180f69aba6cce0c1245365d16f5bb3e9eec437eb5b",
+    "components/events/native/GenericEventV7Terminal.cs": "2fd6afb4e9883aaa21927421bc2a40bb1b4ee055e1063a95271d9e762960036d",
     "components/events/native/GenericEventV7TransformAdapter.cs": "3e758b7d1c62c1673c2c3b04c7dcac971afad9ab96918effa9c7201d609ba004",
     "components/events/native/GenericEventV7TransformState.cs": "1b4fdba1e502b83b6c462cb309413e8e72d86c377cedbb6b638926868a392e84",
     "components/events/native/PinnedGenericEventHarmonyGuard.cs": "93ceaa0524fef4140cfa6af52740c772c1c1383e77e3bbf2d7fd2599818bcfb6",
-    "components/events/native/PinnedGenericEventV7NativeAdapter.cs": "53ddfd73e91846f5d2c71c1456dad430485fa47ded3478c215b24c067c74a1e1",
+    "components/events/native/PinnedGenericEventV7NativeAdapter.cs": "7775c97d7158e33908dbf104bbd809826cc7d47ad68ce30099750a2275054c99",
     "components/events/native_tests/AbandonPopupFixtures.cs": "d17ad014c9be73be6d8e8b04c22735a21b44c60e535d9c7701c814f54cba1352",
     "components/events/native_tests/AbandonPopupStubs.cs": "d12360c1e9f2e49a4d59bdefe6b9a13acc37709c52b6a982015622c13f8e629a",
     "components/events/native_tests/CardRewardFixtures.cs": "03f8061eeac7e18aa4c4f6b580b6f4a084357323209aa7f57269d6490acacb3b",
     "components/events/native_tests/CardRewardSetFixtures.cs": "24714e6194960907f7208e080e0bea59a3fde1f0c12324a77913933d4a8e7a87",
-    "components/events/native_tests/CombatItemFixtures.cs": "5071380160ef6ea965b4907f3814dd05f4c2c0004365359b3d9c39a7648882dd",
+    "components/events/native_tests/CombatItemFixtures.cs": "ae04e3e08483c4647937356c2f84719ce19b864fc0ee0f78db8cff543827a9a6",
     "components/events/native_tests/EmbeddedCombatFixtures.cs": "74ea7a24717581600c2259799d4cf2e51d27da8aae088cfa6e7e7a8ed2750ffc",
-    "components/events/native_tests/EventCapacityFixtures.cs": "2866386e4c11268281dc1af60fe911332eeed63f52e6de0cf5e75fcf1f64d9a2",
-    "components/events/native_tests/GenericEventV7.Native.Tests.csproj": "5f206b7894745532ab110078c4469255127c6193f896b3687e05878b5c51a257",
-    "components/events/native_tests/ItemFixtures.cs": "ae7f6107d83f290b65ebcc4973bef8639f70ece4f86cf58aefe85ff6a5e5fef2",
+    "components/events/native_tests/EventCapacityFixtures.cs": "5768d3caddb05769df28d2dc3800d7bc4f39feaea2edd73b339fb31878da232e",
+    "components/events/native_tests/GenericEventV7.Native.Tests.csproj": "2d96c762e5738094b6ac858f15a63f4ae59bb5a827db8f736984329806478584",
+    "components/events/native_tests/HealingRewardFixtures.cs": "56e4eb61cdd351c708b076e8e4e00f64f2b6b5eb78aff4981dfaf9f1300aac79",
+    "components/events/native_tests/ItemFixtures.cs": "26817d3dbef778bd21d4e5e49c8c73f6349261fa9c662a73aec6b870b2611b2b",
+    "components/events/native_tests/ItemPolicyFixtures.cs": "7351fac645b07ecebf50c22dd82319f02368c9d595c0de8d86c177ad38f26e8b",
+    "components/events/native_tests/MerchantFightFixtures.cs": "b88db65367541e11b4e202965310dc61cf5ef87dfa855095c7af0aa44f8b2ea3",
     "components/events/native_tests/MerchantScreenFixtures.cs": "f3cca1a0c1d7abc15e09d16bc083d8ec319eff02558706eae2afc347fecf6824",
-    "components/events/native_tests/MerchantScreenStubs.cs": "418d2f9a51b6bf016716f774154906edd36cf760abe59b1ec031d42278eaa95d",
+    "components/events/native_tests/MerchantScreenStubs.cs": "40b8c7120fa778110b819e1659df64d21e3c17f6a98c245c94f528ce7c9d40c6",
     "components/events/native_tests/MultiUpgradeFixtures.cs": "25226a94f8f2e4dc52d5771f1ffa76342879f2cbf1d14bfdfdaa52ff7210a1fe",
     "components/events/native_tests/OfferFixtures.cs": "21771e46957d3847eaf5ae8f963172285b4c55e44969251628a80710022b3145",
     "components/events/native_tests/PostRemovalAdditionFixtures.cs": "6deb977c4a8808642e3446d70b3345e48edfe330d9905c82d9c816ae0a0d08fb",
     "components/events/native_tests/PotionCapacityFixtures.cs": "f0c80947eaa703a07c418bf1886fa1a8664c64941943aaeb86bb1ba200e38968",
-    "components/events/native_tests/PotionDiscardFixtures.cs": "e7378f9206ea8d29821a7bb68af57af862642acf9df968d864a2392bba0e8510",
+    "components/events/native_tests/PotionDiscardFixtures.cs": "8dc767ccd761771e24ceb00bf4db444771fcf1922e83458a8f222bbb4047a98c",
     "components/events/native_tests/PreSelectorAdditionFixtures.cs": "5f522faa03a91fd3e3bac351afb5380ccae8a17c8bf6b8363253a8204fd06ab1",
-    "components/events/native_tests/Program.cs": "100e1234441903078921638318715cc9ee4471d9f6818d8609a07cb6a349fee6",
+    "components/events/native_tests/Program.cs": "0b1d985b156c8705694c3806dc91f2872c39dc16850eddeb1900f3511dc748b9",
     "components/events/native_tests/RepeatedPageFixtures.cs": "1c2a787319a18f13ea18bdb38325d3f401694ca1214a2d03ed48e65a63280fb9",
+    "components/events/native_tests/ShopPickupFixtures.cs": "abd3b08add592d009ad8eb8b6f70283ff547fc1fcc0724deca3559d3184aba02",
+    "components/events/native_tests/ShopPickupStubs.cs": "7aa056032669352c362cfcf4c9c2a87018783bfed2c349768d58b68e95bc5052",
+    "components/events/native_tests/ShopPotionFixtures.cs": "7596e0894c3fd9e4cdfbc505cacc7c947a42e67ffeb0093639d04443938e3656",
+    "components/events/native_tests/ShopRelicFixtures.cs": "4f93d34cb5cc8e6eaa1a46aaaf3392fcd979d306e884f14ed12d05253e6acd18",
+    "components/events/native_tests/ShopRemovalFixtures.cs": "bc4404f6ac3aba846302cf54fa8c5f90ad7010fcb4343a57561fa74a29f7c409",
     "components/events/native_tests/SpecialCardFixtures.cs": "4f6de6cf94ee59f577032b8364234581cc4ce9b3a365195aa1351db968d4ede6",
     "components/events/native_tests/SphereFixtures.cs": "b2d1872ee4a74c03756c6c101844941933f4395ad888c7579b090d9a9d789453",
     "components/events/native_tests/SphereStubs.cs": "a494ee390862f1ba0941a2936b4bd8f9094ea9e3e76444976419f85aeb524d9a",
     "components/events/native_tests/SurfaceFixtures.cs": "f613340a8454ea431dac302b1ee1f27fd41cbcfc31f529a6d82d3e574582ea13",
-    "components/events/native_tests/TargetStubs.cs": "9d0888cf343c27063dc8132be1b4f7cbd8c6cf66739bcf3af7383aefd4cd85d5",
+    "components/events/native_tests/TargetStubs.cs": "062d98c212fd8e5677e69236efc0175216233476fd6ca9ee9080c3530ab210c6",
+    "components/events/native_tests/TerminalFixtures.cs": "9235f79dfa5cfbf0a8dd682f037688f05d6d1db4b88be02d9bd14dc7f1196153",
     "components/events/native_tests/TransformFixtures.cs": "dcf6f31382b1be24b609e7db08cf908f7a5aefe7ba0ce8201d35dc6380c437dc",
     "components/events/native_tests/VariableTransformFixtures.cs": "daef288581b46a28a7d6629e46ece1e3126dd9af83169a945c8d4330b4fd2903",
     "components/events/transform_core/CardTransformV2Journal.cs": "393a3e26dd7196e949f217da721402db872e1a531caaea076fc11e11ed2985be",
@@ -559,11 +573,11 @@
     "components/events/transform_tests/CardTransformV2.Tests.csproj": "d2ef32056d636104a26e02cb964de28798b724d86fa50aa90101d95960d289b0",
     "components/events/transform_tests/Program.cs": "1fe8e5345190a4e68a4399f9715b758ecfd315c5058f161e2baebc740aaf59ce",
     "components/events/transport/GenericEventTransportContracts.cs": "0112ce932746122154f22fd6fe679737ade6d41a08d067ce9e82edc14bf343de",
-    "components/events/transport/GenericEventTransportProtocol.cs": "8b362e152299bd901702e150c5c850bcb4e7eeff948641b223644e34e51d7d91",
+    "components/events/transport/GenericEventTransportProtocol.cs": "63d36f34b2b62123a6474804472d1578a190c3bf152fda03784b23037d8fc64a",
     "components/events/wire/CardTransformV2WireCodec.cs": "eb859c2e146b14e79bc26b0dfe398019d8f7ca777c0dd39a04153f2c71b7a4c6",
     "components/events/wire/GenericEventV7.Wire.csproj": "215ff396fc197c5b9d26c8496caab05ede27d08d17d2cbb1f9df0fe69e050608",
-    "components/events/wire/GenericEventV7WireCodec.cs": "c387c91f265a1826e48b28087fcf24fdbe39bcc1c62fc17cfd671c60e87bd235",
-    "components/events/wire/GenericEventV7WireService.cs": "62b44a086b3a767fcd60536f0b2d6c7a4c6928262fc45bc6131924cd40aa50d3",
+    "components/events/wire/GenericEventV7WireCodec.cs": "b405f1b66076358d21dc6f7f607e849572d6c05b62704ce9727f8b703d4d1800",
+    "components/events/wire/GenericEventV7WireService.cs": "a90900d81f14e12bfb3f25bde0b010aaacd41beee56d691ec77b1d82f4d7b437",
     "components/events/wire_tests/GenericEventV7WireTests.cs": "513c476f133f435e66d03b1d9ee92615d989d2a86c492a2e8c82f3b925d9ffc2",
     "components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": "a528796b9aa02c0314ff6a643e5c8820540bfbb8bc44be520c7c142a7564ace8",
     "components/item_bootstrap/Directory.Build.props": "10632427d5838775750de04857ff20a968a427bde0310fffa5a3fa38ec881cf6",
@@ -618,6 +632,7 @@
     "components/items/core/Sts2AgentBridge.ItemV1.Core.csproj": "04c4653762cef4a74ad1d694d4353faa97259f0552580524f4932cff2d5f1d59",
     "components/items/native/PinnedItemV1NativeAdapter.cs": "44f99f5823c767c07f34ab3a9d29101b94367e255dcf5a5f90d905267c08488e",
     "components/items/native/PinnedPotionCapacity.cs": "c2f207d8966e7734bfdd38d9b6e9d4fe42783930a5571545de94d699e95f8d90",
+    "components/items/native/PinnedPotionDiscard.cs": "577cac894e25b1b43dbf68bf12284627fae433461cde38289c5802110efb6e4e",
     "components/items/native/Sts2AgentBridge.ItemV1.Native.csproj": "bd5f4717660df3854b342225b6be9d744e1deebd4a3376d450da679b911ba8de",
     "components/items/tests/Program.cs": "9d08e284998e27f11caaa1d856b01a9df5bd401955a577d01939bacfd4d741df",
     "components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": "73792b94d7252b1642166d4219e8e949b25aab1f4e54663aed01a106f2157ef4",
@@ -627,7 +642,7 @@
     "components/rooms/broker_tests/Program.cs": "e5b2ccedb4fe8c47a2d9e16aa07914df6928ce0626a38389e71f4cdf9229fd8f",
     "components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": "07a2a373c23ee47db9b211d38323926fa008fefb3e7a9cbb10c1969d05c81ae8",
     "components/rooms/common/EventItemChildContracts.cs": "3c69404e8fbaf55c980e4529d6eaf198225e3d94f3d5dbf3c56dcd39bb3a7865",
-    "components/rooms/common/RoomFlowContracts.cs": "c332b416919a41c7b61507045edd42fb0d9a1b36996d43e91f724d6016f837b6",
+    "components/rooms/common/RoomFlowContracts.cs": "415f61d25b9d2b1d8ce468cf1cc9358f5741a0548c191ca36e5067baeb071cf1",
     "components/rooms/common/Sts2AgentBridge.RoomFlowsV1.Common.csproj": "b7023c583aa52f87b1fcd2ae58943831856c40d3fa12c5be136b858ff938121a",
     "components/rooms/event/core/EventV1CanonicalEncoder.cs": "9dfe654b61135a4d96c2af0cc55004c0bb91adb6757b7b15f6880375462fc407",
     "components/rooms/event/core/EventV1Contracts.cs": "023cda67508720cb40437ebbf57e119cd518380d94033e90de9572c8a3b34b6d",
@@ -637,48 +652,54 @@
     "components/rooms/event/native/Sts2AgentBridge.RoomFlowsV1.Event.Native.csproj": "28ac229333210000e472a6741c1f8ad0357d5941e1a885c6776cd8297f04d786",
     "components/rooms/event/tests/Program.cs": "3cf113e9ec6edf2ebb75e47fde4acb74826e25ded9213bc4656074735eca8b72",
     "components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": "347d64a76e12fdfb18222b97592d92d3736d99e9d354b1797c76f4d8e63b3b93",
-    "components/rooms/host/room_flow_host.py": "39ae0857d9e05fcad63729a00dfa8fbfb0dee6526fa1f324e40c88415a1b0e4a",
+    "components/rooms/host/room_flow_host.py": "6a5f7bed697aab57c93e7f9f8e5b699d5f38db7de67c7055cc4d3f4bbe204f28",
     "components/rooms/integration/Program.cs": "f836ca1fe736347ac8cba96bc595a0a74742589cf1cd62ca1204179880c9e6bf",
     "components/rooms/integration/Sts2AgentBridge.RoomFlowsV1.Integration.csproj": "f0f2517ee205178bbbdd770698450ebfe2708a673e39514f182e4eb79e049f93",
     "components/rooms/integration/test_cross_language.py": "4de047199351a37703e1a74717847d2dacc1337932bb9345b32481082eeb245b",
-    "components/rooms/shop/core/ShopV1CanonicalEncoder.cs": "6a746dd7737f66f4afbad4388ae02cde8accaf34ff1fe3d67b268252e6e9c8ba",
-    "components/rooms/shop/core/ShopV1Contracts.cs": "30128b356d64d2ed14500ea8cb59b8f381df612db6728055b494dff1fdaf7cc6",
-    "components/rooms/shop/core/ShopV1Session.cs": "4a361e4dbba3fcf961d893407b4b3e6d14235e1dbcaddfcc9434d1fff317ed35",
+    "components/rooms/shop/core/ShopV1CanonicalEncoder.cs": "de8333c1f4603056c6e84bea1a853f8bc04bce5fd98d9db3d2954a182075e872",
+    "components/rooms/shop/core/ShopV1Contracts.cs": "d4779f8669246364c5c6aa2ab5dd4398b1ddc572e5db868e0443be8d217006f3",
+    "components/rooms/shop/core/ShopV1Session.cs": "c4c498a10421f6d3e1cfcc573892152baaab4143806fef030f4d7020cc147b14",
     "components/rooms/shop/core/Sts2AgentBridge.RoomFlowsV1.Shop.Core.csproj": "62044121a83a17450f31273ed32697ac46baa9c5d2c26e0298340110656c9846",
-    "components/rooms/shop/native/PinnedShopV1NativeAdapter.cs": "0198e8bb9f3fe89f25b8fb197b11cf2e2cdf0ae31829c20efd6dfa41c946d9b4",
-    "components/rooms/shop/native/Sts2AgentBridge.RoomFlowsV1.Shop.Native.csproj": "5886473e299303c8bd1c1e741345c91c506dc0e71eba21a306cc8136479f5590",
-    "components/rooms/shop/tests/Program.cs": "f67d4fadfabd66fdc80ca29baa9efa1f5eeba3be132a2db775b6d18c747ea360",
-    "components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": "1fd3595596da96ab07a64e1e98929924a40f514f88820d1245904b5e73d19215",
+    "components/rooms/shop/native/PinnedDeckCardChoice.cs": "4e2636e387dd64a54f77ae3d175248cc82a7e32534ccaa094b89dff8b81871c1",
+    "components/rooms/shop/native/PinnedShopPickupDispatch.cs": "ccb8fbb5084b68fed1bc75ad58b1402c94a3e943cf0371cf25fc3ba8fb8205ad",
+    "components/rooms/shop/native/PinnedShopRemovalDispatch.cs": "983c5382db1f56f67029eec821bf78cd44e38b8bf85bd35b05c70d226436e756",
+    "components/rooms/shop/native/PinnedShopV1NativeAdapter.cs": "0d998f9615ddad4a793fc12df9bafde01775b2a5b7dc7d20369ac68d76ddab14",
+    "components/rooms/shop/native/ShopPotionOwnership.cs": "5e5d411b9b0838c57fd4e360aec881e84a965eda8626967c391916ee5601da63",
+    "components/rooms/shop/native/ShopRelicRules.cs": "56315d8a27d9d047c83516b62112d8318d44f2f816b86a977aa01cc513a3ff13",
+    "components/rooms/shop/native/Sts2AgentBridge.RoomFlowsV1.Shop.Native.csproj": "f77ac965c5f600b31d93caf41324ceb30bb5318af851340ba8206ab892075e88",
+    "components/rooms/shop/tests/MultiplePurchaseFixture.cs": "8d191b3eeedf7e0889785cef6b56727718fd1980d084157f6ca81867c374a544",
+    "components/rooms/shop/tests/Program.cs": "ea5b3d4114ae87339c2dc462a96e290966431c4c260ebc7cfcb96e7c84a2cb12",
+    "components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": "04fc0da15da1bddb5a8a591d35d4f11275c7a3559eea33d98ce606b253eb5b00",
     "components/rooms/transport/RoomFlowTransportContracts.cs": "78b803563e21c9625ce93360871ec5a17e6ebd584f63d17d7f4b7241567d785b",
-    "components/rooms/transport/RoomFlowTransportProtocol.cs": "0a43e018ea94e0fa6a4f2ca0316c3ab1e76fd915ee5bc79cca32d3e936482114",
-    "components/rooms/wire/RoomFlowWireCodec.cs": "d21ca60fc90025c90bb336c281aa75c3200194350ceea53748e9ac9edcc5c401",
-    "components/rooms/wire/RoomFlowWireService.cs": "db9a6a998cb429fcc10a5d5023ef3b17044df6dd619976a3603e7b6287c574ea",
+    "components/rooms/transport/RoomFlowTransportProtocol.cs": "ba240fa351264e5f9412c753874023c1209ecacd687a6db80830551171f3b5fe",
+    "components/rooms/wire/RoomFlowWireCodec.cs": "4dbe35be77dfd3a8af8aa0e775da49c8e783daa80b1fafe6250141c11d7d94f0",
+    "components/rooms/wire/RoomFlowWireService.cs": "d31cc01c1a560bd49ffbd688896cac46495790d756d7fe8c29564ed43711093a",
     "components/rooms/wire/Sts2AgentBridge.RoomFlowsV1.Wire.csproj": "ad0654eb6daec8a5f0cd274bb25b31756c370a570b56336b54180f9690ef28ec",
     "global.json": "eca284a49ac825a1a8c87c70969c68844fca6595bae84b1aedf0acbae50b9793",
     "release_support.py": "45656cbd210a573e61aa0eea26e756b94a57d432fdff0acee4a40c18b7b68d1e",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatActionApplier.cs": "eb50e731766275787b73e6bdf485fa238c40b027357152872765de6d51855c0a",
-    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatDecisionReader.cs": "1904c9fde9fb19c646be527990c808587241ffcf76582aeba714e7740581f53c",
-    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs": "eaefd41f70ad48b04d1928d2bce1dc2efbada91fc9e93004c7f26f2f54275db1",
+    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatDecisionReader.cs": "a43395f67912ff6648e8eb7eecf192e411cb134ddcecc562e30388a734eee7e8",
+    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs": "4731db1a10475b1f480e9f1a001209f808714c325f57d4d72f2137c23a8f61e3",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapActionApplier.cs": "8a6e57912d1655eab6e034c2e2095e44c5e6d866a11f28d58ee10f8e560f566f",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapDecisionReader.cs": "d2e45de2b236387843806270bea44a3e996e4baa9121062f9d0cff1e92e5043b",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicPotionDiscard.cs": "67f6cc3b11aa287dc73b9b2e93bf590aa4b9f1e1ce99c4ba971281b7f6561942",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardActionApplier.cs": "b0127647d53ce0d40a27e60274337c8c0add961bcdd009c446c20630037c1300",
-    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardDecisionReader.cs": "b8668094b79c32e6b3ed5fc223c86bb1769ffe59e054066b7e58b5ba1482fe21",
-    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs": "4cb8e8566d8c3b786e05d457f2338e9f84458ca4b5e3c26da4f46c965eef9515",
+    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardDecisionReader.cs": "c68417d2c2e09ae7bbe0305cab10f1b8888e45eb393b42af3625dd54881aa28d",
+    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs": "66c2ce6ec33d866c87ba089dea2fdd0b422875739c515874b919ea7fcaea6b34",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomActionApplier.cs": "139e88daaa129e978e50a03fe71dd8872236faf55ad61fbc4324c50fce3721d6",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRoomDecisionReader.cs": "495b47667c4a5241cc5d4b44dfe8b6394a96bcef100d69120e4b5fef3749db86",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicScreenReader.cs": "aa864119891f42841d6c8d5b273dcd9ce28466fa1411b4c7b3c26c3974a23728",
     "src/Sts2AgentBridge/Core/Identity/CorrelationIdGenerator.cs": "2febeb0b49cf3d97118613988da417b9eb99fbf3158569e762307ef79de0f867",
-    "src/Sts2AgentBridge/Core/Protocol/CanonicalProbeEncoder.cs": "0862c825138e4890707b8ce91138a955062f2014102e4601b0676801d958638f",
+    "src/Sts2AgentBridge/Core/Protocol/CanonicalProbeEncoder.cs": "caa1484eaccac9588c692510e335b260d7e04af48b3a92d77b37d56b55e9d5b3",
     "src/Sts2AgentBridge/Core/Protocol/LiveProbeLimits.cs": "841471e6fee9968b8b400101fa02c4f8914beb63c8ff1e9be7ae9a2aadc796b1",
     "src/Sts2AgentBridge/Core/Protocol/ProbeErrors.cs": "ed1817aaf3dfa254ac3ac96fe3cfafb2aa4d4d494f834d0ae497b87199416645",
     "src/Sts2AgentBridge/Core/Protocol/ProbeRoutes.cs": "ac8ee46ff87def86c458b8f0d6dafeb96a0479b00f50d110d0e675c54b0ae367",
     "src/Sts2AgentBridge/Core/Public/PublicCombatAction.cs": "39b712c20370e49b7dde3cf07c27a67900d7976f37c38765d7eef35914fd7fb8",
-    "src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs": "3c9a8abe72c9ef19ed8401bbbed70203bb7e841806f9b2d423325b5c5b325794",
+    "src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs": "758ff531f5336b25a5f9f3ad1d540b2ebb8c69619a81234cae316d35c6313da5",
     "src/Sts2AgentBridge/Core/Public/PublicMapAction.cs": "f3643739277382046ab79f001b985e4748344515ee3ddf707b71d3c3814bb712",
     "src/Sts2AgentBridge/Core/Public/PublicMapDecision.cs": "d16ecab222ea9d54a2bc2f740f88add2459334ef8b499007b1105c10214a1ccd",
     "src/Sts2AgentBridge/Core/Public/PublicRewardAction.cs": "aeb68a3bac6a2bde6f54715bb926fdef5e10a3fe1cf674b60d6b9f58419c0fdd",
-    "src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs": "b9eadf340239c63a94a93ed489da3f6d4bca4bf543e1a4598a094322b28493a9",
+    "src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs": "e21e7915b9470e8b5095b9e28121bb683e4a165fd6d94a118e92fc5849a02818",
     "src/Sts2AgentBridge/Core/Public/PublicRoomAction.cs": "d217adb3df278a420f13439f1126dc9cf27504665ef621cc8a426b6fea710022",
     "src/Sts2AgentBridge/Core/Public/PublicRoomDecision.cs": "1e9392687bd1f826ecf32725ad18a578988d03339664ce892adb2c15155c11b3",
     "src/Sts2AgentBridge/Core/Public/PublicScreenModel.cs": "37c22bb65f1dfcffd1853bc7bb141f3dc214053fd3fe387e1082fbcd4905c23a",
@@ -688,7 +709,7 @@
     "tests/maintenance/test_check_runner.py": "d64fab808c592c5ac132f811f2106b840032303ab86ad2bf51b0d7c26459bf8c",
     "tests/maintenance/test_release_support.py": "078d36636597363912f0bc479a797e926b9eb30bd691294021bf8666de7adf5b",
     "tools/apply_map_live.py": "6b375e6ce767c5d835141a37f10b3fe9622b7dfc204b1387eb89c0fbbdf61da5",
-    "tools/apply_reward_live.py": "f8dd58420efcb9de8827c895aaf28daacce06da90550cd1ca415a94434f99859",
+    "tools/apply_reward_live.py": "6dc18eec8f99c3abd1cf0329c1e8feb8978e4e3772741870bc3a27e90a3bb230",
     "tools/apply_reward_live_fixtures.py": "74274da6cf9c0e1f299db5ff2bf40ad60076bfaf229239bd228a013ba337ce86",
     "tools/decision_providers.py": "3835f63c8014e78cd9aa104a725e89f8216c384cc505f3158ba5e53715ce4058",
     "tools/probe_live.py": "55567537ededb9d34b1a1ab3250259fce42d212dfc8935731cf48afc71f81312",
@@ -698,12 +719,12 @@
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      1073334,
-      "486857fa5fb831722c01eff993b6e7e4307b5144f5648899145c83d2ca91ee5a"
+      1224886,
+      "02eecb65ca5dd2a788b5700f97c3eef0dad3bf357ef8dae0c113e91cef953546"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      1072640,
-      "60dd3aad7a9a331cc1955ef84b6006d17ca77bed435f6fc51c36ca6eb614948d"
+      1224192,
+      "f3a9b522b2af36c91451b6befc5436fc4be08d60eb171012a4293671b26d30a0"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -711,8 +732,8 @@
     ]
   },
   "production": {
-    "bytes": 1072640,
-    "sha256": "60dd3aad7a9a331cc1955ef84b6006d17ca77bed435f6fc51c36ca6eb614948d"
+    "bytes": 1224192,
+    "sha256": "f3a9b522b2af36c91451b6befc5436fc4be08d60eb171012a4293671b26d30a0"
   },
   "references": {
     "0Harmony.dll": [
@@ -730,7 +751,7 @@
   },
   "schema_version": 1,
   "sdk": "9.0.303",
-  "source_inventory_sha256": "c0a58785beb9b2459eb815cacb0e856af36a03109fa253c733e2e5ce0b81ef30",
+  "source_inventory_sha256": "9a780e3fc6b00bc8d982ba3897fab5bc54a69812c89f41e5c262fc776913b916",
   "status": "passed",
   "suite": "release",
   "target": "bridge"

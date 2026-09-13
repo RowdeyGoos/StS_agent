@@ -17,6 +17,7 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Combat bridge selectors and host | [Combat choices](COMBAT_CHOICES.md) |
 | Generic event architecture and coverage | [Generic events](GENERIC_EVENTS.md), [coverage](EVENT_COVERAGE.md), [all-event research map](EVENT_INTERACTION_MAP.md) |
 | Reduced headless actor and datasets | [Headless actor](HEADLESS_ACTOR.md) |
+| Headless assessment and full-game implementation tasks | [Headless full-game backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Combat simulator | [Project context](PROJECT_CONTEXT.md) |
 | Training, profiling and evaluation | [Experiment workflows](EXPERIMENT_WORKFLOWS.md), [benchmarks](BENCHMARKS.md), [benchmark suite](BENCHMARK_SUITE.md) |
 | Full-game scope and research destination | [Target](TARGET.md), relevant sections of [long-term architecture](LONG_TERM_ARCHITECTURE_ROADMAP.md) |

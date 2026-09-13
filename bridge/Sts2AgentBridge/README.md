@@ -23,10 +23,10 @@ Read [current status](../../docs/STATUS.md) for evidence and
 
 All routes use one authenticated loopback listener at `127.0.0.1:43117` and one
 owner-frame queue. Native feature sessions are created only when their route is
-requested. Generic events prepare their 31 observational hooks across successive
+requested. Generic events prepare their 34 observational hooks across successive
 reads, one target per read. Preparation returns the existing waiting response;
 no option is published or armed until installation finishes. The session allows
-at most 32 preparation reads, preserves exclusive partial ownership and checks
+at most 35 preparation reads, preserves exclusive partial ownership and checks
 for foreign patches before every step. Partial installation is cleaned up by the
 same module owner. The 500 ms frame-result deadline is unchanged. The current session owns its parent and child operations until the
 native result reconciles and disposal succeeds; another capability receives
@@ -61,6 +61,14 @@ Process-wide limits are
 16,384 reads, 512 action reservations and 64 feature sessions, with the existing
 stricter limits inside each module.
 
+In particular, the persistent core reward reader permits **three terminal reward
+screens per game process**, with 17 accepted actions per screen and 51 total.
+Starting another client invocation does not reset this counter. A fourth screen
+currently returns the generic `unsupported_reward` before offer inspection.
+Budget these screens when combining live tests; use a fresh game process for the
+next batch. Event-owned resume-item children use a separate path and do not consume
+this core counter.
+
 A core `stale_decision` rejection with `mutation_state: none` permits a fresh
 observation: native dispatch did not occur. Once its response is fully sent, its
 reservation is released; a fresh selection still revalidates native legality and
@@ -87,6 +95,16 @@ the native Leave/map path. Custom providers receive `crystal_sphere` child views
 See the [sphere contract](../../docs/GENERIC_EVENTS.md#implemented-offline-crystal-sphere)
 for the public projection and limits. The September 12 Uncover Future/gold/map case passed live, including exact
 completed-overlay cleanup; other branches retain offline coverage.
+
+The current implementation batch adds `shop_v6` restock/replacement and native
+shop pickup selection (first original deck cards up to the native maximum), plus
+`item_policy_v1` for full-inventory event/mixed/resumed rewards. Use
+`--shop-potion-policy replace-first` or `--event-potion-policy replace-first` to
+replace original inventory potions; new pickups remain protected. Defaults skip
+potions that do not fit. The Architect task chain requires a verified `run_won`, but its live admission
+currently stops before dispatch with `unsupported_state`; the initial
+Fake Merchant screen advertises an explicit Foul Potion fight choice when legal.
+These changes passed the combined validation gate. Seven representative shop and full-belt event cases passed live; remaining coverage is tracked in current status.
 
 ## Development checks
 
@@ -218,6 +236,75 @@ receipt reports acceptance, not completion; reconcile through the corresponding
 decision route. Event choices use the replaceable first-legal host provider.
 The client verifies release and owned installation before credential access.
 
+When an authenticated read returns a recognized runtime error, the final result
+also retains `read_diagnostic`: its fixed failure code and bounded initialization
+stage timings. The original host outcome and action counts remain intact. Unknown
+fields, free-form error text and raw response bodies are not retained. This report
+does not authorize a retry or change the runtime's stop/cleanup behavior.
+
+Use `--capability shop` with the ordinary merchant inventory open. The default
+buys the first eligible affordable card once, then closes the inventory and leaves.
+`--shop-max-purchases N` permits zero through eight total purchases in one visit;
+zero leaves without buying. `--shop-gold-reserve G` keeps at least G gold after
+each purchase (default zero). `--shop-purchase-policy` accepts `cards` (default),
+`potions`, `cards-and-potions`, `relics` or `all`. Selection follows slot order
+among eligible offers. For example, `--capability shop --shop-purchase-policy all
+--shop-max-purchases 5 --shop-gold-reserve 75` buys up to five supported items
+while retaining 75 gold, then closes and leaves.
+
+Use `--shop-removal-policy first` to remove the first eligible card in deck order
+before buying. The default is `skip`, including with purchase policy `all`.
+Removal shares the total purchase limit and gold reserve: with the default limit
+of one, `first` removes one card and leaves. For removal plus purchases, raise
+`--shop-max-purchases`. The wire action `remove:<deck-slot>` precommits to an exact
+public candidate; the bridge opens the native service, selects that model and
+confirms its exact preview. Grid order may differ from deck order. This is a
+single-player flow supporting one through 64 eligible allocated cards.
+
+Removal verifies the exact price debit, selected-card deletion, unchanged
+survivors and other inventory, removal-use counter increment, exhausted service,
+completed native wrapper/callback and closed selector. Cancellation, changed
+foreground/ownership or uncertain completion stops the host without retrying.
+Pending native work cannot be reported as successful cleanup. Exact removal,
+separate inventory close/Leave and actionable map return passed live; see
+[current status](../../docs/STATUS.md).
+
+Relic purchases support models inheriting the pinned base no-op `AfterObtained`
+callback (for example Anchor and Bag of Preparation), plus the exact Potion Belt
++2 empty-slot effect. Existing relics retain their order, identity and keys; the
+exact purchased model must be appended and owned by the local player. Pending
+reconciliation follows native payment, relic insertion, capacity effect and
+completion order. Relics already owned, or gains beyond eight potion slots, are
+ineligible. Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp
+also support their exact native pickup selectors for decks of 1–64 cards. The
+policy selects eligible originals in deck order up to the native maximum, verifies
+the exact preview and waits for the native clone/enchantment effect. Other pickup
+callbacks remain unavailable until a concrete native caller is supported.
+
+Potion purchases require a free slot and verify exact first-empty insertion,
+local ownership and unchanged other inventory. Full inventories leave potion
+offers unpurchased while other eligible purchases can continue. Opt into
+`--shop-potion-policy replace-first` to discard an eligible original potion before
+buying; newly acquired potions are protected. Each discard has its own receipt,
+native execution guard and inventory reconciliation. Under `all`, a
+supported Potion Belt can make space for subsequent potions. Each purchase
+verifies the displayed/native price, exact debit, cleared stock or callback-certified restock, and callback
+disposal before the next decision. Existing deck, relics and potion slots remain
+checked through close and map return, except the selected purchase's exact effect.
+
+The room routes remain unchanged, with shop body version `shop_v6` and event body
+version `event_v1`. Shop player observations include ordered public `potion_slots`
+keys/nulls and `relics` keys; offers include `potion_capacity_gain` (zero or two).
+The observation also includes `removal_candidates` with original deck slots, keys
+and upgrade levels. All are bound into the decision ID. Eight purchases, up to eight original-potion discards, inventory close and native
+Leave consume at most eighteen action reservations. `prior_results` carries the latest
+reconciliation, while the controller retains all attempted/accepted/reconciled
+counts, including on failure. A restocked entry needs its exact fresh model, key
+and price from the native completion callback before it can be purchased again.
+Mixed ordinary-shop card/potion purchases, exact removal and restocked potion
+replacement passed representative live validation through map return. Relic
+capacity and pickup-selector purchases still need live coverage. This policy does not evaluate strategic item value.
+
 Use `--capability combat` for bounded combat with nested discard/exhaust choices,
 or `combat-choice` to resolve one such selector. `--choice-policy minimum` confirms
 as soon as the native control permits it; the default `first-select` fills the
@@ -242,6 +329,13 @@ Reward bounds are 45 seconds, 512 reads, 17 accepted/25 attempted actions and ei
 known no-mutation stale rejections. Existing combat and map bounds also apply.
 Both reward policies have shared-socket coverage and completed live from combat
 through verified reward effects to an actionable map in that batch.
+
+Combat decision IDs bind the public state to the exact native combat instance.
+Identical openings in consecutive combats therefore have different opaque IDs;
+repeated reads, waiting periods and event handoff notifications within the same
+combat keep the same identity. Native and transport action reservations remain
+intact, so old or uncertain actions cannot be replayed. The wire ID remains a
+64-character lowercase hex string; clients echo it without computing it.
 
 The shared client spaces exchanges by at least 60 ms, below the listener's
 20-per-second authenticated allowance. Pacing consumes the existing exchange
@@ -288,10 +382,12 @@ button; both card policies do this and record `rewards.claimed_special_cards`.
 The same controller collects potions/relics with `collect:<slot>` and records
 verified pickups in `rewards.collected_items`. Repeated rewards retain distinct
 session identities even when visible slots compact. Item sessions use ready schema
-5 with `item_key`, `potion_capacity_gain` and public potion slots; special-card sessions use schema 2. Ordinary sessions
+5 for capacity rewards or schema6 for Fake Lee’s Waffle healing, with `item_key`,
+`potion_capacity_gain`, public potion slots and schema6’s `heal_amount`; special-card sessions use schema 2. Ordinary sessions
 and all waiting/completion/receipt payloads retain schema 1. Full potion inventories
-stop with `potion_inventory_full` by default. Resume-time card rewards, nested pickup selectors and relic effects beyond the known Potion Belt capacity
-gain remain unsupported. See the [item reward contract](../../docs/GENERIC_EVENTS.md#extra-potionrelic-rewards-and-mixed-collection).
+stop with `potion_inventory_full` by default. Resume-time card rewards and nested pickup selectors remain unsupported. Terminal
+Fake Lee’s Waffle verifies exact capped ten-percent healing; broader relic pickup
+effects remain unsupported. See the [item reward contract](../../docs/GENERIC_EVENTS.md#extra-potionrelic-rewards-and-mixed-collection).
 
 For terminal rewards, add `--potion-policy skip-full` to collect potions that fit
 and leave the rest while completing other rewards. Use `skip-all` to leave every

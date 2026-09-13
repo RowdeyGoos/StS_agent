@@ -323,7 +323,8 @@ public static class CanonicalProbeEncoder
         builder.Append("{\"schema_version\":");
         bool items = snapshot.PotionSlots is not null || snapshot.ItemRewards || System.Linq.Enumerable.Any(snapshot.Rewards, r => r.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic);
         if(snapshot.CapacityRewards&&snapshot.PotionSlots is null)throw new ArgumentException("Capacity schema needs potion slots.",nameof(snapshot));
-        builder.Append(snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
+        if(snapshot.HealingRewards&&!snapshot.CapacityRewards)throw new ArgumentException("Healing schema needs capacity fields.",nameof(snapshot));
+        builder.Append(snapshot.HealingRewards ? "6" : snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
         builder.Append(",\"status\":\"ready\",\"decision_kind\":\"reward\",\"actionable\":true,\"decision_id\":\"");
         builder.Append(snapshot.DecisionId);
         builder.Append("\",\"decision_revision\":");
@@ -409,8 +410,14 @@ public static class CanonicalProbeEncoder
                 builder.Append(",\"item_key\":");
                 if(reward.ItemKey is null)builder.Append("null");else AppendJsonString(builder,reward.ItemKey);
             }
+            if(reward.HealAmount<0 || reward.HealAmount!=0&&!snapshot.HealingRewards || snapshot.HealingRewards&&
+                reward.HealAmount!=(reward.Kind==PublicRewardKind.Relic&&reward.ItemKey=="FAKE_LEES_WAFFLE"?snapshot.Player.MaxHp/10:0))
+                throw new ArgumentException("Unsupported reward healing effect.",nameof(snapshot));
             if(snapshot.CapacityRewards) {
                 builder.Append(",\"potion_capacity_gain\":");AppendNonNegative(builder,reward.PotionCapacityGain);
+            }
+            if(snapshot.HealingRewards) {
+                builder.Append(",\"heal_amount\":");AppendNonNegative(builder,reward.HealAmount);
             }
             builder.Append('}');
         }

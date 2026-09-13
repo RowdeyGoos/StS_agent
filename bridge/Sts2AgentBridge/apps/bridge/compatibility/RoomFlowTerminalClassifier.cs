@@ -56,7 +56,7 @@ internal static class RoomFlowTerminalClassifier
         string flow = selection == RoomFlowSelection.Shop ? "shop" : "event";
         if (p.Count < 7 || !Number(p[0], "schema_version", 1) ||
             !Text(p[1], "protocol", "room_flows_v1") ||
-            !Text(p[2], "version", flow + "_v1") ||
+            !Text(p[2], "version", flow == "shop" ? "shop_v6" : flow + "_v1") ||
             !Text(p[3], "flow_kind", flow) || !Text(p[4], "session_nonce", nonce) ||
             !Number(p[5], "parent_ordinal", 1) || p[6].Name != "status" ||
             p[6].Value.ValueKind != JsonValueKind.String)
@@ -79,7 +79,7 @@ internal static class RoomFlowTerminalClassifier
             "rejected" or "uncertain" => 7,
             "error" => 8,
             "resolved" when selection == RoomFlowSelection.Event => 10,
-            "ready" or "waiting" or "complete" when selection == RoomFlowSelection.Shop => 13,
+            "ready" or "waiting" or "complete" when selection == RoomFlowSelection.Shop => 14,
             "ready" or "waiting" or "item_child" when selection == RoomFlowSelection.Event => 11,
             _ => -1,
         };
@@ -87,7 +87,7 @@ internal static class RoomFlowTerminalClassifier
         {
             bool fixedFailure = p.Count == 7;
             bool observation = selection == RoomFlowSelection.Shop
-                ? p.Count == 13 && ParentTailNames(p, selection, status)
+                ? p.Count == 14 && ParentTailNames(p, selection, status)
                 : p.Count == 11 && ParentTailNames(p, selection, status);
             bool valid = route == RoomFlowTransportRoute.ParentGet ? observation : fixedFailure;
             return valid
@@ -112,7 +112,7 @@ internal static class RoomFlowTerminalClassifier
         if (status is "rejected" or "uncertain") return p.Count == 7;
         if (status == "resolved") return Names(p, 7, "decision_id", "action_id", "result");
         return selection == RoomFlowSelection.Shop
-            ? Names(p, 7, "phase", "decision_id", "player", "offers", "legal_actions", "prior_results")
+            ? Names(p, 7, "phase", "decision_id", "player", "offers", "removal_candidates", "legal_actions", "prior_results")
             : Names(p, 7, "phase", "decision_id", "candidates", "legal_actions");
     }
 

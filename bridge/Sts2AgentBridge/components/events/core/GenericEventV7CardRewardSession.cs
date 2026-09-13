@@ -15,11 +15,13 @@ public interface IGenericEventV7RewardChildSession : IGenericEventV7ChildSession
     GenericEventV7RewardRead Read();
     GenericEventV7RewardReceipt Apply(string? decision,string? action);
 }
+public sealed record GenericEventV7ItemPolicyOffer(int Index,string Kind,string Key,int CapacityGain,bool Settled);
+public sealed record GenericEventV7ItemPolicyView(IReadOnlyList<GenericEventV7ItemPolicyOffer> Offers,IReadOnlyList<string?> PotionSlots,bool CanSkip);
 public sealed record GenericEventV7RewardRead(string SessionNonce,string Status,string Phase,string DecisionId,
     IReadOnlyList<GenericEventV7RewardCard> Cards,bool CanSkip,IReadOnlyList<string> LegalActions,
     IReadOnlyList<GenericEventV7PriorResult> PriorResults,int? SelectedSlot,
     int OfferCount=1,int OfferIndex=0,IReadOnlyList<GenericEventV7RewardSettlement>? Settled=null,
-    IReadOnlyList<string>? OfferKinds=null,Sts2AgentBridge.Successors.ItemV1.ItemV1Observation? Item=null,IReadOnlyList<GenericEventV7Offer>? Offers=null,IReadOnlyList<GenericEventV7RewardCard>? AdditionalCards=null,GenericEventV7SphereView? Sphere=null);
+    IReadOnlyList<string>? OfferKinds=null,Sts2AgentBridge.Successors.ItemV1.ItemV1Observation? Item=null,IReadOnlyList<GenericEventV7Offer>? Offers=null,IReadOnlyList<GenericEventV7RewardCard>? AdditionalCards=null,GenericEventV7SphereView? Sphere=null,GenericEventV7ItemPolicyView? ItemPolicy=null);
 public sealed record GenericEventV7SphereView(int Divinations,string Tool,IReadOnlyList<bool> Hidden,IReadOnlyList<GenericEventV7SphereReward> Rewards);
 public sealed record GenericEventV7SphereReward(int Slot,string Kind,string Key,int Amount,IReadOnlyList<GenericEventV7RewardCard> Cards);
 public sealed record GenericEventV7RewardReceipt(string SessionNonce,string DecisionId,string ActionId,string Outcome);

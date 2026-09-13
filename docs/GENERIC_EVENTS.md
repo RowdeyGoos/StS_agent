@@ -870,9 +870,10 @@ the latter retains combat, rewards and map results even when a later stage fails
 Defeat does not start rewards. Reward coverage includes gold, ordinary card choices, direct special-card
 grants and exact potion/relic collection; other reward surfaces stop with the preceding evidence intact.
 
-This feature is **unreleased and not live-demonstrated**. The resuming path below
-adds a separate callback witness. Resuming entry with extra rewards and arbitrary
-embedded combat branches remain unsupported.
+This feature is released with live Dense Vegetation, Lantern Key, Punch Off and
+Fake Merchant combat/reward/map results. The resuming path below adds a separate
+callback witness. Resuming entry with extra rewards and arbitrary embedded combat
+branches remain unsupported. See [current status](STATUS.md) for exact limits.
 
 ### Extra special-card reward
 
@@ -911,8 +912,9 @@ receipts are never retried. The host reports verified grants separately in
 
 Combat and reward stages establish their own native identities. This does not add
 an independent proof of historical event provenance across the handoff, certify
-unrelated automatic effects, or establish full-run play. The pending live case is
-The Lantern Key's Fight page through victory, special-card collection and map.
+unrelated automatic effects, or establish full-run play. The Lantern Key Fight
+through victory, exact special-card collection and map passed live; see
+[current status](STATUS.md).
 
 ### Extra potion/relic rewards and mixed collection
 
@@ -1000,6 +1002,34 @@ collected before the belt. Custom event and resume-time item rewards use the
 above. Nested pickup selectors remain unsupported. Evidence is static inspection
 and offline fixtures, not live gameplay.
 
+### Terminal Fake Lee’s Waffle healing pickup
+
+The terminal adapter recognizes exact native `FakeLeesWaffle`, key
+`FAKE_LEES_WAFFLE`, with `Heal.BaseValue` equal to 10. Pinned static IL establishes
+healing of `floor(max_hp / 10)`, capped at maximum HP, with no maximum-HP increase.
+The reader verifies that exact health result plus unchanged gold, maximum HP,
+deck models/upgrades/enchantments, surviving relics and potion slots. A same-key
+model of another type or another Heal value cannot grant healing permission.
+Other health changes remain unsupported.
+
+A session containing this model uses **ready schema 6** throughout parent and card
+child decisions. Every row appends `heal_amount` after schema 5’s
+`potion_capacity_gain`: `floor(max_hp / 10)` for this relic, zero for other rows.
+The nominal amount remains stable even at full health; reconciliation caps the
+actual gain. Decision identity uses `reward_v6` and binds this field. The client
+validates the declaration and exact resulting player state. Older ready schemas
+and schema 1 waiting/completion/receipt payloads retain their meanings.
+
+The native terminal screen frees a collected reward button and fades its empty
+panel while retaining the parent overlay and Proceed. Once the retained reward
+reports successful selection, the reader verifies its exact claimed model and
+effects without dereferencing the freed button. Before completion, the original
+live button remains required. Parent overlay ownership and no-retry rules remain
+unchanged. This is a targeted terminal correction; it does not certify other
+healing relics, event/resume pickup effects or Merchant reward screens exceeding
+the eight-entry projection limit. Current validation and live acceptance are recorded in
+[current status](STATUS.md).
+
 ### Terminal potion reward policies
 
 The shared client accepts `--potion-policy stop-on-full` (default), `skip-full`,
@@ -1058,11 +1088,12 @@ Reconciliation requires exact removal, the native removed flag, successful compl
 of the same action task and no action exception; unexpected effects or nested screens
 stop without retry. Cleanup with an unresolved discard fails explicitly.
 Static inspection of the pinned game establishes this queue path; fixtures establish
-the adapter and wire checks. Neither is a live demonstration of replacement.
+the adapter and wire checks. Terminal replacement and skip policies also have
+representative live results, including skip-all with a verified free slot.
 
-This is offline coverage. The policies do not apply to custom event rewards or
-resume-time item children, which retain their capacity checks. Selectors opened by
-pickup effects remain unsupported.
+These terminal policies are separate from the event/resume `item_policy_v1`
+policies described below. Nested selectors opened by these reward pickups remain
+unsupported. See [current status](STATUS.md) for the demonstrated cases.
 
 ## Implemented offline: event combat resumption
 
@@ -1072,8 +1103,9 @@ and the concrete `EventModel.Resume(AbstractRoom): Task` declaration before the
 fight can end. The initial event session resolves to `combat_resume_handoff`,
 with matching history and a retained session nonce, rather than claiming map
 return or victory. **Battleworn Dummy Setting2** and **training time expiry** are
-the representative pending live cases. Setting2’s automatic upgrades remain
-unverified effects.
+representative live-tested cases. Setting2 victory subsequently passed with two
+automatic upgrades observed in the native deck; those parent effects remain
+unverified in the bridge result and do not exercise a multi-card selector.
 
 The original event module remains the cleanup owner during combat. After the
 owned choice task and exact combat entry reconcile, ordinary event hooks are
@@ -1152,12 +1184,12 @@ collected public item keys, including partial progress on failure. Every retaine
 history row is type-validated before another input. Lost or malformed receipts are
 never retried.
 
-This batch is **released and not live-demonstrated**. Setting1's potion offer is
-the source-backed live candidate; single relics and ordered item sets extend the
-same mechanism and currently have fixture evidence only. A Setting3 relic that
-opens a selector remains unsupported. Passive callback completion does not certify
-its automatic rewards/upgrades. Extra potion/relic combat rewards are implemented above; recursive combat/resume
-cycles and terminal run progression remain separate work.
+Setting1’s potion collection, full-belt skip and original-potion replacement passed
+live through resumed Proceed/map. Single relics and ordered item sets retain
+fixture evidence only. A Setting3 relic that opens a selector remains unsupported.
+Passive callback completion does not certify its automatic rewards/upgrades.
+Extra potion/relic combat rewards are described above; terminal run progression
+and its remaining live admission failure are described below.
 
 ## Implemented offline: Fake Merchant custom screen
 
@@ -1196,10 +1228,9 @@ binding inspection used the same pinned game assembly
 `e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
 It establishes the intended native path, not live execution evidence.
 
-This batch is **released and not live-demonstrated**. Already-open entry and
-Fake Merchant's `FoulPotionThrown` combat branch are outside this path. Crystal
-Sphere is implemented below. Nested
-pickup selectors and terminal run progression remain separate work. See
+The inventory path has representative live evidence. Already-open entry remains
+unsupported. The initial Foul Potion combat choice is a separate live-tested
+addition described below. Crystal Sphere is also implemented below. See
 [current validation](STATUS.md) for offline test and build results.
 
 ## Implemented offline: Crystal Sphere
@@ -1291,7 +1322,10 @@ selects termination. Use `--capability events` for this terminal path rather tha
 stage whose acceptance condition requires a map. Native fixtures and C#/Python
 integration cover cancellation through subsequent Accept/Proceed/map, immediate
 and delayed confirmation, stale controls, task failures, changed completion,
-lost receipts and malformed outcomes. Live coverage remains open.
+lost receipts and malformed outcomes. Both popup paths passed live on September
+13: Cancel continued through card rewards and verified map/next-room entry;
+Confirm reconciled `run_abandoned`, with native Defeat and HP zero independently
+observed. See the [multi-case evidence](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md).
 
 Source inspection used pinned `sts2.dll` SHA-256
 `e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
@@ -1328,3 +1362,46 @@ For semantic detail use [G7](archive/phase-1/PHASE_1_GENERIC_EVENT_V7_CONTRACT.m
 [v10 input experiment](archive/phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md) and the
 [coverage matrix](EVENT_COVERAGE.md).
 For preparation, evidence reuse and cleanup use the [live guide](LIVE_DEVELOPMENT.md).
+
+
+## Full-inventory reward policies and native terminal progression
+
+`item_policy_v1` owns an event reward screen when its items cannot all be collected
+in the original order. It exposes stable indexed offers, explicit card menus,
+public potion-slot keys, legal actions and correlated history. Actions are
+`collect:N`, `discard:N`, `choose:N`, `skip_card` and `skip_remaining`. Card collection
+opens the native menu; choosing or skipping it is a separate action. Native Proceed
+dismisses unclaimed rewards only when that screen permits skipping. Collection,
+original-potion discard and final dismissal retain their exact native tasks;
+settled claimed models, card effects and unrelated inventory remain bound until
+parent completion. New potions cannot be discarded by this policy. The maximum is
+25 child actions across at most eight offers and eight original potion slots.
+
+The event host’s `--event-potion-policy` supports `skip-full` (default), `skip-all`,
+`replace-first` and `stop-on-full`. Capacity grants are preferred before replacement.
+The same policy applies to owned resume-time item screens. Existing fitting item
+sets retain their earlier contracts. The pinned source has no concrete resume-time
+card/selector caller; this implementation makes no broader resume claim.
+
+At Fake Merchant’s untouched initial closed inventory, the first legal owned Foul Potion
+adds `FAKE_MERCHANT.FOUL_POTION.<slot>`. It enqueues native potion use once, guards
+its exact slot at execution, retains `FoulPotionThrown`, and binds the resulting
+combat plus seven exact extra relic rewards. It does not offer this choice after
+opening or shopping. Standard combat/reward/map orchestration continues from the
+verified handoff; the potion action itself is not victory evidence.
+
+The Architect’s terminal choice observes the native readiness vote, exact queued
+vote action, `EnterNextAct` and `WinRun` tasks. Only their successful completion,
+exact retained ownership/inventory and native win effect produce `run_won`.
+Pending votes or win tasks remain waiting; foreign actions, altered state, failed
+tasks and unresolved cleanup stop the host. No map read is required after `run_won`.
+
+Trial abandonment Cancel/Confirm and Fake Merchant initial Foul Potion entry plus
+combat victory passed live. The corrected assisted seven-relic follow-through also
+passed, including Waffle healing33→41HP at max80, native Proceed, actionable map and
+next room. Waffle was sixth; Strike Dummy was the last pickup. Architect win remains
+open: revised native final-act setup reached Architect, but its initial bridge
+read returned `unsupported_state` with zero attempted actions. The exact admission
+predicate remains unproven. Direct `event THE_ARCHITECT` remains unavailable.
+[Current status](STATUS.md) records these narrow results and the accepted build;
+this does not establish automatic handling of the original ten-entry reward list.

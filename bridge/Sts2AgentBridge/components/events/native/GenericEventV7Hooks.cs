@@ -94,7 +94,8 @@ public sealed class GenericEventV7Hooks : IDisposable
             typeof(MegaCrit.Sts2.Core.Nodes.Events.Custom.CrystalSphere.NCrystalSphereScreen).GetMethod("ShowScreen")!,
             typeof(CardPileCmd).GetMethod("AddCursesToDeck")!,
             typeof(NAbandonRunConfirmPopup).GetMethod("Create",new[]{typeof(MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NMainMenu)})!,
-            typeof(RunManager).GetMethod("AbandonInternal",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null)!
+            typeof(RunManager).GetMethod("AbandonInternal",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null)!,
+            typeof(MegaCrit.Sts2.Core.Multiplayer.Game.ActChangeSynchronizer).GetMethod("SetLocalPlayerReady",Type.EmptyTypes)!
         };
         _readStage?.Invoke(7);
         if (targets.Any(t => t is null || Harmony.GetPatchInfo(t)?.Owners.Count > 0))
@@ -122,7 +123,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             targets[21].IsStatic||!targets[21].IsPublic||targets[21].ReturnType!=typeof(Task<int?>))throw new InvalidOperationException("Card reward hook signature mismatch.");
         if(!targets[22].IsStatic||!targets[22].IsPublic||targets[22].IsGenericMethod||targets[22].ReturnType!=typeof(Task<IEnumerable<CardModel>>))
             throw new InvalidOperationException("Generic deck hook signature mismatch.");
-        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen","ResultsScreen","CombatEntry","SphereScreen","SphereCurse","AbandonPopup","AbandonTask"};
+        string[] names = {"Chosen","Upgrade","Screen","Removal","RemovalScreen","Reward","RewardScreen","MultiClick","Clone","TransformRequest","TransformScreen","TransformCommand","TransformChoice","TransformModify","TransformInsert","ItemOffer","ItemScreen","ItemCollection","EnchantRequest","EnchantScreen","CardMenu","CardMenuTask","GenericDeck","OfferRequest","OfferScreen","BundleRequest","BundleScreen","ResultsScreen","CombatEntry","SphereScreen","SphereCurse","AbandonPopup","AbandonTask","ActReady"};
         _targets=targets;_names=names;_afterPatch=afterPatch;
         _installed=this;
         if(!incremental)InstallNext(targets.Length);
@@ -378,6 +379,12 @@ public sealed class GenericEventV7Hooks : IDisposable
         internal PopupScope(GenericEventV7AbandonPopup popup)=>_popup=popup;
         public void Dispose(){if(!ReferenceEquals(PopupDispatch.Value,_popup))_popup.Binding.Failed=true;PopupDispatch.Value=null;}
     }
+    private static void ActReadyPrefix(object __instance,out State __state) {
+        var b=Parent.Value;__state=new State{Binding=b};if(b is null)return;
+        try{if(!Owns(b)||b.Terminal is not null)throw new InvalidOperationException("Terminal owner changed.");b.Terminal=new(b,__instance);b.RequestSeen=true;}catch{b.Failed=true;throw;}
+    }
+    private static void ActReadyPostfix(State? __state)=>__state?.Binding?.Terminal?.ReadyReturned();
+    private static void ActReadyFinalizer(Exception? __exception,State? __state){if(__exception is not null&&__state?.Binding is {} b){b.Terminal?.Abort();b.Failed=true;}}
     private static void AbandonPopupPrefix(MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NMainMenu? __0,out State __state) {
         var b=Parent.Value;__state=new State{Binding=b};if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         try{if(__0 is not null||!Owns(b)||b.RequestSeen||!b.ContextValid(false))throw new InvalidOperationException();b.Abandon=new(b);b.RequestSeen=true;}

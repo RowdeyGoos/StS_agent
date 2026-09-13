@@ -18,7 +18,7 @@ internal static class RoomFlowWireCodec
         {
             w.WriteStartObject();
             w.WriteNumber("schema_version", 1); S(w,"protocol","room_flows_v1");
-            S(w,"version",flow+"_v1"); S(w,"flow_kind",flow); S(w,"session_nonce",nonce);
+            S(w,"version",flow=="shop"?ShopV1Constants.Version:flow+"_v1"); S(w,"flow_kind",flow); S(w,"session_nonce",nonce);
             w.WriteNumber("parent_ordinal",1);
             switch (value)
             {
@@ -30,15 +30,15 @@ internal static class RoomFlowWireCodec
                     S(w,"status",failure.Outcome); break;
                 case ShopV1Observation shop:
                     S(w,"status",shop.Status); S(w,"phase",shop.Phase); S(w,"decision_id",shop.DecisionId);
-                    w.WriteStartObject("player"); w.WriteNumber("gold",shop.Player.Gold); w.WriteNumber("deck_count",shop.Player.DeckCount); w.WriteEndObject();
+                    w.WriteStartObject("player"); w.WriteNumber("gold",shop.Player.Gold); w.WriteNumber("deck_count",shop.Player.DeckCount); w.WriteStartArray("potion_slots"); foreach (string? potion in shop.Player.PotionSlots) { if (potion is null) w.WriteNullValue(); else w.WriteStringValue(potion); } w.WriteEndArray(); w.WriteStartArray("relics"); foreach (string relic in shop.Player.Relics) w.WriteStringValue(relic); w.WriteEndArray(); w.WriteEndObject();
                     w.WriteStartArray("offers");
                     foreach (ShopV1Offer offer in shop.Offers)
                     {
                         w.WriteStartObject(); w.WriteNumber("slot",offer.Slot); S(w,"kind",offer.Kind); S(w,"key",offer.Key);
                         w.WriteNumber("displayed_price",offer.DisplayedPrice); w.WriteBoolean("affordable",offer.Affordable);
-                        w.WriteBoolean("enabled",offer.Enabled); w.WriteBoolean("supported",offer.Supported); w.WriteEndObject();
+                        w.WriteBoolean("enabled",offer.Enabled); w.WriteBoolean("supported",offer.Supported); w.WriteNumber("potion_capacity_gain",offer.PotionCapacityGain); w.WriteEndObject();
                     }
-                    w.WriteEndArray(); Actions(w,shop.LegalActions); w.WriteStartArray("prior_results");
+                    w.WriteEndArray(); w.WriteStartArray("removal_candidates"); foreach(var card in shop.RemovalCandidates) {w.WriteStartObject();w.WriteNumber("deck_slot",card.DeckSlot);S(w,"key",card.Key);w.WriteNumber("upgrade_level",card.UpgradeLevel);w.WriteEndObject();}w.WriteEndArray(); Actions(w,shop.LegalActions); w.WriteStartArray("prior_results");
                     foreach (ShopV1ReconciledAction prior in shop.PriorResults)
                     {
                         w.WriteStartObject(); S(w,"flow_kind",prior.FlowKind); S(w,"session_nonce",prior.SessionNonce);

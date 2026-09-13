@@ -4,6 +4,8 @@ using System.Linq;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Relics;
+using Sts2AgentBridge.Core.Public;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Runs;
@@ -26,6 +28,22 @@ internal sealed class PinnedPublicItemRewardClaim
         return slots.Where(p=>p is not null).All(p=>ValidKey(Key(p))) && slots.Where(p=>p is not null).Distinct(ReferenceEqualityComparer.Instance).Count()==slots.Count(p=>p is not null);
     }
     internal static int CapacityGain(Reward reward)=>Sts2AgentBridge.Items.Native.PinnedPotionCapacity.Gain(Model(reward));
+    // Pinned FakeLeesWaffle heals ten percent of max HP, truncated and capped.
+    // A public key alone cannot grant permission for a native health mutation.
+    internal static bool HealingReward(Reward reward) {
+        var model=Model(reward);
+        if(model is FakeLeesWaffle || Key(model)=="FAKE_LEES_WAFFLE") {
+            if(model?.GetType()!=typeof(FakeLeesWaffle)||Key(model)!="FAKE_LEES_WAFFLE"||
+                ((RelicModel)model).DynamicVars["Heal"].BaseValue!=10m)
+                throw new InvalidOperationException("Unsupported healing relic effect.");
+            return true;
+        }
+        return false;
+    }
+    internal static int HealingAmount(Reward reward)=>HealingReward(reward)?reward.Player.Creature.MaxHp/10:0;
+    internal int HealAmount {get;}
+    internal bool MatchesPlayer(PublicRewardPlayer before,PublicRewardPlayer after)=>
+        after==before with {Hp=(int)Math.Min((long)before.Hp+HealAmount,before.MaxHp)};
     internal int PotionCapacityGain {get;}
     internal int ResultCapacity=>_potions.Length+PotionCapacityGain;
     private int _settledCapacity;
@@ -44,7 +62,7 @@ internal sealed class PinnedPublicItemRewardClaim
         _reward=reward;_player=reward.Player;_run=_player.RunState;
         _node=NRun.Instance??throw new InvalidOperationException("Item reward run unavailable.");
         _model=Model(reward)??throw new InvalidOperationException("Item reward unpopulated.");
-        _key=Key(_model)!;PotionCapacityGain=CapacityGain(reward);
+        _key=Key(_model)!;PotionCapacityGain=CapacityGain(reward);HealAmount=HealingAmount(reward);
         if(_model is RelicModel {Owner:not null})throw new InvalidOperationException("Offered relic already owned.");
         if(!ValidKey(_key)||!Slots(_player,out _potions)||_player.Relics.Count>512||_player.Deck.Cards.Count>512)
             throw new InvalidOperationException("Item reward baseline unavailable.");
@@ -58,7 +76,7 @@ internal sealed class PinnedPublicItemRewardClaim
     internal bool HasCapacity => _model is PotionModel ? _potions.Any(p=>p is null) : ResultCapacity<=8;
     private bool Identity() => ReferenceEquals(NRun.Instance,_node)&&ReferenceEquals(RunManager.Instance?.DebugOnlyGetState(),_run)&&
         ReferenceEquals(_player.RunState,_run)&&ReferenceEquals(_reward.Player,_player)&&ReferenceEquals(Model(_reward),_model)&&Key(_model)==_key&&
-        _reward.ParentRewardSet is null&&CardSelectCmd.Selector is null&&CapacityGain(_reward)==PotionCapacityGain&&
+        _reward.ParentRewardSet is null&&CardSelectCmd.Selector is null&&CapacityGain(_reward)==PotionCapacityGain&&HealingAmount(_reward)==HealAmount&&
         (_model is not RelicModel relic||relic.Owner is null||ReferenceEquals(relic.Owner,_player));
     private object? Claimed => _reward is PotionReward p?p.ClaimedPotion:((RelicReward)_reward).ClaimedRelic;
     internal bool Valid(bool inserted, int discardedSlot = -1)

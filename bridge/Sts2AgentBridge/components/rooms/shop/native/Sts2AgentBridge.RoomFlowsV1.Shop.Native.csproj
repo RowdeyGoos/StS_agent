@@ -14,9 +14,19 @@
   </Target>
   <ItemGroup>
     <Compile Include="PinnedShopV1NativeAdapter.cs" />
+    <Compile Include="ShopPotionOwnership.cs" />
+    <Compile Include="ShopRelicRules.cs" />
+    <Compile Include="PinnedShopRemovalDispatch.cs" />
+    <Compile Include="PinnedDeckCardChoice.cs" />
+    <Compile Include="PinnedShopPickupDispatch.cs" />
+    <Compile Include="../../../cards/native/CardSelectionV1NativeRules.cs" />
+    <Compile Include="../../../items/native/PinnedPotionCapacity.cs" />
+    <Compile Include="../../../items/native/PinnedPotionDiscard.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../core/Sts2AgentBridge.RoomFlowsV1.Shop.Core.csproj" />
+    <ProjectReference Include="../../../cards/core/Sts2AgentBridge.CardSelectionV1.Core.csproj" />
+    <Reference Include="0Harmony"><HintPath>$(STS2GameDataDir)/0Harmony.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>

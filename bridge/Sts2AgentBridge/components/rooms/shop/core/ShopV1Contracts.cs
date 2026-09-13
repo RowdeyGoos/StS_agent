@@ -1,4 +1,5 @@
 using System;
+using Sts2AgentBridge.Successors.ItemV1;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Sts2AgentBridge.Successors.RoomFlowsV1;
@@ -7,25 +8,31 @@ namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop;
 
 public static class ShopV1Constants
 {
-    public const string Version = "shop_v1";
+    public const string Version = "shop_v6";
     public const string FlowKind = "shop";
     public const int MaximumOffers = RoomFlowLimits.MaximumShopOffers;
     public const int MaximumDeckCards = RoomFlowLimits.MaximumDeckCards;
     public const int MaximumPendingReads = RoomFlowLimits.MaximumPendingReads;
-    public const int MaximumReservations = 3;
+    public const int MaximumPurchases = 8;
+    public const int MaximumRelics = 128;
+    public const int MaximumReservations = MaximumPurchases + 10;
     public const int MaximumActionLength = 32;
 }
 
 public sealed class ShopV1Player
 {
-    public ShopV1Player(int gold, int deckCount)
+    public ShopV1Player(int gold, int deckCount, IReadOnlyList<string?>? potionSlots = null, IReadOnlyList<string>? relics = null)
     {
+        Relics = ShopV1SurfaceCaptureCopy.Copy(relics ?? Array.Empty<string>());
         Gold = gold;
         DeckCount = deckCount;
+        PotionSlots = ShopV1SurfaceCaptureCopy.Copy(potionSlots ?? Array.Empty<string?>());
     }
 
     public int Gold { get; }
     public int DeckCount { get; }
+    public IReadOnlyList<string?> PotionSlots { get; }
+    public IReadOnlyList<string> Relics { get; }
 }
 
 public sealed class ShopV1Offer
@@ -37,8 +44,9 @@ public sealed class ShopV1Offer
         int displayedPrice,
         bool affordable,
         bool enabled,
-        bool supported)
+        bool supported, int potionCapacityGain = 0)
     {
+        PotionCapacityGain = potionCapacityGain;
         Slot = slot;
         Kind = kind;
         Key = key;
@@ -55,6 +63,7 @@ public sealed class ShopV1Offer
     public bool Affordable { get; }
     public bool Enabled { get; }
     public bool Supported { get; }
+    public int PotionCapacityGain { get; }
 }
 
 public sealed class ShopV1ReconciledAction
@@ -97,8 +106,9 @@ public sealed class ShopV1Observation : IRoomFlowReadValue
         ShopV1Player player,
         IReadOnlyList<ShopV1Offer> offers,
         IReadOnlyList<string> legalActions,
-        ShopV1ReconciledAction? priorResult)
+        ShopV1ReconciledAction? priorResult, IReadOnlyList<ShopV1RemovalCandidate>? removalCandidates = null)
     {
+        RemovalCandidates=Copy(removalCandidates ?? Array.Empty<ShopV1RemovalCandidate>());
         Version = ShopV1Constants.Version;
         FlowKind = ShopV1Constants.FlowKind;
         SessionNonce = sessionNonce;
@@ -106,7 +116,7 @@ public sealed class ShopV1Observation : IRoomFlowReadValue
         Status = status;
         Phase = phase;
         DecisionId = decisionId;
-        Player = new ShopV1Player(player.Gold, player.DeckCount);
+        Player = new ShopV1Player(player.Gold, player.DeckCount, player.PotionSlots, player.Relics);
         _offers = Copy(offers);
         _legalActions = Copy(legalActions);
         _priorResults = priorResult is null
@@ -122,6 +132,7 @@ public sealed class ShopV1Observation : IRoomFlowReadValue
     public string Phase { get; }
     public string DecisionId { get; }
     public ShopV1Player Player { get; }
+    public IReadOnlyList<ShopV1RemovalCandidate> RemovalCandidates { get; }
     public IReadOnlyList<ShopV1Offer> Offers => _offers;
     public IReadOnlyList<string> LegalActions => _legalActions;
     public IReadOnlyList<ShopV1ReconciledAction> PriorResults => _priorResults;
@@ -174,6 +185,10 @@ public enum ShopV1ActionKind
     PurchaseCard = 1,
     CloseInventory = 2,
     Leave = 3,
+    PurchasePotion = 4,
+    PurchaseRelic = 5,
+    RemoveCard = 6,
+    DiscardPotion = 7,
 }
 
 public interface IShopV1NativeDispatch : IDisposable
@@ -182,14 +197,53 @@ public interface IShopV1NativeDispatch : IDisposable
     void Invoke();
 }
 
+// Captured once by the native successful purchase callback, after restocking.
+public sealed record ShopV1RestockWitness(object ModelIdentity, string StableKey, int Price);
+public interface IShopV1RestockDispatch : IShopV1NativeDispatch
+{
+    ShopV1RestockWitness? Restocked { get; }
+}
+
+public interface IShopV1AbortableDispatch { void Abort(); }
+
+public interface IShopV1PickupDispatch : IShopV1NativeDispatch
+{
+    bool DeckMatches(IReadOnlyList<ShopV1DeckCardBinding> deck, bool complete);
+}
+
+public interface IShopV1RemovalDispatch : IShopV1NativeDispatch
+{
+    void SelectTarget(ShopV1DeckCardBinding card);
+}
+
+public sealed class ShopV1RemovalCandidate
+{
+    public ShopV1RemovalCandidate(int deckSlot, string key, int upgradeLevel)
+    { DeckSlot=deckSlot; Key=key; UpgradeLevel=upgradeLevel; }
+    public int DeckSlot { get; }
+    public string Key { get; }
+    public int UpgradeLevel { get; }
+}
+
+public sealed class ShopV1RelicBinding
+{
+    public ShopV1RelicBinding(object modelIdentity, string stableKey)
+    { ModelIdentity = modelIdentity; StableKey = stableKey; }
+    public object ModelIdentity { get; }
+    public string StableKey { get; }
+}
+
 public sealed class ShopV1DeckCardBinding
 {
-    public ShopV1DeckCardBinding(object modelIdentity, string stableKey)
+    public ShopV1DeckCardBinding(object modelIdentity, string stableKey, int upgradeLevel = 0, bool removable = false)
     {
         ModelIdentity = modelIdentity;
         StableKey = stableKey;
+        UpgradeLevel=upgradeLevel; Removable=removable;
     }
 
+    public int UpgradeLevel { get; }
+    public bool Removable { get; }
     public object ModelIdentity { get; }
     public string StableKey { get; }
 }
@@ -229,8 +283,10 @@ public sealed class ShopV1NativeOffer
         object? offeredModelIdentity,
         object controlIdentity,
         object labelIdentity,
-        IShopV1NativeDispatch? purchaseDispatch)
+        IShopV1NativeDispatch? purchaseDispatch, int potionCapacityGain = 0, object? stockModelIdentity = null)
     {
+        StockModelIdentity=stockModelIdentity ?? offeredModelIdentity;
+        PotionCapacityGain = potionCapacityGain;
         Slot = slot;
         Kind = kind;
         StableKey = stableKey;
@@ -255,11 +311,15 @@ public sealed class ShopV1NativeOffer
     public bool Enabled { get; }
     public object SlotIdentity { get; }
     public object EntryIdentity { get; }
+    public object? StockModelIdentity {get;}
     public object? OfferedModelIdentity { get; }
     public object ControlIdentity { get; }
     public object LabelIdentity { get; }
     public IShopV1NativeDispatch? PurchaseDispatch { get; }
+    public int PotionCapacityGain { get; }
 }
+
+public sealed record ShopV1PotionDiscardBinding(int Slot, IShopV1NativeDispatch Dispatch);
 
 public sealed class ShopV1SurfaceCapture
 {
@@ -286,8 +346,12 @@ public sealed class ShopV1SurfaceCapture
         IReadOnlyList<ShopV1NativeOffer> offers,
         ShopV1NativeControl? backControl,
         ShopV1NativeControl? merchantControl,
-        ShopV1NativeControl? proceedControl)
+        ShopV1NativeControl? proceedControl,
+        IReadOnlyList<ItemV1PotionSlotBinding>? potionSlots = null,
+        IReadOnlyList<ShopV1RelicBinding>? relics = null, IReadOnlyList<ShopV1PotionDiscardBinding>? discards = null)
     {
+        Discards = Copy(discards ?? Array.Empty<ShopV1PotionDiscardBinding>());
+        Relics = ShopV1SurfaceCaptureCopy.Copy(relics ?? Array.Empty<ShopV1RelicBinding>());
         Status = status;
         RunIdentity = runIdentity;
         RoomIdentity = roomIdentity;
@@ -304,12 +368,14 @@ public sealed class ShopV1SurfaceCapture
         MapTraveling = mapTraveling;
         Gold = gold;
         _deck = Copy(deck);
+        PotionSlots = Copy(potionSlots ?? Array.Empty<ItemV1PotionSlotBinding>());
         _offers = Copy(offers);
         BackControl = backControl;
         MerchantControl = merchantControl;
         ProceedControl = proceedControl;
     }
 
+    public IReadOnlyList<ShopV1PotionDiscardBinding> Discards { get; }
     public ShopV1SurfaceStatus Status { get; }
     public object? RunIdentity { get; }
     public object? RoomIdentity { get; }
@@ -326,6 +392,8 @@ public sealed class ShopV1SurfaceCapture
     public bool MapTraveling { get; }
     public int Gold { get; }
     public IReadOnlyList<ShopV1DeckCardBinding> Deck => _deck;
+    public IReadOnlyList<ItemV1PotionSlotBinding> PotionSlots { get; }
+    public IReadOnlyList<ShopV1RelicBinding> Relics { get; }
     public IReadOnlyList<ShopV1NativeOffer> Offers => _offers;
     public ShopV1NativeControl? BackControl { get; }
     public ShopV1NativeControl? MerchantControl { get; }
@@ -368,8 +436,13 @@ public sealed class ShopV1PendingProbe
         object? targetModelIdentity,
         string targetKey,
         int displayedPrice,
-        IShopV1NativeDispatch? purchaseDispatch)
+        IShopV1NativeDispatch? purchaseDispatch,
+        IReadOnlyList<ItemV1PotionSlotBinding> beforePotions,
+        IReadOnlyList<ShopV1RelicBinding> beforeRelics, int potionCapacityGain)
     {
+        BeforeRelics = ShopV1SurfaceCaptureCopy.Copy(beforeRelics);
+        PotionCapacityGain = potionCapacityGain;
+        BeforePotions = ShopV1SurfaceCaptureCopy.Copy(beforePotions);
         Kind = kind;
         RunIdentity = runIdentity;
         RoomIdentity = roomIdentity;
@@ -401,6 +474,8 @@ public sealed class ShopV1PendingProbe
     public string ActionId { get; }
     public int BeforeGold { get; }
     public IReadOnlyList<ShopV1DeckCardBinding> BeforeDeck { get; }
+    public IReadOnlyList<ItemV1PotionSlotBinding> BeforePotions { get; }
+    public IReadOnlyList<ShopV1RelicBinding> BeforeRelics { get; }
     public int TargetSlot { get; }
     public object? TargetSlotIdentity { get; }
     public object? TargetEntryIdentity { get; }
@@ -408,6 +483,7 @@ public sealed class ShopV1PendingProbe
     public string TargetKey { get; }
     public int DisplayedPrice { get; }
     public IShopV1NativeDispatch? PurchaseDispatch { get; }
+    public int PotionCapacityGain { get; }
 }
 
 public sealed class ShopV1PendingCapture
@@ -438,8 +514,12 @@ public sealed class ShopV1PendingCapture
         object? targetEntryIdentity,
         bool targetStocked,
         object? targetModelIdentity,
-        ShopV1Completion completion)
+        ShopV1Completion completion,
+        IReadOnlyList<ItemV1PotionSlotBinding>? potionSlots = null,
+        IReadOnlyList<ShopV1RelicBinding>? relics = null)
     {
+        Relics = ShopV1SurfaceCaptureCopy.Copy(relics ?? Array.Empty<ShopV1RelicBinding>());
+        PotionSlots = ShopV1SurfaceCaptureCopy.Copy(potionSlots ?? Array.Empty<ItemV1PotionSlotBinding>());
         Status = status;
         RunIdentity = runIdentity;
         RoomIdentity = roomIdentity;
@@ -482,6 +562,8 @@ public sealed class ShopV1PendingCapture
     public bool MapTraveling { get; }
     public int Gold { get; }
     public IReadOnlyList<ShopV1DeckCardBinding> Deck => _deck;
+    public IReadOnlyList<ItemV1PotionSlotBinding> PotionSlots { get; }
+    public IReadOnlyList<ShopV1RelicBinding> Relics { get; }
     public ShopV1NativeControl? MerchantControl { get; }
     public ShopV1NativeControl? ProceedControl { get; }
     public bool TargetPresent { get; }

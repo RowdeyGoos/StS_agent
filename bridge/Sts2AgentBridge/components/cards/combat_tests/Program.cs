@@ -37,6 +37,7 @@ internal static class Program
             fixture.Service.Dispose(); return;
         }
         OptionalAndMultiple(); BindingFailures(); DispatchAndCompletionFailures();
+        CombatIdentityFixtures.Run(Check);
         Console.WriteLine("{\"status\":\"passed\",\"suite\":\"combat_choice_native\",\"checks\":" + _checks + "}");
     }
     private static void OptionalAndMultiple()

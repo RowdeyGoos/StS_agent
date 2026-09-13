@@ -56,17 +56,18 @@ def run_event_map(request, host, *, event_provider=None, clock=time.monotonic, s
                if event['status'] != 'resolved' or event.get('destination')!='map_handoff' else
                verify_map_handoff(request, clock=clock, sleep=sleep))
     return {'schema_version': 1,
-            'status': 'resolved' if handoff['status'] == 'passed' else 'failed',
+            'status': 'resolved' if handoff['status'] == 'passed' or event['status']=='resolved' and event.get('destination') in ('run_won','run_abandoned') else 'failed',
             'event': event, 'map_handoff': handoff,
-            'code': event['code'] if event['status'] != 'resolved' else (handoff['code'] if handoff['status'] != 'not_attempted' else 'event_destination_not_map')}
+            'code': event['code'] if event['status'] != 'resolved' else (None if event.get('destination') in ('run_won','run_abandoned') else handoff['code'] if handoff['status'] != 'not_attempted' else 'event_destination_not_map')}
 
 
-def event_option_policy(host, stable_id, abandon_policy="cancel"):
+def event_option_policy(host, stable_id, abandon_policy="cancel", potion_policy="skip-full"):
     """Select one explicitly requested first parent option, then use advertised actions."""
     if abandon_policy not in ("cancel", "confirm"): raise ValueError("Unknown abandon policy.")
     used = False
     def choose(view):
         nonlocal used
+        if view.kind=="item_policy":return host.item_policy_action(view.payload,potion_policy)
         if view.kind == "abandon_confirmation":
             return "confirm_abandon" if abandon_policy == "confirm" else "cancel"
         if used or stable_id is None or view.kind != 'parent': return host.first_legal(view)
@@ -79,10 +80,10 @@ def event_option_policy(host, stable_id, abandon_policy="cancel"):
 
 
 def run_resuming_event_combat(request, event, events, combat, *, event_provider=None,
-                              choice_provider=None, clock=time.monotonic, sleep=time.sleep):
+                              choice_provider=None, potion_policy="skip-full", clock=time.monotonic, sleep=time.sleep):
     """One witnessed event resume; no reward or victory assumption for training expiry."""
     fight = combat.run_combat(request, choice_provider=choice_provider or combat.first_select,
-                              event_resume_nonce=event['session_nonce'], clock=clock, sleep=sleep)
+                              event_resume_nonce=event['session_nonce'], resume_potion_policy=potion_policy, clock=clock, sleep=sleep)
     resumed = {'status': 'not_attempted', 'code': None}
     handoff = {'status': 'not_attempted', 'reads': 0, 'candidate_count': 0, 'code': None}
     code = fight['code']
@@ -101,7 +102,7 @@ def run_resuming_event_combat(request, event, events, combat, *, event_provider=
 
 
 def run_event_combat_map(request, events, combat, rewards, *, event_provider=None,
-                         choice_provider=None, reward_policy='first-card', potion_policy='stop-on-full', clock=time.monotonic, sleep=time.sleep):
+                         choice_provider=None, reward_policy='first-card', potion_policy='stop-on-full', event_potion_policy='skip-full', clock=time.monotonic, sleep=time.sleep):
     """Complete one non-resuming event combat without treating entry as victory."""
     event=events.run_event(request,provider=event_provider or events.first_legal,clock=clock,sleep=sleep)
     flow={'status':'not_attempted','code':None}
@@ -110,7 +111,7 @@ def run_event_combat_map(request, events, combat, rewards, *, event_provider=Non
                             reward_policy=reward_policy,potion_policy=potion_policy,clock=clock,sleep=sleep)
     elif event['status']=='resolved' and event.get('destination')=='combat_resume_handoff':
         flow=run_resuming_event_combat(request,event,events,combat,event_provider=event_provider,
-            choice_provider=choice_provider,clock=clock,sleep=sleep)
+            choice_provider=choice_provider,potion_policy=event_potion_policy,clock=clock,sleep=sleep)
     code=event.get('code') if event['status']!='resolved' else (flow.get('code') if flow['status']!='not_attempted' else 'event_combat_not_entered')
     return {'schema_version':1,'status':'resolved' if flow['status']=='resolved' else 'failed',
             'code':code,'event':event,'combat_flow':flow}
@@ -161,12 +162,25 @@ def load(name, relative):
     return module
 
 
+def retain_read_diagnostic(result, client):
+    """Keep original stage/counter evidence alongside a bounded runtime failure."""
+    if client.read_diagnostic is not None:
+        return {**result, 'read_diagnostic': client.read_diagnostic}
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--release-manifest', type=Path, required=True)
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
     parser.add_argument('--capability', choices=['events', 'event-map', 'event-combat-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'core'], required=True)
+    parser.add_argument('--shop-max-purchases', type=int, choices=range(9), default=1, help='Maximum shop purchases, 0 to 8; zero leaves without buying.')
+    parser.add_argument('--event-potion-policy', choices=('skip-full','skip-all','replace-first','stop-on-full'), default='skip-full')
+    parser.add_argument('--shop-potion-policy', choices=('skip-full','replace-first'), default='skip-full', help='Optionally discard an eligible original potion before buying when the belt is full.')
+    parser.add_argument('--shop-removal-policy', choices=('skip','first'), default='skip', help='Optionally remove the first eligible deck card before buying; counts toward the shop limit and gold reserve.')
+    parser.add_argument('--shop-purchase-policy', choices=('cards','potions','cards-and-potions','relics','all'), default='cards', help='Shop offer kinds to buy; slot order within the selected kinds.')
+    parser.add_argument('--shop-gold-reserve', type=int, default=0, help='Minimum gold to retain after each shop purchase.')
     parser.add_argument('--abandon-policy', choices=('cancel','confirm'), default='cancel', help='Cancel event abandonment popups by default; confirm explicitly ends the run.')
     parser.add_argument('--event-option', help='Exact stable ID of the first parent option; absence or illegality stops before input.')
     parser.add_argument('--choice-policy', choices=['first-select', 'minimum'], default='first-select',
@@ -208,10 +222,10 @@ def main():
             combat=load('unified_combat_host','apps/bridge/client/combat_host.py')
             rewards=load('unified_reward_host','apps/bridge/client/reward_host.py')
             provider=combat.minimum_select if args.choice_policy=='minimum' else combat.first_select
-            result=run_event_combat_map(client.exchange,events,combat,rewards,event_provider=event_option_policy(events,args.event_option,args.abandon_policy),choice_provider=provider,reward_policy=args.reward_policy,potion_policy=args.potion_policy)
+            result=run_event_combat_map(client.exchange,events,combat,rewards,event_provider=event_option_policy(events,args.event_option,args.abandon_policy,args.event_potion_policy),choice_provider=provider,reward_policy=args.reward_policy,potion_policy=args.potion_policy,event_potion_policy=args.event_potion_policy)
         elif args.capability in ('events', 'event-map'):
             host = load('unified_event_host', 'components/events/host/generic_event_host.py')
-            provider = event_option_policy(host,args.event_option,args.abandon_policy)
+            provider = event_option_policy(host,args.event_option,args.abandon_policy,args.event_potion_policy)
             result = (run_event_map(client.exchange, host,event_provider=provider) if args.capability == 'event-map' else
                       host.run_event(client.exchange, provider=provider))
         elif args.capability == 'cards':
@@ -223,7 +237,7 @@ def main():
                 result = items.run_collection(client.item_exchange)
             else:
                 rooms = load('unified_room_host', 'components/rooms/host/room_flow_host.py')
-                result = rooms.run_flow('shop' if args.capability == 'shop' else 'event', client.item_exchange, item_host=items)
+                result = rooms.run_flow('shop' if args.capability == 'shop' else 'event', client.item_exchange, item_host=items, max_purchases=args.shop_max_purchases, gold_reserve=args.shop_gold_reserve, purchase_policy=args.shop_purchase_policy, removal_policy=args.shop_removal_policy, potion_policy=args.shop_potion_policy)
         else:
             if not args.route or not args.route.startswith('/probe/v0/') or bool(args.decision) != bool(args.action):
                 raise ValueError('core_request')
@@ -243,6 +257,7 @@ def main():
         result = {'status': 'failed', 'code': 'client_failed'}
     finally:
         if client is not None:
+            result = retain_read_diagnostic(result, client)
             client.close()
         credential[:] = b'\0' * len(credential)
     print(json.dumps(result, separators=(',', ':'), ensure_ascii=True))

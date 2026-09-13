@@ -46,9 +46,11 @@ def action(flow: str, value: Any) -> bool:
         return False
     if flow == "shop" and value in ("inventory:close", "leave"):
         return True
-    prefix, maximum = ("buy:card:", 31) if flow == "shop" else ("choose:", 7)
+    prefix, maximum = ("buy:relic:" if value.startswith("buy:relic:") else "buy:potion:" if value.startswith("buy:potion:") else "buy:card:", 31) if flow == "shop" else ("choose:", 7)
+    if flow=="shop" and value.startswith("discard:"):prefix,maximum="discard:",7
+    if flow=="shop" and value.startswith("remove:"):prefix,maximum="remove:",511
     suffix = value[len(prefix):]
-    return value.startswith(prefix) and 1 <= len(suffix) <= 2 and suffix.isascii() and suffix.isdecimal() and str(int(suffix)) == suffix and int(suffix) <= maximum
+    return value.startswith(prefix) and 1 <= len(suffix) <= (3 if maximum==511 else 2) and suffix.isascii() and suffix.isdecimal() and str(int(suffix)) == suffix and int(suffix) <= maximum
 
 
 def keys(value: Any, expected: tuple[str, ...]) -> None:
@@ -76,7 +78,7 @@ def decode(body: bytearray, flow: str) -> dict[str, Any]:
         require(json.dumps(value, ensure_ascii=True, allow_nan=False, separators=(",", ":")).encode("ascii") == raw)
         require(type(value) is dict)
         require(type(value.get("schema_version")) is int and value["schema_version"] == 1)
-        require(value.get("protocol") == "room_flows_v1" and value.get("version") == flow + "_v1" and value.get("flow_kind") == flow)
+        require(value.get("protocol") == "room_flows_v1" and value.get("version") == ("shop_v6" if flow=="shop" else flow + "_v1") and value.get("flow_kind") == flow)
         require(hex_id(value.get("session_nonce"), 32))
         require(type(value.get("parent_ordinal")) is int and value["parent_ordinal"] == 1)
         status = value.get("status")
@@ -105,23 +107,27 @@ def decode(body: bytearray, flow: str) -> dict[str, Any]:
 
 
 def _shop(v: dict[str, Any]) -> None:
-    keys(v, COMMON + ("phase", "decision_id", "player", "offers", "legal_actions", "prior_results"))
+    keys(v, COMMON + ("phase", "decision_id", "player", "offers", "removal_candidates", "legal_actions", "prior_results"))
     require(v["status"] in ("ready", "waiting", "unsupported", "complete"))
-    keys(v["player"], ("gold", "deck_count"))
+    keys(v["player"], ("gold", "deck_count", "potion_slots", "relics"))
+    slots=v["player"]["potion_slots"]
+    relics=v["player"]["relics"]
+    require(type(relics) is list and len(relics)<=128 and all(stable_key(r) for r in relics))
+    require(type(slots) is list and len(slots)<=8 and all(p is None or stable_key(p) for p in slots))
     require(integer(v["player"]["gold"]) and integer(v["player"]["deck_count"], 512))
     require(type(v["offers"]) is list and len(v["offers"]) <= 32)
-    require(type(v["legal_actions"]) is list and len(v["legal_actions"]) <= 33)
+    require(type(v["legal_actions"]) is list and len(v["legal_actions"]) <= 105)
     require(type(v["prior_results"]) is list and len(v["prior_results"]) <= 1)
     for p in v["prior_results"]:
         keys(p, ("flow_kind", "session_nonce", "parent_ordinal", "decision_id", "action_id", "kind", "result"))
         require(p["flow_kind"] == "shop" and p["session_nonce"] == v["session_nonce"])
         require(type(p["parent_ordinal"]) is int and p["parent_ordinal"] == 1)
         require(hex_id(p["decision_id"], 64) and action("shop", p["action_id"]) and p["result"] == "reconciled")
-        require(p["kind"] == ("leave" if p["action_id"] == "leave" else "inventory_close" if p["action_id"] == "inventory:close" else "purchase_card"))
+        require(p["kind"] == ("leave" if p["action_id"] == "leave" else "inventory_close" if p["action_id"] == "inventory:close" else "purchase_potion" if p["action_id"].startswith("buy:potion:") else "discard_potion" if p["action_id"].startswith("discard:") else "remove_card" if p["action_id"].startswith("remove:") else "purchase_relic" if p["action_id"].startswith("buy:relic:") else "purchase_card"))
     if v["status"] != "ready":
-        require(v["decision_id"] == "" and v["offers"] == [] and v["legal_actions"] == [])
+        require(v["decision_id"] == "" and v["offers"] == [] and v["removal_candidates"] == [] and v["legal_actions"] == [])
         if v["status"] != "complete":
-            require(v["player"] == {"gold": 0, "deck_count": 0})
+            require(v["player"] == {"gold": 0, "deck_count": 0, "potion_slots": [], "relics": []})
         phases = {"waiting": ("unknown", "purchase_waiting", "close_waiting", "leave_waiting"), "unsupported": ("unknown",), "complete": ("complete",)}
         require(v["phase"] in phases[v["status"]])
         if v["status"] == "complete":
@@ -131,18 +137,50 @@ def _shop(v: dict[str, Any]) -> None:
     last = -1
     possible = []
     for o in v["offers"]:
-        keys(o, ("slot", "kind", "key", "displayed_price", "affordable", "enabled", "supported"))
+        keys(o, ("slot", "kind", "key", "displayed_price", "affordable", "enabled", "supported", "potion_capacity_gain"))
         require(integer(o["slot"], 31) and o["slot"] > last and o["kind"] in ("card", "relic", "potion", "removal", "unknown") and stable_key(o["key"]))
         require(integer(o["displayed_price"]) and all(type(o[k]) is bool for k in ("affordable", "enabled", "supported")))
-        require(o["affordable"] == (v["player"]["gold"] >= o["displayed_price"]) and (not o["supported"] or o["kind"] == "card"))
-        if o["supported"] and o["enabled"] and o["affordable"]:
-            possible.append("buy:card:" + str(o["slot"]))
+        require(o["affordable"] == (v["player"]["gold"] >= o["displayed_price"]) and (not o["supported"] or o["kind"] in ("card", "potion", "relic", "removal")))
+        require(type(o["potion_capacity_gain"]) is int and o["potion_capacity_gain"] in (0,2))
+        require(o["potion_capacity_gain"]==0 or (o["kind"]=="relic" and o["key"]=="POTION_BELT" and o["supported"]))
+        if shop_offer_legal(o,v["player"]):
+            possible.append("buy:" + o["kind"] + ":" + str(o["slot"]))
         last = o["slot"]
+    require(type(v["removal_candidates"]) is list and len(v["removal_candidates"])<=64)
+    removals=[o for o in v["offers"] if o["kind"]=="removal"]
+    require(len(removals)<=1)
+    require(not v["removal_candidates"] or (removals and removals[0]["supported"]))
+    last=-1
+    for c in v["removal_candidates"]:
+        keys(c,("deck_slot","key","upgrade_level"))
+        require(integer(c["deck_slot"],511) and last<c["deck_slot"]<v["player"]["deck_count"] and stable_key(c["key"]) and integer(c["upgrade_level"]))
+        last=c["deck_slot"]
+    possible+=shop_removals(v)+shop_discards(v)
     if v["phase"] == "room_ready_to_leave":
-        require(v["offers"] == [] and v["legal_actions"] == ["leave"])
+        require(v["offers"] == [] and v["removal_candidates"] == [] and v["legal_actions"] == ["leave"])
     else:
         require(v["legal_actions"] in (possible + ["inventory:close"], ["inventory:close"]))
     require(v["decision_id"] == shop_digest(v))
+
+
+def shop_offer_legal(o, player):
+    return (o["kind"]!="removal" and o["supported"] and o["enabled"] and o["affordable"]
+            and (o["kind"]!="potion" or None in player["potion_slots"])
+            and (o["kind"]!="relic" or (len(player["relics"])<128 and o["key"] not in player["relics"]
+                 and len(player["potion_slots"])+o["potion_capacity_gain"]<=8)))
+
+
+def shop_discards(v):
+    actions=[a for a in v['legal_actions'] if type(a) is str and a.startswith('discard:')]
+    slots=v['player']['potion_slots']
+    require(len(actions)<=8 and actions==sorted(set(actions)))
+    for a in actions:require(action('shop',a) and slots and None not in slots and int(a[-1])<len(slots))
+    return actions
+
+
+def shop_removals(v):
+    offers=[o for o in v["offers"] if o["kind"]=="removal" and o["supported"] and o["enabled"] and o["affordable"]]
+    return ["remove:"+str(c["deck_slot"]) for c in v["removal_candidates"]] if len(offers)==1 else []
 
 
 def shop_digest(v: dict[str, Any]) -> str:
@@ -151,13 +189,21 @@ def shop_digest(v: dict[str, Any]) -> str:
         parts.extend((str(len(x)), ":", x, ";"))
     def n(x: int) -> None:
         parts.extend((str(x), ";"))
-    for x in ("shop_v1", "shop", v["session_nonce"]):
+    for x in ("shop_v6", "shop", v["session_nonce"]):
         s(x)
-    n(1); s(v["phase"]); n(v["player"]["gold"]); n(v["player"]["deck_count"]); n(len(v["offers"]))
+    n(1); s(v["phase"]); n(v["player"]["gold"]); n(v["player"]["deck_count"])
+    n(len(v["player"]["potion_slots"]))
+    for potion in v["player"]["potion_slots"]: s(potion or "")
+    n(len(v["player"]["relics"]))
+    for relic in v["player"]["relics"]: s(relic)
+    n(len(v["offers"]))
     for o in v["offers"]:
         n(o["slot"]); s(o["kind"]); s(o["key"]); n(o["displayed_price"])
         for key in ("affordable", "enabled", "supported"):
             n(int(o[key]))
+        n(o["potion_capacity_gain"])
+    n(len(v["removal_candidates"]))
+    for c in v["removal_candidates"]: n(c["deck_slot"]); s(c["key"]); n(c["upgrade_level"])
     n(len(v["legal_actions"]))
     for a in v["legal_actions"]:
         s(a)
@@ -245,7 +291,7 @@ class Controller:
             if self.reads >= MAX_READS:
                 raise Stop("read_limit_reached")
             self.reads += 1
-        if self.attempted + self.child_attempted > 13:
+        if self.attempted + self.child_attempted > (18 if self.flow=="shop" else 13):
             raise Stop("action_limit_reached")
         return self.exchange(method, route, decision, action_id, min(deadline, self.deadline))
 
@@ -254,7 +300,7 @@ class Controller:
         try:
             self.budget()
             if method == "POST":
-                if self.attempted >= (3 if self.flow == "shop" else 12):
+                if self.attempted >= (18 if self.flow == "shop" else 12):
                     raise Stop("action_limit_reached")
                 self.attempted += 1
             body = self.raw(method, GET if method == "GET" else POST, decision, action_id, self.deadline)
@@ -281,8 +327,10 @@ class Controller:
         self.accepted += 1
         return (v["decision_id"], v["action_id"])
 
-    def shop(self, buy_card):
-        pending, completed, bought, closed = None, None, False, False
+    def shop(self, buy_card, max_purchases, gold_reserve, purchase_policy, removal_policy, potion_policy):
+        pending, completed, bought, closed = None, None, 0, False
+        discarded_slots=set()
+        removal_done=False
         while True:
             v = self.call()
             require("prior_results" in v)
@@ -304,14 +352,24 @@ class Controller:
                 require(closed); selected = "leave"
             else:
                 require(not closed)
-                purchases = ["buy:card:" + str(o["slot"]) for o in v["offers"]
-                             if o["supported"] and o["enabled"] and o["affordable"]]
-                require(v["legal_actions"] == ([] if bought else purchases) + ["inventory:close"])
-                if bought:
-                    purchases = []
-                selected = purchases[0] if buy_card and not bought and purchases else "inventory:close"
+                purchases = ["buy:" + o["kind"] + ":" + str(o["slot"]) for o in v["offers"]
+                             if shop_offer_legal(o,v["player"])]
+                require(v["legal_actions"] == ([] if bought>=8 else purchases+shop_removals(v)+shop_discards(v)) + ["inventory:close"])
+                purchases=["buy:"+o["kind"]+":"+str(o["slot"]) for o in v["offers"]
+                           if "buy:"+o["kind"]+":"+str(o["slot"]) in purchases
+                           and (purchase_policy=="all" or (purchase_policy=="cards-and-potions" and o["kind"] in ("card","potion")) or purchase_policy==o["kind"]+"s")
+                           and v["player"]["gold"]-o["displayed_price"]>=gold_reserve]
+                selected = purchases[0] if buy_card and bought<max_purchases and purchases else "inventory:close"
+                removals=shop_removals(v)
+                removal_offer=next((o for o in v["offers"] if o["kind"]=="removal"),None)
+                if buy_card and bought<max_purchases and removal_policy=="first" and not removal_done and removals and v["player"]["gold"]-removal_offer["displayed_price"]>=gold_reserve:
+                    selected=removals[0];removal_done=True;bought+=1
+                if selected=="inventory:close" and buy_card and bought<max_purchases and potion_policy=="replace-first" and purchase_policy in ("potions","cards-and-potions","all"):
+                    affordable_potion=any(o['kind']=='potion' and o['supported'] and o['enabled'] and o['affordable'] and v['player']['gold']-o['displayed_price']>=gold_reserve for o in v['offers'])
+                    discards=[a for a in shop_discards(v) if int(a[-1]) not in discarded_slots]
+                    if affordable_potion and discards:selected=discards[0];discarded_slots.add(int(selected[-1]))
                 if selected.startswith("buy:"):
-                    bought = True
+                    bought+=1
             pending = self.receipt(v, selected)
 
     def event(self, item_host):
@@ -388,14 +446,14 @@ class Controller:
         return result
 
 
-def run_flow(flow, exchange, *, item_host=None, buy_card=True, clock=time.monotonic, sleep=time.sleep):
+def run_flow(flow, exchange, *, item_host=None, buy_card=True, max_purchases=1, gold_reserve=0, purchase_policy="cards", removal_policy="skip", potion_policy="skip-full", clock=time.monotonic, sleep=time.sleep):
     """One activation, one 30s outer deadline; caller supplies the pinned item host."""
-    if flow not in ("shop", "event") or type(buy_card) is not bool:
+    if flow not in ("shop", "event") or type(buy_card) is not bool or type(max_purchases) is not int or not 0<=max_purchases<=8 or type(gold_reserve) is not int or not 0<=gold_reserve<=2147483647 or purchase_policy not in ("cards","potions","cards-and-potions","relics","all") or removal_policy not in ("skip","first") or potion_policy not in ("skip-full","replace-first"):
         raise ValueError("Invalid flow configuration.")
     controller = Controller(flow, exchange, clock, sleep)
     try:
         if flow == "shop":
-            controller.shop(buy_card)
+            controller.shop(buy_card, max_purchases, gold_reserve, purchase_policy, removal_policy, potion_policy)
         else:
             if item_host is None:
                 raise Stop("item_host_unavailable")

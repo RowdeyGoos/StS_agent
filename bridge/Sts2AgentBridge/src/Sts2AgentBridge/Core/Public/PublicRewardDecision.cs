@@ -30,7 +30,8 @@ public readonly record struct PublicRewardItem(
     IReadOnlyList<string> Cards,
     bool CardSelectionCanSkip,
     string? ItemKey = null,
-    int PotionCapacityGain = 0);
+    int PotionCapacityGain = 0,
+    int HealAmount = 0);
 
 public readonly record struct PublicRewardDecisionSnapshot(
     PublicDecisionStatus Status,
@@ -42,7 +43,8 @@ public readonly record struct PublicRewardDecisionSnapshot(
     int DecisionRevision = 0,
     bool ItemRewards = false,
     IReadOnlyList<string?>? PotionSlots = null,
-    bool CapacityRewards = false)
+    bool CapacityRewards = false,
+    bool HealingRewards = false)
 {
     public static PublicRewardDecisionSnapshot Waiting() => new(
         PublicDecisionStatus.Waiting,
@@ -85,7 +87,7 @@ public static class PublicRewardDecisionIdentity
 
         var builder = new StringBuilder(512);
         if(snapshot.PotionSlots is not null) {
-            Append(builder,snapshot.CapacityRewards?"reward_v5":"reward_v4");Append(builder,snapshot.PotionSlots.Count);
+            Append(builder,snapshot.HealingRewards?"reward_v6":snapshot.CapacityRewards?"reward_v5":"reward_v4");Append(builder,snapshot.PotionSlots.Count);
             foreach(var potion in snapshot.PotionSlots)Append(builder,potion??string.Empty);
         }else if(snapshot.ItemRewards)Append(builder,"reward_v3");
         Append(builder, snapshot.ScreenKind);
@@ -99,6 +101,7 @@ public static class PublicRewardDecisionIdentity
         {
             if(reward.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic)Append(builder,reward.ItemKey??string.Empty);
             if(snapshot.CapacityRewards)Append(builder,reward.PotionCapacityGain);
+            if(snapshot.HealingRewards)Append(builder,reward.HealAmount);
             Append(builder, reward.RewardIndex);
             Append(builder, (int)reward.Kind);
             Append(builder, reward.SuccessfullySelected ? 1 : 0);

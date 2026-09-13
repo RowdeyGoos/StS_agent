@@ -4,11 +4,84 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).absolute().parents[1] / 'client'))
-from wire_client import BridgeClient, build_request, parse_response
-from run_live import core_summary
+from wire_client import BridgeClient, build_request, parse_response, read_failure_diagnostic
+from run_live import core_summary, retain_read_diagnostic
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_read_failure_details_survive_host_failure_without_changing_counts(self):
+        for event in (False, True):
+            sent = []
+            diagnostic = dict(code='dispatch_timeout_after_claim', stages=[
+                dict(stage='hook_install', elapsed_ms=600, active=True)])
+            response = framed_error(dict(schema_version=1, kind='error', **diagnostic), event=event)
+            def connect():
+                sock = FakeSocket(sent); sock.response = response; return sock
+            client = BridgeClient(bytearray(b'a' * 64), connector=connect)
+            # Six-header router errors still fail the event parser; reporting
+            # must survive that failure without weakening normal framing.
+            if event:
+                body = client.exchange('GET', '/probe/generic-event-v7/public/decision')
+                body[:] = b'\0' * len(body)
+            else:
+                with self.assertRaises(ValueError):
+                    client.exchange('GET', '/probe/generic-event-v7/public/decision')
+                with self.assertRaises(ValueError):
+                    client.exchange('GET', '/probe/generic-event-v7/public/decision')
+            result = dict(status='failed', code='invalid_response', event=dict(
+                parent_attempted=2, parent_accepted=2, parent_reconciled=1))
+            recorded = retain_read_diagnostic(result, client)
+            self.assertEqual(recorded, {**result, 'read_diagnostic': diagnostic})
+            self.assertNotIn('read_diagnostic', result)
+            self.assertEqual(len(sent), 1)
+            self.assertTrue(all(not any(buffer) for buffer in sent))
+            client.close()
+
+    def test_read_diagnostics_accept_only_closed_runtime_categories(self):
+        row = dict(stage='dispatch', elapsed_ms=0, active=True)
+        codes = ('dispatch_unavailable', 'dispatch_busy', 'dispatch_timeout_before_claim',
+                 'dispatch_timeout_after_claim', 'dispatch_fault', 'dispatch_invalid_result')
+        for code in codes:
+            value = dict(schema_version=1, kind='error', code=code, stages=[row])
+            self.assertEqual(read_failure_diagnostic(framed_error(value)), dict(code=code, stages=[row]))
+        for code in ('bridge_stopped', 'capability_busy'):
+            for event in (False, True):
+                self.assertEqual(read_failure_diagnostic(framed_error(dict(schema_version=1, kind='error', code=code), event=event)), dict(code=code, stages=[]))
+
+    def test_malformed_or_private_diagnostics_are_never_retained(self):
+        good = dict(schema_version=1, kind='error', code='dispatch_timeout_after_claim',
+                    stages=[dict(stage='hook_install', elapsed_ms=600, active=True)])
+        bad = [{**good, 'schema_version': True}, {**good, 'code': 'private exception'},
+               {**good, 'extra': 'private'}, {**good, 'stages': []},
+               {**good, 'stages': good['stages'] * 2}]
+        for field, value in [('stage', 'private'), ('elapsed_ms', True), ('elapsed_ms', -1),
+                             ('elapsed_ms', 3001), ('active', 1), ('active', False), ('extra', 'private')]:
+            bad.append({**good, 'stages': [{**good['stages'][0], field: value}]})
+        for value in bad:
+            self.assertIsNone(read_failure_diagnostic(framed_error(value)))
+        for raw in (b'{"schema_version":1,"schema_version":1,"kind":"error","code":"bridge_stopped"}',
+                    b'{"schema_version":1,"kind":"error","code":"bridge_stopped","extra":"secret"}'):
+            self.assertIsNone(read_failure_diagnostic(framed_error(raw)))
+        framed = framed_error(good)
+        for raw in (framed + b'x', framed[:-1], framed.replace(b'200 OK', b'503 Error')):
+            self.assertIsNone(read_failure_diagnostic(raw))
+
+    def test_post_responses_and_successes_do_not_add_read_diagnostics(self):
+        for post in (False, True):
+            sent = []
+            def connect():
+                sock = FakeSocket(sent)
+                if post: sock.response = framed_error(dict(schema_version=1, kind='error', code='bridge_stopped'), event=False)
+                return sock
+            client = BridgeClient(bytearray(b'a' * 64), connector=connect)
+            if post:
+                client.exchange('POST', '/probe/v0/public/reward-action', bytearray(json.dumps(dict(decision_id='b'*64, action_id='proceed')).encode()))
+            else: client.exchange('GET', '/probe/v0/health')
+            self.assertIsNone(client.read_diagnostic)
+            result = dict(status='failed' if post else 'passed')
+            self.assertIs(retain_read_diagnostic(result, client), result)
+            client.close()
+
     def test_sphere_actions_require_event_child_and_canonical_bounds(self):
         route = '/probe/generic-event-v7/public/action'
         token = bytearray(b'a' * 64)
@@ -90,9 +163,9 @@ class ClientBoundaryTests(unittest.TestCase):
         def request(action, path=route):
             return build_request('POST', path, bytearray(json.dumps({
                 'decision_id': 'b' * 64, 'action_id': action}).encode()), token)
-        for action in ('buy:card:0', 'buy:card:9', 'buy:card:10', 'buy:card:31', 'inventory:close', 'leave'):
+        for action in ('buy:card:0', 'buy:card:9', 'buy:card:10', 'buy:card:31', 'buy:potion:0', 'buy:potion:31', 'buy:relic:0', 'buy:relic:31', 'remove:0', 'remove:511', 'inventory:close', 'leave'):
             self.assertIn(('X-Sts2-Action-Id: ' + action + '\r\n').encode(), request(action))
-        for action in ('buy:card:32', 'buy:card:00', 'buy:relic:0', 'inventory:open', 'buy:card:0\r\nOrigin: evil'):
+        for action in ('buy:card:32', 'buy:potion:32', 'buy:potion:00', 'buy:card:00', 'buy:relic:32', 'buy:relic:00', 'remove:512', 'remove:01', 'remove:-1', 'inventory:open', 'buy:card:0\r\nOrigin: evil'):
             with self.assertRaises(ValueError):
                 request(action)
         for path in ('/probe/v0/public/combat-action', '/probe/item-v1/public/item-action',
@@ -149,6 +222,13 @@ class FakeClock:
     value = 0.0
     def __call__(self): return self.value
     def sleep(self, seconds): self.value += seconds
+
+
+def framed_error(value, *, event=True):
+    body = value if isinstance(value, bytes) else json.dumps(value, separators=(',', ':')).encode()
+    return bytearray(b'HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: ' +
+        str(len(body)).encode() + b'\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n' +
+        (b'X-Sts2-Native-Diagnostic: not_captured\r\n' if event else b'') + b'Connection: close\r\n\r\n' + body)
 
 
 class FakeSocket:

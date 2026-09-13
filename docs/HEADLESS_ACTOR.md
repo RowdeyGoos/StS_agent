@@ -4,6 +4,9 @@ The headless backend and actor pipeline support deterministic structural
 experiments. They establish interface, dataset and training plumbing; they do
 not establish target-game fidelity, learned live play or strategic strength.
 Use the [project README](../README.md#reduced-headless-experiments) for CLI commands.
+For the source assessment and selectable gameplay implementation tasks, use the
+[headless full-game backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md). It covers the
+rules, content, persistence and conformance work beyond this actor pipeline.
 
 ## Code and contracts
 

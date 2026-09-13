@@ -77,6 +77,6 @@
   <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicScreenProjector.cs" />
   <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicScreenService.cs" />
   <Compile Include="../../../src/Sts2AgentBridge/Core/Transport/ProbeRequestParser.cs" />
-  <Compile Include="Program.cs" />
+  <Compile Include="Program.cs" /><Compile Include="../../../components/rooms/shop/tests/MultiplePurchaseFixture.cs" /><Compile Include="ShopSocketFixture.cs" />
   <Compile Include="EventBoundaryTests.cs" />
 </ItemGroup></Project>

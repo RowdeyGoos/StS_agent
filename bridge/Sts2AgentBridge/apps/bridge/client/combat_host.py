@@ -223,7 +223,45 @@ def run_choice(request, *, provider=first_select, clock=time.monotonic, sleep=ti
     return controller.summary('failed', code)
 
 
-def run_resume_items(request, nonce, *, parent_deadline=float("inf"), clock=time.monotonic, sleep=time.sleep):
+def run_resume_item_policy(request,nonce,initial,policy,*,parent_deadline,clock,sleep):
+    sys.path.insert(0,str(Path(__file__).absolute().parents[3]/'components/events/host'))
+    import generic_event_host as codec
+    tracker=codec.ItemPolicyTracker(nonce);receipts=[];attempted=reads=0;value=initial
+    try:
+        while True:
+            require(clock()<parent_deadline and reads<256,'resume_item_policy_deadline');reads+=1
+            if value is None:
+                raw=request('GET',EVENT_ITEM_READ,None)
+                try:value=json.loads(raw,object_pairs_hook=probe._unique_object,parse_constant=probe._reject_json_constant)
+                finally:
+                    if type(raw) is bytearray:raw[:]=b'\0'*len(raw)
+            require(clock()<parent_deadline,'resume_item_policy_deadline')
+            status=tracker.read(value,receipts)
+            if status=='resolved':break
+            require(status in ('ready','waiting'),'resume_item_policy_stopped')
+            if status=='ready':
+                require(attempted==len(receipts)==len(tracker.history) and attempted<25,'resume_item_policy_unsettled')
+                action=codec.item_policy_action(value,policy);decision=value['decision_id']
+                command=bytearray(json.dumps(dict(decision_id=decision,action_id=action),separators=(',',':')).encode());receipt=None
+                try:
+                    attempted+=1;receipt=request('POST',EVENT_ITEM_ACTION,command)
+                    require(clock()<parent_deadline,'resume_item_policy_deadline')
+                    r=json.loads(receipt,object_pairs_hook=probe._unique_object,parse_constant=probe._reject_json_constant)
+                    require(r==dict(version='item_policy_v1',session_nonce=nonce,decision_id=decision,action_id=action,outcome='accepted'),'resume_item_policy_receipt')
+                    receipts.append((decision,action))
+                finally:
+                    command[:]=b'\0'*len(command)
+                    if type(receipt) is bytearray:receipt[:]=b'\0'*len(receipt)
+            value=None;sleep(min(.05,max(0,parent_deadline-clock())))
+        code=None
+    except Stop as error:code=str(error)
+    except KeyboardInterrupt:code='interrupted'
+    except Exception:code='invalid_resume_item_policy'
+    return dict(status='resolved' if code is None else 'failed',code=code,attempted=attempted,accepted=len(receipts),reconciled=len(tracker.history),reads=reads,
+                collected=[h for h in tracker.history if h['result']=='collected'],discarded=sum(h['result']=='discarded' for h in tracker.history),skipped=any(h['result']=='skipped' for h in tracker.history))
+
+
+def run_resume_items(request, nonce, *, potion_policy="skip-full", parent_deadline=float("inf"), clock=time.monotonic, sleep=time.sleep):
     """One owned resume Offer, reusing item_v1 validation and bounded set ordering."""
     sys.path.insert(0, str(Path(__file__).absolute().parents[3] / 'components/item_wire/host'))
     import item_host as codec
@@ -263,6 +301,9 @@ def run_resume_items(request, nonce, *, parent_deadline=float("inf"), clock=time
                 require(type(raw) is bytearray and 0 < len(raw) <= 65536)
                 value = json.loads(raw, object_pairs_hook=probe._unique_object, parse_constant=probe._reject_json_constant)
                 require(type(value) is dict)
+                if value.get('version')=='item_policy_v1':
+                    require(reads==1 and set_mode is None and attempted==accepted==0 and pending is None and not collected and not history,'resume_item_contract_changed')
+                    return run_resume_item_policy(request,nonce,value,potion_policy,parent_deadline=deadline,clock=clock,sleep=sleep)
                 is_set = value.get('version') == 'item_set_v1'
                 require(set_mode is None or is_set == set_mode, 'resume_item_contract_changed')
                 set_mode = is_set
@@ -324,7 +365,7 @@ def run_resume_items(request, nonce, *, parent_deadline=float("inf"), clock=time
                 accepted=accepted, reconciled=len(collected), reads=reads, collected=collected)
 
 
-def run_combat(request, *, choice_provider=first_select, event_resume_nonce=None, clock=time.monotonic, sleep=time.sleep):
+def run_combat(request, *, choice_provider=first_select, event_resume_nonce=None, resume_potion_policy="skip-full", clock=time.monotonic, sleep=time.sleep):
     """One combat, preserving attempted/accepted/reconciled counts on every exit."""
     attempted = accepted = reconciled = reads = choice_probes = stale = 0
     choices = []
@@ -357,7 +398,7 @@ def run_combat(request, *, choice_provider=first_select, event_resume_nonce=None
                     if type(resume_body) is bytearray: resume_body[:] = b'\0' * len(resume_body)
                 if resume_status == 'item':
                     require(not resume_items, 'repeated_resume_offer')
-                    child = run_resume_items(request, event_resume_nonce, parent_deadline=deadline, clock=clock, sleep=sleep)
+                    child = run_resume_items(request, event_resume_nonce, potion_policy=resume_potion_policy, parent_deadline=deadline, clock=clock, sleep=sleep)
                     resume_items.append(child)
                     require(child['status'] == 'resolved', child['code'])
                     check()

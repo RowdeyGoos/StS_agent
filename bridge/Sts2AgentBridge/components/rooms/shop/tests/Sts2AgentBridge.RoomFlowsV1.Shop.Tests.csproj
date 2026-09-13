@@ -7,7 +7,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Program.cs" /><Compile Include="MultiplePurchaseFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../core/Sts2AgentBridge.RoomFlowsV1.Shop.Core.csproj" />

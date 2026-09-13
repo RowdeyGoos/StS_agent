@@ -77,7 +77,7 @@ public sealed class RoomFlowWireService : IDisposable
                 else if (method == "POST" && route == RoomFlowWireProtocol.ActionRoute &&
                     RoomFlowIdentity.IsDecisionId(decisionId) && RoomFlowIdentity.IsActionId(_session.FlowKind, actionId))
                 {
-                    if (!CanApply(decisionId!, actionId!) || _attempted >= (_session.FlowKind == "shop" ? 3 : 12))
+                    if (!CanApply(decisionId!, actionId!) || _attempted >= (_session.FlowKind == "shop" ? ShopV1Constants.MaximumReservations : 12))
                         return Error("invalid_request");
                     _attempted++; // Reserve before invoking the real module.
                     string phase = _published is ShopV1Observation shop ? shop.Phase : ((EventV1Observation)_published!).Phase;
@@ -156,7 +156,7 @@ public sealed class RoomFlowWireService : IDisposable
         if (value is ShopV1Observation shop && _session.FlowKind == "shop")
         {
             Common(shop.FlowKind, shop.SessionNonce, shop.ParentOrdinal);
-            if (shop.Version != "shop_v1" || shop.Offers.Count > 32 || shop.PriorResults.Count > 1 ||
+            if (shop.Version != ShopV1Constants.Version || shop.Offers.Count > 32 || shop.PriorResults.Count > 1 ||
                 shop.Player.Gold < 0 || shop.Player.DeckCount is < 0 or > 512) throw new InvalidOperationException();
             if (shop.Status is not ("waiting" or "unsupported" or "ready" or "complete")) throw new InvalidOperationException();
             if (shop.PriorResults.Count == 1)
@@ -174,7 +174,7 @@ public sealed class RoomFlowWireService : IDisposable
             {
                 if (!RoomFlowIdentity.IsDecisionId(shop.DecisionId) ||
                     ShopV1CanonicalEncoder.ComputeDecisionId(_nonce, shop.Phase, shop.Player, shop.Offers,
-                    shop.LegalActions, shop.PriorResults.Count == 0 ? null : shop.PriorResults[0]) != shop.DecisionId)
+                    shop.LegalActions, shop.PriorResults.Count == 0 ? null : shop.PriorResults[0], shop.RemovalCandidates) != shop.DecisionId)
                     throw new InvalidOperationException();
             }
             else if (shop.DecisionId.Length != 0 || shop.Offers.Count != 0 || shop.LegalActions.Count != 0)
@@ -222,7 +222,7 @@ public sealed class RoomFlowWireService : IDisposable
         if (flow != _session.FlowKind || nonce != _nonce || ordinal != 1) throw new InvalidOperationException();
     }
     internal static string Kind(string action) => action == "leave" ? "leave" :
-        action == "inventory:close" ? "inventory_close" : "purchase_card";
+        action == "inventory:close" ? "inventory_close" : action.StartsWith("discard:",StringComparison.Ordinal)?"discard_potion":action.StartsWith("remove:",StringComparison.Ordinal)?"remove_card": action.StartsWith("buy:potion:", StringComparison.Ordinal) ? "purchase_potion" : action.StartsWith("buy:relic:", StringComparison.Ordinal) ? "purchase_relic" : "purchase_card";
     private static bool Contains(IReadOnlyList<string> values, string action)
     {
         foreach (string value in values) if (value == action) return true;

@@ -385,4 +385,67 @@ class ItemRewardTests(unittest.TestCase):
             self.assertEqual(len(result['collected_items']),1 if mutation in ('changed_key','disappeared','late_loss') else 0, (mutation,result))
 
 
-if __name__ == '__main__': unittest.main()
+
+
+class HealingRewardWire(ItemRewardWire):
+    def __init__(self,hp=33,max_hp=80):
+        super().__init__(1)
+        self.state.update(schema_version=6,potion_slots=[None]*3)
+        self.state['player'].update(hp=hp,max_hp=max_hp)
+        self.state['rewards'][0].update(kind='relic',item_key='FAKE_LEES_WAFFLE',potion_capacity_gain=0,heal_amount=max_hp//10)
+        self.actions()
+
+    def actions(self):
+        super().actions()
+        if self.state.get('schema_version')==6:
+            for a in self.state['legal_actions']:a['potion_slot']=None
+
+    def request(self,method,route,body=None):
+        if method=='POST':
+            action=json.loads(body)['action_id'];before=copy.deepcopy(self.state['player'])
+            if action.startswith('collect:'):
+                self.state['player']['hp']=min(before['max_hp'],before['hp']+self.state['rewards'][0]['heal_amount'])
+            result=super().request(method,route,body)
+            if action=='proceed':self.state['player']=before
+            return result
+        return super().request(method,route,body)
+
+class HealingRewardTests(unittest.TestCase):
+    run_wire=SpecialRewardTests.run_wire
+
+    def test_healing_and_empty_terminal_reward_parent(self):
+        for hp,max_hp in [(33,80),(33,85),(78,80),(80,80),(1,9)]:
+            wire=HealingRewardWire(hp,max_hp);result=self.run_wire(wire)
+            self.assertEqual(result['status'],'resolved',result)
+            self.assertEqual((result['accepted'],result['reconciled']),(2,2))
+            self.assertEqual(result['after_player']['hp'],min(max_hp,hp+max_hp//10))
+            self.assertEqual(result['collected_items'],[dict(kind='relic',key='FAKE_LEES_WAFFLE',reward_index=0)])
+
+    def test_bad_healing_declarations_rejected_before_input(self):
+        for key,value in [('heal_amount',True),('heal_amount',-1),('heal_amount',9),('heal_amount',0),('item_key','PASSIVE'),('kind','potion')]:
+            wire=HealingRewardWire();wire.state['rewards'][0][key]=value
+            result=self.run_wire(wire)
+            self.assertEqual((result['status'],wire.posts),('failed',0),(key,value,result))
+        wire=HealingRewardWire();wire.state['schema_version']=5
+        self.assertEqual(self.run_wire(wire)['status'],'failed');self.assertEqual(wire.posts,0)
+
+    def test_unexpected_effect_and_schema_loss_stop_without_retry(self):
+        for mode in ['missing','extra','gold','max_hp','deck','potion','schema','lost','late_loss']:
+            wire=HealingRewardWire()
+            def corrupt(value,method):
+                if mode=='lost' and method=='POST':return OSError('lost')
+                if mode=='late_loss' and method=='POST' and wire.posts==2:return OSError('lost')
+                if method=='GET' and wire.posts==1:
+                    if mode=='missing':value['player']['hp']=33
+                    if mode=='extra':value['player']['hp']=42
+                    if mode in ('gold','max_hp','deck'):value['player']['deck_count' if mode=='deck' else mode]+=1
+                    if mode=='potion':value['potion_slots'][0]='FOREIGN'
+                    if mode=='schema':value['schema_version']=5
+                return value
+            wire.corrupt=corrupt;result=self.run_wire(wire)
+            self.assertEqual(result['status'],'failed',(mode,result))
+            self.assertEqual(wire.posts,2 if mode=='late_loss' else 1)
+            self.assertEqual(result['reconciled'],1 if mode=='late_loss' else 0)
+
+if __name__ == '__main__':
+    unittest.main()

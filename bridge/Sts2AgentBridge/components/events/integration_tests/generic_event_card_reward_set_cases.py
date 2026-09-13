@@ -128,6 +128,9 @@ def run_mixed_reward_set_cases(args: Any, host: Any, exchange_type: Any, *, part
     def run(scenario='MR_COFFER',wrapper=None):
         ex=exchange_type(args.dotnet,args.native_fixture,scenario,native=True)
         def choose(view):
+            if view.kind=='item_policy':
+                if scenario=='MR_POLICY_CARD_SKIP' and view.payload['phase']=='choose_card':return 'skip_card'
+                return host.item_policy_action(view.payload,'replace-first' if scenario=='MR_POLICY_REPLACE' else 'skip-full')
             if scenario in ('MR_SKIP','MR_CAPACITY_SKIP') and view.payload.get('phase')=='choose':return 'skip:'+str(view.payload['offer_index'])
             return host.first_legal(view)
         try:
@@ -135,7 +138,15 @@ def run_mixed_reward_set_cases(args: Any, host: Any, exchange_type: Any, *, part
         finally:ex.close()
         return result,ex
     if part is None or part == 'mixed_native':
-        for scenario in ('MR_CAPACITY','MR_CAPACITY_SKIP','MR_COFFER','MR_SKIP','MR_FIRST','MR_EIGHT','MR_COLLECTION','MR_OFFER','MR_CHOSEN'):
+        for scenario in ('MR_POLICY_SKIP','MR_POLICY_REPLACE','MR_POLICY_CARD_SKIP'):
+            result,ex=run(scenario)
+            assert result['status']=='resolved',(scenario,result,ex.envelopes[-1:])
+            assert result['completed_item_children']==1 and result['completed_card_children']==0
+            assert result['child_reconciled']==(6 if scenario=='MR_POLICY_REPLACE' else 3)
+            assert ex.telemetry[-1]['map_open'] and ex.telemetry[-1]['overlay_count']==0
+            assert ex.telemetry[-1]['skips']==int(scenario=='MR_POLICY_CARD_SKIP')
+            checks+=1
+        for scenario in ('MR_CAPACITY','MR_CAPACITY_SKIP' ,'MR_COFFER','MR_SKIP','MR_FIRST','MR_EIGHT','MR_COLLECTION','MR_OFFER','MR_CHOSEN'):
             result,ex=run(scenario)
             assert result['status']=='resolved',(scenario,result,ex.envelopes[-1])
             kinds=['relic','card','potion','potion'] if scenario.startswith('MR_CAPACITY') else ['card','relic','card','potion','relic','card','potion','relic'] if scenario=='MR_EIGHT' else ['potion','card','potion'] if scenario in ('MR_FIRST','MR_COLLECTION') else ['card','potion']

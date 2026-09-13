@@ -15,7 +15,7 @@ public static class ShopV1CanonicalEncoder
         ShopV1Player player,
         IReadOnlyList<ShopV1Offer> offers,
         IReadOnlyList<string> legalActions,
-        ShopV1ReconciledAction? priorResult)
+        ShopV1ReconciledAction? priorResult, IReadOnlyList<ShopV1RemovalCandidate>? removalCandidates = null)
     {
         var builder = new StringBuilder(4096);
         Append(builder, ShopV1Constants.Version);
@@ -25,6 +25,10 @@ public static class ShopV1CanonicalEncoder
         Append(builder, phase);
         Append(builder, player.Gold);
         Append(builder, player.DeckCount);
+        Append(builder, player.PotionSlots.Count);
+        foreach (string? potion in player.PotionSlots) Append(builder, potion ?? string.Empty);
+        Append(builder, player.Relics.Count);
+        foreach (string relic in player.Relics) Append(builder, relic);
         Append(builder, offers.Count);
         foreach (ShopV1Offer offer in offers)
         {
@@ -35,7 +39,10 @@ public static class ShopV1CanonicalEncoder
             Append(builder, offer.Affordable ? 1 : 0);
             Append(builder, offer.Enabled ? 1 : 0);
             Append(builder, offer.Supported ? 1 : 0);
+            Append(builder, offer.PotionCapacityGain);
         }
+        Append(builder, removalCandidates?.Count ?? 0);
+        if (removalCandidates is not null) foreach(var card in removalCandidates) { Append(builder,card.DeckSlot); Append(builder,card.Key); Append(builder,card.UpgradeLevel); }
         Append(builder, legalActions.Count);
         foreach (string action in legalActions) Append(builder, action);
         Append(builder, priorResult is null ? 0 : 1);
@@ -51,13 +58,13 @@ public static class ShopV1CanonicalEncoder
             .ToLowerInvariant();
     }
 
-    public static string PurchaseActionId(int slot) =>
-        "buy:card:" + slot.ToString(CultureInfo.InvariantCulture);
+    public static string PurchaseActionId(int slot, ShopV1OfferKind kind = ShopV1OfferKind.Card) =>
+        (kind == ShopV1OfferKind.Potion ? "buy:potion:" : kind == ShopV1OfferKind.Relic ? "buy:relic:" : "buy:card:") + slot.ToString(CultureInfo.InvariantCulture);
 
     public static bool TryParsePurchaseAction(string? actionId, out int slot)
     {
         slot = -1;
-        const string prefix = "buy:card:";
+        string prefix = actionId?.StartsWith("buy:relic:", StringComparison.Ordinal) == true ? "buy:relic:" : actionId?.StartsWith("buy:potion:", StringComparison.Ordinal) == true ? "buy:potion:" : "buy:card:";
         if (actionId is null || !actionId.StartsWith(prefix, StringComparison.Ordinal))
         {
             return false;

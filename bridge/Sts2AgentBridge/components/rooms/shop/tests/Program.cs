@@ -1,4 +1,5 @@
 using System;
+using Sts2AgentBridge.Successors.ItemV1;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +17,12 @@ internal static class Program
     {
         try
         {
+            Check(DiscardPurchases);
+            Check(RestockedPurchases);
+            Check(RemovalPurchases);
+            Check(RelicPurchases);
+            Check(PotionPurchases);
+            Check(MultiplePurchases);
             Check(PurchaseCloseLeave);
             Check(ZeroPurchaseCloseLeave);
             Check(PurchaseWaitingAndContradictions);
@@ -33,10 +40,294 @@ internal static class Program
             Console.WriteLine("{\"schema_version\":1,\"status\":\"passed\",\"suite\":\"shop_map_permission_v1_core\",\"check_count\":" + _checks + "}");
             return 0;
         }
-        catch
+        catch (Exception error)
         {
+            Console.Error.WriteLine(error);
             Console.WriteLine("{\"schema_version\":1,\"status\":\"failed\",\"suite\":\"shop_map_permission_v1_core\",\"check_count\":0}");
             return 1;
+        }
+    }
+
+    private static void DiscardPurchases() {
+        var f=new MultiplePurchaseFixture(2){AllowDiscards=true};foreach(var offer in f.Offers)offer.Kind=ShopV1OfferKind.Potion;
+        f.Potions.Add(new(new object(),"OLD_0"));f.Potions.Add(new(new object(),"OLD_1"));
+        using(var session=new ShopV1Session(Nonce,f)) {
+            var ready=Obs(session.Read());Sequence(new[]{"discard:0","discard:1","inventory:close"},ready.LegalActions);
+            Receipt(session.Apply(ready.DecisionId,"discard:0"));ready=Obs(session.Read());Equal(100,ready.Player.Gold);Equal("discard_potion",ready.PriorResults[0].Kind);
+            Receipt(session.Apply(ready.DecisionId,"buy:potion:0"));ready=Obs(session.Read());Sequence(new[]{"discard:1","inventory:close"},ready.LegalActions);
+            Receipt(session.Apply(ready.DecisionId,"discard:1"));ready=Obs(session.Read());Receipt(session.Apply(ready.DecisionId,"buy:potion:1"));
+            ready=Obs(session.Read());Sequence(new[]{"inventory:close"},ready.LegalActions);Equal(2,f.Discards);Equal(2,f.Purchases);
+        }
+        foreach(string mode in new[]{"gold","deck","relic","wrong_slot","same_key","stale"}) {
+            f=new MultiplePurchaseFixture(1){AllowDiscards=true};f.Potions.Add(new(new object(),"OLD_0"));f.Potions.Add(new(new object(),"OLD_1"));
+            using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());var target=f.Potions[0];
+            if(mode=="stale"){f.Potions[0]=new(new object(),"OLD_0");Equal("unsupported",Failure(session.Apply(ready.DecisionId,"discard:0")).Outcome);Equal(0,f.Discards);continue;}
+            Receipt(session.Apply(ready.DecisionId,"discard:0"));
+            if(mode=="gold")f.Gold--;if(mode=="deck")f.Deck.Clear();if(mode=="relic")f.Relics.Add(new(new object(),"NEW"));
+            if(mode=="wrong_slot"){f.Potions[0]=target;f.Potions[1]=new(null,null);}if(mode=="same_key")f.Potions[0]=new(new object(),"OLD_0");
+            Equal("unsupported",Obs(session.Read()).Status);Equal(1,f.Discards);
+        }
+    }
+    private static void RestockedPurchases()
+    {
+        foreach(var kind in new[]{ShopV1OfferKind.Card,ShopV1OfferKind.Potion,ShopV1OfferKind.Relic}) {
+            var f=new MultiplePurchaseFixture(1){Restock=true};f.Offers[0].Kind=kind;
+            for(int i=0;i<8;i++)f.Potions.Add(new(null,null));
+            using var session=new ShopV1Session(Nonce,f);
+            for(int i=0;i<8;i++) {
+                var ready=Obs(session.Read());Equal("ready",ready.Status);Equal(10+i,ready.Offers[0].DisplayedPrice);
+                f.Gold=1000; // Re-observe gold before reserving this transaction.
+                ready=Obs(session.Read());Receipt(session.Apply(ready.DecisionId,ready.LegalActions[0]));
+            }
+            var capped=Obs(session.Read());Sequence(new[]{"inventory:close"},capped.LegalActions);
+            Receipt(session.Apply(capped.DecisionId,"inventory:close"));capped=Obs(session.Read());Receipt(session.Apply(capped.DecisionId,"leave"));Equal("complete",Obs(session.Read()).Status);
+        }
+        foreach(string mode in new[]{"model","key","price","absent","debit","old_model","cleared","hidden"}) {
+            var f=new MultiplePurchaseFixture(1){Restock=true};using var session=new ShopV1Session(Nonce,f);
+            var ready=Obs(session.Read());var old=f.Offers[0].Card;Receipt(session.Apply(ready.DecisionId,"buy:card:0"));
+            var offer=f.Offers[0];
+            if(mode is "cleared" or "hidden")offer.Stocked=false;
+            if(mode=="model")offer.Card=new();
+            if(mode=="key")offer.KeyOverride="OTHER";
+            if(mode=="price")offer.Price++;
+            if(mode=="absent")offer.Restocked=null;
+            if(mode=="debit")f.Gold--;
+            if(mode=="old_model")offer.Card=old;
+            Equal("unsupported",Obs(session.Read()).Status);Equal(1,f.Purchases);
+        }
+    }
+    private static MultiplePurchaseFixture RemovalFixture()
+    {
+        var f=new MultiplePurchaseFixture(2);f.Offers[1].Kind=ShopV1OfferKind.Removal;
+        f.Deck.Add(new(new object(),"REMOVE_ME",1,true));f.Deck.Add(new(new object(),"KEEP",0,true));
+        f.Potions.Add(new(new object(),"OLD_POTION"));f.Relics.Add(new(new object(),"OLD_RELIC"));return f;
+    }
+    private static void RemovalPurchases()
+    {
+        var f=RemovalFixture();
+        using(var session=new ShopV1Session(Nonce,f)) {
+            var ready=Obs(session.Read());Sequence(new[]{"buy:card:0","remove:1","remove:2","inventory:close"},ready.LegalActions);
+            Equal(1,ready.RemovalCandidates[0].UpgradeLevel);Equal(1,ready.RemovalCandidates[0].DeckSlot);
+            Equal("rejected",Failure(session.Apply(ready.DecisionId,"remove:0")).Outcome);Equal(0,f.Purchases);
+            Receipt(session.Apply(ready.DecisionId,"remove:1"));ready=Obs(session.Read());Equal("ready",ready.Status);
+            Equal("remove_card",ready.PriorResults[0].Kind);Equal(2,ready.Player.DeckCount);Equal(90,ready.Player.Gold);
+            Sequence(new[]{"buy:card:0","inventory:close"},ready.LegalActions);Equal(0,ready.RemovalCandidates.Count);
+            Receipt(session.Apply(ready.DecisionId,"buy:card:0"));ready=Obs(session.Read());Equal(3,ready.Player.DeckCount);
+            Receipt(session.Apply(ready.DecisionId,"inventory:close"));ready=Obs(session.Read());Receipt(session.Apply(ready.DecisionId,"leave"));Equal("complete",Obs(session.Read()).Status);
+        }
+        foreach(string mode in new[]{"stale_model","stale_level","stale_eligible","wrong_card","same_key_wrong_card","missing","extra","reordered","survivor_level","debit","unpaid","stock","relic","potion","pending"}) {
+            f=RemovalFixture();using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());
+            var target=f.Deck[1];var keep=f.Deck[2];
+            if(mode.StartsWith("stale")) {
+                f.Deck[1]=new(mode=="stale_model"?new object():target.ModelIdentity,target.StableKey,mode=="stale_level"?2:1,mode!="stale_eligible");
+                Equal("unsupported",Failure(session.Apply(ready.DecisionId,"remove:1")).Outcome);Equal(0,f.Purchases);continue;
+            }
+            Receipt(session.Apply(ready.DecisionId,"remove:1"));
+            switch(mode) {
+                case "wrong_card":f.Deck[1]=target;break;
+                case "same_key_wrong_card":f.Deck[1]=new(new object(),keep.StableKey,keep.UpgradeLevel,keep.Removable);break;
+                case "missing":f.Deck.Insert(1,target);break;
+                case "extra":f.Deck.RemoveAt(1);break;
+                case "reordered":f.Deck.Reverse();break;
+                case "survivor_level":f.Deck[1]=new(keep.ModelIdentity,keep.StableKey,1,true);break;
+                case "debit":f.Gold--;break;
+                case "unpaid":f.Gold=100;break;
+                case "stock":f.Offers[1].Stocked=true;break;
+                case "relic":f.Relics.Clear();break;
+                case "potion":f.Potions.Clear();break;
+                case "pending":f.Offers[1].State=ShopV1Completion.Pending;break;
+            }
+            if(mode=="pending"){Equal("waiting",Obs(session.Read()).Status);f.Offers[1].State=ShopV1Completion.Succeeded;Equal("ready",Obs(session.Read()).Status);}
+            else {Equal("unsupported",Obs(session.Read()).Status);Equal("unsupported",Failure(session.Apply(ready.DecisionId,"remove:1")).Outcome);}
+            Equal(1,f.Purchases);
+        }
+        foreach(string mode in new[]{"empty","poor","many","duplicate_service"}) {
+            f=RemovalFixture();if(mode=="empty")f.Deck.RemoveRange(1,2);if(mode=="poor")f.Gold=0;
+            if(mode=="many")for(int i=0;i<63;i++)f.Deck.Add(new(new object(),"CARD_"+i,0,true));
+            if(mode=="duplicate_service")f.Offers[0].Kind=ShopV1OfferKind.Removal;
+            using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());
+            if(mode is "many" or "duplicate_service")Equal("unsupported",ready.Status);
+            else Equal(false,ready.LegalActions.Any(a=>a.StartsWith("remove:")));
+        }
+    }
+
+    private static MultiplePurchaseFixture RelicFixture(bool belt=false)
+    {
+        var f=new MultiplePurchaseFixture(1);f.Offers[0].Kind=ShopV1OfferKind.Relic;
+        if(belt){f.Offers[0].KeyOverride="POTION_BELT";f.Offers[0].CapacityGain=2;}
+        f.Relics.Add(new(new object(),"OLD_RELIC"));f.Potions.Add(new(new object(),"OLD_POTION"));
+        return f;
+    }
+    private static void RelicPurchases()
+    {
+        foreach(bool belt in new[]{false,true}) {
+            var f=RelicFixture(belt);using var session=new ShopV1Session(Nonce,f);
+            var ready=Obs(session.Read());Receipt(session.Apply(ready.DecisionId,"buy:relic:0"));ready=Obs(session.Read());
+            Equal("ready",ready.Status);Equal("purchase_relic",ready.PriorResults[0].Kind);Equal(90,ready.Player.Gold);
+            Sequence(new[]{"OLD_RELIC",belt?"POTION_BELT":"RELIC_0"},ready.Player.Relics);
+            Equal(belt?3:1,ready.Player.PotionSlots.Count);Equal("OLD_POTION",ready.Player.PotionSlots[0]);
+            Equal(1,f.Disposals);Receipt(session.Apply(ready.DecisionId,"inventory:close"));ready=Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId,"leave"));Equal("complete",Obs(session.Read()).Status);
+        }
+        // Native relic purchase debits first, appends before AfterObtained, then signals completion.
+        {
+            var f=RelicFixture(true);f.Delay=true;using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId,"buy:relic:0"));Equal("waiting",Obs(session.Read()).Status);
+            f.Gold=90;Equal("waiting",Obs(session.Read()).Status);
+            f.Relics.Add(new(f.Offers[0].Card,"POTION_BELT"));Equal("waiting",Obs(session.Read()).Status);
+            f.Potions.Add(new(null,null));f.Potions.Add(new(null,null));Equal("waiting",Obs(session.Read()).Status);
+            f.Offers[0].Stocked=false;f.Offers[0].State=ShopV1Completion.Succeeded;
+            Equal("ready",Obs(session.Read()).Status);Equal(1,f.Purchases);Equal(1,f.Disposals);
+        }
+        foreach(bool appended in new[]{false,true}) {
+            var f=RelicFixture(true);f.Delay=true;using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId,"buy:relic:0"));f.Offers[0].Stocked=false;
+            if(appended){f.Gold=90;f.Relics.Add(new(f.Offers[0].Card,"POTION_BELT"));}
+            Equal("unsupported",Obs(session.Read()).Status);Equal(1,f.Disposals);
+        }
+        foreach(bool capacityFirst in new[]{false,true}) {
+            var f=RelicFixture(true);f.Delay=true;using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());
+            Receipt(session.Apply(ready.DecisionId,"buy:relic:0"));
+            if(capacityFirst){f.Gold=90;f.Potions.Add(new(null,null));f.Potions.Add(new(null,null));}
+            else f.Relics.Add(new(f.Offers[0].Card,"POTION_BELT"));
+            Equal("unsupported",Obs(session.Read()).Status);Equal(1,f.Purchases);Equal(1,f.Disposals);
+        }
+        foreach(string mode in new[]{"stale","missing","wrong_model","wrong_key","wrong_order","extra","survivor","deck","potion","missing_capacity","filled_capacity","extra_capacity","debit","card_survivor","potion_survivor","close_survivor"}) {
+            var f=RelicFixture(true);using var session=new ShopV1Session(Nonce,f);
+            if(mode=="card_survivor"){f.Offers[0].Kind=ShopV1OfferKind.Card;f.Offers[0].CapacityGain=0;}
+            if(mode=="potion_survivor"){f.Offers[0].Kind=ShopV1OfferKind.Potion;f.Offers[0].CapacityGain=0;f.Potions.Add(new(null,null));}
+            var ready=Obs(session.Read());
+            if(mode=="stale"){f.Relics[0]=new(new object(),"OLD_RELIC");Equal("unsupported",Failure(session.Apply(ready.DecisionId,"buy:relic:0")).Outcome);Equal(0,f.Purchases);continue;}
+            string action=mode=="card_survivor"?"buy:card:0":mode=="potion_survivor"?"buy:potion:0":mode=="close_survivor"?"inventory:close":"buy:relic:0";
+            Receipt(session.Apply(ready.DecisionId,action));
+            switch(mode) {
+                case "missing":f.Relics.RemoveAt(1);break;
+                case "wrong_model":f.Relics[1]=new(new object(),"POTION_BELT");break;
+                case "wrong_key":f.Relics[1]=new(f.Offers[0].Card,"WRONG");break;
+                case "wrong_order":f.Relics.Reverse();break;
+                case "extra":f.Relics.Add(new(new object(),"EXTRA"));break;
+                case "survivor":case "card_survivor":case "potion_survivor":case "close_survivor":f.Relics[0]=new(new object(),"OLD_RELIC");break;
+                case "deck":f.Deck.Add(new(new object(),"EXTRA"));break;
+                case "potion":f.Potions[0]=new(new object(),"OLD_POTION");break;
+                case "missing_capacity":f.Potions.RemoveAt(2);break;
+                case "filled_capacity":f.Potions[1]=new(new object(),"EXTRA");break;
+                case "extra_capacity":f.Potions.Add(new(null,null));break;
+                case "debit":f.Gold--;break;
+            }
+            Equal("unsupported",Obs(session.Read()).Status);Equal("unsupported",Failure(session.Apply(ready.DecisionId,action)).Outcome);
+            Equal(mode=="close_survivor"?0:1,f.Purchases);
+        }
+        foreach(string mode in new[]{"full","owned","max_relics","bad_gain","wrong_kind","wrong_gain_key","duplicate_identity"}) {
+            var f=RelicFixture(true);
+            if(mode=="full")for(int i=0;i<6;i++)f.Potions.Add(new(null,null));
+            if(mode=="owned")f.Relics.Add(new(new object(),"POTION_BELT"));
+            if(mode=="max_relics")for(int i=1;i<128;i++)f.Relics.Add(new(new object(),"R_"+i));
+            if(mode=="bad_gain")f.Offers[0].CapacityGain=1;
+            if(mode=="wrong_kind")f.Offers[0].Kind=ShopV1OfferKind.Card;
+            if(mode=="wrong_gain_key")f.Offers[0].KeyOverride="OTHER";
+            if(mode=="duplicate_identity")f.Relics.Add(f.Relics[0]);
+            using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());
+            if(mode is "full" or "owned" or "max_relics")Sequence(new[]{"inventory:close"},ready.LegalActions);else Equal("unsupported",ready.Status);
+            Equal(0,f.Purchases);
+        }
+    }
+
+    private static MultiplePurchaseFixture PotionFixture()
+    {
+        var f=new MultiplePurchaseFixture(3);
+        foreach(var offer in f.Offers)offer.Kind=ShopV1OfferKind.Potion;
+        f.Potions.Add(new(new object(),"OLD_POTION"));f.Potions.Add(new(null,null));f.Potions.Add(new(null,null));
+        return f;
+    }
+    private static void PotionPurchases()
+    {
+        var f=PotionFixture();
+        using(var session=new ShopV1Session(Nonce,f)) {
+            var ready=Obs(session.Read());
+            Equal("rejected",Failure(session.Apply(ready.DecisionId,"buy:card:0")).Outcome);Equal(0,f.Purchases);
+            for(int i=0;i<2;i++) {
+                Receipt(session.Apply(ready.DecisionId,"buy:potion:"+i));ready=Obs(session.Read());
+                Equal("purchase_potion",ready.PriorResults[0].Kind);Equal(i+1,f.Disposals);Equal(1,ready.Player.DeckCount);
+                Equal("POTION_"+i,ready.Player.PotionSlots[i+1]);Equal("OLD_POTION",ready.Player.PotionSlots[0]);
+            }
+            Sequence(new[]{"inventory:close"},ready.LegalActions);Equal(80,ready.Player.Gold);
+            Receipt(session.Apply(ready.DecisionId,"inventory:close"));ready=Obs(session.Read());Receipt(session.Apply(ready.DecisionId,"leave"));
+            Equal("complete",Obs(session.Read()).Status);Equal(2,f.Purchases);
+        }
+        foreach(string mode in new[]{"stale","capacity","survivor","wrong_model","wrong_key","wrong_slot","missing","deck","debit","pending","card_survivor","close_survivor"}) {
+            f=PotionFixture();using var session=new ShopV1Session(Nonce,f);
+            if(mode=="card_survivor")f.Offers[0].Kind=ShopV1OfferKind.Card;
+            var ready=Obs(session.Read());
+            if(mode=="stale") {
+                f.Potions[0]=new(new object(),"OLD_POTION");Equal("unsupported",Failure(session.Apply(ready.DecisionId,"buy:potion:0")).Outcome);Equal(0,f.Purchases);continue;
+            }
+            string action=mode=="card_survivor"?"buy:card:0":mode=="close_survivor"?"inventory:close":"buy:potion:0";
+            Receipt(session.Apply(ready.DecisionId,action));
+            switch(mode) {
+                case "capacity":f.Potions.Add(new(null,null));break;
+                case "survivor":case "card_survivor":case "close_survivor":f.Potions[0]=new(new object(),"OLD_POTION");break;
+                case "wrong_model":f.Potions[1]=new(new object(),"POTION_0");break;
+                case "wrong_key":f.Potions[1]=new(f.Offers[0].Card,"WRONG");break;
+                case "wrong_slot":f.Potions[2]=f.Potions[1];f.Potions[1]=new(null,null);break;
+                case "missing":f.Potions[1]=new(null,null);break;
+                case "deck":f.Deck.Add(new(new object(),"EXTRA"));break;
+                case "debit":f.Gold--;break;
+                case "pending":f.Gold=100;f.Offers[0].State=ShopV1Completion.Pending;break;
+            }
+            if(mode=="pending") {
+                Equal("waiting",Obs(session.Read()).Status);Equal(0,f.Disposals);
+                f.Gold=90;f.Offers[0].State=ShopV1Completion.Succeeded;Equal("ready",Obs(session.Read()).Status);Equal(1,f.Disposals);
+            } else {
+                Equal("unsupported",Obs(session.Read()).Status);
+                Equal("unsupported",Failure(session.Apply(ready.DecisionId,action)).Outcome);Equal(mode=="close_survivor"?0:1,f.Purchases);
+            }
+        }
+        foreach(string mode in new[]{"full","duplicate","malformed","too_many"}) {
+            f=PotionFixture();
+            if(mode=="full")for(int i=1;i<3;i++)f.Potions[i]=new(new object(),"FULL_"+i);
+            if(mode=="duplicate")f.Potions[1]=f.Potions[0];
+            if(mode=="malformed")f.Potions[1]=new(null,"INVALID");
+            if(mode=="too_many")for(int i=0;i<6;i++)f.Potions.Add(new(null,null));
+            using var session=new ShopV1Session(Nonce,f);var ready=Obs(session.Read());
+            if(mode=="full")Sequence(new[]{"inventory:close"},ready.LegalActions);else Equal("unsupported",ready.Status);
+            Equal(0,f.Purchases);
+        }
+    }
+
+    private static void MultiplePurchases()
+    {
+        foreach(int count in new[]{0,1,2,8}) {
+            var f=new MultiplePurchaseFixture();using var session=new ShopV1Session(Nonce,f);
+            var ready=Obs(session.Read());string initial=ready.DecisionId;
+            for(int i=0;i<count;i++) {
+                Equal("accepted",Receipt(session.Apply(ready.DecisionId,"buy:card:"+i)).Outcome);
+                ready=Obs(session.Read());Equal("ready",ready.Status);Equal(i+1,f.Disposals);
+                Equal("purchase_card",ready.PriorResults[0].Kind);Equal(100-10*(i+1),ready.Player.Gold);
+                Equal(i+2,ready.Player.DeckCount);Equal("rejected",Failure(session.Apply(initial,"buy:card:0")).Outcome);
+            }
+            if(count==8)Sequence(new[]{"inventory:close"},ready.LegalActions);
+            Receipt(session.Apply(ready.DecisionId,"inventory:close"));ready=Obs(session.Read());Receipt(session.Apply(ready.DecisionId,"leave"));
+            Equal("complete",Obs(session.Read()).Status);Equal(count,f.Purchases);Equal(1,f.Closes);Equal(1,f.Leaves);
+        }
+        var restocked=new MultiplePurchaseFixture();
+        using(var session=new ShopV1Session(Nonce,restocked)) {
+            var r=Obs(session.Read());Receipt(session.Apply(r.DecisionId,"buy:card:0"));r=Obs(session.Read());
+            restocked.Offers[0].Stocked=true;restocked.Offers[0].Card=new object();
+            Equal("unsupported",Obs(session.Read()).Status);
+            Equal("unsupported",Failure(session.Apply(r.DecisionId,"buy:card:1")).Outcome);Equal(1,restocked.Purchases);
+        }
+        foreach(string failure in new[]{"debit","dispatch","cleanup","delayed"}) {
+            var f=new MultiplePurchaseFixture();var session=new ShopV1Session(Nonce,f);
+            var r=Obs(session.Read());Receipt(session.Apply(r.DecisionId,"buy:card:0"));r=Obs(session.Read());
+            f.BadDebitAt=failure=="debit"?2:-1;f.FailAt=failure=="dispatch"?2:-1;f.BadCleanupAt=failure=="cleanup"?2:-1;f.Delay=failure=="delayed";
+            var receipt=session.Apply(r.DecisionId,"buy:card:1");
+            if(failure=="dispatch")Equal("uncertain",Failure(receipt).Outcome);
+            else Equal("accepted",Receipt(receipt).Outcome);
+            var next=Obs(session.Read());
+            if(failure=="delayed") {Equal("waiting",next.Status);Equal(1,f.Disposals);f.Settle(f.Pending!);next=Obs(session.Read());Equal("ready",next.Status);}
+            else {Equal("unsupported",next.Status);Equal(0,f.Closes);Equal("unsupported",Failure(session.Apply(r.DecisionId,"buy:card:1")).Outcome);}
+            if(failure=="cleanup")Throws<InvalidOperationException>(session.Dispose);else session.Dispose();
+            Equal(2,f.Purchases);
         }
     }
 
@@ -354,10 +645,10 @@ internal static class Program
 
     private static void OutputShapeAndImmutability()
     {
-        ExactProperties(typeof(ShopV1Player), "DeckCount", "Gold");
-        ExactProperties(typeof(ShopV1Offer), "Affordable", "DisplayedPrice", "Enabled", "Key", "Kind", "Slot", "Supported");
+        ExactProperties(typeof(ShopV1Player), "DeckCount", "Gold", "PotionSlots", "Relics");
+        ExactProperties(typeof(ShopV1Offer), "Affordable", "DisplayedPrice", "Enabled", "Key", "Kind", "Slot", "Supported", "PotionCapacityGain");
         ExactProperties(typeof(ShopV1ReconciledAction), "ActionId", "DecisionId", "FlowKind", "Kind", "ParentOrdinal", "Result", "SessionNonce");
-        ExactProperties(typeof(ShopV1Observation), "DecisionId", "FlowKind", "LegalActions", "Offers", "ParentOrdinal", "Phase", "Player", "PriorResults", "SessionNonce", "Status", "Version");
+        ExactProperties(typeof(ShopV1Observation), "DecisionId", "FlowKind", "LegalActions", "Offers", "RemovalCandidates", "ParentOrdinal", "Phase", "Player", "PriorResults", "SessionNonce", "Status", "Version");
         ExactProperties(typeof(RoomFlowDispatchReceipt), "ActionId", "DecisionId", "FlowKind", "Outcome", "ParentOrdinal", "SessionNonce");
         ExactProperties(typeof(RoomFlowApplyFailure), "FlowKind", "Outcome", "ParentOrdinal", "SessionNonce");
 
