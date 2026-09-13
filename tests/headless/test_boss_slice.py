@@ -2,6 +2,7 @@
 
 import json
 from copy import deepcopy
+from dataclasses import replace
 from random import Random
 
 import pytest
@@ -266,7 +267,13 @@ def test_act_completion_cannot_be_reached_through_a_map_terminal_node():
     assert saved(run) == before
 
 
-def test_default_demo_boss_route_replays_defeat_without_fabricating_act_completion():
+def test_maze_elite_demo_replays_defeat_without_fabricating_act_completion(monkeypatch):
+    from game.headless.run import scenarios
+    graph = scenarios.overgrowth_act1_map()
+    maze_route = MapGraph(tuple(replace(node, next_node_ids=tuple(
+        target for target in node.next_node_ids if target != "aroma"))
+        for node in graph.nodes if node.node_id != "aroma"), graph.start_id)
+    monkeypatch.setattr(scenarios, "ROUTES", {**scenarios.ROUTES, "overgrowth-act1": lambda: maze_route})
     run, trace = play_slice(seed=2, route="overgrowth-act1", rest_choice="rest", path="right", verify_restore=True)
     assert run.state.phase is RunPhase.DEFEAT
     assert "vantom" in run.state.visited_nodes and run.state.act_completion is None

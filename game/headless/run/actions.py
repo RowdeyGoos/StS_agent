@@ -114,3 +114,9 @@ class ChooseEventOption:
 @dataclass(frozen=True, slots=True)
 class LeaveEvent:
     event_instance_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseEventCard:
+    event_instance_id: int
+    card_instance_id: str

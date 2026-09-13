@@ -56,7 +56,7 @@ whether slimes or Fuzzy Wurm comes second, fight the other third, rest/smith, th
 choose Mawler, paired Nibbits or the Byrdonis elite. Elite rewards include 35–45
 gold and a relic from Strawberry/Pear/Mango, which permanently raises maximum HP
 and heals on pickup. `--path right` selects the elite; `left` selects Mawler.
-Add `--route overgrowth-act1` for Jungle Maze Adventure and a treasure chest after
+Add `--route overgrowth-act1` for an event fork and a treasure chest after
 the third fight, followed
 by the fourth fight, an optional shop, a second rest site and Vantom. Opening the
 chest grants 42–52 gold; its relic can be taken or skipped. The restricted fruit
@@ -67,7 +67,12 @@ card and removes a starter if it can afford both; direct commands allow any lega
 purchase sequence. Shop choices also support `--verify-restore`.
 Jungle Maze Adventure offers Solo Quest (18 damage for more gold) or Join Forces
 (less gold, no damage). The demo chooses Join Forces. Both payouts are fixed on
-event entry, and event choices support `--verify-restore`.
+event entry, and event choices support `--verify-restore`. The left path visits
+Jungle Maze; the right visits Aroma of Chaos. Aroma offers Let Go (transform one
+card) or Maintain Control (upgrade one). Its mandatory card choice resolves
+automatically for zero or one eligible card. The demo upgrades Bash when possible.
+Transformations use the 12 implemented nonstarter Ironclad cards, exclude the
+original definition and create a new unupgraded card in the same deck position.
 This route also offers Sword Boomerang, including its four-hit upgrade.
 Leaving the boss rewards records `act_complete` for Act 1; it does not declare
 full-game victory. The simple demo player can lose on this route. Boss rewards

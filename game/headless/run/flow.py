@@ -8,7 +8,7 @@ from game.headless.run.actions import (
     ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
-    OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, LeaveEvent,
+    OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
 )
 from game.headless.run import rest_site, rewards, shop, treasure, events
 from game.headless.run.inventory import discard_potion, potion_slot
@@ -64,6 +64,8 @@ def legal_actions(engine) -> tuple:
         actions.extend(treasure.legal_actions(state))
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "scripted_event":
         actions.extend(events.legal_actions(state))
+        if state.pending["stage"] == "select_card":
+            return tuple(actions)
     actions.extend(DiscardPotion(p.instance_id) for p in state.potions if p is not None)
     return tuple(actions)
 
@@ -92,7 +94,7 @@ def apply(engine, action):
         if node.kind in ("combat", "elite", "boss", "shop", "treasure", "event"):
             try:
                 if node.kind == "event":
-                    events.begin(state, node.event_id)
+                    events.begin(state, node.event_id, cards=engine.cards)
                     return node
                 if node.kind == "treasure":
                     treasure.begin(state)
@@ -124,7 +126,9 @@ def apply(engine, action):
     if isinstance(action, DiscardPotion):
         return discard_potion(state, action.instance_id)
     if isinstance(action, ChooseEventOption):
-        return events.choose(state, action.event_instance_id, action.option_id)
+        return events.choose(state, action.event_instance_id, action.option_id, cards=engine.cards)
+    if isinstance(action, ChooseEventCard):
+        return events.select_card(state, action.event_instance_id, action.card_instance_id, cards=engine.cards)
     if isinstance(action, LeaveEvent):
         return events.leave(state, action.event_instance_id)
     if isinstance(action, OpenChest):

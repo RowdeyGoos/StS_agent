@@ -12,7 +12,7 @@ class JungleMazeAdventure:
     solo_gold_range: tuple[int, int] = (135, 164)
     join_gold_range: tuple[int, int] = (35, 64)
 
-    def generate(self, rng):
+    def generate(self, rng, *, state=None, cards=None):
         # Native values are 150/50 + NextFloat(-15, 15), then truncated on gain.
         # Integer sampling of the resulting amounts is authored, not native RNG.
         return {"solo_gold": rng.randint("event.jungle_maze", *self.solo_gold_range),
@@ -22,7 +22,7 @@ class JungleMazeAdventure:
     def options(self, pending):
         return ("solo_quest", "join_forces") if pending["stage"] == "options" else ()
 
-    def choose(self, state, pending, option_id):
+    def choose(self, state, pending, option_id, *, cards=None):
         data = pending["data"]
         if option_id == "solo_quest":
             apply_effect(state, "lose_hp", self.solo_damage)
@@ -33,7 +33,7 @@ class JungleMazeAdventure:
         data["choice"] = option_id
         pending["stage"] = "resolved"
 
-    def validate(self, pending, *, defeated=False):
+    def validate(self, pending, *, state=None, cards=None, defeated=False):
         data = pending["data"]
         if not isinstance(data, dict) or set(data) != {"solo_gold", "join_gold", "choice"}:
             raise ValueError("Invalid Jungle Maze event data.")

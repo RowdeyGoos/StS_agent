@@ -158,8 +158,8 @@ Do not scaffold empty plugin frameworks or guess all future hooks now.
 
 ## Ordinary events
 
-The Act 1 route visits Jungle Maze Adventure after its third combat, immediately
-before treasure. `ChooseEventOption(event_instance_id, option_id)` chooses
+The Act 1 route offers Jungle Maze Adventure on the left and Aroma of Chaos on
+the right after its third combat, immediately before treasure. `ChooseEventOption(event_instance_id, option_id)` chooses
 `solo_quest` or `join_forces`. Solo Quest deals 18 damage, then grants the larger
 gold amount; Join Forces grants the smaller amount without damage. There is no
 initial leave choice. After resolution, `LeaveEvent(event_instance_id)` returns
@@ -174,7 +174,25 @@ is not claimed. Each event owns its ID, stage, variables and selected outcome.
 Inspection and restore consume no draws, and stale/repeated choices cannot award
 again. Map event IDs and the event catalog are included in private snapshots.
 
-`events/jungle_maze.py` owns the event rules; `run/events.py` owns lifecycle and
+Aroma offers `let_go` (transform one card) and `maintain_control` (upgrade one).
+`ChooseEventCard(event_instance_id, card_instance_id)` resolves the mandatory
+selection. There is no cancel; zero eligible cards finish without mutation, and
+one resolves automatically. Multiple candidates expose only their exact card
+commands until selection finishes. Upgrades preserve identity; transformation
+uses `run/deck.py` to replace the original at the same index with a fresh owned
+ID and base upgrade level, excluding its original definition. Candidate validation
+precedes an owned RNG draw; failed transforms preserve deck, allocator and RNG.
+
+The explicit transformation pool contains the 12 implemented nonstarter Ironclad
+cards. Aroma currently accepts only those cards and Strike/Defend/Bash in the
+master deck; missing catalog content or unsupported source cards reject entry
+atomically. Status/curse/colorless pools, Eternal and transformation hooks remain
+open. The demo chooses Maintain Control, prioritizing Bash. Selector candidates
+and resolved results are plain saved data checked against the permanent deck.
+See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md).
+
+`events/jungle_maze.py` and `events/aroma_of_chaos.py` own event rules;
+`run/events.py` owns lifecycle and
 dispatch. The older primitive event fixture still uses `run/rooms.py`; native
 content is not dispatched by its synthetic option dictionary. Native event pool
 weights, eligibility/repeat tracking, multiplayer voting and the rest of the
@@ -337,10 +355,10 @@ run in `act_complete`. Winning the fight alone leaves the reward decision active
 There is no map shortcut to this outcome, no Act 2 launch or inter-act healing,
 and no claim of full-game victory. The example player is deliberately simple;
 `--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
-still demonstrates a boss defeat. With `--path left --rest-choice rest`, the
-installed seed-2 demo now wins this authored Act 1 at 11/94 HP in 124 commands,
-including event, treasure and shop decisions with exact restore. See the
-[event acceptance](evidence/first_event_2026_09_13.md). This five-fight route omits
+now wins after Aroma upgrades Bash. The left/rest seed-2 route also wins,
+including Jungle Maze, treasure and shop decisions. The original Maze/elite
+route remains a tested defeat case. See the
+[Aroma acceptance](evidence/aroma_of_chaos_2026_09_13.md). This five-fight route omits
 most of a native Act 1 map and its deck-building opportunities. See the
 [boss source and acceptance evidence](evidence/first_boss_2026_09_13.md).
 
@@ -388,14 +406,14 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v7`, including configuration,
+Private run snapshots now use `headless_run_state_v8`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection,
 shop/treasure/event catalog fingerprints, event node IDs and pending event data, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.
 Nested combat records now use `headless_combat_state_v4`, including the in-play
 pile, pending continuation, selection/target RNG and power duration flags. Earlier combat
-v1/v2/v3 and run v1/v2/v3/v4/v5/v6 formats are rejected rather than assigning invented item
+v1/v2/v3 and run v1/v2/v3/v4/v5/v6/v7 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed
