@@ -100,6 +100,14 @@ class Enemy(ABC):
     def incoming_attack_multiplier(self):
         return (1, 1)
 
+    def _attack_multiplier(self, attacker_statuses):
+        n, d = self.incoming_attack_multiplier()
+        player = self.combat_player
+        if player is not None and attacker_statuses is player.statuses and self.statuses.get('vulnerable'):
+            n *= 150 + player.rules.powers.get('cruelty', 0)
+            d *= 150
+        return n, d
+
     def start_turn(self) -> None:
         """Clear block at the start of the enemy turn."""
         self.block = 0
@@ -130,7 +138,7 @@ class Enemy(ABC):
                 self.statuses,
                 attacker_statuses=attacker_statuses,
                 attacker_strength=attacker_strength,
-                extra_multiplier=self.incoming_attack_multiplier(),
+                extra_multiplier=self._attack_multiplier(attacker_statuses),
             )
             if is_attack
             else amount
@@ -148,12 +156,14 @@ class Enemy(ABC):
             settle_enemies(self.combat_player)
         return damage
 
-    def apply_status(self, status_name: str, stacks: int) -> None:
+    def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the enemy."""
-        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink") and self.statuses.get("artifact"):
+        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle") and self.statuses.get("artifact"):
             self.statuses.decrement("artifact")
             return
         self.statuses.add(status_name, stacks)
+        if status_name == 'vulnerable' and stacks and source is not None:
+            source.draw_cards(source.rules.powers.get('vicious', 0))
 
     def to_observation(self) -> dict[str, int | str | bool | dict[str, int] | dict[str, int | str | None]]:
         """Return a plain dict snapshot used by observations and renderers."""
@@ -201,9 +211,10 @@ class Enemy(ABC):
             player.take_damage(
                 current_intent.attack_damage if current_intent.base_attack_damage is None else current_intent.base_attack_damage,
                 attacker_statuses=None if current_intent.base_attack_damage is None else self.statuses,
-                attacker_strength=0 if current_intent.base_attack_damage is None else self.strength,
+                attacker_strength=-self.statuses.get("mangle") if current_intent.base_attack_damage is None else self.strength - self.statuses.get("mangle"),
+                source=self,
             )
-            if not player.is_alive:
+            if not player.is_alive or not self.is_alive:
                 return current_intent
         if current_intent.block_gain > 0:
             self.gain_block(current_intent.block_gain)
@@ -251,7 +262,7 @@ class Enemy(ABC):
                 template.attack_damage,
                 {},
                 attacker_statuses=self.statuses,
-                attacker_strength=self.strength,
+                attacker_strength=self.strength - self.statuses.get("mangle"),
             )
 
         resolved_value = template.value

@@ -1,5 +1,6 @@
 """The restricted first boss reward pool, including each native upgrade."""
 
+from dataclasses import replace
 from game.headless.cards.base import CardDefinition, CardSpec
 from game.headless.cards.effects import GainBlock, LoseHp, GainEnergy, DrawCards, ExhaustHandAttack
 
@@ -15,5 +16,9 @@ FIEND_FIRE = CardDefinition("fiend_fire", (
     CardSpec("Fiend Fire", 2, "attack", base_damage=7, exhausts=True),
     CardSpec("Fiend Fire+", 2, "attack", base_damage=10, exhausts=True),
 ), (ExhaustHandAttack(),))
+IMPERVIOUS = replace(IMPERVIOUS, pool="ironclad", rarity="rare", strike=False)
+OFFERING = replace(OFFERING, pool="ironclad", rarity="rare", strike=False)
+FIEND_FIRE = replace(FIEND_FIRE, pool="ironclad", rarity="rare", strike=False)
+
 DEFINITIONS = (IMPERVIOUS, OFFERING, FIEND_FIRE)
 

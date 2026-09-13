@@ -1,0 +1,794 @@
+{
+  "game_version": "0.107.1",
+  "steam_build": "23811903",
+  "assembly_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "excluded_multiplayer": [
+    "demonic_shield",
+    "tank"
+  ],
+  "cards": [
+    {
+      "definition_id": "aggression",
+      "native_type": "Aggression",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100690783
+    },
+    {
+      "definition_id": "anger",
+      "native_type": "Anger",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100690802
+    },
+    {
+      "definition_id": "armaments",
+      "native_type": "Armaments",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100690825
+    },
+    {
+      "definition_id": "ashen_strike",
+      "native_type": "AshenStrike",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100690838
+    },
+    {
+      "definition_id": "barricade",
+      "native_type": "Barricade",
+      "cost": 3,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100690895
+    },
+    {
+      "definition_id": "bash",
+      "native_type": "Bash",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "basic",
+      "uses_target": true,
+      "ctor_token": 100690899
+    },
+    {
+      "definition_id": "battle_trance",
+      "native_type": "BattleTrance",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100690904
+    },
+    {
+      "definition_id": "bloodletting",
+      "native_type": "Bloodletting",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100690973
+    },
+    {
+      "definition_id": "blood_wall",
+      "native_type": "BloodWall",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100690978
+    },
+    {
+      "definition_id": "bludgeon",
+      "native_type": "Bludgeon",
+      "cost": 3,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100690984
+    },
+    {
+      "definition_id": "body_slam",
+      "native_type": "BodySlam",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100690998
+    },
+    {
+      "definition_id": "brand",
+      "native_type": "Brand",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691045
+    },
+    {
+      "definition_id": "break",
+      "native_type": "Break",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "ancient",
+      "uses_target": true,
+      "ctor_token": 100691050
+    },
+    {
+      "definition_id": "breakthrough",
+      "native_type": "Breakthrough",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100691055
+    },
+    {
+      "definition_id": "bully",
+      "native_type": "Bully",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691083
+    },
+    {
+      "definition_id": "burning_pact",
+      "native_type": "BurningPact",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691106
+    },
+    {
+      "definition_id": "cascade",
+      "native_type": "Cascade",
+      "cost": -1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691158
+    },
+    {
+      "definition_id": "cinder",
+      "native_type": "Cinder",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100691194
+    },
+    {
+      "definition_id": "colossus",
+      "native_type": "Colossus",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691244
+    },
+    {
+      "definition_id": "conflagration",
+      "native_type": "Conflagration",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691266
+    },
+    {
+      "definition_id": "corruption",
+      "native_type": "Corruption",
+      "cost": 3,
+      "kind": "power",
+      "rarity": "ancient",
+      "uses_target": false,
+      "ctor_token": 100691307
+    },
+    {
+      "definition_id": "crimson_mantle",
+      "native_type": "CrimsonMantle",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691336
+    },
+    {
+      "definition_id": "cruelty",
+      "native_type": "Cruelty",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691341
+    },
+    {
+      "definition_id": "dark_embrace",
+      "native_type": "DarkEmbrace",
+      "cost": 2,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691371
+    },
+    {
+      "definition_id": "defend",
+      "native_type": "DefendIronclad",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "basic",
+      "uses_target": false,
+      "ctor_token": 100691449
+    },
+    {
+      "definition_id": "demon_form",
+      "native_type": "DemonForm",
+      "cost": 3,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691507
+    },
+    {
+      "definition_id": "demonic_shield",
+      "native_type": "DemonicShield",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691512
+    },
+    {
+      "definition_id": "dismantle",
+      "native_type": "Dismantle",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691550
+    },
+    {
+      "definition_id": "dominate",
+      "native_type": "Dominate",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691566
+    },
+    {
+      "definition_id": "drum_of_battle",
+      "native_type": "DrumOfBattle",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691599
+    },
+    {
+      "definition_id": "evil_eye",
+      "native_type": "EvilEye",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691700
+    },
+    {
+      "definition_id": "expect_a_fight",
+      "native_type": "ExpectAFight",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691709
+    },
+    {
+      "definition_id": "feed",
+      "native_type": "Feed",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100691752
+    },
+    {
+      "definition_id": "feel_no_pain",
+      "native_type": "FeelNoPain",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691764
+    },
+    {
+      "definition_id": "fiend_fire",
+      "native_type": "FiendFire",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100691782
+    },
+    {
+      "definition_id": "fight_me",
+      "native_type": "FightMe",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691788
+    },
+    {
+      "definition_id": "flame_barrier",
+      "native_type": "FlameBarrier",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691819
+    },
+    {
+      "definition_id": "forgotten_ritual",
+      "native_type": "ForgottenRitual",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691876
+    },
+    {
+      "definition_id": "havoc",
+      "native_type": "Havoc",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100692073
+    },
+    {
+      "definition_id": "headbutt",
+      "native_type": "Headbutt",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100692084
+    },
+    {
+      "definition_id": "hellraiser",
+      "native_type": "Hellraiser",
+      "cost": 2,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692112
+    },
+    {
+      "definition_id": "hemokinesis",
+      "native_type": "Hemokinesis",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100692117
+    },
+    {
+      "definition_id": "howl_from_beyond",
+      "native_type": "HowlFromBeyond",
+      "cost": 3,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692155
+    },
+    {
+      "definition_id": "impervious",
+      "native_type": "Impervious",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692195
+    },
+    {
+      "definition_id": "infernal_blade",
+      "native_type": "InfernalBlade",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692208
+    },
+    {
+      "definition_id": "inferno",
+      "native_type": "Inferno",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692212
+    },
+    {
+      "definition_id": "inflame",
+      "native_type": "Inflame",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692220
+    },
+    {
+      "definition_id": "iron_wave",
+      "native_type": "IronWave",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100692241
+    },
+    {
+      "definition_id": "juggernaut",
+      "native_type": "Juggernaut",
+      "cost": 2,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692259
+    },
+    {
+      "definition_id": "juggling",
+      "native_type": "Juggling",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692264
+    },
+    {
+      "definition_id": "mangle",
+      "native_type": "Mangle",
+      "cost": 3,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100692403
+    },
+    {
+      "definition_id": "molten_fist",
+      "native_type": "MoltenFist",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100692514
+    },
+    {
+      "definition_id": "not_yet",
+      "native_type": "NotYet",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692599
+    },
+    {
+      "definition_id": "offering",
+      "native_type": "Offering",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692620
+    },
+    {
+      "definition_id": "one_two_punch",
+      "native_type": "OneTwoPunch",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692630
+    },
+    {
+      "definition_id": "pacts_end",
+      "native_type": "PactsEnd",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692655
+    },
+    {
+      "definition_id": "perfected_strike",
+      "native_type": "PerfectedStrike",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100692707
+    },
+    {
+      "definition_id": "pillage",
+      "native_type": "Pillage",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100692728
+    },
+    {
+      "definition_id": "pommel_strike",
+      "native_type": "PommelStrike",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100692756
+    },
+    {
+      "definition_id": "primal_force",
+      "native_type": "PrimalForce",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692786
+    },
+    {
+      "definition_id": "pyre",
+      "native_type": "Pyre",
+      "cost": 2,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692837
+    },
+    {
+      "definition_id": "rage",
+      "native_type": "Rage",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692855
+    },
+    {
+      "definition_id": "rampage",
+      "native_type": "Rampage",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100692871
+    },
+    {
+      "definition_id": "rupture",
+      "native_type": "Rupture",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693007
+    },
+    {
+      "definition_id": "second_wind",
+      "native_type": "SecondWind",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693059
+    },
+    {
+      "definition_id": "setup_strike",
+      "native_type": "SetupStrike",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100693093
+    },
+    {
+      "definition_id": "shrug_it_off",
+      "native_type": "ShrugItOff",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100693170
+    },
+    {
+      "definition_id": "spite",
+      "native_type": "Spite",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693305
+    },
+    {
+      "definition_id": "stampede",
+      "native_type": "Stampede",
+      "cost": 2,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693361
+    },
+    {
+      "definition_id": "stoke",
+      "native_type": "Stoke",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100693370
+    },
+    {
+      "definition_id": "stomp",
+      "native_type": "Stomp",
+      "cost": 3,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693372
+    },
+    {
+      "definition_id": "stone_armor",
+      "native_type": "StoneArmor",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693380
+    },
+    {
+      "definition_id": "strike",
+      "native_type": "StrikeIronclad",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "basic",
+      "uses_target": true,
+      "ctor_token": 100693405
+    },
+    {
+      "definition_id": "sword_boomerang",
+      "native_type": "SwordBoomerang",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100693476
+    },
+    {
+      "definition_id": "tank",
+      "native_type": "Tank",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100693506
+    },
+    {
+      "definition_id": "taunt",
+      "native_type": "Taunt",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693510
+    },
+    {
+      "definition_id": "tear_asunder",
+      "native_type": "TearAsunder",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100693516
+    },
+    {
+      "definition_id": "thrash",
+      "native_type": "Thrash",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100693577
+    },
+    {
+      "definition_id": "thunderclap",
+      "native_type": "Thunderclap",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100693596
+    },
+    {
+      "definition_id": "tremble",
+      "native_type": "Tremble",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100693636
+    },
+    {
+      "definition_id": "true_grit",
+      "native_type": "TrueGrit",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "common",
+      "uses_target": false,
+      "ctor_token": 100693642
+    },
+    {
+      "definition_id": "twin_strike",
+      "native_type": "TwinStrike",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "common",
+      "uses_target": true,
+      "ctor_token": 100693653
+    },
+    {
+      "definition_id": "unmovable",
+      "native_type": "Unmovable",
+      "cost": 2,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100693684
+    },
+    {
+      "definition_id": "unrelenting",
+      "native_type": "Unrelenting",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693688
+    },
+    {
+      "definition_id": "uppercut",
+      "native_type": "Uppercut",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693705
+    },
+    {
+      "definition_id": "vicious",
+      "native_type": "Vicious",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693723
+    },
+    {
+      "definition_id": "whirlwind",
+      "native_type": "Whirlwind",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693761
+    }
+  ]
+}

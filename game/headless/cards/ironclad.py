@@ -1,5 +1,6 @@
 """Implemented Ironclad cards. Add each verified card family in this layer."""
 
+from dataclasses import replace
 from game.headless.cards.base import Card, CardDefinition, CardSpec
 from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock, SelectHandCard, ApplyDebuffs, RandomEnemyAttack
 from game.headless.powers.status import VULNERABLE, WEAK
@@ -53,6 +54,18 @@ SWORD_BOOMERANG = CardDefinition("sword_boomerang", (
     CardSpec("Sword Boomerang", 1, "attack", base_damage=3, uses_target=False),
     CardSpec("Sword Boomerang+", 1, "attack", base_damage=3, uses_target=False),
 ), (RandomEnemyAttack(hits=3, upgraded_hits=4),))
+
+STRIKE = replace(STRIKE, pool="ironclad", rarity="basic", strike=True)
+DEFEND = replace(DEFEND, pool="ironclad", rarity="basic", strike=False)
+BASH = replace(BASH, pool="ironclad", rarity="basic", strike=False)
+POMMEL_STRIKE = replace(POMMEL_STRIKE, pool="ironclad", rarity="common", strike=True)
+SHRUG_IT_OFF = replace(SHRUG_IT_OFF, pool="ironclad", rarity="common", strike=False)
+IRON_WAVE = replace(IRON_WAVE, pool="ironclad", rarity="common", strike=False)
+BODY_SLAM = replace(BODY_SLAM, pool="ironclad", rarity="common", strike=False)
+ARMAMENTS = replace(ARMAMENTS, pool="ironclad", rarity="common", strike=False)
+TRUE_GRIT = replace(TRUE_GRIT, pool="ironclad", rarity="common", strike=False)
+UPPERCUT = replace(UPPERCUT, pool="ironclad", rarity="uncommon", strike=False)
+SWORD_BOOMERANG = replace(SWORD_BOOMERANG, pool="ironclad", rarity="common", strike=False)
 
 DEFINITIONS = (SWORD_BOOMERANG, STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE,
                BODY_SLAM, ARMAMENTS, TRUE_GRIT, UPPERCUT)

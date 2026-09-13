@@ -21,7 +21,8 @@ PLOW = "plow"
 MINION = "minion"
 ILLUSION = "illusion"
 INFESTED = "infested"
-SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED)
+MANGLE = "mangle"
+SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE)
 STATUS_STACK_SCALE = 5.0
 
 
@@ -39,7 +40,7 @@ STATUS_DEFINITIONS = MappingProxyType({
     WEAK: StatusDefinition(name=WEAK),
     FRAIL: StatusDefinition(name=FRAIL),
     **{name: StatusDefinition(name=name, duration_tick_side=None) for name in
-       (ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED)},
+       (ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE)},
     TERRITORIAL: StatusDefinition(name=TERRITORIAL, duration_tick_side=None),
     SLIPPERY: StatusDefinition(name=SLIPPERY, duration_tick_side=None),
 })

@@ -13,14 +13,16 @@ from game.headless.core.deck import Deck
 from game.headless.core.player import Player
 from game.headless.core.selection import PendingCardPlay
 from game.headless.cards.effects import SelectHandCard
+from game.headless.cards.operations import ChoosePileCard
+from game.headless.core.card_state import CardState
 from game.headless.monsters.base import Intent
 from game.headless.monsters.catalog import DEFAULT_MONSTERS
 from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v7"
-PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play")
+SCHEMA = "headless_combat_state_v8"
+PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
 
@@ -28,11 +30,11 @@ def card_record(card) -> dict:
     enchantments.validate(card)
     return {"definition_id": card.definition.definition_id,
             "instance_id": card.instance_id, "upgrade_level": card.upgrade_level, "combats_seen": card.combats_seen,
-            "enchantment": enchantments.record(card)}
+            "enchantment": enchantments.record(card), "combat_state": asdict(card.combat_state)}
 
 
 def restore_card(record, cards=DEFAULT_CARDS):
-    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "enchantment"}:
+    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "enchantment", "combat_state"}:
         raise ValueError("Invalid card state fields.")
     if not isinstance(record["instance_id"], str) or not record["instance_id"]:
         raise ValueError("Invalid card instance ID.")
@@ -41,6 +43,10 @@ def restore_card(record, cards=DEFAULT_CARDS):
     if type(count) is not int or not 0 <= count < max(1, card.definition.combat_lifetime):
         raise ValueError("Invalid card combat lifetime.")
     card.combats_seen = count
+    values = record["combat_state"]
+    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['free_this_turn']) is not bool:
+        raise ValueError('Invalid transient card state.')
+    card.combat_state = CardState(**values)
     card.enchantment = enchantments.restore(record["enchantment"])
     enchantments.validate(card)
     return card
@@ -92,8 +98,8 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "config": {"player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
-                   "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
-        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "next_instance_id": deck._next_instance_id,
+                   "rules": asdict(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
+        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
     }
@@ -133,6 +139,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         deck.rng = rng_at(source_deck["rng"])
         deck.selection_rng = rng_at(source_deck["selection_rng"])
         deck.target_rng = rng_at(source_deck["target_rng"])
+        deck.generation_rng = rng_at(source_deck["generation_rng"])
         deck._next_instance_id = source_deck["next_instance_id"]
         if type(deck._next_instance_id) is not int or deck._next_instance_id < 0:
             raise ValueError("Invalid card allocator.")
@@ -188,8 +195,10 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         config = snapshot["config"]
         if set(config) != {"player_max_hp", "energy_per_turn", "cards_per_turn"} or any(type(v) is not int or v < 0 for v in config.values()) or config["player_max_hp"] <= 0:
             raise ValueError("Invalid combat configuration.")
-        if player.max_hp != config["player_max_hp"]:
+        if player.max_hp != config["player_max_hp"] + snapshot["player"]["rules"]["max_hp_gained"]:
             raise ValueError("Player maximum HP differs from the combat configuration.")
+        if any(c.spec.kind != 'power' for c in deck.powers):
+            raise ValueError('Only played power cards belong in the powers pile.')
         player.combat_enemies = enemies
         count = snapshot["player"]["cards_played_this_turn"]
         if type(count) is not int or count < 0:
@@ -204,6 +213,9 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         for enemy in enemies:
             enemy.combat_player = player
             enemy.validate_combat_context(player)
+        from game.headless.core.rule_snapshots import restore_rules
+        restore_rules(snapshot["player"]["rules"], player)
+        player.catalog = cards
         pending = snapshot["pending_play"]
         if pending is None:
             if deck.in_play:
@@ -211,9 +223,9 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         else:
             if not isinstance(pending, dict) or set(pending) != {"effect_index", "target_slot"}:
                 raise ValueError("Invalid pending card play fields.")
-            if winner is not None or len(deck.in_play) != 1:
+            if winner is not None or not deck.in_play:
                 raise ValueError("Pending choice requires one resolving card in active combat.")
-            card = deck.in_play[0]
+            card = deck.in_play[-1]
             index, slot = pending["effect_index"], pending["target_slot"]
             if type(index) is not int or not 0 <= index < len(card.definition.effects):
                 raise ValueError("Invalid pending effect index.")
@@ -222,8 +234,12 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
                     raise ValueError("Invalid pending target slot.")
             elif slot is not None:
                 raise ValueError("Untargeted pending play cannot have a target.")
+            if player.rules.plays[card.instance_id]['effect_index'] != index:
+                raise ValueError('Pending effect differs from its play.')
+            if player.rules.plays[card.instance_id]['target'] != slot:
+                raise ValueError('Pending target differs from its play.')
             effect = card.definition.effects[index]
-            if not isinstance(effect, SelectHandCard) or effect.mode_for(card) != "choose" or len(effect.eligible(player)) <= 1:
+            if not isinstance(effect, (SelectHandCard, ChoosePileCard)) or effect.mode_for(card) != "choose" or len(effect.eligible(player)) <= 1:
                 raise ValueError("Pending effect does not require a hand choice.")
             player.pending_play = PendingCardPlay(index, slot)
         return {**config, "rng": rng_at(snapshot["combat_rng"]), "player": player,

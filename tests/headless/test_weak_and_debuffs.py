@@ -56,9 +56,9 @@ def test_shockwave_hits_every_living_slot_in_native_order_and_exhausts(level, st
     calls = []
     for slot, enemy in enumerate(combat.enemies):
         original = enemy.apply_status
-        def record(name, amount, slot=slot, original=original):
+        def record(name, amount, slot=slot, original=original, **kwargs):
             calls.append((slot, name, amount))
-            original(name, amount)
+            original(name, amount, **kwargs)
         monkeypatch.setattr(enemy, "apply_status", record)
     assert PlayCard("run.card.0") in combat.legal_actions()
     assert PlayCard("run.card.0", 0) not in combat.legal_actions()

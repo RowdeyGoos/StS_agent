@@ -24,6 +24,12 @@ class Player:
         energy_per_turn: int = 3,
     ) -> None:
         self.deck = deck
+        deck.owner = self
+        from game.headless.core.card_state import CombatRules
+
+        self.rules = CombatRules()
+        self._resolving = False
+        self.catalog = None
         self.max_hp = max_hp
         self.hp = max_hp
         self.block = 0
@@ -50,43 +56,54 @@ class Player:
 
     def start_turn(self, draw_count: int = 5) -> None:
         """Start the player's turn by clearing block, resetting energy, and drawing."""
-        self.block = 0
-        self.energy = self.energy_per_turn
-        self.cards_played_this_turn = 0
-        self.draw_cards(draw_count)
+        from game.headless.powers.ironclad import start_turn
+
+        start_turn(self, draw_count)
 
     def draw_cards(self, count: int) -> list[Card]:
-        """Draw cards through the player's deck and return the cards drawn."""
+        from game.headless.core.resolution import push, drain
+
         if count < 0:
             raise ValueError("Draw count cannot be negative.")
-        if self.combat_is_ending:
+        if self.combat_is_ending or self.rules.powers.get("no_draw"):
             return []
-        return self.deck.draw(count)
+        if self._resolving:
+            push(self, ["draw", count, False])
+            return []
+        before = {c.instance_id for c in self.hand}
+        push(self, ["draw", count, False])
+        drain(self)
+        return [c for c in self.hand if c.instance_id not in before]
 
     @property
     def combat_is_ending(self) -> bool:
-        return not self.is_alive or (self.combat_enemies is not None and
-                                    not any(e.is_alive for e in self.combat_enemies))
+        return not self.is_alive or (
+            self.combat_enemies is not None and not any(e.is_alive for e in self.combat_enemies)
+        )
 
     def end_turn(self) -> None:
         """End the player's turn by discarding the current hand."""
         if self.pending_play is not None:
             raise ValueError("Resolve the pending card choice first.")
-        for card in tuple(self.hand):
-            if card.spec.end_turn_damage:
-                self.take_damage(card.spec.end_turn_damage, is_attack=False)
-                if not self.is_alive:
-                    return
-            if card.spec.ethereal:
-                self.hand.remove(card)
-                self.deck.exhaust_card(card)
-        self.deck.discard_hand()
+        from game.headless.powers.ironclad import end_turn
+
+        end_turn(self)
 
     def gain_block(self, amount: int, *, powered: bool = False) -> None:
         """Increase player block."""
         if amount < 0:
             raise ValueError("Block gain cannot be negative.")
-        self.block += amount * 3 // 4 if powered and self.statuses.get("frail") else amount
+        from game.headless.powers.ironclad import block_multiplier, record_block, after_block
+
+        if not amount:
+            return
+        gain = amount * block_multiplier(self, powered)
+        if powered and self.statuses.get("frail"):
+            gain = gain * 3 // 4
+        self.block += gain
+        if gain:
+            record_block(self, powered)
+            after_block(self)
 
     def take_damage(
         self,
@@ -94,6 +111,7 @@ class Player:
         is_attack: bool = True,
         attacker_statuses: StatusCollection | None = None,
         attacker_strength: int = 0,
+        source=None,
     ) -> int:
         """Apply incoming damage and return the HP damage taken."""
         incoming_damage = (
@@ -102,6 +120,13 @@ class Player:
                 self.statuses,
                 attacker_statuses=attacker_statuses,
                 attacker_strength=attacker_strength,
+                extra_multiplier=(
+                    (1, 2)
+                    if self.rules.powers.get("colossus")
+                    and attacker_statuses is not None
+                    and attacker_statuses.get("vulnerable")
+                    else (1, 1)
+                ),
             )
             if is_attack
             else amount
@@ -110,9 +135,23 @@ class Player:
         self.hp, self.block = apply_damage_to_block_and_hp(
             self.hp,
             self.block,
-            incoming_damage, statuses=self.statuses,
+            incoming_damage,
+            statuses=self.statuses,
         )
-        return previous_hp - self.hp
+        damage = previous_hp - self.hp
+        from game.headless.powers.ironclad import after_hp_loss
+
+        if damage:
+            after_hp_loss(self, damage)
+        if (
+            is_attack
+            and self.is_alive
+            and source is not None
+            and source.is_alive
+            and self.rules.powers.get("flame_barrier")
+        ):
+            source.take_damage(self.rules.powers["flame_barrier"], is_attack=False)
+        return damage
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the player."""
@@ -130,72 +169,48 @@ class Player:
         """Add a card directly to the discard pile."""
         self.deck.discard_card(card)
 
-    def card_cost(self, card):
-        return card.cost + (self.statuses.get("tangled") if card.spec.kind == "attack" and card.cost >= 0 else 0)
+    def gain_energy(self, amount):
+        if not self.combat_is_ending and not self.rules.powers.get("no_energy_gain"):
+            self.energy += amount
 
-    def play_card(self, hand_index: int, enemy: Enemy) -> Card:
-        """Play a card from the hand against the current enemy."""
+    def card_cost(self, card):
+        from game.headless.powers.ironclad import card_cost
+
+        return card_cost(self, card)
+
+    def play_card(self, hand_index: int, enemy) -> Card:
+        from game.headless.core.resolution import start_play, drain
+
         if self.pending_play is not None:
             raise ValueError("Resolve the pending card choice first.")
-        try:
-            card = self.hand[hand_index]
-        except IndexError as exc:
-            raise IndexError(f"Invalid hand index: {hand_index}.") from exc
-
-        if card.cost < 0:
-            raise ValueError(f"{card.name} is unplayable.")
-        if self.card_cost(card) > self.energy:
-            raise ValueError(f"Not enough energy to play {card.name}.")
-
+        card = self.hand[hand_index]
+        if (card.cost < 0 and not card.spec.x_cost) or self.card_cost(card) > self.energy:
+            raise ValueError("Card is unplayable or unaffordable.")
         if self.statuses.get("ringing") and self.cards_played_this_turn:
             raise ValueError("Ringing permits only one card this turn.")
-        self.energy -= self.card_cost(card)
-        self.cards_played_this_turn += 1
-        card = self.deck.pop_card_from_hand(hand_index)
-        self.deck.in_play.append(card)
-        result = card.play(self, enemy)
-        if result is not None:
-            index, _ = result
-            slot = None if not card.spec.uses_target or enemy is None else self.combat_enemies.index(enemy)
-            self.pending_play = PendingCardPlay(index, slot)
-        else:
-            self._finish_card_play()
+        start_play(self, card, enemy)
+        drain(self)
         return card
 
     def pending_options(self) -> tuple[str, ...]:
         if self.pending_play is None:
             return ()
-        card = self.deck.in_play[0]
+        card = self.deck.in_play[-1]
         effect = card.definition.effects[self.pending_play.effect_index]
         return tuple(c.instance_id for c in effect.eligible(self))
 
     def choose_combat_card(self, instance_id: str) -> None:
         if instance_id not in self.pending_options():
             raise ValueError("Illegal combat card choice.")
-        pending = self.pending_play
-        card = self.deck.in_play[0]
-        effect = card.definition.effects[pending.effect_index]
-        selected = next(c for c in self.hand if c.instance_id == instance_id)
-        effect.resolve(self, selected)
-        target = None if pending.target_slot is None else self.combat_enemies[pending.target_slot]
-        self.pending_play = None
-        result = card.play(self, target, start_effect=pending.effect_index + 1)
-        if result is not None:
-            self.pending_play = PendingCardPlay(result[0], pending.target_slot)
-        else:
-            self._finish_card_play()
+        from game.headless.core.resolution import drain
 
-    def _finish_card_play(self) -> None:
-        card = self.deck.in_play[0]
-        if card.enchantment is not None:
-            from game.headless.enchantments.base import ENCHANTMENTS
-            ENCHANTMENTS[card.enchantment.definition_id].on_play(card.enchantment, self)
-        if self.combat_enemies is not None:
-            for enemy in tuple(self.combat_enemies):
-                if enemy.is_alive:
-                    enemy.after_player_card(self)
-        card = self.deck.in_play.pop()
-        if card.exhausts:
-            self.deck.exhaust_card(card)
-        else:
-            self.deck.discard_card(card)
+        card = self.deck.in_play[-1]
+        effect = card.definition.effects[self.pending_play.effect_index]
+        selected = next(c for c in effect.eligible(self) if c.instance_id == instance_id)
+        self.pending_play = None
+        self._resolving = True
+        try:
+            effect.resolve(self, selected)
+        finally:
+            self._resolving = False
+        drain(self)

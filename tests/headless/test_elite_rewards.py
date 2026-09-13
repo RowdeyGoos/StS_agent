@@ -267,7 +267,7 @@ def test_encounter_graph_kind_and_active_identity_must_match():
 
 
 @pytest.mark.parametrize("rest_choice", ["rest", "smith"])
-def test_authored_elite_route_natural_victory_every_command_restores(rest_choice):
+def test_authored_elite_route_natural_victory_every_command_restores(rest_choice, original_slice_rewards):
     run, trace = play_slice(seed=2, route="overgrowth", path="right",
                             rest_choice=rest_choice, verify_restore=True)
     assert run.state.phase is RunPhase.SLICE_COMPLETE and run.state.combats_completed == 4

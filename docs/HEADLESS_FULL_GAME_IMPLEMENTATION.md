@@ -21,6 +21,14 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — full single-player Ironclad pool:** 85 base/upgraded definitions;
+  Demonic Shield/Tank excluded. All 80 ordinary cards enter rewards, shops and
+  transforms; Ancient/basic cards stay separate. Shared powers, transient values,
+  X costs, nested autoplay/replay/choices and generation now execute through owned
+  plain tasks. Feed persists maximum HP. See [evidence](evidence/ironclad_complete_2026_09_13.md).
+  Native RNG/rarity weights, additional colorless cards/items and live differential
+  coverage remain open.
+
 - **2026-09-13 — Byrdonis Nest/Hatch:** Eat gains 7 maximum/current HP; Take adds
   an egg enabling a rest-site Hatch. Byrdpip pickup replaces all eggs with fresh
   Byrd Swoops, with exact ownership and JSON continuation. Event-pet eligibility
@@ -626,11 +634,10 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-13 — Execute upgraded and modified card instances
 
 - **Status:** partial. Immutable definitions, mutable instances, arbitrary per-card
-  levels and the verified first upgrades of all eleven current Ironclad cards are
-  implemented. See [starter evidence](evidence/strike_upgrade_2026_09_13.md) and
+  levels and the first upgrades of all 85 single-player Ironclad definitions are
+  implemented, including owned combat damage/cost modifiers. See [starter evidence](evidence/strike_upgrade_2026_09_13.md) and
   [reward-card evidence](evidence/slice_combat_content_2026_09_13.md). Rest-site
-  selection works. Other card families, temporary modifiers and other upgrade
-  sources remain open.
+  selection works. Other-character families, additional modifier systems and upgrade sources remain open.
 - **Depends on:** HF-01/02 for each rule and existing HF-04 state; coordinate
   persistent mutation with HF-33. No public contract dependency.
 - **Implement:** add verified levels to [game cards]; add instance fields and
@@ -649,7 +656,8 @@ Dependencies and acceptance cases are in the linked task.
 - **Status:** partial. The verified ten-card cap, blocked-draw conservation and
   needed-only reshuffle behavior are implemented for ordinary integer draws;
   encoder capacity does not control the rule. See the
-  [source evidence](evidence/hand_limit_2026_09_13.md).
+  [source evidence](evidence/hand_limit_2026_09_13.md). Ironclad No Draw, early-draw
+  Hellraiser, Ethereal exhaust hooks, innate cards and card generation are implemented.
 - **Implement:** complete native draw-prevention/after-draw hooks, shuffle ordering
   with hooks, retain/ethereal/innate or equivalent reachable keywords, inserted
   cards and cards in play/resolution. Preserve identities and zone conservation.
@@ -660,6 +668,9 @@ Dependencies and acceptance cases are in the linked task.
   without truncation. Tests: direct game, State, Replay and Differential.
 
 ### HF-15 — Extend card costs, play legality and targeting
+
+- **Status:** Ironclad X costs, free-next attack, Corruption, Stomp reductions and
+  random/area targets implemented. Other-resource callers remain open.
 
 - **Depends on:** HF-06/11/13; external action encoding is later integration.
 - **Implement:** add real current/base costs, temporary reductions, variable/X costs,
@@ -676,14 +687,11 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-16 — Support decisions inside card resolution
 
-- **Status:** first callers implemented: Armaments (one/all combat upgrades) and
-  True Grit (random/chosen exhaustion), with zero/one auto-selection, exact hand
-  IDs, mandatory single choices and restoration while suspended. Both are in the
-  seven-card default slice reward pool and support Smith. See the
-  [source and acceptance evidence](evidence/combat_card_choices_2026_09_13.md).
-  Next: add a source-verified caller for discard/draw-pile selection or variable
-  counts; optionality, ordered bundles, offered cards and replay/autoplay remain
-  unimplemented. Do not replace the current mechanism just to anticipate them.
+- **Status:** implemented for all single-player Ironclad callers: hand upgrade/
+  exhaust, Headbutt discard selection, nested autoplay and One-Two Punch repeats.
+  Choices suspend exact owned play frames and resume through a validated plain
+  queue, including end-turn Stampede. Variable-size, optional, offered-card and
+  ordered-bundle choices still need their own concrete callers.
 
 - **Depends on:** HF-07/13/14/15.
 - **Implement:** first add one target-game card that asks for a hand/discard/draw-pile
@@ -717,6 +725,13 @@ Dependencies and acceptance cases are in the linked task.
   Combat and Differential; update [card notes][card-notes] only when facts change.
 
 ### HF-18 — Implement all remaining reachable card content
+
+- **Status:** all 85 single-player Ironclad base/upgrade definitions implemented
+  for the pinned build. Giant Rock supports Primal Force; Shockwave remains
+  colorless. [Inventory and evidence](evidence/ironclad_complete_2026_09_13.md).
+  Remaining: full reachable colorless/curse/event content, interactions with
+  unimplemented items and independent native differential cases. Multiplayer-only
+  cards are excluded by the current user scope.
 
 - **Depends on:** HF-01 inventory and the required HF-11–16 primitives.
 - **Implement:** one bounded `HF-18/<definition_id>` ticket per base/upgrade family.

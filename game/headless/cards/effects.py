@@ -8,8 +8,10 @@ class DealDamage:
     def apply(self, card, player, target) -> None:
         if target is None:
             raise ValueError("Damage requires a target.")
-        damage = player.block if card.spec.damage_equals_player_block else card.spec.base_damage
-        target.take_damage(damage, attacker_statuses=player.statuses, attacker_strength=player.strength)
+        from game.headless.cards.operations import Attack
+        Attack(expression='block' if card.spec.damage_equals_player_block else 'base',
+               factor=1 if card.spec.damage_equals_player_block else 0).apply(card, player, target)
+
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,7 +33,7 @@ class ApplyTargetStatus:
         if target is None or card.spec.applies_status_name is None:
             raise ValueError("Status application requires its target and status rule.")
         if target.is_alive and not player.combat_is_ending:
-            target.apply_status(card.spec.applies_status_name, card.spec.applies_status_stacks)
+            target.apply_status(card.spec.applies_status_name, card.spec.applies_status_stacks, source=player)
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,10 +93,9 @@ class ApplyDebuffs:
         targets = player.combat_enemies if self.all_enemies else (target,)
         if targets is None:
             raise ValueError("Area effects require an owning combat.")
-        for enemy in targets:
-            if enemy is not None and enemy.is_alive:
-                for name in self.names:
-                    enemy.apply_status(name, card.spec.applies_status_stacks)
+        from game.headless.core.resolution import push
+        push(player, *[['status', player.combat_enemies.index(enemy), name, card.spec.applies_status_stacks]
+                      for enemy in targets if enemy is not None and enemy.is_alive for name in self.names])
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,7 +104,8 @@ class LoseHp:
 
     def apply(self, card, player, target):
         if not player.combat_is_ending:
-            player.hp = max(0, player.hp - self.amount)
+            from game.headless.cards.special import apply_operation
+            apply_operation('hp_loss', card, player, target, self.amount)
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,7 +114,7 @@ class GainEnergy:
 
     def apply(self, card, player, target):
         if not player.combat_is_ending:
-            player.energy += self.amount
+            player.gain_energy(self.amount)
 
 
 @dataclass(frozen=True, slots=True)
@@ -122,15 +124,9 @@ class ExhaustHandAttack:
             raise ValueError("Attack requires a target.")
         if player.combat_is_ending:
             return
-        hand = tuple(player.hand)
-        for other in hand:
-            player.hand.remove(other)
-            player.deck.exhaust_card(other)
-        for _ in hand:
-            if not target.is_alive or player.combat_is_ending:
-                break
-            target.take_damage(card.spec.base_damage, attacker_statuses=player.statuses,
-                               attacker_strength=player.strength)
+        from game.headless.cards.special import apply_operation
+        apply_operation('fiend_fire', card, player, target, 0)
+
 
 
 @dataclass(frozen=True, slots=True)

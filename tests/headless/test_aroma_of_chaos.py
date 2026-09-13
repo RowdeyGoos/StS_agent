@@ -196,7 +196,7 @@ def test_resolved_result_snapshot_binds_actual_card(choice,field,value):
     assert snap(run)==before
 
 
-def test_installed_route_consumer_picks_aroma_and_upgrades():
+def test_installed_route_consumer_picks_aroma_and_upgrades(original_slice_rewards):
     run,trace=play_slice(seed=2,route="overgrowth-act1",path="right",rest_choice="rest",verify_restore=True)
     assert "aroma" in run.state.visited_nodes and "jungle_maze" not in run.state.visited_nodes
     assert any(t["action"]=="ChooseEventCard" for t in trace)

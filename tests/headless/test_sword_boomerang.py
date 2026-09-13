@@ -135,7 +135,7 @@ def test_search_clone_keeps_target_rng_independent_even_without_encoding_new_car
     assert env.player.deck.target_rng.getstate() == before
 
 
-def test_act1_reward_pool_can_acquire_and_permanently_upgrade_boomerang():
+def test_act1_reward_pool_can_acquire_and_permanently_upgrade_boomerang(original_slice_rewards):
     selected = None
     for seed in range(20):
         run = RunEngine.ironclad_slice(seed=seed, route="overgrowth-act1")
