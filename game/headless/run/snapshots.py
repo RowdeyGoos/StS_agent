@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v18"
+SCHEMA = "headless_run_state_v19"
 
 
 def _restore_event_combat(record):
@@ -173,6 +173,11 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Active combat requires the combat phase.")
             combat = CombatEngine()
             combat.restore(snapshot["combat"], cards=cards)
+            rules = combat.player.rules
+            expected_pool = list(state.config.reward_potions) if state.config is not None else ["fire_potion", "block_potion"]
+            if (rules.potion_slots != state.potions.count(None) or rules.potion_pool != expected_pool
+                    or rules.potions_generated or rules.gold_gained):
+                raise ValueError("Combat loot differs from its owning run inventory.")
             if combat.player.max_hp != state.max_hp + combat.player.rules.max_hp_gained:
                 raise ValueError("Combat maximum HP differs from the run.")
         elif state.phase is RunPhase.COMBAT:

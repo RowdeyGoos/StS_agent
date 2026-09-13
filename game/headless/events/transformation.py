@@ -1,11 +1,11 @@
 """Explicit restricted transformation pools and source validation."""
 
-from game.headless.cards.pools import REWARD_CARDS, ANCIENT_CARDS
+from game.headless.cards.pools import REWARD_CARDS, ANCIENT_CARDS, COLORLESS_CARDS
 
 TRANSFORM_POOL = REWARD_CARDS
 
 CURSE_POOL = ("guilty", "clumsy")
-COLORLESS_POOL = ("finesse", "flash_of_steel", "shockwave")
+COLORLESS_POOL = COLORLESS_CARDS
 COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop", "giant_rock")
 
 

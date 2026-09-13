@@ -49,6 +49,11 @@ def apply_power(p, name, amount, target=None):
     if name == "strength":
         p.strength += amount
         return
+    from game.headless.powers import colorless
+
+    if name in colorless.NAMES:
+        colorless.apply(p, name, amount)
+        return
     if name not in POWER_NAMES:
         raise ValueError(f"Unknown player power: {name}")
     r = p.rules
@@ -63,14 +68,14 @@ def card_cost(p, card):
     if card.spec.x_cost:
         return (
             0
-            if card.combat_state.free_this_turn
+            if (card.combat_state.free_this_turn or card.combat_state.free_until_played)
             or (card.spec.kind == "attack" and p.rules.powers.get("free_attack"))
             or (card.spec.kind == "skill" and p.rules.powers.get("corruption"))
             else p.energy
         )
     if card.cost < 0:
         return card.cost
-    if card.combat_state.free_this_turn:
+    if card.combat_state.free_this_turn or card.combat_state.free_until_played:
         return 0
     if card.spec.kind in ("skill", "block") and p.rules.powers.get("corruption"):
         return 0
@@ -97,7 +102,7 @@ def after_exhaust(p, card):
             else:
                 tasks.append(["draw", amount, False])
     if card.definition.definition_id == "drum_of_battle":
-        p.gain_energy(3 if card.upgraded else 2)
+        p.gain_energy((3 if card.upgraded else 2) * (1 + card.combat_state.replay_count))
     push(p, *tasks)
     if not p._resolving:
         drain(p)
@@ -157,13 +162,32 @@ def after_play(p, card):
     context["rupture"] = 0
     if card.spec.kind == "attack":
         r.attacks_finished += 1
-        if r.powers.get("rage") and not p.combat_is_ending:
-            p.gain_block(r.powers["rage"])
-        if r.attacks_finished == 3 and not p.combat_is_ending:
-            from game.headless.cards.special import clone_to
+    r.plays_finished += 1
+    push(
+        p,
+        *[["after_card_power", card.instance_id, key] for key in r.powers],
+        ["after_card_enemies", card.instance_id],
+    )
 
-            for _ in range(r.powers.get("juggling", 0)):
-                clone_to(p, card, "hand")
+
+def after_card_power(p, card, key):
+    r = p.rules
+    if key == "rage" and card.spec.kind == "attack" and not p.combat_is_ending:
+        p.gain_block(r.powers[key])
+    elif (
+        key == "juggling"
+        and card.spec.kind == "attack"
+        and r.attacks_finished == 3
+        and not p.combat_is_ending
+    ):
+        from game.headless.cards.special import clone_to
+
+        for _ in range(r.powers[key]):
+            clone_to(p, card, "hand")
+    else:
+        from game.headless.powers.colorless import after_card_power
+
+        after_card_power(p, card, key)
 
 
 def start_turn(p, draw_count):
@@ -174,7 +198,9 @@ def start_turn(p, draw_count):
     p.cards_played_this_turn = 0
     r.player_side = True
     r.turn_ending = False
-    r.attacks_started = r.attacks_finished = r.hp_lost_this_turn = r.exhausted_this_turn = 0
+    r.attacks_started = r.attacks_finished = r.skills_started = r.hp_lost_this_turn = (
+        r.exhausted_this_turn
+    ) = 0
     r.auxiliaries["block_gains"] = 0
     for card in p.deck.all_cards():
         card.combat_state.cost_change = 0
@@ -190,33 +216,19 @@ def start_turn(p, draw_count):
             if card.upgrade_level + 1 < len(card.definition.levels):
                 card.upgrade()
     p.strength += r.powers.get("demon_form", 0)
-    push(p, ["draw", draw_count, True], ["start_powers"])
+    from game.headless.powers.colorless import before_draw
+
+    before_draw(p)
+    push(p, ["draw", draw_count, True], ["start_powers"], ["mayhem"])
     drain(p)
-
-
-def after_start(p):
-    r = p.rules
-    for name in tuple(r.powers):
-        if p.combat_is_ending:
-            break
-        if name in ("crimson_mantle", "inferno"):
-            loss = r.auxiliaries.get(name, 0)
-            if loss:
-                damage = min(p.hp, loss)
-                p.hp -= damage
-                if damage:
-                    after_hp_loss(p, damage)
-            if name == "crimson_mantle" and not p.combat_is_ending:
-                p.gain_block(r.powers[name])
 
 
 def end_turn(p):
     r = p.rules
     r.turn_ending = True
-    # Plating's early block precedes auto post-play and ordinary hand cleanup.
-    if r.powers.get("plating"):
-        p.gain_block(r.powers["plating"])
-    tasks = [
+    tasks = [["block", r.powers["plating"], False]] if r.powers.get("plating") else []
+    tasks += [["early_end", key] for key in r.powers]
+    tasks += [
         ["autoplay", c.instance_id, False]
         for c in tuple(p.deck.exhaust_pile)
         if c.definition.definition_id == "howl_from_beyond"
@@ -240,6 +252,6 @@ def after_player_end(p, name):
 def after_enemy_end(p):
     r = p.rules
     r.powers.pop("flame_barrier", None)
-    for name in ("plating", "colossus"):
+    for name in ("plating", "colossus", "no_block"):
         if r.powers.get(name):
             r.powers[name] -= 1

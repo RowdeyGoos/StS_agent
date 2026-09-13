@@ -180,7 +180,8 @@ def test_special_and_colorless_cards_transform_in_correct_pool(source, event, ch
     events.begin(run.state, event)
     step(run, ChooseEventOption(0, choice))
     result = run.state.deck[0]
-    assert result.definition.definition_id in {'finesse', 'flash_of_steel', 'shockwave'} - {source}
+    from game.headless.cards.pools import COLORLESS_CARDS
+    assert result.definition.definition_id in set(COLORLESS_CARDS) - {source}
     assert result.instance_id != original and result.upgrade_level == 0
     assert not entry_conditions(run.state)['event_pet']
 

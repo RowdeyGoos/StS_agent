@@ -115,6 +115,43 @@ Giant Rock is also implemented. See the [inventory and rule evidence](evidence/i
 These pools use project-authored sampling, not native rarity weights or seed parity.
 Slimed costs one, draws one and exhausts; it cannot be upgraded.
 
+
+### Colorless cards
+
+All **53 single-player colorless definitions** in pinned 0.107.1 execute at base
+and upgraded level. The native pool contains 64; Beacon of Hope, Believe in You,
+Coordinate, Gang Up, Huddle Up, Intercept, Knockdown, Lift, Mimic, Rally and Tag Team
+are excluded under the single-player scope. The explicit definitions are in
+[`cards/colorless.py`](../game/headless/cards/colorless.py); see the
+[native inventory and validation evidence](evidence/colorless_complete_2026_09_13.md).
+
+Colorless cards have separate uncommon/rare merchant slots and a full transformation
+pool; they do not enter ordinary Ironclad combat rewards. General choices expose
+`ChooseCombatCard(instance_id)` to select/deselect and `ConfirmCombatSelection()`
+to finish. Purity permits selecting zero cards; Discovery and Splash permit skipping.
+Mandatory selections require their count before confirmation. Offered cards,
+selected IDs and queued work are owned plain state. Existing single-card Ironclad
+selectors still finish immediately on their `ChooseCombatCard` action.
+
+Shared rules cover Retain and Retain Hand, shuffle-time Stratagem choices,
+Automation draw counters, post-draw Mayhem autoplay, Entropy transformations,
+independent Panache/Bomb/Boulder instances, temporary Dexterity/Vigor/block effects,
+returning Bolas/Hatchet instances, and Hidden Gem's combat-local replay count.
+Hidden Gem also multiplies Drum of Battle's exhaust energy. Play hooks preserve
+power insertion order across content families. Original cards and generated clones
+have independent state; combat changes do not alter the permanent deck.
+
+Hand of Greed transfers fatal gold and Alchemize transfers successfully procured
+potions through the run's owned inventory. Alchemize has a separate saved RNG stream
+and still generates when slots are full. Its declared pool remains the implemented
+Fire/Block Potions (or the run's configured supported potion pool). Discovery and
+Calamity use the Ironclad generation catalog. Splash uses other registered character
+pools when present, otherwise the sole Ironclad pool, matching the one-unlocked-character
+case; other characters' card catalogs are not yet implemented. Entropy preserves
+status/curse replacement categories using supported subsets and gives fresh base
+cards without inherited upgrades or combat modifiers. Full native unlock state,
+other-character/potion/status/curse catalogs and RNG parity remain separate work.
+
 Armaments gives 5 block, then upgrades one eligible hand card for this combat;
 Armaments+ upgrades all eligible hand cards. True Grit gives 7 block and exhausts
 a random remaining hand card; True Grit+ gives 9 block and lets the player choose.
@@ -137,7 +174,7 @@ Uppercut costs 2, deals 13 damage, then applies 1 Weak and 1 Vulnerable;
 its upgrade applies 2 of each without increasing damage. Shockwave is colorless and costs 2,
 applies 3 Weak then 3 Vulnerable to each living enemy in slot order, and exhausts;
 its upgrade applies 5 of each. Uppercut is in the full default Ironclad
-reward pool; Shockwave is in the restricted colorless transformation pool.
+reward pool; Shockwave is in the full single-player colorless transformation pool and merchant stock.
 Weak multiplies attack damage by 0.75 regardless of stack count. Strength is
 added first and Weak/Vulnerable fractions are combined before rounding down.
 Enemy intents retain an authored damage amount privately so execution does not
@@ -370,7 +407,7 @@ sources, implemented colorless/event cards and the supported curses Guilty/Clums
 Giant Rock transforms through the supported colorless pool.
 Curse transformations use their own two-card subpool, exclude the original
 definition and reset the replacement lifetime. Missing catalog content or
-unsupported sources reject entry atomically. Full curse/colorless pools, Eternal
+unsupported sources reject entry atomically. Full curse pools, Eternal
 and transformation hooks remain open. The demo chooses Maintain Control, prioritizing Bash. Selector candidates
 and resolved results are plain saved data checked against the permanent deck.
 See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md).
@@ -536,11 +573,11 @@ player targeting excludes it. The headless engine retains relic/gameplay state
 without a cosmetic actor or skin. In-combat Byrdpip acquisition remains unsupported;
 the implemented hatch acquires it outside combat.
 
-Egg, Byrd Swoop and colorless cards transform into the explicit supported pool
-`finesse` / `flash_of_steel` / `shockwave`, excluding the original definition. Finesse costs zero,
-gains 4/7 block and draws one; Flash of Steel costs zero, deals 5/8 damage and draws
-one. They are implemented transformation targets, not additions to the Ironclad
-combat-reward pool. Native full colorless content and sampling remain open.
+Egg, Byrd Swoop and colorless cards transform into the full 53-card single-player
+colorless pool, excluding the original definition. Finesse costs zero, gains 4/7
+block and draws one; Flash of Steel costs zero, deals 5/8 damage and draws one.
+These cards remain separate from Ironclad combat rewards. Native sampling parity
+remains open.
 All three existing transformation events share these family rules.
 
 Event content stays in `cards/event_cards.py` and `events/byrdonis_nest.py`;
@@ -589,16 +626,16 @@ All currently implemented cards are removable; native Eternal cards will need
 eligibility support when introduced. `LeaveShop()` returns to the map. While
 selecting a removal, only removal/cancel commands are legal.
 
-Stock is explicitly authored: one common card (Sword Boomerang, Pommel Strike or
-Shrug It Off), one uncommon (Uppercut), one rare (Impervious, Offering
-or Fiend Fire), one unowned Strawberry/Pear/Mango, and Fire and Block Potions.
-An exhausted fruit pool omits that slot. One card is on sale at half its rounded
-price. Native base prices are 50/75/150 for these card rarities, 175/225/275 for
-the three fruits and 50 for either potion. Cards and potions vary by ±5%; relics
+Stock is explicitly authored: one common, uncommon and rare card from the full
+80-card Ironclad ordinary pool; one uncommon and rare from the full 53-card solo
+colorless pool; one unowned Strawberry/Pear/Mango; and Fire and Block Potions.
+An exhausted fruit pool omits that slot. One character card is on sale at half its
+rounded price; colorless cards cannot be the sale slot. Native base prices are
+50/75/150 for character cards, 86/172 for uncommon/rare colorless cards (the native
+1.15 multiplier, rounded before variation), 175/225/275 for fruits and 50 per potion. Cards and potions vary by ±5%; relics
 by ±15%. Sampling uses owned `shop.stock` and `shop.prices` streams, with discrete
 basis-point variation; this is not native pool composition, rarity weighting,
-float precision or RNG parity. Shops with discounts, restock relics, colorless
-cards and pickup selectors remain open. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
+float precision or RNG parity. Shops with discounts, restock relics and pickup selectors remain open. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
 
 ## Compatibility and limits
 
@@ -761,7 +798,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v18`, including configuration,
+Private run snapshots now use `headless_run_state_v19`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
@@ -770,8 +807,9 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v8`, including the in-play
-and played-power piles, nested plain-data continuations, selection/target/generation RNG,
+Nested combat records now use `headless_combat_state_v9`, including the in-play
+played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion RNG,
+optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
 gains, power duration flags, player
 card-play counts, exact power applier slots, monster phase/spawn counters and
@@ -779,7 +817,7 @@ per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v7 and run v1–v17 formats are rejected rather than assigning invented item
+v1–v8 and run v1–v18 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

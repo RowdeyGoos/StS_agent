@@ -21,6 +21,14 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — full single-player colorless pool:** all 53 base/upgraded
+  definitions, with 11 multiplayer-only exclusions. Shared optional/multiple
+  choices, offers, retain, shuffle/draw hooks, independent power instances,
+  Hidden Gem replays and combat gold/potions are implemented. Full solo colorless
+  merchant/transform pools are available. Other character catalogs, full potion/
+  status/curse catalogs and native differential/RNG parity remain open.
+  [Evidence](evidence/colorless_complete_2026_09_13.md).
+
 - **2026-09-13 — full single-player Ironclad pool:** 85 base/upgraded definitions;
   Demonic Shield/Tank excluded. All 80 ordinary cards enter rewards, shops and
   transforms; Ancient/basic cards stay separate. Shared powers, transient values,
@@ -634,7 +642,7 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-13 — Execute upgraded and modified card instances
 
 - **Status:** partial. Immutable definitions, mutable instances, arbitrary per-card
-  levels and the first upgrades of all 85 single-player Ironclad definitions are
+  levels and the first upgrades of all 85 single-player Ironclad and 53 colorless definitions are
   implemented, including owned combat damage/cost modifiers. See [starter evidence](evidence/strike_upgrade_2026_09_13.md) and
   [reward-card evidence](evidence/slice_combat_content_2026_09_13.md). Rest-site
   selection works. Other-character families, additional modifier systems and upgrade sources remain open.
@@ -658,6 +666,8 @@ Dependencies and acceptance cases are in the linked task.
   encoder capacity does not control the rule. See the
   [source evidence](evidence/hand_limit_2026_09_13.md). Ironclad No Draw, early-draw
   Hellraiser, Ethereal exhaust hooks, innate cards and card generation are implemented.
+  Colorless retain, Automation, Stratagem shuffle selection and post-draw Mayhem
+  hooks are implemented; native differential coverage remains open.
 - **Implement:** complete native draw-prevention/after-draw hooks, shuffle ordering
   with hooks, retain/ethereal/innate or equivalent reachable keywords, inserted
   cards and cards in play/resolution. Preserve identities and zone conservation.
@@ -690,8 +700,9 @@ Dependencies and acceptance cases are in the linked task.
 - **Status:** implemented for all single-player Ironclad callers: hand upgrade/
   exhaust, Headbutt discard selection, nested autoplay and One-Two Punch repeats.
   Choices suspend exact owned play frames and resume through a validated plain
-  queue, including end-turn Stampede. Variable-size, optional, offered-card and
-  ordered-bundle choices still need their own concrete callers.
+  queue, including end-turn Stampede. Colorless optional multi-card and offered-card
+  choices now select/deselect and confirm with owned IDs; start-turn and shuffle
+  choices use the same resumable queue. Other decision families remain caller-driven.
 
 - **Depends on:** HF-07/13/14/15.
 - **Implement:** first add one target-game card that asks for a hand/discard/draw-pile
@@ -729,7 +740,9 @@ Dependencies and acceptance cases are in the linked task.
 - **Status:** all 85 single-player Ironclad base/upgrade definitions implemented
   for the pinned build. Giant Rock supports Primal Force; Shockwave remains
   colorless. [Inventory and evidence](evidence/ironclad_complete_2026_09_13.md).
-  Remaining: full reachable colorless/curse/event content, interactions with
+  All 53 solo colorless base/upgrades now execute, with full solo shop/transform
+  pools. [Colorless evidence](evidence/colorless_complete_2026_09_13.md).
+  Remaining: full reachable curse/event/other-character content, interactions with
   unimplemented items and independent native differential cases. Multiplayer-only
   cards are excluded by the current user scope.
 
@@ -1057,7 +1070,8 @@ Dependencies and acceptance cases are in the linked task.
   shop decisions restore exactly. Native base costs and variation bands are
   verified; stock composition and discrete variation sampling are authored.
   Remaining: complete native pool generation, discounts/restock modifiers,
-  colorless stock, pickup child selectors and event-owned merchants. See
+  pickup child selectors and event-owned merchants. The full 53-card solo colorless
+  stock now has separate uncommon/rare slots (86/172 base cost), outside sales. See
   [first-shop evidence](evidence/first_shop_2026_09_13.md).
 
 - **Depends on:** HF-01/05/07/24/26/33; HF-29/30 for normal entry.

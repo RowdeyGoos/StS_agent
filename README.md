@@ -40,6 +40,11 @@ content catalogs and mutable instances are separate. All 85 single-player Ironcl
 card definitions and their upgrades are implemented, including their shared powers,
 autoplay, replay, card generation and pile choices. Demonic Shield and Tank are
 excluded as multiplayer-only; basic/Ancient cards do not enter ordinary rewards.
+All **53 single-player colorless cards** and both upgrade levels also execute,
+including optional selections, retained hands, delayed powers and combat-generated
+gold/potions. Eleven multiplayer-only colorless cards are excluded. Colorless
+merchant slots and transformations use the full solo pool. See the
+[colorless implementation and limits](docs/HEADLESS_ENGINE.md#colorless-cards).
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain
 unfinished; see the [feature backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md).
@@ -125,7 +130,7 @@ card, or give a card Sown for +1 energy on its first completed play each combat.
 See [Sapphire Seed and enchantment evidence](docs/evidence/sapphire_seed_2026_09_13.md).
 Byrdonis Nest brings the pool to eleven: gain 7 maximum HP or take an egg, then
 choose Hatch at a rest site to obtain Byrdpip and replace all eggs with Byrd Swoop.
-Egg/Swoop transformations use the explicit Finesse/Flash of Steel/Shockwave colorless pool.
+Egg/Swoop transformations use the full 53-card single-player colorless pool.
 See [Nest and hatch evidence](docs/evidence/byrdonis_nest_2026_09_13.md). Add `--ancient neow` to begin with
 the restricted Golden Pearl (+150 gold) / Nutritious Oyster (+11 maximum HP)
 choice; omit it for the post-Ancient fixture start. Full Neow offers, event

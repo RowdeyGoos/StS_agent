@@ -29,4 +29,9 @@ class ChooseCombatCard:
             raise ValueError("A combat choice requires an exact card instance ID.")
 
 
-CombatAction = PlayCard | EndTurn | ChooseCombatCard
+@dataclass(frozen=True, slots=True)
+class ConfirmCombatSelection:
+    pass
+
+
+CombatAction = PlayCard | EndTurn | ChooseCombatCard | ConfirmCombatSelection

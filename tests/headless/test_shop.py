@@ -55,7 +55,7 @@ def reject_unchanged(run, action):
 def test_stock_prices_are_seeded_and_reads_do_not_consume_rng():
     a, b = merchant(), merchant()
     assert snapshot(a) == snapshot(b)
-    assert len(a.state.pending["offers"]) == 6
+    assert len(a.state.pending["offers"]) == 8
     assert sum(o["on_sale"] for o in a.state.pending["offers"]) == 1
     rng = a.state.rng.snapshot()
     for _ in range(5):

@@ -4,10 +4,11 @@ Stock slots and discrete basis-point draws are project-authored, not native shop
 pool/RNG parity. Prices round to even before the card sale's integer halving.
 """
 
+from game.headless.cards.catalog import DEFAULT_CARDS
 from dataclasses import asdict, dataclass
 from game.headless.cards.pools import COMMON_CARDS, UNCOMMON_CARDS, RARE_CARDS
 
-SHOP_ID = "supported_merchant_v2"
+SHOP_ID = "supported_merchant_v3"
 
 
 @dataclass(frozen=True, slots=True)
@@ -15,12 +16,15 @@ class StockSlot:
     kind: str
     items: tuple[tuple[str, int], ...]
     variation: int = 5
+    sale_eligible: bool = True
 
 
 SLOTS = (
     StockSlot("card", tuple((c, 50) for c in COMMON_CARDS)),
     StockSlot("card", tuple((c, 75) for c in UNCOMMON_CARDS)),
     StockSlot("card", tuple((c, 150) for c in RARE_CARDS)),
+    StockSlot("card", tuple((d.definition_id, 86) for d in DEFAULT_CARDS.definitions if d.pool == "colorless" and d.rarity == "uncommon"), sale_eligible=False),
+    StockSlot("card", tuple((d.definition_id, 172) for d in DEFAULT_CARDS.definitions if d.pool == "colorless" and d.rarity == "rare"), sale_eligible=False),
     StockSlot("relic", (("strawberry", 175), ("pear", 225), ("mango", 275)), 15),
     StockSlot("potion", (("fire_potion", 50),)),
     StockSlot("potion", (("block_potion", 50),)),

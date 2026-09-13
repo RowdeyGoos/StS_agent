@@ -8,6 +8,9 @@ class CardState:
     extra_damage: int = 0
     cost_change: int = 0
     free_this_turn: bool = False
+    replay_count: int = 0
+    return_next_turn: bool = False
+    free_until_played: bool = False
 
 
 @dataclass
@@ -25,3 +28,11 @@ class CombatRules:
     turn_ending: bool = False
     max_hp_gained: int = 0
     ethereal_draws: int = 0
+    selection: dict | None = None
+    power_sequence: int = 0
+    skills_started: int = 0
+    plays_finished: int = 0
+    gold_gained: int = 0
+    potion_slots: int = 3
+    potion_pool: list[str] = field(default_factory=lambda: ["fire_potion", "block_potion"])
+    potions_generated: list[str] = field(default_factory=list)

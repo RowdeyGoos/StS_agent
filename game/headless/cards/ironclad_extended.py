@@ -1,65 +1,12 @@
 """Remaining single-player Ironclad cards for the pinned 0.107.1 build."""
 
 from dataclasses import replace
-from game.headless.cards.base import CardDefinition, CardSpec
+
 from game.headless.cards.effects import GainBlock, DrawCards, SelectHandCard, ApplyDebuffs
 from game.headless.cards.operations import Attack, Power, CardOperation as Op, ChoosePileCard
 
 
-def define(
-    identity,
-    name,
-    cost,
-    kind,
-    rarity,
-    effects,
-    *,
-    damage=0,
-    upgraded_damage=None,
-    block=0,
-    upgraded_block=None,
-    draw=0,
-    upgraded_draw=None,
-    upgraded_cost=None,
-    target=None,
-    exhaust=False,
-    upgraded_exhaust=None,
-    innate=False,
-    strike=False,
-    x=False,
-    generate=True,
-):
-    base = CardSpec(
-        name,
-        cost,
-        kind,
-        base_damage=damage,
-        block_gain=block,
-        draw_count=draw,
-        uses_target=kind == "attack" if target is None else target,
-        exhausts=exhaust,
-        x_cost=x,
-    )
-    upgrade = replace(
-        base,
-        name=name + "+",
-        cost=cost if upgraded_cost is None else upgraded_cost,
-        base_damage=damage if upgraded_damage is None else upgraded_damage,
-        block_gain=block if upgraded_block is None else upgraded_block,
-        draw_count=draw if upgraded_draw is None else upgraded_draw,
-        exhausts=exhaust if upgraded_exhaust is None else upgraded_exhaust,
-        innate=innate,
-    )
-    return CardDefinition(
-        identity,
-        (base, upgrade),
-        effects,
-        rarity=rarity,
-        pool="ironclad",
-        strike=strike,
-        generate_in_combat=generate,
-    )
-
+from game.headless.cards.builders import define
 
 # Values and composition are explicit; no display-name dispatch or runtime registration.
 DEFINITIONS = (

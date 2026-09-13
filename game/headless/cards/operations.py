@@ -28,6 +28,25 @@ class Attack:
             "vulnerable": 0 if target is None else target.statuses.get("vulnerable"),
             "strikes": sum(c.definition.strike for c in player.deck.all_cards()),
             "block": player.block,
+            "plays": player.rules.plays_finished,
+            "draw_pile": len(player.deck.draw_pile),
+            "debuffs": (
+                sum(
+                    target.statuses.get(n) > 0
+                    for n in (
+                        "weak",
+                        "vulnerable",
+                        "frail",
+                        "slow",
+                        "constrict",
+                        "tangled",
+                        "ringing",
+                        "shrink",
+                    )
+                )
+                if target is not None
+                else 0
+            ),
         }[self.expression]
         return card.spec.base_damage + card.combat_state.extra_damage + extra * n
 
@@ -44,8 +63,9 @@ class Attack:
         elif self.hit_expression == "x":
             hits = player.rules.plays[card.instance_id]["x"]
         elif self.hit_expression == "pacts_end" and len(player.deck.exhaust_pile) < 3:
-            hits = 0
+            return
         slot = None if self.all_enemies or target is None else player.combat_enemies.index(target)
+        vigor = player.rules.powers.pop("vigor", 0)
         push(
             player,
             *[
@@ -57,6 +77,7 @@ class Attack:
                     self.expression,
                     value(card, self.factor, self.upgraded_factor),
                     value(card, self.fatal_max_hp, self.upgraded_max_hp),
+                    vigor,
                 ]
                 for _ in range(hits)
             ],

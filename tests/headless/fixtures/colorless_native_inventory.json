@@ -1,0 +1,596 @@
+{
+  "game_version": "0.107.1",
+  "steam_build": "23811903",
+  "assembly_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "excluded_multiplayer": [
+    "beacon_of_hope",
+    "believe_in_you",
+    "coordinate",
+    "gang_up",
+    "huddle_up",
+    "intercept",
+    "knockdown",
+    "lift",
+    "mimic",
+    "rally",
+    "tag_team"
+  ],
+  "cards": [
+    {
+      "definition_id": "alchemize",
+      "native_type": "Alchemize",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100690786
+    },
+    {
+      "definition_id": "anointed",
+      "native_type": "Anointed",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100690806
+    },
+    {
+      "definition_id": "automation",
+      "native_type": "Automation",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100690855
+    },
+    {
+      "definition_id": "beacon_of_hope",
+      "native_type": "BeaconOfHope",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100690908
+    },
+    {
+      "definition_id": "beat_down",
+      "native_type": "BeatDown",
+      "cost": 3,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100690918
+    },
+    {
+      "definition_id": "believe_in_you",
+      "native_type": "BelieveInYou",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100690935
+    },
+    {
+      "definition_id": "bolas",
+      "native_type": "Bolas",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100691003
+    },
+    {
+      "definition_id": "calamity",
+      "native_type": "Calamity",
+      "cost": 3,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691127
+    },
+    {
+      "definition_id": "catastrophe",
+      "native_type": "Catastrophe",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691161
+    },
+    {
+      "definition_id": "coordinate",
+      "native_type": "Coordinate",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691296
+    },
+    {
+      "definition_id": "dark_shackles",
+      "native_type": "DarkShackles",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691378
+    },
+    {
+      "definition_id": "discovery",
+      "native_type": "Discovery",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691540
+    },
+    {
+      "definition_id": "dramatic_entrance",
+      "native_type": "DramaticEntrance",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691588
+    },
+    {
+      "definition_id": "entropy",
+      "native_type": "Entropy",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691668
+    },
+    {
+      "definition_id": "equilibrium",
+      "native_type": "Equilibrium",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691678
+    },
+    {
+      "definition_id": "eternal_armor",
+      "native_type": "EternalArmor",
+      "cost": 3,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100691695
+    },
+    {
+      "definition_id": "fasten",
+      "native_type": "Fasten",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691741
+    },
+    {
+      "definition_id": "finesse",
+      "native_type": "Finesse",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100691799
+    },
+    {
+      "definition_id": "fisticuffs",
+      "native_type": "Fisticuffs",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691808
+    },
+    {
+      "definition_id": "flash_of_steel",
+      "native_type": "FlashOfSteel",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691828
+    },
+    {
+      "definition_id": "gang_up",
+      "native_type": "GangUp",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100691927
+    },
+    {
+      "definition_id": "gold_axe",
+      "native_type": "GoldAxe",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100691996
+    },
+    {
+      "definition_id": "hand_of_greed",
+      "native_type": "HandOfGreed",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100692052
+    },
+    {
+      "definition_id": "hidden_gem",
+      "native_type": "HiddenGem",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692129
+    },
+    {
+      "definition_id": "huddle_up",
+      "native_type": "HuddleUp",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692161
+    },
+    {
+      "definition_id": "impatience",
+      "native_type": "Impatience",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692190
+    },
+    {
+      "definition_id": "intercept",
+      "native_type": "Intercept",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692230
+    },
+    {
+      "definition_id": "jack_of_all_trades",
+      "native_type": "JackOfAllTrades",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692250
+    },
+    {
+      "definition_id": "jackpot",
+      "native_type": "Jackpot",
+      "cost": 3,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100692255
+    },
+    {
+      "definition_id": "knockdown",
+      "native_type": "Knockdown",
+      "cost": 3,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100692284
+    },
+    {
+      "definition_id": "lift",
+      "native_type": "Lift",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692336
+    },
+    {
+      "definition_id": "master_of_strategy",
+      "native_type": "MasterOfStrategy",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692414
+    },
+    {
+      "definition_id": "mayhem",
+      "native_type": "Mayhem",
+      "cost": 2,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692431
+    },
+    {
+      "definition_id": "mimic",
+      "native_type": "Mimic",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692462
+    },
+    {
+      "definition_id": "mind_blast",
+      "native_type": "MindBlast",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100692469
+    },
+    {
+      "definition_id": "nostalgia",
+      "native_type": "Nostalgia",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692596
+    },
+    {
+      "definition_id": "omnislice",
+      "native_type": "Omnislice",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100692626
+    },
+    {
+      "definition_id": "panache",
+      "native_type": "Panache",
+      "cost": 0,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692670
+    },
+    {
+      "definition_id": "panic_button",
+      "native_type": "PanicButton",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692674
+    },
+    {
+      "definition_id": "prep_time",
+      "native_type": "PrepTime",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692781
+    },
+    {
+      "definition_id": "production",
+      "native_type": "Production",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692789
+    },
+    {
+      "definition_id": "prolong",
+      "native_type": "Prolong",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692795
+    },
+    {
+      "definition_id": "prowess",
+      "native_type": "Prowess",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692810
+    },
+    {
+      "definition_id": "purity",
+      "native_type": "Purity",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692826
+    },
+    {
+      "definition_id": "rally",
+      "native_type": "Rally",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692865
+    },
+    {
+      "definition_id": "rend",
+      "native_type": "Rend",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100692950
+    },
+    {
+      "definition_id": "restlessness",
+      "native_type": "Restlessness",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100692961
+    },
+    {
+      "definition_id": "rolling_boulder",
+      "native_type": "RollingBoulder",
+      "cost": 3,
+      "kind": "power",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100692992
+    },
+    {
+      "definition_id": "salvo",
+      "native_type": "Salvo",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "rare",
+      "uses_target": true,
+      "ctor_token": 100693019
+    },
+    {
+      "definition_id": "scrawl",
+      "native_type": "Scrawl",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100693043
+    },
+    {
+      "definition_id": "secret_technique",
+      "native_type": "SecretTechnique",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100693066
+    },
+    {
+      "definition_id": "secret_weapon",
+      "native_type": "SecretWeapon",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100693070
+    },
+    {
+      "definition_id": "seeker_strike",
+      "native_type": "SeekerStrike",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693074
+    },
+    {
+      "definition_id": "shockwave",
+      "native_type": "Shockwave",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693159
+    },
+    {
+      "definition_id": "splash",
+      "native_type": "Splash",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693311
+    },
+    {
+      "definition_id": "stratagem",
+      "native_type": "Stratagem",
+      "cost": 1,
+      "kind": "power",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693397
+    },
+    {
+      "definition_id": "tag_team",
+      "native_type": "TagTeam",
+      "cost": 2,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693501
+    },
+    {
+      "definition_id": "the_bomb",
+      "native_type": "TheBomb",
+      "cost": 2,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693534
+    },
+    {
+      "definition_id": "the_gambit",
+      "native_type": "TheGambit",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "rare",
+      "uses_target": false,
+      "ctor_token": 100693538
+    },
+    {
+      "definition_id": "thinking_ahead",
+      "native_type": "ThinkingAhead",
+      "cost": 0,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693572
+    },
+    {
+      "definition_id": "thrumming_hatchet",
+      "native_type": "ThrummingHatchet",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693585
+    },
+    {
+      "definition_id": "ultimate_defend",
+      "native_type": "UltimateDefend",
+      "cost": 1,
+      "kind": "skill",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693662
+    },
+    {
+      "definition_id": "ultimate_strike",
+      "native_type": "UltimateStrike",
+      "cost": 1,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": true,
+      "ctor_token": 100693668
+    },
+    {
+      "definition_id": "volley",
+      "native_type": "Volley",
+      "cost": 0,
+      "kind": "attack",
+      "rarity": "uncommon",
+      "uses_target": false,
+      "ctor_token": 100693738
+    }
+  ]
+}

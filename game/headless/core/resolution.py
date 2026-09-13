@@ -12,7 +12,7 @@ def find(player, identity):
 
 
 def move_out(player, card):
-    for name in ("hand", "draw_pile", "discard_pile", "exhaust_pile", "in_play", "powers"):
+    for name in ("hand", "draw_pile", "discard_pile", "exhaust_pile", "in_play", "powers", "offered"):
         pile = getattr(player.deck, name)
         if card in pile:
             pile.remove(card)
@@ -58,7 +58,7 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     move_out(player, card)
     player.deck.in_play.append(card)
     rules = player.rules
-    repeats = 1
+    repeats = 1 + card.combat_state.replay_count
     if card.spec.kind == "attack" and rules.powers.get("one_two_punch"):
         repeats += 1
         rules.powers["one_two_punch"] -= 1
@@ -82,6 +82,13 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
             )
         ),
     }
+    frame = rules.plays[card.instance_id]
+    if (
+        frame["destination"] == "discard_pile"
+        and card.spec.kind in ("attack", "skill", "block")
+        and rules.attacks_started + rules.skills_started < rules.powers.get("nostalgia", 0)
+    ):
+        frame["destination"] = "draw_pile"
     push(player, ["iteration", card.instance_id])
 
 
@@ -90,7 +97,7 @@ def drain(player):
         return
     player._resolving = True
     try:
-        while player.rules.tasks and player.pending_play is None:
+        while player.rules.tasks and player.pending_play is None and player.rules.selection is None:
             task = player.rules.tasks.pop(0)
             execute(player, task)
     finally:
@@ -100,6 +107,8 @@ def drain(player):
 def execute(p, task):
     from game.headless.powers import ironclad as hooks
     from game.headless.cards import special
+    from game.headless.powers import colorless
+    from game.headless.core import choices
 
     op, *args = task
     r = p.rules
@@ -111,11 +120,15 @@ def execute(p, task):
             p.cards_played_this_turn += 1
             if card.spec.kind == "attack":
                 r.attacks_started += 1
+                if r.powers.get("calamity"):
+                    r.plays[identity]["calamity"] = r.powers["calamity"]
                 if r.powers.get("free_attack"):
                     r.powers["free_attack"] -= 1
                 for other in p.deck.all_cards():
                     if other.definition.definition_id == "stomp":
                         other.combat_state.cost_change -= 1
+            if card.spec.kind in ("skill", "block"):
+                r.skills_started += 1
             push(
                 p,
                 *[["effect", identity, i] for i in range(len(card.definition.effects))],
@@ -144,9 +157,7 @@ def execute(p, task):
 
             ENCHANTMENTS[card.enchantment.definition_id].on_play(card.enchantment, p)
         hooks.after_play(p, card)
-        for enemy in tuple(p.combat_enemies or ()):
-            if enemy.is_alive:
-                enemy.after_player_card(p)
+
     elif op == "repeat":
         (identity,) = args
         context = r.plays[identity]
@@ -155,22 +166,27 @@ def execute(p, task):
     elif op == "finish":
         (identity,) = args
         card = find(p, identity)
+        card.combat_state.free_until_played = False
         context = r.plays.pop(identity)
         p.deck.in_play.remove(card)
         if context["destination"] == "powers":
             p.deck.powers.append(card)
         elif context["destination"] == "exhaust_pile":
             p.deck.exhaust_card(card)
+        elif context["destination"] == "draw_pile":
+            p.deck.draw_pile.append(card)
         else:
             p.deck.discard_card(card)
     elif op == "draw":
         count, hand_draw = args
         if count <= 0 or p.combat_is_ending or (r.powers.get("no_draw") and not hand_draw):
             return
+        if not colorless.ensure_draw(p, task):
+            return
         drawn = p.deck.draw(1)
         if not drawn:
             return
-        push(p, ["draw", count - 1, hand_draw])
+        push(p, ["after_draw"], ["draw", count - 1, hand_draw])
         card = drawn[0]
         if r.powers.get("hellraiser") and card.definition.strike:
             push(p, ["autoplay", card.instance_id, False])
@@ -183,8 +199,8 @@ def execute(p, task):
         count, force_exhaust = args
         if count <= 0 or p.combat_is_ending:
             return
-        if not p.deck.draw_pile:
-            p.deck._refill_draw_pile()
+        if not colorless.ensure_draw(p, task, hand=False):
+            return
         if p.deck.draw_pile:
             push(
                 p,
@@ -202,7 +218,7 @@ def execute(p, task):
         if not p.combat_is_ending:
             p.gain_block(amount, powered=powered)
     elif op == "attack":
-        identity, slot, all_enemies, expression, factor, max_hp = args
+        identity, slot, all_enemies, expression, factor, max_hp, vigor = args
         if p.combat_is_ending:
             return
         card = find(p, identity)
@@ -212,7 +228,7 @@ def execute(p, task):
                 continue
             from game.headless.cards.operations import Attack
 
-            amount = Attack(expression=expression, factor=factor).damage(card, p, target)
+            amount = Attack(expression=expression, factor=factor).damage(card, p, target) + vigor
             fatal = not target.statuses.get("minion") and not target.statuses.get("illusion")
             target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
             if max_hp and fatal and not target.is_alive and p.is_alive:
@@ -226,10 +242,12 @@ def execute(p, task):
     elif op == "pillage":
         if p.combat_is_ending or r.powers.get("no_draw"):
             return
+        if not colorless.ensure_draw(p, task):
+            return
         drawn = p.deck.draw(1)
         if drawn:
-            if drawn[0].spec.kind == "attack":
-                push(p, ["pillage"])
+            continuation = [["pillage"]] if drawn[0].spec.kind == "attack" else []
+            push(p, ["after_draw"], *continuation)
             if r.powers.get("hellraiser") and drawn[0].definition.strike:
                 push(p, ["autoplay", drawn[0].instance_id, False])
     elif op == "generate":
@@ -259,11 +277,50 @@ def execute(p, task):
             p.deck.exhaust_card(card)
             r.auxiliaries.pop("exhaust_ethereal", None)
     elif op == "discard_remaining":
-        p.deck.discard_hand()
-        push(p, *[["end_power", name] for name in r.powers])
+        for card in tuple(p.hand):
+            if not card.spec.retain and not r.powers.get("retain_hand"):
+                p.hand.remove(card)
+                p.deck.discard_card(card)
+        push(p, *[["end_power", name] for name in r.powers], ["cleanup_turn"])
+    elif op == "cleanup_turn":
+        for card in p.deck.all_cards():
+            card.combat_state.free_this_turn = False
+            card.combat_state.free_until_played = False
     elif op == "end_power":
         hooks.after_player_end(p, args[0])
+        colorless.after_end(p, args[0])
     elif op == "start_powers":
-        hooks.after_start(p)
+        push(p, *[["start_power", key] for key in r.powers])
+    elif op == "after_card_power":
+        hooks.after_card_power(p, find(p, args[0]), args[1])
+    elif op == "after_card_enemies":
+        for enemy in tuple(p.combat_enemies or ()):
+            if enemy.is_alive:
+                enemy.after_player_card(p)
+    elif op == "mayhem":
+        push(p, ["autoplay_draw", r.powers.get("mayhem", 0), False])
+    elif op == "start_power":
+        colorless.start_power(p, args[0])
+    elif op == "early_end":
+        colorless.early_end(p, args[0])
+    elif op == "after_draw":
+        colorless.after_draw(p)
+    elif op == "energy":
+        p.gain_energy(args[0])
+    elif op == "selected":
+        choices.resolve(p, *args)
+    elif op == "catastrophe":
+        count = args[0]
+        if count > 0 and p.deck.draw_pile and not p.combat_is_ending:
+            available = [c for c in p.deck.draw_pile if c.cost >= 0 or c.spec.x_cost]
+            available = available or list(p.deck.draw_pile)
+            p.deck.rng.shuffle(available)
+            push(p, ["autoplay", available[0].instance_id, False], ["catastrophe", count - 1])
+    elif op == "random_hit":
+        from game.headless.cards.colorless_effects import hit
+
+        living = [e for e in p.combat_enemies if e.is_alive]
+        if living and not p.combat_is_ending:
+            hit(p, find(p, args[0]), p.deck.target_rng.choice(living), extra=args[1])
     else:
         raise ValueError(f"Unknown combat work: {op}")

@@ -38,7 +38,7 @@ def validate_shop(state, cards, graph):
         slot = SLOTS[index]
         if offer["offer_id"] != f"shop.{pending['shop_id']}.offer.{index}" or offer["kind"] != slot.kind:
             raise ValueError("Invalid shop offer identity.")
-        if type(offer["sold"]) is not bool or type(offer["on_sale"]) is not bool or (offer["on_sale"] and slot.kind != "card"):
+        if type(offer["sold"]) is not bool or type(offer["on_sale"]) is not bool or (offer["on_sale"] and (slot.kind != "card" or not slot.sale_eligible)):
             raise ValueError("Invalid shop offer flags.")
         base = dict(slot.items).get(offer["definition_id"])
         if base is None:

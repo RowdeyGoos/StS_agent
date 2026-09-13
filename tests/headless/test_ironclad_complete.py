@@ -93,7 +93,7 @@ def test_complete_single_player_pool_matches_native_constructor_inventory():
 
     assert RunConfig().reward_cards == REWARD_CARDS == TRANSFORM_POOL
     assert RunConfig().boss_reward_cards == RARE_CARDS
-    assert {i for slot in SLOTS if slot.kind == "card" for i, _ in slot.items} == set(REWARD_CARDS)
+    assert {i for slot in SLOTS if slot.kind == "card" and slot.sale_eligible for i, _ in slot.items} == set(REWARD_CARDS)
 
 
 @pytest.mark.parametrize("identity", IRONCLAD_CARDS)
