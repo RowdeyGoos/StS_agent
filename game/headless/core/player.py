@@ -30,6 +30,9 @@ class Player:
         self.energy = 0
         self.strength = 0
         self.statuses = StatusCollection()
+        # Alias to the owning combat's enemy slots, rebound by reset/restore/clone.
+        # Isolated Player rule fixtures can leave this unset.
+        self.combat_enemies: list[Enemy] | None = None
 
     @property
     def hand(self) -> list[Card]:
@@ -49,7 +52,16 @@ class Player:
 
     def draw_cards(self, count: int) -> list[Card]:
         """Draw cards through the player's deck and return the cards drawn."""
+        if count < 0:
+            raise ValueError("Draw count cannot be negative.")
+        if self.combat_is_ending:
+            return []
         return self.deck.draw(count)
+
+    @property
+    def combat_is_ending(self) -> bool:
+        return not self.is_alive or (self.combat_enemies is not None and
+                                    not any(e.is_alive for e in self.combat_enemies))
 
     def end_turn(self) -> None:
         """End the player's turn by discarding the current hand."""

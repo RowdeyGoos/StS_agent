@@ -101,8 +101,10 @@ content catalog. New effects belong in that content family or shared game rules
 when multiple cards need them. Display names do not dispatch behavior. A test can
 inject a `CardCatalog` containing an entirely new card without touching any adapter.
 Upgrade levels are per definition; they are not globally limited to a boolean.
-Strike, Defend and Bash each have one implemented upgrade with
-[native source evidence](evidence/strike_upgrade_2026_09_13.md).
+All seven playable Ironclad definitions in the current pool have one implemented
+upgrade: [starter-card evidence](evidence/strike_upgrade_2026_09_13.md) and
+[reward-card/encounter evidence](evidence/slice_combat_content_2026_09_13.md).
+Slimed costs one, draws one and exhausts; it cannot be upgraded.
 
 Game commands describe intent, not network authority. External adapters still own
 public references, stale request bindings, information filtering and representation
@@ -149,12 +151,28 @@ At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
 `Smith` opens a plain-data, cancelable selection of implemented upgrades.
 `ChooseUpgrade(instance_id)` commits one exact card; `ChooseUpgrade(None)` returns
 to the rest options without spending the action. Only one rest/smith action can
-be completed. Unsupported upgrades are excluded explicitly; the three starter
-cards have upgrades, while the four reward cards currently have base levels only.
+be completed. All seven current Ironclad cards can be upgraded once. Pommel
+Strike+ deals 10 and draws 2; Shrug It Off+ gives 11 block and draws 1; Iron Wave+
+gives 7 block then deals 7; Body Slam+ costs zero and still scales with current
+block. Unsupported cards and further upgrade levels remain excluded explicitly.
 Fire Potion deals 20 damage through enemy block without attack modifiers; Block
 Potion gives 12 block. Both are combat-only and cost no energy. Their use consumes
 the exact owned instance before checking combat completion. See the
 [native rule evidence and scope](evidence/first_vertical_slice_2026_09_13.md).
+
+The slime encounter uses native small/medium/small slot ordering, with one small
+Leaf, one small Twig and either medium variant. Medium Twig starts with Sticky
+Shot, then attacks; after one attack the next move is equally likely to attack
+or use Sticky Shot, and after two attacks Sticky Shot is forced. Small Leaf
+starts with an equal choice and then alternates. Both random-branch models
+consume a Python roll on each transition, including forced choices. These
+corrections change old seeded slime trajectories; native RNG parity is still open.
+
+Card draws and later block/status effects stop when combat is ending. A lethal
+Pommel Strike does not draw when it kills the last enemy, but still draws if
+another enemy remains. The player references the owning combat's enemy slots
+for this rule; reset, JSON restore and search cloning explicitly rebind that
+alias. Enemy moves stop on player death before later effects or another roll.
 
 This is a partial game model. Native RNG parity, full status/hook ordering,
 draw-prevention/after-draw hooks, other card-zone mechanics, remaining items,
@@ -184,6 +202,10 @@ certificates. Unknown monster state types reject until their content family has 
 serializer. Do not pickle arbitrary callables or import types named by a snapshot.
 Policy consumers must never receive these private records.
 
+The corrected Slimed definition and added upgrade levels change the automatic
+card-catalog fingerprint, so older private default-catalog snapshots reject.
+No historical release evidence or accepted fixture fingerprint was repinned.
+
 No architecture guarantees that future mechanics require zero change. The stable
 boundary is that game concepts can grow without driving changes in unrelated
 policy, transport or artifact code.
@@ -196,7 +218,11 @@ JSON continuation, RNG aliasing, invalid-operation atomicity, branch isolation,
 rewards, rooms, map navigation and an import-boundary check.
 [`test_vertical_slice.py`](../tests/headless/test_vertical_slice.py) covers both
 complete routes with JSON restore before each command, item legality, exact
-persistent identities, canceled smithing, defeat and malformed snapshots. Existing simulation,
+persistent identities, canceled smithing, defeat and malformed snapshots.
+[`test_slice_cards.py`](../tests/headless/test_slice_cards.py) and
+[`test_slice_encounters.py`](../tests/headless/test_slice_encounters.py) cover the
+completed reward upgrades, generated Slimed, move cycles, branch restrictions,
+terminal effects and clone ownership. Existing simulation,
 search and headless adapter tests cover compatibility. Broaden checks when a shared
 rule or consumer actually changes; bridge builds and historical frozen-evidence
 repinning are not part of ordinary card implementation.

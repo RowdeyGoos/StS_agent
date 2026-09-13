@@ -144,7 +144,11 @@ def test_combat_v0_fixed_seed_single_enemy_trace_and_shaped_diagnostics() -> Non
 
 
 def test_combat_v0_fixed_seed_multi_enemy_actions_are_complete_and_canonical() -> None:
-    """``combat_v0``: freeze the multi-target action trace through public APIs."""
+    """Regress public actions against the shared engine's corrected slime layout.
+
+    The September 13 source check corrected small/medium/small slots and move
+    sampling. This current regression is not a repin of historical artifacts.
+    """
     env = CombatEnvFactory(
         encounter_set="slimes",
         incoming_damage_shaping_scale=0.5,
@@ -154,14 +158,14 @@ def test_combat_v0_fixed_seed_multi_enemy_actions_are_complete_and_canonical() -
     observation = env.reset(seed=17)
 
     assert [enemy["name"] for enemy in observation["enemies"]] == [
-        "Leaf Slime (M)",
         "Leaf Slime (S)",
+        "Twig Slime (M)",
         "Twig Slime (S)",
     ]
-    assert [enemy["hp"] for enemy in observation["enemies"]] == [35, 14, 11]
+    assert [enemy["hp"] for enemy in observation["enemies"]] == [13, 27, 10]
     assert [enemy["intent"]["move_name"] for enemy in observation["enemies"]] == [
-        "Sticky Shot",
         "Goop",
+        "Sticky Shot",
         "Tackle",
     ]
     # Non-targeted Defend is canonicalized to the first living target; attacks

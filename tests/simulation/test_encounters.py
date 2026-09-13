@@ -35,7 +35,8 @@ def test_overgrowth_slimes_encounter_has_canonical_composition() -> None:
         counts = Counter(enemy.name for enemy in encounter)
 
         assert len(encounter) == 3
-        assert encounter[0].name in {"Leaf Slime (M)", "Twig Slime (M)"}
+        assert encounter[1].name in {"Leaf Slime (M)", "Twig Slime (M)"}
+        assert {encounter[0].name, encounter[2].name} == {"Leaf Slime (S)", "Twig Slime (S)"}
         assert counts["Leaf Slime (M)"] + counts["Twig Slime (M)"] == 1
         assert counts["Leaf Slime (S)"] == 1
         assert counts["Twig Slime (S)"] == 1

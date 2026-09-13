@@ -239,8 +239,11 @@ class LeafSlimeSmall(Enemy):
         self._current_intent = self._choose_next_template()
 
     def _choose_next_template(self) -> Intent:
+        # Native random branches roll even when repeat restrictions leave only
+        # one available move. Python sampling is not native seed parity.
+        roll = self.rng.random()
         if self._last_move_name is None:
-            return self.rng.choice((self.TACKLE, self.GOOP))
+            return self.TACKLE if roll < 0.5 else self.GOOP
         return self.GOOP if self._last_move_name == self.TACKLE.move_name else self.TACKLE
 
     def _behavior_phase_index(self) -> int:
@@ -316,27 +319,38 @@ class TwigSlimeMedium(Enemy):
     def __init__(self, rng: Random) -> None:
         super().__init__(name="Twig Slime (M)", max_hp=rng.randint(26, 28), rng=rng)
         self._current_intent = self.STICKY_SHOT
+        self._consecutive_attacks = 0
 
     @property
     def intent(self) -> Intent:
+        if (self._consecutive_attacks not in (0, 1, 2)
+                or self._current_intent not in (self.STICKY_SHOT, self.CHOMP)
+                or (self._current_intent == self.STICKY_SHOT) != (self._consecutive_attacks == 0)):
+            raise ValueError("Invalid Twig Slime move/repeat state.")
         return self._resolve_intent(self._current_intent)
 
     def advance_intent(self) -> None:
+        roll = self.rng.random()
         if self._current_intent.move_name == self.STICKY_SHOT.move_name:
+            self._consecutive_attacks = 1
             self._current_intent = self.CHOMP
             return
-
-        self._current_intent = (
-            self.CHOMP if self.rng.random() < (2.0 / 3.0) else self.STICKY_SHOT
-        )
+        if self._consecutive_attacks < 2 and roll < 0.5:
+            self._consecutive_attacks += 1
+            self._current_intent = self.CHOMP
+        else:
+            self._consecutive_attacks = 0
+            self._current_intent = self.STICKY_SHOT
 
     def _behavior_phase_index(self) -> int:
-        return 0 if self._current_intent.move_name == self.STICKY_SHOT.move_name else 1
+        return self._consecutive_attacks
 
     def _behavior_phase_count(self) -> int:
-        return 2
+        return 3
 
     def _possible_next_templates(self) -> tuple[Intent, ...]:
         if self._current_intent.move_name == self.STICKY_SHOT.move_name:
             return (self.CHOMP,)
+        if self._consecutive_attacks == 2:
+            return (self.STICKY_SHOT,)
         return (self.CHOMP, self.STICKY_SHOT)

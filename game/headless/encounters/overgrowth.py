@@ -34,10 +34,12 @@ def sample_overgrowth_first_three_encounter_builders(
 
 def build_overgrowth_slimes_encounter(rng: Random) -> list[Enemy]:
     """Build the Overgrowth easy Slimes encounter."""
-    medium_enemy = rng.choice((LeafSlimeMedium, TwigSlimeMedium))(rng)
-    small_enemies: list[Enemy] = [LeafSlimeSmall(rng), TwigSlimeSmall(rng)]
-    rng.shuffle(small_enemies)
-    return [medium_enemy, *small_enemies]
+    small_types = [LeafSlimeSmall, TwigSlimeSmall]
+    first_small = rng.choice(small_types)
+    small_types.remove(first_small)
+    last_small = rng.choice(small_types)
+    medium_type = rng.choice((LeafSlimeMedium, TwigSlimeMedium))
+    return [first_small(rng), medium_type(rng), last_small(rng)]
 
 
 def build_overgrowth_mawler_encounter(rng: Random) -> list[Enemy]:
