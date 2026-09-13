@@ -14,8 +14,9 @@ from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.shops.catalog import fingerprint as shop_fingerprint
+from game.headless.treasure.catalog import fingerprint as treasure_fingerprint
 
-SCHEMA = "headless_run_state_v5"
+SCHEMA = "headless_run_state_v6"
 
 
 def _item_definitions():
@@ -27,7 +28,7 @@ def capture_run(engine) -> dict:
     state = engine.state
     state.validate()
     return {
-        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(),
+        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(), "treasure": treasure_fingerprint(),
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
@@ -40,7 +41,8 @@ def capture_run(engine) -> dict:
                   "relics": [asdict(r) for r in state.relics],
                   "potions": [None if p is None else asdict(p) for p in state.potions],
                   "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance,
-                  "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used},
+                  "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used,
+                  "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
         "graph": None if engine.graph is None else asdict(engine.graph),
         "combat": None if engine.combat is None else engine.combat.snapshot(cards=engine.cards),
     }
@@ -56,13 +58,15 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Run snapshot item definitions are incompatible.")
     if snapshot.get("shops") != shop_fingerprint():
         raise ValueError("Run snapshot shop definitions are incompatible.")
+    if snapshot.get("treasure") != treasure_fingerprint():
+        raise ValueError("Run snapshot treasure definitions are incompatible.")
     try:
         payload = snapshot["state"]
         config = None if payload["config"] is None else RunConfig(**payload["config"])
         if config is not None:
             for card_id in (*config.reward_cards, *config.boss_reward_cards):
                 cards.definition(card_id)
-            if any(r not in RELICS or r == "burning_blood" for r in config.reward_relics):
+            if any(r not in RELICS or r == "burning_blood" or RELICS[r].stackable for r in config.reward_relics):
                 raise ValueError("Unsupported relic pool.")
             if any(p not in POTIONS for p in config.reward_potions):
                 raise ValueError("Unsupported potion pool.")
@@ -82,6 +86,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
             next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"],
             next_shop_id=payload["next_shop_id"], shop_removals_used=payload["shop_removals_used"],
+            next_treasure_id=payload["next_treasure_id"], treasure_relics_drawn=deepcopy(payload["treasure_relics_drawn"]),
         )
         state.validate()
         if state.active_encounter_id is not None and state.active_encounter_id not in ENCOUNTERS:
@@ -189,6 +194,9 @@ def _validate_pending(state, cards, graph):
                 owned = any(r.definition_id == relic for r in state.relics)
                 if relic not in state.config.reward_relics or owned != pending["relic_claimed"]:
                     raise ValueError("Invalid relic offer or ownership.")
+    elif kind == "treasure":
+        from game.headless.run.treasure_validation import validate_treasure
+        validate_treasure(state, graph)
     elif kind == "shop":
         from game.headless.run.shop_validation import validate_shop
         validate_shop(state, cards, graph)

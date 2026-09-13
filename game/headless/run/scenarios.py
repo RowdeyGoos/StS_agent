@@ -34,7 +34,11 @@ def overgrowth_route_map():
 def overgrowth_act1_map():
     nodes = tuple(replace(n, next_node_ids=("merchant", "boss_camp")) if n.next_node_ids == ("slice_end",) else n
                   for n in overgrowth_route_map().nodes if n.node_id != "slice_end")
-    return MapGraph((*nodes, MapNode("merchant", "shop", ("boss_camp",)), MapNode("boss_camp", "rest", ("vantom",)),
+    nodes = tuple(replace(n, next_node_ids=("treasure",)) if n.next_node_ids == ("camp",) else n for n in nodes)
+    return MapGraph((*nodes,
+                     MapNode("treasure", "treasure", ("camp",)),
+                     MapNode("merchant", "shop", ("boss_camp",)),
+                     MapNode("boss_camp", "rest", ("vantom",)),
                      MapNode("vantom", "boss", (), "overgrowth_vantom")), "fight_1")
 
 

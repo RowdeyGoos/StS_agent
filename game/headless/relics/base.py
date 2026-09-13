@@ -9,6 +9,7 @@ class RelicDefinition:
     definition_id: str
     victory_heal: int = 0
     pickup_max_hp: int = 0
+    stackable: bool = False
 
     def after_obtained(self, state) -> None:
         state.max_hp += self.pickup_max_hp
@@ -29,6 +30,7 @@ class RelicInstance:
 
 
 RELICS = MappingProxyType({
+    "circlet": RelicDefinition("circlet", stackable=True),
     "burning_blood": RelicDefinition("burning_blood", victory_heal=6),
     "strawberry": RelicDefinition("strawberry", pickup_max_hp=7),
     "pear": RelicDefinition("pear", pickup_max_hp=10),

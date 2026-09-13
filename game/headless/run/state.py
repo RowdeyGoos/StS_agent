@@ -53,6 +53,8 @@ class RunState:
     potion_drop_chance: int = 40
     next_shop_id: int = 0
     shop_removals_used: int = 0
+    next_treasure_id: int = 0
+    treasure_relics_drawn: list[str] = field(default_factory=list)
 
     def allocate_item_id(self) -> str:
         result = f"run.item.{self.next_item_id}"
@@ -112,6 +114,13 @@ class RunState:
                 or type(self.shop_removals_used) is not int
                 or not 0 <= self.shop_removals_used <= self.next_shop_id):
             raise ValueError("Invalid shop counters.")
+        from game.headless.treasure.catalog import ORDINARY_CHEST
+        if (type(self.next_treasure_id) is not int or self.next_treasure_id < 0
+                or not isinstance(self.treasure_relics_drawn, list)
+                or any(r not in ORDINARY_CHEST.relic_pool for r in self.treasure_relics_drawn)
+                or len(set(self.treasure_relics_drawn)) != len(self.treasure_relics_drawn)
+                or len(self.treasure_relics_drawn) > self.next_treasure_id):
+            raise ValueError("Invalid treasure counters or depleted pool.")
         if type(self.next_item_id) is not int or self.next_item_id < 0:
             raise ValueError("Invalid item allocator.")
         if type(self.potion_drop_chance) is not int or not 0 <= self.potion_drop_chance <= 100 or self.potion_drop_chance % 10:
@@ -130,7 +139,8 @@ class RunState:
                 raise ValueError("Item identity exceeds its allocator.")
         if any(not isinstance(r, RelicInstance) or r.definition_id not in RELICS for r in self.relics):
             raise ValueError("Unsupported relic.")
-        if len({r.definition_id for r in self.relics}) != len(self.relics):
+        nonstackable = [r.definition_id for r in self.relics if not RELICS[r.definition_id].stackable]
+        if len(set(nonstackable)) != len(nonstackable):
             raise ValueError("Duplicate relic definition.")
         if any(p is not None and (not isinstance(p, PotionInstance) or p.definition_id not in POTIONS) for p in self.potions):
             raise ValueError("Unsupported potion.")

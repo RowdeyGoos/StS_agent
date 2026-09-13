@@ -21,6 +21,13 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — first treasure room:** closed/open/claimed chest decisions,
+  automatic 42–52 A0 gold on opening, optional fruit relic, persistent offer
+  depletion and repeatable Circlet fallback are implemented. The Act 1 route
+  visits a chest after its third fight; all decisions restore exactly. Sampling
+  and the treasure-only pool are authored; full global pools and modifiers remain
+  HF-36 work. [Evidence](evidence/first_treasure_2026_09_13.md).
+
 - **2026-09-13 — first shop:** repeatable card/relic/potion purchases, one card
   sale, cancelable permanent deck removal with A0 escalation, sold-out state,
   affordability/inventory checks and JSON continuation are implemented. The Act 1
@@ -949,6 +956,15 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-36 — Implement treasure and remaining non-event room families
 
+- **Partial:** the ordinary A0 chest now grants 42–52 gold on opening and offers
+  one optional relic through shared acquisition rules. Leaving closed grants
+  nothing; leaving open retains the gold. The restricted fruit pool excludes
+  owned and previously offered entries and falls back to stackable Circlet.
+  Exact chest/claimed-item IDs, gold, pool depletion and RNG restore; Act 1 has
+  a chest after its third combat. Native global grab bags, rarity weighting,
+  tutorial/multiplayer rules, treasure suppression, extra rewards and other fixed
+  room families remain open. See [first-treasure evidence](evidence/first_treasure_2026_09_13.md).
+
 - **Depends on:** HF-01's room census, HF-07/25/29/30/32.
 - **Implement:** chest/treasure generation, open/leave choices, pool effects and
   pickup children, then one ticket per other fixed room family reachable in the
@@ -1223,22 +1239,25 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The authored Act 1 route now includes an elite, an optional shop, a boss and an
-explicit act end. The next useful batch is **HF-36: a first treasure room**, adding
-another ordinary room family through existing relic acquisition rules:
+The authored Act 1 route now includes treasure, an elite option, an optional
+shop and a boss with an explicit act end. The next useful batch is **HF-39: a
+first source-verified ordinary Overgrowth event**:
 
-1. Verify the pinned native chest choices, ordinary A0 reward contents, skip/leave
-   behavior and empty-pool behavior. Identify modifiers explicitly and leave
-   unsupported modifiers out of the first restricted room definition.
-2. Add owned chest state and open/claim/leave commands in a small room rule module.
-   Reuse relic acquisition and unowned-pool filtering; apply pickup effects once.
-   Keep pending choices as plain data and stock generation separate from rewards.
-3. Add an authored treasure node to `overgrowth-act1`. Test opening, declining,
-   claiming, duplicate rejection, pool depletion and continuation into the next
-   room, with exact JSON restore before and after each decision.
-4. Then implement one source-verified Overgrowth event (HF-39), followed by remaining
-   encounter families and native map/pool generation. Shops still need the HF-35
-   modifiers and full content listed above; later acts remain separate work.
+1. Select one actual event from the pinned Overgrowth pool whose costs/rewards
+   mainly use existing gold, HP, relic or permanent-deck operations. Verify its
+   initial conditions, branches, decline behavior and terminal transitions before
+   coding; do not rename a primitive synthetic event as native content.
+2. Put immutable event content and its rules in `game/headless/events/`. Persist
+   event identity, stage and exact pending choices as plain game state. Add a
+   small run dispatcher only for the lifecycle decisions needed by that event.
+3. Add an authored event node to `overgrowth-act1`. Exercise each branch, invalid
+   choices, costs at affordability/HP boundaries, duplicate resolution and death
+   where applicable. Restore before and after each decision and continue to the
+   next room through direct commands and the installed CLI.
+4. Keep event sampling explicitly authored until HF-30/39 implements native
+   eligibility, weights and repeat rules. Remaining encounter families, global
+   relic bags, full shop/treasure modifiers, native map generation and later acts
+   stay separate assignments.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py
