@@ -108,7 +108,8 @@ consumer with a generic adapter over `RunEngine` is deferred integration work,
 not an invitation to maintain two evolving rule sets.
 
 This is a partial game model. Native RNG parity, full status/hook ordering,
-hand-limit behavior, relics, potions, complex selections, shops, procedural maps,
+draw-prevention/after-draw hooks, other card-zone mechanics, relics, potions,
+complex selections, shops, procedural maps,
 all content and complete target-game progression remain in the
 [implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md). `RunEngine`
 provides direct combat, map and room/reward primitives; it does not yet generate
@@ -116,6 +117,12 @@ or automatically orchestrate a native full run. Rest/event amounts are explicit
 caller-supplied synthetic values. A map node must be resolved before navigation
 can continue. Combat copies the persistent deck; its current persistent result
 is HP. Permanent combat-produced deck changes need their own explicit rules.
+
+Ordinary draws stop at the native ten-card hand limit, checked before each draw
+and any needed reshuffle. Overflow stays in its current piles; a full-hand draw
+consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
+its encoder size does not configure game capacity. See the
+[draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
 Private snapshots bind schema and card values/effect composition automatically,
 and restore RNG aliases and exact piles. Use the same game-rule implementation

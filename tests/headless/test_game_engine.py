@@ -146,13 +146,14 @@ def test_discard_reshuffle_and_branch_mutation_preserve_ownership():
     assert selected.upgrade_level == run.state.deck[0].upgrade_level == 0
 
 
-def test_large_game_state_is_not_limited_by_encoder_capacities():
+def test_game_hand_limit_and_large_encounters_are_independent_of_encoders():
     combat = CombatEngine(deck_factory=lambda: [DEFAULT_CARDS.create("strike") for _ in range(14)],
                           encounter_factory=lambda rng: [SimpleEnemy(max_hp=20) for _ in range(5)], cards_per_turn=14)
     combat.reset()
-    assert len(combat.player.hand) == 14
-    assert len(combat.legal_actions()) == 1 + 14 * 5
-    combat.apply(PlayCard(combat.player.hand[13].instance_id, 4))
+    assert len(combat.player.hand) == 10
+    assert len(combat.player.deck.draw_pile) == 4
+    assert len(combat.legal_actions()) == 1 + 10 * 5
+    combat.apply(PlayCard(combat.player.hand[9].instance_id, 4))
     assert combat.enemies[4].hp == 14
     assert all(enemy.hp == 20 for enemy in combat.enemies[:4])
 
