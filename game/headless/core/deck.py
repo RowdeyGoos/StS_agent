@@ -8,6 +8,8 @@ from typing import Sequence
 from game.headless.cards.base import Card
 from game.headless.core.utils import shuffle_list
 
+MAX_CARDS_IN_HAND = 10
+
 
 class Deck:
     """Owns draw, discard, hand, and exhaust piles for a combat."""
@@ -33,12 +35,18 @@ class Deck:
         shuffle_list(self.rng, self.draw_pile)
 
     def draw(self, count: int) -> list[Card]:
-        """Draw up to `count` cards into the hand."""
+        """Draw up to `count` cards, stopping at the game's hand limit.
+
+        Check capacity before refilling: a blocked draw must not shuffle or move
+        cards. The limit is a game rule, independent of observation encoders.
+        """
         if count < 0:
             raise ValueError("Draw count cannot be negative.")
 
         drawn_cards: list[Card] = []
         for _ in range(count):
+            if len(self.hand) >= MAX_CARDS_IN_HAND:
+                break
             if not self.draw_pile:
                 self._refill_draw_pile()
             if not self.draw_pile:

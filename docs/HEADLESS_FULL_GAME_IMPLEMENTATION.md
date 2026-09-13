@@ -33,6 +33,11 @@ into validation of changed code.
   persistence through two fights. Other card upgrades and general temporary
   modifiers remain unimplemented. The
   [pinned source check](evidence/strike_upgrade_2026_09_13.md) owns the native evidence.
+- **HF-14 is partial:** ordinary draws stop at 10 cards before any unnecessary
+  reshuffle, preserving overflow, identities and RNG on blocked draws. Direct
+  continuation and shared combat regression tests cover the rule. See the
+  [draw source check](evidence/hand_limit_2026_09_13.md). Draw hooks and the remaining
+  card-zone keywords are still open.
 - The earlier `strike_upgrade_v1` adapter experiment at `7ca5f77` is retired.
   Gameplay changes no longer need per-feature profiles or projection changes.
   Accepted reduced backend artifacts retain their original behavior and identities.
@@ -521,11 +526,14 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-14 — Complete card-zone, draw and hand-limit behavior
 
 - **Depends on:** HF-02 for exact semantics; HF-04/06 for new instance/lifecycle state.
-- **Implement:** establish and implement the target's hand cap and overflow/no-draw
-  rule in [game deck]. The game engine no longer uses encoder capacity as a limit;
-  its currently unbounded draw behavior still needs the native rule. Then cover shuffle timing, draw exhaustion, discard,
-  exhaust, retain/ethereal/innate or equivalent reachable keywords, inserted cards,
-  and cards in play/resolution. Preserve instance identity and conservation rules.
+- **Status:** partial. The verified ten-card cap, blocked-draw conservation and
+  needed-only reshuffle behavior are implemented for ordinary integer draws;
+  encoder capacity does not control the rule. See the
+  [source evidence](evidence/hand_limit_2026_09_13.md).
+- **Implement:** complete native draw-prevention/after-draw hooks, shuffle ordering
+  with hooks, retain/ethereal/innate or equivalent reachable keywords, inserted
+  cards and cards in play/resolution. Preserve identities and zone conservation.
+  Exact native RNG remains HF-05; the existing Python shuffle is not seed parity.
 - **Accept:** draw at/beyond the hand limit, reshuffle during a multi-draw, retain
   while ending a turn, and generate/exhaust a temporary card without corrupting
   the master deck. Later consumer integration must represent every legal hand
@@ -1085,19 +1093,18 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-**HF-13/Defend+ and Bash+ are complete** for direct gameplay. The definition-only
-change uses existing effects, owned upgrades and continuation. Rest-site upgrade
-selection remains HF-34; the remaining card upgrades remain HF-13/17 work.
+The direct Defend+/Bash+ slice and ordinary ten-card draw cap are complete. The
+next useful slice is **HF-11/12: verify and complete Weak's attack modifier and
+turn lifetime**, using one pinned native caller:
 
-Next, implement **HF-14/hand-limit behavior**:
-
-1. Inspect the pinned draw operation and hand-cap rules, including full-hand draws,
-   multi-draw overflow and reshuffle timing. Establish expected cases from that source.
-2. Implement the verified rule in `game/headless/core/deck.py` and the relevant
-   draw operation. Preserve card identity, zones and the required RNG consumption.
-3. Test draws below/at/beyond the limit and across reshuffles, including JSON
-   continuation. Keep encoder capacity separate from the actual game rule.
-4. Update HF-14 progress and retain the exact native source anchors and limits.
+1. Inspect the pinned Weak power, attack modifier order and turn-duration rules.
+   Select one real card or enemy interaction that applies it.
+2. Implement the verified status in `game/headless/powers/` with the required
+   lifecycle operation and its first caller. Keep modifier ownership in game rules.
+3. Test modifier order/rounding, multi-hit behavior, reapplication, expiration and
+   JSON continuation against independently derived expected cases.
+4. Update coverage and retain source anchors. Extend consumer vocabularies only
+   when that separate integration is selected.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py
