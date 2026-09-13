@@ -8,9 +8,12 @@ from game.headless.powers.colorless import NAMES, INSTANCED, name
 from game.headless.core.choice_snapshots import validate_selection, valid_power
 
 TASK_ARITIES = {
+    "relic_hook": 3,
+    "relic_damage": 5,
     "iteration": 1,
     "effect": 2,
     "after_play": 1,
+    "after_enchantment": 1,
     "repeat": 1,
     "finish": 1,
     "draw": 2,
@@ -22,6 +25,7 @@ TASK_ARITIES = {
     "random_hit": 2,
     "after_card_power": 2,
     "after_card_enemies": 1,
+    "after_card_enchantment": 1,
     "mayhem": 0,
     "cleanup_turn": 0,
     "selected": 4,
@@ -59,6 +63,8 @@ def restore_rules(record, player):
         "power_sequence",
         "gold_gained",
         "potion_slots",
+        "potion_capacity",
+        "round_number",
     ):
         if type(getattr(r, key)) is not int or getattr(r, key) < 0:
             raise ValueError("Invalid rule counter.")
@@ -77,6 +83,10 @@ def restore_rules(record, player):
         for k, v in r.auxiliaries.items()
     ):
         raise ValueError("Invalid auxiliary power state.")
+    from game.headless.relics.combat import validate as validate_relics
+    validate_relics(r.relics, r.relic_data, player.deck._allocated_ids)
+    if r.room_kind not in ("combat", "elite", "boss") or r.round_number < 1:
+        raise ValueError("Invalid combat relic room context.")
     validate_selection(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
     if not isinstance(r.plays, dict) or set(r.plays) != set(in_play):
@@ -87,19 +97,23 @@ def restore_rules(record, player):
             "auto",
             "force_exhaust",
             "x",
+            "energy_value",
             "remaining",
             "rupture",
             "destination",
             "effect_index",
+            "stage",
         }
         if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity"} != required:
             raise ValueError("Invalid play frame.")
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
-            or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "remaining", "rupture"))
-            or not 1 <= frame["remaining"] <= 2 + in_play[identity].combat_state.replay_count
+            or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "energy_value", "remaining", "rupture"))
+            or not 1 <= frame["remaining"] <= 2 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
         ):
             raise ValueError("Invalid play resources.")
+        if frame["stage"] not in ("effects", "enchantment", "hooks"):
+            raise ValueError("Invalid play resolution stage.")
         if "calamity" in frame and (type(frame["calamity"]) is not int or frame["calamity"] < 0):
             raise ValueError("Invalid captured Calamity.")
         if "blocks_gained" in frame and (
@@ -141,16 +155,20 @@ def restore_rules(record, player):
         if any(type(v) not in (int, bool, str, type(None)) for v in task):
             raise ValueError("Task must contain plain values.")
         op, *args = task
+        if op == 'relic_damage' and (args[0] not in r.relic_data or type(args[1]) is not int or args[1] < 0 or type(args[2]) is not bool or type(args[3]) is not bool or (args[4] is not None and (type(args[4]) is not int or not 0 <= args[4] < len(player.combat_enemies)))):
+            raise ValueError('Invalid owned relic damage continuation.')
         if op in (
             "iteration",
             "effect",
             "after_play",
+            "after_enchantment",
             "repeat",
             "finish",
             "attack",
             "random_hit",
             "after_card_power",
             "after_card_enemies",
+            "after_card_enchantment",
         ):
             if args[0] not in r.plays:
                 raise ValueError("Task has no owning play.")
@@ -158,6 +176,8 @@ def restore_rules(record, player):
             raise ValueError("Queued movement cannot remove an active play.")
         elif op in ("autoplay", "exhaust", "ethereal") and args[0] not in player.deck._allocated_ids:
             raise ValueError("Task references an unallocated card.")
+        if op == "relic_hook" and (args[0] not in r.relic_data or args[1] not in ("before_draw", "after_draw", "before_end", "after_end", "after_play", "exhaust", "exhaust_ethereal", "shuffle", "after_side_start") or (args[2] and args[2] not in player.deck._allocated_ids)):
+            raise ValueError("Invalid relic hook continuation.")
         if op == "random_hit" and (type(args[1]) is not int or args[1] < 0):
             raise ValueError("Invalid random attack.")
         if op == "after_card_power" and not valid_power(args[1], r.power_sequence):
@@ -165,7 +185,7 @@ def restore_rules(record, player):
         if op == "selected" and (
             args[0] not in player.deck._allocated_ids
             or args[0] in r.plays
-            or args[1] not in ("move", "exhaust", "transform")
+            or args[1] not in ("move", "exhaust", "transform", "discard_redraw")
             or args[2] not in ("hand", "draw_pile")
             or args[3] not in ("", "free_this_turn", "free_until_played")
         ):
@@ -219,12 +239,14 @@ def restore_rules(record, player):
         control = [
             t
             for t in r.tasks
-            if t[0] in ("iteration", "effect", "after_play", "repeat", "finish") and t[1] == identity
+            if t[0] in ("iteration", "effect", "after_play", "after_enchantment", "repeat", "finish") and t[1] == identity
         ]
         expected = [
             ["effect", identity, i]
             for i in range(frame["effect_index"] + 1, len(in_play[identity].definition.effects))
         ] + [["after_play", identity]]
+        if frame["stage"] != "effects":
+            expected = [["after_enchantment" if frame["stage"] == "enchantment" else "repeat", identity]]
         if control != expected:
             raise ValueError("Invalid interrupted play continuation.")
         if (
@@ -233,7 +255,7 @@ def restore_rules(record, player):
             and r.tasks[: len(expected)] != expected
         ):
             raise ValueError("Pending selector has unexpected work before its continuation.")
-    if [t[1] for t in r.tasks if t[0] == "after_play"] != [
+    if [t[1] for t in r.tasks if t[0] in ("after_play", "after_enchantment", "repeat")] != [
         c.instance_id for c in reversed(player.deck.in_play)
     ]:
         raise ValueError("Nested plays must finish before their parents.")
@@ -242,3 +264,5 @@ def restore_rules(record, player):
         # externally observable work always suspends at a card selector.
         raise ValueError("Unowned pending combat work.")
     player.rules = r
+    from game.headless.core.enemy_turn import validate as validate_enemy_turn
+    validate_enemy_turn(r.enemy_turn, player)

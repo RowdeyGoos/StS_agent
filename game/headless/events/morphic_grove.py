@@ -3,7 +3,7 @@
 from copy import deepcopy
 from dataclasses import dataclass
 
-from game.headless.events.transformation import TRANSFORM_POOL, CURSE_POOL, COLORLESS_SOURCES, ANCIENT_CARDS, check_content, replacement_pool
+from game.headless.events.transformation import TRANSFORM_POOL, CURSE_POOL, COLORLESS_SOURCES, ANCIENT_CARDS, ETERNAL_SOURCES, check_content, replacement_pool
 from game.headless.run.deck import transform_card
 
 
@@ -35,7 +35,7 @@ class MorphicGrove:
             state.hp += self.max_hp_gain
             pending["data"]["choice"], pending["stage"] = "loner", "resolved"
             return
-        eligible = [c.instance_id for c in state.deck]
+        eligible = [c.instance_id for c in state.deck if not c.spec.eternal]
         if len(eligible) <= self.card_count:
             self._resolve(state, pending, eligible, cards)
         else:
@@ -60,13 +60,14 @@ class MorphicGrove:
         # Selection completes before any transform is revealed; stage both draws
         # and replacements so failure cannot consume the first card or RNG draw.
         trial = deepcopy(state)
+        trial.gold = 0
         results = []
         for identity in selected:
             source = next(c.definition.definition_id for c in trial.deck if c.instance_id == identity)
             card = transform_card(trial, cards, identity, replacement_pool(source, self.transform_pool), stream="event.morphic_transform")
             results.append({"instance_id": card.instance_id, "definition_id": card.definition.definition_id})
-        state.deck, state.rng, state.next_card_id = trial.deck, trial.rng, trial.next_card_id
-        state.gold = 0
+        from game.headless.run.deck import commit_trial
+        commit_trial(state, trial)
         pending["data"].update(choice="group", eligible=[], selected=list(selected), results=results)
         pending["stage"] = "resolved"
 
@@ -84,38 +85,37 @@ class MorphicGrove:
                 raise ValueError("Invalid Morphic card identities.")
         original, selected = data["original_ids"], data["selected"]
         current = [c.instance_id for c in state.deck]
+        transformable = [i for i in original if data["original_definitions"][i] not in ETERNAL_SOURCES]
         definitions = data["original_definitions"]
         if not isinstance(definitions, dict) or set(definitions) != set(original):
             raise ValueError("Invalid Morphic source definitions.")
         for name in definitions.values():
-            if not isinstance(name, str) or name not in (*self.transform_pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_POOL, *COLORLESS_SOURCES):
+            if not isinstance(name, str) or name not in (*self.transform_pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_POOL, *ETERNAL_SOURCES, *COLORLESS_SOURCES):
                 raise ValueError("Unsupported Morphic source definition.")
         if any(c.instance_id in definitions and c.definition.definition_id != definitions[c.instance_id] for c in state.deck):
             raise ValueError("Morphic original definitions differ from the deck.")
         if any(i not in original for i in selected) or not isinstance(data["results"], list):
             raise ValueError("Invalid Morphic selection.")
         stage, choice = pending["stage"], data["choice"]
-        gain = self.max_hp_gain if choice == "loner" else 0
-        if state.hp != data["initial_hp"] + gain or state.max_hp != data["initial_max_hp"] + gain:
-            raise ValueError("Morphic HP effect differs from its choice.")
-        if state.gold != (0 if choice == "group" else data["initial_gold"]):
-            raise ValueError("Morphic gold differs from its choice.")
+        from game.headless.events.resources import validate, valid_new_card
+        effects = [("max_hp", self.max_hp_gain)] if choice == "loner" else [("lose_all_gold", 0), ("cards_added", len(data["results"]))] if choice == "group" else []
+        validate(state, pending, effects)
         if stage == "options" and choice is None or stage == "resolved" and choice == "loner":
             if selected or data["eligible"] or data["results"] or current != original:
                 raise ValueError("Unselected Morphic transformation has results.")
         elif stage == "select_card" and choice == "group":
-            if (len(original) <= self.card_count or len(selected) >= self.card_count or data["results"]
-                    or current != original or data["eligible"] != [i for i in original if i not in selected]):
+            if (len(transformable) <= self.card_count or len(selected) >= self.card_count or data["results"]
+                    or current != original or data["eligible"] != [i for i in transformable if i not in selected]):
                 raise ValueError("Invalid pending Morphic selection.")
         elif stage == "resolved" and choice == "group":
-            if len(selected) != min(self.card_count,len(original)) or data["eligible"] or len(data["results"]) != len(selected):
+            if len(selected) != min(self.card_count,len(transformable)) or data["eligible"] or len(data["results"]) != len(selected):
                 raise ValueError("Invalid resolved Morphic selection.")
             expected = list(original)
             for source, result in zip(selected, data["results"]):
                 if not isinstance(result, dict) or set(result) != {"instance_id", "definition_id"}:
                     raise ValueError("Invalid Morphic result.")
                 card = next((c for c in state.deck if c.instance_id == result["instance_id"]), None)
-                if (card is None or card.instance_id in original or card.upgrade_level != 0 or card.combats_seen != 0 or card.enchantment is not None
+                if (card is None or card.instance_id in original or not valid_new_card(state, card) or card.combats_seen != 0
                         or card.definition.definition_id != result["definition_id"]
                         or result["definition_id"] not in replacement_pool(definitions[source], self.transform_pool)
                         or result["definition_id"] == definitions[source]):

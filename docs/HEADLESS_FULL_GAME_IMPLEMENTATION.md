@@ -21,6 +21,15 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — solo Act 1 relic rules:** the audited 161-definition inventory
+  now has explicit combat/run/acquisition rules, persistent counters and nested
+  pickup choices. Generated runs use complete ordinary/merchant relic pools.
+  Kaleidoscope requires foreign card catalogs absent from the default environment;
+  potion/curse generation and native pool fidelity retain declared restrictions.
+  See [the relic guide](HEADLESS_ENGINE.md#relics) and
+  [validation record](evidence/relics_2026_09_13.md). HF-25's reachable solo rule
+  implementation is covered; dependent content and differential acceptance remain.
+
 - **2026-09-13 — full single-player colorless pool:** all 53 base/upgraded
   definitions, with 11 multiplayer-only exclusions. Shared optional/multiple
   choices, offers, retain, shuffle/draw hooks, independent power instances,
@@ -876,9 +885,13 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-25 — Complete reachable relic content and interactions
 
-- **Partial:** Strawberry, Pear and Mango permanently gain 7/10/14 max HP and
-  heal by the same amount on pickup. Restore never replays the effect; removal
-  does not reverse it. Other relics and combat-time acquisition remain open.
+- **Solo Act 1 rules implemented:** 161 definitions in the pinned inventory;
+  160 available in the default catalog, with Kaleidoscope's implementation requiring
+  three installed foreign character pools. Combat/run hooks, nested acquisition,
+  counters, resource/shop/rest/reward/travel modifiers and relic enchantments are
+  implemented. Remaining acceptance: complete dependent potion/curse/character
+  catalogs, native generation weights/shared depletion and differential evidence.
+  [Implementation and exact limits](HEADLESS_ENGINE.md#relics).
 
 - **Depends on:** HF-01/24 and mechanic-specific tasks.
 - **Implement:** per-ID relic tickets covering combat triggers, persistent counters,

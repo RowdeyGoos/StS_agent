@@ -23,11 +23,15 @@ def add_card(state: RunState, definition, *, upgrade_level: int = 0) -> Card:
     definition.spec_at(upgrade_level)  # Validate before consuming identity.
     card = Card(definition, upgrade_level=upgrade_level, instance_id=state.allocate_card_id())
     state.deck.append(card)
+    from game.headless.relics.run_rules import card_added
+    card_added(state, card)
     return card
 
 
 def remove_card(state: RunState, instance_id: str) -> Card:
     card = find_card(state, instance_id)
+    if card.spec.eternal:
+        raise ValueError("An Eternal card cannot be removed.")
     state.deck.remove(card)
     return card
 
@@ -41,6 +45,8 @@ def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *
     from game.headless.core.rng import GameRandomService
     state.validate()
     original = find_card(state, instance_id)
+    if original.spec.eternal:
+        raise ValueError("An Eternal card cannot be transformed.")
     pool = tuple(replacement_pool)
     if not pool or len(set(pool)) != len(pool):
         raise ValueError("Transformation requires a distinct replacement pool.")
@@ -56,6 +62,8 @@ def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *
     replacement = Card(definition, instance_id=state.allocate_card_id())
     state.deck[index] = replacement
     state.rng = rng
+    from game.headless.relics.run_rules import card_added
+    card_added(state, replacement)
     return replacement
 
 
@@ -66,4 +74,12 @@ def replace_card(state: RunState, instance_id: str, definition) -> Card:
     index = state.deck.index(original)
     result = Card(definition, instance_id=state.allocate_card_id())
     state.deck[index] = result
+    from game.headless.relics.run_rules import card_added
+    card_added(state, result)
     return result
+
+
+def commit_trial(state, trial):
+    """Commit deck changes together with the relic effects those changes produced."""
+    for field in ('deck', 'rng', 'next_card_id', 'hp', 'max_hp', 'gold', 'relics', 'next_item_id', 'relic_work'):
+        setattr(state, field, getattr(trial, field))

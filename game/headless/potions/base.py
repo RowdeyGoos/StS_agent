@@ -28,6 +28,7 @@ class PotionInstance:
 
 
 POTIONS = MappingProxyType({
+    "potion_shaped_rock": PotionDefinition("potion_shaped_rock", damage=15),
     "fire_potion": PotionDefinition("fire_potion", damage=20),
     "block_potion": PotionDefinition("block_potion", block=12),
 })

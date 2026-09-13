@@ -6,10 +6,15 @@ from game.headless.run.deck import add_card, remove_card
 from game.headless.run.inventory import add_potion, add_relic
 from game.headless.run.state import RunPhase
 from game.headless.shops.catalog import SHOP_ID, SLOTS, price
+from game.headless.relics.run_rules import has, modify_new_card
+from game.headless.relics.pools import shop_items
 
 
 def begin(state, cards):
     state.require_room_entry("shop")
+    if state.pending is None:
+        from game.headless.relics.run_rules import entered_room
+        entered_room(state, "shop")
     # Build on an isolated RNG; missing content must not consume a visit or draws.
     rng = GameRandomService(state.seed)
     rng.restore(state.rng.snapshot())
@@ -17,7 +22,7 @@ def begin(state, cards):
     offers = []
     sale_slot = rng.choice("shop.stock", [i for i, s in enumerate(SLOTS) if s.kind == "card" and s.sale_eligible])
     for index, slot in enumerate(SLOTS):
-        pool = [(name, cost) for name, cost in slot.items if slot.kind != "relic" or name not in owned]
+        pool = [(name, cost) for name, cost in shop_items(state, slot) if slot.kind != "relic" or name not in owned]
         if not pool:
             continue
         definition_id, base_cost = rng.choice("shop.stock", pool)
@@ -27,7 +32,10 @@ def begin(state, cards):
         on_sale = index == sale_slot
         offers.append({"offer_id": f"shop.{state.next_shop_id}.offer.{index}", "slot": index,
                        "definition_id": definition_id, "kind": slot.kind, "on_sale": on_sale,
-                       "price": price(base_cost, scale, on_sale), "sold": False})
+                       "base_price": price(base_cost, scale, on_sale), "price": discounted(state, price(base_cost, scale, on_sale)), "sold": False,
+                       "generation": 0, "upgrade_level": 0, "enchantment": None})
+    for offer in offers:
+        modify_offer(state, cards, offer)
     pending = {"kind": "shop", "catalog_id": SHOP_ID, "shop_id": state.next_shop_id,
                "stage": "browse", "offers": offers, "removal_used": False,
                "removals_on_entry": state.shop_removals_used}
@@ -44,13 +52,12 @@ def _pending(state, stage="browse"):
 
 
 def removal_price(state):
-    return 75 + 25 * state.shop_removals_used
+    return discounted(state, 75 + 25 * state.shop_removals_used)
 
 
 def eligible_removals(state):
-    # Native removal excludes the Eternal keyword. No supported card has it;
-    # add its content rule here when Eternal cards are introduced.
-    return tuple(c.instance_id for c in state.deck)
+    # Greed and future Eternal cards are excluded by the shared keyword.
+    return tuple(c.instance_id for c in state.deck if not c.spec.eternal)
 
 
 def can_buy(state, offer):
@@ -74,15 +81,23 @@ def buy(state, cards, offer_id):
     offer = next((o for o in pending["offers"] if o["offer_id"] == offer_id), None)
     if offer is None or not can_buy(state, offer):
         raise ValueError("Shop offer cannot be purchased.")
+    paid = offer["price"]
     # Shared acquisition rules validate before allocating or modifying ownership.
     if offer["kind"] == "card":
-        result = add_card(state, cards.definition(offer["definition_id"]))
+        result = add_card(state, cards.definition(offer["definition_id"]), upgrade_level=offer["upgrade_level"])
+        if offer["enchantment"] is not None:
+            from game.headless.enchantments.base import restore
+            result.enchantment = restore(offer["enchantment"])
     elif offer["kind"] == "potion":
         result = add_potion(state, offer["definition_id"])
     else:
         result = add_relic(state, offer["definition_id"], cards=cards)
-    state.gold -= offer["price"]
+    state.gold -= paid
     offer["sold"] = True
+    if has(state, "the_courier"):
+        refill(state, cards, offer)
+    for remaining in pending["offers"]:
+        remaining["price"] = discounted(state, remaining["base_price"])
     return result
 
 
@@ -113,3 +128,34 @@ def choose_removal(state, instance_id):
 def leave(state):
     _pending(state)
     state.pending, state.phase = None, RunPhase.ROUTE
+
+
+def discounted(state, amount):
+    numerator, denominator = 1, 1
+    if has(state, "membership_card"):
+        denominator *= 2
+    if has(state, "the_courier"):
+        numerator *= 4
+        denominator *= 5
+    return amount * numerator // denominator
+
+
+def modify_offer(state, cards, offer):
+    if offer['kind'] == 'card':
+        from game.headless.enchantments.base import record
+        card = modify_new_card(state, cards.create(offer['definition_id']))
+        offer['upgrade_level'], offer['enchantment'] = card.upgrade_level, record(card)
+
+
+def refill(state, cards, offer):
+    slot = SLOTS[offer['slot']]
+    pool = [(name, cost) for name, cost in shop_items(state, slot) if slot.kind != 'relic' or not has(state, name)]
+    if not pool:
+        return
+    name, base = state.rng.choice('shop.stock', pool)
+    scale = state.rng.randint('shop.prices', 10000-slot.variation*100, 10000+slot.variation*100)
+    generation = offer['generation'] + 1
+    offer.update(definition_id=name, sold=False, on_sale=False, generation=generation,
+                 offer_id=f"shop.{state.pending['shop_id']}.offer.{offer['slot']}.refill.{generation}",
+                 base_price=price(base, scale), price=discounted(state, price(base, scale)), upgrade_level=0, enchantment=None)
+    modify_offer(state, cards, offer)

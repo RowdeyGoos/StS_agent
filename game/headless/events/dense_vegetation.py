@@ -28,11 +28,15 @@ class DenseVegetation:
         data = pending["data"]
         data["choice"] = option_id
         if option_id == "trudge_on":
-            state.hp = max(0, state.hp - self.damage)
-            state.gold += data["gold"]
+            from game.headless.relics.run_rules import damage
+            damage(state, self.damage)
+            from game.headless.relics.run_rules import gain_gold
+            gain_gold(state, data["gold"])
             pending["stage"] = "resolved"
         else:
             state.hp += data["heal"]
+            from game.headless.relics.run_rules import rest_rewards
+            rest_rewards(state)
             pending["stage"] = "fight"
 
     def validate(self, pending, *, state, cards, defeated=False):
@@ -42,13 +46,19 @@ class DenseVegetation:
                 or type(data["initial_hp"]) is not int or not 0 < data["initial_hp"] <= state.max_hp
                 or type(data["initial_gold"]) is not int or data["initial_gold"] < 0
                 or type(data["heal"]) is not int
-                or data["heal"] != min(state.max_hp * 3 // 10, state.max_hp - data["initial_hp"])):
+                or data["heal"] != expected_heal(state, pending)):
             raise ValueError("Invalid Dense Vegetation data.")
         stage, choice = pending["stage"], data["choice"]
         if (stage, choice) not in (("options", None), ("fight", "rest"), ("resolved", "trudge_on")):
             raise ValueError("Invalid Dense Vegetation choice or stage.")
-        expected_hp = (max(0, data["initial_hp"] - self.damage) if choice == "trudge_on"
-                       else data["initial_hp"] + (data["heal"] if choice == "rest" else 0))
-        if (state.hp != expected_hp or defeated != (state.hp == 0)
-                or state.gold != data["initial_gold"] + (data["gold"] if choice == "trudge_on" else 0)):
-            raise ValueError("Dense Vegetation resources differ from its choice.")
+        from game.headless.events.resources import validate
+        effects = [("damage", self.damage), ("gold", data["gold"])] if choice == "trudge_on" else [("heal", data["heal"]), ("rest_bonus", 0)] if choice == "rest" else []
+        validate(state, pending, effects)
+        if defeated != (state.hp == 0):
+            raise ValueError("Dense Vegetation defeat differs from HP.")
+
+
+def expected_heal(state, pending):
+    from game.headless.events.resources import expected
+    initial = expected(state, pending)
+    return heal_amount(initial)

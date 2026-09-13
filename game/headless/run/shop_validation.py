@@ -1,8 +1,9 @@
 """Validation of private merchant continuation data, separate from execution."""
 
 from game.headless.run.unknown_rooms import room_node
+from game.headless.relics.pools import shop_items
 
-from game.headless.run.shop import eligible_removals, removal_price
+from game.headless.run.shop import eligible_removals, removal_price, discounted
 from game.headless.run.state import RunPhase
 from game.headless.shops.catalog import SHOP_ID, SLOTS, price
 
@@ -30,23 +31,32 @@ def validate_shop(state, cards, graph):
         raise ValueError("Invalid shop inventory.")
     slots, sales = [], 0
     for offer in offers:
-        if not isinstance(offer, dict) or set(offer) != {"offer_id", "slot", "definition_id", "kind", "on_sale", "price", "sold"}:
+        if not isinstance(offer, dict) or set(offer) != {"offer_id", "slot", "definition_id", "kind", "on_sale", "price", "sold", "base_price", "generation", "upgrade_level", "enchantment"}:
             raise ValueError("Invalid shop offer fields.")
         index = offer["slot"]
         if type(index) is not int or not 0 <= index < len(SLOTS):
             raise ValueError("Unknown shop slot.")
         slot = SLOTS[index]
-        if offer["offer_id"] != f"shop.{pending['shop_id']}.offer.{index}" or offer["kind"] != slot.kind:
+        generation = offer["generation"]
+        if type(generation) is not int or generation < 0:
+            raise ValueError("Invalid shop refill generation.")
+        expected_id = f"shop.{pending['shop_id']}.offer.{index}" + (f".refill.{generation}" if generation else "")
+        if offer["offer_id"] != expected_id or offer["kind"] != slot.kind:
             raise ValueError("Invalid shop offer identity.")
         if type(offer["sold"]) is not bool or type(offer["on_sale"]) is not bool or (offer["on_sale"] and (slot.kind != "card" or not slot.sale_eligible)):
             raise ValueError("Invalid shop offer flags.")
-        base = dict(slot.items).get(offer["definition_id"])
+        base = dict(shop_items(state, slot)).get(offer["definition_id"])
         if base is None:
             raise ValueError("Unknown shop item.")
         if slot.kind == "card":
-            cards.definition(offer["definition_id"])
-        if (type(offer["price"]) is not int or not
-                price(base, 10000 - slot.variation * 100, offer["on_sale"]) <= offer["price"] <=
+            card = cards.create(offer["definition_id"], upgrade_level=offer["upgrade_level"])
+            from game.headless.enchantments.base import restore, validate
+            card.enchantment = restore(offer["enchantment"])
+            validate(card, permanent=True)
+        elif offer["upgrade_level"] != 0 or offer["enchantment"] is not None:
+            raise ValueError("Non-card shop offer has card metadata.")
+        if (type(offer["price"]) is not int or offer["price"] != discounted(state, offer["base_price"]) or type(offer["base_price"]) is not int or not
+                price(base, 10000 - slot.variation * 100, offer["on_sale"]) <= offer["base_price"] <=
                 price(base, 10000 + slot.variation * 100, offer["on_sale"])):
             raise ValueError("Invalid shop price.")
         if slot.kind == "relic" and offer["sold"] and not any(r.definition_id == offer["definition_id"] for r in state.relics):
@@ -54,11 +64,11 @@ def validate_shop(state, cards, graph):
         slots.append(index)
         sales += int(offer["on_sale"])
     required = [i for i, s in enumerate(SLOTS) if s.kind != "relic"]
-    if slots != sorted(set(slots)) or not set(required) <= set(slots) or sales != 1:
+    if slots != sorted(set(slots)) or not set(required) <= set(slots) or sales > 1 or (sales != 1 and not any(o["generation"] for o in offers)):
         raise ValueError("Invalid shop stock composition.")
     for index, slot in enumerate(SLOTS):
         if slot.kind == "relic" and index not in slots:
-            if not all(any(r.definition_id == name for r in state.relics) for name, _ in slot.items):
+            if not all(any(r.definition_id == name for r in state.relics) for name, _ in shop_items(state, slot)):
                 raise ValueError("Available relic stock is missing.")
     if pending["stage"] == "remove":
         if (pending["removal_used"] or state.gold < removal_price(state) or not pending["eligible"]

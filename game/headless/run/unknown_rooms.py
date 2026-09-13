@@ -45,6 +45,7 @@ def roll_room(odds, rng, *, blocked=()):
 class RoomOutcome:
     kind: str
     event_id: str | None = None
+    blocked_by: str | None = None
 
 
 @dataclass
@@ -63,6 +64,14 @@ class UnknownRooms:
             if node.kind == "unknown":
                 result = self.outcomes[node_id]
                 blocked = blocked_types(graph, node, previous)
+                if result.blocked_by is not None:
+                    identity = result.blocked_by
+                    if not isinstance(identity, str) or not identity.startswith("run.item.") or not identity.removeprefix("run.item.").isdigit() or int(identity.removeprefix("run.item.")) >= state.next_item_id:
+                        raise ValueError("Invalid unknown-room relic source.")
+                    current = next((r for r in state.relics if r.instance_id == identity), None)
+                    if current is not None and current.definition_id != "juzu_bracelet":
+                        raise ValueError("Unknown-room blocker is not Juzu Bracelet.")
+                    blocked = (*blocked, "combat")
                 if (not isinstance(result, RoomOutcome) or result.kind not in ("combat", "treasure", "shop", "event")
                         or result.kind in blocked
                         or result.kind == "event" and result.event_id not in state.config.event_pool
@@ -100,11 +109,14 @@ def prepare_unknown(state, graph, node):
     rng.restore(state.rng.snapshot())
     unknown = deepcopy(state.unknown_rooms)
     previous = room_node(state, graph, state.current_node_id).kind if state.current_node_id is not None else None
-    kind = roll_room(unknown.odds, rng, blocked=blocked_types(graph, node, previous))
+    from game.headless.relics.run_rules import owned
+    bracelet = owned(state, "juzu_bracelet")
+    blocked = blocked_types(graph, node, previous) + (("combat",) if bracelet is not None else ())
+    kind = roll_room(unknown.odds, rng, blocked=blocked)
     if state.event_progression is None:
         raise ValueError("Unknown room requires an owned event queue.")
     progression = deepcopy(state.event_progression)
     from game.headless.events.eligibility import entry_conditions
     event_id = progression.pull(node.node_id, conditions=entry_conditions(state)) if kind == "event" else None
-    unknown.outcomes[node.node_id] = RoomOutcome(kind, event_id)
+    unknown.outcomes[node.node_id] = RoomOutcome(kind, event_id, None if bracelet is None else bracelet.instance_id)
     return rng, unknown, progression, replace(node, kind=kind, event_id=event_id)

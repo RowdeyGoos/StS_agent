@@ -59,6 +59,8 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     player.deck.in_play.append(card)
     rules = player.rules
     repeats = 1 + card.combat_state.replay_count
+    if card.enchantment is not None and card.enchantment.definition_id == "glam" and not card.enchantment.triggered:
+        repeats += 1
     if card.spec.kind == "attack" and rules.powers.get("one_two_punch"):
         repeats += 1
         rules.powers["one_two_punch"] -= 1
@@ -66,10 +68,12 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
         "target": target_slot,
         "auto": auto,
         "force_exhaust": force_exhaust,
-        "x": x,
+        "x": x + (2 if card.spec.x_cost and any(r["definition_id"] == "chemical_x" for r in rules.relics) else 0),
+        "energy_value": 0 if auto else (x if card.spec.x_cost else cost),
         "remaining": repeats,
         "rupture": 0,
         "effect_index": -1,
+        "stage": "effects",
         "destination": (
             "powers"
             if card.spec.kind == "power"
@@ -116,6 +120,7 @@ def execute(p, task):
         (identity,) = args
         card = find(p, identity)
         if not p.combat_is_ending:
+            r.plays[identity]["stage"] = "effects"
             r.plays[identity].pop("blocks_gained", None)
             p.cards_played_this_turn += 1
             if card.spec.kind == "attack":
@@ -129,6 +134,8 @@ def execute(p, task):
                         other.combat_state.cost_change -= 1
             if card.spec.kind in ("skill", "block"):
                 r.skills_started += 1
+            from game.headless.relics.plays import before_play
+            before_play(p, card)
             push(
                 p,
                 *[["effect", identity, i] for i in range(len(card.definition.effects))],
@@ -151,12 +158,17 @@ def execute(p, task):
         (identity,) = args
         card = find(p, identity)
         context = r.plays[identity]
-        push(p, ["repeat", identity])
+        context["stage"] = "enchantment"
+        push(p, ["after_enchantment", identity])
         if card.enchantment is not None and p.is_alive:
             from game.headless.enchantments.base import ENCHANTMENTS
 
             ENCHANTMENTS[card.enchantment.definition_id].on_play(card.enchantment, p)
-        hooks.after_play(p, card)
+    elif op == "after_enchantment":
+        (identity,) = args
+        r.plays[identity]["stage"] = "hooks"
+        push(p, ["repeat", identity])
+        hooks.after_play(p, find(p, identity))
 
     elif op == "repeat":
         (identity,) = args
@@ -177,6 +189,8 @@ def execute(p, task):
             p.deck.draw_pile.append(card)
         else:
             p.deck.discard_card(card)
+        from game.headless.relics.plays import hand_emptied
+        hand_emptied(p)
     elif op == "draw":
         count, hand_draw = args
         if count <= 0 or p.combat_is_ending or (r.powers.get("no_draw") and not hand_draw):
@@ -266,7 +280,8 @@ def execute(p, task):
                 break
             if card.spec.end_turn_damage:
                 p.take_damage(card.spec.end_turn_damage, is_attack=False)
-        ethereal = [c.instance_id for c in p.hand if c.spec.ethereal]
+        from game.headless.relics.combat import has
+        ethereal = [c.instance_id for c in p.hand if c.spec.ethereal or (has(p, "ghost_seed") and (c.definition.strike or c.definition.defend))]
         push(p, *[["ethereal", i] for i in ethereal], ["discard_remaining"])
     elif op == "ethereal":
         (identity,) = args
@@ -278,10 +293,12 @@ def execute(p, task):
             r.auxiliaries.pop("exhaust_ethereal", None)
     elif op == "discard_remaining":
         for card in tuple(p.hand):
-            if not card.spec.retain and not r.powers.get("retain_hand"):
+            from game.headless.relics.combat import has
+            if not card.spec.retain and not r.powers.get("retain_hand") and not (r.round_number == 1 and has(p, "ringing_triangle")):
                 p.hand.remove(card)
                 p.deck.discard_card(card)
-        push(p, *[["end_power", name] for name in r.powers], ["cleanup_turn"])
+        from game.headless.relics.combat import tasks as relic_tasks
+        push(p, *[["end_power", name] for name in r.powers], *relic_tasks(p, "after_end"), ["cleanup_turn"])
     elif op == "cleanup_turn":
         for card in p.deck.all_cards():
             card.combat_state.free_this_turn = False
@@ -293,6 +310,10 @@ def execute(p, task):
         push(p, *[["start_power", key] for key in r.powers])
     elif op == "after_card_power":
         hooks.after_card_power(p, find(p, args[0]), args[1])
+    elif op == "after_card_enchantment":
+        card = find(p, args[0])
+        if card.enchantment is not None and card.enchantment.definition_id == "glam":
+            card.enchantment.triggered = True
     elif op == "after_card_enemies":
         for enemy in tuple(p.combat_enemies or ()):
             if enemy.is_alive:
@@ -322,5 +343,11 @@ def execute(p, task):
         living = [e for e in p.combat_enemies if e.is_alive]
         if living and not p.combat_is_ending:
             hit(p, find(p, args[0]), p.deck.target_rng.choice(living), extra=args[1])
+    elif op == "relic_damage":
+        from game.headless.relics.damage import damage_hook
+        damage_hook(p, *args)
+    elif op == "relic_hook":
+        from game.headless.relics.combat import execute as relic_execute
+        relic_execute(p, *args)
     else:
         raise ValueError(f"Unknown combat work: {op}")

@@ -11,7 +11,9 @@ DAZED = CardDefinition("dazed", (CardSpec("Dazed", -1, "status", uses_target=Fal
 INFECTION = CardDefinition("infection", (CardSpec("Infection", -1, "status", uses_target=False, end_turn_damage=3),), ())
 GUILTY = CardDefinition("guilty", (CardSpec("Guilty", -1, "curse", uses_target=False),), (), combat_lifetime=5)
 CLUMSY = CardDefinition("clumsy", (CardSpec("Clumsy", -1, "curse", uses_target=False, ethereal=True),), ())
-DEFINITIONS = (SLIMED, WOUND, DAZED, INFECTION, GUILTY, CLUMSY)
+INJURY = CardDefinition("injury", (CardSpec("Injury", -1, "curse", uses_target=False),), (), rarity="curse", pool="curse")
+GREED = CardDefinition("greed", (CardSpec("Greed", -1, "curse", uses_target=False, eternal=True),), (), rarity="curse", pool="curse", generate_in_combat=False)
+DEFINITIONS = (SLIMED, WOUND, DAZED, INFECTION, GUILTY, CLUMSY, INJURY, GREED)
 
 
 class SlimedCard(Card):

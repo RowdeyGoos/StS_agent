@@ -104,8 +104,12 @@ class Enemy(ABC):
         n, d = self.incoming_attack_multiplier()
         player = self.combat_player
         if player is not None and attacker_statuses is player.statuses and self.statuses.get('vulnerable'):
-            n *= 150 + player.rules.powers.get('cruelty', 0)
+            from game.headless.relics.combat import has
+            n *= 150 + player.rules.powers.get('cruelty', 0) + (25 if has(player, 'paper_phrog') else 0)
             d *= 150
+        if player is not None and attacker_statuses is player.statuses:
+            from game.headless.relics.damage import attack_multiplier
+            n *= attack_multiplier(player, player.deck.in_play[-1] if player.deck.in_play else None)
         return n, d
 
     def start_turn(self) -> None:
@@ -133,6 +137,10 @@ class Enemy(ABC):
         powered: bool = True,
     ) -> int:
         """Apply incoming damage and return the HP damage taken."""
+        player = self.combat_player
+        if is_attack and powered and player is not None and attacker_statuses is player.statuses:
+            from game.headless.relics.damage import attack_bonus
+            amount += attack_bonus(player, player.deck.in_play[-1] if player.deck.in_play else None)
         incoming_damage = (
             modify_attack_damage_for_statuses(
                 amount,
@@ -155,10 +163,18 @@ class Enemy(ABC):
         if self.combat_player is not None:
             from game.headless.core.enemy_lifecycle import settle_enemies
             settle_enemies(self.combat_player)
+            if previous_hp > 0 and self.hp <= 0 and not self.combat_player.combat_is_ending:
+                from game.headless.relics.combat import has
+                from game.headless.core.resolution import push
+                if has(self.combat_player, "gremlin_horn"):
+                    push(self.combat_player, ["energy", 1], ["draw", 1, False])
         return damage
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the enemy."""
+        if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles"):
+            from game.headless.relics.damage import debuff_amount
+            stacks = debuff_amount(source, source.deck.in_play[-1] if source.deck.in_play else None, stacks)
         if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles") and self.statuses.get("artifact"):
             self.statuses.decrement("artifact")
             return
@@ -209,14 +225,30 @@ class Enemy(ABC):
         current_intent = self.intent
 
         for _hit_index in range(current_intent.attack_count):
-            player.take_damage(
-                current_intent.attack_damage if current_intent.base_attack_damage is None else current_intent.base_attack_damage,
-                attacker_statuses=None if current_intent.base_attack_damage is None else self.statuses,
-                attacker_strength=-(self.statuses.get("mangle") + self.statuses.get("dark_shackles")) if current_intent.base_attack_damage is None else self.strength - (self.statuses.get("mangle") + self.statuses.get("dark_shackles")),
-                source=self,
-            )
+            self.execute_hit(player, current_intent)
+            from game.headless.core.resolution import drain
+            drain(player)
             if not player.is_alive or not self.is_alive:
                 return current_intent
+        self.execute_after_hits(player, current_intent)
+
+        if tick_statuses:
+            from game.headless.powers.lifecycle import after_owner_side_turn_end
+            self.statuses.on_turn_end()
+            after_owner_side_turn_end(self)
+        self.advance_intent()
+        return current_intent
+
+    def execute_hit(self, player, current_intent):
+        player.take_damage(
+            current_intent.attack_damage if current_intent.base_attack_damage is None else current_intent.base_attack_damage,
+            attacker_statuses=None if current_intent.base_attack_damage is None else self.statuses,
+            attacker_strength=-(self.statuses.get("mangle") + self.statuses.get("dark_shackles")) if current_intent.base_attack_damage is None else self.strength - (self.statuses.get("mangle") + self.statuses.get("dark_shackles")),
+            source=self,
+        )
+
+    def execute_after_hits(self, player, current_intent):
+        from game.headless.cards.status import SlimedCard
         if current_intent.block_gain > 0:
             self.gain_block(current_intent.block_gain)
         if current_intent.strength_gain > 0:
@@ -233,12 +265,6 @@ class Enemy(ABC):
 
         self.after_move(player, current_intent)
 
-        if tick_statuses:
-            from game.headless.powers.lifecycle import after_owner_side_turn_end
-            self.statuses.on_turn_end()
-            after_owner_side_turn_end(self)
-        self.advance_intent()
-        return current_intent
 
     def after_move(self, player, intent):
         """Content-owned effects after the shared ordered move operations."""

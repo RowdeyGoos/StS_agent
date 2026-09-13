@@ -9,6 +9,7 @@ from dataclasses import asdict
 from game.headless.core.actions import ChooseCombatCard, ConfirmCombatSelection, EndTurn, PlayCard
 from game.headless.run.actions import (
     ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
+    ChooseRelicCard, ConfirmRelicSelection, ChooseRelicReward, ChooseExtraReward, Lift, Dig,
     Rest, Smith, Hatch, ChooseUpgrade, LeaveRest, UsePotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
     OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
@@ -19,6 +20,15 @@ from game.headless.run.engine import RunEngine
 def choose_demo_action(engine, rest_choice="smith", path="left"):
     """A deterministic example player, not an engine rule or trained policy."""
     actions = engine.legal_actions()
+    if engine.state.relic_work:
+        work = engine.state.relic_work[0]
+        if ConfirmRelicSelection() in actions:
+            return ConfirmRelicSelection()
+        return next((a for a in actions if isinstance(a, ChooseRelicCard) and a.instance_id not in work.get('selected', [])),
+                    next((a for a in actions if isinstance(a, ChooseRelicReward) and a.index is not None), actions[0]))
+    extra = [a for a in actions if isinstance(a, ChooseExtraReward) and a.definition_id is not None]
+    if extra:
+        return extra[0]
     nodes = [a for a in actions if isinstance(a, ChooseNode)]
     if nodes:
         return nodes[0] if path == "left" else nodes[-1]
@@ -50,7 +60,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
         # Buy one affordable card, remove a starter, then leave; this is only
         # an example policy, never a restriction on the room's legal purchases.
         offers = engine.state.pending["offers"]
-        bought_card = any(o["kind"] == "card" and o["sold"] for o in offers)
+        bought_card = any(o["kind"] == "card" and (o["sold"] or o["generation"] > 0) for o in offers)
         if not bought_card:
             for offer in offers:
                 if offer["kind"] == "card" and BuyShopItem(offer["offer_id"]) in actions:

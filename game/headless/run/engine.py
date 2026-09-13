@@ -67,7 +67,8 @@ class RunEngine:
         from game.headless.run import ancient
         if ancient_profile not in (None, ancient.PROFILE):
             raise ValueError("Unsupported Ancient start profile.")
-        config = RunConfig(ascension=ascension, relic_fallback="circlet")
+        from game.headless.relics.pools import ORDINARY_RELICS, SHOP_RELICS
+        config = RunConfig(ascension=ascension, relic_fallback="circlet", reward_relics=ORDINARY_RELICS, shop_relics=SHOP_RELICS)
         if (map_profile or PROFILE) == PROFILE:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
@@ -89,9 +90,15 @@ class RunEngine:
     def apply(self, action):
         from game.headless.run.flow import apply
         result = apply(self, action)
+        from game.headless.relics.neow import drain
+        drain(self.state, self.cards)
         if self.combat is not None:
             self.sync_combat_loot()
         return result
+
+    def obtain_relic(self, definition_id):
+        self.state.require_between_rooms()
+        return add_relic(self.state, definition_id, cards=self.cards)
 
     def preview_upgrade(self, instance_id: str):
         self.state.require_between_rooms()
@@ -119,6 +126,9 @@ class RunEngine:
                 if self.state.config is None or not eligible_relics(self.state):
                     raise ValueError("The restricted elite relic pool has no available reward.")
         self.state.require_room_entry(room_kind)
+        if self.state.pending is None:
+            from game.headless.relics.run_rules import entered_room
+            entered_room(self.state, room_kind)
         if self.state.pending is not None and self.graph is not None:
             from game.headless.encounters.progression import encounter_at
             from game.headless.run.unknown_rooms import room_node
@@ -136,6 +146,9 @@ class RunEngine:
         self.state.phase = RunPhase.COMBAT
         self.state.active_encounter_id = encounter_id
         self.combat = combat
+        self.sync_combat_loot()
+        if combat.done:
+            self.finish_combat()
         return combat
 
     def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5):
@@ -148,10 +161,9 @@ class RunEngine:
                               encounter_factory=encounter_factory, enemy_factory=enemy_factory,
                               player_max_hp=self.state.max_hp, energy_per_turn=energy_per_turn,
                               cards_per_turn=cards_per_turn, cards=self.cards)
-        combat.reset()
-        combat.player.hp = self.state.hp
-        combat.player.strength += sum(RELICS[r.definition_id].combat_strength for r in self.state.relics)
-        combat.player.rules.potion_slots = self.state.potions.count(None)
+        room_kind = getattr(encounter_factory, "room_kind", "combat")
+        combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
+                     potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None))
         if self.state.config is not None:
             combat.player.rules.potion_pool = list(self.state.config.reward_potions)
         return rng, combat
@@ -159,12 +171,16 @@ class RunEngine:
     def sync_combat_loot(self):
         from game.headless.run.inventory import add_potion
         r = self.combat.player.rules
+        from game.headless.relics.combat import synchronize
+        from game.headless.relics.damage import potions_changed
+        synchronize(self.state, self.combat.player)
         self.state.gold += r.gold_gained
         r.gold_gained = 0
         for potion in r.potions_generated:
             add_potion(self.state, potion)
         r.potions_generated.clear()
         r.potion_slots = self.state.potions.count(None)
+        potions_changed(self.combat.player)
 
     def finish_combat(self) -> None:
         if self.state.phase is not RunPhase.COMBAT or self.combat is None or not self.combat.done:
@@ -176,6 +192,9 @@ class RunEngine:
         self.state.hp = self.combat.player.hp
         self.state.combats_completed += 1
         self.state.phase = RunPhase.ROUTE if self.combat.winner == "player" else RunPhase.DEFEAT
+        from game.headless.relics.combat import owned, memory
+        lamp = owned(self.combat.player, "lava_lamp")
+        undamaged = lamp is not None and not memory(self.combat.player, lamp).get("damaged", False)
         self.combat = None
         from game.headless.run.event_combat import finish
         finish(self.state, encounter_id, won=self.state.phase is RunPhase.ROUTE)
@@ -183,15 +202,18 @@ class RunEngine:
         after_combat(self.state, won=self.state.phase is RunPhase.ROUTE,
                      elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite")
         if self.state.phase is RunPhase.ROUTE:
+            from game.headless.relics.run_rules import victory
+            victory(self.state, room_kind=ENCOUNTERS[encounter_id].room_kind if encounter_id is not None else "combat")
             for relic in self.state.relics:
                 RELICS[relic.definition_id].after_combat_victory(self.state)
             if self.state.config is not None:
                 from game.headless.run.rewards import begin_combat_rewards
-                begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id)
+                begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged)
 
     def available_nodes(self) -> tuple[str, ...]:
         self.state.require_between_rooms()
-        return () if self.graph is None else self.graph.available_nodes(self.state.current_node_id)
+        from game.headless.run.map_travel import available
+        return () if self.graph is None else available(self.state, self.graph)
 
     def choose_node(self, node_id: str):
         if node_id not in self.available_nodes():
@@ -202,6 +224,10 @@ class RunEngine:
             rng, unknown, progression, node = prepare_unknown(self.state, self.graph, node)
             self.state.rng, self.state.unknown_rooms = rng, unknown
             self.state.event_progression = progression
+        from game.headless.relics.run_rules import entered_room
+        entered_room(self.state, node.kind, unknown=self.graph.node(node_id).kind == "unknown")
+        from game.headless.run.map_travel import entered
+        entered(self.state, self.graph, self.state.current_node_id, node_id)
         self.state.current_node_id = node_id
         self.state.visited_nodes.append(node_id)
         self.state.pending = {"kind": "node", "node_id": node_id, "room_kind": node.kind}

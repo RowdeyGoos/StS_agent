@@ -7,9 +7,13 @@ def empty():
     return {"eligible": [], "originals": [], "selected": None, "result": None}
 
 
+def eligible(state):
+    return [c for c in state.deck if not c.spec.eternal]
+
+
 def prepare(state, data):
     data["originals"] = [card_record(c) for c in state.deck]
-    data["eligible"] = [c.instance_id for c in state.deck]
+    data["eligible"] = [c.instance_id for c in eligible(state)]
 
 
 def validate(state, data, cards, *, operation, finished, extra=()):
@@ -21,8 +25,9 @@ def validate(state, data, cards, *, operation, finished, extra=()):
     identities = [r["instance_id"] for r in originals]
     if len(identities) != len(set(identities)):
         raise ValueError("Duplicate event original card.")
+    eligible_ids = [r["instance_id"] for r in originals if not restore_card(r, cards).spec.eternal]
     if not finished:
-        if (len(identities) < 2 or data["eligible"] != identities
+        if (len(eligible_ids) < 2 or data["eligible"] != eligible_ids
                 or data["selected"] is not None or data["result"] is not None
                 or originals != [card_record(c) for c in state.deck]):
             raise ValueError("Invalid pending deck choice.")
@@ -31,11 +36,11 @@ def validate(state, data, cards, *, operation, finished, extra=()):
     expected = list(originals)
     if data["eligible"] != []:
         raise ValueError("Completed choice retains candidates.")
-    if not originals:
+    if not eligible_ids:
         if selected is not None or result is not None:
             raise ValueError("Empty selection has a result.")
     else:
-        if selected not in identities:
+        if selected not in eligible_ids:
             raise ValueError("Selected card is not an original.")
         index = identities.index(selected)
         if operation == "remove":
@@ -45,7 +50,8 @@ def validate(state, data, cards, *, operation, finished, extra=()):
             from game.headless.events.transformation import TRANSFORM_POOL, replacement_pool
             restored = restore_card(result, cards)
             source = originals[index]["definition_id"]
-            if (restored.instance_id in identities or restored.upgrade_level or restored.combats_seen or restored.enchantment is not None
+            from game.headless.events.resources import valid_new_card
+            if (restored.instance_id in identities or not valid_new_card(state, restored) or restored.combats_seen
                     or restored.definition.definition_id == source
                     or restored.definition.definition_id not in replacement_pool(source, TRANSFORM_POOL)):
                 raise ValueError("Invalid event transformation.")

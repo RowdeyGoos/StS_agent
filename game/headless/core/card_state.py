@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 class CardState:
     extra_damage: int = 0
     cost_change: int = 0
+    combat_cost_change: int = 0
     free_this_turn: bool = False
     replay_count: int = 0
     return_next_turn: bool = False
@@ -36,3 +37,10 @@ class CombatRules:
     potion_slots: int = 3
     potion_pool: list[str] = field(default_factory=lambda: ["fire_potion", "block_potion"])
     potions_generated: list[str] = field(default_factory=list)
+
+    relics: list[dict] = field(default_factory=list)
+    relic_data: dict[str, dict] = field(default_factory=dict)
+    round_number: int = 0
+    room_kind: str = "combat"
+    potion_capacity: int = 3
+    enemy_turn: dict | None = None

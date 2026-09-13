@@ -9,8 +9,9 @@ def apply_effect(state, effect: str, amount: int) -> int:
         state.hp += applied
     elif effect == "gain_gold":
         applied = amount
-        state.gold += applied
+        from game.headless.relics.run_rules import gain_gold
+        applied = gain_gold(state, applied)
     else:
-        applied = min(amount, state.hp)
-        state.hp -= applied
+        from game.headless.relics.run_rules import damage
+        applied = damage(state, amount)
     return applied

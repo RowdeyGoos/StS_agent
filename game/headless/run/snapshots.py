@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v19"
+SCHEMA = "headless_run_state_v20"
 
 
 def _restore_event_combat(record):
@@ -36,7 +36,7 @@ def _restore_event_combat(record):
 
 
 def _restore_relic(record):
-    if not isinstance(record, dict) or set(record) != {"definition_id", "instance_id", "counter"}:
+    if not isinstance(record, dict) or set(record) != {"definition_id", "instance_id", "counter", "data"}:
         raise ValueError("Invalid relic state fields.")
     return RelicInstance(**record)
 
@@ -67,6 +67,9 @@ def capture_run(engine) -> dict:
                   "event_progression": None if state.event_progression is None else asdict(state.event_progression),
                   "unknown_rooms": None if state.unknown_rooms is None else asdict(state.unknown_rooms),
                   "relics": [asdict(r) for r in state.relics],
+                  "relic_work": deepcopy(state.relic_work),
+                  "free_travels": deepcopy(state.free_travels),
+                  "potion_capacity": state.potion_capacity,
                   "potions": [None if p is None else asdict(p) for p in state.potions],
                   "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance,
                   "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used,
@@ -116,6 +119,9 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             ancient_start=None if payload["ancient_start"] is None else AncientStart(**deepcopy(payload["ancient_start"])),
             event_progression=None if payload["event_progression"] is None else EventProgression(**deepcopy(payload["event_progression"])),
             config=config, relics=[_restore_relic(r) for r in payload["relics"]],
+            relic_work=deepcopy(payload["relic_work"]),
+            free_travels=deepcopy(payload["free_travels"]),
+            potion_capacity=payload["potion_capacity"],
             encounter_progression=None if payload["encounter_progression"] is None else EncounterProgression(**deepcopy(payload["encounter_progression"])),
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
             next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"],
@@ -129,6 +135,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             state.unknown_rooms = UnknownRooms(deepcopy(unknown["odds"]),
                 {node_id: RoomOutcome(**record) for node_id, record in unknown["outcomes"].items()})
         state.validate()
+        from game.headless.relics.pickup import validate as validate_relic_work
+        validate_relic_work(state, cards)
         if state.active_encounter_id is not None and state.active_encounter_id not in ENCOUNTERS:
             raise ValueError("Unknown active encounter.")
         if state.active_encounter_id is not None and ENCOUNTERS[state.active_encounter_id].gives_relic:
@@ -151,19 +159,16 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             if state.act_completion is not None and (state.current_node_id is None or
                     encounter_at(state, room_node(state, graph, state.current_node_id)) != state.act_completion.boss_encounter_id):
                 raise ValueError("Completed boss differs from its room.")
-            previous = None
-            for node_id in state.visited_nodes:
-                if node_id not in graph.available_nodes(previous):
-                    raise ValueError("Invalid map history.")
-                previous = node_id
+            from game.headless.run.map_travel import validate as validate_travel
+            validate_travel(state, graph)
             if state.phase is RunPhase.COMBAT and state.current_node_id is not None:
                 node = room_node(state, graph, state.current_node_id)
                 selected = event_combat.encounter_at_current_room(state) or encounter_at(state, node)
                 if selected is not None and selected != state.active_encounter_id:
                     raise ValueError("Active encounter differs from its selected room.")
-            if previous != state.current_node_id:
+            if (state.visited_nodes[-1] if state.visited_nodes else None) != state.current_node_id:
                 raise ValueError("Map cursor does not match its history.")
-        elif state.current_node_id is not None or state.visited_nodes or state.encounter_progression is not None or state.unknown_rooms is not None or state.event_progression is not None or state.ancient_start is not None:
+        elif state.current_node_id is not None or state.visited_nodes or state.free_travels or state.encounter_progression is not None or state.unknown_rooms is not None or state.event_progression is not None or state.ancient_start is not None:
             raise ValueError("Map history has no map.")
         if state.phase is RunPhase.SLICE_COMPLETE and (graph is None or state.current_node_id is None or room_node(state, graph, state.current_node_id).kind != "slice_end"):
             raise ValueError("Slice completion requires its authored ending.")
@@ -175,7 +180,9 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             combat.restore(snapshot["combat"], cards=cards)
             rules = combat.player.rules
             expected_pool = list(state.config.reward_potions) if state.config is not None else ["fire_potion", "block_potion"]
-            if (rules.potion_slots != state.potions.count(None) or rules.potion_pool != expected_pool
+            if rules.relics != [asdict(r) for r in state.relics]:
+                raise ValueError("Combat relic inventory differs from run ownership.")
+            if (rules.potion_capacity != len(state.potions) or rules.potion_slots != state.potions.count(None) or rules.potion_pool != expected_pool
                     or rules.potions_generated or rules.gold_gained):
                 raise ValueError("Combat loot differs from its owning run inventory.")
             if combat.player.max_hp != state.max_hp + combat.player.rules.max_hp_gained:
@@ -246,9 +253,9 @@ def _validate_pending(state, cards, graph):
         if state.phase is not RunPhase.ROUTE or graph is None or pending["node_id"] != state.current_node_id or pending["room_kind"] != room_node(state, graph, state.current_node_id).kind:
             raise ValueError("Invalid pending map node.")
     elif kind == "reward":
-        expected = {"kind", "gold", "gold_claimed", "offers", "card_resolved"}
+        expected = {"kind", "gold", "gold_claimed", "offers", "card_resolved", "card_modifiers"}
         if "combat_reward" in pending:
-            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id"}
+            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards"}
         if set(pending) != expected:
             raise ValueError("Invalid reward state fields.")
         if state.phase is not RunPhase.REWARD or type(pending["gold"]) is not int or pending["gold"] < 0:
@@ -259,7 +266,10 @@ def _validate_pending(state, cards, graph):
             cards.definition(definition_id)
         if not isinstance(pending["offers"], list) or not pending["offers"] or len(set(pending["offers"])) != len(pending["offers"]):
             raise ValueError("Invalid reward offers.")
+        from game.headless.relics.rewards import validate_modifiers, validate_extra
+        validate_modifiers(cards, pending["offers"], pending["card_modifiers"])
         if "combat_reward" in pending:
+            validate_extra(state, cards, pending["extra_rewards"])
             encounter_id = pending["encounter_id"]
             if encounter_id is not None and encounter_id not in ENCOUNTERS:
                 raise ValueError("Unknown reward encounter.")
@@ -270,10 +280,16 @@ def _validate_pending(state, cards, graph):
                 if selected != encounter_id:
                     raise ValueError("Reward encounter differs from its room.")
             pool = state.config.boss_reward_cards if state.config is not None and encounter is not None and encounter.room_kind == "boss" else (() if state.config is None else state.config.reward_cards)
+            from game.headless.relics.run_rules import has, owned
+            from game.headless.relics.rewards import extend_pool
+            pool = extend_pool(state, cards, pool)
+            if has(state, "amethyst_aubergine"):
+                low, high = low+15, high+15
+            extra_power = has(state, "lasting_candy") and owned(state, "lasting_candy").counter == 0
             if (pending["combat_reward"] is not True or state.config is None
                     or type(pending["potion_claimed"]) is not bool
                     or not low <= pending["gold"] <= high
-                    or len(pending["offers"]) != 3
+                    or len(pending["offers"]) not in ((3, 4) if extra_power else (3,))
                     or not set(pending["offers"]) <= set(pool)
                     or (pending["potion"] is not None and pending["potion"] not in state.config.reward_potions)
                     or (pending["potion"] is None and pending["potion_claimed"])):
@@ -312,6 +328,9 @@ def _validate_pending(state, cards, graph):
     elif kind == "rest_site":
         if state.phase is not RunPhase.ROOM or pending["stage"] not in ("options", "smith", "resolved", "hatched"):
             raise ValueError("Invalid rest-site phase.")
+        used = pending.get("used")
+        if not isinstance(used, list) or len(used) != len(set(used)) or any(v not in ("rest", "smith", "hatch", "lift", "dig") for v in used):
+            raise ValueError("Invalid rest actions history.")
         if pending["stage"] == "hatched":
             from game.headless.run.hatching import validate
             validate(state, cards)
@@ -320,9 +339,9 @@ def _validate_pending(state, cards, graph):
             from game.headless.run.rest_site import eligible_upgrades
             if not pending["eligible"] or pending["eligible"] != list(eligible_upgrades(state)):
                 raise ValueError("Invalid smith selection.")
-            expected = {"kind", "stage", "eligible"}
+            expected = {"kind", "stage", "eligible", "used"}
         else:
-            expected = {"kind", "stage"}
+            expected = {"kind", "stage", "used"}
         if set(pending) != expected:
             raise ValueError("Invalid rest-site state fields.")
     elif kind in ("rest", "event"):

@@ -23,8 +23,10 @@ class SunkenStatue:
             relic = add_relic(state, "sword_of_stone")
             data["relic_id"] = relic.instance_id
         else:
-            state.gold += data["gold"]
-            state.hp = max(0, state.hp - self.damage)
+            from game.headless.relics.run_rules import gain_gold
+            gain_gold(state, data["gold"])
+            from game.headless.relics.run_rules import damage
+            damage(state, self.damage)
         data["choice"] = option_id
         pending["stage"] = "resolved"
 
@@ -39,10 +41,10 @@ class SunkenStatue:
         dive = choice == "dive_into_water"
         if (choice not in (None, "grab_sword", "dive_into_water")
                 or pending["stage"] != ("options" if choice is None else "resolved")
-                or state.gold != data["initial_gold"] + (data["gold"] if dive else 0)
-                or state.hp != max(0, data["initial_hp"] - (self.damage if dive else 0))
                 or defeated != (state.hp == 0)):
             raise ValueError("Sunken Statue result differs from its choice.")
+        from game.headless.events.resources import validate
+        validate(state, pending, [("gold", data["gold"]), ("damage", self.damage)] if dive else [])
         if choice == "grab_sword":
             relic = next((r for r in state.relics if r.instance_id == data["relic_id"]), None)
             if relic is None or relic.definition_id != "sword_of_stone" or relic.counter:

@@ -23,14 +23,14 @@ def validate_selection(r, p):
     from game.headless.potions.base import POTIONS
 
     if (
-        r.potion_slots > 3
+        r.potion_slots > r.potion_capacity
         or not isinstance(r.potion_pool, list)
         or not r.potion_pool
         or any(x not in POTIONS for x in r.potion_pool)
         or len(r.potion_pool) != len(set(r.potion_pool))
         or not isinstance(r.potions_generated, list)
-        or len(r.potions_generated) + r.potion_slots > 3
-        or any(x not in r.potion_pool for x in r.potions_generated)
+        or len(r.potions_generated) + r.potion_slots > r.potion_capacity
+        or any(x not in r.potion_pool and x != "potion_shaped_rock" for x in r.potions_generated)
     ):
         raise ValueError("Invalid combat potion state.")
     expected_aux = {"crimson_mantle", "inferno", "block_gains"}
@@ -58,7 +58,7 @@ def validate_selection(r, p):
     if not isinstance(s, dict) or set(s) != fields:
         raise ValueError("Invalid selection fields.")
     if (
-        s["operation"] not in ("move", "transform", "exhaust")
+        s["operation"] not in ("move", "transform", "exhaust", "discard_redraw")
         or s["destination"] not in ("hand", "draw_pile")
         or s["free"] not in ("", "free_this_turn", "free_until_played")
         or any(type(s[k]) is not int for k in ("minimum", "maximum"))
@@ -80,9 +80,15 @@ def validate_selection(r, p):
         raise ValueError("Invalid selection bounds.")
     source = next((c for c in p.deck.in_play if c.instance_id == s["source"]), None)
     if source is None:
-        if s["source"] not in ("entropy", "stratagem") or not r.powers.get(s["source"]):
-            raise ValueError("Unowned selection source.")
-        operation = s["source"]
+        relic = next((v for v in r.relics if v["instance_id"] == s["source"]), None)
+        if relic is not None:
+            operation = relic["definition_id"]
+            if operation not in ("gambling_chip", "toolbox") or r.round_number != 1:
+                raise ValueError("Invalid relic selection source.")
+        else:
+            if s["source"] not in ("entropy", "stratagem") or not r.powers.get(s["source"]):
+                raise ValueError("Unowned selection source.")
+            operation = s["source"]
     else:
         frame = r.plays.get(source.instance_id)
         index = frame.get("effect_index") if isinstance(frame, dict) else None
@@ -90,6 +96,8 @@ def validate_selection(r, p):
             raise ValueError("Invalid selection effect.")
         operation = getattr(source.definition.effects[index], "operation", None)
     settings = {
+        "gambling_chip": ("hand", "discard_redraw", "hand", ""),
+        "toolbox": ("offered", "move", "hand", ""),
         "entropy": ("hand", "transform", "hand", ""),
         "stratagem": ("draw_pile", "move", "hand", ""),
         "purity": ("hand", "exhaust", "hand", ""),
@@ -118,12 +126,13 @@ def validate_selection(r, p):
     elif s["candidates"] != candidates:
         raise ValueError("Selection differs from eligible cards.")
     expected_max = (
+        len(s["candidates"]) if operation == "gambling_chip" else
         r.powers[operation]
         if operation in ("entropy", "stratagem")
         else (5 if source.upgraded else 3) if operation == "purity" else 1
     )
     expected_max = min(expected_max, len(s["candidates"]))
-    expected_min = 0 if operation in ("purity", "discovery", "splash") else expected_max
+    expected_min = 0 if operation in ("purity", "discovery", "splash", "gambling_chip", "toolbox") else expected_max
     if (s["minimum"], s["maximum"]) != (expected_min, expected_max):
         raise ValueError("Choice limits differ from source.")
     if operation in ("secret_technique", "secret_weapon"):

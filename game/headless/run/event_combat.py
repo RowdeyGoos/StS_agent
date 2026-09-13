@@ -27,6 +27,9 @@ def start(engine, request):
     state.active_encounter_id = request.encounter_id
     state.event_combats.append(record)
     engine.combat = combat
+    engine.sync_combat_loot()
+    if combat.done:
+        engine.finish_combat()
     return combat
 
 

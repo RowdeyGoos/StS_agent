@@ -17,6 +17,7 @@ class SlipperyBridge:
         return conditions.get("floor", 0) > 6 and conditions["transformable_cards"] > 0
 
     def candidates(self, originals, offers):
+        originals = [r for r in originals if r["definition_id"] != "greed"]
         if not offers:
             result = [r["instance_id"] for r in originals if r["definition_id"] not in self.basic_cards]
         else:
@@ -25,7 +26,7 @@ class SlipperyBridge:
         return result or [r["instance_id"] for r in originals]
 
     def generate(self, rng, *, state, cards):
-        if not state.deck:
+        if not any(not c.spec.eternal for c in state.deck):
             raise ValueError("Slippery Bridge requires a removable card.")
         originals = [card_record(c) for c in state.deck]
         offered = rng.choice("event.bridge_card", self.candidates(originals, []))
@@ -46,7 +47,8 @@ class SlipperyBridge:
         else:
             rng = deepcopy(state.rng)
             next_card = rng.choice("event.bridge_card", self.candidates(data["originals"], data["offers"]))
-            state.hp = max(0, state.hp - self.initial_damage - (len(data["offers"]) - 1))
+            from game.headless.relics.run_rules import damage
+            damage(state, self.initial_damage + len(data["offers"]) - 1)
             state.rng = rng
             data["offers"].append(next_card)
             data["choice"] = "hold_on"
@@ -68,8 +70,11 @@ class SlipperyBridge:
             if hp <= 0 or offer not in self.candidates(data["originals"], history):
                 raise ValueError("Invalid Bridge offered-card history.")
             if index:
-                hp = max(0, hp - self.initial_damage - index + 1)
+                from game.headless.events.resources import expected
+                hp = expected(state, pending, [("damage", self.initial_damage + i) for i in range(index)]).hp
             history.append(offer)
+        from game.headless.events.resources import validate
+        validate(state, pending, [("damage", self.initial_damage + i) for i in range(len(history)-1)])
         resolved = data["choice"] == "overcome"
         if (data["choice"] not in (None, "hold_on", "overcome")
                 or data["choice"] is None and len(history) != 1
