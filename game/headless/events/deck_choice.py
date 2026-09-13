@@ -45,7 +45,7 @@ def validate(state, data, cards, *, operation, finished, extra=()):
             from game.headless.events.transformation import TRANSFORM_POOL, replacement_pool
             restored = restore_card(result, cards)
             source = originals[index]["definition_id"]
-            if (restored.instance_id in identities or restored.upgrade_level or restored.combats_seen
+            if (restored.instance_id in identities or restored.upgrade_level or restored.combats_seen or restored.enchantment is not None
                     or restored.definition.definition_id == source
                     or restored.definition.definition_id not in replacement_pool(source, TRANSFORM_POOL)):
                 raise ValueError("Invalid event transformation.")

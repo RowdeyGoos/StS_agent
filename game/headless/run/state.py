@@ -111,7 +111,9 @@ class RunState:
         ids = [card.instance_id for card in self.deck]
         if any(not isinstance(i, str) or not i for i in ids) or len(ids) != len(set(ids)):
             raise ValueError("Persistent card identities must be present and unique.")
+        from game.headless.enchantments.base import validate as validate_enchantment
         for card in self.deck:
+            validate_enchantment(card, permanent=True)
             card.definition.spec_at(card.upgrade_level)
             if type(card.combats_seen) is not int or not 0 <= card.combats_seen < max(1, card.definition.combat_lifetime):
                 raise ValueError("Invalid persistent card combat lifetime.")

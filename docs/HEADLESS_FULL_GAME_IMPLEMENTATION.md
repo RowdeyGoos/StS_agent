@@ -21,6 +21,11 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-13 — Sapphire Seed/Sown:** Eat heals before a permanent upgrade;
+  Plant grants a permanent first-play energy enchantment. Owned card modifiers
+  survive upgrades and JSON continuation, and fresh transformations remove them.
+  The generated pool now has ten events. A native enum check also corrected Guilty
+  to discard normally rather than exhaust at turn end. [Evidence](evidence/sapphire_seed_2026_09_13.md).
 - **2026-09-13 — Dense Vegetation/event combat:** both initial branches and the
   mandatory post-rest four-Wriggler fight now reach ordinary rewards/map or defeat.
   Owned event combat history is separate from normal encounter queues and supports
@@ -1125,7 +1130,9 @@ Dependencies and acceptance cases are in the linked task.
   Whispering Hollow adds transformation then damage; Wellspring and Slippery
   Bridge add removal. Potion reward bundles handle claim/discard/skip. Supported
   curse transformations preserve their family and reset lifetime. Full pools,
-  modifiers, enchantment, card offers and further nested children remain open.
+  other modifiers/enchantments, card offers and further nested children remain open.
+  Sapphire Seed now adds heal-before-upgrade and permanent Sown selection with
+  exact original-deck validation; [evidence](evidence/sapphire_seed_2026_09_13.md).
   See [Aroma evidence](evidence/aroma_of_chaos_2026_09_13.md).
 
 - **Depends on:** HF-07/32/33/39.
@@ -1358,9 +1365,10 @@ The next Act 1 batch should cover **remaining event content and its permanent ef
    Egg together with the egg's rest-site option and hatch result. Native entry
    excludes existing event pets. Inspect those dependencies before registration;
    accept acquisition, rest-site choice, hatch and subsequent combat continuation.
-3. **HF-40 / Sapphire Seed:** implement its concrete enchantment and selection
-   semantics together, with serializable per-card modification state. Accept
-   upgraded/unupgraded targets, ineligible cards and next-combat effects.
+3. **HF-40 / additional enchantment event:** choose a remaining Overgrowth caller,
+   inspect its exact enchantment, eligibility and upgrade interaction, then extend
+   the existing per-card enchantment catalog. Accept selection, upgrades, repeated
+   plays, transform/removal and save/restore through the next combat.
 4. **HF-43 / Luminous Choir:** inspect and implement each required curse/relic
    before adding both event branches. Reuse master-deck lifetime and owned relic
    counters where applicable; do not generalize from names without source evidence.
@@ -1373,7 +1381,8 @@ The next Act 1 batch should cover **remaining event content and its permanent ef
 
 Each event assignment must pin its native branches, implement dependencies, test
 entry predicates and exhausted-pool fallback, and verify installed acquisition
-through the next room. Current event-combat coverage: [Dense Vegetation](evidence/dense_vegetation_2026_09_13.md).
+through the next room. Current content coverage: [Sapphire Seed](evidence/sapphire_seed_2026_09_13.md);
+event-combat coverage: [Dense Vegetation](evidence/dense_vegetation_2026_09_13.md).
 Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json

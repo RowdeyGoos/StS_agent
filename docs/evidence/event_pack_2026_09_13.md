@@ -1,5 +1,11 @@
 # Four-event headless pack — 2026-09-13
 
+**Correction recorded in the Sapphire Seed batch:** the original keyword
+interpretation below incorrectly described Guilty as Ethereal. Native keyword 4
+is Unplayable; Guilty has only that keyword, while Clumsy has 4 and 2 (Ethereal).
+The original test results remain historical; current behavior and regression
+evidence are in [the correction](sapphire_seed_2026_09_13.md).
+
 ## Scope and behavior
 
 Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue extend the default
