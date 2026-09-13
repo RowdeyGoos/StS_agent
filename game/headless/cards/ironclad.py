@@ -1,0 +1,77 @@
+"""Implemented Ironclad cards. Add each verified card family in this layer."""
+
+from game.headless.cards.base import Card, CardDefinition, CardSpec
+from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock
+from game.headless.powers.status import VULNERABLE
+
+STRIKE = CardDefinition("strike", (
+    CardSpec("Strike", 1, "attack", base_damage=6),
+    CardSpec("Strike+", 1, "attack", base_damage=9),
+), (DealDamage(),))
+DEFEND = CardDefinition("defend", (
+    CardSpec("Defend", 1, "block", block_gain=5, uses_target=False),
+), (GainBlock(),))
+BASH = CardDefinition("bash", (
+    CardSpec("Bash", 2, "attack", base_damage=8,
+             applies_status_name=VULNERABLE, applies_status_stacks=2),
+), (DealDamage(), ApplyTargetStatus()))
+POMMEL_STRIKE = CardDefinition("pommel_strike", (
+    CardSpec("Pommel Strike", 1, "attack", base_damage=9, draw_count=1),
+), (DealDamage(), DrawCards()))
+SHRUG_IT_OFF = CardDefinition("shrug_it_off", (
+    CardSpec("Shrug It Off", 1, "block", block_gain=8, draw_count=1, uses_target=False),
+), (GainBlock(), DrawCards()))
+IRON_WAVE = CardDefinition("iron_wave", (
+    CardSpec("Iron Wave", 1, "attack", base_damage=5, block_gain=5),
+), (GainBlock(), DealDamage()))
+BODY_SLAM = CardDefinition("body_slam", (
+    CardSpec("Body Slam", 1, "attack", damage_equals_player_block=True),
+), (DealDamage(),))
+
+DEFINITIONS = (STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE, BODY_SLAM)
+
+# Existing constructor names are retained for callers and old experiment configs.
+class StrikeCard(Card):
+    def __init__(self, *, upgraded: bool = False) -> None:
+        if not isinstance(upgraded, bool):
+            raise ValueError("upgraded must be a boolean.")
+        super().__init__(STRIKE, upgrade_level=int(upgraded))
+
+
+class DefendCard(Card):
+    def __init__(self) -> None:
+        super().__init__(DEFEND)
+
+
+class BashCard(Card):
+    def __init__(self) -> None:
+        super().__init__(BASH)
+
+
+class PommelStrikeCard(Card):
+    def __init__(self) -> None:
+        super().__init__(POMMEL_STRIKE)
+
+
+class ShrugItOffCard(Card):
+    def __init__(self) -> None:
+        super().__init__(SHRUG_IT_OFF)
+
+
+class IronWaveCard(Card):
+    def __init__(self) -> None:
+        super().__init__(IRON_WAVE)
+
+
+class BodySlamCard(Card):
+    def __init__(self) -> None:
+        super().__init__(BODY_SLAM)
+
+
+def create_starter_deck() -> list[Card]:
+    return [StrikeCard() for _ in range(5)] + [DefendCard() for _ in range(4)] + [BashCard()]
+
+
+def create_ironclad_sequencing_deck() -> list[Card]:
+    return ([StrikeCard() for _ in range(2)] + [DefendCard() for _ in range(3)] +
+            [BashCard(), PommelStrikeCard(), ShrugItOffCard(), IronWaveCard(), BodySlamCard()])

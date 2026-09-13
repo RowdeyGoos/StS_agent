@@ -24,6 +24,9 @@ artifact. This is a programmatic path, not an additional `sts-train` policy.
 
 ## Evidence and development
 
+The [full-game implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md)
+records the dated assessment, dependencies, acceptance cases and remaining tasks.
+
 The [actor-ready ledger](archive/phase-1/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md)
 records the accepted encoder, dataset, candidate-policy and cloning work. Its
 packet chronology and separate elite live attempt are historical. Read the
@@ -33,3 +36,12 @@ execution plan or use its old combined test count as a new acceptance gate.
 Improve named mechanics against the pinned game before treating larger training
 runs as evidence of useful play. [Roadmap](../ROADMAP.md#headless-and-learning-direction)
 owns priorities, and [AGENTS.md](../AGENTS.md) owns proportionate validation.
+
+## Gameplay development
+
+Use the [headless game engine](HEADLESS_ENGINE.md) to implement and test rules.
+The earlier experimental `strike_upgrade_v1` backend option has been removed;
+Strike upgrades now belong to ordinary game definitions and instance state.
+The actor and reduced public backend remain consumers with their existing fixed
+capability boundaries. Adding game content does not require extending their
+projections, vocabulary, dataset pins or training pipeline in the same change.

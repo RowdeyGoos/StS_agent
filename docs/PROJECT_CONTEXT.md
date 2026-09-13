@@ -7,7 +7,10 @@ and the reduced headless actor; neither is full-game parity for this simulator.
 
 ## Gameplay and state
 
-`CombatEnv` owns the player, encounter, seeded RNG and optional trajectory.
+[`CombatEngine`](../game/headless/core/combat.py) owns the player, encounter and
+seeded RNG. `CombatEnv` wraps those rules with research observations, action
+encoding, reward shaping and optional trajectories. Implement new game mechanics
+in `game/headless/`; see the [engine guide](HEADLESS_ENGINE.md).
 The player has HP, block, energy, strength, statuses and a deck with draw, discard,
 exhaust and hand piles. Discards are reshuffled by the explicit environment RNG.
 Keep mutable state serializable and avoid global randomness.
@@ -104,6 +107,10 @@ settings, trace inspection and regret analysis. [Agent flow](AGENT_FLOW.md),
 provide deeper explanations.
 
 ## Editing and validation
+
+New card definitions and gameplay effects are tested directly in `tests/headless/`.
+They do not require projection, encoder or training changes. Integrate a completed
+new game capability into consumers as a separate task when needed.
 
 Observation changes affect the encoder, shared action features, heuristics,
 demo formatting and relevant tests. Action changes affect

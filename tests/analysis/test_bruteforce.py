@@ -124,7 +124,7 @@ def test_clone_combat_env_preserves_rng_aliases_and_isolates_mutable_state() -> 
     assert cloned_env.get_observation() != initial_observation
 
 
-def test_brute_force_skips_only_equivalent_duplicate_card_actions() -> None:
+def test_brute_force_preserves_distinct_card_instance_choices() -> None:
     env = CombatEnv(
         seed=0,
         deck_factory=lambda: [StrikeCard(), StrikeCard(), StrikeCard()],
@@ -138,5 +138,5 @@ def test_brute_force_skips_only_equivalent_duplicate_card_actions() -> None:
 
     assert result.proven_optimal is True
     assert result.actions == (("play", 0),)
-    # Root, one representative Strike child, and the end-turn child.
-    assert result.generated_nodes == 3
+    # Root, three distinct persistent-card children, and the end-turn child.
+    assert result.generated_nodes == 5

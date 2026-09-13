@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 2026-09-12. This file owns priorities; [current status](docs/STATUS.md)
+Updated 2026-09-13. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -59,10 +59,17 @@ through ancient pickup paths; these optional selectors have zero/partial/full li
 
 ## Headless and learning direction
 
-Keep the reduced backend and actor pipeline usable while improving fidelity of
-named mechanics against the pinned game. The accepted cloning smoke proves
-training/artifact plumbing on structural data; scale training when the relevant
-rules and useful evaluation cases justify it.
+Prioritize faithful game logic in the [independent engine](docs/HEADLESS_ENGINE.md).
+Implement and test cards, monsters, powers, items and run progression directly,
+then integrate mature capabilities into actor/bridge consumers when useful.
+Projection, encoding and training work must not gate ordinary gameplay features.
+Keep the existing reduced fixtures and experiment commands usable through their
+compatibility boundaries; do not extend them into a second evolving simulator.
+
+The [full-game backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md) owns feature
+scope and acceptance cases. Strike+ is now ordinary game content; the experimental
+per-upgrade profile is retired. Headless and bridge work can proceed in parallel
+with disjoint source ownership and shared pinned-game rule evidence.
 
 Retain these research priorities as evidence-driven options:
 

@@ -16,31 +16,11 @@ from time import monotonic
 from typing import Any, Callable, Hashable, Mapping
 
 from ..simulation.actions import CombatAction
-from ..simulation.card import (
-    BashCard,
-    BodySlamCard,
-    DefendCard,
-    IronWaveCard,
-    PommelStrikeCard,
-    ShrugItOffCard,
-    SlimedCard,
-    StrikeCard,
-    get_card_spec,
-)
+from ..simulation.card import get_card_spec
 from ..simulation.core import CombatEnv, Observation
 from ..simulation.status import StatusCollection
 
 OracleScore = tuple[int, int, int, int]
-_STATELESS_CARD_TYPES = (
-    BashCard,
-    BodySlamCard,
-    DefendCard,
-    IronWaveCard,
-    PommelStrikeCard,
-    ShrugItOffCard,
-    SlimedCard,
-    StrikeCard,
-)
 
 
 @dataclass(frozen=True, slots=True)
@@ -165,20 +145,10 @@ class _RngStateRegistry:
 
 
 class _CardStateRegistry:
-    """Cache semantic card keys across branch clones that share card objects."""
-
-    def __init__(self) -> None:
-        self._keys: dict[int, tuple[object, Hashable]] = {}
+    """Read current instance state; mutable cards cannot use an identity-only cache."""
 
     def key(self, card: object) -> Hashable:
-        object_id = id(card)
-        cached = self._keys.get(object_id)
-        if cached is not None and cached[0] is card:
-            return cached[1]
-        key = _freeze(card)
-        # Keep a strong reference so Python cannot reuse the id for another card.
-        self._keys[object_id] = (card, key)
-        return key
+        return _freeze(card)
 
 
 def brute_force_combat(
@@ -404,17 +374,6 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
     rng_owners = [env.rng]
     if env.player is not None:
         rng_owners.append(env.player.deck.rng)
-        for pile in (
-            env.player.deck.draw_pile,
-            env.player.deck.discard_pile,
-            env.player.deck.exhaust_pile,
-            env.player.deck.hand,
-        ):
-            for card in pile:
-                # Built-in cards have immutable combat definitions. Unknown
-                # future card types keep normal deepcopy behavior.
-                if type(card) in _STATELESS_CARD_TYPES:
-                    memo[id(card)] = card
     if env.enemies is not None:
         rng_owners.extend(enemy.rng for enemy in env.enemies)
     for source_rng in rng_owners:
@@ -431,6 +390,7 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
         source_player = env.player
         source_deck = source_player.deck
         cloned_deck = copy(source_deck)
+        cloned_deck._allocated_ids = source_deck._allocated_ids.copy()
         cloned_deck.rng = memo[id(source_deck.rng)]
         cloned_deck.draw_pile = [
             deepcopy(card, memo) for card in source_deck.draw_pile

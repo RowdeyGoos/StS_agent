@@ -75,6 +75,26 @@ Develop through focused component checks. One final release binds the combined
 binary and package; package identity is derived once and shared by installation,
 cleanup and clients. New features extend modules, not release directories.
 
+## D68. Implement game logic independently of its consumers
+
+Requested and implemented 2026-09-13. `game/headless/` owns content definitions,
+mutable instances, combat rules and persistent run state. It imports only its own
+modules and the standard library. Game definitions drive execution directly;
+adding a card does not require another projection or encoder registration.
+
+`CombatEnv` owns the older observation, mask, shaping and trajectory interface
+around the canonical combat engine. The existing reduced public run backend stays
+a fixed synthetic compatibility fixture. New rules go into the game package;
+consumer integration happens when selected, after the behavior is independently
+usable. The unreleased per-card upgrade profile is retired rather than multiplied.
+
+Content catalogs are immutable and explicit, identity/RNG belongs to each run,
+and pending game state contains values instead of callback closures. Private
+continuation remains distinct from public information and release evidence.
+Future mechanics may extend state and lifecycle operations; unrelated consumers
+must not constrain that work. The [engine guide](docs/HEADLESS_ENGINE.md) records
+the reference-repository analysis, actual migration and remaining limits.
+
 ## Core architecture
 
 - **Combat research remains a separate interface (D1–D6, D12, D30).** Structured
