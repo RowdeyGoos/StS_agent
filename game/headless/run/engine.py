@@ -29,7 +29,7 @@ class RunEngine:
         if config is not None:
             for card_id in (*config.reward_cards, *config.boss_reward_cards):
                 cards.definition(card_id)
-            if any(r not in RELICS or r == "burning_blood" for r in config.reward_relics):
+            if any(r not in RELICS or r == "burning_blood" or RELICS[r].stackable for r in config.reward_relics):
                 raise ValueError("Unsupported relic reward pool.")
             if any(p not in POTIONS for p in config.reward_potions):
                 raise ValueError("Unsupported potion reward pool.")

@@ -88,3 +88,18 @@ class ChooseShopRemoval:
 @dataclass(frozen=True, slots=True)
 class LeaveShop:
     pass
+
+
+@dataclass(frozen=True, slots=True)
+class OpenChest:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class ClaimTreasureRelic:
+    treasure_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class LeaveTreasure:
+    pass

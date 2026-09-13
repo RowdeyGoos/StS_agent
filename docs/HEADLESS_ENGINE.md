@@ -46,6 +46,7 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`run/config.py`](../game/headless/run/config.py), [`run/actions.py`](../game/headless/run/actions.py), [`run/flow.py`](../game/headless/run/flow.py) | Declared character/difficulty/pools and direct run command legality/dispatch |
 | [`run/deck.py`](../game/headless/run/deck.py), [`run/rewards.py`](../game/headless/run/rewards.py), [`run/rooms.py`](../game/headless/run/rooms.py) | Persistent mutations, reward resolution and room transitions |
 | [`run/rest_site.py`](../game/headless/run/rest_site.py), [`run/inventory.py`](../game/headless/run/inventory.py), [`relics/`](../game/headless/relics/), [`potions/`](../game/headless/potions/) | Rest/smith decisions, owned item acquisition/removal, victory healing, permanent max-HP pickup effects and potion effects |
+| [`treasure/catalog.py`](../game/headless/treasure/catalog.py), [`run/treasure.py`](../game/headless/run/treasure.py), [`run/treasure_validation.py`](../game/headless/run/treasure_validation.py) | Chest content, gold on opening, optional relic acquisition, pool depletion and private continuation |
 | [`shops/catalog.py`](../game/headless/shops/catalog.py), [`run/shop.py`](../game/headless/run/shop.py), [`run/shop_validation.py`](../game/headless/run/shop_validation.py) | Authored stock, native base-price bands, purchases, permanent removal and private continuation validation |
 | [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored map navigation and the existing primitive event effects |
 | [`core/rng.py`](../game/headless/core/rng.py), [`core/snapshots.py`](../game/headless/core/snapshots.py), [`run/snapshots.py`](../game/headless/run/snapshots.py) | Owned RNG streams and private JSON continuation |
@@ -153,6 +154,27 @@ Keep their rules beside their content; add explicit lifecycle
 operations in the core as needed. Do not put card-name switches, global mutable
 registries, live-service dependencies or callback closures into saved game state.
 Do not scaffold empty plugin frameworks or guess all future hooks now.
+
+## Treasure rooms
+
+The `overgrowth-act1` route now visits `treasure` after the third combat, before
+its first rest site. `OpenChest()` grants 42–52 gold once. The single relic can
+then be taken using `ClaimTreasureRelic(treasure_id)` or declined with
+`LeaveTreasure()`. Leaving a closed chest grants nothing. The example player
+opens the chest and claims its relic; direct commands also permit skipping.
+
+The relic is drawn on room entry from unowned Strawberry/Pear/Mango. A drawn
+relic leaves the restricted treasure pool even if the chest or relic is skipped.
+The exhausted pool offers Circlet, which has no pickup effect and permits multiple
+separately owned instances. Ordinary relic definitions still reject duplicates.
+Gold uses the owned `treasure.gold` stream on opening; the relic uses
+`treasure.relic` on entry. Neither inspection nor restore rerolls or grants rewards.
+
+This is authored uniform sampling and a treasure-specific depleted pool. Native
+rarity weights, shared/player bags across reward sources, tutorial overrides,
+multiplayer allocation, treasure-suppression modifiers and extra reward hooks
+remain open. A native suppressed empty chest is distinct from ordinary pool
+exhaustion, which uses Circlet. See [source and validation evidence](evidence/first_treasure_2026_09_13.md).
 
 ## Shops
 
@@ -290,7 +312,10 @@ run in `act_complete`. Winning the fight alone leaves the reward decision active
 There is no map shortcut to this outcome, no Act 2 launch or inter-act healing,
 and no claim of full-game victory. The example player is deliberately simple;
 `--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
-currently demonstrates a real boss defeat. This authored five-fight route has an optional restricted shop and omits
+still demonstrates a boss defeat. With `--path left --rest-choice rest`, the
+installed seed-2 demo now wins this authored Act 1 at 11/94 HP in 121 commands,
+including treasure and shop decisions with exact restore. See the
+[treasure acceptance](evidence/first_treasure_2026_09_13.md). This five-fight route omits
 most of a native Act 1 map and its deck-building opportunities. See the
 [boss source and acceptance evidence](evidence/first_boss_2026_09_13.md).
 
@@ -338,13 +363,14 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v5`, including configuration,
-items, card/item/shop allocators, persistent removal count, owned shop offers and selection,
-shop catalog fingerprint, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
+Private run snapshots now use `headless_run_state_v6`, including configuration,
+items, card/item/shop/treasure allocators, depleted treasure offers, chest decisions,
+persistent removal count, owned shop offers and selection,
+shop/treasure catalog fingerprints, potion odds, active/reward encounter IDs, relic claim state, boss reward pools, an explicit
 act-completion record and every pending decision.
 Nested combat records now use `headless_combat_state_v4`, including the in-play
 pile, pending continuation, selection/target RNG and power duration flags. Earlier combat
-v1/v2/v3 and run v1/v2/v3/v4 formats are rejected rather than assigning invented item
+v1/v2/v3 and run v1/v2/v3/v4/v5 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; new powers are exposed

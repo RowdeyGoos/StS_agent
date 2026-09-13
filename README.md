@@ -56,8 +56,10 @@ whether slimes or Fuzzy Wurm comes second, fight the other third, rest/smith, th
 choose Mawler, paired Nibbits or the Byrdonis elite. Elite rewards include 35–45
 gold and a relic from Strawberry/Pear/Mango, which permanently raises maximum HP
 and heals on pickup. `--path right` selects the elite; `left` selects Mawler.
-Add `--route overgrowth-act1` to continue through an optional shop, a second rest
-site and Vantom. `--path left` visits the shop; `right` bypasses it. The shop sells
+Add `--route overgrowth-act1` for a treasure chest after the third fight, followed
+by the fourth fight, an optional shop, a second rest site and Vantom. Opening the
+chest grants 42–52 gold; its relic can be taken or skipped. The restricted fruit
+pool depletes on offers and falls back to Circlet when exhausted. `--path left` visits the shop; `right` bypasses it. The shop sells
 supported cards, a fruit relic and Fire/Block Potions, and removes a chosen deck
 card for 75 gold (25 more per prior shop removal). The demo buys one affordable
 card and removes a starter if it can afford both; direct commands allow any legal
