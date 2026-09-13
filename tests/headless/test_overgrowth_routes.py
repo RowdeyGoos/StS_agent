@@ -149,7 +149,7 @@ def test_encounter_cycles_restore_and_branch_rng_remains_owned(encounter):
 @pytest.mark.parametrize("first_branch", ["slimes", "fuzzy"])
 @pytest.mark.parametrize("last_branch", ["mawler", "nibbits", "byrdonis"])
 @pytest.mark.parametrize("rest_choice", ["rest", "smith"])
-def test_every_authored_path_four_combats_rewards_and_restore(first_branch, last_branch, rest_choice):
+def test_every_authored_path_four_combats_rewards_and_restore(first_branch, last_branch, rest_choice, original_slice_rewards):
     run = RunEngine.ironclad_slice(seed=2, route="overgrowth")
     for _ in range(200):
         actions = run.legal_actions()

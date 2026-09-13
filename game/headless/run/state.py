@@ -94,6 +94,9 @@ class RunState:
             raise ValueError("Selected map node requires a different room.")
 
     def validate(self) -> None:
+        from game.headless.core.card_state import CardState
+        if any(c.combat_state != CardState() for c in self.deck):
+            raise ValueError('Permanent cards cannot retain transient combat modifiers.')
         if (self.phase is RunPhase.ACT_COMPLETE) != (self.act_completion is not None):
             raise ValueError("Act completion requires its terminal record.")
         if self.act_completion is not None and (not isinstance(self.act_completion, ActCompletion)

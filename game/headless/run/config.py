@@ -1,16 +1,17 @@
 """Declared game settings and explicit content restrictions for playable routes."""
 
 from dataclasses import dataclass
+from game.headless.cards.pools import REWARD_CARDS, RARE_CARDS
 
 
 @dataclass(frozen=True, slots=True)
 class RunConfig:
     character: str = "ironclad"
     ascension: int = 0
-    reward_cards: tuple[str, ...] = ("pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit", "uppercut")
+    reward_cards: tuple[str, ...] = REWARD_CARDS
     reward_potions: tuple[str, ...] = ("fire_potion", "block_potion")
 
-    boss_reward_cards: tuple[str, ...] = ("impervious", "offering", "fiend_fire")
+    boss_reward_cards: tuple[str, ...] = RARE_CARDS
     reward_relics: tuple[str, ...] = ("strawberry", "pear", "mango")
     event_pool: tuple[str, ...] = ("jungle_maze_adventure", "aroma_of_chaos")
     relic_fallback: str | None = None

@@ -29,6 +29,8 @@ class CardSpec:
     uses_target: bool = True
     ethereal: bool = False
     end_turn_damage: int = 0
+    innate: bool = False
+    x_cost: bool = False
 
     @property
     def is_dead_card(self) -> bool:
@@ -51,6 +53,10 @@ class CardDefinition:
     levels: tuple[CardSpec, ...]
     effects: tuple[CardEffect, ...]
     combat_lifetime: int = 0
+    rarity: str = "special"
+    pool: str = "special"
+    strike: bool = False
+    generate_in_combat: bool = True
 
     def __post_init__(self) -> None:
         if not self.definition_id or not self.levels:
@@ -88,6 +94,8 @@ class Card:
         self.instance_id = instance_id
         self.combats_seen = 0
         self.enchantment = None
+        from game.headless.core.card_state import CardState
+        self.combat_state = CardState()
 
     @property
     def spec(self) -> CardSpec:
@@ -117,11 +125,32 @@ class Card:
         self.upgrade_level += 1
 
     def play(self, player: Player, enemy: Enemy | None, *, start_effect: int = 0):
-        for index in range(start_effect, len(self.definition.effects)):
-            result = self.definition.effects[index].apply(self, player, enemy)
-            if isinstance(result, HandChoice):
-                return index, result
-        return None
+        """Compatibility entry for an isolated effect play without energy payment.
+
+        Game callers use Player/CombatEngine so ownership, legality and suspended
+        choices remain explicit. The old effect-index restart is no longer needed.
+        """
+        from game.headless.core.resolution import start_play, drain, move_out
+        if start_effect or player.pending_play is not None:
+            raise ValueError("Resume choices through Player.choose_combat_card().")
+        origin = next(((pile, pile.index(self)) for pile in
+                       (player.deck.hand, player.deck.draw_pile, player.deck.discard_pile,
+                        player.deck.exhaust_pile) if self in pile), None)
+        prior_enemies = player.combat_enemies
+        try:
+            start_play(player, self, enemy, auto=True)
+            drain(player)
+            if player.pending_play is not None:
+                # A suspended choice must retain its target slots until resolved.
+                return player.pending_play.effect_index, HandChoice(player.pending_options())
+            # This legacy helper applies effects; its caller retains pile authority.
+            move_out(player, self)
+            if origin is not None:
+                origin[0].insert(origin[1], self)
+            return None
+        finally:
+            if player.pending_play is None:
+                player.combat_enemies = prior_enemies
 
     def __repr__(self) -> str:
         return f"{self.name}(cost={self.cost}, exhausts={self.exhausts})"

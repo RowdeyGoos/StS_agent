@@ -5,8 +5,9 @@ pool/RNG parity. Prices round to even before the card sale's integer halving.
 """
 
 from dataclasses import asdict, dataclass
+from game.headless.cards.pools import COMMON_CARDS, UNCOMMON_CARDS, RARE_CARDS
 
-SHOP_ID = "supported_merchant_v1"
+SHOP_ID = "supported_merchant_v2"
 
 
 @dataclass(frozen=True, slots=True)
@@ -17,9 +18,9 @@ class StockSlot:
 
 
 SLOTS = (
-    StockSlot("card", (("sword_boomerang", 50), ("pommel_strike", 50), ("shrug_it_off", 50))),
-    StockSlot("card", (("uppercut", 75),)),
-    StockSlot("card", (("impervious", 150), ("offering", 150), ("fiend_fire", 150))),
+    StockSlot("card", tuple((c, 50) for c in COMMON_CARDS)),
+    StockSlot("card", tuple((c, 75) for c in UNCOMMON_CARDS)),
+    StockSlot("card", tuple((c, 150) for c in RARE_CARDS)),
     StockSlot("relic", (("strawberry", 175), ("pear", 225), ("mango", 275)), 15),
     StockSlot("potion", (("fire_potion", 50),)),
     StockSlot("potion", (("block_potion", 50),)),

@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v17"
+SCHEMA = "headless_run_state_v18"
 
 
 def _restore_event_combat(record):
@@ -173,7 +173,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Active combat requires the combat phase.")
             combat = CombatEngine()
             combat.restore(snapshot["combat"], cards=cards)
-            if combat.player.max_hp != state.max_hp:
+            if combat.player.max_hp != state.max_hp + combat.player.rules.max_hp_gained:
                 raise ValueError("Combat maximum HP differs from the run.")
         elif state.phase is RunPhase.COMBAT:
             raise ValueError("Combat phase requires its owned combat.")

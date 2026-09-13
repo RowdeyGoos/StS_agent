@@ -36,7 +36,7 @@ class CombatEngine:
         deck_factory: Callable[[], Sequence[Card]] = create_starter_deck,
         enemy_factory: Callable[[], Enemy] | None = None,
         encounter_factory: EncounterFactory | None = None,
-        player_max_hp: int = 80, energy_per_turn: int = 3, cards_per_turn: int = 5,
+        player_max_hp: int = 80, energy_per_turn: int = 3, cards_per_turn: int = 5, cards=None,
     ) -> None:
         if type(seed) is not int:
             raise ValueError("Combat seed must be an explicit integer.")
@@ -44,6 +44,7 @@ class CombatEngine:
             raise ValueError("Player maximum HP must be positive.")
         if any(type(value) is not int or value < 0 for value in (energy_per_turn, cards_per_turn)):
             raise ValueError("Turn energy and draw count must be nonnegative integers.")
+        self.card_catalog = cards
         self.rng = make_rng(seed)
         self.deck_factory = deck_factory
         self.enemy_factory = enemy_factory or SimpleEnemy
@@ -63,6 +64,7 @@ class CombatEngine:
                 raise ValueError("Combat seed must be an integer.")
             self.rng = make_rng(seed)
         self.player = self._build_player()
+        self.player.catalog = self.card_catalog
         self.enemies = self._build_encounter()
         self.player.combat_enemies = self.enemies
         for enemy in self.enemies:
@@ -70,7 +72,8 @@ class CombatEngine:
         self.turn = 1
         self.done = False
         self.winner = None
-        self.player.start_turn(draw_count=self.cards_per_turn)
+        opening_draw = max(self.cards_per_turn, sum(c.spec.innate for c in self.player.deck.draw_pile))
+        self.player.start_turn(draw_count=opening_draw)
         self._refresh_persistent_statuses()
 
     def legal_actions(self) -> tuple[CombatAction, ...]:
@@ -83,7 +86,7 @@ class CombatEngine:
         for card in self.player.hand:
             if self.player.statuses.get("ringing") and self.player.cards_played_this_turn:
                 continue
-            if card.cost < 0 or self.player.card_cost(card) > self.player.energy:
+            if (card.cost < 0 and not card.spec.x_cost) or self.player.card_cost(card) > self.player.energy:
                 continue
             if card.spec.uses_target:
                 actions.extend(PlayCard(card.instance_id, slot) for slot in self._living_enemy_indices())
@@ -102,6 +105,8 @@ class CombatEngine:
             self.player.choose_combat_card(action.instance_id)
             self._refresh_persistent_statuses()
             self._check_terminal()
+            if self.player.rules.turn_ending and self.player.pending_play is None and not self.done:
+                return self._finish_turn()
             return CombatResult(self.done, self.winner, {"selected_card": action.instance_id})
         if isinstance(action, PlayCard):
             hand_index = next(i for i, card in enumerate(self.player.hand) if card.instance_id == action.instance_id)
@@ -114,7 +119,16 @@ class CombatEngine:
             return CombatResult(self.done, self.winner, details)
 
         self.player.end_turn()
+        self._check_terminal()
+        if self.player.pending_play is not None or self.done:
+            return CombatResult(self.done, self.winner, {"enemy_actions": []})
+        return self._finish_turn()
+
+    def _finish_turn(self):
+        details = {}
         after_owner_side_turn_end(self.player)
+        self.player.rules.player_side = False
+        self.player.rules.turn_ending = False
         self._refresh_persistent_statuses()
         self._check_terminal()
         if self.done:
@@ -140,26 +154,29 @@ class CombatEngine:
             for enemy in self._living_enemies():
                 enemy.statuses.after_enemy_side_turn_end()
                 after_owner_side_turn_end(enemy)
+            from game.headless.powers.ironclad import after_enemy_end
+            after_enemy_end(self.player)
             self.turn += 1
             self.player.start_turn(draw_count=self.cards_per_turn)
             self._refresh_persistent_statuses()
+            self._check_terminal()
         return CombatResult(self.done, self.winner, details)
 
     def snapshot(self, *, cards=None, monsters=None) -> dict:
         from game.headless.core.snapshots import capture_combat
-        return capture_combat(self, cards=cards, monsters=monsters)
+        return capture_combat(self, cards=cards or self.player.catalog, monsters=monsters)
 
     def resolve_external_effect(self) -> CombatResult:
         """Settle an already validated item effect before run-level handoff."""
         self._ensure_ready()
         self._refresh_persistent_statuses()
         self._check_terminal()
-        return CombatResult(self.done, self.winner, {})
+        return CombatResult(self.done, self.winner, {"enemy_actions": []})
 
     def restore(self, snapshot: dict, *, cards=None, monsters=None) -> None:
         from game.headless.core.snapshots import restore_combat
         # Decoder constructs and validates a separate graph before installation.
-        restored = restore_combat(snapshot, cards=cards, monsters=monsters)
+        restored = restore_combat(snapshot, cards=cards or self.card_catalog, monsters=monsters)
         for name, value in restored.items():
             setattr(self, name, value)
 

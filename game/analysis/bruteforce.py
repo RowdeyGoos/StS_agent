@@ -373,7 +373,7 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
     # one memo entry per source object to preserve shared-RNG identity.
     rng_owners = [env.rng]
     if env.player is not None:
-        rng_owners.extend((env.player.deck.rng, env.player.deck.selection_rng, env.player.deck.target_rng))
+        rng_owners.extend((env.player.deck.rng, env.player.deck.selection_rng, env.player.deck.target_rng, env.player.deck.generation_rng))
     if env.enemies is not None:
         rng_owners.extend(enemy.rng for enemy in env.enemies)
     for source_rng in rng_owners:
@@ -394,6 +394,8 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
         cloned_deck.rng = memo[id(source_deck.rng)]
         cloned_deck.selection_rng = memo[id(source_deck.selection_rng)]
         cloned_deck.target_rng = memo[id(source_deck.target_rng)]
+        cloned_deck.generation_rng = memo[id(source_deck.generation_rng)]
+        cloned_deck.powers = [deepcopy(card, memo) for card in source_deck.powers]
         cloned_deck.in_play = [deepcopy(card, memo) for card in source_deck.in_play]
         cloned_deck.draw_pile = [
             deepcopy(card, memo) for card in source_deck.draw_pile
@@ -413,6 +415,8 @@ def clone_combat_env(env: CombatEnv) -> CombatEnv:
         cloned_player.deck = cloned_deck
         cloned_player.statuses = cloned_player_statuses
         cloned_player.power_sources = source_player.power_sources.copy()
+        cloned_player.rules = deepcopy(source_player.rules)
+        cloned_deck.owner = cloned_player
         memo[id(source_player)] = cloned_player
         cloned_env.player = cloned_player
 
@@ -617,7 +621,7 @@ def _combat_state_key(
     player = env.player
     deck = player.deck
 
-    rng_owners = [env.rng, deck.rng, deck.selection_rng, deck.target_rng,
+    rng_owners = [env.rng, deck.rng, deck.selection_rng, deck.target_rng, deck.generation_rng,
                   *(enemy.rng for enemy in env.enemies)]
     rng_aliases: dict[int, int] = {}
     rng_references: list[int] = []
@@ -641,6 +645,11 @@ def _combat_state_key(
         _freeze(player.statuses),
         player.cards_played_this_turn,
         _freeze(player.power_sources),
+        _freeze(player.rules),
+        tuple(player.rules.powers.items()),
+        _freeze(player.pending_play),
+        tuple(card_registry.key(card) for card in deck.in_play),
+        tuple(card_registry.key(card) for card in deck.powers),
         tuple(card_registry.key(card) for card in deck.draw_pile),
         tuple(card_registry.key(card) for card in deck.discard_pile),
         tuple(card_registry.key(card) for card in deck.exhaust_pile),

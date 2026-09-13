@@ -8,6 +8,7 @@ from game.headless.cards.base import Card, CardDefinition
 from game.headless.cards.ironclad import DEFINITIONS as IRONCLAD
 from game.headless.cards.status import DEFINITIONS as STATUSES
 from game.headless.cards.ironclad_rare import DEFINITIONS as RARES
+from game.headless.cards.ironclad_extended import DEFINITIONS as EXTENDED, GIANT_ROCK
 from game.headless.cards.colorless import DEFINITIONS as COLORLESS
 from game.headless.cards.event_cards import DEFINITIONS as EVENT_CARDS
 
@@ -49,7 +50,7 @@ class CardCatalog:
                 if not is_dataclass(effect):
                     raise ValueError("Snapshotable card effects must be immutable dataclass values.")
                 effects.append([type(effect).__module__ + "." + type(effect).__qualname__, asdict(effect)])
-            rows.append([definition.definition_id, [asdict(level) for level in definition.levels], effects, definition.combat_lifetime])
+            rows.append([definition.definition_id, [asdict(level) for level in definition.levels], effects, definition.combat_lifetime, definition.rarity, definition.pool, definition.strike, definition.generate_in_combat])
         from game.headless.enchantments.base import fingerprint
         return sha256(json.dumps({"cards": rows, "enchantments": fingerprint()}, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
@@ -57,4 +58,4 @@ class CardCatalog:
         return self
 
 
-DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *RARES, *EVENT_CARDS, *COLORLESS))
+DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *RARES, *EVENT_CARDS, *COLORLESS, *EXTENDED, GIANT_ROCK))

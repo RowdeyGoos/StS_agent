@@ -36,7 +36,11 @@ For only the pure-Python simulator, `pip install -e .` is sufficient.
 Start with [`game/headless/`](game/headless/) and the [engine guide](docs/HEADLESS_ENGINE.md).
 Game rules run directly through `CombatEngine` and `RunEngine`, without public
 projections, encoders or training. Cards own their effect/upgrade definitions;
-content catalogs and mutable instances are separate. The older experiment APIs
+content catalogs and mutable instances are separate. All 85 single-player Ironclad
+card definitions and their upgrades are implemented, including their shared powers,
+autoplay, replay, card generation and pile choices. Demonic Shield and Tank are
+excluded as multiplayer-only; basic/Ancient cards do not enter ordinary rewards.
+The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain
 unfinished; see the [feature backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md).
 
@@ -48,8 +52,9 @@ sts-headless-play --route overgrowth --path right --seed 2 --rest-choice rest --
 
 The playable first slice starts Ironclad at Ascension 0, fights Nibbit, collects
 rewards, rests or upgrades a card, then fights Overgrowth slimes and collects the
-second rewards. It includes Burning Blood and Fire/Block Potions. The map and
-reward pools are explicitly restricted; `slice_complete` is not full-game victory.
+second rewards. It includes Burning Blood and Fire/Block Potions. The map and item
+pools are restricted; Ironclad rewards use the full single-player pool.
+`slice_complete` is not full-game victory.
 Use `--rest-choice rest` for the healing path and `--trace` to print every command.
 The optional `--route overgrowth` plays four combats with two branches: choose
 whether slimes or Fuzzy Wurm comes second, fight the other third, rest/smith, then
@@ -71,12 +76,12 @@ event entry, and event choices support `--verify-restore`. The left path visits
 Jungle Maze; the right visits Aroma of Chaos. Aroma offers Let Go (transform one
 card) or Maintain Control (upgrade one). Its mandatory card choice resolves
 automatically for zero or one eligible card. The demo upgrades Bash when possible.
-Transformations use the 12 implemented nonstarter Ironclad cards, exclude the
+Transformations use all 80 common/uncommon/rare Ironclad cards, exclude the
 original definition and create a new unupgraded card in the same deck position.
 This route also offers Sword Boomerang, including its four-hit upgrade.
 Leaving the boss rewards records `act_complete` for Act 1; it does not declare
 full-game victory. The simple demo player can lose on this route. Boss rewards
-use a restricted rare-card pool: Impervious, Offering and Fiend Fire.
+use the full single-player Ironclad rare-card pool.
 
 All **22 native Overgrowth encounters** are implemented at A0: 16 hallway/easy
 encounters, three elites and three bosses, covering 29 monster types including
@@ -126,7 +131,8 @@ the restricted Golden Pearl (+150 gold) / Nutritious Oyster (+11 maximum HP)
 choice; omit it for the post-Ancient fixture start. Full Neow offers, event
 content/unlock conditions and map modifiers remain open. The installed seed-2 right/rest demo with `--ancient neow`
 loses with the current restricted pools; the authored Act 1
-seed-2 left/rest demo still wins. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
+seed-2 left/rest result recorded there used the earlier restricted card pool.
+With the full Ironclad pool, the simple demo can lose before the boss. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
 
 
 Without reinstalling the console entry point, run

@@ -1,14 +1,12 @@
 """Explicit restricted transformation pools and source validation."""
 
-TRANSFORM_POOL = (
-    "pommel_strike", "shrug_it_off", "iron_wave", "body_slam", "armaments", "true_grit",
-    "uppercut", "sword_boomerang", "impervious", "offering", "fiend_fire",
-)
+from game.headless.cards.pools import REWARD_CARDS, ANCIENT_CARDS
 
+TRANSFORM_POOL = REWARD_CARDS
 
 CURSE_POOL = ("guilty", "clumsy")
 COLORLESS_POOL = ("finesse", "flash_of_steel", "shockwave")
-COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop")
+COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop", "giant_rock")
 
 
 def replacement_pool(source, pool):
@@ -22,7 +20,7 @@ def transform(state, cards, identity, pool, *, stream):
 
 
 def check_content(state, cards, pool):
-    sources = (*pool, "strike", "defend", "bash", *CURSE_POOL, *COLORLESS_SOURCES)
+    sources = (*pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_POOL, *COLORLESS_SOURCES)
     if any(c.definition.definition_id not in sources for c in state.deck):
         raise ValueError("Transformation requires a supported source card and replacement pool.")
     for name in pool:

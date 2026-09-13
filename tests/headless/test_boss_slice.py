@@ -217,10 +217,12 @@ def test_boss_rewards_distinct_pool_exact_gold_no_relic_and_completion_after_exi
     run = won_boss()
     assert run.state.phase is RunPhase.REWARD and run.state.act_completion is None
     assert run.state.pending["gold"] == 100
-    assert set(run.state.pending["offers"]) == {"impervious", "offering", "fiend_fire"}
+    from game.headless.cards.pools import RARE_CARDS
+    assert len(set(run.state.pending["offers"])) == 3
+    assert set(run.state.pending["offers"]) <= set(RARE_CARDS)
     assert run.state.pending["relic"] is None and ClaimRelic() not in run.legal_actions()
     run.apply(ClaimGold())
-    run.apply(ChooseRewardCard("impervious"))
+    run.apply(ChooseRewardCard(run.state.pending["offers"][0]))
     other = restored(run)
     for engine in (run, other):
         engine.apply(LeaveRewards())

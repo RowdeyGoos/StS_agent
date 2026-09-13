@@ -49,8 +49,6 @@ class RunEngine:
         if route not in ROUTES:
             raise ValueError("Unsupported authored route.")
         config = RunConfig(ascension=ascension)
-        if route == "overgrowth-act1":
-            config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
         overrides = {name: value for name, value in (("boss", boss), ("elite", elite), ("hallway", hallway)) if value is not None}
         if overrides and route != "overgrowth-act1":
             raise ValueError("Encounter overrides require the authored Act 1 route.")
@@ -70,7 +68,6 @@ class RunEngine:
         if ancient_profile not in (None, ancient.PROFILE):
             raise ValueError("Unsupported Ancient start profile.")
         config = RunConfig(ascension=ascension, relic_fallback="circlet")
-        config = replace(config, reward_cards=(*config.reward_cards, "sword_boomerang"))
         if (map_profile or PROFILE) == PROFILE:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
@@ -147,7 +144,7 @@ class RunEngine:
         combat = CombatEngine(seed=seed, deck_factory=lambda: deepcopy(deck),
                               encounter_factory=encounter_factory, enemy_factory=enemy_factory,
                               player_max_hp=self.state.max_hp, energy_per_turn=energy_per_turn,
-                              cards_per_turn=cards_per_turn)
+                              cards_per_turn=cards_per_turn, cards=self.cards)
         combat.reset()
         combat.player.hp = self.state.hp
         combat.player.strength += sum(RELICS[r.definition_id].combat_strength for r in self.state.relics)
@@ -158,6 +155,7 @@ class RunEngine:
             raise ValueError("The owned combat is not finished.")
         encounter_id = self.state.active_encounter_id
         self.state.active_encounter_id = None
+        self.state.max_hp = self.combat.player.max_hp
         self.state.hp = self.combat.player.hp
         self.state.combats_completed += 1
         self.state.phase = RunPhase.ROUTE if self.combat.winner == "player" else RunPhase.DEFEAT

@@ -105,10 +105,14 @@ content catalog. New effects belong in that content family or shared game rules
 when multiple cards need them. Display names do not dispatch behavior. A test can
 inject a `CardCatalog` containing an entirely new card without touching any adapter.
 Upgrade levels are per definition; they are not globally limited to a boolean.
-All fifteen implemented Ironclad definitions have one upgrade. The original
-eleven use the starter/hallway pools; Sword Boomerang joins the Act 1 route pool,
-and three rares form the restricted boss pool. Earlier source checks: [starter-card evidence](evidence/strike_upgrade_2026_09_13.md) and
-[reward-card/encounter evidence](evidence/slice_combat_content_2026_09_13.md).
+All **85 single-player Ironclad definitions** from pinned game 0.107.1 have their
+base and upgraded execution. Demonic Shield and Tank are excluded as multiplayer-only.
+The full **80-card common/uncommon/rare pool** is available to ordinary rewards,
+shops and Ironclad transformations. Boss rewards sample the rare subset. Strike,
+Defend and Bash are basic; Break and Corruption are Ancient cards, implemented but
+excluded from ordinary acquisition. Shockwave remains colorless. Primal Force's
+Giant Rock is also implemented. See the [inventory and rule evidence](evidence/ironclad_complete_2026_09_13.md).
+These pools use project-authored sampling, not native rarity weights or seed parity.
 Slimed costs one, draws one and exhausts; it cannot be upgraded.
 
 Armaments gives 5 block, then upgrades one eligible hand card for this combat;
@@ -132,7 +136,7 @@ Python sampling, not the native run's `CombatCardSelection` seed sequence.
 Uppercut costs 2, deals 13 damage, then applies 1 Weak and 1 Vulnerable;
 its upgrade applies 2 of each without increasing damage. Shockwave is colorless and costs 2,
 applies 3 Weak then 3 Vulnerable to each living enemy in slot order, and exhausts;
-its upgrade applies 5 of each. Uppercut is in the seven-card default Ironclad
+its upgrade applies 5 of each. Uppercut is in the full default Ironclad
 reward pool; Shockwave is in the restricted colorless transformation pool.
 Weak multiplies attack damage by 0.75 regardless of stack count. Strength is
 added first and Weak/Vulnerable fractions are combined before rounding down.
@@ -146,6 +150,31 @@ that flag. Snapshot continuation and search cloning retain this owned duration
 state. This corrects the old player-Vulnerable owner-turn approximation; the
 reduced Shrink rule and unsupported power/relic modifiers remain separate work.
 See the [native source and acceptance evidence](evidence/weak_and_area_debuffs_2026_09_13.md).
+
+The shared resolver is `core/resolution.py`. It executes an explicit queue of
+plain tasks and owned play frames, including nested Havoc/Cascade/Hellraiser
+plays and One-Two Punch repeats. A frame captures its result pile and paid/X
+resources before effects. Each repeated play runs its own hooks; the physical
+card moves once. Headbutt selects from discard; Burning Pact and Brand reuse
+hand selection. Choices during Stampede resume the pending enemy phase once.
+`core/rule_snapshots.py` validates continuation structure and ownership before
+installing restored state. No callback or global counter is saved.
+
+`powers/ironclad.py` owns acquisition-ordered hooks for exhaust, HP loss, block,
+play and turn boundaries. For example, Dark Embrace draws after ordinary exhaust
+and defers Ethereal draws to its end-turn hook; No Draw expiry respects listener
+order. Unmovable counts powered block entries from other plays. Corruption changes
+skill costs and their captured result pile. Rage/Feel No Pain block and Juggernaut/
+Inferno damage remain unpowered. Flame Barrier stops an attacker's remaining hits
+if retaliation kills it, and never retaliates after player death.
+
+`Card.combat_state` owns cost reductions and damage growth for Stomp, Rampage,
+Thrash and generated cards. These values and temporary upgrades never mutate the
+master deck. Anger/Juggling clones have fresh owned IDs and independent modifiers;
+Stoke/Infernal Blade generation uses a separate saved RNG stream and excludes
+Feed/Not Yet and basic/Ancient cards. Feed's fatal maximum-HP gain is carried back
+to the run explicitly. Howl from Beyond plays from exhaust at turn end and then
+returns to discard. Powers occupy a separate played-power pile.
 
 Game commands describe intent, not network authority. External adapters still own
 public references, stale request bindings, information filtering and representation
@@ -335,9 +364,10 @@ uses `run/deck.py` to replace the original at the same index with a fresh owned
 ID and base upgrade level, excluding its original definition. Candidate validation
 precedes an owned RNG draw; failed transforms preserve deck, allocator and RNG.
 
-The explicit transformation pool contains the 12 implemented nonstarter Ironclad
-cards. Aroma, Morphic Grove and Whispering Hollow accept those cards,
-Strike/Defend/Bash and the supported curses Guilty/Clumsy in the master deck.
+The Ironclad transformation pool contains all 80 common/uncommon/rare cards.
+Aroma, Morphic Grove and Whispering Hollow also accept basic and Ancient Ironclad
+sources, implemented colorless/event cards and the supported curses Guilty/Clumsy.
+Giant Rock transforms through the supported colorless pool.
 Curse transformations use their own two-card subpool, exclude the original
 definition and reset the replacement lifetime. Missing catalog content or
 unsupported sources reject entry atomically. Full curse/colorless pools, Eternal
@@ -518,8 +548,8 @@ colorless definitions live in `cards/colorless.py`. Owned hatch
 state lives in `run/hatching.py`. The relic pickup uses shared deterministic deck
 replacement and the owning engine's card catalog. Pending snapshots bind original
 cards and prior relic IDs to the fresh grant; missing content and malformed results
-reject without partial mutation. Run schema v17 and event profile v6 reject older
-private state; combat schema remains v7 with the updated card fingerprint.
+reject without partial mutation. The Nest batch introduced run v17/event profile v6. Current combat/run formats
+are described below; event profile v6 remains current.
 See [source and validation](evidence/byrdonis_nest_2026_09_13.md).
 
 ## Treasure rooms
@@ -679,8 +709,9 @@ run in `act_complete`. Winning the fight alone leaves the reward decision active
 There is no map shortcut to this outcome, no Act 2 launch or inter-act healing,
 and no claim of full-game victory. The example player is deliberately simple;
 `--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
-now wins after Aroma upgrades Bash. The left/rest seed-2 route also wins,
-including Jungle Maze, treasure and shop decisions. The original Maze/elite
+won with the earlier restricted card pool after Aroma upgraded Bash. The historical left/rest seed-2 route also won,
+including Jungle Maze, treasure and shop decisions. Those policy outcomes are
+not carried forward to the full 80-card reward pool. The original Maze/elite
 route remains a tested defeat case. See the
 [Aroma acceptance](evidence/aroma_of_chaos_2026_09_13.md). This five-fight route omits
 most of a native Act 1 map and its deck-building opportunities. See the
@@ -690,7 +721,7 @@ At a rest site, `Rest` heals floor(30% of maximum HP), capped at maximum HP.
 `Smith` opens a plain-data, cancelable selection of implemented upgrades.
 `ChooseUpgrade(instance_id)` commits one exact card; `ChooseUpgrade(None)` returns
 to the rest options without spending the action. Only one rest/smith action can
-be completed. All fifteen current Ironclad cards can be upgraded once. Pommel
+be completed. All 85 single-player Ironclad cards can be upgraded once. Pommel
 Strike+ deals 10 and draws 2; Shrug It Off+ gives 11 block and draws 1; Iron Wave+
 gives 7 block then deals 7; Body Slam+ costs zero and still scales with current
 block. Unsupported cards and further upgrade levels remain excluded explicitly.
@@ -714,7 +745,7 @@ for this rule; reset, JSON restore and search cloning explicitly rebind that
 alias. Enemy moves stop on player death before later effects or another roll.
 
 This is a partial game model. Native RNG parity, full status/hook ordering,
-draw-prevention/after-draw hooks, other card-zone mechanics, remaining items,
+other-character draw/pile hooks and card-zone mechanics, remaining items,
 complex selections, full merchant pools/modifiers, native event eligibility and map modifiers,
 all content and complete target-game progression remain in the
 [implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md). `RunEngine`
@@ -730,7 +761,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v17`, including configuration,
+Private run snapshots now use `headless_run_state_v18`, including configuration,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
@@ -739,18 +770,20 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v7`, including the in-play
-pile, pending continuation, selection/target RNG, power duration flags, player
+Nested combat records now use `headless_combat_state_v8`, including the in-play
+and played-power piles, nested plain-data continuations, selection/target/generation RNG,
+ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
+gains, power duration flags, player
 card-play counts, exact power applier slots, monster phase/spawn counters and
 per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v6 and run v1–v15 formats are rejected rather than assigning invented item
+v1–v7 and run v1–v17 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
-The legacy status encoder retains its two-name vocabulary; new powers are exposed
-as active status entries by direct game inspection.
+The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy
+debuffs through `enemy.statuses`.
 Snapshots bind card values/effect composition and item values automatically,
 and restore RNG aliases and exact piles. Use the same game-rule implementation
 when restoring: these are development continuation records, not release provenance
