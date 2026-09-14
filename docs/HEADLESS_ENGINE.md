@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v17 / run v29**.
+than being silently reinterpreted: current schemas are **combat v18 / run v30**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -127,11 +127,18 @@ Automatic Gremlin Horn death draws now run before Infested spawns, so a Hellrais
 Strike cannot attack children that do not exist yet. Unplayable no-target autoplay
 moves the card to its result pile without a play or target roll.
 
-**Remaining choice-timing limit:** native AfterDeath can detach a hook when it
-requests a player choice, allowing Infested and the enclosing attack to continue
-before the choice resumes. The current headless choice queue is serial. Its
-snapshots preserve that serial continuation, but this does not establish native
-paused-hook parity. Pausable hook continuations are the next bounded assignment.
+`core/hook_scheduler.py` now detaches a Gremlin Horn callback at its first choice.
+Infested and the enclosing player action finish before queued hooks resume FIFO.
+Each hook owns plain tasks and a play context; nested Seeker Strikes keep their
+own card attribution, and repeated choices stay on the active hook. Stratagem
+builds its visible options from the then-current draw pile: empty completes;
+a previously deferred singleton still requires input. Seeker Strike filters the live draw pile by its original three-card sample. Combat ending cancels waiting hooks.
+
+[Paused-hook evidence](evidence/paused_death_hooks_2026_09_14.md) covers native
+source inspection and Python action/restore regressions. Direct native queue
+execution requires initialized Godot services and remains unverified. Native
+enemy-side work runs concurrently with the action queue; its exact scheduling,
+multiplayer queues and the complete hook-order audit remain separate work.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -624,8 +631,8 @@ Rules added for these encounters:
   stun, followed by Beast Cry, Stomp and Crush.
 - Phrog's death runs automatic Gremlin Horn draws before appending four owned
   Wriggler slots. Unfinished Infested work prevents premature victory. Their
-  initial stun and alternating slot roles survive restore. Native detached
-  death-hook choices remain subject to the choice-timing limit above.
+  initial stun and alternating slot roles survive restore. A paused Horn choice
+  lets Infested and the enclosing player action finish before it resumes.
 - Eye With Teeth remains in its slot while dead, clears debuffs, cannot be hit
   during revival and spends its next turn restoring HP. Secondary minions do
   not keep a fight alive after the last primary enemy dies. Summons do not join

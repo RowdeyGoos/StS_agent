@@ -20,7 +20,7 @@ def valid_power(key, sequence):
     )
 
 
-def validate_selection(r, p):
+def validate_selection(r, p, *, deferred=False, shared_offers=False):
     from game.headless.potions.base import POTIONS
 
     if (
@@ -54,11 +54,11 @@ def validate_selection(r, p):
             raise ValueError("Invalid Panache activation.")
     s = r.selection
     if s is None:
-        if p.deck.offered:
+        if p.deck.offered and not shared_offers:
             raise ValueError("Unowned offered cards.")
         return
     fields = {"source", "candidates", "selected", "operation", "destination", "minimum", "maximum", "free"}
-    if not isinstance(s, dict) or set(s) != fields:
+    if not isinstance(s, dict) or set(s) - {"whitelist"} != fields:
         raise ValueError("Invalid selection fields.")
     if (
         s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat")
@@ -82,6 +82,8 @@ def validate_selection(r, p):
     ):
         raise ValueError("Invalid selection bounds.")
     if s["source"] in r.potion_uses:
+        if "whitelist" in s:
+            raise ValueError("Potion choice cannot own a sampled card filter.")
         from game.headless.potions.selections import validate
         validate(r, p, s, r.potion_uses[s["source"]]["definition_id"])
         return
@@ -120,20 +122,33 @@ def validate_selection(r, p):
     pile, effect, destination, free = settings[operation]
     if (s["operation"], s["destination"], s["free"]) != (effect, destination, free):
         raise ValueError("Choice semantics differ from source.")
+    whitelist = s.get("whitelist")
+    if operation == "seeker_strike":
+        if (not isinstance(whitelist, list) or not 1 <= len(whitelist) <= 3
+                or any(not isinstance(i, str) for i in whitelist)
+                or len(whitelist) != len(set(whitelist))
+                or not set(whitelist) <= p.deck._allocated_ids
+                or source.instance_id in whitelist
+                or not set(s["candidates"]) <= set(whitelist)):
+            raise ValueError("Invalid sampled tutor whitelist.")
+    elif "whitelist" in s:
+        raise ValueError("Choice source does not own a sampled filter.")
     available = getattr(p.deck, pile)
-    if not set(s["candidates"]) <= {c.instance_id for c in available}:
+    deferred_live = deferred and operation in ("stratagem", "seeker_strike")
+    if deferred_live:
+        if not set(s["candidates"]) <= p.deck._allocated_ids or s["selected"]:
+            raise ValueError("Invalid deferred live selection.")
+    elif not set(s["candidates"]) <= {c.instance_id for c in available}:
         raise ValueError("Selection references a foreign pile.")
     candidates = [c.instance_id for c in available]
     if operation in ("secret_technique", "secret_weapon"):
         kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
         candidates = [c.instance_id for c in available if c.spec.kind in kinds]
-    if operation == "stratagem":
+    if operation in ("stratagem", "seeker_strike"):
         from game.headless.core.piles import stratagem_cards
-        candidates = [c.instance_id for c in stratagem_cards(p)]
-    if operation == "seeker_strike":
-        if len(s["candidates"]) != min(3, len(available)):
-            raise ValueError("Invalid sampled tutor count.")
-    elif s["candidates"] != candidates:
+        candidates = [c.instance_id for c in stratagem_cards(p)
+                      if whitelist is None or c.instance_id in whitelist]
+    if not deferred_live and s["candidates"] != candidates:
         raise ValueError("Selection differs from eligible cards.")
     expected_max = (
         len(s["candidates"]) if operation == "gambling_chip" else
@@ -149,5 +164,5 @@ def validate_selection(r, p):
         kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
         if any(c.spec.kind not in kinds for c in available if c.instance_id in s["candidates"]):
             raise ValueError("Ineligible tutor card.")
-    if pile == "offered" and set(s["candidates"]) != {c.instance_id for c in p.deck.offered}:
+    if pile == "offered" and not shared_offers and set(s["candidates"]) != {c.instance_id for c in p.deck.offered}:
         raise ValueError("Offer ownership mismatch.")

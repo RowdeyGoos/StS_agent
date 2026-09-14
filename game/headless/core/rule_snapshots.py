@@ -22,6 +22,7 @@ TASK_ARITIES = {
     "after_enchantment": 1,
     "repeat": 1,
     "finish": 1,
+    "death_hook": 1,
     "draw": 2,
     "autoplay": 2,
     "autoplay_draw": 2,
@@ -103,12 +104,15 @@ def restore_rules(record, player):
         raise ValueError("Invalid combat relic room context.")
     from game.headless.potions.snapshots import validate as validate_potions
     validate_potions(r, player)
-    validate_selection(r, player)
+    from game.headless.core.hook_snapshots import groups, validate_choices
+    work = groups(r, player)
+    validate_choices(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
     if not isinstance(r.plays, dict) or set(r.plays) != set(in_play):
         raise ValueError("Play ownership mismatch.")
     for identity, frame in r.plays.items():
         required = {
+            "context",
             "target",
             "auto",
             "force_exhaust",
@@ -128,6 +132,8 @@ def restore_rules(record, player):
             or not 1 <= frame["remaining"] <= 3 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
         ):
             raise ValueError("Invalid play resources.")
+        if type(frame["context"]) is not int or frame["context"] not in work:
+            raise ValueError("Play has no owning execution context.")
         if frame["stage"] not in ("effects", "enchantment", "hooks"):
             raise ValueError("Invalid play resolution stage.")
         if "gigantification" in frame and (type(frame["gigantification"]) is not bool or not frame["gigantification"] or not r.powers.get("gigantification")):
@@ -165,7 +171,8 @@ def restore_rules(record, player):
     if not isinstance(r.end_hand_remaining, list):
         raise ValueError("Invalid remaining end-of-hand effects.")
     end_hand_ids = []
-    for task in r.tasks:
+    all_tasks = [t for tasks in work.values() for t in tasks]
+    for task in all_tasks:
         if (
             not isinstance(task, list)
             or not task
@@ -177,6 +184,12 @@ def restore_rules(record, player):
         if any(type(v) not in (int, bool, str, type(None)) for v in task):
             raise ValueError("Task must contain plain values.")
         op, *args = task
+        if op == "death_hook":
+            slot = args[0]
+            if (type(slot) is not int or not 0 <= slot < len(player.combat_enemies)
+                    or player.combat_enemies[slot].is_alive
+                    or not any(v["definition_id"] == "gremlin_horn" for v in r.relics)):
+                raise ValueError("Unowned death hook.")
         if op == "spawn_wrigglers":
             from game.headless.monsters.phrog_parasite import PhrogParasite
             slot = args[0]
@@ -184,7 +197,7 @@ def restore_rules(record, player):
                     or not isinstance(player.combat_enemies[slot], PhrogParasite)
                     or player.combat_enemies[slot].is_alive or player.combat_enemies[slot].spawned
                     or not player.combat_enemies[slot].statuses.get("infested")
-                    or r.tasks.count(task) != 1):
+                    or all_tasks.count(task) != 1):
                 raise ValueError("Unowned parasite spawn continuation.")
         if op == "shuffle_choice" and not r.powers.get("stratagem"):
             raise ValueError("Unowned shuffle choice.")
@@ -281,9 +294,10 @@ def restore_rules(record, player):
     if end_hand_ids != r.end_hand_remaining:
         raise ValueError("Missing end-of-hand continuation.")
     for identity, frame in r.plays.items():
+        tasks = work[frame["context"]]
         control = [
             t
-            for t in r.tasks
+            for t in tasks
             if t[0] in ("iteration", "effect", "after_play", "after_enchantment", "repeat", "finish") and t[1] == identity
         ]
         expected = [
@@ -296,15 +310,24 @@ def restore_rules(record, player):
             raise ValueError("Invalid interrupted play continuation.")
         if (
             r.selection is None
-            and identity == player.deck.in_play[-1].instance_id
-            and r.tasks[: len(expected)] != expected
+            and frame["context"] == r.active_hook
+            and identity == next(c.instance_id for c in reversed(player.deck.in_play)
+                                 if r.plays[c.instance_id]["context"] == r.active_hook)
+            and tasks[: len(expected)] != expected
         ):
             raise ValueError("Pending selector has unexpected work before its continuation.")
-    if [t[1] for t in r.tasks if t[0] in ("after_play", "after_enchantment", "repeat")] != [
-        c.instance_id for c in reversed(player.deck.in_play)
-    ]:
-        raise ValueError("Nested plays must finish before their parents.")
-    if r.selection is None and bool(r.tasks) != bool(r.plays):
+    for context, tasks in work.items():
+        if [t[1] for t in tasks if t[0] in ("after_play", "after_enchantment", "repeat")] != [
+            c.instance_id for c in reversed(player.deck.in_play) if r.plays[c.instance_id]["context"] == context
+        ]:
+            raise ValueError("Nested plays must finish before their parents in their own context.")
+        for task in tasks:
+            if task[0] in ("iteration", "effect", "after_play", "after_enchantment", "repeat", "finish",
+                           "attack", "random_hit", "gigantification_end", "gigantification_begin",
+                           "after_card_power", "after_card_enemies", "after_card_enchantment"):
+                if r.plays[task[1]]["context"] != context:
+                    raise ValueError("Task belongs to a different execution context.")
+    if r.selection is None and bool(r.tasks) != any(f["context"] == r.active_hook for f in r.plays.values()):
         # Pending start/end autoplay can leave outer turn work plus nested plays;
         # externally observable work always suspends at a card selector.
         raise ValueError("Unowned pending combat work.")

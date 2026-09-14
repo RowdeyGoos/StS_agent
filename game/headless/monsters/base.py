@@ -119,9 +119,9 @@ class Enemy(ABC):
             d *= 150
         if player is not None and attacker_statuses is player.statuses:
             from game.headless.relics.damage import attack_multiplier
-            n *= attack_multiplier(player, player.deck.in_play[-1] if player.deck.in_play else None)
+            n *= attack_multiplier(player, player.current_card)
             from game.headless.potions.powers import attack_multiplier as potion_multiplier
-            n *= potion_multiplier(player, player.deck.in_play[-1] if player.deck.in_play else None)
+            n *= potion_multiplier(player, player.current_card)
         return n, d
 
     def start_turn(self) -> None:
@@ -152,7 +152,7 @@ class Enemy(ABC):
         player = self.combat_player
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
             from game.headless.relics.damage import attack_bonus
-            amount += attack_bonus(player, player.deck.in_play[-1] if player.deck.in_play else None)
+            amount += attack_bonus(player, player.current_card)
         incoming_damage = (
             modify_attack_damage_for_statuses(
                 amount,
@@ -179,7 +179,7 @@ class Enemy(ABC):
                 from game.headless.relics.combat import has
                 from game.headless.core.resolution import push
                 if has(self.combat_player, "gremlin_horn"):
-                    push(self.combat_player, ["energy", 1], ["draw", 1, False])
+                    push(self.combat_player, ["death_hook", self.combat_player.combat_enemies.index(self)])
             if previous_hp > 0 and self.hp <= 0 and not self.combat_player._resolving:
                 from game.headless.core.resolution import drain
                 drain(self.combat_player)
@@ -189,7 +189,7 @@ class Enemy(ABC):
         """Apply a status effect to the enemy."""
         if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise"):
             from game.headless.relics.damage import debuff_amount
-            stacks = debuff_amount(source, source.deck.in_play[-1] if source.deck.in_play else None, stacks)
+            stacks = debuff_amount(source, source.current_card, stacks)
         if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise") and self.statuses.get("artifact"):
             self.statuses.decrement("artifact")
             return

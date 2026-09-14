@@ -1492,15 +1492,22 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
      spawns match actual AttackCommand/CreatureCmd execution. Automatic Horn draws
      precede spawning; no-target Hellraiser autoplay skips the play and target roll.
      [Evidence](evidence/combat_interactions_2026_09_14.md).
-   - **Next: paused death-hook choices.** Native Hook.AfterDeath advances after a
-     hook pauses for a choice, so Infested and the enclosing attack may finish
-     before Horn's draw resumes. Implement owned pausable hook continuations in
-     the existing resolver, with independent saved work for the suspended hook
-     and outer action. Do not use callback closures or global mutable state.
-     Accept Horn → shuffle/Stratagem choice → Infested → remaining multihit →
-     resumed draw against native action-queue records, with stable slots, exact
-     RNG consumption, atomic rejection and JSON restoration at each decision.
-     Current serial-choice regressions do not certify native timing.
+   - **Paused death-hook choices implemented from pinned source:** Horn callbacks
+     run until their first choice, then retain owned tasks/play contexts in FIFO
+     order. Infested and the enclosing player action finish first. Stratagem
+     refreshes live options on activation; nested Seeker Strikes and repeat
+     selections retain their own contexts. Waiting hooks cancel on combat end;
+     all exposed decisions support JSON restore and atomic malformed-state rejection.
+     [Evidence](evidence/paused_death_hooks_2026_09_14.md).
+   - **Next: native runtime queue/turn verification.** The queue probe stops in
+     native Logger initialization, which calls Godot OS before TestMode checks.
+     Use an initialized, isolated native runtime to verify Horn → shuffle/Stratagem
+     → Infested → remaining hits → resumed draw, FIFO and cancellation. Keep
+     explicit fixture state and avoid profile/save access. Check enemy-side hooks
+     separately: native enemy-side execution is concurrent with the action queue,
+     so a player-action FIFO fixture does not establish its scheduling. Compare
+     visible choices, stable slots, HP/resources and RNG suffixes. Source-backed
+     Python regressions are implemented; direct native queue parity is still open.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
      autoplay and further combat boundaries. Require actual native sequences;
      passing Python continuation alone is regression evidence.

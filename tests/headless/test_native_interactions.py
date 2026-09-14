@@ -151,36 +151,36 @@ def test_horn_hellraiser_strike_runs_before_infested_and_cannot_target_future_ch
     assert p.energy == 3
 
 
-def test_serial_death_continuation_restores_and_rejects_missing_duplicate_or_foreign_spawn():
-    # Regression for the engine's serial choice contract. Native detached choice
-    # scheduling can advance Infested/outer attack sooner and remains separate work.
+def test_paused_death_hook_exposes_choice_after_infested_and_parent_play_finish():
     run, strikes = phrog_run(choices=True)
     run.apply(PlayCard(strikes[0].instance_id, 0))
-    assert not run.combat.done and run.combat.player.rules.selection
+    p = run.combat.player
+    assert not run.combat.done and p.rules.selection
+    assert len(run.combat.enemies) == 5 and run.combat.enemies[0].spawned
+    assert p.rules.attacks_finished == 1 and not p.deck.in_play
+    assert p.rules.active_hook == 1 and not p.rules.deferred_hooks
     before = saved(run)
     other = RunEngine()
     other.restore(before)
-    for mutation in ("missing", "duplicate", "foreign", "living"):
+    for mutation in ("foreign_context", "duplicate_spawn", "living"):
         bad = deepcopy(before)
-        tasks = bad["combat"]["player"]["rules"]["tasks"]
-        spawn = next(t for t in tasks if t[0] == "spawn_wrigglers")
-        if mutation == "missing":
-            tasks.remove(spawn)
-        elif mutation == "duplicate":
-            tasks.append(spawn.copy())
-        elif mutation == "foreign":
-            spawn[1] = 7
+        rules = bad["combat"]["player"]["rules"]
+        if mutation == "foreign_context":
+            rules["active_hook"] = 2
+        elif mutation == "duplicate_spawn":
+            rules["tasks"].append(["spawn_wrigglers", 0])
         else:
             bad["combat"]["enemies"][0]["state"]["hp"] = 1
         with pytest.raises(ValueError):
             other.restore(bad)
         assert saved(other) == before
-    choice = run.combat.player.rules.selection["candidates"][0]
+    choice = p.rules.selection["candidates"][0]
     for action in (ChooseCombatCard(choice), ConfirmCombatSelection()):
         run.apply(action)
         other.apply(action)
         assert saved(run) == saved(other)
     assert len(run.combat.enemies) == 5 and not run.combat.done
+    assert p.rules.active_hook == 0 and not p.rules.tasks
 
 
 @pytest.mark.parametrize("lethal", [False, True])

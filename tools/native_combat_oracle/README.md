@@ -93,5 +93,7 @@ No existing player history, save files or Cloud data are read. Each command has 
 five-second task bound; invoke the tool in a disposable process. These records
 do not execute Horn/Hellraiser, detached hook choices, full card plays, turns,
 run boundaries or multiplayer. Horn's automatic ordering correction uses pinned
-source plus labeled Python regressions; native paused-choice scheduling remains
-an open implementation task.
+source plus labeled Python regressions. Paused death hooks now have owned FIFO
+continuations and live-pile selection in Python; see the
+[paused-hook evidence](../../docs/evidence/paused_death_hooks_2026_09_14.md).
+Direct native queue execution still requires an initialized Godot runtime.

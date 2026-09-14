@@ -4,7 +4,7 @@ from game.headless.core.actions import ChooseCombatCard, ConfirmCombatSelection
 from game.headless.core.resolution import push, find, move_out, drain
 
 
-def begin(p, source, cards, *, operation="move", destination="hand", minimum=1, maximum=1, free=""):
+def begin(p, source, cards, *, operation="move", destination="hand", minimum=1, maximum=1, free="", whitelist=None):
     ids = [c.instance_id for c in cards]
     if not ids:
         return
@@ -20,6 +20,8 @@ def begin(p, source, cards, *, operation="move", destination="hand", minimum=1, 
         maximum=maximum,
         free=free,
     )
+    if whitelist is not None:
+        p.rules.selection["whitelist"] = list(whitelist)
     if minimum == len(ids):
         p.rules.selection["selected"] = ids.copy()
         confirm(p)
@@ -50,7 +52,8 @@ def confirm(p):
         raise ValueError("Selection is incomplete.")
     p.rules.selection = None
     selected = set(s["selected"])
-    p.deck.offered[:] = [c for c in p.deck.offered if c.instance_id in selected]
+    candidates = set(s["candidates"])
+    p.deck.offered[:] = [c for c in p.deck.offered if c.instance_id not in candidates or c.instance_id in selected]
     trailing = [["draw", len(s["selected"]), False]] if s["operation"] == "discard_redraw" else []
     push(p, *[["selected", i, s["operation"], s["destination"], s["free"]] for i in s["selected"]], *trailing)
     # Resolution can be invoked from a nested choice. Its outer drain owns work.

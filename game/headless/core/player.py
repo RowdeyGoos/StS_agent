@@ -45,6 +45,11 @@ class Player:
         self.combat_enemies: list[Enemy] | None = None
 
     @property
+    def current_card(self):
+        return next((c for c in reversed(self.deck.in_play)
+                     if self.rules.plays[c.instance_id]["context"] == self.rules.active_hook), None)
+
+    @property
     def hand(self) -> list[Card]:
         """Return the current hand."""
         return self.deck.hand
@@ -101,13 +106,13 @@ class Player:
         if not amount and not powered:
             return
         if powered:
-            if self.rules.powers.get("no_block") and self.deck.in_play:
+            if self.rules.powers.get("no_block") and self.current_card is not None:
                 return
             amount += self.rules.powers.get("dexterity", 0)
-            card = self.deck.in_play[-1] if self.deck.in_play else None
+            card = self.current_card
             if card is not None and card.enchantment is not None and card.enchantment.definition_id == "nimble":
                 amount += card.enchantment.amount
-            if self.deck.in_play and self.deck.in_play[-1].definition.defend:
+            if self.current_card is not None and self.current_card.definition.defend:
                 amount += self.rules.powers.get("fasten", 0)
         gain = max(0, amount) * block_multiplier(self, powered)
         if powered:
@@ -228,7 +233,7 @@ class Player:
     def pending_options(self) -> tuple[str, ...]:
         if self.pending_play is None:
             return ()
-        card = self.deck.in_play[-1]
+        card = self.current_card
         effect = card.definition.effects[self.pending_play.effect_index]
         return tuple(c.instance_id for c in effect.eligible(self))
 
@@ -237,7 +242,7 @@ class Player:
             raise ValueError("Illegal combat card choice.")
         from game.headless.core.resolution import drain
 
-        card = self.deck.in_play[-1]
+        card = self.current_card
         effect = card.definition.effects[self.pending_play.effect_index]
         selected = next(c for c in effect.eligible(self) if c.instance_id == instance_id)
         self.pending_play = None
