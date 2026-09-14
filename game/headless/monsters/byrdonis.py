@@ -12,7 +12,7 @@ class Byrdonis(Enemy):
     )
 
     def __init__(self, rng: Random):
-        super().__init__("Byrdonis", rng.randint(81, 84), rng)
+        super().__init__("Byrdonis", 84, rng, min_hp=81)
         self._intent_index = 1
         self.statuses.add(TERRITORIAL, 1)
 

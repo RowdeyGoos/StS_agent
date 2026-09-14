@@ -10,7 +10,7 @@ class ScriptedEnemy(Enemy):
     LOOP_START = 0
 
     def __init__(self, rng):
-        super().__init__(self.NAME, self.HP[0] if self.HP[0] == self.HP[1] else rng.randint(*self.HP), rng)
+        super().__init__(self.NAME, self.HP[1], rng, min_hp=self.HP[0] if self.HP[0] != self.HP[1] else None)
         self._intent_index = 0
 
     @property

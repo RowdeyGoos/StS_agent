@@ -1,5 +1,7 @@
 """Explicit encounter definitions used by authored run routes."""
 
+from game.headless.encounters.randomness import create
+
 from types import MappingProxyType
 from functools import partial
 from game.headless.encounters.events import dense_vegetation
@@ -24,19 +26,19 @@ from game.headless.encounters.overgrowth import (
 
 
 def solo(kind, rng):
-    return [kind(rng)]
+    return [create(kind, rng)]
 
 
 def nibbit_encounter(rng):
-    return [Nibbit(rng)]
+    return [create(Nibbit, rng)]
 
 
 def byrdonis_encounter(rng):
-    return [Byrdonis(rng)]
+    return [create(Byrdonis, rng)]
 
 
 def vantom_encounter(rng):
-    return [Vantom(rng)]
+    return [create(Vantom, rng)]
 
 
 ENCOUNTERS = MappingProxyType({

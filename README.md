@@ -61,8 +61,9 @@ probability rules, including persistent relic grab bags and 13-slot merchants.
 Native startup queues and complete Act 1 maps match direct assembly reference
 seeds for the declared solo/all-unlocked Overgrowth start. Authored slices retain
 their fixture generator. Runtime acquisition now applies native
-relic predicates, shop filters and marked card-reward pool rules. Whole-run same-seed
-parity still requires combat call-order and interaction checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
+relic predicates, shop filters and marked card-reward pool rules. Encounter composition,
+HP, opening AI and initial/refill shuffle order also match native method fixtures.
+Whole-run same-seed parity still requires combat generation and interaction checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
 
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain

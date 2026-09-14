@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v13"
+SCHEMA = "headless_combat_state_v14"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -105,7 +105,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
                    "rules": asdict(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
-        "deck": {"rng": rng_ref(deck.rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "next_instance_id": deck._next_instance_id,
+        "deck": {"rng": rng_ref(deck.rng), "niche_rng": rng_ref(deck.niche_rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
     }
@@ -148,6 +148,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         deck = Deck.__new__(Deck)
         source_deck = snapshot["deck"]
         deck.rng = rng_at(source_deck["rng"])
+        deck.niche_rng = rng_at(source_deck["niche_rng"])
         deck.selection_rng = rng_at(source_deck["selection_rng"])
         deck.target_rng = rng_at(source_deck["target_rng"])
         deck.generation_rng = rng_at(source_deck["generation_rng"])

@@ -19,7 +19,7 @@ class Deck:
             raise ValueError("A deck cannot contain the same mutable card object twice.")
         self.rng = rng
         from copy import deepcopy
-        for attribute, domain in (("selection_rng","combat_card_selection"),("energy_rng","combat_energy_costs"),
+        for attribute, domain in (("niche_rng","niche"),("selection_rng","combat_card_selection"),("energy_rng","combat_energy_costs"),
                                   ("potion_rng","combat_potion_generation"),("generation_rng","combat_card_generation"),
                                   ("target_rng","combat_targets")):
             setattr(self,attribute,streams[domain] if streams is not None else deepcopy(rng))
@@ -37,16 +37,25 @@ class Deck:
         self.powers: list[Card] = []
         self.offered: list[Card] = []
         self.owner = None
-        self.shuffle_draw_pile()
+        self.shuffle_draw_pile(initial=True)
         innate = [c for c in self.draw_pile if c.spec.innate]
         self.draw_pile = [c for c in self.draw_pile if not c.spec.innate] + innate
 
     def all_cards(self):
         return [c for name in ("draw_pile", "discard_pile", "hand", "exhaust_pile", "in_play", "powers", "offered") for c in getattr(self, name)]
 
-    def shuffle_draw_pile(self) -> None:
+    def shuffle_draw_pile(self, *, initial=False) -> None:
         """Shuffle the draw pile in place."""
+        from game.headless.core.native_rng import NativeRng
+        native = isinstance(self.rng, NativeRng)
+        if native and not initial:
+            # Native refill StableShuffle orders by model ID, then upgrade level.
+            from game.headless.core.native_shuffle import sort_cards
+            sort_cards(self.draw_pile)
         shuffle_list(self.rng, self.draw_pile)
+        if native:
+            # Native pile index zero is top; this engine's stack pops from the end.
+            self.draw_pile.reverse()
 
     def draw(self, count: int) -> list[Card]:
         """Draw up to `count` cards, stopping at the game's hand limit.

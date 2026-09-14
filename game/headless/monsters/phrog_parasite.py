@@ -1,5 +1,7 @@
 """Phrog's death creates four primary Wrigglers before victory is possible."""
 
+from game.headless.encounters.randomness import summon
+
 from game.headless.monsters.base import Intent
 from game.headless.monsters.scripted import ScriptedEnemy
 
@@ -49,7 +51,7 @@ class PhrogParasite(ScriptedEnemy):
         self.spawned = True
         self.first_child_slot = len(player.combat_enemies)
         for index in range(4):
-            child = Wriggler(self.rng, starts_with_wriggle=index % 2 == 1)
+            child = summon(Wriggler, self, player, starts_with_wriggle=index % 2 == 1)
             child.combat_player = player
             player.combat_enemies.append(child)
 

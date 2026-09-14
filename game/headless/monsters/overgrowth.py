@@ -1,6 +1,9 @@
 """Implemented reduced encounter enemies; native parity is incomplete."""
 
 from random import Random
+
+from game.headless.core.native_rng import NativeRng
+from game.headless.encounters.randomness import branch
 from types import MappingProxyType
 from game.headless.monsters.base import Enemy, Intent
 
@@ -60,7 +63,7 @@ class Nibbit(Enemy):
         openings = {"solo": 0, "front": 1, "back": 2}
         if role not in openings:
             raise ValueError("Unsupported Nibbit encounter role.")
-        super().__init__(name="Nibbit", max_hp=rng.randint(42, 46), rng=rng)
+        super().__init__(name="Nibbit", max_hp=46, rng=rng, min_hp=42)
         self._intent_index = openings[role]
 
     @property
@@ -97,7 +100,7 @@ class ShrinkerBeetle(Enemy):
     STOMP = Intent(kind="attack", value=13, move_name="Stomp", attack_damage=13, attack_count=1)
 
     def __init__(self, rng: Random) -> None:
-        super().__init__(name="Shrinker Beetle", max_hp=rng.randint(38, 40), rng=rng)
+        super().__init__(name="Shrinker Beetle", max_hp=40, rng=rng, min_hp=38)
         self._used_opening = False
         self._post_opening_index = 0
 
@@ -139,7 +142,7 @@ class FuzzyWurmCrawler(Enemy):
     )
 
     def __init__(self, rng: Random) -> None:
-        super().__init__(name="Fuzzy Wurm Crawler", max_hp=rng.randint(55, 57), rng=rng)
+        super().__init__(name="Fuzzy Wurm Crawler", max_hp=57, rng=rng, min_hp=55)
         self._intent_index = 0
 
     @property
@@ -203,7 +206,8 @@ class Mawler(Enemy):
         # Native branches draw even with one legal successor. Match the rule
         # and authored branch order; Python Random is not native seed parity.
         candidates = self._candidate_templates()
-        self._current_intent = candidates[int(self.rng.random() * len(candidates))]
+        self._current_intent = (branch(self.rng, candidates) if isinstance(self.rng, NativeRng)
+                                else candidates[int(self.rng.random() * len(candidates))])
 
     def _candidate_templates(self) -> tuple[Intent, ...]:
         return tuple(
@@ -238,7 +242,7 @@ class LeafSlimeSmall(Enemy):
     GOOP = Intent(kind="shuffle", value=1, move_name="Goop", slimed_added=1)
 
     def __init__(self, rng: Random) -> None:
-        super().__init__(name="Leaf Slime (S)", max_hp=rng.randint(11, 15), rng=rng)
+        super().__init__(name="Leaf Slime (S)", max_hp=15, rng=rng, min_hp=11)
         self._last_move_name: str | None = None
         self._current_intent = self._choose_next_template()
 
@@ -255,7 +259,7 @@ class LeafSlimeSmall(Enemy):
         # one available move. Python sampling is not native seed parity.
         roll = self.rng.random()
         if self._last_move_name is None:
-            return self.TACKLE if roll < 0.5 else self.GOOP
+            return self.TACKLE if (roll <= 0.5 if isinstance(self.rng, NativeRng) else roll < 0.5) else self.GOOP
         return self.GOOP if self._last_move_name == self.TACKLE.move_name else self.TACKLE
 
     def _behavior_phase_index(self) -> int:
@@ -282,7 +286,7 @@ class LeafSlimeMedium(Enemy):
     )
 
     def __init__(self, rng: Random) -> None:
-        super().__init__(name="Leaf Slime (M)", max_hp=rng.randint(32, 35), rng=rng)
+        super().__init__(name="Leaf Slime (M)", max_hp=35, rng=rng, min_hp=32)
         self._intent_index = 0
 
     @property
@@ -309,7 +313,7 @@ class TwigSlimeSmall(Enemy):
     TACKLE = Intent(kind="attack", value=4, move_name="Tackle", attack_damage=4, attack_count=1)
 
     def __init__(self, rng: Random) -> None:
-        super().__init__(name="Twig Slime (S)", max_hp=rng.randint(7, 11), rng=rng)
+        super().__init__(name="Twig Slime (S)", max_hp=11, rng=rng, min_hp=7)
 
     @property
     def intent(self) -> Intent:
@@ -329,7 +333,7 @@ class TwigSlimeMedium(Enemy):
     CHOMP = Intent(kind="attack", value=11, move_name="Chomp", attack_damage=11, attack_count=1)
 
     def __init__(self, rng: Random) -> None:
-        super().__init__(name="Twig Slime (M)", max_hp=rng.randint(26, 28), rng=rng)
+        super().__init__(name="Twig Slime (M)", max_hp=28, rng=rng, min_hp=26)
         self._current_intent = self.STICKY_SHOT
         self._consecutive_attacks = 0
 
@@ -347,7 +351,7 @@ class TwigSlimeMedium(Enemy):
             self._consecutive_attacks = 1
             self._current_intent = self.CHOMP
             return
-        if self._consecutive_attacks < 2 and roll < 0.5:
+        if self._consecutive_attacks < 2 and (roll <= 0.5 if isinstance(self.rng, NativeRng) else roll < 0.5):
             self._consecutive_attacks += 1
             self._current_intent = self.CHOMP
         else:
