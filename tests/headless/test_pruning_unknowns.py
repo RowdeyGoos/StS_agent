@@ -106,7 +106,8 @@ def test_pruned_maps_are_reproducible_full_length_and_keep_unknowns_hidden(seed)
     new = RunEngine.ironclad_act1(seed=seed)
     old = RunEngine.ironclad_act1(seed=seed,map_profile=BASE_PROFILE)
     assert len(new.graph.nodes) < len(old.graph.nodes)
-    assert set(new.graph.entry_node_ids) <= set(old.graph.entry_node_ids)
+    # Native postprocessing can move surviving entrances to new columns.
+    assert len(new.graph.entry_node_ids) <= len(old.graph.entry_node_ids)
     assert new.graph.generation == PROFILE
     assert new.state.unknown_rooms.outcomes == {}
     assert new.state.unknown_rooms.odds == dict(BASE_ODDS)

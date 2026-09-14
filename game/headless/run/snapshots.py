@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v23"
+SCHEMA = "headless_run_state_v24"
 
 
 def _restore_event_combat(record):
@@ -71,7 +71,7 @@ def capture_run(engine) -> dict:
                   "free_travels": deepcopy(state.free_travels),
                   "potion_capacity": state.potion_capacity,
                   "potions": [None if p is None else asdict(p) for p in state.potions],
-                  "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance, "generation_odds": deepcopy(state.generation_odds), "relic_bags": deepcopy(state.relic_bags),
+                  "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance, "generation_odds": deepcopy(state.generation_odds), "initialization": deepcopy(state.initialization), "relic_bags": deepcopy(state.relic_bags),
                   "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used,
                   "next_event_id": state.next_event_id, "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
         "graph": None if engine.graph is None else asdict(engine.graph),
@@ -124,7 +124,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             potion_capacity=payload["potion_capacity"],
             encounter_progression=None if payload["encounter_progression"] is None else EncounterProgression(**deepcopy(payload["encounter_progression"])),
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
-            next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"], generation_odds=deepcopy(payload["generation_odds"]), relic_bags=deepcopy(payload["relic_bags"]),
+            next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"], generation_odds=deepcopy(payload["generation_odds"]), initialization=deepcopy(payload["initialization"]), relic_bags=deepcopy(payload["relic_bags"]),
             next_shop_id=payload["next_shop_id"], shop_removals_used=payload["shop_removals_used"],
             next_event_id=payload["next_event_id"], next_treasure_id=payload["next_treasure_id"], treasure_relics_drawn=deepcopy(payload["treasure_relics_drawn"]),
         )
@@ -237,6 +237,8 @@ def _validate_progression(state, graph, cards):
     if generated:
         if not isinstance(state.encounter_progression, EncounterProgression) or state.config is None:
             raise ValueError("Invalid generated run configuration.")
+        if getattr(state.rng, "native", False) and state.initialization is None:
+            raise ValueError("Generated native run requires its initialization record.")
         if state.phase in (RunPhase.VICTORY, RunPhase.SLICE_COMPLETE):
             raise ValueError("Generated Act 1 success requires boss act completion.")
         if state.current_node_id is not None and room_node(state, graph, state.current_node_id).kind == "boss":

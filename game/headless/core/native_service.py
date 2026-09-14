@@ -1,7 +1,7 @@
 """Native stream ownership behind the existing random-service interface.
 
-Known native consumers share streams. Authored map/encounter construction keeps
-explicit fixture domains until its complete initialization order is reproduced.
+Known native consumers share streams. Native startup consumes UpFront in game
+order; explicitly authored compatibility profiles retain their fixture domains.
 """
 
 from game.headless.core.native_rng import NativeRng, deterministic_hash

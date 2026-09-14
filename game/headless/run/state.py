@@ -36,7 +36,7 @@ class ActCompletion:
 
 @dataclass
 class RunState:
-    seed: int
+    seed: int | str
     max_hp: int
     hp: int
     gold: int
@@ -59,6 +59,7 @@ class RunState:
     potions: list[PotionInstance | None] = field(default_factory=lambda: [None] * 3)
     next_item_id: int = 0
     potion_drop_chance: int = 40
+    initialization: dict | None = None
     generation_odds: dict | None = None
     relic_bags: dict | None = None
     next_shop_id: int = 0
@@ -101,6 +102,8 @@ class RunState:
             raise ValueError("Selected map node requires a different room.")
 
     def validate(self) -> None:
+        from game.headless.generation.initialization import validate as validate_initialization
+        validate_initialization(self)
         if getattr(self.rng, "native", False):
             from game.headless.generation.odds import validate
             validate(self.generation_odds)

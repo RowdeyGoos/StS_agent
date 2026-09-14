@@ -6,7 +6,7 @@ import pytest
 
 from game.cli.headless_play import choose_demo_action, play_slice, main
 from game.headless.core.rng import GameRandomService
-from game.headless.events.progression import EventProgression, PROFILE as EVENT_PROFILE
+from game.headless.events.progression import EventProgression, NATIVE_PROFILE as EVENT_PROFILE
 from game.headless.run.actions import ChooseAncientRelic, ChooseNode
 from game.headless.run.ancient import RESTRICTED_PROFILE as PROFILE, OFFERS, begin
 from game.headless.run.engine import RunEngine
@@ -194,7 +194,8 @@ def test_neow_to_all_bosses_with_synthetic_fights_restores_every_decision(seed,p
     events = list(run.state.event_progression.assignments.values())
     assert len(set(events[:2])) == min(2, len(events))
     assert run.state.event_progression.profile == EVENT_PROFILE
-    assert run.state.rng.request_count('act1.events') == len(run.state.config.event_pool) - 1
+    assert run.state.rng.request_count('act1.events') == 0
+    assert run.state.event_progression.queue == run.state.initialization['acts'][0]['events']
     if events:
         before = saved(run)
         bad = deepcopy(before)

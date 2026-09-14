@@ -83,7 +83,17 @@ class RunEngine:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
         engine = cls(seed=seed, gold=99, config=config, rng_profile=rng_profile)
-        engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
+        if getattr(engine.state.rng, "native", False):
+            if discovery != "all_seen":
+                raise ValueError("Only declared all-seen Overgrowth discovery is supported.")
+            from game.headless.generation.initialization import generate
+            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS as ids
+            engine.state.initialization = generate(engine.state.rng)
+            initial = engine.state.initialization["acts"][0]
+            engine.state.encounter_progression = EncounterProgression(
+                [ids[n] for n in initial["normal"]], [ids[n] for n in initial["elites"]], ids[initial["boss"]])
+        else:
+            engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
         if (map_profile or PROFILE) == PROFILE:
             from game.headless.events.act1_content import DEFINITIONS as remaining_events
             config = replace(config, event_pool=(*config.event_pool, *(d.definition_id for d in remaining_events)))
@@ -91,7 +101,11 @@ class RunEngine:
         engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)
         if engine.graph.generation == PROFILE:
             engine.state.unknown_rooms = UnknownRooms()
-            engine.state.event_progression = EventProgression.generate(engine.state.rng, config.event_pool)
+            if engine.state.initialization is not None:
+                from game.headless.events.progression import NATIVE_PROFILE
+                engine.state.event_progression = EventProgression(list(initial["events"]), profile=NATIVE_PROFILE)
+            else:
+                engine.state.event_progression = EventProgression.generate(engine.state.rng, config.event_pool)
         add_relic(engine.state, "burning_blood")
         if ancient_profile is not None:
             ancient.begin(engine.state, profile=ancient_profile, cards=engine.cards)
