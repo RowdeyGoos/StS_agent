@@ -59,6 +59,8 @@ class RunState:
     potions: list[PotionInstance | None] = field(default_factory=lambda: [None] * 3)
     next_item_id: int = 0
     potion_drop_chance: int = 40
+    generation_odds: dict | None = None
+    relic_bags: dict | None = None
     next_shop_id: int = 0
     shop_removals_used: int = 0
     next_event_id: int = 0
@@ -99,6 +101,13 @@ class RunState:
             raise ValueError("Selected map node requires a different room.")
 
     def validate(self) -> None:
+        if getattr(self.rng, "native", False):
+            from game.headless.generation.odds import validate
+            validate(self.generation_odds)
+            from game.headless.generation.relics import validate as validate_bags
+            validate_bags(self.relic_bags)
+        elif self.generation_odds is not None or self.relic_bags is not None:
+            raise ValueError("Native odds require native randomness.")
         if self.phase is RunPhase.COMBAT and self.relic_work:
             raise ValueError("Combat cannot own unfinished run relic acquisition.")
         from game.headless.core.card_state import CardState

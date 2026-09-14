@@ -21,7 +21,7 @@ from game.headless.run.inventory import add_potion, add_relic
 from game.headless.events.act1_content import DEFINITIONS
 from game.headless.events.catalog import EVENTS
 from game.headless.run.ancient import PROFILE, generate, EXCLUSIONS, CURSES
-from game.headless.core.rng import GameRandomService
+from game.headless.core.native_service import NativeRandomService as GameRandomService
 from game.headless.core.actions import PlayCard, EndTurn
 
 
@@ -264,12 +264,13 @@ def test_event_checkpoint_rejects_changed_result(mutation):
 
 
 def test_neow_cannot_restore_unsupported_kaleidoscope_offer():
-    run = RunEngine.ironclad_act1(seed=4, ancient_profile=PROFILE)
+    seed = next(s for s in range(100) if "kaleidoscope" in generate(GameRandomService(s)))
+    run = RunEngine.ironclad_act1(seed=seed, ancient_profile=PROFILE)
     baseline = saved(run)
     bad = deepcopy(baseline)
     a = bad["state"]["ancient_start"]
     a["unavailable"] = []
-    a["offers"] = generate(GameRandomService(4))
+    a["offers"] = generate(GameRandomService(seed))
     assert "kaleidoscope" in a["offers"]
     with pytest.raises(ValueError):
         run.restore(bad)

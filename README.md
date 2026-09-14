@@ -56,6 +56,11 @@ and Potion-Shaped Rock are implemented. Generated runs use the complete ordinary
 potion pool, including rarity-based rewards/shops, automatic Fairy revival and
 resumable card choices. See [potion rules and scope](docs/HEADLESS_ENGINE.md#potions).
 
+Generated Act 1 runs now default to the pinned native RNG algorithm and reward
+probability rules, including persistent relic grab bags and 13-slot merchants.
+Authored slices retain their fixture generator. Whole-run same-seed parity still
+requires initialization and call-order checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
+
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain
 unfinished; see the [feature backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md).

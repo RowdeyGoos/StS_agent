@@ -21,10 +21,19 @@ from game.headless.encounters.catalog import ENCOUNTERS
 class RunEngine:
     def __init__(self, *, seed: int = 0, card_ids=None, max_hp: int = 80, hp: int | None = None,
                  gold: int = 0, cards=DEFAULT_CARDS, graph: MapGraph | None = None,
-                 config: RunConfig | None = None) -> None:
+                 config: RunConfig | None = None, rng_profile="fixture") -> None:
         self.cards = cards
         self.graph = graph
-        self.state = RunState(seed, max_hp, max_hp if hp is None else hp, gold, [], GameRandomService(seed))
+        from game.headless.core.native_service import NativeRandomService
+        if rng_profile not in ("fixture", "native"):
+            raise ValueError("Unsupported randomness profile.")
+        rng = NativeRandomService(seed) if rng_profile == "native" else GameRandomService(seed)
+        self.state = RunState(seed, max_hp, max_hp if hp is None else hp, gold, [], rng)
+        if rng_profile == "native":
+            from game.headless.generation.odds import initial
+            self.state.generation_odds = initial()
+            from game.headless.generation.relics import populate
+            self.state.relic_bags = populate(rng)
         self.state.config = config
         if config is not None:
             for card_id in (*config.reward_cards, *config.boss_reward_cards):
@@ -58,7 +67,7 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None):
+    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None, rng_profile="native"):
         """Generate a full-length A0 map with declared restricted content pools."""
         from game.headless.map.overgrowth import generate_overgrowth_map, PROFILE
         from game.headless.encounters.progression import EncounterProgression
@@ -73,7 +82,7 @@ class RunEngine:
         if (map_profile or PROFILE) == PROFILE:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
-        engine = cls(seed=seed, gold=99, config=config)
+        engine = cls(seed=seed, gold=99, config=config, rng_profile=rng_profile)
         engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
         if (map_profile or PROFILE) == PROFILE:
             from game.headless.events.act1_content import DEFINITIONS as remaining_events
@@ -162,14 +171,18 @@ class RunEngine:
 
     def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5):
         # Build against an independent stream snapshot, committing only on success.
-        rng = GameRandomService(self.state.seed)
-        rng.restore(self.state.rng.snapshot())
-        seed = rng.randint("combat_launch", 0, (1 << 63) - 1)
+        from game.headless.core.rng import from_snapshot
+        rng = from_snapshot(self.state.rng.snapshot())
+        seed = 0 if getattr(rng, "native", False) else rng.randint("combat_launch", 0, (1 << 63) - 1)
         deck = deepcopy(self.state.deck)
         combat = CombatEngine(seed=seed, deck_factory=lambda: deepcopy(deck),
                               encounter_factory=encounter_factory, enemy_factory=enemy_factory,
                               player_max_hp=self.state.max_hp, energy_per_turn=energy_per_turn,
                               cards_per_turn=cards_per_turn, cards=self.cards)
+        if getattr(rng, "native", False):
+            from game.headless.core.native_service import COMBAT_STREAMS
+            combat.native_streams = {name:rng.stream(name) for name in COMBAT_STREAMS}
+            combat.rng = combat.native_streams["monster_ai"]
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
                      potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,

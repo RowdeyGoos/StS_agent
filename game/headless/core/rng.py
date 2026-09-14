@@ -237,3 +237,11 @@ class GameRandomService:
     def _validate_integer(value: Any, name: str) -> None:
         if not isinstance(value, int) or isinstance(value, bool):
             raise ValueError(f"{name} must be an integer.")
+
+
+def from_snapshot(snapshot):
+    """Restore either explicit fixture randomness or the pinned native profile."""
+    from game.headless.core.native_service import NativeRandomService, SCHEMA
+    rng = NativeRandomService(snapshot['seed']) if snapshot.get('schema') == SCHEMA else GameRandomService(snapshot['seed'])
+    rng.restore(snapshot)
+    return rng

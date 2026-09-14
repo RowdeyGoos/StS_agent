@@ -75,6 +75,10 @@ def begin(state, relic, cards):
             for d in sorted(cards.definitions, key=lambda d: d.definition_id)
             if d.pool == "ironclad" and d.rarity == "rare"
         ]
+        if getattr(state.rng,"native",False):
+            from game.headless.core.content_order import IRONCLADCARDPOOL
+            rank={n:i for i,n in enumerate(IRONCLADCARDPOOL)}
+            pool.sort(key=lambda d:rank[d.definition_id])
         add_card(state, state.rng.choice("relic.rare_card", pool))
     elif name == "cursed_pearl":
         add_card(state, cards.definition("greed"))
@@ -138,14 +142,21 @@ def begin(state, relic, cards):
             for d in sorted(cards.definitions, key=lambda d: d.definition_id)
             if d.pool == "ironclad" and d.rarity == "uncommon"
         ]
-        state.rng.shuffle("relic.bundles", commons)
-        state.rng.shuffle("relic.bundles", uncommons)
+        if getattr(state.rng,"native",False):
+            from game.headless.generation.odds import card_offers
+            commons,_=card_offers(state,cards,commons,4,uniform=True,upgrade_roll=False)
+            uncommons,_=card_offers(state,cards,uncommons,2,uniform=True,upgrade_roll=False)
+        else:
+            state.rng.shuffle("relic.bundles", commons)
+            state.rng.shuffle("relic.bundles", uncommons)
         bundles = [[*commons[i * 2 : i * 2 + 2], uncommons[i]] for i in range(2)]
         state.relic_work.append(dict(source=source, kind="bundle", offers=bundles))
     elif name == "neows_bones":
+        from game.headless.run.ancient import CURSES,POSITIVES
+        order=(*CURSES,*POSITIVES,"lava_rock","neows_talisman","nutritious_oyster","pomander","small_capsule","stone_humidifier") if getattr(state.rng,"native",False) else NEOW_RELICS
         pool = [
             n
-            for n in NEOW_RELICS
+            for n in order
             if n != name and n not in {r.definition_id for r in state.relics} and available(n, cards)
         ]
         state.rng.shuffle("relic.neow_rewards", pool)

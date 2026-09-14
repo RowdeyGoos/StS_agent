@@ -26,17 +26,24 @@ def begin(state):
             state.phase = RunPhase.ROOM
             return
     pool = eligible_relics(state)
-    rng = GameRandomService(state.seed)
-    rng.restore(state.rng.snapshot())
-    relic_id = rng.choice("treasure.relic", pool) if pool else ORDINARY_CHEST.fallback_relic
+    from game.headless.core.rng import from_snapshot
+    rng = from_snapshot(state.rng.snapshot())
+    if getattr(rng,"native",False):
+        from copy import deepcopy
+        from game.headless.generation.relics import pull
+        trial=deepcopy(state);trial.rng=rng
+        relic_id=pull(trial,stream="treasure_room_relics",allowed=treasure_pool(state))
+        state.relic_bags=trial.relic_bags
+    else:
+        relic_id = rng.choice("treasure.relic", pool) if pool else ORDINARY_CHEST.fallback_relic
     if relic_id not in RELICS:
         raise ValueError("Unsupported treasure relic.")
     pending = {"kind": "treasure", "definition_id": ORDINARY_CHEST.definition_id,
                "treasure_id": state.next_treasure_id, "stage": "closed", "relic_id": relic_id,
                "gold": None, "claimed_instance_id": None}
     # Like a native grab-bag pull, an offered relic is consumed even if skipped.
-    # This restricted pool is owned by treasure; native cross-source bags are open work.
-    if pool:
+    # Fixture profiles also retain their original treasure-specific draw history.
+    if relic_id != ORDINARY_CHEST.fallback_relic:
         state.treasure_relics_drawn.append(relic_id)
     state.rng = rng
     state.next_treasure_id += 1

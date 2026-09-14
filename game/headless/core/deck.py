@@ -14,21 +14,15 @@ MAX_CARDS_IN_HAND = 10
 class Deck:
     """Owns draw, discard, hand, and exhaust piles for a combat."""
 
-    def __init__(self, cards: Sequence[Card], rng: Random) -> None:
+    def __init__(self, cards: Sequence[Card], rng: Random, streams=None) -> None:
         if len({id(card) for card in cards}) != len(cards):
             raise ValueError("A deck cannot contain the same mutable card object twice.")
         self.rng = rng
-        # Fork without consuming shuffle/enemy RNG. Native seed parity is separate.
-        self.selection_rng = Random(0)
-        self.selection_rng.setstate(rng.getstate())
-        self.energy_rng = Random(0)
-        self.energy_rng.setstate(rng.getstate())
-        self.potion_rng = Random(0)
-        self.potion_rng.setstate(rng.getstate())
-        self.generation_rng = Random(0)
-        self.generation_rng.setstate(rng.getstate())
-        self.target_rng = Random(0)
-        self.target_rng.setstate(rng.getstate())
+        from copy import deepcopy
+        for attribute, domain in (("selection_rng","combat_card_selection"),("energy_rng","combat_energy_costs"),
+                                  ("potion_rng","combat_potion_generation"),("generation_rng","combat_card_generation"),
+                                  ("target_rng","combat_targets")):
+            setattr(self,attribute,streams[domain] if streams is not None else deepcopy(rng))
         self._next_instance_id = 0
         self._allocated_ids = {card.instance_id for card in cards if card.instance_id is not None}
         if len(self._allocated_ids) != sum(card.instance_id is not None for card in cards):

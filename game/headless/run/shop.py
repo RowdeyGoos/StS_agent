@@ -16,8 +16,17 @@ def begin(state, cards):
         from game.headless.relics.run_rules import entered_room
         entered_room(state, "shop")
     # Build on an isolated RNG; missing content must not consume a visit or draws.
-    rng = GameRandomService(state.seed)
-    rng.restore(state.rng.snapshot())
+    from game.headless.core.rng import from_snapshot
+    rng = from_snapshot(state.rng.snapshot())
+    if getattr(rng,"native",False):
+        from copy import deepcopy
+        from game.headless.generation.merchant import populate
+        trial=deepcopy(state);trial.rng=rng
+        offers=populate(trial,cards)
+        trial.pending={"kind":"shop","catalog_id":SHOP_ID,"shop_id":trial.next_shop_id,"stage":"browse","offers":offers,"removal_used":False,"removals_on_entry":trial.shop_removals_used}
+        trial.next_shop_id+=1;trial.phase=RunPhase.ROOM
+        state.__dict__.clear();state.__dict__.update(trial.__dict__)
+        return
     owned = {r.definition_id for r in state.relics}
     offers = []
     sale_slot = rng.choice("shop.stock", [i for i, s in enumerate(SLOTS) if s.kind == "card" and s.sale_eligible])
@@ -61,9 +70,10 @@ def eligible_removals(state):
 
 
 def can_buy(state, offer):
+    from game.headless.relics.base import RELICS
     return (not offer["sold"] and state.gold >= offer["price"]
             and (offer["kind"] != "potion" or None in state.potions)
-            and (offer["kind"] != "relic" or not any(r.definition_id == offer["definition_id"] for r in state.relics)))
+            and (offer["kind"] != "relic" or RELICS[offer["definition_id"]].stackable or RELICS[offer["definition_id"]].allow_duplicates or not any(r.definition_id == offer["definition_id"] for r in state.relics)))
 
 
 def legal_actions(state):
@@ -148,6 +158,9 @@ def modify_offer(state, cards, offer):
 
 
 def refill(state, cards, offer):
+    if getattr(state.rng,"native",False):
+        from game.headless.generation.merchant import restock
+        return restock(state,cards,offer)
     slot = SLOTS[offer['slot']]
     pool = [(name, cost) for name, cost in shop_items(state, slot) if slot.kind != 'relic' or not has(state, name)]
     if not pool:
