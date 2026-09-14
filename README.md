@@ -58,8 +58,10 @@ resumable card choices. See [potion rules and scope](docs/HEADLESS_ENGINE.md#pot
 
 Generated Act 1 runs now default to the pinned native RNG algorithm and reward
 probability rules, including persistent relic grab bags and 13-slot merchants.
-Authored slices retain their fixture generator. Whole-run same-seed parity still
-requires initialization and call-order checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
+Native startup queues and complete Act 1 maps match direct assembly reference
+seeds for the declared solo/all-unlocked Overgrowth start. Authored slices retain
+their fixture generator. Whole-run same-seed parity still requires runtime
+eligibility and combat call-order checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
 
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain

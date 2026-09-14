@@ -5,8 +5,8 @@ from dataclasses import dataclass, field
 
 from game.headless.events.eligibility import is_allowed, validate_conditions
 
-
 PROFILE = "supported_events_all_unlocked_v7"
+NATIVE_PROFILE = "native_act1_events_all_unlocked_v1"
 
 
 @dataclass
@@ -25,6 +25,7 @@ class EventProgression:
 
     def pull(self, node_id, *, conditions=None):
         from game.headless.events.catalog import EVENTS
+
         conditions = {"gold": 0, "transformable_cards": 0} if conditions is None else conditions
         validate_conditions(conditions)
         if node_id in self.assignments:
@@ -32,28 +33,47 @@ class EventProgression:
         # RoomSet skips visited/ineligible events, then permits repetition after
         # one full pass even if the fallback itself is ineligible.
         seen = set(self.assignments.values())
+        from game.headless.generation.room_pools import ACT1_INELIGIBLE_EVENTS
+
+        cursor = self.cursor
         for _ in self.queue:
-            candidate = self.queue[self.cursor % len(self.queue)]
-            if candidate not in seen and is_allowed(EVENTS[candidate], conditions):
+            candidate = self.queue[cursor % len(self.queue)]
+            excluded = self.profile == NATIVE_PROFILE and candidate in ACT1_INELIGIBLE_EVENTS
+            if not excluded and candidate not in EVENTS:
+                raise ValueError("Event queue contains unsupported eligible content.")
+            if not excluded and candidate not in seen and is_allowed(EVENTS[candidate], conditions):
                 break
-            self.cursor += 1
-        result = self.queue[self.cursor % len(self.queue)]
-        self.cursor += 1
+            cursor += 1
+        result = self.queue[cursor % len(self.queue)]
+        if result not in EVENTS:
+            raise ValueError("Exhausted event queue selected unsupported later-act content.")
+        self.cursor = cursor + 1
         self.assignments[node_id] = result
         self.entry_conditions[node_id] = deepcopy(conditions)
         return result
 
     def validate(self, state, graph):
         from game.headless.run.unknown_rooms import room_node
-        if (self.profile != PROFILE or not isinstance(self.queue, list)
-                or any(not isinstance(e, str) for e in self.queue)
-                or len(self.queue) != len(state.config.event_pool)
-                or set(self.queue) != set(state.config.event_pool)
-                or type(self.cursor) is not int or self.cursor < 0
-                or not isinstance(self.assignments, dict) or not isinstance(self.entry_conditions, dict)
-                or set(self.entry_conditions) != set(self.assignments)):
+        from game.headless.generation.room_pools import ACT_POOLS, SHARED_EVENTS
+
+        native = self.profile == NATIVE_PROFILE
+        pool = (*ACT_POOLS[0][3], *SHARED_EVENTS) if native else state.config.event_pool
+        if (
+            self.profile not in (PROFILE, NATIVE_PROFILE)
+            or native
+            and state.initialization is None
+            or not isinstance(self.queue, list)
+            or any(not isinstance(e, str) for e in self.queue)
+            or len(self.queue) != len(pool)
+            or set(self.queue) != set(pool)
+            or type(self.cursor) is not int
+            or self.cursor < 0
+            or not isinstance(self.assignments, dict)
+            or not isinstance(self.entry_conditions, dict)
+            or set(self.entry_conditions) != set(self.assignments)
+        ):
             raise ValueError("Invalid restricted event progression.")
-        expected = EventProgression(list(self.queue))
+        expected = EventProgression(list(self.queue), profile=self.profile)
         for node_id in state.visited_nodes:
             node = room_node(state, graph, node_id)
             if node.kind == "event":

@@ -7,6 +7,14 @@ from game.headless.map.graph import MapGraph, MapNode
 
 BASE_PROFILE = "overgrowth_a0_base_restricted_v1"
 PROFILE = "overgrowth_a0_pruned_restricted_v2"
+class OrderedPoints(dict):
+    """Insertion-ordered adjacency; only construction adds, pruning removes."""
+    def __init__(self, points=()):
+        super().__init__((p, None) for p in points)
+    def add(self, point): self[point] = None
+    def discard(self, point): self.pop(point, None)
+
+
 ROWS = 15
 WIDTH = 7
 
@@ -33,16 +41,20 @@ def generate_overgrowth_map(rng, *, event_pool, profile=PROFILE):
     unknown_kind = "event" if profile == BASE_PROFILE else "unknown"
     rest_count = _gaussian_count(rng, 7, 6, 7)
     event_count = _gaussian_count(rng, 12, 10, 14)
+    native = getattr(rng, "native", False)
+    points = OrderedPoints if native else set
     edges = {}
     starts = []
     for path in range(7):
         columns = list(range(WIDTH))
-        if path == 1:
+        if path == 1 and not native:
             columns.remove(starts[0][1])
         current = (1, rng.choice("act1.map", columns))
+        while native and path == 1 and current in starts:
+            current = (1, rng.choice("act1.map", columns))
         if current not in starts:
             starts.append(current)
-        edges.setdefault(current, set())
+        edges.setdefault(current, points())
         for row in range(2, ROWS + 1):
             offsets = [-1, 0, 1]
             rng.shuffle("act1.map", offsets)
@@ -55,9 +67,9 @@ def generate_overgrowth_map(rng, *, event_pool, profile=PROFILE):
             else:
                 raise RuntimeError("No noncrossing map continuation.")
             edges[current].add(target)
-            edges.setdefault(target, set())
+            edges.setdefault(target, points())
             current = target
-    parents = {point: set() for point in edges}
+    parents = {point: points() for point in edges}
     for point, children in edges.items():
         for child in children:
             parents[child].add(point)
@@ -76,7 +88,7 @@ def generate_overgrowth_map(rng, *, event_pool, profile=PROFILE):
 
     queue = deque(["rest"] * rest_count + ["shop"] * 3 + ["elite"] * 5 + [unknown_kind] * event_count)
     for _ in range(3):
-        unassigned = sorted(p for p, kind in kinds.items() if kind is None)
+        unassigned = sorted((p for p, kind in kinds.items() if kind is None), key=(lambda p:(p[1],p[0])) if native else None)
         rng.shuffle("act1.map", unassigned)
         for point in unassigned:
             for _ in range(len(queue)):
@@ -92,16 +104,19 @@ def generate_overgrowth_map(rng, *, event_pool, profile=PROFILE):
     if profile == PROFILE:
         from game.headless.map.pruning import prune_and_repair
         root, boss = (0, 3), (16, 3)
-        edges[root], parents[root], kinds[root] = set(starts), set(), "ancient"
+        edges[root], parents[root], kinds[root] = points(sorted(starts)), points(), "ancient"
         for point in starts:
             parents[point].add(root)
-        edges[boss], parents[boss], kinds[boss] = set(), set(), "boss"
+        edges[boss], parents[boss], kinds[boss] = points(), points(), "boss"
         for point in tuple(edges):
             if point[0] == ROWS:
                 edges[point].add(boss)
                 parents[boss].add(point)
         prune_and_repair(edges, parents, kinds, root, rng,
                          {"rest": rest_count, "unknown": event_count, "shop": 3, "elite": 5}, valid)
+        if native:
+            from game.headless.map.postprocessing import reposition
+            edges, parents, kinds = reposition(edges, parents, kinds)
         starts = sorted(edges.pop(root))
         del edges[boss], kinds[root], kinds[boss]
     def identity(point):

@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v13 / run v23**.
+than being silently reinterpreted: current schemas are **combat v13 / run v24**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -103,15 +103,34 @@ outside the game state.
   second price roll and Courier refill consumption use the pinned rules. A Courier
   potion refill can duplicate another stocked potion.
 
-**This does not establish whole-run same-seed parity.** Encounter/event queue
-initialization still includes authored domains and ordering; not every entity/AI
-call site has a native boundary trace. Full runtime relic eligibility predicates,
-unlock epochs and foreign-character content are incomplete. Those inputs can alter
-candidates and downstream draw order even where the primitive and probability rule
-are exact. Existing authored route restrictions below remain explicit fixtures.
-The next assignments isolate these remaining differences rather than replacing
-this generator again. See [source, oracle and validation](evidence/native_rng_2026_09_14.md)
-and [HF-05](HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-05--match-target-rng-algorithms-domains-and-consumption).
+`generation/initialization.py` now reproduces the pinned startup sequence after
+relic bags: shared-Ancient allocation, then each act's event shuffle, weak/normal/
+elite encounter draws, boss and Ancient selection. All three room sets are retained
+as plain `state.initialization` data, because their startup draws share `up_front`.
+Hive/Glory initialization does not enable their gameplay. The declared act sequence
+is **Overgrowth → Hive → Glory**, solo, A0, all unlocked/all seen; the native lobby
+act picker and profile-dependent first-run overrides are outside this profile.
+
+Native event progression uses `native_act1_events_all_unlocked_v1`: all **31**
+queued IDs are shuffled before eligibility, including nine later-act events and
+one disabled event. Only the 21 supported Act-1-eligible events can normally enter
+rooms. Their exclusions are explicit metadata, not inferred from missing handlers.
+An exhausted queue that falls back to unsupported content fails without committing
+an event or advancing its cursor. Fixture progression retains its original profile.
+
+The native map uses second-entrance rejection draws, column-first stable sorting,
+insertion-ordered pruning and deterministic centering/spreading/straightening.
+Thirteen direct assembly reference seeds match complete room queues, startup RNG
+counters/suffixes and every Act 1 map coordinate, edge, type and entrance.
+See [native initialization evidence](evidence/native_initialization_2026_09_14.md).
+
+**This does not establish whole-run same-seed parity.** Remaining work concerns
+runtime acquisition eligibility and pool modifiers, every combat caller's random
+draw consumption and interaction ordering, foreign-character content and a complete
+native run comparison. The generator foundation and these initialization checks
+cover declared inputs, not profile-dependent lobby selection or other acts' gameplay.
+See [probability evidence](evidence/native_rng_2026_09_14.md) and
+[HF-05](HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-05--match-target-rng-algorithms-domains-and-consumption).
 
 ## Use and extend the game directly
 
@@ -294,7 +313,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v13 and run v23. Legacy RL encoders retain their frozen vocabulary.
+combat v13 and run v24. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -404,8 +423,8 @@ row 9 treasure and row 15 rest sites. The pinned base placement restrictions
 apply before native duplicate-segment pruning and room-count repair. Equivalent
 room sequences between the same branch/merge points can be removed; shared
 branches retain their connections. Pruning may leave a single first-row entrance.
-Surviving coordinates and node IDs remain stable. Visual centering, spreading
-and path straightening remain open.
+Native-profile runs apply centering, spreading and path straightening before
+publishing coordinates and stable node IDs. Authored fixture profiles retain their original layout.
 
 Unknown map markers remain `kind="unknown"` with no preselected event identity.
 On entry, owned native base odds select combat, treasure, shop or event exactly
@@ -432,8 +451,9 @@ assignments, topology and RNG persist through JSON continuation.
 
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. By default it retains the post-Ancient fixture start; the
-optional Neow start below generates the supported native offer families. The event profile
-`supported_events_all_unlocked_v7` shuffles `RunConfig.event_pool` once. The
+optional Neow start below generates the supported native offer families. The native event profile queues all 31 IDs before eligibility using shared UpFront
+initialization; the fixture `supported_events_all_unlocked_v7` profile shuffles
+`RunConfig.event_pool` once. The
 generated pool contains Jungle Maze Adventure, Aroma of Chaos, Morphic Grove and
 Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue, Dense Vegetation, Sapphire Seed and Byrdonis Nest, plus the ten definitions listed under [remaining Act 1 events](#remaining-act-1-events).
 Morphic Grove requires at least 100 gold and two transformable cards; Whispering
@@ -445,8 +465,8 @@ exhausted pass it permits the current candidate even if visited or ineligible,
 matching the native fallback. `state.event_progression` owns queue order, cursor,
 node assignments and plain entry conditions (resources, deck eligibility and inventory counts).
 Restore replays selection against those conditions and visited room outcomes. Reads and failed room construction never advance the queue.
-Later-act event content, unlock epochs and native pool ordering remain open. Card,
-item, shop and reward pools retain their restrictions. Juzu Bracelet and Winged Boots now modify unknown/travel behavior; tutorial overrides and native RNG
+Later-act event gameplay and unlock epochs remain open. Native initialization
+uses pinned pool order; authored profiles retain their declared pool restrictions. Juzu Bracelet and Winged Boots now modify unknown/travel behavior; tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
 `RunConfig.relic_fallback="circlet"`, preventing exhausted relic rewards
 from blocking a later elite; authored routes retain their existing rejection rule.
@@ -993,8 +1013,9 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v23`, including configuration,
-native stream state, rarity/potion odds, shared/player relic bags,
+Private run snapshots now use `headless_run_state_v24`, including configuration,
+native stream state, seed-bound initialization for all three room sets,
+rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
@@ -1013,7 +1034,7 @@ per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v12 and run v1–v22 formats are rejected rather than assigning invented item
+v1–v12 and run v1–v23 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

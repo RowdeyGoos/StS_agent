@@ -190,8 +190,8 @@ def test_repeat_event_fights_have_distinct_owners_and_reward_skip_is_final():
 
 @pytest.mark.parametrize('seed,path',[(0,'left'),(2,'right'),(4,'left')])
 def test_generated_event_combat_preserves_normal_queue_and_all_room_continuations(seed,path):
-    # Restrict only the declared event pool to exercise this caller repeatedly.
-    run=RunEngine.ironclad_act1(seed=seed)
+    # Use an authored single-event fixture to exercise this caller repeatedly.
+    run=RunEngine.ironclad_act1(seed=seed,rng_profile='fixture')
     run.state.config=replace(run.state.config,event_pool=('dense_vegetation',))
     run.state.event_progression.queue=['dense_vegetation']
     observed=0

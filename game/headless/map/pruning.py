@@ -10,12 +10,12 @@ TYPE_NUMBER = MappingProxyType({"unknown": 1, "shop": 2, "treasure": 3, "rest": 
                                 "combat": 5, "elite": 6, "boss": 7, "ancient": 8})
 
 
-def matching_segments(edges, parents, kinds, root):
+def matching_segments(edges, parents, kinds, root, *, native_order=False):
     def paths(point):
         if kinds[point] == "boss":
             yield (point,)
         else:
-            for child in sorted(edges[point]):
+            for child in (edges[point] if native_order else sorted(edges[point])):
                 for suffix in paths(child):
                     yield (point, *suffix)
 
@@ -80,7 +80,7 @@ def _break_segment(edges, parents, segment):
 def prune_duplicates(edges, parents, kinds, root, rng):
     for _ in range(51):
         changed = False
-        for group in matching_segments(edges, parents, kinds, root):
+        for group in matching_segments(edges, parents, kinds, root, native_order=getattr(rng, "native", False)):
             rng.shuffle("act1.map", group)
             removed_count = 0
             for segment in group:
@@ -104,7 +104,7 @@ def prune_and_repair(edges, parents, kinds, root, rng, counts, valid):
             missing = counts[kind] - sum(k == kind for k in kinds.values())
             if missing <= 0:
                 continue
-            candidates = sorted(p for p, k in kinds.items() if k == "combat" and p[0] != 1)
+            candidates = sorted((p for p, k in kinds.items() if k == "combat" and p[0] != 1), key=(lambda p:(p[1],p[0])) if getattr(rng,"native",False) else None)
             rng.shuffle("act1.map", candidates)
             for point in candidates:
                 if not missing:
