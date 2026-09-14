@@ -46,6 +46,7 @@ TASK_ARITIES = {
     "generate": 5,
     "stampede": 1,
     "shuffle_choice": 0,
+    "spawn_wrigglers": 1,
     "discard_hand": 0,
     "ethereal": 1,
     "discard_remaining": 0,
@@ -176,6 +177,15 @@ def restore_rules(record, player):
         if any(type(v) not in (int, bool, str, type(None)) for v in task):
             raise ValueError("Task must contain plain values.")
         op, *args = task
+        if op == "spawn_wrigglers":
+            from game.headless.monsters.phrog_parasite import PhrogParasite
+            slot = args[0]
+            if (type(slot) is not int or not 0 <= slot < len(player.combat_enemies)
+                    or not isinstance(player.combat_enemies[slot], PhrogParasite)
+                    or player.combat_enemies[slot].is_alive or player.combat_enemies[slot].spawned
+                    or not player.combat_enemies[slot].statuses.get("infested")
+                    or r.tasks.count(task) != 1):
+                raise ValueError("Unowned parasite spawn continuation.")
         if op == "shuffle_choice" and not r.powers.get("stratagem"):
             raise ValueError("Unowned shuffle choice.")
         if op == "after_draw_card" and args[0] not in player.deck._allocated_ids:

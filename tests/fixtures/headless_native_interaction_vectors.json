@@ -1,0 +1,2694 @@
+{
+  "source": "Actual pinned AttackCommand.Execute and CreatureCmd damage/death/Infested hooks in TestMode; explicit in-memory contexts, no card play wrapper or run",
+  "assemblySha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "rows": [
+    {
+      "seed": "0",
+      "mode": "slippery",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.04080202762219143,
+      "hpCounter": 1,
+      "hpSuffix": 0.1563804935170099,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "0",
+      "mode": "blocked",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 9,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.04080202762219143,
+      "hpCounter": 1,
+      "hpSuffix": 0.1563804935170099,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "0",
+      "mode": "partial_block",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 2,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 2,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.04080202762219143,
+      "hpCounter": 1,
+      "hpSuffix": 0.1563804935170099,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "0",
+      "mode": "zero",
+      "damage": 0,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.04080202762219143,
+      "hpCounter": 1,
+      "hpSuffix": 0.1563804935170099,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "0",
+      "mode": "random_deaths",
+      "damage": 3,
+      "hits": 5,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 1,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial2",
+          "hp": 7,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [],
+      "results": [
+        [
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ]
+      ],
+      "targetCounter": 5,
+      "targetSuffix": 0.8649545626452929,
+      "hpCounter": 3,
+      "hpSuffix": 0.9159164475927652,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "0",
+      "mode": "random_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 64,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 11,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 19,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 21,
+          "maxHp": 21,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 15,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 4,
+      "targetSuffix": 0.7452919475237079,
+      "hpCounter": 5,
+      "hpSuffix": 0.7224409334500357,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "0",
+      "mode": "targeted_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 64,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 17,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 19,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 21,
+          "maxHp": 21,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 18,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.560389547855068,
+      "hpCounter": 5,
+      "hpSuffix": 0.7224409334500357,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "0",
+      "mode": "area_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 64,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 9,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 12,
+          "maxHp": 21,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 8,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 11,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.560389547855068,
+      "hpCounter": 6,
+      "hpSuffix": 0.08751510960083475,
+      "aiCounter": 0,
+      "aiSuffix": 0.8595005349436016
+    },
+    {
+      "seed": "1",
+      "mode": "slippery",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.8476878758568384,
+      "hpCounter": 1,
+      "hpSuffix": 0.09353090694730959,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "1",
+      "mode": "blocked",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 9,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.8476878758568384,
+      "hpCounter": 1,
+      "hpSuffix": 0.09353090694730959,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "1",
+      "mode": "partial_block",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 2,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 2,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.8476878758568384,
+      "hpCounter": 1,
+      "hpSuffix": 0.09353090694730959,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "1",
+      "mode": "zero",
+      "damage": 0,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.8476878758568384,
+      "hpCounter": 1,
+      "hpSuffix": 0.09353090694730959,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "1",
+      "mode": "random_deaths",
+      "damage": 3,
+      "hits": 5,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 1,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial2",
+          "hp": 7,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [],
+      "results": [
+        [
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ]
+      ],
+      "targetCounter": 5,
+      "targetSuffix": 0.5733806410067985,
+      "hpCounter": 3,
+      "hpSuffix": 0.26167140750755535,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "1",
+      "mode": "random_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 63,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 17,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 16,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 18,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 14,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 4,
+      "targetSuffix": 0.5627308562797791,
+      "hpCounter": 5,
+      "hpSuffix": 0.28367358902405115,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "1",
+      "mode": "targeted_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 63,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 17,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 19,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 18,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 20,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.3553099464123689,
+      "hpCounter": 5,
+      "hpSuffix": 0.28367358902405115,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "1",
+      "mode": "area_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 63,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 10,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 9,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 8,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 11,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.3553099464123689,
+      "hpCounter": 6,
+      "hpSuffix": 0.9623365865397429,
+      "aiCounter": 0,
+      "aiSuffix": 0.7742249175531104
+    },
+    {
+      "seed": "2",
+      "mode": "slippery",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.6612123216846731,
+      "hpCounter": 1,
+      "hpSuffix": 0.23057593503680052,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "2",
+      "mode": "blocked",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 9,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.6612123216846731,
+      "hpCounter": 1,
+      "hpSuffix": 0.23057593503680052,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "2",
+      "mode": "partial_block",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 2,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 2,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.6612123216846731,
+      "hpCounter": 1,
+      "hpSuffix": 0.23057593503680052,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "2",
+      "mode": "zero",
+      "damage": 0,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.6612123216846731,
+      "hpCounter": 1,
+      "hpSuffix": 0.23057593503680052,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "2",
+      "mode": "random_deaths",
+      "damage": 3,
+      "hits": 5,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 1,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial2",
+          "hp": 7,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ],
+        [
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 5,
+      "targetSuffix": 0.1852693655769032,
+      "hpCounter": 3,
+      "hpSuffix": 0.8900445894807667,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "2",
+      "mode": "random_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 64,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 18,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 20,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 15,
+          "maxHp": 21,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 14,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 4,
+      "targetSuffix": 0.7197993070729224,
+      "hpCounter": 5,
+      "hpSuffix": 0.21911029059689846,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "2",
+      "mode": "targeted_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 64,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 18,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 20,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 21,
+          "maxHp": 21,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 17,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.25298703320308014,
+      "hpCounter": 5,
+      "hpSuffix": 0.21911029059689846,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "2",
+      "mode": "area_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 64,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 10,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 12,
+          "maxHp": 21,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 9,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 8,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.25298703320308014,
+      "hpCounter": 6,
+      "hpSuffix": 0.21537880214486405,
+      "aiCounter": 0,
+      "aiSuffix": 0.6221866213071366
+    },
+    {
+      "seed": "42",
+      "mode": "slippery",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.34988906446744994,
+      "hpCounter": 1,
+      "hpSuffix": 0.5673254525287167,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    },
+    {
+      "seed": "42",
+      "mode": "blocked",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 9,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 3,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.34988906446744994,
+      "hpCounter": 1,
+      "hpSuffix": 0.5673254525287167,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    },
+    {
+      "seed": "42",
+      "mode": "partial_block",
+      "damage": 3,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 2,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 168,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 2,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.34988906446744994,
+      "hpCounter": 1,
+      "hpSuffix": 0.5673254525287167,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    },
+    {
+      "seed": "42",
+      "mode": "zero",
+      "damage": 0,
+      "hits": 3,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 173,
+          "maxHp": 173,
+          "block": 0,
+          "powers": [
+            {
+              "id": "slippery_power",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 0,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 3,
+      "targetSuffix": 0.34988906446744994,
+      "hpCounter": 1,
+      "hpSuffix": 0.5673254525287167,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    },
+    {
+      "seed": "42",
+      "mode": "random_deaths",
+      "damage": 3,
+      "hits": 5,
+      "before": [
+        {
+          "type": "Vantom",
+          "slot": "initial0",
+          "hp": 1,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial2",
+          "hp": 7,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [],
+      "results": [
+        [
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "initial0",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ],
+        [
+          {
+            "slot": "initial2",
+            "damage": 1,
+            "blocked": 0,
+            "overkill": 2
+          }
+        ]
+      ],
+      "targetCounter": 5,
+      "targetSuffix": 0.2736560580387417,
+      "hpCounter": 3,
+      "hpSuffix": 0.6025768608973682,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    },
+    {
+      "seed": "42",
+      "mode": "random_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 63,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 19,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 17,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 18,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 11,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 4,
+      "targetSuffix": 0.8618104316586587,
+      "hpCounter": 5,
+      "hpSuffix": 0.6501702668982376,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    },
+    {
+      "seed": "42",
+      "mode": "targeted_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 63,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 19,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 20,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 18,
+          "maxHp": 18,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 17,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.6614423129365938,
+      "hpCounter": 5,
+      "hpSuffix": 0.6501702668982376,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    },
+    {
+      "seed": "42",
+      "mode": "area_spawn",
+      "damage": 3,
+      "hits": 4,
+      "before": [
+        {
+          "type": "PhrogParasite",
+          "slot": "initial0",
+          "hp": 3,
+          "maxHp": 63,
+          "block": 0,
+          "powers": [
+            {
+              "id": "infested_power",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "type": "Vantom",
+          "slot": "initial1",
+          "hp": 3,
+          "maxHp": 173,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "after": [
+        {
+          "type": "Wriggler",
+          "slot": "wriggler1",
+          "hp": 11,
+          "maxHp": 20,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler2",
+          "hp": 10,
+          "maxHp": 19,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler3",
+          "hp": 8,
+          "maxHp": 17,
+          "block": 0,
+          "powers": []
+        },
+        {
+          "type": "Wriggler",
+          "slot": "wriggler4",
+          "hp": 12,
+          "maxHp": 21,
+          "block": 0,
+          "powers": []
+        }
+      ],
+      "results": [
+        [
+          {
+            "slot": "initial0",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "initial1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ],
+        [
+          {
+            "slot": "wriggler1",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler2",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler3",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          },
+          {
+            "slot": "wriggler4",
+            "damage": 3,
+            "blocked": 0,
+            "overkill": 0
+          }
+        ]
+      ],
+      "targetCounter": 0,
+      "targetSuffix": 0.6614423129365938,
+      "hpCounter": 6,
+      "hpSuffix": 0.29765726659098124,
+      "aiCounter": 0,
+      "aiSuffix": 0.6649295906797883
+    }
+  ]
+}

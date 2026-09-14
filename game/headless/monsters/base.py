@@ -100,6 +100,10 @@ class Enemy(ABC):
         return self.hp > 0
 
     @property
+    def prevents_combat_end(self):
+        return False
+
+    @property
     def can_take_turn(self):
         return self.is_alive
 
@@ -176,6 +180,9 @@ class Enemy(ABC):
                 from game.headless.core.resolution import push
                 if has(self.combat_player, "gremlin_horn"):
                     push(self.combat_player, ["energy", 1], ["draw", 1, False])
+            if previous_hp > 0 and self.hp <= 0 and not self.combat_player._resolving:
+                from game.headless.core.resolution import drain
+                drain(self.combat_player)
         return damage
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:

@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v16"
+SCHEMA = "headless_combat_state_v17"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -203,7 +203,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             enemies.append(enemy)
         if not enemies or type(snapshot["turn"]) is not int or snapshot["turn"] < 1:
             raise ValueError("Invalid combat state.")
-        winner = "player" if not any(e.is_alive for e in enemies) else "enemy" if not player.is_alive else None
+        winner = "player" if not any(e.is_alive or e.prevents_combat_end for e in enemies) else "enemy" if not player.is_alive else None
         if type(snapshot["done"]) is not bool or snapshot["done"] != (winner is not None) or snapshot["winner"] != winner:
             raise ValueError("Invalid terminal state.")
         config = snapshot["config"]
@@ -226,9 +226,10 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         player.power_sources = dict(sources)
         for enemy in enemies:
             enemy.combat_player = player
-            enemy.validate_combat_context(player)
         from game.headless.core.rule_snapshots import restore_rules
         restore_rules(snapshot["player"]["rules"], player)
+        for enemy in enemies:
+            enemy.validate_combat_context(player)
         player.catalog = cards
         pending = snapshot["pending_play"]
         if pending is None:

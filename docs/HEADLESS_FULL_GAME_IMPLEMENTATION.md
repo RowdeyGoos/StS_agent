@@ -1487,11 +1487,23 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
      timing follow pinned source, with physical-copy reference vectors and exact
      pending-choice restoration tests. [Evidence](evidence/shuffle_hooks_2026_09_14.md).
      Full native command/turn execution remains part of the interaction work below.
-   - **Interaction sequences:** actual native dependent actions for multihit
-     targeting/death, spawned slots, autoplay and ordered relic/power triggers.
-     Existing Python continuation checks are regression evidence only. Acceptance:
-     effects, identities, decisions and RNG suffixes match native sequences across
-     combat boundaries, including JSON restoration and rejected actions.
+   - **Attack/death/spawn interactions implemented for 32 native command cases:**
+     random, area and fixed-target multihit damage, Slippery, deaths and Infested
+     spawns match actual AttackCommand/CreatureCmd execution. Automatic Horn draws
+     precede spawning; no-target Hellraiser autoplay skips the play and target roll.
+     [Evidence](evidence/combat_interactions_2026_09_14.md).
+   - **Next: paused death-hook choices.** Native Hook.AfterDeath advances after a
+     hook pauses for a choice, so Infested and the enclosing attack may finish
+     before Horn's draw resumes. Implement owned pausable hook continuations in
+     the existing resolver, with independent saved work for the suspended hook
+     and outer action. Do not use callback closures or global mutable state.
+     Accept Horn → shuffle/Stratagem choice → Infested → remaining multihit →
+     resumed draw against native action-queue records, with stable slots, exact
+     RNG consumption, atomic rejection and JSON restoration at each decision.
+     Current serial-choice regressions do not certify native timing.
+   - **Broader interaction sequences:** ordered relic/power triggers, dependent
+     autoplay and further combat boundaries. Require actual native sequences;
+     passing Python continuation alone is regression evidence.
 3. **HF-28 / Kaleidoscope:** implement required foreign-character card pools and
    combat rules, then enable existing Neow eligibility. Accept every transformed
    card through combat and exact restore; do not silently substitute Ironclad cards.
@@ -1501,7 +1513,8 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
 5. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with Act 2,
    then assign later-act-only shared events individually under HF-43.
 
-Current source/coverage: [shuffle hooks](evidence/shuffle_hooks_2026_09_14.md),
+Current source/coverage: [combat interactions](evidence/combat_interactions_2026_09_14.md),
+[shuffle hooks](evidence/shuffle_hooks_2026_09_14.md),
 [combat generation](evidence/combat_generation_2026_09_14.md),
 [combat RNG](evidence/combat_rng_2026_09_14.md),
 [runtime acquisition](evidence/runtime_eligibility_2026_09_14.md),

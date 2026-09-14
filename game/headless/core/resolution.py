@@ -46,6 +46,12 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
         if target is None or not target.is_alive:
             living = [e for e in player.combat_enemies or () if e.is_alive]
             if not living:
+                if auto:
+                    move_out(player, card)
+                    if force_exhaust or card.exhausts:
+                        player.deck.exhaust_card(card)
+                    else:
+                        player.deck.discard_card(card)
                 return
             target = player.deck.target_rng.choice(living)
     else:
@@ -368,6 +374,8 @@ def execute(p, task):
             else:
                 p.deck.rng.shuffle(available)
             push(p, ["autoplay", available[0].instance_id, False], ["catastrophe", count - 1])
+    elif op == "spawn_wrigglers":
+        p.combat_enemies[args[0]].spawn_children(p)
     elif op == "random_hit":
         from game.headless.cards.colorless_effects import hit
 

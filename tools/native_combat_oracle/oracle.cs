@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] != "generation")) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation]");
+if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] is not ("generation" or "interactions"))) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation|interactions]");
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
@@ -13,6 +13,7 @@ AssemblyLoadContext.Default.Resolving += (context,name) => {
     return File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
 };
 var asm=AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+if(args.Length==3 && args[2]=="interactions") { await InteractionOracle.Run(asm,digest); return; }
 var flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
 var db=asm.GetType("MegaCrit.Sts2.Core.Models.ModelDb",true)!;
 var abstractType=asm.GetType("MegaCrit.Sts2.Core.Models.AbstractModel",true)!;

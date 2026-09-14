@@ -41,6 +41,10 @@ class PhrogParasite(ScriptedEnemy):
         self.spawned = False
         self.first_child_slot = -1
 
+    @property
+    def prevents_combat_end(self):
+        return bool(self.statuses.get("infested") and not self.spawned)
+
     def on_damage_taken(self, damage, is_attack):
         if self.combat_player is not None:
             self.on_combat_state_changed(self.combat_player)
@@ -48,6 +52,12 @@ class PhrogParasite(ScriptedEnemy):
     def on_combat_state_changed(self, player):
         if self.is_alive or self.spawned or not self.statuses.get("infested"):
             return
+        from game.headless.core.resolution import push
+        task = ["spawn_wrigglers", player.combat_enemies.index(self)]
+        if task not in player.rules.tasks:
+            push(player, task)
+
+    def spawn_children(self, player):
         self.spawned = True
         self.first_child_slot = len(player.combat_enemies)
         for index in range(4):
@@ -59,6 +69,10 @@ class PhrogParasite(ScriptedEnemy):
         if self.is_alive:
             if self.spawned or self.first_child_slot != -1:
                 raise ValueError("Living Phrog cannot already have spawned its parasites.")
+        elif not self.spawned:
+            task = ["spawn_wrigglers", player.combat_enemies.index(self)]
+            if self.first_child_slot != -1 or player.rules.tasks.count(task) != 1:
+                raise ValueError("Dead Phrog requires its pending spawn continuation.")
         else:
             children = player.combat_enemies[self.first_child_slot:self.first_child_slot + 4]
             if (not self.spawned or self.first_child_slot <= player.combat_enemies.index(self)
