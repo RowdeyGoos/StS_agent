@@ -47,6 +47,7 @@ class CombatEngine:
         self.card_catalog = cards
         self.rng = make_rng(seed)
         self.native_streams = None
+        self.encounter_rng = None
         self.deck_factory = deck_factory
         self.enemy_factory = enemy_factory or SimpleEnemy
         self.encounter_factory = encounter_factory
@@ -225,7 +226,7 @@ class CombatEngine:
         return Player(Deck(deepcopy(self.deck_factory()), rng=self.native_streams["shuffle"] if self.native_streams else self.rng, streams=self.native_streams), self.player_max_hp, self.energy_per_turn)
 
     def _build_encounter(self) -> list[Enemy]:
-        result = list(self.encounter_factory(self.rng)) if self.encounter_factory else [self.enemy_factory()]
+        result = list(self.encounter_factory(self.encounter_rng or self.rng)) if self.encounter_factory else [self.enemy_factory()]
         if not result:
             raise ValueError("Encounter factory must create at least one enemy.")
         return result

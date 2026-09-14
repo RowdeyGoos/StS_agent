@@ -1,5 +1,7 @@
 """Overgrowth hallway rules with verified A0 values and move history."""
 
+from game.headless.encounters.randomness import branch
+
 from game.headless.monsters.base import Intent
 from game.headless.monsters.scripted import ScriptedEnemy
 
@@ -38,7 +40,7 @@ class SlitheringStrangler(ScriptedEnemy):
              Intent("attack", 12, "Lash", attack_damage=12, attack_count=1))
 
     def advance_intent(self):
-        self._intent_index = self.rng.choice((1, 2)) if self._intent_index == 0 else 0
+        self._intent_index = branch(self.rng, (1, 2)) if self._intent_index == 0 else 0
 
     def _possible_next_templates(self):
         return self.MOVES[1:] if self._intent_index == 0 else self.MOVES[:1]
@@ -55,7 +57,7 @@ class Inklet(ScriptedEnemy):
         self._intent_index = 1 if middle else 0
 
     def advance_intent(self):
-        self._intent_index = self.rng.choice((1, 2)) if self._intent_index == 0 else 0
+        self._intent_index = branch(self.rng, (1, 2)) if self._intent_index == 0 else 0
 
     def _possible_next_templates(self):
         return self.MOVES[1:] if self._intent_index == 0 else self.MOVES[:1]
@@ -72,7 +74,7 @@ class Flyconid(ScriptedEnemy):
         super().__init__(rng)
         self.vulnerable_cooldown = 0
         self.frail_cooldown = 0
-        self._intent_index = rng.choice((1, 2))
+        self._intent_index = branch(rng, (1, 2))
 
     @property
     def intent(self):
@@ -91,7 +93,7 @@ class Flyconid(ScriptedEnemy):
         self.vulnerable_cooldown, self.frail_cooldown, indices = self._next_indices()
         # Native NextFloat(0) still draws; its <=0 test selects the first branch
         # when every cooldown excludes a move (RandomBranchState 100681567).
-        self._intent_index = self.rng.choice(indices or (0,))
+        self._intent_index = branch(self.rng, indices or (0,))
 
     def _possible_next_templates(self):
         return tuple(self.MOVES[i] for i in (self._next_indices()[2] or (0,)))

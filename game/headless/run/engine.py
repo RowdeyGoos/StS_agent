@@ -197,6 +197,22 @@ class RunEngine:
             from game.headless.core.native_service import COMBAT_STREAMS
             combat.native_streams = {name:rng.stream(name) for name in COMBAT_STREAMS}
             combat.rng = combat.native_streams["monster_ai"]
+            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS
+            import re
+            from game.headless.encounters.randomness import EncounterRandom
+            native_type = next((key for key, value in NATIVE_OVERGROWTH_ENCOUNTERS.items()
+                                if ENCOUNTERS[value] is encounter_factory), None)
+            if getattr(encounter_factory, "event_id", None) == "dense_vegetation":
+                native_type = "DenseVegetationEventEncounter"
+            if native_type is not None:
+                # Generated maps start after Ancient, including when its optional
+                # choice was skipped. Native history counts that root as floor 1.
+                ancient_floor = int(self.state.initialization is not None or self.state.ancient_start is not None)
+                combat.encounter_rng = EncounterRandom(
+                    rng.root_seed, len(self.state.visited_nodes) + ancient_floor,
+                    re.sub(r"(?<!^)(?=[A-Z])", "_", native_type).upper(),
+                    combat.rng, combat.native_streams["niche"],
+                )
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
                      potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,

@@ -46,6 +46,7 @@ COMBAT_STREAMS = (
     "combat_potion_generation",
     "combat_energy_costs",
     "monster_ai",
+    "niche",
 )
 
 
@@ -148,6 +149,7 @@ def bind_combat(service, combat):
     deck = combat.player.deck
     bindings = {
         "monster_ai": combat.rng,
+        "niche": deck.niche_rng,
         "shuffle": deck.rng,
         "combat_card_selection": deck.selection_rng,
         "combat_targets": deck.target_rng,
@@ -160,5 +162,8 @@ def bind_combat(service, combat):
             raise ValueError("Combat RNG differs from its owning run stream.")
     if len({id(r) for r in bindings.values()}) != len(bindings):
         raise ValueError("Independent combat domains cannot alias.")
+    from game.headless.monsters.overgrowth import SimpleEnemy
+    if any(type(enemy) is not SimpleEnemy and enemy.rng is not combat.rng for enemy in combat.enemies):
+        raise ValueError("Enemy AI must use its owning combat stream.")
     service._streams.update(bindings)
     combat.native_streams = bindings

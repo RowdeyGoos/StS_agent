@@ -78,7 +78,13 @@ class Enemy(ABC):
     SNAPSHOT_FIELD_TYPES = MappingProxyType({})
     APPLIED_PLAYER_POWERS = ()
 
-    def __init__(self, name: str, max_hp: int, rng: Random | None = None) -> None:
+    def __init__(self, name: str, max_hp: int, rng: Random | None = None, *, min_hp: int | None = None) -> None:
+        from game.headless.encounters.randomness import MonsterConstruction
+        if isinstance(rng, MonsterConstruction):
+            max_hp = rng.initial_hp(max_hp if min_hp is None else min_hp, max_hp)
+            rng = rng.ai
+        elif min_hp is not None:
+            max_hp = rng.randint(min_hp, max_hp)
         self.name = name
         self.max_hp = max_hp
         self.hp = max_hp

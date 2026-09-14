@@ -1468,11 +1468,25 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
    Direct assembly vectors cover bags, pools, predicates and potion RNG suffixes;
    all 18 relevant epoch gates are inventoried. Arbitrary progression inputs remain
    a separate extension. [Evidence](evidence/runtime_eligibility_2026_09_14.md).
-2. **HF-05C / combat draw consumption:** compare native entity construction, HP,
-   opening moves, random-target multihits, generation and reshuffles across combat
-   boundaries. Correct individual consumers while preserving the seven owned
-   domains. Acceptance: dependent action sequences match effects and RNG suffixes,
-   including JSON restoration and rejected actions.
+2. **HF-05C / combat draw consumption — construction and pile baseline implemented:**
+   encounter-local composition, shared Niche HP, opening AI and initial/refill card
+   permutations match actual native methods; eight run-owned combat domains restore
+   without foreign AI aliases. [Evidence](evidence/combat_rng_2026_09_14.md).
+   Next independently pickable work:
+   - **Combat generation:** inspect each card/potion generator's native pool,
+     ordering, rarity/pick and upgrade calls (`cards/ironclad_effects.py`,
+     `cards/colorless_effects.py`, `potions/combat.py`). Extend the retained oracle
+     with actual native factory sequences; assert offers and RNG suffixes before
+     and after choices/restoration. Existing `sample` calls are not native evidence.
+   - **Shuffle commands and hooks:** compare Bottled Potential's nonempty draw/hand/discard
+     merge, initial Innate/Stratagem and refill Abacus/Stratagem ordering. Use the
+     shared native shuffle helper; assert copy identities and pending choices,
+     not just card names or draw counts.
+   - **Interaction sequences:** actual native dependent actions for multihit
+     targeting/death, spawned slots, autoplay and ordered relic/power triggers.
+     Existing Python continuation checks are regression evidence only. Acceptance:
+     effects, identities, decisions and RNG suffixes match native sequences across
+     combat boundaries, including JSON restoration and rejected actions.
 3. **HF-28 / Kaleidoscope:** implement required foreign-character card pools and
    combat rules, then enable existing Neow eligibility. Accept every transformed
    card through combat and exact restore; do not silently substitute Ironclad cards.
@@ -1482,7 +1496,8 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
 5. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with Act 2,
    then assign later-act-only shared events individually under HF-43.
 
-Current source/coverage: [runtime acquisition](evidence/runtime_eligibility_2026_09_14.md),
+Current source/coverage: [combat RNG](evidence/combat_rng_2026_09_14.md),
+[runtime acquisition](evidence/runtime_eligibility_2026_09_14.md),
 [native initialization](evidence/native_initialization_2026_09_14.md),
 [native RNG and probability](evidence/native_rng_2026_09_14.md),
 [events and Neow](evidence/events_neow_2026_09_14.md).

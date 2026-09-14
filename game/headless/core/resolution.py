@@ -356,7 +356,14 @@ def execute(p, task):
         if count > 0 and p.deck.draw_pile and not p.combat_is_ending:
             available = [c for c in p.deck.draw_pile if c.cost >= 0 or c.spec.x_cost]
             available = available or list(p.deck.draw_pile)
-            p.deck.rng.shuffle(available)
+            from game.headless.core.native_rng import NativeRng
+            if isinstance(p.deck.rng, NativeRng):
+                from game.headless.core.native_shuffle import stable_shuffle
+                # Native CardPile enumerates from the top.
+                available.reverse()
+                stable_shuffle(available, p.deck.rng)
+            else:
+                p.deck.rng.shuffle(available)
             push(p, ["autoplay", available[0].instance_id, False], ["catastrophe", count - 1])
     elif op == "random_hit":
         from game.headless.cards.colorless_effects import hit

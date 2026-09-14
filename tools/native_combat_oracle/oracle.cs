@@ -1,0 +1,71 @@
+using System.Reflection;
+using System.Runtime.Loader;
+using System.Text.Json;
+// Read-only reflection: no game initialization or player-profile access.
+if (args.Length != 2) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory>");
+var assemblyPath = Path.GetFullPath(args[0]);
+var dependencyDirectory = Path.GetFullPath(args[1]);
+var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
+if (digest != "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18")
+    throw new InvalidOperationException("Assembly differs from the pinned 0.107.1 build.");
+AssemblyLoadContext.Default.Resolving += (context,name) => {
+    var path = Path.Combine(dependencyDirectory, name.Name + ".dll");
+    return File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
+};
+var asm=AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+var flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
+var db=asm.GetType("MegaCrit.Sts2.Core.Models.ModelDb",true)!;
+var abstractType=asm.GetType("MegaCrit.Sts2.Core.Models.AbstractModel",true)!;
+foreach(var modelType in asm.GetTypes().Where(t=>!t.IsAbstract && t.IsSubclassOf(abstractType) && t.Namespace is "MegaCrit.Sts2.Core.Models.Acts" or "MegaCrit.Sts2.Core.Models.Encounters" or "MegaCrit.Sts2.Core.Models.Events" or "MegaCrit.Sts2.Core.Models.RelicPools" or "MegaCrit.Sts2.Core.Models.Relics" or "MegaCrit.Sts2.Core.Models.Characters" or "MegaCrit.Sts2.Core.Models.Cards" or "MegaCrit.Sts2.Core.Models.CardPools" or "MegaCrit.Sts2.Core.Models.Potions" or "MegaCrit.Sts2.Core.Models.PotionPools" or "MegaCrit.Sts2.Core.Models.Monsters"))
+    db.GetMethod("Inject")!.Invoke(null,new object[]{modelType});
+object Get(string method,string suffix)=>db.GetMethods().Single(m=>m.Name==method&&m.IsGenericMethodDefinition).MakeGenericMethod(asm.GetType("MegaCrit.Sts2.Core.Models."+suffix,true)!).Invoke(null,null)!;
+object Prop(object o,string n)=>o.GetType().GetProperty(n,flags)!.GetValue(o)!;
+object Call(object o,string n,params object?[] a)=>o.GetType().GetMethods(flags).Single(m=>m.Name==n&&!m.IsGenericMethodDefinition&&m.GetParameters().Length==a.Length&&m.GetParameters().Select((p,i)=>a[i] is null||p.ParameterType.IsInstanceOfType(a[i])).All(x=>x)).Invoke(o,a)!;
+object[] Items(object o)=>((System.Collections.IEnumerable)o).Cast<object>().ToArray();
+string Id(object o)=>Prop(Prop(o,"Id"),"Entry").ToString()!.ToLowerInvariant();
+
+Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
+Array Typed(object[] values,Type t){var a=Array.CreateInstance(t,values.Length);Array.Copy(values,a,values.Length);return a;}
+void Field(object o,string n,object value)=>o.GetType().GetField(n,flags)!.SetValue(o,value);
+
+var player=System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(T("Entities.Players.Player"));
+var creatureType=T("Entities.Creatures.Creature");
+Field(player,"<Character>k__BackingField",Get("Character","Characters.Ironclad"));
+var all=Items(Prop(Get("Act","Acts.Overgrowth"),"AllEncounters")).Append(Get("Encounter","Encounters.DenseVegetationEventEncounter")).ToArray();
+var rows=new List<object>();
+foreach(string seed in new[]{"0","1","2","42"}) foreach(int floor in new[]{1,7}) foreach(var original in all) {
+ var context=DispatchProxy.Create(T("Runs.IRunState"),typeof(Context));var d=(Context)context;
+ var runRng=Activator.CreateInstance(T("Runs.RunRngSet"),new object[]{seed})!;
+ d.Values["get_Rng"]=runRng;d.Values["get_TotalFloor"]=floor;d.Values["get_CurrentActIndex"]=0;
+ d.Values["get_CurrentMapCoord"]=Activator.CreateInstance(T("Map.MapCoord"),new object[]{3,floor})!;
+ d.Values["get_Players"]=Typed(new[]{player},T("Entities.Players.Player"));d.Values["get_AscensionLevel"]=0;
+ Field(player,"_runState",context);
+ var encounter=Call(original,"MutableClone");Call(encounter,"GenerateMonstersWithSlots",context);
+ var combat=Activator.CreateInstance(T("Combat.CombatState"),new object?[]{encounter,context,null,null,null})!;
+ var pc=Activator.CreateInstance(creatureType,new object[]{player,80,80})!;
+ Field(player,"<Creature>k__BackingField",pc);Call(combat,"AddPlayer",player);
+ var monsters=new List<object>();var creatures=new List<object>();
+ foreach(var entry in Items(Prop(encounter,"MonstersWithSlots"))) {
+  var m=entry.GetType().GetField("Item1")!.GetValue(entry)!;var slot=entry.GetType().GetField("Item2")!.GetValue(entry);
+  var c=Call(combat,"CreateCreature",m,Enum.Parse(T("Combat.CombatSide"),"Enemy"),slot);Call(combat,"AddCreature",c);creatures.Add(c);
+ }
+ foreach(var c in creatures){var m=Prop(c,"Monster");Call(m,"SetUpForCombat");Call(m,"RollMove",Typed(new[]{pc},creatureType));monsters.Add(new{type=m.GetType().Name,id=Id(m),slot=Prop(c,"SlotName"),hp=Prop(c,"MaxHp"),move=Prop(Prop(m,"NextMove"),"Id"),localSeed=Prop(Prop(m,"Rng"),"Seed")});}
+ var erng=T("Models.EncounterModel").GetField("_rng",flags)!.GetValue(encounter)!;
+ var niche=Prop(runRng,"Niche");var ai=Prop(runRng,"MonsterAi");
+ rows.Add(new{seed,floor,encounter=original.GetType().Name,id=Id(original),monsters,compositionCounter=Prop(erng,"Counter"),compositionSuffix=Call(erng,"NextDouble"),hpCounter=Prop(niche,"Counter"),hpSuffix=Call(niche,"NextDouble"),aiCounter=Prop(ai,"Counter"),aiSuffix=Call(ai,"NextDouble")});
+}
+var shuffles=new List<object>();
+foreach(uint seed in new uint[]{0,1,42}) foreach(int size in new[]{0,1,3,10,16,17,31,64}) foreach(bool stable in new[]{false,true}) {
+ var types=new[]{"StrikeIronclad","Bash","DefendIronclad","Anger","ShrugItOff"};
+ var cardType=T("Models.CardModel");var inputs=new List<object>();var cards=new List<object>();
+ for(int i=0;i<size;i++) {var type=types[(i*7+i/3)%types.Length];var card=Call(Get("Card","Cards."+type),"ToMutable");var upgraded=i%4==0;if(upgraded){Call(card,"UpgradeInternal");Call(card,"FinalizeUpgradeInternal");}cards.Add(card);inputs.Add(new{type,upgraded});}
+ var array=(System.Collections.IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(cardType))!;foreach(var card in cards)array.Add(card);var rng=Activator.CreateInstance(T("Random.Rng"),new object[]{seed,0})!;
+ var method=T("Extensions.ListExtensions").GetMethods(flags).Single(m=>m.Name==(stable?"StableShuffle":"UnstableShuffle")&&m.IsGenericMethodDefinition);
+ method.MakeGenericMethod(cardType).Invoke(null,new object[]{array,rng});
+ shuffles.Add(new{seed,size,stable,inputs,order=Items(array).Select(c=>cards.FindIndex(x=>ReferenceEquals(x,c))).ToArray(),counter=Prop(rng,"Counter"),suffix=Call(rng,"NextDouble")});
+}
+Console.Write(JsonSerializer.Serialize(new{source="Pinned encounter generation, creature HP construction, and initial move selection; explicit in-memory A0 contexts",assemblySha256=digest,rows,shuffles},new JsonSerializerOptions{WriteIndented=true}));
+public class Context:DispatchProxy {
+ public Dictionary<string,object> Values=new();
+ protected override object? Invoke(MethodInfo? method,object?[]? args)=>Values.TryGetValue(method!.Name,out var value)?value:throw new InvalidOperationException("Unexpected native context access: "+method.Name);
+}

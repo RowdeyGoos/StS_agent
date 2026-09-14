@@ -1,5 +1,8 @@
 """Fogmog's summoned illusion retains its slot through repeated revival."""
 
+from game.headless.encounters.randomness import summon
+from game.headless.core.native_rng import NativeRng, single
+
 from game.headless.monsters.base import Intent
 from game.headless.monsters.scripted import ScriptedEnemy
 
@@ -53,13 +56,14 @@ class Fogmog(ScriptedEnemy):
 
     def after_move(self, player, intent):
         if self._intent_index == 0:
-            child = EyeWithTeeth(self.rng)
+            child = summon(EyeWithTeeth, self, player)
             child.combat_player = player
             player.combat_enemies.append(child)
 
     def advance_intent(self):
         if self._intent_index == 1:
-            self._intent_index = 2 if self.rng.random() < 0.4 else 3
+            roll = self.rng.random()
+            self._intent_index = 2 if (roll <= single(0.4) if isinstance(self.rng, NativeRng) else roll < 0.4) else 3
         else:
             self._intent_index = (1, 2, 3, 1)[self._intent_index]
 
