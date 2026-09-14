@@ -43,7 +43,7 @@ class EnchantmentDefinition:
 
 
 ENCHANTMENTS = MappingProxyType({"sown": Sown(), **{
-    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam")
+    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam", "slither")
 }})
 
 
@@ -53,6 +53,8 @@ def can_enchant(card, definition_id="sown"):
     kind = card.spec.kind
     if definition_id not in ENCHANTMENTS or kind not in ("attack", "skill", "block", "power") or card.cost < 0 or card.enchantment is not None:
         return False
+    if definition_id == "slither":
+        return not card.spec.x_cost
     if definition_id in ("sharp", "momentum"):
         return kind == "attack"
     if definition_id == "royally_approved":
@@ -96,3 +98,14 @@ def restore(record):
 
 def fingerprint():
     return [asdict(definition) for definition in ENCHANTMENTS.values()]
+
+
+def after_draw(card, deck):
+    if card.enchantment is None or card.enchantment.definition_id != "slither" or card not in deck.hand:
+        return
+    v=card.combat_state
+    v.combat_cost_override=deck.energy_rng.randrange(4)
+    v.combat_override_baseline=v.combat_cost_change
+    v.cost_change=0
+    v.free_this_turn=v.free_this_combat=v.free_until_played=False
+    v.turn_cost_override=None

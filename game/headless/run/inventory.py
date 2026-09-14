@@ -4,26 +4,26 @@ from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 
 
-def add_relic(state, definition_id: str, *, cards=None):
+def add_relic(state, definition_id: str, *, cards=None, allow_dead=False):
     # Acquisition may generate nested choices; failures roll back the complete
     # owned state, including RNG, resources and both identity allocators.
     from copy import deepcopy
     before = deepcopy(state)
     try:
-        return _add_relic(state, definition_id, cards=cards)
+        return _add_relic(state, definition_id, cards=cards, allow_dead=allow_dead)
     except Exception:
         state.__dict__.clear()
         state.__dict__.update(before.__dict__)
         raise
 
 
-def _add_relic(state, definition_id: str, *, cards=None):
+def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False):
     if definition_id not in RELICS or (not RELICS[definition_id].stackable and not RELICS[definition_id].allow_duplicates and any(r.definition_id == definition_id for r in state.relics)):
         raise ValueError("Unsupported or already owned relic.")
-    if RELICS[definition_id].pickup_max_hp and (state.phase.value == "combat" or state.hp <= 0):
+    if RELICS[definition_id].pickup_max_hp and (state.phase.value == "combat" or state.hp <= 0 and not allow_dead):
         raise ValueError("Max-HP relic pickup requires a living run outside combat.")
     if RELICS[definition_id].pickup_transform is not None:
-        if state.phase.value == "combat" or state.hp <= 0:
+        if state.phase.value == "combat" or state.hp <= 0 and not allow_dead:
             raise ValueError("This relic pickup requires a living run outside combat.")
         if cards is None:
             from game.headless.cards.catalog import DEFAULT_CARDS

@@ -11,6 +11,8 @@ class CardState:
     free_this_turn: bool = False
     free_this_combat: bool = False
     turn_cost_override: int | None = None
+    combat_cost_override: int | None = None
+    combat_override_baseline: int = 0
     override_turn_baseline: int = 0
     override_combat_baseline: int = 0
     replay_count: int = 0
@@ -38,6 +40,10 @@ class CombatRules:
     skills_started: int = 0
     plays_finished: int = 0
     gold_gained: int = 0
+    gold_available: int = 0
+    gold_lost: int = 0
+    end_turn_hand_size: int = 0
+    end_hand_remaining: list[str] = field(default_factory=list)
     potion_slots: int = 3
     potion_pool: list[str] = field(default_factory=lambda: ["fire_potion", "block_potion"])
     potions_generated: list[str] = field(default_factory=list)

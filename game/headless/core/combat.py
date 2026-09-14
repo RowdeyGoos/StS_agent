@@ -58,7 +58,7 @@ class CombatEngine:
         self.done = False
         self.winner: str | None = None
 
-    def reset(self, seed: int | None = None, *, relics=(), initial_hp=None, room_kind="combat", potion_capacity=3, potion_slots=3, potions=(), potion_pool=None) -> None:
+    def reset(self, seed: int | None = None, *, relics=(), initial_hp=None, room_kind="combat", potion_capacity=3, potion_slots=3, potions=(), potion_pool=None, gold=0) -> None:
         if seed is not None:
             if type(seed) is not int:
                 raise ValueError("Combat seed must be an integer.")
@@ -73,6 +73,7 @@ class CombatEngine:
         self.done = False
         self.winner = None
         from dataclasses import asdict
+        self.player.rules.gold_available = gold
         self.player.rules.potions = [None if item is None else asdict(item) for item in potions]
         if potion_pool is not None:
             self.player.rules.potion_pool = list(potion_pool)
@@ -93,7 +94,10 @@ class CombatEngine:
         if self.player.pending_play is not None:
             return tuple(ChooseCombatCard(i) for i in self.player.pending_options())
         actions: list[CombatAction] = [EndTurn()]
+        from game.headless.cards.curses import can_play
         for card in self.player.hand:
+            if not can_play(self.player, card):
+                continue
             if self.player.statuses.get("ringing") and self.player.cards_played_this_turn:
                 continue
             if (card.cost < 0 and not card.spec.x_cost) or self.player.card_cost(card) > self.player.energy:

@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v21"
+SCHEMA = "headless_run_state_v22"
 
 
 def _restore_event_combat(record):
@@ -49,7 +49,7 @@ def _item_definitions():
 def capture_run(engine) -> dict:
     state = engine.state
     state.validate()
-    _validate_progression(state, engine.graph)
+    _validate_progression(state, engine.graph, engine.cards)
     return {
         "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(), "treasure": treasure_fingerprint(), "events": event_fingerprint(),
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
@@ -151,7 +151,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         if graph is not None:
             graph = MapGraph(tuple(MapNode(**{**n, "next_node_ids": tuple(n["next_node_ids"])}) for n in graph["nodes"]),
                              graph["start_id"], tuple(graph["entry_node_ids"]), graph["generation"])
-            _validate_progression(state, graph)
+            _validate_progression(state, graph, cards)
             if any(n.encounter_id is not None and (n.encounter_id not in ENCOUNTERS or n.kind != ENCOUNTERS[n.encounter_id].room_kind) for n in graph.nodes):
                 raise ValueError("Unsupported map encounter.")
             if any(n.event_id is not None and n.event_id not in EVENTS for n in graph.nodes):
@@ -183,7 +183,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             if rules.relics != [asdict(r) for r in state.relics]:
                 raise ValueError("Combat relic inventory differs from run ownership.")
             if (rules.potion_capacity != len(state.potions) or rules.potion_slots != state.potions.count(None) or rules.potion_pool != expected_pool
-                    or rules.potions_generated or rules.gold_gained
+                    or rules.potions_generated or rules.gold_gained or rules.gold_lost or rules.gold_available != state.gold
                     or rules.potions != [None if p is None else asdict(p) for p in state.potions]):
                 raise ValueError("Combat loot differs from its owning run inventory.")
             for identity in rules.potion_uses:
@@ -204,13 +204,13 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Invalid run snapshot.") from error
 
 
-def _validate_progression(state, graph):
+def _validate_progression(state, graph, cards):
     event_combat.validate(state, graph)
     from game.headless.map.overgrowth import PROFILE
     if state.ancient_start is not None:
         if not isinstance(state.ancient_start, AncientStart):
             raise ValueError("Invalid Ancient start ownership.")
-        state.ancient_start.validate(state, graph)
+        state.ancient_start.validate(state, graph, cards)
     if state.pending is not None and state.pending.get("kind") == "ancient" and state.ancient_start is None:
         raise ValueError("Ancient choice has no owner.")
     has_unknowns = graph is not None and graph.generation == PROFILE
@@ -321,7 +321,7 @@ def _validate_pending(state, cards, graph):
     elif kind == "ancient":
         if state.ancient_start is None:
             raise ValueError("Ancient choice has no owner.")
-        state.ancient_start.validate(state, graph)
+        state.ancient_start.validate(state, graph, cards)
     elif kind == "scripted_event":
         from game.headless.run.events import validate_event
         validate_event(state, graph, cards=cards)

@@ -77,7 +77,8 @@ def legal_actions(engine) -> tuple:
         actions.extend(treasure.legal_actions(state))
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "scripted_event":
         actions.extend(events.legal_actions(state))
-        if state.pending["stage"] == "select_card":
+        if (state.pending["stage"] == "select_card"
+                or state.pending["definition_id"] == "the_future_of_potions" and state.pending["stage"] != "resolved"):
             return tuple(actions)
     from game.headless.potions.use import actions as potion_actions
     actions.extend(potion_actions(engine))
@@ -94,15 +95,17 @@ def apply(engine, action):
         # acquisition through the shared inventory API).
         from dataclasses import asdict
         r = engine.combat.player.rules
+        r.gold_available = state.gold
         r.potions = [None if p is None else asdict(p) for p in state.potions]
         r.potion_slots = state.potions.count(None)
         from game.headless.relics.damage import potions_changed
         potions_changed(engine.combat.player)
     if state.relic_work:
         from game.headless.relics.pickup import apply as apply_relic_choice
-        return apply_relic_choice(state, engine.cards, action)
+        result = apply_relic_choice(state, engine.cards, action)
+        return result
     if isinstance(action, ChooseAncientRelic):
-        return ancient.choose(state, action)
+        return ancient.choose(state, action, cards=engine.cards)
     if isinstance(action, ChooseNode):
         # Unknown resolution and room construction form one transaction. Native
         # outcome odds commit only with a usable room; failures restore navigation,

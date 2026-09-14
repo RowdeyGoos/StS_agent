@@ -13,4 +13,15 @@ NEOWS_FURY = CardDefinition("neows_fury", (
     CardSpec("Neow's Fury", 1, "attack", base_damage=10, exhausts=True),
     CardSpec("Neow's Fury+", 1, "attack", base_damage=14, exhausts=True),
 ), (Attack(), CardOperation("random_discard_to_hand", 2, 3)), rarity="ancient", pool="colorless", generate_in_combat=False)
-DEFINITIONS = (BYRDONIS_EGG, BYRD_SWOOP, NEOWS_FURY)
+from game.headless.cards.event_effects import ToricBlock
+PECK = CardDefinition("peck", (
+    CardSpec("Peck", 1, "attack", base_damage=2),
+    CardSpec("Peck+", 1, "attack", base_damage=2),
+), (Attack(hits=3, upgraded_hits=4),), rarity="event", pool="event", generate_in_combat=False)
+TORIC_TOUGHNESS = CardDefinition("toric_toughness", (
+    CardSpec("Toric Toughness", 2, "skill", block_gain=5, uses_target=False),
+    CardSpec("Toric Toughness+", 2, "skill", block_gain=7, uses_target=False),
+), (ToricBlock(),), rarity="event", pool="event", generate_in_combat=False)
+SPOILS_MAP = CardDefinition("spoils_map", (CardSpec("Spoils Map", -1, "quest", uses_target=False),), (),
+                            rarity="quest", pool="event", generate_in_combat=False)
+DEFINITIONS = (BYRDONIS_EGG, BYRD_SWOOP, NEOWS_FURY, PECK, TORIC_TOUGHNESS, SPOILS_MAP)

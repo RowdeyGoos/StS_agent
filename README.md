@@ -132,22 +132,21 @@ Morphic Grove (maximum HP or spending all gold to transform two cards), with
 Morphic Grove's native entry conditions. Whispering Hollow, Wellspring, Slippery
 Bridge and Sunken Statue add potion bundles, removal/curse choices, escalating
 damage and a sword that evolves after five elite victories. Potion rewards use
-the complete ordinary Ironclad pool; curse transformations use Guilty/Clumsy. See the
+the complete ordinary Ironclad pool; curse transformations use all 18 native curse-pool cards. See the
 [event pack evidence](docs/evidence/event_pack_2026_09_13.md). Dense Vegetation
 adds event-triggered combat: Trudge On trades 8 HP for gold, while Rest
 heals 30% maximum HP before a mandatory four-Wriggler fight, ordinary rewards
 and map continuation. Sapphire Seed lets you heal and upgrade one
 card, or give a card Sown for +1 energy on its first completed play each combat.
 See [Sapphire Seed and enchantment evidence](docs/evidence/sapphire_seed_2026_09_13.md).
-Byrdonis Nest brings the pool to eleven: gain 7 maximum HP or take an egg, then
+Byrdonis Nest is included in the generated pool: gain 7 maximum HP or take an egg, then
 choose Hatch at a rest site to obtain Byrdpip and replace all eggs with Byrd Swoop.
 Egg/Swoop transformations use the full 53-card single-player colorless pool.
-See [Nest and hatch evidence](docs/evidence/byrdonis_nest_2026_09_13.md). Add `--ancient neow` to begin with
-the restricted Golden Pearl (+150 gold) / Nutritious Oyster (+11 maximum HP)
-choice; omit it for the post-Ancient fixture start. Full Neow offers, event
-content/unlock conditions and map modifiers remain open. The installed seed-2 right/rest demo with `--ancient neow`
-loses with the current restricted pools; the authored Act 1
-seed-2 left/rest result recorded there used the earlier restricted card pool.
+See [Nest and hatch evidence](docs/evidence/byrdonis_nest_2026_09_13.md). Add `--ancient neow` for randomized two-positive/one-curse Neow offers and nested pickup choices;
+omit it for the post-Ancient fixture start. The generated catalog now includes
+all 21 normally Act-1-eligible events. Neow supports 26 solo offers in the default
+catalog; Kaleidoscope still requires foreign character cards. See
+[events and Neow evidence](docs/evidence/events_neow_2026_09_14.md).
 With the full Ironclad pool, the simple demo can lose before the boss. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
 
 

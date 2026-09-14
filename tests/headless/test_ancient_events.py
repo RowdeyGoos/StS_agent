@@ -8,7 +8,7 @@ from game.cli.headless_play import choose_demo_action, play_slice, main
 from game.headless.core.rng import GameRandomService
 from game.headless.events.progression import EventProgression, PROFILE as EVENT_PROFILE
 from game.headless.run.actions import ChooseAncientRelic, ChooseNode
-from game.headless.run.ancient import PROFILE, OFFERS, begin
+from game.headless.run.ancient import RESTRICTED_PROFILE as PROFILE, OFFERS, begin
 from game.headless.run.engine import RunEngine
 from game.headless.run.inventory import add_potion, remove_relic
 from game.headless.run.state import RunPhase
@@ -208,9 +208,10 @@ def test_neow_to_all_bosses_with_synthetic_fights_restores_every_decision(seed,p
 def test_cli_neow_start_reports_profile_and_pickup(capsys):
     main(['--route', 'overgrowth-generated', '--ancient', 'neow', '--seed', '2', '--rest-choice', 'rest', '--verify-restore'])
     result = json.loads(capsys.readouterr().out)
-    assert result['ancient_start']['profile'] == PROFILE
-    assert result['ancient_start']['selected'] == 'golden_pearl'
-    assert 'golden_pearl' in result['relics']
+    from game.headless.run.ancient import PROFILE as NATIVE_PROFILE
+    assert result['ancient_start']['profile'] == NATIVE_PROFILE
+    assert result['ancient_start']['selected'] == result['ancient_start']['offers'][0]
+    assert result['ancient_start']['selected'] in result['relics']
     assert result['event_profile'] == EVENT_PROFILE
     assert result['restore_verified'] is True
     assert result['phase'] in ('act_complete', 'defeat')

@@ -211,6 +211,9 @@ class Player:
         if self.pending_play is not None or self.rules.selection is not None:
             raise ValueError("Resolve the pending card choice first.")
         card = self.hand[hand_index]
+        from game.headless.cards.curses import can_play
+        if not can_play(self, card):
+            raise ValueError("A curse in hand prevents this play.")
         if (card.cost < 0 and not card.spec.x_cost) or self.card_cost(card) > self.energy:
             raise ValueError("Card is unplayable or unaffordable.")
         if self.statuses.get("ringing") and self.cards_played_this_turn:

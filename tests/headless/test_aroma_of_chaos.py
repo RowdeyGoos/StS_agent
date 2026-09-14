@@ -181,7 +181,7 @@ def test_malformed_selector_snapshot_is_atomic(mutation):
     elif mutation=="selected":data["selected_card_id"]=data["eligible"][0]
     elif mutation=="stage":pending["stage"]="resolved"
     elif mutation=="schema":broken["schema"]="headless_run_state_v7"
-    elif mutation=="content":broken["events"][1]["transform_pool"].append("strike")
+    elif mutation=="content":next(e for e in broken["events"] if e["definition_id"]=="aroma_of_chaos")["transform_pool"].append("strike")
     elif mutation=="dead":broken["state"]["phase"]="defeat";broken["state"]["hp"]=0
     with pytest.raises(ValueError):run.restore(broken)
     assert snap(run)==before

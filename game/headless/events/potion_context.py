@@ -16,6 +16,9 @@ def record(state, before, definition_id=None):
     pending = state.pending
     if pending is None or pending.get("kind") != "scripted_event":
         return
+    from game.headless.events.catalog import EVENTS
+    if getattr(EVENTS[pending["definition_id"]], "uses_steps", False):
+        return
     pending.setdefault("potion_changes", []).append(
         {
             "position": position(pending),

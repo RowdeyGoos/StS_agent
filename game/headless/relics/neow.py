@@ -153,13 +153,7 @@ def begin(state, relic, cards):
             state.relic_work.append(
                 dict(source=source, kind="relic_reward", offers=[definition], mandatory=True)
             )
-        # The current catalog explicitly declares its supported modifier curse pool.
-        curses = [
-            n
-            for n in ("clumsy", "injury")
-            if any(d.definition_id == n for d in sorted(cards.definitions, key=lambda d: d.definition_id))
-        ]
-        effect(state, source, "cards", [state.rng.choice("relic.curse", sorted(curses))])
+        effect(state, source, "curse", [])
     elif name == "kaleidoscope":
         for _ in range(2):
             pools = foreign_pools(cards)
@@ -188,7 +182,13 @@ def drain(state, cards):
     """Execute deterministic acquisition work until the next player decision."""
     while state.relic_work and state.relic_work[0]["kind"] == "effect":
         work = state.relic_work.pop(0)
-        if work["operation"] == "cards":
+        if work["operation"] == "curse":
+            from game.headless.cards.curses import MODIFIER_CURSES
+            from game.headless.run.deck import add_card
+            name = state.rng.choice("relic.curse", MODIFIER_CURSES)
+            if state.hp:
+                add_card(state, cards.definition(name))
+        elif work["operation"] == "cards":
             from game.headless.run.deck import add_card
 
             for name in work["values"]:

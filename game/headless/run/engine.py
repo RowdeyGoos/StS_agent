@@ -65,7 +65,7 @@ class RunEngine:
         from game.headless.run.unknown_rooms import UnknownRooms
         from game.headless.events.progression import EventProgression
         from game.headless.run import ancient
-        if ancient_profile not in (None, ancient.PROFILE):
+        if ancient_profile not in (None, ancient.PROFILE, ancient.RESTRICTED_PROFILE):
             raise ValueError("Unsupported Ancient start profile.")
         from game.headless.potions.pools import ORDINARY_POTIONS
         from game.headless.relics.pools import ORDINARY_RELICS, SHOP_RELICS
@@ -75,13 +75,17 @@ class RunEngine:
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
         engine = cls(seed=seed, gold=99, config=config)
         engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
+        if (map_profile or PROFILE) == PROFILE:
+            from game.headless.events.act1_content import DEFINITIONS as remaining_events
+            config = replace(config, event_pool=(*config.event_pool, *(d.definition_id for d in remaining_events)))
+            engine.state.config = config
         engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)
         if engine.graph.generation == PROFILE:
             engine.state.unknown_rooms = UnknownRooms()
             engine.state.event_progression = EventProgression.generate(engine.state.rng, config.event_pool)
         add_relic(engine.state, "burning_blood")
         if ancient_profile is not None:
-            ancient.begin(engine.state, profile=ancient_profile)
+            ancient.begin(engine.state, profile=ancient_profile, cards=engine.cards)
         return engine
 
     def legal_actions(self) -> tuple:
@@ -93,8 +97,12 @@ class RunEngine:
         result = apply(self, action)
         from game.headless.relics.neow import drain
         drain(self.state, self.cards)
+        from game.headless.events.steps import drain as resume_event
+        resume_event(self.state, self.cards)
         if self.combat is not None:
             self.sync_combat_loot()
+        from game.headless.events.checkpoint import refresh
+        refresh(self.state)
         return result
 
     def obtain_relic(self, definition_id):
@@ -165,7 +173,7 @@ class RunEngine:
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
                      potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,
-                     potion_pool=self.state.config.reward_potions if self.state.config else None)
+                     gold=self.state.gold, potion_pool=self.state.config.reward_potions if self.state.config else None)
         return rng, combat
 
     def sync_combat_loot(self):
@@ -174,8 +182,9 @@ class RunEngine:
         from game.headless.relics.combat import synchronize
         from game.headless.relics.damage import potions_changed
         synchronize(self.state, self.combat.player)
-        self.state.gold += r.gold_gained
-        r.gold_gained = 0
+        self.state.gold += r.gold_gained - r.gold_lost
+        r.gold_gained = r.gold_lost = 0
+        r.gold_available = self.state.gold
         from game.headless.potions.base import PotionInstance
         self.state.potions = [None if item is None else PotionInstance(**item) for item in r.potions]
         for potion in r.potions_generated:
