@@ -69,7 +69,7 @@ def after_card_power(p, card, key):
     elif key == "calamity":
         amount = r.plays[card.instance_id].pop("calamity", 0)
         if amount:
-            push(p, ["generate", amount, True, False, False])
+            push(p, ["generate", amount, True, False, False, False])
 
 
 def before_draw(p):

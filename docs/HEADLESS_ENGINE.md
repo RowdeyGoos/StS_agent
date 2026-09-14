@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v14 / run v26**.
+than being silently reinterpreted: current schemas are **combat v15 / run v27**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -103,8 +103,24 @@ stable candidate shuffle. Fixture RNG trajectories keep their prior behavior.
 [Combat RNG evidence](evidence/combat_rng_2026_09_14.md) covers all 22 encounter
 openings, Dense Vegetation and initial/refill permutations through 64 cards.
 This is actual native method execution in explicit contexts, not a full native
-combat or run. Card-generation consumers, nonempty-pile shuffle commands and the
-complete relic/power hook-order audit remain open.
+combat or run. Nonempty-pile shuffle commands, generated-card insertion hooks and the complete
+relic/power hook-order audit remain open.
+
+`generation/combat.py` shares the supported combat card pool and selection rules.
+The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
+cards. Skill filters include legacy `block` cards such as Shrug It Off. Discovery,
+card potions, Jack of All Trades, Infernal Blade and each Orobic Acid type use a
+full eligible-pool shuffle before taking distinct cards. Stoke, Jackpot and Calamity
+instead draw with replacement. Neither factory rolls rarity or upgrades; caller
+rules apply explicit upgrades and discounts to fresh owned instances. Queued
+generation carries an explicit distinct/replacement flag through restoration.
+
+[Generation evidence](evidence/combat_generation_2026_09_14.md) contains 66 actual
+native card-factory sequences, 16 empty/singleton/duplicate/count boundary cases
+and 12 repeated potion-factory sequences. Alchemize consumes its in-combat potion
+roll even when inventory is full; Entropic Brew calls the out-of-combat factory
+once per free slot, allowing duplicate potions across those calls. Those existing
+potion rules are now additionally checked against direct factory execution.
 
 `generation/` contains the probability rules independently of rooms and content:
 
@@ -165,7 +181,7 @@ cutoff are boundary-tested pure predicates, not new first-run/later-act modes.
 See [acquisition evidence](evidence/runtime_eligibility_2026_09_14.md).
 
 **This does not establish whole-run same-seed parity.** Remaining work concerns
-combat card/potion generation, remaining shuffle callers and full interaction ordering,
+remaining shuffle callers, generated-card insertion hooks and full interaction ordering,
 foreign-character content and a complete
 native run comparison. The generator foundation and these initialization checks
 cover declared inputs, not profile-dependent lobby selection or other acts' gameplay.
@@ -259,12 +275,12 @@ potions through the run's owned inventory. Alchemize has a separate saved RNG st
 and still generates when slots are full. Generated runs now use all ordinary
 Ironclad-accessible potions, filtering Fairy, Fruit Juice and Regen from Alchemize.
 Authored slice fixtures retain their explicit Fire/Block pool. Discovery and
-Calamity use the Ironclad generation catalog. Splash uses other registered character
+Calamity use the Ironclad generation catalog with their distinct native factory modes. Splash uses other registered character
 pools when present, otherwise the sole Ironclad pool, matching the one-unlocked-character
 case; other characters' card catalogs are not yet implemented. Entropy preserves
 status/curse replacement categories using supported subsets and gives fresh base
 cards without inherited upgrades or combat modifiers. Full native unlock state,
-other-character/status/curse catalogs and RNG parity remain separate work.
+other-character/status/curse catalogs and transformation RNG parity remain separate work.
 
 Armaments gives 5 block, then upgrades one eligible hand card for this combat;
 Armaments+ upgrades all eligible hand cards. True Grit gives 7 block and exhausts
@@ -353,7 +369,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v14 and run v26. Legacy RL encoders retain their frozen vocabulary.
+combat v15 and run v27. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -1052,7 +1068,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v26`, including configuration,
+Private run snapshots now use `headless_run_state_v27`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1063,7 +1079,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v14`, including the in-play
+Nested combat records now use `headless_combat_state_v15`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
@@ -1073,7 +1089,7 @@ per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v13 and run v1–v25 formats are rejected rather than assigning invented item
+v1–v14 and run v1–v26 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

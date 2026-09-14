@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from game.headless.cards.operations import value
 from game.headless.core.resolution import push, move_out
 from game.headless.core.choices import begin
+from game.headless.generation.combat import select_cards
 
 
 def catalog(p):
@@ -13,17 +14,8 @@ def catalog(p):
 
 
 def pool(p, family="ironclad", kind=None):
-    return sorted(
-        (
-            d
-            for d in catalog(p).definitions
-            if d.pool == family
-            and d.rarity in ("common", "uncommon", "rare")
-            and d.generate_in_combat
-            and (kind is None or d.levels[0].kind == kind)
-        ),
-        key=lambda d: d.definition_id,
-    )
+    from game.headless.generation.combat import card_pool
+    return card_pool(catalog(p), family, kind)
 
 
 def create(p, definition, *, upgraded=False, destination="hand"):
@@ -125,7 +117,7 @@ class ColorlessOperation:
                 choices = [d for family in sorted(families) for d in pool(p, family, "attack")]
             offers = [
                 create(p, d, upgraded=op == "splash" and card.upgraded, destination="offered")
-                for d in p.deck.generation_rng.sample(choices, min(3, len(choices)))
+                for d in select_cards(choices, p.deck.generation_rng, 3, distinct=True)
             ]
             begin(
                 p,
@@ -166,12 +158,12 @@ class ColorlessOperation:
                 push(p, ["draw", amount, False])
         elif op == "jack_of_all_trades":
             choices = [d for d in pool(p, "colorless") if d.definition_id != op]
-            for definition in p.deck.generation_rng.sample(choices, min(amount, len(choices))):
+            for definition in select_cards(choices, p.deck.generation_rng, amount, distinct=True):
                 create(p, definition)
         elif op == "jackpot":
             choices = [d for d in pool(p) if d.levels[0].cost == 0 and not d.levels[0].x_cost]
-            for _ in range(amount):
-                create(p, p.deck.generation_rng.choice(choices), upgraded=card.upgraded)
+            for definition in select_cards(choices, p.deck.generation_rng, amount, distinct=False):
+                create(p, definition, upgraded=card.upgraded)
         elif op == "prolong":
             from game.headless.powers.ironclad import apply_power
 
