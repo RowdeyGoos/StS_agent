@@ -139,7 +139,7 @@ def execute(p, task):
                 if r.powers.get("free_attack"):
                     r.powers["free_attack"] -= 1
                 for other in p.deck.all_cards():
-                    if other.definition.definition_id == "stomp":
+                    if other.definition.definition_id == "stomp" and other not in p.deck.offered:
                         other.combat_state.cost_change -= 1
             if card.spec.kind in ("skill", "block"):
                 r.skills_started += 1
@@ -201,6 +201,9 @@ def execute(p, task):
             p.deck.discard_card(card)
         from game.headless.relics.plays import hand_emptied
         hand_emptied(p)
+    elif op == "shuffle_choice":
+        from game.headless.core.piles import choose_after_shuffle
+        choose_after_shuffle(p)
     elif op == "draw":
         count, hand_draw = args
         if count <= 0 or p.combat_is_ending or (r.powers.get("no_draw") and not hand_draw):

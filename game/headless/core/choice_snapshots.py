@@ -127,6 +127,9 @@ def validate_selection(r, p):
     if operation in ("secret_technique", "secret_weapon"):
         kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
         candidates = [c.instance_id for c in available if c.spec.kind in kinds]
+    if operation == "stratagem":
+        from game.headless.core.piles import stratagem_cards
+        candidates = [c.instance_id for c in stratagem_cards(p)]
     if operation == "seeker_strike":
         if len(s["candidates"]) != min(3, len(available)):
             raise ValueError("Invalid sampled tutor count.")

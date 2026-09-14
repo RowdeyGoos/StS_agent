@@ -39,6 +39,9 @@ class Deck:
         self.owner = None
         self.shuffle_draw_pile(initial=True)
         innate = [c for c in self.draw_pile if c.spec.innate]
+        from game.headless.core.native_rng import NativeRng
+        if isinstance(self.rng, NativeRng):
+            innate.reverse()  # Native moves each top-first Innate card to the top.
         self.draw_pile = [c for c in self.draw_pile if not c.spec.innate] + innate
 
     def all_cards(self):
@@ -56,6 +59,19 @@ class Deck:
         if native:
             # Native pile index zero is top; this engine's stack pops from the end.
             self.draw_pile.reverse()
+
+    def shuffle_piles(self, *, include_hand=False):
+        """Native Shuffle starts with discard, then the current top-first draw pile."""
+        from game.headless.core.native_rng import NativeRng
+        hand = list(self.hand) if include_hand else []
+        if isinstance(self.rng, NativeRng):
+            self.draw_pile = self.discard_pile + list(reversed(self.draw_pile)) + hand
+        else:
+            self.draw_pile = self.draw_pile + hand + self.discard_pile
+        self.discard_pile = []
+        if include_hand:
+            self.hand.clear()
+        self.shuffle_draw_pile()
 
     def draw(self, count: int) -> list[Card]:
         """Draw up to `count` cards, stopping at the game's hand limit.

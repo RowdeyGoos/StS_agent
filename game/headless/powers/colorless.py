@@ -128,13 +128,8 @@ def ensure_draw(p, continuation, *, hand=True):
     if hand and len(p.hand) >= 10:
         return False
     if not p.deck.draw_pile and p.deck.discard_pile:
-        p.deck._refill_draw_pile()
-        from game.headless.relics.combat import has
-        if has(p, "the_abacus"):
-            p.gain_block(6)
-        if p.rules.powers.get("stratagem"):
-            push(p, continuation)
-            count = p.rules.powers["stratagem"]
-            begin(p, "stratagem", tuple(p.deck.draw_pile), minimum=count, maximum=count)
-            return False
+        from game.headless.core.piles import shuffle
+        push(p, continuation)
+        shuffle(p)
+        return False
     return bool(p.deck.draw_pile)

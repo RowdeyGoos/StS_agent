@@ -45,6 +45,7 @@ TASK_ARITIES = {
     "pillage": 0,
     "generate": 5,
     "stampede": 1,
+    "shuffle_choice": 0,
     "discard_hand": 0,
     "ethereal": 1,
     "discard_remaining": 0,
@@ -175,6 +176,8 @@ def restore_rules(record, player):
         if any(type(v) not in (int, bool, str, type(None)) for v in task):
             raise ValueError("Task must contain plain values.")
         op, *args = task
+        if op == "shuffle_choice" and not r.powers.get("stratagem"):
+            raise ValueError("Unowned shuffle choice.")
         if op == "after_draw_card" and args[0] not in player.deck._allocated_ids:
             raise ValueError("Unowned drawn-card hook.")
         if op == "end_hand_card":

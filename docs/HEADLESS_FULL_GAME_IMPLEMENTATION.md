@@ -1481,12 +1481,12 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
      Entropic Brew also match repeated native potion-factory sequences.
      [Evidence](evidence/combat_generation_2026_09_14.md). Foreign-character Splash
      and Entropy transformation-category/selection RNG remain separate extensions.
-   - **Shuffle commands and hooks:** compare Bottled Potential's nonempty draw/hand/discard
-     merge, initial Innate/Stratagem and refill Abacus/Stratagem ordering. Check
-     generated-card insertion hooks separately from factory selection (including
-     Stomp timing when a generated offer is selected). Use the shared native
-     shuffle helper; assert copy identities, costs and pending choices,
-     not just card names or draw counts.
+   - **Shuffle commands and Stomp entry implemented:** Bottled Potential's mixed
+     piles use native StableShuffle; Stratagem precedes Abacus and resumes the
+     triggering draw. Innate ordering/count composition and generated Stomp entry
+     timing follow pinned source, with physical-copy reference vectors and exact
+     pending-choice restoration tests. [Evidence](evidence/shuffle_hooks_2026_09_14.md).
+     Full native command/turn execution remains part of the interaction work below.
    - **Interaction sequences:** actual native dependent actions for multihit
      targeting/death, spawned slots, autoplay and ordered relic/power triggers.
      Existing Python continuation checks are regression evidence only. Acceptance:
@@ -1501,7 +1501,8 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
 5. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with Act 2,
    then assign later-act-only shared events individually under HF-43.
 
-Current source/coverage: [combat generation](evidence/combat_generation_2026_09_14.md),
+Current source/coverage: [shuffle hooks](evidence/shuffle_hooks_2026_09_14.md),
+[combat generation](evidence/combat_generation_2026_09_14.md),
 [combat RNG](evidence/combat_rng_2026_09_14.md),
 [runtime acquisition](evidence/runtime_eligibility_2026_09_14.md),
 [native initialization](evidence/native_initialization_2026_09_14.md),

@@ -81,8 +81,7 @@ class CombatEngine:
             self.player.rules.potion_pool = list(potion_pool)
         from game.headless.relics.combat import install
         install(self.player, relics, room_kind=room_kind, hp=initial_hp, potion_capacity=potion_capacity, potion_slots=potion_slots)
-        opening_draw = max(self.cards_per_turn, sum(c.spec.innate for c in self.player.deck.draw_pile))
-        self.player.start_turn(draw_count=opening_draw)
+        self.player.start_turn(draw_count=self.cards_per_turn)
         self._refresh_persistent_statuses()
         self._check_terminal()
 
