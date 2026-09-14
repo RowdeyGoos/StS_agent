@@ -80,6 +80,7 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
         repeats += 1
         rules.powers["one_two_punch"] -= 1
     rules.plays[card.instance_id] = {
+        "context": rules.active_hook,
         "target": target_slot,
         "auto": auto,
         "force_exhaust": force_exhaust,
@@ -114,11 +115,11 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
 def drain(player):
     if player._resolving:
         return
+    from game.headless.core.hook_scheduler import run
+
     player._resolving = True
     try:
-        while player.rules.tasks and player.pending_play is None and player.rules.selection is None:
-            task = player.rules.tasks.pop(0)
-            execute(player, task)
+        run(player, execute)
     finally:
         player._resolving = False
 

@@ -129,8 +129,8 @@ def block_multiplier(p, powered=True):
     if not powered:
         return 1
     before = p.rules.auxiliaries.get("block_gains", 0)
-    if p.deck.in_play:
-        context = p.rules.plays.get(p.deck.in_play[-1].instance_id)
+    if p.current_card is not None:
+        context = p.rules.plays.get(p.current_card.instance_id)
         if context is not None:
             before -= context.get("blocks_gained", 0)
     return 2 if before < p.rules.powers.get("unmovable", 0) else 1
@@ -139,8 +139,8 @@ def block_multiplier(p, powered=True):
 def record_block(p, powered):
     if powered:
         p.rules.auxiliaries["block_gains"] = p.rules.auxiliaries.get("block_gains", 0) + 1
-        if p.deck.in_play:
-            context = p.rules.plays.get(p.deck.in_play[-1].instance_id)
+        if p.current_card is not None:
+            context = p.rules.plays.get(p.current_card.instance_id)
             if context is not None:
                 context["blocks_gained"] = context.get("blocks_gained", 0) + 1
 
@@ -161,8 +161,8 @@ def after_hp_loss(p, amount):
     if not p.is_alive:
         return
     strength = r.powers.get("rupture", 0)
-    if p.deck.in_play and p.deck.in_play[-1].instance_id in r.plays:
-        r.plays[p.deck.in_play[-1].instance_id]["rupture"] += strength
+    if p.current_card is not None:
+        r.plays[p.current_card.instance_id]["rupture"] += strength
     else:
         p.gain_strength(strength)
     inferno = r.powers.get("inferno", 0)

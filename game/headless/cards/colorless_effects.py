@@ -183,8 +183,18 @@ class ColorlessOperation:
             elif op == "secret_weapon":
                 choices = [c for c in choices if c.spec.kind == "attack"]
             elif op == "seeker_strike":
-                p.deck.selection_rng.shuffle(choices)
-                choices = choices[:3]
+                from game.headless.core.native_rng import NativeRng
+                if isinstance(p.deck.selection_rng, NativeRng):
+                    from game.headless.core.native_shuffle import stable_shuffle
+                    choices.reverse()  # Native pile enumerates from the top.
+                    stable_shuffle(choices, p.deck.selection_rng)
+                else:
+                    p.deck.selection_rng.shuffle(choices)
+                whitelist = [c.instance_id for c in choices[:3]]
+                from game.headless.core.piles import stratagem_cards
+                choices = [c for c in stratagem_cards(p) if c.instance_id in whitelist]
+                begin(p, card.instance_id, choices, whitelist=whitelist)
+                return
             begin(p, card.instance_id, choices, destination="draw_pile" if op == "thinking_ahead" else "hand")
         elif op == "shockwave":
             push(

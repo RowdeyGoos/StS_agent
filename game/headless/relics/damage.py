@@ -119,7 +119,7 @@ def attack_multiplier(p, card):
 
 def block_multiplier(p, gain):
     relic = owned(p, "vambrace")
-    card = p.deck.in_play[-1] if p.deck.in_play else None
+    card = p.current_card
     if relic is None or card is None or gain <= 0:
         return 1
     m = memory(p, relic)

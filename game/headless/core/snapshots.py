@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v17"
+SCHEMA = "headless_combat_state_v18"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -232,6 +232,9 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             enemy.validate_combat_context(player)
         player.catalog = cards
         pending = snapshot["pending_play"]
+        if ((player.rules.active_hook or player.rules.deferred_hooks)
+                and pending is None and player.rules.selection is None):
+            raise ValueError("Saved hook work requires an active decision.")
         if pending is None:
             if deck.in_play and player.rules.selection is None:
                 raise ValueError("In-play cards require a pending continuation.")
@@ -242,7 +245,9 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
                 raise ValueError("Invalid pending card play fields.")
             if winner is not None or not deck.in_play:
                 raise ValueError("Pending choice requires one resolving card in active combat.")
-            card = deck.in_play[-1]
+            card = player.current_card
+            if card is None:
+                raise ValueError("Pending choice has no active card.")
             index, slot = pending["effect_index"], pending["target_slot"]
             if type(index) is not int or not 0 <= index < len(card.definition.effects):
                 raise ValueError("Invalid pending effect index.")
@@ -256,7 +261,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             if player.rules.plays[card.instance_id]['target'] != slot:
                 raise ValueError('Pending target differs from its play.')
             effect = card.definition.effects[index]
-            if not isinstance(effect, (SelectHandCard, ChoosePileCard)) or effect.mode_for(card) != "choose" or len(effect.eligible(player)) <= 1:
+            if not isinstance(effect, (SelectHandCard, ChoosePileCard)) or effect.mode_for(card) != "choose" or len(effect.eligible(player)) < (1 if player.rules.active_hook else 2):
                 raise ValueError("Pending effect does not require a hand choice.")
             player.pending_play = PendingCardPlay(index, slot)
         return {**config, "rng": rng_at(snapshot["combat_rng"]), "player": player,
