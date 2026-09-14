@@ -38,5 +38,6 @@ def price(base_cost, scale, on_sale=False):
 
 def fingerprint():
     # JSON primitives even before serialization, for exact installed continuation.
-    return {"catalog_id": SHOP_ID, "slots": [
+    from game.headless.generation.merchant import SLOTS as native_slots
+    return {"catalog_id": SHOP_ID, "native_slots": [{**asdict(s), "items": [list(item) for item in s.items]} for s in native_slots], "slots": [
         {**asdict(s), "items": [list(item) for item in s.items]} for s in SLOTS]}

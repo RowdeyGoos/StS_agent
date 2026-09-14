@@ -51,7 +51,7 @@ class AncientStart:
         expected_unavailable = [n for n in ("kaleidoscope", "scroll_boxes") if not available(n, cards or DEFAULT_CARDS)]
         if self.unavailable != expected_unavailable:
             raise ValueError("Neow exclusions differ from the configured card catalog.")
-        expected = list(OFFERS) if self.profile == RESTRICTED_PROFILE else generate(GameRandomService(state.seed), self.unavailable)
+        expected = list(OFFERS) if self.profile == RESTRICTED_PROFILE else generate(type(state.rng)(state.seed), self.unavailable)
         if self.offers != expected:
             raise ValueError("Neow offers differ from their seeded construction.")
         pending = state.pending is not None and state.pending.get("kind") == "ancient"

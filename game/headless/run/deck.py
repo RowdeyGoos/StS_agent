@@ -53,10 +53,14 @@ def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *
     definitions = [cards.definition(name) for name in pool if name != original.definition.definition_id]
     if not definitions:
         raise ValueError("Transformation cannot reproduce the original definition.")
+    if getattr(state.rng,"native",False):
+        from game.headless.core.content_order import IRONCLADCARDPOOL,COLORLESSCARDPOOL,CURSECARDPOOL
+        rank={n:i for i,n in enumerate((*IRONCLADCARDPOOL,*COLORLESSCARDPOOL,*CURSECARDPOOL))}
+        definitions.sort(key=lambda d:rank.get(d.definition_id,len(rank)))
     for definition in definitions:
         definition.spec_at(0)
-    rng = GameRandomService(state.seed)
-    rng.restore(state.rng.snapshot())
+    from game.headless.core.rng import from_snapshot
+    rng = from_snapshot(state.rng.snapshot())
     definition = rng.choice(stream, definitions)
     index = state.deck.index(original)
     replacement = Card(definition, instance_id=state.allocate_card_id())

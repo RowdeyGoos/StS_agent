@@ -169,7 +169,7 @@ def before_unknown(seed, *, next_kind='combat'):
     return run
 
 
-@pytest.mark.parametrize('seed,kind',[(0,'event'),(1,'treasure'),(2,'shop'),(7,'combat')])
+@pytest.mark.parametrize('seed,kind',[(0,'event'),(6,'treasure'),(32,'shop'),(2,'combat')])
 def test_every_unknown_outcome_restores_and_uses_the_existing_room_handler(seed,kind):
     run=before_unknown(seed)
     before=saved(run)
@@ -193,7 +193,7 @@ def test_every_unknown_outcome_restores_and_uses_the_existing_room_handler(seed,
 
 
 def test_shop_blacklist_checks_previous_resolved_room_and_all_next_markers():
-    run=before_unknown(2,next_kind='shop')
+    run=before_unknown(32,next_kind='shop')
     point=run.graph.node('act1.2.3')
     assert blocked_types(run.graph,point,'combat')==('shop',)
     step(run,ChooseNode(point.node_id))
@@ -203,7 +203,7 @@ def test_shop_blacklist_checks_previous_resolved_room_and_all_next_markers():
     assert blocked_types(run.graph,run.graph.node('act1.2.3'),'shop')==('shop',)
 
 
-@pytest.mark.parametrize('seed,target',[(0,'event'),(1,'treasure'),(2,'shop'),(7,'combat')])
+@pytest.mark.parametrize('seed,target',[(0,'event'),(6,'treasure'),(32,'shop'),(2,'combat')])
 def test_failed_unknown_construction_rolls_back_all_owned_state(seed,target,monkeypatch):
     run=before_unknown(seed);before=saved(run)
     def fail(*args,**kwargs):raise ValueError('fixture failure')

@@ -48,16 +48,70 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`run/deck.py`](../game/headless/run/deck.py), [`run/rewards.py`](../game/headless/run/rewards.py), [`run/rooms.py`](../game/headless/run/rooms.py) | Persistent mutations, reward resolution and room transitions |
 | [`run/rest_site.py`](../game/headless/run/rest_site.py), [`run/inventory.py`](../game/headless/run/inventory.py), [`relics/`](../game/headless/relics/), [`potions/`](../game/headless/potions/) | Rest/smith decisions, owned item acquisition/removal, victory healing, permanent max-HP pickup effects and potion effects |
 | [`treasure/catalog.py`](../game/headless/treasure/catalog.py), [`run/treasure.py`](../game/headless/run/treasure.py), [`run/treasure_validation.py`](../game/headless/run/treasure_validation.py) | Chest content, gold on opening, optional relic acquisition, pool depletion and private continuation |
-| [`shops/catalog.py`](../game/headless/shops/catalog.py), [`run/shop.py`](../game/headless/run/shop.py), [`run/shop_validation.py`](../game/headless/run/shop_validation.py) | Authored stock, native base-price bands, purchases, permanent removal and private continuation validation |
+| [`shops/catalog.py`](../game/headless/shops/catalog.py), [`run/shop.py`](../game/headless/run/shop.py), [`run/shop_validation.py`](../game/headless/run/shop_validation.py) | Stock, purchases, permanent removal and private continuation validation |
 | [`events/catalog.py`](../game/headless/events/catalog.py), [`events/jungle_maze.py`](../game/headless/events/jungle_maze.py), [`run/events.py`](../game/headless/run/events.py) | Native event definitions, content-owned choices/effects and owned event lifecycle |
 | [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored navigation with explicit encounter/event IDs and shared primitive effects |
 | [`core/rng.py`](../game/headless/core/rng.py), [`core/snapshots.py`](../game/headless/core/snapshots.py), [`run/snapshots.py`](../game/headless/run/snapshots.py) | Owned RNG streams and private JSON continuation |
+| [`generation/`](../game/headless/generation/), [`core/native_rng.py`](../game/headless/core/native_rng.py), [`core/native_service.py`](../game/headless/core/native_service.py) | Native RNG, stream ownership, probability rules, relic bags and merchant generation |
 | `game/simulation/`, `game/backends/`, `game/contracts/`, actor/data/training packages | Compatibility, encoding, public-information policy and external consumption |
 
 The enforced import rule is one-way: consumers may import `game.headless`; that
 package may import only itself and the standard library. Existing symbols such as
 `game.simulation.card.StrikeCard` remain importable, but re-export the canonical
 game classes. There is one combat implementation, not two simulators to maintain.
+
+## Native randomness and generation
+
+Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
+`RunEngine()` and `ironclad_slice()` retain the original Python fixture generator;
+`ironclad_act1(rng_profile="fixture")` explicitly selects that compatibility profile.
+Native runs accept integer or text seeds programmatically: integer `2` is hashed
+as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
+Changing profiles changes seeded trajectories. Old private snapshots reject rather
+than being silently reinterpreted: current schemas are **combat v13 / run v23**.
+
+The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
+not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
+binary32 float and double draws, boolean draws, Fisher–Yates shuffle and bounded
+Gaussian integer draws. Private snapshots retain all four state words, seed and
+counters. Every Gaussian attempt consumes two counted double draws.
+
+`core/native_service.py` owns streams and aliases callers that share native state.
+Gold, card rarity/picks/upgrades, potion drops and relic rarity share player
+`rewards`; shop picks/prices use `shops`. Neow and ordinary events use the native
+model-ID seed salt; entering an event resets its local stream. Solo player slot
+zero is supported. Combat uses seven run-owned domains for shuffle, selection,
+targeting, card/potion generation, energy costs and monster AI. Restore validates
+both snapshot views and reestablishes their ownership aliases. Policy RNG remains
+outside the game state.
+
+`generation/` contains the probability rules independently of rooms and content:
+
+- Card rarity uses native normal/elite/boss/shop weights, float32 pity offset,
+  per-caller offset modes and rarity fallback order. Native pool declaration order
+  is explicit in `core/content_order.py`. Upgrade checks consume their native draw
+  even when Act 1's base upgrade chance is zero; uniform/no-upgrade callers preserve
+  their distinct consumption rules.
+- Potion drops use float32 adaptive odds, the elite bonus and forced-drop updates;
+  the native chance is not clamped. Potion rarity and ordered pools match the pinned
+  factory, with distinct initial multi-potion offers.
+- Relics use shared/player grab bags shuffled through `up_front`, native rarity
+  weights, front/back pulls, cross-source depletion and Circlet fallback. Named
+  acquisition also removes the relic from both bags.
+- Native merchants have **13 slots**: two attacks, two skills, one power, two
+  colorless cards, three relics and three potions. Stock, float32 prices, the sale's
+  second price roll and Courier refill consumption use the pinned rules. A Courier
+  potion refill can duplicate another stocked potion.
+
+**This does not establish whole-run same-seed parity.** Encounter/event queue
+initialization still includes authored domains and ordering; not every entity/AI
+call site has a native boundary trace. Full runtime relic eligibility predicates,
+unlock epochs and foreign-character content are incomplete. Those inputs can alter
+candidates and downstream draw order even where the primitive and probability rule
+are exact. Existing authored route restrictions below remain explicit fixtures.
+The next assignments isolate these remaining differences rather than replacing
+this generator again. See [source, oracle and validation](evidence/native_rng_2026_09_14.md)
+and [HF-05](HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-05--match-target-rng-algorithms-domains-and-consumption).
 
 ## Use and extend the game directly
 
@@ -112,7 +166,7 @@ shops and Ironclad transformations. Boss rewards sample the rare subset. Strike,
 Defend and Bash are basic; Break and Corruption are Ancient cards, implemented but
 excluded from ordinary acquisition. Shockwave remains colorless. Primal Force's
 Giant Rock is also implemented. See the [inventory and rule evidence](evidence/ironclad_complete_2026_09_13.md).
-These pools use project-authored sampling, not native rarity weights or seed parity.
+Generated native-profile runs use the rarity rules above; authored fixture profiles retain their original sampling.
 Slimed costs one, draws one and exhausts; it cannot be upgraded.
 
 
@@ -168,7 +222,7 @@ Selecting resumes the ordered effect suffix, then discards/exhausts the source
 once. Later effects can request another choice through the same mechanism.
 Temporary upgrades keep their instance IDs and last through combat reshuffles;
 the persistent master deck is unaffected. Random hand selection uses an owned
-`Deck.selection_rng`, forked without consuming deck/enemy RNG. This is deterministic
+`Deck.selection_rng` (run-owned `combat_card_selection` in native-profile runs). This is deterministic
 Python sampling, not the native run's `CombatCardSelection` seed sequence.
 
 Uppercut costs 2, deals 13 damage, then applies 1 Weak and 1 Vulnerable;
@@ -240,7 +294,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v12 and run v22. Legacy RL encoders retain their frozen vocabulary.
+combat v13 and run v23. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -289,9 +343,9 @@ and other characters' exclusive relics are outside this scope.
 Generated `RunEngine.ironclad_act1()` runs now use all ordinary eligible relics
 for rewards/treasure and the full supported merchant relic pool. Old Coin and The
 Courier are excluded from merchant generation. Authored routes retain their
-explicit smaller `RunConfig` pools. Native rarity weights, shared grab-bag
-consumption across acquisition sources, unlock history and seed parity remain
-separate generation work.
+explicit smaller `RunConfig` pools. Native-profile runs now apply rarity weights and
+shared grab-bag depletion across sources. Unlock history, complete runtime eligibility
+and whole-run seed parity remain separate work.
 
 Relic rules live in small modules under `relics/`: `turns.py`, `plays.py` and
 `damage.py` own combat hooks; `run_rules.py` owns shared resource/card mutations;
@@ -450,8 +504,8 @@ Bygone Effigy, Phrog Parasite/Wrigglers, Ceremonial Beast and Kin followers/prie
 Mixed groups preserve native member order and authored opening roles. Ruby Raiders
 select three distinct variants; normal slimes have four members. Flyconid retains
 its native move cooldowns, including the source's first-branch fallback when all
-weights are zero. The engine continues to use seeded Python RNG, without native
-seed/draw parity claims.
+weights are zero. Generated runs use native primitives and run-owned combat streams;
+complete entity initialization and move-selection call-order parity remain open.
 
 Rules added for these encounters:
 
@@ -516,7 +570,8 @@ work preserves post-autoplay Regret capture, ethereal-first ordering and remaini
 effects across reactive draws. Neow's Bones uses the separate ten-card modifier pool.
 Spoils Map is carried as its native quest card; its Act 2 route/gold quest is outside
 this Act 1 implementation. Later-act shared events and disabled events are excluded.
-Card reward probabilities, unlock epochs and native RNG parity remain separate work.
+Native-profile card reward probabilities are implemented; unlock epochs and complete
+run initialization/call-order parity remain separate work.
 
 ## Ordinary events
 
@@ -744,8 +799,8 @@ separately owned instances. Ordinary relic definitions still reject duplicates.
 Gold uses the owned `treasure.gold` stream on opening; the relic uses
 `treasure.relic` on entry. Neither inspection nor restore rerolls or grants rewards.
 
-This is authored uniform sampling and a treasure-specific depleted pool. Native
-rarity weights, shared/player bags across reward sources, tutorial overrides,
+This authored route retains uniform sampling and a treasure-specific depleted pool.
+Native-profile generated runs use rarity weights and shared/player bags across sources. Tutorial overrides,
 multiplayer allocation, treasure-suppression modifiers and extra reward hooks
 remain open. A native suppressed empty chest is distinct from ordinary pool
 exhaustion, which uses Circlet. See [source and validation evidence](evidence/first_treasure_2026_09_13.md).
@@ -765,7 +820,7 @@ plus 25 per previous successful shop removal and is available once per shop.
 Eternal cards are excluded from removal choices. `LeaveShop()` returns to the map. While
 selecting a removal, only removal/cancel commands are legal.
 
-Stock is explicitly authored: one common, uncommon and rare card from the full
+For this authored fixture route, stock is explicitly authored: one common, uncommon and rare card from the full
 80-card Ironclad ordinary pool; one uncommon and rare from the full 53-card solo
 colorless pool; one unowned Strawberry/Pear/Mango; and Fire and Block Potions.
 An exhausted fruit pool omits that slot. One character card is on sale at half its
@@ -774,7 +829,8 @@ rounded price; colorless cards cannot be the sale slot. Native base prices are
 1.15 multiplier, rounded before variation), 175/225/275 for fruits and 50 per potion. Cards and potions vary by ±5%; relics
 by ±15%. Sampling uses owned `shop.stock` and `shop.prices` streams, with discrete
 basis-point variation; this is not native pool composition, rarity weighting,
-float precision or RNG parity. Membership Card discounts, The Courier restocking and relic pickup selectors now use the shared relic rules. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
+float precision or RNG parity. Generated native-profile merchants use the 13-slot
+composition and exact arithmetic described above. Membership Card discounts, The Courier restocking and relic pickup selectors now use the shared relic rules. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
 
 ## Compatibility and limits
 
@@ -849,8 +905,8 @@ HP increase and heals the same amount once; restoring does not apply it again.
 Removing the relic does not reverse the permanent gain. Pickup is currently
 supported outside combat only. A depleted pool rejects elite entry before moving
 the map cursor or consuming RNG. This explicit content limit is not a native
-relic-pool exhaustion rule. Native rarity weighting, upgraded card offers and
-full elite reward pools remain open. See the
+relic-pool exhaustion rule. Generated native-profile runs use the full configured pools,
+native rarity weighting and upgrade checks. See the
 [first elite source and acceptance evidence](evidence/first_elite_2026_09_13.md).
 
 `RunEngine.ironclad_slice(route="overgrowth-act1")` extends the four-combat
@@ -937,7 +993,8 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v20`, including configuration,
+Private run snapshots now use `headless_run_state_v23`, including configuration,
+native stream state, rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
 persistent removal count, owned shop offers and selection, generated map metadata,
 encounter/event queues and assignments with event entry conditions, optional Ancient start/selection history,
@@ -946,7 +1003,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v10`, including the in-play
+Nested combat records now use `headless_combat_state_v13`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
@@ -956,7 +1013,7 @@ per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v8 and run v1–v18 formats are rejected rather than assigning invented item
+v1–v12 and run v1–v22 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

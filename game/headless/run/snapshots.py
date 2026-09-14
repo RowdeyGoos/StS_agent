@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v22"
+SCHEMA = "headless_run_state_v23"
 
 
 def _restore_event_combat(record):
@@ -71,7 +71,7 @@ def capture_run(engine) -> dict:
                   "free_travels": deepcopy(state.free_travels),
                   "potion_capacity": state.potion_capacity,
                   "potions": [None if p is None else asdict(p) for p in state.potions],
-                  "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance,
+                  "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance, "generation_odds": deepcopy(state.generation_odds), "relic_bags": deepcopy(state.relic_bags),
                   "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used,
                   "next_event_id": state.next_event_id, "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
         "graph": None if engine.graph is None else asdict(engine.graph),
@@ -103,8 +103,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Unsupported relic pool.")
             if any(p not in POTIONS for p in config.reward_potions):
                 raise ValueError("Unsupported potion pool.")
-        rng = GameRandomService(payload["seed"])
-        rng.restore(payload["rng"])
+        from game.headless.core.rng import from_snapshot
+        rng = from_snapshot(payload["rng"])
         if rng.seed != payload["seed"]:
             raise ValueError("Run RNG seed mismatch.")
         state = RunState(
@@ -124,7 +124,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             potion_capacity=payload["potion_capacity"],
             encounter_progression=None if payload["encounter_progression"] is None else EncounterProgression(**deepcopy(payload["encounter_progression"])),
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
-            next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"],
+            next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"], generation_odds=deepcopy(payload["generation_odds"]), relic_bags=deepcopy(payload["relic_bags"]),
             next_shop_id=payload["next_shop_id"], shop_removals_used=payload["shop_removals_used"],
             next_event_id=payload["next_event_id"], next_treasure_id=payload["next_treasure_id"], treasure_relics_drawn=deepcopy(payload["treasure_relics_drawn"]),
         )
@@ -178,6 +178,9 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Active combat requires the combat phase.")
             combat = CombatEngine()
             combat.restore(snapshot["combat"], cards=cards)
+            if getattr(state.rng, "native", False):
+                from game.headless.core.native_service import bind_combat
+                bind_combat(state.rng, combat)
             rules = combat.player.rules
             expected_pool = list(state.config.reward_potions) if state.config is not None else ["fire_potion", "block_potion"]
             if rules.relics != [asdict(r) for r in state.relics]:
@@ -197,6 +200,9 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             raise ValueError("Combat phase requires its owned combat.")
         event_combat.validate(state, graph)
         _validate_pending(state, cards, graph)
+        if (getattr(state.rng,"native",False) and state.pending and state.pending.get("kind")=="scripted_event"
+                and state.rng.active_event!=state.pending["definition_id"]):
+            raise ValueError("Event RNG owner differs from pending event.")
         result = RunEngine.__new__(RunEngine)
         result.cards, result.graph, result.state, result.combat = cards, graph, state, combat
         return result

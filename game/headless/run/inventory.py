@@ -36,6 +36,9 @@ def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False):
         raise ValueError("Relic requires card pools absent from this content catalog.")
     relic = RelicInstance(definition_id, state.allocate_item_id(), data={"treasures": 0} if definition_id == "silver_crucible" else {})
     state.relics.append(relic)
+    if getattr(state.rng, "native", False):
+        from game.headless.generation.relics import remove
+        remove(state, definition_id)
     RELICS[definition_id].after_obtained(state, cards=cards)
     from game.headless.relics.run_rules import pickup
     pickup(state, relic, cards)

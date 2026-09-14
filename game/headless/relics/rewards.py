@@ -16,10 +16,13 @@ def extend_pool(state, cards, pool):
     return result
 
 
-def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True):
+def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgraded=()):
     instances = [cards.create(name) for name in offers]
     from game.headless.relics.run_rules import counter
 
+    for card in instances:
+        if card.definition.definition_id in upgraded and len(card.definition.levels)>1:
+            card.upgrade()
     if upgrade_all:
         for card in instances:
             if card.upgrade_level + 1 < len(card.definition.levels):
@@ -68,15 +71,20 @@ def extra_rewards(state, cards, encounter, *, undamaged=False):
             pool = extend_pool(
                 state, cards, RARE_CARDS if name == "white_star" else state.config.reward_cards
             )
-            state.rng.shuffle("reward_offer", pool)
-            offers = pool[:3]
+            upgraded=[]
+            if getattr(state.rng, "native", False):
+                from game.headless.generation.odds import card_offers
+                offers,upgraded=card_offers(state,cards,pool,kind=kind,uniform=name=="white_star")
+            else:
+                state.rng.shuffle("reward_offer", pool)
+                offers = pool[:3]
             result.append(
                 {
                     "source": relic.instance_id,
                     "kind": "card",
                     "offers": offers,
                     "modifiers": decorate(
-                        state, cards, offers, upgrade_all=undamaged and has(state, "lava_lamp")
+                        state, cards, offers, upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded
                     ),
                     "resolved": False,
                 }
@@ -94,7 +102,11 @@ def extra_rewards(state, cards, encounter, *, undamaged=False):
                     for n, d in RELICS.items()
                     if d.rarity in ("common", "uncommon", "rare") and n not in blocked
                 ]
-                chosen = state.rng.choice("relic.lava_rock", pool) if pool else "circlet"
+                if getattr(state.rng,"native",False):
+                    from game.headless.generation.relics import pull
+                    chosen=pull(state,blacklist=blocked)
+                else:
+                    chosen = state.rng.choice("relic.lava_rock", pool) if pool else "circlet"
                 blocked.add(chosen)
                 result.append(
                     {

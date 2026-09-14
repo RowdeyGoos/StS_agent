@@ -87,11 +87,16 @@ def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, 
         and d.rarity in ("common", "uncommon", "rare")
         and (rarity is None or d.rarity == rarity)
     ]
-    state.rng.shuffle("relic.card_reward", pool)
     from game.headless.relics.rewards import decorate
-
-    definitions = [d.definition_id for d in pool[:count]]
-    modifiers = decorate(state, cards, definitions, card_reward=is_card_reward)
+    upgraded=[]
+    if getattr(state.rng, "native", False):
+        from game.headless.generation.odds import card_offers
+        owner=next((r.definition_id for r in state.relics if r.instance_id==source),None)
+        definitions,upgraded=card_offers(state,cards,[d.definition_id for d in pool],count,mode="base",uniform=rarity is not None,upgrade_roll=owner in ("orrery","lost_coffer","lead_paperweight"))
+    else:
+        state.rng.shuffle("relic.card_reward", pool)
+        definitions = [d.definition_id for d in pool[:count]]
+    modifiers = decorate(state, cards, definitions, card_reward=is_card_reward, upgraded=upgraded)
     offers = [{"definition_id": name, **modifiers[name]} for name in definitions]
     if offers:
         state.relic_work.append(dict(source=source, kind="card_reward", offers=offers))
@@ -170,7 +175,8 @@ def _apply(state, cards, action):
                 from game.headless.events.transformation import replacement_pool
 
                 transform_card(
-                    state, cards, identity, replacement_pool(card.definition.definition_id, REWARD_CARDS)
+                    state, cards, identity, replacement_pool(card.definition.definition_id, REWARD_CARDS),
+                    stream="niche" if getattr(state.rng, "native", False) else "card.transform",
                 )
             elif operation == "enchant":
                 enchant(card, work["enchantment"], work["amount"])
@@ -375,7 +381,11 @@ def relic_reward(state, source, *, automatic=False):
         for name, definition in RELICS.items()
         if definition.rarity in ("common", "uncommon", "rare") and name not in unavailable
     ]
-    name = state.rng.choice("relic.reward", pool) if pool else "circlet"
+    if getattr(state.rng,"native",False):
+        from game.headless.generation.relics import pull
+        name=pull(state,blacklist=unavailable)
+    else:
+        name = state.rng.choice("relic.reward", pool) if pool else "circlet"
     if automatic:
         from game.headless.relics.neow import effect
 

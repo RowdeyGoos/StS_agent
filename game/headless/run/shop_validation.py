@@ -9,6 +9,8 @@ from game.headless.shops.catalog import SHOP_ID, SLOTS, price
 
 
 def validate_shop(state, cards, graph):
+    from game.headless.generation.merchant import slots_for
+    SLOTS = slots_for(state)
     pending = state.pending
     expected = {"kind", "catalog_id", "shop_id", "stage", "offers", "removal_used", "removals_on_entry"}
     if pending.get("stage") == "remove":
@@ -46,6 +48,8 @@ def validate_shop(state, cards, graph):
         if type(offer["sold"]) is not bool or type(offer["on_sale"]) is not bool or (offer["on_sale"] and (slot.kind != "card" or not slot.sale_eligible)):
             raise ValueError("Invalid shop offer flags.")
         base = dict(shop_items(state, slot)).get(offer["definition_id"])
+        if base is None and getattr(state.rng,"native",False):
+            if slot.kind=="relic" and offer["definition_id"]=="circlet":base=175
         if base is None:
             raise ValueError("Unknown shop item.")
         if slot.kind == "card":

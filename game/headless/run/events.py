@@ -13,8 +13,10 @@ def begin(state, definition_id, *, cards=DEFAULT_CARDS):
     state.require_room_entry("event")
     if definition_id not in EVENTS:
         raise ValueError("Unsupported event.")
-    rng = GameRandomService(state.seed)
-    rng.restore(state.rng.snapshot())
+    from game.headless.core.rng import from_snapshot
+    rng = from_snapshot(state.rng.snapshot())
+    if getattr(rng, "native", False):
+        rng.begin_event(definition_id)
     pending = {"kind": "scripted_event", "definition_id": definition_id,
                "event_instance_id": state.next_event_id, "stage": "options",
                "data": EVENTS[definition_id].generate(rng, state=state, cards=cards)}

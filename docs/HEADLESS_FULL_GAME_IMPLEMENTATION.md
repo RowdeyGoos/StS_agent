@@ -43,7 +43,7 @@ into validation of changed code.
   transforms; Ancient/basic cards stay separate. Shared powers, transient values,
   X costs, nested autoplay/replay/choices and generation now execute through owned
   plain tasks. Feed persists maximum HP. See [evidence](evidence/ironclad_complete_2026_09_13.md).
-  Native RNG/rarity weights, additional colorless cards/items and live differential
+  Native whole-run RNG parity and live differential
   coverage remain open.
 
 - **2026-09-13 — Byrdonis Nest/Hatch:** Eat gains 7 maximum/current HP; Take adds
@@ -522,6 +522,16 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-05 — Match target RNG algorithms, domains and consumption
 
+- **Implemented foundation (2026-09-14):** pinned MegaRandom/xoshiro256** primitives,
+  UTF-16 seed conversion, native stream aliases and combat ownership, float32
+  card/potion probabilities, ordered pools, relic grab bags and native merchants.
+  Generated runs default to this profile; authored fixtures retain MT19937.
+  Direct assembly vectors cover hash, integers/floats/doubles, shuffle and Gaussian
+  rejection/suffixes; source-derived Neow sequences use the assembly RNG.
+  [Implementation, evidence and remaining limits](evidence/native_rng_2026_09_14.md).
+- **Still open:** whole-run initialization order, every gameplay caller's stream
+  and consumption, native runtime eligibility/unlock inputs and a complete native
+  same-seed continuation trace. The acceptance below is not fully satisfied.
 - **Depends on:** HF-01's RNG findings and HF-02 reference vectors.
 - **Implement:** evolve [game rng] and its consumers for target seed conversion, integer
   ranges, weighted draws, shuffle, stream ownership and snapshot state. Map combat
@@ -890,7 +900,8 @@ Dependencies and acceptance cases are in the linked task.
   three installed foreign character pools. Combat/run hooks, nested acquisition,
   counters, resource/shop/rest/reward/travel modifiers and relic enchantments are
   implemented. Remaining acceptance: complete dependent potion/curse/character
-  catalogs, native generation weights/shared depletion and differential evidence.
+  catalogs, complete runtime acquisition eligibility and differential evidence.
+  Native generation weights/shared depletion are implemented in the native profile.
   [Implementation and exact limits](HEADLESS_ENGINE.md#relics).
 
 - **Depends on:** HF-01/24 and mechanic-specific tasks.
@@ -1022,12 +1033,14 @@ Dependencies and acceptance cases are in the linked task.
 - **Boss slice:** Vantom awards 100 gold, a potion roll and three rare cards from
   Impervious/Offering/Fiend Fire. No elite relic is substituted into boss rewards.
   Native rare-only base odds and scalar/card rules are source-checked; the full
-  rare pool, native upgraded offers and native sampling remain open.
+  rare pool, native upgrade checks and rarity sampling are now used in generated
+  native-profile runs; authored boss slices retain their restricted pool.
 
 - **Partial:** source-checked hallway 10–20 and elite 35–45 gold, three card
   offers, potion rolls and an elite relic are implemented. Card/potion/relic
-  pools and Python sampling are explicitly restricted; native rarity/upgrade
-  chances, full pools and native RNG parity remain open. Owned relics are
+  pools and Python sampling remain restricted in authored fixtures. Native-profile
+  generated runs use full supported pools, native rarity/upgrade checks and
+  grab-bag depletion; complete same-seed run parity remains open. Owned relics are
   excluded; authored routes reject exhausted elite entry without a roll, while
   generated routes explicitly opt in to stackable Circlet fallback. Exact claimed
   reward item IDs persist across continuation.
@@ -1121,9 +1134,10 @@ Dependencies and acceptance cases are in the linked task.
   nothing; leaving open retains the gold. The restricted fruit pool excludes
   owned and previously offered entries and falls back to stackable Circlet.
   Exact chest/claimed-item IDs, gold, pool depletion and RNG restore; Act 1 has
-  a chest after its third combat. Native global grab bags, rarity weighting,
+  a chest after its third combat. Native-profile global grab bags and rarity weighting
+  are implemented; remaining treasure work includes
   tutorial/multiplayer rules, treasure suppression, extra rewards and other fixed
-  room families remain open. See [first-treasure evidence](evidence/first_treasure_2026_09_13.md).
+  room families. See [first-treasure evidence](evidence/first_treasure_2026_09_13.md).
 
 - **Depends on:** HF-01's room census, HF-07/25/29/30/32.
 - **Implement:** chest/treasure generation, open/leave choices, pool effects and
@@ -1430,25 +1444,35 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The Act 1 event catalog and Neow are implemented. The next batch should address
-**native generation fidelity and end-to-end acceptance**, with separate tasks:
+The native RNG/probability foundation is implemented. Remaining fidelity tasks
+can extend its owned streams and small generation modules independently:
 
-1. **HF-24–27 / reward generation:** pin native rarity weights, pool modifiers,
-   exclusions, depleted pools and unlock inputs for combat/shop/event rewards.
-   Reuse current catalogs; test named seeds and empty pools independently of RNG parity.
-2. **HF-05 / RNG parity:** map owned streams to pinned native streams, algorithms
-   and call order. Add differential cases for Neow offers and representative event
-   rewards before changing the generator globally.
-3. **HF-28 / Kaleidoscope:** implement the required foreign-character card pools
-   and combat rules, then enable its existing Neow eligibility. Accept each foreign
-   transformed card through combat and exact restore.
-4. **Act 1 completion gate:** run a declared seed/path matrix across all three
-   bosses, events, shops, pickups and choices; inventory actual mismatches against
-   native source rather than treating a demo victory as fidelity proof.
-5. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with the Act 2
-   route, then assign later-act-only shared events individually under HF-43.
+1. **HF-05A / initialization order:** trace pinned `RunManager`, act, player and
+   encounter setup; replace authored `act1.encounters`/`act1.events` domains with
+   actual native owners and order. Acceptance: fixed seeds match encounter/event
+   queues, map boundaries and named stream counters before the first player action.
+2. **HF-05B / runtime acquisition eligibility:** inventory native `IsAllowed` and
+   pool modifiers for the 161-relic solo scope, unlock epochs and card/potion
+   callers. Implement pure eligibility against declared run inputs, retaining
+   native bag skipping/depletion order. Acceptance: each predicate has an eligible
+   and ineligible case; source-derived reward/shop/event sequences match offers,
+   rarity offset, bags and stream counters after selection or skipping.
+3. **HF-05C / combat draw consumption:** compare native entity construction, HP,
+   opening moves, random-target multihits, generation and reshuffles across combat
+   boundaries. Correct individual consumers while preserving the seven owned
+   domains. Acceptance: dependent action sequences match effects and RNG suffixes,
+   including JSON restoration and rejected actions.
+4. **HF-28 / Kaleidoscope:** implement required foreign-character card pools and
+   combat rules, then enable existing Neow eligibility. Accept every transformed
+   card through combat and exact restore; do not silently substitute Ironclad cards.
+5. **Act 1 completion gate:** run a declared seed/path matrix across all three
+   bosses, events, shops, pickups and choices. Compare native boundary records;
+   a synthetic victory or deterministic Python continuation alone is insufficient.
+6. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with Act 2,
+   then assign later-act-only shared events individually under HF-43.
 
-Current source/coverage: [events and Neow](evidence/events_neow_2026_09_14.md).
+Current source/coverage: [native RNG and probability](evidence/native_rng_2026_09_14.md),
+[events and Neow](evidence/events_neow_2026_09_14.md).
 Higher ascensions, other characters and later acts remain separate scope.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json

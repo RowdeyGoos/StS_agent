@@ -176,9 +176,14 @@ def drain(state, cards):
                 or data["choice"] == "share_knowledge"
             ):
                 pool = extend_pool(state, cards, pool)
-            state.rng.shuffle("event.card_reward", pool)
-            offers = pool[:count]
-            modifiers = decorate(state, cards, offers, upgrade_all=upgrade, card_reward=optional)
+            upgraded=[]
+            if getattr(state.rng, "native", False):
+                from game.headless.generation.odds import card_offers
+                offers,upgraded=card_offers(state,cards,pool,count,mode="base",uniform=rarity!="any",upgrade_roll=False)
+            else:
+                state.rng.shuffle("event.card_reward", pool)
+                offers = pool[:count]
+            modifiers = decorate(state, cards, offers, upgrade_all=upgrade, card_reward=optional, upgraded=upgraded)
             data["active"] = dict(
                 offers=offers,
                 modifiers=modifiers,
@@ -238,7 +243,11 @@ def execute(state, cards, operation):
         if name == "random":
             owned = {r.definition_id for r in state.relics}
             pool = state.config.reward_relics if state.config else ORDINARY_RELICS
-            name = state.rng.choice("event.relic", [n for n in pool if n not in owned] or ["circlet"])
+            if getattr(state.rng,"native",False):
+                from game.headless.generation.relics import pull
+                name=pull(state,allowed=pool)
+            else:
+                name = state.rng.choice("event.relic", [n for n in pool if n not in owned] or ["circlet"])
         relic = add_relic(state, name, cards=cards, allow_dead=True)
         return {"definition_id": name, "instance_id": relic.instance_id}
     elif op == "discard_potion":

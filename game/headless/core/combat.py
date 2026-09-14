@@ -46,6 +46,7 @@ class CombatEngine:
             raise ValueError("Turn energy and draw count must be nonnegative integers.")
         self.card_catalog = cards
         self.rng = make_rng(seed)
+        self.native_streams = None
         self.deck_factory = deck_factory
         self.enemy_factory = enemy_factory or SimpleEnemy
         self.encounter_factory = encounter_factory
@@ -221,7 +222,7 @@ class CombatEngine:
             setattr(self, name, value)
 
     def _build_player(self) -> Player:
-        return Player(Deck(deepcopy(self.deck_factory()), rng=self.rng), self.player_max_hp, self.energy_per_turn)
+        return Player(Deck(deepcopy(self.deck_factory()), rng=self.native_streams["shuffle"] if self.native_streams else self.rng, streams=self.native_streams), self.player_max_hp, self.energy_per_turn)
 
     def _build_encounter(self) -> list[Enemy]:
         result = list(self.encounter_factory(self.rng)) if self.encounter_factory else [self.enemy_factory()]

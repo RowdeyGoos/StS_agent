@@ -105,8 +105,8 @@ def prepare_unknown(state, graph, node):
     """Build an outcome on independent state; the caller commits at room entry."""
     if state.unknown_rooms is None or state.config is None or node.node_id in state.unknown_rooms.outcomes:
         raise ValueError("Unknown room requires an unresolved owned point.")
-    rng = GameRandomService(state.seed)
-    rng.restore(state.rng.snapshot())
+    from game.headless.core.rng import from_snapshot
+    rng = from_snapshot(state.rng.snapshot())
     unknown = deepcopy(state.unknown_rooms)
     previous = room_node(state, graph, state.current_node_id).kind if state.current_node_id is not None else None
     from game.headless.relics.run_rules import owned

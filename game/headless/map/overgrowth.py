@@ -12,6 +12,8 @@ WIDTH = 7
 
 
 def _gaussian_count(rng, mean, low, high):
+    if getattr(rng,"native",False):
+        return rng.stream("act1.map").gaussian_int(mean,1,low,high)
     # Native NextGaussianInt: rounded Box–Muller, rejection rather than clamping.
     for _ in range(10000):
         u = 1 - rng.random("act1.map")

@@ -194,7 +194,7 @@ def test_neow_to_all_bosses_with_synthetic_fights_restores_every_decision(seed,p
     events = list(run.state.event_progression.assignments.values())
     assert len(set(events[:2])) == min(2, len(events))
     assert run.state.event_progression.profile == EVENT_PROFILE
-    assert run.state.rng.request_count('act1.events') == 1
+    assert run.state.rng.request_count('act1.events') == len(run.state.config.event_pool) - 1
     if events:
         before = saved(run)
         bad = deepcopy(before)
