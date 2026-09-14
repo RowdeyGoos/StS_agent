@@ -12,7 +12,8 @@ def settle_enemies(player):
         if not enemies[slot].is_alive:
             player.statuses.decrement(name, player.statuses.get(name))
             del player.power_sources[name]
-    if not any(e.is_alive and not e.statuses.get("minion") for e in enemies):
+    if not any((e.is_alive and not e.statuses.get("minion")) or
+               e.prevents_combat_end for e in enemies):
         for enemy in enemies:
             if enemy.statuses.get("minion"):
                 enemy.hp = 0

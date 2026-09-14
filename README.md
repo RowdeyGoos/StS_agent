@@ -66,7 +66,8 @@ HP, opening AI and initial/refill shuffle order also match native method fixture
 Combat card-generation factories now match native pool, selection and RNG reference
 cases, including potion offers. Bottled Potential, Innate/Stratagem/Abacus ordering
 and generated Stomp entry now follow pinned source rules. Whole-run same-seed parity
-still requires dependent native interaction checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
+still requires broader interaction checks. Random/area/targeted multihit damage,
+deaths and Phrog spawns now match native attack-command reference cases; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
 
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain

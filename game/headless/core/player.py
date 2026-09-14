@@ -78,7 +78,10 @@ class Player:
     @property
     def combat_is_ending(self) -> bool:
         return not self.is_alive or (
-            self.combat_enemies is not None and not any(e.is_alive for e in self.combat_enemies)
+            self.combat_enemies is not None and not any(
+                e.is_alive or e.prevents_combat_end
+                for e in self.combat_enemies
+            )
         )
 
     def end_turn(self) -> None:

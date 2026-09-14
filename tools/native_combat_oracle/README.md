@@ -60,3 +60,38 @@ upgrades, free-cost flags and optional choices are covered by source inspection
 and Python action/restoration regressions. Splash's unsupported foreign pools
 and Entropy's transformation factory are outside this fixture. The original
 two-argument mode and its construction/shuffle output remain unchanged.
+
+
+## Native attack interactions
+
+Pass `interactions` as the third argument to emit
+[interaction vectors](../../tests/fixtures/headless_native_interaction_vectors.json).
+The existing verified assembly loader dispatches to `interactions.cs`; the two
+older modes and their outputs are unchanged.
+
+This mode enables the assembly's TestMode and sets the synthetic local net ID to
+zero in its disposable process. That ID is required: native AfterDeath returns
+without visiting any listeners when LocalContext.NetId is absent. It constructs
+fresh in-memory CombatState/Creature/Power objects and an explicit constructor-free
+Player (no Player constructor, SaveManager or profile access). Its synthetic
+PlayerCombatState supplies turn numbering for in-memory combat history. Player
+hook collections are intentionally inactive and empty: these are attack-command
+and enemy-power cases, not relic/card-play-wrapper cases.
+
+Each of four seeds executes eight attack recipes: Slippery, full/partial block,
+zero damage, changing random targets after death, and random/fixed/area attacks
+through Phrog's Infested spawn. Actual AttackCommand.Execute calls actual damage,
+death, native Wriggler construction and subsequent target selection. Initial HP
+and block are explicit fixtures. Animations and attack FX are omitted; TestMode
+suppresses presentation waits. Native hooks are not patched or bypassed.
+Results retain per-hit physical target slots, HP/block/overkill, surviving HP and
+powers, and target/Niche/AI counters and next-double suffixes.
+
+The IRunState proxy delegates listener enumeration to the actual combat state;
+its map-point-history entry is explicitly null. Unexpected context access throws.
+No existing player history, save files or Cloud data are read. Each command has a
+five-second task bound; invoke the tool in a disposable process. These records
+do not execute Horn/Hellraiser, detached hook choices, full card plays, turns,
+run boundaries or multiplayer. Horn's automatic ordering correction uses pinned
+source plus labeled Python regressions; native paused-choice scheduling remains
+an open implementation task.
