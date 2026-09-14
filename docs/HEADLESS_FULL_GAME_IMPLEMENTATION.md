@@ -533,8 +533,13 @@ Dependencies and acceptance cases are in the linked task.
   Overgrowth/Hive/Glory setup now matches actual assembly room/map generation
   across 13 seeds, including startup counters and map coordinates/edges/types.
   [Source and acceptance](evidence/native_initialization_2026_09_14.md).
-- **Still open:** profile-dependent lobby inputs, every gameplay caller's stream
-  and consumption, native runtime eligibility/unlock inputs and a complete native
+- **Runtime acquisition implemented for declared inputs (2026-09-14):** native
+  relic predicates/global bag pruning, five merchant exclusions, caller filters,
+  marked card-reward pool rules and potion batch eligibility have actual assembly
+  reference cases. Unlock epoch gates are inventoried; runtime retains all-unlocked
+  solo Ironclad inputs. [Evidence](evidence/runtime_eligibility_2026_09_14.md).
+- **Still open:** profile-dependent lobby/unlock inputs, every gameplay caller's
+  stream/consumption, complete interaction ordering and a complete native
   same-seed continuation trace. The acceptance below is not fully satisfied.
 - **Depends on:** HF-01's RNG findings and HF-02 reference vectors.
 - **Implement:** evolve [game rng] and its consumers for target seed conversion, integer
@@ -1457,12 +1462,12 @@ complete Act 1 map generation match direct assembly reference vectors. Lobby act
 selection, unlock/discovery histories and later-act gameplay remain outside that
 profile. See [evidence](evidence/native_initialization_2026_09_14.md).
 
-1. **HF-05B / runtime acquisition eligibility:** inventory native `IsAllowed` and
-   pool modifiers for the 161-relic solo scope, unlock epochs and card/potion
-   callers. Implement pure eligibility against declared run inputs, retaining
-   native bag skipping/depletion order. Acceptance: each predicate has an eligible
-   and ineligible case; source-derived reward/shop/event sequences match offers,
-   rarity offset, bags and stream counters after selection or skipping.
+1. **HF-05B is implemented for the declared all-unlocked solo profile:** 161 relic
+   predicates, merchant filters, global versus caller bag exclusions, Dingy Rug
+   reward contexts, Lasting Candy/White Star generation and potion eligibility.
+   Direct assembly vectors cover bags, pools, predicates and potion RNG suffixes;
+   all 18 relevant epoch gates are inventoried. Arbitrary progression inputs remain
+   a separate extension. [Evidence](evidence/runtime_eligibility_2026_09_14.md).
 2. **HF-05C / combat draw consumption:** compare native entity construction, HP,
    opening moves, random-target multihits, generation and reshuffles across combat
    boundaries. Correct individual consumers while preserving the seven owned
@@ -1477,7 +1482,8 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
 5. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with Act 2,
    then assign later-act-only shared events individually under HF-43.
 
-Current source/coverage: [native initialization](evidence/native_initialization_2026_09_14.md),
+Current source/coverage: [runtime acquisition](evidence/runtime_eligibility_2026_09_14.md),
+[native initialization](evidence/native_initialization_2026_09_14.md),
 [native RNG and probability](evidence/native_rng_2026_09_14.md),
 [events and Neow](evidence/events_neow_2026_09_14.md).
 Higher ascensions, other characters and later acts remain separate scope.

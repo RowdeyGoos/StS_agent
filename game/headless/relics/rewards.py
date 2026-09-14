@@ -4,14 +4,18 @@ from game.headless.relics.run_rules import has, owned, modify_new_card
 from game.headless.enchantments.base import can_enchant, enchant, record
 
 
-def extend_pool(state, cards, pool):
+def extend_pool(state, cards, pool, *, card_reward=True, custom_pool=False, no_pool_changes=False, card_kind=None):
     result = list(pool)
+    native = getattr(state.rng, "native", False)
+    if native and (not card_reward or custom_pool or no_pool_changes):
+        return result
     if has(state, "dingy_rug"):
         rarities = {cards.definition(name).rarity for name in result}
         result += [
             d.definition_id
             for d in sorted(cards.definitions, key=lambda d: d.definition_id)
             if d.pool == "colorless" and d.rarity in rarities and d.definition_id not in result
+            and (card_kind in (None, "any") or d.levels[0].kind == card_kind)
         ]
     return result
 
@@ -50,14 +54,25 @@ def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgra
     }
 
 
-def add_power_option(state, cards, offers, pool):
+def add_power_option(state, cards, offers, pool, *, kind="combat"):
     if not has(state, "lasting_candy") or owned(state, "lasting_candy").counter:
-        return
-    choices = [
-        name for name in pool if name not in offers and cards.definition(name).levels[0].kind == "power"
-    ]
+        return []
+    powers = [name for name in pool if cards.definition(name).levels[0].kind == "power"]
+    choices = [name for name in powers if name not in offers]
+    if not choices and powers and getattr(state.rng, "native", False):
+        # Native retries without the blacklist. Definition-ID reward decisions
+        # cannot yet distinguish independently modified duplicate options.
+        raise ValueError("Lasting Candy duplicate-power fallback requires instance-based reward choices.")
     if choices:
+        if getattr(state.rng, "native", False):
+            from game.headless.generation.odds import card_offers
+            # Native creates one custom-pool reward with Source.Other: base odds,
+            # no further pool/options hooks, but a normal upgrade roll.
+            extra, upgraded = card_offers(state, cards, choices, 1, kind=kind, mode="base")
+            offers.extend(extra)
+            return upgraded
         offers.append(state.rng.choice("relic.power_reward", choices))
+    return []
 
 
 def extra_rewards(state, cards, encounter, *, undamaged=False):
@@ -74,7 +89,8 @@ def extra_rewards(state, cards, encounter, *, undamaged=False):
             upgraded=[]
             if getattr(state.rng, "native", False):
                 from game.headless.generation.odds import card_offers
-                offers,upgraded=card_offers(state,cards,pool,kind=kind,uniform=name=="white_star")
+                offers,upgraded=card_offers(state,cards,pool,kind="boss" if name=="white_star" else kind)
+                upgraded.extend(add_power_option(state,cards,offers,pool,kind="boss" if name=="white_star" else kind))
             else:
                 state.rng.shuffle("reward_offer", pool)
                 offers = pool[:3]
@@ -169,8 +185,8 @@ def validate_extra(state, cards, rewards):
         if (
             reward["kind"] != "card"
             or not isinstance(reward["offers"], list)
-            or len(reward["offers"]) != 3
-            or len(set(reward["offers"])) != 3
+            or len(reward["offers"]) not in ((3, 4) if has(state,"lasting_candy") and owned(state,"lasting_candy").counter == 0 else (3,))
+            or len(set(reward["offers"])) != len(reward["offers"])
         ):
             raise ValueError("Invalid extra card offers.")
         sources.append(reward["source"])
