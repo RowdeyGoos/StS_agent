@@ -97,7 +97,7 @@ def validate_event(state, graph, *, cards=DEFAULT_CARDS):
     from game.headless.events.resources import capture, expected
     if (capture(state) is not None) != ("resources" in pending):
         raise ValueError("Event resource context is missing or unexpected.")
-    if "resources" in pending:
+    if "resources" in pending and not getattr(EVENTS[pending["definition_id"]], "uses_steps", False):
         initial = expected(state, pending, potion_changes=False)
         from game.headless.events.potion_context import apply_at
         apply_at(initial, state, pending, -1)

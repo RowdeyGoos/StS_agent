@@ -1,0 +1,61 @@
+{
+  "game_version": "0.107.1",
+  "steam_build": 23811903,
+  "assembly_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "scope": "solo Ironclad A0, all unlocked, normally Act-1-eligible events",
+  "overgrowth_events": [
+    "AromaOfChaos",
+    "ByrdonisNest",
+    "DenseVegetation",
+    "JungleMazeAdventure",
+    "LuminousChoir",
+    "MorphicGrove",
+    "SapphireSeed",
+    "SunkenStatue",
+    "TabletOfTruth",
+    "UnrestSite",
+    "Wellspring",
+    "WhisperingHollow",
+    "WoodCarvings"
+  ],
+  "shared_act1_events": [
+    "BrainLeech",
+    "RoomFullOfCheese",
+    "SelfHelpBook",
+    "SlipperyBridge",
+    "TeaMaster",
+    "TheFutureOfPotions",
+    "TheLegendsWereTrue",
+    "ThisOrThat"
+  ],
+  "later_act_shared_exclusions": [
+    "CrystalSphere",
+    "DollRoom",
+    "FakeMerchant",
+    "PotionCourier",
+    "RanwidTheElder",
+    "RelicTrader",
+    "StoneOfAllTime",
+    "Symbiote",
+    "WelcomeToWongos"
+  ],
+  "disabled_shared_exclusions": [
+    "WarHistorianRepy"
+  ],
+  "neow_native_solo_relics": 27,
+  "neow_default_catalog_relics": 26,
+  "neow_unsupported": [
+    "Kaleidoscope"
+  ],
+  "neow_multiplayer_exclusions": [
+    "MassiveScroll"
+  ],
+  "curse_transformation_pool": 18,
+  "modifier_curse_pool": 10,
+  "anchors": {
+    "Overgrowth.get_AllEvents": 100694203,
+    "ModelDb.get_AllSharedEvents": 100682568,
+    "CardFactory.GetDefaultTransformationOptions": 100695705,
+    "CardFactory.GetFilteredTransformationOptions": 100695708
+  }
+}

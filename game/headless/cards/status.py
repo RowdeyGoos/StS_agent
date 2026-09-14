@@ -13,7 +13,9 @@ GUILTY = CardDefinition("guilty", (CardSpec("Guilty", -1, "curse", uses_target=F
 CLUMSY = CardDefinition("clumsy", (CardSpec("Clumsy", -1, "curse", uses_target=False, ethereal=True),), ())
 INJURY = CardDefinition("injury", (CardSpec("Injury", -1, "curse", uses_target=False),), (), rarity="curse", pool="curse")
 GREED = CardDefinition("greed", (CardSpec("Greed", -1, "curse", uses_target=False, eternal=True),), (), rarity="curse", pool="curse", generate_in_combat=False)
-DEFINITIONS = (SLIMED, WOUND, DAZED, INFECTION, GUILTY, CLUMSY, INJURY, GREED)
+SPORE_MIND = CardDefinition("spore_mind", (CardSpec("Spore Mind", 1, "curse", uses_target=False, exhausts=True),), (), rarity="curse", pool="curse", generate_in_combat=False)
+POOR_SLEEP = CardDefinition("poor_sleep", (CardSpec("Poor Sleep", -1, "curse", uses_target=False, retain=True),), (), rarity="curse", pool="curse", generate_in_combat=False)
+DEFINITIONS = (SLIMED, WOUND, DAZED, INFECTION, GUILTY, CLUMSY, INJURY, GREED, SPORE_MIND, POOR_SLEEP)
 
 
 class SlimedCard(Card):

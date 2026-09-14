@@ -42,7 +42,7 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`core/player.py`](../game/headless/core/player.py), [`core/deck.py`](../game/headless/core/deck.py) | Combat player state, card zones and owned generated-card identities |
 | [`monsters/`](../game/headless/monsters/), [`encounters/`](../game/headless/encounters/) | Monster behavior and separate seeded encounter composition |
 | [`powers/status.py`](../game/headless/powers/status.py) | Implemented status rules and damage modifiers |
-| [`run/ancient.py`](../game/headless/run/ancient.py), [`events/progression.py`](../game/headless/events/progression.py) | Restricted starting choices and owned unique-event queue progression |
+| [`run/ancient.py`](../game/headless/run/ancient.py), [`events/progression.py`](../game/headless/events/progression.py) | Seeded Neow offers and owned unique-event queue progression |
 | [`run/state.py`](../game/headless/run/state.py), [`run/engine.py`](../game/headless/run/engine.py) | Persistent state and owned combat handoff |
 | [`run/config.py`](../game/headless/run/config.py), [`run/actions.py`](../game/headless/run/actions.py), [`run/flow.py`](../game/headless/run/flow.py) | Declared character/difficulty/pools and direct run command legality/dispatch |
 | [`run/deck.py`](../game/headless/run/deck.py), [`run/rewards.py`](../game/headless/run/rewards.py), [`run/rooms.py`](../game/headless/run/rooms.py) | Persistent mutations, reward resolution and room transitions |
@@ -240,7 +240,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v11 and run v21. Legacy RL encoders retain their frozen vocabulary.
+combat v12 and run v22. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -319,11 +319,10 @@ Juzu's unknown-room combat exclusion and Winged Boots' three non-edge travels.
 Relic-dependent content includes Sharp, Adroit, Momentum, Royally Approved, Swift,
 Nimble and Glam enchantments, Eternal Greed, Injury, Neow's Fury and Potion-Shaped
 Rock. Generated runs use the complete ordinary potion pool;
-Neow's Bones generates from the implemented modifier-curse subset. Completing
-relic rules does not supply missing curse/foreign-character catalogs or
-replace the current fixed Neow starting offer profile with native offer generation.
-Event-only relics have executable pickup/combat rules even where their granting
-event has not yet been implemented.
+Neow's Bones generates from all ten native modifier-eligible curses after its
+relic selections finish. All 18 curse-pool definitions are available for curse
+transformations, including playable Spore Mind/Enthralled and Eternal results.
+Foreign-character pools remain unavailable in the default catalog.
 
 See the [scope inventory](../tests/fixtures/headless_relic_scope.json),
 [combat tests](../tests/headless/test_relic_combat.py),
@@ -379,20 +378,20 @@ assignments, topology and RNG persist through JSON continuation.
 
 This profile explicitly assumes all encounters have been seen and skips native
 first-run overrides. By default it retains the post-Ancient fixture start; the
-optional Neow start below adds the first supported rewards. The event profile
-`supported_events_all_unlocked_v6` shuffles `RunConfig.event_pool` once. The
+optional Neow start below generates the supported native offer families. The event profile
+`supported_events_all_unlocked_v7` shuffles `RunConfig.event_pool` once. The
 generated pool contains Jungle Maze Adventure, Aroma of Chaos, Morphic Grove and
-Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue, Dense Vegetation, Sapphire Seed and Byrdonis Nest.
+Tablet of Truth, Whispering Hollow, Wellspring, Slippery Bridge, Sunken Statue, Dense Vegetation, Sapphire Seed and Byrdonis Nest, plus the ten definitions listed under [remaining Act 1 events](#remaining-act-1-events).
 Morphic Grove requires at least 100 gold and two transformable cards; Whispering
 Hollow requires 44 gold; Slippery Bridge requires floor greater than six and a
 removable card. Byrdonis Nest excludes an owned event pet or Byrdonis Egg. The
-other definitions inherit unconditional native eligibility. On event entry,
+remaining entry predicates include Choir gold/relic availability, Unrest missing HP, Wood Carvings removable Basics, Tea Master gold, Future of Potions inventory and Legends HP/deck requirements. On event entry,
 the queue skips previously visited or ineligible definitions; after a full
 exhausted pass it permits the current candidate even if visited or ineligible,
 matching the native fallback. `state.event_progression` owns queue order, cursor,
-node assignments and plain entry conditions (gold and transformable-card count).
+node assignments and plain entry conditions (resources, deck eligibility and inventory counts).
 Restore replays selection against those conditions and visited room outcomes. Reads and failed room construction never advance the queue.
-Remaining event content, unlock epochs and additional eligibility rules remain open. Card,
+Later-act event content, unlock epochs and native pool ordering remain open. Card,
 item, shop and reward pools retain their restrictions. Juzu Bracelet and Winged Boots now modify unknown/travel behavior; tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
 `RunConfig.relic_fallback="circlet"`, preventing exhausted relic rewards
@@ -411,30 +410,29 @@ from game.headless.run.actions import ChooseAncientRelic
 from game.headless.run.engine import RunEngine
 
 run = RunEngine.ironclad_act1(seed=2, ancient_profile=NEOW_PROFILE)
-run.apply(ChooseAncientRelic("nutritious_oyster"))
-# 91/91 HP; the next legal choices are the generated map entrances.
+run.apply(next(a for a in run.legal_actions() if isinstance(a, ChooseAncientRelic)))
+# Resolve any offered relic card selections before choosing a map entrance.
 ```
 
 ```bash
 sts-headless-play --route overgrowth-generated --ancient neow --seed 2 --rest-choice rest --verify-restore
 ```
 
-The `neow_pickups_restricted_v1` profile offers Golden Pearl (+150 gold) and
-Nutritious Oyster (+11 maximum/current HP), using the ordinary owned relic pickup
-rules. Selection is mandatory before map entry and grants exactly one relic.
-`run/ancient.py` owns the pending start and acquisition history; it stores no
-callbacks. JSON restore resumes either the unchosen start or the selected run
-without granting the reward again. Effects carry into the first combat. Removing
-an obtained relic does not reverse its upon-pickup effect.
+`neow_solo_all_unlocked_v2` generates two positive offers and one curse offer.
+It filters eligibility before choosing the curse, applies paired exclusions,
+then randomizes Lava Rock/Small Capsule, Oyster/Humidifier and Talisman/Pomander
+before shuffling the positive pool. Large Capsule excludes its conflicting pair.
+The current catalog supports 26 of 27 solo Neow relics; Kaleidoscope requires
+foreign character pools and is explicitly excluded. Massive Scroll is multiplayer-only.
+The default assumes all content is unlocked; native RNG parity is not claimed.
 
-These are fixed supported positive choices, **not native Neow's complete offer
-generation** (two randomized positives and one curse). The Neow relic rules are
-implemented separately; complete curse pools, offer exclusions, dialogue and unlock
-behavior remain content tasks.
-`ancient_profile=None` (the factory default), or omitting `--ancient`, explicitly
-retains the earlier post-Ancient fixture. The demo chooses Golden Pearl; callers
-can select either legal action. No profile/save data is read.
-See [source and continuation evidence](evidence/neow_event_progression_2026_09_13.md).
+Selection and nested card/relic rewards use the existing owned pickup queue.
+Map entry remains blocked until acquisition finishes. Restore binds offered
+choices to the seed, content availability, selected relic and pickup history.
+The historical `neow_pickups_restricted_v1` fixture retains its two fixed offers.
+`ancient_profile=None` remains the explicit post-Ancient factory default;
+`--ancient neow` selects the randomized profile. No player save/profile is read.
+See [source, tests and limits](evidence/events_neow_2026_09_14.md).
 
 ## Complete Overgrowth encounter roster at A0
 
@@ -484,6 +482,42 @@ encounter of that room kind. Defaults preserve the earlier route. The route stil
 has five fights; a complete native Act 1 requires map/progression and remaining
 content work, not another enemy backend.
 
+## Remaining Act 1 events
+
+The default generated catalog contains all 13 Overgrowth events and eight shared
+events normally eligible in Act 1 (21 total), under the all-unlocked solo scope.
+The ten additions are:
+
+| Event | Implemented decisions |
+| --- | --- |
+| Luminous Choir | Remove two cards and gain Spore Mind, or buy a random relic for the captured price |
+| Unrest Site | Heal the missing HP captured at entry and gain Poor Sleep, or trade maximum HP for a relic |
+| Wood Carvings | Transform a Basic into Peck/Toric Toughness, or enchant a card with Slither |
+| Brain Leech | Choose a character card, or take damage for an optional colorless reward |
+| Room Full of Cheese | Choose two of eight Common cards, or take damage for Chosen Cheese |
+| Self Help Book | Apply Sharp, Nimble or Swift to two eligible cards |
+| Tea Master | Buy Bone Tea/Ember Tea or take Discourtesy |
+| The Future of Potions | Trade a captured potion for an upgraded card reward matching its rarity and assigned type |
+| The Legends Were True | Take Spoils Map or lose HP for an ordinary potion |
+| This or That | Trade HP for gold, or gain a random relic followed by Clumsy |
+
+Content lives in `events/act1_content.py`. `events/steps.py` executes small plain
+operations and pauses through existing card, potion and relic choices. Receipts,
+selection ownership and resource checkpoints reject inconsistent restores;
+checkpoints are consistency checks, not authentication against coordinated edits.
+Future of Potions freezes manual potion use/discard until its event finishes.
+Lethal damage preserves unconditional native resource/relic effects while blocking
+new card choices. Fairy revival continues the same branch.
+
+Supporting rules include Peck's hits, Toric Toughness's captured block for two
+future block-clear hooks (including Barricade), Slither's combat-long 0–3 cost
+reroll after early draw autoplay, and the complete curse catalog. End-turn curse
+work preserves post-autoplay Regret capture, ethereal-first ordering and remaining
+effects across reactive draws. Neow's Bones uses the separate ten-card modifier pool.
+Spoils Map is carried as its native quest card; its Act 2 route/gold quest is outside
+this Act 1 implementation. Later-act shared events and disabled events are excluded.
+Card reward probabilities, unlock epochs and native RNG parity remain separate work.
+
 ## Ordinary events
 
 The Act 1 route offers Jungle Maze Adventure on the left and Aroma of Chaos on
@@ -513,12 +547,11 @@ precedes an owned RNG draw; failed transforms preserve deck, allocator and RNG.
 
 The Ironclad transformation pool contains all 80 common/uncommon/rare cards.
 Aroma, Morphic Grove and Whispering Hollow also accept basic and Ancient Ironclad
-sources, implemented colorless/event cards and the supported curses Guilty/Clumsy/Injury; Eternal Greed cannot be transformed.
+sources, implemented colorless/event cards and all 18 curses. Eternal cards cannot be selected as transformation sources; a transformation can produce an Eternal curse.
 Giant Rock transforms through the supported colorless pool.
-Curse transformations use their own two-card subpool, exclude the original
+Curse transformations use their own 18-card pool, exclude the original
 definition and reset the replacement lifetime. Missing catalog content or
-unsupported sources reject entry atomically. Full curse pools, Eternal
-and transformation hooks remain open. The demo chooses Maintain Control, prioritizing Bash. Selector candidates
+unsupported sources reject entry atomically. Native generation probabilities remain open. The demo chooses Maintain Control, prioritizing Bash. Selector candidates
 and resolved results are plain saved data checked against the permanent deck.
 See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md).
 
@@ -527,7 +560,7 @@ See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md
 dispatch. The older primitive event fixture still uses `run/rooms.py`; native
 content is not dispatched by its synthetic option dictionary. Native event pool
 unlock filters, additional conditional eligibility, multiplayer voting and the rest of the
-Overgrowth event catalog remain open; the generated route now has owned
+later-act event catalog remain open; the generated route now has owned
 unique-event progression and exhausted-pool repetition. See [source and validation evidence](evidence/first_event_2026_09_13.md).
 
 ## Tablet of Truth and Morphic Grove
@@ -558,13 +591,12 @@ while preparing either replacement preserves the paid selection, deck and RNG.
 The event modules own their content rules. Shared pool validation lives in
 `events/transformation.py`; eligibility entry conditions live in
 `events/eligibility.py`. Pending decisions and results contain plain data, without
-callbacks. The demo chooses Smash and Loner. Full transformation pools, Eternal
-and other item/card modifiers remain open.
+callbacks. The demo chooses Smash and Loner. Foreign-character pools and native generation probabilities remain open.
 See [pinned source and validation](evidence/overgrowth_events_2026_09_13.md).
 
 ## Whispering Hollow, Wellspring, Slippery Bridge and Sunken Statue
 
-These four definitions form part of the eleven-event default generated pool. Each
+These four definitions form part of the 21-event default generated pool. Each
 owns plain pending data, exact commands and JSON continuation; authored fixtures
 retain their explicit pools. Shared `events/potion_rewards.py` and
 `events/deck_choice.py` handle acquisition and mandatory single-card selections.
@@ -590,9 +622,7 @@ Potion bundles expose `claim_potion_N` and `finish_rewards`. Full inventory remo
 claim actions until `DiscardPotion` frees a slot; finishing skips unclaimed items.
 Discarding a claimed potion never makes its reward claimable again. The supported
 reward pool now contains all 48 ordinary Ironclad potions, with native rarity
-distribution. Curse transformations likewise use only Guilty/Clumsy. Curse
-prevention/replacement, Eternal, additional item hooks and native RNG parity remain
-open. Empty-deck Slippery Bridge fallback is explicitly unsupported.
+distribution. Curse transformations use all 18 native definitions and reject Eternal source cards. Native RNG parity remains open. Empty-deck Slippery Bridge fallback is explicitly unsupported.
 
 `run/lifecycle.py` handles master-deck expiry and elite relic evolution after
 combat; combat copies do not age the persistent cards. The demo chooses Gold,
@@ -696,7 +726,7 @@ state lives in `run/hatching.py`. The relic pickup uses shared deterministic dec
 replacement and the owning engine's card catalog. Pending snapshots bind original
 cards and prior relic IDs to the fresh grant; missing content and malformed results
 reject without partial mutation. The Nest batch introduced run v17/event profile v6. Current combat/run formats
-are described below; event profile v6 remains current.
+are described below; event profile v7 is current.
 See [source and validation](evidence/byrdonis_nest_2026_09_13.md).
 
 ## Treasure rooms
@@ -732,8 +762,7 @@ its displayed price once and marks that exact offer sold. `BeginShopRemoval()`
 opens a master-deck choice; `ChooseShopRemoval(instance_id)` permanently removes
 that instance. `ChooseShopRemoval(None)` cancels for free. Removal costs 75 gold
 plus 25 per previous successful shop removal and is available once per shop.
-All currently implemented cards are removable; native Eternal cards will need
-eligibility support when introduced. `LeaveShop()` returns to the map. While
+Eternal cards are excluded from removal choices. `LeaveShop()` returns to the map. While
 selecting a removal, only removal/cancel commands are legal.
 
 Stock is explicitly authored: one common, uncommon and rare card from the full

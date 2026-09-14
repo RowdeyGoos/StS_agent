@@ -3,7 +3,7 @@
 from game.headless.core.resolution import push, move_out
 from game.headless.core.choices import begin
 
-INSTANCED = frozenset(("automation", "panache", "rolling_boulder", "the_bomb"))
+INSTANCED = frozenset(("automation", "panache", "rolling_boulder", "the_bomb", "toric_toughness"))
 NAMES = INSTANCED | frozenset(
     (
         "calamity",

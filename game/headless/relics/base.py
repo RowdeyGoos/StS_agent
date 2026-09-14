@@ -208,8 +208,8 @@ RELICS = MappingProxyType({
     "small_capsule": RelicDefinition("small_capsule", rarity="ancient"),
     "stone_humidifier": RelicDefinition("stone_humidifier", rarity="ancient"),
     "winged_boots": RelicDefinition("winged_boots", rarity="ancient", counter_limit=3),
-    "chosen_cheese": RelicDefinition("chosen_cheese", rarity="event"),
-    "bone_tea": RelicDefinition("bone_tea", rarity="event", counter_limit=1),
-    "ember_tea": RelicDefinition("ember_tea", rarity="event", counter_limit=5),
-    "tea_of_discourtesy": RelicDefinition("tea_of_discourtesy", rarity="event", counter_limit=1),
+    "chosen_cheese": RelicDefinition("chosen_cheese", allow_duplicates=True, rarity="event"),
+    "bone_tea": RelicDefinition("bone_tea", allow_duplicates=True, rarity="event", counter_limit=1),
+    "ember_tea": RelicDefinition("ember_tea", allow_duplicates=True, rarity="event", counter_limit=5),
+    "tea_of_discourtesy": RelicDefinition("tea_of_discourtesy", allow_duplicates=True, rarity="event", counter_limit=1),
 })

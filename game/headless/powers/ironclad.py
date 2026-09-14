@@ -93,10 +93,14 @@ def local_cost(card, *, clamp=True):
         return card.cost
     if v.free_this_turn or ((v.free_until_played or v.free_this_combat) and v.turn_cost_override is None):
         return 0
-    value = card.cost if v.turn_cost_override is None else v.turn_cost_override
+    value = card.cost if v.combat_cost_override is None else v.combat_cost_override
+    if v.turn_cost_override is not None:
+        value = v.turn_cost_override
     value += v.cost_change + v.combat_cost_change
     if v.turn_cost_override is not None:
         value -= v.override_turn_baseline + v.override_combat_baseline
+    elif v.combat_cost_override is not None:
+        value -= v.combat_override_baseline
     return max(0, value) if clamp else value
 
 
@@ -212,6 +216,9 @@ def start_turn(p, draw_count):
     from game.headless.relics.turns import start_turn as relic_start
     if r.round_number and not r.powers.get("barricade"):
         p.block = min(10, p.block) if has(p, "sturdy_clamp") else 0
+    if r.round_number:
+        from game.headless.cards.event_effects import after_block_cleared
+        after_block_cleared(p)
     p.energy = (p.energy if r.round_number and has(p, "ice_cream") else 0) + p.energy_per_turn + r.powers.get("pyre", 0)
     from game.headless.potions.powers import start_turn as potion_start
     draw_count = potion_start(p, draw_count)

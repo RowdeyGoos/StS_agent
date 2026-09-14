@@ -8,6 +8,7 @@ from game.headless.powers.colorless import NAMES, INSTANCED, name
 from game.headless.core.choice_snapshots import validate_selection, valid_power
 
 TASK_ARITIES = {
+    "end_hand_card": 1,
     "potion_effect": 2,
     "potion_finish": 1,
     "potion_status": 4,
@@ -36,6 +37,7 @@ TASK_ARITIES = {
     "selected": 4,
     "energy": 1,
     "after_draw": 0,
+    "after_draw_card": 1,
     "start_power": 1,
     "early_end": 1,
     "catastrophe": 1,
@@ -67,12 +69,17 @@ def restore_rules(record, player):
         "plays_finished",
         "power_sequence",
         "gold_gained",
+        "gold_available",
+        "gold_lost",
+        "end_turn_hand_size",
         "potion_slots",
         "potion_capacity",
         "round_number",
     ):
         if type(getattr(r, key)) is not int or getattr(r, key) < 0:
             raise ValueError("Invalid rule counter.")
+    if r.gold_lost > r.gold_available + r.gold_gained or r.end_turn_hand_size > 10:
+        raise ValueError("Invalid turn resource state.")
     if type(r.player_side) is not bool or type(r.turn_ending) is not bool:
         raise ValueError("Invalid combat side state.")
     if r.attacks_finished > r.attacks_started:
@@ -152,6 +159,10 @@ def restore_rules(record, player):
     if not isinstance(r.tasks, list):
         raise ValueError("Invalid work queue.")
     known = {c.instance_id: c for c in player.deck.all_cards()}
+    from game.headless.cards.curses import END_HAND_CURSES
+    if not isinstance(r.end_hand_remaining, list):
+        raise ValueError("Invalid remaining end-of-hand effects.")
+    end_hand_ids = []
     for task in r.tasks:
         if (
             not isinstance(task, list)
@@ -164,6 +175,14 @@ def restore_rules(record, player):
         if any(type(v) not in (int, bool, str, type(None)) for v in task):
             raise ValueError("Task must contain plain values.")
         op, *args = task
+        if op == "after_draw_card" and args[0] not in player.deck._allocated_ids:
+            raise ValueError("Unowned drawn-card hook.")
+        if op == "end_hand_card":
+            source = known.get(args[0])
+            if (source is None or args[0] in end_hand_ids or not r.turn_ending
+                    or not (source.spec.end_turn_damage or source.definition.definition_id in END_HAND_CURSES)):
+                raise ValueError("Unowned end-of-hand effect.")
+            end_hand_ids.append(args[0])
         if op == 'relic_damage' and (args[0] not in r.relic_data or type(args[1]) is not int or args[1] < 0 or type(args[2]) is not bool or type(args[3]) is not bool or (args[4] is not None and (type(args[4]) is not int or not 0 <= args[4] < len(player.combat_enemies)))):
             raise ValueError('Invalid owned relic damage continuation.')
         if op in (
@@ -246,6 +265,8 @@ def restore_rules(record, player):
             raise ValueError("Invalid queued flag.")
         if op == "generate" and any(type(v) is not bool for v in args[1:]):
             raise ValueError("Invalid generation flags.")
+    if end_hand_ids != r.end_hand_remaining:
+        raise ValueError("Missing end-of-hand continuation.")
     for identity, frame in r.plays.items():
         control = [
             t

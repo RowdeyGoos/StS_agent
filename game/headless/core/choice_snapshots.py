@@ -36,7 +36,7 @@ def validate_selection(r, p):
         raise ValueError("Invalid combat potion state.")
     expected_aux = {"crimson_mantle", "inferno", "block_gains"}
     for key in r.powers:
-        if name(key) in ("automation", "panache", "the_bomb"):
+        if name(key) in ("automation", "panache", "the_bomb", "toric_toughness"):
             expected_aux.add(key)
         if name(key) == "panache":
             expected_aux.add(key + ".ready")
@@ -48,6 +48,8 @@ def validate_selection(r, p):
             maximum = {"automation": 10, "panache": 5, "the_bomb": 3}[kind]
             if key not in r.auxiliaries or not 1 <= r.auxiliaries[key] <= maximum:
                 raise ValueError("Invalid power timer.")
+        if kind == "toric_toughness" and (key not in r.auxiliaries or not 1 <= r.powers[key] <= 2):
+            raise ValueError("Invalid Toric Toughness instance.")
         if kind == "panache" and r.auxiliaries.get(key + ".ready") not in (0, 1):
             raise ValueError("Invalid Panache activation.")
     s = r.selection

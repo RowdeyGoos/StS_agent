@@ -127,9 +127,10 @@ def test_curse_transform_uses_curse_pool_and_resets_lifetime(event,option_id):
     run=start(event,card_ids=['guilty'],gold=150)
     run.state.deck[0].combats_seen=3
     step(run,opt(run,option_id))
-    assert run.state.deck[0].definition.definition_id in ('clumsy', 'injury')
+    from game.headless.cards.curses import ALL_CURSES
+    assert run.state.deck[0].definition.definition_id in set(ALL_CURSES)-{'guilty'}
     assert run.state.deck[0].combats_seen==0
-    assert run.state.deck[0].spec.kind=='curse' and run.state.deck[0].cost==-1
+    assert run.state.deck[0].spec.kind=='curse'
 
 
 def test_bridge_prefers_nonbasic_then_excludes_previous_definition_and_skipped_cards():
@@ -228,7 +229,7 @@ def test_entry_predicates_skip_ineligible_events(gold,floor,expected):
 @pytest.mark.parametrize('seed,path',[(0,'left'),(2,'right'),(4,'left'),(7,'right'),(9,'left')])
 def test_expanded_generated_routes_restore_every_decision(seed,path):
     run=RunEngine.ironclad_act1(seed=seed)
-    assert len(run.state.config.event_pool)==11
+    assert len(run.state.config.event_pool)==21
     for _ in range(500):
         if run.state.phase is RunPhase.ACT_COMPLETE:break
         if run.state.phase is RunPhase.COMBAT:win(run)

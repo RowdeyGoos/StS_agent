@@ -16,7 +16,10 @@ from game.headless.events.dense_vegetation import DenseVegetation
 from game.headless.events.sapphire_seed import SapphireSeed
 from game.headless.events.byrdonis_nest import ByrdonisNest
 
+from game.headless.events.act1_content import DEFINITIONS as ACT1_EVENTS
+
 EVENTS = MappingProxyType({
+    **{d.definition_id: d for d in ACT1_EVENTS},
     "jungle_maze_adventure": JungleMazeAdventure(), "aroma_of_chaos": AromaOfChaos(),
     "morphic_grove": MorphicGrove(), "tablet_of_truth": TabletOfTruth(),
     "whispering_hollow": WhisperingHollow(), "wellspring": Wellspring(),

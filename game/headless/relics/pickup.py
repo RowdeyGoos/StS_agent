@@ -321,13 +321,15 @@ def validate(state, cards):
         elif work.get("kind") == "effect":
             if (
                 set(work) != {"source", "kind", "operation", "values"}
-                or work["operation"] not in ("cards", "relic")
+                or work["operation"] not in ("cards", "relic", "curse")
                 or not isinstance(work["values"], list)
                 or any(not isinstance(v, str) for v in work["values"])
             ):
                 raise ValueError("Invalid automatic relic acquisition.")
             name = owners[work["source"]]
-            if work["operation"] == "cards":
+            if work["operation"] == "curse":
+                valid = name == "neows_bones" and work["values"] == []
+            elif work["operation"] == "cards":
                 for value in work["values"]:
                     cards.definition(value)
                 valid = (

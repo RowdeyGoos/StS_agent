@@ -22,6 +22,12 @@ def move_out(player, card):
 def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     if player.combat_is_ending:
         return
+    from game.headless.cards.curses import can_play
+    if not can_play(player, card, auto=auto):
+        if auto:
+            move_out(player, card)
+            player.deck.exhaust_card(card) if force_exhaust or card.exhausts else player.deck.discard_card(card)
+        return
     if card.cost < 0 and not card.spec.x_cost:
         if auto:
             move_out(player, card)
@@ -204,8 +210,8 @@ def execute(p, task):
         drawn = p.deck.draw(1)
         if not drawn:
             return
-        push(p, ["after_draw"], ["draw", count - 1, hand_draw])
         card = drawn[0]
+        push(p, ["after_draw_card", card.instance_id], ["after_draw"], ["draw", count - 1, hand_draw])
         if r.powers.get("hellraiser") and card.definition.strike:
             push(p, ["autoplay", card.instance_id, False])
     elif op == "autoplay":
@@ -279,14 +285,19 @@ def execute(p, task):
                 card = p.deck.rng.choice(choices)
                 push(p, ["autoplay", card.instance_id, False], ["stampede", count - 1])
     elif op == "discard_hand":
-        for card in tuple(p.hand):
-            if p.combat_is_ending:
-                break
-            if card.spec.end_turn_damage:
-                p.take_damage(card.spec.end_turn_damage, is_attack=False)
         from game.headless.relics.combat import has
-        ethereal = [c.instance_id for c in p.hand if c.spec.ethereal or (has(p, "ghost_seed") and (c.definition.strike or c.definition.defend))]
-        push(p, *[["ethereal", i] for i in ethereal], ["discard_remaining"])
+        from game.headless.cards.curses import END_HAND_CURSES
+        r.end_turn_hand_size = len(p.hand)
+        r.end_hand_remaining = [c.instance_id for c in p.hand if c.spec.end_turn_damage or c.definition.definition_id in END_HAND_CURSES]
+        ethereal = [c.instance_id for c in p.hand if c.instance_id not in r.end_hand_remaining and (c.spec.ethereal or (has(p, "ghost_seed") and (c.definition.strike or c.definition.defend)))]
+        push(p, *[["ethereal", i] for i in ethereal], *[["end_hand_card", i] for i in r.end_hand_remaining], ["discard_remaining"])
+    elif op == "end_hand_card":
+        from game.headless.cards.curses import end_in_hand
+        if not r.end_hand_remaining or r.end_hand_remaining.pop(0) != args[0]:
+            raise ValueError("Invalid end-of-hand continuation.")
+        card = find(p, args[0])
+        if card is not None:
+            end_in_hand(p, card)
     elif op == "ethereal":
         (identity,) = args
         card = find(p, identity)
@@ -329,6 +340,11 @@ def execute(p, task):
         colorless.start_power(p, args[0])
     elif op == "early_end":
         colorless.early_end(p, args[0])
+    elif op == "after_draw_card":
+        from game.headless.enchantments.base import after_draw
+        card = find(p, args[0])
+        if card is not None:
+            after_draw(card, p.deck)
     elif op == "after_draw":
         colorless.after_draw(p)
     elif op == "energy":

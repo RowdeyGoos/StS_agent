@@ -950,12 +950,12 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-28 — Initialize declared runs and starting choices
 
-- **Partial:** optional `neow_pickups_restricted_v1` grants Golden Pearl or
-  Nutritious Oyster through owned inventory before unlocking the first map row.
-  Both effects and pending/selected states restore through the first fight and
-  Act 1. `ancient_profile=None` retains the post-Ancient fixture. Native randomized
-  two-positive/one-curse offers, remaining relic effects and unlock/modifier inputs
-  remain open; see [evidence](evidence/neow_event_progression_2026_09_13.md).
+- **Act 1 implemented:** `neow_solo_all_unlocked_v2` generates two positive
+  offers and one curse, including eligibility/exclusions and nested pickup work.
+  Default catalog supports 26/27 solo relics; Kaleidoscope awaits foreign card pools.
+  The old restricted and post-Ancient fixtures remain explicit. Unlock epochs,
+  other characters/ancients and exact native RNG remain open.
+  [Evidence](evidence/events_neow_2026_09_14.md).
 
 - **Depends on:** HF-01/04 and starter content, including HF-24. A first starting
   choice can be implemented with HF-39; HF-43 later completes the offer catalog.
@@ -1249,6 +1249,12 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-43 — Complete the event and ancient catalog
 
+- **Act 1 implemented:** all 13 Overgrowth and eight normally Act-1-eligible
+  shared events, including their card/enchantment/relic dependencies and Neow.
+  All 18 curses and ten modifier-eligible curses have distinct catalogs.
+  Spoils Map's later-act quest, later-act events, progression unlocks and native
+  probability/RNG parity remain open. [Evidence](evidence/events_neow_2026_09_14.md).
+
 - **Depends on:** HF-01/24/25/28/39–42 as applicable.
 - **Implement:** instantiate a ticket for each reachable event/ancient branch in
   the [retained inventory][event-inventory], incorporating the corrections linked
@@ -1424,31 +1430,26 @@ Dependencies and acceptance cases are in the linked task.
 
 ## Next bounded implementation assignment
 
-The next Act 1 batch should cover **remaining event content and its permanent effects**:
+The Act 1 event catalog and Neow are implemented. The next batch should address
+**native generation fidelity and end-to-end acceptance**, with separate tasks:
 
-1. **HF-41 / resuming event combat:** select the next native caller and verify its
-   terminal/resume policy and special rewards. Extend the existing owned event
-   combat path with the concrete parent continuation. Accept victory, defeat,
-   reward completion and restore inside both the child and resumed parent.
-2. **HF-40 / additional enchantment event:** choose a remaining Overgrowth caller,
-   inspect its exact enchantment, eligibility and upgrade interaction, then extend
-   the existing per-card enchantment catalog. Accept selection, upgrades, repeated
-   plays, transform/removal and save/restore through the next combat.
-3. **HF-43 / Luminous Choir:** inspect and implement each required curse/relic
-   before adding both event branches. Reuse master-deck lifetime and owned relic
-   counters where applicable; do not generalize from names without source evidence.
-4. **HF-24–27 / pool completion:** add remaining curse and foreign-character content to replace
-   the current Fire/Block, Guilty/Clumsy and Finesse/Flash of Steel/Shockwave subpools; verify actual reward weights,
-   unlocks, exclusions and prevention/replacement hooks separately from RNG parity.
-5. **HF-28 / Neow:** expand native three-offer generation, including the negative
-   offer and required relic/card effects. Preserve the explicit two-positive and
-   post-Ancient fixtures. Full-offer distribution remains a separate acceptance case.
+1. **HF-24–27 / reward generation:** pin native rarity weights, pool modifiers,
+   exclusions, depleted pools and unlock inputs for combat/shop/event rewards.
+   Reuse current catalogs; test named seeds and empty pools independently of RNG parity.
+2. **HF-05 / RNG parity:** map owned streams to pinned native streams, algorithms
+   and call order. Add differential cases for Neow offers and representative event
+   rewards before changing the generator globally.
+3. **HF-28 / Kaleidoscope:** implement the required foreign-character card pools
+   and combat rules, then enable its existing Neow eligibility. Accept each foreign
+   transformed card through combat and exact restore.
+4. **Act 1 completion gate:** run a declared seed/path matrix across all three
+   bosses, events, shops, pickups and choices; inventory actual mismatches against
+   native source rather than treating a demo victory as fidelity proof.
+5. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with the Act 2
+   route, then assign later-act-only shared events individually under HF-43.
 
-Each event assignment must pin its native branches, implement dependencies, test
-entry predicates and exhausted-pool fallback, and verify installed acquisition
-through the next room. Current content coverage: [Byrdonis Nest](evidence/byrdonis_nest_2026_09_13.md);
-event-combat coverage: [Dense Vegetation](evidence/dense_vegetation_2026_09_13.md).
-Native RNG parity remains HF-05; later acts and higher ascensions stay separate.
+Current source/coverage: [events and Neow](evidence/events_neow_2026_09_14.md).
+Higher ascensions, other characters and later acts remain separate scope.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py
