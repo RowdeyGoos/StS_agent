@@ -119,17 +119,8 @@ def effect(p, identity, index):
             for definition in select_cards(options, p.deck.generation_rng, 1, distinct=True):
                 create(p, definition).combat_state.free_this_turn = True
     elif op == "shuffle_hand":
-        p.deck.draw_pile.extend(p.hand)
-        p.hand.clear()
-        # Native Shuffle merges discard into draw as well.
-        p.deck.draw_pile.extend(p.deck.discard_pile)
-        p.deck.discard_pile.clear()
-        p.deck.rng.shuffle(p.deck.draw_pile)
-        if has(p, "the_abacus"):
-            p.gain_block(6)
-        if r.powers.get("stratagem"):
-            count = r.powers["stratagem"]
-            begin(p, "stratagem", tuple(p.deck.draw_pile), minimum=count, maximum=count)
+        from game.headless.core.piles import shuffle
+        shuffle(p, include_hand=True)
     elif op == "random_costs":
         for card in p.hand:
             if card.cost >= 0 and not card.spec.x_cost:

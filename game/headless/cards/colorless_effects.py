@@ -21,11 +21,12 @@ def pool(p, family="ironclad", kind=None):
 def create(p, definition, *, upgraded=False, destination="hand"):
     card = catalog(p).create(definition.definition_id, upgrade_level=int(upgraded))
     p.deck._ensure_identity(card)
-    if card.definition.definition_id == "stomp":
-        card.combat_state.cost_change = -p.rules.attacks_finished
     if destination == "hand" and len(p.hand) >= 10:
         destination = "discard_pile"
     getattr(p.deck, destination).append(card)
+    if destination != "offered":
+        from game.headless.core.piles import after_generated_entry
+        after_generated_entry(p, card)
     return card
 
 

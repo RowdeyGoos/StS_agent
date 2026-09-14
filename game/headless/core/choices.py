@@ -76,9 +76,13 @@ def resolve(p, identity, operation, destination, free):
 
         transform(p, card)
     else:
+        generated = card in p.deck.offered
         move_out(p, card)
         if free and (free != "free_until_played" or card.spec.cost >= 0):
             setattr(card.combat_state, free, True)
         if destination == "hand" and len(p.hand) >= 10:
             destination = "discard_pile"
         getattr(p.deck, destination).append(card)
+        if generated:
+            from game.headless.core.piles import after_generated_entry
+            after_generated_entry(p, card)

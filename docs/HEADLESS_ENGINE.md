@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v15 / run v27**.
+than being silently reinterpreted: current schemas are **combat v16 / run v28**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -103,8 +103,20 @@ stable candidate shuffle. Fixture RNG trajectories keep their prior behavior.
 [Combat RNG evidence](evidence/combat_rng_2026_09_14.md) covers all 22 encounter
 openings, Dense Vegetation and initial/refill permutations through 64 cards.
 This is actual native method execution in explicit contexts, not a full native
-combat or run. Nonempty-pile shuffle commands, generated-card insertion hooks and the complete
-relic/power hook-order audit remain open.
+combat or run. The complete relic/power hook-order audit remains open.
+
+`core/piles.py` composes shared shuffle and generated-entry hooks. Bottled Potential
+merges discard, native top-first draw and hand-at-bottom before StableShuffle.
+Stratagem resolves before The Abacus, then the triggering draw resumes. Choices
+sort by rarity/model ID with stable copy ties; automatic all-card selection keeps
+pile order. Abacus grants unpowered block. Opening Innate placement reverses the
+Innate group through repeated moves to top, and its draw-count minimum applies
+after opening draw modifiers, capped at ten. Opening shuffle does not fire Abacus.
+Fresh offered Stomps receive their finished-attack discount only on entering a
+combat pile; ordinary moves and clones do not apply that entry discount again.
+[Shuffle-hook evidence](evidence/shuffle_hooks_2026_09_14.md) distinguishes pinned
+source inspection, actual native shuffle vectors and Python command/restore tests;
+it does not claim execution of full native shuffle commands or turns.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless

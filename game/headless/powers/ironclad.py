@@ -223,6 +223,8 @@ def start_turn(p, draw_count):
     from game.headless.potions.powers import start_turn as potion_start
     draw_count = potion_start(p, draw_count)
     draw_count = relic_start(p, draw_count)
+    if r.round_number == 1:
+        draw_count = min(10, max(draw_count, sum(c.spec.innate for c in p.deck.draw_pile)))
     p.cards_played_this_turn = 0
     r.player_side = True
     r.turn_ending = False
