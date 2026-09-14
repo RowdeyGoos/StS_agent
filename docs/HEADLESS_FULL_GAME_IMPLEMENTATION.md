@@ -1499,15 +1499,20 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
      selections retain their own contexts. Waiting hooks cancel on combat end;
      all exposed decisions support JSON restore and atomic malformed-state rejection.
      [Evidence](evidence/paused_death_hooks_2026_09_14.md).
-   - **Next: native runtime queue/turn verification.** The queue probe stops in
-     native Logger initialization, which calls Godot OS before TestMode checks.
-     Use an initialized, isolated native runtime to verify Horn → shuffle/Stratagem
-     → Infested → remaining hits → resumed draw, FIFO and cancellation. Keep
+   - **Native queue mechanics verified:** an isolated pinned Godot runtime now
+     executes actual HookPlayerChoiceContext, GenericHookGameAction and
+     ActionQueueSet with synthetic choice tasks. It verifies detachment, FIFO,
+     repeated-choice blocking and queued/gathering cancellation. The repeatable
+     fixture lives in `tools/native_combat_oracle/queue_runtime/`; it manually
+     drives actions and does not exercise the executor's frame loop or card UI.
+   - **Next: native card/turn composition verification.** Extend that fixture to
+     verify Horn → shuffle/Stratagem → Infested → remaining hits → resumed draw. Keep
      explicit fixture state and avoid profile/save access. Check enemy-side hooks
      separately: native enemy-side execution is concurrent with the action queue,
      so a player-action FIFO fixture does not establish its scheduling. Compare
      visible choices, stable slots, HP/resources and RNG suffixes. Source-backed
-     Python regressions are implemented; direct native queue parity is still open.
+     Python regressions and native queue mechanics are verified; actual native
+     card/selector composition and enemy-turn timing remain open.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
      autoplay and further combat boundaries. Require actual native sequences;
      passing Python continuation alone is regression evidence.

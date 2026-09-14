@@ -1,0 +1,19 @@
+<Project>
+  <Import Project="$(GodotSdkDir)/Sdk/Sdk.props" />
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <DisableImplicitGodotSharpReferences>true</DisableImplicitGodotSharpReferences>
+    <DisableImplicitGodotGeneratorReferences>true</DisableImplicitGodotGeneratorReferences>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <NuGetAudit>false</NuGetAudit><UseSharedCompilation>false</UseSharedCompilation>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
+  <Import Project="$(GodotGeneratorsDir)/build/Godot.SourceGenerators.props" />
+  <ItemGroup>
+    <Reference Include="GodotSharp"><HintPath>$(NativeDataDir)/GodotSharp.dll</HintPath></Reference>
+    <Analyzer Include="$(GodotGeneratorsDir)/analyzers/dotnet/cs/Godot.SourceGenerators.dll" />
+  </ItemGroup>
+  <Import Project="$(GodotSdkDir)/Sdk/Sdk.targets" />
+</Project>

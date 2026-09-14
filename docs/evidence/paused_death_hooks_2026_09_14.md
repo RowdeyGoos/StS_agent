@@ -26,7 +26,8 @@ Independent inspection of the pinned assembly establishes these rules:
   an original sampled-card whitelist; cards that leave the pile are excluded.
   Older decompiled source used FromSimpleGrid and is obsolete for this caller.
 
-Native execution was attempted in a disposable constructor-free fixture using
+During the original implementation batch, native execution was attempted in a
+disposable constructor-free fixture using
 HookPlayerChoiceContext.MockDependenciesForTest and manual native action driving.
 It stopped before reaching the tested behavior: ActionQueueSet's constructor
 `100695574` initializes Logger; its static initializer `100694556` calls
@@ -36,7 +37,9 @@ profile/save/history-file access or weakened safeguard was used. The unvalidated
 probe was removed from production; scratch diagnostics remain under
 `/private/tmp/sts-headless-paused-review/`.
 
-These queue conclusions are **source-backed, not direct native execution evidence**.
+At that point these queue conclusions were **source-backed, not direct native
+execution evidence**. The isolated runtime verification below supersedes that
+limitation for the specific queue mechanics it exercises.
 The existing 32 actual native attack/death/spawn vectors remain independent evidence
 for those commands; they do not execute player card/relic hooks or choice screens.
 
@@ -106,3 +109,54 @@ Work began at 20:53:49 UTC; implementation, source inspection and independent re
 overlapped, so separate phase timings were not measured. No user wait or live
 release was required. Final validation and local integration finished around 21:22 UTC
 (about 28 minutes elapsed).
+
+
+## Direct native queue verification follow-up
+
+The optional [isolated runtime fixture](../../tools/native_combat_oracle/queue_runtime/run.py)
+now executes actual pinned HookPlayerChoiceContext, GenericHookGameAction and
+ActionQueueSet methods. The [retained native record](native_hook_queue_2026_09_14.json)
+binds engine, assembly, GodotSharp, all supplied runtime dependencies, fixture
+source and compiled output hashes. Final execution used MegaDot
+`v4.5.1.m.12.mono.custom_build`; stderr was empty and the process exited zero.
+
+Synthetic tasks A and B request choices before either becomes visible. The outer
+fixture then continues; native queue driving exposes A's first choice, resumes A
+into its second choice using the same action, finishes A and finally exposes B.
+Both A choices block B. Separate native CombatEnded calls cancel two waiting
+hooks, then a gathering hook plus a waiting hook. The queue becomes empty and
+canceled coroutine tasks remain suspended until the isolated process exits.
+
+The fixture uses an explicit constructor-free player, synchronizer dependencies,
+executor ownership field and a singleplayer-only network proxy. It manually calls
+actual GameAction.Execute; it does not execute the ActionExecutor frame loop,
+Horn, shuffle/draw commands, card-selection screens, enemy turns or a native run.
+Those compositions remain open. Existing Python tests cover their modeled
+behavior and restoration, not direct native selector parity.
+
+The custom project has no game autoloads, extension manifest or native game pack.
+Exported hosting requires `_custom_features="dotnet"`. The native assembly loads
+in the fixture's component assembly context and verifies that it resolves the
+same initialized GodotSharp assembly. Loading it into Default had instead caused
+an uninitialized interop call in Logger during fixture development. No native
+methods or binaries were patched. A fresh owned empty Application Support
+directory supplies Godot's user directory and is removed with nonrecursive rmdir;
+no real profile, save, history or Cloud directory is accessed.
+
+Final validation:
+
+- Native fixture build: **1.220s**; execution and owned-directory cleanup:
+  **1.305s**, all assertions passed.
+- Existing paused-hook regressions: **15 passed in 0.85s**.
+- Independent semantic/isolation review: no blockers; six file/symlink output
+  collision cases rejected before staging and preserved their inputs.
+- Both the final runtime and earlier bootstrap Godot user directories were
+  removed. Runtime logs and build outputs remain in the disposable output folder
+  `/private/tmp/sts-native-queue-final/`.
+
+No production engine or schema changed, so the prior full gameplay/package
+validation remains applicable; this follow-up adds native verification tooling
+and evidence only. Work began at 21:32:23 UTC; the final runtime check completed
+at 21:54 UTC (about 22 minutes). Most elapsed time was spent bootstrapping isolated
+exported .NET hosting; implementation and review overlapped. No user wait or game
+installation was required.

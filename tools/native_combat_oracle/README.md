@@ -96,4 +96,47 @@ run boundaries or multiplayer. Horn's automatic ordering correction uses pinned
 source plus labeled Python regressions. Paused death hooks now have owned FIFO
 continuations and live-pile selection in Python; see the
 [paused-hook evidence](../../docs/evidence/paused_death_hooks_2026_09_14.md).
-Direct native queue execution still requires an initialized Godot runtime.
+Direct native queue mechanics now execute in the optional isolated Godot fixture
+below; actual card/selector composition remains outside that probe.
+
+## Native paused-hook queue runtime
+
+`queue_runtime/run.py` uses the pinned macOS arm64 game engine with a fresh custom
+project pack. It executes actual HookPlayerChoiceContext, GenericHookGameAction and
+ActionQueueSet with synthetic choice tasks, a singleplayer-only network proxy and
+manual native action driving. It asserts detachment, FIFO, repeated-choice blocking
+and combat-end cancellation of waiting/gathering hooks. It records that canceled
+coroutines remain suspended until the disposable process exits. This is not a
+Horn/card-draw/UI/ActionExecutor-loop or complete native turn fixture.
+
+Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
+**Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
+respectively). The runner does not download dependencies. Example:
+
+```sh
+python3 tools/native_combat_oracle/queue_runtime/run.py \
+  --engine '/path/to/SlayTheSpire2.app/Contents/MacOS/Slay the Spire 2' \
+  --native-data /path/to/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64 \
+  --godot-sdk /tmp/godot-sdk-4.5.1 \
+  --godot-generators /tmp/godot-generators-4.5.1 \
+  --dotnet /path/to/dotnet \
+  --output /tmp/new-native-queue-output
+```
+
+The output directory must not exist. Engine, game assembly and GodotSharp hashes
+are checked before staging. The runner copies the engine and symlinks native
+runtime dependencies, builds the fixture and composes its self-contained runtime
+metadata from the native runtime inventory. It does not modify native inputs.
+Only four whitelisted project resources enter the custom ZIP. No native game PCK,
+autoload or extension manifest is loaded. `_custom_features="dotnet"` enables
+exported managed hosting. The native assembly must load in the fixture's component
+assembly context, so both use the same initialized GodotSharp instance.
+
+Godot requires a user directory even for this fixture: the runner creates a unique
+empty `StsNativeQueueOracle-<uuid>` under macOS Application Support, then removes
+only that directory with `rmdir`. Unexpected files cause cleanup to fail visibly.
+No real profile/save/history/Cloud directory is read. The runtime process has a
+15-second bound (native probe: five seconds); a failed process is not retried.
+Output retains build/runtime logs, exact fixture/dependency hashes, native result,
+timing and cleanup confirmation in `evidence.json`. See the retained
+[queue record](../../docs/evidence/native_hook_queue_2026_09_14.json).
