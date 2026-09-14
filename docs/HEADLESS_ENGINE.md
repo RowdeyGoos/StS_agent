@@ -135,8 +135,10 @@ builds its visible options from the then-current draw pile: empty completes;
 a previously deferred singleton still requires input. Seeker Strike filters the live draw pile by its original three-card sample. Combat ending cancels waiting hooks.
 
 [Paused-hook evidence](evidence/paused_death_hooks_2026_09_14.md) covers native
-source inspection and Python action/restore regressions. Direct native queue
-execution requires initialized Godot services and remains unverified. Native
+source inspection, Python action/restore regressions and direct native FIFO,
+repeated-choice and combat-end cancellation checks in an isolated Godot runtime.
+The native fixture uses synthetic choices and manually drives native actions;
+whole Horn/card-selection composition remains unverified. Native
 enemy-side work runs concurrently with the action queue; its exact scheduling,
 multiplayer queues and the complete hook-order audit remain separate work.
 
