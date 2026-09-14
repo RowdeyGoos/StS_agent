@@ -275,8 +275,8 @@ def execute(p, task):
             if r.powers.get("hellraiser") and drawn[0].definition.strike:
                 push(p, ["autoplay", drawn[0].instance_id, False])
     elif op == "generate":
-        count, attacks_only, upgraded, free = args
-        special.generate(p, count, attacks_only, upgraded, free)
+        count, attacks_only, upgraded, free, distinct = args
+        special.generate(p, count, attacks_only, upgraded, free, distinct)
     elif op == "stampede":
         (count,) = args
         if count and not p.combat_is_ending:

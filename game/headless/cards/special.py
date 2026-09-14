@@ -16,32 +16,15 @@ def clone_to(p, card, pile):
     return clone
 
 
-def generate(p, count, attacks_only, upgraded, free):
+def generate(p, count, attacks_only, upgraded, free, distinct=False):
     if p.combat_is_ending:
         return
-    from game.headless.cards.catalog import DEFAULT_CARDS
+    from game.headless.cards.colorless_effects import pool, create
+    from game.headless.generation.combat import select_cards
 
-    catalog = p.catalog or DEFAULT_CARDS
-    pool = [
-        d
-        for d in catalog.definitions
-        if d.pool == "ironclad"
-        and d.rarity in ("common", "uncommon", "rare")
-        and d.generate_in_combat
-        and (not attacks_only or d.levels[0].kind == "attack")
-    ]
-    pool.sort(key=lambda definition: definition.definition_id)
-    if not pool:
-        raise ValueError("No eligible Ironclad generation content.")
-    # A dedicated owned stream, separate from shuffle/selection and target draws.
-    for _ in range(count):
-        definition = p.deck.generation_rng.choice(pool)
-        card = catalog.create(definition.definition_id, upgrade_level=int(upgraded))
-        card.combat_state.free_this_turn = free
-        if definition.definition_id == "stomp":
-            card.combat_state.cost_change = -p.rules.attacks_finished
-        p.deck._ensure_identity(card)
-        (p.hand if len(p.hand) < 10 else p.deck.discard_pile).append(card)
+    options = pool(p, "ironclad", "attack" if attacks_only else None)
+    for definition in select_cards(options, p.deck.generation_rng, count, distinct=distinct):
+        create(p, definition, upgraded=upgraded).combat_state.free_this_turn = free
 
 
 def apply_operation(operation, card, p, target, amount):
@@ -128,10 +111,10 @@ def apply_operation(operation, card, p, target, amount):
             ]
             tasks.append(["gigantification_end", card.instance_id])
         elif operation == "stoke":
-            tasks.append(["generate", len(hand), False, card.upgraded, False])
+            tasks.append(["generate", len(hand), False, card.upgraded, False, False])
         push(p, *tasks)
     elif operation == "infernal_blade":
-        push(p, ["generate", 1, True, False, True])
+        push(p, ["generate", 1, True, False, True, True])
     elif operation == "havoc":
         push(p, ["autoplay_draw", 1, True])
     elif operation == "cascade":

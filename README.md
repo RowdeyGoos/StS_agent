@@ -63,7 +63,9 @@ seeds for the declared solo/all-unlocked Overgrowth start. Authored slices retai
 their fixture generator. Runtime acquisition now applies native
 relic predicates, shop filters and marked card-reward pool rules. Encounter composition,
 HP, opening AI and initial/refill shuffle order also match native method fixtures.
-Whole-run same-seed parity still requires combat generation and interaction checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
+Combat card-generation factories now match native pool, selection and RNG reference
+cases, including potion offers. Whole-run same-seed parity still requires the remaining
+shuffle and interaction checks; see [native generation and limits](docs/HEADLESS_ENGINE.md#native-randomness-and-generation).
 
 The older experiment APIs
 consume the same combat engine. Full target-game content and progression remain

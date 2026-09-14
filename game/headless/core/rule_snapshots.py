@@ -43,7 +43,7 @@ TASK_ARITIES = {
     "catastrophe": 1,
     "status": 3,
     "pillage": 0,
-    "generate": 4,
+    "generate": 5,
     "stampede": 1,
     "discard_hand": 0,
     "ethereal": 1,

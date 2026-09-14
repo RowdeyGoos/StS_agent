@@ -33,3 +33,30 @@ is this output with compact JSON records; Python never generates expected values
 The oracle does not execute full combat turns, relic/power hooks or a native run.
 The generated first-node floor offset is checked separately from pinned room-entry
 IL, and Python continuation tests are labeled regression evidence.
+
+## Combat card and potion generation
+
+Pass `generation` as the third argument to emit the separate
+[generation fixture](../../tests/fixtures/headless_native_combat_generation_vectors.json):
+
+```sh
+dotnet /tmp/sts-combat-oracle/bin/oracle/debug/oracle.dll /path/to/sts2.dll /path/to/dependencies generation > /tmp/native-combat-generation.json
+```
+
+This mode initializes only the synthetic player's empty deck and all-unlocked
+state in addition to the construction context. It calls actual CardFactory
+`GetDistinctForCombat`/`GetForCombat`, including actual CombatState card creation.
+Two pool inventories retain native type, rarity, generation eligibility and energy
+metadata. Sixty-six sequences cover 11 caller recipes at six seeds, including
+run seed 2's actual combat-generation domain. Sixteen extra cases cover empty,
+singleton and duplicate input pools and zero/oversized requests. Twelve potion
+sequences call actual in-/out-of-combat factories three times each, including
+run seed 2's potion-generation domain. Repeated calls can produce duplicates.
+
+Recipes follow inspected pinned caller methods. These cases execute factories,
+not whole card plays, choice screens, insertion hooks or a native combat turn.
+No native rarity or upgrade rolls occur in the combat card factory. Caller
+upgrades, free-cost flags and optional choices are covered by source inspection
+and Python action/restoration regressions. Splash's unsupported foreign pools
+and Entropy's transformation factory are outside this fixture. The original
+two-argument mode and its construction/shuffle output remain unchanged.

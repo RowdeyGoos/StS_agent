@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length != 2) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory>");
+if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] != "generation")) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation]");
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
@@ -64,7 +64,53 @@ foreach(uint seed in new uint[]{0,1,42}) foreach(int size in new[]{0,1,3,10,16,1
  method.MakeGenericMethod(cardType).Invoke(null,new object[]{array,rng});
  shuffles.Add(new{seed,size,stable,inputs,order=Items(array).Select(c=>cards.FindIndex(x=>ReferenceEquals(x,c))).ToArray(),counter=Prop(rng,"Counter"),suffix=Call(rng,"NextDouble")});
 }
+if(args.Length==3) {
+ Field(player,"<Deck>k__BackingField",Activator.CreateInstance(T("Entities.Cards.CardPile"),new object[]{Enum.Parse(T("Entities.Cards.PileType"),"Deck")})!);
+ var unlock=T("Unlocks.UnlockState").GetField("all")!.GetValue(null)!;
+ Field(player,"<UnlockState>k__BackingField",unlock);
+ var context=(Context)Prop(player,"RunState");
+ context.Values["get_CardMultiplayerConstraint"]=Enum.Parse(T("Entities.Cards.CardMultiplayerConstraint"),"SingleplayerOnly");
+ var cardType=T("Models.CardModel");var factory=T("Factories.CardFactory");
+ var pools=new Dictionary<string,object[]>();
+ foreach(var (name,type) in new[]{("ironclad","CardPools.IroncladCardPool"),("colorless","CardPools.ColorlessCardPool")})
+  pools[name]=Items(Call(Get("CardPool",type),"GetUnlockedCards",unlock,context.Values["get_CardMultiplayerConstraint"]));
+ object[] Filter(IEnumerable<object> cards)=>Items(factory.GetMethod("FilterForCombat")!.Invoke(null,new object[]{Typed(cards.ToArray(),cardType)})!);
+ object Metadata(object c)=>new{id=Id(c),kind=Prop(c,"Type").ToString(),rarity=Prop(c,"Rarity").ToString(),canGenerate=Prop(c,"CanBeGeneratedInCombat"),cost=Prop(Prop(c,"EnergyCost"),"Canonical"),costsX=Prop(Prop(c,"EnergyCost"),"CostsX")};
+ var poolRows=pools.Select(p=>new{name=p.Key,cards=p.Value.Select(Metadata).ToArray(),eligible=Filter(p.Value).Select(Id).ToArray()}).ToArray();
+ var generationRows=new List<object>();
+ uint combatSeed=(uint)Prop(Prop(Activator.CreateInstance(T("Runs.RunRngSet"),new object[]{"2"})!,"CombatCardGeneration"),"Seed");
+ foreach(uint seed in new uint[]{0,1,2,42,4294967295,combatSeed}) foreach(string mode in new[]{"infernal_blade","discovery","attack_potion","skill_potion","power_potion","colorless_potion","jack_of_all_trades","jackpot","stoke","calamity","orobic_acid"}) {
+  var rng=Activator.CreateInstance(T("Random.Rng"),new object[]{seed,0})!;var calls=new List<object>();
+  var kinds=mode=="orobic_acid"?new[]{"Attack","Skill","Power"}:new[]{mode switch {"infernal_blade" or "attack_potion" or "calamity"=>"Attack","skill_potion"=>"Skill","power_potion"=>"Power",_=>""}};
+  foreach(var kind in kinds) {
+   var family=mode is "colorless_potion" or "jack_of_all_trades"?"colorless":"ironclad";
+   var options=pools[family].Where(c=>(kind==""||Prop(c,"Type").ToString()==kind)&&(mode!="jack_of_all_trades"||Id(c)!="jack_of_all_trades")&&(mode!="jackpot"||((int)Prop(Prop(c,"EnergyCost"),"Canonical")==0&&!(bool)Prop(Prop(c,"EnergyCost"),"CostsX")))).ToArray();
+   bool distinct=mode is not ("jackpot" or "stoke" or "calamity");
+   int count=mode switch {"infernal_blade" or "orobic_acid"=>1,"jack_of_all_trades"=>2,_=>3};
+   var generated=Items(factory.GetMethod(distinct?"GetDistinctForCombat":"GetForCombat")!.Invoke(null,new object[]{player,Typed(options,cardType),count,rng})!);
+   calls.Add(new{family,kind,distinct,count,eligible=Filter(options).Select(Id),selected=generated.Select(Id),upgrades=generated.Select(c=>Prop(c,"CurrentUpgradeLevel")),counter=Prop(rng,"Counter")});
+  }
+  generationRows.Add(new{seed,mode,calls,counter=Prop(rng,"Counter"),suffix=Call(rng,"NextDouble")});
+ }
+ var boundaries=new List<object>();
+ foreach(bool distinct in new[]{false,true}) foreach(int count in new[]{0,1,5}) foreach(int size in new[]{0,1,3}) {
+  if(!distinct&&size==0&&count>0)continue;
+  var options=new[]{Get("Card","Cards.Anger"),Get("Card","Cards.IronWave"),Get("Card","Cards.Anger")}.Take(size).ToArray();
+  var rng=Activator.CreateInstance(T("Random.Rng"),new object[]{42u,0})!;
+  var generated=Items(factory.GetMethod(distinct?"GetDistinctForCombat":"GetForCombat")!.Invoke(null,new object[]{player,Typed(options,cardType),count,rng})!);
+  boundaries.Add(new{distinct,count,inputs=options.Select(Id),selected=generated.Select(Id),counter=Prop(rng,"Counter"),suffix=Call(rng,"NextDouble")});
+ }
+ var potionRows=new List<object>();
+ uint potionSeed=(uint)Prop(Prop(Activator.CreateInstance(T("Runs.RunRngSet"),new object[]{"2"})!,"CombatPotionGeneration"),"Seed");
+ foreach(uint seed in new uint[]{0,1,2,42,4294967295,potionSeed}) foreach(bool inCombat in new[]{false,true}) {
+  var rng=Activator.CreateInstance(T("Random.Rng"),new object[]{seed,0})!;var selected=new List<string>();
+  for(int i=0;i<3;i++)selected.Add(Id(T("Factories.PotionFactory").GetMethod(inCombat?"CreateRandomPotionInCombat":"CreateRandomPotionOutOfCombat")!.Invoke(null,new object?[]{player,rng,null})!));
+  potionRows.Add(new{seed,inCombat,selected,counter=Prop(rng,"Counter"),suffix=Call(rng,"NextDouble")});
+ }
+ Console.Write(JsonSerializer.Serialize(new{source="Actual pinned CardFactory combat generation in explicit solo all-unlocked contexts; no card play or insertion hooks",assemblySha256=digest,combatSeed,potionSeed,poolRows,generationRows,boundaries,potionRows},new JsonSerializerOptions{WriteIndented=true}));
+} else {
 Console.Write(JsonSerializer.Serialize(new{source="Pinned encounter generation, creature HP construction, and initial move selection; explicit in-memory A0 contexts",assemblySha256=digest,rows,shuffles},new JsonSerializerOptions{WriteIndented=true}));
+}
 public class Context:DispatchProxy {
  public Dictionary<string,object> Values=new();
  protected override object? Invoke(MethodInfo? method,object?[]? args)=>Values.TryGetValue(method!.Name,out var value)?value:throw new InvalidOperationException("Unexpected native context access: "+method.Name);

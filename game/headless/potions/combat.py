@@ -37,6 +37,7 @@ def effect(p, identity, index):
     from game.headless.powers.ironclad import apply_power
     from game.headless.relics.combat import heal, has
     from game.headless.cards.colorless_effects import pool, create
+    from game.headless.generation.combat import select_cards
     from game.headless.core.choices import begin
     from game.headless.potions.selections import select
 
@@ -109,14 +110,14 @@ def effect(p, identity, index):
         options = pool(p, family, kind)
         offered = [
             create(p, d, destination="offered")
-            for d in p.deck.generation_rng.sample(options, min(3, len(options)))
+            for d in select_cards(options, p.deck.generation_rng, 3, distinct=True)
         ]
         begin(p, identity, offered, minimum=0, free="free_this_turn")
     elif op == "generate_types":
         for kind in ("attack", "skill", "power"):
             options = pool(p, "ironclad", kind)
-            if options:
-                create(p, p.deck.generation_rng.choice(options)).combat_state.free_this_turn = True
+            for definition in select_cards(options, p.deck.generation_rng, 1, distinct=True):
+                create(p, definition).combat_state.free_this_turn = True
     elif op == "shuffle_hand":
         p.deck.draw_pile.extend(p.hand)
         p.hand.clear()
