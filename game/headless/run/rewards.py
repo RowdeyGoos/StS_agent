@@ -97,7 +97,7 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False) -
     pool = state.config.boss_reward_cards if encounter is not None and encounter.room_kind == "boss" else state.config.reward_cards
     upgraded = begin_reward(state, cards, gold=gold, card_ids=pool, decorate_cards=False, native_kind=kind)
     from game.headless.relics.rewards import add_power_option, decorate, extra_rewards, extend_pool
-    add_power_option(state, cards, state.pending["offers"], extend_pool(state, cards, pool))
+    upgraded.extend(add_power_option(state, cards, state.pending["offers"], extend_pool(state, cards, pool), kind=kind))
     state.pending["card_modifiers"] = decorate(state, cards, state.pending["offers"], upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded)
     if relic_pool and getattr(state.rng,"native",False):
         from game.headless.generation.relics import pull

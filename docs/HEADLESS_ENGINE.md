@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v13 / run v24**.
+than being silently reinterpreted: current schemas are **combat v13 / run v25**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -97,11 +97,22 @@ outside the game state.
   factory, with distinct initial multi-potion offers.
 - Relics use shared/player grab bags shuffled through `up_front`, native rarity
   weights, front/back pulls, cross-source depletion and Circlet fallback. Named
-  acquisition also removes the relic from both bags.
+  acquisition also removes the relic from both bags. Runtime `IsAllowed` removes
+  disallowed relics from every player rarity bag before a draw; caller filters
+  skip candidates without depleting them. Filters consume no extra RNG.
 - Native merchants have **13 slots**: two attacks, two skills, one power, two
   colorless cards, three relics and three potions. Stock, float32 prices, the sale's
   second price roll and Courier refill consumption use the pinned rules. A Courier
-  potion refill can duplicate another stocked potion.
+  potion refill can duplicate another stocked potion. Native merchant exclusions
+  are Amethyst Aubergine, Bowler Hat, Lucky Fysh, Old Coin and The Courier.
+- Dingy Rug extends marked card rewards, including Orrery/Lost Coffer, while
+  preserving rarity/type filters. Direct grants, custom pools and explicit
+  no-pool-modification callers keep their pools. Lasting Candy's extra power uses
+  Source.Other/base rarity odds, a card pick and an upgrade check; White Star uses
+  boss rarity rolls, and both additional encounter reward hooks compose.
+- Potion batches apply blacklist/combat exclusions before rarity selection and
+  remove each selected potion from the batch. Combat excludes Fairy, Fruit Juice
+  and Regen; Entropic Brew deliberately retains its out-of-combat factory.
 
 `generation/initialization.py` now reproduces the pinned startup sequence after
 relic bags: shared-Ancient allocation, then each act's event shuffle, weak/normal/
@@ -124,9 +135,17 @@ Thirteen direct assembly reference seeds match complete room queues, startup RNG
 counters/suffixes and every Act 1 map coordinate, edge, type and entrance.
 See [native initialization evidence](evidence/native_initialization_2026_09_14.md).
 
+Runtime acquisition checks execute all 161 relic predicates against the pinned
+assembly, eight bag sequences, six Dingy Rug contexts and eight potion batches.
+The six relevant native pools and 18 epoch gates are inventoried under declared
+inputs, without reading a user profile. Runtime uses `UnlockState.all` semantics
+(9,999 prior runs); the first-ever Ironclad Lasting Candy exclusion and floor-41
+cutoff are boundary-tested pure predicates, not new first-run/later-act modes.
+See [acquisition evidence](evidence/runtime_eligibility_2026_09_14.md).
+
 **This does not establish whole-run same-seed parity.** Remaining work concerns
-runtime acquisition eligibility and pool modifiers, every combat caller's random
-draw consumption and interaction ordering, foreign-character content and a complete
+every combat caller's random draw consumption and full interaction ordering,
+foreign-character content and a complete
 native run comparison. The generator foundation and these initialization checks
 cover declared inputs, not profile-dependent lobby selection or other acts' gameplay.
 See [probability evidence](evidence/native_rng_2026_09_14.md) and
@@ -313,7 +332,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v13 and run v24. Legacy RL encoders retain their frozen vocabulary.
+combat v13 and run v25. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -360,11 +379,10 @@ The default environment has no such character catalogs. Multiplayer-only relics
 and other characters' exclusive relics are outside this scope.
 
 Generated `RunEngine.ironclad_act1()` runs now use all ordinary eligible relics
-for rewards/treasure and the full supported merchant relic pool. Old Coin and The
-Courier are excluded from merchant generation. Authored routes retain their
+for rewards/treasure and the full supported merchant relic pool. Amethyst Aubergine, Bowler Hat, Lucky Fysh, Old Coin and The Courier are excluded
+from merchant generation. Authored routes retain their
 explicit smaller `RunConfig` pools. Native-profile runs now apply rarity weights and
-shared grab-bag depletion across sources. Unlock history, complete runtime eligibility
-and whole-run seed parity remain separate work.
+shared grab-bag depletion across sources. Profile-dependent unlock histories and whole-run seed parity remain separate work.
 
 Relic rules live in small modules under `relics/`: `turns.py`, `plays.py` and
 `damage.py` own combat hooks; `run_rules.py` owns shared resource/card mutations;
@@ -1013,7 +1031,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v24`, including configuration,
+Private run snapshots now use `headless_run_state_v25`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1034,7 +1052,7 @@ per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v12 and run v1–v23 formats are rejected rather than assigning invented item
+v1–v12 and run v1–v24 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

@@ -87,12 +87,12 @@ def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, 
         and d.rarity in ("common", "uncommon", "rare")
         and (rarity is None or d.rarity == rarity)
     ]
-    from game.headless.relics.rewards import decorate
+    from game.headless.relics.rewards import decorate, extend_pool
     upgraded=[]
     if getattr(state.rng, "native", False):
         from game.headless.generation.odds import card_offers
         owner=next((r.definition_id for r in state.relics if r.instance_id==source),None)
-        definitions,upgraded=card_offers(state,cards,[d.definition_id for d in pool],count,mode="base",uniform=rarity is not None,upgrade_roll=owner in ("orrery","lost_coffer","lead_paperweight"))
+        definitions,upgraded=card_offers(state,cards,extend_pool(state,cards,[d.definition_id for d in pool],card_reward=is_card_reward),count,mode="base",uniform=rarity is not None,upgrade_roll=owner in ("orrery","lost_coffer","lead_paperweight"))
     else:
         state.rng.shuffle("relic.card_reward", pool)
         definitions = [d.definition_id for d in pool[:count]]

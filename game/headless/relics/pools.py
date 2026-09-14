@@ -1,12 +1,13 @@
 """Pinned rarity membership, excluding event/Ancient/starter items from ordinary loot."""
 
 from game.headless.relics.base import RELICS
+from game.headless.relics.eligibility import SHOP_EXCLUDED
 
 ORDINARY_RELICS = tuple(name for name, d in RELICS.items() if d.rarity in ("common", "uncommon", "rare"))
 SHOP_RELICS = tuple(
     name
     for name, d in RELICS.items()
-    if d.rarity in ("common", "uncommon", "rare", "shop") and name not in ("old_coin", "the_courier")
+    if d.rarity in ("common", "uncommon", "rare", "shop") and name not in SHOP_EXCLUDED
 )
 MERCHANT_COSTS = {"common": 175, "uncommon": 225, "rare": 275, "shop": 200}
 

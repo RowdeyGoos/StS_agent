@@ -170,12 +170,12 @@ def drain(state, cards):
                 and (kind == "any" or d.levels[0].kind == kind)
             ]
             # Rip and Future prohibit pool modification; Cheese/Share use their
-            # ordinary card-factory pool hooks.
+            # card factory; only marked card rewards allow Dingy Rug.
             if (
                 definition.definition_id not in ("brain_leech", "the_future_of_potions")
                 or data["choice"] == "share_knowledge"
             ):
-                pool = extend_pool(state, cards, pool)
+                pool = extend_pool(state, cards, pool, card_reward=optional, card_kind=kind)
             upgraded=[]
             if getattr(state.rng, "native", False):
                 from game.headless.generation.odds import card_offers

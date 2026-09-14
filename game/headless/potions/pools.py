@@ -24,12 +24,13 @@ def generate(pool, rng, *, stream=None, in_combat=False, blacklist=()):
     return rng.choice(eligible) if stream is None else rng.choice(stream, eligible)
 
 
-def generate_many(pool, rng, count, *, stream=None):
+def generate_many(pool, rng, count, *, stream=None, in_combat=False, blacklist=()):
     if set(pool) != set(ORDINARY_POTIONS):
-        return [generate(pool, rng, stream=stream) for _ in range(count)]
+        return [generate(pool, rng, stream=stream, in_combat=in_combat, blacklist=blacklist) for _ in range(count)]
     from game.headless.core.content_order import SHAREDPOTIONPOOL, ordered
     from game.headless.core.native_rng import NativeRng
     available = ordered(pool, ("blood_potion", "soldiers_stew", "ashwater", *SHAREDPOTIONPOOL)) if getattr(rng,"native",False) or isinstance(rng,NativeRng) else list(pool)
+    available = [k for k in available if k not in blacklist and (not in_combat or POTIONS[k].in_combat_generation)]
     result = []
     for _ in range(count):
         roll = rng.random() if stream is None else rng.random(stream)
