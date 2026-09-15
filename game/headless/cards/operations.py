@@ -30,6 +30,9 @@ class Attack:
             "block": player.block,
             "plays": player.rules.plays_finished,
             "draw_pile": len(player.deck.draw_pile),
+            "discards": player.rules.discarded_turn,
+            "draws": player.rules.drawn_combat,
+            "precise": 0,
             "debuffs": (
                 sum(
                     target.statuses.get(n) > 0
@@ -49,7 +52,8 @@ class Attack:
                 else 0
             ),
         }[self.expression]
-        return card.spec.base_damage + card.combat_state.extra_damage + extra * n
+        amount = card.spec.base_damage + card.combat_state.extra_damage + extra * n
+        return max(0, amount - 2 * len(player.hand)) if self.expression == "precise" else amount
 
     def apply(self, card, player, target):
         from game.headless.core.resolution import push
@@ -61,6 +65,10 @@ class Attack:
             hits = 1 + player.rules.hp_loss_events
         elif self.hit_expression == "spite":
             hits = hits if player.rules.hp_lost_this_turn else 1
+        elif self.hit_expression == "attacks_finished":
+            hits = player.rules.attacks_finished
+        elif self.hit_expression == "hand_skills":
+            hits = sum(c.spec.kind in ("skill", "block") for c in player.hand)
         elif self.hit_expression == "x":
             hits = player.rules.plays[card.instance_id]["x"]
         elif self.hit_expression == "pacts_end" and len(player.deck.exhaust_pile) < 3:

@@ -31,6 +31,7 @@ def define(
     upgraded_retain=None,
     base_innate=False,
     defend=False,
+    sly=False,
 ):
     base = CardSpec(
         name,
@@ -44,6 +45,7 @@ def define(
         x_cost=x,
         innate=base_innate,
         retain=retain,
+        sly=sly,
     )
     upgrade = replace(
         base,

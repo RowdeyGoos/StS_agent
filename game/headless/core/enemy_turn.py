@@ -41,12 +41,18 @@ def begin(enemy):
 def validate(record, player):
     if record is None:
         return
-    if not isinstance(record, dict) or set(record) != {"limit", "slot", "move", "actions"}:
+    if not isinstance(record, dict) or set(record) - {"poison_start", "started"} != {"limit", "slot", "move", "actions"}:
         raise ValueError("Invalid enemy-side continuation.")
     if player.rules.player_side or any(type(record[k]) is not int for k in ("limit", "slot")):
         raise ValueError("Invalid enemy-side ownership.")
     if not 0 <= record["slot"] < record["limit"] <= len(player.combat_enemies):
         raise ValueError("Invalid enemy-side cursor.")
+    if "started" in record and record["started"] is not True:
+        raise ValueError("Invalid side-start marker.")
+    if "poison_start" in record:
+        if record["poison_start"] is not True or record.get("started") is not True or record["slot"] != 0 or record["move"] is not None or record["actions"]:
+            raise ValueError("Invalid poison side-start continuation.")
+        return
     move = record["move"]
     if not isinstance(move, dict) or set(move) != {"intent", "hit", "stage"}:
         raise ValueError("Invalid enemy move continuation.")

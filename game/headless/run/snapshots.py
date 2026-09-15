@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v31"
+SCHEMA = "headless_run_state_v32"
 
 
 def _restore_event_combat(record):
@@ -269,7 +269,7 @@ def _validate_pending(state, cards, graph):
     elif kind == "reward":
         expected = {"kind", "gold", "gold_claimed", "offers", "card_resolved", "card_modifiers"}
         if "combat_reward" in pending:
-            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards"}
+            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards", "hunt_rewards_earned"}
         if set(pending) != expected:
             raise ValueError("Invalid reward state fields.")
         if state.phase is not RunPhase.REWARD or type(pending["gold"]) is not int or pending["gold"] < 0:
@@ -283,7 +283,7 @@ def _validate_pending(state, cards, graph):
         from game.headless.relics.rewards import validate_modifiers, validate_extra
         validate_modifiers(cards, pending["offers"], pending["card_modifiers"])
         if "combat_reward" in pending:
-            validate_extra(state, cards, pending["extra_rewards"])
+            validate_extra(state, cards, pending["extra_rewards"], hunt_rewards_earned=pending["hunt_rewards_earned"])
             encounter_id = pending["encounter_id"]
             if encounter_id is not None and encounter_id not in ENCOUNTERS:
                 raise ValueError("Unknown reward encounter.")

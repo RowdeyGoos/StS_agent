@@ -51,6 +51,9 @@ END_HAND_CURSES = ("debt", "decay", "doubt", "regret", "shame", "bad_luck")
 
 
 def can_play(player, card=None, *, auto=False):
+    from game.headless.powers.silent import can_play as silent_can_play
+    if card is not None and not silent_can_play(player, card):
+        return False
     held = {c.definition.definition_id for c in player.hand}
     return (player.cards_played_this_turn < 3 or "normality" not in held) and (
         auto

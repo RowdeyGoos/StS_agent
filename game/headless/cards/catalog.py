@@ -60,3 +60,7 @@ class CardCatalog:
 
 
 DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *COLORLESS, *EXTENDED, GIANT_ROCK))
+
+# Staged complete family; default all-unlocked foreign acquisition remains gated.
+from game.headless.cards.silent import DEFINITIONS as SILENT
+SILENT_CARDS = CardCatalog((*DEFAULT_CARDS.definitions, *SILENT))

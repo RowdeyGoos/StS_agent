@@ -58,6 +58,10 @@ def apply_power(p, name, amount, target=None):
     if name in POTION_POWERS:
         p.rules.powers[name] = p.rules.powers.get(name, 0) + amount
         return
+    from game.headless.powers import silent
+    if name in silent.NAMES:
+        silent.apply(p, name, amount)
+        return
     if name not in POWER_NAMES:
         raise ValueError(f"Unknown player power: {name}")
     r = p.rules
@@ -69,6 +73,8 @@ def apply_power(p, name, amount, target=None):
 
 
 def card_cost(p, card):
+    if card.spec.kind in ("skill", "block") and p.rules.powers.get("free_skill") and (card in p.hand or card in p.deck.in_play):
+        return 0
     if card.spec.x_cost:
         return (
             0
@@ -96,7 +102,7 @@ def local_cost(card, *, clamp=True):
     value = card.cost if v.combat_cost_override is None else v.combat_cost_override
     if v.turn_cost_override is not None:
         value = v.turn_cost_override
-    value += v.cost_change + v.combat_cost_change
+    value += v.cost_change + v.turn_cost_change + v.combat_cost_change
     if v.turn_cost_override is not None:
         value -= v.override_turn_baseline + v.override_combat_baseline
     elif v.combat_cost_override is not None:
@@ -126,14 +132,15 @@ def after_exhaust(p, card):
 
 
 def block_multiplier(p, powered=True):
+    shadow = 2 ** p.rules.powers.get("shadowmeld", 0)
     if not powered:
-        return 1
+        return shadow
     before = p.rules.auxiliaries.get("block_gains", 0)
     if p.current_card is not None:
         context = p.rules.plays.get(p.current_card.instance_id)
         if context is not None:
             before -= context.get("blocks_gained", 0)
-    return 2 if before < p.rules.powers.get("unmovable", 0) else 1
+    return shadow * (2 if before < p.rules.powers.get("unmovable", 0) else 1)
 
 
 def record_block(p, powered):
@@ -180,6 +187,8 @@ def after_play(p, card):
     if card.spec.kind == "attack":
         r.attacks_finished += 1
     r.plays_finished += 1
+    from game.headless.powers.silent import after_play as silent_after_play
+    silent_after_play(p, card)
     from game.headless.relics.combat import tasks as relic_tasks
     push(
         p,
@@ -208,13 +217,15 @@ def after_card_power(p, card, key):
         from game.headless.powers.colorless import after_card_power
 
         after_card_power(p, card, key)
+        from game.headless.powers.silent import after_card_power as silent_after_card
+        silent_after_card(p, card, key)
 
 
 def start_turn(p, draw_count):
     r = p.rules
     from game.headless.relics.combat import has, tasks as relic_tasks
     from game.headless.relics.turns import start_turn as relic_start
-    if r.round_number and not r.powers.get("barricade"):
+    if r.round_number and not r.powers.get("barricade") and not r.powers.get("blur"):
         p.block = min(10, p.block) if has(p, "sturdy_clamp") else 0
     if r.round_number:
         from game.headless.cards.event_effects import after_block_cleared
@@ -223,6 +234,7 @@ def start_turn(p, draw_count):
     from game.headless.potions.powers import start_turn as potion_start
     draw_count = potion_start(p, draw_count)
     draw_count = relic_start(p, draw_count)
+    draw_count += r.powers.pop("draw_next_turn", 0) + r.powers.get("tools_of_the_trade", 0)
     if r.round_number == 1:
         draw_count = min(10, max(draw_count, sum(c.spec.innate for c in p.deck.draw_pile)))
     p.cards_played_this_turn = 0
@@ -249,16 +261,18 @@ def start_turn(p, draw_count):
     p.gain_strength(r.powers.get("demon_form", 0))
     from game.headless.powers.colorless import before_draw
 
+    from game.headless.powers.silent import before_draw as silent_before_draw
+    silent_before_draw(p)
     before_draw(p)
-    push(p, *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], *relic_tasks(p, "after_draw"), *relic_tasks(p, "after_side_start"), ["mayhem"])
+    push(p, *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], *relic_tasks(p, "after_draw"), ["silent_side_start_all"], *relic_tasks(p, "after_side_start"), ["mayhem"])
     drain(p)
     if p.pending_play is not None or r.selection is not None:
         # Native setup may pause while AfterSideTurnStart still completes.
-        from game.headless.relics.combat import execute as execute_relic
-        ready = [t for t in r.tasks if t[0] == "relic_hook" and t[2] == "after_side_start"]
+        from game.headless.core.hook_scheduler import advance_side_start
+        ready = [t for t in r.tasks if t[0] in ("silent_side_start", "silent_side_start_all") or (t[0] == "relic_hook" and t[2] == "after_side_start")]
         for task in ready:
             r.tasks.remove(task)
-            execute_relic(p, *task[1:])
+        advance_side_start(p, ready)
 
 
 def end_turn(p):
@@ -284,6 +298,8 @@ def end_turn(p):
 def after_player_end(p, name):
     from game.headless.potions.powers import after_end
     after_end(p, name)
+    from game.headless.powers.silent import end_turn as silent_end
+    silent_end(p, name)
     r = p.rules
     if name == "dark_embrace":
         push(p, ["draw", r.ethereal_draws, False])

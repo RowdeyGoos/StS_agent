@@ -33,7 +33,13 @@ class EnchantmentDefinition:
     def on_play(self, instance, player):
         if not player.is_alive:
             return
-        if self.definition_id == "momentum":
+        if self.definition_id == "inky" and not player.combat_is_ending:
+            from game.headless.core.resolution import push
+            card = player.current_card
+            target = player.rules.plays[card.instance_id]["target"]
+            slots = range(len(player.combat_enemies)) if card.combat_state.all_enemies else (target,)
+            push(player, *[["status", slot, "weak", 1] for slot in slots if slot is not None and player.combat_enemies[slot].is_alive])
+        elif self.definition_id == "momentum":
             instance.extra_damage += instance.amount
         elif self.definition_id == "adroit" and not player.combat_is_ending:
             player.gain_block(instance.amount, powered=True)
@@ -43,7 +49,7 @@ class EnchantmentDefinition:
 
 
 ENCHANTMENTS = MappingProxyType({"sown": Sown(), **{
-    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam", "slither")
+    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam", "slither", "inky")
 }})
 
 
@@ -106,6 +112,6 @@ def after_draw(card, deck):
     v=card.combat_state
     v.combat_cost_override=deck.energy_rng.randrange(4)
     v.combat_override_baseline=v.combat_cost_change
-    v.cost_change=0
+    v.cost_change=v.turn_cost_change=0
     v.free_this_turn=v.free_this_combat=v.free_until_played=False
     v.turn_cost_override=None

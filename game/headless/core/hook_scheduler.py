@@ -42,6 +42,11 @@ def activate(p, hook):
         # Its subsequently activated screen completes empty, but not singleton.
         if not s["candidates"]:
             r.selection = None
+    if r.selection is not None:
+        from game.headless.core.choices import refresh_hand_selection
+        refresh_hand_selection(p)
+        if not r.selection["candidates"]:
+            r.selection = None
     if p.pending_play is not None and not p.pending_options():
         p.pending_play = None
 
@@ -96,3 +101,50 @@ def run(p, execute):
         if not r.deferred_hooks:
             return
         activate(p, r.deferred_hooks.pop(0))
+
+
+def advance_side_start(p, tasks):
+    """Side-start listeners finish even when player setup has reached a choice.
+
+    Park that already-visible decision. Reactive Horn choices discovered here
+    join its deferred FIFO; side-start effects have no resolving card source.
+    """
+    if not tasks:
+        return
+    from game.headless.core.resolution import execute
+    r = p.rules
+    parked = capture(p)
+    deferred, resolving = r.deferred_hooks, p._resolving
+    r.hook_sequence += 1
+    r.active_hook = r.hook_sequence
+    r.tasks, r.selection, r.deferred_hooks = list(tasks), None, []
+    p.pending_play, p._resolving = None, True
+    try:
+        run(p, execute)
+        discovered = ([capture(p)] if paused(p) else []) + r.deferred_hooks
+    finally:
+        r.active_hook, r.tasks, r.selection = parked['context'], parked['tasks'], parked['selection']
+        p.pending_play = None if parked['pending'] is None else PendingCardPlay(**parked['pending'])
+        r.deferred_hooks, p._resolving = deferred, resolving
+    r.deferred_hooks.extend(discovered)
+    if p.combat_is_ending:
+        cancel_terminal_work(p)
+        return
+    from game.headless.core.choices import refresh_hand_selection
+    refresh_hand_selection(p)
+
+
+def cancel_terminal_work(p):
+    """Dispose interrupted setup after side-start reactions end combat."""
+    r = p.rules
+    for card in tuple(p.deck.in_play):
+        frame = r.plays[card.instance_id]
+        p.deck.in_play.remove(card)
+        getattr(p.deck, frame['destination']).append(card)
+    p.deck.offered.clear()
+    r.plays.clear()
+    r.tasks.clear()
+    r.deferred_hooks.clear()
+    r.selection = p.pending_play = None
+    r.active_hook = 0
+    r.end_hand_remaining.clear()

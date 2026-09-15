@@ -68,13 +68,15 @@ def eligible_relics(state):
     return pool or ((state.config.relic_fallback,) if state.config.relic_fallback else ())
 
 
-def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False) -> None:
+def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, extra_cards=0) -> None:
     """A0 encounter amounts with explicitly restricted, project-sampled pools.
 
     Draw once on entry. Reading choices and restoring a pending reward never
     rerolls it. Named Python streams do not reproduce native seeds/draw order.
     """
     state.require_between_rooms()
+    if type(extra_cards) is not int or extra_cards < 0:
+        raise ValueError("Invalid earned card reward count.")
     if state.config is None:
         raise ValueError("Combat rewards require declared content pools.")
     encounter = None if encounter_id is None else ENCOUNTERS[encounter_id]
@@ -105,8 +107,11 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False) -
     else:
         relic = state.rng.choice("reward_relic", relic_pool) if relic_pool else None
     state.pending["relic"] = relic
-    state.pending.update(combat_reward=True, encounter_id=encounter_id, potion=potion,
+    state.pending.update(combat_reward=True, hunt_rewards_earned=extra_cards, encounter_id=encounter_id, potion=potion,
                          potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None, extra_rewards=extra_rewards(state, cards, encounter, undamaged=undamaged))
+    if extra_cards:
+        from game.headless.relics.rewards import hunt_rewards
+        state.pending["extra_rewards"].extend(hunt_rewards(state, cards, kind, extra_cards, undamaged=undamaged))
 
 
 def claim_potion(state):

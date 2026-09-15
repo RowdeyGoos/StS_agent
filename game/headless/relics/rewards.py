@@ -150,11 +150,15 @@ def validate_modifiers(cards, offers, modifiers):
         validate(card, permanent=True)
 
 
-def validate_extra(state, cards, rewards):
+def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0):
     if not isinstance(rewards, list):
         raise ValueError("Invalid extra rewards.")
+    earned = hunt_rewards_earned
+    if type(earned) is not int or earned < 0:
+        raise ValueError("Invalid earned Hunt reward count.")
     owners = {r.instance_id: r.definition_id for r in state.relics}
     sources = []
+    hunt_index = 0
     for reward in rewards:
         if not isinstance(reward, dict) or set(reward) != {
             "source",
@@ -164,8 +168,12 @@ def validate_extra(state, cards, rewards):
             "resolved",
         }:
             raise ValueError("Invalid extra reward fields.")
+        if reward["source"] == f"the_hunt:{hunt_index}":
+            cards.definition("the_hunt")
+            owners[reward["source"]] = "the_hunt"
+            hunt_index += 1
         if (
-            owners.get(reward["source"]) not in ("prayer_wheel", "white_star", "lava_rock")
+            owners.get(reward["source"]) not in ("prayer_wheel", "white_star", "lava_rock", "the_hunt")
             or type(reward["resolved"]) is not bool
         ):
             raise ValueError("Unowned extra reward.")
@@ -191,5 +199,28 @@ def validate_extra(state, cards, rewards):
             raise ValueError("Invalid extra card offers.")
         sources.append(reward["source"])
         validate_modifiers(cards, reward["offers"], reward["modifiers"])
+    if hunt_index != earned:
+        raise ValueError("Hunt rewards differ from the earned count.")
     if any(sources.count(i) != (2 if owners[i] == "lava_rock" else 1) for i in sources):
         raise ValueError("Duplicated relic reward source.")
+
+
+def hunt_rewards(state, cards, kind, count, *, undamaged=False):
+    """Populate the room's owed Fatal rewards only at the post-combat boundary."""
+    if type(count) is not int or count < 0:
+        raise ValueError("Invalid owed card reward count.")
+    result = []
+    pool = extend_pool(state, cards, state.config.boss_reward_cards if kind == "boss" else state.config.reward_cards)
+    for index in range(count):
+        upgraded = []
+        if getattr(state.rng, "native", False):
+            from game.headless.generation.odds import card_offers
+            offers, upgraded = card_offers(state, cards, pool, kind=kind)
+            upgraded.extend(add_power_option(state, cards, offers, pool, kind=kind))
+        else:
+            offers = list(pool)
+            state.rng.shuffle("reward_offer", offers)
+            offers = offers[:3]
+        result.append(dict(source=f"the_hunt:{index}", kind="card", offers=offers,
+            modifiers=decorate(state, cards, offers, upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded), resolved=False))
+    return result
