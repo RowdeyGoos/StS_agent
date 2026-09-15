@@ -251,9 +251,43 @@ run.start_combat(encounter_id="overgrowth_cubex")
 
 Pinned native base/upgrade metadata is reproducible with the existing oracle's
 `silent` mode. Interaction tests are source-backed Python regressions; they do
-not establish native full-turn or whole-run parity. Regent, Necrobinder and Defect,
-then complete native Kaleidoscope/Splash acquisition, remain separate assignments.
+not establish native full-turn or whole-run parity. Necrobinder and Defect, then
+complete native Kaleidoscope/Splash acquisition, remain separate assignments.
 See [Silent evidence](evidence/silent_cards_2026_09_15.md).
+
+### Staged Regent content
+
+`game.headless.cards.catalog.REGENT_CARDS` extends `SILENT_CARDS` with all
+**80 ordinary solo Regent cards**, both levels, four starters and Sovereign Blade,
+Minion Strike, Minion Dive Bomb and Minion Sacrifice. It supports acquired Regent
+cards under the existing Ironclad owner. Meteor Shower and The Sealed Throne are
+Ancient entries outside this ordinary-family batch. Default acquisition remains
+restricted until the other two foreign families and native acquisition rules are complete.
+
+Stars live in `player.rules.stars`; `player.star_cost(card)` supplies current
+payment and participates in legality. Stars persist across turns, reset with combat,
+and autoplay captures Star-X without paying it. Forge updates owned blades,
+including exhausted ones, and creates one when none remain outside Exhaust.
+Sword Sage adds whole-card replays; Seeking Edge changes targeting; Parry gains
+powered block per replay. Minion transformations replace exact owned instances.
+
+Shared turn phases preserve power application order across families. Delayed
+choices, card generation, temporary Strength, replay/resource capture and Royalties'
+separate optional gold reward use existing command and continuation mechanisms.
+The `regent` native-oracle mode reproduces 90 base/upgrade metadata rows, including
+the two inventoried Ancient exclusions. [Regent evidence](evidence/regent_cards_2026_09_15.md)
+distinguishes direct metadata execution from source-backed Python interaction tests.
+
+```python
+from game.headless.cards.catalog import REGENT_CARDS
+from game.headless.run.config import RunConfig
+from game.headless.run.engine import RunEngine
+
+run = RunEngine(seed=2, rng_profile="native", cards=REGENT_CARDS,
+                config=RunConfig(),
+                card_ids=["venerate", "solar_strike", "spoils_of_battle", "cloak_of_stars"])
+run.start_combat(encounter_id="overgrowth_cubex")
+```
 
 ## Use and extend the game directly
 
@@ -1151,7 +1185,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v32`, including configuration,
+Private run snapshots now use `headless_run_state_v33`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1162,17 +1196,18 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v20`, including the in-play
+Nested combat records now use `headless_combat_state_v21`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
-gains, power duration flags, player
+gains, Stars and paid/captured Star-X values, per-target hit history, generated-card
+counts, instanced Orbit/Monologue counters, earned Royalties, power duration flags, player
 card-play counts, exact power applier slots, monster phase/spawn counters and
 per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v18 and run v1–v30 formats are rejected rather than assigning invented item
+v1–v20 and run v1–v32 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

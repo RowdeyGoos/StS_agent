@@ -168,3 +168,14 @@ Silent entries plus Shiv, makes mutable cards, applies each upgrade and reads
 resolved local costs, keywords and dynamic variables. Ancient entries remain in
 the census even though the staged ordinary-family implementation excludes them.
 The mode does not start a game, access profiles or demonstrate native card execution.
+
+## Regent card inventory
+
+Pass `regent` as the third argument to reproduce
+[`headless_native_regent_values.json`](../../tests/fixtures/headless_native_regent_values.json).
+This read-only mode instantiates the pinned all-unlocked solo Regent pool and four
+generated dependencies, then invokes actual upgrade methods. Its 90 rows retain
+energy/Star costs, both X flags, kind, rarity, target, generation eligibility,
+keywords and dynamic base/upgrade values. The two Ancient rows are inventoried but
+excluded from the ordinary-family implementation. It executes metadata/upgrade
+methods, not complete card plays or native turn scheduling.

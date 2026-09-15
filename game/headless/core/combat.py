@@ -101,7 +101,7 @@ class CombatEngine:
                 continue
             if self.player.statuses.get("ringing") and self.player.cards_played_this_turn:
                 continue
-            if (card.cost < 0 and not card.spec.x_cost) or self.player.card_cost(card) > self.player.energy:
+            if (card.cost < 0 and not card.spec.x_cost) or self.player.card_cost(card) > self.player.energy or self.player.star_cost(card) > self.player.rules.stars:
                 continue
             if card.spec.uses_target:
                 actions.extend(PlayCard(card.instance_id, slot) for slot in self._living_enemy_indices())
@@ -137,6 +137,8 @@ class CombatEngine:
                        "target_enemy_name": None if target is None else target.name}
             self._refresh_persistent_statuses()
             self._check_terminal()
+            if self.player.rules.turn_ending and not self.done and self.player.pending_play is None and self.player.rules.selection is None:
+                return self._finish_turn()
             return CombatResult(self.done, self.winner, details)
 
         self.player.end_turn()

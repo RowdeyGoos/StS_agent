@@ -126,21 +126,18 @@ def enemy_side_tasks(p):
     return [['silent_poison_begin', i] for i, e in enumerate(p.combat_enemies) if e.is_alive and e.statuses.get('poison')]
 
 
-def before_draw(p):
+def before_draw_power(p, key):
     from game.headless.core.snapshots import restore_card
     from game.headless.cards.special import clone_to
     from game.headless.cards.colorless_effects import catalog
-    from game.headless.powers.ironclad import apply_power
-    r = p.rules
-    r.discarded_turn = r.skills_finished = r.shivs_finished = 0
     from game.headless.cards.silent_effects import shivs
-    for key in tuple(r.powers):
-        if key == 'infinite_blades':
-            shivs(p, r.powers[key])
-        elif key in r.nightmares:
-            card = restore_card(r.nightmares.pop(key), catalog(p))
-            for _ in range(r.powers.pop(key)):
-                clone_to(p, card, 'hand')
+    r = p.rules
+    if key == 'infinite_blades' and r.powers.get(key):
+        shivs(p, r.powers[key])
+    elif key in r.nightmares:
+        card = restore_card(r.nightmares.pop(key), catalog(p))
+        for _ in range(r.powers.pop(key)):
+            clone_to(p, card, 'hand')
 
 
 def start_power(p, key):

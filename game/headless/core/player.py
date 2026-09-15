@@ -97,17 +97,17 @@ class Player:
 
         end_turn(self)
 
-    def gain_block(self, amount: int, *, powered: bool = False) -> None:
-        """Increase player block."""
+    def block_amount(self, amount: int, *, powered: bool = False) -> int:
+        """Preview a block command without recording a gain or firing hooks."""
         if amount < 0:
             raise ValueError("Block gain cannot be negative.")
-        from game.headless.powers.ironclad import block_multiplier, record_block, after_block
+        from game.headless.powers.ironclad import block_multiplier
 
         if not amount and not powered:
-            return
+            return 0
         if powered:
             if self.rules.powers.get("no_block") and self.current_card is not None:
-                return
+                return 0
             amount += self.rules.powers.get("dexterity", 0)
             card = self.current_card
             if card is not None and card.enchantment is not None and card.enchantment.definition_id == "nimble":
@@ -120,6 +120,11 @@ class Player:
             gain *= relic_block_multiplier(self, gain)
         if powered and self.statuses.get("frail"):
             gain = gain * 3 // 4
+        return gain
+
+    def gain_block(self, amount: int, *, powered: bool = False) -> None:
+        from game.headless.powers.ironclad import record_block, after_block
+        gain = self.block_amount(amount, powered=powered)
         self.block += gain
         if gain:
             record_block(self, powered)
@@ -158,14 +163,14 @@ class Player:
         from game.headless.powers.damage import resolve_unblocked_damage
         remaining = resolve_unblocked_damage(self.statuses, incoming_damage - blocked)
         damage = self.lose_hp(remaining, unblockable=False, attack=is_attack, source=source)
-        if (
-            is_attack
-            and self.is_alive
-            and source is not None
-            and source.is_alive
-            and self.rules.powers.get("flame_barrier")
-        ):
-            source.take_damage(self.rules.powers["flame_barrier"], is_attack=False)
+        if is_attack and self.is_alive and source is not None:
+            for key, value in tuple(self.rules.powers.items()):
+                if not source.is_alive:
+                    break
+                if key == "flame_barrier" and value:
+                    source.take_damage(value, is_attack=False)
+                elif key == "reflect" and value and blocked:
+                    source.take_damage(blocked, is_attack=False)
         return damage
 
     def lose_hp(self, amount, *, unblockable=True, attack=False, source=None):
@@ -213,6 +218,10 @@ class Player:
 
         return card_cost(self, card)
 
+    def star_cost(self, card):
+        from game.headless.powers.regent import star_cost
+        return star_cost(self, card)
+
     def play_card(self, hand_index: int, enemy) -> Card:
         from game.headless.core.resolution import start_play, drain
 
@@ -222,7 +231,7 @@ class Player:
         from game.headless.cards.curses import can_play
         if not can_play(self, card):
             raise ValueError("A curse in hand prevents this play.")
-        if (card.cost < 0 and not card.spec.x_cost) or self.card_cost(card) > self.energy:
+        if (card.cost < 0 and not card.spec.x_cost) or self.card_cost(card) > self.energy or self.star_cost(card) > self.rules.stars:
             raise ValueError("Card is unplayable or unaffordable.")
         if self.statuses.get("ringing") and self.cards_played_this_turn:
             raise ValueError("Ringing permits only one card this turn.")

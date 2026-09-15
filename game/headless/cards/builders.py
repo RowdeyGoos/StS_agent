@@ -32,6 +32,10 @@ def define(
     base_innate=False,
     defend=False,
     sly=False,
+    star_cost=-1,
+    star_x=False,
+    ethereal=False,
+    upgraded_ethereal=None,
 ):
     base = CardSpec(
         name,
@@ -46,6 +50,9 @@ def define(
         innate=base_innate,
         retain=retain,
         sly=sly,
+        star_cost=star_cost,
+        star_x=star_x,
+        ethereal=ethereal,
     )
     upgrade = replace(
         base,
@@ -56,6 +63,7 @@ def define(
         draw_count=draw if upgraded_draw is None else upgraded_draw,
         exhausts=exhaust if upgraded_exhaust is None else upgraded_exhaust,
         innate=innate or base_innate,
+        ethereal=ethereal if upgraded_ethereal is None else upgraded_ethereal,
         retain=retain if upgraded_retain is None else upgraded_retain,
     )
     return CardDefinition(

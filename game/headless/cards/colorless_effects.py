@@ -42,7 +42,7 @@ def transform(p, card):
             p.deck._ensure_identity(replacement)
             pile[index] = replacement
             from game.headless.core.piles import after_generated_entry
-            after_generated_entry(p, replacement)
+            after_generated_entry(p, replacement, generated=False)
             return
     raise ValueError("Combat transformation requires an owned card in a combat pile.")
 

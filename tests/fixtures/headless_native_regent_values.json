@@ -1,0 +1,2859 @@
+{
+  "assemblySha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "rows": [
+    {
+      "id": "alignment",
+      "type": "Alignment",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Energy": 2
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Energy": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "arsenal",
+      "type": "Arsenal",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "ArsenalPower": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Innate"
+          ],
+          "vars": {
+            "ArsenalPower": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "astral_pulse",
+      "type": "AstralPulse",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "beat_into_shape",
+      "type": "BeatIntoShape",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 5,
+            "CalculationBase": 5,
+            "CalculationExtra": 5,
+            "CalculatedForge": 5
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 7,
+            "CalculationBase": 7,
+            "CalculationExtra": 7,
+            "CalculatedForge": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "begone",
+      "type": "Begone",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "big_bang",
+      "type": "BigBang",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Cards": 1,
+            "Energy": 1,
+            "Stars": 1,
+            "Forge": 5
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust",
+            "Innate"
+          ],
+          "vars": {
+            "Cards": 1,
+            "Energy": 1,
+            "Stars": 1,
+            "Forge": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "black_hole",
+      "type": "BlackHole",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "BlackHolePower": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "BlackHolePower": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "bombardment",
+      "type": "Bombardment",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 18
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 24
+          }
+        }
+      ]
+    },
+    {
+      "id": "bulwark",
+      "type": "Bulwark",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 12,
+            "Forge": 10
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 15,
+            "Forge": 13
+          }
+        }
+      ]
+    },
+    {
+      "id": "bundle_of_joy",
+      "type": "BundleOfJoy",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Cards": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Cards": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "celestial_might",
+      "type": "CelestialMight",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6,
+            "Repeat": 3
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6,
+            "Repeat": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "type": "Charge",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "child_of_the_stars",
+      "type": "ChildOfTheStars",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "BlockForStars": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "BlockForStars": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "cloak_of_stars",
+      "type": "CloakOfStars",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 7
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "collision_course",
+      "type": "CollisionCourse",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 11
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 15
+          }
+        }
+      ]
+    },
+    {
+      "id": "comet",
+      "type": "Comet",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 5,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 33,
+            "VulnerablePower": 3,
+            "WeakPower": 3
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 5,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 44,
+            "VulnerablePower": 3,
+            "WeakPower": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "conqueror",
+      "type": "Conqueror",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "convergence",
+      "type": "Convergence",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Energy": 1,
+            "Stars": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Energy": 1,
+            "Stars": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "cosmic_indifference",
+      "type": "CosmicIndifference",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 6
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "crash_landing",
+      "type": "CrashLanding",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 21
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 26
+          }
+        }
+      ]
+    },
+    {
+      "id": "crescent_spear",
+      "type": "CrescentSpear",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 8,
+            "ExtraDamage": 2,
+            "CalculatedDamage": 8
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 8,
+            "ExtraDamage": 3,
+            "CalculatedDamage": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "crush_under",
+      "type": "CrushUnder",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 7,
+            "StrengthLoss": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "StrengthLoss": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "decisions_decisions",
+      "type": "DecisionsDecisions",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 6,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Cards": 3,
+            "Repeat": 3
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 6,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Cards": 5,
+            "Repeat": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "defend_regent",
+      "type": "DefendRegent",
+      "kind": "Skill",
+      "rarity": "Basic",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 5
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "devastate",
+      "type": "Devastate",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 4,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 30
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 4,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "dying_star",
+      "type": "DyingStar",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [
+            "Ethereal"
+          ],
+          "vars": {
+            "Damage": 9,
+            "StrengthLoss": 9
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [
+            "Ethereal"
+          ],
+          "vars": {
+            "Damage": 11,
+            "StrengthLoss": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "falling_star",
+      "type": "FallingStar",
+      "kind": "Attack",
+      "rarity": "Basic",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "VulnerablePower": 1,
+            "WeakPower": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 12,
+            "VulnerablePower": 1,
+            "WeakPower": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "foregone_conclusion",
+      "type": "ForegoneConclusion",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "furnace",
+      "type": "Furnace",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 5
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "gamma_blast",
+      "type": "GammaBlast",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 13,
+            "VulnerablePower": 2,
+            "WeakPower": 2
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 18,
+            "VulnerablePower": 2,
+            "WeakPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "gather_light",
+      "type": "GatherLight",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8,
+            "Stars": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 11,
+            "Stars": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "genesis",
+      "type": "Genesis",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "StarsPerTurn": 2
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "StarsPerTurn": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "glimmer",
+      "type": "Glimmer",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 3,
+            "PutBack": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 4,
+            "PutBack": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "glitterstream",
+      "type": "Glitterstream",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 11,
+            "BlockNextTurn": 5
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 13,
+            "BlockNextTurn": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "glow",
+      "type": "Glow",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Stars": 1,
+            "Cards": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Stars": 2,
+            "Cards": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "guards",
+      "type": "Guards",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "guiding_star",
+      "type": "GuidingStar",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 12,
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 13,
+            "Cards": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "heavenly_drill",
+      "type": "HeavenlyDrill",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": true,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "Energy": 4
+          }
+        },
+        {
+          "cost": 0,
+          "x": true,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10,
+            "Energy": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "hegemony",
+      "type": "Hegemony",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 15,
+            "Energy": 2
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 18,
+            "Energy": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "heirloom_hammer",
+      "type": "HeirloomHammer",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 20,
+            "Repeat": 1
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 25,
+            "Repeat": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "hidden_cache",
+      "type": "HiddenCache",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Stars": 1,
+            "StarNextTurnPower": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Stars": 1,
+            "StarNextTurnPower": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "i_am_invincible",
+      "type": "IAmInvincible",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 10
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 13
+          }
+        }
+      ]
+    },
+    {
+      "id": "kingly_kick",
+      "type": "KinglyKick",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 4,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 27
+          }
+        },
+        {
+          "cost": 4,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 35
+          }
+        }
+      ]
+    },
+    {
+      "id": "kingly_punch",
+      "type": "KinglyPunch",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "Increase": 4
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10,
+            "Increase": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "knockout_blow",
+      "type": "KnockoutBlow",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 30,
+            "Stars": 5
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 38,
+            "Stars": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "know_thy_place",
+      "type": "KnowThyPlace",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "WeakPower": 1,
+            "VulnerablePower": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "WeakPower": 1,
+            "VulnerablePower": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "lunar_blast",
+      "type": "LunarBlast",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 4,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 5,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "make_it_so",
+      "type": "MakeItSo",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6,
+            "Cards": 3
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 9,
+            "Cards": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "manifest_authority",
+      "type": "ManifestAuthority",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 7
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "meteor_shower",
+      "type": "MeteorShower",
+      "kind": "Attack",
+      "rarity": "Ancient",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 14,
+            "VulnerablePower": 2,
+            "WeakPower": 2
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 21,
+            "VulnerablePower": 2,
+            "WeakPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "monarchs_gaze",
+      "type": "MonarchsGaze",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "StrengthLoss": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "StrengthLoss": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "monologue",
+      "type": "Monologue",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Power": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Retain"
+          ],
+          "vars": {
+            "Power": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "neutron_aegis",
+      "type": "NeutronAegis",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 5,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "PlatingPower": 8
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 5,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "PlatingPower": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "orbit",
+      "type": "Orbit",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Energy": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Energy": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "pale_blue_dot",
+      "type": "PaleBlueDot",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 1,
+            "CardPlay": 5
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2,
+            "CardPlay": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "parry",
+      "type": "Parry",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "ParryPower": 10
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "ParryPower": 14
+          }
+        }
+      ]
+    },
+    {
+      "id": "particle_wall",
+      "type": "ParticleWall",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 9
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "patter",
+      "type": "Patter",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8,
+            "VigorPower": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 10,
+            "VigorPower": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "photon_cut",
+      "type": "PhotonCut",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10,
+            "Cards": 1,
+            "PutBack": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 13,
+            "Cards": 2,
+            "PutBack": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "pillar_of_creation",
+      "type": "PillarOfCreation",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "prophesize",
+      "type": "Prophesize",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 6
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "quasar",
+      "type": "Quasar",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 2,
+          "starX": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "radiate",
+      "type": "Radiate",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 3,
+            "Stars": 1,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 4,
+            "Stars": 1,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "refine_blade",
+      "type": "RefineBlade",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 9,
+            "Energy": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 13,
+            "Energy": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "reflect",
+      "type": "Reflect",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 15
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Block": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "resonance",
+      "type": "Resonance",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "StrengthPower": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "StrengthPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "royal_gamble",
+      "type": "RoyalGamble",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": 5,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Stars": 9
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 5,
+          "starX": false,
+          "keywords": [
+            "Exhaust",
+            "Retain"
+          ],
+          "vars": {
+            "Stars": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "royalties",
+      "type": "Royalties",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": false,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Gold": 30
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Gold": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "seeking_edge",
+      "type": "SeekingEdge",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 7
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "seven_stars",
+      "type": "SevenStars",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": 7,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 7,
+            "Repeat": 7
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 7,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 7,
+            "Repeat": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "shining_strike",
+      "type": "ShiningStrike",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "Stars": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 11,
+            "Stars": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "solar_strike",
+      "type": "SolarStrike",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 9,
+            "Stars": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10,
+            "Stars": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "spectrum_shift",
+      "type": "SpectrumShift",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "spoils_of_battle",
+      "type": "SpoilsOfBattle",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 5,
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 8,
+            "Cards": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "stardust",
+      "type": "Stardust",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "RandomEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": true,
+          "keywords": [],
+          "vars": {
+            "Damage": 5
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": true,
+          "keywords": [],
+          "vars": {
+            "Damage": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "strike_regent",
+      "type": "StrikeRegent",
+      "kind": "Attack",
+      "rarity": "Basic",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "summon_forth",
+      "type": "SummonForth",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 8
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "supermassive",
+      "type": "Supermassive",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 5,
+            "ExtraDamage": 3,
+            "CalculatedDamage": 5
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 5,
+            "ExtraDamage": 4,
+            "CalculatedDamage": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "sword_sage",
+      "type": "SwordSage",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "SwordSagePower": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "SwordSagePower": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "terraforming",
+      "type": "Terraforming",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "VigorPower": 6
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "VigorPower": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "the_sealed_throne",
+      "type": "TheSealedThrone",
+      "kind": "Power",
+      "rarity": "Ancient",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": 3,
+          "starX": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "the_smith",
+      "type": "TheSmith",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": 4,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 30
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": 4,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Forge": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "tyranny",
+      "type": "Tyranny",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Innate"
+          ],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "venerate",
+      "type": "Venerate",
+      "kind": "Skill",
+      "rarity": "Basic",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Stars": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Stars": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "void_form",
+      "type": "VoidForm",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Ethereal"
+          ],
+          "vars": {
+            "VoidFormPower": 2
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "VoidFormPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "wrought_in_war",
+      "type": "WroughtInWar",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 7,
+            "Forge": 7
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 9,
+            "Forge": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "sovereign_blade",
+      "type": "SovereignBlade",
+      "kind": "Attack",
+      "rarity": "Token",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Retain"
+          ],
+          "vars": {
+            "Damage": 10,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedBlock": 0,
+            "Repeat": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Retain"
+          ],
+          "vars": {
+            "Damage": 10,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedBlock": 0,
+            "Repeat": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "minion_strike",
+      "type": "MinionStrike",
+      "kind": "Attack",
+      "rarity": "Token",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 6,
+            "Cards": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 9,
+            "Cards": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "minion_dive_bomb",
+      "type": "MinionDiveBomb",
+      "kind": "Attack",
+      "rarity": "Token",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 13
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "minion_sacrifice",
+      "type": "MinionSacrifice",
+      "kind": "Skill",
+      "rarity": "Token",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Block": 8
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "star": -1,
+          "starX": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Block": 11
+          }
+        }
+      ]
+    }
+  ]
+}

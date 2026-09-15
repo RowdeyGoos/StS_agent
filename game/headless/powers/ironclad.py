@@ -62,6 +62,10 @@ def apply_power(p, name, amount, target=None):
     if name in silent.NAMES:
         silent.apply(p, name, amount)
         return
+    from game.headless.powers import regent
+    if name in regent.NAMES:
+        regent.apply(p, name, amount)
+        return
     if name not in POWER_NAMES:
         raise ValueError(f"Unknown player power: {name}")
     r = p.rules
@@ -73,6 +77,9 @@ def apply_power(p, name, amount, target=None):
 
 
 def card_cost(p, card):
+    from game.headless.powers.regent import free
+    if not card.spec.x_cost and card.cost >= 0 and free(p):
+        return 0
     if card.spec.kind in ("skill", "block") and p.rules.powers.get("free_skill") and (card in p.hand or card in p.deck.in_play):
         return 0
     if card.spec.x_cost:
@@ -219,6 +226,8 @@ def after_card_power(p, card, key):
         after_card_power(p, card, key)
         from game.headless.powers.silent import after_card_power as silent_after_card
         silent_after_card(p, card, key)
+        from game.headless.powers.regent import after_card_power as regent_after_card
+        regent_after_card(p, card, key)
 
 
 def start_turn(p, draw_count):
@@ -234,6 +243,8 @@ def start_turn(p, draw_count):
     from game.headless.potions.powers import start_turn as potion_start
     draw_count = potion_start(p, draw_count)
     draw_count = relic_start(p, draw_count)
+    from game.headless.powers.regent import start_turn as regent_start
+    draw_count = regent_start(p, draw_count)
     draw_count += r.powers.pop("draw_next_turn", 0) + r.powers.get("tools_of_the_trade", 0)
     if r.round_number == 1:
         draw_count = min(10, max(draw_count, sum(c.spec.innate for c in p.deck.draw_pile)))
@@ -261,15 +272,16 @@ def start_turn(p, draw_count):
     p.gain_strength(r.powers.get("demon_form", 0))
     from game.headless.powers.colorless import before_draw
 
-    from game.headless.powers.silent import before_draw as silent_before_draw
-    silent_before_draw(p)
+    r.discarded_turn = r.skills_finished = r.shivs_finished = 0
     before_draw(p)
-    push(p, *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], *relic_tasks(p, "after_draw"), ["silent_side_start_all"], *relic_tasks(p, "after_side_start"), ["mayhem"])
+    from game.headless.powers.regent import setup_tasks
+    from game.headless.powers.turns import before_draw_tasks
+    push(p, *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["regent_preplay"], ["mayhem"])
     drain(p)
     if p.pending_play is not None or r.selection is not None:
         # Native setup may pause while AfterSideTurnStart still completes.
         from game.headless.core.hook_scheduler import advance_side_start
-        ready = [t for t in r.tasks if t[0] in ("silent_side_start", "silent_side_start_all") or (t[0] == "relic_hook" and t[2] == "after_side_start")]
+        ready = [t for t in r.tasks if t[0] in ("silent_side_start", "silent_side_start_all", "regent_side_start", "regent_side_start_all", "side_start_powers") or (t[0] == "relic_hook" and t[2] == "after_side_start")]
         for task in ready:
             r.tasks.remove(task)
         advance_side_start(p, ready)
@@ -278,6 +290,13 @@ def start_turn(p, draw_count):
 def end_turn(p):
     r = p.rules
     r.turn_ending = True
+    postplay = [["regent_end_card", c.instance_id] for c in (*p.hand, *reversed(p.deck.draw_pile), *p.deck.discard_pile, *p.deck.exhaust_pile) if c.definition.definition_id == "i_am_invincible"]
+    push(p, *postplay, ["begin_end_hooks"])
+    drain(p)
+
+
+def begin_end_hooks(p):
+    r = p.rules
     from game.headless.relics.combat import tasks as relic_tasks, memory
     for relic in r.relics:
         if relic["definition_id"] == "orichalcum":
@@ -292,7 +311,6 @@ def end_turn(p):
     tasks += relic_tasks(p, "before_end")
     tasks += [["stampede", r.powers.get("stampede", 0)], ["discard_hand"]]
     push(p, *tasks)
-    drain(p)
 
 
 def after_player_end(p, name):
@@ -300,6 +318,8 @@ def after_player_end(p, name):
     after_end(p, name)
     from game.headless.powers.silent import end_turn as silent_end
     silent_end(p, name)
+    from game.headless.powers.regent import end_turn as regent_end
+    regent_end(p, name)
     r = p.rules
     if name == "dark_embrace":
         push(p, ["draw", r.ethereal_draws, False])
