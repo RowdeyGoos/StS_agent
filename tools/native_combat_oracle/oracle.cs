@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] is not ("generation" or "interactions"))) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation|interactions]");
+if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] is not ("generation" or "interactions" or "transforms"))) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation|interactions|transforms]");
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
@@ -71,6 +71,7 @@ if(args.Length==3) {
  Field(player,"<UnlockState>k__BackingField",unlock);
  var context=(Context)Prop(player,"RunState");
  context.Values["get_CardMultiplayerConstraint"]=Enum.Parse(T("Entities.Cards.CardMultiplayerConstraint"),"SingleplayerOnly");
+ if(args[2]=="transforms") { TransformOracle.Run(asm,digest,player); return; }
  var cardType=T("Models.CardModel");var factory=T("Factories.CardFactory");
  var pools=new Dictionary<string,object[]>();
  foreach(var (name,type) in new[]{("ironclad","CardPools.IroncladCardPool"),("colorless","CardPools.ColorlessCardPool")})

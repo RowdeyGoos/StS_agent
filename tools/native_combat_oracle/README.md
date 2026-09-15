@@ -99,6 +99,24 @@ continuations and live-pile selection in Python; see the
 Direct native queue mechanics now execute in the optional isolated Godot fixture
 below; actual card/selector composition remains outside that probe.
 
+## Combat transformations and foreign-card census
+
+Pass `transforms` as the third argument to execute actual
+`GetDefaultTransformationOptions` and `CreateRandomCardForTransform` in the same
+explicit solo/all-unlocked context. The retained
+[fixture](../../tests/fixtures/headless_native_transform_vectors.json) contains
+ordered options and three replacements at each of five seeds for 174 originals,
+including status/curse, basic, event, Ancient, token and quest inputs. Tests compare
+the 172 currently implemented originals; native-only Soot and Frantic Escape
+remain inventoried. This executes the
+factory, not CardCmd.Transform, selectors or complete combat turns.
+
+The fixture also records all eight relevant pool inventories, including 344 solo
+foreign definitions (320 ordinary), native type/rarity/cost, generation eligibility,
+maximum upgrade and keywords. The census is evidence of scope, not an assertion
+that foreign cards have executable headless rules. Native replacement IDs, RNG
+counters and suffixes are never synthesized by Python.
+
 ## Native paused-hook queue runtime
 
 `queue_runtime/run.py` uses the pinned macOS arm64 game engine with a fresh custom

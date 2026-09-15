@@ -44,7 +44,6 @@ DEFINITIONS += tuple(
         (),
         rarity="curse",
         pool="curse",
-        generate_in_combat=False,
     )
     for name in SPECIAL_CURSES
 )
@@ -80,3 +79,6 @@ def end_in_hand(player, card):
             player.apply_status("weak" if name == "doubt" else "frail", 1)
     elif card.spec.end_turn_damage:
         player.take_damage(card.spec.end_turn_damage, is_attack=False)
+    elif card.spec.end_turn_hp_loss:
+        from game.headless.powers.damage import resolve_unblocked_damage
+        player.lose_hp(resolve_unblocked_damage(player.statuses, card.spec.end_turn_hp_loss))

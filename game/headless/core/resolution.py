@@ -221,7 +221,7 @@ def execute(p, task):
         if not drawn:
             return
         card = drawn[0]
-        push(p, ["after_draw_card", card.instance_id], ["after_draw"], ["draw", count - 1, hand_draw])
+        push(p, ["after_draw"], ["after_draw_card", card.instance_id], ["draw", count - 1, hand_draw])
         if r.powers.get("hellraiser") and card.definition.strike:
             push(p, ["autoplay", card.instance_id, False])
     elif op == "autoplay":
@@ -281,7 +281,7 @@ def execute(p, task):
         drawn = p.deck.draw(1)
         if drawn:
             continuation = [["pillage"]] if drawn[0].spec.kind == "attack" else []
-            push(p, ["after_draw"], *continuation)
+            push(p, ["after_draw"], ["after_draw_card", drawn[0].instance_id], *continuation)
             if r.powers.get("hellraiser") and drawn[0].definition.strike:
                 push(p, ["autoplay", drawn[0].instance_id, False])
     elif op == "generate":
@@ -298,7 +298,7 @@ def execute(p, task):
         from game.headless.relics.combat import has
         from game.headless.cards.curses import END_HAND_CURSES
         r.end_turn_hand_size = len(p.hand)
-        r.end_hand_remaining = [c.instance_id for c in p.hand if c.spec.end_turn_damage or c.definition.definition_id in END_HAND_CURSES]
+        r.end_hand_remaining = [c.instance_id for c in p.hand if c.spec.end_turn_damage or c.spec.end_turn_hp_loss or c.definition.definition_id in END_HAND_CURSES]
         ethereal = [c.instance_id for c in p.hand if c.instance_id not in r.end_hand_remaining and (c.spec.ethereal or (has(p, "ghost_seed") and (c.definition.strike or c.definition.defend)))]
         push(p, *[["ethereal", i] for i in ethereal], *[["end_hand_card", i] for i in r.end_hand_remaining], ["discard_remaining"])
     elif op == "end_hand_card":
@@ -355,6 +355,8 @@ def execute(p, task):
         card = find(p, args[0])
         if card is not None:
             after_draw(card, p.deck)
+            if card.definition.definition_id == "void":
+                p.energy = max(0, p.energy - 1)
     elif op == "after_draw":
         colorless.after_draw(p)
     elif op == "energy":

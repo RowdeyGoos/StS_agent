@@ -29,6 +29,7 @@ class CardSpec:
     uses_target: bool = True
     ethereal: bool = False
     end_turn_damage: int = 0
+    end_turn_hp_loss: int = 0
     innate: bool = False
     x_cost: bool = False
     retain: bool = False

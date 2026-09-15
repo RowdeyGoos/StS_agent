@@ -1479,8 +1479,11 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
      against native selection/order/consumption for 11 callers, with base/upgraded
      action, full-hand, optional-choice and restoration regressions. Alchemize and
      Entropic Brew also match repeated native potion-factory sequences.
-     [Evidence](evidence/combat_generation_2026_09_14.md). Foreign-character Splash
-     and Entropy transformation-category/selection RNG remain separate extensions.
+     [Evidence](evidence/combat_generation_2026_09_14.md). Entropy's transformation
+     pools and selection RNG now match actual native factory vectors, with all ten
+     combat-generatable statuses and 18 curses executable; generated Stomp hooks
+     and status/draw/selection restoration are covered. Foreign-character Splash
+     remains separate. [Transformation evidence](evidence/combat_transforms_2026_09_15.md).
    - **Shuffle commands and Stomp entry implemented:** Bottled Potential's mixed
      piles use native StableShuffle; Stratagem precedes Abacus and resumes the
      triggering draw. Innate ordering/count composition and generated Stomp entry
@@ -1516,9 +1519,27 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
      autoplay and further combat boundaries. Require actual native sequences;
      passing Python continuation alone is regression evidence.
-3. **HF-28 / Kaleidoscope:** implement required foreign-character card pools and
-   combat rules, then enable existing Neow eligibility. Accept every transformed
-   card through combat and exact restore; do not silently substitute Ironclad cards.
+3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
+   ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
+   Their full 344-card pool inventory, including basic/special entries, is retained
+   in `tests/fixtures/headless_native_transform_vectors.json`. Implement in staged
+   batches through existing catalogs and owned continuations. A partial catalog
+   must not silently replace a complete all-unlocked acquisition pool.
+
+   | Independently pickable implementation | Acceptance |
+   | --- | --- |
+   | Silent card family and dependent generated cards | Implement the 80 ordinary cards and both levels; shared poison, Shiv, discard and delayed-card hooks; exercise acquired cards in an Ironclad combat with JSON continuation. |
+   | Regent card family and dependent generated cards | Implement the 80 ordinary cards and both levels; owned Stars and Forge/Sovereign Blade state; resource legality, nested generation and exact restore when acquired by Ironclad. |
+   | Necrobinder card family and dependent generated cards | Implement the 80 ordinary cards and both levels; Doom, Souls, summon/Osty ownership and relevant death interactions; validate acquisition into Ironclad independently of playing as Necrobinder. |
+   | Defect card family and dependent generated cards | Implement the 80 ordinary cards and both levels; owned orb slots/order, channel/evoke and Focus hooks; resource and targeting behavior in an Ironclad combat, including no-slot cases. |
+   | Kaleidoscope/Splash native acquisition | Once content dependencies are complete, match exact eligibility, native pool order, selection/upgrade rolls and RNG suffixes; acquire and play every offered definition. |
+
+   Source inspection additionally found that Kaleidoscope requires all native
+   characters unlocked, shuffles the four foreign pools with Niche, and uses the
+   reward factory for each selected family. The existing custom-catalog fallback
+   (at least three foreign families and direct uniform card selection) is a fixture,
+   not verified native acquisition. Correct this when enabling complete catalogs;
+   do not enable Kaleidoscope merely by adding one card per family.
 4. **Act 1 completion gate:** run a declared seed/path matrix across all three
    bosses, events, shops, pickups and choices. Compare native boundary records;
    a synthetic victory or deterministic Python continuation alone is insufficient.
