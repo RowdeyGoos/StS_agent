@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v18 / run v30**.
+than being silently reinterpreted: current schemas are **combat v19 / run v31**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -313,10 +313,24 @@ Ironclad-accessible potions, filtering Fairy, Fruit Juice and Regen from Alchemi
 Authored slice fixtures retain their explicit Fire/Block pool. Discovery and
 Calamity use the Ironclad generation catalog with their distinct native factory modes. Splash uses other registered character
 pools when present, otherwise the sole Ironclad pool, matching the one-unlocked-character
-case; other characters' card catalogs are not yet implemented. Entropy preserves
-status/curse replacement categories using supported subsets and gives fresh base
-cards without inherited upgrades or combat modifiers. Full native unlock state,
-other-character/status/curse catalogs and transformation RNG parity remain separate work.
+case; other characters' card catalogs are not yet implemented. Entropy now uses
+the native ordered combat transformation pools: 78 eligible Ironclad definitions,
+50 colorless, all 18 curses and all ten combat-generatable statuses, excluding the
+original definition. Ancient/event/token/quest cards transform into colorless
+cards; registered foreign cards retain their own family. Replacements get fresh
+IDs and base values, preserve pile position, clear old modifiers and run generated
+entry hooks such as Stomp. Selection and RNG continuation match direct native
+factory vectors. See [transformation evidence](evidence/combat_transforms_2026_09_15.md).
+
+The six added statuses are Beckon (play to avoid six unblockable end-turn damage),
+Burn (two blockable end-turn damage), Debris (pay one to exhaust), base Wither
+(three blockable end-turn damage), Toxic (five blockable end-turn damage; pay one
+to exhaust) and Void (lose one energy when drawn; ethereal). Automation's normal
+draw hook precedes Void; generated entry does not count as drawing. Soot and
+Frantic Escape cannot be generated in combat and await their later-act callers;
+Wither's encounter-driven fake upgrades are also outside this Act 1 batch.
+Private snapshots are combat **v19** / run **v31**. Other-character catalogs and
+whole-command/native-run interaction fidelity remain separate work.
 
 Armaments gives 5 block, then upgrades one eligible hand card for this combat;
 Armaments+ upgrades all eligible hand cards. True Grit gives 7 block and exhausts
@@ -405,7 +419,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v15 and run v27. Legacy RL encoders retain their frozen vocabulary.
+combat v19 and run v31. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -491,8 +505,8 @@ Foreign-character pools remain unavailable in the default catalog.
 See the [scope inventory](../tests/fixtures/headless_relic_scope.json),
 [combat tests](../tests/headless/test_relic_combat.py),
 [run tests](../tests/headless/test_relic_run.py) and
-[source/validation record](evidence/relics_2026_09_13.md). Private combat **v10** and
-run **v20** persist the new state and reject older schemas; public fixture schemas
+[source/validation record](evidence/relics_2026_09_13.md). Current private combat/run
+snapshots persist this state and reject older schemas; public fixture schemas
 are unchanged. This is static-source and synthetic execution evidence, not live
 or exhaustive interaction conformance.
 
@@ -1106,7 +1120,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v27`, including configuration,
+Private run snapshots now use `headless_run_state_v31`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1117,7 +1131,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v15`, including the in-play
+Nested combat records now use `headless_combat_state_v19`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
@@ -1127,7 +1141,7 @@ per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v14 and run v1–v26 formats are rejected rather than assigning invented item
+v1–v18 and run v1–v30 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

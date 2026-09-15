@@ -3,11 +3,11 @@
 from game.headless.cards.base import CardDefinition, CardSpec
 from game.headless.cards.effects import DealDamage
 
-BYRDONIS_EGG = CardDefinition("byrdonis_egg", (CardSpec("Byrdonis Egg", -1, "quest", uses_target=False),), ())
+BYRDONIS_EGG = CardDefinition("byrdonis_egg", (CardSpec("Byrdonis Egg", -1, "quest", uses_target=False),), (), rarity="quest", pool="event", generate_in_combat=False)
 BYRD_SWOOP = CardDefinition("byrd_swoop", (
     CardSpec("Byrd Swoop", 0, "attack", base_damage=14),
     CardSpec("Byrd Swoop+", 0, "attack", base_damage=18),
-), (DealDamage(),))
+), (DealDamage(),), rarity="event", pool="event", generate_in_combat=False)
 from game.headless.cards.operations import Attack, CardOperation
 NEOWS_FURY = CardDefinition("neows_fury", (
     CardSpec("Neow's Fury", 1, "attack", base_damage=10, exhausts=True),

@@ -206,7 +206,7 @@ def restore_rules(record, player):
         if op == "end_hand_card":
             source = known.get(args[0])
             if (source is None or args[0] in end_hand_ids or not r.turn_ending
-                    or not (source.spec.end_turn_damage or source.definition.definition_id in END_HAND_CURSES)):
+                    or not (source.spec.end_turn_damage or source.spec.end_turn_hp_loss or source.definition.definition_id in END_HAND_CURSES)):
                 raise ValueError("Unowned end-of-hand effect.")
             end_hand_ids.append(args[0])
         if op == 'relic_damage' and (args[0] not in r.relic_data or type(args[1]) is not int or args[1] < 0 or type(args[2]) is not bool or type(args[3]) is not bool or (args[4] is not None and (type(args[4]) is not int or not 0 <= args[4] < len(player.combat_enemies)))):

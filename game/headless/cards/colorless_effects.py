@@ -31,27 +31,20 @@ def create(p, definition, *, upgraded=False, destination="hand"):
 
 
 def transform(p, card):
-    family = card.definition.pool
-    if card.spec.kind == "curse":
-        choices = [d for d in catalog(p).definitions if d.levels[0].kind == "curse"]
-    elif card.spec.kind == "status":
-        choices = [d for d in catalog(p).definitions if d.levels[0].kind == "status"]
-    else:
-        choices = pool(
-            p, "ironclad" if family == "ironclad" and card.definition.rarity != "ancient" else "colorless"
-        )
-    choices = [d for d in choices if d.definition_id != card.definition.definition_id]
-    if not choices:
-        return
-    definition = p.deck.selection_rng.choice(choices)
+    from game.headless.generation.transforms import combat_options
+    choices = combat_options(catalog(p), card)
     for name in ("hand", "draw_pile", "discard_pile", "exhaust_pile"):
         pile = getattr(p.deck, name)
         if card in pile:
+            definition = p.deck.selection_rng.choice(choices)
             index = pile.index(card)
             replacement = catalog(p).create(definition.definition_id)
             p.deck._ensure_identity(replacement)
             pile[index] = replacement
+            from game.headless.core.piles import after_generated_entry
+            after_generated_entry(p, replacement)
             return
+    raise ValueError("Combat transformation requires an owned card in a combat pile.")
 
 
 def hit(p, card, target, *, extra=0):
