@@ -65,6 +65,8 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     target_slot = None if target is None else player.combat_enemies.index(target)
     cost = player.card_cost(card)
     x = player.energy if card.spec.x_cost else 0
+    star_value = player.rules.stars if card.spec.star_x else 0
+    stars_spent = 0 if auto else player.star_cost(card)
     if not auto:
         player.energy -= cost
     move_out(player, card)
@@ -88,7 +90,9 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
         "auto": auto,
         "force_exhaust": force_exhaust,
         "x": x + (2 if card.spec.x_cost and any(r["definition_id"] == "chemical_x" for r in rules.relics) else 0),
-        "energy_value": 0 if auto else (x if card.spec.x_cost else cost),
+        "energy_value": 0 if auto else cost,
+        "star_value": star_value + (2 if card.spec.star_x and any(r["definition_id"] == "chemical_x" for r in rules.relics) else 0),
+        "stars_spent": stars_spent,
         "remaining": repeats,
         "rupture": 0,
         "effect_index": -1,
@@ -113,6 +117,9 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     ):
         frame["destination"] = "draw_pile"
     push(player, ["iteration", card.instance_id])
+    if not auto:
+        from game.headless.powers.regent import spend
+        spend(player, cost, stars_spent)
 
 
 def drain(player):
@@ -157,6 +164,8 @@ def execute(p, task):
             before_play(p, card)
             from game.headless.powers.silent import before_play as silent_before_play
             silent_before_play(p, card)
+            from game.headless.powers.regent import before_play as regent_before_play
+            regent_before_play(p, card)
             push(
                 p,
                 *[["effect", identity, i] for i in range(len(card.definition.effects))],
@@ -207,12 +216,17 @@ def execute(p, task):
             p.deck.powers.append(card)
         elif context["destination"] == "exhaust_pile":
             p.deck.exhaust_card(card)
+        elif context["destination"] == "hand":
+            (p.hand if len(p.hand) < 10 else p.deck.discard_pile).append(card)
         elif context["destination"] == "draw_pile":
             p.deck.draw_pile.append(card)
         else:
             p.deck.discard_card(card)
         from game.headless.relics.plays import hand_emptied
         hand_emptied(p)
+        if r.regent_end_requested and not r.plays and not r.turn_ending:
+            r.regent_end_requested = False
+            hooks.end_turn(p)
     elif op == "shuffle_choice":
         from game.headless.core.piles import choose_after_shuffle
         choose_after_shuffle(p)
@@ -349,6 +363,9 @@ def execute(p, task):
     elif op == "end_power":
         hooks.after_player_end(p, args[0])
         colorless.after_end(p, args[0])
+    elif op in ("before_draw_power", "side_start_powers"):
+        from game.headless.powers.turns import execute as turn_execute
+        turn_execute(p, op, args)
     elif op == "start_powers":
         push(p, *[["start_power", key] for key in r.powers])
     elif op == "after_card_power":
@@ -357,6 +374,8 @@ def execute(p, task):
         card = find(p, args[0])
         from game.headless.powers.silent import after_card
         after_card(p, card)
+        from game.headless.powers.regent import after_card as regent_after_card
+        regent_after_card(p, card)
         if card.enchantment is not None and card.enchantment.definition_id == "glam":
             card.enchantment.triggered = True
     elif op == "after_card_enemies":
@@ -371,6 +390,10 @@ def execute(p, task):
         colorless.start_power(p, args[0])
         from game.headless.powers.silent import start_power
         start_power(p, args[0])
+        if args[0] == "tyranny":
+            push(p, ["regent_start_power"])
+    elif op == "begin_end_hooks":
+        hooks.begin_end_hooks(p)
     elif op == "early_end":
         colorless.early_end(p, args[0])
     elif op == "after_draw_card":
@@ -378,6 +401,8 @@ def execute(p, task):
         card = find(p, args[0])
         if card is not None:
             after_draw(card, p.deck)
+            from game.headless.powers.regent import after_draw as regent_after_draw
+            regent_after_draw(p, card)
             if card.definition.definition_id == "void":
                 p.energy = max(0, p.energy - 1)
     elif op == "after_draw":
@@ -430,6 +455,9 @@ def execute(p, task):
     elif op == "relic_hook":
         from game.headless.relics.combat import execute as relic_execute
         relic_execute(p, *args)
+    elif op.startswith("regent_"):
+        from game.headless.cards.regent_effects import execute as regent_execute
+        regent_execute(p, op, args)
     elif op.startswith("silent_"):
         from game.headless.cards.silent_effects import execute as silent_execute
         silent_execute(p, op, args)

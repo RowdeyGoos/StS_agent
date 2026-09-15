@@ -71,3 +71,9 @@ class CombatRules:
     shivs_finished: int = 0
     extra_card_rewards: int = 0
     nightmares: dict[str, dict] = field(default_factory=dict)
+    stars: int = 0
+    stars_gained_turn: int = 0
+    generated_combat: int = 0
+    round_plays: int = 0
+    regent_hits: dict[str, int] = field(default_factory=dict)
+    regent_end_requested: bool = False

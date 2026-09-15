@@ -13,7 +13,8 @@ def after_owner_side_turn_end(owner):
                 owner.take_damage(owner.statuses.get("demise"), is_attack=False)
                 owner.block = block
             owner.statuses.decrement("mangle", owner.statuses.get("mangle"))
-            owner.statuses.decrement("dark_shackles", owner.statuses.get("dark_shackles"))
+            for key in ("dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down"):
+                owner.statuses.decrement(key, owner.statuses.get(key))
         if hasattr(owner, "power_sources"):
             amount = owner.statuses.get("constrict")
             if amount:

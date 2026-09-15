@@ -9,12 +9,15 @@ def valid_power(key, sequence):
         return False
     from game.headless.potions.powers import NAMES as POTION_POWERS
     from game.headless.powers.silent import NAMES as SILENT_POWERS
+    from game.headless.powers.regent import NAMES as REGENT_POWERS, INSTANCED as REGENT_INSTANCED
+    if key in REGENT_POWERS - REGENT_INSTANCED:
+        return True
     if key in POWER_NAMES or key in NAMES - INSTANCED or key in POTION_POWERS or key in SILENT_POWERS:
         return True
     parts = key.split(":")
     return (
         len(parts) == 2
-        and parts[0] in INSTANCED | {"nightmare"}
+        and parts[0] in INSTANCED | REGENT_INSTANCED | {"nightmare"}
         and parts[1].isdigit()
         and str(int(parts[1])) == parts[1]
         and int(parts[1]) < sequence
@@ -39,6 +42,8 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     if "outbreak" in r.powers:
         expected_aux.add("outbreak")
     for key in r.powers:
+        if key.startswith(("monologue:", "orbit:")) or key == "void_form":
+            expected_aux.add(key)
         if name(key) in ("automation", "panache", "the_bomb", "toric_toughness"):
             expected_aux.add(key)
         if name(key) == "panache":
@@ -63,8 +68,9 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     fields = {"source", "candidates", "selected", "operation", "destination", "minimum", "maximum", "free"}
     if not isinstance(s, dict) or set(s) - {"whitelist"} != fields:
         raise ValueError("Invalid selection fields.")
+    from game.headless.core.regent_snapshots import CHOICES as REGENT_CHOICES, validate_selection as regent_selection
     if (
-        s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
+        s["operation"] not in REGENT_CHOICES and s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
         or s["destination"] not in ("hand", "draw_pile")
         or s["free"] not in ("", "free_this_turn", "free_until_played")
         or any(type(s[k]) is not int for k in ("minimum", "maximum"))
@@ -84,6 +90,9 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         or not set(s["selected"]) <= set(s["candidates"])
     ):
         raise ValueError("Invalid selection bounds.")
+    if s["operation"] in REGENT_CHOICES:
+        regent_selection(r, p, s, deferred=deferred)
+        return
     from game.headless.core.silent_snapshots import CHOICES, validate_selection as silent_selection
     if s["operation"] in CHOICES:
         silent_selection(r, p, s, deferred=deferred)

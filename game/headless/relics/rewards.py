@@ -150,12 +150,15 @@ def validate_modifiers(cards, offers, modifiers):
         validate(card, permanent=True)
 
 
-def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0):
+def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_earned=0):
     if not isinstance(rewards, list):
         raise ValueError("Invalid extra rewards.")
     earned = hunt_rewards_earned
     if type(earned) is not int or earned < 0:
         raise ValueError("Invalid earned Hunt reward count.")
+    if type(royalties_earned) is not int or royalties_earned < 0:
+        raise ValueError("Invalid earned Royalties reward.")
+    royalties_count = 0
     owners = {r.instance_id: r.definition_id for r in state.relics}
     sources = []
     hunt_index = 0
@@ -168,6 +171,12 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0):
             "resolved",
         }:
             raise ValueError("Invalid extra reward fields.")
+        if reward["source"] == "royalties":
+            cards.definition("royalties")
+            if not royalties_earned or reward["kind"] != "gold" or reward["offers"] != ["royalties"] or reward["modifiers"] != {"gold": royalties_earned} or type(reward["resolved"]) is not bool:
+                raise ValueError("Invalid Royalties reward.")
+            royalties_count += 1
+            continue
         if reward["source"] == f"the_hunt:{hunt_index}":
             cards.definition("the_hunt")
             owners[reward["source"]] = "the_hunt"
@@ -199,6 +208,8 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0):
             raise ValueError("Invalid extra card offers.")
         sources.append(reward["source"])
         validate_modifiers(cards, reward["offers"], reward["modifiers"])
+    if royalties_count != int(royalties_earned > 0):
+        raise ValueError("Royalties reward differs from earned gold.")
     if hunt_index != earned:
         raise ValueError("Hunt rewards differ from the earned count.")
     if any(sources.count(i) != (2 if owners[i] == "lava_rock" else 1) for i in sources):

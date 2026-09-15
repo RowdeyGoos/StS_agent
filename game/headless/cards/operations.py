@@ -33,6 +33,8 @@ class Attack:
             "discards": player.rules.discarded_turn,
             "draws": player.rules.drawn_combat,
             "precise": 0,
+            "star_cards": sum(c.spec.star_cost >= 0 or c.spec.star_x for c in player.deck.all_cards() if c not in player.deck.offered),
+            "generated": player.rules.generated_combat,
             "debuffs": (
                 sum(
                     target.statuses.get(n) > 0
@@ -45,9 +47,9 @@ class Attack:
                         "tangled",
                         "ringing",
                         "shrink",
-                        "demise",
+                        "demise", "conqueror",
                     )
-                ) + int(target.strength - target.statuses.get("mangle") - target.statuses.get("dark_shackles") < 0)
+                ) + int(target.strength - sum(target.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down")) < 0)
                 if target is not None
                 else 0
             ),
@@ -69,6 +71,13 @@ class Attack:
             hits = player.rules.attacks_finished
         elif self.hit_expression == "hand_skills":
             hits = sum(c.spec.kind in ("skill", "block") for c in player.hand)
+        elif self.hit_expression == "skills_finished":
+            hits = player.rules.skills_finished
+        elif self.hit_expression == "stars_gained":
+            hits = player.rules.stars_gained_turn
+        elif self.hit_expression == "heavenly_drill":
+            x = player.rules.plays[card.instance_id]["x"]
+            hits = x * (2 if x >= 4 else 1)
         elif self.hit_expression == "x":
             hits = player.rules.plays[card.instance_id]["x"]
         elif self.hit_expression == "pacts_end" and len(player.deck.exhaust_pile) < 3:

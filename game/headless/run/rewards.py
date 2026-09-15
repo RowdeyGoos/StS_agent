@@ -68,13 +68,15 @@ def eligible_relics(state):
     return pool or ((state.config.relic_fallback,) if state.config.relic_fallback else ())
 
 
-def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, extra_cards=0) -> None:
+def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, extra_cards=0, royalties=0) -> None:
     """A0 encounter amounts with explicitly restricted, project-sampled pools.
 
     Draw once on entry. Reading choices and restoring a pending reward never
     rerolls it. Named Python streams do not reproduce native seeds/draw order.
     """
     state.require_between_rooms()
+    if type(royalties) is not int or royalties < 0:
+        raise ValueError("Invalid earned Royalties gold.")
     if type(extra_cards) is not int or extra_cards < 0:
         raise ValueError("Invalid earned card reward count.")
     if state.config is None:
@@ -107,8 +109,10 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     else:
         relic = state.rng.choice("reward_relic", relic_pool) if relic_pool else None
     state.pending["relic"] = relic
-    state.pending.update(combat_reward=True, hunt_rewards_earned=extra_cards, encounter_id=encounter_id, potion=potion,
+    state.pending.update(combat_reward=True, hunt_rewards_earned=extra_cards, royalties_earned=royalties, encounter_id=encounter_id, potion=potion,
                          potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None, extra_rewards=extra_rewards(state, cards, encounter, undamaged=undamaged))
+    if royalties:
+        state.pending["extra_rewards"].append(dict(source="royalties", kind="gold", offers=["royalties"], modifiers={"gold": royalties}, resolved=False))
     if extra_cards:
         from game.headless.relics.rewards import hunt_rewards
         state.pending["extra_rewards"].extend(hunt_rewards(state, cards, kind, extra_cards, undamaged=undamaged))
@@ -165,7 +169,12 @@ def choose_extra(state, cards, index, name):
         raise ValueError('Extra reward is unavailable.')
     result = None
     if name is not None:
-        result = add_relic(state, name, cards=cards) if reward['kind'] == 'relic' else acquire_card(state, cards, name, reward['modifiers'])
+        if reward['kind'] == 'gold':
+            from game.headless.relics.run_rules import gain_gold
+            gain_gold(state, reward["modifiers"]["gold"])
+            result = reward["modifiers"]["gold"]
+        else:
+            result = add_relic(state, name, cards=cards) if reward['kind'] == 'relic' else acquire_card(state, cards, name, reward['modifiers'])
     reward['resolved'] = True
     return result
 

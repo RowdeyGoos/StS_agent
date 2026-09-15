@@ -46,10 +46,16 @@ def choose_after_shuffle(player):
         begin(player, "stratagem", cards, minimum=count, maximum=count)
 
 
-def after_generated_entry(player, card, *, is_clone=False):
+def after_generated_entry(player, card, *, is_clone=False, generated=True):
     # Offered cards are not hook listeners. Apply entry effects only when the
     # fresh instance enters a combat pile; ordinary pile moves/clones skip this.
+    if generated:
+        player.rules.generated_combat += 1
     from game.headless.powers.silent import entered
     entered(player, card, is_clone=is_clone)
+    from game.headless.powers.regent import entered as regent_entered, generated as regent_generated
+    regent_entered(player, card, is_clone=is_clone)
+    if generated:
+        regent_generated(player)
     if not is_clone and card.definition.definition_id == "stomp":
         card.combat_state.cost_change -= player.rules.attacks_finished

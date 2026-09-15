@@ -1523,15 +1523,16 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
    Their full 344-card pool inventory, including basic/special entries, is retained
    in `tests/fixtures/headless_native_transform_vectors.json`. Implement in staged
-   batches through existing catalogs and owned continuations. Silent is now available
-   through `SILENT_CARDS`; **Regent is the next family assignment**. The remaining
-   three ordinary families contain 240 cards. A partial catalog
+   batches through existing catalogs and owned continuations. Silent is available
+   through `SILENT_CARDS`, and Regent through the cumulative `REGENT_CARDS`.
+   **Necrobinder is the next family assignment**, followed by Defect: 160 ordinary
+   cards remain across those two families. A partial catalog
    must not silently replace a complete all-unlocked acquisition pool.
 
    | Independently pickable implementation | Acceptance |
    | --- | --- |
    | Silent family — implemented as an explicit catalog extension | All 80 ordinary solo cards, both levels, four starters and Shiv; shared poison, discard/Sly, delayed effects and earned rewards. Native metadata plus source-backed interaction/JSON regressions. [Evidence](evidence/silent_cards_2026_09_15.md). |
-   | Regent card family and dependent generated cards | Implement the 80 ordinary cards and both levels; owned Stars and Forge/Sovereign Blade state; resource legality, nested generation and exact restore when acquired by Ironclad. |
+   | Regent family — implemented as an explicit catalog extension | All 80 ordinary solo cards, both levels, four starters and four generated cards; owned Stars, Forge/blade replays, minion transformations, ordered hooks and earned gold rewards. Native metadata plus source-backed interaction/JSON regressions. [Evidence](evidence/regent_cards_2026_09_15.md). |
    | Necrobinder card family and dependent generated cards | Implement the 80 ordinary cards and both levels; Doom, Souls, summon/Osty ownership and relevant death interactions; validate acquisition into Ironclad independently of playing as Necrobinder. |
    | Defect card family and dependent generated cards | Implement the 80 ordinary cards and both levels; owned orb slots/order, channel/evoke and Focus hooks; resource and targeting behavior in an Ironclad combat, including no-slot cases. |
    | Kaleidoscope/Splash native acquisition | Once content dependencies are complete, match exact eligibility, native pool order, selection/upgrade rolls and RNG suffixes; acquire and play every offered definition. |

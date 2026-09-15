@@ -35,6 +35,8 @@ class CardSpec:
     retain: bool = False
     eternal: bool = False
     sly: bool = False
+    star_cost: int = -1
+    star_x: bool = False
 
     @property
     def is_dead_card(self) -> bool:
