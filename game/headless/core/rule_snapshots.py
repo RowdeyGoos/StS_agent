@@ -56,11 +56,16 @@ TASK_ARITIES = {
 }
 
 
+from game.headless.core import silent_snapshots
+TASK_ARITIES.update(silent_snapshots.TASK_ARITIES)
+
+
 def restore_rules(record, player):
     if not isinstance(record, dict) or set(record) != set(asdict(CombatRules())):
         raise ValueError("Invalid combat rule state fields.")
     r = CombatRules(**deepcopy(record))
     for key in (
+        "discarded_turn", "drawn_combat", "skills_finished", "shivs_finished", "extra_card_rewards",
         "attacks_started",
         "attacks_finished",
         "hp_loss_events",
@@ -88,7 +93,7 @@ def restore_rules(record, player):
     if r.attacks_finished > r.attacks_started:
         raise ValueError("Invalid attack history.")
     if not isinstance(r.powers, dict) or any(
-        not valid_power(k, r.power_sequence) or type(v) is not int or v < 0 for k, v in r.powers.items()
+        not valid_power(k, r.power_sequence) or type(v) is not int or (v < 0 and k != "dexterity") for k, v in r.powers.items()
     ):
         raise ValueError("Invalid player power state.")
     if not isinstance(r.auxiliaries, dict) or any(
@@ -104,6 +109,7 @@ def restore_rules(record, player):
         raise ValueError("Invalid combat relic room context.")
     from game.headless.potions.snapshots import validate as validate_potions
     validate_potions(r, player)
+    silent_snapshots.validate_state(r, player)
     from game.headless.core.hook_snapshots import groups, validate_choices
     work = groups(r, player)
     validate_choices(r, player)
@@ -123,8 +129,9 @@ def restore_rules(record, player):
             "destination",
             "effect_index",
             "stage",
+            "silent_before",
         }
-        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification"} != required:
+        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification", "echo_kills"} != required:
             raise ValueError("Invalid play frame.")
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
@@ -150,6 +157,7 @@ def restore_rules(record, player):
             in_play[identity].definition.effects
         ):
             raise ValueError("Invalid interrupted effect.")
+        silent_snapshots.validate_frame(frame, player)
         card = in_play[identity]
         if (frame["destination"] == "powers") != (card.spec.kind == "power"):
             raise ValueError("Result pile does not match card kind.")
@@ -241,7 +249,7 @@ def restore_rules(record, player):
         if op == "selected" and (
             args[0] not in player.deck._allocated_ids
             or args[0] in r.plays
-            or args[1] not in ("move", "exhaust", "transform", "discard_redraw", "free_combat")
+            or args[1] not in ("move", "exhaust", "transform", "discard_redraw", "free_combat", "hand_trick", "nightmare", "well_laid_plans")
             or args[2] not in ("hand", "draw_pile")
             or args[3] not in ("", "free_this_turn", "free_until_played")
         ):
@@ -257,7 +265,7 @@ def restore_rules(record, player):
             if (
                 type(slot) is not int
                 or not 0 <= slot < len(player.combat_enemies)
-                or name not in ("strength", "vulnerable", "weak", "mangle", "dark_shackles")
+                or name not in ("strength", "vulnerable", "weak", "mangle", "dark_shackles", "poison", "strangle")
                 or type(amount) is not int
                 or amount < 0
             ):
@@ -280,7 +288,7 @@ def restore_rules(record, player):
                 "block",
                 "plays",
                 "draw_pile",
-                "debuffs",
+                "debuffs", "discards", "draws", "precise",
             ) or any(type(v) is not int or v < 0 for v in (factor, gain, vigor)):
                 raise ValueError("Invalid queued attack expression.")
         if op in ("draw", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
@@ -322,6 +330,8 @@ def restore_rules(record, player):
         ]:
             raise ValueError("Nested plays must finish before their parents in their own context.")
         for task in tasks:
+            if task[0] in silent_snapshots.TASK_ARITIES:
+                silent_snapshots.validate_task(task, r, player, context)
             if task[0] in ("iteration", "effect", "after_play", "after_enchantment", "repeat", "finish",
                            "attack", "random_hit", "gigantification_end", "gigantification_begin",
                            "after_card_power", "after_card_enemies", "after_card_enchantment"):

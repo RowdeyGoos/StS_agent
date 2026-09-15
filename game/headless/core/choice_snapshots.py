@@ -8,12 +8,13 @@ def valid_power(key, sequence):
     if not isinstance(key, str):
         return False
     from game.headless.potions.powers import NAMES as POTION_POWERS
-    if key in POWER_NAMES or key in NAMES - INSTANCED or key in POTION_POWERS:
+    from game.headless.powers.silent import NAMES as SILENT_POWERS
+    if key in POWER_NAMES or key in NAMES - INSTANCED or key in POTION_POWERS or key in SILENT_POWERS:
         return True
     parts = key.split(":")
     return (
         len(parts) == 2
-        and parts[0] in INSTANCED
+        and parts[0] in INSTANCED | {"nightmare"}
         and parts[1].isdigit()
         and str(int(parts[1])) == parts[1]
         and int(parts[1]) < sequence
@@ -35,6 +36,8 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     ):
         raise ValueError("Invalid combat potion state.")
     expected_aux = {"crimson_mantle", "inferno", "block_gains"}
+    if "outbreak" in r.powers:
+        expected_aux.add("outbreak")
     for key in r.powers:
         if name(key) in ("automation", "panache", "the_bomb", "toric_toughness"):
             expected_aux.add(key)
@@ -61,7 +64,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     if not isinstance(s, dict) or set(s) - {"whitelist"} != fields:
         raise ValueError("Invalid selection fields.")
     if (
-        s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat")
+        s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
         or s["destination"] not in ("hand", "draw_pile")
         or s["free"] not in ("", "free_this_turn", "free_until_played")
         or any(type(s[k]) is not int for k in ("minimum", "maximum"))
@@ -81,6 +84,10 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         or not set(s["selected"]) <= set(s["candidates"])
     ):
         raise ValueError("Invalid selection bounds.")
+    from game.headless.core.silent_snapshots import CHOICES, validate_selection as silent_selection
+    if s["operation"] in CHOICES:
+        silent_selection(r, p, s, deferred=deferred)
+        return
     if s["source"] in r.potion_uses:
         if "whitelist" in s:
             raise ValueError("Potion choice cannot own a sampled card filter.")

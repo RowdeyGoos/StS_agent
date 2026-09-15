@@ -24,7 +24,9 @@ INFESTED = "infested"
 MANGLE = "mangle"
 DARK_SHACKLES = "dark_shackles"
 DEMISE = "demise"
-SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE, DARK_SHACKLES, DEMISE)
+POISON = "poison"
+STRANGLE = "strangle"
+SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE, DARK_SHACKLES, DEMISE, POISON, STRANGLE)
 STATUS_STACK_SCALE = 5.0
 
 
@@ -42,7 +44,7 @@ STATUS_DEFINITIONS = MappingProxyType({
     WEAK: StatusDefinition(name=WEAK),
     FRAIL: StatusDefinition(name=FRAIL),
     **{name: StatusDefinition(name=name, duration_tick_side=None) for name in
-       (ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE, DARK_SHACKLES, DEMISE)},
+       (ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE, DARK_SHACKLES, DEMISE, POISON, STRANGLE)},
     TERRITORIAL: StatusDefinition(name=TERRITORIAL, duration_tick_side=None),
     SLIPPERY: StatusDefinition(name=SLIPPERY, duration_tick_side=None),
 })
@@ -146,5 +148,5 @@ def _require_supported_status(status_name: str) -> None:
         raise ValueError(f"Unsupported status effect: {status_name!r}")
 
 
-# TODO: Add remaining status families such as poison.
+# Additional character-specific status families remain outside this catalog.
 # TODO: Add richer status hooks for start-of-turn, card-play, and damage events.

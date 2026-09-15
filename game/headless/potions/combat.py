@@ -126,7 +126,7 @@ def effect(p, identity, index):
             if card.cost >= 0 and not card.spec.x_cost:
                 v = card.combat_state
                 v.turn_cost_override = p.deck.energy_rng.randrange(4)
-                v.override_turn_baseline = v.cost_change
+                v.override_turn_baseline = v.cost_change + v.turn_cost_change
                 v.override_combat_baseline = v.combat_cost_change
                 v.free_this_turn = False
     elif op == "exhaust_hand":

@@ -155,6 +155,20 @@ class CombatEngine:
         if self.done:
             return CombatResult(self.done, self.winner, {"enemy_actions": []})
         self.player.rules.enemy_turn = {'limit': len(self.enemies), 'slot': 0, 'move': None, 'actions': []}
+        from game.headless.powers.silent import enemy_side_tasks
+        tasks = enemy_side_tasks(self.player)
+        if tasks:
+            self.player.rules.enemy_turn["poison_start"] = True
+            self.player.rules.enemy_turn["started"] = True
+            for enemy in self._living_enemies():
+                enemy.start_turn()
+            from game.headless.core.resolution import push, drain
+            push(self.player, *tasks)
+            drain(self.player)
+            self._refresh_persistent_statuses()
+            self._check_terminal()
+            if self.player.pending_play is not None or self.player.rules.selection is not None:
+                return CombatResult(self.done, self.winner, {"enemy_actions": []})
         return self._continue_enemy_side()
 
     def _continue_enemy_side(self):
@@ -162,14 +176,16 @@ class CombatEngine:
         progress = self.player.rules.enemy_turn
         enemy_actions = progress['actions']
         details = {}
-        while progress['slot'] < progress['limit']:
+        progress.pop('poison_start', None)
+        while progress['slot'] < progress['limit'] and not self.done:
             slot = progress['slot']
             enemy = self.enemies[slot]
             if progress['move'] is None:
                 if not enemy.can_take_turn:
                     progress['slot'] += 1
                     continue
-                enemy.start_turn()
+                if not progress.get("started"):
+                    enemy.start_turn()
                 progress['move'] = begin(enemy)
             execute(enemy, self.player, progress['move'])
             self._refresh_persistent_statuses()
@@ -192,6 +208,7 @@ class CombatEngine:
             self.player.statuses.after_enemy_side_turn_end()
             for enemy in self._living_enemies():
                 enemy.statuses.after_enemy_side_turn_end()
+                enemy.statuses.decrement("strangle", enemy.statuses.get("strangle"))
                 after_owner_side_turn_end(enemy)
             from game.headless.powers.ironclad import after_enemy_end
             after_enemy_end(self.player)

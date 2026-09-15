@@ -224,6 +224,37 @@ cover declared inputs, not profile-dependent lobby selection or other acts' game
 See [probability evidence](evidence/native_rng_2026_09_14.md) and
 [HF-05](HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-05--match-target-rng-algorithms-domains-and-consumption).
 
+### Staged Silent content
+
+`game.headless.cards.catalog.SILENT_CARDS` extends the default catalog with all
+**80 ordinary solo Silent cards**, their upgrades, four starter cards and Shiv.
+It supports acquired Silent cards in the existing Ironclad run/combat owner;
+it does not add a playable Silent character or change the default acquisition pools.
+Suppress and Wraith Form are Ancient entries outside this ordinary-family batch.
+
+Shared rules cover explicit discard/Sly ordering, Poison/Accelerant/Outbreak,
+Shiv generation and enchantment/targeting powers, play/draw/discard histories,
+turn-scoped costs and keywords, ordered Nightmare templates, optional retention,
+and The Hunt's earned post-combat rewards. Choices and delayed effects are owned
+plain data. The existing legacy encoder vocabulary remains unchanged.
+
+```python
+from game.headless.cards.catalog import SILENT_CARDS
+from game.headless.run.config import RunConfig
+from game.headless.run.engine import RunEngine
+
+run = RunEngine(seed=2, rng_profile="native", cards=SILENT_CARDS,
+                config=RunConfig(),
+                card_ids=["blade_dance", "deadly_poison", "prepared", "tactician"])
+run.start_combat(encounter_id="overgrowth_cubex")
+```
+
+Pinned native base/upgrade metadata is reproducible with the existing oracle's
+`silent` mode. Interaction tests are source-backed Python regressions; they do
+not establish native full-turn or whole-run parity. Regent, Necrobinder and Defect,
+then complete native Kaleidoscope/Splash acquisition, remain separate assignments.
+See [Silent evidence](evidence/silent_cards_2026_09_15.md).
+
 ## Use and extend the game directly
 
 The complete first vertical slice is available through direct game commands:
@@ -1120,7 +1151,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v31`, including configuration,
+Private run snapshots now use `headless_run_state_v32`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1131,7 +1162,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v19`, including the in-play
+Nested combat records now use `headless_combat_state_v20`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

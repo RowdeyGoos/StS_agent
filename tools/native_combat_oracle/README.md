@@ -158,3 +158,13 @@ No real profile/save/history/Cloud directory is read. The runtime process has a
 Output retains build/runtime logs, exact fixture/dependency hashes, native result,
 timing and cleanup confirmation in `evidence.json`. See the retained
 [queue record](../../docs/evidence/native_hook_queue_2026_09_14.json).
+
+
+### Silent card values
+
+Pass `silent` as the third argument to the same pinned-assembly oracle to emit
+`tests/fixtures/headless_native_silent_values.json`. It enumerates all unlocked solo
+Silent entries plus Shiv, makes mutable cards, applies each upgrade and reads
+resolved local costs, keywords and dynamic variables. Ancient entries remain in
+the census even though the staged ordinary-family implementation excludes them.
+The mode does not start a game, access profiles or demonstrate native card execution.

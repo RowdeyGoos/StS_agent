@@ -13,6 +13,8 @@ def clone_to(p, card, pile):
     if pile == "hand" and len(p.hand) >= 10:
         pile = "discard_pile"
     getattr(p.deck, pile).append(clone)
+    from game.headless.core.piles import after_generated_entry
+    after_generated_entry(p, clone, is_clone=True)
     return clone
 
 

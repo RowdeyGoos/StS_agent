@@ -251,6 +251,7 @@ class RunEngine:
         from game.headless.relics.combat import owned, memory
         lamp = owned(self.combat.player, "lava_lamp")
         undamaged = lamp is not None and not memory(self.combat.player, lamp).get("damaged", False)
+        extra_cards = self.combat.player.rules.extra_card_rewards
         self.combat = None
         from game.headless.run.event_combat import finish
         finish(self.state, encounter_id, won=self.state.phase is RunPhase.ROUTE)
@@ -264,7 +265,7 @@ class RunEngine:
                 RELICS[relic.definition_id].after_combat_victory(self.state)
             if self.state.config is not None:
                 from game.headless.run.rewards import begin_combat_rewards
-                begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged)
+                begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged, extra_cards=extra_cards)
 
     def available_nodes(self) -> tuple[str, ...]:
         self.state.require_between_rooms()

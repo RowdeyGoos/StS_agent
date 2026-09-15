@@ -122,6 +122,8 @@ class Enemy(ABC):
             n *= attack_multiplier(player, player.current_card)
             from game.headless.potions.powers import attack_multiplier as potion_multiplier
             n *= potion_multiplier(player, player.current_card)
+            from game.headless.powers.silent import damage_multiplier
+            n *= damage_multiplier(player, self)
         return n, d
 
     def start_turn(self) -> None:
@@ -153,6 +155,8 @@ class Enemy(ABC):
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
             from game.headless.relics.damage import attack_bonus
             amount += attack_bonus(player, player.current_card)
+            from game.headless.powers.silent import damage_bonus
+            amount += damage_bonus(player, player.current_card)
         incoming_damage = (
             modify_attack_damage_for_statuses(
                 amount,
@@ -170,6 +174,19 @@ class Enemy(ABC):
             self.block,
             incoming_damage, statuses=self.statuses,
         )
+        damage = self._after_damage(previous_hp, is_attack)
+        if damage and is_attack and powered and player is not None and attacker_statuses is player.statuses and self.is_alive and player.rules.powers.get("envenom"):
+            from game.headless.core.resolution import push
+            push(player, ["status", player.combat_enemies.index(self), "poison", player.rules.powers["envenom"]])
+        return damage
+
+    def take_unblockable_damage(self, amount):
+        from game.headless.powers.damage import resolve_unblocked_damage
+        previous_hp = self.hp
+        self.hp = max(0, self.hp - resolve_unblocked_damage(self.statuses, amount))
+        return self._after_damage(previous_hp, False)
+
+    def _after_damage(self, previous_hp, is_attack):
         damage = previous_hp - self.hp
         self.on_damage_taken(damage, is_attack)
         if self.combat_player is not None:
@@ -187,13 +204,16 @@ class Enemy(ABC):
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the enemy."""
-        if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise"):
+        if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise", "poison", "strangle"):
             from game.headless.relics.damage import debuff_amount
             stacks = debuff_amount(source, source.current_card, stacks)
-        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise") and self.statuses.get("artifact"):
+        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise", "poison", "strangle") and self.statuses.get("artifact"):
             self.statuses.decrement("artifact")
             return
         self.statuses.add(status_name, stacks)
+        if status_name == "poison" and stacks and source is not None:
+            from game.headless.powers.silent import after_poison
+            after_poison(source)
         if status_name == 'vulnerable' and stacks and source is not None:
             source.draw_cards(source.rules.powers.get('vicious', 0))
 

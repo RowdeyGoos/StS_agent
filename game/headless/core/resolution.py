@@ -79,6 +79,9 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     if card.spec.kind == "attack" and rules.powers.get("one_two_punch"):
         repeats += 1
         rules.powers["one_two_punch"] -= 1
+    if card.spec.kind in ("skill", "block") and rules.powers.get("burst"):
+        repeats += 1
+        rules.powers["burst"] -= 1
     rules.plays[card.instance_id] = {
         "context": rules.active_hook,
         "target": target_slot,
@@ -152,6 +155,8 @@ def execute(p, task):
                 r.skills_started += 1
             from game.headless.relics.plays import before_play
             before_play(p, card)
+            from game.headless.powers.silent import before_play as silent_before_play
+            silent_before_play(p, card)
             push(
                 p,
                 *[["effect", identity, i] for i in range(len(card.definition.effects))],
@@ -221,7 +226,8 @@ def execute(p, task):
         if not drawn:
             return
         card = drawn[0]
-        push(p, ["after_draw"], ["after_draw_card", card.instance_id], ["draw", count - 1, hand_draw])
+        r.drawn_combat += 1
+        push(p, ["after_draw"], ["silent_draw_hook", hand_draw], ["after_draw_card", card.instance_id], ["draw", count - 1, hand_draw])
         if r.powers.get("hellraiser") and card.definition.strike:
             push(p, ["autoplay", card.instance_id, False])
     elif op == "autoplay":
@@ -256,7 +262,11 @@ def execute(p, task):
         if p.combat_is_ending:
             return
         card = find(p, identity)
-        targets = tuple(p.combat_enemies) if all_enemies else (p.combat_enemies[slot],)
+        if all_enemies:
+            push(p, *[["attack", identity, i, False, expression, factor, max_hp, vigor]
+                      for i, enemy in enumerate(p.combat_enemies) if enemy.is_alive])
+            return
+        targets = (p.combat_enemies[slot],)
         for target in targets:
             if not target.is_alive or p.combat_is_ending:
                 continue
@@ -264,7 +274,10 @@ def execute(p, task):
 
             amount = Attack(expression=expression, factor=factor).damage(card, p, target) + vigor
             fatal = not target.statuses.get("minion") and not target.statuses.get("illusion")
-            target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
+            hp_before = target.hp
+            damage = target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
+            if "echo_kills" in r.plays[identity] and damage >= hp_before:
+                r.plays[identity]["echo_kills"] += 1
             if max_hp and fatal and not target.is_alive and p.is_alive:
                 p.max_hp += max_hp
                 p.hp += max_hp
@@ -280,8 +293,9 @@ def execute(p, task):
             return
         drawn = p.deck.draw(1)
         if drawn:
+            r.drawn_combat += 1
             continuation = [["pillage"]] if drawn[0].spec.kind == "attack" else []
-            push(p, ["after_draw"], ["after_draw_card", drawn[0].instance_id], *continuation)
+            push(p, ["after_draw"], ["silent_draw_hook", False], ["after_draw_card", drawn[0].instance_id], *continuation)
             if r.powers.get("hellraiser") and drawn[0].definition.strike:
                 push(p, ["autoplay", drawn[0].instance_id, False])
     elif op == "generate":
@@ -300,7 +314,7 @@ def execute(p, task):
         r.end_turn_hand_size = len(p.hand)
         r.end_hand_remaining = [c.instance_id for c in p.hand if c.spec.end_turn_damage or c.spec.end_turn_hp_loss or c.definition.definition_id in END_HAND_CURSES]
         ethereal = [c.instance_id for c in p.hand if c.instance_id not in r.end_hand_remaining and (c.spec.ethereal or (has(p, "ghost_seed") and (c.definition.strike or c.definition.defend)))]
-        push(p, *[["ethereal", i] for i in ethereal], *[["end_hand_card", i] for i in r.end_hand_remaining], ["discard_remaining"])
+        push(p, *[["ethereal", i] for i in ethereal], *[["end_hand_card", i] for i in r.end_hand_remaining], *([["silent_retain"]] if r.powers.get("well_laid_plans") else []), ["discard_remaining"])
     elif op == "end_hand_card":
         from game.headless.cards.curses import end_in_hand
         if not r.end_hand_remaining or r.end_hand_remaining.pop(0) != args[0]:
@@ -327,6 +341,9 @@ def execute(p, task):
     elif op == "cleanup_turn":
         for card in p.deck.all_cards():
             card.combat_state.free_this_turn = False
+            card.combat_state.turn_cost_change = 0
+            card.combat_state.sly_this_turn = False
+            card.combat_state.retain_this_turn = False
             card.combat_state.free_until_played = False
             card.combat_state.turn_cost_override = None
     elif op == "end_power":
@@ -338,9 +355,13 @@ def execute(p, task):
         hooks.after_card_power(p, find(p, args[0]), args[1])
     elif op == "after_card_enchantment":
         card = find(p, args[0])
+        from game.headless.powers.silent import after_card
+        after_card(p, card)
         if card.enchantment is not None and card.enchantment.definition_id == "glam":
             card.enchantment.triggered = True
     elif op == "after_card_enemies":
+        from game.headless.powers.silent import after_enemies
+        after_enemies(p, find(p, args[0]))
         for enemy in tuple(p.combat_enemies or ()):
             if enemy.is_alive:
                 enemy.after_player_card(p)
@@ -348,6 +369,8 @@ def execute(p, task):
         push(p, ["autoplay_draw", r.powers.get("mayhem", 0), False])
     elif op == "start_power":
         colorless.start_power(p, args[0])
+        from game.headless.powers.silent import start_power
+        start_power(p, args[0])
     elif op == "early_end":
         colorless.early_end(p, args[0])
     elif op == "after_draw_card":
@@ -407,5 +430,8 @@ def execute(p, task):
     elif op == "relic_hook":
         from game.headless.relics.combat import execute as relic_execute
         relic_execute(p, *args)
+    elif op.startswith("silent_"):
+        from game.headless.cards.silent_effects import execute as silent_execute
+        silent_execute(p, op, args)
     else:
         raise ValueError(f"Unknown combat work: {op}")

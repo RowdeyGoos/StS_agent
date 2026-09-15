@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 class CardState:
     extra_damage: int = 0
     cost_change: int = 0
+    turn_cost_change: int = 0
     combat_cost_change: int = 0
     free_this_turn: bool = False
     free_this_combat: bool = False
@@ -18,6 +19,11 @@ class CardState:
     replay_count: int = 0
     return_next_turn: bool = False
     free_until_played: bool = False
+    sly_this_turn: bool = False
+    sly_this_combat: bool = False
+    retain_this_turn: bool = False
+    retain_this_combat: bool = False
+    all_enemies: bool = False
 
 
 @dataclass
@@ -59,3 +65,9 @@ class CombatRules:
     room_kind: str = "combat"
     potion_capacity: int = 3
     enemy_turn: dict | None = None
+    discarded_turn: int = 0
+    drawn_combat: int = 0
+    skills_finished: int = 0
+    shivs_finished: int = 0
+    extra_card_rewards: int = 0
+    nightmares: dict[str, dict] = field(default_factory=dict)

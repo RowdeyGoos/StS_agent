@@ -34,6 +34,7 @@ class CardSpec:
     x_cost: bool = False
     retain: bool = False
     eternal: bool = False
+    sly: bool = False
 
     @property
     def is_dead_card(self) -> bool:
@@ -106,7 +107,13 @@ class Card:
         spec = self.definition.spec_at(self.upgrade_level)
         if self.enchantment is not None and self.enchantment.definition_id == "royally_approved":
             from dataclasses import replace
-            return replace(spec, innate=True, retain=True)
+            spec = replace(spec, innate=True, retain=True)
+        state = self.combat_state
+        if state.retain_this_turn or state.retain_this_combat or state.sly_this_turn or state.sly_this_combat or state.all_enemies:
+            from dataclasses import replace
+            spec = replace(spec, retain=spec.retain or state.retain_this_turn or state.retain_this_combat,
+                           sly=spec.sly or state.sly_this_turn or state.sly_this_combat,
+                           uses_target=spec.uses_target and not state.all_enemies)
         return spec
 
     @property

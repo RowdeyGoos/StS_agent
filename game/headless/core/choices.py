@@ -54,8 +54,11 @@ def confirm(p):
     selected = set(s["selected"])
     candidates = set(s["candidates"])
     p.deck.offered[:] = [c for c in p.deck.offered if c.instance_id not in candidates or c.instance_id in selected]
-    trailing = [["draw", len(s["selected"]), False]] if s["operation"] == "discard_redraw" else []
-    push(p, *[["selected", i, s["operation"], s["destination"], s["free"]] for i in s["selected"]], *trailing)
+    if s["operation"] in ("discard", "discard_redraw"):
+        from game.headless.core.discard import discard_and_draw
+        discard_and_draw(p, [find(p, i) for i in s["selected"]], draw=len(s["selected"]) if s["operation"] == "discard_redraw" else 0)
+    else:
+        push(p, *[["selected", i, s["operation"], s["destination"], s["free"]] for i in s["selected"]])
     # Resolution can be invoked from a nested choice. Its outer drain owns work.
     if not p._resolving:
         drain(p)
@@ -66,7 +69,10 @@ def resolve(p, identity, operation, destination, free):
     if card is None or p.combat_is_ending:
         p.deck.offered.clear()
         return
-    if operation == "free_combat":
+    if operation in ("hand_trick", "nightmare", "well_laid_plans"):
+        from game.headless.powers.silent import selected
+        selected(p, card, operation)
+    elif operation == "free_combat":
         card.combat_state.free_this_combat = True
         card.combat_state.turn_cost_override = None
     elif operation == "exhaust":
@@ -89,3 +95,25 @@ def resolve(p, identity, operation, destination, free):
         if generated:
             from game.headless.core.piles import after_generated_entry
             after_generated_entry(p, card)
+
+
+def refresh_hand_selection(p):
+    """Native hand selectors include newly entered, eligible card holders."""
+    s = p.rules.selection
+    if s is None:
+        return
+    operation = s['operation']
+    hand_ops = {'discard', 'discard_redraw', 'hand_trick', 'nightmare', 'well_laid_plans', 'transform', 'exhaust'}
+    if operation not in hand_ops and not (operation == 'move' and s['destination'] == 'draw_pile'):
+        return
+    cards = list(p.hand)
+    if operation == 'hand_trick':
+        cards = [c for c in cards if c.spec.kind in ('skill', 'block') and not c.spec.sly]
+    elif operation == 'well_laid_plans':
+        cards = [c for c in cards if not c.spec.retain]
+    s['candidates'] = [c.instance_id for c in cards]
+    s['selected'] = [identity for identity in s['selected'] if identity in s['candidates']]
+    # Keep the command's original prefs; a new card does not increase a fixed
+    # discard/retain count and reaching a singleton does not bypass the open UI.
+    s['maximum'] = min(s['maximum'], len(cards))
+    s['minimum'] = min(s['minimum'], s['maximum'])
