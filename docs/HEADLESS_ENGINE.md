@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v23 / run v35**.
+than being silently reinterpreted: current schemas are **combat v24 / run v36**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -218,18 +218,44 @@ See [acquisition evidence](evidence/runtime_eligibility_2026_09_14.md).
 
 **This does not establish whole-run same-seed parity.** Remaining work concerns
 remaining shuffle callers, generated-card insertion hooks and full interaction ordering,
-foreign-character content and a complete
-native run comparison. The generator foundation and these initialization checks
+broader acquired-card interactions and a complete native run comparison. The generator foundation and these initialization checks
 cover declared inputs, not profile-dependent lobby selection or other acts' gameplay.
 See [probability evidence](evidence/native_rng_2026_09_14.md) and
 [HF-05](HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-05--match-target-rng-algorithms-domains-and-consumption).
 
-### Staged Silent content
+### Foreign acquisition under Ironclad
 
-`game.headless.cards.catalog.SILENT_CARDS` extends the default catalog with all
+The default catalog includes all 320 ordinary solo cards from Silent, Regent,
+Necrobinder and Defect, plus their implemented starters and generated cards.
+Normal rewards and shops remain in the Ironclad pool. This supports acquisition
+under Ironclad, not playable foreign-character runs.
+
+Kaleidoscope models the all-characters-unlocked context. Each of two groups shuffles
+four native pools with Niche, takes three, and creates one reward per family using
+Source.Other base rarity odds without pity changes. Singleton reward hooks run
+before both groups' final reward hooks. Wing Charm, Silver Crucible, Silken Tress
+and eggs retain their native ordering, modifiers and counters. Both groups can be
+skipped independently. Partial custom catalogs cannot unlock the relic.
+
+Splash draws three distinct eligible attacks in native character/pool order;
+Splash+ upgrades them. Its optional choice makes the selected card's local Energy
+cost zero until play or turn end and Star cost zero until turn end. Energy-X and
+Star-X still consume their available resources. Choices and modifiers survive JSON
+restoration. Ordinary/basic foreign cards transform within their own family,
+including through Entropy, Aroma of Chaos, Morphic Grove, Whispering Hollow and
+New Leaf.
+
+Native factory vectors cover 30 Kaleidoscope cases, ten Splash cases and 16
+transformation pools with sampled replacements. They execute native factories
+inside source-reproduced acquisition orchestration, not native whole-card plays
+or full runs. See [acquisition evidence](evidence/foreign_acquisition_2026_09_19.md).
+
+### Silent content
+
+`game.headless.cards.catalog.SILENT_CARDS` extends `IRONCLAD_CARDS` with all
 **80 ordinary solo Silent cards**, their upgrades, four starter cards and Shiv.
 It supports acquired Silent cards in the existing Ironclad run/combat owner;
-it does not add a playable Silent character or change the default acquisition pools.
+it does not add a playable Silent character.
 Suppress and Wraith Form are Ancient entries outside this ordinary-family batch.
 
 Shared rules cover explicit discard/Sly ordering, Poison/Accelerant/Outbreak,
@@ -251,17 +277,16 @@ run.start_combat(encounter_id="overgrowth_cubex")
 
 Pinned native base/upgrade metadata is reproducible with the existing oracle's
 `silent` mode. Interaction tests are source-backed Python regressions; they do
-not establish native full-turn or whole-run parity. Complete native Kaleidoscope/Splash acquisition remains a separate assignment.
+not establish native full-turn or whole-run parity. Acquisition factory coverage is described above.
 See [Silent evidence](evidence/silent_cards_2026_09_15.md).
 
-### Staged Regent content
+### Regent content
 
 `game.headless.cards.catalog.REGENT_CARDS` extends `SILENT_CARDS` with all
 **80 ordinary solo Regent cards**, both levels, four starters and Sovereign Blade,
 Minion Strike, Minion Dive Bomb and Minion Sacrifice. It supports acquired Regent
 cards under the existing Ironclad owner. Meteor Shower and The Sealed Throne are
-Ancient entries outside this ordinary-family batch. Default acquisition remains
-restricted until native acquisition rules are complete.
+Ancient entries outside this ordinary-family batch.
 
 Stars live in `player.rules.stars`; `player.star_cost(card)` supplies current
 payment and participates in legality. Stars persist across turns, reset with combat,
@@ -288,14 +313,13 @@ run = RunEngine(seed=2, rng_profile="native", cards=REGENT_CARDS,
 run.start_combat(encounter_id="overgrowth_cubex")
 ```
 
-### Staged Necrobinder content
+### Necrobinder content
 
 `game.headless.cards.catalog.NECROBINDER_CARDS` extends `REGENT_CARDS` with all
 **80 ordinary solo Necrobinder cards**, both levels, four starters, Soul and
 Sweeping Gaze. These cards work under the existing Ironclad owner; this does not
 add a playable Necrobinder character. Forbidden Grimoire and Protector are Ancient
-entries outside this ordinary-family batch. Default foreign acquisition remains
-restricted until native acquisition rules are complete.
+entries outside this ordinary-family batch.
 
 Osty is owned combat data, including HP and maximum HP after death. Summon creates
 or revives him; incoming attacks consume player block, then Osty's HP, then spill
@@ -323,14 +347,14 @@ including the two excluded Ancient entries. Card interactions are source-backed
 Python regressions, not demonstrated native full-turn parity.
 See [Necrobinder evidence](evidence/necrobinder_cards_2026_09_19.md).
 
-### Staged Defect content
+### Defect content
 
 `game.headless.cards.catalog.DEFECT_CARDS` extends `NECROBINDER_CARDS` with all
 **80 ordinary solo Defect cards**, both levels, four starters and Fuel (85 definitions).
 Together the cumulative catalogs implement the 320 ordinary foreign cards for
 acquisition under Ironclad. This does not add playable foreign characters.
-Biased Cognition and Quadcast are Ancient exclusions. Default acquisition remains
-gated pending native Kaleidoscope/Splash pool selection and probability rules.
+Biased Cognition and Quadcast are Ancient exclusions. `DEFAULT_CARDS` now uses
+this complete cumulative catalog; `IRONCLAD_CARDS` remains an explicit restricted catalog.
 
 Orbs are owned physical instances with ordered slots, a ten-slot cap and a separate
 native orb-generation RNG stream. Ironclad begins with no slots; his first channel
@@ -449,9 +473,8 @@ potions through the run's owned inventory. Alchemize has a separate saved RNG st
 and still generates when slots are full. Generated runs now use all ordinary
 Ironclad-accessible potions, filtering Fairy, Fruit Juice and Regen from Alchemize.
 Authored slice fixtures retain their explicit Fire/Block pool. Discovery and
-Calamity use the Ironclad generation catalog with their distinct native factory modes. Splash uses other registered character
-pools when present, otherwise the sole Ironclad pool, matching the one-unlocked-character
-case; other characters' card catalogs are not yet implemented. Entropy now uses
+Calamity use the Ironclad generation catalog with their distinct native factory modes. Splash uses the native ordered foreign attack pools in the default catalog;
+explicit restricted catalogs retain a single-character fallback. Entropy now uses
 the native ordered combat transformation pools: 78 eligible Ironclad definitions,
 50 colorless, all 18 curses and all ten combat-generatable statuses, excluding the
 original definition. Ancient/event/token/quest cards transform into colorless
@@ -557,7 +580,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v23 and run v35. Legacy RL encoders retain their frozen vocabulary.
+combat v24 and run v36. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -597,10 +620,9 @@ See the [finite inventory](../tests/fixtures/headless_potion_scope.json),
 
 The pinned solo Ironclad/Overgrowth Act 1 acquisition inventory contains **161
 relic definitions**: 118 shared, 8 Ironclad, 27 Neow, 7 event/evolution definitions
-and Circlet. All have rules in the explicit catalog. **160 can be obtained with
-the default card catalog**; Kaleidoscope validates that at least three other
-character pools are installed before it offers two sets of three foreign cards.
-The default environment has no such character catalogs. Multiplayer-only relics
+and Circlet. All **161 are supported by the default card catalog**. Kaleidoscope
+requires all four complete ordinary foreign families before offering two sets of
+three cards from distinct families. Multiplayer-only relics
 and other characters' exclusive relics are outside this scope.
 
 Generated `RunEngine.ironclad_act1()` runs now use all ordinary eligible relics
@@ -739,8 +761,7 @@ sts-headless-play --route overgrowth-generated --ancient neow --seed 2 --rest-ch
 It filters eligibility before choosing the curse, applies paired exclusions,
 then randomizes Lava Rock/Small Capsule, Oyster/Humidifier and Talisman/Pomander
 before shuffling the positive pool. Large Capsule excludes its conflicting pair.
-The current catalog supports 26 of 27 solo Neow relics; Kaleidoscope requires
-foreign character pools and is explicitly excluded. Massive Scroll is multiplayer-only.
+The default catalog supports all 27 solo Neow relics, including Kaleidoscope. Massive Scroll is multiplayer-only.
 The default assumes all content is unlocked; native RNG parity is not claimed.
 
 Selection and nested card/relic rewards use the existing owned pickup queue.
@@ -1259,7 +1280,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v35`, including configuration,
+Private run snapshots now use `headless_run_state_v36`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1270,7 +1291,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v23`, including the in-play
+Nested combat records now use `headless_combat_state_v24`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

@@ -1,7 +1,12 @@
-"""Explicit restricted transformation pools and source validation."""
+"""Owned source-family transformation pools and content validation."""
 
 from game.headless.cards.pools import REWARD_CARDS, ANCIENT_CARDS, COLORLESS_CARDS
 
+from game.headless.cards.catalog import DEFAULT_CARDS
+from game.headless.generation.foreign import ORDINARY
+
+FOREIGN_SOURCES = tuple(d.definition_id for d in DEFAULT_CARDS.definitions
+                        if d.pool in ORDINARY and d.rarity in ('basic', 'common', 'uncommon', 'rare'))
 TRANSFORM_POOL = REWARD_CARDS
 
 from game.headless.cards.curses import ALL_CURSES, SPECIAL_CURSES
@@ -13,6 +18,8 @@ COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop", "giant_rock"
 
 
 def replacement_pool(source, pool):
+    if source in FOREIGN_SOURCES:
+        return ORDINARY[DEFAULT_CARDS.definition(source).pool]
     return CURSE_POOL if source in CURSE_SOURCES else COLORLESS_POOL if source in COLORLESS_SOURCES else pool
 
 
@@ -23,7 +30,7 @@ def transform(state, cards, identity, pool, *, stream):
 
 
 def check_content(state, cards, pool):
-    sources = (*pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_SOURCES, *ETERNAL_SOURCES, *COLORLESS_SOURCES)
+    sources = (*pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_SOURCES, *ETERNAL_SOURCES, *COLORLESS_SOURCES, *FOREIGN_SOURCES)
     if any(c.definition.definition_id not in sources for c in state.deck):
         raise ValueError("Transformation requires a supported source card and replacement pool.")
     for name in pool:
@@ -33,4 +40,7 @@ def check_content(state, cards, pool):
             cards.definition(name)
     if any(c.definition.definition_id in CURSE_SOURCES for c in state.deck):
         for name in CURSE_POOL:
+            cards.definition(name)
+    for family in {c.definition.pool for c in state.deck if c.definition.definition_id in FOREIGN_SOURCES}:
+        for name in ORDINARY[family]:
             cards.definition(name)

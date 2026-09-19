@@ -98,14 +98,8 @@ class ColorlessOperation:
         elif op in ("discovery", "splash"):
             choices = pool(p)
             if op == "splash":
-                families = {
-                    d.pool
-                    for d in catalog(p).definitions
-                    if d.rarity in ("common", "uncommon", "rare") and d.pool not in ("colorless", "special")
-                }
-                if len(families) > 1:
-                    families.discard("ironclad")
-                choices = [d for family in sorted(families) for d in pool(p, family, "attack")]
+                from game.headless.generation.foreign import splash_pool
+                choices = splash_pool(catalog(p))
             offers = [
                 create(p, d, upgraded=op == "splash" and card.upgraded, destination="offered")
                 for d in select_cards(choices, p.deck.generation_rng, 3, distinct=True)

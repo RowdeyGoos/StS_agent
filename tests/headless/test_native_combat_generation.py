@@ -154,7 +154,7 @@ def test_actual_card_and_potion_callers_match_factory_vectors_and_restore(row, u
                 assert (
                     selected.combat_state.free_until_played
                     if mode == "discovery"
-                    else selected.combat_state.free_this_turn
+                    else selected.combat_state.turn_cost_override == 0
                 )
             assert deepcopy(run.combat.player.deck.generation_rng).next_double() == row["suffix"]
 

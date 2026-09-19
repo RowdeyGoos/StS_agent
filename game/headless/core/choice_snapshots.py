@@ -194,5 +194,13 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
         if any(c.spec.kind not in kinds for c in available if c.instance_id in s["candidates"]):
             raise ValueError("Ineligible tutor card.")
+    if operation == 'splash':
+        from game.headless.cards.colorless_effects import catalog
+        from game.headless.generation.foreign import splash_pool
+        eligible = {d.definition_id for d in splash_pool(catalog(p))}
+        offers = [c for c in available if c.instance_id in s['candidates']]
+        if (len(offers) != min(3, len(eligible)) or len({c.definition.definition_id for c in offers}) != len(offers)
+                or any(c.definition.definition_id not in eligible or c.upgrade_level != int(source.upgraded) for c in offers)):
+            raise ValueError('Invalid Splash attack offers.')
     if pile == "offered" and not shared_offers and set(s["candidates"]) != {c.instance_id for c in p.deck.offered}:
         raise ValueError("Offer ownership mismatch.")

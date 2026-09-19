@@ -55,7 +55,8 @@ def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *
         raise ValueError("Transformation cannot reproduce the original definition.")
     if getattr(state.rng,"native",False):
         from game.headless.core.content_order import IRONCLADCARDPOOL,COLORLESSCARDPOOL,CURSECARDPOOL
-        rank={n:i for i,n in enumerate((*IRONCLADCARDPOOL,*COLORLESSCARDPOOL,*CURSECARDPOOL))}
+        from game.headless.generation.foreign import ORDINARY
+        rank={n:i for i,n in enumerate((*IRONCLADCARDPOOL,*COLORLESSCARDPOOL,*CURSECARDPOOL, *(n for names in ORDINARY.values() for n in names)))}
         definitions.sort(key=lambda d:rank.get(d.definition_id,len(rank)))
     for definition in definitions:
         definition.spec_at(0)

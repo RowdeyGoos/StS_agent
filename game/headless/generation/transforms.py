@@ -8,6 +8,7 @@ STATUS_ORDER = ("beckon", "burn", "dazed", "debris", "frantic_escape", "infectio
 
 
 def combat_options(catalog, original):
+    from game.headless.generation.foreign import ORDINARY
     definition = original.definition
     if original.spec.kind in ("curse", "status"):
         family = original.spec.kind
@@ -16,7 +17,7 @@ def combat_options(catalog, original):
     else:
         family = definition.pool
     order = {"ironclad": IRONCLADCARDPOOL, "colorless": COLORLESSCARDPOOL,
-             "curse": CURSECARDPOOL, "status": STATUS_ORDER}.get(family)
+             "curse": CURSECARDPOOL, "status": STATUS_ORDER, **ORDINARY}.get(family)
     candidates = [d for d in catalog.definitions if d.pool == family
                   and d.generate_in_combat and d.definition_id != definition.definition_id
                   and (family in ("curse", "status") or d.rarity in ("common", "uncommon", "rare"))]

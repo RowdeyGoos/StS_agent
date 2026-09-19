@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v23"
+SCHEMA = "headless_combat_state_v24"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -52,7 +52,7 @@ def restore_card(record, cards=DEFAULT_CARDS):
         raise ValueError('Invalid permanent card block.')
     card.permanent_block = growth
     values = record["combat_state"]
-    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
+    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'star_free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
         raise ValueError('Invalid transient card state.')
     if any(type(values[k]) is not int for k in ('override_turn_baseline', 'override_combat_baseline', 'combat_override_baseline')):
         raise ValueError('Invalid cost override baselines.')

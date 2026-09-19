@@ -93,7 +93,10 @@ def resolve(p, identity, operation, destination, free):
     else:
         generated = card in p.deck.offered
         move_out(p, card)
-        if free and (free != "free_until_played" or card.spec.cost >= 0):
+        if free == "free_this_turn":
+            from game.headless.core.card_costs import free_this_turn
+            free_this_turn(card)
+        elif free and (free != "free_until_played" or card.spec.cost >= 0):
             setattr(card.combat_state, free, True)
         if destination == "hand" and len(p.hand) >= 10:
             destination = "discard_pile"

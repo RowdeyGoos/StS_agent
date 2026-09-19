@@ -39,3 +39,15 @@ def validate(values):
     active = {k for k in ('combat', 'turn', 'played') if values[k + '_cost_override'] is not None}
     if len(active) > 1 and not active <= set(order):
         raise ValueError('Missing active local cost setter order.')
+
+
+def free_this_turn(card):
+    """Native SetToFreeThisTurn: energy until play/end, Stars until turn end."""
+    v = card.combat_state
+    v.turn_cost_override = 0
+    v.turn_cost_until_played = True
+    v.override_turn_baseline = v.cost_change + v.turn_cost_change
+    v.override_combat_baseline = v.combat_cost_change
+    v.free_this_turn = False
+    v.star_free_this_turn = True
+    mark_setter(v, 'turn')

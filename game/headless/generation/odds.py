@@ -65,8 +65,10 @@ def card_offers(
 ):
     from game.headless.core.content_order import IRONCLADCARDPOOL, COLORLESSCARDPOOL, CURSECARDPOOL, ordered
 
+    from game.headless.generation.foreign import ORDINARY
+
     pool = ordered(
-        [n for n in pool if n not in blacklist], (*IRONCLADCARDPOOL, *COLORLESSCARDPOOL, *CURSECARDPOOL)
+        [n for n in pool if n not in blacklist], (*IRONCLADCARDPOOL, *COLORLESSCARDPOOL, *CURSECARDPOOL, *(n for names in ORDINARY.values() for n in names))
     )
     pool = list(dict.fromkeys(pool))
     offers = []

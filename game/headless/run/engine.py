@@ -67,7 +67,7 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None, rng_profile="native"):
+    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
         """Generate a full-length A0 map with declared restricted content pools."""
         from game.headless.map.overgrowth import generate_overgrowth_map, PROFILE
         from game.headless.encounters.progression import EncounterProgression
@@ -82,7 +82,7 @@ class RunEngine:
         if (map_profile or PROFILE) == PROFILE:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
-        engine = cls(seed=seed, gold=99, config=config, rng_profile=rng_profile)
+        engine = cls(seed=seed, gold=99, config=config, rng_profile=rng_profile, cards=cards)
         if getattr(engine.state.rng, "native", False):
             if discovery != "all_seen":
                 raise ValueError("Only declared all-seen Overgrowth discovery is supported.")

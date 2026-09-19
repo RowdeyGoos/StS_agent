@@ -383,6 +383,7 @@ def execute(p, task):
     elif op == "cleanup_turn":
         for card in p.deck.all_cards():
             card.combat_state.free_this_turn = False
+            card.combat_state.star_free_this_turn = False
             card.combat_state.turn_cost_change = 0
             card.combat_state.played_cost_baselines[1] = 0
             card.combat_state.sly_this_turn = False

@@ -284,6 +284,7 @@ def start_turn(p, draw_count):
         card.combat_state.cost_change = 0
         card.combat_state.played_cost_baselines[0] = 0
         card.combat_state.free_this_turn = False
+        card.combat_state.star_free_this_turn = False
         card.combat_state.turn_cost_override = None
     count = r.powers.get("aggression", 0)
     if count:

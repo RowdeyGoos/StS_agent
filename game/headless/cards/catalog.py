@@ -59,11 +59,11 @@ class CardCatalog:
         return self
 
 
-DEFAULT_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *COLORLESS, *EXTENDED, GIANT_ROCK))
+IRONCLAD_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *COLORLESS, *EXTENDED, GIANT_ROCK))
 
-# Staged complete family; default all-unlocked foreign acquisition remains gated.
+# Explicit family subsets remain useful for restricted fixtures.
 from game.headless.cards.silent import DEFINITIONS as SILENT
-SILENT_CARDS = CardCatalog((*DEFAULT_CARDS.definitions, *SILENT))
+SILENT_CARDS = CardCatalog((*IRONCLAD_CARDS.definitions, *SILENT))
 
 from game.headless.cards.regent import DEFINITIONS as REGENT
 REGENT_CARDS = CardCatalog((*SILENT_CARDS.definitions, *REGENT))
@@ -73,3 +73,6 @@ NECROBINDER_CARDS = CardCatalog((*REGENT_CARDS.definitions, *NECROBINDER))
 
 from game.headless.cards.defect import DEFINITIONS as DEFECT
 DEFECT_CARDS = CardCatalog((*NECROBINDER_CARDS.definitions, *DEFECT))
+
+# Complete ordinary solo content, including cards acquired from other characters.
+DEFAULT_CARDS = DEFECT_CARDS

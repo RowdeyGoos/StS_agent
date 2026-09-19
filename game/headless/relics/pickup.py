@@ -226,6 +226,9 @@ def validate(state, cards):
     if state.relic_work and state.relic_work[0].get("kind") == "effect":
         raise ValueError("Snapshot contains undrained automatic acquisition.")
     owners = {r.instance_id: r.definition_id for r in state.relics}
+    for source, name in owners.items():
+        if name == 'kaleidoscope' and sum(w.get('source') == source for w in state.relic_work if isinstance(w, dict)) > 2:
+            raise ValueError('Too many Kaleidoscope reward groups.')
     for work in state.relic_work:
         if not isinstance(work, dict) or work.get("source") not in owners:
             raise ValueError("Unowned relic acquisition.")
@@ -324,6 +327,12 @@ def validate(state, cards):
 
                     card.enchantment = restore(offer["enchantment"])
                     validate_enchantment(card, permanent=True)
+            if name == 'kaleidoscope':
+                from game.headless.generation.foreign import complete, ORDINARY
+                definitions = [cards.definition(o['definition_id']) for o in work['offers']]
+                if (not complete(cards) or len(definitions) != 3 or len({d.pool for d in definitions}) != 3
+                        or any(d.definition_id not in ORDINARY.get(d.pool, ()) for d in definitions)):
+                    raise ValueError('Invalid Kaleidoscope foreign reward group.')
         elif work.get("kind") == "effect":
             if (
                 set(work) != {"source", "kind", "operation", "values"}
