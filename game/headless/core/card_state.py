@@ -20,6 +20,9 @@ class CardState:
     replay_count: int = 0
     return_next_turn: bool = False
     free_until_played: bool = False
+    played_cost_override: int | None = None
+    played_cost_baselines: list[int] = field(default_factory=lambda: [0, 0, 0])
+    cost_override_order: list[str] = field(default_factory=list)
     sly_this_turn: bool = False
     sly_this_combat: bool = False
     retain_this_turn: bool = False
@@ -85,5 +88,15 @@ class CombatRules:
     drawn_turn: int = 0
     doom_applied_turn: bool = False
     fetch_plays: list[str] = field(default_factory=list)
-    nec_pending: list[dict] = field(default_factory=list)
+    pending_events: list[dict] = field(default_factory=list)
     scythe_gains: dict[str, int] = field(default_factory=dict)
+    orb_slots: int = 0
+    orb_order: list[str] = field(default_factory=list)
+    orbs: dict[str, dict] = field(default_factory=dict)
+    series_turn: int = 0
+    zero_attacks_turn: int = 0
+    energy_spent_turn: int = 0
+    status_draws_turn: int = 0
+    genetic_gains: dict[str, int] = field(default_factory=dict)
+    finished_plays_turn: int = 0
+    before_side_end_order: list[str] = field(default_factory=list)

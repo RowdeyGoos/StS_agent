@@ -86,3 +86,17 @@ def validate_choices(r, p):
                 raise ValueError("Deferred effect cannot request a card choice.")
     if owned_offers != offered:
         raise ValueError("Unowned offered cards.")
+
+def validate_pending(r, work):
+    """Every queued summon/damage must have one unconsumed event in its context."""
+    from game.headless.core.resolution import requires_receipt
+    if not isinstance(r.pending_events, list):
+        raise ValueError('Invalid pending reactive events.')
+    expected = [dict(context=context, task=task) for context, tasks in work.items()
+                for task in tasks if isinstance(task, list) and task and isinstance(task[0], str) and requires_receipt(task[0])]
+    for event in r.pending_events:
+        if not isinstance(event, dict) or set(event) != {'context', 'task'} or type(event['context']) is not int or event not in expected:
+            raise ValueError('Unowned or consumed reactive event.')
+        expected.remove(event)
+    if expected:
+        raise ValueError('reactive command has no pending producing event.')

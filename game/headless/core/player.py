@@ -195,8 +195,11 @@ class Player:
         from game.headless.potions.combat import prevent_death as fairy
         fairy(self)
         prevent_death(self)
-        if not self.is_alive and self.rules.osty is not None:
-            self.rules.osty['hp'] = 0
+        if not self.is_alive:
+            from game.headless.core.orbs import clear
+            clear(self)
+            if self.rules.osty is not None:
+                self.rules.osty['hp'] = 0
         if amount:
             after_hp_loss(self, amount)
         after_damage(self, amount, unblockable=unblockable, attack=attack, source=source)
@@ -204,6 +207,11 @@ class Player:
 
     def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
         """Apply a status effect to the player."""
+        if status_name == 'doom' and stacks and not self.statuses.get('doom'):
+            from game.headless.powers.turns import register_before_side_end
+            if self.rules.powers.get('hailstorm'):
+                register_before_side_end(self, 'hailstorm')
+            register_before_side_end(self, 'player_doom')
         self.statuses.add(status_name, stacks, skip_first_tick=True)
         if source is not None and self.combat_enemies is not None and status_name in ("shrink", "constrict"):
             self.power_sources.setdefault(status_name, self.combat_enemies.index(source))

@@ -156,6 +156,8 @@ def execute(p, op, args):
         if drawn:
             c = drawn[0]
             r.drawn_combat += 1
+            from game.headless.powers.defect import draw_record
+            draw_record(p, c)
             r.drawn_turn += 1
             push(p, ['after_draw'], ['silent_draw_hook', False, c.instance_id], ['after_draw_card', c.instance_id], ['silent_escape_block', args[0], args[1], c.spec.kind in ('skill', 'block')])
             if r.powers.get('hellraiser') and c.definition.strike:

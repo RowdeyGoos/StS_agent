@@ -65,6 +65,8 @@ from game.headless.core import regent_snapshots
 TASK_ARITIES.update(regent_snapshots.TASK_ARITIES)
 from game.headless.core import necrobinder_snapshots
 TASK_ARITIES.update(necrobinder_snapshots.TASK_ARITIES)
+from game.headless.core import defect_snapshots
+TASK_ARITIES.update(defect_snapshots.TASK_ARITIES)
 
 
 def restore_rules(record, player):
@@ -101,7 +103,7 @@ def restore_rules(record, player):
     if r.attacks_finished > r.attacks_started:
         raise ValueError("Invalid attack history.")
     if not isinstance(r.powers, dict) or any(
-        not valid_power(k, r.power_sequence) or type(v) is not int or (v < 0 and k != "dexterity") for k, v in r.powers.items()
+        not valid_power(k, r.power_sequence) or type(v) is not int or (v < 0 and k not in ("dexterity", "focus")) for k, v in r.powers.items()
     ):
         raise ValueError("Invalid player power state.")
     if not isinstance(r.auxiliaries, dict) or any(
@@ -120,9 +122,11 @@ def restore_rules(record, player):
     silent_snapshots.validate_state(r, player)
     regent_snapshots.validate_state(r, player)
     necrobinder_snapshots.validate_state(r, player)
+    defect_snapshots.validate_state(r, player)
     from game.headless.core.hook_snapshots import groups, validate_choices
     work = groups(r, player)
-    necrobinder_snapshots.validate_pending(r, work)
+    from game.headless.core.hook_snapshots import validate_pending
+    validate_pending(r, work)
     validate_choices(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
     if not isinstance(r.plays, dict) or set(r.plays) != set(in_play):
@@ -140,14 +144,14 @@ def restore_rules(record, player):
             "destination",
             "effect_index",
             "stage",
-            "silent_before", "regent_before", "star_value", "stars_spent", "nec_before", "nec_first_attack", "nec_banshees",
+            "silent_before", "regent_before", "star_value", "stars_spent", "nec_before", "nec_first_attack", "nec_banshees", "def_before", "def_feral",
         }
-        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification", "echo_kills", "forge_amount", "nec_misery"} != required:
+        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification", "echo_kills", "forge_amount", "nec_misery", "def_scrape"} != required:
             raise ValueError("Invalid play frame.")
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
             or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "energy_value", "remaining", "rupture"))
-            or not 1 <= frame["remaining"] <= 3 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
+            or not 1 <= frame["remaining"] <= 5 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
         ):
             raise ValueError("Invalid play resources.")
         if type(frame["context"]) is not int or frame["context"] not in work:
@@ -171,7 +175,10 @@ def restore_rules(record, player):
         silent_snapshots.validate_frame(frame, player)
         regent_snapshots.validate_frame(frame, r)
         necrobinder_snapshots.validate_frame(frame, player)
-        if frame["destination"] == "hand" and in_play[identity].definition.definition_id != "particle_wall":
+        defect_snapshots.validate_frame(frame, player, in_play[identity])
+        if frame["def_feral"] and not r.powers.get("feral"):
+            raise ValueError("Feral return has no power owner.")
+        if frame["destination"] == "hand" and in_play[identity].definition.definition_id != "particle_wall" and not frame["def_feral"]:
             raise ValueError("Unowned return-to-hand destination.")
         card = in_play[identity]
         if "forge_amount" in frame and (card.definition.definition_id != "beat_into_shape" or type(frame["forge_amount"]) is not int or frame["forge_amount"] < 0):
@@ -180,6 +187,7 @@ def restore_rules(record, player):
             raise ValueError("Result pile does not match card kind.")
         if (
             card.spec.kind != "power"
+            and not frame["def_feral"]
             and (card.exhausts or frame["force_exhaust"])
             and frame["destination"] != "exhaust_pile"
         ):
@@ -278,7 +286,7 @@ def restore_rules(record, player):
         if op == "begin_end_hooks" and not r.turn_ending:
             raise ValueError("Turn-end hooks outside the ending phase.")
         if op == "before_draw_power":
-            if not r.player_side or not (args[0] in ("infinite_blades", "spectrum_shift", "foregone_conclusion", "call_of_the_void", "sentry_mode") or (isinstance(args[0], str) and args[0].startswith("nightmare:") and valid_power(args[0], r.power_sequence))):
+            if not r.player_side or not (args[0] in ("infinite_blades", "spectrum_shift", "foregone_conclusion", "call_of_the_void", "sentry_mode", "creative_ai") or (isinstance(args[0], str) and args[0].startswith("nightmare:") and valid_power(args[0], r.power_sequence))):
                 raise ValueError("Invalid before-draw power task.")
         if op == "side_start_powers" and not r.player_side:
             raise ValueError("Side-start power dispatch outside setup.")
@@ -354,6 +362,8 @@ def restore_rules(record, player):
         ]:
             raise ValueError("Nested plays must finish before their parents in their own context.")
         for task in tasks:
+            if task[0] in defect_snapshots.TASK_ARITIES:
+                defect_snapshots.validate_task(task, r, player, context)
             if task[0] in necrobinder_snapshots.TASK_ARITIES:
                 necrobinder_snapshots.validate_task(task, r, player, context)
             if task[0] in regent_snapshots.TASK_ARITIES:

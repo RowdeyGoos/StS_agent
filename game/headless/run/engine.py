@@ -226,6 +226,10 @@ class RunEngine:
             if card.definition.definition_id == 'the_scythe':
                 card.permanent_damage += r.scythe_gains.get(card.instance_id, 0)
         r.scythe_gains.clear()
+        for card in self.state.deck:
+            if card.definition.definition_id == 'genetic_algorithm':
+                card.permanent_block += r.genetic_gains.get(card.instance_id, 0)
+        r.genetic_gains.clear()
         from game.headless.relics.combat import synchronize
         from game.headless.relics.damage import potions_changed
         synchronize(self.state, self.combat.player)

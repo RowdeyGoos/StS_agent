@@ -66,7 +66,7 @@ def cancel_deferred(p):
         if selection:
             candidates = set(selection["candidates"])
             p.deck.offered[:] = [c for c in p.deck.offered if c.instance_id not in candidates]
-    r.nec_pending[:] = [event for event in r.nec_pending if event['context'] not in canceled]
+    r.pending_events[:] = [event for event in r.pending_events if event['context'] not in canceled]
     r.deferred_hooks.clear()
 
 
@@ -118,6 +118,11 @@ def advance_side_start(p, tasks):
     deferred, resolving = r.deferred_hooks, p._resolving
     r.hook_sequence += 1
     r.active_hook = r.hook_sequence
+    from game.headless.core.resolution import requires_receipt
+    for task in tasks:
+        if requires_receipt(task[0]):
+            event = next(e for e in r.pending_events if e == dict(context=parked['context'], task=task))
+            event['context'] = r.active_hook
     r.tasks, r.selection, r.deferred_hooks = list(tasks), None, []
     p.pending_play, p._resolving = None, True
     try:
@@ -145,7 +150,7 @@ def cancel_terminal_work(p):
     p.deck.offered.clear()
     r.plays.clear()
     r.tasks.clear()
-    r.nec_pending.clear()
+    r.pending_events.clear()
     r.deferred_hooks.clear()
     r.selection = p.pending_play = None
     r.active_hook = 0

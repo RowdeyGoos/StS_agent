@@ -471,7 +471,7 @@ def test_pending_mastery_damage_survives_puzzle_stratagem_choice_once():
     p.take_damage(10, source=c.enemies[0])
     drain(p)
     assert p.rules.selection is not None
-    assert p.rules.nec_pending == [{
+    assert p.rules.pending_events == [{
         'context': 0, 'task': ['nec_enemy_loss', 0, 5, True, 'necro_mastery'],
     }]
     other = clone(c)
@@ -479,4 +479,4 @@ def test_pending_mastery_damage_survives_puzzle_stratagem_choice_once():
     settle(other)
     assert saved(c) == saved(other)
     assert c.enemies[0].hp == 995
-    assert p.rules.nec_pending == []
+    assert p.rules.pending_events == []

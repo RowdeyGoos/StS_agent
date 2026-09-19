@@ -21,7 +21,7 @@ class Deck:
         from copy import deepcopy
         for attribute, domain in (("niche_rng","niche"),("selection_rng","combat_card_selection"),("energy_rng","combat_energy_costs"),
                                   ("potion_rng","combat_potion_generation"),("generation_rng","combat_card_generation"),
-                                  ("target_rng","combat_targets")):
+                                  ("target_rng","combat_targets"),("orb_rng","combat_orb_generation")):
             setattr(self,attribute,streams[domain] if streams is not None else deepcopy(rng))
         self._next_instance_id = 0
         self._allocated_ids = {card.instance_id for card in cards if card.instance_id is not None}

@@ -193,6 +193,8 @@ def execute(p, op, args):
         for key, amount in r.powers.items():
             if key == 'pagestorm' and next(c for c in p.deck.all_cards() if c.instance_id == args[1]).spec.ethereal:
                 tasks.append(['draw', amount, False])
+            elif key == 'defect_iteration' and r.status_draws_turn == 1 and next(c for c in p.deck.all_cards() if c.instance_id == args[1]).spec.kind == 'status':
+                tasks.append(['draw', amount, False])
             elif key == 'corrosive_wave':
                 tasks.extend(['status', i, 'poison', amount] for i, e in enumerate(p.combat_enemies) if e.is_alive)
             elif key == 'speedster' and not args[0] and r.player_side:

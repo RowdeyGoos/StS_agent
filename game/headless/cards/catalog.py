@@ -70,3 +70,6 @@ REGENT_CARDS = CardCatalog((*SILENT_CARDS.definitions, *REGENT))
 
 from game.headless.cards.necrobinder import DEFINITIONS as NECROBINDER
 NECROBINDER_CARDS = CardCatalog((*REGENT_CARDS.definitions, *NECROBINDER))
+
+from game.headless.cards.defect import DEFINITIONS as DEFECT
+DEFECT_CARDS = CardCatalog((*NECROBINDER_CARDS.definitions, *DEFECT))

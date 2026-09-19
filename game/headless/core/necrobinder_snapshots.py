@@ -170,17 +170,3 @@ def validate_selection(r, p, s, *, deferred=False):
         ids = s['candidates']
     if s['candidates'] != ids or s['minimum'] != min(count,len(ids)) or s['maximum'] != min(count,len(ids)) or s['destination'] != 'hand' or s['free'] or 'whitelist' in s:
         raise ValueError('Invalid Necrobinder choice candidates or bounds.')
-
-
-def validate_pending(r, work):
-    """Every queued summon/damage must have one unconsumed event in its context."""
-    if not isinstance(r.nec_pending, list):
-        raise ValueError('Invalid pending Necrobinder events.')
-    expected = [dict(context=context, task=task) for context, tasks in work.items()
-                for task in tasks if isinstance(task, list) and task and task[0] in ('nec_summon', 'nec_enemy_loss')]
-    for event in r.nec_pending:
-        if not isinstance(event, dict) or set(event) != {'context', 'task'} or type(event['context']) is not int or event not in expected:
-            raise ValueError('Unowned or consumed Necrobinder event.')
-        expected.remove(event)
-    if expected:
-        raise ValueError('Necrobinder command has no pending producing event.')

@@ -70,6 +70,10 @@ def apply_power(p, name, amount, target=None):
     if name in necrobinder.NAMES:
         necrobinder.apply(p, name, amount)
         return
+    from game.headless.powers import defect
+    if name in defect.NAMES:
+        defect.apply(p, name, amount)
+        return
     if name not in POWER_NAMES:
         raise ValueError(f"Unknown player power: {name}")
     r = p.rules
@@ -81,6 +85,8 @@ def apply_power(p, name, amount, target=None):
 
 
 def card_cost(p, card):
+    if card.spec.kind == 'power' and p.rules.powers.get('free_power') and card in (*p.hand, *p.deck.in_play):
+        return 0
     from game.headless.powers.regent import free
     if card.spec.ethereal and p.rules.powers.get('veilpiercer') and card in (*p.hand, *p.deck.in_play) and not card.spec.x_cost and card.cost >= 0:
         return 0
@@ -112,13 +118,15 @@ def local_cost(card, *, clamp=True):
         return card.cost
     if v.free_this_turn or ((v.free_until_played or v.free_this_combat) and v.turn_cost_override is None):
         return 0
-    value = card.cost if v.combat_cost_override is None else v.combat_cost_override
-    if v.turn_cost_override is not None:
-        value = v.turn_cost_override
+    from game.headless.core.card_costs import latest
+    setter = latest(v)
+    value = card.cost if setter is None else getattr(v, setter + '_cost_override')
     value += v.cost_change + v.turn_cost_change + v.combat_cost_change
-    if v.turn_cost_override is not None:
+    if setter == 'played':
+        value -= sum(v.played_cost_baselines)
+    elif setter == 'turn':
         value -= v.override_turn_baseline + v.override_combat_baseline
-    elif v.combat_cost_override is not None:
+    elif setter == 'combat':
         value -= v.combat_override_baseline
     return max(0, value) if clamp else value
 
@@ -200,6 +208,7 @@ def after_play(p, card):
     if card.spec.kind == "attack":
         r.attacks_finished += 1
     r.plays_finished += 1
+    r.finished_plays_turn += 1
     from game.headless.powers.silent import after_play as silent_after_play
     silent_after_play(p, card)
     from game.headless.powers.necrobinder import finished_history
@@ -238,6 +247,8 @@ def after_card_power(p, card, key):
         regent_after_card(p, card, key)
         from game.headless.powers.necrobinder import after_card_power as nec_after_card
         nec_after_card(p, card, key)
+        from game.headless.powers.defect import after_card_power as def_after_card
+        def_after_card(p, card, key)
 
 
 def start_turn(p, draw_count):
@@ -257,6 +268,8 @@ def start_turn(p, draw_count):
     draw_count = regent_start(p, draw_count)
     from game.headless.powers.necrobinder import start_turn as nec_start
     draw_count = nec_start(p, draw_count)
+    from game.headless.powers.defect import start_turn as def_start
+    draw_count = def_start(p, draw_count)
     draw_count += r.powers.pop("draw_next_turn", 0) + r.powers.get("tools_of_the_trade", 0)
     if r.round_number == 1:
         draw_count = min(10, max(draw_count, sum(c.spec.innate for c in p.deck.draw_pile)))
@@ -269,6 +282,7 @@ def start_turn(p, draw_count):
     r.auxiliaries["block_gains"] = 0
     for card in p.deck.all_cards():
         card.combat_state.cost_change = 0
+        card.combat_state.played_cost_baselines[0] = 0
         card.combat_state.free_this_turn = False
         card.combat_state.turn_cost_override = None
     count = r.powers.get("aggression", 0)
@@ -288,12 +302,12 @@ def start_turn(p, draw_count):
     before_draw(p)
     from game.headless.powers.regent import setup_tasks
     from game.headless.powers.turns import before_draw_tasks
-    push(p, *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], ["nec_start"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["regent_preplay"], ["mayhem"])
+    push(p, *[["def_energy_reset", key] for key in r.powers if key in ("lightning_rod", "spinner")], *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], ["nec_start"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["orb_phase", "start"], ["regent_preplay"], ["mayhem"])
     drain(p)
     if p.pending_play is not None or r.selection is not None:
         # Native setup may pause while AfterSideTurnStart still completes.
         from game.headless.core.hook_scheduler import advance_side_start
-        ready = [t for t in r.tasks if t[0] in ("silent_side_start", "silent_side_start_all", "regent_side_start", "regent_side_start_all", "nec_side_start", "side_start_powers") or (t[0] == "relic_hook" and t[2] == "after_side_start")]
+        ready = [t for t in r.tasks if t[0] in ("silent_side_start", "silent_side_start_all", "regent_side_start", "regent_side_start_all", "nec_side_start", "def_side_start", "orb_phase", "side_start_powers") or (t[0] == "relic_hook" and t[2] == "after_side_start")]
         for task in ready:
             r.tasks.remove(task)
         advance_side_start(p, ready)
@@ -320,9 +334,10 @@ def begin_end_hooks(p):
         for c in tuple(p.deck.exhaust_pile)
         if c.definition.definition_id == "howl_from_beyond"
     ]
-    tasks += [["nec_player_doom"]]
+    from game.headless.powers.turns import before_side_end_tasks
+    tasks += before_side_end_tasks(p)
     tasks += relic_tasks(p, "before_end")
-    tasks += [["stampede", r.powers.get("stampede", 0)], ["discard_hand"]]
+    tasks += [["orb_phase", "end"], ["stampede", r.powers.get("stampede", 0)], ["discard_hand"]]
     push(p, *tasks)
 
 

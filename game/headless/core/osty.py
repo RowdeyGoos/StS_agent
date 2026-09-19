@@ -50,6 +50,8 @@ def after_attack(p):
         if card not in p.deck.offered and card.definition.definition_id == 'flatten':
             v = card.combat_state
             v.turn_cost_override = 0
+            from game.headless.core.card_costs import mark_setter
+            mark_setter(v, 'turn')
             v.turn_cost_until_played = False
             v.override_turn_baseline = v.turn_cost_change
             v.override_combat_baseline = v.combat_cost_change

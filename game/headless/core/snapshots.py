@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v22"
+SCHEMA = "headless_combat_state_v23"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -30,11 +30,11 @@ def card_record(card) -> dict:
     enchantments.validate(card)
     return {"definition_id": card.definition.definition_id,
             "instance_id": card.instance_id, "upgrade_level": card.upgrade_level, "combats_seen": card.combats_seen,
-            "permanent_damage": card.permanent_damage, "enchantment": enchantments.record(card), "combat_state": asdict(card.combat_state)}
+            "permanent_damage": card.permanent_damage, "permanent_block": card.permanent_block, "enchantment": enchantments.record(card), "combat_state": asdict(card.combat_state)}
 
 
 def restore_card(record, cards=DEFAULT_CARDS):
-    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "permanent_damage", "enchantment", "combat_state"}:
+    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "permanent_damage", "permanent_block", "enchantment", "combat_state"}:
         raise ValueError("Invalid card state fields.")
     if not isinstance(record["instance_id"], str) or not record["instance_id"]:
         raise ValueError("Invalid card instance ID.")
@@ -47,6 +47,10 @@ def restore_card(record, cards=DEFAULT_CARDS):
     if type(growth) is not int or growth < 0 or (growth and card.definition.definition_id != 'the_scythe'):
         raise ValueError('Invalid permanent card damage.')
     card.permanent_damage = growth
+    growth = record['permanent_block']
+    if type(growth) is not int or growth < 0 or (growth and card.definition.definition_id != 'genetic_algorithm'):
+        raise ValueError('Invalid permanent card block.')
+    card.permanent_block = growth
     values = record["combat_state"]
     if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
         raise ValueError('Invalid transient card state.')
@@ -56,6 +60,8 @@ def restore_card(record, cards=DEFAULT_CARDS):
         raise ValueError('Invalid temporary cost override.')
     if values["combat_cost_override"] is not None and (type(values["combat_cost_override"]) is not int or not 0 <= values["combat_cost_override"] <= 3):
         raise ValueError("Invalid combat cost override.")
+    from game.headless.core.card_costs import validate as validate_costs
+    validate_costs(values)
     card.combat_state = CardState(**values)
     card.enchantment = enchantments.restore(record["enchantment"])
     enchantments.validate(card)
@@ -109,7 +115,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
                    "rules": asdict(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
-        "deck": {"rng": rng_ref(deck.rng), "niche_rng": rng_ref(deck.niche_rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "next_instance_id": deck._next_instance_id,
+        "deck": {"rng": rng_ref(deck.rng), "niche_rng": rng_ref(deck.niche_rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "orb_rng": rng_ref(deck.orb_rng), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
     }
@@ -158,6 +164,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         deck.generation_rng = rng_at(source_deck["generation_rng"])
         deck.potion_rng = rng_at(source_deck["potion_rng"])
         deck.energy_rng = rng_at(source_deck["energy_rng"])
+        deck.orb_rng = rng_at(source_deck["orb_rng"])
         deck._next_instance_id = source_deck["next_instance_id"]
         if type(deck._next_instance_id) is not int or deck._next_instance_id < 0:
             raise ValueError("Invalid card allocator.")

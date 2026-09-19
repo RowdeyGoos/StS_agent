@@ -76,6 +76,10 @@ class Attack:
             hits = sum(c.spec.kind in ("skill", "block") for c in player.hand)
         elif self.hit_expression == "skills_finished":
             hits = player.rules.skills_finished
+        elif self.hit_expression == "orbs":
+            hits = len(player.rules.orb_order)
+        elif self.hit_expression == "spent_energy":
+            hits = max(0, player.rules.energy_spent_turn - player.card_cost(card))
         elif self.hit_expression == "ethereal_plays":
             hits = player.rules.ethereal_plays
         elif self.hit_expression == "stars_gained":
@@ -142,7 +146,8 @@ class ChoosePileCard:
 
     def resolve(self, player, selected):
         getattr(player.deck, self.pile).remove(selected)
-        getattr(player.deck, self.destination).append(selected)
+        destination = "discard_pile" if self.destination == "hand" and len(player.hand) >= 10 else self.destination
+        getattr(player.deck, destination).append(selected)
 
     def apply(self, card, player, target):
         if player.combat_is_ending:

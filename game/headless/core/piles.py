@@ -59,6 +59,10 @@ def after_generated_entry(player, card, *, is_clone=False, generated=True):
     from game.headless.powers.necrobinder import entered as nec_entered
     nec_entered(player, card, is_clone=is_clone)
     if generated:
-        regent_generated(player)
+        if card.spec.kind == 'status':
+            from game.headless.powers.defect import generated_status
+            generated_status(player, card)
+        else:
+            regent_generated(player)
     if not is_clone and card.definition.definition_id == "stomp":
         card.combat_state.cost_change -= player.rules.attacks_finished

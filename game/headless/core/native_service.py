@@ -45,6 +45,7 @@ COMBAT_STREAMS = (
     "combat_card_generation",
     "combat_potion_generation",
     "combat_energy_costs",
+    "combat_orb_generation",
     "monster_ai",
     "niche",
 )
@@ -156,6 +157,7 @@ def bind_combat(service, combat):
         "combat_card_generation": deck.generation_rng,
         "combat_potion_generation": deck.potion_rng,
         "combat_energy_costs": deck.energy_rng,
+        "combat_orb_generation": deck.orb_rng,
     }
     for name, rng in bindings.items():
         if name not in service._streams or rng.getstate() != service._streams[name].getstate():
