@@ -191,7 +191,9 @@ def execute(p, op, args):
     elif op == 'silent_draw_hook':
         tasks = []
         for key, amount in r.powers.items():
-            if key == 'corrosive_wave':
+            if key == 'pagestorm' and next(c for c in p.deck.all_cards() if c.instance_id == args[1]).spec.ethereal:
+                tasks.append(['draw', amount, False])
+            elif key == 'corrosive_wave':
                 tasks.extend(['status', i, 'poison', amount] for i, e in enumerate(p.combat_enemies) if e.is_alive)
             elif key == 'speedster' and not args[0] and r.player_side:
                 tasks.append(['silent_area_damage', amount])

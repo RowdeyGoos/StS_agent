@@ -12,6 +12,7 @@ class CardState:
     free_this_turn: bool = False
     free_this_combat: bool = False
     turn_cost_override: int | None = None
+    turn_cost_until_played: bool = True
     combat_cost_override: int | None = None
     combat_override_baseline: int = 0
     override_turn_baseline: int = 0
@@ -24,6 +25,7 @@ class CardState:
     retain_this_turn: bool = False
     retain_this_combat: bool = False
     all_enemies: bool = False
+    ethereal_this_combat: bool = False
 
 
 @dataclass
@@ -77,3 +79,11 @@ class CombatRules:
     round_plays: int = 0
     regent_hits: dict[str, int] = field(default_factory=dict)
     regent_end_requested: bool = False
+    osty: dict | None = None
+    osty_attacks_turn: int = 0
+    ethereal_plays: int = 0
+    drawn_turn: int = 0
+    doom_applied_turn: bool = False
+    fetch_plays: list[str] = field(default_factory=list)
+    nec_pending: list[dict] = field(default_factory=list)
+    scythe_gains: dict[str, int] = field(default_factory=dict)

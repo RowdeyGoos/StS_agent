@@ -149,6 +149,8 @@ class CombatEngine:
 
     def _finish_turn(self):
         details = {}
+        from game.headless.powers.necrobinder import end_player
+        end_player(self.player)
         after_owner_side_turn_end(self.player)
         self.player.rules.player_side = False
         self.player.rules.turn_ending = False
@@ -201,6 +203,16 @@ class CombatEngine:
             progress['move'] = None
             if self.done:
                 break
+        if not self.done and not progress.get('doom_end'):
+            progress['doom_end'] = True
+            from game.headless.powers.necrobinder import doom_tasks
+            from game.headless.core.resolution import push, drain
+            push(self.player, *doom_tasks(self.player))
+            drain(self.player)
+            self._refresh_persistent_statuses()
+            self._check_terminal()
+            if paused(self.player) and not self.done:
+                return CombatResult(False, None, {'enemy_actions': list(enemy_actions)})
         self.player.rules.enemy_turn = None
         details["enemy_actions"] = enemy_actions
         if len(enemy_actions) == 1:

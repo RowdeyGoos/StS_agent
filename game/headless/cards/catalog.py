@@ -67,3 +67,6 @@ SILENT_CARDS = CardCatalog((*DEFAULT_CARDS.definitions, *SILENT))
 
 from game.headless.cards.regent import DEFINITIONS as REGENT
 REGENT_CARDS = CardCatalog((*SILENT_CARDS.definitions, *REGENT))
+
+from game.headless.cards.necrobinder import DEFINITIONS as NECROBINDER
+NECROBINDER_CARDS = CardCatalog((*REGENT_CARDS.definitions, *NECROBINDER))

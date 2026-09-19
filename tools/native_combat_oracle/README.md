@@ -179,3 +179,13 @@ energy/Star costs, both X flags, kind, rarity, target, generation eligibility,
 keywords and dynamic base/upgrade values. The two Ancient rows are inventoried but
 excluded from the ordinary-family implementation. It executes metadata/upgrade
 methods, not complete card plays or native turn scheduling.
+
+## Necrobinder card inventory
+
+Pass `necrobinder` as the third argument to reproduce
+[`headless_native_necrobinder_vectors.json`](../../tests/fixtures/headless_native_necrobinder_vectors.json).
+This read-only mode enumerates the pinned all-unlocked solo pool, Soul and Sweeping
+Gaze, then invokes actual upgrade methods. Its 88 rows include costs, X flags,
+kind, rarity, targeting, generation eligibility, keywords and dynamic values for
+both levels. Forbidden Grimoire and Protector remain inventoried Ancient exclusions.
+It executes metadata and upgrades, not native card plays or turn scheduling.

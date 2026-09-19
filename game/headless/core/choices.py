@@ -69,7 +69,10 @@ def resolve(p, identity, operation, destination, free):
     if card is None or p.combat_is_ending:
         p.deck.offered.clear()
         return
-    if operation.startswith("regent_"):
+    if operation.startswith("nec_"):
+        from game.headless.cards.necrobinder_effects import selected
+        selected(p, card, operation)
+    elif operation.startswith("regent_"):
         from game.headless.cards.regent_effects import selected
         selected(p, card, operation)
     elif operation in ("hand_trick", "nightmare", "well_laid_plans"):
@@ -106,6 +109,15 @@ def refresh_hand_selection(p):
     if s is None:
         return
     operation = s['operation']
+    if operation.startswith('nec_'):
+        op = operation.removeprefix('nec_')
+        if op in ('sculpting_strike', 'snap', 'transfigure'):
+            from game.headless.cards.necrobinder_effects import choice_settings
+            cards, count = choice_settings(p, op)
+            s['candidates'] = [c.instance_id for c in cards]
+            s['selected'] = [i for i in s['selected'] if i in s['candidates']]
+            s['maximum'] = s['minimum'] = min(count, len(cards))
+        return
     if operation.startswith('regent_'):
         op = operation.removeprefix('regent_').removesuffix('_up')
         if op in ('begone', 'guards', 'topdeck', 'heirloom_hammer', 'decisions_decisions', 'tyranny'):

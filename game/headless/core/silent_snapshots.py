@@ -4,7 +4,7 @@ TASK_ARITIES = {
     'silent_shivs': 3, 'silent_random_poison': 1, 'silent_strength_loss': 2,
     'silent_knife': 3, 'silent_hunt': 3, 'silent_echo': 4,
     'silent_escape_draw': 2, 'silent_escape_block': 3,
-    'silent_draw_hook': 1, 'silent_area_damage': 1, 'silent_damage': 2,
+    'silent_draw_hook': 2, 'silent_area_damage': 1, 'silent_damage': 2,
     'silent_strangle': 2, 'silent_outbreak_reset': 0,
     'silent_poison_begin': 1, 'silent_poison_tick': 1, 'silent_poison_decrement': 1,
     'silent_retain': 0, 'silent_side_start': 1, 'silent_side_start_all': 0,
@@ -87,6 +87,8 @@ def validate_task(task, r, p, context):
     elif op in ('silent_random_poison', 'silent_area_damage'):
         natural(args[0])
     elif op == 'silent_draw_hook':
+        if args[1] not in p.deck._allocated_ids:
+            raise ValueError('Unowned draw hook card.')
         flag(args[0])
     elif op == 'silent_side_start_all':
         if not r.player_side:

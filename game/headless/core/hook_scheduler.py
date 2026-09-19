@@ -66,6 +66,7 @@ def cancel_deferred(p):
         if selection:
             candidates = set(selection["candidates"])
             p.deck.offered[:] = [c for c in p.deck.offered if c.instance_id not in candidates]
+    r.nec_pending[:] = [event for event in r.nec_pending if event['context'] not in canceled]
     r.deferred_hooks.clear()
 
 
@@ -144,6 +145,7 @@ def cancel_terminal_work(p):
     p.deck.offered.clear()
     r.plays.clear()
     r.tasks.clear()
+    r.nec_pending.clear()
     r.deferred_hooks.clear()
     r.selection = p.pending_play = None
     r.active_hook = 0

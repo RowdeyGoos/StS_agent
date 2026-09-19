@@ -10,6 +10,9 @@ def valid_power(key, sequence):
     from game.headless.potions.powers import NAMES as POTION_POWERS
     from game.headless.powers.silent import NAMES as SILENT_POWERS
     from game.headless.powers.regent import NAMES as REGENT_POWERS, INSTANCED as REGENT_INSTANCED
+    from game.headless.powers.necrobinder import NAMES as NECRO_POWERS
+    if key in NECRO_POWERS:
+        return True
     if key in REGENT_POWERS - REGENT_INSTANCED:
         return True
     if key in POWER_NAMES or key in NAMES - INSTANCED or key in POTION_POWERS or key in SILENT_POWERS:
@@ -39,6 +42,8 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     ):
         raise ValueError("Invalid combat potion state.")
     expected_aux = {"crimson_mantle", "inferno", "block_gains"}
+    if "summon_next_turn" in r.powers:
+        expected_aux.add("summon_next_turn")
     if "outbreak" in r.powers:
         expected_aux.add("outbreak")
     for key in r.powers:
@@ -68,9 +73,10 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     fields = {"source", "candidates", "selected", "operation", "destination", "minimum", "maximum", "free"}
     if not isinstance(s, dict) or set(s) - {"whitelist"} != fields:
         raise ValueError("Invalid selection fields.")
+    from game.headless.core.necrobinder_snapshots import CHOICES as NECRO_CHOICES, validate_selection as nec_selection
     from game.headless.core.regent_snapshots import CHOICES as REGENT_CHOICES, validate_selection as regent_selection
     if (
-        s["operation"] not in REGENT_CHOICES and s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
+        s["operation"] not in NECRO_CHOICES and s["operation"] not in REGENT_CHOICES and s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
         or s["destination"] not in ("hand", "draw_pile")
         or s["free"] not in ("", "free_this_turn", "free_until_played")
         or any(type(s[k]) is not int for k in ("minimum", "maximum"))
@@ -90,6 +96,9 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         or not set(s["selected"]) <= set(s["candidates"])
     ):
         raise ValueError("Invalid selection bounds.")
+    if s["operation"] in NECRO_CHOICES:
+        nec_selection(r, p, s, deferred=deferred)
+        return
     if s["operation"] in REGENT_CHOICES:
         regent_selection(r, p, s, deferred=deferred)
         return

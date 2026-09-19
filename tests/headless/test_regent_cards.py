@@ -209,7 +209,7 @@ def test_minion_transform_replaces_owned_instance_preserves_pile_and_upgrade(ide
     created=[x for x in pile if x.definition.definition_id==generated]
     assert len(created)==(1 if identity=='begone' else 2)
     assert all(x.upgrade_level==level for x in created)
-    assert not c.player.rules.generated_combat  # transformation is not generation
+    assert c.player.rules.generated_combat == len(created)  # Native transform history.
     assert saved(clone(c))==saved(c)
 
 
@@ -353,15 +353,15 @@ def test_crush_dying_and_monarch_temporary_strength_respects_artifact():
     assert all(not e.statuses.get('dying_star') for e in c.enemies)
 
 
-def test_pillar_and_supermassive_count_clones_but_not_transforms_or_unselected_offers():
+def test_transform_history_counts_for_supermassive_without_pillar_hooks():
     c=fight('pillar_of_creation','quasar','begone','strike','heirloom_hammer','supermassive')
     play(c,'pillar_of_creation');play(c,'quasar')
     assert c.player.rules.generated_combat==0
     c.apply(ConfirmCombatSelection())
     play(c,'begone');settle(c)
-    assert c.player.rules.generated_combat==0
+    assert c.player.rules.generated_combat==1 and c.player.block==0
     play(c,'heirloom_hammer');settle(c)
-    assert c.player.rules.generated_combat==1 and c.player.block==3
+    assert c.player.rules.generated_combat==2 and c.player.block==3
 
 
 @pytest.mark.parametrize('field,value',[('stars',-1),('stars',True),('stars_gained_turn',-1),('generated_combat','3'),('regent_hits',{'90':1}),('regent_end_requested',True)])

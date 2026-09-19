@@ -156,12 +156,18 @@ class Player:
             if is_attack
             else amount
         )
+        if self.rules.powers.get('intangible'):
+            incoming_damage = min(incoming_damage, 1)
         if is_attack and source is not None and source.is_alive and self.rules.powers.get("thorns"):
             source.take_damage(self.rules.powers["thorns"], is_attack=False)
         blocked = min(self.block, incoming_damage)
         self.block -= blocked
         from game.headless.powers.damage import resolve_unblocked_damage
-        remaining = resolve_unblocked_damage(self.statuses, incoming_damage - blocked)
+        remaining = incoming_damage - blocked
+        if is_attack:
+            from game.headless.core.osty import lose_hp as osty_lose_hp
+            remaining -= osty_lose_hp(self, remaining)
+        remaining = resolve_unblocked_damage(self.statuses, remaining)
         damage = self.lose_hp(remaining, unblockable=False, attack=is_attack, source=source)
         if is_attack and self.is_alive and source is not None:
             for key, value in tuple(self.rules.powers.items()):
@@ -176,6 +182,8 @@ class Player:
     def lose_hp(self, amount, *, unblockable=True, attack=False, source=None):
         from game.headless.relics.damage import hp_loss_amount, prevent_death, after_damage
         from game.headless.powers.ironclad import after_hp_loss
+        if self.rules.powers.get('intangible'):
+            amount = min(amount, 1)
         amount = hp_loss_amount(self, amount)
         if amount > 0 and self.rules.powers.get("buffer"):
             self.rules.powers["buffer"] -= 1
@@ -187,6 +195,8 @@ class Player:
         from game.headless.potions.combat import prevent_death as fairy
         fairy(self)
         prevent_death(self)
+        if not self.is_alive and self.rules.osty is not None:
+            self.rules.osty['hp'] = 0
         if amount:
             after_hp_loss(self, amount)
         after_damage(self, amount, unblockable=unblockable, attack=attack, source=source)

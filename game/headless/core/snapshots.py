@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v21"
+SCHEMA = "headless_combat_state_v22"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -30,11 +30,11 @@ def card_record(card) -> dict:
     enchantments.validate(card)
     return {"definition_id": card.definition.definition_id,
             "instance_id": card.instance_id, "upgrade_level": card.upgrade_level, "combats_seen": card.combats_seen,
-            "enchantment": enchantments.record(card), "combat_state": asdict(card.combat_state)}
+            "permanent_damage": card.permanent_damage, "enchantment": enchantments.record(card), "combat_state": asdict(card.combat_state)}
 
 
 def restore_card(record, cards=DEFAULT_CARDS):
-    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "enchantment", "combat_state"}:
+    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "permanent_damage", "enchantment", "combat_state"}:
         raise ValueError("Invalid card state fields.")
     if not isinstance(record["instance_id"], str) or not record["instance_id"]:
         raise ValueError("Invalid card instance ID.")
@@ -43,8 +43,12 @@ def restore_card(record, cards=DEFAULT_CARDS):
     if type(count) is not int or not 0 <= count < max(1, card.definition.combat_lifetime):
         raise ValueError("Invalid card combat lifetime.")
     card.combats_seen = count
+    growth = record['permanent_damage']
+    if type(growth) is not int or growth < 0 or (growth and card.definition.definition_id != 'the_scythe'):
+        raise ValueError('Invalid permanent card damage.')
+    card.permanent_damage = growth
     values = record["combat_state"]
-    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
+    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
         raise ValueError('Invalid transient card state.')
     if any(type(values[k]) is not int for k in ('override_turn_baseline', 'override_combat_baseline', 'combat_override_baseline')):
         raise ValueError('Invalid cost override baselines.')
@@ -168,7 +172,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         player = Player(deck)
         for name in PLAYER_FIELDS:
             value = snapshot["player"][name]
-            if type(value) is not int or value < 0:
+            if type(value) is not int or (value < 0 and name != "strength"):
                 raise ValueError("Invalid player state.")
             setattr(player, name, value)
         if not 0 <= player.hp <= player.max_hp or player.max_hp == 0:
