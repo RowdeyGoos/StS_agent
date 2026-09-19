@@ -20,6 +20,7 @@ ALIASES = {
     "relic.lava_rock": "rewards",
     "relic.rare_card": "rewards",
     "relic.bundles": "rewards",
+    "relic.foreign_pools": "niche",
     "relic.neow_rewards": "rewards",
     "event.card_reward": "rewards",
     "event.relic": "rewards",

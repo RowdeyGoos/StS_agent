@@ -3,7 +3,7 @@
 from copy import deepcopy
 from dataclasses import dataclass
 
-from game.headless.events.transformation import TRANSFORM_POOL, CURSE_POOL, COLORLESS_SOURCES, ANCIENT_CARDS, ETERNAL_SOURCES, check_content, replacement_pool
+from game.headless.events.transformation import TRANSFORM_POOL, CURSE_POOL, COLORLESS_SOURCES, ANCIENT_CARDS, ETERNAL_SOURCES, check_content, replacement_pool, FOREIGN_SOURCES
 from game.headless.run.deck import transform_card
 
 
@@ -90,7 +90,7 @@ class MorphicGrove:
         if not isinstance(definitions, dict) or set(definitions) != set(original):
             raise ValueError("Invalid Morphic source definitions.")
         for name in definitions.values():
-            if not isinstance(name, str) or name not in (*self.transform_pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_POOL, *ETERNAL_SOURCES, *COLORLESS_SOURCES):
+            if not isinstance(name, str) or name not in (*self.transform_pool, *ANCIENT_CARDS, "strike", "defend", "bash", *CURSE_POOL, *ETERNAL_SOURCES, *COLORLESS_SOURCES, *FOREIGN_SOURCES):
                 raise ValueError("Unsupported Morphic source definition.")
         if any(c.instance_id in definitions and c.definition.definition_id != definitions[c.instance_id] for c in state.deck):
             raise ValueError("Morphic original definitions differ from the deck.")

@@ -242,4 +242,4 @@ def test_generated_stomp_offer_and_selection_restore_through_actual_attack_potio
         other.apply(action)
         assert saved(run) == saved(other)
     assert stomp in p.hand and stomp.combat_state.cost_change == -1
-    assert stomp.combat_state.free_this_turn
+    assert p.card_cost(stomp) == 0 and stomp.combat_state.turn_cost_until_played

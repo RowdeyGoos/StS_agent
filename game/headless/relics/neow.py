@@ -33,20 +33,10 @@ NEOW_RELICS = (
 )
 
 
-def foreign_pools(cards):
-    return sorted(
-        {
-            d.pool
-            for d in sorted(cards.definitions, key=lambda d: d.definition_id)
-            if d.pool in ("silent", "regent", "necrobinder", "defect")
-            and d.rarity in ("common", "uncommon", "rare")
-        }
-    )
-
-
 def available(name, cards):
     if name == "kaleidoscope":
-        return len(foreign_pools(cards)) >= 3
+        from game.headless.generation.foreign import complete
+        return complete(cards)
     if name == "scroll_boxes":
         return all(
             sum(
@@ -166,27 +156,8 @@ def begin(state, relic, cards):
             )
         effect(state, source, "curse", [])
     elif name == "kaleidoscope":
-        for _ in range(2):
-            pools = foreign_pools(cards)
-            state.rng.shuffle("relic.foreign_pools", pools)
-            definitions = []
-            for family in pools[:3]:
-                pool = [
-                    d
-                    for d in sorted(cards.definitions, key=lambda d: d.definition_id)
-                    if d.pool == family and d.rarity in ("common", "uncommon", "rare")
-                ]
-                definitions.append(state.rng.choice("relic.foreign_card", pool).definition_id)
-            from game.headless.relics.rewards import decorate
-
-            modifiers = decorate(state, cards, definitions, card_reward=False)
-            state.relic_work.append(
-                dict(
-                    source=source,
-                    kind="card_reward",
-                    offers=[{"definition_id": n, **modifiers[n]} for n in definitions],
-                )
-            )
+        from game.headless.generation.foreign import kaleidoscope
+        kaleidoscope(state, cards, source)
 
 
 def drain(state, cards):

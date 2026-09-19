@@ -49,8 +49,8 @@ merchant slots and transformations use the full solo pool. See the
 The [solo Act 1 relic rules](docs/HEADLESS_ENGINE.md#relics) cover the audited
 161-definition inventory, including nested pickup choices, combat triggers,
 shop/rest/reward modifiers and persistent counters. Generated runs use the full
-ordinary/merchant relic pools. The default catalog supports 160 directly;
-Kaleidoscope requires other-character card pools; curse generation retains its
+ordinary/merchant relic pools. All 161 are supported by the default catalog,
+including Kaleidoscope and 320 ordinary foreign cards; curse generation retains its
 content subset. All **48 ordinary Ironclad-accessible potions**, both event potions
 and Potion-Shaped Rock are implemented. Generated runs use the complete ordinary
 potion pool, including rarity-based rewards/shops, automatic Fairy revival and
@@ -157,8 +157,8 @@ choose Hatch at a rest site to obtain Byrdpip and replace all eggs with Byrd Swo
 Egg/Swoop transformations use the full 53-card single-player colorless pool.
 See [Nest and hatch evidence](docs/evidence/byrdonis_nest_2026_09_13.md). Add `--ancient neow` for randomized two-positive/one-curse Neow offers and nested pickup choices;
 omit it for the post-Ancient fixture start. The generated catalog now includes
-all 21 normally Act-1-eligible events. Neow supports 26 solo offers in the default
-catalog; Kaleidoscope still requires foreign character cards. See
+all 21 normally Act-1-eligible events. Neow supports all 27 solo offers in the default catalog, including Kaleidoscope.
+See [foreign acquisition evidence](docs/evidence/foreign_acquisition_2026_09_19.md) and
 [events and Neow evidence](docs/evidence/events_neow_2026_09_14.md).
 With the full Ironclad pool, the simple demo can lose before the boss. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).
 

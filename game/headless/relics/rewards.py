@@ -20,9 +20,16 @@ def extend_pool(state, cards, pool, *, card_reward=True, custom_pool=False, no_p
     return result
 
 
-def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgraded=()):
+def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgraded=(), modifiers=None):
     instances = [cards.create(name) for name in offers]
     from game.headless.relics.run_rules import counter
+    if modifiers is not None:
+        validate_modifiers(cards, offers, modifiers)
+        from game.headless.enchantments.base import restore
+        for card in instances:
+            saved = modifiers[card.definition.definition_id]
+            card.upgrade_level = saved['upgrade_level']
+            card.enchantment = restore(saved['enchantment'])
 
     for card in instances:
         if card.definition.definition_id in upgraded and len(card.definition.levels)>1:

@@ -6,7 +6,7 @@ from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
 import pytest
-from game.headless.cards.catalog import CardCatalog, DEFAULT_CARDS
+from game.headless.cards.catalog import CardCatalog, DEFAULT_CARDS, IRONCLAD_CARDS
 from game.headless.run.engine import RunEngine
 from game.headless.run.config import RunConfig
 from game.headless.run.inventory import add_relic
@@ -78,7 +78,7 @@ def test_catalog_matches_independently_audited_solo_scope():
     assert set(RELICS) == converted
 
 
-@pytest.mark.parametrize("name", sorted(set(RELICS) - {"kaleidoscope"}))
+@pytest.mark.parametrize("name", sorted(RELICS))
 def test_each_available_relic_pickup_and_all_choices_roundtrip(name):
     r = run_with(name, seed=7, hp=50, gold=99)
     clone = RunEngine()
@@ -88,7 +88,7 @@ def test_each_available_relic_pickup_and_all_choices_roundtrip(name):
 
 
 def test_missing_foreign_pool_dependency_is_explicit_and_atomic():
-    r = run_with()
+    r = run_with(cards=IRONCLAD_CARDS)
     before = saved(r)
     with pytest.raises(ValueError, match="card pools"):
         r.obtain_relic("kaleidoscope")
@@ -96,18 +96,7 @@ def test_missing_foreign_pool_dependency_is_explicit_and_atomic():
 
 
 def test_kaleidoscope_uses_distinct_foreign_families_in_each_set():
-    from dataclasses import replace
-
-    additions = [
-        replace(
-            DEFAULT_CARDS.definition("strike"),
-            definition_id=f"{family}_example",
-            pool=family,
-            rarity="common",
-        )
-        for family in ("silent", "regent", "defect")
-    ]
-    catalog = CardCatalog((*DEFAULT_CARDS.definitions, *additions))
+    catalog = DEFAULT_CARDS
     r = RunEngine(cards=catalog)
     add_relic(r.state, "kaleidoscope", cards=catalog)
     assert len(r.state.relic_work) == 2
@@ -116,7 +105,7 @@ def test_kaleidoscope_uses_distinct_foreign_families_in_each_set():
         for w in r.state.relic_work
     )
     settle(r)
-    assert len([c for c in r.state.deck if c.definition.pool in ("silent", "regent", "defect")]) == 2
+    assert len([c for c in r.state.deck if c.definition.pool in ("silent", "regent", "necrobinder", "defect")]) == 2
 
 
 def test_acquisition_blocks_room_entry_and_corrupt_automatic_work():

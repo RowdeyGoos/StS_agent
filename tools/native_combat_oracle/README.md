@@ -57,8 +57,9 @@ Recipes follow inspected pinned caller methods. These cases execute factories,
 not whole card plays, choice screens, insertion hooks or a native combat turn.
 No native rarity or upgrade rolls occur in the combat card factory. Caller
 upgrades, free-cost flags and optional choices are covered by source inspection
-and Python action/restoration regressions. Splash's unsupported foreign pools
-and Entropy's transformation factory are outside this fixture. The original
+and Python action/restoration regressions. Splash's foreign pools
+and Entropy's transformation factory are outside this original fixture; later modes
+below cover their factories. The original
 two-argument mode and its construction/shuffle output remain unchanged.
 
 
@@ -199,3 +200,18 @@ constructs mutable native cards and invokes their actual upgrade methods. Its 87
 rows include costs, targeting, generation eligibility, keywords and dynamic values
 at both levels. Biased Cognition and Quadcast are inventoried Ancient exclusions.
 It executes metadata/upgrade methods, not native card plays, orb phases or turns.
+
+## Foreign acquisition and transformation factories
+
+Pass `foreign` as the third argument. This reproduces
+`tests/fixtures/headless_native_foreign_vectors.json`: 30 Kaleidoscope cases at
+five seeds with six reward-hook configurations, ten base/upgraded Splash cases,
+and 16 foreign ordinary/basic transformation pools with three sampled RNG seeds.
+It retains offers, modifiers, native pool order, counters and next-value suffixes.
+
+The in-memory all-unlocked A0 run context calls actual native StableShuffle,
+CreateForReward, GetDistinctForCombat, reward hooks and transformation factories.
+Acquisition orchestration follows inspected source; this does not call complete
+Kaleidoscope.AfterObtained or Splash.OnPlay, execute a UI or demonstrate native
+turn/run parity. It uses TestMode and does not read a profile or save.
+See [evidence](../../docs/evidence/foreign_acquisition_2026_09_19.md).

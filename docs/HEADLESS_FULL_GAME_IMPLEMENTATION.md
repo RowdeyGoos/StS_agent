@@ -21,6 +21,13 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-19 — foreign acquisition enabled:** all 320 ordinary foreign cards are
+  now in the default catalog. Kaleidoscope and Splash match pinned native factory
+  selection, modifiers and RNG vectors; all 161 relics and 27 solo Neow offers are
+  supported. Acquired cards retain their family through combat/run transformations.
+  [Evidence](evidence/foreign_acquisition_2026_09_19.md). Broader native interaction
+  composition and the Act 1 boundary comparison matrix remain open.
+
 - **2026-09-13 — solo Act 1 relic rules:** the audited 161-definition inventory
   now has explicit combat/run/acquisition rules, persistent counters and nested
   pickup choices. Generated runs use complete ordinary/merchant relic pools.
@@ -905,8 +912,8 @@ Dependencies and acceptance cases are in the linked task.
 ### HF-25 — Complete reachable relic content and interactions
 
 - **Solo Act 1 rules implemented:** 161 definitions in the pinned inventory;
-  160 available in the default catalog, with Kaleidoscope's implementation requiring
-  three installed foreign character pools. Combat/run hooks, nested acquisition,
+  161 supported in the default catalog, including Kaleidoscope with all four
+  complete foreign ordinary pools. Combat/run hooks, nested acquisition,
   counters, resource/shop/rest/reward/travel modifiers and relic enchantments are
   implemented. Remaining acceptance: complete dependent potion/curse/character
   catalogs, complete runtime acquisition eligibility and differential evidence.
@@ -972,7 +979,7 @@ Dependencies and acceptance cases are in the linked task.
 
 - **Act 1 implemented:** `neow_solo_all_unlocked_v2` generates two positive
   offers and one curse, including eligibility/exclusions and nested pickup work.
-  Default catalog supports 26/27 solo relics; Kaleidoscope awaits foreign card pools.
+  Default catalog supports all 27 solo relics, including Kaleidoscope.
   The old restricted and post-Ancient fixtures remain explicit. Unlock epochs,
   other characters/ancients and exact native RNG remain open.
   [Evidence](evidence/events_neow_2026_09_14.md).
@@ -1483,7 +1490,7 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
      pools and selection RNG now match actual native factory vectors, with all ten
      combat-generatable statuses and 18 curses executable; generated Stomp hooks
      and status/draw/selection restoration are covered. Foreign-character Splash
-     remains separate. [Transformation evidence](evidence/combat_transforms_2026_09_15.md).
+     is now enabled with the complete default catalog (HF-28 below). [Transformation evidence](evidence/combat_transforms_2026_09_15.md).
    - **Shuffle commands and Stomp entry implemented:** Bottled Potential's mixed
      piles use native StableShuffle; Stratagem precedes Abacus and resumes the
      triggering draw. Innate ordering/count composition and generated Stomp entry
@@ -1526,9 +1533,9 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
    batches through existing catalogs and owned continuations. Silent is available
    through `SILENT_CARDS`, Regent through `REGENT_CARDS`, Necrobinder through
    `NECROBINDER_CARDS`, and all four through the cumulative
-   `DEFECT_CARDS`. **All 320 ordinary cards are implemented. Native
-   Kaleidoscope/Splash acquisition is the next assignment.** Default acquisition
-   remains gated until its pool selection and RNG rules are verified.
+   `DEFECT_CARDS`. **All 320 ordinary cards and native Kaleidoscope/Splash acquisition are
+   implemented and enabled in `DEFAULT_CARDS`.** Ordinary Ironclad rewards and
+   shops keep their character pool.
 
    | Independently pickable implementation | Acceptance |
    | --- | --- |
@@ -1536,14 +1543,14 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
    | Regent family — implemented as an explicit catalog extension | All 80 ordinary solo cards, both levels, four starters and four generated cards; owned Stars, Forge/blade replays, minion transformations, ordered hooks and earned gold rewards. Native metadata plus source-backed interaction/JSON regressions. [Evidence](evidence/regent_cards_2026_09_15.md). |
    | Necrobinder family — implemented as an explicit catalog extension | All 80 ordinary solo cards, both levels, four starters, Soul and Sweeping Gaze; owned Osty, Doom, Souls, Ethereal hooks and permanent Scythe growth under Ironclad. Native metadata plus source-backed interaction/JSON regressions. [Evidence](evidence/necrobinder_cards_2026_09_19.md). |
    | Defect family — implemented as an explicit catalog extension | All 80 ordinary solo cards, both levels, four starters and Fuel; owned orb slots/order, five orb types, channel/evoke, Focus, Status generation hooks and permanent Genetic Algorithm growth under Ironclad. Native metadata plus source-backed interaction/JSON regressions. [Evidence](evidence/defect_cards_2026_09_19.md). |
-   | Kaleidoscope/Splash native acquisition | Once content dependencies are complete, match exact eligibility, native pool order, selection/upgrade rolls and RNG suffixes; acquire and play every offered definition. |
+   | Kaleidoscope/Splash acquisition — implemented | Native factories match 30 relic cases and ten Splash cases, with exact pools, offers, upgrades, reward modifiers and RNG suffixes. Every retained offer is acquired and played with JSON continuation; foreign transformations retain native family/order. [Evidence](evidence/foreign_acquisition_2026_09_19.md). |
 
-   Source inspection additionally found that Kaleidoscope requires all native
-   characters unlocked, shuffles the four foreign pools with Niche, and uses the
-   reward factory for each selected family. The existing custom-catalog fallback
-   (at least three foreign families and direct uniform card selection) is a fixture,
-   not verified native acquisition. Correct this when enabling complete catalogs;
-   do not enable Kaleidoscope merely by adding one card per family.
+   Kaleidoscope requires all native characters unlocked; complete default catalogs
+   model that declared context. Four pools use Niche shuffles and per-family native
+   reward-factory odds, followed by ordered singleton/group hooks. The old partial
+   family fallback is removed. Native factory agreement does not establish actual
+   card/selector execution or whole-run parity; the composition and completion
+   gates above/below remain necessary.
 4. **Act 1 completion gate:** run a declared seed/path matrix across all three
    bosses, events, shops, pickups and choices. Compare native boundary records;
    a synthetic victory or deterministic Python continuation alone is insufficient.

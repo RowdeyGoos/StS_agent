@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 import pytest
-from game.headless.cards.catalog import DEFAULT_CARDS, DEFECT_CARDS
+from game.headless.cards.catalog import DEFAULT_CARDS, IRONCLAD_CARDS, DEFECT_CARDS
 from game.headless.cards.defect import ORDINARY_IDS
 from game.headless.core.actions import PlayCard, ChooseCombatCard, ConfirmCombatSelection, EndTurn
 from game.headless.core.combat import CombatEngine
@@ -71,10 +71,11 @@ def settle(c):
 ROWS = json.loads((Path(__file__).parents[1]/'fixtures/headless_native_defect_vectors.json').read_text())['rows']
 
 
-def test_complete_native_family_is_explicit_and_default_pool_is_unchanged():
+def test_complete_native_family_is_explicit_and_enabled_in_default_catalog():
     assert len(ORDINARY_IDS) == 80
     assert set(ORDINARY_IDS) == {r['id'] for r in ROWS if r['rarity'] in ('Common','Uncommon','Rare')}
-    assert not set(ORDINARY_IDS) & {d.definition_id for d in DEFAULT_CARDS.definitions}
+    assert set(ORDINARY_IDS) <= {d.definition_id for d in DEFAULT_CARDS.definitions}
+    assert not set(ORDINARY_IDS) & {d.definition_id for d in IRONCLAD_CARDS.definitions}
 
 
 @pytest.mark.parametrize('row', [r for r in ROWS if r['rarity'] != 'Ancient'], ids=lambda r:r['id'])

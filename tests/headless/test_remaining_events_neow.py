@@ -117,7 +117,7 @@ def test_full_native_act1_event_inventory():
 
 @pytest.mark.parametrize("seed", range(30))
 def test_neow_offers_two_positive_one_curse_and_exclusions(seed):
-    offers = generate(GameRandomService(seed), ["kaleidoscope"])
+    offers = generate(GameRandomService(seed))
     assert len(set(offers)) == 3 and offers[-1] in CURSES
     assert not set(offers[:2]) & set(CURSES)
     assert EXCLUSIONS.get(offers[-1]) not in offers[:2]
@@ -131,7 +131,7 @@ def test_neow_offers_two_positive_one_curse_and_exclusions(seed):
 def covering_seeds():
     found = {}
     for seed in range(300):
-        for name in generate(GameRandomService(seed), ["kaleidoscope"]):
+        for name in generate(GameRandomService(seed)):
             found.setdefault(name, seed)
     return sorted(found.items())
 
@@ -264,8 +264,9 @@ def test_event_checkpoint_rejects_changed_result(mutation):
 
 
 def test_neow_cannot_restore_unsupported_kaleidoscope_offer():
+    from game.headless.cards.catalog import IRONCLAD_CARDS
     seed = next(s for s in range(100) if "kaleidoscope" in generate(GameRandomService(s)))
-    run = RunEngine.ironclad_act1(seed=seed, ancient_profile=PROFILE)
+    run = RunEngine.ironclad_act1(seed=seed, ancient_profile=PROFILE, cards=IRONCLAD_CARDS)
     baseline = saved(run)
     bad = deepcopy(baseline)
     a = bad["state"]["ancient_start"]

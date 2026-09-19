@@ -10,6 +10,7 @@ class CardState:
     turn_cost_change: int = 0
     combat_cost_change: int = 0
     free_this_turn: bool = False
+    star_free_this_turn: bool = False
     free_this_combat: bool = False
     turn_cost_override: int | None = None
     turn_cost_until_played: bool = True
