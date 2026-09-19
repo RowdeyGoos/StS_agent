@@ -86,7 +86,9 @@ class CardCatalog:
         return self
 
 
-IRONCLAD_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *EXTENDED_EVENTS, *COLORLESS, *EXTENDED, GIANT_ROCK, *(d for d in ANCIENT if d.pool in ('colorless','status'))))
+from game.headless.cards.hive import DEFINITIONS as HIVE
+
+IRONCLAD_CARDS = CardCatalog((*IRONCLAD, *HIVE, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *EXTENDED_EVENTS, *COLORLESS, *EXTENDED, GIANT_ROCK, *(d for d in ANCIENT if d.pool in ('colorless','status'))))
 
 # Explicit family subsets remain useful for restricted fixtures.
 from game.headless.cards.silent import DEFINITIONS as SILENT

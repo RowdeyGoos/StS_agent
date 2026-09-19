@@ -266,7 +266,8 @@ def start_turn(p, draw_count):
     if r.round_number:
         from game.headless.cards.event_effects import after_block_cleared
         after_block_cleared(p)
-    p.energy = (p.energy if r.round_number and has(p, "ice_cream") else 0) + p.energy_per_turn + r.powers.get("pyre", 0) + r.powers.get("friendship", 0) + r.powers.get("demesne", 0)
+    p.energy = (p.energy if r.round_number and has(p, "ice_cream") else 0) + p.energy_per_turn + r.powers.get("pyre", 0) + r.powers.get("friendship", 0) + r.powers.get("demesne", 0) - r.powers.get("waste_away", 0)
+    p.energy = max(0, p.energy)
     from game.headless.potions.powers import start_turn as potion_start
     draw_count = potion_start(p, draw_count)
     draw_count = relic_start(p, draw_count)
@@ -277,6 +278,7 @@ def start_turn(p, draw_count):
     from game.headless.powers.defect import start_turn as def_start
     draw_count = def_start(p, draw_count)
     draw_count += r.powers.pop("draw_next_turn", 0) + r.powers.get("tools_of_the_trade", 0)
+    draw_count = max(0, draw_count - r.powers.get("mind_rot", 0))
     p.cards_played_this_turn = 0
     r.player_side = True
     r.turn_ending = False

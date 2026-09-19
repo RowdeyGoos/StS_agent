@@ -141,6 +141,10 @@ class Player:
         source=None,
     ) -> int:
         """Apply incoming damage and return the HP damage taken."""
+        from game.headless.powers.hive import damage_multiplier
+        numerator, denominator = damage_multiplier(self, source)
+        if is_attack:
+            amount += self.rules.powers.get("tainted", 0)
         incoming_damage = (
             modify_attack_damage_for_statuses(
                 amount,
@@ -148,15 +152,15 @@ class Player:
                 attacker_statuses=attacker_statuses,
                 attacker_strength=attacker_strength,
                 extra_multiplier=(
-                    (1, 2)
+                    (numerator, denominator * 2)
                     if self.rules.powers.get("colossus")
                     and attacker_statuses is not None
                     and attacker_statuses.get("vulnerable")
-                    else (1, 1)
+                    else (numerator, denominator)
                 ),
             )
             if is_attack
-            else amount
+            else amount * numerator // denominator
         )
         from game.headless.relics.combat import owned, memory
         diadem = owned(self, "diamond_diadem")
@@ -179,6 +183,7 @@ class Player:
         damage = self.lose_hp(remaining, unblockable=False, attack=is_attack, source=source)
         if is_attack and source is not None:
             source.after_attack_hit(damage, pet_damage)
+            source.after_attack_blocked((blocked > 0 or self.block > 0) and damage == pet_damage == 0)
         if is_attack and self.is_alive and source is not None:
             for key, value in tuple(self.rules.powers.items()):
                 if not source.is_alive:

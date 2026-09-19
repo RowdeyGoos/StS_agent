@@ -76,6 +76,8 @@ class RunState:
     ancient_start: AncientStart | None = None
     event_combats: list[EventCombatRecord] = field(default_factory=list)
 
+    stolen_cards: list[Card] = field(default_factory=list)
+
     def allocate_item_id(self) -> str:
         result = f"run.item.{self.next_item_id}"
         self.next_item_id += 1
@@ -119,12 +121,12 @@ class RunState:
         if self.phase is RunPhase.COMBAT and self.relic_work:
             raise ValueError("Combat cannot own unfinished run relic acquisition.")
         from game.headless.core.card_state import CardState
-        if any(c.combat_state != CardState() for c in self.deck):
+        if any(c.combat_state != CardState() for c in (*self.deck, *self.stolen_cards)):
             raise ValueError('Permanent cards cannot retain transient combat modifiers.')
         if (self.phase is RunPhase.ACT_COMPLETE) != (self.act_completion is not None):
             raise ValueError("Act completion requires its terminal record.")
         if self.act_completion is not None and (not isinstance(self.act_completion, ActCompletion)
-                or type(self.act_completion.act) is not int or self.act_completion.act != 1
+                or type(self.act_completion.act) is not int or self.act_completion.act not in (1, 2, 3)
                 or not isinstance(self.act_completion.boss_encounter_id, str)
                 or self.combats_completed < 1):
             raise ValueError("Invalid act completion record.")
@@ -135,11 +137,11 @@ class RunState:
             raise ValueError("Invalid run HP.")
         if type(self.gold) is not int or self.gold < 0:
             raise ValueError("Invalid run gold.")
-        ids = [card.instance_id for card in self.deck]
+        ids = [card.instance_id for card in (*self.deck, *self.stolen_cards)]
         if any(not isinstance(i, str) or not i for i in ids) or len(ids) != len(set(ids)):
             raise ValueError("Persistent card identities must be present and unique.")
         from game.headless.enchantments.base import validate as validate_enchantment
-        for card in self.deck:
+        for card in (*self.deck, *self.stolen_cards):
             validate_enchantment(card, permanent=True)
             card.definition.spec_at(card.upgrade_level)
             if type(card.combats_seen) is not int or not 0 <= card.combats_seen < max(1, card.definition.combat_lifetime):

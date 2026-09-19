@@ -182,8 +182,14 @@ class CombatEngine:
         for enemy in self._living_enemies():
             enemy.before_side_start(False)
         self.player.rules.enemy_turn = {'limit': len(self.enemies), 'slot': 0, 'move': None, 'actions': []}
+        from game.headless.core.enemy_turn import turn_order
+        order = turn_order(self.enemies)
+        if order != list(range(len(self.enemies))):
+            self.player.rules.enemy_turn['order'] = order
         from game.headless.powers.silent import enemy_side_tasks
         tasks = enemy_side_tasks(self.player)
+        if any(getattr(e, "sandpit", 0) for e in self.enemies):
+            tasks.append(["hive_enemy_start"])
         if tasks:
             self.player.rules.enemy_turn["poison_start"] = True
             self.player.rules.enemy_turn["started"] = True
@@ -199,13 +205,13 @@ class CombatEngine:
         return self._continue_enemy_side()
 
     def _continue_enemy_side(self):
-        from game.headless.core.enemy_turn import begin, execute, paused
+        from game.headless.core.enemy_turn import begin, execute, paused, current_slot
         progress = self.player.rules.enemy_turn
         enemy_actions = progress['actions']
         details = {}
         progress.pop('poison_start', None)
         while progress['slot'] < progress['limit'] and not self.done:
-            slot = progress['slot']
+            slot = current_slot(progress)
             enemy = self.enemies[slot]
             if progress['move'] is None:
                 if not enemy.can_take_turn:
@@ -251,6 +257,9 @@ class CombatEngine:
                 after_owner_side_turn_end(enemy)
             from game.headless.powers.ironclad import after_enemy_end
             after_enemy_end(self.player)
+            self.player.rules.powers.pop("tainted", None)
+            for enemy in self.enemies:
+                enemy.prepare_next_turn()
             self.turn += 1
             for enemy in self._living_enemies():
                 enemy.before_side_start(True)

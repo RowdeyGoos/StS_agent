@@ -36,6 +36,8 @@ class Deck:
         self.in_play: list[Card] = []
         self.powers: list[Card] = []
         self.offered: list[Card] = []
+        self.original_ids = {c.instance_id for c in cards}
+        self.sequestered: list[Card] = []
         self.owner = None
         self.shuffle_draw_pile(initial=True)
 

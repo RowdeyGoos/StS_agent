@@ -5,6 +5,8 @@ from game.headless.core.resolution import push, drain
 
 
 def start(p, potion, target):
+    from game.headless.powers.hive import before_target
+    before_target(p, None if target is None else p.combat_enemies[target])
     r = p.rules
     identity = potion.instance_id
     r.potion_uses[identity] = dict(definition_id=potion.definition_id, target=target, effect_index=-1)

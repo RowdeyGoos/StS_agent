@@ -1,5 +1,6 @@
 """Bind an interrupted enemy move to its serialized execution continuation."""
 from dataclasses import asdict
+from game.headless.core.enemy_turn import current_slot
 from game.headless.monsters.base import Intent
 from game.headless.monsters.scripted import ScriptedEnemy
 
@@ -13,7 +14,7 @@ class InterruptibleEnemy(ScriptedEnemy):
     def capture_interrupted_move(self):
         p = self.combat_player
         progress = p.rules.enemy_turn if p is not None else None
-        if progress and progress['slot'] == p.combat_enemies.index(self) and progress['move'] is not None:
+        if progress and progress['move'] is not None and current_slot(progress) == p.combat_enemies.index(self):
             self.interrupted_intent = Intent(**progress['move']['intent'])
             self.move_interrupted = True
 
@@ -27,8 +28,8 @@ class InterruptibleEnemy(ScriptedEnemy):
     def validate_combat_context(self, player):
         if self.move_interrupted:
             progress = player.rules.enemy_turn
-            if (not progress or progress['slot'] != player.combat_enemies.index(self)
-                    or progress['move'] is None or progress['move']['hit'] <= 0
+            if (not progress or progress['move'] is None
+                    or current_slot(progress) != player.combat_enemies.index(self) or progress['move']['hit'] <= 0
                     or asdict(Intent(**progress['move']['intent'])) != asdict(self.interrupted_intent)):
                 raise ValueError('Unowned interrupted monster move.')
         elif self.interrupted_intent != Intent('stun', 0):

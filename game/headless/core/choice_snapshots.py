@@ -7,6 +7,9 @@ from game.headless.powers.ironclad import POWER_NAMES
 def valid_power(key, sequence):
     if not isinstance(key, str):
         return False
+    from game.headless.powers.hive import NAMES as HIVE_POWERS
+    if key in HIVE_POWERS:
+        return True
     from game.headless.potions.powers import NAMES as POTION_POWERS
     from game.headless.powers.silent import NAMES as SILENT_POWERS
     from game.headless.powers.regent import NAMES as REGENT_POWERS, INSTANCED as REGENT_INSTANCED
@@ -51,6 +54,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         expected_aux.add("feral")
     if "outbreak" in r.powers:
         expected_aux.add("outbreak")
+    expected_aux.update({"tender", "surrounded"} & r.powers.keys())
     for key in r.powers:
         if key.startswith(("monologue:", "orbit:")) or key == "void_form":
             expected_aux.add(key)
@@ -62,6 +66,10 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
             expected_aux.add(key + ".ready")
     if set(r.auxiliaries) - expected_aux:
         raise ValueError("Unowned auxiliary power counter.")
+    if 'surrounded' in r.powers and r.auxiliaries.get('surrounded') not in (0, 1):
+        raise ValueError('Invalid Surrounded facing.')
+    if 'tender' in r.powers and not 0 <= r.auxiliaries.get('tender', -1) <= p.cards_played_this_turn:
+        raise ValueError('Invalid Tender turn counter.')
     for key in r.powers:
         kind = name(key)
         if kind in ("automation", "panache", "the_bomb"):
@@ -83,7 +91,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     from game.headless.core.necrobinder_snapshots import CHOICES as NECRO_CHOICES, validate_selection as nec_selection
     from game.headless.core.regent_snapshots import CHOICES as REGENT_CHOICES, validate_selection as regent_selection
     if (
-        s["operation"] not in NECRO_CHOICES and s["operation"] not in REGENT_CHOICES and s["operation"] not in ("dual_wield", "dual_wield_up", "move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
+        s["operation"] not in NECRO_CHOICES and s["operation"] not in REGENT_CHOICES and s["operation"] not in ("hive_knowledge", "dual_wield", "dual_wield_up", "move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
         or s["destination"] not in ("hand", "draw_pile")
         or s["free"] not in ("", "free_this_turn", "free_until_played")
         or any(type(s[k]) is not int for k in ("minimum", "maximum"))
@@ -103,6 +111,10 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         or not set(s["selected"]) <= set(s["candidates"])
     ):
         raise ValueError("Invalid selection bounds.")
+    if s["operation"] == "hive_knowledge":
+        from game.headless.powers.hive import validate_choice
+        validate_choice(r, p, s, deferred=deferred)
+        return
     if s["operation"] in NECRO_CHOICES:
         nec_selection(r, p, s, deferred=deferred)
         return

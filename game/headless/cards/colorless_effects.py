@@ -122,7 +122,7 @@ class ColorlessOperation:
         elif op in ("fisticuffs", "omnislice", "hand_of_greed"):
             if target is None or not target.is_alive:
                 return
-            eligible = not target.statuses.get("minion") and not target.statuses.get("illusion")
+            eligible = target.allows_fatal
             from game.headless.potions.powers import begin_attack
             begin_attack(p, card)
             total = hit(p, card, target, extra=r.powers.pop("vigor", 0))

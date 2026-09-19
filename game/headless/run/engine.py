@@ -194,6 +194,8 @@ class RunEngine:
         self.state.pending = None
         self.state.phase = RunPhase.COMBAT
         self.state.active_encounter_id = encounter_id
+        if encounter_id is not None:
+            self.state.act_index = ENCOUNTERS[encounter_id].act - 1
         self.combat = combat
         self.sync_combat_loot()
         if combat.done:
@@ -214,10 +216,10 @@ class RunEngine:
             from game.headless.core.native_service import COMBAT_STREAMS
             combat.native_streams = {name:rng.stream(name) for name in COMBAT_STREAMS}
             combat.rng = combat.native_streams["monster_ai"]
-            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS, NATIVE_UNDERDOCKS_ENCOUNTERS
+            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS, NATIVE_UNDERDOCKS_ENCOUNTERS, NATIVE_HIVE_ENCOUNTERS
             import re
             from game.headless.encounters.randomness import EncounterRandom
-            native_type = next((key for key, value in {**NATIVE_OVERGROWTH_ENCOUNTERS, **NATIVE_UNDERDOCKS_ENCOUNTERS}.items()
+            native_type = next((key for key, value in {**NATIVE_OVERGROWTH_ENCOUNTERS, **NATIVE_UNDERDOCKS_ENCOUNTERS, **NATIVE_HIVE_ENCOUNTERS}.items()
                                 if ENCOUNTERS[value] is encounter_factory), None)
             if getattr(encounter_factory, "event_id", None) == "dense_vegetation":
                 native_type = "DenseVegetationEventEncounter"
@@ -242,6 +244,8 @@ class RunEngine:
 
     def sync_combat_loot(self):
         from game.headless.run.inventory import add_potion
+        from game.headless.encounters.theft import synchronize as sync_theft
+        sync_theft(self.state, self.combat.player)
         r = self.combat.player.rules
         from game.headless.relics.ancient_state import sync_cards
         sync_cards(self.state, self.combat.player)
@@ -286,6 +290,8 @@ class RunEngine:
         royalties = self.combat.player.rules.powers.get("royalties", 0)
         from game.headless.encounters.loot import capture as capture_loot
         encounter_loot = capture_loot(encounter_id, self.combat.enemies)
+        from game.headless.encounters.theft import finish as finish_theft
+        finish_theft(self.state, encounter_loot)
         if self.state.phase is RunPhase.ROUTE:
             choices = [c for c in self.state.deck if c.upgrade_level + 1 < len(c.definition.levels)]
             for _ in range(min(len(choices), self.combat.player.rules.powers.get("improvement", 0))):

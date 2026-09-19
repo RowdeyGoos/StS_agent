@@ -11,6 +11,7 @@ class EncounterDefinition:
     gold_range: tuple[int, int] = (10, 20)
     gives_relic: bool = False
     event_id: str | None = None
+    act: int = 1
 
     def __call__(self, rng):
         return self.factory(rng)

@@ -69,7 +69,10 @@ def resolve(p, identity, operation, destination, free):
     if card is None or p.combat_is_ending:
         p.deck.offered.clear()
         return
-    if operation in ("dual_wield", "dual_wield_up"):
+    if operation == "hive_knowledge":
+        from game.headless.powers.hive import choose_knowledge
+        choose_knowledge(p, card)
+    elif operation in ("dual_wield", "dual_wield_up"):
         from game.headless.cards.special import clone_to
         for _ in range(2 if operation.endswith("_up") else 1):
             clone_to(p, card, "hand")

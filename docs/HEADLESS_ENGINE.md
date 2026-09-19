@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v27 / run v40**.
+than being silently reinterpreted: current schemas are **combat v28 / run v41**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -191,7 +191,7 @@ potion rules are now additionally checked against direct factory execution.
 relic bags: shared-Ancient allocation, then each act's event shuffle, weak/normal/
 elite encounter draws, boss and Ancient selection. All three room sets are retained
 as plain `state.initialization` data, because their startup draws share `up_front`.
-Hive/Glory initialization does not enable their gameplay. The declared act sequence
+Hive encounters are available directly and in authored scenarios; these saved room sets do not enable generated Act 2/3 progression. The declared act sequence
 is **Overgrowth or Underdocks → Hive → Glory**, selected explicitly, solo, A0,
 all unlocked/all seen; the native lobby
 act picker and profile-dependent first-run overrides are outside this profile.
@@ -926,7 +926,7 @@ including the Slug and Seapunk families across the weak-to-normal boundary. Boss
 sampling uses Matriarch, Soul Fysh, Giant order, distinct from native discovery
 order. The selected act's event shuffle and encounters consume the same UpFront
 stream before Hive/Glory initialization. Those later room sets remain saved startup
-data without enabling later-act gameplay.
+data without enabling later-act map progression.
 
 The ten local events are Abyssal Baths, Drowning Beacon, Endless Conveyor, Punch Off,
 Spiraling Whirlpool, Sunken Statue, Sunken Treasury, Doors of Light and Dark, Trash
@@ -938,7 +938,7 @@ failed entries do not advance queues; successful event fights retain their separ
 history and do not consume ordinary hallway entries.
 
 `RunConfig.act`, `EncounterProgression.act`, map profile and seed-bound initialization
-must agree. Private run schema v40 saves these declarations and rejects mixed-act
+must agree. Private run schema v41 saves these declarations and rejects mixed-act
 queues, maps, bosses or event pools atomically. Golden Compass map replacement and
 Fur Coat marks keep the declared act and its encounter ownership.
 
@@ -963,6 +963,78 @@ The installed Neow-to-Underdocks demo ended in defeat after 117 commands with
 restore verification enabled. Independent semantic review, compilation and local
 documentation link/diff checks passed. Native oracle build took 1.25 seconds and
 reference execution 0.80 seconds; neither accessed profiles or launched gameplay.
+
+## Complete Hive Act 2 encounter roster at A0
+
+All 20 entries in pinned 0.107.1 `Hive.GenerateAllEncounters` are registered in
+[`encounters/hive.py`](../game/headless/encounters/hive.py). They support direct
+combats and authored encounter overrides, with Act 2 reward context and boss
+completion. Generated maps still end after Act 1; this does not add travel from
+Act 1 into Hive, its Ancient opening, or a generated Hive map.
+
+```python
+from game.headless.run.engine import RunEngine
+from game.headless.run.config import RunConfig
+
+run = RunEngine(seed=7, config=RunConfig())
+run.start_combat(encounter_id="hive_knowledge_demon")
+# Use legal_actions()/apply(); Knowledge Demon choices are ordinary combat actions.
+```
+
+| Kind | Encounter IDs (prefix `hive_`) |
+| --- | --- |
+| Hallways, including weak variants | `bowlbugs`, `bowlbugs_weak`, `chompers`, `exoskeletons`, `exoskeletons_weak`, `hunter_killer`, `louse_progenitor`, `mytes`, `ovicopter`, `slumbering_beetle`, `spiny_toad`, `the_obscura`, `thieving_hopper`, `tunneler` |
+| Elites | `decimillipede`, `entomancer`, `infested_prism` |
+| Bosses | `kaiser_crab`, `knowledge_demon`, `the_insatiable` |
+
+The rules include Hard to Kill's damage cap before Block, Rock's fully blocked
+attack stun, Tunneler's preserved Block and interrupt, Slumber/Plating wake timing,
+Louse Progenitor's once-per-card Curl Up, Tender's temporary stat loss, Personal
+Hive's Dazed insertion, and Vital Spark/Tainted skill afflictions. Decimillipede
+segments revive and only the final segment qualifies for Fatal effects.
+
+Ovicopter allocates stable egg identities, hatches them in place, and executes
+native egg-slot order without changing targeting indices. The Obscura's
+Parafright retains its slot through death and revival. Interrupted enemy attacks
+save their captured move and stop remaining hits if the actor dies, including
+reactive draw/selection pauses.
+
+Knowledge Demon offers three rounds of Disintegration versus Mind Rot, Sloth or
+Waste Away through owned, serializable card previews. The Insatiable inserts
+Frantic Escape into draw/discard, increases each copy's combat cost when played,
+and forces death when Sandpit expires. Kaiser Crab tracks facing, opposing-arm
+damage amplification and the surviving arm's Rage.
+
+Thieving Hopper selects an original draw/discard card using native rarity
+priority and generation RNG. Its exact permanent card is held outside the run
+deck during combat. Killing Hopper offers that same card as an optional reward;
+skipping it or allowing escape loses it. Ordinary gold rewards remain available
+on escape. Flutter reduces powered attack damage and interrupts the planned move
+after five damaging hits. Generated combat cards cannot be stolen.
+
+Private **combat v28 / run v41** add original-card ownership, a sequestered combat
+pile, permanent stolen-card ownership, Tainted flags, optional frozen enemy turn
+order and Hive continuations. Restore rejects missing power counters, forged
+monster choices, unowned stolen cards and misplaced turn-boundary tasks. Earlier
+private schemas are rejected rather than migrated.
+
+The read-only [native construction oracle](../tools/native_combat_oracle/README.md#hive-act-2-construction)
+retains 160 actual native cases: all 20 encounters × four seeds × two floor inputs.
+Python matches composition, raw construction HP, first move, RNG counters and next
+values. Native `AfterAddedToRoom` hooks are outside that oracle: adjusted
+Decimillipede HP, summon/revival, powers, choices, rewards and JSON continuation
+are covered by source inspection and synthetic regressions in
+[`test_hive.py`](../tests/headless/test_hive.py). This is bounded construction
+parity, not a native full-combat or full-Act-2 demonstration. Ascension scaling and
+multiplayer behavior remain outside the solo A0 implementation.
+
+Validation: the broad headless/simulation/backend/agent/CLI regression run passed
+5,059 tests in 332.75 seconds. The final installed wheel passed all 246 Hive tests
+in 32.22 seconds, including the final revival/order corrections, and its 222
+headless Python files matched the source bytes. Independent semantic review
+checked those corrections and snapshot rejection cases. An installed authored-route
+CLI run with Hive overrides verified restoration over 83 commands and ended in
+defeat; it is packaging evidence, not an Act 2 victory demonstration.
 
 ## Complete Underdocks encounter roster at A0
 
@@ -1562,7 +1634,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v40`, including configuration,
+Private run snapshots now use `headless_run_state_v41`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1573,7 +1645,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v27`, including the in-play
+Nested combat records now use `headless_combat_state_v28`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

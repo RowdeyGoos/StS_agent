@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 class CardState:
     is_dupe: bool = False
     smog: bool = False
+    tainted: bool = False
     extra_damage: int = 0
     cost_change: int = 0
     turn_cost_change: int = 0

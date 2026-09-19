@@ -21,8 +21,8 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v27"
-PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
+SCHEMA = "headless_combat_state_v28"
+PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered", "sequestered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
 
@@ -60,7 +60,7 @@ def restore_card(record, cards=DEFAULT_CARDS):
         raise ValueError('Invalid permanent card block.')
     card.permanent_block = growth
     values = record["combat_state"]
-    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('smog', 'is_dupe', 'free_this_turn', 'star_free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
+    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('tainted', 'smog', 'is_dupe', 'free_this_turn', 'star_free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
         raise ValueError('Invalid transient card state.')
     if any(type(values[k]) is not int for k in ('override_turn_baseline', 'override_combat_baseline', 'combat_override_baseline')):
         raise ValueError('Invalid cost override baselines.')
@@ -123,7 +123,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
                    "rules": asdict(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
-        "deck": {"rng": rng_ref(deck.rng), "niche_rng": rng_ref(deck.niche_rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "orb_rng": rng_ref(deck.orb_rng), "next_instance_id": deck._next_instance_id,
+        "deck": {"rng": rng_ref(deck.rng), "niche_rng": rng_ref(deck.niche_rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "orb_rng": rng_ref(deck.orb_rng), "original_ids": sorted(deck.original_ids), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
     }
@@ -184,6 +184,10 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             ids.extend(card.instance_id for card in restored)
         if len(ids) != len(set(ids)) or not set(ids) <= deck._allocated_ids:
             raise ValueError("Duplicate or unallocated card IDs in snapshot.")
+        deck.original_ids = set(source_deck["original_ids"])
+        if (not isinstance(source_deck["original_ids"], list) or len(deck.original_ids) != len(source_deck["original_ids"])
+                or not deck.original_ids <= deck._allocated_ids):
+            raise ValueError("Invalid original card identities.")
         player = Player(deck)
         for name in PLAYER_FIELDS:
             value = snapshot["player"][name]
@@ -248,6 +252,8 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         from game.headless.core.rule_snapshots import restore_rules
         player.catalog = cards
         restore_rules(snapshot["player"]["rules"], player)
+        from game.headless.encounters.theft import validate_combat
+        validate_combat(player)
         for enemy in enemies:
             enemy.validate_combat_context(player)
         player.catalog = cards

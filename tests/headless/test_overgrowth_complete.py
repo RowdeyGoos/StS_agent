@@ -54,13 +54,13 @@ def fight(encounter, cards=(), hp=10000, draw=0):
 def test_native_census_is_complete_and_only_a0_content_is_enabled():
     assert len(NATIVE_OVERGROWTH_ENCOUNTERS) == 22
     assert set(NATIVE_OVERGROWTH_ENCOUNTERS.values()) == {k for k, v in ENCOUNTERS.items() if k.startswith('overgrowth_')}
-    assert len(DEFAULT_MONSTERS) == 57  # Includes 21 new Underdocks types.
+    assert len(DEFAULT_MONSTERS) == 83  # Overgrowth, Underdocks, Hive and event monsters.
     assert sum(ENCOUNTERS[k].room_kind == 'elite' for k in NATIVE_OVERGROWTH_ENCOUNTERS.values()) == 3
     assert sum(ENCOUNTERS[k].room_kind == 'boss' for k in NATIVE_OVERGROWTH_ENCOUNTERS.values()) == 3
     with pytest.raises(ValueError): RunConfig(ascension=1)
 
 
-@pytest.mark.parametrize('encounter', tuple(k for k in ENCOUNTERS if not k.startswith('battleworn_dummy_')))
+@pytest.mark.parametrize('encounter', tuple(k for k in ENCOUNTERS if ENCOUNTERS[k].act == 1 and not k.startswith('battleworn_dummy_')))
 def test_every_encounter_runs_twelve_turns_and_restores_every_boundary(encounter):
     combat = fight(encounter)
     before = saved(combat)
