@@ -56,10 +56,10 @@ class EventProgression:
 
     def validate(self, state, graph):
         from game.headless.run.unknown_rooms import room_node
-        from game.headless.generation.room_pools import ACT_POOLS, SHARED_EVENTS
+        from game.headless.generation.room_pools import ACT1_POOLS, SHARED_EVENTS
 
         native = self.profile == NATIVE_PROFILE
-        pool = (*ACT_POOLS[0][3], *SHARED_EVENTS) if native else state.config.event_pool
+        pool = (*ACT1_POOLS[state.config.act][3], *SHARED_EVENTS) if native else state.config.event_pool
         if (
             self.profile not in (PROFILE, NATIVE_PROFILE)
             or native

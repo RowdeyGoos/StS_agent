@@ -4,7 +4,7 @@ Future room sets are plain initialization data. They advance the shared UpFront
 stream without pretending to implement later-act combat or event behavior.
 """
 
-from game.headless.generation.room_pools import ACT_POOLS, SHARED_EVENTS, SHARED_ANCIENTS, ENCOUNTER_TAGS
+from game.headless.generation.room_pools import campaign_pools, SHARED_EVENTS, SHARED_ANCIENTS, ENCOUNTER_TAGS
 
 PROFILE = "native_overgrowth_hive_glory_all_unlocked_v1"
 
@@ -33,18 +33,19 @@ def extend_queue(rng, queue, pool, count):
         queue.append(chosen)
 
 
-def generate(rng):
+def generate(rng, *, act="overgrowth"):
+    pools_by_act = campaign_pools(act)
     if not getattr(rng, "native", False):
         raise ValueError("Native initialization requires a native RNG owner.")
     remaining = list(SHARED_ANCIENTS)
     rng.shuffle("up_front", remaining)
     subsets = []
-    for _ in ACT_POOLS[1:]:
+    for _ in pools_by_act[1:]:
         count = rng.randint("up_front", 0, len(remaining))
         subsets.append(remaining[:count])
         remaining = remaining[count:]
     acts = []
-    for index, (name, rooms, weak_count, events, ancients, pools) in enumerate(ACT_POOLS):
+    for index, (name, rooms, weak_count, events, ancients, pools) in enumerate(pools_by_act):
         event_queue = list((*events, *SHARED_EVENTS))
         rng.shuffle("up_front", event_queue)
         normal, elites = [], []
@@ -64,7 +65,7 @@ def generate(rng):
                 counter=rng.request_count("up_front"),
             )
         )
-    return dict(profile=PROFILE, subsets=subsets, acts=acts)
+    return dict(profile=f"native_{act}_hive_glory_all_unlocked_v1", subsets=subsets, acts=acts)
 
 
 def validate(state):
@@ -77,7 +78,9 @@ def validate(state):
         raise ValueError("Fixture run cannot own native initialization.")
     rng = NativeRandomService(state.seed)
     populate(rng)
-    expected = generate(rng)
+    if state.config is None:
+        raise ValueError("Native initialization requires declared act settings.")
+    expected = generate(rng, act=state.config.act)
     if state.initialization != expected:
         raise ValueError("Native initialization differs from its seed and declared inputs.")
     if state.rng.request_count("up_front") < rng.request_count("up_front"):
@@ -85,7 +88,8 @@ def validate(state):
     progression = state.encounter_progression
     if progression is None:
         raise ValueError("Native initialization requires encounter progression.")
-    from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS as ids
+    from game.headless.encounters.progression import native_ids
+    ids = native_ids(state.config.act)
 
     act = expected["acts"][0]
     if (

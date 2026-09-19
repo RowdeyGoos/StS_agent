@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v39"
+SCHEMA = "headless_run_state_v40"
 
 
 def _restore_event_combat(record):
@@ -95,6 +95,10 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Run snapshot event definitions are incompatible.")
     try:
         payload = snapshot["state"]
+        if payload['config'] is not None and 'act' not in payload['config']:
+            raise ValueError('Missing declared act.')
+        if payload['encounter_progression'] is not None and 'act' not in payload['encounter_progression']:
+            raise ValueError('Missing encounter act owner.')
         config = None if payload["config"] is None else RunConfig(**payload["config"])
         if config is not None:
             for card_id in (*config.reward_cards, *config.boss_reward_cards):
@@ -216,7 +220,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
 
 def _validate_progression(state, graph, cards):
     event_combat.validate(state, graph, cards=cards)
-    from game.headless.map.overgrowth import PROFILE
+    from game.headless.map.act1 import PRUNED_PROFILES, profile_for
     if state.ancient_start is not None:
         if not isinstance(state.ancient_start, AncientStart):
             raise ValueError("Invalid Ancient start ownership.")
@@ -226,7 +230,7 @@ def _validate_progression(state, graph, cards):
     from game.headless.map.golden_path import PROFILE as GOLDEN
     from game.headless.relics.ancient_map import validate as validate_ancient_map
     validate_ancient_map(state, graph)
-    has_unknowns = graph is not None and graph.generation in (PROFILE, GOLDEN)
+    has_unknowns = graph is not None and graph.generation in (*PRUNED_PROFILES, GOLDEN)
     if has_unknowns != (state.unknown_rooms is not None):
         raise ValueError("Unknown room state requires its generated map profile.")
     if has_unknowns != (state.event_progression is not None):
@@ -244,6 +248,10 @@ def _validate_progression(state, graph, cards):
     if generated:
         if not isinstance(state.encounter_progression, EncounterProgression) or state.config is None:
             raise ValueError("Invalid generated run configuration.")
+        if state.encounter_progression.act != state.config.act:
+            raise ValueError('Encounter progression differs from declared act.')
+        if graph.generation not in (GOLDEN, profile_for(state.config.act), profile_for(state.config.act, base=True)):
+            raise ValueError('Generated map differs from declared act.')
         if getattr(state.rng, "native", False) and state.initialization is None:
             raise ValueError("Generated native run requires its initialization record.")
         if state.phase in (RunPhase.VICTORY, RunPhase.SLICE_COMPLETE):

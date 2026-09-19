@@ -16,6 +16,9 @@ from game.headless.events.progression import NATIVE_PROFILE
 VECTORS = json.loads(
     (Path(__file__).parents[1] / "fixtures/headless_native_initialization_vectors.json").read_text()
 )
+UNDERDOCKS_VECTORS = json.loads(
+    (Path(__file__).parents[1] / "fixtures/headless_underdocks_initialization_vectors.json").read_text()
+)
 KINDS = dict(
     Monster="combat",
     Elite="elite",
@@ -31,17 +34,18 @@ def saved(run):
     return json.loads(json.dumps(run.snapshot()))
 
 
-@pytest.mark.parametrize("row", VECTORS["rows"], ids=lambda r: r["seed"])
+@pytest.mark.parametrize("row", [*VECTORS["rows"], *UNDERDOCKS_VECTORS["rows"]], ids=lambda r: r["acts"][0]["act"] + "-" + r["seed"])
 def test_native_initialization_and_complete_map_match_actual_assembly(row):
     rng = NativeRandomService(row["seed"])
     populate(rng)
     assert rng.request_count("up_front") == row["afterBags"]
-    initial = generate(rng)
+    act = row["acts"][0]["act"]
+    initial = generate(rng, act=act)
     assert initial["subsets"] == row["subsets"]
     assert initial["acts"] == row["acts"]
     assert rng.request_count("up_front") == row["upFrontCounter"]
     assert rng.double("up_front") == row["upFrontSuffix"]
-    run = RunEngine.ironclad_act1(seed=row["seed"], ancient_profile=NEOW)
+    run = RunEngine.ironclad_act1(seed=row["seed"], act=act, ancient_profile=NEOW)
     graph = run.graph
     actual = [
         dict(
@@ -59,7 +63,7 @@ def test_native_initialization_and_complete_map_match_actual_assembly(row):
     assert run.state.rng.request_count("up_front") == row["upFrontCounter"]
     assert run.state.rng.request_count("act1.encounters") == run.state.rng.request_count("act1.events") == 0
     assert run.state.event_progression.profile == NATIVE_PROFILE
-    assert len(run.state.event_progression.queue) == 31
+    assert len(run.state.event_progression.queue) == (28 if act == "underdocks" else 31)
     before = saved(run)
     for _ in range(3):
         run.legal_actions()
@@ -141,3 +145,16 @@ def test_full_pass_fallback_can_now_resolve_later_act_content():
     queue=EventProgression(['fake_merchant'],profile=NATIVE_PROFILE)
     assert queue.pull('synthetic-event',conditions={'gold':0,'transformable_cards':0}) == 'fake_merchant'
     assert queue.cursor == 2 and queue.assignments == {'synthetic-event':'fake_merchant'}
+
+
+def test_underdocks_inputs_match_actual_pinned_model_metadata():
+    from game.headless.generation.room_pools import UNDERDOCKS, ENCOUNTER_TAGS
+    catalog = UNDERDOCKS_VECTORS['catalog'][0]
+    assert UNDERDOCKS_VECTORS['dllSha256'] == 'e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18'
+    name, rooms, weak_count, events, ancients, pools = UNDERDOCKS
+    assert (name, rooms, weak_count) == (catalog['act'], catalog['rooms'], catalog['weakCount'])
+    assert events == tuple(catalog['events']) and ancients == tuple(catalog['ancients'])
+    for i, (kind, weak) in enumerate([('Monster', True), ('Monster', False), ('Elite', False), ('Boss', False)]):
+        assert pools[i] == tuple(e['name'] for e in catalog['encounters'] if e['kind'] == kind and e['weak'] == weak)
+    for encounter in catalog['encounters']:
+        assert tuple(encounter['tags']) == ENCOUNTER_TAGS.get(encounter['name'], ())

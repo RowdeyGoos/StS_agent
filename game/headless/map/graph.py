@@ -50,7 +50,7 @@ class MapGraph:
         if visited != ids:
             raise ValueError("Map contains unreachable nodes.")
         if self.generation is not None:
-            from game.headless.map.overgrowth import validate_generated_map
+            from game.headless.map.act1 import validate_generated_map
             from game.headless.map.golden_path import PROFILE, validate
             validate(self) if self.generation == PROFILE else validate_generated_map(self)
 

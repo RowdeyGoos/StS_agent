@@ -136,6 +136,10 @@ SHARED_ANCIENTS = ("darv",)
 
 ENCOUNTER_TAGS = MappingProxyType(
     {
+        "CorpseSlugsNormal": (13,),
+        "CorpseSlugsWeak": (13,),
+        "SeapunkNormal": (12,),
+        "SeapunkWeak": (12,),
         "FlyconidNormal": (9, 5),
         "FuzzyWurmCrawlerWeak": (8,),
         "NibbitsWeak": (3,),
@@ -171,3 +175,27 @@ ACT1_INELIGIBLE_EVENTS = (
     "welcome_to_wongos",
     "war_historian_repy",
 )
+
+
+UNDERDOCKS = (
+    'underdocks', 15, 3,
+    ('abyssal_baths', 'drowning_beacon', 'endless_conveyor', 'punch_off',
+     'spiraling_whirlpool', 'sunken_statue', 'sunken_treasury',
+     'doors_of_light_and_dark', 'trash_heap', 'waterlogged_scriptorium'),
+    ('neow',),
+    (
+        ('CorpseSlugsWeak', 'SeapunkWeak', 'SludgeSpinnerWeak', 'ToadpolesWeak'),
+        ('CorpseSlugsNormal', 'CultistsNormal', 'FossilStalkerNormal',
+         'GremlinMercNormal', 'HauntedShipNormal', 'LivingFogNormal',
+         'PunchConstructNormal', 'SeapunkNormal', 'SewerClamNormal', 'TwoTailedRatsNormal'),
+        ('PhantasmalGardenersElite', 'SkulkingColonyElite', 'TerrorEelElite'),
+        ('LagavulinMatriarchBoss', 'SoulFyshBoss', 'WaterfallGiantBoss'),
+    ),
+)
+ACT1_POOLS = MappingProxyType({'overgrowth': ACT_POOLS[0], 'underdocks': UNDERDOCKS})
+
+
+def campaign_pools(first_act):
+    if first_act not in ACT1_POOLS:
+        raise ValueError('Unsupported Act 1 location.')
+    return (ACT1_POOLS[first_act], *ACT_POOLS[1:])

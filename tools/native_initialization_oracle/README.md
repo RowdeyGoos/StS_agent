@@ -11,7 +11,14 @@ dotnet /tmp/sts-init-oracle/bin/oracle/debug/oracle.dll /path/to/sts2.dll /path/
 ```
 
 The declared inputs are solo, all unlocked, no modifiers, and the fixed
-Overgrowth/Hive/Glory act sequence. This deliberately bypasses the game's
+Overgrowth/Hive/Glory act sequence by default. Pass `underdocks` as the optional
+third argument to use Underdocks/Hive/Glory instead:
+
+```sh
+dotnet /tmp/sts-init-oracle/bin/oracle/debug/oracle.dll /path/to/sts2.dll /path/to/dependencies underdocks > /tmp/underdocks-initialization.json
+```
+
+This deliberately bypasses the game's
 profile-dependent lobby act picker. Runtime gameplay for Hive and Glory is not
 part of the headless implementation.
 
@@ -20,7 +27,8 @@ actual assembly methods. The small shared-Ancient partition loop mirrors the
 inspected `RunManager.GenerateRooms` prelude using actual native RNG calls.
 The output records source pool metadata, all three generated room sets, final
 UpFront counters/suffixes and complete Act 1 maps/counters/suffixes for 13 seeds.
-The checked-in fixture preserves these values with one compact record per seed.
+The checked-in Overgrowth and Underdocks fixtures preserve these values with one
+compact record per seed. Underdocks output also records the verified DLL digest.
 
 Production `generation/room_pools.py` contains immutable metadata extracted from
 these native models. Future-act room sets consume startup randomness and are

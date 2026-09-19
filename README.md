@@ -59,7 +59,7 @@ resumable card choices. See [potion rules and scope](docs/HEADLESS_ENGINE.md#pot
 Generated Act 1 runs now default to the pinned native RNG algorithm and reward
 probability rules, including persistent relic grab bags and 13-slot merchants.
 Native startup queues and complete Act 1 maps match direct assembly reference
-seeds for the declared solo/all-unlocked Overgrowth start. Authored slices retain
+seeds for declared solo/all-unlocked Overgrowth and Underdocks starts. Authored slices retain
 their fixture generator. Runtime acquisition now applies native
 relic predicates, shop filters and marked card-reward pool rules. Encounter composition,
 HP, opening AI and initial/refill shuffle order also match native method fixtures.
@@ -137,8 +137,16 @@ sts-headless-play --route overgrowth-act1 --path right --elite underdocks_terror
 ```
 
 [Underdocks roster and rules](docs/HEADLESS_ENGINE.md#complete-underdocks-encounter-roster-at-a0).
-Procedural Underdocks maps and encounter queues are not implemented; the generated
-campaign still starts in Overgrowth.
+A complete generated Underdocks Act 1 route is available, with its native encounter
+queues, ten local events, eligible shared events and optional Neow opening:
+
+```bash
+sts-headless-play --route underdocks-generated --ancient neow --seed 2 --verify-restore
+```
+
+Programmatically, use `RunEngine.ironclad_act1(act="underdocks", seed=2)` and
+pass the Neow profile to include the opening choice. Overgrowth remains the default.
+[Generated Underdocks details](docs/HEADLESS_ENGINE.md#generated-underdocks-act-1).
 
 A generated full-length route is also available:
 
@@ -169,7 +177,7 @@ choose Hatch at a rest site to obtain Byrdpip and replace all eggs with Byrd Swo
 Egg/Swoop transformations use the full 53-card single-player colorless pool.
 See [Nest and hatch evidence](docs/evidence/byrdonis_nest_2026_09_13.md). Add `--ancient neow` for randomized two-positive/one-curse Neow offers and nested pickup choices;
 omit it for the post-Ancient fixture start. The generated catalog now includes
-all 21 normally Act-1-eligible events. The [full solo event roster](docs/HEADLESS_ENGINE.md#all-solo-events-across-acts) is also implemented for authored scenarios: 58 regular events and all eight Ancients, including Neow. This includes event combats, Crystal Sphere, Fake Merchant, Tinker Time and their card/relic rules; generated campaign progression still stops after Act 1. Neow supports all 27 solo offers in the default catalog, including Kaleidoscope.
+all 21 normally eligible Overgrowth events (18 for Underdocks). The [full solo event roster](docs/HEADLESS_ENGINE.md#all-solo-events-across-acts) is also implemented for authored scenarios: 58 regular events and all eight Ancients, including Neow. This includes event combats, Crystal Sphere, Fake Merchant, Tinker Time and their card/relic rules; generated campaign progression still stops after Act 1. Neow supports all 27 solo offers in the default catalog, including Kaleidoscope.
 See [foreign acquisition evidence](docs/evidence/foreign_acquisition_2026_09_19.md) and
 [events and Neow evidence](docs/evidence/events_neow_2026_09_14.md).
 With the full Ironclad pool, the simple demo can lose before the boss. [Generated route details](docs/HEADLESS_ENGINE.md#generated-full-length-overgrowth-route).

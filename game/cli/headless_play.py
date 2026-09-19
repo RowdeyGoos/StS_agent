@@ -94,13 +94,13 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
 def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="first-slice", path="left", boss=None, elite=None, hallway=None, ancient=None):
     if path not in ("left", "right"):
         raise ValueError("Unknown demo path preference.")
-    if ancient not in (None, "neow") or ancient is not None and route != "overgrowth-generated":
+    if ancient not in (None, "neow") or ancient is not None and route not in ("overgrowth-generated", "underdocks-generated"):
         raise ValueError("Neow start requires the generated Act 1 route.")
-    if route == "overgrowth-generated":
+    if route in ("overgrowth-generated", "underdocks-generated"):
         if any(value is not None for value in (boss, elite, hallway)):
             raise ValueError("Generated routes select encounters from owned queues.")
         from game.headless.run.ancient import PROFILE as ANCIENT_PROFILE
-        engine = RunEngine.ironclad_act1(seed=seed, ancient_profile=ANCIENT_PROFILE if ancient else None)
+        engine = RunEngine.ironclad_act1(seed=seed, act=route.removesuffix("-generated"), ancient_profile=ANCIENT_PROFILE if ancient else None)
     else:
         engine = RunEngine.ironclad_slice(seed=seed, route=route, boss=boss, elite=elite, hallway=hallway)
     trace = []
@@ -131,7 +131,7 @@ def main(argv=None):
                             help="Replace this encounter on the authored Act 1 route.")
     parser.add_argument("--ancient", choices=("neow",), help="Begin generated Act 1 with the restricted Neow pickup choices.")
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--route", choices=(*ROUTES, "overgrowth-generated"), default="first-slice")
+    parser.add_argument("--route", choices=(*ROUTES, "overgrowth-generated", "underdocks-generated"), default="first-slice")
     parser.add_argument("--path", choices=("left", "right"), default="left",
                         help="Demo preference for the first or last available branch.")
     parser.add_argument("--rest-choice", choices=("rest", "smith"), default="smith")
@@ -140,8 +140,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     engine, trace = play_slice(seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path, boss=args.boss, elite=args.elite, hallway=args.hallway, ancient=args.ancient)
     state = engine.state
-    print(json.dumps({"scope": "restricted_ironclad_a0_generated_act1" if args.route == "overgrowth-generated" else ("restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route")),
+    print(json.dumps({"scope": "restricted_ironclad_a0_generated_act1" if args.route in ("overgrowth-generated", "underdocks-generated") else ("restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route")),
                       "map_profile": engine.graph.generation,
+                      "act": state.config.act,
                       "ancient_start": None if state.ancient_start is None else asdict(state.ancient_start),
                       "event_profile": None if state.event_progression is None else state.event_progression.profile,
                       "rooms_visited": len(state.visited_nodes),
