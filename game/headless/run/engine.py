@@ -209,10 +209,10 @@ class RunEngine:
             from game.headless.core.native_service import COMBAT_STREAMS
             combat.native_streams = {name:rng.stream(name) for name in COMBAT_STREAMS}
             combat.rng = combat.native_streams["monster_ai"]
-            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS
+            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS, NATIVE_UNDERDOCKS_ENCOUNTERS
             import re
             from game.headless.encounters.randomness import EncounterRandom
-            native_type = next((key for key, value in NATIVE_OVERGROWTH_ENCOUNTERS.items()
+            native_type = next((key for key, value in {**NATIVE_OVERGROWTH_ENCOUNTERS, **NATIVE_UNDERDOCKS_ENCOUNTERS}.items()
                                 if ENCOUNTERS[value] is encounter_factory), None)
             if getattr(encounter_factory, "event_id", None) == "dense_vegetation":
                 native_type = "DenseVegetationEventEncounter"
@@ -279,6 +279,8 @@ class RunEngine:
         undamaged = lamp is not None and not memory(self.combat.player, lamp).get("damaged", False)
         extra_cards = self.combat.player.rules.extra_card_rewards
         royalties = self.combat.player.rules.powers.get("royalties", 0)
+        from game.headless.encounters.loot import capture as capture_loot
+        encounter_loot = capture_loot(encounter_id, self.combat.enemies)
         if self.state.phase is RunPhase.ROUTE:
             choices = [c for c in self.state.deck if c.upgrade_level + 1 < len(c.definition.levels)]
             for _ in range(min(len(choices), self.combat.player.rules.powers.get("improvement", 0))):
@@ -306,7 +308,7 @@ class RunEngine:
                 resume(self.state, self.cards)
             elif self.state.config is not None:
                 from game.headless.run.rewards import begin_combat_rewards
-                begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged, extra_cards=extra_cards, royalties=royalties)
+                begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged, extra_cards=extra_cards, royalties=royalties, encounter_loot=encounter_loot)
 
     def available_nodes(self) -> tuple[str, ...]:
         self.state.require_between_rooms()

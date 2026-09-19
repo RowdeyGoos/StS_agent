@@ -53,10 +53,10 @@ def fight(encounter, cards=(), hp=10000, draw=0):
 
 def test_native_census_is_complete_and_only_a0_content_is_enabled():
     assert len(NATIVE_OVERGROWTH_ENCOUNTERS) == 22
-    assert set(NATIVE_OVERGROWTH_ENCOUNTERS.values()) == {k for k, v in ENCOUNTERS.items() if v.event_id is None}
-    assert len(DEFAULT_MONSTERS) == 36  # 29 Overgrowth, six event types, synthetic SimpleEnemy.
-    assert sum(e.room_kind == 'elite' for e in ENCOUNTERS.values()) == 3
-    assert sum(e.room_kind == 'boss' for e in ENCOUNTERS.values()) == 3
+    assert set(NATIVE_OVERGROWTH_ENCOUNTERS.values()) == {k for k, v in ENCOUNTERS.items() if k.startswith('overgrowth_')}
+    assert len(DEFAULT_MONSTERS) == 57  # Includes 21 new Underdocks types.
+    assert sum(ENCOUNTERS[k].room_kind == 'elite' for k in NATIVE_OVERGROWTH_ENCOUNTERS.values()) == 3
+    assert sum(ENCOUNTERS[k].room_kind == 'boss' for k in NATIVE_OVERGROWTH_ENCOUNTERS.values()) == 3
     with pytest.raises(ValueError): RunConfig(ascension=1)
 
 

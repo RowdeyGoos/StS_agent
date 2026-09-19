@@ -33,8 +33,9 @@ class OstyAttack:
         slot = None if target is None else p.combat_enemies.index(target)
         # Freeze expressions once per command, before a multihit's summon hooks.
         amount = self.damage(p, card)
-        push(p, *[['osty_hit', card.instance_id, slot, self.all_enemies, self.random, amount] for _ in range(hits)],
-             ['osty_after', card.instance_id, self.after])
+        from game.headless.core.enemy_lifecycle import attack_boundary
+        push(p, *attack_boundary(p, card, before=True), *[['osty_hit', card.instance_id, slot, self.all_enemies, self.random, amount] for _ in range(hits)],
+             *attack_boundary(p, card, before=False), ['osty_after', card.instance_id, self.after])
 
 
 def is_osty_attack(card):

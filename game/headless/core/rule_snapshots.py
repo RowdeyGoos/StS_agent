@@ -8,6 +8,7 @@ from game.headless.powers.colorless import NAMES, INSTANCED, name
 from game.headless.core.choice_snapshots import validate_selection, valid_power
 
 TASK_ARITIES = {
+    "begin_card_attack": 1, "end_card_attack": 1, "monster_death": 1,
     "ancient_preplay": 0, "ancient_mittens": 1, "ancient_strength": 1, "ancient_earring": 2,
     "end_hand_card": 1, "hand_draw": 1,
     "potion_effect": 2,
@@ -147,8 +148,16 @@ def restore_rules(record, player):
             "stage",
             "silent_before", "regent_before", "star_value", "stars_spent", "nec_before", "nec_first_attack", "nec_banshees", "def_before", "def_feral",
         }
-        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification", "echo_kills", "forge_amount", "nec_misery", "def_scrape"} != required:
+        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification", "echo_kills", "forge_amount", "nec_misery", "def_scrape", "enemy_attack"} != required:
             raise ValueError("Invalid play frame.")
+        if 'enemy_attack' in frame:
+            results = frame['enemy_attack']
+            if (not isinstance(results, dict) or any(
+                    not isinstance(slot, str) or not slot.isdigit()
+                    or str(int(slot)) != slot or not 0 <= int(slot) < len(player.combat_enemies)
+                    or not player.combat_enemies[int(slot)].TRACKS_CARD_ATTACKS
+                    or type(amount) is not int or amount < 0 for slot, amount in results.items())):
+                raise ValueError('Invalid owned attack results.')
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
             or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "energy_value", "remaining", "rupture"))
@@ -275,6 +284,10 @@ def restore_rules(record, player):
             raise ValueError("Invalid random attack.")
         if op == "after_card_power" and not valid_power(args[1], r.power_sequence):
             raise ValueError("Invalid card hook.")
+        if op in ('begin_card_attack', 'end_card_attack') and args[0] not in r.plays:
+            raise ValueError('Unowned card attack boundary.')
+        if op == 'monster_death' and (type(args[0]) is not int or not 0 <= args[0] < len(player.combat_enemies) or not getattr(player.combat_enemies[args[0]], 'death_pending', False) or all_tasks.count(task) != 1):
+            raise ValueError('Invalid monster death continuation.')
         if op == "selected" and (
             args[0] not in player.deck._allocated_ids
             or args[0] in r.plays
@@ -335,10 +348,21 @@ def restore_rules(record, player):
             raise ValueError("Invalid queued flag.")
         if op == "generate" and any(type(v) is not bool for v in args[1:]):
             raise ValueError("Invalid generation flags.")
+    for slot, enemy in enumerate(player.combat_enemies):
+        if getattr(enemy, 'death_pending', False) and all_tasks.count(['monster_death', slot]) != 1:
+            raise ValueError('Missing owned monster death continuation.')
     if end_hand_ids != r.end_hand_remaining:
         raise ValueError("Missing end-of-hand continuation.")
     for identity, frame in r.plays.items():
         tasks = work[frame["context"]]
+        attack_open = 'enemy_attack' in frame
+        for task in tasks:
+            if task[0] in ('begin_card_attack', 'end_card_attack') and task[1] == identity:
+                if (task[0] == 'begin_card_attack') == attack_open:
+                    raise ValueError('Unbalanced owned attack continuation.')
+                attack_open = not attack_open
+        if attack_open:
+            raise ValueError('Missing owned attack completion.')
         control = [
             t
             for t in tasks

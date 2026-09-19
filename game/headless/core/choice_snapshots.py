@@ -56,6 +56,8 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
             expected_aux.add(key)
         if name(key) in ("automation", "panache", "the_bomb", "toric_toughness"):
             expected_aux.add(key)
+        if key == "smoggy":
+            expected_aux.add("smoggy.ready")
         if name(key) == "panache":
             expected_aux.add(key + ".ready")
     if set(r.auxiliaries) - expected_aux:

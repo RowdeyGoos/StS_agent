@@ -43,7 +43,10 @@ def vantom_encounter(rng):
 
 from game.headless.encounters.extended_events import ENCOUNTERS as EXTENDED_EVENTS
 
+from game.headless.encounters.underdocks import ENCOUNTERS as UNDERDOCKS, NATIVE_UNDERDOCKS_ENCOUNTERS
+
 ENCOUNTERS = MappingProxyType({
+    **UNDERDOCKS,
     **EXTENDED_EVENTS,
     "dense_vegetation_event": EncounterDefinition(dense_vegetation, event_id="dense_vegetation"),
     "overgrowth_shrinker": EncounterDefinition(partial(solo, ShrinkerBeetle)),

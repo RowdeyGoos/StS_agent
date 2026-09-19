@@ -9,7 +9,8 @@ WEAK = tuple(NATIVE_OVERGROWTH_ENCOUNTERS[n] for n in (
     "FuzzyWurmCrawlerWeak", "NibbitsWeak", "ShrinkerBeetleWeak", "SlimesWeak"))
 NORMAL = tuple(name for native, name in NATIVE_OVERGROWTH_ENCOUNTERS.items()
                if ENCOUNTERS[name].room_kind == "combat" and name not in WEAK)
-ELITES = tuple(name for name, definition in ENCOUNTERS.items() if definition.room_kind == "elite")
+ELITES = tuple(name for name, definition in ENCOUNTERS.items()
+               if name in NATIVE_OVERGROWTH_ENCOUNTERS.values() and definition.room_kind == "elite")
 BOSSES = ("overgrowth_vantom", "overgrowth_ceremonial_beast", "overgrowth_the_kin")
 TAGS = MappingProxyType({
     "overgrowth_nibbit": frozenset({3}), "overgrowth_shrinker": frozenset({4}),

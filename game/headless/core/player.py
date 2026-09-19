@@ -170,11 +170,15 @@ class Player:
         self.block -= blocked
         from game.headless.powers.damage import resolve_unblocked_damage
         remaining = incoming_damage - blocked
+        pet_damage = 0
         if is_attack:
             from game.headless.core.osty import lose_hp as osty_lose_hp
-            remaining -= osty_lose_hp(self, remaining)
+            pet_damage = osty_lose_hp(self, remaining)
+            remaining -= pet_damage
         remaining = resolve_unblocked_damage(self.statuses, remaining)
         damage = self.lose_hp(remaining, unblockable=False, attack=is_attack, source=source)
+        if is_attack and source is not None:
+            source.after_attack_hit(damage, pet_damage)
         if is_attack and self.is_alive and source is not None:
             for key, value in tuple(self.rules.powers.items()):
                 if not source.is_alive:

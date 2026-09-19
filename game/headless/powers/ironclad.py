@@ -4,7 +4,7 @@ from game.headless.core.resolution import push, drain
 
 POWER_NAMES = frozenset(
     (
-        "aggression", "curious", "improvement", "hello_world", "rebound",
+        "smoggy", "aggression", "curious", "improvement", "hello_world", "rebound",
         "confused",
         "barricade",
         "colossus",

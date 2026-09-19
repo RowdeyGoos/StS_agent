@@ -51,6 +51,8 @@ END_HAND_CURSES = ("debt", "decay", "doubt", "regret", "shame", "bad_luck")
 
 
 def can_play(player, card=None, *, auto=False):
+    if card is not None and card.combat_state.smog:
+        return False
     from game.headless.relics.combat import owned, memory
     if card is not None and card.definition.definition_id == "clash" and any(c.spec.kind != "attack" for c in player.hand):
         return False

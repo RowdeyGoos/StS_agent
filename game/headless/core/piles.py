@@ -51,6 +51,8 @@ def after_generated_entry(player, card, *, is_clone=False, generated=True):
     # fresh instance enters a combat pile; ordinary pile moves/clones skip this.
     # Both generation and transformation record CardGenerated history. Only
     # generation invokes AfterCardGeneratedForCombat (Arsenal/Pillar).
+    from game.headless.powers.underdocks import after_entry
+    after_entry(player, card)
     player.rules.generated_combat += 1
     from game.headless.powers.silent import entered
     entered(player, card, is_clone=is_clone)

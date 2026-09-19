@@ -88,6 +88,9 @@ class CombatEngine:
             if memory(self.player, coat)["active"]:
                 for enemy in self.enemies:
                     enemy.hp = 1
+        for enemy in self.enemies:
+            enemy.after_joining_combat(self.player)
+            enemy.before_side_start(True)
         self.player.start_turn(draw_count=self.cards_per_turn)
         self._refresh_persistent_statuses()
         self._check_terminal()
@@ -159,6 +162,8 @@ class CombatEngine:
         from game.headless.powers.necrobinder import end_player
         end_player(self.player)
         after_owner_side_turn_end(self.player)
+        for enemy in self._living_enemies():
+            enemy.after_player_side_end()
         self.player.rules.player_side = False
         self.player.rules.turn_ending = False
         self._refresh_persistent_statuses()
@@ -168,10 +173,14 @@ class CombatEngine:
         from game.headless.relics.ancient_combat import extra_turn
         if extra_turn(self.player):
             self.turn += 1
+            for enemy in self._living_enemies():
+                enemy.before_side_start(True)
             self.player.start_turn(draw_count=self.cards_per_turn)
             self._refresh_persistent_statuses()
             self._check_terminal()
             return CombatResult(self.done, self.winner, {"enemy_actions": []})
+        for enemy in self._living_enemies():
+            enemy.before_side_start(False)
         self.player.rules.enemy_turn = {'limit': len(self.enemies), 'slot': 0, 'move': None, 'actions': []}
         from game.headless.powers.silent import enemy_side_tasks
         tasks = enemy_side_tasks(self.player)
@@ -213,6 +222,7 @@ class CombatEngine:
             from game.headless.monsters.base import Intent
             executed = Intent(**progress['move']['intent'])
             enemy_actions.append({'enemy_index': slot, 'enemy_name': enemy.name, 'intent': executed.as_dict()})
+            enemy.finish_move()
             progress['slot'] += 1
             progress['move'] = None
             if self.done:
@@ -237,10 +247,13 @@ class CombatEngine:
             for enemy in self._living_enemies():
                 enemy.statuses.after_enemy_side_turn_end()
                 enemy.statuses.decrement("strangle", enemy.statuses.get("strangle"))
+                enemy.after_side_end()
                 after_owner_side_turn_end(enemy)
             from game.headless.powers.ironclad import after_enemy_end
             after_enemy_end(self.player)
             self.turn += 1
+            for enemy in self._living_enemies():
+                enemy.before_side_start(True)
             self.player.start_turn(draw_count=self.cards_per_turn)
             self._refresh_persistent_statuses()
             self._check_terminal()
