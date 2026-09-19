@@ -1,15 +1,27 @@
 # Current unified release
 
-[bridge.json](bridge.json) binds accepted release `cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0` to 359 exact source/test inputs captured at build time from the working checkout based on `7334873`. The manifest retains that original build provenance after commit.
+This directory owns the **accepted artifact identity and validation binding**.
+[Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns the
+latest operational result, installation record and capability limits;
+[bridge usage](../../README.md) owns build/install/client/cleanup commands.
 
-Terminal Fake Lee’s Waffle collection now verifies exact ten-percent healing, rounded down and capped at maximum HP. Maximum HP, gold, deck and surviving inventory remain checked. After native reward completion frees its button, the reader uses the retained reward and exact claimed model while requiring the original terminal overlay. Ready schema 6 publishes and binds `heal_amount`; the maintained Python client verifies the effect and preserves older schema semantics.
+| Record | Meaning |
+| --- | --- |
+| [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
+| [validation.json](validation.json) | Accepted validation and retained live/cleanup evidence bindings |
 
-Independent semantic review passed, including pinned native healing, model-key conversion and terminal-screen lifecycle inspection. Focused native/client/codec/unified/socket checks passed in 192.284 seconds, including 11,432 native checks and both card policies over the shared socket. All **71 release groups passed in 262.45 seconds**, including reproducible production build, package and owned installation/cleanup fixtures. See [validation.json](validation.json).
+Manifest SHA-256:
+`cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0`.
+It binds 359 exact source/test inputs captured from the working checkout based on
+`7334873`. That original build provenance is retained after the implementation
+commit `cd3dc76`; documentation edits do not repin the manifest.
 
-Current installation: absent after normal quit, stopped-process/closed-listener verification and exact owned quarantine/purge. The latest batch passed Dummy Setting2 victory, two native automatic upgrades, resumption/Proceed/map and next-room entry (9 accepted/reconciled). Revised native final-act setup reached Architect, but the bridge’s initial read returned `unsupported_state` with zero actions; exact predicate unresolved and terminal win untested. Queue: `/private/tmp/sts-dummy-upgrade-architect-live-20260913.json`.
+The accepted gate passed **71 groups in 262.450 seconds**, including reproducible
+production build, package and owned installation/cleanup checks. Independent
+semantic review and focused native/client/codec/unified/socket checks preceded it
+(11,432 native checks; 192.284 seconds). The release includes the exact terminal
+Fake Lee’s Waffle healing and freed reward-button reconciliation corrections.
 
-The preceding Merchant batch completed normal quit, stopped-process/closed-listener verification and exact owned quarantine/purge. This release passed Merchant Foul Potion entry, combat, all seven assisted relic pickups (Waffle HP33→41), Proceed, actionable map and next native room:20 accepted/reconciled actions in27.105 seconds. Native setup collected ordinary gold/potion/card rewards before the first core read; the original ten-entry screen remains outside this proof. Architect was deferred in that batch; the subsequent setup and initial-read failure are recorded above. Queue: `/private/tmp/sts-merchant-healing-live-20260913.json`.
-
-The previous release `593fed9a09e7a9ee69c73903dfbdc9dbdc1f28d55f8bb12b3556c4e3563851d2` owns the failed seventh pickup and earlier live passes. Its manifest/evidence are retained at `/private/tmp/sts-healing-previous-release-593fed9a`, package at `/private/tmp/sts-unified-bridge-release-retained-593fed9a`. Original failed counts and cleanup remain unchanged in the [live evidence](../../../../docs/evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md).
-
-[Current status](../../../../docs/STATUS.md) owns remaining limits; the [bridge guide](../../README.md) describes usage.
+The [September 12–13 ledger](../../../../docs/evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md)
+retains original failed attempts and later passes under their own releases.
+Earlier manifests and test counts are not evidence for a different artifact.

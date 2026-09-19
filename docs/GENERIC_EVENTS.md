@@ -1,10 +1,23 @@
-# Generic event development
+# Generic event contracts
 
-[Current status](STATUS.md) owns supported capabilities and latest
-evidence. [AGENTS.md](../AGENTS.md) owns the streamlined workflow.
-This document describes the architecture and next acceptance case, not campaign history.
+This is the technical reference for the **current shared event mechanisms**.
+[Status](STATUS.md) owns supported/unsupported behavior and current live-test gaps;
+[caller evidence](EVENT_COVERAGE.md) links dated results. No section here is a test
+queue or a new release claim. Historical versioned contracts keep their original
+semantics; extensions below apply only to the named versions/contexts.
 
-## Implemented architecture
+- [Ownership and option pages](#ownership-and-option-pages)
+- [Card selectors and deck effects](#card-selectors-and-deck-effects)
+- [Event rewards and offers](#event-rewards-and-offers)
+- [Event combat](#event-combat)
+- [Terminal combat rewards](#terminal-combat-rewards)
+- [Custom screens and endings](#custom-screens-and-endings)
+
+## Ownership and option pages
+
+<a id="implemented-architecture"></a>
+
+### Parent and child ownership
 
 Handle shared interactions using the rules the game supplies. A new event using
 a supported interaction does not need an event-name registration. Event names
@@ -18,8 +31,7 @@ identity. The child advertises legal actions; a replaceable host provider choose
 one. The adapter rechecks identity before native input, verifies preview/effect
 completion, then resumes the parent through Proceed.
 
-This two-stage admission is implemented. Do not restart discovery design from
-the old proposals. G7 and inherited child contracts describe exact semantics;
+G7 and inherited child contracts describe exact two-stage admission semantics;
 a parent action may already have effects before an unsupported child appears.
 Preserve cumulative child completion independently of the latest parent's effect label.
 
@@ -33,7 +45,81 @@ parent effects or a fresh core map decision. The shared client's `event-map`
 flow separately checks that core decision and preserves the original event summary
 on success or failure. See the [bridge guide](../bridge/Sts2AgentBridge/README.md).
 
-## Implemented: appended cards before a selector
+<a id="implemented-repeated-ordinary-option-pages"></a>
+
+### Repeated ordinary option pages
+
+The parent can revisit option keys and accept identical keys/text on consecutive
+pages. Pinned `AbyssalBaths.Linger` allocates new options, and the ordinary
+`NEventRoom.SetOptions` path clears and rebuilds the native option controls.
+Those control identities establish a new presentation; text or flag changes alone
+do not. The owned `Chosen` task must succeed and child/overlay work must settle
+before an ordinary transition reconciles. All controls on a dispatched page,
+including unchosen ones, are retired for the session. A page retaining any retired
+control waits within the existing pending-read bound and cannot receive input.
+
+Each reconciled choice advances the decision identity. The shared host reserves
+that decision rather than the localization key, while retaining receipt/history
+checks and replay rejection. Read/apply identity and legality revalidation, danger
+masking, 12 parent actions, 52 total actions and all existing read/time bounds
+remain. This is an expansion of admitted native behavior with the same wire
+shape and decision/action semantics; repeated pages require the updated bundled
+host. An `option_transition` verifies callback/page progress, not arbitrary HP or
+gold effects. No uncertain action is retried.
+
+<a id="implemented-ancient-dialogue-and-optional-selections"></a>
+
+### Ancient dialogue and optional selections
+
+The shared parent admits the pinned `NAncientEventLayout` alongside ordinary
+`NEventLayout`. While native dialogue remains, it exposes one `choose:0` action
+with text “Continue dialogue”. This emits the owned dialogue hitbox's native
+Released signal once. Completion requires exactly one line advancement on the
+same layout, event, hitbox and dialogue list with unchanged line identities.
+Hidden or disabled input waits; replaced objects, changed lines, jumps, exceptions
+and exhausted waits stop the session. There is no fabricated Chosen task for a
+dialogue action. Dialogue uses the existing parent action budget (12).
+
+The last native dialogue line enables ordinary event options. Those options use
+the existing Chosen/child ownership and effect checks. Dialogue that restarts
+after a completed relic pickup is handled before Proceed. Proceed still requires
+the native callback and actionable map. No event-name admission list is added.
+Automatic relic effects without a child remain unverified parent effects.
+
+Two explicit child versions extend the existing card envelope:
+
+| Contract | Native selection | Completion and bounds |
+| --- | --- | --- |
+| `card_add_v2` | Event `FromSimpleGridForRewards` → `NSimpleCardSelectScreen`; min=0, max=1..15; manual confirmation | Select zero through max, then Confirm; at most 16 child actions. Complete nonempty offer domain of up to 64, including domain equal to max. Exact selected additions and unchanged baseline deck. |
+| `card_transform_v3` | Event `FromDeckForTransformation` → `NDeckTransformSelectScreen`; min=0, max=1..8; manual confirmation | Select a subset, explicitly open preview below max, then Confirm. At max the native selector opens preview. Complete nonempty domain of up to 64, including domains smaller than max. Existing 10-action limit. |
+
+The pinned acceptance callers are **Orobas/SeaGlass** (one combined 15-card grid,
+0..15) and **Tanx/Claws** (0..6). Zero is a submitted selection, not cancellation.
+Both selector and request results must be exactly empty, the overlay must close,
+the complete deck must remain unchanged, and Chosen must succeed. Claws still
+invokes one native transform command for zero: the journal requires exactly one
+successful command returning the native empty array, with no choice, modification,
+insertion or removal effects. Missing, repeated, faulted or effect-bearing empty
+commands cannot resolve. Preview cancellation is never exposed.
+
+Generic add-card grids use exact allocated native holders and their clickability,
+without inferred scroll dimensions or whole-grid viewport fit. Grid/holder/card/
+hitbox identity, animation state, Confirm ownership and native task/deck outcome
+checks remain enforced. This also permits zero-selection Confirm on a larger grid.
+
+Optional behavior is enabled only by an explicit event context. Existing positive
+selection versions, standalone card contracts and their limits remain unchanged.
+Host and production boundary validation require the new matching descriptor and
+payload versions; confirmed histories and exact selected sets remain mandatory.
+This selector contract does not establish every ancient pickup. Nested pickups,
+true cancellation and empty candidate domains remain unsupported; item inventory
+policies are separate from optional card selection.
+
+## Card selectors and deck effects
+
+<a id="implemented-appended-cards-before-a-selector"></a>
+
+### Appended cards before a selector
 
 The first owned card-selector request can establish a deck baseline that includes
 cards appended by the preceding event callback. The original pre-action deck must
@@ -42,7 +128,7 @@ enchantment identities/values. New cards must belong to the same player and run;
 the complete deck remains bounded at 512 cards. Binding happens once, before
 native selector creation, with the existing parent ownership and empty-overlay
 checks. Prepending, replacing, removing, reordering or modifying original cards
-is unsupported in this increment.
+is unsupported by this contract.
 
 The request-time deck then stays fixed through admission, target selection and
 preview. All shared card families use it, including transform effect observations
@@ -58,26 +144,16 @@ the verified selector effect. No public fields, action meanings, hooks, retry
 behavior or selector limits change. The removal-specific post-selection extension
 below is separate; other selectors still reject post-selection additions.
 
-Pinned callers are Grave of the Forgotten/Confront (Decay before single-card
-SoulsPower), Trial/MerchantInnocent (Shame before two upgrades), and
-Trial/NondescriptInnocent (Doubt before two transformations). The pinned
-`AddCursesToDeck` path uses the deck append position. Inert fixtures cover these
-interaction shapes, the other shared selector families, selection of an eligible
-newly appended card, delayed requests, changed originals, late additions,
-ownership loss and collateral enchantment changes. Native-to-host cases complete
-the three representative shapes through Proceed/map. The enchantment fixture
-uses Sown and does not execute Grave's native body. Separately, Grave/Confront
-passed live on release `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`:
-SoulsPower amount 1 on unupgraded Neow's Fury, slot 0 of 3 eligible cards, exact
-preview/effect, Proceed and independently verified core map. All four actions
-reconciled. This exercises the native curse-before-selector caller; automatic
-addition provenance is still outside the child effect guarantee. Trial verdicts
-remain separate caller tests. See the
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions).
+Pinned callers include Grave of the Forgotten/Confront (Decay before SoulsPower),
+Trial/MerchantInnocent (Shame before two upgrades), and Trial/NondescriptInnocent
+(Doubt before two transformations). The pinned `AddCursesToDeck` path appends to
+the deck. Their automatic additions remain outside the selector effect guarantee.
 
-## Implemented: removal followed by one appended grant
+<a id="implemented-removal-followed-by-one-appended-grant"></a>
 
-Generic removal children now advertise **`card_remove_v2`** before input. The
+### Removal followed by one appended grant
+
+Generic removal children advertise **`card_remove_v2`** before input. The
 shared card session uses an explicit event-removal policy; standalone
 `card_selection_v1` removal keeps its exact baseline-minus-selection guarantee.
 Existing selection counts, preview/confirm actions, task ownership, action bounds
@@ -115,89 +191,34 @@ The list has zero or one entries. These observations do not establish the grant'
 provenance or intended identity, and do not add child actions or effect counts.
 The parent `card_effect_verified` label still refers to the selected removal.
 
-The concrete pinned caller is **Amalgamator/CombineStrikes** (two removals followed
-by an appended Ultimate Strike); CombineDefends follows the same shape with
-Ultimate Defend. Native fixtures cover immediate and delayed callbacks,
-pre-selector plus post-removal additions, exact survivors and invalid suffixes;
-producer-to-Python cases check separate grant metadata through Proceed/map.
-These fixtures are inert. Separately, the September 9 live CombineStrikes test
-passed with five eligible cards: upgraded Strikes at slots 0 and 1 were removed
-after exact preview, one upgraded Ultimate Strike was reported with unverified
-parent provenance, and Proceed returned to a fresh actionable core map. All five
-actions reconciled. CombineDefends, other callers and off-screen removal remain
-untested live. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#tenth-installation-native-removal-without-whole-grid-geometry)
-retains the exact release and result.
+Pinned callers include Amalgamator/CombineStrikes and CombineDefends: two removals
+followed by one appended merged card. The v2 result verifies selected removals,
+not the provenance of that grant.
 Multiple grants, interleaved/prepended additions, other post-selector operations
 and changes to surviving cards remain unsupported.
 
-## Implemented: repeated ordinary option pages
+<a id="implemented-all-eligible-transform-holders"></a>
 
-The parent can revisit option keys and accept identical keys/text on consecutive
-pages. Pinned `AbyssalBaths.Linger` allocates new options, and the ordinary
-`NEventRoom.SetOptions` path clears and rebuilds the native option controls.
-Those control identities establish a new presentation; text or flag changes alone
-do not. The owned `Chosen` task must succeed and child/overlay work must settle
-before an ordinary transition reconciles. All controls on a dispatched page,
-including unchosen ones, are retired for the session. A page retaining any retired
-control waits within the existing pending-read bound and cannot receive input.
+### Allocated transform holders
 
-Each reconciled choice advances the decision identity. The shared host reserves
-that decision rather than the localization key, while retaining receipt/history
-checks and replay rejection. Read/apply identity and legality revalidation, danger
-masking, 12 parent actions, 52 total actions and all existing read/time bounds
-remain. This is an expansion of admitted native behavior with the same wire
-shape and decision/action semantics; repeated pages require the updated bundled
-host. An `option_transition` verifies callback/page progress, not arbitrary HP or
-gold effects. No uncertain action is retried.
+All eligible **allocated** holders are exposed in native order with complete
+candidate/domain binding. Input uses the shared direct native holder path in
+`components/events/native/GenericEventV7TransformAdapter.cs`; it has no fixed-slot
+or inferred whole-grid viewport restriction. A card without an allocated holder
+cannot use this path.
 
-Inert native-to-host fixtures exercise Immerse → Linger twice → Exit → Proceed/map,
-identical text, revisited keys, delayed/failed callbacks, stale/partially replaced
-controls, dangerous choices and action limits. Existing item-child cases also
-reuse a parent key across separate completed children. These are offline checks.
-Abyssal Baths passed live on release `65c4e3d526b799f53795ab77131ba8947ad42be1db7f8261c1cacb064fe52dc9`:
-Immerse, two Lingers, Exit Baths and Proceed all reconciled, followed by an
-independently verified actionable map. See the
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#seventh-installation-repeated-pages-and-pre-selector-additions).
-Endless Conveyor and Slippery Bridge remain separate caller tests.
+Exact holder/model/run/screen/task ownership, native clickability, enabled hitbox,
+deferred-callback identity, original preview membership and selected-only effects
+remain required. Matching card names do not establish identity. Missing, disabled
+or reassigned targets stop without choosing a substitute. Fixed/variable preview
+semantics remain distinct. The old card16 restriction belonged to a historical
+experiment, not the production contract.
 
-## Implemented: all eligible transform holders
+<a id="implemented-allocated-upgrade-holders"></a>
 
-The successful v10 experiment directly selected an allocated off-screen card.
-Its card16-only mask and dispatch guard were test restrictions. The unified
-production bridge now uses the generalized adapter in
-`bridge/Sts2AgentBridge/components/events/native/GenericEventV7TransformAdapter.cs`.
-Historical release evidence remains in Git.
+### Allocated upgrade holders
 
-- Both fixed-slot restrictions are removed. All legal allocated holders are
-  exposed in native order, with complete candidate/domain binding.
-- Retain exact holder/model/run/screen/task ownership, native enabled state,
-  deferred-callback identity, exact-original preview membership and selected-only
-  transformation reconciliation. Matching card names do not establish identity.
-- Keep viewport, clipping-parent and complete-layout-fit checks out of this
-  direct transformation input path. The earlier ten-card suggestion is obsolete.
-- Keep fixed/variable preview semantics and host decision-provider behavior.
-  Do not change strategy or add event-name admission rules.
-
-Acceptance exercises actual adapter-to-client selection of different targets,
-including visible and allocated off-screen holders. It rejects missing, disabled
-or reassigned targets without choosing a substitute or retrying uncertainty, and
-checks existing preview/completion modes. Reuse matching accepted dependency
-evidence; one independent review addresses the changed action semantics.
-
-A further live test must answer a remaining behavior question, such as selecting
-another advertised target through the generalized path. Use the minimal known
-setup and one precise expected outcome. Do not repeat the same card16 question
-with another visibility-proof implementation.
-
-The generalization is implemented and tested offline. The direct-input fixtures
-exercise slots 0, 15 and 19 in a 20-card domain and slot 1 in a two-card domain,
-plus missing/disabled/reassigned targets and deferred input. Existing fixed and
-variable transformation regressions remain. A new live all-holder claim has not
-been made; see [current release evidence](../bridge/Sts2AgentBridge/releases/current/README.md).
-
-## Implemented: allocated upgrade holders
-
-Generic fixed-count upgrades (1–8) now use their existing direct holder input
+Generic fixed-count upgrades (1–8) use their existing direct holder input
 without requiring the entire eligible grid to fit inside the viewport. The exact
 allocated domain remains bounded at 64 cards; unallocated cards are unsupported.
 The adapter retains holder/model/card/hitbox identity, native `_isClickable` and
@@ -207,27 +228,16 @@ input retains its dispatch ticket through the deferred native callback. Scroll
 position and viewport size are not target identity.
 
 The pinned `NCardHolder._GuiInput` checks `_isClickable` before deferring
-`EmitPressed` on that holder. Inert native fixtures exercise slots 0, 15 and 19
-in a 20-card domain, viewport changes, rejected target mutations and deferred
-multi-upgrade selection. Native-to-Python fixtures verify later-card selection,
-exact deck effects, Proceed and map return. These are offline checks, not live
-proof of upgrade behavior below the viewport.
+`EmitPressed` on that holder. Input completion must retain that exact identity.
+This generic-event extension does not broaden the standalone Smith-one contract.
 
-The September 9 [live batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
-demonstrated `SapphireSeed`/Consume with 23 eligible cards: direct selection of
-unupgraded Defend slot 20 below the viewport, exact preview and upgrade effect,
-Proceed and an independently checked core map. No selector scrolling or manual
-card input was used. This establishes one allocated off-screen single-upgrade
-path; multi-upgrade and other domains/counts remain separate evidence targets.
-For console fixtures, check automatic-upgrade relics and actual card eligibility:
-Molten Egg upgraded the added Bashes; unupgraded Defend skills supplied this case.
+<a id="implemented-one-card-enchantment"></a>
 
-## Implemented: one card enchantment
+### Single-card enchantment
 
 The shared `CardSelectCmd.FromDeckForEnchantment` request and
-`NDeckEnchantSelectScreen` now form a `card_enchant_v1` child of the existing
-`generic_event_v10` parent. No event-name admission rule is added. Sapphire Seed's
-observed Plant and Nourish branch is the representative live target. Pinned
+`NDeckEnchantSelectScreen` form a `card_enchant_v1` child of the existing
+`generic_event_v10` parent. No event-name admission rule is added. Sapphire Seed's Plant and Nourish branch is a concrete caller. Pinned
 metadata also confirms `FieldOfManSizedHoles.EnterYourHole` requests one card,
 applies an enchantment and finishes the event.
 
@@ -259,17 +269,9 @@ are never serialized. The host binds the descriptor for the whole child and
 rejects version, cardinality, key or amount changes. Existing child versions retain
 their wire shapes.
 
-Native fixtures cover distinct event identities, copied/sorted request lists,
-preview and effect replacement, collateral changes, failed/delayed completion and
-unsupported request shapes. Native-to-Python checks cover selection through
-Proceed/map return, a later allocated target, delayed completion and wrong effects.
-The [sixth live installation](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sixth-installation-single-card-enchantment)
-passed Plant and Nourish: Sown amount 1 on unupgraded Defend slot 5 of 24,
-exact preview/effect verification, Proceed and the shared client's independently
-checked core map. All four actions reconciled; normal quit and owned cleanup
-passed. Other enchantments/callers and broader selection semantics remain unproved.
+<a id="implemented-fixed-multi-card-enchantment"></a>
 
-## Implemented: fixed multi-card enchantment
+### Fixed multi-card enchantment
 
 `card_enchant_v2` extends the same owned enchantment request to fixed counts
 2–8, with more eligible allocated candidates than the requested count (up to
@@ -289,19 +291,43 @@ overlay remain required. Deferred input waits for the exact preview and never
 permits an early confirm. Single-card v1 retains its existing preview and wire
 semantics; v2 carries the same public fields with fixed multi-card cardinality.
 
-Native fixtures cover counts two, three and eight, deferred final input,
-replacement targets/previews, partial effects, shared/replaced/disappearing
-enchantments and collateral changes. Actual C# wire/Python controller fixtures
-complete two and eight selections through Proceed/map. Prickly Sponge now also
-has live acceptance: two upgraded Strikes in a 24-card eligible domain, exact
-original preview, Steady amount 1 on each and an independent fresh core map.
-All five actions reconciled. See the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#prickly-sponge-fixed-two-enchantment-passed).
-Other enchantment counts/callers, optional counts and stacking/replacement retain
-their narrower evidence or remain gaps. Ancient entry now has offline support below.
+<a id="implemented-generic-deck-transformation-selectors"></a>
 
-## Implemented: multiple potion/relic rewards
+### Generic deck transformation selectors
 
-One owned, nonterminal `RewardsSet.Offer` may now yield 2–8 populated, unlinked
+`FromDeckGeneric` with the native transformation prompt admits a fixed-one,
+noncancelable `NDeckCardSelectScreen` child. WoodCarvings/Bird and Torus are the
+representative pinned callers: they filter transformable deck cards, show this
+original-card preview, then call `TransformTo<Peck>` or
+`TransformTo<ToricToughness>`. That command forwards through the existing observed
+batch transformation path.
+
+Admission uses the native prompt's localization table/key (`card_selection` /
+`TO_TRANSFORM`), not event names or rendered English. The prompt classifies intent;
+it does not prove the eventual effect. The screen's filtered/sorted original list
+is authoritative: 2–64 distinct, owned, transformable baseline cards with exact
+allocated holder bindings. The bridge does not rerun filter or sorting callbacks.
+Other prompts, optional/multiple selection, cancellation and selectorless automatic
+completion remain outside this contract. The existing removal request's nested
+`FromDeckGeneric` call retains its outer request ownership.
+
+The child reuses `card_transform_v2`: select one advertised slot, then confirm its
+exact original-card preview. The generic screen does not display a generated
+replacement preview, so none is fabricated. Before confirmation the adapter checks
+current native legality, expected selection, preview/control identity and deck,
+then reserves the original before input can complete the selector task. The
+existing journal must witness the selected original's removal, exact replacement
+and insertion order, successful command result, unchanged survivors, completed
+selector/request/Chosen tasks and closed overlay. A prompt, click receipt or deck
+change alone cannot report success. Public wire shape and host actions are unchanged.
+
+## Event rewards and offers
+
+<a id="implemented-multiple-potionrelic-rewards"></a>
+
+### Ordered potion/relic rewards
+
+One owned, nonterminal `RewardsSet.Offer` may yield 2–8 populated, unlinked
 potion/relic entries. The new generic item child uses `item_set_v1`; a singleton
 keeps `item_v1`. Whispering Hollow/Gold (two potions) and War Historian Repy's
 Unlock Chest (two potions and two relics) supply representative native shapes.
@@ -314,9 +340,9 @@ retains its exact reward/model identity, native type index and control. Public
 Duplicate offered model identities, linked rewards, unsupported reward types,
 foreign controls and changed list membership/order are rejected. Before the first
 collection, an ordered capacity plan requires each potion to fit in an initially
-free slot or a slot supplied by a preceding pinned Potion Belt. A later belt cannot
-rescue an earlier full-inventory potion. Discard/replace/skip remain unsupported
-for these item children.
+free slot or a slot supplied by a preceding pinned Potion Belt. A later belt cannot rescue an earlier full-inventory potion **under this ordered
+contract**. Screens/policies requiring skip, discard or reordered capacity
+collection use the separate `item_policy_v1` contract below.
 
 Each entry uses the existing `item_v1` observation/action/effect checks. Its
 collection task must succeed before advancing. Completed entries retain their
@@ -343,26 +369,14 @@ earlier reconciled collections without claiming set or parent completion, and a
 lost mutation reply never causes a retry. The existing event-wide action/read
 budgets still apply; the set has a shared 256-read local bound.
 
-Offline native and C#/Python fixtures cover two potions, mixed sets, eight relics,
-delayed tasks, late changes to completed claims/slots, malformed public history,
-lost replies and cleanup interference. Potion Courier/Grab Potions now has live
-acceptance: three Foul Potions collected in order, each exact inventory effect
-reconciled, parent completion and an independent fresh core map. All five actions
-reconciled. See the [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#potion-courier-three-item-reward-set-passed).
-Other counts, relic-containing sets and full-inventory behavior retain their
-narrower evidence or remain gaps. [Current status](STATUS.md) owns the release and
-installation identity.
+<a id="implemented-offline-event-potion-belt-capacity-pickup"></a>
 
-## Implemented offline: event Potion Belt capacity pickup
+### Event Potion Belt capacity pickup
 
-Owned singleton, ordered item-set and mixed card/item rewards now support the
+Owned singleton, ordered item-set and mixed card/item rewards support the
 pinned `PotionBelt` pickup, including item rewards opened by the owned Resume
 callback. The shared native recognizer requires the exact native type, stable
-`POTION_BELT` key and `PotionSlots` value two. Static inspection establishes its
-`AfterObtained` → `GainMaxPotionCount` → empty-slot append path; the representative
-offline case starts with three occupied slots, collects the belt and then two
-potions, and reaches event Proceed/map. A natural event offer has not been
-live-demonstrated for this capacity path.
+`POTION_BELT` key and `PotionSlots` value two. Its native `AfterObtained` → `GainMaxPotionCount` path appends empty slots.
 
 Admission simulates the original reward order using initially free slots and
 preceding known +2 grants, bounded to eight slots. Each belt must initially be
@@ -377,22 +391,19 @@ final inventory and ownership through the continuation handoff.
 The existing `item_v1`, `item_set_v1` and `mixed_reward_set_v1` wire contracts stay
 unchanged. The next entry's ordinary `potion_slots` includes newly available slots;
 relic results still certify the claimed model, with capacity verified by the native
-completion adapter. These event children collect in order and do not inherit the
-terminal controller's skip, discard or priority policy. Other capacity effects,
-nested pickup selectors and a potion that cannot fit at its position remain
-unsupported. Offline fixtures cover singleton/two-belt sets, card choose/Skip,
-delayed and lost receipts, wrong growth/slot contents, foreign or lost relic
-ownership and resume-time retention. See [current validation](STATUS.md).
+completion adapter. These ordered contracts do not themselves acquire skip,
+discard or priority actions. `item_policy_v1` separately handles screens requiring
+those policies. Other capacity effects and nested pickup selectors remain unsupported.
 
-## Implemented: ordinary event card reward menus
+<a id="implemented-ordinary-event-card-reward-menus"></a>
+
+### Single ordinary card reward
 
 `card_reward_v1` adds a `card_reward` child for one populated, unlinked, exact
 `CardReward` in an owned nonterminal `RewardsSet.Offer`. The representative pinned
 caller is **BrainLeech/Rip** (canonical RewardCount one); **TheFutureOfPotions/Trade**
 also offers one reward and upgrades its generated cards before opening the screen.
-BrainLeech/Rip now has live acceptance: Equilibrium selected from slot 0 of three
-offers, exact deck insertion, all four actions reconciled and fresh core map.
-TheFutureOfPotions/Trade remains a source-backed caller candidate. The Cheese add-card grid remains a separate interaction.
+The Cheese add-card grid remains a separate interaction.
 
 The child first advertises `open` on the exact native reward button. Observational
 hooks retain the resulting `NCardRewardSelectionScreen`, its original generated
@@ -432,18 +443,13 @@ a verified Skip/dismiss; it uses at most three actions and 256 reads. The wire a
 host validate lineage, versions, stable offers, receipts and history. Lost replies
 stop without retry. Older consumers reject the new child descriptor.
 
-Offline native fixtures and the actual C#/Python path cover single and five-card
-menus, duplicate-key originals, both outcomes, delayed/deferred completion,
-changed targets/owners/deck effects, native Skip legality, nondefault alternatives,
-malformed replies, lost replies and rollback of either new hook. This code is
-packaged in the current combined test release. Brain Leech's choose path passed
-live; singleton Skip/dismiss retains offline evidence. See the
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#brain-leech-singleton-card-reward-passed).
 The multiple-entry extension is described below.
 Mixed card/item sets use the versioned extension below. Repeated offers within one option, SpecialCardReward, reroll/multiple picks,
 hook-substituted cards and nested pickup selectors remain unsupported.
 
-## Implemented: multiple card reward menus
+<a id="implemented-multiple-card-reward-menus"></a>
+
+### Multiple card reward menus
 
 `card_reward_set_v1` extends the same `card_reward` child family to **2–8 ordinary
 CardReward entries in one owned nonterminal RewardsSet**. The pinned representative
@@ -492,33 +498,20 @@ legal transitions and final dismissal. Lost mutation replies stop without retry.
 Reentry into the outer session blocks subsequent inner input and cleanup retains
 ownership on failure.
 
-Offline fixtures cover two, three and eight rewards with varied one/three/five-card
-menus, all-collected, mixed and all-skipped outcomes, delayed collection/parent
-tasks, native dismissal legality, changed admission and prior-effect state,
-unsupported domains, malformed replies, lost replies and reentry. Colorful
-Philosophers now has live acceptance through its Necrobinder option: three menus,
-Fear+ from the first, native Skip in the second, Necro Mastery from the third,
-final dismissal and an independent fresh map. All nine actions reconciled. See
-[the live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#colorful-philosophers-multiple-menus-and-skip-passed).
-Other counts and all-collected/all-skipped paths retain offline evidence.
 Mixed card/item sets use the versioned extension below. Repeated
 Offers within one option, SpecialCardReward, rerolls/multiple picks, substituted
 cards and nested pickup selectors remain separate gaps.
 
-## Implemented: mixed card/item reward sets
+<a id="implemented-mixed-carditem-reward-sets"></a>
+
+### Mixed card/item reward sets
 
 `mixed_reward_set_v1` extends the existing set session to **2–8 ordinary card,
 potion and relic rewards in one owned nonterminal RewardsSet**, with at least one
 card and one item. The pinned concrete caller is **LostCoffer.AfterObtained**:
 its generated list contains a three-card CardReward followed by a PotionReward,
-passed to `RewardsCmd.OfferCustom`. Lost Coffer is offered by Neow; reaching that
-pickup through Neow can now use the ancient layout support below. The live
-admitted set was ordered potion then card, despite card-first callback construction.
-The first policy stopped before child input because it assumed construction order.
-The corrected potion→card path passed live: Mazaleth's Gift, unupgraded Shrug It
-Off, five reconciled actions and fresh map in 1.919 seconds. Card Skip/final
-dismissal also passed: Skill Potion collected, no card addition, six reconciled
-actions and fresh map in 1.631 seconds.
+passed to `RewardsCmd.OfferCustom`. Lost Coffer is offered by Neow. Callback construction order can differ from the
+admitted screen order; the bridge follows the actual retained screen list.
 
 Entries retain the admitted native reward-list order; callers must use exposed
 `offer_kinds` rather than infer order from callback construction. Cards use
@@ -528,9 +521,9 @@ collection task. Each item settles after its collection succeeds and its exact
 model/claim effect is verified. Offer and Chosen completion belong to the whole
 set. If any card was skipped, the exact root Proceed control provides one final
 `dismiss`, including when the last entry is an item. Otherwise native automatic
-closure applies. Item Skip and full-inventory replacement are not part of this
-contract. The ordered capacity plan must fit every potion, allowing slots from
-a preceding pinned Potion Belt while preserving the original reward order.
+closure applies. This ordered contract has no item Skip or replacement actions;
+its capacity plan must fit every potion using preceding known belt gains. The
+separate `item_policy_v1` contract handles policies that need those extra actions.
 
 The admission deck remains fixed through leading items. Only verified card
 insertions advance its baseline. Initial potion slots plus verified insertions and
@@ -557,126 +550,42 @@ its contents. Stable prefixes and the variable action count are checked by both
 wire service and host; an uncertain or lost action reply stops without retry.
 The existing 256-read/set and event-wide budgets remain in force.
 
-Native and C#/Python fixtures cover card→potion, potion→card, potion→card→potion,
-eight mixed entries, choose/Skip/final dismissal, actual collection/Offer/Chosen
-delays, failed collections, retained deck/inventory/task changes, insufficient
-capacity, malformed replies, lost replies and item reentry/cleanup interference.
-The production response classifier and shared request parser are included in
-these checks. The current combined release has the representative Lost Coffer
-choose/collect acceptance above; broader orders, counts and branches retain offline
-evidence. The [live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#lost-coffer-potion-and-card-collection-passed)
-retains exact release and result bindings.
+<a id="full-inventory-reward-policies-and-native-terminal-progression"></a>
 
-## Implemented: generic deck transformation selectors
+### Full-inventory item policies
 
-`FromDeckGeneric` with the native transformation prompt now admits a fixed-one,
-noncancelable `NDeckCardSelectScreen` child. WoodCarvings/Bird and Torus are the
-representative pinned callers: they filter transformable deck cards, show this
-original-card preview, then call `TransformTo<Peck>` or
-`TransformTo<ToricToughness>`. That command forwards through the existing observed
-batch transformation path. The eleventh installation passed Bird on upgraded
-Strike slot 0 of 21 eligible cards: exact preview, journal-verified transformation,
-completed parent and fresh actionable core map. Torus remains a live candidate;
-[status and the live record](STATUS.md) retain the result and scope.
+`item_policy_v1` owns an event reward screen when its items cannot all be collected
+in the original order. It exposes stable indexed offers, explicit card menus,
+public potion-slot keys, legal actions and correlated history. Actions are
+`collect:N`, `discard:N`, `choose:N`, `skip_card` and `skip_remaining`. Card collection
+opens the native menu; choosing or skipping it is a separate action. Native Proceed
+dismisses unclaimed rewards only when that screen permits skipping. Collection,
+original-potion discard and final dismissal retain their exact native tasks;
+settled claimed models, card effects and unrelated inventory remain bound until
+parent completion. New potions cannot be discarded by this policy. The maximum is
+25 child actions across at most eight offers and eight original potion slots.
 
-Admission uses the native prompt's localization table/key (`card_selection` /
-`TO_TRANSFORM`), not event names or rendered English. The prompt classifies intent;
-it does not prove the eventual effect. The screen's filtered/sorted original list
-is authoritative: 2–64 distinct, owned, transformable baseline cards with exact
-allocated holder bindings. The bridge does not rerun filter or sorting callbacks.
-Other prompts, optional/multiple selection, cancellation and selectorless automatic
-completion remain outside this increment. The existing removal request's nested
-`FromDeckGeneric` call retains its outer request ownership.
+The event host’s `--event-potion-policy` supports `skip-full` (default), `skip-all`,
+`replace-first` and `stop-on-full`. Capacity grants are preferred before replacement.
+The same policy applies to owned resume-time item screens. Existing fitting item
+sets retain their earlier contracts. The pinned source has no concrete resume-time
+card/selector caller; this implementation makes no broader resume claim.
 
-The child reuses `card_transform_v2`: select one advertised slot, then confirm its
-exact original-card preview. The generic screen does not display a generated
-replacement preview, so none is fabricated. Before confirmation the adapter checks
-current native legality, expected selection, preview/control identity and deck,
-then reserves the original before input can complete the selector task. The
-existing journal must witness the selected original's removal, exact replacement
-and insertion order, successful command result, unchanged survivors, completed
-selector/request/Chosen tasks and closed overlay. A prompt, click receipt or deck
-change alone cannot report success. Public wire shape and host actions are unchanged.
+#### Nested pickup boundary
 
-Offline cases exercise Bird/Peck, Torus/ToricToughness and a held-out replacement,
-filtered/reversed domains, original-only previews, delayed creation/selection/
-command/parent completion, prompt/domain/legality/preview mutations, wrong request
-results, failed commands, unrelated deck additions and removal forwarding. Actual
-native-to-wire-to-Python cases also cover both named replacement shapes, callback
-failure and a lost confirmation reply without retry. The Bird case now has representative live acceptance. Torus with at least two
-eligible cards remains a distinct branch candidate. The live summary does not
-expose the replacement key; the user separately confirmed Peck in the deck.
+Source inspection used pinned `sts2.dll` SHA-256
+`e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
+Bounded inspection found that ordinary relic reward rolls select rarities
+2/3/4, while identified pickup selector relics use shop/ancient rarities 5/7.
+Small Capsule and Toy Box therefore do not establish the proposed ordinary random
+reward → nested-selector case. Shop pickup selectors use their own scoped adapter; this does not admit nested
+selectors within event/resume reward children.
 
-## Implemented: ancient dialogue and optional selections
+<a id="implemented-choose-one-cards-and-bundles"></a>
 
-The shared parent admits the pinned `NAncientEventLayout` alongside ordinary
-`NEventLayout`. While native dialogue remains, it exposes one `choose:0` action
-with text “Continue dialogue”. This emits the owned dialogue hitbox's native
-Released signal once. Completion requires exactly one line advancement on the
-same layout, event, hitbox and dialogue list with unchanged line identities.
-Hidden or disabled input waits; replaced objects, changed lines, jumps, exceptions
-and exhausted waits stop the session. There is no fabricated Chosen task for a
-dialogue action. Dialogue uses the existing parent action budget (12).
+### Required card offers and bundles
 
-The last native dialogue line enables ordinary event options. Those options use
-the existing Chosen/child ownership and effect checks. Dialogue that restarts
-after a completed relic pickup is handled before Proceed. Proceed still requires
-the native callback and actionable map. No event-name admission list is added.
-Automatic relic effects without a child remain unverified parent effects.
-
-Two explicit child versions extend the existing card envelope:
-
-| Contract | Native selection | Completion and bounds |
-| --- | --- | --- |
-| `card_add_v2` | Event `FromSimpleGridForRewards` → `NSimpleCardSelectScreen`; min=0, max=1..15; manual confirmation | Select zero through max, then Confirm; at most 16 child actions. Complete nonempty offer domain of up to 64, including domain equal to max. Exact selected additions and unchanged baseline deck. |
-| `card_transform_v3` | Event `FromDeckForTransformation` → `NDeckTransformSelectScreen`; min=0, max=1..8; manual confirmation | Select a subset, explicitly open preview below max, then Confirm. At max the native selector opens preview. Complete nonempty domain of up to 64, including domains smaller than max. Existing 10-action limit. |
-
-The pinned acceptance callers are **Orobas/SeaGlass** (one combined 15-card grid,
-0..15) and **Tanx/Claws** (0..6). Zero is a submitted selection, not cancellation.
-Both selector and request results must be exactly empty, the overlay must close,
-the complete deck must remain unchanged, and Chosen must succeed. Claws still
-invokes one native transform command for zero: the journal requires exactly one
-successful command returning the native empty array, with no choice, modification,
-insertion or removal effects. Missing, repeated, faulted or effect-bearing empty
-commands cannot resolve. Preview cancellation is never exposed.
-
-Generic add-card grids use exact allocated native holders and their clickability,
-without inferred scroll dimensions or whole-grid viewport fit. Grid/holder/card/
-hitbox identity, animation state, Confirm ownership and native task/deck outcome
-checks remain enforced. This also permits zero-selection Confirm on a larger grid.
-The initial Sea Glass live attempt exposed the leftover layout prerequisite and
-stopped before any card input. The corrected **Sea Glass zero-selection path has
-live acceptance**: explicitly confirmed empty result, unchanged deck and fresh map.
-**Three-card selection also passed**, adding the exact unupgraded Twin Strike,
-Sword Boomerang and Tremble originals and verifying a fresh map. **All fifteen
-selected cards also passed**, with exact additions, 18 reconciled actions and a
-fresh map. These establish zero/partial/full examples, not every grid layout. See the
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#sea-glass-zero-passed-after-read-only-startup).
-
-**Claws zero-selection has live acceptance**: explicit empty Preview/Confirm,
-unchanged deck, four reconciled actions and a fresh map. **Three-card Claws also
-passed**: three unupgraded Strike originals, explicit preview and seven reconciled
-actions through exact native replacement checks and map return. Replacement names
-are not exposed in the public result. **Six-card maximum selection also passed**:
-five Strikes and one Defend, automatic preview, exact native replacement checks,
-nine reconciled actions and fresh map. The native
-zero-selection completion includes the required successful
-empty transform command described above. See the
-[live evidence](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#claws-zero-transformation-passed).
-
-Optional behavior is enabled only by an explicit event context. Existing positive
-selection versions, standalone card contracts and their limits remain unchanged.
-Host and production boundary validation require the new matching descriptor and
-payload versions; confirmed histories and exact selected sets remain mandatory.
-Fixtures cover ancient entry, post-pickup dialogue reset, zero/partial/full counts,
-small transform domains, delayed completion, stale input, malformed versions/results
-and lost replies without retry. This is offline evidence, not live acceptance or
-support for every ancient pickup. Full inventory,
-nested pickups, cancellation and empty candidate domains remain outside this change.
-
-## Implemented: choose-one cards and bundles
-
-Two native selection surfaces now compose with the same event parent, including
+Two native selection surfaces compose with the same event parent, including
 ancient dialogue/options and Proceed/map. **Neow/ScrollBoxes** is the pinned bundle
 caller. LeadPaperweight and MassiveScroll use the direct-card surface but pass
 `canSkip=true`, so their actual admission uses **card_offer_v2** below. No required
@@ -710,18 +619,14 @@ cards in order. Baseline and offer ownership are retained. Partial ordered addit
 and deferred input/tasks wait; unrelated changes, failures or exhausted waits stop.
 The deck limit remains 512. Each input is attempted at most once.
 
-This increment has native, production-boundary and C#/Python fixture evidence.
-**Scroll Boxes has representative live acceptance**: bundle zero of two three-card
-offers added unupgraded Havoc, Cinder and Feel No Pain after exact native preview
-and Confirm, with four reconciled actions and fresh map return in 0.841 seconds.
-Required single-card v1 offers remain pending live acceptance. The
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#scroll-boxes-bundle-selection-passed)
-binds the result to its release and installation. These v1 contracts do not add Skip, preview
+These v1 contracts do not add Skip, preview
 cancellation, extra grants/copies, card substitution or nested pickups. Optional
 choose-one offers and one extra grant now have the separate v2 contract below.
 Native direct menus with more than three choices are rejected.
 
-## Implemented: optional card offers and one appended grant
+<a id="implemented-optional-card-offers-and-one-appended-grant"></a>
+
+### Optional card offers and one appended grant
 
 `card_offer_v2` extends the direct ChooseACard family only when the owned native
 request has `canSkip=true`. **Neow/HeftyTablet** is the representative caller:
@@ -731,13 +636,7 @@ and awaits enumerable `CardPileCmd.Add` at IL350. Choosing therefore adds the
 selected original followed by Injury; Skip still adds Injury. Admission remains
 generic, with no event/relic allowlist. Other optional requests may add no extra.
 
-LeadPaperweight also uses `canSkip=true` with no appended grant. Its choose branch
-has representative live acceptance: unupgraded Dramatic Entrance, no additional
-card, three reconciled actions and fresh map in 1.054 seconds. Its no-grant Skip
-branch also passed after same-build relaunch: unchanged deck, no selected/additional
-card, three reconciled actions and fresh map in 1.443 seconds. The
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#lead-paperweight-choice-passed)
-retains the release and result binding.
+LeadPaperweight also uses `canSkip=true` with no appended grant.
 
 The descriptor remains `kind: card_offer`, now with `contract_version: card_offer_v2`
 and 1–3 offers. The ready phase exposes `choose:0` through the final offered index,
@@ -771,17 +670,11 @@ resolved history is `collected` with the chosen `selected_index`, or `skipped` w
 leave parent `effects: unverified`; core, wire and host retain that distinction
 through reconciliation and map return. Lost input/replies are never retried.
 
-Native fixtures, strict C#/Python integration and production-boundary checks cover
-choose/Skip with and without the extra, delayed completion, changed controls/decks,
-extra-card substitution/rollback, mismatched task results and lost replies.
-**Both HeftyTablet branches have representative live acceptance**: choose added
-Cruelty (unupgraded) plus Injury; Skip added Injury only. Each completed one card
-child and reconciled three actions through a fresh actionable map. See the
-[live evidence](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#heftytablet-skip-passed).
+<a id="implemented-inactive-combat-layouts-and-result-acknowledgment"></a>
 
-## Implemented: inactive combat layouts and result acknowledgment
+### Inactive combat layouts and results acknowledgment
 
-The parent now admits the pinned `NCombatEventLayout` while `HasCombatStarted`
+The parent admits the pinned `NCombatEventLayout` while `HasCombatStarted`
 is false and its native embedded room remains valid and unchanged. Ordinary
 options and existing children use the same ownership and completion rules.
 **PunchOff/Nab** is the representative interaction: Injury is added before the
@@ -790,10 +683,7 @@ is another source-backed noncombat candidate. Layout admission alone does not
 certify combat entry. The separate non-resuming handoff below admits a narrow
 combat path; other entries stop as unsupported. Native options do not expose a
 reliable pre-choice combat flag, so unsupported entries may stop after the
-authorized choice has started combat. **PunchOff/Nab passed live**: Meal Ticket
-collected at native singleton index three, three reconciled actions and fresh map
-in 1.278 seconds. Automatic Injury is not certified by the relic child. This
-demonstrates the inactive noncombat branch, not combat execution/resumption.
+authorized choice has started combat.
 
 The `card_results_v1` child acknowledges the pinned `NSimpleCardsViewScreen`
 opened by an owned event callback. **Darv/PandorasBox** supplies the inspected
@@ -811,13 +701,6 @@ entire post-show deck to remain unchanged in model/order/key/upgrade/enchantment
 and ownership. The result list must contain 1–64 successful, unique models
 currently present exactly once in the deck. The existing 512-card deck limit applies.
 
-**Darv/Pandora's Box has representative live acknowledgment acceptance**: nine
-result cards, one Confirm, three reconciled actions and fresh map in 0.677 seconds.
-The exact displayed cards and post-show deck were retained through closure; this
-does not certify the preceding automatic transformations or normal Darv pool
-eligibility. The console DebugOption supplied the tested route. See the
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md#pandoras-box-results-acknowledgment-passed).
-
 The descriptor uses `kind: card_results`, `contract_version: card_results_v1`,
 parent lineage/ordinal and `offer_count` for the result-card count. Payload fields
 are `version`, `session_nonce`, `status`, `phase`, `decision_id`, `cards`,
@@ -833,17 +716,18 @@ Acknowledgment counts as a completed card child, but parent effects remain
 transformation. Wire and host checks reject a fabricated `card_effect_verified`
 claim for that acknowledgment. Card inspection, nested/sequential result screens,
 results inside an existing pickup/selector child and alternative result screens
-remain unsupported. Both paths have native/C#/Python and production-boundary
-evidence plus the representative live acceptance described above.
+remain unsupported.
 
-## Implemented offline: non-resuming event combat
+## Event combat
 
-The checkout observes the owned, non-generic
+<a id="implemented-offline-non-resuming-event-combat"></a>
+
+### Non-resuming combat
+
+The adapter observes the owned, non-generic
 `EventModel.EnterCombatWithoutExitingEvent` call. It admits zero to eight supported special-card, potion or relic extra rewards
 (at most one special-card entry)
-with `shouldResumeParentEventAfterCombat=false`, outside any child selector. No event-name rule is used. **Dense Vegetation’s Fight page after Rest**
-is the representative live acceptance case; prepare that page before using the
-first-legal host policy.
+with `shouldResumeParentEventAfterCombat=false`, outside any child selector. No event-name rule is used. Dense Vegetation’s Fight page after Rest is a concrete caller.
 
 The native entry method returns `void` and starts room entry through a discarded
 task. Its return and the successful option callback are therefore insufficient.
@@ -870,10 +754,108 @@ the latter retains combat, rewards and map results even when a later stage fails
 Defeat does not start rewards. Reward coverage includes gold, ordinary card choices, direct special-card
 grants and exact potion/relic collection; other reward surfaces stop with the preceding evidence intact.
 
-This feature is released with live Dense Vegetation, Lantern Key, Punch Off and
-Fake Merchant combat/reward/map results. The resuming path below adds a separate
-callback witness. Resuming entry with extra rewards and arbitrary embedded combat
-branches remain unsupported. See [current status](STATUS.md) for exact limits.
+The resuming path below adds a separate callback witness. Resuming entry with
+extra rewards and arbitrary embedded combat branches remain unsupported.
+
+<a id="implemented-offline-event-combat-resumption"></a>
+
+### Callback-verified resumption
+
+The same entry observer admits `shouldResumeParentEventAfterCombat=true`
+with no event-supplied extra rewards. It binds the original logical `EventRoom`
+and the concrete `EventModel.Resume(AbstractRoom): Task` declaration before the
+fight can end. The initial event session resolves to `combat_resume_handoff`,
+with matching history and a retained session nonce, rather than claiming map
+return or victory. Battleworn Dummy is a concrete caller. Automatic upgrades in its callback remain
+unverified parent effects and do not exercise a multi-card selector.
+
+The original event module remains the cleanup owner during combat. After the
+owned choice task and exact combat entry reconcile, ordinary event hooks are
+removed while the exact resume hook and three item observation hooks remain. Ownership is rechecked immediately
+before unpatching; interference or cleanup failure stops the bridge. Core combat
+and combat-choice routes use the same native legality and action bounds as before.
+Other capability routes remain blocked; only the owned resume-item routes below
+can service an interactive resume callback.
+
+The read-only `/probe/event-combat-v2/public/decision` route returns schema 1,
+protocol `event_combat_v2`, the initial event `session_nonce`, and status
+`combat`, `waiting`, `item` or `resumed`. It is available only during an owned resuming
+combat. An ending fight or room transition waits for the callback; a late combat
+POST is rejected before dispatch as stale. Unknown identities and callback
+fault/cancellation stop the host. No uncertain action is retried.
+
+`EventRoom.Resume` is not a completion witness: it starts callbacks without
+awaiting them and creates the replacement event node immediately. The bridge
+instead requires exactly one callback on the original mutable event, with the
+exact exited combat room, and retains the returned Task. Success also requires
+the original logical event room, run and player, the new `NEventRoom` matching
+that event’s Node, and no active overlay/capstone. A new node alone cannot finish
+a pending callback. An unresolved combat chooser blocks release. Successful
+module disposal precedes clearing the core combat scope and pending action.
+
+`event-combat-map` handles both destinations. For `combat_resume_handoff`, the
+combat host polls the nonce-bound continuation route within its existing
+300-second/4096-loop bound, preserving attempted/accepted/reconciled actions.
+A successful return is `event_resumed`; training expiry is never labeled victory.
+Then one fresh event session runs through Proceed, followed by the existing
+five-second actionable-map check. The composite retains `event`, plus
+`combat_flow.combat`, `resumed_event` and `map_handoff` even if a later stage fails.
+Another combat from that resumed session is not recursively driven by this controller.
+
+`--event-option` selects one exact, currently legal first parent option by its
+stable ID, then falls back to the existing first-legal policy. A missing, locked
+or ambiguous requested option stops before input; the bridge does not guess a
+replacement. For the representative setup use
+`--event-option BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2` with
+`--capability event-combat-map`. This is a reusable host policy, not a native
+event allowlist or a strategic policy.
+
+#### Owned item rewards during resumption
+
+A successful **Battleworn Dummy Setting1** callback awaits a generated potion
+through `RewardsCmd.OfferCustom`. The bridge observes that callback's exact
+`RewardsSet.Offer`, screen creation and collection tasks. Its async scope carries
+through delayed generation; a reward screen found outside that scope is not adopted.
+Item context uses the retained run/player/logical event room and replacement event
+node. The original Chosen task is preserved; the item completion witness is the
+actual Resume task.
+
+Continuation status `item` permits GET
+`/probe/event-combat-v2/public/item-decision` and POST
+`/probe/event-combat-v2/public/item-action`. The POST uses the existing authenticated
+decision/action headers, canonical item decision digest and `collect:<index>` action.
+The payload reuses `item_v1` for one potion/relic or `item_set_v1` for 2–8 ordered
+item entries, including retained collected rows. These are child routes under the
+retained event owner, not standalone item sessions. A child result cannot release
+combat ownership; only the subsequent verified continuation and successful cleanup
+can do so. The earlier continuation v1 route is retired. Current generic parent bodies use
+`generic_event_v10` over the existing v7 routes.
+
+Collection requires the exact owned reward/button and an ordered capacity plan:
+each potion must fit using initially free slots or a preceding pinned Potion Belt.
+The existing item sessions verify the claimed model, exact potion insertion, collection
+and Offer tasks, Resume completion and closed screen. Through the final handoff,
+the bridge retains successful task identities and settled potion slots/capacity;
+changing them stops the host. Faulted/canceled callbacks, duplicate/unowned offers,
+foreign overlays, nested pickup selectors and card rewards stop this path.
+
+The combat host services one resume Offer within both its remaining combat budget
+and a 30-second/128-read item bound. Each native reward is dispatched at most once.
+Its `resume_items` summary preserves attempted/accepted/reconciled counts and
+collected public item keys, including partial progress on failure. Every retained
+history row is type-validated before another input. Lost or malformed receipts are
+never retried.
+
+Setting3 obtains its relic directly through `RelicCmd.Obtain`; it does not
+establish a resume-time relic reward screen or selector caller. Passive callback
+completion does not certify automatic rewards/upgrades. Full-inventory resume
+screens may use [item_policy_v1](#full-inventory-item-policies); the ordered item contracts retain their
+own collection order and capacity requirements.
+
+## Terminal combat rewards
+
+These use the shared core reward adapter after combat, not the event-owned
+nonterminal reward contracts above. The full screen remains limited to eight entries.
 
 ### Extra special-card reward
 
@@ -892,10 +874,10 @@ through the combat terminal observation. Resuming combat with extra rewards and
 enchanted extra cards remain unsupported.
 No event-name registration is used.
 
-The existing public reward routes now project `kind: special_card`, one public
+The existing public reward routes project `kind: special_card`, one public
 card key and the native `take:<slot>` / `claim_special_card` action. Ready payloads
-containing a special card use **schema 2**, unless part of a schema-3 item session
-below. Ordinary ready payloads, waiting, completion and action receipts retain schema 1. The decision digest includes the
+containing a special card use **schema 2**, unless a higher item-session schema
+below is required. Ordinary ready payloads, waiting, completion and action receipts retain schema 1. The decision digest includes the
 new reward kind and action. Older consumers reject the extension before input.
 Both `first-card` and `skip-card` collect the specified special card; those policy
 names continue to govern ordinary card-choice menus.
@@ -912,9 +894,7 @@ receipts are never retried. The host reports verified grants separately in
 
 Combat and reward stages establish their own native identities. This does not add
 an independent proof of historical event provenance across the handoff, certify
-unrelated automatic effects, or establish full-run play. The Lantern Key Fight
-through victory, exact special-card collection and map passed live; see
-[current status](STATUS.md).
+unrelated automatic effects, or establish full-run play.
 
 ### Extra potion/relic rewards and mixed collection
 
@@ -933,8 +913,8 @@ owned relics. Special-card extras retain their populated-card rules above.
 
 The existing core reward reader and controller also collect potion/relic rewards
 on ordinary terminal reward screens. A screen containing items uses **ready schema
-4** for its entire reward session, including ordinary card children and empty
-parents after collection. Every reward row appends `item_key`, a bounded public
+4**, or schema 5/6 for the specific capacity/healing effects below, for its entire
+reward session, including ordinary card children and empty parents after collection. Every reward row appends `item_key`, a bounded public
 model key for `potion`/`relic` and null for other kinds. Item rows have empty cards,
 null gold and no Skip flag. `collect:0` through `collect:7` use action kind
 `collect_item`. Waiting, completion and action receipts remain schema 1.
@@ -961,9 +941,9 @@ that alter these baselines or open a selector remain unsupported.
 
 Both card policies collect items before special/ordinary cards and record only
 verified pickups in `rewards.collected_items` as kind, public key and reward index.
-Prior verified effects survive later stage failures. This is offline development
-coverage; Punch Off through victory, both extra pickups and map remains a pending
-live case, and random relic pickup effects may reach the unsupported boundary.
+Prior verified effects survive later stage failures. Potion Belt capacity and
+Fake Lee’s Waffle healing are the explicit effect exceptions below; arbitrary
+relic pickup effects may reach the unsupported boundary.
 
 ### Terminal Potion Belt capacity pickup
 
@@ -999,8 +979,7 @@ slots and collected potions are excluded from that original-inventory set. A set
 capacity grant must persist until reward completion, including when no potion was
 collected before the belt. Custom event and resume-time item rewards use the
 [ordered capacity contract](#implemented-offline-event-potion-belt-capacity-pickup)
-above. Nested pickup selectors remain unsupported. Evidence is static inspection
-and offline fixtures, not live gameplay.
+above. Nested pickup selectors remain unsupported.
 
 ### Terminal Fake Lee’s Waffle healing pickup
 
@@ -1027,8 +1006,7 @@ effects without dereferencing the freed button. Before completion, the original
 live button remains required. Parent overlay ownership and no-retry rules remain
 unchanged. This is a targeted terminal correction; it does not certify other
 healing relics, event/resume pickup effects or Merchant reward screens exceeding
-the eight-entry projection limit. Current validation and live acceptance are recorded in
-[current status](STATUS.md).
+the eight-entry projection limit.
 
 ### Terminal potion reward policies
 
@@ -1087,116 +1065,20 @@ execution, preventing a late slot lookup from deleting a replacement object.
 Reconciliation requires exact removal, the native removed flag, successful completion
 of the same action task and no action exception; unexpected effects or nested screens
 stop without retry. Cleanup with an unresolved discard fails explicitly.
-Static inspection of the pinned game establishes this queue path; fixtures establish
-the adapter and wire checks. Terminal replacement and skip policies also have
-representative live results, including skip-all with a verified free slot.
 
 These terminal policies are separate from the event/resume `item_policy_v1`
-policies described below. Nested selectors opened by these reward pickups remain
+[policies described above](#full-inventory-item-policies). Nested selectors opened by these reward pickups remain
 unsupported. See [current status](STATUS.md) for the demonstrated cases.
 
-## Implemented offline: event combat resumption
+## Custom screens and endings
 
-The same entry observer now admits `shouldResumeParentEventAfterCombat=true`
-with no event-supplied extra rewards. It binds the original logical `EventRoom`
-and the concrete `EventModel.Resume(AbstractRoom): Task` declaration before the
-fight can end. The initial event session resolves to `combat_resume_handoff`,
-with matching history and a retained session nonce, rather than claiming map
-return or victory. **Battleworn Dummy Setting2** and **training time expiry** are
-representative live-tested cases. Setting2 victory subsequently passed with two
-automatic upgrades observed in the native deck; those parent effects remain
-unverified in the bridge result and do not exercise a multi-card selector.
+<a id="implemented-offline-fake-merchant-custom-screen"></a>
 
-The original event module remains the cleanup owner during combat. After the
-owned choice task and exact combat entry reconcile, ordinary event hooks are
-removed while the exact resume hook and three item observation hooks remain. Ownership is rechecked immediately
-before unpatching; interference or cleanup failure stops the bridge. Core combat
-and combat-choice routes use the same native legality and action bounds as before.
-Other capability routes remain blocked; only the owned resume-item routes below
-can service an interactive resume callback.
+### Fake Merchant
 
-The read-only `/probe/event-combat-v2/public/decision` route returns schema 1,
-protocol `event_combat_v2`, the initial event `session_nonce`, and status
-`combat`, `waiting`, `item` or `resumed`. It is available only during an owned resuming
-combat. An ending fight or room transition waits for the callback; a late combat
-POST is rejected before dispatch as stale. Unknown identities and callback
-fault/cancellation stop the host. No uncertain action is retried.
-
-`EventRoom.Resume` is not a completion witness: it starts callbacks without
-awaiting them and creates the replacement event node immediately. The bridge
-instead requires exactly one callback on the original mutable event, with the
-exact exited combat room, and retains the returned Task. Success also requires
-the original logical event room, run and player, the new `NEventRoom` matching
-that event’s Node, and no active overlay/capstone. A new node alone cannot finish
-a pending callback. An unresolved combat chooser blocks release. Successful
-module disposal precedes clearing the core combat scope and pending action.
-
-`event-combat-map` now handles both destinations. For `combat_resume_handoff`, the
-combat host polls the nonce-bound continuation route within its existing
-300-second/4096-loop bound, preserving attempted/accepted/reconciled actions.
-A successful return is `event_resumed`; training expiry is never labeled victory.
-Then one fresh event session runs through Proceed, followed by the existing
-five-second actionable-map check. The composite retains `event`, plus
-`combat_flow.combat`, `resumed_event` and `map_handoff` even if a later stage fails.
-Another combat from that resumed session is not recursively driven in this batch.
-
-`--event-option` selects one exact, currently legal first parent option by its
-stable ID, then falls back to the existing first-legal policy. A missing, locked
-or ambiguous requested option stops before input; the bridge does not guess a
-replacement. For the representative setup use
-`--event-option BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2` with
-`--capability event-combat-map`. This is a reusable host policy, not a native
-event allowlist or a strategic policy.
-
-### Owned item rewards during resumption
-
-A successful **Battleworn Dummy Setting1** callback awaits a generated potion
-through `RewardsCmd.OfferCustom`. The bridge now observes that callback's exact
-`RewardsSet.Offer`, screen creation and collection tasks. Its async scope carries
-through delayed generation; a reward screen found outside that scope is not adopted.
-Item context uses the retained run/player/logical event room and replacement event
-node. The original Chosen task is preserved; the item completion witness is the
-actual Resume task.
-
-Continuation status `item` permits GET
-`/probe/event-combat-v2/public/item-decision` and POST
-`/probe/event-combat-v2/public/item-action`. The POST uses the existing authenticated
-decision/action headers, canonical item decision digest and `collect:<index>` action.
-The payload reuses `item_v1` for one potion/relic or `item_set_v1` for 2–8 ordered
-item entries, including retained collected rows. These are child routes under the
-retained event owner, not standalone item sessions. A child result cannot release
-combat ownership; only the subsequent verified continuation and successful cleanup
-can do so. The earlier unreleased continuation v1 route is retired; generic parent
-protocol v9 and its routes are unchanged.
-
-Collection requires the exact owned reward/button and an ordered capacity plan:
-each potion must fit using initially free slots or a preceding pinned Potion Belt.
-The existing item sessions verify the claimed model, exact potion insertion, collection
-and Offer tasks, Resume completion and closed screen. Through the final handoff,
-the bridge retains successful task identities and settled potion slots/capacity;
-changing them stops the host. Faulted/canceled callbacks, duplicate/unowned offers,
-foreign overlays, nested pickup selectors and card rewards stop this path.
-
-The combat host services one resume Offer within both its remaining combat budget
-and a 30-second/128-read item bound. Each native reward is dispatched at most once.
-Its `resume_items` summary preserves attempted/accepted/reconciled counts and
-collected public item keys, including partial progress on failure. Every retained
-history row is type-validated before another input. Lost or malformed receipts are
-never retried.
-
-Setting1’s potion collection, full-belt skip and original-potion replacement passed
-live through resumed Proceed/map. Single relics and ordered item sets retain
-fixture evidence only. A Setting3 relic that opens a selector remains unsupported.
-Passive callback completion does not certify its automatic rewards/upgrades.
-Extra potion/relic combat rewards are described above; terminal run progression
-and its remaining live admission failure are described below.
-
-## Implemented offline: Fake Merchant custom screen
-
-The shared event adapter now supports the pinned `NFakeMerchant` inventory flow:
+The shared event adapter supports the pinned `NFakeMerchant` inventory flow:
 open the initially closed inventory, buy zero to six offered relics, close it,
-then use its native Proceed control to reach the map. This is the first custom
-screen implementation. It uses existing parent choices, `choose:N` actions and
+then use its native Proceed control to reach the map.  It uses existing parent choices, `choose:N` actions and
 event/map composition; no additional listener, route or protocol version is needed.
 
 The public choices are `FAKE_MERCHANT.OPEN`,
@@ -1228,12 +1110,21 @@ binding inspection used the same pinned game assembly
 `e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
 It establishes the intended native path, not live execution evidence.
 
-The inventory path has representative live evidence. Already-open entry remains
-unsupported. The initial Foul Potion combat choice is a separate live-tested
-addition described below. Crystal Sphere is also implemented below. See
-[current validation](STATUS.md) for offline test and build results.
+Already-open entry remains unsupported. The initial Foul Potion combat choice
+is described separately below; opening the inventory removes that choice.
 
-## Implemented offline: Crystal Sphere
+#### Initial Foul Potion fight
+
+At Fake Merchant’s untouched initial closed inventory, the first legal owned Foul Potion
+adds `FAKE_MERCHANT.FOUL_POTION.<slot>`. It enqueues native potion use once, guards
+its exact slot at execution, retains `FoulPotionThrown`, and binds the resulting
+combat plus seven exact extra relic rewards. It does not offer this choice after
+opening or shopping. Standard combat/reward/map orchestration continues from the
+verified handoff; the potion action itself is not victory evidence.
+
+<a id="implemented-offline-crystal-sphere"></a>
+
+### Crystal Sphere
 
 The shared event owner supports both native entry choices (`UncoverFuture` and
 `PaymentPlan`) into `NCrystalSphereScreen`. The smallest complete acceptance case
@@ -1277,18 +1168,15 @@ Lost mutation replies are never retried; unresolved disposal remains a failure.
 The child is bounded to 40 actions and 512 native reads, within the existing host
 and parent limits.
 
-The **Uncover Future/reveal/gold reward/map path passed live**, including exact
-completed-overlay cleanup and an independent actionable-map check. Payment Plan
-also passed in the subsequent multi-case session with two parent and eight child
-actions reconciled. Explicit tool-switch variants and card/potion/relic reward
-branches retain offline coverage. See the [live record](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md). Static bindings use the
-same pinned game assembly as the Fake Merchant inspection above. Admission requires
+Static bindings use the same pinned game assembly as Fake Merchant. Admission requires
 entry through an owned ordinary event choice; adopting an already-open sphere,
 full-potion replacement and nested pickup selectors remain outside this path.
-See [current validation](STATUS.md) and the
+See the
 [wire contract](../bridge/Sts2AgentBridge/components/events/wire/schema.md).
 
-## Implemented offline: Trial abandonment confirmation
+<a id="implemented-offline-trial-abandonment-confirmation"></a>
+
+### Trial abandonment confirmation
 
 Trial's Reject page mixes Accept with Double Down. In the pinned native code,
 Double Down has `IsProceed=true`, `DisableOnChosen=false` and a lethal predicate,
@@ -1319,76 +1207,9 @@ There are no mutation retries or direct save/profile operations.
 The parent protocol is `generic_event_v10`; route names remain unchanged. The
 bundled client defaults to cancellation; `--abandon-policy confirm` explicitly
 selects termination. Use `--capability events` for this terminal path rather than a
-stage whose acceptance condition requires a map. Native fixtures and C#/Python
-integration cover cancellation through subsequent Accept/Proceed/map, immediate
-and delayed confirmation, stale controls, task failures, changed completion,
-lost receipts and malformed outcomes. Both popup paths passed live on September
-13: Cancel continued through card rewards and verified map/next-room entry;
-Confirm reconciled `run_abandoned`, with native Defeat and HP zero independently
-observed. See the [multi-case evidence](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md).
+stage whose acceptance condition requires a map.
 
-Source inspection used pinned `sts2.dll` SHA-256
-`e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
-The same bounded inspection found that ordinary relic reward rolls select rarities
-2/3/4, while identified pickup selector relics use shop/ancient rarities 5/7.
-Small Capsule and Toy Box therefore do not establish the proposed ordinary random
-reward → nested-selector case. A concrete shop pickup is a more relevant next
-composition target; nested pickup selectors remain unsupported.
-
-## Separate remaining questions
-
-An allocated off-screen holder can accept direct input. A card without an
-allocated holder cannot use that path yet. Incomplete coverage may require
-scrolling/rebinding or another supported native mechanism; inspect that specific
-case before designing infrastructure. Other selector families may still impose
-layout restrictions and need their own evidence.
-
-The [all-event research map](EVENT_INTERACTION_MAP.md) now records branch families
-for all 68 pinned types and concrete callers for the remaining work. Repeated-page
-progress and pre-selector append-only additions are implemented above. Deck
-changes after selectors, other pre-selector deck mutations, broader pickup
-composition, resume-time selectors/card rewards, repeated/nested pickup children,
-and terminal surfaces are distinct gaps. WoodCarvings’ generic deck
-transformation selector is implemented above; Bird passed live, while Torus remains a branch candidate.
-
-Choose the next feature from those source-backed callers. Positive variable
-transformation and optional Claws selections are implemented. Claws zero-selection
-and partial/full selection have representative live acceptance. Sea Glass has zero/partial/full live acceptance through its
-ancient route; other native ancient routes remain candidates for testing. No
-inspected event/immediate pickup establishes variable-count upgrades or true native
-cancellation. Keep those speculative extensions separate from demonstrated gaps.
-
-For semantic detail use [G7](archive/phase-1/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md), the
-[v10 input experiment](archive/phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md) and the
-[coverage matrix](EVENT_COVERAGE.md).
-For preparation, evidence reuse and cleanup use the [live guide](LIVE_DEVELOPMENT.md).
-
-
-## Full-inventory reward policies and native terminal progression
-
-`item_policy_v1` owns an event reward screen when its items cannot all be collected
-in the original order. It exposes stable indexed offers, explicit card menus,
-public potion-slot keys, legal actions and correlated history. Actions are
-`collect:N`, `discard:N`, `choose:N`, `skip_card` and `skip_remaining`. Card collection
-opens the native menu; choosing or skipping it is a separate action. Native Proceed
-dismisses unclaimed rewards only when that screen permits skipping. Collection,
-original-potion discard and final dismissal retain their exact native tasks;
-settled claimed models, card effects and unrelated inventory remain bound until
-parent completion. New potions cannot be discarded by this policy. The maximum is
-25 child actions across at most eight offers and eight original potion slots.
-
-The event host’s `--event-potion-policy` supports `skip-full` (default), `skip-all`,
-`replace-first` and `stop-on-full`. Capacity grants are preferred before replacement.
-The same policy applies to owned resume-time item screens. Existing fitting item
-sets retain their earlier contracts. The pinned source has no concrete resume-time
-card/selector caller; this implementation makes no broader resume claim.
-
-At Fake Merchant’s untouched initial closed inventory, the first legal owned Foul Potion
-adds `FAKE_MERCHANT.FOUL_POTION.<slot>`. It enqueues native potion use once, guards
-its exact slot at execution, retains `FoulPotionThrown`, and binds the resulting
-combat plus seven exact extra relic rewards. It does not offer this choice after
-opening or shopping. Standard combat/reward/map orchestration continues from the
-verified handoff; the potion action itself is not victory evidence.
+### Architect terminal progression
 
 The Architect’s terminal choice observes the native readiness vote, exact queued
 vote action, `EnterNextAct` and `WinRun` tasks. Only their successful completion,
@@ -1396,12 +1217,16 @@ exact retained ownership/inventory and native win effect produce `run_won`.
 Pending votes or win tasks remain waiting; foreign actions, altered state, failed
 tasks and unresolved cleanup stop the host. No map read is required after `run_won`.
 
-Trial abandonment Cancel/Confirm and Fake Merchant initial Foul Potion entry plus
-combat victory passed live. The corrected assisted seven-relic follow-through also
-passed, including Waffle healing33→41HP at max80, native Proceed, actionable map and
-next room. Waffle was sixth; Strike Dummy was the last pickup. Architect win remains
-open: revised native final-act setup reached Architect, but its initial bridge
-read returned `unsupported_state` with zero attempted actions. The exact admission
-predicate remains unproven. Direct `event THE_ARCHITECT` remains unavailable.
-[Current status](STATUS.md) records these narrow results and the accepted build;
-this does not establish automatic handling of the original ten-entry reward list.
+The implementation has a known live admission failure; see [status](STATUS.md).
+
+<a id="separate-remaining-questions"></a>
+
+## Source and evidence references
+
+The [wire schema](../bridge/Sts2AgentBridge/components/events/wire/schema.md) owns
+payload field definitions. [G7](archive/phase-1/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md)
+and the [V10 input experiment](archive/phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md)
+retain historical artifact semantics. [Static research](EVENT_INTERACTION_MAP.md)
+identifies caller candidates; [status](STATUS.md#implementation-gaps-versus-remaining-live-tests)
+separates current implementation gaps from live validation. Use the
+[live guide](LIVE_DEVELOPMENT.md) for preparation, evidence reuse and cleanup.

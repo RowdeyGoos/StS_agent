@@ -1,83 +1,80 @@
-# Event coverage
+# Event caller evidence index
 
-Updated 2026-09-10. This page records family and caller evidence. It is not a
-production event allowlist: supported shared interactions are discovered at runtime.
-[Generic events](GENERIC_EVENTS.md) explains the architecture; [status](STATUS.md)
-owns the latest operational result and [roadmap](../ROADMAP.md) owns priorities.
-The [all-event research map](EVENT_INTERACTION_MAP.md) classifies native interaction
-requirements across all 68 pinned event types; static findings are not live acceptance.
+Reviewed 2026-09-19; latest live evidence is September 13. Use
+[bridge status](STATUS.md) for current support and gaps, and
+[generic event contracts](GENERIC_EVENTS.md) for exact semantics. This page maps
+**named tested paths to their evidence**. It is not an event allowlist or a second
+family support matrix. No row establishes every branch of an event.
 
-## Interaction families
+## September 12–13 cases
 
-| Family | Implemented behavior and evidence | Remaining limits |
+The [multi-case ledger](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md) retains failed
+attempts, corrected releases, setup assistance and cleanup. The path/result below
+summarizes the final recorded case; it does not repin earlier tests to the latest DLL.
+
+| Caller/path | Recorded result | Qualification |
 | --- | --- | --- |
-| Ordinary option pages and Proceed | Generic native control; Dense Vegetation continuation live | Longer chains and other branches need evidence |
-| Item rewards | Singleton potion/relic children and Potion Courier/Ransack live; `item_set_v1` now has native/C#/Python fixtures for 2–8 potion/relic entries, exact ordered collection and retained prior effects; Potion Courier/Grab Potions three-Foul-Potion set and fresh map passed live | Other counts, relic-containing sets, full-inventory handling, nested pickups and broader relic/caller evidence |
-| Add cards | Positive variable counts up to eight in fixtures; Cheese/Gorge two-of-eight live | Other callers/domains/counts are not all live-proven |
-| Upgrade cards | Fixed counts 1–8, exact preview mapping and allocated off-screen holder selection in native-to-Python fixtures; Smith and Sapphire Seed single upgrades live, including Sapphire Seed off-screen slot 20 of 23 | Multi-upgrade live evidence, variable counts and unallocated holders |
-| Enchant cards | Single-card v1 has Sapphire Seed/Sown and Grave/SoulsPower live evidence; fixed multi-card v2 (2–8) has native/C#/Python fixtures; Prickly Sponge fixed-two Steady, exact original preview/effects and fresh core map passed live | Other counts and callers remain open; candidates must be unenchanted; stacking/replacement and optional counts unsupported |
-| Remove cards | Generic `card_remove_v2`: positive counts up to eight, exact removal preview/effect and optional single appended parent grant with separate unverified metadata; strict standalone v1 remains unchanged; Amalgamator/CombineStrikes fixed-two removal, upgraded Ultimate Strike observation and fresh core map passed live | Other removal callers/counts, optional selection and unallocated holders |
-| Transform cards | Fixed counts and positive variable counts up to eight in G7 fixtures; Aroma/Let Go fixed-one live | Variable-count live evidence and unallocated holders; optional v3 is described below |
-| Optional/zero selection | `card_add_v2` (0..15, explicit confirm) and `card_transform_v3` (0..8, preview/confirm); Sea Glass and Claws zero/partial/full selection passed through ancient pickups and map return | Other domains/callers, empty candidate domains and true cancellation remain separate |
-| Repeated option pages | Fresh native controls plus completed callbacks permit identical keys/text and revisits; AbyssalBaths passed two Lingers through Exit/Proceed and fresh core map live; fixtures also cover separate completed item children | EndlessConveyor and SlipperyBridge need caller evidence |
-| Deck changes around selectors | Append-only additions before the first owned selector request form its fixed baseline; Grave/Confront passed live; native-to-host enchant/upgrade/transform shapes pass through Proceed/map; removal followed by one appended grant passed Amalgamator/CombineStrikes live in v2 | Trial and other callers need live evidence; changed survivors, multiple grants and additions after other selector operations except optional ChooseACard v2 remain unsupported; automatic addition provenance is not verified |
-| Event card rewards and multiple reward entries | `card_reward_v1` covers singleton menus; `card_reward_set_v1` now has native/C#/Python fixtures for 2–8 ordinary CardReward entries with 1–5 offers each, per-menu choice/Skip and final dismissal. BrainLeech/Rip chose Equilibrium and returned to map live; ColorfulPhilosophers/Necrobinder passed three menus with choose/Skip/choose, final dismissal and fresh map. `item_set_v1` supports 2–8 potion/relic entries in fixtures and a three-potion set live; Cheese uses a different add-grid surface | Other menu counts/outcomes and singleton Skip/dismiss live acceptance, broader mixed-set coverage, repeated offers within one option, SpecialCardReward, reroll/multipick, substituted cards and nested pickup/selector ownership remain gaps |
-| Mixed card/item reward sets | `mixed_reward_set_v1` supports 2–8 entries with ordered card choice/Skip, potion/relic collection and final dismissal; Lost Coffer potion-first choose and Skip paths passed live | Other interleavings/counts, full-inventory replacement and nested pickup selectors remain open |
-| Embedded event combat | Non-resuming entry and callback-verified event resumption are implemented offline, with exact ownership and bounded host composition; Dense Vegetation Fight after Rest and Battleworn Dummy Setting2/training expiry are pending live cases | Unreleased and not live-demonstrated; extra combat rewards, resume-time card rewards, nested selectors and recursive combat cycles remain unsupported; automatic effects unverified |
-| Item rewards during event resumption | Owned single potion/relic rewards and 2–8 ordered item entries reuse the existing item contracts; offline native, client and socket checks cover collection, retained task/inventory evidence and return to the event. Battleworn Dummy Setting1 is the source-backed potion caller | Not released or live-demonstrated; relics/sets have fixture evidence only; full inventories and nested pickup selectors remain unsupported |
-| Ancient layout and dialogue | Exact native layout/hitbox admission, bounded dialogue progress, supported pickups and map handoff; representative console-selected ancient option routes passed live | Console entry may skip initial dialogue; natural entry/dialogue and unsupported pickup families need separate evidence |
-| Inactive combat layouts | Native `NCombatEventLayout` admission with stable embedded room and `HasCombatStarted=false`; Punch Off/Nab passed live with Meal Ticket collection and map return | Its combat branch is not demonstrated; automatic Injury remains unverified; choices cannot all be classified as combat-starting in advance |
-| Custom layouts and terminal flows | Static caller/surface map identifies CrystalSphere, FakeMerchant, Trial popup and TheArchitect | Custom adapters and terminal outcomes remain unsupported; see the research map |
-| Generic deck transformations | Fixed-one native transform-prompt `FromDeckGeneric` → `NDeckCardSelectScreen` uses original preview and exact `card_transform_v2` journal; Bird/Peck and Torus/ToricToughness shapes pass native/C#/Python fixtures; WoodCarvings/Bird passed live with upgraded Strike slot 0 of 21, exact preview, verified transformation and fresh core map | Torus live acceptance, selectorless automatic cases, optional/multiple generic selection and other prompt semantics remain open |
-| Choose-one offered cards | Required `card_offer_v1` has fixtures but no required-choice caller found; optional `card_offer_v2` supports Skip and zero/one separately observed appended grant. Lead Paperweight choose/Skip passed; Hefty Tablet choose/Skip plus Injury passed on the preceding release | Lead Paperweight and Massive Scroll allow Skip and use v2; grant provenance, multiple grants, substitution and nested pickups remain open |
-| Card bundles | `bundle_offer_v1`: 1–5 bundles of 1–8 cards, exact native preview/Confirm and ordered additions; Scroll Boxes three-card bundle and map return passed live | Other bundles/callers, preview cancellation, extra grants and nested pickups remain open |
-| Card-results acknowledgment | `card_results_v1` acknowledges 1–64 displayed results through owned SimpleCardsView and native Confirm; Pandora’s Box nine-card screen and map return passed live | Automatic transformation correctness and normal Darv pool eligibility remain unverified; nested/alternative results screens unsupported |
+| Dense Vegetation: Rest → Fight | Victory, ordinary rewards and actionable map passed | Representative non-resuming combat |
+| Battleworn Dummy: Setting2 expiry | Training expiry, exact callback, resumed Proceed/map passed | Expiry is `event_resumed`, not victory |
+| Battleworn Dummy: Setting1 victory | Potion collect, full-belt skip and replacement passed through resumed Proceed/map | Consecutive matching combats also passed; no resume relic/set proof |
+| Battleworn Dummy: Setting2 victory | Two of four Bludgeons visibly upgraded, resumed Proceed/map and next room passed | Automatic upgrades; parent effects unverified, **not a selector test** |
+| Lantern Key: Keep the Key → Fight | Victory, exact special-card collection and map passed | Prepared-combat correction precedes accepted result |
+| Punch Off: Take Them → Fight | Potion/relic extras, ordinary rewards and map passed | Terminal potion policy tests include skip-all with verified free capacity and distinct same-key replacement |
+| Potion Courier: Grab Potions | Full-belt native skip and three original-potion replacements passed | New pickups protected; representative three-potion set |
+| Neow/Lost Coffer | Full-belt card acquisition with potion skip or replacement passed | Uses actual advertised reward order |
+| Fake Merchant: inventory | Open, two purchases, close/Leave and map passed | Zero/six purchase variants not demonstrated |
+| Fake Merchant: initial Foul Potion | Combat, seven relics, Waffle healing33→41/max80, Proceed/map/next room passed | Native setup removed ordinary rewards first; original ten-entry screen not covered. Waffle was sixth, Strike Dummy last |
+| Crystal Sphere: Payment Plan | Reveal/reward/exit and independent map check passed | Does not establish every reward/tool variant |
+| Trial: Reject → Double Down | Cancel and Confirm both passed | Cancel continued to rewards/map/next room; Confirm produced `run_abandoned` and native Defeat/HP0 |
+| The Architect: final Proceed | **Initial read failed `unsupported_state`; zero actions** | Native final-act setup succeeded; exact rejection predicate and terminal win remain unresolved |
 
-All eligible allocated transform holders now use direct input in the unified
-bridge. Native fixtures cover different slots, including 0, 15 and 19 in a
-20-card domain, plus missing/disabled/reassigned and deferred targets. The earlier
-card16-only mask was a test restriction and is removed. The controlled
-[V10 result](archive/phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md)
-establishes one allocated off-screen transform holder. The September 9
-[combined batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) separately establishes
-an allocated off-screen single-upgrade holder. Neither proves unallocated cards
-or every selector family. A further test should answer
-a new behavior question rather than repeat the geometry investigation.
+The separate [Crystal Sphere ledger](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md)
+records Uncover Future/gold/map acceptance and exact completed-overlay cleanup.
+Ordinary shop tests are also in the multi-case ledger; they are room flows, not
+Fake Merchant event coverage.
 
-## Caller evidence
+## September 9–10 cases
 
-The [accepted census](archive/phase-1/research/PHASE_1_EVENT_COVERAGE_CENSUS_GENERIC_RESULT.md)
-contains 68 concrete types, including ancient/deprecated types. That count does
-not establish the reachable pool or runtime eligibility. The rows below retain
-positive caller evidence from earlier inspection, fixtures or live tests. The new
-research map supplies broader static classification; unlisted or untested paths
-have no additional runtime acceptance. No event has complete all-branch evidence.
+The [combined ledger](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) binds each result
+to its original release. These remain representative evidence for the named path.
 
-| Event | Observed path | Evidence limit |
+| Caller/path | Recorded result | Qualification |
 | --- | --- | --- |
-| `DenseVegetation` | Ordinary choice → follow-up → Proceed/map passed live; Rest → Fight → rewards/map is implemented offline | Combat branch still awaits live testing |
-| `BattlewornDummy` | Combat → exact Resume callback → event/map implemented offline; Setting1 potion reward supported; Setting2 and training expiry cover passive return | No live acceptance yet; automatic upgrades/relic effects unverified; Setting3 nested pickup selectors unsupported |
-| `RoomFullOfCheese` | Gorge adds exactly two of eight; Search returns to map with zero item children | Bounded live paths; other branches unclassified |
-| `PotionCourier` | Ransack collects one potion; Grab Potions collects three Foul Potions; both complete Proceed/map | Representative bounded live paths; full-inventory behavior remains unsupported |
-| `AromaOfChaos` | MaintainControl upgrade-one fixtures; LetGo fixed-one transformation live, including direct card16 in V10 | Other targets/counts and MaintainControl live remain open; unified smoke has the final-summary limit below |
-| `SapphireSeed` | Consume/Eat single upgrade, including off-screen Defend slot 20 of 23; Plant and Nourish/Sown on Defend slot 5 of 24; both passed Proceed and independently checked core map live | Other domains/counts and enchantments/callers unverified |
-| `EndlessConveyor` | JellyLiver fixed-one transform caller statically audited | No native caller/live acceptance; selected body did not establish finish |
-| `MorphicGrove` | Group fixed-two transform caller statically audited; loses current gold first | No native caller/live acceptance |
-| `Symbiote` | KillWithFire equal-count transform request statically audited | Dynamic count unproved; no native caller/live acceptance |
-| `Trial` | NondescriptInnocent fixed-two transform caller statically audited; adds curse first | No native caller/live acceptance |
-| `WhisperingHollow` | Hug fixed-one transform caller statically audited; dynamic HP loss afterward | No native caller/live acceptance |
+| Abyssal Baths | Two Lingers, Exit/Proceed and fresh map | Reused keys with fresh native controls |
+| Grave of the Forgotten: Confront | Curse appended before SoulsPower selection, Proceed/map | Automatic grant provenance unverified |
+| Amalgamator: CombineStrikes | Exact two-card removal plus observed merged grant, map | One appended grant; no arbitrary multi-grant proof |
+| Sapphire Seed | Single upgrade including slot20/23; Sown selection, map | Allocated off-screen holder, not unallocated input |
+| Waterlogged Scriptorium: Prickly Sponge | Fixed-two Steady, exact preview/effects, map | Other counts/enchantments need separate evidence |
+| Potion Courier: Grab Potions | Three exact Foul Potion collections, map | Earlier singleton Ransack evidence also exists |
+| Brain Leech: Rip | One ordinary card reward chosen, map | Singleton Skip/dismiss remains offline evidence |
+| Colorful Philosophers: Necrobinder | Three menus choose/Skip/choose, final dismissal, map | Not every set size or outcome |
+| Wood Carvings: Bird | Original-card preview, journal-verified transform, map | Peck separately confirmed by user; Torus untested live |
+| Neow/Lost Coffer | Potion→card choose and Skip/dismiss paths, map | Construction order is not authoritative screen order |
+| Orobas/Sea Glass | Zero, three and fifteen selected additions, map | One optional 15-card grid, not sequential children |
+| Tanx/Claws | Zero, three and six transforms, preview/Confirm, map | Zero is confirmation, not cancellation |
+| Neow/Lead Paperweight | Choose and Skip with no extra grant, map | Optional v2, not required v1 |
+| Neow/Hefty Tablet | Choose plus Injury; Skip plus Injury; map | Original preceding release retained in ledger; grant provenance unverified |
+| Neow/Scroll Boxes | Three-card bundle, preview/Confirm, map | Other bundles/preview cancellation not established |
+| Punch Off: Nab | Meal Ticket collection and map | Automatic Injury unverified; Fight evidence is separate above |
+| Darv/Pandora’s Box | Nine-result acknowledgment and map | Prior transformations and natural pool eligibility unverified |
 
-The earlier [unified module smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
-includes singleton potion collection and Aroma/Let Go with one completed card
-child. Generic orchestration resolved, but its final `effects` summary remained
-`unverified`; legacy public-screen observation after the controlled event setup
-was unsupported/unknown. Preserve those distinctions when reporting completion.
+Ancient cases used controlled console entry. They do not establish natural initial
+dialogue or normal pool eligibility. Neow’s Fury zero/two-card combat choices are
+in the same ledger and described in [combat choices](COMBAT_CHOICES.md).
 
-## Detailed evidence
+## Earlier results and source candidates
 
-Use the [archive index](archive/README.md) for historical contracts and the
-[G7 acceptance](archive/phase-1/research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md),
-[Cheese live result](archive/phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md)
-and [potion live result](archive/phase-1/research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
-for exact artifact-level results. Superseded checkpoint chronology is in Git at
-`176882fe2016832d7dbafd355f76c42bb89cf1ae`; do not append it back to this matrix.
+[Unified smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) covers earlier core,
+rest/shop, singleton potion and Aroma/Let Go paths. Its final generic `effects`
+summary remained `unverified`; its legacy public-screen read was not a map probe.
+The [V10 acceptance](archive/phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md)
+is the original allocated off-screen transform result. Earlier
+[Cheese add-two](archive/phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V5_ACCEPTANCE.md)
+and [Potion Courier singleton](archive/phase-1/research/PHASE_1_GENERIC_EVENT_V6_POTION_COURIER_LIVE.md)
+records retain their exact original scope.
+
+For untested caller candidates—including Endless Conveyor, Morphic Grove,
+Symbiote, Whispering Hollow and Trial’s conditional selector branches—use the
+[static research map](EVENT_INTERACTION_MAP.md). Its 68 types/105 branch groups
+are a source census, not a count of supported events, reachable events or remaining
+features. Keep future attempt chronology in the dated evidence ledger.

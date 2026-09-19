@@ -12,8 +12,7 @@ The repository contains three complementary systems:
 
 This is not yet a complete autonomous agent or a verified full-game simulator.
 [Current status](docs/STATUS.md) distinguishes implemented,
-fixture-tested and live-demonstrated behavior, including the successful direct
-off-screen transformation-card test.
+fixture-tested and live-demonstrated behavior, known failures and implementation gaps.
 
 Requires Python 3.10+. New coding sessions follow [AGENTS.md](AGENTS.md).
 
@@ -93,10 +92,11 @@ Read [current status](docs/STATUS.md) and the
 [live development guide](docs/LIVE_DEVELOPMENT.md) before selecting a component
 or preparing a live test. The [unified bridge](bridge/Sts2AgentBridge/README.md)
 packages all supported capabilities in one mod, with one client and development
-checker. The [unified module smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md)
-demonstrated representative combat, reward, map, shop, card, item and event paths,
-with recorded setup assistance and remaining limits. Generalized transform input
-also has focused native fixtures. Complete autonomous runs remain an open target.
+checker. The status page separates implemented support, known live failures,
+missing features and remaining live tests. Use the [caller evidence index](docs/EVENT_COVERAGE.md)
+to find exact tested branches and the [event contracts](docs/GENERIC_EVENTS.md)
+for protocol/effect details. Dated ledgers retain test history and setup assistance.
+Complete autonomous runs remain an open target.
 
 ## Project layout and documentation
 

@@ -70,7 +70,9 @@ Native limits are 32 selector episodes per process, 2,048 reads per episode,
 200 pending reconciliation reads and 32 attempted inputs. Shared transport and
 core limits also apply.
 
-## Host behavior and validation
+<a id="host-behavior-and-validation"></a>
+
+## Host behavior
 
 `--capability combat-choice` resolves one selector. `--capability combat` uses the
 existing public combat codec and heuristic provider, resolves a supported chooser
@@ -90,14 +92,6 @@ observations in the original round remain pending and service native choices;
 only the exact next round or terminal combat reconciles that end-turn. Backward
 and skipped rounds still stop. Unknown/lost receipts stop.
 
-Offline evidence includes actual-adapter inert native fixtures, adversarial
-Python accounting cases, real C# producer-to-Python chooser tests and the shared
-socket play → chooser → resumed combat → victory fixture. The latter exercises
-both codecs and preserves separate parent/child counts. Independent semantic
-review found no outstanding blockers after delayed-completion reconciliation was
-corrected. Current release identity and executed checks are recorded in the
-[release evidence](../bridge/Sts2AgentBridge/releases/current/README.md).
-
 The shared `combat-map` mode composes this combat controller with the maintained
 reward codec, then the existing map-readiness check. It claims gold, chooses or
 skips supported card rewards and stops at an actionable map. Each stage retains
@@ -106,15 +100,14 @@ map check. The new reward host uses stable reward-set indices through compacted
 visible slots, binds opened card children to their original offer, checks player
 and revision transitions and never counts an unverified receipt as an effect.
 See the [bridge guide](../bridge/Sts2AgentBridge/README.md#installation-client-and-cleanup)
-for policy flags, bounds and shared-client pacing. Native combat/reward/choice
-adapters are unchanged by this composition.
+for policy flags, bounds and shared-client pacing.
 
-The September 9 live retest completed Neow's Fury with two selected cards from
-six available and zero selected from seven available. Both native tasks reported
-`selection_verified`; both combats resumed and ended in victory without UI input
-inside the flows. The corrected host waited through original-round snapshots
-after accepted end-turn without premature reconciliation. First-card and skip-card
-reward policies each verified effects and returned to an actionable map. See the
-[live record](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) for counts, the earlier
-failed attempt and cleanup. Exhaust/fixed-count callers, generic-event optional
-selection, other selector domains and full runs are separate evidence targets.
+## Evidence
+
+[Status](STATUS.md) owns current support and remaining live gaps. The
+[September 9 ledger](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) records Neow’s Fury
+zero/two-card selection, resumed victories and both terminal card policies through
+an actionable map, with original release identities and earlier failed attempts.
+Other exhaust/fixed-count callers retain fixture coverage; this does not establish
+full-run play. [Current release validation](../bridge/Sts2AgentBridge/releases/current/README.md)
+binds the integrated checks.

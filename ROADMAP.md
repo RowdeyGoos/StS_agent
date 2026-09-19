@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 2026-09-13. This file owns priorities; [current status](docs/STATUS.md)
+Priorities set 2026-09-13; documentation clarified 2026-09-19. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -34,20 +34,21 @@ Allocated off-screen transformation and single-upgrade holders each have a
 representative live result. Further tests should address new behavior, such as
 multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
-## Remaining generic interaction work
+## Scope of further bridge implementation
 
-The [research map](docs/EVENT_INTERACTION_MAP.md#interaction-families-and-concrete-blockers)
-owns the event-to-family matrix and named acceptance candidates. Its concrete gaps
-now require concrete callers for broader deck changes, resume-time card/selector
-rewards and multiple independent children within one callback. The current batch
-implements shop pickup selectors, full-inventory event policies, the initial
-Fake Merchant Foul Potion fight and The Architect’s terminal progression. Plan shared capabilities from those dependencies, not event-name rules.
+[Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
+owns the missing-feature list, separately from implemented capabilities awaiting
+live coverage. The confirmed gaps include Dig/Lift/Cook/Clone/Kindle/Hatch rest
+actions and wider reward-screen bounds. Unsupported selector/pickup shapes without a concrete caller
+are explicitly separated from that list; multi-card Smith is not a native gameplay
+requirement in the pinned assembly. This documentation cleanup does not
+promote every unsupported variant into an immediate priority.
 
-Keep representative held-out/live coverage for implemented families separate from
-new implementation. Variable upgrades, true native cancellation, enchantment
-stacking/replacement and unallocated-holder mechanisms need a concrete caller or
-setup before becoming priorities. Claws and Sea Glass establish optional selection
-through ancient pickup paths; these optional selectors have zero/partial/full live acceptance. They do not establish variable-count upgrades.
+Use the [research map](docs/EVENT_INTERACTION_MAP.md) for source-backed callers;
+its historical gap matrix is not a current task queue. Variable upgrades, enchantment
+stacking/replacement and unallocated-holder mechanisms need a concrete caller/setup before implementation. Native cancellation
+is confirmed for rest-site Smith/Cook, separately from optional-zero event selectors.
+Plan shared capabilities from native dependencies, not event-name rules.
 
 ## Headless and learning direction
 
