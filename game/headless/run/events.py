@@ -98,7 +98,7 @@ def validate_event(state, graph, *, cards=DEFAULT_CARDS):
     if (type(pending["event_instance_id"]) is not int or pending["event_instance_id"] < 0
             or pending["event_instance_id"] != state.next_event_id - 1):
         raise ValueError("Invalid owned event identity.")
-    if graph is not None:
+    if graph is not None and state.epilogue_event_id is None:
         node = None if state.current_node_id is None else room_node(state, graph, state.current_node_id)
         if node is None or node.kind != "event" or node.event_id != pending["definition_id"]:
             raise ValueError("Event differs from its room.")

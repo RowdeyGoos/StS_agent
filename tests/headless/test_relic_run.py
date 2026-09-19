@@ -173,7 +173,7 @@ def test_lava_rock_first_boss_adds_two_owned_distinct_relic_rewards_once():
     from game.headless.run.rewards import begin_combat_rewards
     from game.headless.encounters.catalog import ENCOUNTERS
 
-    boss = next(k for k, v in ENCOUNTERS.items() if v.room_kind == "boss")
+    boss = next(k for k, v in ENCOUNTERS.items() if v.room_kind == "boss" and v.act == 1)
     r = run_with("lava_rock")
     begin_combat_rewards(r.state, r.cards, encounter_id=boss)
     extra = r.state.pending["extra_rewards"]

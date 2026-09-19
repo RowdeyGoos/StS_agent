@@ -17,6 +17,7 @@ class CompletedAct:
     event_progression: EventProgression
     unknown_rooms: UnknownRooms
     event_pool: tuple[str, ...]
+    spoils_map: dict | None = None
 
 
 def view(state, record, index):
@@ -25,7 +26,7 @@ def view(state, record, index):
     result.config = replace(state.config, act=record.act, event_pool=record.event_pool)
     result.act_index = index
     result.completed_acts = state.completed_acts[:index]
-    for key in ('visited_nodes', 'encounter_progression', 'event_progression', 'unknown_rooms'):
+    for key in ('visited_nodes', 'encounter_progression', 'event_progression', 'unknown_rooms', 'spoils_map'):
         setattr(result, key, getattr(record, key))
     result.current_node_id = record.visited_nodes[-1] if record.visited_nodes else None
     return result
@@ -49,9 +50,16 @@ def validate(state):
         if not isinstance(record, CompletedAct) or record.act != config.campaign[i] or not isinstance(record.graph, MapGraph):
             raise ValueError('Invalid completed act owner.')
         old = view(state, record, i)
-        from game.headless.map.standard import profile_for
+        if i:
+            from game.headless.map.standard import ancients_for
+            root = record.graph.node(f'act{i + 1}.ancient')
+            if root.row != 0 or root.kind != 'event' or root.event_id not in ancients_for(record.act):
+                raise ValueError('Archived act is missing its Ancient entrance.')
+            if state.initialization is not None and root.event_id != state.initialization['acts'][i]['ancient']:
+                raise ValueError('Archived Ancient differs from native initialization.')
+        from game.headless.map.standard import profile_for, SPOILS_PROFILE
         from game.headless.map.golden_path import PROFILE as GOLDEN
-        if record.graph.generation not in (profile_for(record.act), GOLDEN):
+        if record.graph.generation not in (profile_for(record.act), GOLDEN, *((SPOILS_PROFILE,) if record.act == 'hive' else ())):
             raise ValueError('Completed act map differs from its region.')
         if not isinstance(record.visited_nodes, list) or not record.visited_nodes or len(set(record.visited_nodes)) != len(record.visited_nodes):
             raise ValueError('Invalid completed act path.')
@@ -66,13 +74,16 @@ def validate(state):
             raise ValueError('Completed act is missing room history.')
         record.unknown_rooms.validate(old, record.graph)
         record.event_progression.validate(old, record.graph)
+        from game.headless.run.spoils_map import validate as validate_spoils
+        validate_spoils(old, record.graph)
 
 
 def can_continue(engine):
     from game.headless.run.state import RunPhase
     s = engine.state
+    from game.headless.run.epilogue import complete_campaign
     return (s.phase is RunPhase.ACT_COMPLETE and s.config is not None and bool(s.config.campaign)
-            and s.act_index + 1 < len(s.config.campaign) and not s.relic_work
+            and (s.act_index + 1 < len(s.config.campaign) or complete_campaign(s)) and not s.relic_work
             and s.pending is None and s.hp > 0 and engine.combat is None
             and engine.graph is not None and s.encounter_progression is not None)
 
@@ -80,15 +91,18 @@ def can_continue(engine):
 def advance(engine):
     from game.headless.run.state import RunPhase
     from game.headless.map.standard import generate_map
-    from game.headless.events.progression import HIVE_PROFILE
+    from game.headless.events.progression import native_profile
     from game.headless.generation.room_pools import REGION_POOLS, SHARED_EVENTS
     if not can_continue(engine):
         raise ValueError('No completed generated act is ready to continue.')
+    from game.headless.run.epilogue import complete_campaign, begin as begin_epilogue
+    if complete_campaign(engine.state):
+        return begin_epilogue(engine)
     state, graph = engine.state, engine.graph
     # Construction uses an independent owner; a failed map/queue build changes nothing.
     trial = deepcopy(state)
     trial.completed_acts.append(CompletedAct(state.config.act, graph, list(state.visited_nodes),
-        deepcopy(state.encounter_progression), deepcopy(state.event_progression), deepcopy(state.unknown_rooms), state.config.event_pool))
+        deepcopy(state.encounter_progression), deepcopy(state.event_progression), deepcopy(state.unknown_rooms), state.config.event_pool, deepcopy(state.spoils_map)))
     trial.act_index += 1
     act = trial.config.campaign[trial.act_index]
     trial.config = replace(trial.config, act=act, event_pool=(*REGION_POOLS[act][3], *SHARED_EVENTS))
@@ -100,12 +114,12 @@ def advance(engine):
         ids = native_ids(act)
         trial.encounter_progression = EncounterProgression([ids[n] for n in initial['normal']],
             [ids[n] for n in initial['elites']], ids[initial['boss']], act=act)
-        trial.event_progression = EventProgression(list(initial['events']), profile=HIVE_PROFILE)
+        trial.event_progression = EventProgression(list(initial['events']), profile=native_profile(act))
         ancient = initial['ancient']
     else:
         trial.encounter_progression = EncounterProgression.generate(trial.rng, act=act)
         trial.event_progression = EventProgression.generate(trial.rng, trial.config.event_pool, act=act)
-        ancient = trial.rng.choice('act2.ancient', REGION_POOLS[act][4])
+        ancient = trial.rng.choice(f'act{trial.act_index + 1}.ancient', REGION_POOLS[act][4])
     next_graph = generate_map(trial.rng, event_pool=trial.config.event_pool, act=act, ancient=ancient)
     from game.headless.run import spoils_map
     next_graph = spoils_map.generate(trial, next_graph)

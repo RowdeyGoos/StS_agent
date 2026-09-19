@@ -25,14 +25,15 @@ def generate(*, act_index=0, ancient=None):
 
 def validate(graph):
     prefix = graph.nodes[0].node_id.split('.')[0]
-    if prefix not in ('act1', 'act2'):
+    if prefix not in ('act1', 'act2', 'act3'):
         raise ValueError('Invalid Golden Compass act.')
     root = next((n for n in graph.nodes if n.row == 0), None)
     expected = nodes(prefix)
     entries = (prefix + '.1.3',)
     if root:
-        if (prefix != 'act2' or root != MapNode(prefix + '.ancient', 'event', entries,
-                event_id=root.event_id, row=0, column=3) or root.event_id not in ('pael', 'orobas', 'tezcatara', 'darv')):
+        from game.headless.map.standard import ancients_for
+        if (prefix not in ('act2', 'act3') or root != MapNode(prefix + '.ancient', 'event', entries,
+                event_id=root.event_id, row=0, column=3) or root.event_id not in ancients_for('hive' if prefix == 'act2' else 'glory')):
             raise ValueError('Invalid Golden Compass Ancient.')
         expected, entries = (root, *expected), (root.node_id,)
     if graph.nodes != expected or graph.start_id != entries[0] or graph.entry_node_ids != entries:

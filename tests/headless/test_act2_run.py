@@ -70,7 +70,7 @@ def complete_act(run, *, verify=False, path='left'):
 
 @pytest.fixture
 def first_act_complete():
-    run = RunEngine.ironclad_run(seed=2)
+    run = RunEngine.ironclad_run(last_act="hive", seed=2)
     run.state.max_hp = run.state.hp = 10000
     complete_act(run)
     return run
@@ -115,7 +115,7 @@ def test_transition_reuses_startup_queues_and_heals_only_at_ancient(first_act_co
 @pytest.mark.parametrize('first_act', ['overgrowth', 'underdocks'])
 @pytest.mark.parametrize('profile', ['fixture', 'native'])
 def test_both_acts_through_hive_boss_with_every_decision_restored(first_act, profile):
-    run = RunEngine.ironclad_run(seed=2, first_act=first_act, rng_profile=profile)
+    run = RunEngine.ironclad_run(last_act="hive", seed=2, first_act=first_act, rng_profile=profile)
     run.state.max_hp = run.state.hp = 10000
     complete_act(run, verify=True)
     step(run, ContinueAct())
@@ -152,7 +152,7 @@ def test_corrupted_cross_act_history_is_rejected_atomically(first_act_complete, 
 
 
 def test_invalid_or_failed_continue_cannot_advance_rng_or_history(first_act_complete, monkeypatch):
-    run = RunEngine.ironclad_run(seed=0)
+    run = RunEngine.ironclad_run(last_act="hive", seed=0)
     before = saved(run)
     with pytest.raises(ValueError): run.apply(ContinueAct())
     assert saved(run) == before
@@ -169,7 +169,7 @@ def test_invalid_or_failed_continue_cannot_advance_rng_or_history(first_act_comp
 def test_hive_skips_shared_events_seen_in_previous_act():
     from game.headless.events.progression import EventProgression, HIVE_PROFILE
     from game.headless.events.eligibility import entry_conditions
-    run = RunEngine.ironclad_run(seed=0)
+    run = RunEngine.ironclad_run(last_act="hive", seed=0)
     conditions = entry_conditions(run.state)
     conditions.update(act_index=1, gold=200)
     queue = EventProgression(['room_full_of_cheese', 'brain_leech'], profile=HIVE_PROFILE)
@@ -200,7 +200,7 @@ def test_ancient_room_heal_and_maw_bank_happen_once_in_native_order(first_act_co
 
 
 def test_prior_map_relics_retain_their_original_act_and_map():
-    run = RunEngine.ironclad_run(seed=2)
+    run = RunEngine.ironclad_run(last_act="hive", seed=2)
     run.obtain_relic('golden_compass')
     run.obtain_relic('fur_coat')
     run.state.hp = run.state.max_hp = 10000

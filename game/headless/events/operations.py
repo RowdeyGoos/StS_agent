@@ -44,6 +44,8 @@ def execute(state, cards, operation):
         state.freed_repy = True
         return None
     if op == 'win_run':
+        if state.config is not None and state.config.campaign and state.epilogue_event_id is None:
+            raise ValueError('Campaign victory requires its completed Architect epilogue.')
         from game.headless.run.state import RunPhase
         state.phase = RunPhase.VICTORY
         state.pending = None

@@ -96,14 +96,14 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
 def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="first-slice", path="left", boss=None, elite=None, hallway=None, ancient=None):
     if path not in ("left", "right"):
         raise ValueError("Unknown demo path preference.")
-    if ancient not in (None, "neow") or ancient is not None and route not in ("overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive"):
+    if ancient not in (None, "neow") or ancient is not None and route not in ("overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive", "overgrowth-glory", "underdocks-glory"):
         raise ValueError("Neow start requires the generated Act 1 route.")
-    if route in ("overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive"):
+    if route in ("overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive", "overgrowth-glory", "underdocks-glory"):
         if any(value is not None for value in (boss, elite, hallway)):
             raise ValueError("Generated routes select encounters from owned queues.")
         from game.headless.run.ancient import PROFILE as ANCIENT_PROFILE
-        if route.endswith('-hive'):
-            engine = RunEngine.ironclad_run(seed=seed, first_act=route.removesuffix('-hive'), ancient_profile=ANCIENT_PROFILE if ancient else None)
+        if route.endswith(('-hive', '-glory')):
+            engine = RunEngine.ironclad_run(seed=seed, first_act=route.rsplit('-', 1)[0], last_act=route.rsplit('-', 1)[1], ancient_profile=ANCIENT_PROFILE if ancient else None)
         else:
             engine = RunEngine.ironclad_act1(seed=seed, act=route.removesuffix("-generated"), ancient_profile=ANCIENT_PROFILE if ancient else None)
     else:
@@ -136,7 +136,7 @@ def main(argv=None):
                             help="Replace this encounter on the authored Act 1 route.")
     parser.add_argument("--ancient", choices=("neow",), help="Begin generated Act 1 with the restricted Neow pickup choices.")
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--route", choices=(*ROUTES, "overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive"), default="first-slice")
+    parser.add_argument("--route", choices=(*ROUTES, "overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive", "overgrowth-glory", "underdocks-glory"), default="first-slice")
     parser.add_argument("--path", choices=("left", "right"), default="left",
                         help="Demo preference for the first or last available branch.")
     parser.add_argument("--rest-choice", choices=("rest", "smith"), default="smith")
@@ -145,7 +145,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     engine, trace = play_slice(seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path, boss=args.boss, elite=args.elite, hallway=args.hallway, ancient=args.ancient)
     state = engine.state
-    print(json.dumps({"scope": "ironclad_a0_generated_through_hive" if state.config.campaign else "restricted_ironclad_a0_generated_act1" if args.route in ("overgrowth-generated", "underdocks-generated") else ("restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route")),
+    print(json.dumps({"scope": "ironclad_a0_generated_through_" + state.config.campaign[-1] if state.config.campaign else "restricted_ironclad_a0_generated_act1" if args.route in ("overgrowth-generated", "underdocks-generated") else ("restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route")),
                       "map_profile": engine.graph.generation,
                       "act": state.config.act,
                       "ancient_start": None if state.ancient_start is None else asdict(state.ancient_start),

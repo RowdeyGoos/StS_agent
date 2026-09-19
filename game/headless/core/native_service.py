@@ -32,6 +32,7 @@ ALIASES = {
     "act1.unknown": "unknown_map_point",
     "act1.map": "act_1_map",
     "act2.map": "act_2_map",
+    "act3.map": "act_3_map",
     "ancient.neow": "event:NEOW",
     "relic.curse": "niche",
     "relic.reward_enchantment": "niche",

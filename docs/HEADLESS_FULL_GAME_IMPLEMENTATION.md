@@ -21,24 +21,25 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
-- **2026-09-19 — Glory encounters:** all 18 solo A0 encounters are playable directly
-  and through authored overrides, including all elites, bosses and summons.
-  Native construction vectors and source-backed combat/JSON regressions cover the
-  roster. [Scope and evidence](HEADLESS_ENGINE.md#complete-glory-act-3-encounter-roster-at-a0).
-  Generated Act 3 progression and final run-victory semantics remain open.
+- **2026-09-19 — Glory campaign integration:** all 18 solo A0 encounters now enter
+  full generated campaigns from either Act 1 region, through Hive and Glory’s
+  Ancient/map/events to the Architect and explicit run victory. Native map and
+  construction vectors, source-backed ending rules and JSON regressions cover the
+  implementation. [Scope and evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
+  Native whole-run differential acceptance remains open.
 
 - **2026-09-19 — generated campaign through Hive:** both Act 1 regions now continue
   into Hive’s Ancient, native map, encounters, events, rewards and boss. Act history,
   global event/floor ownership and Spoils Map’s hourglass/600-gold quest continue
   through JSON saves. [Scope and evidence](HEADLESS_ENGINE.md#generated-campaign-through-hive).
-  Act 3 progression and whole-run native differential acceptance remain open.
+  Whole-run native differential acceptance remains open.
 
 - **2026-09-19 — all solo events:** all 66 regular/Ancient event models are
   implemented, including the existing Neow path; deprecated placeholders are
   excluded. Custom interactions, training timeout, event combat extra rewards,
   17 event cards, 27 relics and owned page/reward continuations are covered by
   source-backed regression tests. [Current scope and usage](HEADLESS_ENGINE.md#all-solo-events-across-acts).
-  Act 3 campaigns and live/native differential acceptance remain open.
+  Live/native differential acceptance remains open.
 
 - **2026-09-19 — foreign acquisition enabled:** all 320 ordinary foreign cards are
   now in the default catalog. Kaleidoscope and Splash match pinned native factory
@@ -1493,9 +1494,10 @@ can extend its owned streams and small generation modules independently:
 **HF-05A is implemented for the declared start:** fixed Overgrowth/Hive/Glory,
 solo A0, all unlocked/all seen. Shared UpFront ordering, all three room sets and
 complete Act 1 map generation match direct assembly reference vectors. Lobby act
-selection and unlock/discovery histories remain outside that profile. Hive map
-generation and progression are now implemented; Glory encounters are playable,
-but generated Glory progression still uses initialization data only. See [evidence](evidence/native_initialization_2026_09_14.md).
+selection and unlock/discovery histories remain outside that profile. Map
+generation and progression are now implemented for Hive and Glory, through the
+Architect ending. See [initialization evidence](evidence/native_initialization_2026_09_14.md)
+and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
 
 1. **HF-05B is implemented for the declared all-unlocked solo profile:** 161 relic
    predicates, merchant filters, global versus caller bag exclusions, Dingy Rug
@@ -1582,13 +1584,12 @@ but generated Glory progression still uses initialization data only. See [eviden
 4. **Act 1 completion gate:** run a declared seed/path matrix across all three
    bosses, events, shops, pickups and choices. Compare native boundary records;
    a synthetic victory or deterministic Python continuation alone is insufficient.
-5. **Act 3 integration:** connect the implemented Glory encounters to generated
-   progression, including its Ancient, eligible events, saved room queues and
-   act-specific map rules. Add `ContinueAct()` from Hive, preserved global floors
-   and history, exact native map/RNG vectors, JSON continuation through all three
-   bosses, and explicit final run-victory semantics. Hive progression and Spoils Map’s Act 2
-   target/600-gold quest are implemented; all solo event handlers are available,
-   with native differential acceptance still required.
+5. **Act 3 integration — implemented:** generated Glory progression includes its
+   Ancient, eligible events, saved room queues and native map profile. Hive and
+   Spoils history survives continuation, and the Architect records explicit victory.
+   The next acceptance work is a declared native three-act seed/path comparison:
+   compare room/RNG boundaries, final-boss reward modifiers and ending transitions,
+   then resolve observed differences. Synthetic victories are not native acceptance.
 
 Current source/coverage: [combat interactions](evidence/combat_interactions_2026_09_14.md),
 [shuffle hooks](evidence/shuffle_hooks_2026_09_14.md),
@@ -1598,8 +1599,7 @@ Current source/coverage: [combat interactions](evidence/combat_interactions_2026
 [native initialization](evidence/native_initialization_2026_09_14.md),
 [native RNG and probability](evidence/native_rng_2026_09_14.md),
 [events and Neow](evidence/events_neow_2026_09_14.md).
-Higher ascensions, character-specific run starts and generated Act 3 progression
-remain separate scope.
+Higher ascensions and character-specific run starts remain separate scope.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

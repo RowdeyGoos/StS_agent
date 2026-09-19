@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v29 / run v43**.
+than being silently reinterpreted: current schemas are **combat v29 / run v44**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -191,7 +191,7 @@ potion rules are now additionally checked against direct factory execution.
 relic bags: shared-Ancient allocation, then each act's event shuffle, weak/normal/
 elite encounter draws, boss and Ancient selection. All three room sets are retained
 as plain `state.initialization` data, because their startup draws share `up_front`.
-Generated campaigns reuse the saved Hive room set on Act 2 entry; Glory’s saved room set is not yet connected to generated Act 3 progression. The declared act sequence
+Generated campaigns reuse the saved Hive and Glory room sets on entry to those acts. The declared act sequence
 is **Overgrowth or Underdocks → Hive → Glory**, selected explicitly, solo, A0,
 all unlocked/all seen; the native lobby
 act picker and profile-dependent first-run overrides are outside this profile.
@@ -775,7 +775,7 @@ exhausted pass it permits the current candidate even if visited or ineligible,
 matching the native fallback. `state.event_progression` owns queue order, cursor,
 node assignments and plain entry conditions (resources, deck eligibility and inventory counts).
 Restore replays selection against those conditions and visited room outcomes. Reads and failed room construction never advance the queue.
-Later-act events are available through the explicit event catalog below and eligible Hive events enter generated campaigns. Act 3 progression and profile-dependent unlock epochs remain open. Native initialization
+Later-act events are available through the explicit event catalog below; eligible Hive and Glory events enter generated campaigns. Profile-dependent unlock epochs remain open. Native initialization
 uses pinned pool order; authored profiles retain their declared pool restrictions. Juzu Bracelet and Winged Boots now modify unknown/travel behavior; tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
 `RunConfig.relic_fallback="circlet"`, preventing exhausted relic rewards
@@ -924,7 +924,7 @@ own 15-entry queue. Refillable bags reject consecutive matching identities/tags,
 including the Slug and Seapunk families across the weak-to-normal boundary. Boss
 sampling uses Matriarch, Soul Fysh, Giant order, distinct from native discovery
 order. The selected act's event shuffle and encounters consume the same UpFront
-stream before Hive/Glory initialization. Campaigns reuse Hive’s saved room set; Glory’s saved room set is reserved for future generated progression.
+stream before Hive/Glory initialization. Campaigns reuse both Hive’s and Glory’s saved room sets.
 
 The ten local events are Abyssal Baths, Drowning Beacon, Endless Conveyor, Punch Off,
 Spiraling Whirlpool, Sunken Statue, Sunken Treasury, Doors of Light and Dark, Trash
@@ -936,7 +936,7 @@ failed entries do not advance queues; successful event fights retain their separ
 history and do not consume ordinary hallway entries.
 
 `RunConfig.act`, `EncounterProgression.act`, map profile and seed-bound initialization
-must agree. Private run schema v43 saves these declarations and rejects mixed-act
+must agree. Private run schema v44 saves these declarations and rejects mixed-act
 queues, maps, bosses or event pools atomically. Golden Compass map replacement and
 Fur Coat marks keep the declared act and its encounter ownership.
 
@@ -964,7 +964,7 @@ reference execution 0.80 seconds; neither accessed profiles or launched gameplay
 
 ## Generated campaign through Hive
 
-`RunEngine.ironclad_run(seed=2, first_act="overgrowth")` generates a solo A0
+`RunEngine.ironclad_run(seed=2, first_act="overgrowth", last_act="hive")` generates a solo A0
 campaign through **Overgrowth or Underdocks → Hive**. Pass the existing Neow
 `ancient_profile` to include Act 1’s opening. The CLI exposes `--route overgrowth-hive`
 and `--route underdocks-hive`, with `--ancient neow` and `--verify-restore` supported.
@@ -1001,12 +1001,12 @@ gold normally. Relic pickup remains a separate choice.
 [`run/campaign.py`](../game/headless/run/campaign.py) owns the transition and compact
 completed-act records. Shared map rules live in
 [`map/standard.py`](../game/headless/map/standard.py); the existing Act 1 import is
-a compatibility entry point. Private run **v43** requires campaign/history fields
+a compatibility entry point. Private run **v44** requires campaign/history fields
 and validates each act’s queues, map, event/unknown decisions, global combat count,
 free travel and map relic ownership. Older run snapshots are rejected explicitly;
 combat schema is **v29**. Hive boss reward exit records `ActCompletion(act=2, …)`
-and stops at `ACT_COMPLETE`; generated Act 3 progression and full-game victory
-are not implemented. Glory encounters are independently playable below.
+and stops at `ACT_COMPLETE` when `last_act="hive"`. The default campaign now
+continues through Glory and the Architect as described below.
 
 The read-only [native oracle](../tools/native_initialization_oracle/README.md)
 executed actual pinned 0.107.1 `StandardActMap` and `SpoilsActMap` constructors.
@@ -1033,14 +1033,90 @@ defeat. Independent semantic review, compilation and documentation link/diff
 checks passed. The Spoils oracle built in 1.11 seconds and executed in 0.52 seconds;
 these read-only references did not launch gameplay or access player data.
 
+## Generated campaign through Glory
+
+`RunEngine.ironclad_run(seed=2, first_act="overgrowth")` now defaults to the complete
+supported solo Ironclad A0 sequence **Overgrowth or Underdocks → Hive → Glory →
+The Architect**. Neow remains an explicit `ancient_profile` option, matching the
+existing startup API. `ContinueAct()` after Hive’s boss reuses Glory’s native
+startup-selected Ancient and room queues without rerolling UpFront. Earlier act
+maps, paths, queues and Spoils Map quest provenance stay in `completed_acts`.
+The existing two-act API is available with `last_act="hive"`.
+
+Glory uses the shared map generator with 13 ordinary rows, treasure on row 7,
+rest on row 13 and boss on row 14. Its rest count is a uniform integer, 5 or 6;
+its unknown count is the native standard Gaussian count minus one. Pruning,
+repair and coordinate layout use the actual grid height. The `act3.map` alias
+owns native `act_3_map`; generating Glory does not consume either earlier map RNG.
+The `glory_a0_pruned_v1` profile is distinct from both earlier regions.
+
+The row-zero Ancient is Nonupeipe, Tanx or Vakuu, or shared Darv when startup
+allocated him to Glory. Entering that room runs its existing healing and choice
+logic. The local/shared event queue uses Glory eligibility and skips previously
+visited events across both earlier acts. A carried Lantern Key forces an unknown
+room into War Historian Repy while still consuming its event-queue selection.
+Golden Compass and Fur Coat bind their acquisition act and owning map; archived
+Hive Spoils layouts retain their quest record after current Glory quest state resets.
+
+The final boss has **no normal gold, card or potion rewards**, no pity/offer RNG
+rolls, and no appended Hunt/Royalties combat rewards. The native reward-modifier
+pass still runs: an eligible Wongo’s Mystery Ticket adds its three relic rewards.
+The empty baseline retains the existing `LeaveRewards()` transition, followed by
+`ACT_COMPLETE` and `ContinueAct()` into the Architect.
+
+[`run/epilogue.py`](../game/headless/run/epilogue.py) owns that post-map event through
+an exact `epilogue_event_id` and retained Glory `ActCompletion`. It invokes the
+existing Architect event’s single `proceed` option; profile-dependent dialogue
+and presentation are omitted. Entry adds no map node, TotalFloor or Ancient heal,
+but still invokes room-entry hooks such as Maw Bank. Only choosing `proceed`
+records `VICTORY`. Native post-victory presentation death is not a simulated defeat.
+No Lantern Key or other optional event is required to finish the run.
+
+Private **run v44** saves the epilogue identity and archived Spoils quest records;
+combat remains **v29**. Restore requires the completed campaign/boss, matching
+Ancient identities in both current and historical maps, and an owned Architect
+event or completed victory. It rejects incomplete victory claims, mixed-act
+history, final-boss ordinary rewards, and missing archived quest owners. Failed
+map or Architect construction leaves the current state and RNG untouched.
+
+[Native Glory map vectors](../tests/fixtures/headless_native_glory_map_vectors.json)
+match all nodes, edges, starts, counters and RNG suffixes for 13 seeds using the
+actual pinned 0.107.1 `StandardActMap` constructor. The
+[read-only oracle](../tools/native_initialization_oracle/README.md) built in 1.20
+seconds (seven existing nullable-context warnings) and executed in 0.42 seconds.
+It did not launch gameplay or read profiles/saves. Final rewards and ending order
+are source-backed; the native oracle does not execute complete campaigns.
+
+[`test_act3_run.py`](../tests/headless/test_act3_run.py) covers both starting regions
+and both RNG profiles through all three bosses and the Architect, restoring each
+decision, plus native map vectors, queue/history corruption, final reward rules,
+failed transitions, Lantern Key, map relics and archived Spoils ownership. Route
+victories use synthetic combat outcomes to isolate run integration from policy
+strength. They do not establish live whole-run parity or a winning demo policy.
+
+Validation: the broad headless/simulation/consumer/package selection completed in
+487.62 seconds with 5,415 passes and one test-fixture failure: Lava Rock’s
+first-boss test selected the catalog’s first boss, now an Act 3 boss. Restricting
+that fixture to Act 1 required no game-logic change; the affected relic and final
+Glory campaign suites then passed **341 tests in 73.35 seconds**. The final
+installed wheel passed **359 Act 2/Glory tests in 142.16 seconds**; all 246 packaged
+headless/CLI Python files matched their source bytes. Neow-start routes covering
+all three Glory bosses also passed (three tests, 2.91 seconds).
+
+The installed CLI’s `underdocks-glory --ancient neow --seed 2 --verify-restore`
+run restored 117 decisions before its demo policy lost in Act 1; this checks
+packaging and continuation, not a three-act policy victory. Compilation, document
+links and diff checks passed. Independent semantic review covered RNG ownership,
+campaign persistence, final rewards and the Architect, with no remaining blockers.
+
 ## Complete Glory Act 3 encounter roster at A0
 
 All 18 entries in pinned 0.107.1 `Glory.GenerateAllEncounters` are registered in
 [`encounters/glory.py`](../game/headless/encounters/glory.py). Direct combats and
-authored encounter overrides retain Act 3 reward context. Boss reward exit records
-`ActCompletion(act=3, …)` and ends at `ACT_COMPLETE`; it does **not** represent full-game
-victory. Generated campaigns still stop after Hive. Glory map generation, Ancient
-entry, event/encounter queues and the transition from Act 2 remain the next slice.
+authored encounter overrides retain Act 3 context. Final bosses have no ordinary
+reward bundle; Wongo’s ticket may still add relic rewards. Leaving records
+`ActCompletion(act=3, …)`. Direct/authored encounters stop there; a generated full
+campaign continues into the [Architect ending](#generated-campaign-through-glory).
 
 | Kind | Encounter IDs (each prefixed `glory_`) |
 | --- | --- |
@@ -1080,8 +1156,8 @@ Punch Construct and Cubex Construct. Rules live in four small content modules:
 
 [`core/afflictions.py`](../game/headless/core/afflictions.py) enforces one affliction
 per card across Smog, Tainted, Galvanized, Hexed and Bound. Glory-specific lifecycle
-hooks are in [`powers/glory.py`](../game/headless/powers/glory.py). Private **combat
-v29 / run v43** add plain card-effect/history fields and the resumable post-attack
+hooks are in [`powers/glory.py`](../game/headless/powers/glory.py). The initial Glory
+implementation (**combat v29 / run v43**) added plain card-effect/history fields and the resumable post-attack
 boundary. Restore rejects unowned effects, impossible boss phases, forged upgrade
 history, duplicate death work and inconsistent replacement slots. Older private
 snapshots are rejected explicitly; public bridge contracts are unchanged.
@@ -1728,7 +1804,7 @@ stops attacking a dead target. Lethal Offering ends combat before energy or draw
 Leaving boss rewards, including forfeiting them, records
 `ActCompletion(act=1, boss_encounter_id="overgrowth_vantom")` and ends this supported
 run in `act_complete`. Winning the fight alone leaves the reward decision active.
-This authored route ends at Act 1. Generated campaigns expose a separate continuation into Hive; neither endpoint is full-game victory. The example player is deliberately simple;
+This authored route ends at Act 1. Generated campaigns continue through Hive, Glory and the Architect; only that ending records full-game victory. The example player is deliberately simple;
 `--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
 won with the earlier restricted card pool after Aroma upgraded Bash. The historical left/rest seed-2 route also won,
 including Jungle Maze, treasure and shop decisions. Those policy outcomes are
@@ -1783,7 +1859,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v43`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v44`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,

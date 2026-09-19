@@ -79,6 +79,7 @@ class RunState:
     stolen_cards: list[Card] = field(default_factory=list)
     completed_acts: list = field(default_factory=list)
     spoils_map: dict | None = None
+    epilogue_event_id: int | None = None
 
     @property
     def visited_room_count(self):
@@ -121,6 +122,8 @@ class RunState:
             raise ValueError("Invalid event progression context.")
         from game.headless.run.campaign import validate as validate_campaign
         validate_campaign(self)
+        from game.headless.run.epilogue import validate as validate_epilogue
+        validate_epilogue(self)
         from game.headless.generation.initialization import validate as validate_initialization
         validate_initialization(self)
         if getattr(self.rng, "native", False):
@@ -135,7 +138,7 @@ class RunState:
         from game.headless.core.card_state import CardState
         if any(c.combat_state != CardState() for c in (*self.deck, *self.stolen_cards)):
             raise ValueError('Permanent cards cannot retain transient combat modifiers.')
-        if (self.phase is RunPhase.ACT_COMPLETE) != (self.act_completion is not None):
+        if (self.phase is RunPhase.ACT_COMPLETE or self.epilogue_event_id is not None) != (self.act_completion is not None):
             raise ValueError("Act completion requires its terminal record.")
         if self.act_completion is not None and (not isinstance(self.act_completion, ActCompletion)
                 or type(self.act_completion.act) is not int or self.act_completion.act not in (1, 2, 3)

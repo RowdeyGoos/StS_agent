@@ -25,11 +25,11 @@ class RunConfig:
 
     def __post_init__(self):
         object.__setattr__(self, 'campaign', tuple(self.campaign))
-        if self.campaign not in ((), ('overgrowth', 'hive'), ('underdocks', 'hive')):
+        if self.campaign not in ((), ('overgrowth', 'hive'), ('underdocks', 'hive'), ('overgrowth', 'hive', 'glory'), ('underdocks', 'hive', 'glory')):
             raise ValueError('Unsupported campaign sequence.')
         if self.campaign and self.act not in self.campaign:
             raise ValueError('Current act is outside the declared campaign.')
-        if self.act not in ("overgrowth", "underdocks", "hive"):
+        if self.act not in ("overgrowth", "underdocks", "hive", "glory"):
             raise ValueError("Unsupported Act 1 location.")
         if self.character != "ironclad" or type(self.ascension) is not int or self.ascension != 0:
             raise ValueError("Only Ironclad Ascension 0 is implemented.")
