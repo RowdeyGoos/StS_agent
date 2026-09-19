@@ -81,7 +81,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     from game.headless.core.necrobinder_snapshots import CHOICES as NECRO_CHOICES, validate_selection as nec_selection
     from game.headless.core.regent_snapshots import CHOICES as REGENT_CHOICES, validate_selection as regent_selection
     if (
-        s["operation"] not in NECRO_CHOICES and s["operation"] not in REGENT_CHOICES and s["operation"] not in ("move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
+        s["operation"] not in NECRO_CHOICES and s["operation"] not in REGENT_CHOICES and s["operation"] not in ("dual_wield", "dual_wield_up", "move", "transform", "exhaust", "discard_redraw", "free_combat", "discard", "hand_trick", "nightmare", "well_laid_plans")
         or s["destination"] not in ("hand", "draw_pile")
         or s["free"] not in ("", "free_this_turn", "free_until_played")
         or any(type(s[k]) is not int for k in ("minimum", "maximum"))
@@ -140,6 +140,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         "choices_paradox": ("offered", "move", "hand", ""),
         "entropy": ("hand", "transform", "hand", ""),
         "stratagem": ("draw_pile", "move", "hand", ""),
+        "dual_wield": ("hand", "dual_wield_up" if source is not None and source.upgraded else "dual_wield", "hand", ""),
         "purity": ("hand", "exhaust", "hand", ""),
         "thinking_ahead": ("hand", "move", "draw_pile", ""),
         "secret_technique": ("draw_pile", "move", "hand", ""),
@@ -172,6 +173,8 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     elif not set(s["candidates"]) <= {c.instance_id for c in available}:
         raise ValueError("Selection references a foreign pile.")
     candidates = [c.instance_id for c in available]
+    if operation == "dual_wield":
+        candidates = [c.instance_id for c in available if c.spec.kind in ("attack", "power")]
     if operation in ("secret_technique", "secret_weapon"):
         kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
         candidates = [c.instance_id for c in available if c.spec.kind in kinds]

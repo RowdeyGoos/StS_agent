@@ -4,7 +4,7 @@ from game.headless.core.resolution import push, drain
 
 POWER_NAMES = frozenset(
     (
-        "aggression",
+        "aggression", "curious", "improvement", "hello_world", "rebound",
         "confused",
         "barricade",
         "colossus",
@@ -114,7 +114,7 @@ def card_cost(p, card):
         return 0
     from game.headless.relics.combat import has
     surcharge = int(card.spec.kind == "power" and has(p, "spiked_gauntlets"))
-    return max(0, local_cost(card, clamp=False) + surcharge + p.rules.powers.get("borrowed_time", 0) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
+    return max(0, local_cost(card, clamp=False) - (p.rules.powers.get("curious", 0) if card.spec.kind == "power" else 0) + surcharge + p.rules.powers.get("borrowed_time", 0) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
 
 
 def local_cost(card, *, clamp=True):
@@ -319,6 +319,7 @@ def start_turn(p, draw_count):
 
 
 def end_turn(p):
+    p.rules.powers.pop("rebound", None)
     r = p.rules
     r.turn_ending = True
     postplay = [["regent_end_card", c.instance_id] for c in (*p.hand, *reversed(p.deck.draw_pile), *p.deck.discard_pile, *p.deck.exhaust_pile) if c.definition.definition_id == "i_am_invincible"]
@@ -331,7 +332,7 @@ def begin_end_hooks(p):
     r = p.rules
     from game.headless.relics.combat import tasks as relic_tasks, memory
     for relic in r.relics:
-        if relic["definition_id"] == "orichalcum":
+        if relic["definition_id"] in ("orichalcum", "fake_orichalcum"):
             memory(p, relic)["orichalcum_ready"] = p.block == 0
     tasks = [["block", r.powers["plating"], False]] if r.powers.get("plating") else []
     tasks += [["early_end", key] for key in r.powers]

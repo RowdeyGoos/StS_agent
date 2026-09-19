@@ -46,7 +46,7 @@ def legal_actions(engine) -> tuple:
             actions.append(ClaimRelic())
         for index, extra in enumerate(reward["extra_rewards"]):
             if not extra["resolved"]:
-                actions.extend(ChooseExtraReward(index, name) for name in [*extra["offers"], None])
+                actions.extend(ChooseExtraReward(index, name) for name in [*(extra["offers"] if extra["kind"] != "potion" or None in state.potions else []), None])
         actions.append(LeaveRewards())
     elif state.phase is RunPhase.ROOM and state.pending.get("kind") == "rest_site":
         stage = state.pending["stage"]
@@ -81,7 +81,7 @@ def legal_actions(engine) -> tuple:
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "scripted_event":
         actions.extend(events.legal_actions(state))
         if (state.pending["stage"] == "select_card"
-                or state.pending["definition_id"] == "the_future_of_potions" and state.pending["stage"] != "resolved"):
+                or state.pending["definition_id"] in ("the_future_of_potions", "ranwid_the_elder", "stone_of_all_time") and state.pending["stage"] != "resolved"):
             return tuple(actions)
     from game.headless.potions.use import actions as potion_actions
     actions.extend(potion_actions(engine))
@@ -168,11 +168,18 @@ def apply(engine, action):
         return result
     if isinstance(action, ChooseEventOption):
         from game.headless.events.combat import EventCombatRequest
-        result = events.choose(state, action.event_instance_id, action.option_id, cards=engine.cards)
-        if isinstance(result, EventCombatRequest):
-            from game.headless.run.event_combat import start
-            return start(engine, result)
-        return result
+        from copy import deepcopy
+        before = deepcopy(state)
+        try:
+            result = events.choose(state, action.event_instance_id, action.option_id, cards=engine.cards)
+            if isinstance(result, EventCombatRequest):
+                from game.headless.run.event_combat import start
+                return start(engine, result)
+            return result
+        except Exception:
+            state.__dict__.clear()
+            state.__dict__.update(before.__dict__)
+            raise
     if isinstance(action, ChooseEventCard):
         return events.select_card(state, action.event_instance_id, action.card_instance_id, cards=engine.cards)
     if isinstance(action, LeaveEvent):
@@ -202,7 +209,7 @@ def apply(engine, action):
     if isinstance(action, ClaimPotion):
         return rewards.claim_potion(state)
     if isinstance(action, LeaveRewards):
-        return rewards.leave_combat_rewards(state)
+        return rewards.leave_combat_rewards(state, cards=engine.cards)
     if isinstance(action, UseRestRelic):
         return rest_site.use_ancient(state, engine.cards, action.option)
     if isinstance(action, (ChooseCookCard, ConfirmCook)):
@@ -212,7 +219,7 @@ def apply(engine, action):
     if isinstance(action, Dig):
         return rest_site.dig(state)
     if isinstance(action, Rest):
-        return rest_site.heal(state)
+        return rest_site.heal(state, cards=engine.cards)
     if isinstance(action, Hatch):
         from game.headless.run.hatching import hatch
         return hatch(state, engine.cards)

@@ -36,7 +36,7 @@ class DenseVegetation:
         else:
             state.hp = min(state.max_hp, state.hp + data["heal"])
             from game.headless.relics.run_rules import rest_rewards
-            rest_rewards(state)
+            rest_rewards(state, cards=cards)
             pending["stage"] = "fight"
 
     def validate(self, pending, *, state, cards, defeated=False):

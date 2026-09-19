@@ -39,12 +39,17 @@ class StepEvent:
         if pending["stage"] == "options":
             return tuple(data["options"])
         active = data["active"]
+        if pending["stage"] == "event_rewards":
+            from game.headless.events.reward_batch import options
+            return options(active["rewards"])
         if pending["stage"] == "card_rewards":
             return tuple(f"card_{i}" for i in range(len(active["offers"])) if i not in active["selected"]) + (
                 ("skip",) if active["optional"] else ()
             )
         if pending["stage"] == "potion_rewards":
             return ("claim_potion_0", "skip")
+        if pending["stage"] in ("relic_reward", "gold_reward", "special_card_reward"):
+            return ("claim", "skip")
         return ()
 
     def plan(self, data):
@@ -99,6 +104,10 @@ def eligible(state, mode, argument):
         c
         for c in state.deck
         if (mode == "remove" and not c.spec.eternal)
+        or (mode == "upgrade" and c.upgrade_level + 1 < len(c.definition.levels))
+        or (mode == "transform" and not c.spec.eternal)
+        or (mode == "remove_strike" and c.definition.rarity == "basic" and c.definition.strike and not c.spec.eternal)
+        or (mode == "remove_defend" and c.definition.rarity == "basic" and c.definition.defend and not c.spec.eternal)
         or (mode == "transform_basic" and not c.spec.eternal and c.definition.rarity == "basic")
         or (
             mode == "enchant"
@@ -130,15 +139,56 @@ def drain(state, cards):
     plan = definition.plan(data)
     while data["cursor"] < len(plan):
         if state.relic_work:
-            pending["stage"] = "relic_work"
+            if pending["stage"] != "event_rewards" or data["active"] is None:
+                pending["stage"] = "relic_work"
             return
         if data["active"] is not None:
             return
         operation = plan[data["cursor"]]
         op, *args = operation
-        if not state.hp and op in ("select", "cards", "potion"):
+        if not state.hp and op in ("rewards", "select", "cards", "potion", "fixed_potion", "event_potion", "factory_potion", "relic_reward", "gold_reward", "special_card_reward", "combat"):
             complete(data, operation, None)
             continue
+        if not state.hp and op == "page":
+            pending["stage"] = "defeated"
+            return
+        if op == "rewards":
+            from game.headless.events.reward_batch import prepare
+            data["active"] = {"rewards": prepare(state, cards, args[0])}
+            pending["stage"] = "event_rewards"
+            return
+        if op in ("relic_reward", "gold_reward", "special_card_reward"):
+            if op == "relic_reward":
+                from game.headless.events.operations import pull_relic
+                value = pull_relic(state, stream=args[1] if len(args)>1 else "rewards") if args[0] == "random" else args[0]
+            else:
+                value = args[0]
+            data["active"] = {"value": value}
+            pending["stage"] = op
+            return
+        if op == "combat":
+            data["active"] = {"encounter_id": args[0]}
+            pending["stage"] = "fight"
+            return
+        if op == "page":
+            definition.open_page(state, pending, cards, *args)
+            return
+        if op == "factory_potion":
+            from game.headless.potions.pools import generate, ORDINARY_POTIONS
+            data["active"] = {"definition_id": generate(ORDINARY_POTIONS, state.rng, stream="rewards")}
+            pending["stage"] = "potion_rewards"
+            return
+        if op == "event_potion":
+            from game.headless.potions.pools import ORDINARY_POTIONS
+            from game.headless.potions.base import POTIONS
+            pool = [n for n in ORDINARY_POTIONS if args[0] == "any" or POTIONS[n].rarity == args[0]]
+            data["active"] = {"definition_id": state.rng.choice(args[1], pool)}
+            pending["stage"] = "potion_rewards"
+            return
+        if op == "fixed_potion":
+            data["active"] = {"definition_id": args[0]}
+            pending["stage"] = "potion_rewards"
+            return
         if op == "select":
             mode, count, argument, amount = args
             candidates = eligible(state, mode, argument)
@@ -159,7 +209,7 @@ def drain(state, cards):
                 complete(data, operation, [])
             continue
         if op == "cards":
-            family, rarity, kind, count, take, optional, upgrade = args
+            family, rarity, kind, count, take, optional, upgrade, *extra = args
             from game.headless.relics.rewards import decorate, extend_pool
 
             pool = [
@@ -172,14 +222,14 @@ def drain(state, cards):
             # Rip and Future prohibit pool modification; Cheese/Share use their
             # card factory; only marked card rewards allow Dingy Rug.
             if (
-                definition.definition_id not in ("brain_leech", "the_future_of_potions")
+                definition.definition_id not in ("brain_leech", "the_future_of_potions", "colorful_philosophers")
                 or data["choice"] == "share_knowledge"
             ):
                 pool = extend_pool(state, cards, pool, card_reward=optional, card_kind=kind)
             upgraded=[]
             if getattr(state.rng, "native", False):
                 from game.headless.generation.odds import card_offers
-                offers,upgraded=card_offers(state,cards,pool,count,mode="base",uniform=rarity!="any",upgrade_roll=False)
+                offers,upgraded=card_offers(state,cards,pool,count,mode="base",uniform=rarity!="any",upgrade_roll=hasattr(definition, "open_page"), stream=extra[0] if extra else "rewards")
             else:
                 state.rng.shuffle("event.card_reward", pool)
                 offers = pool[:count]
@@ -256,7 +306,8 @@ def execute(state, cards, operation):
 
         return asdict(discard_potion(state, args[0]))
     else:
-        raise ValueError("Unknown event operation.")
+        from game.headless.events.operations import execute as execute_extra
+        return execute_extra(state, cards, operation)
 
 
 def select(state, pending, cards, identity):
@@ -274,10 +325,16 @@ def select(state, pending, cards, identity):
     if card not in eligible(state, mode, argument):
         raise ValueError("Ineligible event card.")
     result = None
-    if mode == "remove":
+    if mode.startswith("remove"):
         remove_card(state, identity)
     elif mode == "transform_basic":
         result = card_record(replace_card(state, identity, cards.definition(argument)))
+    elif mode == "upgrade":
+        card.upgrade()
+        result = card_record(card)
+    elif mode == "transform":
+        from game.headless.events.transformation import transform, TRANSFORM_POOL
+        result = card_record(transform(state, cards, identity, TRANSFORM_POOL, stream="event.transform"))
     elif mode == "enchant":
         result = card_record(enchant(card, argument, amount))
     active["selected"].append(identity)
@@ -296,7 +353,17 @@ def reward(state, pending, cards, option):
         raise ValueError("Unavailable event reward.")
     operation = definition.plan(data)[data["cursor"]]
     active = data["active"]
-    if pending["stage"] == "potion_rewards":
+    if pending["stage"] == "event_rewards":
+        from game.headless.events.reward_batch import choose
+        choose(state, cards, active["rewards"], option)
+        if all(row["resolved"] for row in active["rewards"]):
+            complete(data, operation, active["rewards"])
+    elif pending["stage"] in ("relic_reward", "gold_reward", "special_card_reward"):
+        result = None
+        if option != "skip":
+            result = execute(state, cards, ("relic" if pending["stage"] == "relic_reward" else "card" if pending["stage"] == "special_card_reward" else "gold", active["value"]))
+        complete(data, operation, result)
+    elif pending["stage"] == "potion_rewards":
         result = None
         if option != "skip":
             from game.headless.run.inventory import add_potion

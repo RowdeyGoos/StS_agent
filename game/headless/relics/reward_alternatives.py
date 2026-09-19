@@ -8,13 +8,15 @@ def contexts(state):
     if state.relic_work:
         work = state.relic_work[0]
         source = next(r for r in state.relics if r.instance_id == work['source'])
-        if work['kind'] == 'card_reward' and source.definition_id in ('orrery','lost_coffer','glass_eye','kaleidoscope'):
+        if work['kind'] == 'card_reward' and source.definition_id in ('orrery','lost_coffer','glass_eye','kaleidoscope','dream_catcher'):
             return [(-1, 'relic', work)]
         return []
     pending = state.pending or {}
     if pending.get('kind') == 'reward':
         result = [] if pending['card_resolved'] else [(-1, 'main', pending)]
         return result + [(i, 'extra', r) for i,r in enumerate(pending.get('extra_rewards', [])) if r['kind'] == 'card' and not r['resolved']]
+    if pending.get('kind') == 'scripted_event' and pending.get('stage') == 'event_rewards':
+        return [(i,'batch',r) for i,r in enumerate(pending['data']['active']['rewards']) if r['kind']=='card' and not r['resolved']]
     if pending.get('kind') == 'scripted_event' and pending.get('stage') == 'card_rewards':
         data = pending.get('data', {})
         active = data.get('active', {})
@@ -55,8 +57,13 @@ def _apply(state, cards, action):
     # Complete the reward before obtaining a relic that can open nested choices.
     if kind == 'main':
         reward['card_resolved'] = True
-    elif kind == 'extra':
+    elif kind in ('extra','batch'):
         reward['resolved'] = True
+        if kind == 'batch' and all(r['resolved'] for r in state.pending['data']['active']['rewards']):
+            from game.headless.events.steps import complete
+            from game.headless.events.catalog import EVENTS
+            data=state.pending['data']
+            complete(data,EVENTS[state.pending['definition_id']].plan(data)[data['cursor']],data['active']['rewards'])
     elif kind == 'relic':
         state.relic_work.pop(0)
     else:
@@ -85,6 +92,8 @@ def reroll(state, cards, kind, reward):
     from game.headless.cards.pools import REWARD_CARDS
     room_kind, mode, uniform, upgrade, count = 'combat', 'base', False, True, 3
     rarity, family, card_kind, upgrade_all = None, 'ironclad', None, False
+    stream='rewards'
+    no_pool_changes=False
     pool = list(state.config.reward_cards if state.config else REWARD_CARDS)
     if kind in ('main','extra'):
         from game.headless.encounters.catalog import ENCOUNTERS
@@ -97,6 +106,16 @@ def reroll(state, cards, kind, reward):
                 rarity, room_kind = 'rare', 'boss'
         if room_kind == 'boss' and state.config:
             pool = list(state.config.boss_reward_cards)
+    elif kind == 'batch':
+        from game.headless.events.catalog import EVENTS
+        data=state.pending['data']
+        index=data['active']['rewards'].index(reward)
+        descriptor=EVENTS[state.pending['definition_id']].plan(data)[data['cursor']][1][index]
+        _,family,rarity,count,stream,*extra=descriptor
+        flags=extra[0] if extra else {}
+        rarity=None if rarity=='any' else rarity
+        uniform,upgrade=rarity is not None,flags.get('upgrade',True)
+        no_pool_changes=not flags.get('pool_changes',True)
     elif kind == 'relic':
         source = next(r for r in state.relics if r.instance_id == reward['source'])
         if source.definition_id == 'kaleidoscope':
@@ -111,13 +130,13 @@ def reroll(state, cards, kind, reward):
         _, family, rarity, card_kind, count, _, _, upgrade_all = op
         rarity = None if rarity == 'any' else rarity
         uniform, upgrade = rarity is not None, False
-    if kind in ('relic','event') or rarity:
+    if kind in ('relic','event','batch') or rarity:
         pool = [d.definition_id for d in cards.definitions if d.pool == family and d.rarity in ((rarity,) if rarity else ('common','uncommon','rare')) and (card_kind in (None,'any') or d.levels[0].kind == card_kind)]
-    pool = extend_pool(state, cards, pool, card_kind=card_kind)
+    pool = extend_pool(state, cards, pool, card_kind=card_kind, no_pool_changes=no_pool_changes)
     upgraded = []
     if getattr(state.rng,'native',False):
         from game.headless.generation.odds import card_offers
-        offers, upgraded = card_offers(state, cards, pool, count, kind=room_kind, mode=mode, uniform=uniform, upgrade_roll=upgrade)
+        offers, upgraded = card_offers(state, cards, pool, count, kind=room_kind, mode=mode, uniform=uniform, upgrade_roll=upgrade,stream=stream)
         if kind in ("main", "extra"):
             upgraded += add_power_option(state, cards, offers, pool, kind=room_kind)
     else:

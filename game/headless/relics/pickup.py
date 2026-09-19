@@ -100,7 +100,7 @@ def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, 
     if getattr(state.rng, "native", False):
         from game.headless.generation.odds import card_offers
         owner=next((r.definition_id for r in state.relics if r.instance_id==source),None)
-        definitions,upgraded=card_offers(state,cards,extend_pool(state,cards,[d.definition_id for d in pool],card_reward=is_card_reward, no_pool_changes=no_pool_changes),count,mode="base",uniform=rarity is not None,upgrade_roll=owner in ("orrery","lost_coffer","lead_paperweight"))
+        definitions,upgraded=card_offers(state,cards,extend_pool(state,cards,[d.definition_id for d in pool],card_reward=is_card_reward, no_pool_changes=no_pool_changes),count,mode="changing" if owner == "dream_catcher" else "base",uniform=rarity is not None,upgrade_roll=owner in ("orrery","lost_coffer","lead_paperweight","dream_catcher"))
     else:
         state.rng.shuffle("relic.card_reward", pool)
         definitions = [d.definition_id for d in pool[:count]]
@@ -183,9 +183,8 @@ def _apply(state, cards, action):
             elif operation == "remove":
                 remove_card(state, identity)
             elif operation == "clone":
-                clone = add_card(state, card.definition, upgrade_level=card.upgrade_level)
-                if card.enchantment is not None:
-                    clone.enchantment = deepcopy(card.enchantment)
+                add_card(state, card.definition, upgrade_level=card.upgrade_level,
+                         enchantment=card.enchantment, event_data=card.event_data, cloned=True)
             elif operation == "transform":
                 from game.headless.events.transformation import replacement_pool
 
@@ -317,7 +316,7 @@ def validate(state, cards):
                 raise ValueError("Non-card relic reroll.")
             name = owners[work["source"]]
             sources = {
-                "card_reward": {"orrery", "lost_coffer", "lead_paperweight", "hefty_tablet", "kaleidoscope", "glass_eye"},
+                "card_reward": {"orrery", "lost_coffer", "lead_paperweight", "hefty_tablet", "kaleidoscope", "glass_eye", "dream_catcher"},
                 "potion_reward": {"cauldron", "lost_coffer", "tiny_mailbox"},
                 "relic_reward": {"small_capsule", "neows_bones", "shovel", "calling_bell", "toy_box"},
                 "bundle": {"scroll_boxes"},

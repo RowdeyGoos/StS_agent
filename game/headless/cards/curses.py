@@ -52,6 +52,8 @@ END_HAND_CURSES = ("debt", "decay", "doubt", "regret", "shame", "bad_luck")
 
 def can_play(player, card=None, *, auto=False):
     from game.headless.relics.combat import owned, memory
+    if card is not None and card.definition.definition_id == "clash" and any(c.spec.kind != "attack" for c in player.hand):
+        return False
     choker = owned(player, "velvet_choker")
     if choker and memory(player, choker).get("turn_plays", 0) >= 6:
         return False

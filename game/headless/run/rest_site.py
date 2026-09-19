@@ -28,18 +28,15 @@ def heal_amount(state) -> int:
     return min(state.max_hp * 3 // 10 + (15 if has(state, "regal_pillow") else 0), state.max_hp - state.hp)
 
 
-def heal(state) -> int:
+def heal(state, *, cards=None) -> int:
     pending = _pending(state, "options")
     if "rest" in pending["used"]:
         raise ValueError("Rest was already used here.")
     amount = heal_amount(state)
     state.hp += amount
     complete(state, "rest")
-    if has(state, "stone_humidifier"):
-        max_hp(state, 5)
-    if has(state, "tiny_mailbox"):
-        from game.headless.relics.pickup import potion_reward
-        potion_reward(state, owned(state, "tiny_mailbox").instance_id)
+    from game.headless.relics.run_rules import rest_rewards
+    rest_rewards(state, cards=cards)
     return amount
 
 

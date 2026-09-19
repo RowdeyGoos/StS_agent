@@ -19,12 +19,16 @@ def upgrade_card(state: RunState, instance_id: str) -> Card:
     return card
 
 
-def add_card(state: RunState, definition, *, upgrade_level: int = 0) -> Card:
+def add_card(state: RunState, definition, *, upgrade_level: int = 0, enchantment=None, event_data=None, cloned=False) -> Card:
     definition.spec_at(upgrade_level)  # Validate before consuming identity.
     card = Card(definition, upgrade_level=upgrade_level, instance_id=state.allocate_card_id())
+    from copy import deepcopy
+    card.enchantment = deepcopy(enchantment)
+    if event_data is not None:
+        card.event_data = deepcopy(event_data)
     state.deck.append(card)
     from game.headless.relics.run_rules import card_added
-    card_added(state, card)
+    card_added(state, card, cloned=cloned)
     return card
 
 

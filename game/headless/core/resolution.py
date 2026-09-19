@@ -91,6 +91,8 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False, sp
     if rules.powers.get("duplication"):
         repeats += 1
         rules.powers["duplication"] -= 1
+    if card.enchantment is not None and card.enchantment.definition_id == "spiral":
+        repeats += 1
     if card.enchantment is not None and card.enchantment.definition_id == "glam" and not card.enchantment.triggered:
         repeats += 1
     if card.spec.kind == "attack" and rules.powers.get("one_two_punch"):
@@ -131,6 +133,9 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False, sp
         and rules.attacks_started + rules.skills_started < rules.powers.get("nostalgia", 0)
     ):
         frame["destination"] = "draw_pile"
+    if frame["destination"] == "discard_pile" and rules.powers.get("rebound", 0):
+        frame["destination"] = "draw_pile"
+        rules.powers["rebound"] -= 1
     from game.headless.powers.defect import prepare_play
     prepare_play(player, card, frame)
     push(player, ["iteration", card.instance_id])
@@ -241,7 +246,9 @@ def execute(p, task):
             card.combat_state.turn_cost_override = None
         context = r.plays.pop(identity)
         p.deck.in_play.remove(card)
-        if context["destination"] == "powers":
+        if card.combat_state.is_dupe:
+            pass  # Native duplicate plays disappear without discard/exhaust hooks.
+        elif context["destination"] == "powers":
             p.deck.powers.append(card)
         elif context["destination"] == "exhaust_pile":
             p.deck.exhaust_card(card)
@@ -428,7 +435,7 @@ def execute(p, task):
         regent_after_card(p, card)
         from game.headless.powers.necrobinder import after_card as nec_after_card
         nec_after_card(p, card)
-        if card.enchantment is not None and card.enchantment.definition_id == "glam":
+        if card.enchantment is not None and card.enchantment.definition_id in ("glam", "vigorous"):
             card.enchantment.triggered = True
         if card.enchantment is not None and card.enchantment.definition_id == "goopy" and p.is_alive:
             card.enchantment.amount += 1

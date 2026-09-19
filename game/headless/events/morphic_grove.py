@@ -121,6 +121,11 @@ class MorphicGrove:
                         or result["definition_id"] == definitions[source]):
                     raise ValueError("Morphic result differs from the deck.")
                 expected[original.index(source)] = card.instance_id
+            if any(r.definition_id == 'bing_bong' and not r.data.get('_melted') for r in state.relics):
+                clones = [c for c in state.deck if c.instance_id not in expected]
+                if [c.definition.definition_id for c in clones] != [r['definition_id'] for r in data['results']]:
+                    raise ValueError('Morphic clone results differ from replacements.')
+                expected.extend(c.instance_id for c in clones)
             if current != expected:
                 raise ValueError("Morphic replacements differ from their original positions.")
         else:

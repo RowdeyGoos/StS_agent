@@ -17,7 +17,7 @@ RESOURCE_RELICS = frozenset(
         "lucky_fysh",
         "regal_pillow",
         "stone_humidifier",
-        "tiny_mailbox",
+        "tiny_mailbox", "bing_bong", "darkstone_periapt",
     )
 )
 
@@ -25,6 +25,7 @@ RESOURCE_RELICS = frozenset(
 def capture(state):
     relics = [asdict(r) for r in state.relics if r.definition_id in RESOURCE_RELICS]
     return {"hp": state.hp, "max_hp": state.max_hp, "gold": state.gold, "relics": relics,
+            "deck_ids": [c.instance_id for c in state.deck],
             "potions": [None if p is None else asdict(p) for p in state.potions]}
 
 
@@ -39,7 +40,7 @@ def expected(state, pending, effects=(), *, potion_changes=True):
             "relics": [],
         }
     else:
-        if not isinstance(context, dict) or set(context) != {"hp", "max_hp", "gold", "relics", "potions"}:
+        if not isinstance(context, dict) or set(context) != {"hp", "max_hp", "gold", "relics", "potions", "deck_ids"}:
             raise ValueError("Invalid event resource context.")
         values = deepcopy(context)
         if (
@@ -76,6 +77,11 @@ def expected(state, pending, effects=(), *, potion_changes=True):
                 raise ValueError("Event entry resource copies disagree.")
     from game.headless.events.potion_context import inventory, apply_at
     values['potions'] = inventory(state, values.get('potions', [None] * state.potion_capacity))
+    original_ids = values.pop('deck_ids', [c.instance_id for c in state.deck])
+    if not isinstance(original_ids,list) or any(not isinstance(i,str) for i in original_ids) or len(set(original_ids)) != len(original_ids):
+        raise ValueError('Invalid entry deck identities.')
+    additions = sorted([c for c in state.deck if c.instance_id not in original_ids],key=lambda c:int(c.instance_id.removeprefix('run.card.')))
+    card_cursor = 0
     result = SimpleNamespace(**values)
     for index, (operation, amount) in enumerate(effects):
         if potion_changes:
@@ -93,8 +99,11 @@ def expected(state, pending, effects=(), *, potion_changes=True):
         elif operation == "lose_all_gold":
             result.gold = 0
         elif operation == "cards_added":
-            for _ in range(amount):
+            for _ in range(amount * (2 if run_rules.has(result, 'bing_bong') else 1)):
                 run_rules.after_card_added(result)
+                if card_cursor < len(additions) and additions[card_cursor].spec.kind == 'curse' and run_rules.has(result, 'darkstone_periapt'):
+                    run_rules.max_hp(result,6)
+                card_cursor += 1
         elif operation == "rest_bonus":
             if run_rules.has(result, "stone_humidifier"):
                 run_rules.max_hp(result, 5)

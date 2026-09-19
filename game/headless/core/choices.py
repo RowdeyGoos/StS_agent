@@ -69,7 +69,11 @@ def resolve(p, identity, operation, destination, free):
     if card is None or p.combat_is_ending:
         p.deck.offered.clear()
         return
-    if operation.startswith("nec_"):
+    if operation in ("dual_wield", "dual_wield_up"):
+        from game.headless.cards.special import clone_to
+        for _ in range(2 if operation.endswith("_up") else 1):
+            clone_to(p, card, "hand")
+    elif operation.startswith("nec_"):
         from game.headless.cards.necrobinder_effects import selected
         selected(p, card, operation)
     elif operation.startswith("regent_"):
@@ -131,11 +135,13 @@ def refresh_hand_selection(p):
             s['maximum'] = min(s['maximum'], len(cards))
             s['minimum'] = min(s['minimum'], s['maximum'])
         return
-    hand_ops = {'discard', 'discard_redraw', 'hand_trick', 'nightmare', 'well_laid_plans', 'transform', 'exhaust'}
+    hand_ops = {'dual_wield', 'dual_wield_up', 'discard', 'discard_redraw', 'hand_trick', 'nightmare', 'well_laid_plans', 'transform', 'exhaust'}
     if operation not in hand_ops and not (operation == 'move' and s['destination'] == 'draw_pile'):
         return
     cards = list(p.hand)
-    if operation == 'hand_trick':
+    if operation in ('dual_wield','dual_wield_up'):
+        cards = [c for c in cards if c.spec.kind in ('attack','power')]
+    elif operation == 'hand_trick':
         cards = [c for c in cards if c.spec.kind in ('skill', 'block') and not c.spec.sly]
     elif operation == 'well_laid_plans':
         cards = [c for c in cards if not c.spec.retain]

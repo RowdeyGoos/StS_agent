@@ -16,7 +16,10 @@ from game.headless.monsters.kin import KinFollower, KinPriest
 from game.headless.monsters.phrog_parasite import PhrogParasite, Wriggler
 from game.headless.monsters.fogmog import Fogmog, EyeWithTeeth
 
+from game.headless.monsters.event_monsters import BattleFriendV1, BattleFriendV2, BattleFriendV3, PunchConstruct, MysteriousKnight, FakeMerchantMonster
+
 DEFAULT_MONSTERS = MappingProxyType({kind.__name__: kind for kind in (
+    BattleFriendV1, BattleFriendV2, BattleFriendV3, PunchConstruct, MysteriousKnight, FakeMerchantMonster,
     SimpleEnemy, Nibbit, ShrinkerBeetle, FuzzyWurmCrawler, Mawler, Byrdonis, Vantom,
     CubexConstruct, SnappingJaxfruit, VineShambler, SlitheringStrangler, Inklet, Flyconid,
     AssassinRubyRaider, AxeRubyRaider, BruteRubyRaider, CrossbowRubyRaider, TrackerRubyRaider,

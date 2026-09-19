@@ -216,6 +216,8 @@ class RunEngine:
                                 if ENCOUNTERS[value] is encounter_factory), None)
             if getattr(encounter_factory, "event_id", None) == "dense_vegetation":
                 native_type = "DenseVegetationEventEncounter"
+            from game.headless.encounters.extended_events import NATIVE_IDS
+            native_type = native_type or next((n for key,n in NATIVE_IDS.items() if ENCOUNTERS[key] is encounter_factory), None)
             if native_type is not None:
                 # Generated maps start after Ancient, including when its optional
                 # choice was skipped. Native history counts that root as floor 1.
@@ -277,6 +279,14 @@ class RunEngine:
         undamaged = lamp is not None and not memory(self.combat.player, lamp).get("damaged", False)
         extra_cards = self.combat.player.rules.extra_card_rewards
         royalties = self.combat.player.rules.powers.get("royalties", 0)
+        if self.state.phase is RunPhase.ROUTE:
+            choices = [c for c in self.state.deck if c.upgrade_level + 1 < len(c.definition.levels)]
+            for _ in range(min(len(choices), self.combat.player.rules.powers.get("improvement", 0))):
+                card = self.combat.player.deck.selection_rng.choice(choices)
+                choices.remove(card)
+                card.upgrade()
+        if self.state.event_combats and self.state.event_combats[-1].outcome is None:
+            self.state.event_combats[-1].timed_out = any(getattr(e, "timed_out", False) for e in self.combat.enemies)
         self.combat = None
         from game.headless.run.event_combat import finish
         finish(self.state, encounter_id, won=self.state.phase is RunPhase.ROUTE)
@@ -291,7 +301,10 @@ class RunEngine:
             for relic in self.state.relics:
                 if not relic.data.get("_melted"):
                     RELICS[relic.definition_id].after_combat_victory(self.state)
-            if self.state.config is not None:
+            if encounter_id and encounter_id.startswith("battleworn_dummy_"):
+                from game.headless.run.event_combat import resume
+                resume(self.state, self.cards)
+            elif self.state.config is not None:
                 from game.headless.run.rewards import begin_combat_rewards
                 begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged, extra_cards=extra_cards, royalties=royalties)
 

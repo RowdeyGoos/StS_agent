@@ -47,6 +47,8 @@ class EventProgression:
         result = self.queue[cursor % len(self.queue)]
         if result not in EVENTS:
             raise ValueError("Exhausted event queue selected unsupported later-act content.")
+        if conditions.get("act_index") == 2 and conditions.get("lantern_keys",0):
+            result = "war_historian_repy"
         self.cursor = cursor + 1
         self.assignments[node_id] = result
         self.entry_conditions[node_id] = deepcopy(conditions)

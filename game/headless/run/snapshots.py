@@ -26,11 +26,11 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v37"
+SCHEMA = "headless_run_state_v38"
 
 
 def _restore_event_combat(record):
-    if not isinstance(record, dict) or set(record) != {"event_instance_id", "definition_id", "node_id", "encounter_id", "combat_number", "outcome", "rewards_left"}:
+    if not isinstance(record, dict) or set(record) != {"event_instance_id", "definition_id", "node_id", "encounter_id", "combat_number", "outcome", "rewards_left", "continuation", "timed_out", "resumed"}:
         raise ValueError("Invalid event combat state fields.")
     return EventCombatRecord(**record)
 
@@ -73,7 +73,7 @@ def capture_run(engine) -> dict:
                   "potions": [None if p is None else asdict(p) for p in state.potions],
                   "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance, "generation_odds": deepcopy(state.generation_odds), "initialization": deepcopy(state.initialization), "relic_bags": deepcopy(state.relic_bags),
                   "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used,
-                  "next_event_id": state.next_event_id, "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
+                  "act_index": state.act_index, "wongo_points": state.wongo_points, "freed_repy": state.freed_repy, "next_event_id": state.next_event_id, "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
         "graph": None if engine.graph is None else asdict(engine.graph),
         "combat": None if engine.combat is None else engine.combat.snapshot(cards=engine.cards),
     }
@@ -126,7 +126,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             potions=[None if p is None else PotionInstance(**p) for p in payload["potions"]],
             next_item_id=payload["next_item_id"], potion_drop_chance=payload["potion_drop_chance"], generation_odds=deepcopy(payload["generation_odds"]), initialization=deepcopy(payload["initialization"]), relic_bags=deepcopy(payload["relic_bags"]),
             next_shop_id=payload["next_shop_id"], shop_removals_used=payload["shop_removals_used"],
-            next_event_id=payload["next_event_id"], next_treasure_id=payload["next_treasure_id"], treasure_relics_drawn=deepcopy(payload["treasure_relics_drawn"]),
+            act_index=payload["act_index"], wongo_points=payload["wongo_points"], freed_repy=payload["freed_repy"], next_event_id=payload["next_event_id"], next_treasure_id=payload["next_treasure_id"], treasure_relics_drawn=deepcopy(payload["treasure_relics_drawn"]),
         )
         unknown = payload["unknown_rooms"]
         if unknown is not None:
@@ -202,7 +202,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Combat maximum HP differs from the run.")
         elif state.phase is RunPhase.COMBAT:
             raise ValueError("Combat phase requires its owned combat.")
-        event_combat.validate(state, graph)
+        event_combat.validate(state, graph, cards=cards)
         _validate_pending(state, cards, graph)
         if (getattr(state.rng,"native",False) and state.pending and state.pending.get("kind")=="scripted_event"
                 and state.rng.active_event!=state.pending["definition_id"]):
@@ -215,7 +215,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
 
 
 def _validate_progression(state, graph, cards):
-    event_combat.validate(state, graph)
+    event_combat.validate(state, graph, cards=cards)
     from game.headless.map.overgrowth import PROFILE
     if state.ancient_start is not None:
         if not isinstance(state.ancient_start, AncientStart):

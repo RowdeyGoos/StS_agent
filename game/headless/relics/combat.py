@@ -54,6 +54,8 @@ def execute(p, instance_id, event, identity):
     relic = next(r for r in p.rules.relics if r["instance_id"] == instance_id)
     if not p.is_alive or relic.get("data", {}).get("_melted"):
         return
+    from game.headless.relics.event_content import hook as event_hook
+    event_hook(p, relic, event, identity)
     if event in ("before_draw", "after_draw", "before_end", "after_end", "after_side_start"):
         from game.headless.relics.turns import hook
     else:
@@ -115,6 +117,7 @@ def validate(records, data, card_ids=()):
 from game.headless.relics.ancient_content import MEMORY
 
 MEMORY_FIELDS = {
+    "history_course": {"last_card": "card", "last_turn": 2**31-1, "replay": "card"},
     **MEMORY,
     **{n: {"turn_attacks": 2**31 - 1} for n in ("kunai", "kusarigama", "ornamental_fan", "shuriken")},
     **{n: {"used": "bool"} for n in ("ruined_helmet", "centennial_puzzle", "permafrost", "burning_sticks")},
@@ -136,6 +139,7 @@ MEMORY_FIELDS = {
     "vambrace": {"triggering_card": "card", "used": "bool"},
     "unsettling_lamp": {"triggering_card": "card", "used": "bool"},
     "orichalcum": {"orichalcum_ready": "bool"},
+    "fake_orichalcum": {"orichalcum_ready": "bool"},
     "reptile_trinket": {"temporary_strength": 2**31 - 1},
     "joss_paper": {"ethereal_exhausts": 2**31 - 1},
 }

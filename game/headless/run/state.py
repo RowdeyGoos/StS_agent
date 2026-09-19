@@ -43,6 +43,9 @@ class RunState:
     deck: list[Card]
     rng: GameRandomService
     phase: RunPhase = RunPhase.ROUTE
+    act_index: int = 0
+    wongo_points: int = 0
+    freed_repy: bool = False
     next_card_id: int = 0
     combats_completed: int = 0
     current_node_id: str | None = None
@@ -102,6 +105,8 @@ class RunState:
             raise ValueError("Selected map node requires a different room.")
 
     def validate(self) -> None:
+        if type(self.act_index) is not int or not 0 <= self.act_index <= 2 or type(self.wongo_points) is not int or self.wongo_points < 0 or type(self.freed_repy) is not bool:
+            raise ValueError("Invalid event progression context.")
         from game.headless.generation.initialization import validate as validate_initialization
         validate_initialization(self)
         if getattr(self.rng, "native", False):

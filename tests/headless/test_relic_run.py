@@ -76,7 +76,8 @@ def test_catalog_matches_independently_audited_solo_scope():
     converted = {re.sub(r"(?<!^)(?=[A-Z])", "_", n).lower() for n in names}
     assert len(converted) == fixture["definition_count"] == 161
     ancients = json.loads((Path(__file__).parents[1] / "fixtures/headless_ancient_scope.json").read_text())
-    assert set(RELICS) == converted | set(ancients["solo"]) | {"black_blood"}
+    events = json.loads((Path(__file__).parents[1] / "fixtures/headless_solo_event_scope.json").read_text())
+    assert set(RELICS) == converted | set(ancients["solo"]) | set(events["event_relics"]) | {"black_blood"}
 
 
 @pytest.mark.parametrize("name", sorted(RELICS))

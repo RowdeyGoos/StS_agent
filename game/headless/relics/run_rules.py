@@ -59,9 +59,20 @@ def modify_new_card(state, card, *, only=None):
     return card
 
 
-def card_added(state, card):
+def card_added(state, card, *, cloned=False):
     modify_new_card(state, card)
     after_card_added(state)
+    if card.spec.kind == "curse" and has(state, "darkstone_periapt"):
+        max_hp(state, 6)
+    if not cloned and has(state, "bing_bong"):
+        from copy import deepcopy
+        clone = deepcopy(card)
+        clone.instance_id = state.allocate_card_id()
+        state.deck.append(clone)
+        modify_new_card(state, clone)
+        after_card_added(state)
+        if clone.spec.kind == "curse" and has(state, "darkstone_periapt"):
+            max_hp(state, 6)
 
 
 def after_card_added(state):
@@ -82,6 +93,8 @@ def entered_room(state, kind, *, unknown=False):
         if relic.data.get("_melted"):
             continue
         name = relic.definition_id
+        if name == "maw_bank" and not relic.counter:
+            gain_gold(state, 12)
         if name == "meal_ticket" and kind == "shop":
             heal(state, 15)
         elif name == "eternal_feather" and kind == "rest":
@@ -90,7 +103,7 @@ def entered_room(state, kind, *, unknown=False):
             heal(state, 25)
         elif name == "planisphere" and unknown:
             heal(state, 5)
-        elif name == "venerable_tea_set" and kind == "rest":
+        elif name in ("venerable_tea_set", "fake_venerable_tea_set") and kind == "rest":
             counter(state, relic, 1)
 
 
@@ -101,6 +114,8 @@ def victory(state, *, room_kind="combat"):
     for relic in tuple(state.relics):
         if relic.data.get("_melted"):
             continue
+        if relic.definition_id == "wongos_mystery_ticket" and relic.counter < 5:
+            counter(state, relic, relic.counter + 1)
         if relic.definition_id == "lasting_candy":
             counter(state, relic, (relic.counter + 1) % 2)
         elif relic.definition_id == "fishing_rod" and room_kind == "combat":
@@ -119,6 +134,8 @@ def victory(state, *, room_kind="combat"):
 
 def pickup(state, relic, cards):
     name = relic.definition_id
+    from game.headless.relics.event_content import pickup as event_pickup
+    event_pickup(state, relic, cards)
     if name == "lees_waffle":
         heal(state, state.max_hp)
     elif name == "potion_belt":
@@ -152,7 +169,11 @@ def damage(state, amount):
     return max(0, previous - state.hp)
 
 
-def rest_rewards(state):
+def rest_rewards(state, *, cards=None):
+    if has(state, "dream_catcher"):
+        from game.headless.relics.pickup import card_reward
+        from game.headless.cards.catalog import DEFAULT_CARDS
+        card_reward(state, cards or DEFAULT_CARDS, owned(state, "dream_catcher").instance_id)
     if has(state, "stone_humidifier"):
         max_hp(state, 5)
     if has(state, "tiny_mailbox"):

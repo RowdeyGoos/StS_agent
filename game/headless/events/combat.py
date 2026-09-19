@@ -17,3 +17,6 @@ class EventCombatRecord:
     combat_number: int
     outcome: str | None = None
     rewards_left: bool = False
+    continuation: dict | None = None
+    timed_out: bool = False
+    resumed: bool = False

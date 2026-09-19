@@ -14,7 +14,7 @@ CURSE_POOL = ALL_CURSES
 CURSE_SOURCES = CURSE_POOL
 ETERNAL_SOURCES = ("greed", *SPECIAL_CURSES)
 COLORLESS_POOL = COLORLESS_CARDS
-COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop", "giant_rock", "neows_fury", "peck", "toric_toughness", "spoils_map")
+COLORLESS_SOURCES = (*COLORLESS_POOL, "byrdonis_egg", "byrd_swoop", "giant_rock", "neows_fury", "peck", "toric_toughness", "spoils_map", *(d.definition_id for d in DEFAULT_CARDS.definitions if d.pool == "event"))
 
 
 def replacement_pool(source, pool):

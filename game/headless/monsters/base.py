@@ -193,11 +193,20 @@ class Enemy(ABC):
         from copy import deepcopy
         total = min(self.block, incoming_damage) + resolve_unblocked_damage(deepcopy(self.statuses), max(0, incoming_damage - self.block))
         previous_hp = self.hp
+        previous_block = self.block
         self.hp, self.block = apply_damage_to_block_and_hp(
             self.hp,
             self.block,
             incoming_damage, statuses=self.statuses,
         )
+        if player is not None and (pet or attacker_statuses is player.statuses):
+            from game.headless.relics.combat import has
+            unblocked = total - min(previous_block, incoming_damage)
+            if is_attack and powered and has(player, "the_boot") and 0 < unblocked < 5:
+                total += 5 - unblocked
+                self.hp = max(0, previous_hp - 5)
+            if previous_block > 0 and self.block == 0 and has(player, "hand_drill"):
+                self.apply_status("vulnerable", 2, source=player)
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
             slot = str(player.combat_enemies.index(self))
             player.rules.regent_hits[slot] = player.rules.regent_hits.get(slot, 0) + 1

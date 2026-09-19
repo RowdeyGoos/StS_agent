@@ -136,10 +136,8 @@ def test_fixture_profile_keeps_its_independent_streams_and_no_native_record():
     assert saved(clone) == saved(run)
 
 
-def test_unsupported_full_pass_fallback_leaves_cursor_and_history_unchanged():
+def test_full_pass_fallback_can_now_resolve_later_act_content():
     from game.headless.events.progression import EventProgression
     queue=EventProgression(['fake_merchant'],profile=NATIVE_PROFILE)
-    before=deepcopy(queue)
-    with pytest.raises(ValueError,match='unsupported later-act'):
-        queue.pull('synthetic-event',conditions={'gold':0,'transformable_cards':0})
-    assert queue==before
+    assert queue.pull('synthetic-event',conditions={'gold':0,'transformable_cards':0}) == 'fake_merchant'
+    assert queue.cursor == 2 and queue.assignments == {'synthetic-event':'fake_merchant'}

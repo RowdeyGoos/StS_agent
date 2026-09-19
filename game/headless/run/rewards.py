@@ -111,6 +111,8 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     state.pending["relic"] = relic
     state.pending.update(combat_reward=True, hunt_rewards_earned=extra_cards, royalties_earned=royalties, encounter_id=encounter_id, potion=potion,
                          potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None, extra_rewards=extra_rewards(state, cards, encounter, undamaged=undamaged))
+    from game.headless.run.event_combat import extra_rewards as event_rewards
+    state.pending["extra_rewards"].extend(event_rewards(state,cards,encounter_id))
     if royalties:
         state.pending["extra_rewards"].append(dict(source="royalties", kind="gold", offers=["royalties"], modifiers={"gold": royalties}, resolved=False))
     if extra_cards:
@@ -127,7 +129,7 @@ def claim_potion(state):
     return potion
 
 
-def leave_combat_rewards(state) -> None:
+def leave_combat_rewards(state, *, cards=None) -> None:
     reward = _reward(state)
     if not reward.get("combat_reward"):
         raise ValueError("No combat rewards are active.")
@@ -142,6 +144,9 @@ def leave_combat_rewards(state) -> None:
         state.phase = RunPhase.ACT_COMPLETE
     else:
         state.phase = RunPhase.ROUTE
+        from game.headless.run.event_combat import resume
+        from game.headless.cards.catalog import DEFAULT_CARDS
+        resume(state, cards or DEFAULT_CARDS)
 
 
 def claim_relic(state, *, cards=None):
@@ -157,9 +162,8 @@ def claim_relic(state, *, cards=None):
 def acquire_card(state, cards, name, modifiers):
     from game.headless.enchantments.base import restore
     modifier = modifiers[name]
-    card = add_card(state, cards.definition(name), upgrade_level=modifier['upgrade_level'])
-    if modifier['enchantment'] is not None:
-        card.enchantment = restore(modifier['enchantment'])
+    card = add_card(state, cards.definition(name), upgrade_level=modifier['upgrade_level'],
+                    enchantment=restore(modifier['enchantment']))
     return card
 
 
@@ -168,6 +172,9 @@ def choose_extra(state, cards, index, name):
     if reward['resolved'] or name is not None and name not in reward['offers']:
         raise ValueError('Extra reward is unavailable.')
     result = None
+    if reward['source'].startswith('event:'):
+        from game.headless.events.reward_batch import claim
+        return claim(state,cards,reward,name)
     if name is not None:
         if reward['kind'] == 'gold':
             from game.headless.relics.run_rules import gain_gold

@@ -108,10 +108,10 @@ def test_full_native_act1_event_inventory():
     from pathlib import Path
     inventory = json.loads((Path(__file__).parents[1] / "fixtures/headless_act1_event_scope.json").read_text())
     names = inventory["overgrowth_events"] + inventory["shared_act1_events"]
-    assert set(EVENTS) == {re.sub(r"(?<!^)(?=[A-Z])", "_", n).lower() for n in names}
-    assert len(EVENTS) == 21
+    assert set(EVENTS) >= {re.sub(r"(?<!^)(?=[A-Z])", "_", n).lower() for n in names}
+    assert len(names) == 21
     run = RunEngine.ironclad_act1()
-    assert set(run.state.config.event_pool) == set(EVENTS)
+    assert set(run.state.config.event_pool) == {re.sub(r"(?<!^)(?=[A-Z])", "_", n).lower() for n in names}
     clone(run)
 
 

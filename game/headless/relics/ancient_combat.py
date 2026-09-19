@@ -155,6 +155,8 @@ def extra_turn(p):
 
 def preplay(p):
     if p.rules.round_number != 1:
+        from game.headless.relics.event_content import history_preplay
+        history_preplay(p)
         return
     # Native hooks visit hand, then top-first draw, discard, exhaust and play.
     ordered = (*p.hand, *reversed(p.deck.draw_pile), *p.deck.discard_pile, *p.deck.exhaust_pile, *p.deck.in_play)

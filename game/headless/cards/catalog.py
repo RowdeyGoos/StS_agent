@@ -12,6 +12,7 @@ from game.headless.cards.ironclad_rare import DEFINITIONS as RARES
 from game.headless.cards.ironclad_extended import DEFINITIONS as EXTENDED, GIANT_ROCK
 from game.headless.cards.colorless import DEFINITIONS as COLORLESS
 from game.headless.cards.event_cards import DEFINITIONS as EVENT_CARDS
+from game.headless.cards.extended_events import DEFINITIONS as EXTENDED_EVENTS
 from game.headless.cards.ancient import DEFINITIONS as ANCIENT
 
 
@@ -85,7 +86,7 @@ class CardCatalog:
         return self
 
 
-IRONCLAD_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *COLORLESS, *EXTENDED, GIANT_ROCK, *(d for d in ANCIENT if d.pool in ('colorless','status'))))
+IRONCLAD_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *EXTENDED_EVENTS, *COLORLESS, *EXTENDED, GIANT_ROCK, *(d for d in ANCIENT if d.pool in ('colorless','status'))))
 
 # Explicit family subsets remain useful for restricted fixtures.
 from game.headless.cards.silent import DEFINITIONS as SILENT

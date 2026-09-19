@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v24 / run v36**.
+than being silently reinterpreted: current schemas are **combat v26 / run v38**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -199,8 +199,8 @@ Native event progression uses `native_act1_events_all_unlocked_v1`: all **31**
 queued IDs are shuffled before eligibility, including nine later-act events and
 one disabled event. Only the 21 supported Act-1-eligible events can normally enter
 rooms. Their exclusions are explicit metadata, not inferred from missing handlers.
-An exhausted queue that falls back to unsupported content fails without committing
-an event or advancing its cursor. Fixture progression retains its original profile.
+The full solo roster now also handles a later-act candidate selected by the native
+exhausted-queue fallback; normal Act 1 eligibility remains unchanged. Fixture progression retains its original profile.
 
 The native map uses second-entrance rejection draws, column-first stable sorting,
 insertion-ordered pruning and deterministic centering/spreading/straightening.
@@ -571,9 +571,9 @@ All **51 potion definitions in the solo Ironclad scope** execute against the pin
 0.107.1 / Steam build 23811903 rules: 45 shared, Blood Potion, Ashwater and Soldier's
 Stew, plus Foul Potion, Glowwater Potion and Potion-Shaped Rock. Other characters'
 12 exclusive potions and Deprecated Potion are outside this scope. Event/token
-potions have executable rules even where their granting event is not implemented;
+potions have executable rules and their granting solo events are implemented;
 Foul's combat and ordinary merchant uses are supported, while Fake Merchant awaits
-that event's implementation.
+its event choice and inventory legality.
 
 `potions/base.py` owns immutable content, `combat.py` applies ordered effects,
 `powers.py` owns delayed/resource hooks, and `selections.py` defines card choices.
@@ -618,10 +618,10 @@ See the [finite inventory](../tests/fixtures/headless_potion_scope.json),
 
 ## Relics
 
-The default catalog contains **232 relic definitions**, including all **99 solo
+The default catalog contains **259 relic definitions**, including all **99 solo
 Ancient relics** from pinned build 0.107.1. This extends the original 161-definition
 Act 1 inventory with 70 Ancients and Black Blood, the Ironclad starter evolution
-granted by Touch of Orobas. Massive Scroll remains excluded as multiplayer-only.
+granted by Touch of Orobas, plus 27 event relics. Massive Scroll remains excluded as multiplayer-only.
 Kaleidoscope
 requires all four complete ordinary foreign families before offering two sets of
 three cards from distinct families. Multiplayer-only relics
@@ -774,7 +774,8 @@ exhausted pass it permits the current candidate even if visited or ineligible,
 matching the native fallback. `state.event_progression` owns queue order, cursor,
 node assignments and plain entry conditions (resources, deck eligibility and inventory counts).
 Restore replays selection against those conditions and visited room outcomes. Reads and failed room construction never advance the queue.
-Later-act event gameplay and unlock epochs remain open. Native initialization
+Later-act events are available through the explicit event catalog below. Full later-act
+run progression and profile-dependent unlock epochs remain open. Native initialization
 uses pinned pool order; authored profiles retain their declared pool restrictions. Juzu Bracelet and Winged Boots now modify unknown/travel behavior; tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
 `RunConfig.relic_fallback="circlet"`, preventing exhausted relic rewards
@@ -784,6 +785,79 @@ Each claimed reward records its exact item instance, including repeated Circlets
 Every path has 16 room visits before Act 1 completion if survived. This is a
 full-length **restricted-content** route, not yet complete native Act 1 fidelity.
 [Source anchors, checks and remaining work](evidence/map_pruning_unknowns_2026_09_13.md).
+
+## All solo events across acts
+
+The pinned 0.107.1 census now has **66 implemented solo events**: **58 regular
+events and eight Ancients**. `events/catalog.py` contains 65 definitions; Neow
+retains its established `run/ancient.py` entry path. The two deprecated placeholder
+models are excluded. [The checked-in census](../tests/fixtures/headless_solo_event_scope.json)
+records the source build and DLL hash.
+
+This adds 44 definitions, 17 event cards, six enchantments, 27 relics and six
+encounter configurations. The default catalog now contains 547 cards and 259
+relics. Event-only content stays out of ordinary reward and merchant pools.
+
+| Content module | Implemented interactions |
+| --- | --- |
+| `events/roster.py` | Amalgamator, Bugslayer, Doors of Light and Dark, Drowning Beacon, Field of Man-Sized Holes, Grave of the Forgotten, Hungry for Mushrooms, Infested Automaton, Lost Wisp, Potion Courier, Reflections, Spiraling Whirlpool, Spirit Grafter, Sunken Treasury, Symbiote, Waterlogged Scriptorium, Zen Weaver, Stone of All Time |
+| `events/social.py` | Abyssal Baths, Colossal Flower, Doll Room, Round Tea Party, Trial, Colorful Philosophers, Ranwid the Elder, Relic Trader, Welcome to Wongo's |
+| `events/minigames.py` | Crystal Sphere's hidden grid, tools, reveal order and custom rewards; Endless Conveyor's weighted dishes and repeated purchases |
+| `events/special.py` | Tinker Time's configured Mad Science card, Trash Heap's legacy cards/relics, War Historian Repy's key choices, Architect's terminal victory |
+| `events/fights.py` | Three Battleworn Dummy settings, Punch-Off, Lantern Key/Mysterious Knight and Fake Merchant |
+| `events/ancients.py` | Darv, Nonupeipe, Orobas, Pael, Tanx, Tezcatara and Vakuu offer generation and ordinary nested relic acquisition |
+
+Use the existing event commands in authored scenarios:
+
+```python
+from game.headless.run.engine import RunEngine
+from game.headless.run.config import RunConfig
+from game.headless.run import events
+from game.headless.run.actions import ChooseEventOption
+
+run = RunEngine(seed=7, config=RunConfig(), gold=200, rng_profile="native")
+run.state.act_index = 1  # Zero-based; owned scenario input, before event entry.
+events.begin(run.state, "crystal_sphere", cards=run.cards)
+run.apply(ChooseEventOption(run.state.pending["event_instance_id"], "payment_plan"))
+# Choose from run.legal_actions(); snapshot()/restore() also work inside the grid.
+```
+
+`FlowEvent` extends the existing step interpreter with named pages. Saved pages
+contain offered values, selections and operation receipts, never callbacks. Card
+and relic acquisition uses the existing run rules. Repeated purchases and page
+transitions update the owned continuation atomically. Pending reward batches are
+fully generated before claims, and support ordinary reward modifiers, Driftwood
+rerolls, Pael's Wing sacrifices and nested relic selectors.
+
+Dummy expiry is recorded separately from a kill and returns to its result page.
+Other event fights put custom loot alongside ordinary combat rewards, then leave
+the event. A completed continuation cannot resume again in another fight. Fake
+Merchant stores six prices rolled on the Shops stream; its event inventory does
+not receive MerchantRoom discounts or Courier restocks. Crystal Sphere stores its
+private board in the run snapshot; only hidden cell centers are legal dig targets.
+The snapshot is privileged simulator state, not a public observation contract.
+
+Mad Science retains its type/rider across cloning, combat and restore. History
+Course replays a temporary duplicate that disappears after use. Bing Bong copies
+new deck acquisitions with their modifiers and skips effects explicitly cloning a
+card. Dream Catcher integrates with real rest-site rewards. The knight's Plating
+expires by turn. New enchantments implement Perfect Fit, Soul's Power, Spiral,
+Corrupted, Steady and Vigorous through shared card/turn rules.
+
+`state.act_index`, `state.wongo_points` and `state.freed_repy` are explicit owned
+scenario/progression values; no game profile is read or written. At act index 2,
+Lantern Key forces the next unknown point to Repy. Ancient entry heals fully at A0,
+and Darv binds Dusty Tome's offered card before the choice. Non-rare event card
+upgrade rolls scale with act index; no-roll factories retain their native flags.
+
+Validation is source-backed and synthetic: branch completion under both RNG
+profiles, JSON continuation between decisions, card/relic combat tests, minigame
+legality, reward ownership and adversarial replay/rollback cases. See
+[branch tests](../tests/headless/test_all_solo_events.py) and
+[event content tests](../tests/headless/test_extended_event_content.py). This is not
+an assertion of live end-to-end parity for every event or a complete Act 2/3
+campaign. Generated campaign play still ends at Act 1; higher ascensions,
+profile-dependent unlocks and whole-run native comparisons remain separate work.
 
 ## Neow starting choice
 
@@ -944,8 +1018,8 @@ See [Aroma source and validation evidence](evidence/aroma_of_chaos_2026_09_13.md
 `run/events.py` owns lifecycle and
 dispatch. The older primitive event fixture still uses `run/rooms.py`; native
 content is not dispatched by its synthetic option dictionary. Native event pool
-unlock filters, additional conditional eligibility, multiplayer voting and the rest of the
-later-act event catalog remain open; the generated route now has owned
+profile unlock filters and multiplayer voting remain open; the full solo event
+catalog and its resource/act eligibility are implemented above; the generated route now has owned
 unique-event progression and exhausted-pool repetition. See [source and validation evidence](evidence/first_event_2026_09_13.md).
 
 ## Tablet of Truth and Morphic Grove
@@ -1324,7 +1398,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v37`, including configuration,
+Private run snapshots now use `headless_run_state_v38`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1335,7 +1409,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v25`, including the in-play
+Nested combat records now use `headless_combat_state_v26`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

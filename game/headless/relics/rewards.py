@@ -124,14 +124,14 @@ def extra_rewards(state, cards, encounter, *, undamaged=False):
                     "resolved": False,
                 }
             )
-        elif (name == "lava_rock" and kind == "boss" and not relic.counter) or (name == "black_star" and kind == "elite"):
+        elif (name == "lava_rock" and kind == "boss" and not relic.counter) or (name == "black_star" and kind == "elite") or (name == "wongos_mystery_ticket" and relic.counter == 5):
             from game.headless.relics.run_rules import counter
             from game.headless.relics.base import RELICS
 
             blocked = {r.definition_id for r in state.relics}
             if state.pending.get("relic"):
                 blocked.add(state.pending["relic"])
-            for _ in range(2 if name == "lava_rock" else 1):
+            for _ in range(2 if name == "lava_rock" else 3 if name == "wongos_mystery_ticket" else 1):
                 pool = [
                     n
                     for n, d in RELICS.items()
@@ -152,8 +152,8 @@ def extra_rewards(state, cards, encounter, *, undamaged=False):
                         "resolved": False,
                     }
                 )
-            if name == "lava_rock":
-                counter(state, relic, 1)
+            if name in ("lava_rock", "wongos_mystery_ticket"):
+                counter(state, relic, 1 if name == "lava_rock" else 6)
     return result
 
 
@@ -182,6 +182,8 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
     owners = {r.instance_id: r.definition_id for r in state.relics}
     sources = []
     hunt_index = 0
+    from game.headless.run.event_combat import validate_extra_rewards
+    validate_extra_rewards(state,cards,rewards)
     for reward in rewards:
         if not isinstance(reward, dict) or set(reward) - {"rerolled"} != {
             "source",
@@ -195,6 +197,8 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
         validate_marker(state, reward)
         if "rerolled" in reward and reward["kind"] != "card":
             raise ValueError("Non-card reroll marker.")
+        if isinstance(reward["source"],str) and reward["source"].startswith("event:"):
+            continue
         if reward["source"] == "royalties":
             cards.definition("royalties")
             if not royalties_earned or reward["kind"] != "gold" or reward["offers"] != ["royalties"] or reward["modifiers"] != {"gold": royalties_earned} or type(reward["resolved"]) is not bool:
@@ -206,11 +210,11 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
             owners[reward["source"]] = "the_hunt"
             hunt_index += 1
         if (
-            owners.get(reward["source"]) not in ("prayer_wheel", "white_star", "lava_rock", "black_star", "the_hunt")
+            owners.get(reward["source"]) not in ("prayer_wheel", "white_star", "lava_rock", "black_star", "the_hunt", "wongos_mystery_ticket")
             or type(reward["resolved"]) is not bool
         ):
             raise ValueError("Unowned extra reward.")
-        if owners[reward["source"]] in ("lava_rock", "black_star"):
+        if owners[reward["source"]] in ("lava_rock", "black_star", "wongos_mystery_ticket"):
             from game.headless.relics.base import RELICS
 
             if (
@@ -236,7 +240,7 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
         raise ValueError("Royalties reward differs from earned gold.")
     if hunt_index != earned:
         raise ValueError("Hunt rewards differ from the earned count.")
-    if any(sources.count(i) != (2 if owners[i] == "lava_rock" else 1) for i in sources):
+    if any(sources.count(i) != (2 if owners[i] == "lava_rock" else 3 if owners[i] == "wongos_mystery_ticket" else 1) for i in sources):
         raise ValueError("Duplicated relic reward source.")
 
 
