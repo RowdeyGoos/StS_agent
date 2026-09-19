@@ -111,7 +111,10 @@ def after_draw(card, deck):
         return
     v=card.combat_state
     v.combat_cost_override=deck.energy_rng.randrange(4)
+    from game.headless.core.card_costs import mark_setter
+    mark_setter(v, 'combat')
     v.combat_override_baseline=v.combat_cost_change
     v.cost_change=v.turn_cost_change=0
+    v.played_cost_baselines[:2]=[0, 0]
     v.free_this_turn=v.free_this_combat=v.free_until_played=False
     v.turn_cost_override=None

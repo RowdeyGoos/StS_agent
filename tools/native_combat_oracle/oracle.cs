@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] is not ("generation" or "interactions" or "transforms" or "silent" or "regent" or "necrobinder"))) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation|interactions|transforms|silent|regent|necrobinder]");
+if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] is not ("generation" or "interactions" or "transforms" or "silent" or "regent" or "necrobinder" or "defect"))) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation|interactions|transforms|silent|regent|necrobinder|defect]");
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
@@ -19,6 +19,7 @@ var db=asm.GetType("MegaCrit.Sts2.Core.Models.ModelDb",true)!;
 var abstractType=asm.GetType("MegaCrit.Sts2.Core.Models.AbstractModel",true)!;
 foreach(var modelType in asm.GetTypes().Where(t=>!t.IsAbstract && t.IsSubclassOf(abstractType) && t.Namespace is "MegaCrit.Sts2.Core.Models.Acts" or "MegaCrit.Sts2.Core.Models.Encounters" or "MegaCrit.Sts2.Core.Models.Events" or "MegaCrit.Sts2.Core.Models.RelicPools" or "MegaCrit.Sts2.Core.Models.Relics" or "MegaCrit.Sts2.Core.Models.Characters" or "MegaCrit.Sts2.Core.Models.Cards" or "MegaCrit.Sts2.Core.Models.CardPools" or "MegaCrit.Sts2.Core.Models.Potions" or "MegaCrit.Sts2.Core.Models.PotionPools" or "MegaCrit.Sts2.Core.Models.Monsters"))
     db.GetMethod("Inject")!.Invoke(null,new object[]{modelType});
+if(args.Length==3 && args[2]=="defect") { DefectOracle.Run(asm,digest); return; }
 if(args.Length==3 && args[2]=="necrobinder") { NecrobinderOracle.Run(asm,digest); return; }
 if(args.Length==3 && args[2]=="regent") { RegentOracle.Run(asm,digest); return; }
 if(args.Length==3 && args[2]=="silent") { SilentOracle.Run(asm,digest); return; }

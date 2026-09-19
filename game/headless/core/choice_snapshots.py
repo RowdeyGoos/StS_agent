@@ -11,6 +11,9 @@ def valid_power(key, sequence):
     from game.headless.powers.silent import NAMES as SILENT_POWERS
     from game.headless.powers.regent import NAMES as REGENT_POWERS, INSTANCED as REGENT_INSTANCED
     from game.headless.powers.necrobinder import NAMES as NECRO_POWERS
+    from game.headless.powers.defect import NAMES as DEFECT_POWERS
+    if key in DEFECT_POWERS:
+        return True
     if key in NECRO_POWERS:
         return True
     if key in REGENT_POWERS - REGENT_INSTANCED:
@@ -44,6 +47,8 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     expected_aux = {"crimson_mantle", "inferno", "block_gains"}
     if "summon_next_turn" in r.powers:
         expected_aux.add("summon_next_turn")
+    if "feral" in r.powers:
+        expected_aux.add("feral")
     if "outbreak" in r.powers:
         expected_aux.add("outbreak")
     for key in r.powers:

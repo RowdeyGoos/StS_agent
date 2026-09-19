@@ -3,13 +3,17 @@
 from game.headless.core.selection import HandChoice, PendingCardPlay
 
 
+def requires_receipt(op):
+    return op in ('nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_'))
+
+
 def push(player, *tasks):
     r = player.rules
     for task in tasks:
-        if task[0] in ('nec_summon', 'nec_enemy_loss'):
+        if requires_receipt(task[0]):
             # Capture an emitted event separately from its executable queue entry.
             # Its receipt survives suspended death hooks and is consumed once.
-            r.nec_pending.append(dict(context=r.active_hook, task=list(task)))
+            r.pending_events.append(dict(context=r.active_hook, task=list(task)))
     r.tasks[0:0] = [list(t) for t in tasks]
 
 
@@ -122,6 +126,8 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
         and rules.attacks_started + rules.skills_started < rules.powers.get("nostalgia", 0)
     ):
         frame["destination"] = "draw_pile"
+    from game.headless.powers.defect import prepare_play
+    prepare_play(player, card, frame)
     push(player, ["iteration", card.instance_id])
     if not auto:
         from game.headless.powers.regent import spend
@@ -148,8 +154,8 @@ def execute(p, task):
 
     op, *args = task
     r = p.rules
-    if op in ('nec_summon', 'nec_enemy_loss'):
-        r.nec_pending.remove(dict(context=r.active_hook, task=task))
+    if requires_receipt(op):
+        r.pending_events.remove(dict(context=r.active_hook, task=task))
     if op == "iteration":
         (identity,) = args
         card = find(p, identity)
@@ -176,6 +182,8 @@ def execute(p, task):
             regent_before_play(p, card)
             from game.headless.powers.necrobinder import before_play as nec_before_play
             nec_before_play(p, card)
+            from game.headless.powers.defect import before_play as def_before_play
+            def_before_play(p, card)
             push(
                 p,
                 *[["effect", identity, i] for i in range(len(card.definition.effects))],
@@ -219,6 +227,8 @@ def execute(p, task):
         (identity,) = args
         card = find(p, identity)
         card.combat_state.free_until_played = False
+        card.combat_state.played_cost_override = None
+        card.combat_state.played_cost_baselines = [0, 0, 0]
         if card.combat_state.turn_cost_until_played:
             card.combat_state.turn_cost_override = None
         context = r.plays.pop(identity)
@@ -252,6 +262,8 @@ def execute(p, task):
             return
         card = drawn[0]
         r.drawn_combat += 1
+        from game.headless.powers.defect import draw_record
+        draw_record(p, card)
         if not hand_draw:
             r.drawn_turn += 1
         push(p, ["after_draw"], ["silent_draw_hook", hand_draw, card.instance_id], ["after_draw_card", card.instance_id], ["draw", count - 1, hand_draw])
@@ -321,6 +333,8 @@ def execute(p, task):
         drawn = p.deck.draw(1)
         if drawn:
             r.drawn_combat += 1
+            from game.headless.powers.defect import draw_record
+            draw_record(p, drawn[0])
             r.drawn_turn += 1
             continuation = [["pillage"]] if drawn[0].spec.kind == "attack" else []
             push(p, ["after_draw"], ["silent_draw_hook", False, drawn[0].instance_id], ["after_draw_card", drawn[0].instance_id], *continuation)
@@ -370,6 +384,7 @@ def execute(p, task):
         for card in p.deck.all_cards():
             card.combat_state.free_this_turn = False
             card.combat_state.turn_cost_change = 0
+            card.combat_state.played_cost_baselines[1] = 0
             card.combat_state.sly_this_turn = False
             card.combat_state.retain_this_turn = False
             card.combat_state.free_until_played = False
@@ -377,6 +392,8 @@ def execute(p, task):
     elif op == "end_power":
         hooks.after_player_end(p, args[0])
         colorless.after_end(p, args[0])
+        from game.headless.powers.defect import execute as defect_execute
+        defect_execute(p, "def_end_power", args)
     elif op in ("before_draw_power", "side_start_powers"):
         from game.headless.powers.turns import execute as turn_execute
         turn_execute(p, op, args)
@@ -406,6 +423,8 @@ def execute(p, task):
         push(p, ["autoplay_draw", r.powers.get("mayhem", 0), False])
     elif op == "start_power":
         colorless.start_power(p, args[0])
+        from game.headless.powers.defect import execute as defect_execute
+        defect_execute(p, "def_start_power", args)
         from game.headless.powers.silent import start_power
         start_power(p, args[0])
         if args[0] == "tyranny":
@@ -473,6 +492,12 @@ def execute(p, task):
     elif op == "relic_hook":
         from game.headless.relics.combat import execute as relic_execute
         relic_execute(p, *args)
+    elif op.startswith("orb_"):
+        from game.headless.core.orbs import execute as orb_execute
+        orb_execute(p, op, args)
+    elif op.startswith("def_"):
+        from game.headless.cards.defect_effects import execute as defect_execute
+        defect_execute(p, op, args)
     elif op.startswith("osty_"):
         from game.headless.cards.osty_effects import execute as osty_execute
         osty_execute(p, op, args)

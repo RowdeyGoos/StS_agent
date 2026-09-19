@@ -78,6 +78,8 @@ def entered(p, card, *, is_clone=False):
     if card.definition.definition_id == 'flatten' and p.rules.osty_attacks_turn:
         v = card.combat_state
         v.turn_cost_override = 0
+        from game.headless.core.card_costs import mark_setter
+        mark_setter(v, 'turn')
         v.turn_cost_until_played = False
         v.override_turn_baseline = v.turn_cost_change
         v.override_combat_baseline = v.combat_cost_change
@@ -156,8 +158,11 @@ def execute(p, op, args):
             from game.headless.relics.damage import prevent_death
             fairy(p)
             prevent_death(p)
-            if not p.is_alive and r.osty is not None:
-                r.osty['hp'] = 0
+            if not p.is_alive:
+                from game.headless.core.orbs import clear
+                clear(p)
+                if r.osty is not None:
+                    r.osty['hp'] = 0
     elif op == 'nec_side_start':
         key = args[0]
         if key == 'countdown':

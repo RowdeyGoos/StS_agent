@@ -101,6 +101,7 @@ class Card:
         self.instance_id = instance_id
         self.combats_seen = 0
         self.permanent_damage = 0
+        self.permanent_block = 0
         self.enchantment = None
         from game.headless.core.card_state import CardState
         self.combat_state = CardState()
@@ -114,6 +115,9 @@ class Card:
         if self.permanent_damage:
             from dataclasses import replace
             spec = replace(spec, base_damage=spec.base_damage + self.permanent_damage)
+        if self.permanent_block:
+            from dataclasses import replace
+            spec = replace(spec, block_gain=spec.block_gain + self.permanent_block)
         state = self.combat_state
         if state.retain_this_turn or state.retain_this_combat or state.sly_this_turn or state.sly_this_combat or state.all_enemies or state.ethereal_this_combat:
             from dataclasses import replace
