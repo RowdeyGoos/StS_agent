@@ -30,7 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--mode", choices=("queue", "death-draw"), default="queue")
+    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks"), default="queue")
     args = parser.parse_args()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("This pinned exported-runtime fixture requires macOS arm64.")

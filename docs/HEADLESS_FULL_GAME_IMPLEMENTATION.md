@@ -1558,16 +1558,24 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      and deferred three-card cases. Python matches paused/final card identities,
      options, resources and RNG suffixes, including JSON continuation. No production
      rule change was needed. [Native record](evidence/native_death_draw_2026_09_19.json).
-   - **Next: native card/turn composition verification.** Extend that fixture to
-     execute the death dispatcher and enclosing attack, verifying Horn →
-     shuffle/Stratagem → Infested → remaining hits → resumed draw. Keep
-     explicit fixture state and avoid profile/save access. Check enemy-side hooks
-     separately: native enemy-side execution is concurrent with the action queue,
-     so a player-action FIFO fixture does not establish its scheduling. Compare
-     visible choices, stable slots, HP/resources and RNG suffixes. Source-backed
-     Python regressions, native queue mechanics and the explicit Horn draw callback
-     are verified; enclosing card/death-dispatch composition, live selector behavior
-     and enemy-turn timing remain open.
+   - **Native enclosing attack/death composition verified for twelve cases:**
+     actual PlayCardAction runs base/upgraded Sword Boomerang against a one-HP
+     Phrog, through Horn → shuffle/Stratagem → Infested → remaining hits → resumed
+     draw. Three seeds and singleton/deferred choices match physical piles,
+     per-hit damage, surviving enemy slots/HP/powers, resources and four RNG
+     suffixes. Paused JSON continuation matches as well. Native replay methods
+     supply a physical-card answer and manually drive the queue; no live UI or
+     executor frame loop is exercised. [Record](evidence/native_attack_hooks_2026_09_19.json).
+   - **Next: multiple deaths and terminal cancellation in native card plays.**
+     Extend `attack-hooks` with a stronger Sword Boomerang that kills Wrigglers:
+     compare multiple Horn callbacks, the live pile when the first choice activates,
+     queued contexts and RNG continuation. Add a final-hit combat-ending case to
+     verify canceled draws do not consume cards or RNG. Require actual native
+     execution; existing Python regressions alone do not settle these boundaries.
+     Native enemy-side work must then be checked separately because it runs
+     concurrently with the action queue. Keep explicit in-memory fixture state;
+     avoid real profile/save access. Live selector behavior and full native
+     executor/turn scheduling remain open.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
      autoplay and further combat boundaries. Require actual native sequences;
      passing Python continuation alone is regression evidence.
