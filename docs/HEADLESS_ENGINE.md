@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v28 / run v41**.
+than being silently reinterpreted: current schemas are **combat v28 / run v42**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -191,7 +191,7 @@ potion rules are now additionally checked against direct factory execution.
 relic bags: shared-Ancient allocation, then each act's event shuffle, weak/normal/
 elite encounter draws, boss and Ancient selection. All three room sets are retained
 as plain `state.initialization` data, because their startup draws share `up_front`.
-Hive encounters are available directly and in authored scenarios; these saved room sets do not enable generated Act 2/3 progression. The declared act sequence
+Generated campaigns reuse the saved Hive room set on Act 2 entry; Glory remains startup data without playable Act 3 progression. The declared act sequence
 is **Overgrowth or Underdocks → Hive → Glory**, selected explicitly, solo, A0,
 all unlocked/all seen; the native lobby
 act picker and profile-dependent first-run overrides are outside this profile.
@@ -775,8 +775,7 @@ exhausted pass it permits the current candidate even if visited or ineligible,
 matching the native fallback. `state.event_progression` owns queue order, cursor,
 node assignments and plain entry conditions (resources, deck eligibility and inventory counts).
 Restore replays selection against those conditions and visited room outcomes. Reads and failed room construction never advance the queue.
-Later-act events are available through the explicit event catalog below. Full later-act
-run progression and profile-dependent unlock epochs remain open. Native initialization
+Later-act events are available through the explicit event catalog below and eligible Hive events enter generated campaigns. Act 3 progression and profile-dependent unlock epochs remain open. Native initialization
 uses pinned pool order; authored profiles retain their declared pool restrictions. Juzu Bracelet and Winged Boots now modify unknown/travel behavior; tutorial overrides and native RNG
 parity remain unsupported. Generated runs opt in to
 `RunConfig.relic_fallback="circlet"`, preventing exhausted relic rewards
@@ -925,8 +924,7 @@ own 15-entry queue. Refillable bags reject consecutive matching identities/tags,
 including the Slug and Seapunk families across the weak-to-normal boundary. Boss
 sampling uses Matriarch, Soul Fysh, Giant order, distinct from native discovery
 order. The selected act's event shuffle and encounters consume the same UpFront
-stream before Hive/Glory initialization. Those later room sets remain saved startup
-data without enabling later-act map progression.
+stream before Hive/Glory initialization. Campaigns reuse Hive’s saved room set; Glory remains future-act startup data.
 
 The ten local events are Abyssal Baths, Drowning Beacon, Endless Conveyor, Punch Off,
 Spiraling Whirlpool, Sunken Statue, Sunken Treasury, Doors of Light and Dark, Trash
@@ -938,7 +936,7 @@ failed entries do not advance queues; successful event fights retain their separ
 history and do not consume ordinary hallway entries.
 
 `RunConfig.act`, `EncounterProgression.act`, map profile and seed-bound initialization
-must agree. Private run schema v41 saves these declarations and rejects mixed-act
+must agree. Private run schema v42 saves these declarations and rejects mixed-act
 queues, maps, bosses or event pools atomically. Golden Compass map replacement and
 Fur Coat marks keep the declared act and its encounter ownership.
 
@@ -964,13 +962,82 @@ restore verification enabled. Independent semantic review, compilation and local
 documentation link/diff checks passed. Native oracle build took 1.25 seconds and
 reference execution 0.80 seconds; neither accessed profiles or launched gameplay.
 
+## Generated campaign through Hive
+
+`RunEngine.ironclad_run(seed=2, first_act="overgrowth")` generates a solo A0
+campaign through **Overgrowth or Underdocks → Hive**. Pass the existing Neow
+`ancient_profile` to include Act 1’s opening. The CLI exposes `--route overgrowth-hive`
+and `--route underdocks-hive`, with `--ancient neow` and `--verify-restore` supported.
+`ironclad_act1` retains its one-act endpoint.
+
+After the first boss’s rewards are left, `ContinueAct()` is the sole legal action.
+It archives the completed map, path and room queues, reuses Hive’s startup-selected
+encounters/events/Ancient, and resets current navigation and unknown-room odds.
+Deck, HP, gold, inventory, item/card IDs, reward probabilities, relic bags and
+persistent RNG streams carry forward. Construction is atomic: failure preserves
+the previous completed act. Healing occurs when the player enters Hive’s explicit
+row-zero Ancient, before its offers; Maw Bank pays afterward. Continuing itself
+grants no heal or room reward.
+
+Hive uses 14 ordinary rows, treasure on row 8, rest on row 14 and boss on row 15.
+The `hive_a0_pruned_v1` profile uses the native `act_2_map` domain, point counts,
+pruning and positioning. Its queues hold two weak fights followed by twelve normal
+entries, fifteen elite entries and one boss. The full local/shared event pool uses
+Hive eligibility and skips events already visited in Act 1. Total floor and combat
+numbers continue across acts, including event fights. Winged Boots history spans
+both maps. Golden Compass and Fur Coat retain their acquisition act and map;
+Hive Ancient pickups can modify Hive’s map without deleting its Ancient entrance.
+
+Spoils Map carried into Hive replaces the standard map with the native hourglass
+profile `hive_a0_spoils_v1`, using its own fresh `spoils_map` RNG. Its plain quest
+record binds original card IDs to the first treasure on the final map. Golden
+Compass can replace this layout and retarget the quest; replacement provenance
+preserves the quest’s save binding. Opening the marked chest grants normal chest
+gold, then 600 gold per current Spoils Map copy and removes those copies. Removing
+all original marker owners disables the quest. Leaving the chest unopened or
+Silver Crucible suppressing its contents retains the cards; Ectoplasm suppresses
+gold normally. Relic pickup remains a separate choice.
+
+[`run/campaign.py`](../game/headless/run/campaign.py) owns the transition and compact
+completed-act records. Shared map rules live in
+[`map/standard.py`](../game/headless/map/standard.py); the existing Act 1 import is
+a compatibility entry point. Private run **v42** requires campaign/history fields
+and validates each act’s queues, map, event/unknown decisions, global combat count,
+free travel and map relic ownership. Older run snapshots are rejected explicitly;
+combat schema remains **v28**. Hive boss reward exit records `ActCompletion(act=2, …)`
+and stops at `ACT_COMPLETE`; Act 3 and full-game victory are not implemented.
+
+The read-only [native oracle](../tools/native_initialization_oracle/README.md)
+executed actual pinned 0.107.1 `StandardActMap` and `SpoilsActMap` constructors.
+[Hive vectors](../tests/fixtures/headless_native_hive_map_vectors.json) and
+[Spoils vectors](../tests/fixtures/headless_native_spoils_map_vectors.json) each match
+complete geometry, starts, RNG counters and suffixes for 13 seeds.
+[`test_act2_run.py`](../tests/headless/test_act2_run.py) covers both starting regions
+and both RNG profiles through Hive boss rewards, restoring every decision, plus
+malformed history, failed transitions, Ancient timing and Spoils chest interactions.
+Full-route victories are synthetic lifecycle tests; these results do not establish
+live whole-run parity or demo-policy strength.
+
+Broader validation covered all 5,124 collected cases. The initial run passed
+4,084 before three failures in an outdated floor-count test double (321.39 seconds).
+After updating that fixture to the cumulative room-count interface, all 1,046
+affected/remaining cases passed in 69.19 seconds. Final map regressions include
+the subsequent Golden Compass/Spoils ownership correction.
+
+Validation on 2026-09-19: the final installed wheel passed 473 campaign, standard/
+Spoils map, Underdocks, native initialization and Ancient regressions in 145.76
+seconds. All 227 installed headless/CLI Python files matched source bytes.
+The installed Underdocks→Hive Neow demo verified 117 decisions and ended in Act 1
+defeat. Independent semantic review, compilation and documentation link/diff
+checks passed. The Spoils oracle built in 1.11 seconds and executed in 0.52 seconds;
+these read-only references did not launch gameplay or access player data.
+
 ## Complete Hive Act 2 encounter roster at A0
 
 All 20 entries in pinned 0.107.1 `Hive.GenerateAllEncounters` are registered in
 [`encounters/hive.py`](../game/headless/encounters/hive.py). They support direct
 combats and authored encounter overrides, with Act 2 reward context and boss
-completion. Generated maps still end after Act 1; this does not add travel from
-Act 1 into Hive, its Ancient opening, or a generated Hive map.
+completion. The generated campaign below connects these encounters to Act 1, Hive’s Ancient and its native map.
 
 ```python
 from game.headless.run.engine import RunEngine
@@ -1012,7 +1079,7 @@ skipping it or allowing escape loses it. Ordinary gold rewards remain available
 on escape. Flutter reduces powered attack damage and interrupts the planned move
 after five damaging hits. Generated combat cards cannot be stolen.
 
-Private **combat v28 / run v41** add original-card ownership, a sequestered combat
+Private **combat v28 / run v42** include original-card ownership, a sequestered combat
 pile, permanent stolen-card ownership, Tainted flags, optional frozen enemy turn
 order and Hive continuations. Restore rejects missing power counters, forged
 monster choices, unowned stolen cards and misplaced turn-boundary tasks. Earlier
@@ -1208,8 +1275,7 @@ future block-clear hooks (including Barricade), Slither's combat-long 0–3 cost
 reroll after early draw autoplay, and the complete curse catalog. End-turn curse
 work preserves post-autoplay Regret capture, ethereal-first ordering and remaining
 effects across reactive draws. Neow's Bones uses the separate ten-card modifier pool.
-Spoils Map is carried as its native quest card; its Act 2 route/gold quest is outside
-this Act 1 implementation. Later-act shared events and disabled events are excluded.
+Spoils Map is carried as its native quest card; generated campaigns implement its Hive map and 600-gold chest quest. Act 1 queues retain their later-act and disabled-event eligibility exclusions.
 Native-profile card reward probabilities are implemented; unlock epochs and complete
 run initialization/call-order parity remain separate work.
 
@@ -1578,8 +1644,7 @@ stops attacking a dead target. Lethal Offering ends combat before energy or draw
 Leaving boss rewards, including forfeiting them, records
 `ActCompletion(act=1, boss_encounter_id="overgrowth_vantom")` and ends this supported
 run in `act_complete`. Winning the fight alone leaves the reward decision active.
-There is no map shortcut to this outcome, no Act 2 launch or inter-act healing,
-and no claim of full-game victory. The example player is deliberately simple;
+This authored route ends at Act 1. Generated campaigns expose a separate continuation into Hive; neither endpoint is full-game victory. The example player is deliberately simple;
 `--route overgrowth-act1 --seed 2 --path right --rest-choice rest --verify-restore`
 won with the earlier restricted card pool after Aroma upgraded Bash. The historical left/rest seed-2 route also won,
 including Jungle Maze, treasure and shop decisions. Those policy outcomes are
@@ -1634,7 +1699,9 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v41`, including configuration,
+Private run snapshots now use `headless_run_state_v42`, including campaign configuration,
+completed-act maps and paths, historical encounter/event/unknown-room queues,
+map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,

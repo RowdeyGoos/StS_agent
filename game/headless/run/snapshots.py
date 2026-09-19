@@ -26,7 +26,25 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v41"
+SCHEMA = "headless_run_state_v42"
+
+
+def _restore_graph(record):
+    return MapGraph(tuple(MapNode(**{**n, 'next_node_ids': tuple(n['next_node_ids'])}) for n in record['nodes']),
+                    record['start_id'], tuple(record['entry_node_ids']), record['generation'], record['replaced_generation'])
+
+
+def _restore_completed_act(record):
+    from game.headless.run.campaign import CompletedAct
+    if not isinstance(record, dict) or set(record) != {'act', 'graph', 'visited_nodes', 'encounter_progression', 'event_progression', 'unknown_rooms', 'event_pool'}:
+        raise ValueError('Invalid completed act fields.')
+    unknown = record['unknown_rooms']
+    if not isinstance(unknown, dict) or set(unknown) != {'odds', 'outcomes'}:
+        raise ValueError('Invalid archived unknown-room fields.')
+    return CompletedAct(record['act'], _restore_graph(record['graph']), deepcopy(record['visited_nodes']),
+        EncounterProgression(**deepcopy(record['encounter_progression'])),
+        EventProgression(**deepcopy(record['event_progression'])),
+        UnknownRooms(deepcopy(unknown['odds']), {n: RoomOutcome(**r) for n, r in unknown['outcomes'].items()}), tuple(record['event_pool']))
 
 
 def _restore_event_combat(record):
@@ -55,6 +73,8 @@ def capture_run(engine) -> dict:
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
                   "stolen_cards": [card_record(c) for c in state.stolen_cards],
+                  "completed_acts": [asdict(a) for a in state.completed_acts],
+                  "spoils_map": deepcopy(state.spoils_map),
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
                   "next_card_id": state.next_card_id, "combats_completed": state.combats_completed,
                   "current_node_id": state.current_node_id,
@@ -96,7 +116,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Run snapshot event definitions are incompatible.")
     try:
         payload = snapshot["state"]
-        if payload['config'] is not None and 'act' not in payload['config']:
+        if payload['config'] is not None and not {'act', 'campaign'} <= set(payload['config']):
             raise ValueError('Missing declared act.')
         if payload['encounter_progression'] is not None and 'act' not in payload['encounter_progression']:
             raise ValueError('Missing encounter act owner.')
@@ -116,6 +136,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             seed=payload["seed"], max_hp=payload["max_hp"], hp=payload["hp"], gold=payload["gold"],
             deck=[restore_card(record, cards) for record in payload["deck"]], rng=rng,
             stolen_cards=[restore_card(record, cards) for record in payload["stolen_cards"]],
+            completed_acts=[_restore_completed_act(r) for r in payload["completed_acts"]],
+            spoils_map=deepcopy(payload["spoils_map"]),
             phase=RunPhase(payload["phase"]), next_card_id=payload["next_card_id"],
             combats_completed=payload["combats_completed"], current_node_id=payload["current_node_id"],
             active_encounter_id=payload["active_encounter_id"],
@@ -155,8 +177,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Act completion requires a supported boss.")
         graph = snapshot["graph"]
         if graph is not None:
-            graph = MapGraph(tuple(MapNode(**{**n, "next_node_ids": tuple(n["next_node_ids"])}) for n in graph["nodes"]),
-                             graph["start_id"], tuple(graph["entry_node_ids"]), graph["generation"])
+            graph = _restore_graph(graph)
             _validate_progression(state, graph, cards)
             if any(n.encounter_id is not None and (n.encounter_id not in ENCOUNTERS or n.kind != ENCOUNTERS[n.encounter_id].room_kind) for n in graph.nodes):
                 raise ValueError("Unsupported map encounter.")
@@ -174,7 +195,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                     raise ValueError("Active encounter differs from its selected room.")
             if (state.visited_nodes[-1] if state.visited_nodes else None) != state.current_node_id:
                 raise ValueError("Map cursor does not match its history.")
-        elif state.current_node_id is not None or state.visited_nodes or state.free_travels or state.encounter_progression is not None or state.unknown_rooms is not None or state.event_progression is not None or state.ancient_start is not None:
+        elif state.spoils_map is not None or state.completed_acts or state.current_node_id is not None or state.visited_nodes or state.free_travels or state.encounter_progression is not None or state.unknown_rooms is not None or state.event_progression is not None or state.ancient_start is not None:
             raise ValueError("Map history has no map.")
         if state.phase is RunPhase.SLICE_COMPLETE and (graph is None or state.current_node_id is None or room_node(state, graph, state.current_node_id).kind != "slice_end"):
             raise ValueError("Slice completion requires its authored ending.")
@@ -224,7 +245,9 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
 
 def _validate_progression(state, graph, cards):
     event_combat.validate(state, graph, cards=cards)
-    from game.headless.map.act1 import PRUNED_PROFILES, profile_for
+    from game.headless.run.spoils_map import validate as validate_spoils
+    validate_spoils(state, graph)
+    from game.headless.map.standard import PRUNED_PROFILES, SPOILS_PROFILE, profile_for
     if state.ancient_start is not None:
         if not isinstance(state.ancient_start, AncientStart):
             raise ValueError("Invalid Ancient start ownership.")
@@ -252,9 +275,15 @@ def _validate_progression(state, graph, cards):
     if generated:
         if not isinstance(state.encounter_progression, EncounterProgression) or state.config is None:
             raise ValueError("Invalid generated run configuration.")
+        if state.config.campaign and state.act_index:
+            root = graph.node(f'act{state.act_index + 1}.ancient')
+            if root.row != 0 or root.kind != 'event' or root.event_id not in ('orobas', 'pael', 'tezcatara', 'darv'):
+                raise ValueError('Campaign act is missing its Ancient entrance.')
+            if state.initialization is not None and root.event_id != state.initialization['acts'][state.act_index]['ancient']:
+                raise ValueError('Ancient entrance differs from native initialization.')
         if state.encounter_progression.act != state.config.act:
             raise ValueError('Encounter progression differs from declared act.')
-        if graph.generation not in (GOLDEN, profile_for(state.config.act), profile_for(state.config.act, base=True)):
+        if graph.generation not in (GOLDEN, profile_for(state.config.act), profile_for(state.config.act, base=True), *((SPOILS_PROFILE,) if state.config.act == "hive" else ())):
             raise ValueError('Generated map differs from declared act.')
         if getattr(state.rng, "native", False) and state.initialization is None:
             raise ValueError("Generated native run requires its initialization record.")
@@ -264,12 +293,12 @@ def _validate_progression(state, graph, cards):
             selecting = state.phase is RunPhase.ROUTE and state.pending is not None and state.pending.get("kind") == "node"
             if not selecting and state.phase not in (RunPhase.COMBAT, RunPhase.REWARD, RunPhase.ACT_COMPLETE, RunPhase.DEFEAT):
                 raise ValueError("Generated boss cannot return to between-room navigation.")
-        if any(n.kind == "event" and n.event_id not in state.config.event_pool for n in graph.nodes):
+        if any(n.kind == "event" and n.row != 0 and n.event_id not in state.config.event_pool for n in graph.nodes):
             raise ValueError("Generated event differs from its declared pool.")
         state.encounter_progression.validate(graph, state.visited_nodes,
             pending_node=state.pending is not None and state.pending.get("kind") == "node",
             room_kinds={node_id: room_node(state, graph, node_id).kind for node_id in state.visited_nodes})
-        if len(state.encounter_progression.assignments) + len(state.event_combats) != state.combats_completed + (state.phase is RunPhase.COMBAT):
+        if sum(len(a.encounter_progression.assignments) for a in state.completed_acts) + len(state.encounter_progression.assignments) + len(state.event_combats) != state.combats_completed + (state.phase is RunPhase.COMBAT):
             raise ValueError("Encounter history differs from completed/active combats.")
 
 

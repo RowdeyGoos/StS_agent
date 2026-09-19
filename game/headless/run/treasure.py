@@ -71,6 +71,8 @@ def open_chest(state):
     gold = state.rng.randint("treasure.gold", *ORDINARY_CHEST.gold_range)
     from game.headless.relics.run_rules import gain_gold
     gain_gold(state, gold)
+    from game.headless.run.spoils_map import complete
+    complete(state)
     pending["gold"], pending["stage"] = gold, "open"
     return gold
 

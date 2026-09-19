@@ -116,6 +116,18 @@ class RunEngine:
             ancient.begin(engine.state, profile=ancient_profile, cards=engine.cards)
         return engine
 
+    @classmethod
+    def ironclad_run(cls, *, seed=0, first_act="overgrowth", ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
+        """Play the supported two-act campaign, stopping after Hive boss rewards."""
+        engine = cls.ironclad_act1(seed=seed, act=first_act, ancient_profile=ancient_profile,
+                                   rng_profile=rng_profile, cards=cards)
+        engine.state.config = replace(engine.state.config, campaign=(first_act, 'hive'))
+        return engine
+
+    def advance_act(self):
+        from game.headless.run.campaign import advance
+        return advance(self)
+
     def legal_actions(self) -> tuple:
         from game.headless.run.flow import legal_actions
         return legal_actions(self)
@@ -230,7 +242,7 @@ class RunEngine:
                 # choice was skipped. Native history counts that root as floor 1.
                 ancient_floor = int(self.state.initialization is not None or self.state.ancient_start is not None)
                 combat.encounter_rng = EncounterRandom(
-                    rng.root_seed, len(self.state.visited_nodes) + ancient_floor,
+                    rng.root_seed, self.state.visited_room_count + ancient_floor,
                     re.sub(r"(?<!^)(?=[A-Z])", "_", native_type).upper(),
                     combat.rng, combat.native_streams["niche"],
                 )
@@ -336,7 +348,8 @@ class RunEngine:
             self.state.rng, self.state.unknown_rooms = rng, unknown
             self.state.event_progression = progression
         from game.headless.relics.run_rules import entered_room
-        entered_room(self.state, node.kind, unknown=self.graph.node(node_id).kind == "unknown")
+        if node.row != 0:
+            entered_room(self.state, node.kind, unknown=self.graph.node(node_id).kind == "unknown")
         from game.headless.run.map_travel import entered
         entered(self.state, self.graph, self.state.current_node_id, node_id)
         self.state.current_node_id = node_id

@@ -53,4 +53,4 @@ def is_allowed(name, *, total_floor, prior_runs=9999, character="ironclad", play
 def allowed_in_run(state, name):
     # The only generated profile is solo Ironclad, all unlocked/all seen.
     # Act 1's entered nodes are below the floor-41 cutoff; startup is floor zero.
-    return is_allowed(name, total_floor=len(state.visited_nodes))
+    return is_allowed(name, total_floor=state.visited_room_count)

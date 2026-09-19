@@ -186,3 +186,8 @@ class RerollCardReward:
 @dataclass(frozen=True, slots=True)
 class SacrificeCardReward:
     index: int = -1
+
+
+@dataclass(frozen=True, slots=True)
+class ContinueAct:
+    pass

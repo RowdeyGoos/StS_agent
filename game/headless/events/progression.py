@@ -7,6 +7,7 @@ from game.headless.events.eligibility import is_allowed, validate_conditions
 
 PROFILE = "supported_events_all_unlocked_v7"
 NATIVE_PROFILE = "native_act1_events_all_unlocked_v1"
+HIVE_PROFILE = "native_hive_events_all_unlocked_v1"
 
 
 @dataclass
@@ -18,12 +19,12 @@ class EventProgression:
     entry_conditions: dict[str, dict] = field(default_factory=dict)
 
     @classmethod
-    def generate(cls, rng, pool):
+    def generate(cls, rng, pool, *, act="overgrowth"):
         queue = list(pool)
-        rng.shuffle("act1.events", queue)
+        rng.shuffle("act2.events" if act == "hive" else "act1.events", queue)
         return cls(queue)
 
-    def pull(self, node_id, *, conditions=None):
+    def pull(self, node_id, *, conditions=None, seen_before=()):
         from game.headless.events.catalog import EVENTS
 
         conditions = {"gold": 0, "transformable_cards": 0} if conditions is None else conditions
@@ -32,7 +33,7 @@ class EventProgression:
             raise ValueError("Event point is already assigned.")
         # RoomSet skips visited/ineligible events, then permits repetition after
         # one full pass even if the fallback itself is ineligible.
-        seen = set(self.assignments.values())
+        seen = set(self.assignments.values()) | set(seen_before)
         from game.headless.generation.room_pools import ACT1_INELIGIBLE_EVENTS
 
         cursor = self.cursor
@@ -56,12 +57,14 @@ class EventProgression:
 
     def validate(self, state, graph):
         from game.headless.run.unknown_rooms import room_node
-        from game.headless.generation.room_pools import ACT1_POOLS, SHARED_EVENTS
+        from game.headless.generation.room_pools import REGION_POOLS, SHARED_EVENTS
 
-        native = self.profile == NATIVE_PROFILE
-        pool = (*ACT1_POOLS[state.config.act][3], *SHARED_EVENTS) if native else state.config.event_pool
+        native = self.profile in (NATIVE_PROFILE, HIVE_PROFILE)
+        if native and self.profile != (HIVE_PROFILE if state.config.act == "hive" else NATIVE_PROFILE):
+            raise ValueError("Event profile differs from its act.")
+        pool = (*REGION_POOLS[state.config.act][3], *SHARED_EVENTS) if native else state.config.event_pool
         if (
-            self.profile not in (PROFILE, NATIVE_PROFILE)
+            self.profile not in (PROFILE, NATIVE_PROFILE, HIVE_PROFILE)
             or native
             and state.initialization is None
             or not isinstance(self.queue, list)
@@ -78,10 +81,10 @@ class EventProgression:
         expected = EventProgression(list(self.queue), profile=self.profile)
         for node_id in state.visited_nodes:
             node = room_node(state, graph, node_id)
-            if node.kind == "event":
+            if node.kind == "event" and node.row != 0:
                 conditions = self.entry_conditions.get(node_id)
                 validate_conditions(conditions)
-                if expected.pull(node_id, conditions=conditions) != node.event_id:
+                if expected.pull(node_id, conditions=conditions, seen_before=state.previous_event_ids) != node.event_id:
                     raise ValueError("Event outcome differs from its owned queue.")
         if self.cursor != expected.cursor or self.assignments != expected.assignments:
             raise ValueError("Event progression differs from visited rooms.")

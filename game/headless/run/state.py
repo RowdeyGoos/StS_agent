@@ -77,6 +77,16 @@ class RunState:
     event_combats: list[EventCombatRecord] = field(default_factory=list)
 
     stolen_cards: list[Card] = field(default_factory=list)
+    completed_acts: list = field(default_factory=list)
+    spoils_map: dict | None = None
+
+    @property
+    def visited_room_count(self):
+        return sum(len(a.visited_nodes) for a in self.completed_acts) + len(self.visited_nodes)
+
+    @property
+    def previous_event_ids(self):
+        return {event for a in self.completed_acts for event in a.event_progression.assignments.values()}
 
     def allocate_item_id(self) -> str:
         result = f"run.item.{self.next_item_id}"
@@ -109,6 +119,8 @@ class RunState:
     def validate(self) -> None:
         if type(self.act_index) is not int or not 0 <= self.act_index <= 2 or type(self.wongo_points) is not int or self.wongo_points < 0 or type(self.freed_repy) is not bool:
             raise ValueError("Invalid event progression context.")
+        from game.headless.run.campaign import validate as validate_campaign
+        validate_campaign(self)
         from game.headless.generation.initialization import validate as validate_initialization
         validate_initialization(self)
         if getattr(self.rng, "native", False):

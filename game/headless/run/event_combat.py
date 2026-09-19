@@ -85,10 +85,14 @@ def validate(state, graph, *, cards=None):
             if record.node_id is not None:
                 raise ValueError("Event combat node has no map.")
         else:
-            if not isinstance(record.node_id, str) or record.node_id not in state.visited_nodes:
+            from game.headless.run.campaign import journeys
+            owners = journeys(state, graph)
+            visited = [n for owner, _ in owners for n in owner.visited_nodes]
+            if not isinstance(record.node_id, str) or record.node_id not in visited:
                 raise ValueError("Event combat requires a visited event node.")
-            node = room_node(state, graph, record.node_id)
-            position = state.visited_nodes.index(record.node_id)
+            owner, layout = next((o, g) for o, g in owners if record.node_id in o.visited_nodes)
+            node = room_node(owner, layout, record.node_id)
+            position = visited.index(record.node_id)
             if node.kind != "event" or node.event_id != record.definition_id or position <= previous_node:
                 raise ValueError("Event combat differs from its map origin.")
             previous_node = position

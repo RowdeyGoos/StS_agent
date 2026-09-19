@@ -18,17 +18,23 @@ third argument to use Underdocks/Hive/Glory instead:
 dotnet /tmp/sts-init-oracle/bin/oracle/debug/oracle.dll /path/to/sts2.dll /path/to/dependencies underdocks > /tmp/underdocks-initialization.json
 ```
 
-This deliberately bypasses the game's
-profile-dependent lobby act picker. Runtime gameplay for Hive and Glory is not
-part of the headless implementation.
+Pass `hive` to retain the Overgrowth/Hive/Glory startup and emit the Act 2
+`StandardActMap`; pass `spoils` for the actual `SpoilsActMap` constructor. Spoils
+receives an explicit read-only `IRunState` proxy with only the Hive model, a solo
+player-count container and root-seeded `RunRngSet`; unexpected property access fails.
+No player data is loaded. Both modes record the map’s own RNG counter and suffix.
+
+This deliberately bypasses the game's profile-dependent lobby act picker.
+Headless campaigns support Hive; Glory remains future-act startup data.
 
 `RelicGrabBag.Populate`, `ActModel.GenerateRooms` and `StandardActMap` execute
 actual assembly methods. The small shared-Ancient partition loop mirrors the
 inspected `RunManager.GenerateRooms` prelude using actual native RNG calls.
 The output records source pool metadata, all three generated room sets, final
-UpFront counters/suffixes and complete Act 1 maps/counters/suffixes for 13 seeds.
+UpFront counters/suffixes and complete selected maps/counters/suffixes for 13 seeds.
 The checked-in Overgrowth and Underdocks fixtures preserve these values with one
-compact record per seed. Underdocks output also records the verified DLL digest.
+compact record per seed. Hive/Spoils fixtures retain their map vectors separately;
+all outputs record the verified DLL digest.
 
 Production `generation/room_pools.py` contains immutable metadata extracted from
 these native models. Future-act room sets consume startup randomness and are

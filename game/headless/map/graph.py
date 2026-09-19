@@ -20,6 +20,7 @@ class MapGraph:
     start_id: str
     entry_node_ids: tuple[str, ...] = ()
     generation: str | None = None
+    replaced_generation: str | None = None
 
     def __post_init__(self):
         object.__setattr__(self, "nodes", tuple(self.nodes))
@@ -49,8 +50,12 @@ class MapGraph:
             visit(entry, set(), visited)
         if visited != ids:
             raise ValueError("Map contains unreachable nodes.")
+        from game.headless.map.golden_path import PROFILE as GOLDEN
+        from game.headless.map.standard import PRUNED_PROFILES, BASE_PROFILES
+        if self.replaced_generation is not None and (self.generation != GOLDEN or self.replaced_generation not in (*PRUNED_PROFILES, *BASE_PROFILES)):
+            raise ValueError('Invalid map replacement provenance.')
         if self.generation is not None:
-            from game.headless.map.act1 import validate_generated_map
+            from game.headless.map.standard import validate_generated_map
             from game.headless.map.golden_path import PROFILE, validate
             validate(self) if self.generation == PROFILE else validate_generated_map(self)
 

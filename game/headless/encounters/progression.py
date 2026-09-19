@@ -21,11 +21,13 @@ TAGS = MappingProxyType({
 
 
 def native_ids(act):
-    from game.headless.encounters.catalog import NATIVE_UNDERDOCKS_ENCOUNTERS
+    from game.headless.encounters.catalog import NATIVE_UNDERDOCKS_ENCOUNTERS, NATIVE_HIVE_ENCOUNTERS
     if act == 'overgrowth':
         return NATIVE_OVERGROWTH_ENCOUNTERS
     if act == 'underdocks':
         return NATIVE_UNDERDOCKS_ENCOUNTERS
+    if act == 'hive':
+        return NATIVE_HIVE_ENCOUNTERS
     raise ValueError('Unsupported Act 1 location.')
 
 
@@ -33,9 +35,9 @@ def pools_for(act):
     if act == 'overgrowth':
         # Retain the original fixture order; native initialization uses its own order.
         return WEAK, NORMAL, ELITES, BOSSES
-    from game.headless.generation.room_pools import ACT1_POOLS
+    from game.headless.generation.room_pools import REGION_POOLS
     ids = native_ids(act)
-    return tuple(tuple(ids[n] for n in pool) for pool in ACT1_POOLS[act][5])
+    return tuple(tuple(ids[n] for n in pool) for pool in REGION_POOLS[act][5])
 
 
 def _compatible(previous, candidate):
@@ -43,7 +45,7 @@ def _compatible(previous, candidate):
     def tags(name):
         if name in TAGS:
             return TAGS[name]
-        ids = native_ids('underdocks')
+        ids = {**native_ids('underdocks'), **native_ids('hive')}
         native = next((n for n, identity in ids.items() if identity == name), None)
         return frozenset(ENCOUNTER_TAGS.get(native, ()))
     return candidate != previous and not tags(previous) & tags(candidate)
@@ -93,12 +95,15 @@ class EncounterProgression:
         # Explicitly skips native first-run/discovery overrides; never reads a profile.
         if discovery != "all_seen":
             raise ValueError("Only declared all-seen Act 1 discovery is supported.")
+        from game.headless.generation.room_pools import REGION_POOLS
+        rooms, weak_count = REGION_POOLS[act][1:3]
+        stream = "act2.encounters" if act == "hive" else "act1.encounters"
         normal = []
-        _extend_queue(rng, normal, weak, 3, "act1.encounters")
-        _extend_queue(rng, normal, normal_pool, 12, "act1.encounters")
+        _extend_queue(rng, normal, weak, weak_count, stream)
+        _extend_queue(rng, normal, normal_pool, rooms - weak_count, stream)
         elites = []
-        _extend_queue(rng, elites, elites_pool, 15, "act1.encounters")
-        return cls(normal, elites, rng.choice("act1.encounters", bosses), discovery, act=act)
+        _extend_queue(rng, elites, elites_pool, 15, stream)
+        return cls(normal, elites, rng.choice(stream, bosses), discovery, act=act)
 
     def next_encounter(self, kind):
         if kind == "boss":
@@ -113,7 +118,9 @@ class EncounterProgression:
         weak, normal, elites, bosses = pools_for(self.act)
         if self.discovery != "all_seen" or self.boss not in bosses:
             raise ValueError("Unsupported encounter discovery or boss.")
-        _validate_queue(self.normal_queue, ((weak, 3), (normal, 12)))
+        from game.headless.generation.room_pools import REGION_POOLS
+        rooms, weak_count = REGION_POOLS[self.act][1:3]
+        _validate_queue(self.normal_queue, ((weak, weak_count), (normal, rooms - weak_count)))
         _validate_queue(self.elite_queue, ((elites, 15),))
         if not isinstance(self.assignments, dict):
             raise ValueError("Invalid encounter assignments.")

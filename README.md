@@ -154,7 +154,18 @@ Decimillipede revival, Knowledge Demon choices, Sandpit/Frantic Escape, Kaiser
 Crab facing and Thieving Hopper's optional stolen-card return. Use
 `run.start_combat(encounter_id="hive_knowledge_demon")` on a configured `RunEngine`.
 [Hive roster, rules and evidence](docs/HEADLESS_ENGINE.md#complete-hive-act-2-encounter-roster-at-a0).
-Generated Act 2 maps and progression remain to be implemented.
+Generated campaigns now continue from either Act 1 region into Hive, including
+its Ancient, rooms, rewards and boss:
+
+```bash
+sts-headless-play --route overgrowth-hive --ancient neow --seed 2 --verify-restore
+# Or --route underdocks-hive
+```
+
+Use `RunEngine.ironclad_run(first_act="overgrowth", seed=2)` and apply `ContinueAct()`
+after Act 1 boss rewards. The existing `ironclad_act1` factory still ends at Act 1.
+[Campaign rules and evidence](docs/HEADLESS_ENGINE.md#generated-campaign-through-hive).
+Act 3 progression remains unimplemented.
 
 A generated full-length route is also available:
 

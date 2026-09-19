@@ -14,7 +14,7 @@ def entry_conditions(state):
             "hp": state.hp, "max_hp": state.max_hp, "potion_count": sum(p is not None for p in state.potions),
             "removable_basics": sum(c.definition.rarity == "basic" and not c.spec.eternal for c in state.deck),
             "available_relics": any(r not in {v.definition_id for v in state.relics} for r in state.config.reward_relics) if state.config else True,
-            "event_pet": pet, "gold": state.gold, "transformable_cards": sum(not c.spec.eternal for c in state.deck), "floor": len(state.visited_nodes) + 1}
+            "event_pet": pet, "gold": state.gold, "transformable_cards": sum(not c.spec.eternal for c in state.deck), "floor": state.visited_room_count + 1}
 
 
 def validate_conditions(conditions):

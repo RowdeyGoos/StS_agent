@@ -77,11 +77,11 @@ def _break_segment(edges, parents, segment):
     return changed
 
 
-def prune_duplicates(edges, parents, kinds, root, rng):
+def prune_duplicates(edges, parents, kinds, root, rng, *, stream="act1.map"):
     for _ in range(51):
         changed = False
         for group in matching_segments(edges, parents, kinds, root, native_order=getattr(rng, "native", False)):
-            rng.shuffle("act1.map", group)
+            rng.shuffle(stream, group)
             removed_count = 0
             for segment in group:
                 if removed_count == len(group) - 1:
@@ -95,17 +95,17 @@ def prune_duplicates(edges, parents, kinds, root, rng):
     raise RuntimeError("Map pruning exceeded the native 50-change bound.")
 
 
-def prune_and_repair(edges, parents, kinds, root, rng, counts, valid):
+def prune_and_repair(edges, parents, kinds, root, rng, counts, valid, *, stream="act1.map"):
     """At most three prune/repair rounds, matching the pinned native boundary."""
     for _ in range(3):
-        prune_duplicates(edges, parents, kinds, root, rng)
+        prune_duplicates(edges, parents, kinds, root, rng, stream=stream)
         repaired = False
         for kind in ("shop", "elite", "rest", "unknown"):
             missing = counts[kind] - sum(k == kind for k in kinds.values())
             if missing <= 0:
                 continue
             candidates = sorted((p for p, k in kinds.items() if k == "combat" and p[0] != 1), key=(lambda p:(p[1],p[0])) if getattr(rng,"native",False) else None)
-            rng.shuffle("act1.map", candidates)
+            rng.shuffle(stream, candidates)
             for point in candidates:
                 if not missing:
                     break

@@ -1,4 +1,4 @@
-"""Pinned immutable room-generation inputs; later-act gameplay is not enabled."""
+"""Pinned immutable room-generation inputs, including saved future-act queues."""
 
 from types import MappingProxyType
 
@@ -162,6 +162,7 @@ ENCOUNTER_TAGS = MappingProxyType(
     }
 )
 
+
 # Native Act-1 eligibility exclusions; retained in the shuffled room queue.
 ACT1_INELIGIBLE_EVENTS = (
     "crystal_sphere",
@@ -193,6 +194,7 @@ UNDERDOCKS = (
     ),
 )
 ACT1_POOLS = MappingProxyType({'overgrowth': ACT_POOLS[0], 'underdocks': UNDERDOCKS})
+REGION_POOLS = MappingProxyType({**{a[0]: a for a in ACT_POOLS}, 'underdocks': UNDERDOCKS})
 
 
 def campaign_pools(first_act):

@@ -21,12 +21,18 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-19 — generated campaign through Hive:** both Act 1 regions now continue
+  into Hive’s Ancient, native map, encounters, events, rewards and boss. Act history,
+  global event/floor ownership and Spoils Map’s hourglass/600-gold quest continue
+  through JSON saves. [Scope and evidence](HEADLESS_ENGINE.md#generated-campaign-through-hive).
+  Act 3 progression and whole-run native differential acceptance remain open.
+
 - **2026-09-19 — all solo events:** all 66 regular/Ancient event models are
   implemented, including the existing Neow path; deprecated placeholders are
   excluded. Custom interactions, training timeout, event combat extra rewards,
   17 event cards, 27 relics and owned page/reward continuations are covered by
   source-backed regression tests. [Current scope and usage](HEADLESS_ENGINE.md#all-solo-events-across-acts).
-  Full later-act campaigns and live/native differential acceptance remain open.
+  Act 3 campaigns and live/native differential acceptance remain open.
 
 - **2026-09-19 — foreign acquisition enabled:** all 320 ordinary foreign cards are
   now in the default catalog. Kaleidoscope and Splash match pinned native factory
@@ -1481,8 +1487,8 @@ can extend its owned streams and small generation modules independently:
 **HF-05A is implemented for the declared start:** fixed Overgrowth/Hive/Glory,
 solo A0, all unlocked/all seen. Shared UpFront ordering, all three room sets and
 complete Act 1 map generation match direct assembly reference vectors. Lobby act
-selection, unlock/discovery histories and later-act gameplay remain outside that
-profile. See [evidence](evidence/native_initialization_2026_09_14.md).
+selection and unlock/discovery histories remain outside that profile. Hive map
+generation and progression are now implemented; Glory remains initialization data. See [evidence](evidence/native_initialization_2026_09_14.md).
 
 1. **HF-05B is implemented for the declared all-unlocked solo profile:** 161 relic
    predicates, merchant filters, global versus caller bag exclusions, Dingy Rug
@@ -1569,8 +1575,10 @@ profile. See [evidence](evidence/native_initialization_2026_09_14.md).
 4. **Act 1 completion gate:** run a declared seed/path matrix across all three
    bosses, events, shops, pickups and choices. Compare native boundary records;
    a synthetic victory or deterministic Python continuation alone is insufficient.
-5. **Later acts:** implement Spoils Map's Act 2 target/600-gold quest with Act 2,
-   then assign later-act-only shared events individually under HF-43.
+5. **Act 3:** implement Glory encounters and generated progression, including its
+   Ancient and act-specific map rules. Hive progression and Spoils Map’s Act 2
+   target/600-gold quest are implemented; all solo event handlers are available,
+   with native differential acceptance still required.
 
 Current source/coverage: [combat interactions](evidence/combat_interactions_2026_09_14.md),
 [shuffle hooks](evidence/shuffle_hooks_2026_09_14.md),
@@ -1580,7 +1588,7 @@ Current source/coverage: [combat interactions](evidence/combat_interactions_2026
 [native initialization](evidence/native_initialization_2026_09_14.md),
 [native RNG and probability](evidence/native_rng_2026_09_14.md),
 [events and Neow](evidence/events_neow_2026_09_14.md).
-Higher ascensions, other characters and later acts remain separate scope.
+Higher ascensions, character-specific run starts and Act 3 remain separate scope.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

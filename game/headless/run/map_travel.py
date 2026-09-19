@@ -55,13 +55,16 @@ def validate(state, graph):
         counts[identity] = counts.get(identity, 0) + 1
         if counts[identity] > 3:
             raise ValueError("Exhausted Winged Boots travel.")
-    previous, consumed = None, set()
-    for node in state.visited_nodes:
-        if node not in graph.available_nodes(previous):
-            if node not in destinations or node not in alternatives(graph, previous):
-                raise ValueError("Invalid visited map path.")
-            consumed.add(node)
-        previous = node
+    from game.headless.run.campaign import journeys
+    consumed = set()
+    for owner, layout in journeys(state, graph):
+        previous = None
+        for node in owner.visited_nodes:
+            if node not in layout.available_nodes(previous):
+                if node not in destinations or node not in alternatives(layout, previous):
+                    raise ValueError("Invalid visited map path.")
+                consumed.add(node)
+            previous = node
     if consumed != set(destinations):
         raise ValueError("Free travel differs from visited path.")
     for relic in state.relics:
