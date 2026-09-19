@@ -8,6 +8,11 @@ class CardState:
     is_dupe: bool = False
     smog: bool = False
     tainted: bool = False
+    galvanized: bool = False
+    hexed: bool = False
+    bound: bool = False
+    dampened_levels: int = 0
+    wither_level: int = 0
     extra_damage: int = 0
     cost_change: int = 0
     turn_cost_change: int = 0

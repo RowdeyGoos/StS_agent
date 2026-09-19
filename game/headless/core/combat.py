@@ -174,7 +174,7 @@ class CombatEngine:
         if extra_turn(self.player):
             self.turn += 1
             for enemy in self._living_enemies():
-                enemy.before_side_start(True)
+                enemy.before_extra_side_start()
             self.player.start_turn(draw_count=self.cards_per_turn)
             self._refresh_persistent_statuses()
             self._check_terminal()

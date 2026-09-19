@@ -228,10 +228,10 @@ class RunEngine:
             from game.headless.core.native_service import COMBAT_STREAMS
             combat.native_streams = {name:rng.stream(name) for name in COMBAT_STREAMS}
             combat.rng = combat.native_streams["monster_ai"]
-            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS, NATIVE_UNDERDOCKS_ENCOUNTERS, NATIVE_HIVE_ENCOUNTERS
+            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS, NATIVE_UNDERDOCKS_ENCOUNTERS, NATIVE_HIVE_ENCOUNTERS, NATIVE_GLORY_ENCOUNTERS
             import re
             from game.headless.encounters.randomness import EncounterRandom
-            native_type = next((key for key, value in {**NATIVE_OVERGROWTH_ENCOUNTERS, **NATIVE_UNDERDOCKS_ENCOUNTERS, **NATIVE_HIVE_ENCOUNTERS}.items()
+            native_type = next((key for key, value in {**NATIVE_OVERGROWTH_ENCOUNTERS, **NATIVE_UNDERDOCKS_ENCOUNTERS, **NATIVE_HIVE_ENCOUNTERS, **NATIVE_GLORY_ENCOUNTERS}.items()
                                 if ENCOUNTERS[value] is encounter_factory), None)
             if getattr(encounter_factory, "event_id", None) == "dense_vegetation":
                 native_type = "DenseVegetationEventEncounter"

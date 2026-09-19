@@ -29,7 +29,13 @@ from game.headless.monsters.hive_elites import Entomancer, InfestedPrism, Decimi
 from game.headless.monsters.hive_bosses import Crusher, Rocket, KnowledgeDemon, TheInsatiable
 from game.headless.monsters.hive_hopper import ThievingHopper
 
+from game.headless.monsters.glory_normal import DevotedSculptor, FrogKnight, GlobeHead, OwlMagistrate, ScrollOfBiting, SlimedBerserker, TheLost, TheForgotten, LivingShield, TurretOperator
+from game.headless.monsters.glory_summons import Axebot, Fabricator, Zapbot, Stabbot, Guardbot, Noisebot
+from game.headless.monsters.glory_elites import FlailKnight, SpectralKnight, MagiKnight, MechaKnight, SoulNexus
+from game.headless.monsters.glory_bosses import Aeonglass, Queen, TorchHeadAmalgam, TestSubject
+
 DEFAULT_MONSTERS = MappingProxyType({kind.__name__: kind for kind in (
+    DevotedSculptor, FrogKnight, GlobeHead, OwlMagistrate, ScrollOfBiting, SlimedBerserker, TheLost, TheForgotten, LivingShield, TurretOperator, Axebot, Fabricator, Zapbot, Stabbot, Guardbot, Noisebot, FlailKnight, SpectralKnight, MagiKnight, MechaKnight, SoulNexus, Aeonglass, Queen, TorchHeadAmalgam, TestSubject,
     BowlbugEgg, BowlbugNectar, BowlbugRock, BowlbugSilk, Chomper, Exoskeleton, HunterKiller, LouseProgenitor, Myte, SlumberingBeetle, SpinyToad, Tunneler, Ovicopter, ToughEgg, TheObscura, Parafright, Entomancer, InfestedPrism, DecimillipedeSegmentFront, DecimillipedeSegmentMiddle, DecimillipedeSegmentBack, Crusher, Rocket, KnowledgeDemon, TheInsatiable, ThievingHopper,
     CorpseSlug, CalcifiedCultist, DampCultist, FossilStalker, HauntedShip, Seapunk, SewerClam, SludgeSpinner, Toadpole,
     TwoTailedRat, GremlinMerc, SneakyGremlin, FatGremlin, LivingFog, GasBomb,

@@ -51,10 +51,15 @@ def after_generated_entry(player, card, *, is_clone=False, generated=True):
     # fresh instance enters a combat pile; ordinary pile moves/clones skip this.
     # Both generation and transformation record CardGenerated history. Only
     # generation invokes AfterCardGeneratedForCombat (Arsenal/Pillar).
+    if is_clone:
+        # Dampen recovery belongs to the original card, not its copied values.
+        card.combat_state.dampened_levels = 0
     from game.headless.powers.underdocks import after_entry
     after_entry(player, card)
     from game.headless.powers.hive import after_entry as hive_entry
     hive_entry(player, card)
+    from game.headless.powers.glory import after_entry as glory_entry
+    glory_entry(player, card, generated=generated and not is_clone)
     player.rules.generated_combat += 1
     from game.headless.powers.silent import entered
     entered(player, card, is_clone=is_clone)

@@ -154,6 +154,12 @@ Decimillipede revival, Knowledge Demon choices, Sandpit/Frantic Escape, Kaiser
 Crab facing and Thieving Hopper's optional stolen-card return. Use
 `run.start_combat(encounter_id="hive_knowledge_demon")` on a configured `RunEngine`.
 [Hive roster, rules and evidence](docs/HEADLESS_ENGINE.md#complete-hive-act-2-encounter-roster-at-a0).
+All **18 Glory Act 3 encounters** are available at solo A0: 12 hallway/weak
+encounters, three elites and all three bosses (Aeonglass, Queen and Test Subject).
+Use `run.start_combat(encounter_id="glory_test_subject")` on a configured
+`RunEngine`, or use Glory IDs in authored encounter overrides.
+[Glory roster, rules and evidence](docs/HEADLESS_ENGINE.md#complete-glory-act-3-encounter-roster-at-a0).
+
 Generated campaigns now continue from either Act 1 region into Hive, including
 its Ancient, rooms, rewards and boss:
 

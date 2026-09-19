@@ -23,9 +23,11 @@ def after_card(player, card):
         player.rules.auxiliaries['smoggy.ready'] = 1
         for candidate in player.deck.all_cards():
             if candidate.spec.kind in ('skill', 'block'):
-                candidate.combat_state.smog = True
+                from game.headless.core.afflictions import afflict
+                afflict(candidate, 'smog')
 
 
 def after_entry(player, card):
     if player.rules.powers.get('smoggy') and player.rules.auxiliaries.get('smoggy.ready') and card.spec.kind in ('skill', 'block'):
-        card.combat_state.smog = True
+        from game.headless.core.afflictions import afflict
+        afflict(card, 'smog')

@@ -43,7 +43,7 @@ TASK_ARITIES = {
     "after_draw_card": 1,
     "start_power": 1,
     "early_end": 1,
-    "begin_end_hooks": 0,
+    "begin_end_hooks": 0, "glory_bound_clear": 0,
     "catastrophe": 1,
     "status": 3,
     "pillage": 0,
@@ -300,7 +300,9 @@ def restore_rules(record, player):
             type(args[1]) is not int or not 0 <= args[1] < len(known[args[0]].definition.effects)
         ):
             raise ValueError("Invalid queued effect.")
-        if op == "begin_end_hooks" and not r.turn_ending:
+        if op == "glory_bound_clear" and (all_tasks.count(task) != 1 or not any(getattr(e, 'binding', False) for e in player.combat_enemies)):
+            raise ValueError('Unowned Chains of Binding cleanup.')
+        if op in ("begin_end_hooks", "glory_bound_clear") and not r.turn_ending:
             raise ValueError("Turn-end hooks outside the ending phase.")
         if op == "before_draw_power":
             if not r.player_side or not (args[0] in ("infinite_blades", "spectrum_shift", "foregone_conclusion", "call_of_the_void", "sentry_mode", "creative_ai", "hello_world") or (isinstance(args[0], str) and args[0].startswith("nightmare:") and valid_power(args[0], r.power_sequence))):
