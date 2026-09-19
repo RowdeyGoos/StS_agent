@@ -57,8 +57,15 @@ def hit(p, card, target, *, extra=0):
     # Damage-result totals include block and overkill, after flat HP caps.
     from copy import deepcopy
 
-    total = blocked + resolve_unblocked_damage(deepcopy(target.statuses), incoming - blocked)
+    total = blocked + target.modify_unblocked_damage(resolve_unblocked_damage(deepcopy(target.statuses), incoming - blocked))
+    frame = p.rules.plays.get(card.instance_id, {})
+    tracks = 'enemy_attack' not in frame and any(e.TRACKS_CARD_ATTACKS for e in p.combat_enemies or ())
+    if tracks:
+        frame['enemy_attack'] = {}
     target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
+    if tracks:
+        from game.headless.core.enemy_lifecycle import finish_card_attack
+        finish_card_attack(p, frame)
     return total
 
 
@@ -195,6 +202,7 @@ class ColorlessOperation:
             from game.headless.potions.powers import begin_attack
             begin_attack(p, card)
             vigor = r.powers.pop("vigor", 0)
-            push(p, *[["random_hit", card.instance_id, vigor] for _ in range(r.plays[card.instance_id]["x"])])
+            from game.headless.core.enemy_lifecycle import attack_tasks
+            push(p, *attack_tasks(p, card, [["random_hit", card.instance_id, vigor] for _ in range(r.plays[card.instance_id]["x"])]))
         else:
             raise ValueError(f"Unknown colorless operation: {op}")

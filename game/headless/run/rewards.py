@@ -68,7 +68,7 @@ def eligible_relics(state):
     return pool or ((state.config.relic_fallback,) if state.config.relic_fallback else ())
 
 
-def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, extra_cards=0, royalties=0) -> None:
+def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, extra_cards=0, royalties=0, encounter_loot=None) -> None:
     """A0 encounter amounts with explicitly restricted, project-sampled pools.
 
     Draw once on entry. Reading choices and restoring a pending reward never
@@ -85,7 +85,10 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     relic_pool = eligible_relics(state) if encounter is not None and encounter.gives_relic else ()
     if encounter is not None and encounter.gives_relic and not relic_pool:
         raise ValueError("Restricted relic pool exhausted.")
+    from game.headless.encounters import loot
+    loot.validate(encounter_id, encounter_loot)
     low, high = (10, 20) if encounter is None else encounter.gold_range
+    low, high = loot.gold_range(low, high, encounter_loot)
     from game.headless.relics.run_rules import has
     kind = encounter.room_kind if encounter is not None else "combat"
     if getattr(state.rng, "native", False):
@@ -95,7 +98,7 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
         dropped = state.rng.randint("potion_drop", 0, 99) < state.potion_drop_chance
         dropped = dropped or has(state, "white_beast_statue")
         state.potion_drop_chance = max(0, min(100, state.potion_drop_chance + (-10 if dropped else 10)))
-    gold = state.rng.randint("reward_gold", low, high) + (15 if has(state, "amethyst_aubergine") else 0)
+    gold = (state.rng.randint("reward_gold", low, high) if high else 0) + (15 if has(state, "amethyst_aubergine") else 0)
     from game.headless.potions.pools import generate
     potion = generate(state.config.reward_potions, state.rng, stream="reward_potion") if dropped else None
     pool = state.config.boss_reward_cards if encounter is not None and encounter.room_kind == "boss" else state.config.reward_cards
@@ -109,8 +112,18 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     else:
         relic = state.rng.choice("reward_relic", relic_pool) if relic_pool else None
     state.pending["relic"] = relic
+    returned = loot.returned_gold(encounter_loot)
+    if returned:
+        # Initial room rewards populate before relic-added reward batches.
+        state.rng.randint('reward_gold', returned, returned)
     state.pending.update(combat_reward=True, hunt_rewards_earned=extra_cards, royalties_earned=royalties, encounter_id=encounter_id, potion=potion,
                          potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None, extra_rewards=extra_rewards(state, cards, encounter, undamaged=undamaged))
+    if encounter_loot is not None:
+        state.pending['encounter_loot'] = dict(encounter_loot)
+        if not high and not gold:
+            state.pending['gold_claimed'] = True
+        if returned:
+            state.pending['extra_rewards'].append(dict(source='stolen_gold', kind='gold', offers=['stolen_gold'], modifiers={'gold': returned}, resolved=False))
     from game.headless.run.event_combat import extra_rewards as event_rewards
     state.pending["extra_rewards"].extend(event_rewards(state,cards,encounter_id))
     if royalties:

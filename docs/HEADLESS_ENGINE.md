@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v26 / run v38**.
+than being silently reinterpreted: current schemas are **combat v27 / run v39**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -889,6 +889,99 @@ The historical `neow_pickups_restricted_v1` fixture retains its two fixed offers
 `ancient_profile=None` remains the explicit post-Ancient factory default;
 `--ancient neow` selects the randomized profile. No player save/profile is read.
 See [source, tests and limits](evidence/events_neow_2026_09_14.md).
+
+## Complete Underdocks encounter roster at A0
+
+All 20 entries in native `Underdocks.GenerateAllEncounters` are registered in
+[`encounters/underdocks.py`](../game/headless/encounters/underdocks.py): 14 hallway/easy
+encounters, three elites and three bosses. They use 22 monster types including
+summons; Punch Construct is shared with existing content. The independent
+[census fixture](../tests/fixtures/headless_underdocks_scope.json) pins build
+0.107.1 / Steam 23811903 and the assembly SHA-256. Behavior was checked against
+that decompiled source. Regression evidence is synthetic, not live gameplay parity.
+
+All IDs below have the `underdocks_` prefix:
+
+| Kind | IDs without prefix |
+| --- | --- |
+| Hallway/easy | `corpse_slugs`, `corpse_slugs_weak`, `cultists`, `fossil_stalker`, `gremlin_merc`, `haunted_ship`, `living_fog`, `punch_construct`, `seapunk`, `seapunk_weak`, `sewer_clam`, `sludge_spinner`, `toadpoles`, `two_tailed_rats` |
+| Elite | `phantasmal_gardeners`, `skulking_colony`, `terror_eel` |
+| Boss | `lagavulin_matriarch`, `soul_fysh`, `waterfall_giant` |
+
+Construct these directly or substitute them into the existing authored route:
+
+```python
+from game.headless.run.config import RunConfig
+from game.headless.run.engine import RunEngine
+
+run = RunEngine(seed=7, config=RunConfig(), rng_profile="native")
+run.start_combat(encounter_id="underdocks_living_fog")
+
+route = RunEngine.ironclad_slice(
+    route="overgrowth-act1",
+    hallway="underdocks_gremlin_merc",
+    elite="underdocks_phantasmal_gardeners",
+    boss="underdocks_waterfall_giant",
+)
+```
+
+Encounter composition has its own floor/native-ID seed. Native runs reuse the
+existing monster-AI and Niche HP streams; observations and restores consume no
+randomness. Fixed group slots and authored opening roles match the source.
+Summons append stable combat slots, retain separate native rat positions, and
+wait until the next enemy turn to act.
+
+Rules implemented in the content modules include:
+
+- Corpse Slugs gain Strength and lose their next turn when an ally dies. Cultists
+  start Ritual without an immediate Strength tick. Fossil Stalker gains Strength
+  once per hit that deals unblocked damage, including damage absorbed by Osty
+  and lethal damage followed by revival; its moves repeat at most twice.
+- Sewer Clam and Matriarch retain Plating turn timing. Toadpole removes its
+  temporary Thorns before Spike Spit; retaliation precedes the incoming hit,
+  including lethal hits, and direct pet retaliation consumes shared Block.
+- Rat reinforcements preserve weighted AI, cooldowns, the three-call shared limit
+  and vacant native positions. Living Fog creates Minion Gas Bombs and Smog:
+  after a Skill, further Skills are unplayable until turn cleanup. New Skills
+  entering during that first Skill already carry Smog; automatic plays use the
+  same restriction. Artifact blocks Smog and Matriarch's individual stat debuffs.
+- Gardeners gain Block only after a complete card attack, once per opposing turn,
+  based on that attack's first damage result for each receiver. This handles
+  multihits, random targets, nested plays, custom attacks and extra turns.
+  Skulking Colony caps accumulated unblocked damage at 20 per side turn.
+  Terror Eel's threshold interrupts with a stun before Terror and its 99 Vulnerable.
+- Matriarch sleeps for three turns or wakes when damaged. Soul Fysh creates Beckon
+  in the correct piles and cycles Intangible. Waterfall Giant retains steam after
+  lethal damage, performs About to Blow once, then explodes and dies. Reactive
+  damage and paused draw choices cannot skip these forced transitions.
+- Gremlin Merc steals up to 20 gold after each move. Death summons Sneaky and Fat
+  Gremlins; killing Fat offers the stolen gold separately. A fleeing Fat leaves
+  zero ordinary gold if carrying loot, otherwise half. The recovered fixed gold
+  amount consumes its native reward-population RNG draw before relic-added offers.
+
+Monster powers remain owned content state; pending work contains IDs and plain
+values. Snapshot validation binds death work and attack completions to their
+owners and preserves interrupted enemy moves independently of the next intent.
+The private schema change records Smog, these continuations and stolen-loot
+reward outcomes; older snapshots reject instead of guessing missing values.
+
+[`test_underdocks.py`](../tests/headless/test_underdocks.py) covers the census,
+12-turn trajectories and reward handoffs for every encounter under both RNG
+profiles, defeat, rule interactions and invalid continuation rejection.
+
+Validation on 2026-09-19: the broad headless/simulation/backend/encoder/CLI checks
+passed 4,749 tests in 275.07 seconds. After the final multihit correction, the
+installed wheel passed all 105 Underdocks tests in 20.30 seconds; all 212 installed
+headless modules matched source bytes. The authored CLI smoke ended in defeat
+after 114 commands with restore verification enabled. Independent semantic review,
+compilation, documentation links and diff checks passed.
+
+This adds encounter content, **not a generated Underdocks campaign**. Generated
+Overgrowth queues stay scoped to Overgrowth. Underdocks procedural topology,
+weak/normal encounter queues and discovery exclusions, act selection and its
+opening Ancient still need run-level implementation. Multiplayer and ascension
+modifiers above A0 remain outside this roster. Boss reward exit records Act 1
+completion through the existing lifecycle, not full-game victory.
 
 ## Complete Overgrowth encounter roster at A0
 

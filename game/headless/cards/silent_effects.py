@@ -93,15 +93,16 @@ def apply(op, card, p, target, amount):
         slot = p.combat_enemies.index(target)
         push(p, *[['silent_knife', c.instance_id, slot, card.upgraded] for c in p.deck.exhaust_pile if c.definition.definition_id == 'shiv'])
     elif op in ('shiv', 'the_hunt', 'echoing_slash'):
+        from game.headless.core.enemy_lifecycle import attack_tasks
         from game.headless.potions.powers import begin_attack
         begin_attack(p, card)
         vigor = r.powers.pop('vigor', 0)
         if op == 'shiv':
             area = bool(r.powers.get('fan_of_knives'))
             slot = None if area else p.combat_enemies.index(target)
-            push(p, ['attack', card.instance_id, slot, area, 'base', 0, 0, vigor])
+            push(p, *attack_tasks(p, card, [['attack', card.instance_id, slot, area, 'base', 0, 0, vigor]]))
         elif op == 'the_hunt':
-            push(p, ['silent_hunt', card.instance_id, p.combat_enemies.index(target), vigor])
+            push(p, *attack_tasks(p, card, [['silent_hunt', card.instance_id, p.combat_enemies.index(target), vigor]]))
         else:
             r.plays[card.instance_id]['echo_kills'] = 0
             push(p, ['silent_echo', card.instance_id, 1, vigor, 0])
@@ -147,7 +148,8 @@ def execute(p, op, args):
         kills = r.plays[identity]["echo_kills"]
         remaining += kills - previous_kills
         if remaining:
-            push(p, ['attack', identity, None, True, 'base', 0, 0, vigor], ['silent_echo', identity, remaining - 1, vigor, kills])
+            from game.headless.core.enemy_lifecycle import attack_tasks
+            push(p, *attack_tasks(p, find(p, identity), [['attack', identity, None, True, 'base', 0, 0, vigor]]), ['silent_echo', identity, remaining - 1, vigor, kills])
     elif op == 'silent_escape_draw':
         from game.headless.powers.colorless import ensure_draw
         if r.powers.get('no_draw') or not ensure_draw(p, [op, *args]):

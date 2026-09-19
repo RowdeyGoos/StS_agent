@@ -18,7 +18,15 @@ from game.headless.monsters.fogmog import Fogmog, EyeWithTeeth
 
 from game.headless.monsters.event_monsters import BattleFriendV1, BattleFriendV2, BattleFriendV3, PunchConstruct, MysteriousKnight, FakeMerchantMonster
 
+from game.headless.monsters.underdocks_normal import (CorpseSlug, CalcifiedCultist, DampCultist, FossilStalker, HauntedShip, Seapunk, SewerClam, SludgeSpinner, Toadpole)
+from game.headless.monsters.underdocks_summons import (TwoTailedRat, GremlinMerc, SneakyGremlin, FatGremlin, LivingFog, GasBomb)
+from game.headless.monsters.underdocks_elites import PhantasmalGardener, SkulkingColony, TerrorEel
+from game.headless.monsters.underdocks_bosses import LagavulinMatriarch, SoulFysh, WaterfallGiant
+
 DEFAULT_MONSTERS = MappingProxyType({kind.__name__: kind for kind in (
+    CorpseSlug, CalcifiedCultist, DampCultist, FossilStalker, HauntedShip, Seapunk, SewerClam, SludgeSpinner, Toadpole,
+    TwoTailedRat, GremlinMerc, SneakyGremlin, FatGremlin, LivingFog, GasBomb,
+    PhantasmalGardener, SkulkingColony, TerrorEel, LagavulinMatriarch, SoulFysh, WaterfallGiant,
     BattleFriendV1, BattleFriendV2, BattleFriendV3, PunchConstruct, MysteriousKnight, FakeMerchantMonster,
     SimpleEnemy, Nibbit, ShrinkerBeetle, FuzzyWurmCrawler, Mawler, Byrdonis, Vantom,
     CubexConstruct, SnappingJaxfruit, VineShambler, SlitheringStrangler, Inklet, Flyconid,

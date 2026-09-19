@@ -128,6 +128,18 @@ options exercise content on the existing five-fight route; native map generation
 encounter selection and full card/item/event pools remain unfinished.
 [Complete roster and validation](docs/evidence/overgrowth_roster_2026_09_13.md).
 
+All **20 native Underdocks encounters** are also implemented at A0, including
+Phantasmal Gardeners, Skulking Colony, Terror Eel, Lagavulin Matriarch, Soul Fysh
+and Waterfall Giant. Use their IDs with direct combats or the authored route:
+
+```bash
+sts-headless-play --route overgrowth-act1 --path right --elite underdocks_terror_eel --boss underdocks_waterfall_giant --verify-restore
+```
+
+[Underdocks roster and rules](docs/HEADLESS_ENGINE.md#complete-underdocks-encounter-roster-at-a0).
+Procedural Underdocks maps and encounter queues are not implemented; the generated
+campaign still starts in Overgrowth.
+
 A generated full-length route is also available:
 
 ```bash

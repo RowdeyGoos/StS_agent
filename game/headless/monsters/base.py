@@ -9,7 +9,6 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING, Callable, Sequence
 
 from game.headless.powers.status import StatusCollection, modify_attack_damage_for_statuses
-from game.headless.core.utils import apply_damage_to_block_and_hp
 
 if TYPE_CHECKING:
     from game.headless.core.player import Player
@@ -77,6 +76,7 @@ class Enemy(ABC):
     # Content-owned exceptions for fields whose type changes during play.
     SNAPSHOT_FIELD_TYPES = MappingProxyType({})
     APPLIED_PLAYER_POWERS = ()
+    TRACKS_CARD_ATTACKS = False
 
     def __init__(self, name: str, max_hp: int, rng: Random | None = None, *, min_hp: int | None = None) -> None:
         from game.headless.encounters.randomness import MonsterConstruction
@@ -190,15 +190,15 @@ class Enemy(ABC):
         player = self.combat_player
         incoming_damage = self.damage_amount(amount, is_attack=is_attack, attacker_statuses=attacker_statuses, attacker_strength=attacker_strength, powered=powered, pet=pet)
         from game.headless.powers.damage import resolve_unblocked_damage
-        from copy import deepcopy
-        total = min(self.block, incoming_damage) + resolve_unblocked_damage(deepcopy(self.statuses), max(0, incoming_damage - self.block))
+        self.before_received_damage(is_attack=is_attack, powered=powered,
+                                    attacker_statuses=attacker_statuses, pet=pet)
         previous_hp = self.hp
         previous_block = self.block
-        self.hp, self.block = apply_damage_to_block_and_hp(
-            self.hp,
-            self.block,
-            incoming_damage, statuses=self.statuses,
-        )
+        blocked = min(self.block, incoming_damage)
+        unblocked = self.modify_unblocked_damage(resolve_unblocked_damage(self.statuses, max(0, incoming_damage - self.block)))
+        total = blocked + unblocked
+        self.block -= blocked
+        self.hp = max(0, self.hp - unblocked)
         if player is not None and (pet or attacker_statuses is player.statuses):
             from game.headless.relics.combat import has
             unblocked = total - min(previous_block, incoming_damage)
@@ -210,6 +210,8 @@ class Enemy(ABC):
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
             slot = str(player.combat_enemies.index(self))
             player.rules.regent_hits[slot] = player.rules.regent_hits.get(slot, 0) + 1
+        self.after_received_damage(total - blocked, is_attack=is_attack, powered=powered,
+                                   attacker_statuses=attacker_statuses, pet=pet)
         damage = self._after_damage(previous_hp, is_attack)
         if is_attack and powered and player is not None and (pet or attacker_statuses is player.statuses):
             from game.headless.powers.necrobinder_damage import after_attack_damage
@@ -219,12 +221,19 @@ class Enemy(ABC):
     def take_unblockable_damage(self, amount):
         from game.headless.powers.damage import resolve_unblocked_damage
         previous_hp = self.hp
-        self.hp = max(0, self.hp - resolve_unblocked_damage(self.statuses, amount))
+        amount = self.modify_unblocked_damage(resolve_unblocked_damage(self.statuses, amount))
+        self.hp = max(0, self.hp - amount)
+        self.after_received_damage(amount, is_attack=False, powered=False, attacker_statuses=None, pet=False)
         return self._after_damage(previous_hp, False)
 
     def _after_damage(self, previous_hp, is_attack):
         damage = previous_hp - self.hp
+        died = previous_hp > 0 and self.hp == 0
         self.on_damage_taken(damage, is_attack)
+        if died and self.combat_player is not None:
+            for other in tuple(self.combat_player.combat_enemies):
+                if other is not self and other.is_alive:
+                    other.on_teammate_death(self)
         if self.combat_player is not None:
             from game.headless.core.enemy_lifecycle import settle_enemies
             if previous_hp > 0 and self.hp <= 0 and not self.statuses.get("illusion"):
@@ -304,6 +313,7 @@ class Enemy(ABC):
             self.stunned = False
             return current_intent
 
+        self.before_move(player)
         for _hit_index in range(current_intent.attack_count):
             self.execute_hit(player, current_intent)
             from game.headless.core.resolution import drain
@@ -327,6 +337,15 @@ class Enemy(ABC):
             source=self,
         )
 
+    def continuation_intent(self):
+        return self.intent
+
+    def finish_move(self):
+        pass
+
+    def after_attack_hit(self, player_damage, pet_damage):
+        pass
+
     def execute_after_hits(self, player, current_intent):
         from game.headless.cards.status import SlimedCard
         if current_intent.block_gain > 0:
@@ -345,6 +364,39 @@ class Enemy(ABC):
 
         self.after_move(player, current_intent)
 
+
+    def before_received_damage(self, *, is_attack, powered, attacker_statuses, pet):
+        pass
+
+    def after_player_side_end(self):
+        pass
+
+    def modify_unblocked_damage(self, amount):
+        return amount
+
+    def after_received_damage(self, damage, *, is_attack, powered, attacker_statuses, pet):
+        """Receive the unblocked result before phase/death reactions."""
+
+    def before_move(self, player):
+        """Run content effects preceding the move's first hit."""
+
+    def before_side_start(self, player_side):
+        """Reset side-owned monster effects before side-start damage."""
+
+    def after_side_end(self):
+        """Apply content-owned enemy side-end effects."""
+
+    def after_joining_combat(self, player):
+        """Choose openings that depend on the complete encounter."""
+
+    def on_teammate_death(self, other):
+        """React once per actual teammate death, including repeated deaths."""
+
+    def before_card_attack(self, frame):
+        """Begin one card attack command, which may contain several hits."""
+
+    def after_card_attack(self, frame):
+        """Finish that attack command after all hits and their reactions."""
 
     def after_move(self, player, intent):
         """Content-owned effects after the shared ordered move operations."""

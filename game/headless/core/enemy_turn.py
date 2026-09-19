@@ -14,7 +14,7 @@ def execute(enemy, player, continuation):
         continuation["stage"] = "done"
         return
     current = Intent(**continuation["intent"])
-    if enemy.stunned:
+    if enemy.stunned and current.kind == "stun" and continuation["hit"] == 0:
         enemy.stunned = False
         continuation["stage"] = "done"
         return
@@ -39,6 +39,8 @@ def execute(enemy, player, continuation):
 
 
 def begin(enemy):
+    if not enemy.stunned:
+        enemy.before_move(enemy.combat_player)
     return {"intent": asdict(enemy.intent), "hit": 0, "stage": "hits"}
 
 
@@ -73,7 +75,7 @@ def validate(record, player):
         or move["stage"] not in ("hits", "advance")
     ):
         raise ValueError("Invalid enemy hit cursor.")
-    if asdict(player.combat_enemies[record["slot"]].intent) != asdict(intent):
+    if asdict(player.combat_enemies[record["slot"]].continuation_intent()) != asdict(intent):
         raise ValueError("Enemy continuation differs from its current move.")
     if move["stage"] == "advance" and move["hit"] != intent.attack_count:
         raise ValueError("Enemy continuation skips unfinished hits.")

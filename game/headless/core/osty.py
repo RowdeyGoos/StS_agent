@@ -39,6 +39,15 @@ def lose_hp(p, amount):
     return actual
 
 
+def take_damage(p, amount):
+    """Unpowered damage addressed to Osty uses shared Block, with no overflow."""
+    if not alive(p):
+        return 0
+    blocked = min(p.block, amount)
+    p.block -= blocked
+    return lose_hp(p, amount - blocked)
+
+
 def kill(p):
     if alive(p):
         lose_hp(p, p.rules.osty['hp'])

@@ -105,7 +105,8 @@ def apply(op, card, p, target, amount):
         from game.headless.potions.powers import begin_attack
         begin_attack(p, card)
         vigor = r.powers.pop('vigor', 0)
-        push(p, *[['random_hit', card.instance_id, vigor] for _ in range(r.plays[card.instance_id]['star_value'])])
+        from game.headless.core.enemy_lifecycle import attack_tasks
+        push(p, *attack_tasks(p, card, [['random_hit', card.instance_id, vigor] for _ in range(r.plays[card.instance_id]['star_value'])]))
     elif op in ('beat_into_shape', 'knockout_blow'):
         slot = p.combat_enemies.index(target)
         if op == 'beat_into_shape':
@@ -118,7 +119,8 @@ def apply(op, card, p, target, amount):
             from game.headless.potions.powers import begin_attack
             begin_attack(p, card)
             vigor = r.powers.pop('vigor', 0)
-            push(p, ['regent_knockout', card.instance_id, slot, vigor, amount])
+            from game.headless.core.enemy_lifecycle import attack_tasks
+            push(p, *attack_tasks(p, card, [['regent_knockout', card.instance_id, slot, vigor, amount]]))
     elif op == 'end_turn':
         r.regent_end_requested = True
     else:

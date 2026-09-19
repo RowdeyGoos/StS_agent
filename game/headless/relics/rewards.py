@@ -184,6 +184,8 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
     hunt_index = 0
     from game.headless.run.event_combat import validate_extra_rewards
     validate_extra_rewards(state,cards,rewards)
+    from game.headless.encounters.loot import validate_rewards
+    validate_rewards(state, rewards)
     for reward in rewards:
         if not isinstance(reward, dict) or set(reward) - {"rerolled"} != {
             "source",
@@ -198,6 +200,8 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
         if "rerolled" in reward and reward["kind"] != "card":
             raise ValueError("Non-card reroll marker.")
         if isinstance(reward["source"],str) and reward["source"].startswith("event:"):
+            continue
+        if reward["source"] == "stolen_gold":
             continue
         if reward["source"] == "royalties":
             cards.definition("royalties")

@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v38"
+SCHEMA = "headless_run_state_v39"
 
 
 def _restore_event_combat(record):
@@ -279,6 +279,8 @@ def _validate_pending(state, cards, graph):
             expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards", "hunt_rewards_earned", "royalties_earned"}
         from game.headless.relics.reward_alternatives import validate_marker
         validate_marker(state, pending)
+        if pending.get('encounter_id') == 'underdocks_gremlin_merc':
+            expected.add('encounter_loot')
         if set(pending) - {"rerolled"} != expected:
             raise ValueError("Invalid reward state fields.")
         if state.phase is not RunPhase.REWARD or type(pending["gold"]) is not int or pending["gold"] < 0:
@@ -292,12 +294,15 @@ def _validate_pending(state, cards, graph):
         from game.headless.relics.rewards import validate_modifiers, validate_extra
         validate_modifiers(cards, pending["offers"], pending["card_modifiers"])
         if "combat_reward" in pending:
+            from game.headless.encounters import loot
+            loot.validate(pending['encounter_id'], pending.get('encounter_loot'))
             validate_extra(state, cards, pending["extra_rewards"], hunt_rewards_earned=pending["hunt_rewards_earned"], royalties_earned=pending["royalties_earned"])
             encounter_id = pending["encounter_id"]
             if encounter_id is not None and encounter_id not in ENCOUNTERS:
                 raise ValueError("Unknown reward encounter.")
             encounter = None if encounter_id is None else ENCOUNTERS[encounter_id]
             low, high = (10, 20) if encounter is None else encounter.gold_range
+            low, high = loot.gold_range(low, high, pending.get("encounter_loot"))
             if graph is not None and state.current_node_id is not None:
                 selected = event_combat.encounter_at_current_room(state) or encounter_at(state, room_node(state, graph, state.current_node_id))
                 if selected != encounter_id:

@@ -95,8 +95,10 @@ class Attack:
         from game.headless.potions.powers import begin_attack
         begin_attack(player, card)
         vigor = player.rules.powers.pop("vigor", 0)
+        from game.headless.core.enemy_lifecycle import attack_boundary
         push(
             player,
+            *attack_boundary(player, card, before=True),
             *[
                 [
                     "attack",
@@ -110,6 +112,7 @@ class Attack:
                 ]
                 for _ in range(hits)
             ],
+            *attack_boundary(player, card, before=False),
         )
 
 

@@ -1,0 +1,28 @@
+{
+  "build": "0.107.1",
+  "steam_build": 23811903,
+  "dll_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "source": "Underdocks.GenerateAllEncounters; source-backed A0 solo scope, not live parity evidence",
+  "encounters": [
+    "CorpseSlugsNormal",
+    "CorpseSlugsWeak",
+    "CultistsNormal",
+    "FossilStalkerNormal",
+    "GremlinMercNormal",
+    "HauntedShipNormal",
+    "LagavulinMatriarchBoss",
+    "LivingFogNormal",
+    "PhantasmalGardenersElite",
+    "PunchConstructNormal",
+    "SeapunkNormal",
+    "SeapunkWeak",
+    "SewerClamNormal",
+    "SkulkingColonyElite",
+    "SludgeSpinnerWeak",
+    "SoulFyshBoss",
+    "TerrorEelElite",
+    "ToadpolesWeak",
+    "TwoTailedRatsNormal",
+    "WaterfallGiantBoss"
+  ]
+}

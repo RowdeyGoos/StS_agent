@@ -187,6 +187,8 @@ def execute(p, task):
                         other.combat_state.cost_change -= 1
             if card.spec.kind in ("skill", "block"):
                 r.skills_started += 1
+                if r.powers.get('smoggy'):
+                    r.auxiliaries['smoggy.ready'] = 1
             from game.headless.relics.plays import before_play
             before_play(p, card)
             from game.headless.powers.silent import before_play as silent_before_play
@@ -204,6 +206,19 @@ def execute(p, task):
             )
         else:
             push(p, ["finish", identity])
+    elif op in ('begin_card_attack', 'end_card_attack'):
+        frame = r.plays[args[0]]
+        if op == 'begin_card_attack':
+            frame['enemy_attack'] = {}
+        else:
+            for enemy in tuple(p.combat_enemies or ()):
+                enemy.after_card_attack(frame)
+            frame.pop('enemy_attack', None)
+    elif op == 'monster_death':
+        enemy = p.combat_enemies[args[0]]
+        if enemy.hp != 0 or not enemy.death_pending:
+            raise ValueError('Unowned monster death continuation.')
+        enemy.resolve_death(p)
     elif op == "effect":
         identity, index = args
         card = find(p, identity)
@@ -406,7 +421,9 @@ def execute(p, task):
         from game.headless.relics.combat import tasks as relic_tasks
         push(p, *[["end_power", name] for name in r.powers], *relic_tasks(p, "after_end"), ["cleanup_turn"])
     elif op == "cleanup_turn":
+        r.auxiliaries.pop('smoggy.ready', None)
         for card in p.deck.all_cards():
+            card.combat_state.smog = False
             card.combat_state.free_this_turn = False
             card.combat_state.star_free_this_turn = False
             card.combat_state.turn_cost_change = 0
@@ -440,6 +457,8 @@ def execute(p, task):
         if card.enchantment is not None and card.enchantment.definition_id == "goopy" and p.is_alive:
             card.enchantment.amount += 1
     elif op == "after_card_enemies":
+        from game.headless.powers.underdocks import after_card as underdocks_after_card
+        underdocks_after_card(p, find(p, args[0]))
         from game.headless.powers.necrobinder import after_enemies as nec_after_enemies
         nec_after_enemies(p, find(p, args[0]))
         from game.headless.powers.silent import after_enemies
