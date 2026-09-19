@@ -191,9 +191,17 @@ a previously deferred singleton still requires input. Seeker Strike filters the 
 [Paused-hook evidence](evidence/paused_death_hooks_2026_09_14.md) covers native
 source inspection, Python action/restore regressions and direct native FIFO,
 repeated-choice and combat-end cancellation checks in an isolated Godot runtime.
-The native fixture uses synthetic choices and manually drives native actions;
-whole Horn/card-selection composition remains unverified. Native
-enemy-side work runs concurrently with the action queue; its exact scheduling,
+The queue mode uses synthetic choices and manually drives native actions.
+The separate `death-draw` mode now executes an explicit native Gremlin Horn
+AfterDeath callback through actual Draw/Shuffle, Stratagem and Abacus, using a
+controlled selector that supplies native choice begin/end signals and an answer.
+[Six retained native cases](evidence/native_death_draw_2026_09_19.json) cover
+three seeds with automatic singleton and deferred three-card choices. Headless
+comparisons match paused/final physical pile order, energy/block, options and
+Shuffle counter/next-double suffix, including JSON restoration while paused.
+No production rule change was needed. This probe does not execute the death
+dispatcher, enclosing attack, live card UI or ActionExecutor frame loop.
+Native enemy-side work runs concurrently with the action queue; its exact scheduling,
 multiplayer queues and the complete hook-order audit remain separate work.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.

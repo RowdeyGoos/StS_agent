@@ -98,7 +98,7 @@ source plus labeled Python regressions. Paused death hooks now have owned FIFO
 continuations and live-pile selection in Python; see the
 [paused-hook evidence](../../docs/evidence/paused_death_hooks_2026_09_14.md).
 Direct native queue mechanics now execute in the optional isolated Godot fixture
-below; actual card/selector composition remains outside that probe.
+below; its optional death-draw mode adds the explicit Horn draw callback described there.
 
 ## Combat transformations and foreign-card census
 
@@ -121,12 +121,31 @@ counters and suffixes are never synthesized by Python.
 ## Native paused-hook queue runtime
 
 `queue_runtime/run.py` uses the pinned macOS arm64 game engine with a fresh custom
-project pack. It executes actual HookPlayerChoiceContext, GenericHookGameAction and
+project pack. The default `--mode queue` executes actual HookPlayerChoiceContext, GenericHookGameAction and
 ActionQueueSet with synthetic choice tasks, a singleplayer-only network proxy and
 manual native action driving. It asserts detachment, FIFO, repeated-choice blocking
 and combat-end cancellation of waiting/gathering hooks. It records that canceled
 coroutines remain suspended until the disposable process exits. This is not a
 Horn/card-draw/UI/ActionExecutor-loop or complete native turn fixture.
+
+Pass `--mode death-draw` with the same arguments for actual GremlinHorn.AfterDeath
+→ CardPileCmd.Draw/Shuffle → StratagemPower → TheAbacus execution. Six cases use
+seeds 0, 2 and 42 with one or three physical Defends initially in discard, empty
+hand/draw, zero energy/block, Stratagem 1 and an unused Shuffle stream. The callback
+is invoked explicitly with an enemy; no creature is killed by the fixture.
+A controlled ICardSelector supplies native choice begin/end signals and selects
+the first option. Native hook actions are driven manually. Assertions require
+automatic singleton versus detached three-card behavior, exactly zero/one selector
+calls, +1 energy/+6 block, one/two cards in hand and physical-card conservation.
+The [retained result](../../docs/evidence/native_death_draw_2026_09_19.json)
+includes paused/final piles, options and RNG suffixes. Python comparison and
+paused JSON continuation live in `tests/headless/test_native_death_draw.py`.
+
+This mode does not run the death dispatcher, enclosing attack, live selector UI,
+ActionExecutor frame loop or enemy turn. It uses constructor-free fixture shells
+where needed and explicit in-memory localization entries. Native shuffle's FTUE
+check accesses SaveManager's **in-memory TestMode MockGodotFileIo**; real save
+files and localization initialization are not used.
 
 Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
 **Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
@@ -155,7 +174,8 @@ Godot requires a user directory even for this fixture: the runner creates a uniq
 empty `StsNativeQueueOracle-<uuid>` under macOS Application Support, then removes
 only that directory with `rmdir`. Unexpected files cause cleanup to fail visibly.
 No real profile/save/history/Cloud directory is read. The runtime process has a
-15-second bound (native probe: five seconds); a failed process is not retried.
+15-second bound (queue probe: five seconds; death-draw continuation waits: three
+seconds each); a failed process is not retried.
 Output retains build/runtime logs, exact fixture/dependency hashes, native result,
 timing and cleanup confirmation in `evidence.json`. See the retained
 [queue record](../../docs/evidence/native_hook_queue_2026_09_14.json).

@@ -30,6 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--mode", choices=("queue", "death-draw"), default="queue")
     args = parser.parse_args()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("This pinned exported-runtime fixture requires macOS arm64.")
@@ -57,7 +58,7 @@ def main():
         if path.is_file():
             (data / path.name).symlink_to(path)
             native_hashes[path.name] = sha(path)
-    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "empty.tscn"):
+    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "empty.tscn"):
         shutil.copyfile(source / name, project / name)
     user_name = "StsNativeQueueOracle-" + uuid.uuid4().hex
     user_dir = Path.home() / "Library" / "Application Support" / user_name
@@ -109,7 +110,7 @@ project/assembly_name="queue_oracle"
     started = time.monotonic()
     try:
         run = subprocess.run([str(staged_engine), "--headless", "--main-pack", str(pack),
-                              "--path", str(project), "--log-file", str(output / "engine.log")],
+                              "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode],
                              cwd=project, capture_output=True, text=True, timeout=15)
         (output / "stdout.log").write_text(run.stdout)
         (output / "stderr.log").write_text(run.stderr)

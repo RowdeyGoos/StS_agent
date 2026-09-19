@@ -1552,14 +1552,22 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      repeated-choice blocking and queued/gathering cancellation. The repeatable
      fixture lives in `tools/native_combat_oracle/queue_runtime/`; it manually
      drives actions and does not exercise the executor's frame loop or card UI.
+   - **Native Horn draw callback verified for six explicit fixtures:** actual
+     GremlinHorn.AfterDeath invokes Draw/Shuffle, Stratagem and Abacus using native
+     hook actions with a controlled selector. Three seeds cover automatic singleton
+     and deferred three-card cases. Python matches paused/final card identities,
+     options, resources and RNG suffixes, including JSON continuation. No production
+     rule change was needed. [Native record](evidence/native_death_draw_2026_09_19.json).
    - **Next: native card/turn composition verification.** Extend that fixture to
-     verify Horn → shuffle/Stratagem → Infested → remaining hits → resumed draw. Keep
+     execute the death dispatcher and enclosing attack, verifying Horn →
+     shuffle/Stratagem → Infested → remaining hits → resumed draw. Keep
      explicit fixture state and avoid profile/save access. Check enemy-side hooks
      separately: native enemy-side execution is concurrent with the action queue,
      so a player-action FIFO fixture does not establish its scheduling. Compare
      visible choices, stable slots, HP/resources and RNG suffixes. Source-backed
-     Python regressions and native queue mechanics are verified; actual native
-     card/selector composition and enemy-turn timing remain open.
+     Python regressions, native queue mechanics and the explicit Horn draw callback
+     are verified; enclosing card/death-dispatch composition, live selector behavior
+     and enemy-turn timing remain open.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
      autoplay and further combat boundaries. Require actual native sequences;
      passing Python continuation alone is regression evidence.
