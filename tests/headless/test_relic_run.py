@@ -193,7 +193,7 @@ def test_silver_crucible_does_not_consume_rewards_on_hefty_tablet():
 
     begin_reward(r.state, r.cards, gold=0, card_ids=("strike", "defend", "bash"))
     assert r.state.relics[0].counter == 1
-    assert all(v["upgrade_level"] == 1 for v in r.state.pending["card_modifiers"].values())
+    assert all(v["upgrade_level"] == 1 for v in r.state.pending["card_modifiers"])
 
 
 def test_shears_empty_deck_still_loses_hp():

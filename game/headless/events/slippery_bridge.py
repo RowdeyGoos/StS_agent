@@ -11,15 +11,14 @@ from game.headless.run.deck import remove_card
 class SlipperyBridge:
     definition_id: str = "slippery_bridge"
     initial_damage: int = 3
-    basic_cards: tuple[str, ...] = ("strike", "defend", "bash")
 
     def is_allowed(self, conditions):
         return conditions.get("floor", 0) > 6 and conditions["transformable_cards"] > 0
 
-    def candidates(self, originals, offers):
-        originals = [r for r in originals if r["definition_id"] != "greed"]
+    def candidates(self, originals, offers, cards):
+        originals = [r for r in originals if not cards.definition(r["definition_id"]).spec_at(r["upgrade_level"]).eternal]
         if not offers:
-            result = [r["instance_id"] for r in originals if r["definition_id"] not in self.basic_cards]
+            result = [r["instance_id"] for r in originals if cards.definition(r["definition_id"]).rarity != "basic"]
         else:
             previous = next(r["definition_id"] for r in originals if r["instance_id"] == offers[-1])
             result = [r["instance_id"] for r in originals if r["definition_id"] != previous and r["instance_id"] not in offers]
@@ -29,7 +28,7 @@ class SlipperyBridge:
         if not any(not c.spec.eternal for c in state.deck):
             raise ValueError("Slippery Bridge requires a removable card.")
         originals = [card_record(c) for c in state.deck]
-        offered = rng.choice("event.bridge_card", self.candidates(originals, []))
+        offered = rng.choice("event.bridge_card", self.candidates(originals, [], cards))
         return {"initial_hp": state.hp, "originals": originals, "offers": [offered], "choice": None}
 
     def options(self, pending):
@@ -46,7 +45,7 @@ class SlipperyBridge:
             pending["stage"] = "resolved"
         else:
             rng = deepcopy(state.rng)
-            next_card = rng.choice("event.bridge_card", self.candidates(data["originals"], data["offers"]))
+            next_card = rng.choice("event.bridge_card", self.candidates(data["originals"], data["offers"], cards))
             from game.headless.relics.run_rules import damage
             damage(state, self.initial_damage + len(data["offers"]) - 1)
             state.rng = rng
@@ -67,7 +66,7 @@ class SlipperyBridge:
             raise ValueError("Duplicate Bridge original.")
         history, hp = [], data["initial_hp"]
         for index, offer in enumerate(data["offers"]):
-            if hp <= 0 or offer not in self.candidates(data["originals"], history):
+            if hp <= 0 or offer not in self.candidates(data["originals"], history, cards):
                 raise ValueError("Invalid Bridge offered-card history.")
             if index:
                 from game.headless.events.resources import expected

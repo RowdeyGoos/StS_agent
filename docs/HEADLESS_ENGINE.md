@@ -60,6 +60,60 @@ package may import only itself and the standard library. Existing symbols such a
 `game.simulation.card.StrikeCard` remain importable, but re-export the canonical
 game classes. There is one combat implementation, not two simulators to maintain.
 
+## Current completion scope
+
+The supported campaign is solo Ironclad A0 on pinned build 0.107.1, with all content
+unlocked, through either Act 1 region, Hive, Glory and the Architect ending.
+The [next assignments](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment)
+track current completion work. Older batch descriptions below retain their original
+validation limits; their mentions of missing later acts, cards or generation do
+not override the implemented campaign and catalogs described above.
+
+The remaining acceptance work is native composed combat/choice/turn comparison,
+then native complete-run seed/path comparison and repairs for observed mismatches.
+Passing Python progression with synthetic combat wins does not establish that
+fidelity. Other playable characters, ascensions, progression-dependent unlocks,
+multiplayer and alternate modes are outside this declared campaign scope.
+
+## Duplicate card reward choices
+
+Lasting Candy first tries powers absent from the original three offers, then
+falls back to the complete eligible power pool. The appended card keeps its own
+upgrade roll and late reward modifiers, even when its definition repeats. A pool
+without powers produces no extra offer. This applies to ordinary combat rewards,
+Prayer Wheel/White Star/Hunt card rewards and Driftwood rerolls.
+
+Main `card_modifiers` and relic/Hunt card reward `modifiers` are now ordered lists
+aligned with `offers`. `ChooseRewardCard(definition_id, offer_index)` and
+`ChooseExtraReward(reward_index, definition_id, offer_index)` select an exact
+position in the active reward. The index is required for repeated definitions;
+unique definitions retain the existing index-free command. Declining remains
+`definition_id=None`. Acquisition copies only the chosen offer’s modifiers.
+Event and relic-pickup reward selectors retain their existing representations.
+
+Private run **v45** rejects earlier snapshots rather than interpreting their
+name-keyed modifiers as physical offers. Restore validates modifier count, card
+values and the Lasting Candy duplicate source; ambiguous or mismatched selections
+fail before acquisition or RNG changes. Rerolling replaces the complete offer list.
+
+[Native reward vectors](../tests/fixtures/headless_native_reward_edge_vectors.json)
+cover 135 cases: five seeds, three act upgrade contexts, duplicate/unseen/no-power
+pools, and plain Candy/Silver Crucible/Wing Charm hooks. They execute the actual
+base-odds card factory followed by actual encounter reward hooks in isolated native
+contexts, comparing physical offers, upgrades, enchantments and Rewards/Niche
+counters and suffixes. Changing-odds orchestration is excluded: its logger requires
+a Godot host. This fixture does not execute a complete native reward screen or run.
+
+Validation: **5,445 headless/backend/CLI/package tests passed in 485.94 seconds**.
+The new position/eligibility/native-vector tests passed 157 cases in 0.67 seconds;
+14 native duplicate pairs have different upgrades or enchantments. The installed
+wheel passed 429 affected tests in 38.13 seconds, and its CLI restored all 38
+commands of the authored first slice. All 235 packaged headless/demo source files
+matched the validated checkout. The native oracle built with zero warnings/errors
+in 1.02 seconds. Compilation, documentation links and diff checks passed.
+Independent semantic review found no blockers in choice identity, modifier
+ownership, reward alternatives, snapshot rejection or Slippery Bridge filtering.
+
 ## Native randomness and generation
 
 Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
@@ -68,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v29 / run v44**.
+than being silently reinterpreted: current schemas are **combat v29 / run v45**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -1543,7 +1597,7 @@ Potion bundles expose `claim_potion_N` and `finish_rewards`. Full inventory remo
 claim actions until `DiscardPotion` frees a slot; finishing skips unclaimed items.
 Discarding a claimed potion never makes its reward claimable again. The supported
 reward pool now contains all 48 ordinary Ironclad potions, with native rarity
-distribution. Curse transformations use all 18 native definitions and reject Eternal source cards. Native RNG parity remains open. Empty-deck Slippery Bridge fallback is explicitly unsupported.
+distribution. Curse transformations use all 18 native definitions and reject Eternal source cards. Native RNG parity remains open. Slippery Bridge requires at least one removable card in native play; no empty-deck fallback is required. Candidate selection uses the card’s Basic rarity and Eternal keyword, including foreign starters.
 
 `run/lifecycle.py` handles master-deck expiry and elite relic evolution after
 combat; combat copies do not age the persistent cards. The demo chooses Gold,
@@ -1859,7 +1913,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v44`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v45`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,

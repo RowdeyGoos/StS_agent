@@ -219,15 +219,15 @@ def test_dingy_rug_applies_to_orrery_but_not_hefty_tablet_or_direct_event_grants
     restored(event)
 
 
-def test_restricted_lasting_candy_duplicate_fallback_rejects_atomically():
+def test_restricted_lasting_candy_duplicate_fallback_restores_independent_offers():
     from game.headless.run import rewards
     run = RunEngine(seed=2, rng_profile="native", config=RunConfig(
         reward_cards=("inflame", "barricade", "demon_form")))
     add_relic(run.state, "lasting_candy")
-    before = run.snapshot()
-    with pytest.raises(ValueError, match="duplicate-power fallback"):
-        rewards.begin_combat_rewards(run.state, run.cards)
-    assert run.snapshot() == before
+    rewards.begin_combat_rewards(run.state, run.cards)
+    assert len(run.state.pending["offers"]) == 4
+    assert len(set(run.state.pending["offers"])) == 3
+    assert len(run.state.pending["card_modifiers"]) == 4
     restored(run)
 
 

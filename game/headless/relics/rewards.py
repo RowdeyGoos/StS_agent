@@ -24,7 +24,7 @@ def extend_pool(state, cards, pool, *, card_reward=True, custom_pool=False, no_p
     return result
 
 
-def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgraded=(), modifiers=None):
+def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgraded=(), modifiers=None, indexed=False, upgraded_indices=()):
     instances = [cards.create(name) for name in offers]
     from game.headless.relics.run_rules import counter
     if modifiers is not None:
@@ -35,8 +35,8 @@ def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgra
             card.upgrade_level = saved['upgrade_level']
             card.enchantment = restore(saved['enchantment'])
 
-    for card in instances:
-        if card.definition.definition_id in upgraded and len(card.definition.levels)>1:
+    for index, card in enumerate(instances):
+        if (index in upgraded_indices or card.definition.definition_id in upgraded) and len(card.definition.levels)>1:
             card.upgrade()
     if upgrade_all:
         for card in instances:
@@ -65,10 +65,8 @@ def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgra
         for card in instances:
             if can_enchant(card, "glam"):
                 enchant(card, "glam", 1)
-    return {
-        c.definition.definition_id: {"upgrade_level": c.upgrade_level, "enchantment": record(c)}
-        for c in instances
-    }
+    values = [{"upgrade_level": c.upgrade_level, "enchantment": record(c)} for c in instances]
+    return values if indexed else dict(zip(offers, values))
 
 
 def add_power_option(state, cards, offers, pool, *, kind="combat"):
@@ -76,10 +74,8 @@ def add_power_option(state, cards, offers, pool, *, kind="combat"):
         return []
     powers = [name for name in pool if cards.definition(name).levels[0].kind == "power"]
     choices = [name for name in powers if name not in offers]
-    if not choices and powers and getattr(state.rng, "native", False):
-        # Native retries without the blacklist. Definition-ID reward decisions
-        # cannot yet distinguish independently modified duplicate options.
-        raise ValueError("Lasting Candy duplicate-power fallback requires instance-based reward choices.")
+    if not choices:
+        choices = powers
     if choices:
         if getattr(state.rng, "native", False):
             from game.headless.generation.odds import card_offers
@@ -90,6 +86,17 @@ def add_power_option(state, cards, offers, pool, *, kind="combat"):
             return upgraded
         offers.append(state.rng.choice("relic.power_reward", choices))
     return []
+
+
+
+def combat_modifiers(state, cards, offers, pool, *, upgraded=(), kind="combat", upgrade_all=False):
+    """One modifier per offer position, including independently generated duplicates."""
+    indices = [i for i, name in enumerate(offers) if name in upgraded]
+    count = len(offers)
+    extra_upgrades = add_power_option(state, cards, offers, pool, kind=kind)
+    if len(offers) > count and offers[-1] in extra_upgrades:
+        indices.append(count)
+    return decorate(state, cards, offers, indexed=True, upgraded_indices=indices, upgrade_all=upgrade_all)
 
 
 def extra_rewards(state, cards, encounter, *, undamaged=False, final_boss=False):
@@ -111,7 +118,6 @@ def extra_rewards(state, cards, encounter, *, undamaged=False, final_boss=False)
             if getattr(state.rng, "native", False):
                 from game.headless.generation.odds import card_offers
                 offers,upgraded=card_offers(state,cards,pool,kind="boss" if name=="white_star" else kind)
-                upgraded.extend(add_power_option(state,cards,offers,pool,kind="boss" if name=="white_star" else kind))
             else:
                 state.rng.shuffle("reward_offer", pool)
                 offers = pool[:3]
@@ -120,8 +126,9 @@ def extra_rewards(state, cards, encounter, *, undamaged=False, final_boss=False)
                     "source": relic.instance_id,
                     "kind": "card",
                     "offers": offers,
-                    "modifiers": decorate(
-                        state, cards, offers, upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded
+                    "modifiers": combat_modifiers(
+                        state, cards, offers, pool, kind="boss" if name == "white_star" else kind,
+                        upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded
                     ),
                     "resolved": False,
                 }
@@ -159,12 +166,27 @@ def extra_rewards(state, cards, encounter, *, undamaged=False, final_boss=False)
     return result
 
 
-def validate_modifiers(cards, offers, modifiers):
-    if not isinstance(modifiers, dict) or set(modifiers) != set(offers):
+
+def validate_combat_offers(state, cards, offers):
+    if len(set(offers)) == len(offers):
+        return
+    # The factory samples without replacement; only Candy's appended power can
+    # repeat an earlier definition. Its own modifiers still occupy a separate slot.
+    if (not has(state, "lasting_candy") or owned(state, "lasting_candy").counter
+            or len(offers) != 4 or len(set(offers[:-1])) != 3
+            or offers[-1] not in offers[:-1] or cards.definition(offers[-1]).levels[0].kind != "power"):
+        raise ValueError("Duplicated reward lacks its Lasting Candy offer.")
+
+
+def validate_modifiers(cards, offers, modifiers, *, indexed=False):
+    if indexed:
+        if not isinstance(modifiers, list) or len(modifiers) != len(offers):
+            raise ValueError("Reward modifiers differ from their offer positions.")
+    elif not isinstance(modifiers, dict) or set(modifiers) != set(offers):
         raise ValueError("Reward modifiers differ from their offers.")
     from game.headless.enchantments.base import restore, validate
 
-    for name, data in modifiers.items():
+    for name, data in (zip(offers, modifiers) if indexed else modifiers.items()):
         if not isinstance(data, dict) or set(data) != {"upgrade_level", "enchantment"}:
             raise ValueError("Invalid card reward modifier fields.")
         card = cards.create(name, upgrade_level=data["upgrade_level"])
@@ -239,11 +261,11 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
             reward["kind"] != "card"
             or not isinstance(reward["offers"], list)
             or len(reward["offers"]) not in ((3, 4) if has(state,"lasting_candy") and owned(state,"lasting_candy").counter == 0 else (3,))
-            or len(set(reward["offers"])) != len(reward["offers"])
         ):
             raise ValueError("Invalid extra card offers.")
         sources.append(reward["source"])
-        validate_modifiers(cards, reward["offers"], reward["modifiers"])
+        validate_combat_offers(state, cards, reward["offers"])
+        validate_modifiers(cards, reward["offers"], reward["modifiers"], indexed=True)
     if royalties_count != int(royalties_earned > 0):
         raise ValueError("Royalties reward differs from earned gold.")
     if hunt_index != earned:
@@ -263,11 +285,10 @@ def hunt_rewards(state, cards, kind, count, *, undamaged=False):
         if getattr(state.rng, "native", False):
             from game.headless.generation.odds import card_offers
             offers, upgraded = card_offers(state, cards, pool, kind=kind)
-            upgraded.extend(add_power_option(state, cards, offers, pool, kind=kind))
         else:
             offers = list(pool)
             state.rng.shuffle("reward_offer", offers)
             offers = offers[:3]
         result.append(dict(source=f"the_hunt:{index}", kind="card", offers=offers,
-            modifiers=decorate(state, cards, offers, upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded), resolved=False))
+            modifiers=combat_modifiers(state, cards, offers, pool, kind=kind, upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded), resolved=False))
     return result

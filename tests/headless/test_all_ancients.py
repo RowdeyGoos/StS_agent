@@ -517,14 +517,18 @@ def test_relic_reroll_retains_source_flags_and_excludes_candy(name, draws):
     roundtrip(run)
 
 
-def test_reroll_factory_failure_restores_rng_and_odds():
+def test_reroll_factory_failure_restores_rng_and_odds(monkeypatch):
     from game.headless.run.rewards import begin_reward
     run = RunEngine.ironclad_act1(seed=3)
     run.state.config = replace(run.state.config, reward_cards=('inflame', 'barricade', 'demon_form'))
     run.obtain_relic('driftwood'); run.obtain_relic('lasting_candy')
     begin_reward(run.state, run.cards, gold=0, card_ids=run.state.config.reward_cards)
     before = saved(run)
-    with pytest.raises(ValueError, match='duplicate-power'):
+    from game.headless.relics import rewards
+    def fail(*args, **kwargs):
+        raise ValueError('injected modifier failure')
+    monkeypatch.setattr(rewards, 'decorate', fail)
+    with pytest.raises(ValueError, match='injected modifier failure'):
         run.apply(RerollCardReward())
     assert saved(run) == before
 
