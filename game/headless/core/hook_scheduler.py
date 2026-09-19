@@ -102,7 +102,7 @@ def run(p, execute):
         r.active_hook = 0
         if p.combat_is_ending:
             cancel_deferred(p)
-        if not r.deferred_hooks:
+        if not r.deferred_hooks or p._defer_death_hooks or r.enemy_turn is not None:
             return
         activate(p, r.deferred_hooks.pop(0))
 
@@ -158,3 +158,29 @@ def cancel_terminal_work(p):
     r.selection = p.pending_play = None
     r.active_hook = 0
     r.end_hand_remaining.clear()
+
+
+def finish_enemy_work(p):
+    """Queue a later setup/reaction choice behind earlier detached death hooks."""
+    from game.headless.core.resolution import drain
+    r = p.rules
+    if p.combat_is_ending:
+        cancel_terminal_work(p)
+        return
+    if r.enemy_turn is not None:
+        return  # A blocking enemy choice must finish its move first.
+    if r.deferred_hooks and paused(p):
+        previous = r.active_hook
+        if not previous:
+            r.hook_sequence += 1
+            r.active_hook = r.hook_sequence
+            for frame in r.plays.values():
+                if frame['context'] == previous:
+                    frame['context'] = r.active_hook
+            for event in r.pending_events:
+                if event['context'] == previous:
+                    event['context'] = r.active_hook
+        r.deferred_hooks.append(capture(p))
+        r.tasks, r.selection, p.pending_play = [], None, None
+        activate(p, r.deferred_hooks.pop(0))
+    drain(p)
