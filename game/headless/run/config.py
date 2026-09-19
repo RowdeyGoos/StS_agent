@@ -17,9 +17,19 @@ class RunConfig:
     event_pool: tuple[str, ...] = ("jungle_maze_adventure", "aroma_of_chaos")
     relic_fallback: str | None = None
     act: str = "overgrowth"
+    campaign: tuple[str, ...] = ()
+
+    @property
+    def first_act(self):
+        return self.campaign[0] if self.campaign else self.act
 
     def __post_init__(self):
-        if self.act not in ("overgrowth", "underdocks"):
+        object.__setattr__(self, 'campaign', tuple(self.campaign))
+        if self.campaign not in ((), ('overgrowth', 'hive'), ('underdocks', 'hive')):
+            raise ValueError('Unsupported campaign sequence.')
+        if self.campaign and self.act not in self.campaign:
+            raise ValueError('Current act is outside the declared campaign.')
+        if self.act not in ("overgrowth", "underdocks", "hive"):
             raise ValueError("Unsupported Act 1 location.")
         if self.character != "ironclad" or type(self.ascension) is not int or self.ascension != 0:
             raise ValueError("Only Ironclad Ascension 0 is implemented.")

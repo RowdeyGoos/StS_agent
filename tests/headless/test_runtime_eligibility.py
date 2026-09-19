@@ -65,7 +65,7 @@ def test_native_bag_depletion_filtering_fallback_and_rng_suffix(row):
     adapter = SimpleNamespace(shuffle=lambda stream, values: raw.shuffle(values))
     bags = relics.populate(adapter)
     assert bags["player"] == row["initial"]
-    state = SimpleNamespace(relic_bags=bags, relics=[], visited_nodes=[None] * row["floor"], rng=adapter)
+    state = SimpleNamespace(relic_bags=bags, relics=[], visited_room_count=row["floor"], rng=adapter)
     for step in row["steps"]:
         allowed = SHOP_RELICS if step["back"] else RELICS
         if step["only"] is not None:

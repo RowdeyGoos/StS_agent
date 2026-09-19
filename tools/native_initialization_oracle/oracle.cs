@@ -2,9 +2,11 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length is < 2 or > 3) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [overgrowth|underdocks]");
-var firstAct = args.Length == 3 ? args[2] : "overgrowth";
-if (firstAct is not ("overgrowth" or "underdocks")) throw new ArgumentException("Unsupported first act.");
+if (args.Length is < 2 or > 3) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [overgrowth|underdocks|hive|spoils]");
+var mode = args.Length == 3 ? args[2] : "overgrowth";
+if (mode is not ("overgrowth" or "underdocks" or "hive" or "spoils")) throw new ArgumentException("Unsupported act mode.");
+var firstAct = mode == "underdocks" ? "underdocks" : "overgrowth";
+var mapIndex = mode is "hive" or "spoils" ? 1 : 0;
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
@@ -63,10 +65,29 @@ foreach(var seed in new[]{"0","1","2","3","4","5","6","7","8","9","42","ABC123",
   var rooms=actType.GetField("_rooms",flags)!.GetValue(act)!;
   generated.Add(new{act=Id(act),events=Items(rooms.GetType().GetField("events")!.GetValue(rooms)!).Select(Id),normal=Items(rooms.GetType().GetField("normalEncounters")!.GetValue(rooms)!).Select(e=>e.GetType().Name),elites=Items(rooms.GetType().GetField("eliteEncounters")!.GetValue(rooms)!).Select(e=>e.GetType().Name),boss=Prop(rooms,"Boss").GetType().Name,ancient=Id(Prop(rooms,"Ancient")),counter=Prop(rng,"Counter")});
  }
- var mapRng=Rng(seed,"act_1_map");
- var map=Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Map.StandardActMap",true)!,new object?[]{mapRng,acts[0],false,false,false,null,true})!;
+ var mapRng=Rng(seed,$"act_{mapIndex + 1}_map");
+ object map;
+ if (mode == "spoils") {
+  var run = DispatchProxy.Create(asm.GetType("MegaCrit.Sts2.Core.Runs.IRunState",true)!, typeof(MapRunProxy));
+  var playerType = asm.GetType("MegaCrit.Sts2.Core.Entities.Players.Player",true)!;
+  ((MapRunProxy)run).Values = new() {
+   ["get_Act"] = acts[1],
+   ["get_Players"] = Array.CreateInstance(playerType, 1),
+   ["get_Rng"] = Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Runs.RunRngSet",true)!, new object[]{seed})!
+  };
+  map = Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Map.SpoilsActMap",true)!, new object?[]{run, null})!;
+  mapRng = map.GetType().GetField("_rng",flags)!.GetValue(map)!;
+ } else {
+  map=Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Map.StandardActMap",true)!,new object?[]{mapRng,acts[mapIndex],false,false,false,null,true})!;
+ }
  int[] Coord(object point){var c=point.GetType().GetField("coord")!.GetValue(point)!;return new[]{(int)c.GetType().GetField("row")!.GetValue(c)!,(int)c.GetType().GetField("col")!.GetValue(c)!};}
  var nodes=Items(Call(map,"GetAllMapPoints")).Append(Prop(map,"BossMapPoint")).Select(p=>new{coord=Coord(p),kind=Prop(p,"PointType").ToString(),children=Items(Prop(p,"Children")).Select(Coord).OrderBy(c=>c[0]).ThenBy(c=>c[1])}).OrderBy(p=>p.coord[0]).ThenBy(p=>p.coord[1]);
  rows.Add(new{seed,afterBags,afterAllocation,subsets,acts=generated,upFrontCounter=Prop(rng,"Counter"),upFrontSuffix=Call(rng,"NextDouble"),map=new{nodes,starts=Items(map.GetType().GetField("startMapPoints")!.GetValue(map)!).Select(Coord).OrderBy(c=>c[0]).ThenBy(c=>c[1]),counter=Prop(mapRng,"Counter"),suffix=Call(mapRng,"NextDouble")}});
 }
-Console.Write(JsonSerializer.Serialize(new{source=$"Pinned assembly metadata, RelicGrabBag.Populate, ActModel.GenerateRooms and StandardActMap execution; explicit solo all-unlocked {firstAct}/Hive/Glory inputs, no profile access",dllSha256=digest,catalog,sharedEvents=sharedEvents.Select(Id),sharedAncients=sharedAncients.Select(Id),rows},new JsonSerializerOptions{WriteIndented=true}));
+Console.Write(JsonSerializer.Serialize(new{source=$"Pinned assembly metadata, RelicGrabBag.Populate, ActModel.GenerateRooms and { (mode == "spoils" ? "SpoilsActMap" : "StandardActMap") } execution; explicit solo all-unlocked {firstAct}/Hive/Glory inputs, no profile access",dllSha256=digest,catalog,sharedEvents=sharedEvents.Select(Id),sharedAncients=sharedAncients.Select(Id),rows},new JsonSerializerOptions{WriteIndented=true}));
+
+public class MapRunProxy : DispatchProxy {
+ public Dictionary<string, object> Values = new();
+ protected override object? Invoke(MethodInfo? method, object?[]? args) =>
+  Values.TryGetValue(method!.Name, out var value) ? value : throw new InvalidOperationException("Unexpected map run access: " + method.Name);
+}

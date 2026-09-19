@@ -5,7 +5,7 @@ from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.events.catalog import EVENTS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
-    UseRestRelic, ChooseCookCard, ConfirmCook, RerollCardReward, SacrificeCardReward, ChooseExtraReward, ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
+    ContinueAct, UseRestRelic, ChooseCookCard, ConfirmCook, RerollCardReward, SacrificeCardReward, ChooseExtraReward, ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, Hatch, Lift, Dig, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
     OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
@@ -21,6 +21,9 @@ def legal_actions(engine) -> tuple:
         from game.headless.relics.pickup import legal_actions as relic_actions
         from game.headless.relics.reward_alternatives import actions as alternatives
         return (*relic_actions(state), *alternatives(state))
+    from game.headless.run.campaign import can_continue
+    if can_continue(engine):
+        return (ContinueAct(),)
     if state.phase in (RunPhase.VICTORY, RunPhase.DEFEAT, RunPhase.SLICE_COMPLETE, RunPhase.ACT_COMPLETE):
         return ()
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "ancient":
@@ -93,6 +96,8 @@ def apply(engine, action):
     if action not in legal_actions(engine):
         raise ValueError(f"Illegal run action: {action!r}")
     state = engine.state
+    if isinstance(action, ContinueAct):
+        return engine.advance_act()
     if isinstance(action, (RerollCardReward, SacrificeCardReward)):
         from game.headless.relics.reward_alternatives import apply as alternate
         return alternate(state, engine.cards, action)
@@ -129,7 +134,12 @@ def apply(engine, action):
             if node.kind == "event":
                 if node.event_id not in EVENTS:
                     raise ValueError("Unsupported map event.")
-                events.begin(state, node.event_id, cards=engine.cards)
+                if node.row == 0:
+                    from game.headless.relics.run_rules import entered_room
+                    events.begin(state, node.event_id, cards=engine.cards)
+                    entered_room(state, 'event')
+                else:
+                    events.begin(state, node.event_id, cards=engine.cards)
             elif node.kind == "treasure":
                 treasure.begin(state)
             elif node.kind == "shop":

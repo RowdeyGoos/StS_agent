@@ -132,6 +132,6 @@ def prepare_unknown(state, graph, node):
         raise ValueError("Unknown room requires an owned event queue.")
     progression = deepcopy(state.event_progression)
     from game.headless.events.eligibility import entry_conditions
-    event_id = progression.pull(node.node_id, conditions=entry_conditions(state)) if kind == "event" else None
+    event_id = progression.pull(node.node_id, conditions=entry_conditions(state), seen_before=state.previous_event_ids) if kind == "event" else None
     unknown.outcomes[node.node_id] = RoomOutcome(kind, event_id, None if bracelet is None else bracelet.instance_id, None if key is None else key.instance_id)
     return rng, unknown, progression, replace(node, kind=kind, event_id=event_id)

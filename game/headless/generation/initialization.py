@@ -80,7 +80,7 @@ def validate(state):
     populate(rng)
     if state.config is None:
         raise ValueError("Native initialization requires declared act settings.")
-    expected = generate(rng, act=state.config.act)
+    expected = generate(rng, act=state.config.first_act)
     if state.initialization != expected:
         raise ValueError("Native initialization differs from its seed and declared inputs.")
     if state.rng.request_count("up_front") < rng.request_count("up_front"):
@@ -89,14 +89,14 @@ def validate(state):
     if progression is None:
         raise ValueError("Native initialization requires encounter progression.")
     from game.headless.encounters.progression import native_ids
-    ids = native_ids(state.config.act)
-
-    act = expected["acts"][0]
-    if (
-        progression.normal_queue != [ids[n] for n in act["normal"]]
-        or progression.elite_queue != [ids[n] for n in act["elites"]]
-        or progression.boss != ids[act["boss"]]
-    ):
-        raise ValueError("Encounter queues differ from native initialization.")
-    if state.event_progression is not None and state.event_progression.queue != act["events"]:
-        raise ValueError("Event queue differs from native initialization.")
+    owners = [(a.act, a.encounter_progression, a.event_progression) for a in state.completed_acts]
+    owners.append((state.config.act, progression, state.event_progression))
+    for index, (name, encounters, events) in enumerate(owners):
+        ids = native_ids(name)
+        act = expected['acts'][index]
+        if (name != act['act'] or encounters.normal_queue != [ids[n] for n in act['normal']]
+                or encounters.elite_queue != [ids[n] for n in act['elites']]
+                or encounters.boss != ids[act['boss']]):
+            raise ValueError('Encounter queues differ from native initialization.')
+        if events is not None and events.queue != act['events']:
+            raise ValueError('Event queue differs from native initialization.')

@@ -38,7 +38,7 @@ def validate_data(name, values):
         if data.pop('family') not in ('ironclad', 'silent', 'regent', 'necrobinder', 'defect'):
             raise ValueError('Invalid Sea Glass family.')
     if name in ("fur_coat", "golden_compass") and "act" in data:
-        if type(data["act"]) is not int or data.pop("act") != 1:
+        if type(data["act"]) is not int or data.pop("act") not in (1, 2, 3):
             raise ValueError("Invalid Ancient act ownership.")
     if name == "fur_coat" and "coordinates" in data:
         coordinates = data.pop("coordinates")
