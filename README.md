@@ -160,18 +160,20 @@ Use `run.start_combat(encounter_id="glory_test_subject")` on a configured
 `RunEngine`, or use Glory IDs in authored encounter overrides.
 [Glory roster, rules and evidence](docs/HEADLESS_ENGINE.md#complete-glory-act-3-encounter-roster-at-a0).
 
-Generated campaigns now continue from either Act 1 region into Hive, including
-its Ancient, rooms, rewards and boss:
+Generated campaigns now continue from either Act 1 region through Hive and Glory,
+including their Ancients, maps, events, bosses, and the Architect ending:
 
 ```bash
-sts-headless-play --route overgrowth-hive --ancient neow --seed 2 --verify-restore
-# Or --route underdocks-hive
+sts-headless-play --route overgrowth-glory --ancient neow --seed 2 --verify-restore
+# Or --route underdocks-glory
 ```
 
 Use `RunEngine.ironclad_run(first_act="overgrowth", seed=2)` and apply `ContinueAct()`
-after Act 1 boss rewards. The existing `ironclad_act1` factory still ends at Act 1.
-[Campaign rules and evidence](docs/HEADLESS_ENGINE.md#generated-campaign-through-hive).
-Act 3 progression remains unimplemented.
+after each boss, including Glory, to enter the next act or the Architect event.
+Choosing the Architect’s `proceed` completes the run. Pass `last_act="hive"` (or use
+`--route overgrowth-hive` / `underdocks-hive`) to retain the two-act endpoint.
+The existing `ironclad_act1` factory still ends at Act 1.
+[Campaign rules and evidence](docs/HEADLESS_ENGINE.md#generated-campaign-through-glory).
 
 A generated full-length route is also available:
 

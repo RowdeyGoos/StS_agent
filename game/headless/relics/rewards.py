@@ -92,7 +92,7 @@ def add_power_option(state, cards, offers, pool, *, kind="combat"):
     return []
 
 
-def extra_rewards(state, cards, encounter, *, undamaged=False):
+def extra_rewards(state, cards, encounter, *, undamaged=False, final_boss=False):
     from game.headless.cards.pools import RARE_CARDS
 
     result = []
@@ -101,6 +101,8 @@ def extra_rewards(state, cards, encounter, *, undamaged=False):
         if relic.data.get("_melted"):
             continue
         name = relic.definition_id
+        if final_boss and name != "wongos_mystery_ticket":
+            continue
         if (name == "prayer_wheel" and kind == "combat") or (name == "white_star" and kind == "elite"):
             pool = extend_pool(
                 state, cards, RARE_CARDS if name == "white_star" else state.config.reward_cards

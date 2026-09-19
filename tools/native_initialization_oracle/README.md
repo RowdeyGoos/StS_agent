@@ -25,7 +25,10 @@ player-count container and root-seeded `RunRngSet`; unexpected property access f
 No player data is loaded. Both modes record the map’s own RNG counter and suffix.
 
 This deliberately bypasses the game's profile-dependent lobby act picker.
-Headless campaigns support Hive; Glory remains future-act startup data.
+Headless campaigns support Hive and Glory through the Architect ending.
+Pass `glory` to retain the same startup inputs and emit the Act 3 standard map.
+Its 13-seed geometry/RNG output is retained in
+[`headless_native_glory_map_vectors.json`](../../tests/fixtures/headless_native_glory_map_vectors.json).
 
 `RelicGrabBag.Populate`, `ActModel.GenerateRooms` and `StandardActMap` execute
 actual assembly methods. The small shared-Ancient partition loop mirrors the

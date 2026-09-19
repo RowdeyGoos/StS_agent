@@ -7,7 +7,8 @@ native grid; their coordinates stay fixed while connected grid points move.
 
 def reposition(edges, parents, kinds):
     locations = {point: point for point in edges}
-    grid = {point: point for point in edges if 1 <= point[0] <= 15}
+    grid = {point: point for point in edges if kinds[point] not in ('ancient', 'boss')}
+    rows = max((row for row, _ in grid), default=0)
 
     def move(point, column):
         row, old = locations[point]
@@ -24,7 +25,7 @@ def reposition(edges, parents, kinds):
         for point in sorted(grid.values(), key=lambda p: (p[0], -p[1] if shift > 0 else p[1])):
             move(point, locations[point][1] + shift)
 
-    for row in range(1, 16):
+    for row in range(1, rows + 1):
         row_nodes = [grid[(row, col)] for col in range(7) if (row, col) in grid]
         changed = True
         while changed:
@@ -50,7 +51,7 @@ def reposition(edges, parents, kinds):
                     move(point, best)
                     changed = True
 
-    for row in range(1, 16):
+    for row in range(1, rows + 1):
         for column in range(7):
             point = grid.get((row, column))
             if point is None or len(parents[point]) != 1 or len(edges[point]) != 1:

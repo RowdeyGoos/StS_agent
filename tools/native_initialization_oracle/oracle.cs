@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length is < 2 or > 3) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [overgrowth|underdocks|hive|spoils]");
+if (args.Length is < 2 or > 3) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [overgrowth|underdocks|hive|spoils|glory]");
 var mode = args.Length == 3 ? args[2] : "overgrowth";
-if (mode is not ("overgrowth" or "underdocks" or "hive" or "spoils")) throw new ArgumentException("Unsupported act mode.");
+if (mode is not ("overgrowth" or "underdocks" or "hive" or "spoils" or "glory")) throw new ArgumentException("Unsupported act mode.");
 var firstAct = mode == "underdocks" ? "underdocks" : "overgrowth";
-var mapIndex = mode is "hive" or "spoils" ? 1 : 0;
+var mapIndex = mode == "glory" ? 2 : mode is "hive" or "spoils" ? 1 : 0;
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();

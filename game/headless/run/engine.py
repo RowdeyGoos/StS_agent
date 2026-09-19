@@ -117,11 +117,13 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_run(cls, *, seed=0, first_act="overgrowth", ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
-        """Play the supported two-act campaign, stopping after Hive boss rewards."""
+    def ironclad_run(cls, *, seed=0, first_act="overgrowth", last_act="glory", ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
+        """Play through Glory and the Architect; optionally stop after Hive."""
+        if last_act not in ("hive", "glory"):
+            raise ValueError("Unsupported campaign endpoint.")
         engine = cls.ironclad_act1(seed=seed, act=first_act, ancient_profile=ancient_profile,
                                    rng_profile=rng_profile, cards=cards)
-        engine.state.config = replace(engine.state.config, campaign=(first_act, 'hive'))
+        engine.state.config = replace(engine.state.config, campaign=(first_act, 'hive', 'glory') if last_act == 'glory' else (first_act, 'hive'))
         return engine
 
     def advance_act(self):

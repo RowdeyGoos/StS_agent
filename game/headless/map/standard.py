@@ -11,17 +11,26 @@ UNDERDOCKS_BASE_PROFILE = "underdocks_a0_base_restricted_v1"
 UNDERDOCKS_PROFILE = "underdocks_a0_pruned_restricted_v1"
 HIVE_BASE_PROFILE = "hive_a0_base_v1"
 HIVE_PROFILE = "hive_a0_pruned_v1"
-BASE_PROFILES = (BASE_PROFILE, UNDERDOCKS_BASE_PROFILE, HIVE_BASE_PROFILE)
+GLORY_BASE_PROFILE = "glory_a0_base_v1"
+GLORY_PROFILE = "glory_a0_pruned_v1"
+BASE_PROFILES = (BASE_PROFILE, UNDERDOCKS_BASE_PROFILE, HIVE_BASE_PROFILE, GLORY_BASE_PROFILE)
 SPOILS_PROFILE = "hive_a0_spoils_v1"
-PRUNED_PROFILES = (PROFILE, UNDERDOCKS_PROFILE, HIVE_PROFILE, SPOILS_PROFILE)
+PRUNED_PROFILES = (PROFILE, UNDERDOCKS_PROFILE, HIVE_PROFILE, GLORY_PROFILE, SPOILS_PROFILE)
 
 
 def profile_for(act, *, base=False):
+    if act == 'glory':
+        return GLORY_BASE_PROFILE if base else GLORY_PROFILE
     if act == 'hive':
         return HIVE_BASE_PROFILE if base else HIVE_PROFILE
     if act not in ('overgrowth', 'underdocks'):
         raise ValueError('Unsupported Act 1 location.')
     return (BASE_PROFILE if base else PROFILE) if act == 'overgrowth' else (UNDERDOCKS_BASE_PROFILE if base else UNDERDOCKS_PROFILE)
+
+
+def ancients_for(act):
+    from game.headless.generation.room_pools import REGION_POOLS, SHARED_ANCIENTS
+    return (*REGION_POOLS[act][4], *SHARED_ANCIENTS) if act in ('hive', 'glory') else ()
 
 
 class OrderedPoints(dict):
@@ -50,8 +59,8 @@ def _gaussian_count(rng, mean, low, high, stream="act1.map"):
 
 
 def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=None):
-    rows = 14 if act == "hive" else 15
-    prefix = "act2" if act == "hive" else "act1"
+    rows = {"hive": 14, "glory": 13}.get(act, 15)
+    prefix = {"hive": "act2", "glory": "act3"}.get(act, "act1")
     stream = "spoils_map" if profile == SPOILS_PROFILE else prefix + ".map"
     profile = profile or profile_for(act)
     from game.headless.events.catalog import EVENTS
@@ -60,8 +69,8 @@ def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=Non
     if profile not in (profile_for(act, base=True), profile_for(act), *( (SPOILS_PROFILE,) if act == "hive" else () )):
         raise ValueError("Unsupported generated map profile.")
     unknown_kind = "event" if profile in BASE_PROFILES else "unknown"
-    rest_count = _gaussian_count(rng, 6 if act == "hive" else 7, 6, 7, stream)
-    event_count = _gaussian_count(rng, 12, 10, 14, stream) - int(act == "hive")
+    rest_count = rng.randint(stream, 5, 6) if act == "glory" else _gaussian_count(rng, 6 if act == "hive" else 7, 6, 7, stream)
+    event_count = _gaussian_count(rng, 12, 10, 14, stream) - int(act in ("hive", "glory"))
     native = getattr(rng, "native", False)
     points = OrderedPoints if native else set
     edges = {}
@@ -155,7 +164,7 @@ def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=Non
     nodes.append(MapNode(prefix + ".boss", "boss", (), row=rows + 1, column=3))
     entries = tuple(identity(p) for p in sorted(starts))
     if ancient is not None:
-        if act != 'hive' or ancient not in ('orobas', 'pael', 'tezcatara', 'darv'):
+        if ancient not in ancients_for(act):
             raise ValueError('Unsupported generated Ancient room.')
         root = prefix + '.ancient'
         nodes.insert(0, MapNode(root, 'event', entries, event_id=ancient, row=0, column=3))
@@ -168,10 +177,11 @@ def validate_generated_map(graph):
     if graph.generation not in (*BASE_PROFILES, *PRUNED_PROFILES):
         raise ValueError("Unsupported generated map profile.")
     hive = graph.generation in (HIVE_PROFILE, HIVE_BASE_PROFILE, SPOILS_PROFILE)
-    rows, prefix = (14, 'act2') if hive else (15, 'act1')
+    glory = graph.generation in (GLORY_PROFILE, GLORY_BASE_PROFILE)
+    rows, prefix = (13, 'act3') if glory else (14, 'act2') if hive else (15, 'act1')
     root = next((n for n in graph.nodes if n.row == 0), None)
-    if root is not None and (not hive or root.node_id != prefix + '.ancient' or root.kind != 'event'
-            or root.column != 3 or root.event_id not in ('orobas', 'pael', 'tezcatara', 'darv')):
+    if root is not None and (not (hive or glory) or root.node_id != prefix + '.ancient' or root.kind != 'event'
+            or root.column != 3 or root.event_id not in ancients_for('glory' if glory else 'hive')):
         raise ValueError('Invalid generated Ancient root.')
     points = {}
     for node in graph.nodes:

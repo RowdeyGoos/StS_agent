@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v43"
+SCHEMA = "headless_run_state_v44"
 
 
 def _restore_graph(record):
@@ -36,7 +36,7 @@ def _restore_graph(record):
 
 def _restore_completed_act(record):
     from game.headless.run.campaign import CompletedAct
-    if not isinstance(record, dict) or set(record) != {'act', 'graph', 'visited_nodes', 'encounter_progression', 'event_progression', 'unknown_rooms', 'event_pool'}:
+    if not isinstance(record, dict) or set(record) != {'act', 'graph', 'visited_nodes', 'encounter_progression', 'event_progression', 'unknown_rooms', 'event_pool', 'spoils_map'}:
         raise ValueError('Invalid completed act fields.')
     unknown = record['unknown_rooms']
     if not isinstance(unknown, dict) or set(unknown) != {'odds', 'outcomes'}:
@@ -44,7 +44,7 @@ def _restore_completed_act(record):
     return CompletedAct(record['act'], _restore_graph(record['graph']), deepcopy(record['visited_nodes']),
         EncounterProgression(**deepcopy(record['encounter_progression'])),
         EventProgression(**deepcopy(record['event_progression'])),
-        UnknownRooms(deepcopy(unknown['odds']), {n: RoomOutcome(**r) for n, r in unknown['outcomes'].items()}), tuple(record['event_pool']))
+        UnknownRooms(deepcopy(unknown['odds']), {n: RoomOutcome(**r) for n, r in unknown['outcomes'].items()}), tuple(record['event_pool']), deepcopy(record['spoils_map']))
 
 
 def _restore_event_combat(record):
@@ -74,7 +74,7 @@ def capture_run(engine) -> dict:
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
                   "stolen_cards": [card_record(c) for c in state.stolen_cards],
                   "completed_acts": [asdict(a) for a in state.completed_acts],
-                  "spoils_map": deepcopy(state.spoils_map),
+                  "spoils_map": deepcopy(state.spoils_map), "epilogue_event_id": state.epilogue_event_id,
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
                   "next_card_id": state.next_card_id, "combats_completed": state.combats_completed,
                   "current_node_id": state.current_node_id,
@@ -137,7 +137,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             deck=[restore_card(record, cards) for record in payload["deck"]], rng=rng,
             stolen_cards=[restore_card(record, cards) for record in payload["stolen_cards"]],
             completed_acts=[_restore_completed_act(r) for r in payload["completed_acts"]],
-            spoils_map=deepcopy(payload["spoils_map"]),
+            spoils_map=deepcopy(payload["spoils_map"]), epilogue_event_id=payload["epilogue_event_id"],
             phase=RunPhase(payload["phase"]), next_card_id=payload["next_card_id"],
             combats_completed=payload["combats_completed"], current_node_id=payload["current_node_id"],
             active_encounter_id=payload["active_encounter_id"],
@@ -277,7 +277,8 @@ def _validate_progression(state, graph, cards):
             raise ValueError("Invalid generated run configuration.")
         if state.config.campaign and state.act_index:
             root = graph.node(f'act{state.act_index + 1}.ancient')
-            if root.row != 0 or root.kind != 'event' or root.event_id not in ('orobas', 'pael', 'tezcatara', 'darv'):
+            from game.headless.map.standard import ancients_for
+            if root.row != 0 or root.kind != 'event' or root.event_id not in ancients_for(state.config.act):
                 raise ValueError('Campaign act is missing its Ancient entrance.')
             if state.initialization is not None and root.event_id != state.initialization['acts'][state.act_index]['ancient']:
                 raise ValueError('Ancient entrance differs from native initialization.')
@@ -287,11 +288,11 @@ def _validate_progression(state, graph, cards):
             raise ValueError('Generated map differs from declared act.')
         if getattr(state.rng, "native", False) and state.initialization is None:
             raise ValueError("Generated native run requires its initialization record.")
-        if state.phase in (RunPhase.VICTORY, RunPhase.SLICE_COMPLETE):
+        if state.phase is RunPhase.SLICE_COMPLETE or state.phase is RunPhase.VICTORY and state.epilogue_event_id is None:
             raise ValueError("Generated Act 1 success requires boss act completion.")
         if state.current_node_id is not None and room_node(state, graph, state.current_node_id).kind == "boss":
             selecting = state.phase is RunPhase.ROUTE and state.pending is not None and state.pending.get("kind") == "node"
-            if not selecting and state.phase not in (RunPhase.COMBAT, RunPhase.REWARD, RunPhase.ACT_COMPLETE, RunPhase.DEFEAT):
+            if not selecting and state.epilogue_event_id is None and state.phase not in (RunPhase.COMBAT, RunPhase.REWARD, RunPhase.ACT_COMPLETE, RunPhase.DEFEAT):
                 raise ValueError("Generated boss cannot return to between-room navigation.")
         if any(n.kind == "event" and n.row != 0 and n.event_id not in state.config.event_pool for n in graph.nodes):
             raise ValueError("Generated event differs from its declared pool.")
@@ -330,7 +331,8 @@ def _validate_pending(state, cards, graph):
             raise ValueError("Invalid reward resolution flags.")
         for definition_id in pending["offers"]:
             cards.definition(definition_id)
-        if not isinstance(pending["offers"], list) or not pending["offers"] or len(set(pending["offers"])) != len(pending["offers"]):
+        final_boss = pending.get('combat_reward') and pending.get('encounter_id') in ENCOUNTERS and ENCOUNTERS[pending['encounter_id']].room_kind == 'boss' and ENCOUNTERS[pending['encounter_id']].act == 3
+        if not isinstance(pending["offers"], list) or not pending["offers"] and not final_boss or len(set(pending["offers"])) != len(pending["offers"]):
             raise ValueError("Invalid reward offers.")
         from game.headless.relics.rewards import validate_modifiers, validate_extra
         validate_modifiers(cards, pending["offers"], pending["card_modifiers"])
@@ -354,11 +356,18 @@ def _validate_pending(state, cards, graph):
             pool = extend_pool(state, cards, pool)
             if has(state, "amethyst_aubergine"):
                 low, high = low+15, high+15
+            if final_boss:
+                low = high = 0
+                owners = {r.instance_id: (r.definition_id, r.counter) for r in state.relics}
+                if (not pending['gold_claimed'] or not pending['card_resolved'] or pending['offers']
+                        or pending['potion'] is not None or pending['hunt_rewards_earned'] or pending['royalties_earned']
+                        or any(owners.get(r['source']) != ('wongos_mystery_ticket', 6) for r in pending['extra_rewards'])):
+                    raise ValueError('Final boss cannot offer ordinary combat rewards.')
             extra_power = has(state, "lasting_candy") and owned(state, "lasting_candy").counter == 0
             if (pending["combat_reward"] is not True or state.config is None
                     or type(pending["potion_claimed"]) is not bool
                     or not low <= pending["gold"] <= high
-                    or len(pending["offers"]) not in ((3, 4) if extra_power else (3,))
+                    or len(pending["offers"]) not in ((0,) if final_boss else (3, 4) if extra_power else (3,))
                     or not set(pending["offers"]) <= set(pool)
                     or (pending["potion"] is not None and pending["potion"] not in state.config.reward_potions)
                     or (pending["potion"] is None and pending["potion_claimed"])):

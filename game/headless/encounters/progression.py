@@ -21,11 +21,13 @@ TAGS = MappingProxyType({
 
 
 def native_ids(act):
-    from game.headless.encounters.catalog import NATIVE_UNDERDOCKS_ENCOUNTERS, NATIVE_HIVE_ENCOUNTERS
+    from game.headless.encounters.catalog import NATIVE_UNDERDOCKS_ENCOUNTERS, NATIVE_HIVE_ENCOUNTERS, NATIVE_GLORY_ENCOUNTERS
     if act == 'overgrowth':
         return NATIVE_OVERGROWTH_ENCOUNTERS
     if act == 'underdocks':
         return NATIVE_UNDERDOCKS_ENCOUNTERS
+    if act == 'glory':
+        return NATIVE_GLORY_ENCOUNTERS
     if act == 'hive':
         return NATIVE_HIVE_ENCOUNTERS
     raise ValueError('Unsupported Act 1 location.')
@@ -45,7 +47,7 @@ def _compatible(previous, candidate):
     def tags(name):
         if name in TAGS:
             return TAGS[name]
-        ids = {**native_ids('underdocks'), **native_ids('hive')}
+        ids = {**native_ids('underdocks'), **native_ids('hive'), **native_ids('glory')}
         native = next((n for n, identity in ids.items() if identity == name), None)
         return frozenset(ENCOUNTER_TAGS.get(native, ()))
     return candidate != previous and not tags(previous) & tags(candidate)
@@ -97,7 +99,7 @@ class EncounterProgression:
             raise ValueError("Only declared all-seen Act 1 discovery is supported.")
         from game.headless.generation.room_pools import REGION_POOLS
         rooms, weak_count = REGION_POOLS[act][1:3]
-        stream = "act2.encounters" if act == "hive" else "act1.encounters"
+        stream = {"hive": "act2", "glory": "act3"}.get(act, "act1") + ".encounters"
         normal = []
         _extend_queue(rng, normal, weak, weak_count, stream)
         _extend_queue(rng, normal, normal_pool, rooms - weak_count, stream)

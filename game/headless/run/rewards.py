@@ -87,6 +87,15 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
         raise ValueError("Restricted relic pool exhausted.")
     from game.headless.encounters import loot
     loot.validate(encounter_id, encounter_loot, cards)
+    if encounter is not None and encounter.room_kind == 'boss' and encounter.act == 3:
+        from game.headless.relics.rewards import extra_rewards
+        state.pending = dict(kind='reward', gold=0, gold_claimed=True, offers=[], card_resolved=True,
+            card_modifiers={}, combat_reward=True, encounter_id=encounter_id,
+            potion=None, potion_claimed=False, relic=None, relic_claimed=False, relic_instance_id=None,
+            extra_rewards=[], hunt_rewards_earned=0, royalties_earned=0)
+        state.pending['extra_rewards'] = extra_rewards(state, cards, encounter, final_boss=True)
+        state.phase = RunPhase.REWARD
+        return
     low, high = (10, 20) if encounter is None else encounter.gold_range
     low, high = loot.gold_range(low, high, encounter_loot)
     from game.headless.relics.run_rules import has
