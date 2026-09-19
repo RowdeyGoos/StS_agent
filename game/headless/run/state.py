@@ -181,6 +181,16 @@ class RunState:
         from game.headless.relics.combat import validate_data
         for relic in self.relics:
             validate_data(relic.definition_id, relic.data)
+        stored_ids = set(ids)
+        for relic in self.relics:
+            if relic.definition_id == 'paels_tooth':
+                for record in relic.data.get('cards', []):
+                    identity = record['instance_id']
+                    suffix = identity.removeprefix('run.card.') if isinstance(identity, str) else ''
+                    if (not suffix.isdecimal() or identity != f'run.card.{int(suffix)}'
+                            or int(suffix) >= self.next_card_id or identity in stored_ids):
+                        raise ValueError('Stored Ancient card has no exclusive allocated run identity.')
+                    stored_ids.add(identity)
         nonstackable = [r.definition_id for r in self.relics if not RELICS[r.definition_id].stackable and not RELICS[r.definition_id].allow_duplicates]
         if any(type(r.counter) is not int or not 0 <= r.counter <= max(RELICS[r.definition_id].counter_limit, RELICS[r.definition_id].evolve_after_elites - 1) for r in self.relics):
             raise ValueError("Invalid relic progression counter.")

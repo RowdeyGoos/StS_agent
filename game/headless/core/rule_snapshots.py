@@ -8,7 +8,8 @@ from game.headless.powers.colorless import NAMES, INSTANCED, name
 from game.headless.core.choice_snapshots import validate_selection, valid_power
 
 TASK_ARITIES = {
-    "end_hand_card": 1,
+    "ancient_preplay": 0, "ancient_mittens": 1, "ancient_strength": 1, "ancient_earring": 2,
+    "end_hand_card": 1, "hand_draw": 1,
     "potion_effect": 2,
     "potion_finish": 1,
     "potion_status": 4,
@@ -94,7 +95,7 @@ def restore_rules(record, player):
         "potion_capacity",
         "round_number",
     ):
-        if type(getattr(r, key)) is not int or getattr(r, key) < 0:
+        if type(getattr(r, key)) is not int or (key != "max_hp_gained" and getattr(r, key) < 0):
             raise ValueError("Invalid rule counter.")
     if r.gold_lost > r.gold_available + r.gold_gained or r.end_turn_hand_size > 10:
         raise ValueError("Invalid turn resource state.")
@@ -151,7 +152,7 @@ def restore_rules(record, player):
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
             or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "energy_value", "remaining", "rupture"))
-            or not 1 <= frame["remaining"] <= 5 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
+            or not 1 <= frame["remaining"] <= 6 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
         ):
             raise ValueError("Invalid play resources.")
         if type(frame["context"]) is not int or frame["context"] not in work:
@@ -217,6 +218,9 @@ def restore_rules(record, player):
         if any(type(v) not in (int, bool, str, type(None)) for v in task):
             raise ValueError("Task must contain plain values.")
         op, *args = task
+        if op.startswith("ancient_"):
+            from game.headless.relics.ancient_state import validate_task
+            validate_task(player, op, args)
         if op == "death_hook":
             slot = args[0]
             if (type(slot) is not int or not 0 <= slot < len(player.combat_enemies)
@@ -323,7 +327,7 @@ def restore_rules(record, player):
                 "debuffs", "discards", "draws", "precise", "star_cards", "generated", "turn_draws", "doom", "exhausted_souls",
             ) or any(type(v) is not int or v < 0 for v in (factor, gain, vigor)):
                 raise ValueError("Invalid queued attack expression.")
-        if op in ("draw", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
+        if op in ("hand_draw", "draw", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
             type(args[0]) is not int or args[0] < 0
         ):
             raise ValueError("Invalid queued amount.")

@@ -7,7 +7,7 @@ from game.headless.relics.base import RELICS
 
 
 def owned(p, name):
-    return next((r for r in p.rules.relics if r["definition_id"] == name), None)
+    return next((r for r in p.rules.relics if r["definition_id"] == name and not r.get("data", {}).get("_melted")), None)
 
 
 def memory(p, relic):
@@ -47,12 +47,12 @@ def synchronize(state, p):
 
 
 def tasks(p, event, identity=""):
-    return [["relic_hook", r["instance_id"], event, identity] for r in p.rules.relics]
+    return [["relic_hook", r["instance_id"], event, identity] for r in p.rules.relics if not r.get("data", {}).get("_melted")]
 
 
 def execute(p, instance_id, event, identity):
     relic = next(r for r in p.rules.relics if r["instance_id"] == instance_id)
-    if not p.is_alive:
+    if not p.is_alive or relic.get("data", {}).get("_melted"):
         return
     if event in ("before_draw", "after_draw", "before_end", "after_end", "after_side_start"):
         from game.headless.relics.turns import hook
@@ -90,10 +90,10 @@ def validate(records, data, card_ids=()):
             names.append(name)
         values = data.get(identity)
         schema = MEMORY_FIELDS.get(name, {})
-        required = {k for k in schema if k.startswith("turn_")}
-        if name == "rainbow_ring":
+        required = {k for k in schema if k.startswith("turn_")} if not record.get("data", {}).get("_melted") else set()
+        if name == "rainbow_ring" and not record.get("data", {}).get("_melted"):
             required.add("rainbow_triggered")
-        if name == "demon_tongue":
+        if name == "demon_tongue" and not record.get("data", {}).get("_melted"):
             required.add("demon_triggered")
         if not isinstance(values, dict) or not required <= set(values) <= set(schema):
             raise ValueError("Invalid transient relic memory fields.")
@@ -112,7 +112,10 @@ def validate(records, data, card_ids=()):
 
 
 # Only state actually owned by a relic can cross the snapshot boundary.
+from game.headless.relics.ancient_content import MEMORY
+
 MEMORY_FIELDS = {
+    **MEMORY,
     **{n: {"turn_attacks": 2**31 - 1} for n in ("kunai", "kusarigama", "ornamental_fan", "shuriken")},
     **{n: {"used": "bool"} for n in ("ruined_helmet", "centennial_puzzle", "permafrost", "burning_sticks")},
     "letter_opener": {"turn_skills": 2**31 - 1},
@@ -225,6 +228,8 @@ COMBAT_RELICS = frozenset(
 
 
 def gain_gold(p, amount):
+    if has(p, "ectoplasm"):
+        return
     if has(p, "bowler_hat"):
         amount = amount * 5 // 4
     p.rules.gold_gained += amount
@@ -235,6 +240,8 @@ def gain_gold(p, amount):
 
 
 def validate_data(name, data):
+    from game.headless.relics.ancient_state import validate_data as ancient_validate
+    data = ancient_validate(name, data)
     expected = {"treasures"} if name == "silver_crucible" else set()
     if (
         not isinstance(data, dict)

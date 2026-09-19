@@ -8,7 +8,7 @@ from dataclasses import asdict
 
 from game.headless.core.actions import ChooseCombatCard, ConfirmCombatSelection, EndTurn, PlayCard
 from game.headless.run.actions import (
-    ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
+    ChooseCookCard, ConfirmCook, UseRestRelic, ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     ChooseRelicCard, ConfirmRelicSelection, ChooseRelicReward, ChooseExtraReward, Lift, Dig,
     Rest, Smith, Hatch, ChooseUpgrade, LeaveRest, UsePotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
@@ -26,6 +26,10 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
             return ConfirmRelicSelection()
         return next((a for a in actions if isinstance(a, ChooseRelicCard) and a.instance_id not in work.get('selected', [])),
                     next((a for a in actions if isinstance(a, ChooseRelicReward) and a.index is not None), actions[0]))
+    if ConfirmCook() in actions:
+        return ConfirmCook()
+    if engine.state.pending and engine.state.pending.get('stage') == 'cook':
+        return next(a for a in actions if isinstance(a, ChooseCookCard) and a.instance_id is not None and a.instance_id not in engine.state.pending['selected'])
     extra = [a for a in actions if isinstance(a, ChooseExtraReward) and a.definition_id is not None]
     if extra:
         return extra[0]

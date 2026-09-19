@@ -4,7 +4,10 @@ from copy import deepcopy
 from game.headless.run.actions import ChooseRelicCard, ConfirmRelicSelection, ChooseRelicReward, DiscardPotion
 from game.headless.relics.run_rules import has
 
+from game.headless.relics.ancient_pickups import SELECTIONS as ANCIENT_SELECTIONS
+
 SELECTIONS = {
+    **ANCIENT_SELECTIONS,
     "dollys_mirror": ("clone", 1, 1, "", 0),
     "gnarled_hammer": ("enchant", 0, 3, "sharp", 3),
     "kifuda": ("enchant", 0, 3, "adroit", 3),
@@ -28,15 +31,18 @@ def begin(state, relic, cards):
             c
             for c in state.deck
             if (operation != "clone" or c.spec.kind != "quest")
-            and (operation not in ("remove", "transform") or not c.spec.eternal)
+            and (operation not in ("remove", "transform", "astrolabe", "maul", "store") or not c.spec.eternal)
         ]
-        if operation == "upgrade":
+        if operation in ("upgrade", "store"):
             eligible = [c for c in eligible if c.upgrade_level + 1 < len(c.definition.levels)]
         elif operation == "enchant":
             from game.headless.enchantments.base import can_enchant
 
             eligible = [c for c in eligible if can_enchant(c, enchantment)]
         if not eligible:
+            if name == "preserved_fog":
+                from game.headless.run.deck import add_card
+                add_card(state, cards.definition("folly"))
             if name == "precarious_shears":
                 from game.headless.relics.run_rules import damage
 
@@ -75,11 +81,13 @@ def begin(state, relic, cards):
     else:
         from game.headless.relics.neow import begin as neow_begin
 
-        neow_begin(state, relic, cards)
+        from game.headless.relics.ancient_pickups import begin as ancient_begin
+        if not ancient_begin(state, relic, cards):
+            neow_begin(state, relic, cards)
 
 
-def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, is_card_reward=True):
-    family = "colorless" if colorless else "ironclad"
+def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, is_card_reward=True, family=None, no_pool_changes=False):
+    family = family or ("colorless" if colorless else "ironclad")
     pool = [
         d
         for d in sorted(cards.definitions, key=lambda d: d.definition_id)
@@ -92,7 +100,7 @@ def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, 
     if getattr(state.rng, "native", False):
         from game.headless.generation.odds import card_offers
         owner=next((r.definition_id for r in state.relics if r.instance_id==source),None)
-        definitions,upgraded=card_offers(state,cards,extend_pool(state,cards,[d.definition_id for d in pool],card_reward=is_card_reward),count,mode="base",uniform=rarity is not None,upgrade_roll=owner in ("orrery","lost_coffer","lead_paperweight"))
+        definitions,upgraded=card_offers(state,cards,extend_pool(state,cards,[d.definition_id for d in pool],card_reward=is_card_reward, no_pool_changes=no_pool_changes),count,mode="base",uniform=rarity is not None,upgrade_roll=owner in ("orrery","lost_coffer","lead_paperweight"))
     else:
         state.rng.shuffle("relic.card_reward", pool)
         definitions = [d.definition_id for d in pool[:count]]
@@ -112,6 +120,8 @@ def potion_reward(state, source):
 
 def legal_actions(state):
     work = state.relic_work[0]
+    if work['kind'] == 'card_grid':
+        return tuple([ChooseRelicReward(i) for i in range(len(work['offers']))] + [ConfirmRelicSelection()])
     if work["kind"] == "select":
         selected = work["selected"]
         actions = [
@@ -142,6 +152,9 @@ def _apply(state, cards, action):
     if action not in legal_actions(state):
         raise ValueError("Unavailable relic acquisition choice.")
     work = state.relic_work[0]
+    if work['kind'] == 'card_grid':
+        from game.headless.relics.ancient_pickups import apply_grid
+        return apply_grid(state, cards, action)
     if isinstance(action, DiscardPotion):
         from game.headless.run.inventory import discard_potion
 
@@ -160,6 +173,8 @@ def _apply(state, cards, action):
         from game.headless.cards.pools import REWARD_CARDS, COLORLESS_CARDS
         from game.headless.enchantments.base import enchant
 
+        if work['operation'] == 'store':
+            work['selected'].sort(key=lambda i: find_card(state, i).definition.definition_id)
         for identity in work["selected"]:
             card = find_card(state, identity)
             operation = work["operation"]
@@ -180,7 +195,12 @@ def _apply(state, cards, action):
                 )
             elif operation == "enchant":
                 enchant(card, work["enchantment"], work["amount"])
+            else:
+                from game.headless.relics.ancient_pickups import selected
+                selected(state, cards, work, card)
         source = next(r for r in state.relics if r.instance_id == work["source"])
+        if source.definition_id == 'preserved_fog':
+            add_card(state, cards.definition('folly'))
         if source.definition_id == "precarious_shears":
             from game.headless.relics.run_rules import damage
 
@@ -208,6 +228,8 @@ def _apply(state, cards, action):
 
         remaining, state.relic_work = state.relic_work, []
         result = add_relic(state, offer, cards=cards)
+        if next(r for r in state.relics if r.instance_id == work['source']).definition_id == 'toy_box':
+            result.data['_wax'] = True
         state.relic_work.extend(remaining)
         return result
     if work["kind"] == "bundle":
@@ -232,7 +254,10 @@ def validate(state, cards):
     for work in state.relic_work:
         if not isinstance(work, dict) or work.get("source") not in owners:
             raise ValueError("Unowned relic acquisition.")
-        if work.get("kind") == "select":
+        if work.get('kind') == 'card_grid':
+            from game.headless.relics.ancient_pickups import validate_grid
+            validate_grid(state, cards, work, owners[work['source']])
+        elif work.get("kind") == "select":
             if set(work) != {
                 "source",
                 "kind",
@@ -265,9 +290,9 @@ def validate(state, cards):
 
             for card in state.deck:
                 if card.instance_id in candidates and (
-                    (work["operation"] in ("remove", "transform") and card.spec.eternal)
+                    (work["operation"] in ("remove", "transform", "maul", "astrolabe", "store") and card.spec.eternal)
                     or (
-                        work["operation"] == "upgrade"
+                        work["operation"] in ("upgrade", "store")
                         and card.upgrade_level + 1 >= len(card.definition.levels)
                     )
                     or (work["operation"] == "enchant" and not can_enchant(card, work["enchantment"]))
@@ -281,16 +306,20 @@ def validate(state, cards):
                 raise ValueError("Invalid relic choice bounds.")
         elif work.get("kind") in ("card_reward", "potion_reward", "relic_reward", "bundle"):
             if (
-                set(work) not in ({"source", "kind", "offers"}, {"source", "kind", "offers", "mandatory"})
+                set(work) - {"rerolled"} not in ({"source", "kind", "offers"}, {"source", "kind", "offers", "mandatory"})
                 or not isinstance(work["offers"], list)
                 or not work["offers"]
             ):
                 raise ValueError("Invalid relic reward.")
+            from game.headless.relics.reward_alternatives import validate_marker
+            validate_marker(state, work)
+            if "rerolled" in work and work["kind"] != "card_reward":
+                raise ValueError("Non-card relic reroll.")
             name = owners[work["source"]]
             sources = {
-                "card_reward": {"orrery", "lost_coffer", "lead_paperweight", "hefty_tablet", "kaleidoscope"},
+                "card_reward": {"orrery", "lost_coffer", "lead_paperweight", "hefty_tablet", "kaleidoscope", "glass_eye"},
                 "potion_reward": {"cauldron", "lost_coffer", "tiny_mailbox"},
-                "relic_reward": {"small_capsule", "neows_bones", "shovel"},
+                "relic_reward": {"small_capsule", "neows_bones", "shovel", "calling_bell", "toy_box"},
                 "bundle": {"scroll_boxes"},
             }
             if name == "neows_bones" and work.get("mandatory") is not True:
@@ -374,7 +403,7 @@ def validate(state, cards):
             raise ValueError("Unknown relic acquisition work.")
 
 
-def relic_reward(state, source, *, automatic=False):
+def relic_reward(state, source, *, automatic=False, rarity=None):
     from game.headless.relics.base import RELICS
 
     unavailable = {r.definition_id for r in state.relics}
@@ -388,11 +417,11 @@ def relic_reward(state, source, *, automatic=False):
     pool = [
         name
         for name, definition in RELICS.items()
-        if definition.rarity in ("common", "uncommon", "rare") and name not in unavailable
+        if definition.rarity in ((rarity,) if rarity else ("common", "uncommon", "rare")) and name not in unavailable
     ]
     if getattr(state.rng,"native",False):
         from game.headless.generation.relics import pull
-        name=pull(state,blacklist=unavailable)
+        name=pull(state,blacklist=unavailable,rarity=rarity)
     else:
         name = state.rng.choice("relic.reward", pool) if pool else "circlet"
     if automatic:

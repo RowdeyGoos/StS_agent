@@ -14,6 +14,8 @@ def after_combat(state, *, won, elite):
                 state.deck.remove(card)
     if won and elite:
         for relic in tuple(state.relics):
+            if relic.data.get("_melted"):
+                continue
             definition = RELICS[relic.definition_id]
             if not definition.evolve_after_elites:
                 continue

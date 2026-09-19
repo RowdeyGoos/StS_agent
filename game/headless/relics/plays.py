@@ -13,8 +13,12 @@ def random_damage(p, amount):
 
 
 def before_play(p, card):
+    from game.headless.relics.ancient_combat import before_play as ancient_before
+    ancient_before(p, card)
     frame = p.rules.plays[card.instance_id]
     for relic in p.rules.relics:
+        if relic.get("data", {}).get("_melted"):
+            continue
         name, m = relic["definition_id"], memory(p, relic)
         if name == "pen_nib" and card.spec.kind == "attack":
             if increment(relic, 10):
@@ -24,6 +28,8 @@ def before_play(p, card):
 
 
 def hook(p, relic, event, identity):
+    from game.headless.relics.ancient_combat import hook as ancient_hook
+    ancient_hook(p, relic, event, identity)
     name, m = relic["definition_id"], memory(p, relic)
     card = find(p, identity)
     if event == "after_play":

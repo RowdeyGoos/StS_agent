@@ -87,6 +87,9 @@ class UnknownRooms:
 
 
 def blocked_types(graph, node, previous_kind):
+    from game.headless.map.golden_path import PROFILE
+    if graph.generation == PROFILE:
+        return ("combat", "elite", "treasure", "shop")
     children = [graph.node(n) for n in node.next_node_ids]
     return ("shop",) if previous_kind == "shop" or children and all(n.kind == "shop" for n in children) else ()
 

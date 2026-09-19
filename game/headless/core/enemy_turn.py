@@ -14,6 +14,10 @@ def execute(enemy, player, continuation):
         continuation["stage"] = "done"
         return
     current = Intent(**continuation["intent"])
+    if enemy.stunned:
+        enemy.stunned = False
+        continuation["stage"] = "done"
+        return
     while continuation["stage"] == "hits" and continuation["hit"] < current.attack_count:
         continuation["hit"] += 1
         enemy.execute_hit(player, current)

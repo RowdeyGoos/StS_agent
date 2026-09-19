@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v36"
+SCHEMA = "headless_run_state_v37"
 
 
 def _restore_event_combat(record):
@@ -223,7 +223,10 @@ def _validate_progression(state, graph, cards):
         state.ancient_start.validate(state, graph, cards)
     if state.pending is not None and state.pending.get("kind") == "ancient" and state.ancient_start is None:
         raise ValueError("Ancient choice has no owner.")
-    has_unknowns = graph is not None and graph.generation == PROFILE
+    from game.headless.map.golden_path import PROFILE as GOLDEN
+    from game.headless.relics.ancient_map import validate as validate_ancient_map
+    validate_ancient_map(state, graph)
+    has_unknowns = graph is not None and graph.generation in (PROFILE, GOLDEN)
     if has_unknowns != (state.unknown_rooms is not None):
         raise ValueError("Unknown room state requires its generated map profile.")
     if has_unknowns != (state.event_progression is not None):
@@ -274,7 +277,9 @@ def _validate_pending(state, cards, graph):
         expected = {"kind", "gold", "gold_claimed", "offers", "card_resolved", "card_modifiers"}
         if "combat_reward" in pending:
             expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards", "hunt_rewards_earned", "royalties_earned"}
-        if set(pending) != expected:
+        from game.headless.relics.reward_alternatives import validate_marker
+        validate_marker(state, pending)
+        if set(pending) - {"rerolled"} != expected:
             raise ValueError("Invalid reward state fields.")
         if state.phase is not RunPhase.REWARD or type(pending["gold"]) is not int or pending["gold"] < 0:
             raise ValueError("Invalid pending reward.")
@@ -344,11 +349,15 @@ def _validate_pending(state, cards, graph):
         from game.headless.run.shop_validation import validate_shop
         validate_shop(state, cards, graph)
     elif kind == "rest_site":
-        if state.phase is not RunPhase.ROOM or pending["stage"] not in ("options", "smith", "resolved", "hatched"):
+        if state.phase is not RunPhase.ROOM or pending["stage"] not in ("options", "smith", "resolved", "hatched", "cook"):
             raise ValueError("Invalid rest-site phase.")
         used = pending.get("used")
-        if not isinstance(used, list) or len(used) != len(set(used)) or any(v not in ("rest", "smith", "hatch", "lift", "dig") for v in used):
+        if not isinstance(used, list) or len(used) != len(set(used)) or any(v not in ("rest", "smith", "hatch", "lift", "dig", "cook", "clone", "kindle") for v in used):
             raise ValueError("Invalid rest actions history.")
+        if pending["stage"] == "cook":
+            from game.headless.run.rest_site import validate_cook
+            validate_cook(state)
+            return
         if pending["stage"] == "hatched":
             from game.headless.run.hatching import validate
             validate(state, cards)

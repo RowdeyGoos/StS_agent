@@ -47,9 +47,9 @@ merchant slots and transformations use the full solo pool. See the
 [colorless implementation and limits](docs/HEADLESS_ENGINE.md#colorless-cards).
 
 The [solo Act 1 relic rules](docs/HEADLESS_ENGINE.md#relics) cover the audited
-161-definition inventory, including nested pickup choices, combat triggers,
+232-definition inventory, including all 99 solo Ancient relics, nested pickup choices, combat triggers,
 shop/rest/reward modifiers and persistent counters. Generated runs use the full
-ordinary/merchant relic pools. All 161 are supported by the default catalog,
+ordinary/merchant relic pools. All 232 are supported by the default catalog,
 including Kaleidoscope and 320 ordinary foreign cards; curse generation retains its
 content subset. All **48 ordinary Ironclad-accessible potions**, both event potions
 and Potion-Shaped Rock are implemented. Generated runs use the complete ordinary

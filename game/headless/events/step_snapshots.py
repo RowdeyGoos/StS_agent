@@ -176,7 +176,9 @@ def validate(definition, pending, state, cards, *, defeated=False):
         if expected != [card_record(c) for c in state.deck]:
             raise ValueError("Event selection deck changed.")
     elif op[0] == "cards":
-        if stage != "card_rewards" or set(active) != {
+        from game.headless.relics.reward_alternatives import validate_marker
+        validate_marker(state, active)
+        if stage != "card_rewards" or set(active) - {"rerolled"} != {
             "offers",
             "modifiers",
             "selected",
@@ -203,6 +205,8 @@ def validate(definition, pending, state, cards, *, defeated=False):
             ):
                 raise ValueError("Wrong event reward content.")
             if d.pool != op[1] and not (
+                op[6] and op[1] != "colorless" and d.pool in ("ironclad","silent","regent","necrobinder","defect") and any(r.definition_id == "prismatic_gem" for r in state.relics)
+            ) and not (
                 d.pool == "colorless"
                 and name not in ("the_future_of_potions",)
                 and any(r.definition_id == "dingy_rug" for r in state.relics)

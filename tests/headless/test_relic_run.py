@@ -75,7 +75,8 @@ def test_catalog_matches_independently_audited_solo_scope():
     ]
     converted = {re.sub(r"(?<!^)(?=[A-Z])", "_", n).lower() for n in names}
     assert len(converted) == fixture["definition_count"] == 161
-    assert set(RELICS) == converted
+    ancients = json.loads((Path(__file__).parents[1] / "fixtures/headless_ancient_scope.json").read_text())
+    assert set(RELICS) == converted | set(ancients["solo"]) | {"black_blood"}
 
 
 @pytest.mark.parametrize("name", sorted(RELICS))

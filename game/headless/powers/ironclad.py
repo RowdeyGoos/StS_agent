@@ -5,6 +5,7 @@ from game.headless.core.resolution import push, drain
 POWER_NAMES = frozenset(
     (
         "aggression",
+        "confused",
         "barricade",
         "colossus",
         "corruption",
@@ -32,7 +33,7 @@ POWER_NAMES = frozenset(
         "vicious",
     )
 )
-SINGLE = frozenset(("barricade", "corruption", "hellraiser", "no_draw", "no_energy_gain"))
+SINGLE = frozenset(("confused", "barricade", "corruption", "hellraiser", "no_draw", "no_energy_gain"))
 
 
 def apply_power(p, name, amount, target=None):
@@ -104,11 +105,16 @@ def card_cost(p, card):
         )
     if card.cost < 0:
         return card.cost
+    from game.headless.relics.ancient_combat import scarf_free
+    if scarf_free(p, card):
+        return 0
     if card.spec.kind in ("skill", "block") and p.rules.powers.get("corruption"):
         return 0
     if card.spec.kind == "attack" and p.rules.powers.get("free_attack"):
         return 0
-    return max(0, local_cost(card, clamp=False) + p.rules.powers.get("borrowed_time", 0) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
+    from game.headless.relics.combat import has
+    surcharge = int(card.spec.kind == "power" and has(p, "spiked_gauntlets"))
+    return max(0, local_cost(card, clamp=False) + surcharge + p.rules.powers.get("borrowed_time", 0) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
 
 
 def local_cost(card, *, clamp=True):
@@ -271,8 +277,6 @@ def start_turn(p, draw_count):
     from game.headless.powers.defect import start_turn as def_start
     draw_count = def_start(p, draw_count)
     draw_count += r.powers.pop("draw_next_turn", 0) + r.powers.get("tools_of_the_trade", 0)
-    if r.round_number == 1:
-        draw_count = min(10, max(draw_count, sum(c.spec.innate for c in p.deck.draw_pile)))
     p.cards_played_this_turn = 0
     r.player_side = True
     r.turn_ending = False
@@ -303,7 +307,7 @@ def start_turn(p, draw_count):
     before_draw(p)
     from game.headless.powers.regent import setup_tasks
     from game.headless.powers.turns import before_draw_tasks
-    push(p, *[["def_energy_reset", key] for key in r.powers if key in ("lightning_rod", "spinner")], *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], ["nec_start"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["orb_phase", "start"], ["regent_preplay"], ["mayhem"])
+    push(p, *[["def_energy_reset", key] for key in r.powers if key in ("lightning_rod", "spinner")], *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["hand_draw", draw_count], ["start_powers"], ["nec_start"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["orb_phase", "start"], ["regent_preplay"], ["ancient_preplay"], ["mayhem"])
     drain(p)
     if p.pending_play is not None or r.selection is not None:
         # Native setup may pause while AfterSideTurnStart still completes.
@@ -318,7 +322,8 @@ def end_turn(p):
     r = p.rules
     r.turn_ending = True
     postplay = [["regent_end_card", c.instance_id] for c in (*p.hand, *reversed(p.deck.draw_pile), *p.deck.discard_pile, *p.deck.exhaust_pile) if c.definition.definition_id == "i_am_invincible"]
-    push(p, *postplay, ["begin_end_hooks"])
+    from game.headless.relics.ancient_combat import before_end
+    push(p, *before_end(p), *postplay, ["begin_end_hooks"])
     drain(p)
 
 

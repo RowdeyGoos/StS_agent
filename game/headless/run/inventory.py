@@ -4,20 +4,20 @@ from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 
 
-def add_relic(state, definition_id: str, *, cards=None, allow_dead=False):
+def add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None):
     # Acquisition may generate nested choices; failures roll back the complete
     # owned state, including RNG, resources and both identity allocators.
     from copy import deepcopy
     before = deepcopy(state)
     try:
-        return _add_relic(state, definition_id, cards=cards, allow_dead=allow_dead)
+        return _add_relic(state, definition_id, cards=cards, allow_dead=allow_dead, card_pool=card_pool)
     except Exception:
         state.__dict__.clear()
         state.__dict__.update(before.__dict__)
         raise
 
 
-def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False):
+def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None):
     if definition_id not in RELICS or (not RELICS[definition_id].stackable and not RELICS[definition_id].allow_duplicates and any(r.definition_id == definition_id for r in state.relics)):
         raise ValueError("Unsupported or already owned relic.")
     if RELICS[definition_id].pickup_max_hp and (state.phase.value == "combat" or state.hp <= 0 and not allow_dead):
@@ -34,7 +34,12 @@ def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False):
     cards = cards or DEFAULT_CARDS
     if not available(definition_id, cards):
         raise ValueError("Relic requires card pools absent from this content catalog.")
-    relic = RelicInstance(definition_id, state.allocate_item_id(), data={"treasures": 0} if definition_id == "silver_crucible" else {})
+    data = {"treasures": 0} if definition_id == "silver_crucible" else {}
+    if card_pool is not None:
+        if definition_id != 'sea_glass' or card_pool not in ('ironclad','silent','regent','necrobinder','defect'):
+            raise ValueError('Only Sea Glass accepts a character card pool.')
+        data['family'] = card_pool
+    relic = RelicInstance(definition_id, state.allocate_item_id(), data=data)
     state.relics.append(relic)
     if getattr(state.rng, "native", False):
         from game.headless.generation.relics import remove
@@ -59,10 +64,17 @@ def remove_relic(state, instance_id: str):
     raise ValueError("Relic is not owned by this run.")
 
 
-def add_potion(state, definition_id: str):
-    if definition_id not in POTIONS or None not in state.potions:
+def add_potion(state, definition_id: str, *, slot=None):
+    from game.headless.relics.run_rules import has
+    if definition_id not in POTIONS:
+        raise ValueError("Unsupported potion.")
+    if has(state, "sozu"):
+        return None
+    if None not in state.potions:
         raise ValueError("Unsupported potion or no empty potion slot.")
-    slot = state.potions.index(None)
+    slot = state.potions.index(None) if slot is None else slot
+    if type(slot) is not int or not 0 <= slot < len(state.potions) or state.potions[slot] is not None:
+        raise ValueError("Potion slot is unavailable.")
     potion = PotionInstance(definition_id, state.allocate_item_id())
     state.potions[slot] = potion
     return potion

@@ -79,7 +79,8 @@ class ColorlessOperation:
         elif op == "alchemize":
             from game.headless.potions.pools import generate
             potion = generate(r.potion_pool, p.deck.potion_rng, in_combat=True)
-            if r.potion_slots:
+            from game.headless.relics.combat import has
+            if r.potion_slots and not has(p, "sozu"):
                 r.potions_generated.append(potion)
                 r.potion_slots -= 1
         elif op == "anointed":

@@ -15,7 +15,9 @@ class OstyAttack:
 
     def damage(self, p, card):
         amount = card.spec.base_damage + card.combat_state.extra_damage
-        if self.expression == 'unleash':
+        if self.expression == 'protector':
+            amount += p.rules.osty['max_hp'] if osty.alive(p) else 0
+        elif self.expression == 'unleash':
             amount += p.rules.osty['hp'] if osty.alive(p) else 0
         elif self.expression == 'squeeze':
             amount += (6 if card.upgraded else 5) * sum(

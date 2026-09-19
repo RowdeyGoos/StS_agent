@@ -5,7 +5,7 @@ from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.events.catalog import EVENTS
 from game.headless.potions.base import POTIONS
 from game.headless.run.actions import (
-    ChooseExtraReward, ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
+    UseRestRelic, ChooseCookCard, ConfirmCook, RerollCardReward, SacrificeCardReward, ChooseExtraReward, ChooseAncientRelic, ChooseNode, ClaimGold, ChooseRewardCard, ClaimPotion, ClaimRelic, LeaveRewards,
     Rest, Smith, Hatch, Lift, Dig, ChooseUpgrade, LeaveRest, UsePotion, DiscardPotion,
     BuyShopItem, BeginShopRemoval, ChooseShopRemoval, LeaveShop,
     OpenChest, ClaimTreasureRelic, LeaveTreasure, ChooseEventOption, ChooseEventCard, LeaveEvent,
@@ -19,12 +19,14 @@ def legal_actions(engine) -> tuple:
     state, combat = engine.state, engine.combat
     if state.relic_work:
         from game.headless.relics.pickup import legal_actions as relic_actions
-        return relic_actions(state)
+        from game.headless.relics.reward_alternatives import actions as alternatives
+        return (*relic_actions(state), *alternatives(state))
     if state.phase in (RunPhase.VICTORY, RunPhase.DEFEAT, RunPhase.SLICE_COMPLETE, RunPhase.ACT_COMPLETE):
         return ()
     if state.phase is RunPhase.ROOM and state.pending.get("kind") == "ancient":
         return ancient.legal_actions(state)
-    actions = []
+    from game.headless.relics.reward_alternatives import actions as alternatives
+    actions = alternatives(state)
     if state.phase is RunPhase.COMBAT:
         actions.extend(combat.legal_actions())
         if combat.player.pending_play is not None or combat.player.rules.selection is not None:
@@ -48,6 +50,7 @@ def legal_actions(engine) -> tuple:
         actions.append(LeaveRewards())
     elif state.phase is RunPhase.ROOM and state.pending.get("kind") == "rest_site":
         stage = state.pending["stage"]
+        actions.extend(rest_site.ancient_actions(state))
         from game.headless.relics.run_rules import has, owned
         used = state.pending["used"]
         if stage == "options" or (stage == "hatched" and has(state, "miniature_tent")):
@@ -90,6 +93,9 @@ def apply(engine, action):
     if action not in legal_actions(engine):
         raise ValueError(f"Illegal run action: {action!r}")
     state = engine.state
+    if isinstance(action, (RerollCardReward, SacrificeCardReward)):
+        from game.headless.relics.reward_alternatives import apply as alternate
+        return alternate(state, engine.cards, action)
     if engine.combat is not None:
         # Run inventory is authoritative between commands (including direct
         # acquisition through the shared inventory API).
@@ -197,6 +203,10 @@ def apply(engine, action):
         return rewards.claim_potion(state)
     if isinstance(action, LeaveRewards):
         return rewards.leave_combat_rewards(state)
+    if isinstance(action, UseRestRelic):
+        return rest_site.use_ancient(state, engine.cards, action.option)
+    if isinstance(action, (ChooseCookCard, ConfirmCook)):
+        return rest_site.cook_choice(state, action)
     if isinstance(action, Lift):
         return rest_site.lift(state)
     if isinstance(action, Dig):

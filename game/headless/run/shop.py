@@ -11,6 +11,18 @@ from game.headless.relics.pools import shop_items
 
 
 def begin(state, cards):
+    from copy import deepcopy
+    before = deepcopy(state)
+    try:
+        _begin(state, cards)
+        start_parasol(state, cards)
+    except Exception:
+        state.__dict__.clear()
+        state.__dict__.update(before.__dict__)
+        raise
+
+
+def _begin(state, cards):
     state.require_room_entry("shop")
     if state.pending is None:
         from game.headless.relics.run_rules import entered_room
@@ -69,9 +81,9 @@ def eligible_removals(state):
     return tuple(c.instance_id for c in state.deck if not c.spec.eternal)
 
 
-def can_buy(state, offer):
+def can_buy(state, offer, *, ignore_cost=False):
     from game.headless.relics.base import RELICS
-    return (not offer["sold"] and state.gold >= offer["price"]
+    return (not offer["sold"] and (ignore_cost or state.gold >= offer["price"])
             and (offer["kind"] != "potion" or None in state.potions)
             and (offer["kind"] != "relic" or RELICS[offer["definition_id"]].stackable or RELICS[offer["definition_id"]].allow_duplicates or not any(r.definition_id == offer["definition_id"] for r in state.relics)))
 
@@ -79,19 +91,19 @@ def can_buy(state, offer):
 def legal_actions(state):
     pending = state.pending
     if pending["stage"] == "remove":
-        return tuple(ChooseShopRemoval(c) for c in pending["eligible"]) + (ChooseShopRemoval(None),)
+        return tuple(ChooseShopRemoval(c) for c in pending["eligible"]) + (() if pending.get("parasol_free_removal") else (ChooseShopRemoval(None),))
     actions = [BuyShopItem(o["offer_id"]) for o in pending["offers"] if can_buy(state, o)]
     if not pending["removal_used"] and state.gold >= removal_price(state) and eligible_removals(state):
         actions.append(BeginShopRemoval())
     return (*actions, LeaveShop())
 
 
-def buy(state, cards, offer_id):
+def buy(state, cards, offer_id, *, ignore_cost=False):
     pending = _pending(state)
     offer = next((o for o in pending["offers"] if o["offer_id"] == offer_id), None)
-    if offer is None or not can_buy(state, offer):
+    if offer is None or not can_buy(state, offer, ignore_cost=ignore_cost):
         raise ValueError("Shop offer cannot be purchased.")
-    paid = offer["price"]
+    paid = 0 if ignore_cost else offer["price"]
     # Shared acquisition rules validate before allocating or modifying ownership.
     if offer["kind"] == "card":
         result = add_card(state, cards.definition(offer["definition_id"]), upgrade_level=offer["upgrade_level"])
@@ -122,15 +134,19 @@ def begin_removal(state):
 def choose_removal(state, instance_id):
     pending = _pending(state, "remove")
     result = None
+    free = pending.get("parasol_free_removal", False)
+    if instance_id is None and free:
+        raise ValueError("Lord’s Parasol removal cannot be canceled.")
     if instance_id is not None:
-        if (pending["removal_used"] or state.gold < removal_price(state)
+        if (pending["removal_used"] or (not free and state.gold < removal_price(state))
                 or instance_id not in pending["eligible"] or instance_id not in eligible_removals(state)):
             raise ValueError("Card is not eligible for shop removal.")
         result = remove_card(state, instance_id)
-        state.gold -= removal_price(state)
+        state.gold -= 0 if free else removal_price(state)
         state.shop_removals_used += 1
         pending["removal_used"] = True
     pending.pop("eligible")
+    pending.pop("parasol_free_removal", None)
     pending["stage"] = "browse"
     return result
 
@@ -181,3 +197,31 @@ def stock_choice(state, slot, pool, rng, *, restock=False):
     blacklist = {o['definition_id'] for o in state.pending['offers'] if o['kind'] == 'potion' and not o['sold']} if restock else set()
     name = generate(ORDINARY_POTIONS, rng, stream='shop.stock', blacklist=blacklist)
     return name, dict(pool)[name]
+
+
+def start_parasol(state, cards):
+    if has(state, 'lords_parasol') and 'parasol_cursor' not in state.pending:
+        state.pending['parasol_cursor'] = 0
+        resume_parasol(state, cards)
+
+
+def resume_parasol(state, cards):
+    pending = state.pending
+    if not pending or pending.get('kind') != 'shop' or 'parasol_cursor' not in pending or state.relic_work:
+        return
+    offers = pending['offers']
+    # Freeze slot order, buying each original entry once even with Courier.
+    while pending['parasol_cursor'] < len(offers):
+        index = pending['parasol_cursor']
+        pending['parasol_cursor'] += 1
+        offer = offers[index]
+        if offer['kind'] != 'potion' or None in state.potions or has(state, 'sozu'):
+            if can_buy(state, offer, ignore_cost=True):
+                buy(state, cards, offer['offer_id'], ignore_cost=True)
+        if state.relic_work:
+            return
+    if pending['parasol_cursor'] == len(offers):
+        pending['parasol_cursor'] += 1
+        eligible = list(eligible_removals(state))
+        if eligible and not pending['removal_used']:
+            pending.update(stage='remove', eligible=eligible, parasol_free_removal=True)

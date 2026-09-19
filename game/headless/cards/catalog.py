@@ -12,6 +12,7 @@ from game.headless.cards.ironclad_rare import DEFINITIONS as RARES
 from game.headless.cards.ironclad_extended import DEFINITIONS as EXTENDED, GIANT_ROCK
 from game.headless.cards.colorless import DEFINITIONS as COLORLESS
 from game.headless.cards.event_cards import DEFINITIONS as EVENT_CARDS
+from game.headless.cards.ancient import DEFINITIONS as ANCIENT
 
 
 def _immutable_content(value):
@@ -84,20 +85,20 @@ class CardCatalog:
         return self
 
 
-IRONCLAD_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *COLORLESS, *EXTENDED, GIANT_ROCK))
+IRONCLAD_CARDS = CardCatalog((*IRONCLAD, *STATUSES, *CURSES, *RARES, *EVENT_CARDS, *COLORLESS, *EXTENDED, GIANT_ROCK, *(d for d in ANCIENT if d.pool in ('colorless','status'))))
 
 # Explicit family subsets remain useful for restricted fixtures.
 from game.headless.cards.silent import DEFINITIONS as SILENT
-SILENT_CARDS = CardCatalog((*IRONCLAD_CARDS.definitions, *SILENT))
+SILENT_CARDS = CardCatalog((*IRONCLAD_CARDS.definitions, *SILENT, *(d for d in ANCIENT if d.pool == 'silent')))
 
 from game.headless.cards.regent import DEFINITIONS as REGENT
-REGENT_CARDS = CardCatalog((*SILENT_CARDS.definitions, *REGENT))
+REGENT_CARDS = CardCatalog((*SILENT_CARDS.definitions, *REGENT, *(d for d in ANCIENT if d.pool == 'regent')))
 
 from game.headless.cards.necrobinder import DEFINITIONS as NECROBINDER
-NECROBINDER_CARDS = CardCatalog((*REGENT_CARDS.definitions, *NECROBINDER))
+NECROBINDER_CARDS = CardCatalog((*REGENT_CARDS.definitions, *NECROBINDER, *(d for d in ANCIENT if d.pool == 'necrobinder')))
 
 from game.headless.cards.defect import DEFINITIONS as DEFECT
-DEFECT_CARDS = CardCatalog((*NECROBINDER_CARDS.definitions, *DEFECT))
+DEFECT_CARDS = CardCatalog((*NECROBINDER_CARDS.definitions, *DEFECT, *(d for d in ANCIENT if d.pool == 'defect')))
 
 # Complete ordinary solo content, including cards acquired from other characters.
 DEFAULT_CARDS = DEFECT_CARDS

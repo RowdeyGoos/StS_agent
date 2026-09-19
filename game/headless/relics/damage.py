@@ -36,6 +36,8 @@ def potions_changed(p):
 
 def hp_loss_amount(p, amount):
     for relic in p.rules.relics:
+        if relic.get("data", {}).get("_melted"):
+            continue
         name = relic["definition_id"]
         if name == "tungsten_rod":
             amount = max(0, amount - 1)
@@ -62,7 +64,7 @@ def after_damage(p, amount, *, unblockable=False, attack=False, source=None):
         p,
         *[
             ["relic_damage", r["instance_id"], amount, unblockable, attack, source_slot]
-            for r in p.rules.relics
+            for r in p.rules.relics if not r.get("data", {}).get("_melted")
         ],
     )
 
@@ -103,6 +105,7 @@ def attack_bonus(p, card):
     )
     return (
         extra
+        + (3 if enchantment is not None and enchantment.definition_id == "tezcataras_ember" else 0)
         + (3 if card.definition.strike and has(p, "strike_dummy") else 0)
         + (3 if card.upgraded and has(p, "miniature_cannon") else 0)
         + (9 if card.enchantment is not None and has(p, "mystic_lighter") else 0)
@@ -110,23 +113,29 @@ def attack_bonus(p, card):
 
 
 def attack_multiplier(p, card):
+    result = 2 if card and card.enchantment and card.enchantment.definition_id == "instinct" else 1
     relic = owned(p, "pen_nib")
     if relic is not None and card is not None:
         if memory(p, relic).get("attack_to_double") == card.instance_id:
-            return 2
-    return 1
+            return result * 2
+    return result
 
 
 def block_multiplier(p, gain):
-    relic = owned(p, "vambrace")
     card = p.current_card
-    if relic is None or card is None or gain <= 0:
+    if card is None or gain <= 0:
         return 1
-    m = memory(p, relic)
-    if m.get("used") or m.get("triggering_card", card.instance_id) != card.instance_id:
-        return 1
-    m["triggering_card"] = card.instance_id
-    return 2
+    result = 1
+    for name in ('vambrace', 'paels_legion'):
+        relic = owned(p, name)
+        if relic is None:
+            continue
+        m = memory(p, relic)
+        unavailable = m.get('used') if name == 'vambrace' else m.get('cooldown', 0) > 0
+        if not unavailable and (name == 'paels_legion' or m.get('triggering_card', card.instance_id) == card.instance_id):
+            m.setdefault('triggering_card', card.instance_id)
+            result *= 2
+    return result
 
 
 def debuff_amount(p, card, amount):
