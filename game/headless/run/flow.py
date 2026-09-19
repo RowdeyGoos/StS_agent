@@ -41,7 +41,7 @@ def legal_actions(engine) -> tuple:
         if not reward["gold_claimed"]:
             actions.append(ClaimGold())
         if not reward["card_resolved"]:
-            actions.extend(ChooseRewardCard(c) for c in reward["offers"])
+            actions.extend(ChooseRewardCard(c, i if reward["offers"].count(c) > 1 else None) for i, c in enumerate(reward["offers"]))
             actions.append(ChooseRewardCard(None))
         if reward["potion"] is not None and not reward["potion_claimed"] and None in state.potions:
             actions.append(ClaimPotion())
@@ -49,7 +49,7 @@ def legal_actions(engine) -> tuple:
             actions.append(ClaimRelic())
         for index, extra in enumerate(reward["extra_rewards"]):
             if not extra["resolved"]:
-                actions.extend(ChooseExtraReward(index, name) for name in [*(extra["offers"] if extra["kind"] != "potion" or None in state.potions else []), None])
+                actions.extend(ChooseExtraReward(index, name, i if name is not None and extra["offers"].count(name) > 1 else None) for i, name in enumerate([*(extra["offers"] if extra["kind"] != "potion" or None in state.potions else []), None]))
         actions.append(LeaveRewards())
     elif state.phase is RunPhase.ROOM and state.pending.get("kind") == "rest_site":
         stage = state.pending["stage"]
@@ -209,11 +209,11 @@ def apply(engine, action):
     if isinstance(action, LeaveShop):
         return shop.leave(state)
     if isinstance(action, ChooseExtraReward):
-        return rewards.choose_extra(state, engine.cards, action.index, action.definition_id)
+        return rewards.choose_extra(state, engine.cards, action.index, action.definition_id, action.offer_index)
     if isinstance(action, ClaimGold):
         return rewards.claim_gold(state)
     if isinstance(action, ChooseRewardCard):
-        return rewards.choose_card(state, engine.cards, action.definition_id)
+        return rewards.choose_card(state, engine.cards, action.definition_id, action.offer_index)
     if isinstance(action, ClaimRelic):
         return rewards.claim_relic(state, cards=engine.cards)
     if isinstance(action, ClaimPotion):

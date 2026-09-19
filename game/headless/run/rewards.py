@@ -24,7 +24,7 @@ def _begin_reward(state, cards, *, gold: int, card_ids, offer_count: int = 3, de
         state.rng.shuffle("reward_offer", pool)
     state.pending = {"kind": "reward", "gold": gold, "gold_claimed": False,
                      "offers": pool[:offer_count], "card_resolved": False,
-                     "card_modifiers": decorate(state, cards, pool[:offer_count], upgraded=upgraded) if decorate_cards else {}}
+                     "card_modifiers": decorate(state, cards, pool[:offer_count], upgraded=upgraded, indexed=True) if decorate_cards else []}
     state.phase = RunPhase.REWARD
     return upgraded
 
@@ -39,11 +39,12 @@ def claim_gold(state) -> int:
     return reward["gold"]
 
 
-def choose_card(state, cards, definition_id: str | None):
+def choose_card(state, cards, definition_id: str | None, offer_index=None):
     reward = _reward(state)
     if reward["card_resolved"] or (definition_id is not None and definition_id not in reward["offers"]):
         raise ValueError("Card reward choice is unavailable.")
-    card = None if definition_id is None else acquire_card(state, cards, definition_id, reward["card_modifiers"])
+    index = select_offer(reward["offers"], definition_id, offer_index)
+    card = None if definition_id is None else acquire_card(state, cards, definition_id, reward["card_modifiers"], offer_index=index)
     reward["card_resolved"] = True
     return card
 
@@ -90,7 +91,7 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     if encounter is not None and encounter.room_kind == 'boss' and encounter.act == 3:
         from game.headless.relics.rewards import extra_rewards
         state.pending = dict(kind='reward', gold=0, gold_claimed=True, offers=[], card_resolved=True,
-            card_modifiers={}, combat_reward=True, encounter_id=encounter_id,
+            card_modifiers=[], combat_reward=True, encounter_id=encounter_id,
             potion=None, potion_claimed=False, relic=None, relic_claimed=False, relic_instance_id=None,
             extra_rewards=[], hunt_rewards_earned=0, royalties_earned=0)
         state.pending['extra_rewards'] = extra_rewards(state, cards, encounter, final_boss=True)
@@ -112,9 +113,8 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     potion = generate(state.config.reward_potions, state.rng, stream="reward_potion") if dropped else None
     pool = state.config.boss_reward_cards if encounter is not None and encounter.room_kind == "boss" else state.config.reward_cards
     upgraded = begin_reward(state, cards, gold=gold, card_ids=pool, decorate_cards=False, native_kind=kind)
-    from game.headless.relics.rewards import add_power_option, decorate, extra_rewards, extend_pool
-    upgraded.extend(add_power_option(state, cards, state.pending["offers"], extend_pool(state, cards, pool), kind=kind))
-    state.pending["card_modifiers"] = decorate(state, cards, state.pending["offers"], upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded)
+    from game.headless.relics.rewards import combat_modifiers, extra_rewards, extend_pool
+    state.pending["card_modifiers"] = combat_modifiers(state, cards, state.pending["offers"], extend_pool(state, cards, pool), kind=kind, upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded)
     if relic_pool and getattr(state.rng,"native",False):
         from game.headless.generation.relics import pull
         relic=pull(state,allowed=state.config.reward_relics)
@@ -183,18 +183,34 @@ def claim_relic(state, *, cards=None):
     return relic
 
 
-def acquire_card(state, cards, name, modifiers):
+def select_offer(offers, name, offer_index=None):
+    """Resolve an unambiguous definition or an exact position in the current reward."""
+    if name is None:
+        if offer_index is not None:
+            raise ValueError("Declining a reward cannot select an offer position.")
+        return None
+    if offer_index is None:
+        if offers.count(name) != 1:
+            raise ValueError("Card reward requires an unambiguous offer position.")
+        return offers.index(name)
+    if type(offer_index) is not int or not 0 <= offer_index < len(offers) or offers[offer_index] != name:
+        raise ValueError("Card reward position differs from its definition.")
+    return offer_index
+
+
+def acquire_card(state, cards, name, modifiers, *, offer_index=None):
     from game.headless.enchantments.base import restore
-    modifier = modifiers[name]
+    modifier = modifiers[offer_index] if isinstance(modifiers, list) else modifiers[name]
     card = add_card(state, cards.definition(name), upgrade_level=modifier['upgrade_level'],
                     enchantment=restore(modifier['enchantment']))
     return card
 
 
-def choose_extra(state, cards, index, name):
+def choose_extra(state, cards, index, name, offer_index=None):
     reward = _reward(state)['extra_rewards'][index]
     if reward['resolved'] or name is not None and name not in reward['offers']:
         raise ValueError('Extra reward is unavailable.')
+    selected = select_offer(reward['offers'], name, offer_index)
     result = None
     if reward['source'] == 'stolen_card':
         from game.headless.encounters.theft import claim
@@ -208,7 +224,7 @@ def choose_extra(state, cards, index, name):
             gain_gold(state, reward["modifiers"]["gold"])
             result = reward["modifiers"]["gold"]
         else:
-            result = add_relic(state, name, cards=cards) if reward['kind'] == 'relic' else acquire_card(state, cards, name, reward['modifiers'])
+            result = add_relic(state, name, cards=cards) if reward['kind'] == 'relic' else acquire_card(state, cards, name, reward['modifiers'], offer_index=selected)
     reward['resolved'] = True
     return result
 

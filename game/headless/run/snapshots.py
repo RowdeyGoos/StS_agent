@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v44"
+SCHEMA = "headless_run_state_v45"
 
 
 def _restore_graph(record):
@@ -332,10 +332,11 @@ def _validate_pending(state, cards, graph):
         for definition_id in pending["offers"]:
             cards.definition(definition_id)
         final_boss = pending.get('combat_reward') and pending.get('encounter_id') in ENCOUNTERS and ENCOUNTERS[pending['encounter_id']].room_kind == 'boss' and ENCOUNTERS[pending['encounter_id']].act == 3
-        if not isinstance(pending["offers"], list) or not pending["offers"] and not final_boss or len(set(pending["offers"])) != len(pending["offers"]):
+        if not isinstance(pending["offers"], list) or not pending["offers"] and not final_boss:
             raise ValueError("Invalid reward offers.")
-        from game.headless.relics.rewards import validate_modifiers, validate_extra
-        validate_modifiers(cards, pending["offers"], pending["card_modifiers"])
+        from game.headless.relics.rewards import validate_modifiers, validate_extra, validate_combat_offers
+        validate_combat_offers(state, cards, pending["offers"])
+        validate_modifiers(cards, pending["offers"], pending["card_modifiers"], indexed=True)
         if "combat_reward" in pending:
             from game.headless.encounters import loot
             loot.validate(pending['encounter_id'], pending.get('encounter_loot'), cards)

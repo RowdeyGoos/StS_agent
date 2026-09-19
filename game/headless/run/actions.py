@@ -16,6 +16,7 @@ class ClaimGold:
 @dataclass(frozen=True, slots=True)
 class ChooseRewardCard:
     definition_id: str | None  # None declines the card reward.
+    offer_index: int | None = None  # Required when multiple offers share a definition.
 
 
 @dataclass(frozen=True, slots=True)
@@ -161,6 +162,7 @@ class Dig:
 class ChooseExtraReward:
     index: int
     definition_id: str | None
+    offer_index: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

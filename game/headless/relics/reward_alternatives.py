@@ -88,7 +88,7 @@ def _apply(state, cards, action):
 
 
 def reroll(state, cards, kind, reward):
-    from game.headless.relics.rewards import extend_pool, decorate, add_power_option
+    from game.headless.relics.rewards import extend_pool, decorate, combat_modifiers
     from game.headless.cards.pools import REWARD_CARDS
     room_kind, mode, uniform, upgrade, count = 'combat', 'base', False, True, 3
     rarity, family, card_kind, upgrade_all = None, 'ironclad', None, False
@@ -137,12 +137,11 @@ def reroll(state, cards, kind, reward):
     if getattr(state.rng,'native',False):
         from game.headless.generation.odds import card_offers
         offers, upgraded = card_offers(state, cards, pool, count, kind=room_kind, mode=mode, uniform=uniform, upgrade_roll=upgrade,stream=stream)
-        if kind in ("main", "extra"):
-            upgraded += add_power_option(state, cards, offers, pool, kind=room_kind)
     else:
         state.rng.shuffle('reward_offer', pool)
         offers = pool[:count]
-    modifiers = decorate(state, cards, offers, upgraded=upgraded, upgrade_all=upgrade_all)
+    modifiers = (combat_modifiers(state, cards, offers, pool, kind=room_kind, upgraded=upgraded, upgrade_all=upgrade_all)
+                 if kind in ("main", "extra") else decorate(state, cards, offers, upgraded=upgraded, upgrade_all=upgrade_all))
     if kind == 'relic':
         reward['offers'] = [dict(definition_id=n, **modifiers[n]) for n in offers]
     else:

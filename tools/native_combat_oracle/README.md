@@ -245,3 +245,17 @@ All 18 Glory encounters run at four seed strings and two total-floor values
 initial moves and composition/Niche/MonsterAi counters plus next-double suffixes.
 As with Hive, `AfterAddedToRoom`, turn execution, summons, choices and rewards are
 excluded. This mode does not launch gameplay or access profiles/saves.
+
+## Duplicate reward option oracle
+
+Pass `reward-edges` as the third argument to reproduce
+[`headless_native_reward_edge_vectors.json`](../../tests/fixtures/headless_native_reward_edge_vectors.json).
+The mode executes the actual base-odds `CardFactory.CreateForReward`, then actual
+encounter option hooks for Lasting Candy, Silver Crucible and Wing Charm. Its 135
+explicit contexts span five seeds, three acts and duplicate/unseen/no-power pools.
+Physical card values and both Rewards/Niche stream counters and suffixes are kept.
+The fixture supplies Candy with two completed combats and marks options as card
+rewards. It does not model a run, a reward screen or changing-odds orchestration;
+the native changing-odds logger requires an initialized Godot host. No profile or
+save access occurs. Source-backed Python tests separately exercise ordinary
+changing-odds generation and run continuation.

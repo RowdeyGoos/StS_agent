@@ -21,6 +21,13 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-19 — duplicate reward edge cases:** Lasting Candy’s fallback now keeps
+  separate physical offers through modifiers, choices, rerolls and JSON restoration.
+  Slippery Bridge candidate filtering uses native rarity/Eternal eligibility;
+  an empty deck is correctly ineligible, not a missing fallback. Native reward
+  hook vectors cover 135 isolated contexts. [Rules and evidence](HEADLESS_ENGINE.md#duplicate-card-reward-choices).
+  Composed native combat and complete-run differential acceptance remain next.
+
 - **2026-09-19 — Glory campaign integration:** all 18 solo A0 encounters now enter
   full generated campaigns from either Act 1 region, through Hive and Glory’s
   Ancient/map/events to the Architect and explicit run victory. Native map and
