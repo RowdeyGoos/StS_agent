@@ -2,7 +2,9 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length != 2) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory>");
+if (args.Length is < 2 or > 3) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [overgrowth|underdocks]");
+var firstAct = args.Length == 3 ? args[2] : "overgrowth";
+if (firstAct is not ("overgrowth" or "underdocks")) throw new ArgumentException("Unsupported first act.");
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
@@ -30,7 +32,7 @@ var hash=asm.GetType("MegaCrit.Sts2.Core.Helpers.StringHelper",true)!.GetMethod(
 uint Hash(string text)=>unchecked((uint)(int)hash.Invoke(null,new object[]{text})!);
 object Rng(string seed,string salt)=>Activator.CreateInstance(rngType,new object[]{unchecked(Hash(seed)+Hash(salt)),0})!;
 object Mutable(object a)=>Call(a,"MutableClone");
-object[] actModels={Get("Act","Acts.Overgrowth"),Get("Act","Acts.Hive"),Get("Act","Acts.Glory")};
+object[] actModels={Get("Act",firstAct == "underdocks" ? "Acts.Underdocks" : "Acts.Overgrowth"),Get("Act","Acts.Hive"),Get("Act","Acts.Glory")};
 var sharedEvents=Items(db.GetProperty("AllSharedEvents")!.GetValue(null)!);
 var sharedAncients=Items(Prop(unlock,"SharedAncients"));
 var catalog=actModels.Select(a=>new {act=Id(a),rooms=Call(a,"GetNumberOfRooms",false),weakCount=Prop(a,"NumberOfWeakEncounters"),
@@ -67,4 +69,4 @@ foreach(var seed in new[]{"0","1","2","3","4","5","6","7","8","9","42","ABC123",
  var nodes=Items(Call(map,"GetAllMapPoints")).Append(Prop(map,"BossMapPoint")).Select(p=>new{coord=Coord(p),kind=Prop(p,"PointType").ToString(),children=Items(Prop(p,"Children")).Select(Coord).OrderBy(c=>c[0]).ThenBy(c=>c[1])}).OrderBy(p=>p.coord[0]).ThenBy(p=>p.coord[1]);
  rows.Add(new{seed,afterBags,afterAllocation,subsets,acts=generated,upFrontCounter=Prop(rng,"Counter"),upFrontSuffix=Call(rng,"NextDouble"),map=new{nodes,starts=Items(map.GetType().GetField("startMapPoints")!.GetValue(map)!).Select(Coord).OrderBy(c=>c[0]).ThenBy(c=>c[1]),counter=Prop(mapRng,"Counter"),suffix=Call(mapRng,"NextDouble")}});
 }
-Console.Write(JsonSerializer.Serialize(new{source="Pinned assembly metadata, RelicGrabBag.Populate, ActModel.GenerateRooms and StandardActMap execution; explicit solo all-unlocked Overgrowth/Hive/Glory inputs, no profile access",catalog,sharedEvents=sharedEvents.Select(Id),sharedAncients=sharedAncients.Select(Id),rows},new JsonSerializerOptions{WriteIndented=true}));
+Console.Write(JsonSerializer.Serialize(new{source=$"Pinned assembly metadata, RelicGrabBag.Populate, ActModel.GenerateRooms and StandardActMap execution; explicit solo all-unlocked {firstAct}/Hive/Glory inputs, no profile access",dllSha256=digest,catalog,sharedEvents=sharedEvents.Select(Id),sharedAncients=sharedAncients.Select(Id),rows},new JsonSerializerOptions{WriteIndented=true}));

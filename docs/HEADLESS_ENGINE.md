@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v27 / run v39**.
+than being silently reinterpreted: current schemas are **combat v27 / run v40**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -192,19 +192,20 @@ relic bags: shared-Ancient allocation, then each act's event shuffle, weak/norma
 elite encounter draws, boss and Ancient selection. All three room sets are retained
 as plain `state.initialization` data, because their startup draws share `up_front`.
 Hive/Glory initialization does not enable their gameplay. The declared act sequence
-is **Overgrowth → Hive → Glory**, solo, A0, all unlocked/all seen; the native lobby
+is **Overgrowth or Underdocks → Hive → Glory**, selected explicitly, solo, A0,
+all unlocked/all seen; the native lobby
 act picker and profile-dependent first-run overrides are outside this profile.
 
 Native event progression uses `native_act1_events_all_unlocked_v1`: all **31**
-queued IDs are shuffled before eligibility, including nine later-act events and
-one disabled event. Only the 21 supported Act-1-eligible events can normally enter
-rooms. Their exclusions are explicit metadata, not inferred from missing handlers.
+Overgrowth or **28** Underdocks queued IDs are shuffled before eligibility,
+including nine later-act events and one disabled event. The 21 Overgrowth or 18
+Underdocks normally Act-1-eligible events can enter rooms. Their exclusions are explicit metadata, not inferred from missing handlers.
 The full solo roster now also handles a later-act candidate selected by the native
 exhausted-queue fallback; normal Act 1 eligibility remains unchanged. Fixture progression retains its original profile.
 
 The native map uses second-entrance rejection draws, column-first stable sorting,
 insertion-ordered pruning and deterministic centering/spreading/straightening.
-Thirteen direct assembly reference seeds match complete room queues, startup RNG
+Thirteen direct assembly reference seeds for each Act 1 location match complete room queues, startup RNG
 counters/suffixes and every Act 1 map coordinate, edge, type and entrance.
 See [native initialization evidence](evidence/native_initialization_2026_09_14.md).
 
@@ -890,6 +891,79 @@ The historical `neow_pickups_restricted_v1` fixture retains its two fixed offers
 `--ancient neow` selects the randomized profile. No player save/profile is read.
 See [source, tests and limits](evidence/events_neow_2026_09_14.md).
 
+## Generated Underdocks Act 1
+
+```python
+from game.headless.run.engine import RunEngine
+from game.headless.run.ancient import PROFILE as NEOW
+
+run = RunEngine.ironclad_act1(seed=2, act="underdocks", ancient_profile=NEOW)
+```
+
+```bash
+sts-headless-play --route underdocks-generated --ancient neow --seed 2 --verify-restore
+```
+
+This route connects Neow, all 20 Underdocks encounters, ten local events, shared
+events, shops, treasure, rest sites and boss rewards through Act 1 completion.
+Omit `ancient_profile` / `--ancient` for the existing post-Ancient test start.
+`act="overgrowth"` remains the programmatic default. Explicit act selection assumes
+solo Ironclad, A0, all content unlocked and encounters seen; it does not read unlock
+profiles or reproduce the profile-dependent lobby picker. Later-act gameplay and
+higher ascensions remain outside this generated run.
+
+[`map/act1.py`](../game/headless/map/act1.py) shares the pinned map generator between
+both Act 1 locations. Underdocks uses `underdocks_a0_pruned_restricted_v1`: 15 rows
+plus the boss, the same fixed rest/treasure rows, native pruning, positioning and
+unknown-room rules as Overgrowth. `underdocks_a0_base_restricted_v1` is the optional
+unpruned test layout. The old Overgrowth import delegates to the shared generator;
+its seed trajectories and profile identifiers are preserved.
+
+[`generation/room_pools.py`](../game/headless/generation/room_pools.py) declares the
+ordered pools. Three weak fights precede twelve normal entries; elites have their
+own 15-entry queue. Refillable bags reject consecutive matching identities/tags,
+including the Slug and Seapunk families across the weak-to-normal boundary. Boss
+sampling uses Matriarch, Soul Fysh, Giant order, distinct from native discovery
+order. The selected act's event shuffle and encounters consume the same UpFront
+stream before Hive/Glory initialization. Those later room sets remain saved startup
+data without enabling later-act gameplay.
+
+The ten local events are Abyssal Baths, Drowning Beacon, Endless Conveyor, Punch Off,
+Spiraling Whirlpool, Sunken Statue, Sunken Treasury, Doors of Light and Dark, Trash
+Heap and Waterlogged Scriptorium. Native initialization shuffles them with all 18
+shared events before applying eligibility. Eight shared events are normally eligible
+in Act 1; the other ten remain in the queue for native ordering/fallback semantics.
+Entry predicates retain resource, floor and enchantment requirements. Reads and
+failed entries do not advance queues; successful event fights retain their separate
+history and do not consume ordinary hallway entries.
+
+`RunConfig.act`, `EncounterProgression.act`, map profile and seed-bound initialization
+must agree. Private run schema v40 saves these declarations and rejects mixed-act
+queues, maps, bosses or event pools atomically. Golden Compass map replacement and
+Fur Coat marks keep the declared act and its encounter ownership.
+
+The read-only [initialization oracle](../tools/native_initialization_oracle/README.md)
+ran actual `RelicGrabBag.Populate`, `ActModel.GenerateRooms` and `StandardActMap`
+methods from pinned build 0.107.1. The new
+[13-seed fixture](../tests/fixtures/headless_underdocks_initialization_vectors.json)
+matches ordered model metadata, all three room sets, complete maps and RNG counters/
+suffixes. Existing Overgrowth vectors remain unchanged. This is native generation
+evidence, not a claim of whole-run gameplay parity.
+
+[`test_underdocks_run.py`](../tests/headless/test_underdocks_run.py) also covers native
+and test RNG profiles, Neow acquisition, entry predicates, full generated routes
+through boss rewards with every decision restored, and corrupted continuation
+rejection. Combat victories in the full-route lifecycle tests are synthetic; the
+ordinary CLI demo can lose and does not establish policy strength.
+
+Validation on 2026-09-19: 4,814 broad headless/simulation/backend/encoder/CLI tests
+passed in 295.18 seconds. The fresh wheel passed 89 route/native-reference tests
+in 25.72 seconds; 213 installed headless modules and the CLI matched source bytes.
+The installed Neow-to-Underdocks demo ended in defeat after 117 commands with
+restore verification enabled. Independent semantic review, compilation and local
+documentation link/diff checks passed. Native oracle build took 1.25 seconds and
+reference execution 0.80 seconds; neither accessed profiles or launched gameplay.
+
 ## Complete Underdocks encounter roster at A0
 
 All 20 entries in native `Underdocks.GenerateAllEncounters` are registered in
@@ -976,12 +1050,9 @@ headless modules matched source bytes. The authored CLI smoke ended in defeat
 after 114 commands with restore verification enabled. Independent semantic review,
 compilation, documentation links and diff checks passed.
 
-This adds encounter content, **not a generated Underdocks campaign**. Generated
-Overgrowth queues stay scoped to Overgrowth. Underdocks procedural topology,
-weak/normal encounter queues and discovery exclusions, act selection and its
-opening Ancient still need run-level implementation. Multiplayer and ascension
-modifiers above A0 remain outside this roster. Boss reward exit records Act 1
-completion through the existing lifecycle, not full-game victory.
+These encounters are also available in the [generated Underdocks route](#generated-underdocks-act-1).
+Multiplayer and ascension modifiers above A0 remain outside this roster. Boss reward
+exit records Act 1 completion through the existing lifecycle, not full-game victory.
 
 ## Complete Overgrowth encounter roster at A0
 
@@ -1491,7 +1562,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v38`, including configuration,
+Private run snapshots now use `headless_run_state_v40`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1502,7 +1573,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v26`, including the in-play
+Nested combat records now use `headless_combat_state_v27`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

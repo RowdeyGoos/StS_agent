@@ -67,9 +67,10 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_act1(cls, *, seed=0, ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
+    def ironclad_act1(cls, *, seed=0, act="overgrowth", ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
         """Generate a full-length A0 map with declared restricted content pools."""
-        from game.headless.map.overgrowth import generate_overgrowth_map, PROFILE
+        from game.headless.map.act1 import generate_act1_map, profile_for, PRUNED_PROFILES
+        map_profile = map_profile or profile_for(act)
         from game.headless.encounters.progression import EncounterProgression
         from game.headless.run.unknown_rooms import UnknownRooms
         from game.headless.events.progression import EventProgression
@@ -78,28 +79,32 @@ class RunEngine:
             raise ValueError("Unsupported Ancient start profile.")
         from game.headless.potions.pools import ORDINARY_POTIONS
         from game.headless.relics.pools import ORDINARY_RELICS, SHOP_RELICS
-        config = RunConfig(ascension=ascension, relic_fallback="circlet", reward_relics=ORDINARY_RELICS, shop_relics=SHOP_RELICS, reward_potions=ORDINARY_POTIONS)
-        if (map_profile or PROFILE) == PROFILE:
+        config = RunConfig(act=act, ascension=ascension, relic_fallback="circlet", reward_relics=ORDINARY_RELICS, shop_relics=SHOP_RELICS, reward_potions=ORDINARY_POTIONS)
+        if act == "overgrowth" and map_profile in PRUNED_PROFILES:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
+        if act == 'underdocks':
+            from game.headless.generation.room_pools import ACT1_POOLS, SHARED_EVENTS, ACT1_INELIGIBLE_EVENTS
+            config = replace(config, event_pool=(*ACT1_POOLS[act][3], *(e for e in SHARED_EVENTS if e not in ACT1_INELIGIBLE_EVENTS)))
         engine = cls(seed=seed, gold=99, config=config, rng_profile=rng_profile, cards=cards)
         if getattr(engine.state.rng, "native", False):
             if discovery != "all_seen":
-                raise ValueError("Only declared all-seen Overgrowth discovery is supported.")
+                raise ValueError("Only declared all-seen Act 1 discovery is supported.")
             from game.headless.generation.initialization import generate
-            from game.headless.encounters.catalog import NATIVE_OVERGROWTH_ENCOUNTERS as ids
-            engine.state.initialization = generate(engine.state.rng)
+            from game.headless.encounters.progression import native_ids
+            ids = native_ids(act)
+            engine.state.initialization = generate(engine.state.rng, act=act)
             initial = engine.state.initialization["acts"][0]
             engine.state.encounter_progression = EncounterProgression(
-                [ids[n] for n in initial["normal"]], [ids[n] for n in initial["elites"]], ids[initial["boss"]])
+                [ids[n] for n in initial["normal"]], [ids[n] for n in initial["elites"]], ids[initial["boss"]], act=act)
         else:
-            engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery)
-        if (map_profile or PROFILE) == PROFILE:
+            engine.state.encounter_progression = EncounterProgression.generate(engine.state.rng, discovery=discovery, act=act)
+        if act == "overgrowth" and map_profile in PRUNED_PROFILES:
             from game.headless.events.act1_content import DEFINITIONS as remaining_events
             config = replace(config, event_pool=(*config.event_pool, *(d.definition_id for d in remaining_events)))
             engine.state.config = config
-        engine.graph = generate_overgrowth_map(engine.state.rng, event_pool=config.event_pool, profile=map_profile or PROFILE)
-        if engine.graph.generation == PROFILE:
+        engine.graph = generate_act1_map(engine.state.rng, event_pool=config.event_pool, act=act, profile=map_profile)
+        if engine.graph.generation in PRUNED_PROFILES:
             engine.state.unknown_rooms = UnknownRooms()
             if engine.state.initialization is not None:
                 from game.headless.events.progression import NATIVE_PROFILE

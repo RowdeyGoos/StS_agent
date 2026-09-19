@@ -16,8 +16,11 @@ class RunConfig:
     shop_relics: tuple[str, ...] = ("strawberry", "pear", "mango")
     event_pool: tuple[str, ...] = ("jungle_maze_adventure", "aroma_of_chaos")
     relic_fallback: str | None = None
+    act: str = "overgrowth"
 
     def __post_init__(self):
+        if self.act not in ("overgrowth", "underdocks"):
+            raise ValueError("Unsupported Act 1 location.")
         if self.character != "ironclad" or type(self.ascension) is not int or self.ascension != 0:
             raise ValueError("Only Ironclad Ascension 0 is implemented.")
         if self.relic_fallback not in (None, "circlet"):
