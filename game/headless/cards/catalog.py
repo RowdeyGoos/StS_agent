@@ -1,7 +1,7 @@
 """Immutable content lookup; no global registration or name-based dispatch."""
 
 from types import MappingProxyType
-from dataclasses import asdict, is_dataclass, dataclass
+from dataclasses import asdict, is_dataclass, dataclass, field, fields
 from hashlib import sha256
 import json
 from game.headless.cards.base import Card, CardDefinition
@@ -14,9 +14,22 @@ from game.headless.cards.colorless import DEFINITIONS as COLORLESS
 from game.headless.cards.event_cards import DEFINITIONS as EVENT_CARDS
 
 
+def _immutable_content(value):
+    """Cache only recursively frozen authored values, never mutable custom effects."""
+    if type(value) in (str, int, float, bool, type(None)):
+        return True
+    if type(value) is tuple:
+        return all(_immutable_content(item) for item in value)
+    return (not isinstance(value, type) and is_dataclass(value)
+            and value.__dataclass_params__.frozen
+            and all(_immutable_content(getattr(value, item.name)) for item in fields(value)))
+
+
 @dataclass(frozen=True, slots=True, init=False)
 class CardCatalog:
     _definitions: object
+    _cacheable: bool = field(compare=False, repr=False)
+    _snapshot_cache: tuple[str, str] | None = field(compare=False, repr=False)
 
     def __init__(self, definitions) -> None:
         definitions = tuple(definitions)
@@ -24,6 +37,8 @@ class CardCatalog:
         if len(by_id) != len(definitions):
             raise ValueError("Duplicate card definition ID.")
         object.__setattr__(self, "_definitions", MappingProxyType(by_id))
+        object.__setattr__(self, "_cacheable", _immutable_content(definitions))
+        object.__setattr__(self, "_snapshot_cache", None)
 
     @property
     def definitions(self) -> tuple[CardDefinition, ...]:
@@ -44,6 +59,13 @@ class CardCatalog:
         Snapshots still require the same game-rule implementation; this is not
         an executable-source provenance certificate or a release manifest.
         """
+        from game.headless.enchantments.base import fingerprint
+
+        enchantments = fingerprint()
+        enchantment_key = json.dumps(enchantments, sort_keys=True, separators=(",", ":"))
+        cached = self._snapshot_cache
+        if cached is not None and cached[0] == enchantment_key:
+            return cached[1]
         rows = []
         for definition in sorted(self.definitions, key=lambda d: d.definition_id):
             effects = []
@@ -52,8 +74,11 @@ class CardCatalog:
                     raise ValueError("Snapshotable card effects must be immutable dataclass values.")
                 effects.append([type(effect).__module__ + "." + type(effect).__qualname__, asdict(effect)])
             rows.append([definition.definition_id, [asdict(level) for level in definition.levels], effects, definition.combat_lifetime, definition.rarity, definition.pool, definition.strike, definition.defend, definition.generate_in_combat])
-        from game.headless.enchantments.base import fingerprint
-        return sha256(json.dumps({"cards": rows, "enchantments": fingerprint()}, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        result = sha256(json.dumps({"cards": rows, "enchantments": enchantments}, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        if self._cacheable:
+            # Derived content only: no run state, global cache or snapshot-format change.
+            object.__setattr__(self, "_snapshot_cache", (enchantment_key, result))
+        return result
 
     def __deepcopy__(self, memo):
         return self
