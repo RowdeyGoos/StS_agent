@@ -122,7 +122,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         relic = next((v for v in r.relics if v["instance_id"] == s["source"]), None)
         if relic is not None:
             operation = relic["definition_id"]
-            if operation not in ("gambling_chip", "toolbox") or r.round_number != 1:
+            if operation not in ("gambling_chip", "toolbox", "choices_paradox") or r.round_number != 1:
                 raise ValueError("Invalid relic selection source.")
         else:
             if s["source"] not in ("entropy", "stratagem") or not r.powers.get(s["source"]):
@@ -137,6 +137,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     settings = {
         "gambling_chip": ("hand", "discard_redraw", "hand", ""),
         "toolbox": ("offered", "move", "hand", ""),
+        "choices_paradox": ("offered", "move", "hand", ""),
         "entropy": ("hand", "transform", "hand", ""),
         "stratagem": ("draw_pile", "move", "hand", ""),
         "purity": ("hand", "exhaust", "hand", ""),
@@ -194,6 +195,12 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
         if any(c.spec.kind not in kinds for c in available if c.instance_id in s["candidates"]):
             raise ValueError("Ineligible tutor card.")
+    if operation == 'choices_paradox':
+        from game.headless.cards.colorless_effects import pool
+        eligible = {d.definition_id for d in pool(p)}
+        if (len(available) != min(5, len(eligible)) or len({c.definition.definition_id for c in available}) != len(available)
+                or any(c.definition.definition_id not in eligible or not c.combat_state.retain_this_combat for c in available)):
+            raise ValueError('Invalid Choices Paradox offers.')
     if operation == 'splash':
         from game.headless.cards.colorless_effects import catalog
         from game.headless.generation.foreign import splash_pool

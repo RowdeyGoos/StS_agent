@@ -15,6 +15,15 @@ def validate_shop(state, cards, graph):
     expected = {"kind", "catalog_id", "shop_id", "stage", "offers", "removal_used", "removals_on_entry"}
     if pending.get("stage") == "remove":
         expected.add("eligible")
+    if 'parasol_cursor' in pending:
+        from game.headless.relics.run_rules import has
+        if not has(state, 'lords_parasol') or type(pending['parasol_cursor']) is not int or not 0 <= pending['parasol_cursor'] <= len(pending['offers']) + 1:
+            raise ValueError('Invalid Lord’s Parasol cursor.')
+        expected.add('parasol_cursor')
+    if 'parasol_free_removal' in pending:
+        if pending['parasol_free_removal'] is not True or pending['stage'] != 'remove' or pending.get('parasol_cursor') != len(pending['offers']) + 1:
+            raise ValueError('Invalid Lord’s Parasol removal.')
+        expected.add('parasol_free_removal')
     if set(pending) != expected or pending["catalog_id"] != SHOP_ID:
         raise ValueError("Invalid shop state fields or catalog.")
     if state.phase is not RunPhase.ROOM or pending["stage"] not in ("browse", "remove"):
@@ -75,6 +84,6 @@ def validate_shop(state, cards, graph):
             if not all(any(r.definition_id == name for r in state.relics) for name, _ in shop_items(state, slot)):
                 raise ValueError("Available relic stock is missing.")
     if pending["stage"] == "remove":
-        if (pending["removal_used"] or state.gold < removal_price(state) or not pending["eligible"]
+        if (pending["removal_used"] or (not pending.get("parasol_free_removal") and state.gold < removal_price(state)) or not pending["eligible"]
                 or pending["eligible"] != list(eligible_removals(state))):
             raise ValueError("Invalid shop card selection.")

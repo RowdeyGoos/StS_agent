@@ -112,6 +112,8 @@ class Player:
             card = self.current_card
             if card is not None and card.enchantment is not None and card.enchantment.definition_id == "nimble":
                 amount += card.enchantment.amount
+            if card is not None and card.enchantment is not None and card.enchantment.definition_id == "goopy":
+                amount += card.enchantment.amount - 1
             if self.current_card is not None and self.current_card.definition.defend:
                 amount += self.rules.powers.get("fasten", 0)
         gain = max(0, amount) * block_multiplier(self, powered)
@@ -156,6 +158,10 @@ class Player:
             if is_attack
             else amount
         )
+        from game.headless.relics.combat import owned, memory
+        diadem = owned(self, "diamond_diadem")
+        if is_attack and diadem and memory(self, diadem).get("protected"):
+            incoming_damage //= 2
         if self.rules.powers.get('intangible'):
             incoming_damage = min(incoming_damage, 1)
         if is_attack and source is not None and source.is_alive and self.rules.powers.get("thorns"):

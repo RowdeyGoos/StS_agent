@@ -38,11 +38,6 @@ class Deck:
         self.offered: list[Card] = []
         self.owner = None
         self.shuffle_draw_pile(initial=True)
-        innate = [c for c in self.draw_pile if c.spec.innate]
-        from game.headless.core.native_rng import NativeRng
-        if isinstance(self.rng, NativeRng):
-            innate.reverse()  # Native moves each top-first Innate card to the top.
-        self.draw_pile = [c for c in self.draw_pile if not c.spec.innate] + innate
 
     def all_cards(self):
         return [c for name in ("draw_pile", "discard_pile", "hand", "exhaust_pile", "in_play", "powers", "offered") for c in getattr(self, name)]

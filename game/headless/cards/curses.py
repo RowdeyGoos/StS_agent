@@ -51,6 +51,10 @@ END_HAND_CURSES = ("debt", "decay", "doubt", "regret", "shame", "bad_luck")
 
 
 def can_play(player, card=None, *, auto=False):
+    from game.headless.relics.combat import owned, memory
+    choker = owned(player, "velvet_choker")
+    if choker and memory(player, choker).get("turn_plays", 0) >= 6:
+        return False
     from game.headless.powers.silent import can_play as silent_can_play
     if card is not None and not silent_can_play(player, card):
         return False

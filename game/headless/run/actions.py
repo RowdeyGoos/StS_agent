@@ -161,3 +161,28 @@ class Dig:
 class ChooseExtraReward:
     index: int
     definition_id: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class UseRestRelic:
+    option: str
+
+
+@dataclass(frozen=True, slots=True)
+class ChooseCookCard:
+    instance_id: str | None  # None cancels; confirmation is a separate action.
+
+
+@dataclass(frozen=True, slots=True)
+class ConfirmCook:
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class RerollCardReward:
+    index: int = -1  # -1 is the main/current reward; >=0 selects an extra reward.
+
+
+@dataclass(frozen=True, slots=True)
+class SacrificeCardReward:
+    index: int = -1

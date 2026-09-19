@@ -112,6 +112,12 @@ class Card:
         if self.enchantment is not None and self.enchantment.definition_id == "royally_approved":
             from dataclasses import replace
             spec = replace(spec, innate=True, retain=True)
+        if self.enchantment is not None:
+            from dataclasses import replace
+            if self.enchantment.definition_id == 'goopy':
+                spec = replace(spec, exhausts=True)
+            elif self.enchantment.definition_id == 'tezcataras_ember':
+                spec = replace(spec, cost=0, eternal=True)
         if self.permanent_damage:
             from dataclasses import replace
             spec = replace(spec, base_damage=spec.base_damage + self.permanent_damage)

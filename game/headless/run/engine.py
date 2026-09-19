@@ -120,17 +120,29 @@ class RunEngine:
         result = apply(self, action)
         from game.headless.relics.neow import drain
         drain(self.state, self.cards)
+        from game.headless.run.shop import resume_parasol
+        resume_parasol(self.state, self.cards)
         from game.headless.events.steps import drain as resume_event
         resume_event(self.state, self.cards)
         if self.combat is not None:
             self.sync_combat_loot()
+        from game.headless.relics.ancient_map import update
+        update(self)
         from game.headless.events.checkpoint import refresh
         refresh(self.state)
         return result
 
-    def obtain_relic(self, definition_id):
+    def obtain_relic(self, definition_id, *, card_pool=None):
         self.state.require_between_rooms()
-        return add_relic(self.state, definition_id, cards=self.cards)
+        before, graph = deepcopy(self.state), self.graph
+        try:
+            result = add_relic(self.state, definition_id, cards=self.cards, card_pool=card_pool)
+            from game.headless.relics.ancient_map import update
+            update(self)
+            return result
+        except Exception:
+            self.state, self.graph = before, graph
+            raise
 
     def preview_upgrade(self, instance_id: str):
         self.state.require_between_rooms()
@@ -214,6 +226,8 @@ class RunEngine:
                     combat.rng, combat.native_streams["niche"],
                 )
         room_kind = getattr(encounter_factory, "room_kind", "combat")
+        from game.headless.relics.ancient_map import coat_active
+        combat.fur_coat_active = coat_active(self)
         combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
                      potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,
                      gold=self.state.gold, potion_pool=self.state.config.reward_potions if self.state.config else None)
@@ -222,6 +236,8 @@ class RunEngine:
     def sync_combat_loot(self):
         from game.headless.run.inventory import add_potion
         r = self.combat.player.rules
+        from game.headless.relics.ancient_state import sync_cards
+        sync_cards(self.state, self.combat.player)
         for card in self.state.deck:
             if card.definition.definition_id == 'the_scythe':
                 card.permanent_damage += r.scythe_gains.get(card.instance_id, 0)
@@ -267,11 +283,14 @@ class RunEngine:
         from game.headless.run.lifecycle import after_combat
         after_combat(self.state, won=self.state.phase is RunPhase.ROUTE,
                      elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite")
+        from game.headless.relics.ancient_state import after_combat as ancient_after
+        ancient_after(self.state, self.cards, elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite")
         if self.state.phase is RunPhase.ROUTE:
             from game.headless.relics.run_rules import victory
             victory(self.state, room_kind=ENCOUNTERS[encounter_id].room_kind if encounter_id is not None else "combat")
             for relic in self.state.relics:
-                RELICS[relic.definition_id].after_combat_victory(self.state)
+                if not relic.data.get("_melted"):
+                    RELICS[relic.definition_id].after_combat_victory(self.state)
             if self.state.config is not None:
                 from game.headless.run.rewards import begin_combat_rewards
                 begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged, extra_cards=extra_cards, royalties=royalties)

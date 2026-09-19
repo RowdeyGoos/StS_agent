@@ -93,6 +93,7 @@ class Enemy(ABC):
         self.statuses = StatusCollection()
         self.rng = rng or Random(0)
         self.combat_player = None
+        self.stunned = False
 
     @property
     def is_alive(self) -> bool:
@@ -290,6 +291,9 @@ class Enemy(ABC):
         from game.headless.cards.status import SlimedCard
 
         current_intent = self.intent
+        if self.stunned:
+            self.stunned = False
+            return current_intent
 
         for _hit_index in range(current_intent.attack_count):
             self.execute_hit(player, current_intent)
@@ -350,6 +354,8 @@ class Enemy(ABC):
 
     def _resolve_intent(self, template: Intent) -> Intent:
         """Convert a base intent template into its current combat values."""
+        if self.stunned:
+            return Intent("stun", 0, "Stunned")
         resolved_attack_damage = 0
         if template.attack_damage > 0:
             resolved_attack_damage = modify_attack_damage_for_statuses(

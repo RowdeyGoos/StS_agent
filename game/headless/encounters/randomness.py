@@ -38,7 +38,14 @@ def summon(kind, parent, player, **kwargs):
     rng = parent.rng
     if isinstance(rng, NativeRng):
         rng = MonsterConstruction(rng, player.deck.niche_rng, player.combat_enemies)
-    return kind(rng, **kwargs)
+    enemy = kind(rng, **kwargs)
+    from game.headless.relics.combat import has, owned, memory
+    if has(player, "philosophers_stone"):
+        enemy.strength += 1
+    coat = owned(player, "fur_coat")
+    if coat and memory(player, coat).get("active"):
+        enemy.hp = 1
+    return enemy
 
 
 def branch(rng, values):

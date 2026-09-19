@@ -302,7 +302,8 @@ def reward(state, pending, cards, option):
             from game.headless.run.inventory import add_potion
             from dataclasses import asdict
 
-            result = asdict(add_potion(state, active["definition_id"]))
+            potion = add_potion(state, active["definition_id"])
+            result = None if potion is None else asdict(potion)
         complete(data, operation, result)
     elif pending["stage"] == "card_rewards":
         if option == "skip":

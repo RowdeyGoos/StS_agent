@@ -49,7 +49,7 @@ class EnchantmentDefinition:
 
 
 ENCHANTMENTS = MappingProxyType({"sown": Sown(), **{
-    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam", "slither", "inky")
+    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam", "slither", "inky", "goopy", "tezcataras_ember", "instinct", "imbued", "clone")
 }})
 
 
@@ -61,7 +61,11 @@ def can_enchant(card, definition_id="sown"):
         return False
     if definition_id == "slither":
         return not card.spec.x_cost
-    if definition_id in ("sharp", "momentum"):
+    if definition_id == "imbued":
+        return kind in ("skill", "block")
+    if definition_id == "goopy":
+        return card.definition.defend
+    if definition_id in ("sharp", "momentum", "instinct"):
         return kind == "attack"
     if definition_id == "royally_approved":
         return kind in ("attack", "skill", "block")
@@ -109,6 +113,10 @@ def fingerprint():
 def after_draw(card, deck):
     if card.enchantment is None or card.enchantment.definition_id != "slither" or card not in deck.hand:
         return
+    randomize_cost(card, deck)
+
+
+def randomize_cost(card, deck):
     v=card.combat_state
     v.combat_cost_override=deck.energy_rng.randrange(4)
     from game.headless.core.card_costs import mark_setter

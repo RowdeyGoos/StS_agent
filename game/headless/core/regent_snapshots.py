@@ -24,7 +24,7 @@ def validate_state(r, p):
 def validate_frame(frame, r):
     if any(type(frame[k]) is not int or frame[k] < 0 for k in ('star_value', 'stars_spent')):
         raise ValueError('Invalid play Stars.')
-    if frame['auto'] and frame['stars_spent']:
+    if frame['auto'] and frame['stars_spent'] and not any(v['definition_id'] == 'whispering_earring' and r.relic_data[v['instance_id']].get('active') for v in r.relics):
         raise ValueError('Autoplay cannot spend Stars.')
     captured = frame['regent_before']
     if not isinstance(captured, dict) or any(not isinstance(k, str) or not k.startswith('monologue:') or k not in r.powers or type(v) is not int or v <= 0 for k, v in captured.items()):

@@ -16,6 +16,10 @@ def enter_combat(p):
 
     for relic in p.rules.relics:
         name = relic["definition_id"]
+        if relic.get("data", {}).get("_melted"):
+            continue
+        from game.headless.relics.ancient_combat import enter
+        enter(p, relic)
         strength = RELICS[name].combat_strength
         if name == "vajra":
             strength += 1
@@ -42,7 +46,7 @@ def enter_combat(p):
                 card = catalog(p).create("dazed")
                 p.deck._ensure_identity(card)
                 p.deck.draw_pile.insert(p.deck.rng.randint(0, len(p.deck.draw_pile)), card)
-        elif name == "petrified_toad" and p.rules.potion_slots:
+        elif name == "petrified_toad" and p.rules.potion_slots and not has(p, "sozu"):
             p.rules.potions_generated.append("potion_shaped_rock")
             p.rules.potion_slots -= 1
         elif name == "anchor":
@@ -65,6 +69,10 @@ def start_turn(p, draw_count):
     r.round_number += 1
     for relic in r.relics:
         name, m = relic["definition_id"], memory(p, relic)
+        if relic.get("data", {}).get("_melted"):
+            continue
+        from game.headless.relics.ancient_combat import start_turn as ancient_start
+        draw_count = ancient_start(p, relic, draw_count)
         if name in ("kunai", "kusarigama", "ornamental_fan", "shuriken", "rainbow_ring"):
             m["turn_attacks"] = 0
         if name in ("letter_opener", "rainbow_ring"):
@@ -114,6 +122,8 @@ def start_turn(p, draw_count):
 
 
 def hook(p, relic, event, identity):
+    from game.headless.relics.ancient_combat import hook as ancient_hook
+    ancient_hook(p, relic, event, identity)
     name, m, turn = relic["definition_id"], memory(p, relic), p.rules.round_number
     if p.combat_is_ending:
         return

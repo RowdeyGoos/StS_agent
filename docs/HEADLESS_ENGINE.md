@@ -208,7 +208,7 @@ Thirteen direct assembly reference seeds match complete room queues, startup RNG
 counters/suffixes and every Act 1 map coordinate, edge, type and entrance.
 See [native initialization evidence](evidence/native_initialization_2026_09_14.md).
 
-Runtime acquisition checks execute all 161 relic predicates against the pinned
+Runtime acquisition checks execute the original 161 relic predicates against the pinned
 assembly, eight bag sequences, six Dingy Rug contexts and eight potion batches.
 The six relevant native pools and 18 epoch gates are inventoried under declared
 inputs, without reading a user profile. Runtime uses `UnlockState.all` semantics
@@ -618,9 +618,11 @@ See the [finite inventory](../tests/fixtures/headless_potion_scope.json),
 
 ## Relics
 
-The pinned solo Ironclad/Overgrowth Act 1 acquisition inventory contains **161
-relic definitions**: 118 shared, 8 Ironclad, 27 Neow, 7 event/evolution definitions
-and Circlet. All **161 are supported by the default card catalog**. Kaleidoscope
+The default catalog contains **232 relic definitions**, including all **99 solo
+Ancient relics** from pinned build 0.107.1. This extends the original 161-definition
+Act 1 inventory with 70 Ancients and Black Blood, the Ironclad starter evolution
+granted by Touch of Orobas. Massive Scroll remains excluded as multiplayer-only.
+Kaleidoscope
 requires all four complete ordinary foreign families before offering two sets of
 three cards from distinct families. Multiplayer-only relics
 and other characters' exclusive relics are outside this scope.
@@ -660,9 +662,51 @@ Rock. Generated runs use the complete ordinary potion pool;
 Neow's Bones generates from all ten native modifier-eligible curses after its
 relic selections finish. All 18 curse-pool definitions are available for curse
 transformations, including playable Spore Mind/Enthralled and Eternal results.
-Foreign-character pools remain unavailable in the default catalog.
+All four ordinary foreign-character card families are available in the default catalog.
 
-See the [scope inventory](../tests/fixtures/headless_relic_scope.json),
+Ancient acquisitions, combat hooks, persistent state and map changes live in
+`ancient_pickups.py`, `ancient_combat.py`, `ancient_state.py` and `ancient_map.py`.
+They use the same owned IDs, RNG streams, pickup queue and combat scheduler as
+other content. Their dependent content includes Maul, Relax, Luminesce, Wish,
+Brightest Flame, Whistle, Apparition, Apotheosis and Soot, all five Archaic Tooth
+starter replacements, and Goopy, Tezcatara's Ember, Instinct, Imbued and Clone.
+Goopy growth returns to its exact master-deck card; combat-only upgrades stay local.
+
+`UseRestRelic("cook" | "clone" | "kindle")` exposes Meat Cleaver, Pael's Growth
+and Pumpkin Candle. Cooking uses `ChooseCookCard` and `ConfirmCook`, with a
+cancelable two-card choice. Sea Glass uses toggled `ChooseRelicReward(index)`
+selections followed by `ConfirmRelicSelection`; `obtain_relic("sea_glass",
+card_pool="silent")` can explicitly choose any of the five supported families.
+Pael's Tooth stores removed card records and returns one upgraded card after each
+combat. Toy Box retains wax relic identities after melting but disables their hooks.
+
+`RerollCardReward(index=-1)` and `SacrificeCardReward(index=-1)` expose Driftwood
+and Pael's Wing on actual card rewards, including nested acquisition/event rewards;
+nonnegative indexes select additional combat rewards. Skipping does not sacrifice.
+Rerolls preserve the source's pool/rarity/upgrade rules and roll back on failure.
+Hefty Tablet, Lead Paperweight and Sea Glass are selection screens, so they do
+not expose these alternatives. The pinned Kaleidoscope has an empty native reroll
+pool: its reroll rejects atomically with an explicit error; sacrifice works.
+
+Lord's Parasol automatically purchases each initial merchant slot once, pauses for
+pickup choices, resumes with Courier restocking, then offers mandatory free removal
+when eligible. Golden Compass replaces a generated Act 1 map with the fixed golden
+path when acquired before map travel; its unknown nodes resolve to events. Fur Coat
+marks up to seven fights using its independent seeded stream and also affects
+summoned enemies. Whispering Earring spends resources on up to 13 automatic plays
+and resolves its own card selections; Imbued plays first. These relics can be
+acquired through `obtain_relic` scenarios. Neow keeps its native 27-relic offer pool;
+this change does not add later-act Ancient encounter selection or later-act runs.
+
+See the [Ancient census](../tests/fixtures/headless_ancient_scope.json) and
+[Ancient behavior/continuation tests](../tests/headless/test_all_ancients.py).
+The census is decompiled-source evidence, not a native runtime oracle. Tests cover
+all 70 new acquisitions and combat continuations, resource/selection interactions,
+RNG consumption, malformed snapshots and atomic failure. Independent semantic
+review reproduced the key RNG and persistence cases. Whole-run same-seed parity
+and exhaustive combinations remain unproven.
+
+See the [original scope inventory](../tests/fixtures/headless_relic_scope.json),
 [combat tests](../tests/headless/test_relic_combat.py),
 [run tests](../tests/headless/test_relic_run.py) and
 [source/validation record](evidence/relics_2026_09_13.md). Current private combat/run
@@ -1280,7 +1324,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v36`, including configuration,
+Private run snapshots now use `headless_run_state_v37`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1291,7 +1335,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v24`, including the in-play
+Nested combat records now use `headless_combat_state_v25`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
@@ -1301,11 +1345,14 @@ Scythe damage and Genetic Algorithm block growth, ordered local cost setters,
 owned orb identities/slots/values and orb-generation RNG, side-end listener order,
 instanced Orbit/Monologue counters, earned Royalties, power duration flags, player
 card-play counts, exact power applier slots, monster phase/spawn counters and
-per-card enchantment trigger state. Permanent card records retain enchantments
+per-card enchantment trigger state, Ancient hook memory, generic monster stun and
+owned automatic-play continuations. Run records additionally retain stored Ancient
+cards, wax state, map marks, reward rerolls and rest/shop continuations.
+Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v22 and run v1–v34 formats are rejected rather than assigning invented item
+v1–v24 and run v1–v36 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

@@ -39,9 +39,9 @@ def restored(run):
     "row", VECTORS["predicates"], ids=lambda row: f"floor{row['floor']}-runs{row['runs']}"
 )
 def test_all_161_relic_predicates_against_native(row):
-    assert {m["id"] for m in VECTORS["metadata"]} == set(RELICS)
+    assert {m["id"] for m in VECTORS["metadata"]} <= set(RELICS)
     assert {
-        name for name in RELICS if is_allowed(name, total_floor=row["floor"], prior_runs=row["runs"])
+        m["id"] for m in VECTORS["metadata"] if is_allowed(m["id"], total_floor=row["floor"], prior_runs=row["runs"])
     } == set(row["allowed"])
 
 

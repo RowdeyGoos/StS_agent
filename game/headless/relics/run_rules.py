@@ -4,7 +4,7 @@ from dataclasses import replace
 
 
 def owned(state, name):
-    return next((r for r in state.relics if r.definition_id == name), None)
+    return next((r for r in state.relics if r.definition_id == name and not r.data.get("_melted")), None)
 
 
 def has(state, name):
@@ -31,7 +31,7 @@ def max_hp(state, amount):
 
 
 def gain_gold(state, amount):
-    amount = max(0, amount)
+    amount = 0 if has(state, "ectoplasm") else max(0, amount)
     if has(state, "bowler_hat"):
         amount = amount * 5 // 4
     state.gold += amount
@@ -43,6 +43,8 @@ def gain_gold(state, amount):
 def modify_new_card(state, card, *, only=None):
     eggs = {"attack": "molten_egg", "skill": "toxic_egg", "block": "toxic_egg", "power": "frozen_egg"}
     for relic in state.relics:
+        if relic.data.get("_melted"):
+            continue
         if only is not None and relic.instance_id != only:
             continue
         if relic.definition_id == eggs.get(card.spec.kind) and card.upgrade_level + 1 < len(
@@ -64,6 +66,8 @@ def card_added(state, card):
 
 def after_card_added(state):
     for relic in tuple(state.relics):
+        if relic.data.get("_melted"):
+            continue
         if relic.definition_id == "book_of_five_rings":
             value = (relic.counter + 1) % 5
             counter(state, relic, value)
@@ -75,6 +79,8 @@ def after_card_added(state):
 
 def entered_room(state, kind, *, unknown=False):
     for relic in tuple(state.relics):
+        if relic.data.get("_melted"):
+            continue
         name = relic.definition_id
         if name == "meal_ticket" and kind == "shop":
             heal(state, 15)
@@ -93,6 +99,8 @@ def victory(state, *, room_kind="combat"):
     if has(state, "meat_on_the_bone") and state.hp * 2 <= state.max_hp:
         heal(state, 12)
     for relic in tuple(state.relics):
+        if relic.data.get("_melted"):
+            continue
         if relic.definition_id == "lasting_candy":
             counter(state, relic, (relic.counter + 1) % 2)
         elif relic.definition_id == "fishing_rod" and room_kind == "combat":
@@ -102,6 +110,9 @@ def victory(state, *, room_kind="combat"):
                 eligible = [c for c in state.deck if c.upgrade_level + 1 < len(c.definition.levels)]
                 if eligible:
                     state.rng.choice("relic.fishing_upgrade", eligible).upgrade()
+        elif relic.definition_id == "war_hammer" and room_kind == "elite":
+            from game.headless.relics.ancient_pickups import upgrade_random
+            upgrade_random(state, 4)
         elif relic.definition_id == "chosen_cheese":
             max_hp(state, 1)
 

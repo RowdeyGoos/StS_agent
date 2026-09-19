@@ -75,6 +75,9 @@ def run(p, execute):
     parents = []
     while True:
         if paused(p):
+            from game.headless.relics.ancient_state import auto_select
+            if auto_select(p):
+                continue
             if not parents:
                 return
             r.deferred_hooks.append(capture(p))

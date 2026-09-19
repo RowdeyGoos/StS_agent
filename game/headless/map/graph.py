@@ -51,7 +51,8 @@ class MapGraph:
             raise ValueError("Map contains unreachable nodes.")
         if self.generation is not None:
             from game.headless.map.overgrowth import validate_generated_map
-            validate_generated_map(self)
+            from game.headless.map.golden_path import PROFILE, validate
+            validate(self) if self.generation == PROFILE else validate_generated_map(self)
 
     def node(self, node_id: str) -> MapNode:
         try:

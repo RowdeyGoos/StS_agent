@@ -29,7 +29,7 @@ def move_out(player, card):
             return
 
 
-def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
+def start_play(player, card, target=None, *, auto=False, force_exhaust=False, spend_resources=False):
     if player.combat_is_ending:
         return
     from game.headless.cards.curses import can_play
@@ -76,13 +76,18 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     cost = player.card_cost(card)
     x = player.energy if card.spec.x_cost else 0
     star_value = player.rules.stars if card.spec.star_x else 0
-    stars_spent = 0 if auto else player.star_cost(card)
-    if not auto:
+    stars_spent = 0 if auto and not spend_resources else player.star_cost(card)
+    if not auto or spend_resources:
         player.energy -= cost
     move_out(player, card)
     player.deck.in_play.append(card)
     rules = player.rules
     repeats = 1 + card.combat_state.replay_count
+    from game.headless.relics.combat import owned, memory
+    axe = owned(player, "throwing_axe")
+    if axe and not memory(player, axe).get("used"):
+        memory(player, axe)["used"] = True
+        repeats += 1
     if rules.powers.get("duplication"):
         repeats += 1
         rules.powers["duplication"] -= 1
@@ -99,9 +104,9 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
         "target": target_slot,
         "auto": auto,
         "force_exhaust": force_exhaust,
-        "x": x + (2 if card.spec.x_cost and any(r["definition_id"] == "chemical_x" for r in rules.relics) else 0),
-        "energy_value": 0 if auto else cost,
-        "star_value": star_value + (2 if card.spec.star_x and any(r["definition_id"] == "chemical_x" for r in rules.relics) else 0),
+        "x": x + (2 if card.spec.x_cost and any(r["definition_id"] == "chemical_x" and not r.get("data", {}).get("_melted") for r in rules.relics) else 0),
+        "energy_value": 0 if auto and not spend_resources else cost,
+        "star_value": star_value + (2 if card.spec.star_x and any(r["definition_id"] == "chemical_x" and not r.get("data", {}).get("_melted") for r in rules.relics) else 0),
         "stars_spent": stars_spent,
         "remaining": repeats,
         "rupture": 0,
@@ -129,7 +134,7 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False):
     from game.headless.powers.defect import prepare_play
     prepare_play(player, card, frame)
     push(player, ["iteration", card.instance_id])
-    if not auto:
+    if not auto or spend_resources:
         from game.headless.powers.regent import spend
         spend(player, cost, stars_spent)
 
@@ -156,7 +161,10 @@ def execute(p, task):
     r = p.rules
     if requires_receipt(op):
         r.pending_events.remove(dict(context=r.active_hook, task=task))
-    if op == "iteration":
+    if op.startswith("ancient_"):
+        from game.headless.relics.ancient_combat import execute as ancient_execute
+        ancient_execute(p, op, args)
+    elif op == "iteration":
         (identity,) = args
         card = find(p, identity)
         if not p.combat_is_ending:
@@ -251,9 +259,18 @@ def execute(p, task):
     elif op == "shuffle_choice":
         from game.headless.core.piles import choose_after_shuffle
         choose_after_shuffle(p)
+    elif op == "hand_draw":
+        count = args[0]
+        if r.round_number == 1:
+            imbued = [c for c in reversed(p.deck.draw_pile) if c.enchantment and c.enchantment.definition_id == 'imbued']
+            innate = [c for c in reversed(p.deck.draw_pile) if c.spec.innate and c not in imbued]
+            p.deck.draw_pile = list(reversed(imbued)) + [c for c in p.deck.draw_pile if c not in imbued and c not in innate] + innate
+            count = min(10, max(count, len(innate)))
+        push(p, ['draw', count, True])
     elif op == "draw":
         count, hand_draw = args
-        if count <= 0 or p.combat_is_ending or (r.powers.get("no_draw") and not hand_draw):
+        from game.headless.relics.combat import has
+        if count <= 0 or p.combat_is_ending or (not hand_draw and (r.powers.get("no_draw") or r.player_side and has(p, "fiddle"))):
             return
         if not colorless.ensure_draw(p, task):
             return
@@ -326,7 +343,8 @@ def execute(p, task):
         if not p.combat_is_ending and p.combat_enemies[slot].is_alive:
             hooks.apply_power(p, name, amount, p.combat_enemies[slot])
     elif op == "pillage":
-        if p.combat_is_ending or r.powers.get("no_draw"):
+        from game.headless.relics.combat import has
+        if p.combat_is_ending or r.powers.get("no_draw") or r.player_side and has(p, "fiddle"):
             return
         if not colorless.ensure_draw(p, task):
             return
@@ -375,7 +393,7 @@ def execute(p, task):
     elif op == "discard_remaining":
         for card in tuple(p.hand):
             from game.headless.relics.combat import has
-            if not card.spec.retain and not r.powers.get("retain_hand") and not (r.round_number == 1 and has(p, "ringing_triangle")):
+            if not has(p, "runic_pyramid") and not card.spec.retain and not r.powers.get("retain_hand") and not (r.round_number == 1 and has(p, "ringing_triangle")):
                 p.hand.remove(card)
                 p.deck.discard_card(card)
         from game.headless.relics.combat import tasks as relic_tasks
@@ -412,6 +430,8 @@ def execute(p, task):
         nec_after_card(p, card)
         if card.enchantment is not None and card.enchantment.definition_id == "glam":
             card.enchantment.triggered = True
+        if card.enchantment is not None and card.enchantment.definition_id == "goopy" and p.is_alive:
+            card.enchantment.amount += 1
     elif op == "after_card_enemies":
         from game.headless.powers.necrobinder import after_enemies as nec_after_enemies
         nec_after_enemies(p, find(p, args[0]))
@@ -438,6 +458,9 @@ def execute(p, task):
         from game.headless.enchantments.base import after_draw
         card = find(p, args[0])
         if card is not None:
+            if r.powers.get("confused") and card.cost >= 0 and not card.spec.x_cost:
+                from game.headless.enchantments.base import randomize_cost
+                randomize_cost(card, p.deck)
             after_draw(card, p.deck)
             from game.headless.powers.regent import after_draw as regent_after_draw
             regent_after_draw(p, card)

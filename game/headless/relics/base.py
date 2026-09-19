@@ -47,10 +47,13 @@ class RelicInstance:
     definition_id: str
     instance_id: str
     counter: int = 0
-    data: dict[str, int] = field(default_factory=dict)
+    data: dict[str, object] = field(default_factory=dict)
 
+
+from game.headless.relics.ancient_content import definitions as ancient_definitions
 
 RELICS = MappingProxyType({
+    **ancient_definitions(RelicDefinition),
     "byrdpip": RelicDefinition("byrdpip", adds_pet=True, allow_duplicates=True, pickup_transform=("byrdonis_egg", "byrd_swoop")),
     "sword_of_stone": RelicDefinition("sword_of_stone", evolve_after_elites=5, evolves_into="sword_of_jade", allow_duplicates=True),
     "sword_of_jade": RelicDefinition("sword_of_jade", combat_strength=3, allow_duplicates=True),

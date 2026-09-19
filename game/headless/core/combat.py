@@ -81,6 +81,13 @@ class CombatEngine:
             self.player.rules.potion_pool = list(potion_pool)
         from game.headless.relics.combat import install
         install(self.player, relics, room_kind=room_kind, hp=initial_hp, potion_capacity=potion_capacity, potion_slots=potion_slots)
+        from game.headless.relics.combat import owned, memory
+        coat = owned(self.player, "fur_coat")
+        if coat:
+            memory(self.player, coat)["active"] = bool(getattr(self, "fur_coat_active", False))
+            if memory(self.player, coat)["active"]:
+                for enemy in self.enemies:
+                    enemy.hp = 1
         self.player.start_turn(draw_count=self.cards_per_turn)
         self._refresh_persistent_statuses()
         self._check_terminal()
@@ -157,6 +164,13 @@ class CombatEngine:
         self._refresh_persistent_statuses()
         self._check_terminal()
         if self.done:
+            return CombatResult(self.done, self.winner, {"enemy_actions": []})
+        from game.headless.relics.ancient_combat import extra_turn
+        if extra_turn(self.player):
+            self.turn += 1
+            self.player.start_turn(draw_count=self.cards_per_turn)
+            self._refresh_persistent_statuses()
+            self._check_terminal()
             return CombatResult(self.done, self.winner, {"enemy_actions": []})
         self.player.rules.enemy_turn = {'limit': len(self.enemies), 'slot': 0, 'move': None, 'actions': []}
         from game.headless.powers.silent import enemy_side_tasks

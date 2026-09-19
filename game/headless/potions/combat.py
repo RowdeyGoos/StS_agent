@@ -93,7 +93,11 @@ def effect(p, identity, index):
 
         while r.potion_slots:
             # Entropic Brew deliberately uses the OUT-of-combat factory even in combat.
-            r.potions_generated.append(generate(r.potion_pool, p.deck.potion_rng))
+            potion = generate(r.potion_pool, p.deck.potion_rng)
+            from game.headless.relics.combat import has
+            if has(p, "sozu"):
+                break
+            r.potions_generated.append(potion)
             r.potion_slots -= 1
     elif op == "upgrade_hand":
         for card in p.hand:

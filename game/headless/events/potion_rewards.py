@@ -24,7 +24,7 @@ def choose(state, pending, option_id):
     if reward["claimed_id"] is not None:
         raise ValueError("Potion already claimed.")
     potion = add_potion(state, reward["definition_id"])
-    reward["claimed_id"] = potion.instance_id
+    reward["claimed_id"] = potion.instance_id if potion is not None else "prevented:sozu"
 
 
 def validate(state, records, pool, count):
@@ -37,6 +37,10 @@ def validate(state, records, pool, count):
             raise ValueError("Invalid event potion offer.")
         identity = record["claimed_id"]
         if identity is None:
+            continue
+        if identity == "prevented:sozu":
+            if not any(r.definition_id == "sozu" for r in state.relics):
+                raise ValueError("Unowned potion prevention.")
             continue
         if not isinstance(identity, str) or not identity.startswith("run.item."):
             raise ValueError("Invalid claimed potion ID.")

@@ -8,6 +8,7 @@ from game.headless.relics import run_rules
 
 RESOURCE_RELICS = frozenset(
     (
+        "ectoplasm",
         "tungsten_rod",
         "lizard_tail",
         "bowler_hat",
