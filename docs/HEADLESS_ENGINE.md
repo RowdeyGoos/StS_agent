@@ -1328,7 +1328,47 @@ policy, transport or artifact code.
 ## Validation
 
 Run `PYTHONPATH=. python -m pytest -q tests/headless` for direct gameplay cases.
-They include an unlisted card with three levels, changed cost/damage, two combats,
+During local changes, run the affected test modules first; add `--durations=15` to
+see slow cases. Run the broad suite after shared changes are stable. A profiler
+can isolate repeated work without running the whole suite under instrumentation:
+
+```bash
+PYTHONPATH=. python -m cProfile -o /tmp/headless-tests.prof -m pytest -q \
+  'tests/headless/test_foreign_acquisition.py::test_splash_matches_native_pool_offers_upgrades_and_rng[0False]' \
+  'tests/headless/test_foreign_acquisition.py::test_every_native_offered_option_can_be_acquired_played_and_restored[0-plain]'
+python -m pstats /tmp/headless-tests.prof
+```
+
+On 2026-09-19, those two cases called `CardCatalog.snapshot_fingerprint()` 90 times;
+repeated catalog serialization took 4.14 of 4.82 profiled seconds (86%). Catalogs
+now reuse their fingerprint only when all definition values are recursively frozen.
+Mutable custom effects bypass caching, and changes to enchantment definitions
+invalidate it. Cache state is owned by the catalog and excluded from its equality;
+fingerprint bytes, snapshot formats and restore checks are unchanged.
+
+The same 123 acquisition tests improved from **31.62 to 4.49 seconds (7.0×)** on
+the same Python 3.11 environment, without changing tests or adding workers.
+Profiled fingerprint time fell from 4.14 to 0.054 seconds, including the first
+computation. All five cumulative catalog fingerprints and representative native
+run/pending-Splash snapshots matched their pre-change bytes. Regression cases
+cover cache reuse, changed values/effects, nested mutable effects, enchantment
+changes and invalid custom effects. Remaining profile cost includes item/shop
+metadata serialization; these measurements do not attribute every full-suite
+second to catalog fingerprints.
+
+The broad headless run passed **3,810 tests in 157.97 seconds (2m38s)**,
+compared with the preceding 3,759-test run's 895.58 seconds (14m55s). That is
+about 5.7× faster despite the additional tests; the identical 123-test comparison
+above is the controlled before/after measurement. The slowest remaining individual
+cases were full-route/CLI restoration tests at 1.4–2.3 seconds. Cache-specific
+regressions live in
+[`test_catalog_fingerprint.py`](../tests/headless/test_catalog_fingerprint.py).
+Compatibility checks passed 360 tests in 79.36 seconds; a fresh wheel installation
+passed 129 fingerprint/acquisition tests in 4.78 seconds and the 38-command authored
+route with restoration verification. All 183 installed headless modules matched
+source bytes. `compileall game tests` and diff checks passed.
+
+The gameplay tests include an unlisted card with three levels, changed cost/damage, two combats,
 JSON continuation, RNG aliasing, invalid-operation atomicity, branch isolation,
 rewards, rooms, map navigation and an import-boundary check.
 [`test_vertical_slice.py`](../tests/headless/test_vertical_slice.py) covers both
