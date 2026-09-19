@@ -115,8 +115,11 @@ class Enemy(ABC):
         player = self.combat_player
         if player is not None and attacker_statuses is player.statuses and self.statuses.get('vulnerable'):
             from game.headless.relics.combat import has
-            n *= 150 + player.rules.powers.get('cruelty', 0) + (25 if has(player, 'paper_phrog') else 0)
-            d *= 150
+            vulnerable = 150 + player.rules.powers.get('cruelty', 0) + (25 if has(player, 'paper_phrog') else 0)
+            if self.statuses.get('debilitate'):
+                vulnerable = 100 + 2 * (vulnerable - 100)
+            n *= vulnerable
+            d *= 200 if self.statuses.get('debilitate') else 150
         if player is not None and attacker_statuses is player.statuses:
             from game.headless.relics.damage import attack_multiplier
             n *= attack_multiplier(player, player.current_card)
@@ -126,6 +129,12 @@ class Enemy(ABC):
             n *= damage_multiplier(player, self)
             if self.statuses.get("conqueror") and player.current_card is not None and player.current_card.definition.definition_id == "sovereign_blade":
                 n *= 2
+            from game.headless.powers.necrobinder import damage_multiplier
+            nn, dd = damage_multiplier(player, player.current_card)
+            n *= nn
+            d *= dd
+            if player.current_card is not None and player.current_card.definition.definition_id == 'hang' and self.statuses.get('hang'):
+                n *= self.statuses.get('hang')
         return n, d
 
     def start_turn(self) -> None:
@@ -144,15 +153,10 @@ class Enemy(ABC):
             raise ValueError("Strength gain cannot be negative.")
         self.strength += amount
 
-    def take_damage(
-        self,
-        amount: int,
-        is_attack: bool = True,
-        attacker_statuses: StatusCollection | None = None,
-        attacker_strength: int = 0,
-        powered: bool = True,
-    ) -> int:
-        """Apply incoming damage and return the HP damage taken."""
+    def damage_amount(self, amount, *, is_attack=True, attacker_statuses=None, attacker_strength=0, powered=True, pet=False):
+        if pet:
+            from game.headless.powers.necrobinder_damage import pet_damage
+            return pet_damage(self.combat_player, self, amount)
         player = self.combat_player
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
             from game.headless.relics.damage import attack_bonus
@@ -170,6 +174,23 @@ class Enemy(ABC):
             if is_attack and powered
             else amount
         )
+        return incoming_damage
+
+    def take_damage(
+        self,
+        amount: int,
+        is_attack: bool = True,
+        attacker_statuses: StatusCollection | None = None,
+        attacker_strength: int = 0,
+        powered: bool = True,
+        pet: bool = False,
+    ) -> int:
+        """Apply incoming damage and return the HP damage taken."""
+        player = self.combat_player
+        incoming_damage = self.damage_amount(amount, is_attack=is_attack, attacker_statuses=attacker_statuses, attacker_strength=attacker_strength, powered=powered, pet=pet)
+        from game.headless.powers.damage import resolve_unblocked_damage
+        from copy import deepcopy
+        total = min(self.block, incoming_damage) + resolve_unblocked_damage(deepcopy(self.statuses), max(0, incoming_damage - self.block))
         previous_hp = self.hp
         self.hp, self.block = apply_damage_to_block_and_hp(
             self.hp,
@@ -180,15 +201,9 @@ class Enemy(ABC):
             slot = str(player.combat_enemies.index(self))
             player.rules.regent_hits[slot] = player.rules.regent_hits.get(slot, 0) + 1
         damage = self._after_damage(previous_hp, is_attack)
-        if is_attack and powered and player is not None and attacker_statuses is player.statuses and self.is_alive:
-            from game.headless.core.resolution import push
-            callbacks = []
-            for key, amount in player.rules.powers.items():
-                if key == "monarchs_gaze":
-                    callbacks.append(["status", player.combat_enemies.index(self), "monarchs_gaze_strength_down", amount])
-                elif key == "envenom" and damage:
-                    callbacks.append(["status", player.combat_enemies.index(self), "poison", amount])
-            push(player, *callbacks)
+        if is_attack and powered and player is not None and (pet or attacker_statuses is player.statuses):
+            from game.headless.powers.necrobinder_damage import after_attack_damage
+            after_attack_damage(player, self, total, pet=pet, damage=damage)
         return damage
 
     def take_unblockable_damage(self, amount):
@@ -202,6 +217,9 @@ class Enemy(ABC):
         self.on_damage_taken(damage, is_attack)
         if self.combat_player is not None:
             from game.headless.core.enemy_lifecycle import settle_enemies
+            if previous_hp > 0 and self.hp <= 0 and not self.statuses.get("illusion"):
+                from game.headless.powers.necrobinder import after_death
+                after_death(self.combat_player)
             settle_enemies(self.combat_player)
             if previous_hp > 0 and self.hp <= 0 and not self.combat_player.combat_is_ending:
                 from game.headless.relics.combat import has
@@ -213,15 +231,18 @@ class Enemy(ABC):
                 drain(self.combat_player)
         return damage
 
-    def apply_status(self, status_name: str, stacks: int, *, source=None) -> None:
+    def apply_status(self, status_name: str, stacks: int, *, source=None, temporary_copy=False) -> None:
         """Apply a status effect to the enemy."""
-        if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise", "poison", "strangle", "conqueror", "crush_under", "dying_star", "monarchs_gaze_strength_down"):
+        if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise", "poison", "strangle", "conqueror", "crush_under", "dying_star", "monarchs_gaze_strength_down", "doom", "debilitate", "enfeebling_touch", "hang", "oblivion", "sic_em"):
             from game.headless.relics.damage import debuff_amount
             stacks = debuff_amount(source, source.current_card, stacks)
-        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise", "poison", "strangle", "conqueror", "crush_under", "dying_star", "monarchs_gaze_strength_down") and self.statuses.get("artifact"):
+        if stacks and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise", "poison", "strangle", "conqueror", "crush_under", "dying_star", "monarchs_gaze_strength_down", "doom", "debilitate", "enfeebling_touch", "hang", "oblivion", "sic_em") and self.statuses.get("artifact"):
             self.statuses.decrement("artifact")
             return
         self.statuses.add(status_name, stacks)
+        if source is not None and stacks and status_name != 'artifact':
+            from game.headless.powers.necrobinder import after_status
+            after_status(source, self, status_name, stacks, temporary_copy=temporary_copy)
         if status_name == "poison" and stacks and source is not None:
             from game.headless.powers.silent import after_poison
             after_poison(source)
@@ -289,7 +310,7 @@ class Enemy(ABC):
         player.take_damage(
             current_intent.attack_damage if current_intent.base_attack_damage is None else current_intent.base_attack_damage,
             attacker_statuses=None if current_intent.base_attack_damage is None else self.statuses,
-            attacker_strength=-(sum(self.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down"))) if current_intent.base_attack_damage is None else self.strength - (sum(self.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down"))),
+            attacker_strength=-(sum(self.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down", "enfeebling_touch"))) if current_intent.base_attack_damage is None else self.strength - (sum(self.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down", "enfeebling_touch"))),
             source=self,
         )
 
@@ -335,7 +356,7 @@ class Enemy(ABC):
                 template.attack_damage,
                 {},
                 attacker_statuses=self.statuses,
-                attacker_strength=self.strength - (sum(self.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down"))),
+                attacker_strength=self.strength - (sum(self.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down", "enfeebling_touch"))),
             )
 
         resolved_value = template.value

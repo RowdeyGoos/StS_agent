@@ -41,10 +41,16 @@ def begin(enemy):
 def validate(record, player):
     if record is None:
         return
-    if not isinstance(record, dict) or set(record) - {"poison_start", "started"} != {"limit", "slot", "move", "actions"}:
+    if not isinstance(record, dict) or set(record) - {"poison_start", "started", "doom_end"} != {"limit", "slot", "move", "actions"}:
         raise ValueError("Invalid enemy-side continuation.")
     if player.rules.player_side or any(type(record[k]) is not int for k in ("limit", "slot")):
         raise ValueError("Invalid enemy-side ownership.")
+    if record.get('doom_end') is True:
+        if record['slot'] != record['limit'] or not 0 < record['limit'] <= len(player.combat_enemies) or record['move'] is not None or not isinstance(record['actions'], list):
+            raise ValueError('Invalid enemy Doom boundary.')
+        return
+    if 'doom_end' in record:
+        raise ValueError('Invalid enemy Doom marker.')
     if not 0 <= record["slot"] < record["limit"] <= len(player.combat_enemies):
         raise ValueError("Invalid enemy-side cursor.")
     if "started" in record and record["started"] is not True:

@@ -63,6 +63,8 @@ from game.headless.core import silent_snapshots
 TASK_ARITIES.update(silent_snapshots.TASK_ARITIES)
 from game.headless.core import regent_snapshots
 TASK_ARITIES.update(regent_snapshots.TASK_ARITIES)
+from game.headless.core import necrobinder_snapshots
+TASK_ARITIES.update(necrobinder_snapshots.TASK_ARITIES)
 
 
 def restore_rules(record, player):
@@ -117,8 +119,10 @@ def restore_rules(record, player):
     validate_potions(r, player)
     silent_snapshots.validate_state(r, player)
     regent_snapshots.validate_state(r, player)
+    necrobinder_snapshots.validate_state(r, player)
     from game.headless.core.hook_snapshots import groups, validate_choices
     work = groups(r, player)
+    necrobinder_snapshots.validate_pending(r, work)
     validate_choices(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
     if not isinstance(r.plays, dict) or set(r.plays) != set(in_play):
@@ -136,9 +140,9 @@ def restore_rules(record, player):
             "destination",
             "effect_index",
             "stage",
-            "silent_before", "regent_before", "star_value", "stars_spent",
+            "silent_before", "regent_before", "star_value", "stars_spent", "nec_before", "nec_first_attack", "nec_banshees",
         }
-        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification", "echo_kills", "forge_amount"} != required:
+        if not isinstance(frame, dict) or set(frame) - {"blocks_gained", "calamity", "gigantification", "echo_kills", "forge_amount", "nec_misery"} != required:
             raise ValueError("Invalid play frame.")
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
@@ -166,6 +170,7 @@ def restore_rules(record, player):
             raise ValueError("Invalid interrupted effect.")
         silent_snapshots.validate_frame(frame, player)
         regent_snapshots.validate_frame(frame, r)
+        necrobinder_snapshots.validate_frame(frame, player)
         if frame["destination"] == "hand" and in_play[identity].definition.definition_id != "particle_wall":
             raise ValueError("Unowned return-to-hand destination.")
         card = in_play[identity]
@@ -261,7 +266,7 @@ def restore_rules(record, player):
         if op == "selected" and (
             args[0] not in player.deck._allocated_ids
             or args[0] in r.plays
-            or (args[1] not in ("move", "exhaust", "transform", "discard_redraw", "free_combat", "hand_trick", "nightmare", "well_laid_plans") and args[1] not in regent_snapshots.CHOICES)
+            or (args[1] not in ("move", "exhaust", "transform", "discard_redraw", "free_combat", "hand_trick", "nightmare", "well_laid_plans") and args[1] not in regent_snapshots.CHOICES and args[1] not in necrobinder_snapshots.CHOICES)
             or args[2] not in ("hand", "draw_pile")
             or args[3] not in ("", "free_this_turn", "free_until_played")
         ):
@@ -273,7 +278,7 @@ def restore_rules(record, player):
         if op == "begin_end_hooks" and not r.turn_ending:
             raise ValueError("Turn-end hooks outside the ending phase.")
         if op == "before_draw_power":
-            if not r.player_side or not (args[0] in ("infinite_blades", "spectrum_shift", "foregone_conclusion") or (isinstance(args[0], str) and args[0].startswith("nightmare:") and valid_power(args[0], r.power_sequence))):
+            if not r.player_side or not (args[0] in ("infinite_blades", "spectrum_shift", "foregone_conclusion", "call_of_the_void", "sentry_mode") or (isinstance(args[0], str) and args[0].startswith("nightmare:") and valid_power(args[0], r.power_sequence))):
                 raise ValueError("Invalid before-draw power task.")
         if op == "side_start_powers" and not r.player_side:
             raise ValueError("Side-start power dispatch outside setup.")
@@ -284,7 +289,7 @@ def restore_rules(record, player):
             if (
                 type(slot) is not int
                 or not 0 <= slot < len(player.combat_enemies)
-                or name not in ("strength", "vulnerable", "weak", "mangle", "dark_shackles", "poison", "strangle", "conqueror", "crush_under", "dying_star", "monarchs_gaze_strength_down")
+                or name not in ("strength", "vulnerable", "weak", "mangle", "dark_shackles", "poison", "strangle", "conqueror", "crush_under", "dying_star", "monarchs_gaze_strength_down", "doom", "debilitate", "enfeebling_touch", "hang", "oblivion", "sic_em")
                 or type(amount) is not int
                 or amount < 0
             ):
@@ -307,7 +312,7 @@ def restore_rules(record, player):
                 "block",
                 "plays",
                 "draw_pile",
-                "debuffs", "discards", "draws", "precise", "star_cards", "generated",
+                "debuffs", "discards", "draws", "precise", "star_cards", "generated", "turn_draws", "doom", "exhausted_souls",
             ) or any(type(v) is not int or v < 0 for v in (factor, gain, vigor)):
                 raise ValueError("Invalid queued attack expression.")
         if op in ("draw", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
@@ -349,6 +354,8 @@ def restore_rules(record, player):
         ]:
             raise ValueError("Nested plays must finish before their parents in their own context.")
         for task in tasks:
+            if task[0] in necrobinder_snapshots.TASK_ARITIES:
+                necrobinder_snapshots.validate_task(task, r, player, context)
             if task[0] in regent_snapshots.TASK_ARITIES:
                 regent_snapshots.validate_task(task, r, player, context)
             if task[0] in silent_snapshots.TASK_ARITIES:

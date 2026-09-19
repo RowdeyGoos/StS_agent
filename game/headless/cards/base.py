@@ -100,6 +100,7 @@ class Card:
         self.upgrade_level = upgrade_level
         self.instance_id = instance_id
         self.combats_seen = 0
+        self.permanent_damage = 0
         self.enchantment = None
         from game.headless.core.card_state import CardState
         self.combat_state = CardState()
@@ -110,12 +111,16 @@ class Card:
         if self.enchantment is not None and self.enchantment.definition_id == "royally_approved":
             from dataclasses import replace
             spec = replace(spec, innate=True, retain=True)
+        if self.permanent_damage:
+            from dataclasses import replace
+            spec = replace(spec, base_damage=spec.base_damage + self.permanent_damage)
         state = self.combat_state
-        if state.retain_this_turn or state.retain_this_combat or state.sly_this_turn or state.sly_this_combat or state.all_enemies:
+        if state.retain_this_turn or state.retain_this_combat or state.sly_this_turn or state.sly_this_combat or state.all_enemies or state.ethereal_this_combat:
             from dataclasses import replace
             spec = replace(spec, retain=spec.retain or state.retain_this_turn or state.retain_this_combat,
                            sly=spec.sly or state.sly_this_turn or state.sly_this_combat,
-                           uses_target=spec.uses_target and not state.all_enemies)
+                           uses_target=spec.uses_target and not state.all_enemies,
+                           ethereal=spec.ethereal or state.ethereal_this_combat)
         return spec
 
     @property

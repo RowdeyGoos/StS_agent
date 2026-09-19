@@ -30,7 +30,8 @@ CRUSH_UNDER = "crush_under"
 DYING_STAR = "dying_star"
 MONARCHS_GAZE = "monarchs_gaze_strength_down"
 CONQUEROR = "conqueror"
-SUPPORTED_STATUS_NAMES: tuple[str, ...] = (SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE, DARK_SHACKLES, DEMISE, POISON, STRANGLE, CONQUEROR, CRUSH_UNDER, DYING_STAR, MONARCHS_GAZE)
+NECRO_STATUSES = ("doom", "debilitate", "enfeebling_touch", "hang", "oblivion", "sic_em")
+SUPPORTED_STATUS_NAMES: tuple[str, ...] = (*NECRO_STATUSES, SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE, DARK_SHACKLES, DEMISE, POISON, STRANGLE, CONQUEROR, CRUSH_UNDER, DYING_STAR, MONARCHS_GAZE)
 STATUS_STACK_SCALE = 5.0
 
 
@@ -43,6 +44,7 @@ class StatusDefinition:
 
 
 STATUS_DEFINITIONS = MappingProxyType({
+    **{n: StatusDefinition(name=n, duration_tick_side='enemy' if n == 'debilitate' else None) for n in NECRO_STATUSES},
     SHRINK: StatusDefinition(name=SHRINK, duration_tick_side=None),
     VULNERABLE: StatusDefinition(name=VULNERABLE),
     WEAK: StatusDefinition(name=WEAK),
@@ -140,10 +142,10 @@ def modify_attack_damage_for_statuses(
         numerator *= 7
         denominator *= 10
     if attacker_statuses is not None and get_status_amount(attacker_statuses, WEAK) > 0:
-        numerator *= 3
+        numerator *= 2 if get_status_amount(attacker_statuses, "debilitate") else 3
         denominator *= 4
     if get_status_amount(target_statuses, VULNERABLE) > 0:
-        numerator *= 3
+        numerator *= 4 if get_status_amount(target_statuses, "debilitate") else 3
         denominator *= 2
     return modified_damage * numerator // denominator
 

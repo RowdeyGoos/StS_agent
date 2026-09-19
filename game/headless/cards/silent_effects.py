@@ -126,10 +126,8 @@ def execute(p, op, args):
     elif op == 'silent_strength_loss':
         e = p.combat_enemies[args[0]]
         if e.is_alive:
-            if e.statuses.get('artifact'):
-                e.statuses.decrement('artifact')
-            else:
-                e.strength -= args[1]
+            from game.headless.powers.necrobinder import lose_strength
+            lose_strength(p, args[1], e)
     elif op == 'silent_knife':
         card = find(p, args[0])
         target = p.combat_enemies[args[1]]
@@ -158,7 +156,8 @@ def execute(p, op, args):
         if drawn:
             c = drawn[0]
             r.drawn_combat += 1
-            push(p, ['after_draw'], ['silent_draw_hook', False], ['after_draw_card', c.instance_id], ['silent_escape_block', args[0], args[1], c.spec.kind in ('skill', 'block')])
+            r.drawn_turn += 1
+            push(p, ['after_draw'], ['silent_draw_hook', False, c.instance_id], ['after_draw_card', c.instance_id], ['silent_escape_block', args[0], args[1], c.spec.kind in ('skill', 'block')])
             if r.powers.get('hellraiser') and c.definition.strike:
                 push(p, ['autoplay', c.instance_id, False])
     elif op == 'silent_escape_block':

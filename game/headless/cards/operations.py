@@ -24,6 +24,9 @@ class Attack:
         extra = value(card, self.factor, self.upgraded_factor)
         n = {
             "base": 0,
+            "turn_draws": player.rules.drawn_turn,
+            "doom": 0 if target is None else target.statuses.get('doom'),
+            "exhausted_souls": sum(c.definition.definition_id == 'soul' for c in player.deck.exhaust_pile),
             "exhaust": len(player.deck.exhaust_pile),
             "vulnerable": 0 if target is None else target.statuses.get("vulnerable"),
             "strikes": sum(c.definition.strike for c in player.deck.all_cards()),
@@ -47,9 +50,9 @@ class Attack:
                         "tangled",
                         "ringing",
                         "shrink",
-                        "demise", "conqueror",
+                        "demise", "conqueror", "doom", "debilitate", "hang", "oblivion", "sic_em",
                     )
-                ) + int(target.strength - sum(target.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down")) < 0)
+                ) + int(target.strength - sum(target.statuses.get(k) for k in ("mangle", "dark_shackles", "crush_under", "dying_star", "monarchs_gaze_strength_down", "enfeebling_touch")) < 0)
                 if target is not None
                 else 0
             ),
@@ -73,6 +76,8 @@ class Attack:
             hits = sum(c.spec.kind in ("skill", "block") for c in player.hand)
         elif self.hit_expression == "skills_finished":
             hits = player.rules.skills_finished
+        elif self.hit_expression == "ethereal_plays":
+            hits = player.rules.ethereal_plays
         elif self.hit_expression == "stars_gained":
             hits = player.rules.stars_gained_turn
         elif self.hit_expression == "heavenly_drill":

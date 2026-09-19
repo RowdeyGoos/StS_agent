@@ -66,6 +66,10 @@ def apply_power(p, name, amount, target=None):
     if name in regent.NAMES:
         regent.apply(p, name, amount)
         return
+    from game.headless.powers import necrobinder
+    if name in necrobinder.NAMES:
+        necrobinder.apply(p, name, amount)
+        return
     if name not in POWER_NAMES:
         raise ValueError(f"Unknown player power: {name}")
     r = p.rules
@@ -78,6 +82,8 @@ def apply_power(p, name, amount, target=None):
 
 def card_cost(p, card):
     from game.headless.powers.regent import free
+    if card.spec.ethereal and p.rules.powers.get('veilpiercer') and card in (*p.hand, *p.deck.in_play) and not card.spec.x_cost and card.cost >= 0:
+        return 0
     if not card.spec.x_cost and card.cost >= 0 and free(p):
         return 0
     if card.spec.kind in ("skill", "block") and p.rules.powers.get("free_skill") and (card in p.hand or card in p.deck.in_play):
@@ -96,7 +102,7 @@ def card_cost(p, card):
         return 0
     if card.spec.kind == "attack" and p.rules.powers.get("free_attack"):
         return 0
-    return max(0, local_cost(card, clamp=False) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
+    return max(0, local_cost(card, clamp=False) + p.rules.powers.get("borrowed_time", 0) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
 
 
 def local_cost(card, *, clamp=True):
@@ -196,6 +202,8 @@ def after_play(p, card):
     r.plays_finished += 1
     from game.headless.powers.silent import after_play as silent_after_play
     silent_after_play(p, card)
+    from game.headless.powers.necrobinder import finished_history
+    finished_history(p, card)
     from game.headless.relics.combat import tasks as relic_tasks
     push(
         p,
@@ -228,6 +236,8 @@ def after_card_power(p, card, key):
         silent_after_card(p, card, key)
         from game.headless.powers.regent import after_card_power as regent_after_card
         regent_after_card(p, card, key)
+        from game.headless.powers.necrobinder import after_card_power as nec_after_card
+        nec_after_card(p, card, key)
 
 
 def start_turn(p, draw_count):
@@ -239,12 +249,14 @@ def start_turn(p, draw_count):
     if r.round_number:
         from game.headless.cards.event_effects import after_block_cleared
         after_block_cleared(p)
-    p.energy = (p.energy if r.round_number and has(p, "ice_cream") else 0) + p.energy_per_turn + r.powers.get("pyre", 0)
+    p.energy = (p.energy if r.round_number and has(p, "ice_cream") else 0) + p.energy_per_turn + r.powers.get("pyre", 0) + r.powers.get("friendship", 0) + r.powers.get("demesne", 0)
     from game.headless.potions.powers import start_turn as potion_start
     draw_count = potion_start(p, draw_count)
     draw_count = relic_start(p, draw_count)
     from game.headless.powers.regent import start_turn as regent_start
     draw_count = regent_start(p, draw_count)
+    from game.headless.powers.necrobinder import start_turn as nec_start
+    draw_count = nec_start(p, draw_count)
     draw_count += r.powers.pop("draw_next_turn", 0) + r.powers.get("tools_of_the_trade", 0)
     if r.round_number == 1:
         draw_count = min(10, max(draw_count, sum(c.spec.innate for c in p.deck.draw_pile)))
@@ -276,12 +288,12 @@ def start_turn(p, draw_count):
     before_draw(p)
     from game.headless.powers.regent import setup_tasks
     from game.headless.powers.turns import before_draw_tasks
-    push(p, *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["regent_preplay"], ["mayhem"])
+    push(p, *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["draw", draw_count, True], ["start_powers"], ["nec_start"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["regent_preplay"], ["mayhem"])
     drain(p)
     if p.pending_play is not None or r.selection is not None:
         # Native setup may pause while AfterSideTurnStart still completes.
         from game.headless.core.hook_scheduler import advance_side_start
-        ready = [t for t in r.tasks if t[0] in ("silent_side_start", "silent_side_start_all", "regent_side_start", "regent_side_start_all", "side_start_powers") or (t[0] == "relic_hook" and t[2] == "after_side_start")]
+        ready = [t for t in r.tasks if t[0] in ("silent_side_start", "silent_side_start_all", "regent_side_start", "regent_side_start_all", "nec_side_start", "side_start_powers") or (t[0] == "relic_hook" and t[2] == "after_side_start")]
         for task in ready:
             r.tasks.remove(task)
         advance_side_start(p, ready)
@@ -308,6 +320,7 @@ def begin_end_hooks(p):
         for c in tuple(p.deck.exhaust_pile)
         if c.definition.definition_id == "howl_from_beyond"
     ]
+    tasks += [["nec_player_doom"]]
     tasks += relic_tasks(p, "before_end")
     tasks += [["stampede", r.powers.get("stampede", 0)], ["discard_hand"]]
     push(p, *tasks)
@@ -333,6 +346,6 @@ def after_player_end(p, name):
 def after_enemy_end(p):
     r = p.rules
     r.powers.pop("flame_barrier", None)
-    for name in ("plating", "colossus", "no_block"):
+    for name in ("plating", "colossus", "no_block", "intangible"):
         if r.powers.get(name):
             r.powers[name] -= 1

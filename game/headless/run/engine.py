@@ -222,6 +222,10 @@ class RunEngine:
     def sync_combat_loot(self):
         from game.headless.run.inventory import add_potion
         r = self.combat.player.rules
+        for card in self.state.deck:
+            if card.definition.definition_id == 'the_scythe':
+                card.permanent_damage += r.scythe_gains.get(card.instance_id, 0)
+        r.scythe_gains.clear()
         from game.headless.relics.combat import synchronize
         from game.headless.relics.damage import potions_changed
         synchronize(self.state, self.combat.player)

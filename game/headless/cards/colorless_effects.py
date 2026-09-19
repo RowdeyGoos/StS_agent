@@ -52,10 +52,7 @@ def hit(p, card, target, *, extra=0):
     from game.headless.powers.damage import resolve_unblocked_damage
 
     amount = card.spec.base_damage + card.combat_state.extra_damage + extra
-    from game.headless.relics.damage import attack_bonus
-    incoming = modify_attack_damage_for_statuses(
-        amount + attack_bonus(p, card), target.statuses, p.statuses, p.strength, target._attack_multiplier(p.statuses)
-    )
+    incoming = target.damage_amount(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
     blocked = min(target.block, incoming)
     # Damage-result totals include block and overkill, after flat HP caps.
     from copy import deepcopy

@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v19 / run v31**.
+than being silently reinterpreted: current schemas are **combat v22 / run v34**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -251,7 +251,7 @@ run.start_combat(encounter_id="overgrowth_cubex")
 
 Pinned native base/upgrade metadata is reproducible with the existing oracle's
 `silent` mode. Interaction tests are source-backed Python regressions; they do
-not establish native full-turn or whole-run parity. Necrobinder and Defect, then
+not establish native full-turn or whole-run parity. Defect, then
 complete native Kaleidoscope/Splash acquisition, remain separate assignments.
 See [Silent evidence](evidence/silent_cards_2026_09_15.md).
 
@@ -262,7 +262,7 @@ See [Silent evidence](evidence/silent_cards_2026_09_15.md).
 Minion Strike, Minion Dive Bomb and Minion Sacrifice. It supports acquired Regent
 cards under the existing Ironclad owner. Meteor Shower and The Sealed Throne are
 Ancient entries outside this ordinary-family batch. Default acquisition remains
-restricted until the other two foreign families and native acquisition rules are complete.
+restricted until the remaining Defect family and native acquisition rules are complete.
 
 Stars live in `player.rules.stars`; `player.star_cost(card)` supplies current
 payment and participates in legality. Stars persist across turns, reset with combat,
@@ -288,6 +288,41 @@ run = RunEngine(seed=2, rng_profile="native", cards=REGENT_CARDS,
                 card_ids=["venerate", "solar_strike", "spoils_of_battle", "cloak_of_stars"])
 run.start_combat(encounter_id="overgrowth_cubex")
 ```
+
+### Staged Necrobinder content
+
+`game.headless.cards.catalog.NECROBINDER_CARDS` extends `REGENT_CARDS` with all
+**80 ordinary solo Necrobinder cards**, both levels, four starters, Soul and
+Sweeping Gaze. These cards work under the existing Ironclad owner; this does not
+add a playable Necrobinder character. Forbidden Grimoire and Protector are Ancient
+entries outside this ordinary-family batch. Default foreign acquisition remains
+restricted until Defect and native acquisition rules are complete.
+
+Osty is owned combat data, including HP and maximum HP after death. Summon creates
+or revives him; incoming attacks consume player block, then Osty's HP, then spill
+into player HP. Pet attacks use their own dealer modifiers. Doom checks the afflicted
+side at turn end; End of Days requests the check immediately. Souls, delayed summons,
+Ethereal choices, power ordering and multi-hit pet attacks use the existing explicit
+continuations. The Scythe records permanent damage on the physical card and synchronizes
+matching run-deck copies after each action, including combat-ending attacks.
+
+Freshly generated and transformed cards both enter generated-card history; transformations
+do not trigger Arsenal or Pillar of Creation. Both count toward Supermassive
+while retaining their separate generation-hook behavior.
+
+```python
+from game.headless.cards.catalog import NECROBINDER_CARDS
+from game.headless.run.engine import RunEngine
+
+run = RunEngine(seed=2, rng_profile="native", cards=NECROBINDER_CARDS,
+                card_ids=["bodyguard", "unleash", "scourge", "soul_storm"])
+run.start_combat(encounter_id="overgrowth_cubex")
+```
+
+The oracle's `necrobinder` mode reproduces 88 native base/upgrade metadata rows,
+including the two excluded Ancient entries. Card interactions are source-backed
+Python regressions, not demonstrated native full-turn parity.
+See [Necrobinder evidence](evidence/necrobinder_cards_2026_09_19.md).
 
 ## Use and extend the game directly
 
@@ -484,7 +519,7 @@ that event's implementation.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v19 and run v31. Legacy RL encoders retain their frozen vocabulary.
+combat v22 and run v34. Legacy RL encoders retain their frozen vocabulary.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -1177,7 +1212,8 @@ orchestrates the restricted slice, not a complete native run. Other ascensions
 reject explicitly. Generic `RunEngine()` retains the isolated primitive setup
 without automatic starter items; its older `run/rooms.py` rest/event amounts
 remain caller-supplied synthetic values. Combat copies the persistent deck;
-permanent combat-produced deck changes need their own explicit rules.
+The Scythe synchronizes permanent damage growth by owned card ID into the run deck;
+other permanent combat-produced deck changes need their own explicit rules.
 
 Ordinary draws stop at the native ten-card hand limit, checked before each draw
 and any needed reshuffle. Overflow stays in its current piles; a full-hand draw
@@ -1185,7 +1221,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v33`, including configuration,
+Private run snapshots now use `headless_run_state_v34`, including configuration,
 native stream state, seed-bound initialization for all three room sets,
 rarity/potion odds, shared/player relic bags,
 items, card/item/shop/treasure/event allocators, depleted treasure offers, chest decisions,
@@ -1196,18 +1232,19 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v21`, including the in-play
+Nested combat records now use `headless_combat_state_v22`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
 gains, Stars and paid/captured Star-X values, per-target hit history, generated-card
-counts, instanced Orbit/Monologue counters, earned Royalties, power duration flags, player
+counts, owned Osty HP, Doom/Ethereal/draw history, pending reactive event receipts,
+Scythe damage growth, instanced Orbit/Monologue counters, earned Royalties, power duration flags, player
 card-play counts, exact power applier slots, monster phase/spawn counters and
 per-card enchantment trigger state. Permanent card records retain enchantments
 with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
-v1–v20 and run v1–v32 formats are rejected rather than assigning invented item
+v1–v21 and run v1–v33 formats are rejected rather than assigning invented item
 or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
 and brute-force oracle do not support combat choices, Weak or the new card families.
 The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy

@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v33"
+SCHEMA = "headless_run_state_v34"
 
 
 def _restore_event_combat(record):
@@ -182,6 +182,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 from game.headless.core.native_service import bind_combat
                 bind_combat(state.rng, combat)
             rules = combat.player.rules
+            if rules.scythe_gains:
+                raise ValueError('Combat Scythe gains were not synchronized with the owning run.')
             expected_pool = list(state.config.reward_potions) if state.config is not None else ["fire_potion", "block_potion"]
             if rules.relics != [asdict(r) for r in state.relics]:
                 raise ValueError("Combat relic inventory differs from run ownership.")

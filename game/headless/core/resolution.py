@@ -4,7 +4,13 @@ from game.headless.core.selection import HandChoice, PendingCardPlay
 
 
 def push(player, *tasks):
-    player.rules.tasks[0:0] = [list(t) for t in tasks]
+    r = player.rules
+    for task in tasks:
+        if task[0] in ('nec_summon', 'nec_enemy_loss'):
+            # Capture an emitted event separately from its executable queue entry.
+            # Its receipt survives suspended death hooks and is consumed once.
+            r.nec_pending.append(dict(context=r.active_hook, task=list(task)))
+    r.tasks[0:0] = [list(t) for t in tasks]
 
 
 def find(player, identity):
@@ -142,6 +148,8 @@ def execute(p, task):
 
     op, *args = task
     r = p.rules
+    if op in ('nec_summon', 'nec_enemy_loss'):
+        r.nec_pending.remove(dict(context=r.active_hook, task=task))
     if op == "iteration":
         (identity,) = args
         card = find(p, identity)
@@ -166,6 +174,8 @@ def execute(p, task):
             silent_before_play(p, card)
             from game.headless.powers.regent import before_play as regent_before_play
             regent_before_play(p, card)
+            from game.headless.powers.necrobinder import before_play as nec_before_play
+            nec_before_play(p, card)
             push(
                 p,
                 *[["effect", identity, i] for i in range(len(card.definition.effects))],
@@ -175,9 +185,9 @@ def execute(p, task):
             push(p, ["finish", identity])
     elif op == "effect":
         identity, index = args
-        if p.combat_is_ending:
-            return
         card = find(p, identity)
+        if p.combat_is_ending and not getattr(card.definition.effects[index], 'resolves_after_combat_end', False):
+            return
         context = r.plays[identity]
         target = None if context["target"] is None else p.combat_enemies[context["target"]]
         context["effect_index"] = index
@@ -209,7 +219,8 @@ def execute(p, task):
         (identity,) = args
         card = find(p, identity)
         card.combat_state.free_until_played = False
-        card.combat_state.turn_cost_override = None
+        if card.combat_state.turn_cost_until_played:
+            card.combat_state.turn_cost_override = None
         context = r.plays.pop(identity)
         p.deck.in_play.remove(card)
         if context["destination"] == "powers":
@@ -241,7 +252,9 @@ def execute(p, task):
             return
         card = drawn[0]
         r.drawn_combat += 1
-        push(p, ["after_draw"], ["silent_draw_hook", hand_draw], ["after_draw_card", card.instance_id], ["draw", count - 1, hand_draw])
+        if not hand_draw:
+            r.drawn_turn += 1
+        push(p, ["after_draw"], ["silent_draw_hook", hand_draw, card.instance_id], ["after_draw_card", card.instance_id], ["draw", count - 1, hand_draw])
         if r.powers.get("hellraiser") and card.definition.strike:
             push(p, ["autoplay", card.instance_id, False])
     elif op == "autoplay":
@@ -308,8 +321,9 @@ def execute(p, task):
         drawn = p.deck.draw(1)
         if drawn:
             r.drawn_combat += 1
+            r.drawn_turn += 1
             continuation = [["pillage"]] if drawn[0].spec.kind == "attack" else []
-            push(p, ["after_draw"], ["silent_draw_hook", False], ["after_draw_card", drawn[0].instance_id], *continuation)
+            push(p, ["after_draw"], ["silent_draw_hook", False, drawn[0].instance_id], ["after_draw_card", drawn[0].instance_id], *continuation)
             if r.powers.get("hellraiser") and drawn[0].definition.strike:
                 push(p, ["autoplay", drawn[0].instance_id, False])
     elif op == "generate":
@@ -376,9 +390,13 @@ def execute(p, task):
         after_card(p, card)
         from game.headless.powers.regent import after_card as regent_after_card
         regent_after_card(p, card)
+        from game.headless.powers.necrobinder import after_card as nec_after_card
+        nec_after_card(p, card)
         if card.enchantment is not None and card.enchantment.definition_id == "glam":
             card.enchantment.triggered = True
     elif op == "after_card_enemies":
+        from game.headless.powers.necrobinder import after_enemies as nec_after_enemies
+        nec_after_enemies(p, find(p, args[0]))
         from game.headless.powers.silent import after_enemies
         after_enemies(p, find(p, args[0]))
         for enemy in tuple(p.combat_enemies or ()):
@@ -455,6 +473,12 @@ def execute(p, task):
     elif op == "relic_hook":
         from game.headless.relics.combat import execute as relic_execute
         relic_execute(p, *args)
+    elif op.startswith("osty_"):
+        from game.headless.cards.osty_effects import execute as osty_execute
+        osty_execute(p, op, args)
+    elif op.startswith("nec_"):
+        from game.headless.cards.necrobinder_effects import execute as nec_execute
+        nec_execute(p, op, args)
     elif op.startswith("regent_"):
         from game.headless.cards.regent_effects import execute as regent_execute
         regent_execute(p, op, args)
