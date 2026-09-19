@@ -294,12 +294,17 @@ def execute(p, task):
             p.deck.draw_pile = list(reversed(imbued)) + [c for c in p.deck.draw_pile if c not in imbued and c not in innate] + innate
             count = min(10, max(count, len(innate)))
         push(p, ['draw', count, True])
-    elif op == "draw":
+    elif op in ("draw", "draw_after_shuffle"):
         count, hand_draw = args
         from game.headless.relics.combat import has
         if count <= 0 or p.combat_is_ending or (not hand_draw and (r.powers.get("no_draw") or r.player_side and has(p, "fiddle"))):
             return
-        if not colorless.ensure_draw(p, task):
+        if op == "draw":
+            if not colorless.ensure_draw(p, ["draw_after_shuffle", count, hand_draw]):
+                return
+        elif not p.deck.draw_pile or len(p.hand) >= 10:
+            # Native Draw shuffles once per iteration. A deferred AfterShuffle
+            # choice may consume its last card; resuming cannot refill again.
             return
         drawn = p.deck.draw(1)
         if not drawn:

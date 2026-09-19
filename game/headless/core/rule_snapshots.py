@@ -26,6 +26,7 @@ TASK_ARITIES = {
     "finish": 1,
     "death_hook": 1,
     "draw": 2,
+    "draw_after_shuffle": 2,
     "autoplay": 2,
     "autoplay_draw": 2,
     "exhaust": 1,
@@ -342,11 +343,11 @@ def restore_rules(record, player):
                 "debuffs", "discards", "draws", "precise", "star_cards", "generated", "turn_draws", "doom", "exhausted_souls",
             ) or any(type(v) is not int or v < 0 for v in (factor, gain, vigor)):
                 raise ValueError("Invalid queued attack expression.")
-        if op in ("hand_draw", "draw", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
+        if op in ("hand_draw", "draw", "draw_after_shuffle", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
             type(args[0]) is not int or args[0] < 0
         ):
             raise ValueError("Invalid queued amount.")
-        if op in ("draw", "autoplay_draw", "block", "autoplay") and type(args[-1]) is not bool:
+        if op in ("draw", "draw_after_shuffle", "autoplay_draw", "block", "autoplay") and type(args[-1]) is not bool:
             raise ValueError("Invalid queued flag.")
         if op == "generate" and any(type(v) is not bool for v in args[1:]):
             raise ValueError("Invalid generation flags.")

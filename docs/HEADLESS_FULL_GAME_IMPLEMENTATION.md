@@ -1566,18 +1566,31 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      suffixes. Paused JSON continuation matches as well. Native replay methods
      supply a physical-card answer and manually drive the queue; no live UI or
      executor frame loop is exercised. [Record](evidence/native_attack_hooks_2026_09_19.json).
-   - **Next: multiple deaths and terminal cancellation in native card plays.**
-     Extend `attack-hooks` with a stronger Sword Boomerang that kills Wrigglers:
-     compare multiple Horn callbacks, the live pile when the first choice activates,
-     queued contexts and RNG continuation. Add a final-hit combat-ending case to
-     verify canceled draws do not consume cards or RNG. Require actual native
-     execution; existing Python regressions alone do not settle these boundaries.
-     Native enemy-side work must then be checked separately because it runs
-     concurrently with the action queue. Keep explicit in-memory fixture state;
-     avoid real profile/save access. Live selector behavior and full native
-     executor/turn scheduling remain open.
+   - **Multiple deaths and terminal cancellation verified at explicit boundaries:**
+     24 native cases use Strength 100 and optional Duplication with Sword Boomerang.
+     Later Horn draws shrink the first paused choice to singleton/empty/larger
+     piles. A real repeated-refill bug is fixed: `draw_after_shuffle` resumes after
+     the existing shuffle, preventing an extra attack draw and Abacus trigger.
+     Terminal guards and the native synchronizer cancellation step consume no
+     further cards/resources/RNG. JSON restoration preserves the new phase
+     (combat v30 / run v46). [Record and scope](HEADLESS_ENGINE.md).
+     [Native vectors](evidence/native_multiple_deaths_2026_09_19.json) retain the
+     terminal native Play pile separately from headless discard cleanup; the full
+     EndCombatInternal lifecycle and live selector UI are not executed.
+   - **Next: native enemy-side paused death hooks.** Use one enemy killed by a
+     retaliatory effect during its own turn, opening Horn → Stratagem while another
+     enemy still has work. Compare actual native scheduling, visible decision
+     boundaries, HP/slots, pending work and RNG suffixes against restored headless
+     continuation. Enemy-side work is concurrent with the action queue, so the
+     player-action results do not settle this. Keep explicit in-memory fixture
+     state and avoid real profile/save access. Several simultaneously paused hook
+     contexts, the live UI and full executor/combat-end integration remain open.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
-     autoplay and further combat boundaries. Require actual native sequences;
+     autoplay and further combat boundaries. Audit the other `ensure_draw` callers
+     (autoplay, Pillage, Escape Plan, Scrape, Mittens and Foregone Conclusion) for
+     their own post-shuffle continuation boundaries; the verified correction here
+     covers the shared ordinary Draw command. Reproduce each suspected difference
+     natively before changing caller semantics. Require actual native sequences;
      passing Python continuation alone is regression evidence.
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).

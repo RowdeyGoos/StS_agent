@@ -91,8 +91,8 @@ unique definitions retain the existing index-free command. Declining remains
 `definition_id=None`. Acquisition copies only the chosen offer’s modifiers.
 Event and relic-pickup reward selectors retain their existing representations.
 
-Private run **v45** rejects earlier snapshots rather than interpreting their
-name-keyed modifiers as physical offers. Restore validates modifier count, card
+Name-keyed reward modifiers from older private run formats are rejected rather
+than interpreted as physical offers. Restore validates modifier count, card
 values and the Lasting Candy duplicate source; ambiguous or mismatched selections
 fail before acquisition or RNG changes. Rerolling replaces the complete offer list.
 
@@ -122,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v29 / run v45**.
+than being silently reinterpreted: current schemas are **combat v30 / run v46**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -213,11 +213,33 @@ paused/final piles and resources, and Shuffle/CombatTargets/Niche/MonsterAi
 counters and next-value suffixes, including JSON continuation at the choice.
 The existing game rules matched without changes.
 
-Actions and replay events are manually driven. These nonterminal cases do not
-establish live UI behavior, executor-frame scheduling, multiple queued deaths,
-combat-end cancellation or a full native run. Native enemy-side work runs
-concurrently with the action queue; its exact scheduling, multiplayer queues and
-the complete hook-order audit remain separate work.
+The `multiple-deaths` mode adds [24 native cases](evidence/native_multiple_deaths_2026_09_19.json)
+with Strength 100, three/eight discarded Defends and optional Duplication. Later
+Horn callbacks draw while the first is paused, leaving a singleton, empty or
+larger live draw pile. This exposed and fixed a repeated-refill bug: a draw that
+already shuffled now resumes through `draw_after_shuffle`, so consuming its last
+card during the pause does not shuffle the discarded attack again or grant a
+second Abacus block. JSON continuation preserves this phase; combat v30 / run v46
+reject older ambiguous continuations. Malformed amounts, flags and task shapes
+are rejected atomically.
+
+Duplicated attacks kill Phrog and all four children. Native terminal guards deny
+the final kill's energy/draw; the fixture then invokes the actual synchronizer's
+NotInCombat cancellation step and verifies canceled hooks leave piles, resources
+and RNG untouched. The full EndCombatInternal room/reward/save lifecycle is not
+executed. Native retains the finished attack in Play because result-pile moves
+are blocked while ending; headless disposes it into discard. Tests keep that
+terminal representation difference explicit. Native history also omits the final
+lethal hit; all five headless hits, the terminal state and target RNG count are
+checked separately. The empty replay answer is source-backed UI behavior, not a
+live screen demonstration.
+
+Actions and replay events are manually driven. These cases exercise one paused
+Horn and later automatic Horn callbacks, not several simultaneously paused
+contexts. Live UI behavior, executor-frame scheduling and full combat-end/run
+integration remain open. Native enemy-side work runs concurrently with the action
+queue; its exact scheduling, multiplayer queues and the complete hook-order
+audit remain separate work.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -1081,7 +1103,7 @@ completed-act records. Shared map rules live in
 a compatibility entry point. Private run **v44** requires campaign/history fields
 and validates each act’s queues, map, event/unknown decisions, global combat count,
 free travel and map relic ownership. Older run snapshots are rejected explicitly;
-combat schema is **v29**. Hive boss reward exit records `ActCompletion(act=2, …)`
+combat schema is **v30**. Hive boss reward exit records `ActCompletion(act=2, …)`
 and stops at `ACT_COMPLETE` when `last_act="hive"`. The default campaign now
 continues through Glory and the Architect as described below.
 
@@ -1150,7 +1172,7 @@ records `VICTORY`. Native post-victory presentation death is not a simulated def
 No Lantern Key or other optional event is required to finish the run.
 
 Private **run v44** saves the epilogue identity and archived Spoils quest records;
-combat remains **v29**. Restore requires the completed campaign/boss, matching
+combat uses **v30**. Restore requires the completed campaign/boss, matching
 Ancient identities in both current and historical maps, and an owned Architect
 event or completed victory. It rejects incomplete victory claims, mixed-act
 history, final-boss ordinary rewards, and missing archived quest owners. Failed
@@ -1936,7 +1958,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v45`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v46`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -1949,7 +1971,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v29`, including the in-play
+Nested combat records now use `headless_combat_state_v30`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
