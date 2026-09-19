@@ -168,6 +168,26 @@ combat fixture with manually driven actions/replay events; it does not establish
 live UI behavior, executor-loop scheduling, multiple-death cancellation or
 whole-run parity. It retains the callback mode's in-memory save/localization scope.
 
+Pass `--mode multiple-deaths` for 24 additional cases: seeds 0/2/42 × three/eight
+Defends × base/upgraded Sword Boomerang × with/without Duplication. Strength 100
+makes each hit lethal. Native powers and the card's real hit counts are used;
+no card definition is altered. Later Horn draws shrink the first paused choice.
+The replay answer uses the live draw pile, including a deliberate empty answer
+when no cards remain (source-backed screen behavior, not actual UI execution).
+
+Terminal cases assert native IsEnding after the fifth kill, then manually deliver
+the queued hook and call actual ActionQueueSynchronizer.SetCombatState(NotInCombat)
+from an established PlayPhase. This is the cancellation step used by
+EndCombatInternal; its preceding room/reward/save lifecycle is **not** executed.
+Assertions require canceled actions, suspended callback tasks, an empty queue,
+unchanged resources/piles/RNG across cancellation and physical-card conservation.
+The final lethal damage is absent from native history by design, so all-dead state
+and five target rolls independently check the terminal boundary. The native attack
+remains in Play; headless terminal disposal puts it in discard. The
+[retained record](../../docs/evidence/native_multiple_deaths_2026_09_19.json) and
+Python comparison preserve that difference explicitly. One Horn is paused in
+these cases; they do not establish several simultaneously paused contexts.
+
 Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
 **Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
 respectively). The runner does not download dependencies. Example:

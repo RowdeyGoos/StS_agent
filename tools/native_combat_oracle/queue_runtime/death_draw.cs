@@ -7,7 +7,7 @@ using System.Text.Json;
 // Neither mode starts a run, live card screen or executor frame loop.
 internal static class DeathDrawOracle
 {
-    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false)
+    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false, bool multipleDeaths = false)
     {
         const BindingFlags flags = BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -39,8 +39,9 @@ internal static class DeathDrawOracle
         tables.Add("combat_messages",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"combat_messages",new Dictionary<string,string>{{"NO_DRAW","No draw"},{"HAND_FULL","Hand full"}},null})!);
         F(loc,"_tables",tables);C(loc,"LoadLocFormatters");T("Localization.LocManager").GetProperty("CultureInfo",flags)!.SetValue(loc,System.Globalization.CultureInfo.InvariantCulture);T("Localization.LocManager").GetProperty("Instance",flags)!.SetValue(null,loc);
         var rows=new List<object>();
-        foreach(string seed in new[]{"0","2","42"})foreach(int fillers in new[]{1,3})
+        foreach(string seed in new[]{"0","2","42"})foreach(int fillers in multipleDeaths ? new[]{3,8} : new[]{1,3})
         foreach(bool upgraded in attackMode ? new[]{false,true} : new[]{false})
+        foreach(bool terminal in multipleDeaths ? new[]{false,true} : new[]{false})
         {
             var player=RuntimeHelpers.GetUninitializedObject(T("Entities.Players.Player"));
             F(player,"<Character>k__BackingField",Get("Character","Characters.Ironclad"));
@@ -73,6 +74,11 @@ internal static class DeathDrawOracle
             var abacus=C(Get("Relic","Relics.TheAbacus"),"ToMutable");abacus.GetType().GetProperty("Owner")!.SetValue(abacus,player);
             ((System.Collections.IList)P(player,"Relics")).Add(abacus);
             var power=C(Get("Power","Powers.StratagemPower"),"ToMutable",0);C(power,"ApplyInternal",pc,1m,true);
+            if(multipleDeaths)
+            {
+                var strength=C(Get("Power","Powers.StrengthPower"),"ToMutable",0);C(strength,"ApplyInternal",pc,100m,true);
+                if(terminal){var duplication=C(Get("Power","Powers.DuplicationPower"),"ToMutable",0);C(duplication,"ApplyInternal",pc,1m,true);}
+            }
             var horn=C(Get("Relic","Relics.GremlinHorn"),"ToMutable");horn.GetType().GetProperty("Owner")!.SetValue(horn,player);
             if (attackMode) ((System.Collections.IList)P(player,"Relics")).Add(horn);
             var physical=new List<object>();
@@ -109,6 +115,9 @@ internal static class DeathDrawOracle
                     type=P(c,"Monster").GetType().Name,slot=P(c,"SlotName"),hp=P(c,"CurrentHp"),maxHp=P(c,"MaxHp"),block=P(c,"Block"),
                     powers=Items(P(c,"Powers")).Select(power=>new{id=P(P(power,"Id"),"Entry").ToString()!.ToLowerInvariant(),amount=P(power,"Amount")}).ToArray()
                 }).ToArray();
+                if(multipleDeaths)C(sync,"SetCombatState",Enum.Parse(T("Entities.Multiplayer.ActionSynchronizerCombatState"),"PlayPhase"));
+                object MultipleState()=>new{hand=Pile("Hand"),draw=Pile("DrawPile"),discard=Pile("DiscardPile"),play=Pile("PlayPile"),energy=P(pcs,"Energy"),block=P(pc,"Block")};
+                var multipleBefore=MultipleState();
                 var attackBefore=State();var enemiesBefore=Enemies();
                 var play=Activator.CreateInstance(T("GameActions.PlayCardAction"),new object?[]{attackCard,null})!;
                 C(queue,"EnqueueWithoutSynchronizing",play);
@@ -116,6 +125,71 @@ internal static class DeathDrawOracle
                 F(executor,"<CurrentlyRunningAction>k__BackingField",play);
                 await ((Task)C(play,"Execute")).WaitAsync(TimeSpan.FromSeconds(5));
                 Require(P(play,"State").ToString()=="Finished","Outer card play did not finish.");
+                if(multipleDeaths)
+                {
+                    // Check the native terminal guard before delivering the same
+                    // cancellation step EndCombatInternal invokes. Do not run its
+                    // separate reward/profile/room cleanup lifecycle.
+                    Require((bool)P(manager,"IsEnding")==terminal,"Wrong native terminal boundary.");
+                    int deaths=terminal ? 5 : upgraded ? 4 : 3;
+                    var pending=Items(sync.GetType().GetField("_hookActions",flags)!.GetValue(sync)!);
+                    Require(pending.Length==1,"Expected one paused Horn while later kills draw automatically.");
+                    Require(Items(P(combat,"Enemies")).Length==5-deaths,"Wrong surviving child count.");
+                    Require((int)P(pcs,"Energy")== (terminal ? 4 : deaths),"Final death must not grant energy.");
+                    Require((int)P(pc,"Block")==0,"Abacus ran before paused Stratagem.");
+                    Require(Pile("Hand").Length==(terminal ? 3 : deaths-1),"Later Horn draws did not finish before choice activation.");
+                    Require(Pile(terminal ? "PlayPile" : "DiscardPile").Contains("card."+fillers),"Unexpected outer card pile.");
+                    var checkpoint=MultipleState();var surviving=Enemies();
+                    var answers=new List<object>();
+                    object MultiStream(string name){var r=P(rng,name);return new{counter=P(r,"Counter"),suffix=C(r,"NextDouble")};}
+                    string Counters()=>string.Join(",",new[]{"Shuffle","CombatTargets","Niche","MonsterAi"}.Select(n=>P(P(rng,n),"Counter")));
+                    foreach(var action in pending) C(queue,"EnqueueWithoutSynchronizing",action);
+                    var beforeCancelCounters=Counters();
+                    if(terminal)
+                    {
+                        C(sync,"SetCombatState",Enum.Parse(T("Entities.Multiplayer.ActionSynchronizerCombatState"),"NotInCombat"));
+                        Require(pending.All(a=>P(a,"State").ToString()=="Canceled"),"Terminal hooks were not canceled.");
+                        Require(pending.All(a=>!((Task)P(P(a,"ChoiceContext"),"Task")).IsCompleted),"Canceled native coroutine unexpectedly resumed.");
+                        Require(JsonSerializer.Serialize(checkpoint)==JsonSerializer.Serialize(MultipleState()),"Cancellation changed resources or piles.");
+                        Require(beforeCancelCounters==Counters(),"Cancellation consumed RNG.");
+                    }
+                    else
+                    {
+                        var action=pending[0];
+                        Require(ReferenceEquals(C(queue,"GetReadyAction"),action),"First detached Horn not ready.");
+                        F(executor,"<CurrentlyRunningAction>k__BackingField",action);
+                        await ((Task)C(action,"Execute")).WaitAsync(TimeSpan.FromSeconds(3));
+                        int choice=0;
+                        while(P(action,"State").ToString()=="GatheringPlayerChoice")
+                        {
+                            Require(choice<3,"Unexpected repeated-choice loop.");
+                            var available=Items(P(P(pcs,"DrawPile"),"Cards"));
+                            // Replay supplies an empty answer for an empty live
+                            // pile, matching the UI's source-backed empty result.
+                            var selectedCards=available.Length==0 ? Array.Empty<object>() : new[]{upgraded ? available[^1] : available[0]};
+                            answers.Add(new{options=available.Select(c=>"card."+physical.IndexOf(c)).ToArray(),selected=selectedCards.Select(c=>"card."+physical.IndexOf(c)).ToArray(),state=MultipleState()});
+                            var result=T("GameActions.PlayerChoiceResult").GetMethod("FromMutableCombatCards")!.Invoke(null,new[]{Typed(selectedCards,T("Models.CardModel"))})!;
+                            C(choices,"ReceiveReplayChoice",player,(uint)choice,C(result,"ToNetData"));
+                            C(queue,"ResumeActionWithoutSynchronizing",P(action,"Id"));
+                            await ((Task)C(action,"Execute")).WaitAsync(TimeSpan.FromSeconds(3));choice++;
+                        }
+                        Require(P(action,"State").ToString()=="Finished","Deferred Horn did not finish.");
+                        Require(answers.Count==1,"Expected one live-pile answer.");
+                        Require((int)P(pc,"Block")== 6,"Resuming an already-shuffled draw must not shuffle again.");
+                    }
+                    Require((bool)P(queue,"IsEmpty") && C(queue,"GetReadyAction") is null,"Hook remained actionable.");
+                    Require(new[]{"Hand","DrawPile","DiscardPile","PlayPile"}.SelectMany(Pile).OrderBy(x=>x).SequenceEqual(Enumerable.Range(0,fillers+1).Select(i=>"card."+i)),"Physical cards lost or duplicated.");
+                    var multiHistory=Items(P(P(manager,"History"),"Entries"));
+                    var multiHits=multiHistory.Where(e=>e.GetType().Name=="DamageReceivedEntry").Select(e=>new{slot=P(P(e,"Receiver"),"SlotName"),damage=P(P(e,"Result"),"UnblockedDamage"),blocked=P(P(e,"Result"),"BlockedDamage")}).ToArray();
+                    // Native multiHistory intentionally omits the combat-ending hit.
+                    Require(multiHits.Length==(terminal ? 4 : deaths),"Wrong native damage multiHistory length.");
+                    Require((int)P(P(rng,"CombatTargets"),"Counter")==deaths,"Wrong target RNG count.");
+                    rows.Add(new{seed,fillers,upgraded,terminal,deaths,hits=multiHits,before=multipleBefore,enemiesBefore,checkpoint,enemiesCheckpoint=surviving,answers,after=MultipleState(),enemiesAfter=Enemies(),
+                        canceled=terminal,pendingStates=pending.Select(a=>P(a,"State").ToString()).ToArray(),
+                        shuffle=MultiStream("Shuffle"),targets=MultiStream("CombatTargets"),niche=MultiStream("Niche"),ai=MultiStream("MonsterAi")});
+                    C(cardDb,"OnCombatEnded",new object?[]{null});((IDisposable)choices).Dispose();
+                    continue;
+                }
                 Require(Pile("DiscardPile").Contains("card."+fillers),"Outer card was not discarded.");
                 var attackPaused=State();var enemiesPaused=Enemies();
                 var generated=Items(sync.GetType().GetField("_hookActions",flags)!.GetValue(sync)!);
@@ -184,7 +258,7 @@ internal static class DeathDrawOracle
             var shuffle=P(rng,"Shuffle");
             rows.Add(new{seed,fillers,before,paused,after=State(),detached=!completed,selectorCalls=chooser.Calls,options=chooser.Options.Select(c=>"card."+physical.IndexOf(c)),shuffleCounter=P(shuffle,"Counter"),shuffleSuffix=C(shuffle,"NextDouble")});
         }
-        return JsonSerializer.Serialize(new{source=attackMode ? "Actual PlayCardAction/SwordBoomerang, death dispatcher, Horn/Stratagem/Abacus and Infested; in-memory native replay choice, manually driven queue, no UI/executor loop/run" : "Actual GremlinHorn.AfterDeath, CardPileCmd.Draw/Shuffle, StratagemPower, TheAbacus and native hook queue; test selector supplies UI signals/answer; explicit death callback invocation, no death dispatcher/attack/UI/run",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
+        return JsonSerializer.Serialize(new{source=multipleDeaths ? "Actual PlayCardAction/SwordBoomerang with Strength100 and optional Duplication, death/Horn/Infested and replay choices; explicit native SetCombatState(NotInCombat) cancellation at IsEnding; no full EndCombatInternal, UI or executor loop" : attackMode ? "Actual PlayCardAction/SwordBoomerang, death dispatcher, Horn/Stratagem/Abacus and Infested; in-memory native replay choice, manually driven queue, no UI/executor loop/run" : "Actual GremlinHorn.AfterDeath, CardPileCmd.Draw/Shuffle, StratagemPower, TheAbacus and native hook queue; test selector supplies UI signals/answer; explicit death callback invocation, no death dispatcher/attack/UI/run",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
     }
 }
 public class DeathDrawContext:DispatchProxy

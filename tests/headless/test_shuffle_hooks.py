@@ -243,3 +243,35 @@ def test_generated_stomp_offer_and_selection_restore_through_actual_attack_potio
         assert saved(run) == saved(other)
     assert stomp in p.hand and stomp.combat_state.cost_change == -1
     assert p.card_cost(stomp) == 0 and stomp.combat_state.turn_cost_until_played
+
+
+@pytest.mark.parametrize("corruption", ["negative", "boolean_count", "non_boolean_flag", "arity", "old_combat", "old_run"])
+def test_post_shuffle_draw_restore_rejects_malformed_or_ambiguous_old_state_atomically(corruption):
+    run = combat(["finesse", "strike", "defend", "bash"], relics=("the_abacus",))
+    p = run.combat.player
+    finesse = next(c for c in p.deck.draw_pile if c.definition.definition_id == "finesse")
+    p.deck.draw_pile.remove(finesse)
+    p.hand.append(finesse)
+    p.deck.discard_pile, p.deck.draw_pile = p.deck.draw_pile, []
+    apply_power(p, "stratagem", 1)
+    run.apply(PlayCard(finesse.instance_id))
+    original = saved(run)
+    restored = clone(run)
+    assert saved(restored) == original
+    altered = deepcopy(original)
+    task = next(t for t in altered["combat"]["player"]["rules"]["tasks"] if t[0] == "draw_after_shuffle")
+    if corruption == "negative":
+        task[1] = -1
+    elif corruption == "boolean_count":
+        task[1] = True
+    elif corruption == "non_boolean_flag":
+        task[2] = 1
+    elif corruption == "arity":
+        task.append(False)
+    elif corruption == "old_combat":
+        altered["combat"]["schema"] = "headless_combat_state_v29"
+    else:
+        altered["schema"] = "headless_run_state_v45"
+    with pytest.raises(ValueError):
+        restored.restore(altered)
+    assert saved(restored) == original

@@ -91,7 +91,7 @@ def test_later_automatic_horn_draws_shrink_live_choice_to_explicit_singleton():
     assert p.rules.selection["selected"] == []
     other = clone(run)
     finish_choices(run, other)
-    assert p.rules.selection is None and len(p.hand) == 4
+    assert p.rules.selection is None and len(p.hand) == 3
 
 
 def test_live_choice_empty_on_activation_completes_without_exposing_stale_cards():
@@ -100,7 +100,7 @@ def test_live_choice_empty_on_activation_completes_without_exposing_stale_cards(
     p = run.combat.player
     assert len([e for e in run.combat.enemies if e.is_alive]) == 1
     assert not p.rules.selection and not p.rules.tasks and not p.rules.deferred_hooks
-    assert card in p.hand  # Resumed draw refills from the now-discarded outer card.
+    assert card in p.deck.discard_pile  # Native Draw does not refill a second time on resume.
     assert saved(clone(run)) == saved(run)
 
 
@@ -119,7 +119,7 @@ def test_ending_combat_cancels_waiting_horn_choice_without_a_draw_or_extra_rng()
     assert combat.done and combat.winner == "player"
     assert not p.rules.selection and not p.rules.deferred_hooks and not p.rules.tasks
     assert p.rules.active_hook == 0 and not p.rules.plays
-    assert len(p.hand) == 3  # The final kill has no Horn callback; queued first draw is canceled.
+    assert len(p.hand) == 3  # The final kill grants no draw; queued first draw is canceled.
     assert p.rules.hook_sequence == 4
     assert saved(clone(run)) == saved(run)
 
