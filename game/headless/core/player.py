@@ -29,6 +29,7 @@ class Player:
 
         self.rules = CombatRules()
         self._resolving = False
+        self._defer_death_hooks = False
         self.catalog = None
         self.max_hp = max_hp
         self.hp = max_hp

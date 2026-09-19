@@ -122,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v30 / run v46**.
+than being silently reinterpreted: current schemas are **combat v31 / run v47**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -234,12 +234,38 @@ lethal hit; all five headless hits, the terminal state and target RNG count are
 checked separately. The empty replay answer is source-backed UI behavior, not a
 live screen demonstration.
 
-Actions and replay events are manually driven. These cases exercise one paused
-Horn and later automatic Horn callbacks, not several simultaneously paused
-contexts. Live UI behavior, executor-frame scheduling and full combat-end/run
-integration remain open. Native enemy-side work runs concurrently with the action
-queue; its exact scheduling, multiplayer queues and the complete hook-order
-audit remain separate work.
+The `enemy-turn` mode now verifies [36 native cases](evidence/native_enemy_turn_2026_09_19.json)
+through actual `CombatManager.ExecuteEnemyTurn`, enemy-side cleanup and the next
+player's setup. Thorns kills the first of two attacking Chompers, opening Horn →
+Stratagem while the second enemy still has work. Enemy attacks and the next hand
+draw finish before the fixture supplies replay answers. The headless scheduler
+now defers death choices across that independent work: Abacus cannot incorrectly
+block later enemy attacks, and the choice uses the remaining live draw pile.
+An automatic singleton draw still completes its hooks immediately, so its Abacus
+block protects the current incoming hit.
+
+Three seeds, one/three/eight discarded Defends, first/last answers and optional
+Tools of the Trade cover both one and two paused contexts. The later Tools discard
+waits behind Horn and refreshes the live hand after Horn resumes. Headless keeps
+that setup continuation in its own plain context, including play/event ownership;
+JSON restoration preserves both choice boundaries. Per-hit damage, stable enemy
+slots/HP/next moves, physical piles, energy/block/HP and four RNG counters/suffixes
+match. Empty live replay choices auto-settle on headless activation. Blocking
+enemy choices, such as Knowledge Demon’s curse, remain active until their move
+finishes; source-backed regressions restore that boundary with Horn and optional
+Tools waiting. Source-backed terminal regressions additionally check cancellation
+when a later enemy kills the player or dies to Thorns. Combat v31 / run v47 reject the previous scheduling
+semantics; malformed context ownership and missing choice powers fail atomically.
+
+Replay events and hook actions are manually driven after enemy work. This proves
+that native enemy work and next-player setup can complete while a death hook is
+paused; it does not prove every live executor-frame/UI interleaving. The fixture
+uses explicit prepared combat state, disables native checksums and omits encounter
+entry hooks. It executes neither the full EndCombatInternal room/reward/save
+lifecycle nor a live run. Several simultaneously paused **death** contexts,
+reactive enemy-side-start choices, multiplayer queues and the broader hook-order
+audit remain separate work. The shared fixture retains in-memory TestMode save
+and localization isolation.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -1103,7 +1129,7 @@ completed-act records. Shared map rules live in
 a compatibility entry point. Private run **v44** requires campaign/history fields
 and validates each act’s queues, map, event/unknown decisions, global combat count,
 free travel and map relic ownership. Older run snapshots are rejected explicitly;
-combat schema is **v30**. Hive boss reward exit records `ActCompletion(act=2, …)`
+combat schema is **v31**. Hive boss reward exit records `ActCompletion(act=2, …)`
 and stops at `ACT_COMPLETE` when `last_act="hive"`. The default campaign now
 continues through Glory and the Architect as described below.
 
@@ -1172,7 +1198,7 @@ records `VICTORY`. Native post-victory presentation death is not a simulated def
 No Lantern Key or other optional event is required to finish the run.
 
 Private **run v44** saves the epilogue identity and archived Spoils quest records;
-combat uses **v30**. Restore requires the completed campaign/boss, matching
+combat uses **v31**. Restore requires the completed campaign/boss, matching
 Ancient identities in both current and historical maps, and an owned Architect
 event or completed victory. It rejects incomplete victory claims, mixed-act
 history, final-boss ordinary rewards, and missing archived quest owners. Failed
@@ -1958,7 +1984,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v46`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v47`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -1971,7 +1997,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v30`, including the in-play
+Nested combat records now use `headless_combat_state_v31`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

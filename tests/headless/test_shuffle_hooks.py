@@ -269,9 +269,9 @@ def test_post_shuffle_draw_restore_rejects_malformed_or_ambiguous_old_state_atom
     elif corruption == "arity":
         task.append(False)
     elif corruption == "old_combat":
-        altered["combat"]["schema"] = "headless_combat_state_v29"
+        altered["combat"]["schema"] = "headless_combat_state_v30"
     else:
-        altered["schema"] = "headless_run_state_v45"
+        altered["schema"] = "headless_run_state_v46"
     with pytest.raises(ValueError):
         restored.restore(altered)
     assert saved(restored) == original

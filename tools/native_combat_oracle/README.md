@@ -188,6 +188,31 @@ remains in Play; headless terminal disposal puts it in discard. The
 Python comparison preserve that difference explicitly. One Horn is paused in
 these cases; they do not establish several simultaneously paused contexts.
 
+Pass `--mode enemy-turn` for 36 cases: seeds 0/2/42 × one/three/eight Defends ×
+first/last choice × with/without Tools of the Trade. Two prepared native Chompers
+attack; the first has one HP, and the player has Thorns 1, Stratagem 1, Gremlin Horn
+and Abacus. Actual `CombatManager.ExecuteEnemyTurn` runs through enemy cleanup,
+side switch and next-player setup before replay delivers the pending answers.
+The single-card case completes Horn automatically, granting block before the
+current incoming hit. Other cases defer Abacus until the enemy attacks and new
+hand draw finish. Tools' later discard choice stays behind Horn and sees the live
+hand after Horn's selected/drawn cards enter it.
+
+[Retained vectors](../../docs/evidence/native_enemy_turn_2026_09_19.json) include
+per-hit damage, before/checkpoint/final physical piles, HP/block/energy/turn/side,
+enemy slots/HP/next moves, each choice and four RNG counters/suffixes. Python
+comparisons in `tests/headless/test_native_enemy_turn.py` restore every exposed
+choice from JSON. Empty live Horn choices auto-complete in headless; native replay
+explicitly returns an empty list. Separate source-backed terminal tests cover
+cancellation without further draws.
+
+This mode uses the native turn manager with prepared state, no encounter entry
+hooks and checksums explicitly disabled. It does not launch a run, execute live
+UI or the ActionExecutor frame loop, or run combat-end/reward/save processing.
+The observed schedule allows enemy work to finish before any replay answer;
+other live interleavings and multiple paused death contexts remain unverified.
+Shared TestMode save and localization isolation is unchanged.
+
 Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
 **Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
 respectively). The runner does not download dependencies. Example:

@@ -1577,14 +1577,24 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      [Native vectors](evidence/native_multiple_deaths_2026_09_19.json) retain the
      terminal native Play pile separately from headless discard cleanup; the full
      EndCombatInternal lifecycle and live selector UI are not executed.
-   - **Next: native enemy-side paused death hooks.** Use one enemy killed by a
-     retaliatory effect during its own turn, opening Horn → Stratagem while another
-     enemy still has work. Compare actual native scheduling, visible decision
-     boundaries, HP/slots, pending work and RNG suffixes against restored headless
-     continuation. Enemy-side work is concurrent with the action queue, so the
-     player-action results do not settle this. Keep explicit in-memory fixture
-     state and avoid real profile/save access. Several simultaneously paused hook
-     contexts, the live UI and full executor/combat-end integration remain open.
+   - **Native enemy-turn and next-hand boundary verified:** 36 explicit cases run
+     actual CombatManager.ExecuteEnemyTurn through the next player setup. Thorns
+     kills one of two Chompers; the second attacks and the new hand draws while
+     Horn → Stratagem waits. Headless now defers that choice across enemy work,
+     preserving HP/block and live options. Optional Tools of the Trade creates a
+     second paused setup context behind Horn; both boundaries restore from JSON.
+     Per-hit damage, enemy slots/HP/next moves, piles, resources and four RNG
+     suffixes match. Combat v31 / run v47 reject older scheduling semantics.
+     [Native vectors](evidence/native_enemy_turn_2026_09_19.json) use manually
+     delivered replay answers, disabled checksums and explicit combat state; they
+     do not demonstrate live executor-frame/UI scheduling or combat-end/run parity.
+   - **Next: native post-shuffle autoplay/selection boundaries.** Use one actual
+     card or power whose `ensure_draw` continuation pauses on Stratagem, consume
+     the remaining draw pile with independent work, then resume. Start with one
+     of autoplay, Pillage, Escape Plan, Scrape, Mittens or Foregone Conclusion.
+     Compare native piles, plays, options and RNG before changing caller rules.
+     Several paused death contexts and reactive enemy-side-start choices remain
+     separate scheduling cases; Horn plus a paused Tools setup is now verified.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
      autoplay and further combat boundaries. Audit the other `ensure_draw` callers
      (autoplay, Pillage, Escape Plan, Scrape, Mittens and Foregone Conclusion) for

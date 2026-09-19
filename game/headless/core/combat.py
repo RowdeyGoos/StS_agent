@@ -205,6 +205,21 @@ class CombatEngine:
         return self._continue_enemy_side()
 
     def _continue_enemy_side(self):
+        # Native monster work and next-turn setup continue independently of a
+        # paused AfterDeath context. Do not offer its choice between enemy hits.
+        # This is a synchronous execution guard, never saved continuation state.
+        from game.headless.core.hook_scheduler import finish_enemy_work
+        self.player._defer_death_hooks = True
+        try:
+            result = self._advance_enemy_side()
+        finally:
+            self.player._defer_death_hooks = False
+        finish_enemy_work(self.player)
+        self._refresh_persistent_statuses()
+        self._check_terminal()
+        return CombatResult(self.done, self.winner, result.details)
+
+    def _advance_enemy_side(self):
         from game.headless.core.enemy_turn import begin, execute, paused, current_slot
         progress = self.player.rules.enemy_turn
         enemy_actions = progress['actions']
