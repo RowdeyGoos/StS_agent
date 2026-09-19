@@ -135,6 +135,8 @@ def plan(definition, data):
 
 
 def allowed(name, c):
+    if name in ("brain_leech", "room_full_of_cheese", "tea_master") and c.get("act_index",0) >= 2: return False
+    if name == "the_legends_were_true" and c.get("act_index",0) != 0: return False
     if name == "luminous_choir":
         return c["gold"] >= 149 and c.get("available_relics", True)
     if name == "unrest_site":

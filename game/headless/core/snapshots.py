@@ -21,24 +21,32 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v25"
+SCHEMA = "headless_combat_state_v26"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
 
 def card_record(card) -> dict:
     enchantments.validate(card)
-    return {"definition_id": card.definition.definition_id,
+    from copy import deepcopy
+    return {**({"event_data": deepcopy(card.event_data)} if card.definition.definition_id == "mad_science" else {}), "definition_id": card.definition.definition_id,
             "instance_id": card.instance_id, "upgrade_level": card.upgrade_level, "combats_seen": card.combats_seen,
             "permanent_damage": card.permanent_damage, "permanent_block": card.permanent_block, "enchantment": enchantments.record(card), "combat_state": asdict(card.combat_state)}
 
 
 def restore_card(record, cards=DEFAULT_CARDS):
-    if set(record) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "permanent_damage", "permanent_block", "enchantment", "combat_state"}:
+    if set(record) - ({"event_data"} if record.get("definition_id") == "mad_science" else set()) != {"definition_id", "instance_id", "upgrade_level", "combats_seen", "permanent_damage", "permanent_block", "enchantment", "combat_state"}:
         raise ValueError("Invalid card state fields.")
     if not isinstance(record["instance_id"], str) or not record["instance_id"]:
         raise ValueError("Invalid card instance ID.")
     card = cards.create(record["definition_id"], instance_id=record["instance_id"], upgrade_level=record["upgrade_level"])
+    if card.definition.definition_id == "mad_science":
+        from game.headless.cards.extended_events import RIDERS
+        from copy import deepcopy
+        data = record.get("event_data")
+        if not isinstance(data, dict) or set(data) != {"kind", "rider"} or data["kind"] not in RIDERS or data["rider"] not in RIDERS[data["kind"]]:
+            raise ValueError("Invalid Mad Science configuration.")
+        card.event_data = deepcopy(data)
     count = record["combats_seen"]
     if type(count) is not int or not 0 <= count < max(1, card.definition.combat_lifetime):
         raise ValueError("Invalid card combat lifetime.")
@@ -52,7 +60,7 @@ def restore_card(record, cards=DEFAULT_CARDS):
         raise ValueError('Invalid permanent card block.')
     card.permanent_block = growth
     values = record["combat_state"]
-    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('free_this_turn', 'star_free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
+    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('is_dupe', 'free_this_turn', 'star_free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
         raise ValueError('Invalid transient card state.')
     if any(type(values[k]) is not int for k in ('override_turn_baseline', 'override_combat_baseline', 'combat_override_baseline')):
         raise ValueError('Invalid cost override baselines.')

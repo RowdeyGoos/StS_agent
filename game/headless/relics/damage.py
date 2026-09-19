@@ -99,7 +99,7 @@ def attack_bonus(p, card):
         return 0
     enchantment = card.enchantment
     extra = (
-        (enchantment.amount if enchantment.definition_id == "sharp" else enchantment.extra_damage)
+        (enchantment.amount if enchantment.definition_id == "sharp" or enchantment.definition_id == "vigorous" and not enchantment.triggered else enchantment.extra_damage)
         if enchantment is not None
         else 0
     )
@@ -107,6 +107,7 @@ def attack_bonus(p, card):
         extra
         + (3 if enchantment is not None and enchantment.definition_id == "tezcataras_ember" else 0)
         + (3 if card.definition.strike and has(p, "strike_dummy") else 0)
+        + (1 if card.definition.strike and has(p, "fake_strike_dummy") else 0)
         + (3 if card.upgraded and has(p, "miniature_cannon") else 0)
         + (9 if card.enchantment is not None and has(p, "mystic_lighter") else 0)
     )
@@ -114,6 +115,8 @@ def attack_bonus(p, card):
 
 def attack_multiplier(p, card):
     result = 2 if card and card.enchantment and card.enchantment.definition_id == "instinct" else 1
+    if card and card.enchantment and card.enchantment.definition_id == "corrupted":
+        result *= 1.5
     relic = owned(p, "pen_nib")
     if relic is not None and card is not None:
         if memory(p, relic).get("attack_to_double") == card.instance_id:

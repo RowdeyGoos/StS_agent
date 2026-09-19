@@ -17,6 +17,9 @@ def capture(state, data):
         "continuation": sha256(
             json.dumps(continuation, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest(),
+        "act_index": state.act_index,
+        "wongo_points": state.wongo_points,
+        "freed_repy": state.freed_repy,
         "hp": state.hp,
         "max_hp": state.max_hp,
         "gold": state.gold,

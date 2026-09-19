@@ -206,7 +206,8 @@ def test_native_fallback_can_repeat_or_select_ineligible_after_full_pass():
 @pytest.mark.parametrize('seed,path',[(0,'left'),(2,'right'),(4,'left'),(7,'right')])
 def test_generated_expanded_event_pool_completes_and_restores(seed,path):
     run=RunEngine.ironclad_act1(seed=seed)
-    assert set(run.state.config.event_pool)==set(EVENTS)
+    assert len(run.state.config.event_pool) == 21
+    assert set(run.state.config.event_pool) < set(EVENTS)
     for _ in range(500):
         if run.state.phase is RunPhase.ACT_COMPLETE:break
         if run.state.phase is RunPhase.COMBAT:

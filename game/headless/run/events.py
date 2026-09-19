@@ -13,21 +13,24 @@ def begin(state, definition_id, *, cards=DEFAULT_CARDS):
     state.require_room_entry("event")
     if definition_id not in EVENTS:
         raise ValueError("Unsupported event.")
-    from game.headless.core.rng import from_snapshot
-    rng = from_snapshot(state.rng.snapshot())
+    from copy import copy, deepcopy
+    trial = deepcopy(state) if hasattr(EVENTS[definition_id], "open_page") else copy(state)
+    trial.rng = deepcopy(state.rng)
+    rng = trial.rng
     if getattr(rng, "native", False):
         rng.begin_event(definition_id)
-    pending = {"kind": "scripted_event", "definition_id": definition_id,
-               "event_instance_id": state.next_event_id, "stage": "options",
-               "data": EVENTS[definition_id].generate(rng, state=state, cards=cards)}
     from game.headless.events.resources import capture
-    resource_context = capture(state)
+    resource_context = capture(trial)
+    pending = {"kind": "scripted_event", "definition_id": definition_id,
+               "event_instance_id": trial.next_event_id, "stage": "options",
+               "data": EVENTS[definition_id].generate(rng, state=trial, cards=cards)}
     if resource_context is not None:
         pending["resources"] = resource_context
-    EVENTS[definition_id].validate(pending, state=state, cards=cards)
-    state.rng = rng
-    state.next_event_id += 1
-    state.pending, state.phase = pending, RunPhase.ROOM
+    EVENTS[definition_id].validate(pending, state=trial, cards=cards)
+    trial.next_event_id += 1
+    trial.pending, trial.phase = pending, RunPhase.ROOM
+    state.__dict__.clear()
+    state.__dict__.update(trial.__dict__)
 
 
 def _pending(state):
@@ -44,6 +47,9 @@ def legal_actions(state):
     if pending["stage"] == "resolved":
         return (LeaveEvent(instance_id),)
     options = EVENTS[pending["definition_id"]].options(pending)
+    if pending["stage"] == "event_rewards":
+        from game.headless.events.reward_batch import options as batch_options
+        options = batch_options(pending["data"]["active"]["rewards"], state)
     if pending["stage"] == "potion_rewards" and None not in state.potions:
         options = tuple(o for o in options if not o.startswith("claim_potion_"))
     return tuple(ChooseEventOption(instance_id, option) for option in options)

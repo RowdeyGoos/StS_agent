@@ -16,13 +16,16 @@ def start(engine, request):
     validate_event(state, engine.graph, cards=engine.cards)
     definition = EVENTS[pending["definition_id"]]
     encounter = ENCOUNTERS.get(request.encounter_id)
-    if (pending["stage"] != "fight" or getattr(definition, "combat_encounter_id", None) != request.encounter_id
+    if (pending["stage"] != "fight" or request.encounter_id not in (getattr(definition, "combat_encounter_id", None), *getattr(definition, "combat_encounter_ids", ()))
             or encounter is None or encounter.event_id != definition.definition_id):
         raise ValueError("Event combat does not match its content definition.")
     # Construction uses isolated RNG; no event, navigation or history changes on failure.
     rng, combat = engine._prepare_combat(encounter_factory=encounter)
     record = EventCombatRecord(pending["event_instance_id"], definition.definition_id,
                                state.current_node_id, request.encounter_id, state.combats_completed + 1)
+    if hasattr(definition, "open_page"):
+        from copy import deepcopy
+        record.continuation = deepcopy(pending)
     state.rng, state.pending, state.phase = rng, None, RunPhase.COMBAT
     state.active_encounter_id = request.encounter_id
     state.event_combats.append(record)
@@ -52,7 +55,9 @@ def leave_rewards(state, encounter_id):
             record.rewards_left = True
 
 
-def validate(state, graph):
+def validate(state, graph, *, cards=None):
+    from game.headless.cards.catalog import DEFAULT_CARDS
+    cards = cards or DEFAULT_CARDS
     from game.headless.run.state import RunPhase
     from game.headless.run.unknown_rooms import room_node
     if not isinstance(state.event_combats, list) or state.event_combats and state.config is None:
@@ -64,12 +69,17 @@ def validate(state, graph):
                 or type(record.event_instance_id) is not int or not previous_event < record.event_instance_id < state.next_event_id
                 or type(record.combat_number) is not int or not previous_number < record.combat_number <= state.combats_completed + (state.phase is RunPhase.COMBAT)
                 or type(record.rewards_left) is not bool
+                or type(record.timed_out) is not bool or type(record.resumed) is not bool
+                or record.timed_out and (record.definition_id != "battleworn_dummy" or record.outcome != "victory")
+                or record.continuation is not None and record.resumed != record.rewards_left
+                or record.resumed and (not record.rewards_left or record.outcome != "victory" or record.continuation is None)
                 or record.outcome not in (None, "victory", "defeat")
                 or not isinstance(record.definition_id, str) or record.definition_id not in EVENTS
                 or not isinstance(record.encounter_id, str) or record.encounter_id not in ENCOUNTERS
-                or getattr(EVENTS[record.definition_id], "combat_encounter_id", None) != record.encounter_id
+                or record.encounter_id not in (getattr(EVENTS[record.definition_id], "combat_encounter_id", None), *getattr(EVENTS[record.definition_id], "combat_encounter_ids", ()))
                 or ENCOUNTERS[record.encounter_id].event_id != record.definition_id):
             raise ValueError("Invalid event combat record.")
+        validate_continuation(state, record, cards)
         previous_number, previous_event = record.combat_number, record.event_instance_id
         if graph is None:
             if record.node_id is not None:
@@ -101,7 +111,8 @@ def validate(state, graph):
         elif state.phase is not RunPhase.DEFEAT or record.combat_number != state.combats_completed or state.pending is not None:
             raise ValueError("Event defeat has no terminal owner.")
     if (state.pending is not None and state.pending.get("kind") == "scripted_event"
-            and previous_event >= state.pending.get("event_instance_id", -1)):
+            and previous_event >= state.pending.get("event_instance_id", -1)
+            and not (state.event_combats and state.event_combats[-1].continuation is not None and state.event_combats[-1].rewards_left and previous_event == state.pending.get("event_instance_id"))):
         raise ValueError("Prior event combat collides with the current event identity.")
     encounter_id = state.active_encounter_id
     if state.phase is RunPhase.REWARD and state.pending is not None:
@@ -118,3 +129,97 @@ def encounter_at_current_room(state):
         if not record.rewards_left and record.node_id == state.current_node_id:
             return record.encounter_id
     return None
+
+
+def resume(state, cards):
+    if not state.event_combats:
+        return False
+    record = state.event_combats[-1]
+    if record.continuation is None or record.outcome != 'victory' or record.resumed or record.combat_number != state.combats_completed or record.node_id != state.current_node_id:
+        return False
+    if record.definition_id != 'battleworn_dummy':
+        record.rewards_left = True
+        record.resumed = True
+        return True
+    from copy import deepcopy
+    from game.headless.run.state import RunPhase
+    from game.headless.events.steps import complete, drain
+    from game.headless.events.checkpoint import refresh
+    state.pending = deepcopy(record.continuation)
+    state.phase = RunPhase.ROOM
+    data = state.pending['data']
+    operation = EVENTS[record.definition_id].plan(data)[data['cursor']]
+    if operation != ['combat', record.encounter_id]:
+        raise ValueError('Combat continuation differs from its event.')
+    complete(data, operation, {'timed_out': record.timed_out})
+    record.rewards_left = True
+    record.resumed = True
+    drain(state, cards)
+    refresh(state)
+    return True
+
+
+def validate_continuation(state, record, cards):
+    definition = EVENTS[record.definition_id]
+    if not hasattr(definition, 'open_page'):
+        if record.continuation is not None or record.resumed or record.timed_out:
+            raise ValueError('Unexpected event continuation.')
+        return
+    from copy import deepcopy
+    from game.headless.cards.catalog import DEFAULT_CARDS
+    from game.headless.core.snapshots import restore_card
+    from game.headless.relics.base import RelicInstance
+    from game.headless.potions.base import PotionInstance
+    pending = record.continuation
+    if (not isinstance(pending, dict) or pending.get('kind') != 'scripted_event'
+            or pending.get('definition_id') != record.definition_id
+            or pending.get('event_instance_id') != record.event_instance_id
+            or pending.get('stage') != 'fight'):
+        raise ValueError('Invalid suspended event combat owner.')
+    data = pending.get('data')
+    if not isinstance(data, dict) or not isinstance(data.get('checkpoint'), dict):
+        raise ValueError('Missing suspended event state.')
+    checkpoint = data['checkpoint']
+    trial = deepcopy(state)
+    for key in ('hp','max_hp','gold','next_card_id','next_item_id','potion_capacity','act_index','wongo_points','freed_repy'):
+        setattr(trial, key, checkpoint[key])
+    trial.deck = [restore_card(c, cards) for c in checkpoint['deck']]
+    trial.relics = [RelicInstance(**r) for r in checkpoint['relics']]
+    trial.potions = [PotionInstance(**p) if p else None for p in checkpoint['potions']]
+    trial.relic_work = []
+    definition.validate(pending, state=trial, cards=cards)
+    if data['active'] != {'encounter_id': record.encounter_id}:
+        raise ValueError('Suspended event requests a different encounter.')
+
+
+def reward_descriptors(record):
+    if record.continuation is None or record.definition_id == 'battleworn_dummy':
+        return []
+    data=record.continuation['data']
+    ops=EVENTS[record.definition_id].plan(data)[data['cursor']+1:]
+    result=[]
+    for op in ops:
+        if op[0]=='relic_reward': result.append(['relic',op[1],'rewards'])
+        elif op[0]=='factory_potion': result.append(['potion','factory','rewards'])
+        elif op[0]=='special_card_reward': result.append(['special_card',op[1]])
+        else: raise ValueError('Unsupported post-combat event reward.')
+    return result
+
+
+def extra_rewards(state,cards,encounter_id):
+    if not state.event_combats: return []
+    record=state.event_combats[-1]
+    if record.encounter_id != encounter_id or record.outcome != 'victory' or record.rewards_left: return []
+    from game.headless.events.reward_batch import prepare
+    return [dict(row, source=f'event:{record.event_instance_id}:{i}')
+            for i,row in enumerate(prepare(state,cards,reward_descriptors(record)))]
+
+
+def validate_extra_rewards(state,cards,rewards):
+    rows=[r for r in rewards if isinstance(r,dict) and isinstance(r.get('source'),str) and r['source'].startswith('event:')]
+    record=state.event_combats[-1] if state.event_combats else None
+    descriptors=reward_descriptors(record) if record and record.outcome=='victory' and not record.rewards_left else []
+    if [r['source'] for r in rows] != [f'event:{record.event_instance_id}:{i}' for i in range(len(descriptors))]:
+        raise ValueError('Event reward sources differ from completed encounter.')
+    from game.headless.events.reward_batch import validate
+    validate([{k:v for k,v in r.items() if k!='source'} for r in rows],descriptors,cards)

@@ -23,7 +23,7 @@ def validate(definition, pending, state, cards, *, defeated=False):
     if data["checkpoint"] != capture(state, data):
         raise ValueError("Event state differs from its last successful command.")
     context = pending.get("resources")
-    if not isinstance(context, dict) or set(context) != {"hp", "max_hp", "gold", "relics", "potions"}:
+    if not isinstance(context, dict) or set(context) != {"hp", "max_hp", "gold", "relics", "potions", "deck_ids"}:
         raise ValueError("Invalid event entry resources.")
     if (
         any(type(context[k]) is not int for k in ("hp", "max_hp", "gold"))
@@ -117,6 +117,13 @@ def validate(definition, pending, state, cards, *, defeated=False):
             if op[1] != "random" and result["definition_id"] != op[1]:
                 raise ValueError("Wrong event relic.")
             check_id(result["instance_id"], "run.item.", state.next_item_id)
+    validate_active(definition, pending, state, cards, plan, defeated=defeated)
+
+
+def validate_active(definition, pending, state, cards, plan, *, defeated=False):
+    data = pending["data"]
+    cursor = data["cursor"]
+    name = definition.definition_id
     active = data["active"]
     stage = pending["stage"]
     if defeated:
@@ -126,6 +133,12 @@ def validate(definition, pending, state, cards, *, defeated=False):
     if data["choice"] is None:
         if stage != "options" or cursor or active is not None or data["eligible"]:
             raise ValueError("Invalid initial event choice.")
+        return
+    if stage == "event_rewards":
+        from game.headless.events.reward_batch import validate
+        if cursor >= len(plan) or plan[cursor][0] != 'rewards' or not isinstance(active,dict) or set(active) != {'rewards'}:
+            raise ValueError('Unexpected custom event rewards.')
+        validate(active['rewards'], plan[cursor][1], cards, state)
         return
     if state.relic_work:
         if stage != "relic_work" or active is not None:
@@ -166,13 +179,19 @@ def validate(definition, pending, state, cards, *, defeated=False):
         expected = list(active["originals"])
         for identity, result in zip(selected, active["results"]):
             index = next(i for i, r in enumerate(expected) if r["instance_id"] == identity)
-            if op[1] == "remove":
+            if op[1].startswith("remove"):
                 if result is not None:
                     raise ValueError("Removal retained a card.")
                 expected.pop(index)
             else:
                 restore_records([result], state, cards)
                 expected[index] = result
+        if op[1] in ('transform','transform_basic') and any(r.definition_id == 'bing_bong' and not r.data.get('_melted') for r in state.relics):
+            ids = {r['instance_id'] for r in expected}
+            clones = [card_record(c) for c in state.deck if c.instance_id not in ids]
+            if [c['definition_id'] for c in clones] != [r['definition_id'] for r in active['results']]:
+                raise ValueError('Event clone results differ from replacements.')
+            expected.extend(clones)
         if expected != [card_record(c) for c in state.deck]:
             raise ValueError("Event selection deck changed.")
     elif op[0] == "cards":
@@ -233,13 +252,21 @@ def validate(definition, pending, state, cards, *, defeated=False):
             c = restore_records([result], state, cards)[0]
             if c.definition.definition_id != offers[i] or result not in [card_record(c) for c in state.deck]:
                 raise ValueError("Event reward is not owned.")
-    elif op[0] == "potion":
+    elif op[0] == "special_card_reward":
+        if stage != op[0] or active != {"value": op[1]}:
+            raise ValueError("Invalid special event card reward.")
+        cards.definition(op[1])
+    elif op[0] in ("relic_reward", "gold_reward"):
+        from game.headless.relics.base import RELICS
+        if stage != op[0] or set(active) != {"value"} or (active["value"] not in RELICS if op[0] == "relic_reward" else type(active["value"]) is not int or active["value"] < 0):
+            raise ValueError("Invalid event item reward.")
+    elif op[0] in ("potion", "fixed_potion", "event_potion", "factory_potion"):
         from game.headless.potions.pools import ORDINARY_POTIONS
 
         if (
             stage != "potion_rewards"
             or set(active) != {"definition_id"}
-            or active["definition_id"] not in ORDINARY_POTIONS
+            or active["definition_id"] not in (ORDINARY_POTIONS if op[0] != "fixed_potion" else (op[1],))
         ):
             raise ValueError("Invalid event potion reward.")
     else:

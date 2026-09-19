@@ -49,6 +49,10 @@ def enter_combat(p):
         elif name == "petrified_toad" and p.rules.potion_slots and not has(p, "sozu"):
             p.rules.potions_generated.append("potion_shaped_rock")
             p.rules.potion_slots -= 1
+        elif name == "fake_anchor":
+            p.gain_block(4)
+        elif name == "fake_snecko_eye":
+            apply_power(p, "confused", 1)
         elif name == "anchor":
             p.gain_block(10)
         elif name == "stone_cracker" and p.rules.room_kind == "boss":
@@ -73,6 +77,8 @@ def start_turn(p, draw_count):
             continue
         from game.headless.relics.ancient_combat import start_turn as ancient_start
         draw_count = ancient_start(p, relic, draw_count)
+        from game.headless.relics.event_content import start_turn as event_start
+        draw_count = event_start(p, relic, draw_count)
         if name in ("kunai", "kusarigama", "ornamental_fan", "shuriken", "rainbow_ring"):
             m["turn_attacks"] = 0
         if name in ("letter_opener", "rainbow_ring"):

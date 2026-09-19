@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class CardState:
+    is_dupe: bool = False
     extra_damage: int = 0
     cost_change: int = 0
     turn_cost_change: int = 0

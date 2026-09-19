@@ -18,7 +18,10 @@ from game.headless.events.byrdonis_nest import ByrdonisNest
 
 from game.headless.events.act1_content import DEFINITIONS as ACT1_EVENTS
 
+from game.headless.events.roster import DEFINITIONS as EXTENDED_EVENTS
+
 EVENTS = MappingProxyType({
+    **{d.definition_id: d for d in EXTENDED_EVENTS},
     **{d.definition_id: d for d in ACT1_EVENTS},
     "jungle_maze_adventure": JungleMazeAdventure(), "aroma_of_chaos": AromaOfChaos(),
     "morphic_grove": MorphicGrove(), "tablet_of_truth": TabletOfTruth(),

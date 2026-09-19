@@ -92,6 +92,7 @@ def card_offers(
         if upgrade_roll:
             roll = state.rng.random(stream)
             # A0 Act1 base chance0; native <= still upgrades exact zero.
-            if roll <= 0.0 and len(cards.definition(name).levels) > 1:
+            threshold = 0.0 if cards.definition(name).rarity == "rare" else getattr(state, "act_index", 0) * .25
+            if roll <= threshold and len(cards.definition(name).levels) > 1:
                 upgraded.append(name)
     return offers, upgraded

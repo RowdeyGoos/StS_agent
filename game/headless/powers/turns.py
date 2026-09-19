@@ -5,14 +5,20 @@ from game.headless.core.resolution import push
 
 def before_draw_tasks(p):
     tasks = [['before_draw_power', key] for key in p.rules.powers
-             if key in ('infinite_blades', 'spectrum_shift', 'foregone_conclusion', 'call_of_the_void', 'sentry_mode', 'creative_ai') or key.startswith('nightmare:')]
+             if key in ('hello_world', 'infinite_blades', 'spectrum_shift', 'foregone_conclusion', 'call_of_the_void', 'sentry_mode', 'creative_ai') or key.startswith('nightmare:')]
     return tasks
 
 
 def execute(p, op, args):
     if op == 'before_draw_power':
         key = args[0]
-        if key == 'creative_ai':
+        if key == 'hello_world':
+            from game.headless.cards.colorless_effects import create, pool
+            from game.headless.generation.combat import select_cards
+            options = [d for d in pool(p) if d.rarity == 'common']
+            for definition in select_cards(options, p.deck.generation_rng, p.rules.powers[key], distinct=True):
+                create(p, definition)
+        elif key == 'creative_ai':
             push(p, ['def_before_draw', p.rules.powers.get(key, 0)])
         elif key in ('call_of_the_void', 'sentry_mode'):
             from game.headless.powers.necrobinder import execute as nec

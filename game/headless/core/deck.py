@@ -55,6 +55,12 @@ class Deck:
             # Native pile index zero is top; this engine's stack pops from the end.
             self.draw_pile.reverse()
 
+        if not initial:
+            for card in self.all_cards():
+                if card in self.draw_pile and card.enchantment and card.enchantment.definition_id == "perfect_fit":
+                    self.draw_pile.remove(card)
+                    self.draw_pile.append(card)
+
     def shuffle_piles(self, *, include_hand=False):
         """Native Shuffle starts with discard, then the current top-first draw pile."""
         from game.headless.core.native_rng import NativeRng

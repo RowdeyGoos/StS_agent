@@ -52,7 +52,10 @@ class RelicInstance:
 
 from game.headless.relics.ancient_content import definitions as ancient_definitions
 
+from game.headless.relics.event_content import definitions as event_definitions
+
 RELICS = MappingProxyType({
+    **event_definitions(RelicDefinition),
     **ancient_definitions(RelicDefinition),
     "byrdpip": RelicDefinition("byrdpip", adds_pet=True, allow_duplicates=True, pickup_transform=("byrdonis_egg", "byrd_swoop")),
     "sword_of_stone": RelicDefinition("sword_of_stone", evolve_after_elites=5, evolves_into="sword_of_jade", allow_duplicates=True),

@@ -33,7 +33,9 @@ class EnchantmentDefinition:
     def on_play(self, instance, player):
         if not player.is_alive:
             return
-        if self.definition_id == "inky" and not player.combat_is_ending:
+        if self.definition_id == "corrupted":
+            player.lose_hp(2)
+        elif self.definition_id == "inky" and not player.combat_is_ending:
             from game.headless.core.resolution import push
             card = player.current_card
             target = player.rules.plays[card.instance_id]["target"]
@@ -49,7 +51,7 @@ class EnchantmentDefinition:
 
 
 ENCHANTMENTS = MappingProxyType({"sown": Sown(), **{
-    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam", "slither", "inky", "goopy", "tezcataras_ember", "instinct", "imbued", "clone")
+    name: EnchantmentDefinition(name) for name in ("sharp", "adroit", "momentum", "royally_approved", "swift", "nimble", "glam", "slither", "inky", "goopy", "tezcataras_ember", "instinct", "imbued", "clone", "perfect_fit", "souls_power", "spiral", "corrupted", "steady", "vigorous")
 }})
 
 
@@ -59,13 +61,17 @@ def can_enchant(card, definition_id="sown"):
     kind = card.spec.kind
     if definition_id not in ENCHANTMENTS or kind not in ("attack", "skill", "block", "power") or card.cost < 0 or card.enchantment is not None:
         return False
+    if definition_id == "souls_power":
+        return card.spec.exhausts
+    if definition_id == "spiral":
+        return card.definition.rarity == "basic" and (card.definition.strike or card.definition.defend)
     if definition_id == "slither":
         return not card.spec.x_cost
     if definition_id == "imbued":
         return kind in ("skill", "block")
     if definition_id == "goopy":
         return card.definition.defend
-    if definition_id in ("sharp", "momentum", "instinct"):
+    if definition_id in ("sharp", "momentum", "instinct", "corrupted", "vigorous"):
         return kind == "attack"
     if definition_id == "royally_approved":
         return kind in ("attack", "skill", "block")

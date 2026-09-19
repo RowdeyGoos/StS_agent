@@ -115,6 +115,10 @@ def buy(state, cards, offer_id, *, ignore_cost=False):
     else:
         result = add_relic(state, offer["definition_id"], cards=cards)
     state.gold -= paid
+    if paid:
+        from game.headless.relics.run_rules import owned, counter
+        bank = owned(state, "maw_bank")
+        if bank: counter(state, bank, 1)
     offer["sold"] = True
     if has(state, "the_courier"):
         refill(state, cards, offer)
@@ -142,7 +146,12 @@ def choose_removal(state, instance_id):
                 or instance_id not in pending["eligible"] or instance_id not in eligible_removals(state)):
             raise ValueError("Card is not eligible for shop removal.")
         result = remove_card(state, instance_id)
-        state.gold -= 0 if free else removal_price(state)
+        cost = 0 if free else removal_price(state)
+        state.gold -= cost
+        if cost:
+            from game.headless.relics.run_rules import owned, counter
+            bank = owned(state, 'maw_bank')
+            if bank: counter(state, bank, 1)
         state.shop_removals_used += 1
         pending["removal_used"] = True
     pending.pop("eligible")

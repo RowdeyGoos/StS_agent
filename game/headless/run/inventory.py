@@ -4,20 +4,20 @@ from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 
 
-def add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None):
+def add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None, tome_card=None):
     # Acquisition may generate nested choices; failures roll back the complete
     # owned state, including RNG, resources and both identity allocators.
     from copy import deepcopy
     before = deepcopy(state)
     try:
-        return _add_relic(state, definition_id, cards=cards, allow_dead=allow_dead, card_pool=card_pool)
+        return _add_relic(state, definition_id, cards=cards, allow_dead=allow_dead, card_pool=card_pool, tome_card=tome_card)
     except Exception:
         state.__dict__.clear()
         state.__dict__.update(before.__dict__)
         raise
 
 
-def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None):
+def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None, tome_card=None):
     if definition_id not in RELICS or (not RELICS[definition_id].stackable and not RELICS[definition_id].allow_duplicates and any(r.definition_id == definition_id for r in state.relics)):
         raise ValueError("Unsupported or already owned relic.")
     if RELICS[definition_id].pickup_max_hp and (state.phase.value == "combat" or state.hp <= 0 and not allow_dead):
@@ -39,6 +39,11 @@ def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_
         if definition_id != 'sea_glass' or card_pool not in ('ironclad','silent','regent','necrobinder','defect'):
             raise ValueError('Only Sea Glass accepts a character card pool.')
         data['family'] = card_pool
+    if tome_card is not None:
+        definition = cards.definition(tome_card)
+        if definition_id != 'dusty_tome' or definition.pool != 'ironclad' or definition.rarity != 'ancient' or tome_card == 'break':
+            raise ValueError('Invalid bound Dusty Tome card.')
+        data['card'] = tome_card
     relic = RelicInstance(definition_id, state.allocate_item_id(), data=data)
     state.relics.append(relic)
     if getattr(state.rng, "native", False):

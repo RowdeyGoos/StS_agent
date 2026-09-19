@@ -103,12 +103,17 @@ class Card:
         self.permanent_damage = 0
         self.permanent_block = 0
         self.enchantment = None
+        self.event_data = {"kind": "attack", "rider": "sapping"} if definition.definition_id == "mad_science" else {}
         from game.headless.core.card_state import CardState
         self.combat_state = CardState()
 
     @property
     def spec(self) -> CardSpec:
         spec = self.definition.spec_at(self.upgrade_level)
+        if self.definition.definition_id == "mad_science":
+            from dataclasses import replace
+            kind = self.event_data["kind"]
+            spec = replace(spec, kind=kind, uses_target=kind == "attack", base_damage=12 if kind == "attack" else 0, block_gain=8 if kind == "skill" else 0)
         if self.enchantment is not None and self.enchantment.definition_id == "royally_approved":
             from dataclasses import replace
             spec = replace(spec, innate=True, retain=True)
@@ -116,6 +121,10 @@ class Card:
             from dataclasses import replace
             if self.enchantment.definition_id == 'goopy':
                 spec = replace(spec, exhausts=True)
+            elif self.enchantment.definition_id == 'steady':
+                spec = replace(spec, retain=True)
+            elif self.enchantment.definition_id == 'souls_power':
+                spec = replace(spec, exhausts=False)
             elif self.enchantment.definition_id == 'tezcataras_ember':
                 spec = replace(spec, cost=0, eternal=True)
         if self.permanent_damage:
@@ -125,6 +134,9 @@ class Card:
             from dataclasses import replace
             spec = replace(spec, block_gain=spec.block_gain + self.permanent_block)
         state = self.combat_state
+        if state.is_dupe:
+            from dataclasses import replace
+            spec = replace(spec, exhausts=False)
         if state.retain_this_turn or state.retain_this_combat or state.sly_this_turn or state.sly_this_combat or state.all_enemies or state.ethereal_this_combat:
             from dataclasses import replace
             spec = replace(spec, retain=spec.retain or state.retain_this_turn or state.retain_this_combat,

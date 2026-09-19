@@ -74,7 +74,7 @@ def begin(state, relic, cards):
                 add_card(state, cards.definition('apparition'))
     elif name == 'dusty_tome':
         choices = [d for d in cards.definitions if d.pool == 'ironclad' and d.rarity == 'ancient' and d.definition_id != 'break']
-        chosen = state.rng.choice('rewards', choices)
+        chosen = cards.definition(relic.data['card']) if 'card' in relic.data else state.rng.choice('rewards', choices)
         relic.data['card'] = chosen.definition_id
         add_card(state, chosen, upgrade_level=1)
     elif name == 'calling_bell':

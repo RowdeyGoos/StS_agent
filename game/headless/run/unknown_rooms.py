@@ -46,6 +46,7 @@ class RoomOutcome:
     kind: str
     event_id: str | None = None
     blocked_by: str | None = None
+    forced_by: str | None = None
 
 
 @dataclass
@@ -72,9 +73,18 @@ class UnknownRooms:
                     if current is not None and current.definition_id != "juzu_bracelet":
                         raise ValueError("Unknown-room blocker is not Juzu Bracelet.")
                     blocked = (*blocked, "combat")
+                if result.forced_by is not None:
+                    identity = result.forced_by
+                    conditions = state.event_progression.entry_conditions.get(node_id, {})
+                    if (not isinstance(identity,str) or not identity.startswith('run.card.') or not identity[9:].isdecimal()
+                            or int(identity[9:]) >= state.next_card_id
+                            or conditions.get('act_index') != 2 or conditions.get('lantern_keys',0) < 1
+                            or result.kind != 'event' or result.event_id != 'war_historian_repy'):
+                        raise ValueError('Invalid Lantern Key event override.')
+                    blocked = tuple(BASE_ODDS)
                 if (not isinstance(result, RoomOutcome) or result.kind not in ("combat", "treasure", "shop", "event")
                         or result.kind in blocked
-                        or result.kind == "event" and result.event_id not in state.config.event_pool
+                        or result.kind == "event" and result.event_id not in state.config.event_pool and result.forced_by is None
                         or result.kind != "event" and result.event_id is not None):
                     raise ValueError("Invalid unknown-room outcome.")
                 _advance(expected_odds, result.kind, blocked)
@@ -115,11 +125,13 @@ def prepare_unknown(state, graph, node):
     from game.headless.relics.run_rules import owned
     bracelet = owned(state, "juzu_bracelet")
     blocked = blocked_types(graph, node, previous) + (("combat",) if bracelet is not None else ())
+    key = next((c for c in state.deck if c.definition.definition_id == 'lantern_key'),None) if state.act_index == 2 else None
+    if key is not None: blocked = tuple(BASE_ODDS)
     kind = roll_room(unknown.odds, rng, blocked=blocked)
     if state.event_progression is None:
         raise ValueError("Unknown room requires an owned event queue.")
     progression = deepcopy(state.event_progression)
     from game.headless.events.eligibility import entry_conditions
     event_id = progression.pull(node.node_id, conditions=entry_conditions(state)) if kind == "event" else None
-    unknown.outcomes[node.node_id] = RoomOutcome(kind, event_id, None if bracelet is None else bracelet.instance_id)
+    unknown.outcomes[node.node_id] = RoomOutcome(kind, event_id, None if bracelet is None else bracelet.instance_id, None if key is None else key.instance_id)
     return rng, unknown, progression, replace(node, kind=kind, event_id=event_id)

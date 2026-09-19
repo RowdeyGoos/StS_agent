@@ -152,7 +152,7 @@ def restore_rules(record, player):
         if (
             any(type(frame[k]) is not bool for k in ("auto", "force_exhaust"))
             or any(type(frame[k]) is not int or frame[k] < 0 for k in ("x", "energy_value", "remaining", "rupture"))
-            or not 1 <= frame["remaining"] <= 6 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id == "glam") + in_play[identity].combat_state.replay_count
+            or not 1 <= frame["remaining"] <= 6 + int(in_play[identity].enchantment is not None and in_play[identity].enchantment.definition_id in ("glam", "spiral")) + in_play[identity].combat_state.replay_count
         ):
             raise ValueError("Invalid play resources.")
         if type(frame["context"]) is not int or frame["context"] not in work:
@@ -278,7 +278,7 @@ def restore_rules(record, player):
         if op == "selected" and (
             args[0] not in player.deck._allocated_ids
             or args[0] in r.plays
-            or (args[1] not in ("move", "exhaust", "transform", "discard_redraw", "free_combat", "hand_trick", "nightmare", "well_laid_plans") and args[1] not in regent_snapshots.CHOICES and args[1] not in necrobinder_snapshots.CHOICES)
+            or (args[1] not in ("move", "exhaust", "transform", "dual_wield", "dual_wield_up", "discard_redraw", "free_combat", "hand_trick", "nightmare", "well_laid_plans") and args[1] not in regent_snapshots.CHOICES and args[1] not in necrobinder_snapshots.CHOICES)
             or args[2] not in ("hand", "draw_pile")
             or args[3] not in ("", "free_this_turn", "free_until_played")
         ):
@@ -290,7 +290,7 @@ def restore_rules(record, player):
         if op == "begin_end_hooks" and not r.turn_ending:
             raise ValueError("Turn-end hooks outside the ending phase.")
         if op == "before_draw_power":
-            if not r.player_side or not (args[0] in ("infinite_blades", "spectrum_shift", "foregone_conclusion", "call_of_the_void", "sentry_mode", "creative_ai") or (isinstance(args[0], str) and args[0].startswith("nightmare:") and valid_power(args[0], r.power_sequence))):
+            if not r.player_side or not (args[0] in ("infinite_blades", "spectrum_shift", "foregone_conclusion", "call_of_the_void", "sentry_mode", "creative_ai", "hello_world") or (isinstance(args[0], str) and args[0].startswith("nightmare:") and valid_power(args[0], r.power_sequence))):
                 raise ValueError("Invalid before-draw power task.")
         if op == "side_start_powers" and not r.player_side:
             raise ValueError("Side-start power dispatch outside setup.")

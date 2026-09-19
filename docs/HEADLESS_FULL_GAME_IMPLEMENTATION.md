@@ -21,6 +21,13 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-19 — all solo events:** all 66 regular/Ancient event models are
+  implemented, including the existing Neow path; deprecated placeholders are
+  excluded. Custom interactions, training timeout, event combat extra rewards,
+  17 event cards, 27 relics and owned page/reward continuations are covered by
+  source-backed regression tests. [Current scope and usage](HEADLESS_ENGINE.md#all-solo-events-across-acts).
+  Full later-act campaigns and live/native differential acceptance remain open.
+
 - **2026-09-19 — foreign acquisition enabled:** all 320 ordinary foreign cards are
   now in the default catalog. Kaleidoscope and Splash match pinned native factory
   selection, modifiers and RNG vectors; all 161 relics and 27 solo Neow offers are
@@ -1250,8 +1257,9 @@ Dependencies and acceptance cases are in the linked task.
 - **Partial:** Dense Vegetation now transfers into four unstunned Wrigglers,
   ordinary combat rewards and map exit. Its event/fight/history identities restore
   separately from normal encounter queues. Victory, defeat, reward skip, repeat
-  events and failed launch rollback are covered. Resuming parents, temporary
-  training and special rewards remain open. [Evidence](evidence/dense_vegetation_2026_09_13.md).
+  events and failed launch rollback are covered. Battleworn Dummy now resumes
+  after a kill or three-turn expiry; Punch-Off, Lantern Key and Fake Merchant
+  use the common combat reward screen with their custom loot. [Evidence](evidence/dense_vegetation_2026_09_13.md).
 
 - **Depends on:** HF-07/09/19/31/32/39.
 - **Implement:** event-selected encounters, temporary combat rules/objectives,
@@ -1265,6 +1273,12 @@ Dependencies and acceptance cases are in the linked task.
   Combat, State, Progression, Replay and Differential.
 
 ### HF-42 — Model custom event interactions and terminal branches
+
+- **Implemented for the solo roster:** Fake Merchant prices/purchases/combat,
+  Crystal Sphere tools/reveals/reward batches, repeated Conveyor/Baths choices,
+  Trial confirmation/cancellation and Architect victory. JSON continuations and
+  illegal/repeated commands have synthetic regression coverage; broader native
+  differential validation remains open.
 
 - **Depends on:** HF-07/32/35/37/39 and each caller's effects.
 - **Implement:** separate bounded tickets for Fake Merchant inventory/combat,
@@ -1282,8 +1296,9 @@ Dependencies and acceptance cases are in the linked task.
 - **Act 1 implemented:** all 13 Overgrowth and eight normally Act-1-eligible
   shared events, including their card/enchantment/relic dependencies and Neow.
   All 18 curses and ten modifier-eligible curses have distinct catalogs.
-  Spoils Map's later-act quest, later-act events, progression unlocks and native
-  probability/RNG parity remain open. [Evidence](evidence/events_neow_2026_09_14.md).
+  The full solo event/Ancient roster is now implemented, including Lantern Key
+  and Repy. Profile unlocks, full later-act progression and whole-run native
+  conformance remain open. [Evidence](evidence/events_neow_2026_09_14.md).
 
 - **Depends on:** HF-01/24/25/28/39–42 as applicable.
 - **Implement:** instantiate a ticket for each reachable event/ancient branch in
