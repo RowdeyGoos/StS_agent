@@ -314,7 +314,9 @@ def test_poison_infested_death_horn_choice_and_enemy_side_restore():
     run.apply(EndTurn())
     p=run.combat.player
     assert p.rules.selection['source']=='stratagem'
-    assert p.rules.enemy_turn['poison_start'] is True
+    # Poison's death hook yields without blocking enemy work. Spawned children
+    # do not act this side; Horn becomes actionable in the next player turn.
+    assert p.rules.enemy_turn is None and run.combat.turn == 2
     assert len(run.combat.enemies)==5
     other=clone_run(run)
     finish_choices(run,other)
