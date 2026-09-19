@@ -201,8 +201,23 @@ comparisons match paused/final physical pile order, energy/block, options and
 Shuffle counter/next-double suffix, including JSON restoration while paused.
 No production rule change was needed. This probe does not execute the death
 dispatcher, enclosing attack, live card UI or ActionExecutor frame loop.
-Native enemy-side work runs concurrently with the action queue; its exact scheduling,
-multiplayer queues and the complete hook-order audit remain separate work.
+The separate `attack-hooks` mode now closes the enclosing play/death-dispatch gap
+for Sword Boomerang against a one-HP Phrog with Horn, Stratagem 1 and Abacus.
+[Twelve native cases](evidence/native_attack_hooks_2026_09_19.json) execute actual
+PlayCardAction (legality, cost, wrapper, OnPlay and discard), damage/death dispatch,
+Infested spawning and deferred choice resumption. They cover base/upgraded cards,
+three seeds and automatic singleton/deferred three-card draws. The real native
+replay-choice path receives an in-memory physical-card answer; there is no test
+selector or rule patch. Python matches each hit, surviving slot/HP/power data,
+paused/final piles and resources, and Shuffle/CombatTargets/Niche/MonsterAi
+counters and next-value suffixes, including JSON continuation at the choice.
+The existing game rules matched without changes.
+
+Actions and replay events are manually driven. These nonterminal cases do not
+establish live UI behavior, executor-frame scheduling, multiple queued deaths,
+combat-end cancellation or a full native run. Native enemy-side work runs
+concurrently with the action queue; its exact scheduling, multiplayer queues and
+the complete hook-order audit remain separate work.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless

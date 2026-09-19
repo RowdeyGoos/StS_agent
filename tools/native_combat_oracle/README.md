@@ -147,6 +147,27 @@ where needed and explicit in-memory localization entries. Native shuffle's FTUE
 check accesses SaveManager's **in-memory TestMode MockGodotFileIo**; real save
 files and localization initialization are not used.
 
+Pass `--mode attack-hooks` for actual PlayCardAction with Sword Boomerang against
+a one-HP Phrog Parasite, Gremlin Horn, Stratagem 1 and Abacus. The shared fixture
+runs twelve cases: seeds 0/2/42 × one/three discarded Defends × base/upgraded card.
+It creates an actual NetReplayGameService and PlayerChoiceSynchronizer, installs
+only explicit RunManager services, and delivers the native replay enqueue,
+physical-card choice and resume events. Native PlayCardAction handles legality,
+cost payment, OnPlayWrapper/OnPlay and discard; native Hook.AfterDeath creates
+its own Horn context. There is no test selector or patched rule. Base deferred
+cases choose the top card; upgraded cases choose the bottom card.
+
+Assertions require a finished/discarded outer card, the expected detached hook
+count, four surviving children, remaining-hit damage before resumption, Abacus
+ordering, final resources/hand and card conservation. The
+[retained record](../../docs/evidence/native_attack_hooks_2026_09_19.json) contains
+native per-hit history, initial/paused/final piles and enemy data, and four RNG
+counters/suffixes. `tests/headless/test_native_attack_hooks.py` compares the
+headless play and paused JSON continuation. This is an explicit nonterminal
+combat fixture with manually driven actions/replay events; it does not establish
+live UI behavior, executor-loop scheduling, multiple-death cancellation or
+whole-run parity. It retains the callback mode's in-memory save/localization scope.
+
 Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
 **Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
 respectively). The runner does not download dependencies. Example:
@@ -175,7 +196,8 @@ empty `StsNativeQueueOracle-<uuid>` under macOS Application Support, then remove
 only that directory with `rmdir`. Unexpected files cause cleanup to fail visibly.
 No real profile/save/history/Cloud directory is read. The runtime process has a
 15-second bound (queue probe: five seconds; death-draw continuation waits: three
-seconds each); a failed process is not retried.
+seconds each; attack mode: five-second play and three-second hook execution
+waits); a failed process is not retried.
 Output retains build/runtime logs, exact fixture/dependency hashes, native result,
 timing and cleanup confirmation in `evidence.json`. See the retained
 [queue record](../../docs/evidence/native_hook_queue_2026_09_14.json).
