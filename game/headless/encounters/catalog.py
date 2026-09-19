@@ -47,7 +47,10 @@ from game.headless.encounters.underdocks import ENCOUNTERS as UNDERDOCKS, NATIVE
 
 from game.headless.encounters.hive import ENCOUNTERS as HIVE, NATIVE_HIVE_ENCOUNTERS
 
+from game.headless.encounters.glory import ENCOUNTERS as GLORY, NATIVE_GLORY_ENCOUNTERS
+
 ENCOUNTERS = MappingProxyType({
+    **GLORY,
     **HIVE,
     **UNDERDOCKS,
     **EXTENDED_EVENTS,

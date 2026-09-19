@@ -234,3 +234,14 @@ move and composition/Niche/MonsterAi counters plus next-double suffixes.
 power application are not native evidence from this fixture. Full combat turns,
 summoning, choices and rewards are likewise outside this oracle. Those mechanics
 have source-grounded Python regressions, not native trajectory parity.
+
+## Glory Act 3 construction
+
+Pass `glory` as the third argument to reproduce
+[`headless_native_glory_vectors.json`](../../tests/fixtures/headless_native_glory_vectors.json).
+The same guarded assembly and in-memory solo A0 context use `CurrentActIndex = 2`.
+All 18 Glory encounters run at four seed strings and two total-floor values
+(144 rows). Actual native construction and `RollMove` provide composition, raw HP,
+initial moves and composition/Niche/MonsterAi counters plus next-double suffixes.
+As with Hive, `AfterAddedToRoom`, turn execution, summons, choices and rewards are
+excluded. This mode does not launch gameplay or access profiles/saves.

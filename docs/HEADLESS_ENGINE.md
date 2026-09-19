@@ -68,7 +68,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v28 / run v42**.
+than being silently reinterpreted: current schemas are **combat v29 / run v43**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -191,7 +191,7 @@ potion rules are now additionally checked against direct factory execution.
 relic bags: shared-Ancient allocation, then each act's event shuffle, weak/normal/
 elite encounter draws, boss and Ancient selection. All three room sets are retained
 as plain `state.initialization` data, because their startup draws share `up_front`.
-Generated campaigns reuse the saved Hive room set on Act 2 entry; Glory remains startup data without playable Act 3 progression. The declared act sequence
+Generated campaigns reuse the saved Hive room set on Act 2 entry; Glory’s saved room set is not yet connected to generated Act 3 progression. The declared act sequence
 is **Overgrowth or Underdocks → Hive → Glory**, selected explicitly, solo, A0,
 all unlocked/all seen; the native lobby
 act picker and profile-dependent first-run overrides are outside this profile.
@@ -924,7 +924,7 @@ own 15-entry queue. Refillable bags reject consecutive matching identities/tags,
 including the Slug and Seapunk families across the weak-to-normal boundary. Boss
 sampling uses Matriarch, Soul Fysh, Giant order, distinct from native discovery
 order. The selected act's event shuffle and encounters consume the same UpFront
-stream before Hive/Glory initialization. Campaigns reuse Hive’s saved room set; Glory remains future-act startup data.
+stream before Hive/Glory initialization. Campaigns reuse Hive’s saved room set; Glory’s saved room set is reserved for future generated progression.
 
 The ten local events are Abyssal Baths, Drowning Beacon, Endless Conveyor, Punch Off,
 Spiraling Whirlpool, Sunken Statue, Sunken Treasury, Doors of Light and Dark, Trash
@@ -936,7 +936,7 @@ failed entries do not advance queues; successful event fights retain their separ
 history and do not consume ordinary hallway entries.
 
 `RunConfig.act`, `EncounterProgression.act`, map profile and seed-bound initialization
-must agree. Private run schema v42 saves these declarations and rejects mixed-act
+must agree. Private run schema v43 saves these declarations and rejects mixed-act
 queues, maps, bosses or event pools atomically. Golden Compass map replacement and
 Fur Coat marks keep the declared act and its encounter ownership.
 
@@ -1001,11 +1001,12 @@ gold normally. Relic pickup remains a separate choice.
 [`run/campaign.py`](../game/headless/run/campaign.py) owns the transition and compact
 completed-act records. Shared map rules live in
 [`map/standard.py`](../game/headless/map/standard.py); the existing Act 1 import is
-a compatibility entry point. Private run **v42** requires campaign/history fields
+a compatibility entry point. Private run **v43** requires campaign/history fields
 and validates each act’s queues, map, event/unknown decisions, global combat count,
 free travel and map relic ownership. Older run snapshots are rejected explicitly;
-combat schema remains **v28**. Hive boss reward exit records `ActCompletion(act=2, …)`
-and stops at `ACT_COMPLETE`; Act 3 and full-game victory are not implemented.
+combat schema is **v29**. Hive boss reward exit records `ActCompletion(act=2, …)`
+and stops at `ACT_COMPLETE`; generated Act 3 progression and full-game victory
+are not implemented. Glory encounters are independently playable below.
 
 The read-only [native oracle](../tools/native_initialization_oracle/README.md)
 executed actual pinned 0.107.1 `StandardActMap` and `SpoilsActMap` constructors.
@@ -1031,6 +1032,89 @@ The installed Underdocks→Hive Neow demo verified 117 decisions and ended in Ac
 defeat. Independent semantic review, compilation and documentation link/diff
 checks passed. The Spoils oracle built in 1.11 seconds and executed in 0.52 seconds;
 these read-only references did not launch gameplay or access player data.
+
+## Complete Glory Act 3 encounter roster at A0
+
+All 18 entries in pinned 0.107.1 `Glory.GenerateAllEncounters` are registered in
+[`encounters/glory.py`](../game/headless/encounters/glory.py). Direct combats and
+authored encounter overrides retain Act 3 reward context. Boss reward exit records
+`ActCompletion(act=3, …)` and ends at `ACT_COMPLETE`; it does **not** represent full-game
+victory. Generated campaigns still stop after Hive. Glory map generation, Ancient
+entry, event/encounter queues and the transition from Act 2 remain the next slice.
+
+| Kind | Encounter IDs (each prefixed `glory_`) |
+| --- | --- |
+| Hallway / weak (12) | `axebots`, `construct_menagerie`, `devoted_sculptor`, `fabricator`, `frog_knight`, `globe_head`, `owl_magistrate`, `scrolls_of_biting`, `scrolls_of_biting_weak`, `slimed_berserker`, `the_lost_and_forgotten`, `turret_operator` |
+| Elite (3) | `knights`, `mecha_knight`, `soul_nexus` |
+| Boss (3) | `aeonglass`, `queen`, `test_subject` |
+
+The roster adds 25 monster types including summons; Construct Menagerie reuses
+Punch Construct and Cubex Construct. Rules live in four small content modules:
+[`glory_normal.py`](../game/headless/monsters/glory_normal.py),
+[`glory_summons.py`](../game/headless/monsters/glory_summons.py),
+[`glory_elites.py`](../game/headless/monsters/glory_elites.py) and
+[`glory_bosses.py`](../game/headless/monsters/glory_bosses.py).
+
+- Hallways implement Ritual's first-turn delay, Plating decay, Frog Knight's
+  one-time charge, Soar damage reduction, Galvanized powers, Paper Cuts maximum-HP
+  loss, Slimed generation, stolen Strength/Dexterity recovery, and Rampart's
+  exclusion of extra player turns.
+- Axebot Stock creates two successive replacements with fresh HP RNG and clean
+  powers. Ordered death work follows player death listeners, so Gremlin Horn
+  autoplay cannot target a replacement before it exists. Fabricator uses native
+  summon choices, capacity, position order and per-command RNG. Target indices
+  stay stable while execution follows bot positions. New bots wait until the next
+  enemy turn to attack but receive the current side-end effects.
+- Knights implement bounded random move repeats, Hex/Ethereal and Dampen.
+  Dampen saves each original card's upgrade loss and restores it when its last
+  source dies; copies do not inherit that recovery entitlement. Mecha Knight and
+  Soul Nexus include their status generation, Artifact and attack/debuff cycles.
+- Aeonglass escalates existing and newly generated Withers, Strength, and its
+  six-card counter. Queen tracks drawn Bound applications and the first Bound
+  play, including autoplay and card replays. End autoplay happens before Bound
+  cleanup. Torch Head Amalgam's death changes Queen's relevant phase.
+- Test Subject retains three genuine death/revival forms (100/200/300 HP), removes
+  ordinary powers at death, and applies Painful Stabs after the complete attack
+  command. Post-attack work survives attacker death and reactive draw choices.
+  The final form alternates Intangible, including unpowered damage and The Boot.
+
+[`core/afflictions.py`](../game/headless/core/afflictions.py) enforces one affliction
+per card across Smog, Tainted, Galvanized, Hexed and Bound. Glory-specific lifecycle
+hooks are in [`powers/glory.py`](../game/headless/powers/glory.py). Private **combat
+v29 / run v43** add plain card-effect/history fields and the resumable post-attack
+boundary. Restore rejects unowned effects, impossible boss phases, forged upgrade
+history, duplicate death work and inconsistent replacement slots. Older private
+snapshots are rejected explicitly; public bridge contracts are unchanged.
+
+The read-only [combat oracle](../tools/native_combat_oracle/README.md#glory-act-3-construction)
+retains [144 native construction vectors](../tests/fixtures/headless_native_glory_vectors.json):
+18 encounters × four seeds × two floor inputs. These match composition, HP,
+initial moves and exact composition/Niche/MonsterAi counters and next-value suffixes.
+The oracle executes native construction and initial move selection, **not**
+`AfterAddedToRoom`, native turns, choices or rewards. Combat mechanics are checked
+against inspected source and synthetic Python regressions in
+[`test_glory.py`](../tests/headless/test_glory.py), including JSON continuation in
+both RNG profiles, all encounter reward exits and malformed-state rejection.
+These are not native trajectory or live full-game parity claims.
+
+Validation on 2026-09-19: the broad Python integration run passed 5,330 cases in
+420.33 seconds; its single failure was the old monster-catalog census (83, now
+108), corrected and rechecked below. The final affected Glory/Hive/Underdocks,
+reactive-death and native-interaction regressions passed 639 cases in 72.45 seconds.
+Independent semantic review passed, including focused correction rechecks.
+
+The installed wheel passed 278 encounter/CLI/native-interaction cases in 19.78
+seconds. One CLI fixture required its repository-relative config in the isolated
+test directory; that case then passed in 0.11 seconds. An additional installed
+legacy action-mask check passed in 0.05 seconds. All 245 installed headless/CLI
+Python files match source bytes. The installed authored CLI with Glory overrides
+verified restoration across 96 decisions and ended in defeat; this is packaging
+and continuation evidence, not a boss-victory claim. The native oracle built in
+1.20 seconds and ran in 0.087 seconds. Compilation and documentation link/diff
+checks passed.
+
+Final census/Glory recheck: **352 passed in 19.52 seconds**, including all 238
+Glory cases and the corrected global monster census.
 
 ## Complete Hive Act 2 encounter roster at A0
 
@@ -1079,7 +1163,7 @@ skipping it or allowing escape loses it. Ordinary gold rewards remain available
 on escape. Flutter reduces powered attack damage and interrupts the planned move
 after five damaging hits. Generated combat cards cannot be stolen.
 
-Private **combat v28 / run v42** include original-card ownership, a sequestered combat
+The initial Hive implementation added original-card ownership in **combat v28 / run v42**, a sequestered combat
 pile, permanent stolen-card ownership, Tainted flags, optional frozen enemy turn
 order and Hive continuations. Restore rejects missing power counters, forged
 monster choices, unowned stolen cards and misplaced turn-boundary tasks. Earlier
@@ -1699,7 +1783,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v42`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v43`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -1712,7 +1796,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v28`, including the in-play
+Nested combat records now use `headless_combat_state_v29`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

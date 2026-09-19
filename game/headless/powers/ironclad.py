@@ -326,6 +326,11 @@ def end_turn(p):
     r.turn_ending = True
     postplay = [["regent_end_card", c.instance_id] for c in (*p.hand, *reversed(p.deck.draw_pile), *p.deck.discard_pile, *p.deck.exhaust_pile) if c.definition.definition_id == "i_am_invincible"]
     from game.headless.relics.ancient_combat import before_end
+    # Native AutoPostPlay completes before any BeforeTurnEnd listeners,
+    # including Chains of Binding's affliction cleanup.
+    postplay += [["autoplay", c.instance_id, False] for c in tuple(p.deck.exhaust_pile)
+                 if c.definition.definition_id == "howl_from_beyond"]
+    postplay += [["stampede", r.powers.get("stampede", 0)]]
     push(p, *before_end(p), *postplay, ["begin_end_hooks"])
     drain(p)
 
@@ -338,15 +343,12 @@ def begin_end_hooks(p):
             memory(p, relic)["orichalcum_ready"] = p.block == 0
     tasks = [["block", r.powers["plating"], False]] if r.powers.get("plating") else []
     tasks += [["early_end", key] for key in r.powers]
-    tasks += [
-        ["autoplay", c.instance_id, False]
-        for c in tuple(p.deck.exhaust_pile)
-        if c.definition.definition_id == "howl_from_beyond"
-    ]
     from game.headless.powers.turns import before_side_end_tasks
     tasks += before_side_end_tasks(p)
+    from game.headless.powers.glory import binding_owner
+    if binding_owner(p) is not None: tasks += [["glory_bound_clear"]]
     tasks += relic_tasks(p, "before_end")
-    tasks += [["orb_phase", "end"], ["stampede", r.powers.get("stampede", 0)], ["discard_hand"]]
+    tasks += [["orb_phase", "end"], ["discard_hand"]]
     push(p, *tasks)
 
 

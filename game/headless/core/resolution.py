@@ -202,6 +202,8 @@ def execute(p, task):
             nec_before_play(p, card)
             from game.headless.powers.defect import before_play as def_before_play
             def_before_play(p, card)
+            from game.headless.powers.glory import before_play as glory_before_play
+            glory_before_play(p, card)
             push(
                 p,
                 *[["effect", identity, i] for i in range(len(card.definition.effects))],
@@ -487,6 +489,9 @@ def execute(p, task):
         start_power(p, args[0])
         if args[0] == "tyranny":
             push(p, ["regent_start_power"])
+    elif op == "glory_bound_clear":
+        from game.headless.powers.glory import clear_bound
+        clear_bound(p)
     elif op == "begin_end_hooks":
         hooks.begin_end_hooks(p)
     elif op == "early_end":
@@ -501,6 +506,8 @@ def execute(p, task):
             after_draw(card, p.deck)
             from game.headless.powers.regent import after_draw as regent_after_draw
             regent_after_draw(p, card)
+            from game.headless.powers.glory import after_draw as glory_after_draw
+            glory_after_draw(p, card)
             if card.definition.definition_id == "void":
                 p.energy = max(0, p.energy - 1)
     elif op == "after_draw":

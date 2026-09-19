@@ -134,6 +134,12 @@ class Card:
             from dataclasses import replace
             spec = replace(spec, block_gain=spec.block_gain + self.permanent_block)
         state = self.combat_state
+        if state.wither_level:
+            from dataclasses import replace
+            spec = replace(spec, name=f"Wither+{state.wither_level}", end_turn_damage=3 + 3 * state.wither_level)
+        if state.hexed:
+            from dataclasses import replace
+            spec = replace(spec, ethereal=True)
         if state.is_dupe:
             from dataclasses import replace
             spec = replace(spec, exhausts=False)

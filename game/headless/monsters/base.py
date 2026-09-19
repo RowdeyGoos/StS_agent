@@ -207,8 +207,9 @@ class Enemy(ABC):
             from game.headless.relics.combat import has
             unblocked = total - min(previous_block, incoming_damage)
             if is_attack and powered and has(player, "the_boot") and 0 < unblocked < 5:
-                total += 5 - unblocked
-                self.hp = max(0, previous_hp - 5)
+                minimum = self.modify_unblocked_damage(5)
+                total += minimum - unblocked
+                self.hp = max(0, previous_hp - minimum)
             if previous_block > 0 and self.block == 0 and has(player, "hand_drill"):
                 self.apply_status("vulnerable", 2, source=player)
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
@@ -308,6 +309,9 @@ class Enemy(ABC):
     def advance_intent(self) -> None:
         """Advance to the next intent in the enemy's cycle."""
 
+    def before_extra_side_start(self):
+        self.before_side_start(True)
+
     def execute_intent(self, player: Player, *, tick_statuses: bool = True) -> Intent:
         """Execute the current intent and advance to the next one."""
         from game.headless.cards.status import SlimedCard
@@ -323,7 +327,12 @@ class Enemy(ABC):
             from game.headless.core.resolution import drain
             drain(player)
             if not player.is_alive or not self.is_alive:
-                return current_intent
+                break
+        if current_intent.attack_count:
+            self.after_attack(player, current_intent)
+            drain(player)
+        if not player.is_alive or not self.can_take_turn or (not self.is_alive and current_intent.attack_count):
+            return current_intent
         self.execute_after_hits(player, current_intent)
 
         if tick_statuses:
@@ -349,6 +358,9 @@ class Enemy(ABC):
 
     def after_attack_hit(self, player_damage, pet_damage):
         pass
+
+    def after_attack(self, player, intent):
+        """Complete one enemy attack command after its hit reactions have drained."""
 
     def after_attack_blocked(self, fully_blocked):
         pass

@@ -32,7 +32,8 @@ def generate(p, name, pile, count, *, random_position=False):
 
 def after_entry(p, card):
     if card.spec.kind in ('skill', 'block') and not card.combat_state.smog and any(e.is_alive and getattr(e, 'vital_spark', 0) for e in p.combat_enemies or ()):
-        card.combat_state.tainted = True
+        from game.headless.core.afflictions import afflict
+        afflict(card, 'tainted')
 
 
 def before_target(p, target):

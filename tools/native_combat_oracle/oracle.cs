@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 // Read-only reflection: no game initialization or player-profile access.
-if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] is not ("generation" or "interactions" or "transforms" or "silent" or "regent" or "necrobinder" or "defect" or "foreign" or "hive"))) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation|interactions|transforms|silent|regent|necrobinder|defect|foreign|hive]");
+if (args.Length is not (2 or 3) || (args.Length == 3 && args[2] is not ("generation" or "interactions" or "transforms" or "silent" or "regent" or "necrobinder" or "defect" or "foreign" or "hive" or "glory"))) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [generation|interactions|transforms|silent|regent|necrobinder|defect|foreign|hive|glory]");
 var assemblyPath = Path.GetFullPath(args[0]);
 var dependencyDirectory = Path.GetFullPath(args[1]);
 var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
@@ -38,13 +38,14 @@ var player=System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject
 var creatureType=T("Entities.Creatures.Creature");
 Field(player,"<Character>k__BackingField",Get("Character","Characters.Ironclad"));
 var hive = args.Length == 3 && args[2] == "hive";
-var all=Items(Prop(Get("Act", hive ? "Acts.Hive" : "Acts.Overgrowth"),"AllEncounters"));
-if (!hive) all=all.Append(Get("Encounter","Encounters.DenseVegetationEventEncounter")).ToArray();
+var glory = args.Length == 3 && args[2] == "glory";
+var all=Items(Prop(Get("Act", glory ? "Acts.Glory" : hive ? "Acts.Hive" : "Acts.Overgrowth"),"AllEncounters"));
+if (!hive && !glory) all=all.Append(Get("Encounter","Encounters.DenseVegetationEventEncounter")).ToArray();
 var rows=new List<object>();
 foreach(string seed in new[]{"0","1","2","42"}) foreach(int floor in new[]{1,7}) foreach(var original in all) {
  var context=DispatchProxy.Create(T("Runs.IRunState"),typeof(Context));var d=(Context)context;
  var runRng=Activator.CreateInstance(T("Runs.RunRngSet"),new object[]{seed})!;
- d.Values["get_Rng"]=runRng;d.Values["get_TotalFloor"]=floor;d.Values["get_CurrentActIndex"]=hive ? 1 : 0;
+ d.Values["get_Rng"]=runRng;d.Values["get_TotalFloor"]=floor;d.Values["get_CurrentActIndex"]=glory ? 2 : hive ? 1 : 0;
  d.Values["get_CurrentMapCoord"]=Activator.CreateInstance(T("Map.MapCoord"),new object[]{3,floor})!;
  d.Values["get_Players"]=Typed(new[]{player},T("Entities.Players.Player"));d.Values["get_AscensionLevel"]=0;
  Field(player,"_runState",context);
@@ -62,7 +63,7 @@ foreach(string seed in new[]{"0","1","2","42"}) foreach(int floor in new[]{1,7})
  var niche=Prop(runRng,"Niche");var ai=Prop(runRng,"MonsterAi");
  rows.Add(new{seed,floor,encounter=original.GetType().Name,id=Id(original),monsters,compositionCounter=Prop(erng,"Counter"),compositionSuffix=Call(erng,"NextDouble"),hpCounter=Prop(niche,"Counter"),hpSuffix=Call(niche,"NextDouble"),aiCounter=Prop(ai,"Counter"),aiSuffix=Call(ai,"NextDouble")});
 }
-if (hive) { Console.Write(JsonSerializer.Serialize(new {source="Pinned Hive construction and initial move selection; excludes AfterAddedToRoom power hooks", assemblySha256=digest, rows}, new JsonSerializerOptions{WriteIndented=true})); return; }
+if (hive || glory) { Console.Write(JsonSerializer.Serialize(new {source=$"Pinned {(glory ? "Glory" : "Hive")} construction and initial move selection; excludes AfterAddedToRoom power hooks", assemblySha256=digest, rows}, new JsonSerializerOptions{WriteIndented=true})); return; }
 var shuffles=new List<object>();
 foreach(uint seed in new uint[]{0,1,42}) foreach(int size in new[]{0,1,3,10,16,17,31,64}) foreach(bool stable in new[]{false,true}) {
  var types=new[]{"StrikeIronclad","Bash","DefendIronclad","Anger","ShrugItOff"};

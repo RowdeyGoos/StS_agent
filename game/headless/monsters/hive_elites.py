@@ -38,7 +38,8 @@ class InfestedPrism(ScriptedEnemy):
     def after_joining_combat(self, player):
         for card in player.deck.all_cards():
             if card.spec.kind in ('skill', 'block'):
-                card.combat_state.tainted = True
+                from game.headless.core.afflictions import afflict
+                afflict(card, 'tainted')
 
     def after_move(self, player, intent):
         if intent.move_name == 'Pulsate':

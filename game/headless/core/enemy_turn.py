@@ -19,32 +19,33 @@ def current_slot(record):
 
 
 def execute(enemy, player, continuation):
-    if not player.is_alive or not enemy.can_take_turn or player.combat_is_ending:
-        continuation["stage"] = "done"
-        return
     current = Intent(**continuation["intent"])
-    if not enemy.is_alive and current.attack_count:
-        continuation['stage'] = 'done'
-        return
     if enemy.stunned and current.kind == "stun" and continuation["hit"] == 0:
         enemy.stunned = False
         continuation["stage"] = "done"
         return
-    while continuation["stage"] == "hits" and continuation["hit"] < current.attack_count:
+    # A dead attacker still completes its captured AfterAttack listeners. Its
+    # remaining hits and move effects are skipped after that command boundary.
+    while (continuation["stage"] == "hits" and continuation["hit"] < current.attack_count
+           and player.is_alive and enemy.is_alive and not player.combat_is_ending):
         continuation["hit"] += 1
         enemy.execute_hit(player, current)
         drain(player)
-        if paused(player):
-            return
-        if not player.is_alive or not enemy.is_alive:
-            continuation["stage"] = "done"
-            return
+        if paused(player): return
     if continuation["stage"] == "hits":
+        continuation["stage"] = "effects"
+        if current.attack_count and continuation['hit']:
+            enemy.after_attack(player, current)
+            drain(player)
+            if paused(player): return
+    if not player.is_alive or not enemy.can_take_turn or player.combat_is_ending or (not enemy.is_alive and current.attack_count):
+        continuation['stage'] = 'done'
+        return
+    if continuation["stage"] == "effects":
         continuation["stage"] = "advance"
         enemy.execute_after_hits(player, current)
         drain(player)
-        if paused(player):
-            return
+        if paused(player): return
     if continuation["stage"] == "advance":
         enemy.advance_intent()
         continuation["stage"] = "done"
@@ -88,12 +89,12 @@ def validate(record, player):
     if (
         type(move["hit"]) is not int
         or not 0 <= move["hit"] <= intent.attack_count
-        or move["stage"] not in ("hits", "advance")
+        or move["stage"] not in ("hits", "effects", "advance")
     ):
         raise ValueError("Invalid enemy hit cursor.")
     if asdict(player.combat_enemies[current_slot(record)].continuation_intent()) != asdict(intent):
         raise ValueError("Enemy continuation differs from its current move.")
-    if move["stage"] == "advance" and move["hit"] != intent.attack_count:
+    if move["stage"] in ("effects", "advance") and move["hit"] != intent.attack_count and player.combat_enemies[current_slot(record)].is_alive:
         raise ValueError("Enemy continuation skips unfinished hits.")
     if not isinstance(record["actions"], list) or len(record["actions"]) > record["slot"]:
         raise ValueError("Invalid completed enemy actions.")

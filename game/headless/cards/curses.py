@@ -51,6 +51,9 @@ END_HAND_CURSES = ("debt", "decay", "doubt", "regret", "shame", "bad_luck")
 
 
 def can_play(player, card=None, *, auto=False):
+    from game.headless.powers.glory import can_play as glory_can_play
+    if card is not None and not glory_can_play(player, card):
+        return False
     if player.rules.powers.get("sloth") and player.cards_played_this_turn >= player.rules.powers["sloth"]:
         return False
     if card is not None and card.combat_state.smog:
