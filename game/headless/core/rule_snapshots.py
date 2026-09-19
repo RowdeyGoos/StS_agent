@@ -36,7 +36,7 @@ TASK_ARITIES = {
     "after_card_enemies": 1,
     "after_card_enchantment": 1,
     "mayhem": 0,
-    "cleanup_turn": 0,
+    "cleanup_turn": 0, "hive_player_end": 0, "hive_enemy_start": 0,
     "selected": 4,
     "energy": 1,
     "after_draw": 0,
@@ -351,6 +351,16 @@ def restore_rules(record, player):
     for slot, enemy in enumerate(player.combat_enemies):
         if getattr(enemy, 'death_pending', False) and all_tasks.count(['monster_death', slot]) != 1:
             raise ValueError('Missing owned monster death continuation.')
+    for task in all_tasks:
+        if task[0] == 'hive_enemy_start':
+            progress = r.enemy_turn
+            if (r.player_side or not progress or progress.get('poison_start') is not True
+                    or progress['slot'] != 0 or progress['move'] is not None
+                    or all_tasks.count(task) != 1 or not any(getattr(e, 'sandpit', 0) for e in player.combat_enemies)):
+                raise ValueError('Unowned Hive enemy-start boundary.')
+        if task[0] == 'hive_player_end' and (not r.player_side or not r.turn_ending or all_tasks.count(task) != 1
+                or all_tasks.count(['cleanup_turn']) != 1):
+            raise ValueError('Unowned Hive player-end boundary.')
     if end_hand_ids != r.end_hand_remaining:
         raise ValueError("Missing end-of-hand continuation.")
     for identity, frame in r.plays.items():

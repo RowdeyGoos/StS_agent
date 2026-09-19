@@ -51,6 +51,8 @@ END_HAND_CURSES = ("debt", "decay", "doubt", "regret", "shame", "bad_luck")
 
 
 def can_play(player, card=None, *, auto=False):
+    if player.rules.powers.get("sloth") and player.cards_played_this_turn >= player.rules.powers["sloth"]:
+        return False
     if card is not None and card.combat_state.smog:
         return False
     from game.headless.relics.combat import owned, memory

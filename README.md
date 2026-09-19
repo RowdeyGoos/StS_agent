@@ -148,6 +148,14 @@ Programmatically, use `RunEngine.ironclad_act1(act="underdocks", seed=2)` and
 pass the Neow profile to include the opening choice. Overgrowth remains the default.
 [Generated Underdocks details](docs/HEADLESS_ENGINE.md#generated-underdocks-act-1).
 
+All **20 Hive Act 2 encounters** are available for direct combats and authored
+scenarios: 14 hallways, three elites and all three bosses. This includes
+Decimillipede revival, Knowledge Demon choices, Sandpit/Frantic Escape, Kaiser
+Crab facing and Thieving Hopper's optional stolen-card return. Use
+`run.start_combat(encounter_id="hive_knowledge_demon")` on a configured `RunEngine`.
+[Hive roster, rules and evidence](docs/HEADLESS_ENGINE.md#complete-hive-act-2-encounter-roster-at-a0).
+Generated Act 2 maps and progression remain to be implemented.
+
 A generated full-length route is also available:
 
 ```bash

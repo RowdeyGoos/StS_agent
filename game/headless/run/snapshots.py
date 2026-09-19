@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v40"
+SCHEMA = "headless_run_state_v41"
 
 
 def _restore_event_combat(record):
@@ -54,6 +54,7 @@ def capture_run(engine) -> dict:
         "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(), "treasure": treasure_fingerprint(), "events": event_fingerprint(),
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
+                  "stolen_cards": [card_record(c) for c in state.stolen_cards],
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
                   "next_card_id": state.next_card_id, "combats_completed": state.combats_completed,
                   "current_node_id": state.current_node_id,
@@ -114,6 +115,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         state = RunState(
             seed=payload["seed"], max_hp=payload["max_hp"], hp=payload["hp"], gold=payload["gold"],
             deck=[restore_card(record, cards) for record in payload["deck"]], rng=rng,
+            stolen_cards=[restore_card(record, cards) for record in payload["stolen_cards"]],
             phase=RunPhase(payload["phase"]), next_card_id=payload["next_card_id"],
             combats_completed=payload["combats_completed"], current_node_id=payload["current_node_id"],
             active_encounter_id=payload["active_encounter_id"],
@@ -149,7 +151,7 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Active elite requires an available relic reward pool.")
         if state.act_completion is not None:
             completed = ENCOUNTERS.get(state.act_completion.boss_encounter_id)
-            if completed is None or completed.room_kind != "boss":
+            if completed is None or completed.room_kind != "boss" or completed.act != state.act_completion.act:
                 raise ValueError("Act completion requires a supported boss.")
         graph = snapshot["graph"]
         if graph is not None:
@@ -206,6 +208,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Combat maximum HP differs from the run.")
         elif state.phase is RunPhase.COMBAT:
             raise ValueError("Combat phase requires its owned combat.")
+        from game.headless.encounters.theft import validate_run
+        validate_run(state, combat)
         event_combat.validate(state, graph, cards=cards)
         _validate_pending(state, cards, graph)
         if (getattr(state.rng,"native",False) and state.pending and state.pending.get("kind")=="scripted_event"
@@ -287,7 +291,7 @@ def _validate_pending(state, cards, graph):
             expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards", "hunt_rewards_earned", "royalties_earned"}
         from game.headless.relics.reward_alternatives import validate_marker
         validate_marker(state, pending)
-        if pending.get('encounter_id') == 'underdocks_gremlin_merc':
+        if pending.get('encounter_id') in ('underdocks_gremlin_merc', 'hive_thieving_hopper'):
             expected.add('encounter_loot')
         if set(pending) - {"rerolled"} != expected:
             raise ValueError("Invalid reward state fields.")
@@ -303,7 +307,7 @@ def _validate_pending(state, cards, graph):
         validate_modifiers(cards, pending["offers"], pending["card_modifiers"])
         if "combat_reward" in pending:
             from game.headless.encounters import loot
-            loot.validate(pending['encounter_id'], pending.get('encounter_loot'))
+            loot.validate(pending['encounter_id'], pending.get('encounter_loot'), cards)
             validate_extra(state, cards, pending["extra_rewards"], hunt_rewards_earned=pending["hunt_rewards_earned"], royalties_earned=pending["royalties_earned"])
             encounter_id = pending["encounter_id"]
             if encounter_id is not None and encounter_id not in ENCOUNTERS:

@@ -23,7 +23,14 @@ from game.headless.monsters.underdocks_summons import (TwoTailedRat, GremlinMerc
 from game.headless.monsters.underdocks_elites import PhantasmalGardener, SkulkingColony, TerrorEel
 from game.headless.monsters.underdocks_bosses import LagavulinMatriarch, SoulFysh, WaterfallGiant
 
+from game.headless.monsters.hive_normal import BowlbugEgg, BowlbugNectar, BowlbugRock, BowlbugSilk, Chomper, Exoskeleton, HunterKiller, LouseProgenitor, Myte, SlumberingBeetle, SpinyToad, Tunneler
+from game.headless.monsters.hive_summons import Ovicopter, ToughEgg, TheObscura, Parafright
+from game.headless.monsters.hive_elites import Entomancer, InfestedPrism, DecimillipedeSegmentFront, DecimillipedeSegmentMiddle, DecimillipedeSegmentBack
+from game.headless.monsters.hive_bosses import Crusher, Rocket, KnowledgeDemon, TheInsatiable
+from game.headless.monsters.hive_hopper import ThievingHopper
+
 DEFAULT_MONSTERS = MappingProxyType({kind.__name__: kind for kind in (
+    BowlbugEgg, BowlbugNectar, BowlbugRock, BowlbugSilk, Chomper, Exoskeleton, HunterKiller, LouseProgenitor, Myte, SlumberingBeetle, SpinyToad, Tunneler, Ovicopter, ToughEgg, TheObscura, Parafright, Entomancer, InfestedPrism, DecimillipedeSegmentFront, DecimillipedeSegmentMiddle, DecimillipedeSegmentBack, Crusher, Rocket, KnowledgeDemon, TheInsatiable, ThievingHopper,
     CorpseSlug, CalcifiedCultist, DampCultist, FossilStalker, HauntedShip, Seapunk, SewerClam, SludgeSpinner, Toadpole,
     TwoTailedRat, GremlinMerc, SneakyGremlin, FatGremlin, LivingFog, GasBomb,
     PhantasmalGardener, SkulkingColony, TerrorEel, LagavulinMatriarch, SoulFysh, WaterfallGiant,

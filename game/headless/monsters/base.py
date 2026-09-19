@@ -101,6 +101,10 @@ class Enemy(ABC):
         return self.hp > 0
 
     @property
+    def allows_fatal(self):
+        return not self.statuses.get("minion") and not self.statuses.get("illusion")
+
+    @property
     def prevents_combat_end(self):
         return False
 
@@ -346,6 +350,9 @@ class Enemy(ABC):
     def after_attack_hit(self, player_damage, pet_damage):
         pass
 
+    def after_attack_blocked(self, fully_blocked):
+        pass
+
     def execute_after_hits(self, player, current_intent):
         from game.headless.cards.status import SlimedCard
         if current_intent.block_gain > 0:
@@ -382,6 +389,9 @@ class Enemy(ABC):
 
     def before_side_start(self, player_side):
         """Reset side-owned monster effects before side-start damage."""
+
+    def prepare_next_turn(self):
+        """Prepare forced moves after the enemy side, including dead revivers."""
 
     def after_side_end(self):
         """Apply content-owned enemy side-end effects."""

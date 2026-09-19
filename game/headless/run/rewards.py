@@ -86,7 +86,7 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     if encounter is not None and encounter.gives_relic and not relic_pool:
         raise ValueError("Restricted relic pool exhausted.")
     from game.headless.encounters import loot
-    loot.validate(encounter_id, encounter_loot)
+    loot.validate(encounter_id, encounter_loot, cards)
     low, high = (10, 20) if encounter is None else encounter.gold_range
     low, high = loot.gold_range(low, high, encounter_loot)
     from game.headless.relics.run_rules import has
@@ -124,6 +124,8 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
             state.pending['gold_claimed'] = True
         if returned:
             state.pending['extra_rewards'].append(dict(source='stolen_gold', kind='gold', offers=['stolen_gold'], modifiers={'gold': returned}, resolved=False))
+    from game.headless.encounters.theft import rewards as theft_rewards
+    state.pending["extra_rewards"].extend(theft_rewards(encounter_loot))
     from game.headless.run.event_combat import extra_rewards as event_rewards
     state.pending["extra_rewards"].extend(event_rewards(state,cards,encounter_id))
     if royalties:
@@ -153,7 +155,7 @@ def leave_combat_rewards(state, *, cards=None) -> None:
     state.pending = None
     if encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "boss":
         from game.headless.run.state import ActCompletion
-        state.act_completion = ActCompletion(1, encounter_id)
+        state.act_completion = ActCompletion(ENCOUNTERS[encounter_id].act, encounter_id)
         state.phase = RunPhase.ACT_COMPLETE
     else:
         state.phase = RunPhase.ROUTE
@@ -185,6 +187,9 @@ def choose_extra(state, cards, index, name):
     if reward['resolved'] or name is not None and name not in reward['offers']:
         raise ValueError('Extra reward is unavailable.')
     result = None
+    if reward['source'] == 'stolen_card':
+        from game.headless.encounters.theft import claim
+        return claim(state, cards, reward, name)
     if reward['source'].startswith('event:'):
         from game.headless.events.reward_batch import claim
         return claim(state,cards,reward,name)

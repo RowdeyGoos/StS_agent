@@ -9,11 +9,23 @@ def paused(p):
     return p.pending_play is not None or p.rules.selection is not None
 
 
+def turn_order(enemies):
+    """Native slot execution order without moving stable targeting indices."""
+    return sorted(range(len(enemies)), key=lambda i: getattr(enemies[i], 'turn_order', i))
+
+
+def current_slot(record):
+    return record.get('order', range(record['limit']))[record['slot']]
+
+
 def execute(enemy, player, continuation):
     if not player.is_alive or not enemy.can_take_turn or player.combat_is_ending:
         continuation["stage"] = "done"
         return
     current = Intent(**continuation["intent"])
+    if not enemy.is_alive and current.attack_count:
+        continuation['stage'] = 'done'
+        return
     if enemy.stunned and current.kind == "stun" and continuation["hit"] == 0:
         enemy.stunned = False
         continuation["stage"] = "done"
@@ -47,10 +59,14 @@ def begin(enemy):
 def validate(record, player):
     if record is None:
         return
-    if not isinstance(record, dict) or set(record) - {"poison_start", "started", "doom_end"} != {"limit", "slot", "move", "actions"}:
+    if not isinstance(record, dict) or set(record) - {"poison_start", "started", "doom_end", "order"} != {"limit", "slot", "move", "actions"}:
         raise ValueError("Invalid enemy-side continuation.")
     if player.rules.player_side or any(type(record[k]) is not int for k in ("limit", "slot")):
         raise ValueError("Invalid enemy-side ownership.")
+    order = record.get('order')
+    expected = turn_order(player.combat_enemies[:record['limit']])
+    if (order is not None and (not isinstance(order, list) or any(type(i) is not int for i in order))) or (order if order is not None else list(range(record['limit']))) != expected:
+        raise ValueError('Invalid enemy execution order.')
     if record.get('doom_end') is True:
         if record['slot'] != record['limit'] or not 0 < record['limit'] <= len(player.combat_enemies) or record['move'] is not None or not isinstance(record['actions'], list):
             raise ValueError('Invalid enemy Doom boundary.')
@@ -75,7 +91,7 @@ def validate(record, player):
         or move["stage"] not in ("hits", "advance")
     ):
         raise ValueError("Invalid enemy hit cursor.")
-    if asdict(player.combat_enemies[record["slot"]].continuation_intent()) != asdict(intent):
+    if asdict(player.combat_enemies[current_slot(record)].continuation_intent()) != asdict(intent):
         raise ValueError("Enemy continuation differs from its current move.")
     if move["stage"] == "advance" and move["hit"] != intent.attack_count:
         raise ValueError("Enemy continuation skips unfinished hits.")

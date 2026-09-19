@@ -45,7 +45,10 @@ from game.headless.encounters.extended_events import ENCOUNTERS as EXTENDED_EVEN
 
 from game.headless.encounters.underdocks import ENCOUNTERS as UNDERDOCKS, NATIVE_UNDERDOCKS_ENCOUNTERS
 
+from game.headless.encounters.hive import ENCOUNTERS as HIVE, NATIVE_HIVE_ENCOUNTERS
+
 ENCOUNTERS = MappingProxyType({
+    **HIVE,
     **UNDERDOCKS,
     **EXTENDED_EVENTS,
     "dense_vegetation_event": EncounterDefinition(dense_vegetation, event_id="dense_vegetation"),

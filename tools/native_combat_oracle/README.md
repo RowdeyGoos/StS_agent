@@ -215,3 +215,22 @@ Acquisition orchestration follows inspected source; this does not call complete
 Kaleidoscope.AfterObtained or Splash.OnPlay, execute a UI or demonstrate native
 turn/run parity. It uses TestMode and does not read a profile or save.
 See [evidence](../../docs/evidence/foreign_acquisition_2026_09_19.md).
+
+## Hive Act 2 construction
+
+Pass `hive` as the third argument to emit the
+[Hive fixture](../../tests/fixtures/headless_native_hive_vectors.json):
+
+```sh
+dotnet /tmp/sts-combat-oracle/bin/oracle/debug/oracle.dll /path/to/sts2.dll /path/to/dependencies hive > /tmp/native-hive.json
+```
+
+The existing pinned assembly guard and synthetic A0 context are reused with
+`CurrentActIndex = 1`. All 20 native Hive encounters run at four seed strings and
+two total-floor values (160 rows). Actual `GenerateMonstersWithSlots`, creature
+construction, `SetUpForCombat` and `RollMove` supply composition, raw HP, initial
+move and composition/Niche/MonsterAi counters plus next-double suffixes.
+`AfterAddedToRoom` is not invoked: Decimillipede HP deduplication and initial
+power application are not native evidence from this fixture. Full combat turns,
+summoning, choices and rewards are likewise outside this oracle. Those mechanics
+have source-grounded Python regressions, not native trajectory parity.

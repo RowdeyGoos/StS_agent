@@ -4,7 +4,7 @@ from game.headless.core.selection import HandChoice, PendingCardPlay
 
 
 def requires_receipt(op):
-    return op in ('nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_'))
+    return op in ('nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_', 'hive_'))
 
 
 def push(player, *tasks):
@@ -175,6 +175,9 @@ def execute(p, task):
         if not p.combat_is_ending:
             r.plays[identity]["stage"] = "effects"
             r.plays[identity].pop("blocks_gained", None)
+            from game.headless.powers.hive import before_target
+            target_slot = r.plays[identity]["target"]
+            before_target(p, None if target_slot is None else p.combat_enemies[target_slot])
             p.cards_played_this_turn += 1
             if card.spec.kind == "attack":
                 r.attacks_started += 1
@@ -351,7 +354,7 @@ def execute(p, task):
             from game.headless.cards.operations import Attack
 
             amount = Attack(expression=expression, factor=factor).damage(card, p, target) + vigor
-            fatal = not target.statuses.get("minion") and not target.statuses.get("illusion")
+            fatal = target.allows_fatal
             hp_before = target.hp
             damage = target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
             if "echo_kills" in r.plays[identity] and damage >= hp_before:
@@ -419,7 +422,13 @@ def execute(p, task):
                 p.hand.remove(card)
                 p.deck.discard_card(card)
         from game.headless.relics.combat import tasks as relic_tasks
-        push(p, *[["end_power", name] for name in r.powers], *relic_tasks(p, "after_end"), ["cleanup_turn"])
+        push(p, *[["end_power", name] for name in r.powers], *relic_tasks(p, "after_end"), ["hive_player_end"], ["cleanup_turn"])
+    elif op == "hive_player_end":
+        from game.headless.powers.hive import player_end
+        player_end(p)
+    elif op == "hive_enemy_start":
+        from game.headless.powers.hive import enemy_start
+        enemy_start(p)
     elif op == "cleanup_turn":
         r.auxiliaries.pop('smoggy.ready', None)
         for card in p.deck.all_cards():
@@ -459,6 +468,8 @@ def execute(p, task):
     elif op == "after_card_enemies":
         from game.headless.powers.underdocks import after_card as underdocks_after_card
         underdocks_after_card(p, find(p, args[0]))
+        from game.headless.powers.hive import after_card as hive_after_card
+        hive_after_card(p, find(p, args[0]))
         from game.headless.powers.necrobinder import after_enemies as nec_after_enemies
         nec_after_enemies(p, find(p, args[0]))
         from game.headless.powers.silent import after_enemies

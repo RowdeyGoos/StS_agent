@@ -139,7 +139,7 @@ def execute(p, op, args):
     elif op == 'silent_hunt':
         card, target = find(p, args[0]), p.combat_enemies[args[1]]
         if target.is_alive:
-            fatal = not target.statuses.get('minion') and not target.statuses.get('illusion')
+            fatal = target.allows_fatal
             target.take_damage(card.spec.base_damage + card.combat_state.extra_damage + args[2], attacker_statuses=p.statuses, attacker_strength=p.strength)
             if fatal and not target.is_alive:
                 r.extra_card_rewards += 1
