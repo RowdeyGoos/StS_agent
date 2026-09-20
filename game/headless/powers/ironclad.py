@@ -309,7 +309,7 @@ def start_turn(p, draw_count):
     before_draw(p)
     from game.headless.powers.regent import setup_tasks
     from game.headless.powers.turns import before_draw_tasks
-    push(p, *[["def_energy_reset", key] for key in r.powers if key in ("lightning_rod", "spinner")], *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["hand_draw", draw_count], ["start_powers"], ["nec_start"], *relic_tasks(p, "after_draw"), ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["orb_phase", "start"], ["regent_preplay"], ["ancient_preplay"], ["mayhem"])
+    push(p, *[["def_energy_reset", key] for key in r.powers if key in ("lightning_rod", "spinner")], *setup_tasks(p), *before_draw_tasks(p), *relic_tasks(p, "before_draw"), ["hand_draw", draw_count], ["start_powers"], ["side_start_powers"], *relic_tasks(p, "after_side_start"), ["orb_phase", "start"], ["regent_preplay"], ["ancient_preplay"], ["mayhem"])
     drain(p)
     if p.pending_play is not None or r.selection is not None:
         # Native setup may pause while AfterSideTurnStart still completes.

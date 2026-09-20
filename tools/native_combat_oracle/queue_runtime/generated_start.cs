@@ -5,7 +5,7 @@ using System.Text.Json;
 // Real native run/reward objects under TestMode and explicit in-memory saves.
 internal static class GeneratedStartOracle
 {
-    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false,bool coverage=false,bool kaiser=false,string? scenario=null)
+    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false,bool coverage=false,bool kaiser=false,string? scenario=null,int ascension=0)
     {
         const BindingFlags flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -54,7 +54,7 @@ internal static class GeneratedStartOracle
             T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,0UL);
             var player=C(T("Entities.Players.Player"),"CreateForNewRun",Get("Character","Characters.Ironclad"),T("Unlocks.UnlockState").GetField("all")!.GetValue(null),0UL);
             var acts=firstAct=="Overgrowth"?null:Typed(new[]{Get("Act","Acts.Underdocks"),Get("Act","Acts.Hive"),Get("Act","Acts.Glory")},T("Models.ActModel"));
-            var state=C(T("Runs.RunState"),"CreateForTest",Typed(new[]{player},player.GetType()),acts,null,Enum.Parse(T("Runs.GameMode"),"Standard"),0,seed);
+            var state=C(T("Runs.RunState"),"CreateForTest",Typed(new[]{player},player.GetType()),acts,null,Enum.Parse(T("Runs.GameMode"),"Standard"),ascension,seed);
             var manager=T("Runs.RunManager").GetProperty("Instance")!.GetValue(null)!;
             var replay=Activator.CreateInstance(T("Multiplayer.NetReplayGameService"),new object[]{0UL})!;
             C(manager,"SetUpTest",state,replay,true,false);
@@ -70,7 +70,7 @@ internal static class GeneratedStartOracle
                 if(!tables.Contains("relics"))tables.Add("relics",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"relics",relicText,null})!);
                 var eventText=new Dictionary<string,string>();
                 foreach(var key in new[]{"SUNKEN_TREASURY.pages.INITIAL.options.FIRST_CHEST","SUNKEN_TREASURY.pages.INITIAL.options.SECOND_CHEST","SUNKEN_TREASURY.pages.FIRST_CHEST","SUNKEN_TREASURY.pages.SECOND_CHEST","PROCEED","GENERIC.youAreDead"})foreach(var suffix in new[]{"title","description"})eventText[key+"."+suffix]="Event";
-                foreach(var pair in new[]{("SUNKEN_STATUE",new[]{"GRAB_SWORD","DIVE_INTO_WATER"}),("AMALGAMATOR",new[]{"COMBINE_STRIKES","COMBINE_DEFENDS"}),("TRASH_HEAP",new[]{"DIVE_IN","GRAB"}),("COLOSSAL_FLOWER",new[]{"EXTRACT_CURRENT_PRIZE_1","REACH_DEEPER_1","EXTRACT_CURRENT_PRIZE"}),("SLIPPERY_BRIDGE",new[]{"OVERCOME","HOLD_ON_0"})})
+                foreach(var pair in new[]{("SELF_HELP_BOOK",new[]{"READ_THE_BACK","READ_PASSAGE","READ_ENTIRE_BOOK","READ_THE_BACK_LOCKED","READ_PASSAGE_LOCKED","READ_ENTIRE_BOOK_LOCKED","NO_OPTIONS"}),("SUNKEN_STATUE",new[]{"GRAB_SWORD","DIVE_INTO_WATER"}),("AMALGAMATOR",new[]{"COMBINE_STRIKES","COMBINE_DEFENDS"}),("TRASH_HEAP",new[]{"DIVE_IN","GRAB"}),("COLOSSAL_FLOWER",new[]{"EXTRACT_CURRENT_PRIZE_1","REACH_DEEPER_1","EXTRACT_CURRENT_PRIZE"}),("SLIPPERY_BRIDGE",new[]{"OVERCOME","HOLD_ON_0"})})
                     foreach(var branch in pair.Item2){foreach(var suffix in new[]{"title","description"})eventText[pair.Item1+".pages.INITIAL.options."+branch+"."+suffix]="Event";eventText[pair.Item1+".pages."+branch+".description"]="Event";}
                 if(!tables.Contains("events"))tables.Add("events",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"events",eventText,null})!);
                 foreach(var tableName in new[]{"card_keywords","cards","static_hover_tips","powers","enchantments","afflictions","monsters"})
@@ -110,6 +110,15 @@ internal static class GeneratedStartOracle
                 var safePotions=new[]{"FIRE_POTION","BLOCK_POTION","STRENGTH_POTION","DEXTERITY_POTION","ENERGY_POTION","EXPLOSIVE_POTION","BLOOD_POTION","FRUIT_JUICE","FEAR_POTION","WEAK_POTION"};
                 var safeCards=new[]{"PERFECTED_STRIKE","POMMEL_STRIKE","SHRUG_IT_OFF","ANGER","IRON_WAVE","TWIN_STRIKE","SWORD_BOOMERANG","BATTLE_TRANCE","INFLAME","METALLICIZE","THUNDERCLAP"};
                 object?[] Potions()=>Items(P(player,"PotionSlots")).Select(p=>p is null?null:(object?)P(P(p,"Id"),"Entry").ToString()).ToArray();
+                object RngCounters()
+                {
+                    var result=new Dictionary<string,object>();
+                    foreach(var owner in new[]{P(state,"Rng"),P(player,"PlayerRng")})
+                        foreach(var property in owner.GetType().GetProperties().Where(p=>p.PropertyType==T("Random.Rng")))
+                            result[C(T("Helpers.StringHelper"),"SnakeCase",property.Name).ToString()!]=P(property.GetValue(owner)!,"Counter");
+                    return result;
+                }
+                object Enchantments()=>Items(P(P(player,"Deck"),"Cards")).Select(c=>c.GetType().GetProperty("Enchantment")!.GetValue(c) is object e?(object)new{id=P(P(e,"Id"),"Entry").ToString(),amount=P(e,"Amount")}:null).ToArray();
                 object RunBoundary()
                 {
                     var result=new Dictionary<string,object?> {
@@ -118,6 +127,7 @@ internal static class GeneratedStartOracle
                         ["deck"]=Items(P(P(player,"Deck"),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")}).ToArray(),
                         ["rewardsCounter"]=P(P(P(player,"PlayerRng"),"Rewards"),"Counter"),["nicheCounter"]=P(P(P(state,"Rng"),"Niche"),"Counter"),["shuffleCounter"]=P(P(P(state,"Rng"),"Shuffle"),"Counter")};
                     if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
+                    if(ascension>0){result["rngCounters"]=RngCounters();result["deckEnchantments"]=Enchantments();}
                     if(coverage){result["potions"]=Potions();result["shopsCounter"]=P(P(P(player,"PlayerRng"),"Shops"),"Counter");}
                     return result;
                 }
@@ -203,7 +213,14 @@ internal static class GeneratedStartOracle
                     {
                         var evt=C(P(manager,"EventSynchronizer"),"GetLocalEvent");
                         eventId=P(P(evt,"Id"),"Entry").ToString();
-                        Require(new[]{"SUNKEN_TREASURY","SUNKEN_STATUE","AMALGAMATOR","TRASH_HEAP","COLOSSAL_FLOWER","SLIPPERY_BRIDGE"}.Contains(eventId),"Undeclared event in coverage route: "+eventId);
+                        Require(new[]{"SUNKEN_TREASURY","SUNKEN_STATUE","AMALGAMATOR","TRASH_HEAP","COLOSSAL_FLOWER","SLIPPERY_BRIDGE","SELF_HELP_BOOK"}.Contains(eventId),"Undeclared event in coverage route: "+eventId);
+                        if(eventId=="SELF_HELP_BOOK"){
+                            var deck=Items(P(P(player,"Deck"),"Cards"));
+                            var sharp=Get("Enchantment","Enchantments.Sharp");
+                            eventDeckIndices=Enumerable.Range(0,deck.Length).Where(i=>P(deck[i],"Type").ToString()=="Attack" && (bool)C(sharp,"CanEnchant",deck[i])).Take(1).ToArray();
+                            Require(eventDeckIndices.Length==1,"Book policy requires an enchantable attack.");
+                            C(selector,"PrepareToSelect",Typed(eventDeckIndices.Select(i=>deck[i]),T("Models.CardModel")));
+                        }
                         if(eventId=="AMALGAMATOR"){
                             var deck=Items(P(P(player,"Deck"),"Cards"));
                             eventDeckIndices=Enumerable.Range(0,deck.Length).Where(i=>P(P(deck[i],"Id"),"Entry").ToString()=="STRIKE_IRONCLAD" && (bool)P(deck[i],"IsRemovable")).Take(2).ToArray();
@@ -281,6 +298,8 @@ internal static class GeneratedStartOracle
                         ["hand"]=Items(P(P(P(player,"PlayerCombatState"),"Hand"),"Cards")).Select(Card).ToArray(),
                         ["enemies"]=Items(P(combat,"Enemies")).Select(c=>boosted?(object)new{combatId=P(c,"CombatId"),id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}:new{id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}).ToArray()};
                     if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
+                    if(ascension>0){result["rngCounters"]=RngCounters();result["deckEnchantments"]=Enchantments();}
+                    if(ascension>0)result["piles"]=new[]{"Hand","DrawPile","DiscardPile","ExhaustPile"}.ToDictionary(n=>n,n=>(object)Items(P(P(P(player,"PlayerCombatState"),n),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel"),enchantment=c.GetType().GetProperty("Enchantment")!.GetValue(c) is object e?(object)new{id=P(P(e,"Id"),"Entry").ToString(),amount=P(e,"Amount")}:null}).ToArray());
                     if(coverage){result["potions"]=Potions();result["shopsCounter"]=P(P(P(player,"PlayerRng"),"Shops"),"Counter");}
                     return result;
                 }
@@ -349,6 +368,8 @@ internal static class GeneratedStartOracle
                     if(P(room,"RoomType").ToString()=="Boss")
                     {
                         if(!boosted){completed=true;break;}
+                        // A10 first Glory boss leads to another real map combat.
+                        if(Items(P(point,"Children")).Length>0)continue;
                         await Await(C(manager,"EnterNextAct"));
                         if((bool)P(P(state,"CurrentRoom"),"IsVictoryRoom"))
                         {
@@ -393,7 +414,9 @@ internal static class GeneratedStartOracle
                 if(coverage)
                 {
                     Require(completed && winningState is not null,"Coverage campaign did not win.");
-                    rows.Add(new{firstAct=firstAct.ToLowerInvariant(),seed,offers,choice,rewardsAfterNeow,startingHp=boostedHp,startingMaxHp=boostedHp,route,state=winningState,outcome="victory"});
+                    var row=new{firstAct=firstAct.ToLowerInvariant(),seed,offers,choice,rewardsAfterNeow,startingHp=boostedHp,startingMaxHp=boostedHp,route,state=winningState,outcome="victory"};
+                    if(ascension==0)rows.Add(row);
+                    else { var fields=JsonSerializer.Deserialize<Dictionary<string,object?>>(JsonSerializer.Serialize(row))!;fields["ascension"]=ascension;rows.Add(fields); }
                 }
                 else if(boosted)
                 {

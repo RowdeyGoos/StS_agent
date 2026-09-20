@@ -10,7 +10,7 @@ from game.headless.core.choice_snapshots import validate_selection, valid_power
 TASK_ARITIES = {
     "begin_card_attack": 1, "end_card_attack": 1, "monster_death": 1,
     "ancient_preplay": 0, "ancient_mittens": 1, "ancient_mittens_after_shuffle": 1, "ancient_strength": 1, "ancient_earring": 2,
-    "end_hand_card": 1, "hand_draw": 1,
+    "end_hand_card": 1, "finish_end_hand_card": 1, "pendulum_turn": 1, "hand_draw": 1,
     "potion_effect": 2,
     "potion_finish": 1,
     "potion_status": 4,
@@ -135,6 +135,15 @@ def restore_rules(record, player):
     reserved = validate_autoplay(r, player, work)
     validate_choices(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
+    from game.headless.cards.curses import END_HAND_CURSES
+    finishing = [t[1] for tasks in work.values() for t in tasks
+                 if isinstance(t, list) and len(t) == 2 and t[0] == "finish_end_hand_card"]
+    if (len(finishing) > 1 or any(not isinstance(i, str) or i not in in_play
+            or i in reserved or i in r.plays or not r.turn_ending
+            or not (in_play[i].spec.end_turn_damage or in_play[i].spec.end_turn_hp_loss
+                    or in_play[i].definition.definition_id in END_HAND_CURSES) for i in finishing)):
+        raise ValueError("Unowned end-of-hand wrapper.")
+    reserved |= set(finishing)
     if not isinstance(r.plays, dict) or set(r.plays) | (reserved & set(in_play)) != set(in_play):
         raise ValueError("Play ownership mismatch.")
     for identity, frame in r.plays.items():
@@ -234,6 +243,10 @@ def restore_rules(record, player):
         if op.startswith("ancient_"):
             from game.headless.relics.ancient_state import validate_task
             validate_task(r, op, args)
+        if op == "pendulum_turn":
+            relic = next((v for v in r.relics if v["instance_id"] == args[0]), None)
+            if relic is None or relic["definition_id"] != "pendulum" or not r.player_side or r.turn_ending:
+                raise ValueError("Unowned Pendulum turn listener.")
         if op == "death_hook":
             slot = args[0]
             if (type(slot) is not int or not 0 <= slot < len(player.combat_enemies)
@@ -267,7 +280,7 @@ def restore_rules(record, player):
             raise ValueError("Unowned drawn-card hook.")
         if op == "end_hand_card":
             source = known.get(args[0])
-            if (source is None or args[0] in end_hand_ids or not r.turn_ending
+            if (source is None or args[0] in end_hand_ids or args[0] in finishing or not r.turn_ending
                     or not (source.spec.end_turn_damage or source.spec.end_turn_hp_loss or source.definition.definition_id in END_HAND_CURSES)):
                 raise ValueError("Unowned end-of-hand effect.")
             end_hand_ids.append(args[0])

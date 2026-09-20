@@ -47,7 +47,9 @@ def synchronize(state, p):
 
 
 def tasks(p, event, identity=""):
-    return [["relic_hook", r["instance_id"], event, identity] for r in p.rules.relics if not r.get("data", {}).get("_melted")]
+    return [["pendulum_turn", r["instance_id"]] if event == "after_draw" and r["definition_id"] == "pendulum"
+            else ["relic_hook", r["instance_id"], event, identity]
+            for r in p.rules.relics if not r.get("data", {}).get("_melted")]
 
 
 def execute(p, instance_id, event, identity):

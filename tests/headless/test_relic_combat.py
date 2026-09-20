@@ -229,3 +229,68 @@ def test_vexing_puzzlebox_cost_reduction_lasts_across_turns():
     clone = RunEngine()
     clone.restore(saved(run))
     assert saved(clone) == saved(run)
+
+
+def test_pendulum_counts_turns_across_combat_and_json_restore():
+    from tests.headless.test_act2_run import step, clone
+
+    run, combat = setup("pendulum", cards=("strike",) * 8, draw=0)
+    assert run.state.relics[0].counter == 1
+    assert not combat.player.hand
+    # End this combat after one turn, leaving two turns until the next draw.
+    combat.enemies[0].take_damage(10000, is_attack=False)
+    combat.resolve_external_effect()
+    run.finish_combat()
+    run = clone(run)
+    combat = run.start_combat(cards_per_turn=0, enemy_factory=lambda: SimpleEnemy(max_hp=1000))
+    assert run.state.relics[0].counter == 2 and not combat.player.hand
+    step(run, EndTurn())
+    assert run.state.relics[0].counter == 0 and len(combat.player.hand) == 1
+    step(run, EndTurn())
+    assert run.state.relics[0].counter == 1 and not combat.player.hand
+
+
+@pytest.mark.parametrize('old', ['headless_combat_state_v41', 'headless_run_state_v60'])
+def test_pre_persistent_pendulum_snapshots_reject_atomically(old):
+    run, combat = setup("pendulum")
+    engine = combat if 'combat' in old else run
+    before = saved(engine)
+    bad = saved(engine)
+    bad['schema'] = old
+    with pytest.raises(ValueError):
+        engine.restore(bad)
+    assert saved(engine) == before
+
+
+@pytest.mark.parametrize('names', [('mercury_hourglass', 'pendulum'), ('pendulum', 'mercury_hourglass')])
+def test_pendulum_counts_admitted_turn_when_an_earlier_relic_wins(names):
+    run = RunEngine(card_ids=('strike',) * 8)
+    for name in names:
+        add_relic(run.state, name)
+    combat = run.start_combat(enemy_factory=lambda: SimpleEnemy(max_hp=3))
+    assert combat.done
+    assert next(r for r in run.state.relics if r.definition_id == 'pendulum').counter == 1
+
+
+def test_pendulum_skips_turn_start_pass_when_normal_draw_wins():
+    from game.headless.powers.ironclad import start_turn
+    from game.headless.core.resolution import drain
+    run, combat = setup('pendulum', cards=('strike',), draw=0)
+    p = combat.player
+    assert run.state.relics[0].counter == 1
+    p.rules.powers['hellraiser'] = 1
+    combat.enemies[0].hp = 1
+    start_turn(p, 1)
+    drain(p)
+    assert not combat.enemies[0].is_alive
+    assert p.rules.relics[0]['counter'] == 1
+
+
+def test_pendulum_admitted_listener_resumes_after_json_choice():
+    from tests.headless.test_act2_run import step, clone
+    run, combat = setup('gambling_chip', 'pendulum', cards=('strike',) * 8, draw=5)
+    assert combat.player.rules.selection is not None
+    assert run.state.relics[1].counter == 0
+    clone(run)
+    step(run, ConfirmCombatSelection())
+    assert run.state.relics[1].counter == 1

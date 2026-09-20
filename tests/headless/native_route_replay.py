@@ -13,21 +13,33 @@ from tests.headless.test_act2_run import step
 from tests.headless.test_native_generated_start import card_id
 
 
+def ascension_boundary(run):
+    from game.headless.core.native_service import COMBAT_STREAMS
+    names = (*COMBAT_STREAMS, 'up_front', 'unknown_map_point', 'treasure_room_relics',
+             'rewards', 'shops', 'transformations')
+    return dict(rngCounters={n: run.state.rng.request_count(n) for n in names},
+                deckEnchantments=[dict(id=c.enchantment.definition_id.upper(), amount=c.enchantment.amount)
+                                  if c.enchantment else None for c in run.state.deck])
+
+
 def combat_boundary(run, expected, slots, *, boosted):
     player = run.combat.player
     if boosted:
-        # Native sorts encounter positions and removes dead creatures. Headless
-        # appends stable slots. Bind creation IDs once, never by HP or target result.
-        fresh = sorted(e['combatId'] for e in expected['enemies'] if e['combatId'] not in slots)
-        unseen = [i for i in range(len(run.combat.enemies)) if i not in slots.values()]
-        assert len(fresh) == len(unseen)
-        slots.update(zip(fresh, unseen))
+        # Native attaches the solo player as ID 0, then allocates creature IDs
+        # monotonically. Headless appends enemies in the same creation order.
+        # This also binds slots killed by combat-start autoplay before capture.
+        for native in expected['enemies']:
+            slot = native['combatId'] - 1
+            assert 0 <= slot < len(run.combat.enemies)
+            assert slots.setdefault(native['combatId'], slot) == slot
         assert len({e['combatId'] for e in expected['enemies']}) == len(expected['enemies'])
         enemies = []
         for native in expected['enemies']:
             enemy = run.combat.enemies[slots[native['combatId']]]
             # Tough Egg changes its display name to Hatchling but retains its model.
             name = getattr(type(enemy), 'NAME', enemy.name)
+            if type(enemy).__name__.startswith('DecimillipedeSegment'):
+                name = re.sub(r'(?<!^)(?=[A-Z])', '_', type(enemy).__name__)
             enemies.append(dict(combatId=native['combatId'],
                                 id=re.sub('[()]', '', name.upper()).replace(' ', '_').replace('-', '_'),
                                 hp=enemy.hp, block=enemy.block))
@@ -43,6 +55,13 @@ def combat_boundary(run, expected, slots, *, boosted):
     if 'potions' in expected:
         result['potions'] = [v['definition_id'].upper() if v else None for v in player.rules.potions]
         result['shopsCounter'] = run.state.rng.request_count('shops')
+    if run.state.config.ascension:
+        result.update(ascension_boundary(run))
+        result["piles"] = {name: [dict(id=card_id(c), upgrade=c.upgrade_level,
+                                      enchantment=dict(id=c.enchantment.definition_id.upper(), amount=c.enchantment.amount)
+                                      if c.enchantment else None) for c in cards]
+                           for name, cards in (("Hand", player.hand), ("DrawPile", reversed(player.deck.draw_pile)),
+                                               ("DiscardPile", player.deck.discard_pile), ("ExhaustPile", player.deck.exhaust_pile))}
     return result
 
 
@@ -58,17 +77,23 @@ def run_boundary(run, *, boosted, coverage=False):
     if coverage:
         result['potions'] = [v.definition_id.upper() if v else None for v in state.potions]
         result['shopsCounter'] = state.rng.request_count('shops')
+    if run.state.config.ascension:
+        result.update(ascension_boundary(run))
     return result
 
 
 def replay_route(row, *, boosted=False):
     coverage = "firstAct" in row
-    run = RunEngine.ironclad_run(seed=int(row['seed']), first_act=row.get("firstAct", "overgrowth"), ancient_profile=ancient.PROFILE)
+    run = RunEngine.ironclad_run(seed=int(row['seed']), ascension=row.get("ascension", 0), first_act=row.get("firstAct", "overgrowth"), ancient_profile=ancient.PROFILE)
     if boosted:
         assert row['startingHp'] == row['startingMaxHp'] == 1_000_000
         # The sole authored gameplay override, matching native setup before Neow.
         run.state.hp = row['startingHp']
         run.state.max_hp = row['startingMaxHp']
+        # ironclad_run has already entered Neow; replay its native entry heal
+        # against the boosted maximum (A2+ starts at 80% after that heal).
+        from game.headless.core.ascension import ancient_heal
+        ancient_heal(run.state, neow=True)
     assert [a.definition_id.upper() for a in run.legal_actions()] == row['offers']
     step(run, ChooseAncientRelic(row['choice'].lower()))
     if row["choice"] in ("SCROLL_BOXES", "SMALL_CAPSULE"):

@@ -4,7 +4,7 @@ from game.headless.core.selection import HandChoice, PendingCardPlay
 
 
 def requires_receipt(op):
-    return op in ('exhaust', 'drum_exhaust', 'draw_power', 'draw_power_removed', 'nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_', 'hive_'))
+    return op in ('exhaust', 'drum_exhaust', 'draw_power', 'draw_power_removed', 'nec_summon', 'nec_enemy_loss', 'pendulum_turn') or op.startswith(('orb_', 'def_', 'hive_'))
 
 
 def push(player, *tasks):
@@ -422,8 +422,25 @@ def execute(p, task):
         if not r.end_hand_remaining or r.end_hand_remaining.pop(0) != args[0]:
             raise ValueError("Invalid end-of-hand continuation.")
         card = find(p, args[0])
-        if card is not None:
+        if card is not None and not p.combat_is_ending:
+            # Native OnTurnEndInHandWrapper moves each status/curse through Play
+            # and Discard before flushing the ordinary hand. Keep it out of
+            # reactive draws/reshuffles while its damage hooks are suspended.
+            move_out(p, card)
+            p.deck.in_play.append(card)
+            push(p, ["finish_end_hand_card", card.instance_id])
             end_in_hand(p, card)
+    elif op == "finish_end_hand_card":
+        card = find(p, args[0])
+        if card is None or card not in p.deck.in_play:
+            raise ValueError("Unowned end-of-hand card.")
+        p.deck.in_play.remove(card)
+        if card.spec.ethereal:
+            r.auxiliaries["exhaust_ethereal"] = 1
+            p.deck.exhaust_card(card)
+            r.auxiliaries.pop("exhaust_ethereal", None)
+        else:
+            p.deck.discard_card(card)
     elif op == "ethereal":
         (identity,) = args
         card = find(p, identity)
@@ -467,7 +484,17 @@ def execute(p, task):
         from game.headless.powers.turns import execute as turn_execute
         turn_execute(p, op, args)
     elif op == "start_powers":
-        push(p, *[["start_power", key] for key in r.powers])
+        # Native starts this listener pass after the ordinary hand draw. Once
+        # admitted, listeners keep their inventory order even if an earlier
+        # listener wins combat. Pendulum still counts that admitted turn.
+        if not p.combat_is_ending:
+            from game.headless.relics.combat import tasks as relic_tasks
+            push(p, *[["start_power", key] for key in r.powers], ["nec_start"], *relic_tasks(p, "after_draw"))
+    elif op == "pendulum_turn":
+        from game.headless.relics.combat import increment
+        relic = next(v for v in r.relics if v["instance_id"] == args[0])
+        if not relic.get("data", {}).get("_melted") and increment(relic, 3) and not p.combat_is_ending:
+            push(p, ["draw", 1, False])
     elif op == "after_card_power":
         hooks.after_card_power(p, find(p, args[0]), args[1])
     elif op == "after_card_enchantment":

@@ -33,7 +33,10 @@ def main():
     parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix"), default="queue")
     parser.add_argument("--spine-extension", type=Path)
     parser.add_argument("--campaign-case", choices=("overgrowth-1", "overgrowth-3", "underdocks-4"))
+    parser.add_argument("--ascension", type=int, choices=(0, 10), default=0)
     args = parser.parse_args()
+    if args.ascension and args.mode != "boosted-matrix":
+        parser.error("Ascension campaigns require boosted-matrix and a declared case.")
     if args.mode in ("boosted-kaiser", "boosted-matrix"):
         if args.spine_extension is None or sha(args.spine_extension) != "dde5c7682eb29f3c69e4191f6361a1f0731292188b2603bee02adf726abde0d8":
             parser.error("Kaiser fixture requires the pinned Spine extension.")
@@ -124,7 +127,7 @@ project/assembly_name="queue_oracle"
     started = time.monotonic()
     try:
         run = subprocess.run([str(staged_engine), "--headless", "--main-pack", str(pack),
-                              "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode, *([args.campaign_case] if args.campaign_case else [])],
+                              "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode, *([args.campaign_case] if args.campaign_case else []), *(["ascension-10"] if args.ascension else [])],
                              cwd=project, capture_output=True, text=True, timeout=60 if args.mode in ("generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix") else 15)
         (output / "stdout.log").write_text(run.stdout)
         (output / "stderr.log").write_text(run.stderr)

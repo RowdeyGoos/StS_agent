@@ -25,8 +25,9 @@ into validation of changed code.
   gold/removal/card odds, map elite counts, native monster difficulty and the
   second Glory boss use run-owned difficulty with JSON continuation. Native
   getters cover all eleven levels; 30 native map/initialization cases and
-  source-backed modifier/encounter/route tests pass. Full native A10 trajectory
-  comparison remains acceptance work. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
+  source-backed modifier/encounter/route tests pass. Two boosted native A10
+  victories from both Act 1 regions now match through both Glory bosses and the
+  Architect, including all card piles, run/player RNG counters and JSON continuation. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
 
 
 - **2026-09-19 — duplicate reward edge cases:** Lasting Candy’s fallback now keeps
@@ -1226,10 +1227,15 @@ Dependencies and acceptance cases are in the linked task.
 - **Implemented for solo Ironclad A0–A10, all unlocked/all seen:** every cumulative
   modifier in pinned 0.107.1, per-monster A8/A9 properties, A10 second-boss startup
   draw and route, and native Golden Compass exception. Private schemas are combat
-  v41 / run v60. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
-- **Remaining acceptance:** capture a boosted native A10 three-act victory and
-  compare its decisions, resources and RNG boundaries through both Glory bosses.
-  Retain low-HP/death/revival cases; no normal-HP policy victory is required.
+  v42 / run v61. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
+- **Native campaign acceptance completed:** boosted Overgrowth seed 1 and
+  Underdocks seed 4 win through both Glory bosses with exact replay of 52 combats
+  and 1,504 actions, resources, rewards, four card piles/enchantments, all 15
+  run/player RNG counters and JSON continuation. Pendulum persistence and native
+  end-of-hand pile order discrepancies are corrected.
+- **Remaining acceptance:** additional event branches and inventory interactions
+  beyond these bounded trajectories. Retain low-HP/death/revival cases; no
+  normal-HP policy victory is required.
   Profile-dependent unlocks, multiplayer and alternate modes remain out of scope.
 
 - **Depends on:** HF-01 and the affected combat/run/content tasks.
@@ -1720,11 +1726,15 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      also exercise five ordinary events, explicit smithing/card selections,
      shops, potions and additional relic interactions. Native/headless differences
      found in queues, summons, upgrade RNG and reward continuation are corrected;
-     that change used private schemas combat v40 / run v59 (current: v41 / v60).
+     that change used private schemas combat v40 / run v59 (current: v42 / v61).
      [Evidence and exact limits](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses).
+   - **A10 campaign acceptance completed:** two additional paths cover both first
+     acts and both Glory bosses per run. All four card piles/enchantments and
+     run/player RNG counters match, alongside action/resource/reward boundaries
+     and JSON continuation. [Evidence](evidence/headless_ascensions_2026_09_20.md#a10-native-campaigns).
    - **Next acceptance coverage:** ordinary-event branches and richer inventory
-     combinations beyond the retained six paths; hidden power/pile/RNG state
-     comparison where current public boundary comparisons cannot expose a defect.
+     combinations beyond the eight retained paths; explicit power/status and
+     per-monster RNG comparisons where the recorded boundaries cannot expose a defect.
      Keep focused low-HP, death and revival cases alongside boosted campaigns.
      Every encounter branch or seed is not yet demonstrated. Multiplayer and
      alternate modes are excluded from the project.
@@ -1772,8 +1782,9 @@ Current source/coverage: [combat interactions](evidence/combat_interactions_2026
 [native initialization](evidence/native_initialization_2026_09_14.md),
 [native RNG and probability](evidence/native_rng_2026_09_14.md),
 [events and Neow](evidence/events_neow_2026_09_14.md).
-A1–A10 rules are implemented under HF-38; a full native A10 campaign comparison
-remains acceptance work. Character-specific run starts remain separate scope.
+A1–A10 rules and two complete native A10 campaign comparisons are implemented
+under HF-38. Broader interaction conformance remains acceptance work;
+character-specific run starts remain separate scope.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py
