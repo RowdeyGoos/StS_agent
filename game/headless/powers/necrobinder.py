@@ -3,7 +3,7 @@
 from game.headless.core.resolution import push, move_out
 from game.headless.core import osty
 
-NAMES = frozenset(('borrowed_time', 'calcify', 'call_of_the_void', 'countdown',
+NAMES = frozenset(('forbidden_grimoire', 'borrowed_time', 'calcify', 'call_of_the_void', 'countdown',
     'danse_macabre', 'demesne', 'devour_life', 'friendship', 'haunt', 'lethality',
     'necro_mastery', 'neurosurge', 'pagestorm', 'reaper_form', 'sentry_mode',
     'shroud', 'sleight_of_flesh', 'spirit_of_ash', 'summon_next_turn', 'veilpiercer', 'intangible'))
@@ -125,8 +125,10 @@ def damage_multiplier(p, card):
 
 
 def doom_tasks(p, *, source='enemy_end'):
-    return [['nec_doom_kill', i, source] for i, e in enumerate(p.combat_enemies)
-            if e.is_alive and e.hp <= e.statuses.get('doom')]
+    slots = [i for i, e in enumerate(p.combat_enemies) if e.is_alive and e.hp <= e.statuses.get('doom')]
+    from game.headless.relics.combat import has
+    return ([['nec_doom_kill', i, source] for i in slots]
+            + ([['nec_doom_after', slots, source]] if slots and has(p, 'book_repair_knife') else []))
 
 
 def end_player(p):
@@ -151,6 +153,15 @@ def execute(p, op, args):
             previous = e.hp
             e.hp = 0
             e._after_damage(previous, False)
+    elif op == 'nec_doom_after':
+        from game.headless.relics.combat import has, heal
+        if has(p, 'book_repair_knife'):
+            from game.headless.monsters.hive_elites import DecimillipedeSegment
+            # Native asks the remaining powers after the complete kill batch.
+            # Illusion itself does not suppress AfterDiedToDoom's Fatal count.
+            victims = [p.combat_enemies[i] for i in args[0]]
+            heal(p, 3 * sum(not e.statuses.get('minion') and
+                           (not isinstance(e, DecimillipedeSegment) or e.allows_fatal) for e in victims))
     elif op == 'nec_player_doom':
         if p.is_alive and p.hp <= p.statuses.get('doom'):
             p.hp = 0

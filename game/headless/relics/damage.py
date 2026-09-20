@@ -106,6 +106,8 @@ def damage_hook(p, identity, amount, unblockable, attack, source_slot):
     elif name == "demon_tongue" and p.rules.player_side and not m.get("demon_triggered"):
         m["demon_triggered"] = True
         heal(p, amount)
+    elif name == "emotion_chip":
+        m["damaged"] = True
     elif name == "lava_lamp" and not unblockable:
         m["damaged"] = True
 
@@ -141,6 +143,8 @@ def attack_multiplier(p, card):
         if (relic["definition_id"] == "pen_nib" and not relic.get("data", {}).get("_melted")
                 and card is not None and memory(p, relic).get("attack_to_double") == card.instance_id):
             result *= 2
+    if card and card.definition.definition_id.startswith("minion_") and has(p, "vitruvian_minion"):
+        result *= 2
     return result
 
 
@@ -148,7 +152,7 @@ def block_multiplier(p, gain):
     card = p.current_card
     if card is None or gain <= 0:
         return 1
-    result = 1
+    result = 2 if card.definition.definition_id.startswith("minion_") and has(p, "vitruvian_minion") else 1
     for relic in p.rules.relics:
         name = relic["definition_id"]
         if name not in ('vambrace', 'paels_legion') or relic.get("data", {}).get("_melted"):

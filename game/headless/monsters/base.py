@@ -267,6 +267,9 @@ class Enemy(ABC):
 
     def apply_status(self, status_name: str, stacks: int, *, source=None, temporary_copy=False) -> None:
         """Apply a status effect to the enemy."""
+        if source is not None and status_name == "poison":
+            from game.headless.relics.combat import has
+            stacks += int(has(source, "snecko_skull"))
         if source is not None and status_name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink", "mangle", "dark_shackles", "demise", "poison", "strangle", "conqueror", "crush_under", "dying_star", "monarchs_gaze_strength_down", "doom", "debilitate", "enfeebling_touch", "hang", "oblivion", "sic_em"):
             from game.headless.relics.damage import debuff_amount
             stacks = debuff_amount(source, source.current_card, stacks)

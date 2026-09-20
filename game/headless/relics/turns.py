@@ -20,6 +20,8 @@ def enter_combat(p):
             continue
         from game.headless.relics.ancient_combat import enter
         enter(p, relic)
+        from game.headless.relics.character_hooks import enter as character_enter
+        character_enter(p, relic)
         strength = RELICS[name].combat_strength
         if name == "vajra":
             strength += 1
@@ -80,6 +82,8 @@ def start_turn(p, draw_count):
             continue
         from game.headless.relics.ancient_combat import start_turn as ancient_start
         draw_count = ancient_start(p, relic, draw_count)
+        from game.headless.relics.character_hooks import start as character_start
+        draw_count = character_start(p, relic, draw_count)
         from game.headless.relics.event_content import start_turn as event_start
         draw_count = event_start(p, relic, draw_count)
         if name in ("kunai", "kusarigama", "ornamental_fan", "shuriken", "rainbow_ring"):

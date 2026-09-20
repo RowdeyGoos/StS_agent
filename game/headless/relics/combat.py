@@ -48,7 +48,7 @@ def synchronize(state, p):
 
 def tasks(p, event, identity=""):
     return [["pendulum_turn", r["instance_id"]] if event == "after_draw" and r["definition_id"] == "pendulum"
-            else ["relic_hook", r["instance_id"], event, identity]
+            else ["character_relic_hook" if event in ("before_side_start", "after_flush", "discard") else "relic_hook", r["instance_id"], event, identity]
             for r in p.rules.relics if not r.get("data", {}).get("_melted")]
 
 
@@ -58,6 +58,8 @@ def execute(p, instance_id, event, identity):
         return
     from game.headless.relics.event_content import hook as event_hook
     event_hook(p, relic, event, identity)
+    from game.headless.relics.character_hooks import hook as character_hook
+    character_hook(p, relic, event, identity)
     if event in ("before_draw", "after_draw", "before_end", "after_end", "after_side_start"):
         from game.headless.relics.turns import hook
     else:
@@ -116,6 +118,9 @@ def validate(records, data, card_ids=()):
 from game.headless.relics.ancient_content import MEMORY
 
 MEMORY_FIELDS = {
+    "mini_regent": {"used": "bool"},
+    "metronome": {"count": 2**31 - 1},
+    "emotion_chip": {"damaged": "bool", "previous_damage": "bool"},
     "history_course": {"last_card": "card", "last_turn": 2**31-1, "replay": "card"},
     **MEMORY,
     **{n: {"turn_attacks": 2**31 - 1} for n in ("kunai", "kusarigama", "ornamental_fan", "shuriken")},

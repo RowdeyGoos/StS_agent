@@ -127,7 +127,9 @@ def local_cost(card, *, clamp=True):
     from game.headless.core.card_costs import latest
     setter = latest(v)
     value = card.cost if setter is None else getattr(v, setter + '_cost_override')
-    value += v.cost_change + v.turn_cost_change + v.combat_cost_change
+    value += v.cost_change + v.turn_cost_change + v.combat_cost_change - v.until_played_discount
+    if setter is not None:
+        value += v.cost_discount_baselines.get(setter, 0)
     if setter == 'played':
         value -= sum(v.played_cost_baselines)
     elif setter == 'turn':

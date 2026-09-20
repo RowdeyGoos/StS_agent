@@ -19,9 +19,12 @@ from game.headless.encounters.catalog import ENCOUNTERS
 
 
 class RunEngine:
-    def __init__(self, *, seed: int = 0, card_ids=None, max_hp: int = 80, hp: int | None = None,
+    def __init__(self, *, seed: int = 0, card_ids=None, max_hp: int | None = None, hp: int | None = None,
                  gold: int = 0, cards=DEFAULT_CARDS, graph: MapGraph | None = None,
                  config: RunConfig | None = None, rng_profile="fixture") -> None:
+        from game.headless.characters import definition
+        start = definition(config.character if config else "ironclad")
+        max_hp = start.max_hp if max_hp is None else max_hp
         self.cards = cards
         self.graph = graph
         from game.headless.core.native_service import NativeRandomService
@@ -33,7 +36,7 @@ class RunEngine:
             from game.headless.generation.odds import initial
             self.state.generation_odds = initial()
             from game.headless.generation.relics import populate
-            self.state.relic_bags = populate(rng)
+            self.state.relic_bags = populate(rng, config.character if config else "ironclad")
         self.state.config = config
         if config is not None and config.ascension >= 4:
             self.state.potion_capacity = 2
@@ -49,7 +52,7 @@ class RunEngine:
             self.state.phase = RunPhase.DEFEAT
         self.combat: CombatEngine | None = None
         if card_ids is None:
-            card_ids = ("strike",) * 5 + ("defend",) * 4 + ("bash",)
+            card_ids = start.deck
         for definition_id in card_ids:
             add_card(self.state, cards.definition(definition_id))
         if config is not None and config.ascension >= 5:
@@ -72,7 +75,7 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_act1(cls, *, seed=0, act="overgrowth", ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
+    def act1(cls, *, character="ironclad", seed=0, act="overgrowth", ascension=0, discovery="all_seen", map_profile=None, ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
         """Generate a full-length A0 map with declared restricted content pools."""
         from game.headless.map.act1 import generate_act1_map, profile_for, PRUNED_PROFILES
         map_profile = map_profile or profile_for(act)
@@ -82,9 +85,10 @@ class RunEngine:
         from game.headless.run import ancient
         if ancient_profile not in (None, ancient.PROFILE, ancient.RESTRICTED_PROFILE):
             raise ValueError("Unsupported Ancient start profile.")
-        from game.headless.potions.pools import ORDINARY_POTIONS
-        from game.headless.relics.pools import ORDINARY_RELICS, SHOP_RELICS
-        config = RunConfig(act=act, ascension=ascension, relic_fallback="circlet", reward_relics=ORDINARY_RELICS, shop_relics=SHOP_RELICS, reward_potions=ORDINARY_POTIONS)
+        from game.headless.characters import definition, relic_pool, potion_pool
+        config = RunConfig(character=character, act=act, ascension=ascension, relic_fallback="circlet",
+                           reward_relics=relic_pool(character), shop_relics=relic_pool(character, shop=True),
+                           reward_potions=potion_pool(character))
         if act == "overgrowth" and map_profile in PRUNED_PROFILES:
             config = replace(config, event_pool=(*config.event_pool, "morphic_grove", "tablet_of_truth",
                                                      "whispering_hollow", "wellspring", "slippery_bridge", "sunken_statue", "dense_vegetation", "sapphire_seed", "byrdonis_nest"))
@@ -116,7 +120,7 @@ class RunEngine:
                 engine.state.event_progression = EventProgression(list(initial["events"]), profile=NATIVE_PROFILE)
             else:
                 engine.state.event_progression = EventProgression.generate(engine.state.rng, config.event_pool)
-        add_relic(engine.state, "burning_blood")
+        add_relic(engine.state, definition(character).relic)
         if ancient_profile is None:
             from game.headless.core.ascension import ancient_heal
             ancient_heal(engine.state, neow=True)
@@ -125,14 +129,22 @@ class RunEngine:
         return engine
 
     @classmethod
-    def ironclad_run(cls, *, seed=0, first_act="overgrowth", last_act="glory", ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS, ascension=0):
+    def campaign(cls, *, character="ironclad", seed=0, first_act="overgrowth", last_act="glory", ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS, ascension=0):
         """Play through Glory and the Architect; optionally stop after Hive."""
         if last_act not in ("hive", "glory"):
             raise ValueError("Unsupported campaign endpoint.")
-        engine = cls.ironclad_act1(seed=seed, act=first_act, ancient_profile=ancient_profile,
+        engine = cls.act1(character=character, seed=seed, act=first_act, ancient_profile=ancient_profile,
                                    rng_profile=rng_profile, cards=cards, ascension=ascension)
         engine.state.config = replace(engine.state.config, campaign=(first_act, 'hive', 'glory') if last_act == 'glory' else (first_act, 'hive'))
         return engine
+
+    @classmethod
+    def ironclad_act1(cls, **kwargs):
+        return cls.act1(character="ironclad", **kwargs)
+
+    @classmethod
+    def ironclad_run(cls, **kwargs):
+        return cls.campaign(character="ironclad", **kwargs)
 
     def advance_act(self):
         from game.headless.run.campaign import advance
@@ -261,6 +273,7 @@ class RunEngine:
         combat.fur_coat_active = coat_active(self)
         combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
                      potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,
+                     character=self.state.config.character if self.state.config else "ironclad",
                      gold=self.state.gold, potion_pool=self.state.config.reward_potions if self.state.config else None)
         return rng, combat
 
@@ -314,6 +327,7 @@ class RunEngine:
         undamaged = lamp is not None and not memory(self.combat.player, lamp).get("damaged", False)
         extra_cards = self.combat.player.rules.extra_card_rewards
         royalties = self.combat.player.rules.powers.get("royalties", 0)
+        removals = self.combat.player.rules.powers.get("forbidden_grimoire", 0)
         from game.headless.encounters.loot import capture as capture_loot
         encounter_loot = capture_loot(encounter_id, self.combat.enemies)
         from game.headless.encounters.theft import finish as finish_theft
@@ -337,6 +351,8 @@ class RunEngine:
             elif self.state.config is not None:
                 from game.headless.run.rewards import begin_combat_rewards
                 begin_combat_rewards(self.state, self.cards, encounter_id=encounter_id, undamaged=undamaged, extra_cards=extra_cards, royalties=royalties, encounter_loot=encounter_loot)
+                from game.headless.run.removal_rewards import add
+                add(self.state, removals)
 
     def available_nodes(self) -> tuple[str, ...]:
         self.state.require_between_rooms()

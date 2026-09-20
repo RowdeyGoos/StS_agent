@@ -8,10 +8,10 @@ from game.headless.cards.pools import REWARD_CARDS, RARE_CARDS
 class RunConfig:
     character: str = "ironclad"
     ascension: int = 0
-    reward_cards: tuple[str, ...] = REWARD_CARDS
+    reward_cards: tuple[str, ...] | None = None
     reward_potions: tuple[str, ...] = ("fire_potion", "block_potion")
 
-    boss_reward_cards: tuple[str, ...] = RARE_CARDS
+    boss_reward_cards: tuple[str, ...] | None = None
     reward_relics: tuple[str, ...] = ("strawberry", "pear", "mango")
     shop_relics: tuple[str, ...] = ("strawberry", "pear", "mango")
     event_pool: tuple[str, ...] = ("jungle_maze_adventure", "aroma_of_chaos")
@@ -33,8 +33,12 @@ class RunConfig:
             raise ValueError("Unsupported Act 1 location.")
         from game.headless.core.ascension import validate
         validate(self.ascension)
-        if self.character != "ironclad":
-            raise ValueError("Only Ironclad runs are implemented.")
+        from game.headless.characters import definition, reward_cards
+        definition(self.character)
+        if self.reward_cards is None:
+            object.__setattr__(self, 'reward_cards', reward_cards(self.character))
+        if self.boss_reward_cards is None:
+            object.__setattr__(self, 'boss_reward_cards', reward_cards(self.character, rare=True))
         if self.relic_fallback not in (None, "circlet"):
             raise ValueError("Unsupported depleted relic pool fallback.")
         from game.headless.events.catalog import EVENTS
@@ -45,8 +49,8 @@ class RunConfig:
             if not values or any(not isinstance(v, str) or not v for v in values) or len(values) != len(set(values)):
                 raise ValueError("Reward pools must contain distinct definition IDs.")
             object.__setattr__(self, name, values)
-        from game.headless.relics.pools import SHOP_RELICS
-        if any(name not in SHOP_RELICS for name in self.shop_relics):
+        from game.headless.characters import relic_pool
+        if any(name not in relic_pool(self.character, shop=True) for name in self.shop_relics):
             raise ValueError("Unsupported merchant relic pool.")
         if len(self.reward_cards) < 3 or len(self.boss_reward_cards) < 3:
             raise ValueError("The slice needs at least three card reward definitions.")

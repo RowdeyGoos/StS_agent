@@ -1,4 +1,5 @@
 """Driftwood and Pael's Wing decisions on actual card reward objects."""
+from game.headless.characters import character, potion_pool as character_potions
 
 from game.headless.relics.run_rules import has, owned, counter
 from game.headless.run.actions import RerollCardReward, SacrificeCardReward
@@ -89,7 +90,7 @@ def reroll(state, cards, kind, reward):
     from game.headless.relics.rewards import extend_pool, decorate, combat_modifiers
     from game.headless.cards.pools import REWARD_CARDS
     room_kind, mode, uniform, upgrade, count = 'combat', 'base', False, True, 3
-    rarity, family, card_kind, upgrade_all = None, 'ironclad', None, False
+    rarity, family, card_kind, upgrade_all = None, character(state), None, False
     stream='rewards'
     no_pool_changes=False
     pool = list(state.config.reward_cards if state.config else REWARD_CARDS)

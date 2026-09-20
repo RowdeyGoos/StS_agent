@@ -38,7 +38,9 @@ def value(p, orb, mode):
         return max(0, 6 + focus) if mode == 'passive' else stored
     if kind == 'glass':
         return max(0, stored + focus) * (1 if mode == 'passive' else 2)
-    return max(0, ({'lightning': (3, 8), 'frost': (2, 5)}[kind][mode != 'passive']) + focus)
+    from game.headless.relics.combat import has
+    bonus = int(kind == "lightning" and has(p, "infused_core"))
+    return max(0, ({'lightning': (3, 8), 'frost': (2, 5)}[kind][mode != 'passive']) + focus) + bonus
 
 
 def execute(p, op, args):
@@ -49,7 +51,7 @@ def execute(p, op, args):
         kind, = args
         if kind == 'random':
             kind = p.deck.orb_rng.choice(KINDS)
-        # The current owner is Ironclad (native BaseOrbSlotCount == 0).
+        # Characters without native slots gain one when first channeling.
         if r.orb_slots == 0:
             add_slots(p, 1)
         push(p, *([['orb_evoke', False, True]] if len(r.orb_order) >= r.orb_slots else []), ['orb_insert', kind])
@@ -58,6 +60,8 @@ def execute(p, op, args):
         identity = f'orb.{len(r.orbs)}'
         r.orbs[identity] = {'kind': kind, 'value': 6 if kind == 'dark' else 4 if kind == 'glass' else 0}
         r.orb_order.append(identity)
+        from game.headless.relics.character_hooks import channeled
+        channeled(p)
     elif op == 'orb_evoke':
         last, dequeue = args
         if r.orb_order:
@@ -71,6 +75,10 @@ def execute(p, op, args):
         if r.orb_order:
             push(p, ['orb_trigger', r.orb_order[0], 'passive', None])
     elif op == 'orb_trigger':
+        from game.headless.relics.combat import has
+        count = 2 if args[1] == 'passive' and r.orb_order and args[0] == r.orb_order[0] and has(p, 'gold_plated_cables') else 1
+        push(p, *[['orb_trigger_once', *args] for _ in range(count)])
+    elif op == 'orb_trigger_once':
         identity, mode, target = args
         orb = r.orbs[identity]
         kind, amount = orb['kind'], value(p, orb, mode)

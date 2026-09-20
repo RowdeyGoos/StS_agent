@@ -233,6 +233,10 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
             raise ValueError("Non-card reroll marker.")
         if isinstance(reward["source"],str) and reward["source"].startswith("event:"):
             continue
+        if str(reward["source"]).startswith("forbidden_grimoire:"):
+            from game.headless.run.removal_rewards import validate
+            validate(state)
+            continue
         if reward["source"] in ("stolen_gold", "stolen_card"):
             continue
         if reward["source"] == "royalties":

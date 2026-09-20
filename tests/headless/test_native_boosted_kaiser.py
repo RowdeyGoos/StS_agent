@@ -25,8 +25,8 @@ def test_kaiser_fixture_identity_and_presentation_cleanup():
     row = next(r for r in rerun['runs'] if r['mode'] == 'boosted-kaiser')
     assert row['resultMatchesRetained'] and row['exitCode'] == row['stderrBytes'] == 0
     assert row['resultSha256'] == hashlib.sha256(json.dumps(RECORD['result'], sort_keys=True).encode()).hexdigest()
-    for name, digest in rerun['fixtureSources'].items():
-        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    from tests.headless.native_fixture_sources import assert_campaign_sources
+    assert_campaign_sources(rerun)
 
 
 def test_native_kaiser_three_act_victory_with_json_continuation():

@@ -73,5 +73,7 @@ def after_generated_entry(player, card, *, is_clone=False, generated=True):
             generated_status(player, card)
         else:
             regent_generated(player)
+        from game.headless.relics.character_hooks import generated as relic_generated
+        relic_generated(player)
     if not is_clone and card.definition.definition_id == "stomp":
         card.combat_state.cost_change -= player.rules.attacks_finished

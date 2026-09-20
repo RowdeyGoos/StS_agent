@@ -23,14 +23,14 @@ class EventOperation:
             begin(p, card.instance_id, [c for c in p.hand if c.spec.kind in ('attack','power')], operation='dual_wield_up' if card.upgraded else 'dual_wield')
         elif self.operation == 'distraction':
             from game.headless.core.card_costs import free_this_turn
-            options = select_cards(pool(p,'ironclad','skill'),p.deck.generation_rng,1,distinct=True)
+            options = select_cards(pool(p,p.rules.character,'skill'),p.deck.generation_rng,1,distinct=True)
             if options: free_this_turn(create(p,options[0]))
         elif self.operation == 'entrench':
             p.gain_block(p.block)
         elif self.operation == 'stack':
             p.gain_block(len(p.deck.discard_pile)+(3 if card.upgraded else 0),powered=True)
         elif self.operation == 'metamorphosis':
-            for definition in select_cards(pool(p,'ironclad','attack'),p.deck.generation_rng,5 if card.upgraded else 3,distinct=False):
+            for definition in select_cards(pool(p,p.rules.character,'attack'),p.deck.generation_rng,5 if card.upgraded else 3,distinct=False):
                 from game.headless.cards.colorless_effects import catalog
                 from game.headless.core.piles import after_generated_entry
                 result=catalog(p).create(definition.definition_id)

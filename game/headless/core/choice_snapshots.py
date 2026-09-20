@@ -221,7 +221,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     if operation == 'splash':
         from game.headless.cards.colorless_effects import catalog
         from game.headless.generation.foreign import splash_pool
-        eligible = {d.definition_id for d in splash_pool(catalog(p))}
+        eligible = {d.definition_id for d in splash_pool(catalog(p), p.rules.character)}
         offers = [c for c in available if c.instance_id in s['candidates']]
         if (len(offers) != min(3, len(eligible)) or len({c.definition.definition_id for c in offers}) != len(offers)
                 or any(c.definition.definition_id not in eligible or c.upgrade_level != int(source.upgraded) for c in offers)):

@@ -3,7 +3,7 @@
 from game.headless.core.orbs import KINDS
 
 TASK_ARITIES = {'orb_channel': 1, 'orb_insert': 1, 'orb_evoke': 2, 'orb_phase': 1,
-    'orb_front_passive': 0, 'orb_trigger': 3, 'orb_damage': 3, 'orb_thunder': 2,
+    'orb_front_passive': 0, 'orb_trigger_once': 3, 'orb_trigger': 3, 'orb_damage': 3, 'orb_thunder': 2,
     'def_compact': 2, 'def_flak': 2, 'def_sunder': 3, 'def_scrape': 1,
     'def_scrape_draw': 2, 'def_scrape_after_shuffle': 2, 'def_discard': 1, 'def_status': 1,
     'def_energy_reset': 1, 'def_decrement': 1, 'def_before_draw': 1,
@@ -92,7 +92,7 @@ def validate_task(task, r, p, context):
             raise ValueError('Invalid orb phase.')
         if (args[0] == 'end') != r.turn_ending or not r.player_side:
             raise ValueError('Orb passive outside its owner phase.')
-    elif op == 'orb_trigger':
+    elif op in ('orb_trigger', 'orb_trigger_once'):
         orb(args[0])
         if args[1] not in ('passive', 'evoke'):
             raise ValueError('Invalid orb trigger kind.')
@@ -130,6 +130,6 @@ def validate_task(task, r, p, context):
         slot(args[0]); natural(args[1])
     elif op in ('def_energy_reset', 'def_decrement', 'def_side_start', 'def_start_power', 'def_early_end', 'def_end_power'):
         choices = {'def_energy_reset':('lightning_rod','spinner'), 'def_decrement':('lightning_rod',),
-            'def_side_start':('coolant','feral'), 'def_start_power':('loop',), 'def_early_end':('hailstorm',),
+            'def_side_start':('coolant','feral','biased_cognition'), 'def_start_power':('loop',), 'def_early_end':('hailstorm',),
             'def_end_power':('focused_strike','hotfix','synchronize','consuming_shadow')}
         if args[0] not in choices[op]: raise ValueError('Invalid Defect power hook.')

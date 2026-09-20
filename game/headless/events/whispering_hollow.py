@@ -1,5 +1,6 @@
 """Whispering Hollow's priced potion pair or transform-then-damage choice."""
 
+from game.headless.characters import character, potion_pool as character_potions
 from copy import deepcopy
 from dataclasses import dataclass
 from game.headless.potions.pools import ORDINARY_POTIONS
@@ -32,7 +33,7 @@ class WhisperingHollow:
         data = pending["data"]
         if option_id == "gold":
             trial = deepcopy(state)
-            rewards = potion_rewards.generate(trial.rng, self.potion_pool, 2)
+            rewards = potion_rewards.generate(trial.rng, (character_potions(character(state)) if self.potion_pool == ORDINARY_POTIONS else self.potion_pool), 2)
             state.gold = max(0, state.gold - data["price"])
             state.rng = trial.rng
             data.update(choice="gold", rewards=rewards)
@@ -79,7 +80,7 @@ class WhisperingHollow:
         if defeated != (state.hp == 0):
             raise ValueError("Whispering Hollow defeat differs from HP.")
         if choice == "gold" and stage in ("potion_rewards", "resolved"):
-            potion_rewards.validate(state, data["rewards"], self.potion_pool, 2)
+            potion_rewards.validate(state, data["rewards"], (character_potions(character(state)) if self.potion_pool == ORDINARY_POTIONS else self.potion_pool), 2)
             if any(data[k] != v for k,v in deck_choice.empty().items()):
                 raise ValueError("Potion branch contains a deck selection.")
         elif choice == "hug" and stage in ("select_card", "resolved"):

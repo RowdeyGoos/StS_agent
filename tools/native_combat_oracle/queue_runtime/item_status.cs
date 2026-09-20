@@ -2,7 +2,7 @@ using System.Reflection;
 
 internal static class ItemStatusOracle
 {
-    public static readonly string[] Scenarios = {"flex", "speed", "binding", "shackles", "ward", "replay", "healing", "duration", "fairy", "chaos", "flex_late", "speed_late", "conditional_skull", "conditional_skull_helmet", "conditional_buckle", "conditional_skull_ending", "conditional_skull_helmet_ending", "conditional_buckle_ending", "focused_tender_first", "focused_ritual_first", "focused_disintegration", "focused_monster_FlailKnight", "focused_monster_HunterKiller", "focused_monster_SludgeSpinner", "focused_monster_Exoskeleton", "focused_monster_BowlbugRock", "focused_roster_ovicopter", "focused_roster_shield", "focused_possess_strength", "focused_possess_dexterity", "focused_possess_strength_ending", "focused_possess_dexterity_ending", "focused_death_strength", "focused_death_dexterity", "focused_death_strength_ending", "focused_death_dexterity_ending", "focused_illusion_EyeWithTeeth", "focused_illusion_Parafright", "focused_sicem_Parafright", "focused_sicem_TestSubject", "focused_sicem_Chomper_ending", "focused_sicem_SpinyToad_ending"};
+    public static readonly string[] Scenarios = {"flex", "speed", "binding", "shackles", "ward", "replay", "healing", "duration", "fairy", "chaos", "flex_late", "speed_late", "conditional_skull", "conditional_skull_helmet", "conditional_buckle", "conditional_skull_ending", "conditional_skull_helmet_ending", "conditional_buckle_ending", "focused_tender_first", "focused_ritual_first", "focused_disintegration", "focused_monster_FlailKnight", "focused_monster_HunterKiller", "focused_monster_SludgeSpinner", "focused_monster_Exoskeleton", "focused_monster_BowlbugRock", "focused_roster_ovicopter", "focused_roster_shield", "focused_possess_strength", "focused_possess_dexterity", "focused_possess_strength_ending", "focused_possess_dexterity_ending", "focused_death_strength", "focused_death_dexterity", "focused_death_strength_ending", "focused_death_dexterity_ending", "focused_illusion_EyeWithTeeth", "focused_illusion_Parafright", "focused_sicem_Parafright", "focused_sicem_TestSubject", "focused_sicem_Chomper_ending", "focused_sicem_SpinyToad_ending", "focused_character_Silent", "focused_character_Silent_refined", "focused_character_Regent", "focused_character_Regent_refined", "focused_character_Necrobinder", "focused_character_Necrobinder_refined", "focused_character_Defect", "focused_character_Defect_refined"};
 
     public static async Task<object> Run(Assembly asm, object player, object pcs, object pc,
         object combat, object target, object manager, object runManager, object queue,
@@ -25,6 +25,8 @@ internal static class ItemStatusOracle
         runManager.GetType().GetProperty("State",flags)!.SetValue(runManager,runMarker);
         runManager.GetType().GetProperty("AscensionManager")!.SetValue(runManager,Activator.CreateInstance(T("Entities.Ascension.AscensionManager"),new object[]{ascension}));
         Require((bool)C(runManager,"HasAscension",Enum.Parse(T("Entities.Ascension.AscensionLevel"),"DeadlyEnemies"))==(ascension>=9),"Ascension fixture inactive");
+        if(scenario.StartsWith("focused_character_"))
+            return await CharacterOracle.Run(asm, player, pcs, pc, combat, target, runManager, queue, executor, scenario);
         if(scenario.StartsWith("conditional_"))
         {
             // Actual relic callbacks/PowerCmd on an authored active combat. The

@@ -1,4 +1,5 @@
 """Persistent Ancient state, lifecycle effects and continuation validation."""
+from game.headless.characters import character, ancient_cards, STARTER_UPGRADES
 
 from copy import deepcopy
 
@@ -32,7 +33,7 @@ def validate_data(name, values):
     if name == 'dusty_tome' and 'card' in data:
         from game.headless.cards.catalog import DEFAULT_CARDS
         card = DEFAULT_CARDS.definition(data.pop('card'))
-        if card.pool != 'ironclad' or card.rarity != 'ancient' or card.definition_id == 'break':
+        if card not in ancient_cards(card.pool, DEFAULT_CARDS):
             raise ValueError('Invalid Dusty Tome card.')
     if name == 'sea_glass' and 'family' in data:
         if data.pop('family') not in ('ironclad', 'silent', 'regent', 'necrobinder', 'defect'):

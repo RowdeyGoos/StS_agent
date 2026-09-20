@@ -333,22 +333,25 @@ ORDINARY = {
     ),
 }
 
-def complete(cards):
+def complete(cards, owner="ironclad"):
+    from game.headless.characters import CHARACTERS, reward_cards
     definitions = {d.definition_id: d for d in cards.definitions}
     return all(name in definitions and definitions[name].pool == family
                and definitions[name].rarity in ('common', 'uncommon', 'rare')
-               for family, names in ORDINARY.items() for name in names)
+               for family in CHARACTERS if family != owner
+               for name in ORDINARY.get(family, reward_cards(family)))
 
 
-def splash_pool(cards):
+def splash_pool(cards, owner="ironclad"):
     """A catalog represents installed unlock families; never sort family names."""
     from game.headless.generation.combat import card_pool
-    families = [f for f in FAMILIES if any(d.pool == f for d in cards.definitions)]
-    if not families:
-        return card_pool(cards, 'ironclad', 'attack')
+    from game.headless.characters import CHARACTERS, card_order
+    families = [f for f in CHARACTERS if any(d.pool == f for d in cards.definitions)]
+    if len(families) > 1 and owner in families:
+        families.remove(owner)
     result = []
     for family in families:
-        rank = {name: i for i, name in enumerate(ORDINARY[family])}
+        rank = {name: i for i, name in enumerate(card_order(family))}
         result.extend(sorted(card_pool(cards, family, 'attack'), key=lambda d: rank.get(d.definition_id, len(rank))))
     return result
 
@@ -359,11 +362,12 @@ def kaleidoscope(state, cards, source):
     from game.headless.relics.rewards import decorate
     groups = []
     for _ in range(2):
-        families = sorted(FAMILIES)
+        from game.headless.characters import character, CHARACTERS, reward_cards
+        families = sorted(c for c in CHARACTERS if c != character(state))
         state.rng.shuffle('relic.foreign_pools', families)
         definitions, modifiers = [], {}
         for family in families[:3]:
-            names, upgraded = card_offers(state, cards, ORDINARY[family], 1, mode='base')
+            names, upgraded = card_offers(state, cards, ORDINARY[family] if family in ORDINARY else reward_cards(family), 1, mode='base')
             definitions.extend(names)
             modifiers.update(decorate(state, cards, names, card_reward=False, upgraded=upgraded))
         groups.append((definitions, modifiers))

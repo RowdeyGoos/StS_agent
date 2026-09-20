@@ -22,8 +22,8 @@ def test_boosted_fixture_matches_executed_sources():
     original = next(r for r in rerun['runs'] if r['mode'] == 'boosted-campaign')
     assert original['resultMatchesRetained']
     assert original['resultSha256'] == hashlib.sha256(json.dumps(RECORD['result'], sort_keys=True).encode()).hexdigest()
-    for name, digest in rerun['fixtureSources'].items():
-        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    from tests.headless.native_fixture_sources import assert_campaign_sources
+    assert_campaign_sources(rerun)
 
 
 def test_boosted_three_act_native_victory_with_json_continuation():

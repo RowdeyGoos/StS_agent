@@ -4,7 +4,7 @@ from game.headless.core.selection import HandChoice, PendingCardPlay
 
 
 def requires_receipt(op):
-    return op in ('exhaust', 'drum_exhaust', 'draw_power', 'draw_power_removed', 'nec_summon', 'nec_enemy_loss', 'pendulum_turn') or op.startswith(('orb_', 'def_', 'hive_'))
+    return op in ('exhaust', 'drum_exhaust', 'draw_power', 'draw_power_removed', 'nec_summon', 'nec_enemy_loss', 'pendulum_turn', 'character_relic_hook', 'nec_doom_after', 'nec_doom_kill') or op.startswith(('orb_', 'def_', 'hive_'))
 
 
 def push(player, *tasks):
@@ -267,6 +267,8 @@ def execute(p, task):
         (identity,) = args
         card = find(p, identity)
         card.combat_state.free_until_played = False
+        card.combat_state.until_played_discount = 0
+        card.combat_state.cost_discount_baselines.clear()
         card.combat_state.played_cost_override = None
         card.combat_state.played_cost_baselines = [0, 0, 0]
         if card.combat_state.turn_cost_until_played:
@@ -456,7 +458,7 @@ def execute(p, task):
                 p.hand.remove(card)
                 p.deck.discard_card(card)
         from game.headless.relics.combat import tasks as relic_tasks
-        push(p, *[["end_power", name] for name in r.powers], *relic_tasks(p, "after_end"), ["hive_player_end"], ["cleanup_turn"])
+        push(p, *relic_tasks(p, "after_flush"), *[["end_power", name] for name in r.powers], *relic_tasks(p, "after_end"), ["hive_player_end"], ["cleanup_turn"])
     elif op == "hive_player_end":
         from game.headless.powers.hive import player_end
         player_end(p)
@@ -603,7 +605,7 @@ def execute(p, task):
     elif op == "relic_damage":
         from game.headless.relics.damage import damage_hook
         damage_hook(p, *args)
-    elif op == "relic_hook":
+    elif op in ("relic_hook", "character_relic_hook"):
         from game.headless.relics.combat import execute as relic_execute
         relic_execute(p, *args)
     elif op.startswith("orb_"):

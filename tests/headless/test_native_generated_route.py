@@ -13,8 +13,8 @@ LEGACY = json.loads((ROOT / 'docs/evidence/native_generated_start_route_regressi
 def test_route_fixture_identity_and_first_combat_regression():
     rerun = json.loads((ROOT / 'docs/evidence/native_item_status_regressions_2026_09_20.json').read_text())
     assert {r['mode'] for r in rerun['runs']} == {'generated-start', 'generated-route', 'boosted-campaign', 'boosted-coverage', 'boosted-kaiser', 'boosted-matrix', 'campaign', 'event-inventory', 'reward-handoff'}
-    for name, digest in rerun['fixtureSources'].items():
-        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    from tests.headless.native_fixture_sources import assert_campaign_sources
+    assert_campaign_sources(rerun)
     for record in rerun['runs']:
         assert record['exitCode'] == record['stderrBytes'] == 0
         assert record['userDirectoryRemoved'] and record['resultMatchesRetained']

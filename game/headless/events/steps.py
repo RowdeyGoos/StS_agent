@@ -4,6 +4,7 @@ Definitions own branches. A continuation stores a branch cursor and the current
 owned selection; it never stores executable callbacks or a second run engine.
 """
 
+from game.headless.characters import character, potion_pool as character_potions
 from dataclasses import dataclass
 from copy import deepcopy
 from game.headless.core.snapshots import card_record, restore_card
@@ -175,13 +176,13 @@ def drain(state, cards):
             return
         if op == "factory_potion":
             from game.headless.potions.pools import generate, ORDINARY_POTIONS
-            data["active"] = {"definition_id": generate(ORDINARY_POTIONS, state.rng, stream="rewards")}
+            data["active"] = {"definition_id": generate(character_potions(character(state)), state.rng, stream="rewards")}
             pending["stage"] = "potion_rewards"
             return
         if op == "event_potion":
             from game.headless.potions.pools import ORDINARY_POTIONS, unlocked_order
             from game.headless.potions.base import POTIONS
-            pool = [n for n in unlocked_order(ORDINARY_POTIONS, state.rng) if args[0] == "any" or POTIONS[n].rarity == args[0]]
+            pool = [n for n in unlocked_order(character_potions(character(state)), state.rng) if args[0] == "any" or POTIONS[n].rarity == args[0]]
             data["active"] = {"definition_id": state.rng.choice(args[1], pool)}
             pending["stage"] = "potion_rewards"
             return
@@ -210,6 +211,7 @@ def drain(state, cards):
             continue
         if op == "cards":
             family, rarity, kind, count, take, optional, upgrade, *extra = args
+            family = character(state) if family == "ironclad" else family
             from game.headless.relics.rewards import decorate, extend_pool
 
             pool = [
@@ -253,7 +255,7 @@ def drain(state, cards):
             # Legends directly samples unlocked definitions uniformly, without
             # calling the rarity-based potion factory.
             from game.headless.potions.pools import unlocked_order
-            name = state.rng.choice("rewards", unlocked_order(ORDINARY_POTIONS, state.rng))
+            name = state.rng.choice("rewards", unlocked_order(character_potions(character(state)), state.rng))
             data["active"] = {"definition_id": name}
             pending["stage"] = "potion_rewards"
             return

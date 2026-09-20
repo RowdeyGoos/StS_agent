@@ -30,8 +30,8 @@ def test_remaining_boss_campaign_with_json_continuation(case, combats, actions):
     assert fresh['userDirectoryRemoved'] and fresh['resultMatchesRetained']
     assert fresh['exitCode'] == fresh['stderrBytes'] == 0
     assert hashlib.sha256(json.dumps(evidence['result'], sort_keys=True).encode()).hexdigest() == fresh['resultSha256']
-    for name, digest in rerun['fixtureSources'].items():
-        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    from tests.headless.native_fixture_sources import assert_campaign_sources
+    assert_campaign_sources(rerun)
     row, = evidence['result']['rows']
     rooms = [r['room'] for r in row['route']]
     assert row['outcome'] == 'victory' and len(rooms) == 48

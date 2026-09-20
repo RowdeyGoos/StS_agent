@@ -27,7 +27,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v65"
+SCHEMA = "headless_run_state_v66"
 
 
 def _restore_graph(record):
@@ -217,6 +217,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Active combat requires the combat phase.")
             combat = CombatEngine()
             combat.restore(snapshot["combat"], cards=cards)
+            if combat.player.rules.character != (state.config.character if state.config else "ironclad"):
+                raise ValueError("Combat character differs from the run.")
             if combat.ascension != (state.config.ascension if state.config else 0):
                 raise ValueError("Combat ascension differs from its run.")
             if getattr(state.rng, "native", False):
@@ -344,6 +346,10 @@ def _validate_pending(state, cards, graph):
         validate_marker(state, pending)
         if pending.get('encounter_id') in ('underdocks_gremlin_merc', 'hive_thieving_hopper'):
             expected.add('encounter_loot')
+        if "grimoire_rewards_earned" in pending:
+            expected.add("grimoire_rewards_earned")
+        from game.headless.run.removal_rewards import validate as validate_removals
+        validate_removals(state)
         if set(pending) - {"rerolled"} != expected:
             raise ValueError("Invalid reward state fields.")
         if state.phase is not RunPhase.REWARD or type(pending["gold"]) is not int or pending["gold"] < 0:
@@ -392,7 +398,7 @@ def _validate_pending(state, cards, graph):
                 owners = {r.instance_id: (r.definition_id, r.counter) for r in state.relics}
                 if (sources or not pending['gold_claimed'] or not pending['card_resolved'] or pending['offers']
                         or pending['potion'] is not None or pending['hunt_rewards_earned'] or pending['royalties_earned']
-                        or any(owners.get(r['source']) != ('wongos_mystery_ticket', 6) for r in pending['extra_rewards'])):
+                        or any(owners.get(r['source']) != ('wongos_mystery_ticket', 6) for r in pending['extra_rewards'] if r['kind'] != 'remove')):
                     raise ValueError('Final boss cannot offer ordinary combat rewards.')
             from game.headless.relics.rewards import active_power_options
             extra_power = active_power_options(state)

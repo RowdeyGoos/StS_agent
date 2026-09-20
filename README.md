@@ -84,6 +84,12 @@ sts-headless-play --seed 2 --rest-choice smith --verify-restore
 sts-headless-play --route overgrowth --path right --seed 2 --rest-choice rest --verify-restore
 ```
 
+Full generated campaigns also support Silent, Regent, Necrobinder and Defect:
+`sts-headless-play --character defect --route overgrowth-glory --seed 2`.
+The shared Python API is `RunEngine.campaign(character="defect", seed=2)`.
+See the [character guide](docs/HEADLESS_ENGINE.md#playable-characters) for scope,
+ascensions, private snapshots and verification limits.
+
 The playable first slice starts Ironclad at Ascension 0, fights Nibbit, collects
 rewards, rests or upgrades a card, then fights Overgrowth slimes and collects the
 second rewards. It includes Burning Blood and Fire/Block Potions. The map and item

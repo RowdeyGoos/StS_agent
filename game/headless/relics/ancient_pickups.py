@@ -1,4 +1,5 @@
 """Ancient acquisitions expressed as owned data and shared deck mutations."""
+from game.headless.characters import character, ancient_cards, STARTER_UPGRADES
 
 from copy import deepcopy
 
@@ -74,7 +75,7 @@ def begin(state, relic, cards):
             for _ in range(3):
                 add_card(state, cards.definition('apparition'))
     elif name == 'dusty_tome':
-        choices = [d for d in cards.definitions if d.pool == 'ironclad' and d.rarity == 'ancient' and d.definition_id != 'break']
+        choices = list(ancient_cards(character(state), cards))
         chosen = cards.definition(relic.data['card']) if 'card' in relic.data else state.rng.choice('rewards', choices)
         relic.data['card'] = chosen.definition_id
         add_card(state, chosen, upgrade_level=1)
@@ -124,7 +125,7 @@ def begin(state, relic, cards):
         if starter:
             index = state.relics.index(starter)
             remove_relic(state, starter.instance_id)
-            replacement = add_relic(state, 'black_blood' if starter.definition_id == 'burning_blood' else 'circlet', cards=cards)
+            replacement = add_relic(state, STARTER_UPGRADES.get(starter.definition_id, 'circlet'), cards=cards)
             state.relics.remove(replacement)
             state.relics.insert(index, replacement)
     elif name == 'pumpkin_candle':

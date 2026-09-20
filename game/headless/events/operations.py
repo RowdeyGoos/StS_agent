@@ -1,4 +1,5 @@
 """Automatic operations for the extended event roster."""
+from game.headless.characters import character, potion_pool as character_potions
 from copy import deepcopy
 from game.headless.core.snapshots import card_record
 
@@ -107,7 +108,7 @@ def execute(state, cards, operation):
         from game.headless.relics.rewards import extend_pool, decorate
         from game.headless.run.rewards import acquire_card
         kind,no_modify=args
-        pool=[d.definition_id for d in cards.definitions if d.pool==('colorless' if kind=='colorless' else 'ironclad') and d.rarity in ('common','uncommon','rare') and (kind=='colorless' or (d.levels[0].kind=='power' if kind=='power' else d.levels[0].cost==0 and not d.levels[0].x_cost))]
+        pool=[d.definition_id for d in cards.definitions if d.pool==('colorless' if kind=='colorless' else character(state)) and d.rarity in ('common','uncommon','rare') and (kind=='colorless' or (d.levels[0].kind=='power' if kind=='power' else d.levels[0].cost==0 and not d.levels[0].x_cost))]
         if not no_modify: pool=extend_pool(state,cards,pool,card_reward=False,card_kind='power')
         offers,upgraded=card_offers(state,cards,pool,1,mode='base',upgrade_roll=False)
         modifiers=decorate(state,cards,offers,upgraded=upgraded,card_reward=False)

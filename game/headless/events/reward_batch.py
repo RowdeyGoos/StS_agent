@@ -1,4 +1,5 @@
 """Populate custom rewards before claims, retaining only offers and decisions."""
+from game.headless.characters import character, potion_pool as character_potions
 from game.headless.relics.base import RELICS
 from game.headless.potions.base import POTIONS
 
@@ -10,14 +11,14 @@ def prepare(state, cards, descriptors):
     from game.headless.relics.rewards import decorate, extend_pool
     # Crystal Sphere creates its explicit potions while constructing rewards;
     # the remaining factories run in the subsequent population pass.
-    potions = {i: state.rng.choice(d[2], [n for n in unlocked_order(ORDINARY_POTIONS, state.rng) if d[1] == 'any' or POTIONS[n].rarity == d[1]])
+    potions = {i: state.rng.choice(d[2], [n for n in unlocked_order(character_potions(character(state)), state.rng) if d[1] == 'any' or POTIONS[n].rarity == d[1]])
                for i,d in enumerate(descriptors) if d[0]=='potion' and d[1]!='factory'}
     result=[]
     reserved=[]
     for i,d in enumerate(descriptors):
         kind=d[0]; modifiers={}
         if kind=='relic': offers=[pull_relic(state,stream=d[2],exclude=reserved) if d[1]=='random' else d[1]]
-        elif kind=='potion': offers=[potions[i] if i in potions else generate(ORDINARY_POTIONS,state.rng,stream=d[2])]
+        elif kind=='potion': offers=[potions[i] if i in potions else generate(character_potions(character(state)),state.rng,stream=d[2])]
         elif kind=='gold':
             # GoldReward.Populate consumes a draw even for a fixed amount.
             if getattr(state.rng, 'native', False):
@@ -26,7 +27,7 @@ def prepare(state, cards, descriptors):
         elif kind=='special_card': offers=[d[1]]
         elif kind=='card':
             flags=d[5] if len(d)>5 else {}
-            pool=[c.definition_id for c in cards.definitions if c.pool==d[1] and c.rarity in (('common','uncommon','rare') if d[2]=='any' else (d[2],))]
+            pool=[c.definition_id for c in cards.definitions if c.pool==(character(state) if d[1]=="ironclad" else d[1]) and c.rarity in (('common','uncommon','rare') if d[2]=='any' else (d[2],))]
             pool=extend_pool(state,cards,pool,card_reward=True,no_pool_changes=not flags.get('pool_changes',True))
             offers,upgraded=card_offers(state,cards,pool,d[3],mode='base',uniform=d[2]!='any',stream=d[4],upgrade_roll=flags.get('upgrade',True))
             modifiers=decorate(state,cards,offers,upgraded=upgraded)

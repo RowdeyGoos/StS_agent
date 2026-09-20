@@ -1,4 +1,5 @@
 """Validate event branch cursors and suspended owned selections."""
+from game.headless.characters import character, potion_pool as character_potions
 
 from types import SimpleNamespace
 from game.headless.core.snapshots import card_record, restore_card
@@ -228,7 +229,7 @@ def validate_active(definition, pending, state, cards, plan, *, defeated=False):
                 op[3] != "any" and d.levels[0].kind != op[3]
             ):
                 raise ValueError("Wrong event reward content.")
-            if d.pool != op[1] and not (
+            if d.pool != (character(state) if op[1] == "ironclad" else op[1]) and not (
                 op[6] and op[1] != "colorless" and d.pool in ("ironclad","silent","regent","necrobinder","defect") and any(r.definition_id == "prismatic_gem" for r in state.relics)
             ) and not (
                 d.pool == "colorless"
@@ -271,7 +272,7 @@ def validate_active(definition, pending, state, cards, plan, *, defeated=False):
         if (
             stage != "potion_rewards"
             or set(active) != {"definition_id"}
-            or active["definition_id"] not in (ORDINARY_POTIONS if op[0] != "fixed_potion" else (op[1],))
+            or active["definition_id"] not in (character_potions(character(state)) if op[0] != "fixed_potion" else (op[1],))
         ):
             raise ValueError("Invalid event potion reward.")
     else:

@@ -13,9 +13,9 @@ def catalog(p):
     return p.catalog or DEFAULT_CARDS
 
 
-def pool(p, family="ironclad", kind=None):
+def pool(p, family=None, kind=None):
     from game.headless.generation.combat import card_pool
-    return card_pool(catalog(p), family, kind)
+    return card_pool(catalog(p), p.rules.character if family is None else family, kind)
 
 
 def create(p, definition, *, upgraded=False, destination="hand"):
@@ -107,7 +107,7 @@ class ColorlessOperation:
             choices = pool(p)
             if op == "splash":
                 from game.headless.generation.foreign import splash_pool
-                choices = splash_pool(catalog(p))
+                choices = splash_pool(catalog(p), p.rules.character)
             offers = [
                 create(p, d, upgraded=op == "splash" and card.upgraded, destination="offered")
                 for d in select_cards(choices, p.deck.generation_rng, 3, distinct=True)

@@ -32,9 +32,9 @@ def execute(p, op, args):
     elif op == 'side_start_powers':
         tasks = []
         for key in p.rules.powers:
-            if key in ('blur', 'shadow_step', 'noxious_fumes'):
+            if key in ('blur', 'shadow_step', 'noxious_fumes', 'wraith_form'):
                 tasks.append(['silent_side_start', key])
-            elif key in ('coolant', 'feral'):
+            elif key in ('coolant', 'feral', 'biased_cognition'):
                 tasks.append(['def_side_start', key])
             elif key in ('countdown', 'neurosurge'):
                 tasks.append(['nec_side_start', key])

@@ -77,7 +77,10 @@ def test_catalog_matches_independently_audited_solo_scope():
     assert len(converted) == fixture["definition_count"] == 161
     ancients = json.loads((Path(__file__).parents[1] / "fixtures/headless_ancient_scope.json").read_text())
     events = json.loads((Path(__file__).parents[1] / "fixtures/headless_solo_event_scope.json").read_text())
-    assert set(RELICS) == converted | set(ancients["solo"]) | set(events["event_relics"]) | {"black_blood"}
+    from game.headless.characters import CHARACTERS, STARTER_UPGRADES
+    exclusive = {n for c,d in CHARACTERS.items() if c != "ironclad" for n in d.relic_pool}
+    assert len(exclusive) == 32
+    assert set(RELICS) == exclusive | set(STARTER_UPGRADES.values()) | converted | set(ancients["solo"]) | set(events["event_relics"]) | {"black_blood"}
 
 
 @pytest.mark.parametrize("name", sorted(RELICS))

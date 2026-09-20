@@ -17,6 +17,8 @@ class CardState:
     cost_change: int = 0
     turn_cost_change: int = 0
     combat_cost_change: int = 0
+    until_played_discount: int = 0
+    cost_discount_baselines: dict[str, int] = field(default_factory=dict)
     free_this_turn: bool = False
     star_free_this_turn: bool = False
     free_this_combat: bool = False
@@ -42,6 +44,7 @@ class CardState:
 
 @dataclass
 class CombatRules:
+    character: str = "ironclad"
     powers: dict[str, int] = field(default_factory=dict)
     auxiliaries: dict[str, int] = field(default_factory=dict)
     tasks: list[list] = field(default_factory=list)
