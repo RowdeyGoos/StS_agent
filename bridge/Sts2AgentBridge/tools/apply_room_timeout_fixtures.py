@@ -215,6 +215,7 @@ class _Socket:
         self.clock = clock
         self.offset = 0
         self.closed = False
+        self.write_shutdown = False
         self.sent: bytearray | None = None
         self._advanced = False
 
@@ -227,7 +228,14 @@ class _Socket:
             fail(EXIT_MISMATCH, "room_timeout_fixture_request")
         self.sent = request
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not (self.sent is not None) or self.write_shutdown or self.closed:
+            fail(EXIT_MISMATCH, "apply_room_timeout_fixture_half_close")
+        self.write_shutdown = True
+
     def recv(self, maximum: int) -> bytes:
+        if not self.write_shutdown:
+            fail(EXIT_MISMATCH, "apply_room_timeout_fixture_receive_before_half_close")
         if maximum != probe._RECEIVE_CHUNK_BYTES:
             fail(EXIT_MISMATCH, "room_timeout_fixture_receive_bound")
         if isinstance(self.response, BaseException):

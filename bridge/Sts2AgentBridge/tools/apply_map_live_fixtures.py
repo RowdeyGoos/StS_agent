@@ -181,6 +181,7 @@ class _Socket:
         self.expected_request = expected_request
         self.offset = 0
         self.closed = False
+        self.write_shutdown = False
         self.request_buffers: list[bytearray] = []
 
     def settimeout(self, value: float) -> None:
@@ -192,7 +193,14 @@ class _Socket:
             fail(EXIT_MISMATCH, "map_fixture_request")
         self.request_buffers.append(request)
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not (self.request_buffers) or self.write_shutdown or self.closed:
+            fail(EXIT_MISMATCH, "apply_map_live_fixture_half_close")
+        self.write_shutdown = True
+
     def recv(self, maximum: int) -> bytes:
+        if not self.write_shutdown:
+            fail(EXIT_MISMATCH, "apply_map_live_fixture_receive_before_half_close")
         if maximum != probe._RECEIVE_CHUNK_BYTES:
             fail(EXIT_MISMATCH, "map_fixture_receive_bound")
         if self.offset >= len(self.response):

@@ -2,8 +2,10 @@
 
 from dataclasses import asdict
 from hashlib import sha256
+import io
 import json
 from pathlib import Path
+import subprocess
 
 from game.backends.headless import combat_v0_backend, reduced_run_backend
 from game.backends.live import r0i_wire
@@ -16,6 +18,9 @@ from synthetic_cases import fixture_bodies
 
 ROOT = Path(__file__).resolve().parents[2]
 IDENTITY_PATH = Path(__file__).with_name("offline_fixture_identity.json")
+# The accepted September 4 corpus names this exact original bridge inventory.
+# Current Python regressions do not execute the subsequently changed C# bridge.
+RETAINED_BRIDGE_REVISION = "778cadd1a5e24de1c316a45831ffd1aa4be4f1dc"
 SOURCE_PATHS = (
     "game/contracts/headless_v0.py",
     "game/backends/live/r0i_wire.py",
@@ -57,13 +62,13 @@ def bridge_source_inventory(repository_root: Path) -> tuple[int, str]:
     return len(bridge_paths), sha256(bridge_records).hexdigest()
 
 
-def current_identities():
+def _identities(bridge_inventory):
     build_path = "manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json"
     build = json.loads((ROOT / build_path).read_text())
     vector_path = ROOT / "bridge/Sts2AgentBridge/contracts/live_probe_v0/vectors"
     r0i_wire.verify_accepted_vector_inventory(vector_path)
     manifest = reduced_run_backend.ReducedRunBackend().manifest()
-    bridge_count, bridge_digest = bridge_source_inventory(ROOT)
+    bridge_count, bridge_digest = bridge_inventory
     body_hashes = {name: sha256(body).hexdigest() for name, body in sorted(fixture_bodies().items())}
     return {
         "schema": "h4_offline_common_subset_fixture_v1",
@@ -106,7 +111,70 @@ def current_identities():
     }
 
 
+def current_identities():
+    return _identities(bridge_source_inventory(ROOT))
+
+
 def verify_identities(expected):
     """No blessing or auto-update on mismatch; coordinator must review a new pin."""
     if json.dumps(expected, sort_keys=True) != json.dumps(current_identities(), sort_keys=True):
         raise ValueError("offline fixture identity mismatch")
+
+
+def retained_bridge_source_inventory() -> tuple[int, str]:
+    """Measure original Git blobs, never substitute today's bridge for old evidence."""
+    prefix = "bridge/Sts2AgentBridge/"
+    fixed = {prefix + name for name in (
+        "Directory.Build.props", "global.json", "Sts2AgentBridge.sln",
+        "package/Sts2AgentBridge.json",
+    )}
+    tree = subprocess.run(
+        ["git", "ls-tree", "-rz", RETAINED_BRIDGE_REVISION, "--", prefix],
+        cwd=ROOT, check=True, capture_output=True, timeout=10,
+    ).stdout
+    entries = []
+    for entry in tree.split(b"\0"):
+        if not entry:
+            continue
+        metadata, raw_path = entry.split(b"\t", 1)
+        mode, kind, oid = metadata.split()
+        path = raw_path.decode("ascii")
+        relative = Path(path).relative_to(prefix)
+        authored = (relative.parts[0] == "src" and relative.suffix in (".cs", ".csproj")
+                    and not {"bin", "obj"}.intersection(relative.parts[:-1]))
+        if path in fixed or authored:
+            if kind != b"blob" or mode not in (b"100644", b"100755"):
+                raise ValueError("retained bridge source is not a regular Git blob")
+            entries.append((path, oid))
+    entries.sort()
+    blobs = subprocess.run(
+        ["git", "cat-file", "--batch"], cwd=ROOT, check=True, capture_output=True,
+        input=b"".join(oid + b"\n" for _, oid in entries), timeout=10,
+    ).stdout
+    stream = io.BytesIO(blobs)
+    records = []
+    for path, oid in entries:
+        returned_oid, kind, length = stream.readline().split()
+        if returned_oid != oid or kind != b"blob":
+            raise ValueError("retained bridge Git blob mismatch")
+        body = stream.read(int(length))
+        if len(body) != int(length) or stream.read(1) != b"\n":
+            raise ValueError("truncated retained bridge Git blob")
+        records.append(sha256(body).hexdigest() + "  " + path + "\n")
+    if stream.read():
+        raise ValueError("unexpected retained bridge Git output")
+    return len(entries), sha256("".join(records).encode("ascii")).hexdigest()
+
+
+def retained_fixture_identities():
+    """Current Python inputs against the original, source-bound bridge reference.
+
+    This does not establish current-bridge fidelity. Missing Git history is an
+    error; there is no fallback to trusted constants or today's bridge sources.
+    """
+    return _identities(retained_bridge_source_inventory())
+
+
+def verify_retained_fixture_identities(expected):
+    if json.dumps(expected, sort_keys=True) != json.dumps(retained_fixture_identities(), sort_keys=True):
+        raise ValueError("retained offline fixture identity mismatch")

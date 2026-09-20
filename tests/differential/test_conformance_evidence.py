@@ -75,8 +75,9 @@ def test_case_spec_and_identity_inventory_are_frozen():
     assert {table.gold_amount: table.table_id for table in REWARD_TABLES} == {
         int(k): v for k, v in spec["table_by_amount"].items()
     }
-    from fixture_identity import current_identities
-    ids = current_identities()
+    from fixture_identity import IDENTITY_PATH, retained_fixture_identities, verify_retained_fixture_identities
+    verify_retained_fixture_identities(json.loads(IDENTITY_PATH.read_text()))
+    ids = retained_fixture_identities()
     assert PINS["build_identity_sha256"] == ids["build"]["identity_sha256"]
     assert PINS["build_manifest_sha256"] == ids["build"]["manifest_sha256"]
     assert PINS["bridge_source_sha256"] == ids["bridge"]["source_inventory_sha256"]

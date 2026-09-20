@@ -1,4 +1,4 @@
-"""Offline-only acceptance for H4-LIVE-DIFF-02. No live evidence promotion."""
+"""Current Python regression against retained H4 fixtures; no current-bridge claim."""
 
 from collections import Counter
 from dataclasses import asdict, replace
@@ -15,7 +15,10 @@ from common_public_subset import (
     Boundary, COMMON_SUBSET, OMISSIONS, compare_case, normalize_headless,
     normalize_wire, typed,
 )
-from fixture_identity import IDENTITY_PATH, ROOT, current_identities, verify_identities
+from fixture_identity import (
+    IDENTITY_PATH, ROOT, current_identities, verify_identities,
+    verify_retained_fixture_identities,
+)
 from synthetic_cases import combat_body, fixture_bodies, make_cases, map_body, setup_backend
 
 
@@ -45,8 +48,9 @@ EXPECTED = {
 
 @pytest.fixture(scope="module", autouse=True)
 def require_frozen_offline_inputs():
-    # This gate also runs when a single named comparison test is selected.
-    verify_identities(json.loads(IDENTITY_PATH.read_text()))
+    # Verify current Python inputs and exact original bridge Git blobs, even
+    # when a single comparison is selected. Current C# is not executed here.
+    verify_retained_fixture_identities(json.loads(IDENTITY_PATH.read_text()))
 
 
 def compare(case):
@@ -54,7 +58,7 @@ def compare(case):
 
 
 def test_frozen_build_wire_rules_content_and_body_identities():
-    verify_identities(json.loads(IDENTITY_PATH.read_text()))
+    verify_retained_fixture_identities(json.loads(IDENTITY_PATH.read_text()))
     assert {b.family for c in CASES for b in (c.wire_pre, c.headless_pre)} == set(COMMON_SUBSET)
     assert {c.name: c.expected for c in CASES} == EXPECTED
     assert Counter(compare(c).outcome for c in CASES) == {"passed": 3, "divergent": 14, "unobserved": 2}
@@ -229,7 +233,7 @@ def test_inactive_and_endpoint_complete_are_not_synthesized_headless_boundaries(
     ("headless", "content_fingerprint"), ("headless", "backend_fingerprint"),
 ])
 def test_identity_drift_fails_closed(section, key):
-    expected = json.loads(IDENTITY_PATH.read_text())
+    expected = current_identities()
     expected[section][key] = True if key == "schema_version" else "changed"
     with pytest.raises(ValueError, match="identity mismatch"):
         verify_identities(expected)
@@ -297,7 +301,52 @@ def test_fixture_and_report_labels_cannot_be_promoted_by_success():
         assert "differential_verified" not in report
         assert "live_observed" not in report
     for label in ("differential_verified", "live_observed"):
-        expected = json.loads(IDENTITY_PATH.read_text())
+        expected = current_identities()
         expected["evidence"] = label
         with pytest.raises(ValueError, match="identity mismatch"):
             verify_identities(expected)
+
+
+def test_retained_bridge_is_measured_from_its_original_git_revision():
+    expected = json.loads(IDENTITY_PATH.read_text())
+    assert fixture_identity.retained_bridge_source_inventory() == (
+        expected["bridge"]["source_file_count"],
+        expected["bridge"]["source_inventory_sha256"],
+    )
+    # A historical-reference pass cannot turn into a current-bridge acceptance.
+    assert current_identities()["bridge"] != expected["bridge"]
+    with pytest.raises(ValueError, match="identity mismatch"):
+        verify_identities(expected)
+
+
+@pytest.mark.parametrize("section,key", [
+    ("bridge", "source_inventory_sha256"),
+    ("bridge", "source_file_count"),
+    ("source_sha256", "game/backends/live/r0i_wire.py"),
+    ("source_sha256", "tests/differential/synthetic_cases.py"),
+    ("headless", "rules_fingerprint"),
+    ("wire", "vector_inventory_sha256"),
+    ("synthetic_body_sha256", "combat_initial"),
+])
+def test_retained_fixture_still_rejects_changed_expectations(section, key):
+    expected = json.loads(IDENTITY_PATH.read_text())
+    expected[section][key] = "changed"
+    with pytest.raises(ValueError, match="identity mismatch"):
+        verify_retained_fixture_identities(expected)
+
+
+def test_retained_fixture_still_checks_current_python_sources(monkeypatch):
+    original = Path.read_bytes
+    def changed_source(path):
+        body = original(path)
+        return body + b"\n# drift\n" if path == ROOT / "game/engine/reward_rules.py" else body
+    monkeypatch.setattr(Path, "read_bytes", changed_source)
+    with pytest.raises(ValueError, match="identity mismatch"):
+        verify_retained_fixture_identities(json.loads(IDENTITY_PATH.read_text()))
+
+
+def test_retained_fixture_requires_original_git_history(monkeypatch):
+    import subprocess
+    monkeypatch.setattr(fixture_identity, "RETAINED_BRIDGE_REVISION", "0" * 40)
+    with pytest.raises(subprocess.CalledProcessError):
+        verify_retained_fixture_identities(json.loads(IDENTITY_PATH.read_text()))
