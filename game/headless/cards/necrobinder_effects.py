@@ -162,7 +162,8 @@ def selected(p, card, operation):
 
 
 def execute(p, op, args):
-    if p.combat_is_ending:
+    # Earned summon hooks still update pet maximum HP during ending.
+    if p.combat_is_ending and op != 'nec_summon':
         return
     if op == 'nec_souls':
         souls(p, args[1], upgraded=args[2])

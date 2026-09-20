@@ -7,6 +7,16 @@ from game.headless.monsters.base import Intent
 from game.headless.monsters.scripted import ScriptedEnemy
 
 
+def clear_illusion_debuffs(enemy):
+    """Illusion preserves buffs and temporary powers through death/revival."""
+    from game.headless.powers.necrobinder import TEMP_STRENGTH
+    buffs = {'artifact', 'territorial', 'slippery', 'minion', 'illusion', 'infested'}
+    retained = buffs | set(TEMP_STRENGTH)
+    for name, amount in tuple(enemy.statuses.as_dict().items()):
+        if name not in retained:
+            enemy.statuses.decrement(name, amount)
+
+
 class EyeWithTeeth(ScriptedEnemy):
     NAME, HP = "Eye With Teeth", (6, 6)
     MOVES = (Intent("shuffle", 3, "Distract", discard_cards=("dazed",) * 3),
@@ -23,8 +33,7 @@ class EyeWithTeeth(ScriptedEnemy):
 
     def on_damage_taken(self, damage, is_attack):
         if not self.is_alive and self.statuses.get("illusion"):
-            for name in ("weak", "vulnerable", "frail", "slow", "constrict", "tangled", "ringing", "shrink"):
-                self.statuses.decrement(name, self.statuses.get(name))
+            clear_illusion_debuffs(self)
             self._intent_index = 1
 
     def validate_combat_context(self, player):

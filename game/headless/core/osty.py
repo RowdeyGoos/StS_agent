@@ -8,9 +8,15 @@ def alive(p):
 
 
 def summon(p, amount):
-    if amount <= 0 or p.combat_is_ending:
+    if amount <= 0:
         return
     r = p.rules
+    if p.combat_is_ending:
+        # An earned Sic Em summon still changes existing Osty's maximum HP;
+        # native CreatureCmd.Heal suppresses the corresponding ending heal.
+        if r.osty is not None:
+            r.osty['max_hp'] = r.osty['max_hp'] + amount if alive(p) else amount
+        return
     if r.osty is None:
         r.osty = {'hp': amount, 'max_hp': amount}
     elif alive(p):

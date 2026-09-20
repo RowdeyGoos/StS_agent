@@ -223,12 +223,14 @@ class Enemy(ABC):
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
             slot = str(player.combat_enemies.index(self))
             player.rules.regent_hits[slot] = player.rules.regent_hits.get(slot, 0) + 1
+        # Native AfterDamageGiven sees Sic Em before death/revival removes it.
+        sic_em = self.statuses.get("sic_em") if pet else 0
         self.after_received_damage(total - blocked, is_attack=is_attack, powered=powered,
                                    attacker_statuses=attacker_statuses, pet=pet)
         damage = self._after_damage(previous_hp, is_attack)
         if is_attack and powered and player is not None and (pet or attacker_statuses is player.statuses):
             from game.headless.powers.necrobinder_damage import after_attack_damage
-            after_attack_damage(player, self, total, pet=pet, damage=damage)
+            after_attack_damage(player, self, total, pet=pet, damage=damage, sic_em=sic_em)
         return damage
 
     def take_unblockable_damage(self, amount):

@@ -1763,11 +1763,19 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      deferred roll validates paused choices and actor death. The pinned local
      monster RNG consumer is cosmetic Tough Egg skin selection; no additional
      gameplay stream is needed. [Scope and evidence](evidence/native_focused_behavior_2026_09_20.md).
+   - **Specific death-lifecycle gaps closed:** ten native scenarios exercise
+     real death dispatch for The Lost/The Forgotten, Gremlin Horn ending guards,
+     Eye With Teeth/Parafright debuff cleanup and temporary penalty expiry, and
+     lethal Sic ’Em summons against revivers or the final enemy. Ending changes
+     Osty's maximum HP without healing, including Thorns killing the pet.
+     A local Horn/Stratagem selector verifies JSON continuation after the earned
+     summon. [Evidence](evidence/native_focused_behavior_2026_09_20.md#death-lifecycle-follow-up).
    - **Further acceptance coverage:** richer inventory combinations beyond the
      declared event/interaction matrices and eight retained campaign paths;
      additional power families or monster branches with a concrete uncovered
      interaction. Prefer one named counterexample over seed/ascension products;
-     dead-slot native power cleanup is not certified by the focused roster cases.
+     permanent dead slots deliberately retain inert historical powers, while
+     reviving creatures' retained powers are compared in the follow-up above.
      Keep focused low-HP, death and revival cases alongside boosted campaigns.
      Every encounter branch or seed is not yet demonstrated. Multiplayer and
      alternate modes are excluded from the project.

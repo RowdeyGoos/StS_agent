@@ -98,3 +98,62 @@ reran four affected Shield/Fabricator ownership cases in **0.27 s** and found no
 remaining blocker. Compile checks and `git diff --check` passed. The full
 headless suite was not rerun; affected gameplay, native evidence bindings and
 headless backend consumers were selected explicitly.
+
+
+## Death-lifecycle follow-up
+
+The [new capture](native_death_fidelity_2026_09_20.json.gz) adds **ten named native
+cases / 32 observed boundaries**, all seed 2 / A0, and freshly reruns the prior
+230 rows with identical parsed results. It uses the same pinned native assembly.
+The original capture above keeps its original source identity and limitations.
+
+| Cases | Actual native behavior and correction |
+| --- | --- |
+| Lost / Forgotten × surviving enemy / ending (four) | Two real steals, first blocked by Artifact, then actual `CreatureCmd.Kill`. With a survivor, actual loss is refunded through PowerCmd, Ruined Helmet doubles Strength, and Gremlin Horn draws/grants energy. At ending, both the refund and Horn are suppressed. These validate the existing refund fix through the death dispatcher. |
+| Eye With Teeth / Parafright (two) | Actual Kill, actual revival move, then a full enemy side through next-player setup. Authored Poison, Doom and Weak clear; Artifact, Illusion, Minion and Enfeebling Touch survive death. The temporary penalty expires at its normal end-turn boundary. Headless now shares this cleanup rule. |
+| Sic ’Em against Parafright / Test Subject (two) | Actual queued Flatten with Osty 5/5 and Sic ’Em 3 kills the target. The earned summon raises Osty to 8/8 even though revival cleanup removes the mark. Headless captures the earned amount before cleanup. |
+| Sic ’Em against the last Chomper / Spiny Toad (two) | Final lethal Flatten leaves living Osty at 5/8. Authored Thorns 5 on Spiny Toad instead kills Osty during the hit: the earned summon sets its maximum to 3 while HP stays zero. Headless now processes this earned summon at ending, with native healing suppression. |
+
+Native Illusion preserves buffs and `ITemporaryPower` during death cleanup;
+negative Strength is still a native buff. The headless temporary-Strength wrappers
+retain their normal expiry semantics. The source hook is combat-wide; this probe
+specifically certifies cleanup on the two reviving illusion creatures. Permanent
+dead stable slots remain inert historical records; the comparison clears their
+projected powers only, while comparing reviving creatures' retained powers.
+
+Each native step compares player resources, piles, relevant memory, target state
+and powers, plus JSON-restored execution. Four RNG counters and next values match.
+Osty HP/max HP and the native play pile are captured explicitly in pet cases.
+At terminal card boundaries, native suppresses result-pile movement and retains
+Flatten in play; headless canonically completes it into discard. Tests assert
+both forms explicitly, following the existing terminal attack-hook convention.
+They do not claim terminal pile equality.
+
+One additional local regression combines a lethal Sic ’Em hit on Test Subject
+with Gremlin Horn and a Stratagem shuffle selector. The summon settles before
+the selector, the removed mark is not reread, and JSON restore/resume neither
+loses nor duplicates the summon. No new continuation fields or schema revision
+were needed.
+
+The native fixtures use authored in-memory HP, powers, deck and survivor setup.
+Test Subject gets an in-memory run counter; card logging receives static monster
+labels. No live game, profile, save or Cloud data is accessed. Actual Kill closes
+the earlier callback-only Possess gap, but these new cases do not run full
+`EndCombatInternal` or reward generation. Existing complete-ending and campaign
+evidence retains that separate scope.
+
+Final native item capture: build **1.624 s**, execution **1.931 s**. The changed
+shared dispatcher also passed a fresh 36-case enemy-turn run with identical
+retained results: build **1.626 s**, execution **1.507 s**. Both isolated user
+directories were removed. The new capture binds the actual current source files
+and the shared regression; historical matrices were not repinned.
+
+Independent semantic review found the terminal living/dead Osty branches and
+confirmed the corrections, including the outer summon-dispatch guard. The reviewer
+independently ran the ten native comparisons plus one local selector regression:
+**11 passed in 0.14 s**, with no remaining blocker.
+
+Final affected gameplay and native-binding validation passed **1,540 tests in
+37.01 s**. Conditional relic regressions and headless backend consumers passed
+**236 tests in 7.66 s**. Compile checks, affected evidence links and
+`git diff --check` passed. The full headless suite was not rerun.

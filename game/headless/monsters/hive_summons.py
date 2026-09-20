@@ -3,7 +3,7 @@ from game.headless.monsters.base import Intent
 from game.headless.monsters.scripted import ScriptedEnemy, DeferredMoveEnemy
 from game.headless.monsters.underdocks_normal import attack
 from game.headless.monsters.underdocks_summons import append_child
-from game.headless.monsters.fogmog import EyeWithTeeth
+from game.headless.monsters.fogmog import EyeWithTeeth, clear_illusion_debuffs
 from game.headless.monsters.interrupts import InterruptibleEnemy
 from game.headless.encounters.randomness import branch
 from game.headless.powers.status import StatusCollection
@@ -65,9 +65,7 @@ class Parafright(EyeWithTeeth, InterruptibleEnemy):
     def on_damage_taken(self, damage, is_attack):
         if not self.is_alive:
             self.capture_interrupted_move()
-            for name in tuple(self.statuses.as_dict()):
-                if name not in ('minion', 'illusion', 'artifact', 'mangle', 'dark_shackles', 'crush_under', 'dying_star', 'monarchs_gaze_strength_down'):
-                    self.statuses.decrement(name, self.statuses.get(name))
+            clear_illusion_debuffs(self)
             self._intent_index = 1
 
     def validate_combat_context(self, player):

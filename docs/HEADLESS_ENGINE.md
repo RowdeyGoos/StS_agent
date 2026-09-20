@@ -687,7 +687,20 @@ Five 20-move traces verify Flail Knight, Hunter Killer, Sludge Spinner,
 Exoskeleton and Bowlbug Rock. The pinned source audit closes the supposed
 monster-local gameplay RNG gap: its only monster consumer selects Tough Egg's
 skin; gameplay branches use the already owned shared streams. These cases do not
-establish every inventory combination or native cleanup of dead stable slots.
+establish every inventory combination.
+
+The [death-lifecycle follow-up](evidence/native_focused_behavior_2026_09_20.md#death-lifecycle-follow-up)
+adds ten named native cases at 32 boundaries. Actual `CreatureCmd.Kill` verifies
+The Lost/The Forgotten refunds and Gremlin Horn with a survivor or at combat
+ending. Eye With Teeth and Parafright now remove ordinary debuffs while retaining
+buffs and temporary penalties through revival. Lethal Sic ’Em hits retain their
+earned summon before revival cleanup removes the mark; at ending, Osty's maximum
+HP changes but healing is suppressed, including a pet killed by Thorns.
+JSON continuations and one Horn/Stratagem pause cover the corrected ordering.
+Permanent dead slots retain inert historical powers; terminal completed cards
+use the existing headless discard representation. These explicit representation
+differences are not claimed as byte-for-byte native cleanup parity. Snapshot
+formats remain combat v44 / run v65.
 
 ### Event and inventory conformance
 

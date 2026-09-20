@@ -27,7 +27,7 @@ def pet_damage(p, target, amount):
     return modify_attack_damage_for_statuses(amount + p.rules.powers.get('calcify', 0) + attack_bonus(p, card), target.statuses, extra_multiplier=(n, d))
 
 
-def after_attack_damage(p, target, total, *, pet, damage):
+def after_attack_damage(p, target, total, *, pet, damage, sic_em):
     tasks = []
     slot = p.combat_enemies.index(target)
     for key, amount in p.rules.powers.items():
@@ -37,6 +37,6 @@ def after_attack_damage(p, target, total, *, pet, damage):
             tasks.append(['status', slot, 'poison', amount])
         elif key == 'monarchs_gaze' and not pet:
             tasks.append(['status', slot, 'monarchs_gaze_strength_down', amount])
-    if pet and target.statuses.get('sic_em'):
-        tasks.append(['nec_summon', target.statuses.get('sic_em'), p.current_card.instance_id, slot])
+    if pet and sic_em:
+        tasks.append(['nec_summon', sic_em, p.current_card.instance_id, slot])
     push(p, *tasks)

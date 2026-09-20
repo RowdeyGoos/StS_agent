@@ -24,7 +24,8 @@ from game.headless.relics.combat import memory
 ROOT = Path(__file__).parents[2]
 RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_item_status_2026_09_20.json.gz').read_bytes()))
 CONDITIONAL_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_conditional_relic_stats_2026_09_20.json.gz').read_bytes()))
-CURRENT_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_focused_behavior_2026_09_20.json.gz').read_bytes()))
+FOCUSED_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_focused_behavior_2026_09_20.json.gz').read_bytes()))
+CURRENT_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_death_fidelity_2026_09_20.json.gz').read_bytes()))
 
 
 def slug(name):
@@ -35,14 +36,14 @@ def saved(combat):
     return json.loads(json.dumps(combat.snapshot()))
 
 
-def prepare(row, *, monster=Chomper):
+def prepare(row, *, monster=Chomper, card_ids=None):
     service = NativeRandomService(int(row['seed']))
     streams = {key: service.stream(key) for key in COMBAT_STREAMS}
     initial_shuffle = streams['shuffle'].getstate()
     construction = MonsterConstruction(streams['monster_ai'], streams['niche'], ascension=row['ascension'])
     engine = CombatEngine(cards=DEFAULT_CARDS, cards_per_turn=0, ascension=row['ascension'],
         player_max_hp=row['before']['maxHp'],
-        deck_factory=lambda: [DEFAULT_CARDS.create(k) for k in ['strike'] * 3 + ['defend'] * 11],
+        deck_factory=lambda: [DEFAULT_CARDS.create(k) for k in (card_ids or ['strike'] * 3 + ['defend'] * 11)],
         encounter_factory=lambda _: [monster(construction)])
     engine.native_streams, engine.rng = streams, streams['monster_ai']
     potions = [PotionInstance(slug(k), f'potion.{i}') for i, k in enumerate(row['potionNames'])]
@@ -156,6 +157,7 @@ def test_native_capture_identity_and_case_census():
     # their historical capture. Their parsed results must remain identical.
     assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith(('conditional_', 'focused_'))] == RECORD['result']['rows']
     assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith('focused_')] == CONDITIONAL_RECORD['result']['rows']
+    assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith(('focused_death_', 'focused_illusion_', 'focused_sicem_'))] == FOCUSED_RECORD['result']['rows']
     assert CURRENT_RECORD['userDirectoryRemoved'] and CURRENT_RECORD['pins'] == RECORD['pins']
     for name, digest in CURRENT_RECORD['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
