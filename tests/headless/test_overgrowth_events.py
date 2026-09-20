@@ -123,8 +123,8 @@ def test_morphic_pays_all_gold_then_collects_two_originals_before_revealing_tran
     step(run,ChooseEventCard(0,originals[0]))
     assert run.state.rng.request_count('event.morphic_transform')==2
     current=[c.instance_id for c in run.state.deck]
-    assert current[3] not in originals and current[0] not in originals
-    assert all(current[i]==originals[i] for i in range(10) if i not in (0,3))
+    assert all(identity not in originals for identity in current[-2:])
+    assert current[:-2] == [identity for i, identity in enumerate(originals) if i not in (0,3)]
     assert run.state.pending['data']['selected']==[originals[3],originals[0]]
     assert all(c.upgrade_level==0 for c in run.state.deck)
     step(run,LeaveEvent(0))

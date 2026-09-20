@@ -217,7 +217,7 @@ def drain(state, cards):
                 for d in cards.definitions
                 if d.pool == family
                 and d.rarity in (("common", "uncommon", "rare") if rarity == "any" else (rarity,))
-                and (kind == "any" or d.levels[0].kind == kind)
+                and (kind == "any" or ("skill" if d.levels[0].kind == "block" else d.levels[0].kind) == kind)
             ]
             # Rip and Future prohibit pool modification; Cheese/Share use their
             # card factory; only marked card rewards allow Dingy Rug.

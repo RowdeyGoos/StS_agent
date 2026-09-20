@@ -55,7 +55,18 @@ def validate(state, data, cards, *, operation, finished, extra=()):
                     or restored.definition.definition_id == source
                     or restored.definition.definition_id not in replacement_pool(source, TRANSFORM_POOL)):
                 raise ValueError("Invalid event transformation.")
-            expected[index] = result
+            expected.pop(index)
+            expected.append(result)
     current = [card_record(c) for c in state.deck if c.instance_id not in extra]
+    if operation == "transform" and selected is not None:
+        from game.headless.relics.run_rules import has
+        if has(state, "bing_bong"):
+            known = {r["instance_id"] for r in expected}
+            clones = [r for r in current if r["instance_id"] not in known]
+            if (len(clones) != 1 or
+                    {k: v for k, v in clones[0].items() if k != "instance_id"} !=
+                    {k: v for k, v in result.items() if k != "instance_id"}):
+                raise ValueError("Event transformation clone differs from replacement.")
+            expected.extend(clones)
     if current != expected:
         raise ValueError("Event deck result differs from originals.")

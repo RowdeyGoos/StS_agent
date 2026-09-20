@@ -185,13 +185,18 @@ def validate_active(definition, pending, state, cards, plan, *, defeated=False):
                 expected.pop(index)
             else:
                 restore_records([result], state, cards)
-                expected[index] = result
+                if op[1] in ("transform", "transform_basic"):
+                    expected.pop(index)
+                    expected.append(result)
+                else:
+                    expected[index] = result
         if op[1] in ('transform','transform_basic') and any(r.definition_id == 'bing_bong' and not r.data.get('_melted') for r in state.relics):
             ids = {r['instance_id'] for r in expected}
             clones = [card_record(c) for c in state.deck if c.instance_id not in ids]
             if [c['definition_id'] for c in clones] != [r['definition_id'] for r in active['results']]:
                 raise ValueError('Event clone results differ from replacements.')
-            expected.extend(clones)
+            for result, clone in zip(active["results"], clones):
+                expected.insert(expected.index(result) + 1, clone)
         if expected != [card_record(c) for c in state.deck]:
             raise ValueError("Event selection deck changed.")
     elif op[0] == "cards":

@@ -120,13 +120,15 @@ class MorphicGrove:
                         or result["definition_id"] not in replacement_pool(definitions[source], self.transform_pool)
                         or result["definition_id"] == definitions[source]):
                     raise ValueError("Morphic result differs from the deck.")
-                expected[original.index(source)] = card.instance_id
+                expected.remove(source)
+                expected.append(card.instance_id)
             if any(r.definition_id == 'bing_bong' and not r.data.get('_melted') for r in state.relics):
                 clones = [c for c in state.deck if c.instance_id not in expected]
                 if [c.definition.definition_id for c in clones] != [r['definition_id'] for r in data['results']]:
                     raise ValueError('Morphic clone results differ from replacements.')
-                expected.extend(c.instance_id for c in clones)
+                for result, clone in zip(data["results"], clones):
+                    expected.insert(expected.index(result["instance_id"]) + 1, clone.instance_id)
             if current != expected:
-                raise ValueError("Morphic replacements differ from their original positions.")
+                raise ValueError("Morphic replacements differ from native deck append order.")
         else:
             raise ValueError("Invalid Morphic stage or choice.")

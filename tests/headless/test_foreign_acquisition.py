@@ -181,7 +181,8 @@ def test_acquired_foreign_cards_continue_through_transformation_sources(event,op
         while run.state.pending['stage']=='select_card':
             run.apply(next(a for a in run.legal_actions() if isinstance(a,ChooseEventCard)))
             assert saved(clone(run))==saved(run)
-    assert [c.definition.pool for c in run.state.deck]==families
+    expected = families if event == 'morphic_grove' or option == 'maintain_control' else families[1:] + families[:1]
+    assert [c.definition.pool for c in run.state.deck] == expected
     if option!='maintain_control':assert [c.instance_id for c in run.state.deck]!=original_ids
     assert saved(clone(run))==saved(run)
 

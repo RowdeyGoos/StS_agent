@@ -706,6 +706,23 @@ Historical captures and their original identities remain unchanged. Replays also
 check JSON continuation at every action; full pile comparison exposed incorrect
 end-of-hand discard ordering that hand-only comparisons could not see.
 
+### Event inventory choices
+
+Use `--mode event-inventory` with the same isolated queue runner inputs.
+`event_inventory.cs` runs 144 actual native event options: Self-Help Book,
+Wood Carvings, Tea Master and The Future of Potions, all three branches, seeds
+0/2/42, A0/A10 and baseline/enhanced authored inventory. It declares physical deck
+selections and chooses the first actual reward. Mock localization/textures satisfy
+hover-tip construction; mock saves and an in-memory map-history entry support
+normal reward claims. No profile/history file or real scene is read.
+
+[The retained event capture](../../docs/evidence/native_event_inventory_2026_09_20.json)
+records ordered inventory, all reward offers and four RNG counters/next values.
+[Ten unchanged native baseline executions](../../docs/evidence/native_event_campaign_regressions_2026_09_20.json)
+bind the current dispatcher/staged sources to the retained A0/A10 campaign results;
+original capture bytes remain unchanged. This verifies the declared event choices,
+not tea combat hooks, arbitrary selections or live UI behavior.
+
 ## Ascension getter references
 
 Pass `ascensions` as the third argument to execute the native A0–A10 monster HP,

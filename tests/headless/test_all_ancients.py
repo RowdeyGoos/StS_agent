@@ -271,7 +271,7 @@ def test_astrolabe_transforms_selected_cards_then_upgrades():
     run.apply(ConfirmRelicSelection())
     assert sum(c.upgraded for c in run.state.deck)==3
     assert not set(original)&{c.instance_id for c in run.state.deck}
-    assert all(c.definition.rarity in ('common','uncommon','rare') for c in run.state.deck[:3])
+    assert all(c.definition.rarity in ('common','uncommon','rare') for c in run.state.deck[-3:])
 
 
 def test_claws_preserves_upgrade_and_enchantment():

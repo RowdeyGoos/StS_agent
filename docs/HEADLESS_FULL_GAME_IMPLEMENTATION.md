@@ -1227,7 +1227,7 @@ Dependencies and acceptance cases are in the linked task.
 - **Implemented for solo Ironclad A0–A10, all unlocked/all seen:** every cumulative
   modifier in pinned 0.107.1, per-monster A8/A9 properties, A10 second-boss startup
   draw and route, and native Golden Compass exception. Private schemas are combat
-  v42 / run v61. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
+  v42 / run v62. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
 - **Native campaign acceptance completed:** boosted Overgrowth seed 1 and
   Underdocks seed 4 win through both Glory bosses with exact replay of 52 combats
   and 1,504 actions, resources, rewards, four card piles/enchantments, all 15
@@ -1726,13 +1726,21 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      also exercise five ordinary events, explicit smithing/card selections,
      shops, potions and additional relic interactions. Native/headless differences
      found in queues, summons, upgrade RNG and reward continuation are corrected;
-     that change used private schemas combat v40 / run v59 (current: v42 / v61).
+     that change used private schemas combat v40 / run v59 (current: v42 / v62).
      [Evidence and exact limits](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses).
    - **A10 campaign acceptance completed:** two additional paths cover both first
      acts and both Glory bosses per run. All four card piles/enchantments and
      run/player RNG counters match, alongside action/resource/reward boundaries
      and JSON continuation. [Evidence](evidence/headless_ascensions_2026_09_20.md#a10-native-campaigns).
-   - **Next acceptance coverage:** ordinary-event branches and richer inventory
+   - **Event/inventory conformance expanded:** all three branches of Self-Help
+     Book, Wood Carvings, Tea Master and The Future of Potions match 144 native
+     cases (three seeds × A0/A10 × baseline/enhanced inventory). Comparisons cover
+     physical deck order/modifiers, duplicate tea acquisition, potion trades,
+     reward offers and four RNG streams, with JSON at every choice. Permanent-deck
+     transformations now append; skill rewards include legacy block cards. Run v62
+     validates transformation continuations and Bing Bong copies.
+     [Evidence and limits](evidence/events_neow_2026_09_14.md#native-event-and-inventory-conformance--2026-09-20).
+   - **Next acceptance coverage:** remaining ordinary-event branches and richer inventory
      combinations beyond the eight retained paths; explicit power/status and
      per-monster RNG comparisons where the recorded boundaries cannot expose a defect.
      Keep focused low-HP, death and revival cases alongside boosted campaigns.
