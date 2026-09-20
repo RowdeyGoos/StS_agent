@@ -26,7 +26,7 @@ TASK_ARITIES = {
     "finish": 1,
     "death_hook": 1,
     "draw": 2,
-    "draw_after_shuffle": 2,
+    "draw_after_shuffle": 2, "draw_next": 2, "drum_exhaust": 1,
     "autoplay": 2,
     "autoplay_draw": 2,
     "autoplay_collect": 1, "autoplay_take": 1, "autoplay_next": 1,
@@ -41,7 +41,7 @@ TASK_ARITIES = {
     "cleanup_turn": 0, "hive_player_end": 0, "hive_enemy_start": 0,
     "selected": 4,
     "energy": 1,
-    "after_draw": 0,
+    "draw_hooks": 2, "draw_power": 3, "draw_power_removed": 4,
     "after_draw_card": 1,
     "start_power": 1,
     "early_end": 1,
@@ -251,6 +251,18 @@ def restore_rules(record, player):
                 raise ValueError("Unowned parasite spawn continuation.")
         if op == "shuffle_choice" and not r.powers.get("stratagem"):
             raise ValueError("Unowned shuffle choice.")
+        if op in ("draw_hooks", "draw_power", "draw_power_removed"):
+            identity, hand_draw = args if op == "draw_hooks" else args[1:3]
+            if identity not in player.deck._allocated_ids or type(hand_draw) is not bool:
+                raise ValueError("Unowned draw listener.")
+            if op == "draw_power":
+                from game.headless.core.draw_hooks import POWER_NAMES as DRAW_POWERS
+                if not isinstance(args[0], str) or args[0].split(":")[0] not in DRAW_POWERS or args[0] not in r.powers:
+                    raise ValueError("Unowned draw power.")
+            if op == "draw_power_removed" and (args[0] != "corrosive_wave" or type(args[3]) is not int or args[3] < 0):
+                raise ValueError("Invalid removed draw listener.")
+        if op == "drum_exhaust" and (args[0] not in known or known[args[0]].definition.definition_id != "drum_of_battle"):
+            raise ValueError("Unowned Drum exhaust hook.")
         if op == "after_draw_card" and args[0] not in player.deck._allocated_ids:
             raise ValueError("Unowned drawn-card hook.")
         if op == "end_hand_card":
@@ -346,11 +358,11 @@ def restore_rules(record, player):
                 "debuffs", "discards", "draws", "precise", "star_cards", "generated", "turn_draws", "doom", "exhausted_souls",
             ) or any(type(v) is not int or v < 0 for v in (factor, gain, vigor)):
                 raise ValueError("Invalid queued attack expression.")
-        if op in ("hand_draw", "draw", "draw_after_shuffle", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
+        if op in ("hand_draw", "draw", "draw_next", "draw_after_shuffle", "autoplay_draw", "block", "generate", "stampede", "energy", "catastrophe") and (
             type(args[0]) is not int or args[0] < 0
         ):
             raise ValueError("Invalid queued amount.")
-        if op in ("draw", "draw_after_shuffle", "autoplay_draw", "block", "autoplay") and type(args[-1]) is not bool:
+        if op in ("draw", "draw_next", "draw_after_shuffle", "autoplay_draw", "block", "autoplay") and type(args[-1]) is not bool:
             raise ValueError("Invalid queued flag.")
         if op == "generate" and any(type(v) is not bool for v in args[1:]):
             raise ValueError("Invalid generation flags.")

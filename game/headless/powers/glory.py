@@ -44,6 +44,8 @@ def clear_bound(player):
 
 def validate(player):
     owner = binding_owner(player)
+    if player.rules.powers.get('chains_of_binding', 0) != (3 if owner is not None else 0):
+        raise ValueError('Unowned Chains of Binding power.')
     dampen = any(getattr(e, 'dampen_active', False) for e in player.combat_enemies)
     hexed = any(getattr(e, 'hex_active', False) for e in player.combat_enemies)
     wither_limit = sum(getattr(e, 'wither_upgrades', 0) for e in player.combat_enemies)

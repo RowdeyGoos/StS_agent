@@ -80,7 +80,9 @@ class Queen(InterruptibleEnemy):
     def after_move(self, player, intent):
         if intent.move_name == 'Puppet Strings':
             if player.statuses.get('artifact'): player.statuses.decrement('artifact')
-            else: self.binding = True
+            else:
+                self.binding = True
+                player.rules.powers['chains_of_binding'] = 3
         elif intent.move_name == 'You Are Mine':
             for name in ('frail', 'weak', 'vulnerable'): player.apply_status(name, 99, source=self)
         elif intent.move_name == 'Burn Bright For Me':

@@ -5,7 +5,7 @@ from game.headless.core.resolution import push, drain
 POWER_NAMES = frozenset(
     (
         "smoggy", "aggression", "curious", "improvement", "hello_world", "rebound",
-        "confused",
+        "confused", "chains_of_binding",
         "barricade",
         "colossus",
         "corruption",
@@ -149,10 +149,10 @@ def after_exhaust(p, card):
                 r.ethereal_draws += amount
             else:
                 tasks.append(["draw", amount, False])
-    if card.definition.definition_id == "drum_of_battle":
-        p.gain_energy((3 if card.upgraded else 2) * (1 + card.combat_state.replay_count))
     from game.headless.relics.combat import tasks as relic_tasks
     tasks += relic_tasks(p, "exhaust_ethereal" if r.auxiliaries.get("exhaust_ethereal") else "exhaust", card.instance_id)
+    if card.definition.definition_id == "drum_of_battle":
+        tasks.append(["drum_exhaust", card.instance_id])
     push(p, *tasks)
     if not p._resolving:
         drain(p)

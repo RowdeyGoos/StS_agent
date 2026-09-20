@@ -425,3 +425,36 @@ rewards. It does not model a run, a reward screen or changing-odds orchestration
 the native changing-odds logger requires an initialized Godot host. No profile or
 save access occurs. Source-backed Python tests separately exercise ordinary
 changing-odds generation and run continuation.
+
+
+### Combined shared interactions (`--mode interactions` / `--mode enemy-interactions`)
+
+These modes reuse the same pinned, isolated queue runtime and its replay choice
+support. `interactions.cs` runs 84 cases (three seeds, two variants): Scrape with
+Hellraiser and optional Reflex/Tactician; direct Drum of Battle exhaustion with
+Dark Embrace/Feel No Pain and optional Duplication, Burst, Throwing Axe or Charon's
+Ashes; and Draw with Pagestorm plus Iteration, Automation, or Confused/Speedster/
+Corrosive Wave, Chains of Binding, or Slither-enchanted Kingly cards. Six cases
+explicitly remove Corrosive Wave with the native command while its captured
+listener waits; this is controlled lifetime interference, not live-frame evidence.
+Variants change upgrade/answer direction and power application
+order. An explicitly authored 500-HP Chomper or Queen prevents incidental combat ending.
+Cards, draw/discard/play history, Bound/Poison state, power counters, costs, resources and six RNG
+counters/suffixes are captured at the initial state, pause, each answer and finish
+(as applicable; history/RNG are final records).
+
+`enemy_interactions.cs` runs 24 cases through native `CombatManager.StartTurn`,
+including enemy block clearing, moves and next-player setup. Thorns kills the
+first Chomper; Horn either draws a Hellraiser Strike against the initially blocked
+second Chomper, or pauses a Fiddle-allowed enemy-side draw at Stratagem. The latter
+continues after the Fiddle-enhanced next hand. Tools of the Trade optionally adds
+another pending choice. Enemy HP/block/moves, per-hit damage, piles, resources and
+four RNG streams are compared. Checksums are disabled; replay answers arrive
+after enemy work. No live executor frame schedule or full run is demonstrated.
+
+Evidence: [card/power cases](../../docs/evidence/native_interactions_2026_09_20.json)
+and [enemy-turn cases](../../docs/evidence/native_enemy_interactions_2026_09_20.json).
+Consumers assert exact piles, draw identities, play/discard counts, resources,
+status/cost state and RNG. Consumers: `test_native_hook_interactions.py` and
+`test_native_enemy_interactions.py`. All exposed boundaries round-trip JSON;
+additional headless tests reject malformed/older continuations atomically.

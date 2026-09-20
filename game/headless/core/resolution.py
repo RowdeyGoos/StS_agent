@@ -4,7 +4,7 @@ from game.headless.core.selection import HandChoice, PendingCardPlay
 
 
 def requires_receipt(op):
-    return op in ('exhaust', 'nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_', 'hive_'))
+    return op in ('exhaust', 'drum_exhaust', 'draw_power', 'draw_power_removed', 'nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_', 'hive_'))
 
 
 def push(player, *tasks):
@@ -27,6 +27,31 @@ def move_out(player, card):
         if card in pile:
             pile.remove(card)
             return
+
+
+def play_count(player, card):
+    """Native GeneratePlayCount also runs for Drum of Battle exhaust hooks."""
+    rules = player.rules
+    repeats = 1 + card.combat_state.replay_count
+    from game.headless.relics.combat import owned, memory
+    axe = owned(player, "throwing_axe")
+    if axe and not memory(player, axe).get("used"):
+        memory(player, axe)["used"] = True
+        repeats += 1
+    if rules.powers.get("duplication"):
+        repeats += 1
+        rules.powers["duplication"] -= 1
+    if card.enchantment is not None and card.enchantment.definition_id == "spiral":
+        repeats += 1
+    if card.enchantment is not None and card.enchantment.definition_id == "glam" and not card.enchantment.triggered:
+        repeats += 1
+    if card.spec.kind == "attack" and rules.powers.get("one_two_punch"):
+        repeats += 1
+        rules.powers["one_two_punch"] -= 1
+    if card.spec.kind in ("skill", "block") and rules.powers.get("burst"):
+        repeats += 1
+        rules.powers["burst"] -= 1
+    return repeats
 
 
 def start_play(player, card, target=None, *, auto=False, force_exhaust=False, spend_resources=False, from_reservation=False):
@@ -82,25 +107,7 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False, sp
     move_out(player, card)
     player.deck.in_play.append(card)
     rules = player.rules
-    repeats = 1 + card.combat_state.replay_count
-    from game.headless.relics.combat import owned, memory
-    axe = owned(player, "throwing_axe")
-    if axe and not memory(player, axe).get("used"):
-        memory(player, axe)["used"] = True
-        repeats += 1
-    if rules.powers.get("duplication"):
-        repeats += 1
-        rules.powers["duplication"] -= 1
-    if card.enchantment is not None and card.enchantment.definition_id == "spiral":
-        repeats += 1
-    if card.enchantment is not None and card.enchantment.definition_id == "glam" and not card.enchantment.triggered:
-        repeats += 1
-    if card.spec.kind == "attack" and rules.powers.get("one_two_punch"):
-        repeats += 1
-        rules.powers["one_two_punch"] -= 1
-    if card.spec.kind in ("skill", "block") and rules.powers.get("burst"):
-        repeats += 1
-        rules.powers["burst"] -= 1
+    repeats = play_count(player, card)
     rules.plays[card.instance_id] = {
         "context": rules.active_hook,
         "target": target_slot,
@@ -294,12 +301,14 @@ def execute(p, task):
             p.deck.draw_pile = list(reversed(imbued)) + [c for c in p.deck.draw_pile if c not in imbued and c not in innate] + innate
             count = min(10, max(count, len(innate)))
         push(p, ['draw', count, True])
-    elif op in ("draw", "draw_after_shuffle"):
+    elif op in ("draw", "draw_next", "draw_after_shuffle"):
         count, hand_draw = args
         from game.headless.relics.combat import has
-        if count <= 0 or p.combat_is_ending or (not hand_draw and (r.powers.get("no_draw") or r.player_side and has(p, "fiddle"))):
+        if count <= 0 or p.combat_is_ending:
             return
-        if op == "draw":
+        if op == "draw" and not hand_draw and (r.powers.get("no_draw") or r.player_side and has(p, "fiddle")):
+            return
+        if op != "draw_after_shuffle":
             if not colorless.ensure_draw(p, ["draw_after_shuffle", count, hand_draw]):
                 return
         elif not p.deck.draw_pile or len(p.hand) >= 10:
@@ -315,7 +324,7 @@ def execute(p, task):
         draw_record(p, card)
         if not hand_draw:
             r.drawn_turn += 1
-        push(p, ["after_draw"], ["silent_draw_hook", hand_draw, card.instance_id], ["after_draw_card", card.instance_id], ["draw", count - 1, hand_draw])
+        push(p, ["draw_hooks", card.instance_id, hand_draw], ["draw_next", count - 1, hand_draw])
         if r.powers.get("hellraiser") and card.definition.strike:
             push(p, ["autoplay", card.instance_id, False])
     elif op == "autoplay":
@@ -388,7 +397,7 @@ def execute(p, task):
             draw_record(p, drawn[0])
             r.drawn_turn += 1
             continuation = [["pillage"]] if drawn[0].spec.kind == "attack" else []
-            push(p, ["after_draw"], ["silent_draw_hook", False, drawn[0].instance_id], ["after_draw_card", drawn[0].instance_id], *continuation)
+            push(p, ["draw_hooks", drawn[0].instance_id, False], *continuation)
             if r.powers.get("hellraiser") and drawn[0].definition.strike:
                 push(p, ["autoplay", drawn[0].instance_id, False])
     elif op == "generate":
@@ -502,22 +511,25 @@ def execute(p, task):
         hooks.begin_end_hooks(p)
     elif op == "early_end":
         colorless.early_end(p, args[0])
+    elif op == "draw_hooks":
+        from game.headless.core.draw_hooks import begin
+        begin(p, *args)
+    elif op in ("draw_power", "draw_power_removed"):
+        from game.headless.core.draw_hooks import power
+        power(p, *args)
     elif op == "after_draw_card":
         from game.headless.enchantments.base import after_draw
         card = find(p, args[0])
         if card is not None:
-            if r.powers.get("confused") and card.cost >= 0 and not card.spec.x_cost:
-                from game.headless.enchantments.base import randomize_cost
-                randomize_cost(card, p.deck)
-            after_draw(card, p.deck)
             from game.headless.powers.regent import after_draw as regent_after_draw
             regent_after_draw(p, card)
-            from game.headless.powers.glory import after_draw as glory_after_draw
-            glory_after_draw(p, card)
             if card.definition.definition_id == "void":
                 p.energy = max(0, p.energy - 1)
-    elif op == "after_draw":
-        colorless.after_draw(p)
+            # Native enumerates the card before its attached enchantment.
+            after_draw(card, p.deck)
+    elif op == "drum_exhaust":
+        card = find(p, args[0])
+        p.gain_energy((3 if card.upgraded else 2) * play_count(p, card))
     elif op == "energy":
         p.gain_energy(args[0])
     elif op == "selected":

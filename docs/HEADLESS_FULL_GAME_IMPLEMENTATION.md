@@ -1624,17 +1624,26 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      execute a real Scrape action and actual before-hand-draw callbacks, including
      controlled pile interference; they do not establish full-turn/live scheduling.
      Dark Embrace interrupting Mittens' exhaust has additional source-backed coverage.
-   - **Next: drawn-card movement before follow-up effects.** Compare native Scrape
-     with Hellraiser and a discard-trigger relic: a captured drawn card can leave
-     the hand before Scrape's final discard. Inspect physical movement, discard
-     hooks and RNG before changing the captured-card handling. Several paused death
-     contexts and reactive enemy-side-start choices remain separate scheduling cases.
-   - **Broader interaction sequences:** ordered relic/power triggers, dependent
-     autoplay and further combat boundaries. Ordinary Draw, Mayhem, Pillage,
-     Escape Plan, Scrape, Mittens and Foregone now have bounded native evidence;
-     interacting draw/exhaust/discard hooks still need their own sequence checks. Reproduce each suspected difference
-     natively before changing caller semantics. Require actual native sequences;
-     passing Python continuation alone is regression evidence.
+   - **Combined interaction audit implemented:** 108 native cases cover Scrape with
+     Hellraiser and Reflex/Tactician Sly; ordered Pagestorm/Iteration/Automation/
+     Confused/Speedster/Corrosive Wave/Chains of Binding draw listeners; captured
+     listeners surviving power expiry; card-before-Slither hooks; Void; Drum of Battle exhaust
+     ordering with Dark Embrace/Feel No Pain/Charon's Ashes and Duplication/Burst/
+     Throwing Axe; enemy-wide block clearing before Thorns/Horn/Hellraiser reactions;
+     and accepted Horn draws resuming across Fiddle's next-player-turn restriction.
+     Optional Tools adds a second choice context. Every exposed choice restores
+     from JSON, with exact piles/resources/enemy state and RNG suffix comparisons.
+     Combat v35 / run v51 represent ordered draw listeners, accepted draw phases
+     and owned Drum exhaust work. See [coverage and limits](HEADLESS_ENGINE.md),
+     [84 card/power vectors](evidence/native_interactions_2026_09_20.json) and
+     [24 enemy-turn vectors](evidence/native_enemy_interactions_2026_09_20.json).
+   - **Remaining interaction evidence:** native sequences with several simultaneous
+     death choices and reactive enemy-side-start choices, followed by complete
+     combat-end/room boundaries. Ordinary Draw, Mayhem, Pillage, Escape Plan,
+     Scrape, Mittens and Foregone and the shared interaction families above now
+     have bounded native evidence. Continue as grouped mechanism audits; no finite
+     matrix proves all card combinations. Require actual native sequences for new
+     parity claims; Python continuation alone is regression evidence.
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
    Their full 344-card pool inventory, including basic/special entries, is retained

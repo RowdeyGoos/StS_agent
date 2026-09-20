@@ -168,7 +168,7 @@ def execute(p, op, args):
             p.rules.drawn_turn += 1
             from game.headless.powers.defect import draw_record
             draw_record(p, c)
-            push(p, ['after_draw'], ['silent_draw_hook', False, c.instance_id], ['after_draw_card', c.instance_id], ['def_scrape_draw', args[0], args[1] - 1])
+            push(p, ['draw_hooks', c.instance_id, False], ['def_scrape_draw', args[0], args[1] - 1])
             if p.rules.powers.get('hellraiser') and c.definition.strike:
                 push(p, ['autoplay', c.instance_id, False])
     elif op == 'def_discard':
@@ -181,7 +181,7 @@ def execute(p, op, args):
         identities = p.rules.plays[args[0]].pop('def_scrape')
         cards = [find(p, identity) for identity in identities]
         from game.headless.core.discard import discard_and_draw
-        discard_and_draw(p, [c for c in cards if c is not None and c in p.hand and (c.spec.x_cost or local_cost(c) != 0)])
+        discard_and_draw(p, [c for c in cards if c is not None and (c.spec.x_cost or local_cost(c) != 0)])
     else:
         from game.headless.powers.defect import execute as power_execute
         power_execute(p, op, args)
