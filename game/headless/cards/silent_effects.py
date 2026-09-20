@@ -150,9 +150,17 @@ def execute(p, op, args):
         if remaining:
             from game.headless.core.enemy_lifecycle import attack_tasks
             push(p, *attack_tasks(p, find(p, identity), [['attack', identity, None, True, 'base', 0, 0, vigor]]), ['silent_echo', identity, remaining - 1, vigor, kills])
-    elif op == 'silent_escape_draw':
+    elif op in ('silent_escape_draw', 'silent_escape_after_shuffle'):
         from game.headless.powers.colorless import ensure_draw
-        if r.powers.get('no_draw') or not ensure_draw(p, [op, *args]):
+        from game.headless.relics.combat import has
+        if p.combat_is_ending:
+            return
+        if op == 'silent_escape_draw':
+            if r.powers.get('no_draw') or r.player_side and has(p, 'fiddle'):
+                return
+            if not ensure_draw(p, ['silent_escape_after_shuffle', *args]):
+                return
+        elif not p.deck.draw_pile or len(p.hand) >= 10:
             return
         drawn = p.deck.draw(1)
         if drawn:

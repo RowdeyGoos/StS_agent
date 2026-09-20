@@ -48,7 +48,7 @@ TASK_ARITIES = {
     "begin_end_hooks": 0, "glory_bound_clear": 0,
     "catastrophe": 1,
     "status": 3,
-    "pillage": 0,
+    "pillage": 0, "pillage_after_shuffle": 0,
     "generate": 5,
     "stampede": 1,
     "shuffle_choice": 0,

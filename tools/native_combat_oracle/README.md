@@ -242,6 +242,32 @@ native captures exercise Mayhem; shared Havoc/Chaos semantics and terminal
 cancellation are not independently demonstrated by these captures. Run either mode
 with the same command below plus its `--mode` argument and a fresh output directory.
 
+Pass `--mode draw-cards` for 96 Pillage/Escape Plan cases: seeds 0/2/42 ×
+base/upgraded × both cards × eight prepared setups. Setups cover mixed and
+all-attack discard piles, singleton/empty piles, nine other cards already in hand,
+Fiddle, No Draw and controlled draw-pile depletion during Stratagem. Base cases
+answer first and upgraded cases last in raw draw-pile order. All have Stratagem 1
+and Abacus. Actual `PlayCardAction` executes the attack/draw/block/result-pile rules.
+The [record](../../docs/evidence/native_draw_cards_2026_09_20.json) includes before,
+paused and completed physical piles/resources/HP, every replay answer, draw and
+play history, five RNG counters/suffixes and explicit controlled moved-card IDs.
+
+The depletion setup deliberately calls actual native `CardPileCmd.Add` to move all
+but one draw card into discard while the card action awaits its choice, then
+selects the remaining card. This is controlled interference to isolate resumption;
+it does not demonstrate a live legal-action/executor sequence causing those moves.
+Python comparisons in `tests/headless/test_native_draw_cards.py` restore the paused
+state before those moves and final state afterward. They do not claim support for
+saving a transient externally modified active selector. Normal choices restore
+without interference. Candidate membership and exact draw-pile order are checked;
+UI sorting is not executed.
+
+This mode shares the prepared nonterminal combat, manual replay and in-memory
+save/localization scope above. A minimal Chomper name string permits native action
+logging without loading localization settings. It does not execute encounter
+entry, complete turns, the live UI/executor frame loop or room/reward/save cleanup.
+Use the command below with `--mode draw-cards` and a fresh output directory.
+
 Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
 **Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
 respectively). The runner does not download dependencies. Example:
