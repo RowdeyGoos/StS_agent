@@ -487,3 +487,34 @@ singleton choices already waiting remain manual. Additional corruption and
 explicit synthetic terminal-disposal tests are separate from native evidence.
 No full combat-end/room/reward/save lifecycle is claimed. This batch validates
 existing rules and leaves combat v35 / run v51 unchanged.
+
+
+### Combat ending and room reward generation (`--mode end-boundary`)
+
+`end_boundary.cs` executes actual lethal Sword Boomerang/Duplication plays or
+`CreatureCmd.Kill`, then `CombatManager.CheckWinCondition`. Victories complete
+`EndCombatInternal`; defeats complete `ProcessPendingLoss`. After victory it
+calls `RewardsCmd.GenerateForRoomEnd`, including native changing-odds factories.
+The [180 retained vectors](../../docs/evidence/native_end_boundary_2026_09_20.json)
+cross three seeds, four HP values, three outcomes and five inventories:
+plain, Chosen Cheese, Cheese before/after Toy Box, and Fishing Rod. Burning Blood,
+Meat on the Bone, Pumpkin Candle and expiring Guilty exercise hook phases.
+
+This is an authored normal-room shell (ToadpolesWeak) containing prepared Phrog
+combat, Strength100/Duplication, three draw fillers and already-exhausted persistent
+cards. It does not claim native encounter construction. Detached Horn replay
+hooks are manually enqueued after the lethal action and before the win check.
+Actual ending must cancel them and leave no ready action; their canceled
+references remain in the native hook registry. State records assert room flags,
+event order, power/pile/block cleanup and loss-only dispatch. Rewards are generated
+twice on the same set to assert generation idempotence, without offering a screen.
+
+Every case installs explicit native `MockGodotFileIo` and a fresh mock SaveManager.
+Progress writes stay in memory, and native replay does not save a run file. There
+is no real profile/save/history/Cloud access. The Python consumer compares HP,
+permanent deck/relic state, gold, potion/card offers, changing odds and two RNG
+streams; terminal/reward snapshots round-trip JSON. Additional headless reward
+claims/room exits are regression evidence, not native selector/exit evidence.
+Live UI/executor scheduling, native reward selection, parent events, boss/act
+handoff and whole seed/path runs remain outside this fixture. Run v52 rejects
+previous end-hook/RNG semantics; the combat schema remains v35.

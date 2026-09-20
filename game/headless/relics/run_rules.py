@@ -107,29 +107,36 @@ def entered_room(state, kind, *, unknown=False):
             counter(state, relic, 1)
 
 
+def after_combat_relic(state, relic, *, room_kind):
+    name = relic.definition_id
+    if name == "wongos_mystery_ticket" and relic.counter < 5:
+        counter(state, relic, relic.counter + 1)
+    elif name == "lasting_candy":
+        counter(state, relic, (relic.counter + 1) % 2)
+    elif name == "fishing_rod" and room_kind == "combat":
+        value = (relic.counter + 1) % 3
+        counter(state, relic, value)
+        if value == 0:
+            eligible = [c for c in state.deck if c.upgrade_level + 1 < len(c.definition.levels)]
+            if eligible:
+                state.rng.choice("niche", eligible).upgrade()
+    elif name == "chosen_cheese":
+        max_hp(state, 1)
+
+
 def victory(state, *, room_kind="combat"):
-    # Early victory healing precedes ordinary Burning Blood irrespective of inventory order.
+    # Native starts fresh early/ordinary victory passes after end hooks.
     if has(state, "meat_on_the_bone") and state.hp * 2 <= state.max_hp:
         heal(state, 12)
-    for relic in tuple(state.relics):
-        if relic.data.get("_melted"):
-            continue
-        if relic.definition_id == "wongos_mystery_ticket" and relic.counter < 5:
-            counter(state, relic, relic.counter + 1)
-        if relic.definition_id == "lasting_candy":
-            counter(state, relic, (relic.counter + 1) % 2)
-        elif relic.definition_id == "fishing_rod" and room_kind == "combat":
-            value = (relic.counter + 1) % 3
-            counter(state, relic, value)
-            if value == 0:
-                eligible = [c for c in state.deck if c.upgrade_level + 1 < len(c.definition.levels)]
-                if eligible:
-                    state.rng.choice("relic.fishing_upgrade", eligible).upgrade()
-        elif relic.definition_id == "war_hammer" and room_kind == "elite":
+    from game.headless.relics.base import RELICS
+    from game.headless.run.lifecycle import evolve_relic
+    for relic in tuple(r for r in state.relics if not r.data.get("_melted")):
+        if room_kind == "elite":
+            evolve_relic(state, relic)
+        if relic.definition_id == "war_hammer" and room_kind == "elite":
             from game.headless.relics.ancient_pickups import upgrade_random
             upgrade_random(state, 4)
-        elif relic.definition_id == "chosen_cheese":
-            max_hp(state, 1)
+        RELICS[relic.definition_id].after_combat_victory(state)
 
 
 def pickup(state, relic, cards):
