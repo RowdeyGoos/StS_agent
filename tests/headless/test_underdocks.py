@@ -484,3 +484,21 @@ def test_random_multihit_waits_until_whole_attack_to_grant_skittish():
     enemy.hp = enemy.max_hp = 1000
     play(run, 'sword_boomerang')
     assert enemy.hp == 991 and enemy.block == 6 and enemy.skittish_used
+
+
+def test_giant_revival_removes_ordinary_powers_before_explosion():
+    run = start('waterfall_giant')
+    step(run, EndTurn())
+    enemy = run.combat.enemies[0]
+    enemy.apply_status('weak', 3)
+    enemy.apply_status('vulnerable', 3)
+    enemy.apply_status('dark_shackles', 4)
+    enemy.strength = 8
+    kill(run, enemy)
+    assert enemy.strength == 0 and not enemy.statuses._counts
+    assert enemy.steam == 15 and enemy.intent.move_name == 'About to Blow'
+    hp = run.combat.player.hp
+    step(run, EndTurn())
+    assert enemy.intent.attack_damage == 15
+    step(run, EndTurn())
+    assert run.state.phase is RunPhase.REWARD and run.state.hp == hp - 15

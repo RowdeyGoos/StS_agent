@@ -32,6 +32,17 @@ internal sealed class KaiserPresentation : IDisposable
         Listen(manager,"CombatSetUp",Attach);
         Listen(manager,"CombatEnded",_=>Clear());
     }
+    public void BeginEventShake()
+    {
+        if(!IsClear)throw new InvalidOperationException("Event presentation already owned.");
+        var game=NewNode("Nodes.NGame");var shake=NewNode("Nodes.Vfx.Utilities.NScreenShake");
+        var target=new Control();nodes.Add(target);
+        shake.GetType().GetMethod("_Ready")!.Invoke(shake,null);
+        shake.GetType().GetMethod("SetTarget")!.Invoke(shake,new[]{target});
+        F(game,"_screenShake",shake);
+        T("Nodes.NGame").GetProperty("Instance",Flags)!.SetValue(null,game);
+    }
+    public void EndEventShake()=>Clear();
     void Listen(object owner,string name,Action<object> action)
     {
         var evt=owner.GetType().GetEvent(name)!;

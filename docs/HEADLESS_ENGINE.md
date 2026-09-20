@@ -126,7 +126,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v39 / run v58**.
+than being silently reinterpreted: current schemas are **combat v40 / run v59**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -348,7 +348,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v39 / run v58.
+reject atomically; current formats are combat v40 / run v59.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -375,7 +375,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v39 / run v58**.
+reject atomically. These private formats are **combat v40 / run v59**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -546,7 +546,7 @@ normal-HP winning strategy, live UI scheduling or exhaustive native parity.
 The boosted replay exposed and corrected Parafright/Obscura action order,
 random-hit target enumeration after summons, Bronze Scales using Thorns before
 incoming damage, Paper Cuts after its owner dies, and Fabricator's delayed
-next-move decision after later bots finish. Current **combat v39 / run v58** reject
+next-move decision after later bots finish. Current **combat v40 / run v59** reject
 older continuation semantics. Fabricator's pending roll is owned by the active
 enemy continuation and survives pauses without a second RNG draw.
 
@@ -562,7 +562,7 @@ Fresh native shared bags refill only the requested empty rarity, in canonical
 order without RNG. Ownership is not a global filter; repeated instances have
 separate identities, counters and effects. An entry allocator boundary binds
 chest claims to newly acquired relics and rejects reopening or claiming an old copy.
-Private schemas are combat v39 / run v58. Native disk-save loading drops the
+Private schemas are combat v40 / run v59. Native disk-save loading drops the
 refill configuration; Python JSON preserves the fresh session being continued.
 See [refill and campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
 The [Kaiser campaign](evidence/native_boosted_kaiser_2026_09_20.json) adds Underdocks
@@ -574,7 +574,26 @@ No real game scene is launched. Headless matches every recorded boundary with JS
 continuation. This corrected Soul Fysh's native random Beckon insertion to account
 for Python's reversed draw-pile storage, without changing RNG consumption.
 See [Kaiser evidence and limits](evidence/headless_generated_route_2026_09_20.md#kaiser-crab-and-third-boosted-campaign).
-Broader boosted boss/event/interaction coverage remains in the
+
+The [remaining boss coverage](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses)
+adds Overgrowth seeds 1 and 3 and Underdocks seed 4: 81 combats and 1,918 actions,
+ending in three native victories. Together the six retained boosted campaigns
+cover **all 12 regional bosses**, with JSON continuation at each headless action.
+The new routes exercise Sunken Statue, Trash Heap, Colossal Flower, Amalgamator
+(two explicit Strikes), Slippery Bridge, smithing, Sea Glass's explicit empty
+selection, shops, potions and additional earned relics.
+
+Trace-driven corrections cover Ancient event-queue advancement, event-owned
+fixed-pool relic RNG, Gas Bomb slot order, dying-parent HP exclusion for summons,
+and Stone Cracker/Whetstone/War Paint native upgrade selection. Source-reviewed
+edge regressions preserve Ceremonial Beast's reactive stun and temporary Strength
+cleanup and Waterfall Giant's post-death power removal. Combat rewards preserve
+the Amethyst Aubergine owners that generated their gold, so later pickups from
+main/extra rewards or Pael's Wing cannot retroactively change the amount. Private
+schemas are combat v40 / run v59; old continuations reject. Boss coverage does not establish every seed,
+event branch, inventory combination or hidden native state field.
+
+Further event and inventory coverage remains in the
 [implementation queue](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment).
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
@@ -2294,7 +2313,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v58`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v59`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -2307,7 +2326,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v39`, including the in-play
+Nested combat records now use `headless_combat_state_v40`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

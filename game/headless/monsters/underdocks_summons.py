@@ -100,22 +100,36 @@ class GasBomb(ScriptedEnemy):
     NAME, HP = 'Gas Bomb', (7, 7)
     MOVES = (attack('Explode', 8),)
 
-    def __init__(self, rng):
+    def __init__(self, rng, *, position=0):
         super().__init__(rng)
+        self.position = position
         self.statuses.add('minion', 1)
+
+    @property
+    def turn_order(self):
+        return self.position
+
+    def validate_combat_context(self, player):
+        if not 0 <= self.position < 5 or (self.is_alive and any(
+                isinstance(e, GasBomb) and e is not self and e.is_alive and e.position == self.position
+                for e in player.combat_enemies)):
+            raise ValueError('Invalid Gas Bomb position.')
 
     def after_move(self, player, intent):
         self.take_unblockable_damage(self.hp)
 
 
 class LivingFog(ScriptedEnemy):
+    turn_order = 5
     NAME, HP = 'Living Fog', (80, 80)
     LOOP_START = 1
     MOVES = (attack('Advanced Gas', 8), attack('Bloat', 5), attack('Super Gas Blast', 8))
 
     def before_move(self, player):
         if self._intent_index == 1 and sum(isinstance(e, GasBomb) and e.is_alive for e in player.combat_enemies) < 5:
-            append_child(GasBomb, self, player)
+            occupied = {e.position for e in player.combat_enemies if isinstance(e, GasBomb) and e.is_alive}
+            position = next(i for i in range(5) if i not in occupied)
+            append_child(GasBomb, self, player, position=position)
 
     def after_move(self, player, intent):
         if intent.move_name == 'Advanced Gas':

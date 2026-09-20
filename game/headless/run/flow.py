@@ -138,6 +138,9 @@ def apply(engine, action):
                     from game.headless.relics.run_rules import entered_room
                     events.begin(state, node.event_id, cards=engine.cards)
                     entered_room(state, 'event')
+                    from game.headless.events.progression import NATIVE_PROFILES
+                    if state.event_progression is not None and state.event_progression.profile in NATIVE_PROFILES:
+                        state.event_progression.cursor += 1
                 else:
                     events.begin(state, node.event_id, cards=engine.cards)
             elif node.kind == "treasure":

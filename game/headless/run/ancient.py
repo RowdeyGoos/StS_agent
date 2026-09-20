@@ -86,6 +86,10 @@ def begin(state, *, profile, cards=None):
         raise ValueError("Unsupported or already started Ancient choice.")
     unavailable = [n for n in ("kaleidoscope", "scroll_boxes") if not available(n, cards)]
     offers = list(OFFERS) if profile == RESTRICTED_PROFILE else generate(state.rng, unavailable)
+    from game.headless.events.progression import NATIVE_PROFILES
+    if state.event_progression is not None and state.event_progression.profile in NATIVE_PROFILES:
+        # Native Neow is an EventRoom and consumes one room-set event position.
+        state.event_progression.cursor += 1
     state.ancient_start = AncientStart(profile, offers=offers, unavailable=unavailable)
     state.pending = {"kind": "ancient", "profile": profile}
     state.phase = RunPhase.ROOM

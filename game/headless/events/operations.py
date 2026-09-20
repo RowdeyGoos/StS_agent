@@ -67,7 +67,7 @@ def execute(state, cards, operation):
     if op == 'random_relic':
         from game.headless.run.inventory import add_relic
         from dataclasses import asdict
-        return asdict(add_relic(state,state.rng.choice('event.relic',args),cards=cards,allow_dead=True))
+        return asdict(add_relic(state,state.rng.choice('event.fixed_relic_pool',args),cards=cards,allow_dead=True))
     if op == 'abandon':
         state.hp = 0
         return None

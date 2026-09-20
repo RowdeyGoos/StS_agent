@@ -6,7 +6,7 @@ from game.headless.run import ancient
 from game.headless.run.actions import (
     ChooseAncientRelic, ChooseNode, ChooseRelicReward, ChooseRewardCard, ChooseRelicCard, ConfirmRelicSelection,
     ClaimGold, ClaimRelic, LeaveRest, LeaveRewards, LeaveShop, LeaveTreasure,
-    Rest, OpenChest, ContinueAct, ChooseEventOption, LeaveEvent, ClaimPotion, UsePotion, BuyShopItem, ClaimTreasureRelic,
+    Rest, Smith, ChooseUpgrade, OpenChest, ContinueAct, ChooseEventOption, ChooseEventCard, LeaveEvent, ClaimPotion, UsePotion, BuyShopItem, ClaimTreasureRelic,
 )
 from game.headless.run.engine import RunEngine
 from tests.headless.test_act2_run import step
@@ -71,7 +71,7 @@ def replay_route(row, *, boosted=False):
         run.state.max_hp = row['startingMaxHp']
     assert [a.definition_id.upper() for a in run.legal_actions()] == row['offers']
     step(run, ChooseAncientRelic(row['choice'].lower()))
-    if row["choice"] == "SCROLL_BOXES":
+    if row["choice"] in ("SCROLL_BOXES", "SMALL_CAPSULE"):
         step(run, ChooseRelicReward(0))
     assert run.state.rng.request_count('rewards') == row['rewardsAfterNeow']
     for item in row['route']:
@@ -99,6 +99,8 @@ def replay_route(row, *, boosted=False):
             assert run.state.pending['definition_id'].upper() == room['ancient']
             assert [a.option_id.upper() for a in run.legal_actions() if isinstance(a, ChooseEventOption)] == room['offers']
             step(run, ChooseEventOption(run.state.pending['event_instance_id'], room['choice'].lower()))
+            if room['choice'] == 'SEA_GLASS':
+                step(run, ConfirmRelicSelection())
             if room.get('upgradeDeckIndices'):
                 for index in room['upgradeDeckIndices']:
                     step(run, ChooseRelicCard(run.state.deck[index].instance_id))
@@ -135,10 +137,13 @@ def replay_route(row, *, boosted=False):
                 if action['state'] is not None:
                     assert combat_boundary(run, action['state'], slots, boosted=boosted) == action['state'], (run.state.act_index, room['row'], index)
             if room['rewards'] is not None:
+                gold_claimed = False
                 for reward in room['rewards']['claims']:
                     if reward['kind'] == 'GoldReward':
-                        assert run.state.pending['gold'] == reward['amount']
-                        step(run, ClaimGold())
+                        if not gold_claimed:
+                            assert run.state.pending['gold'] == sum(r['amount'] for r in room['rewards']['claims'] if r['kind'] == 'GoldReward')
+                            step(run, ClaimGold())
+                            gold_claimed = True
                     elif reward['kind'] == 'PotionReward':
                         assert run.state.pending['potion'].upper() == reward['potion']
                         step(run, ClaimPotion())
@@ -158,10 +163,19 @@ def replay_route(row, *, boosted=False):
                 assert run_boundary(run, boosted=boosted, coverage=coverage) == room['rewards']['state']
         elif kind == 'EventRoom':
             assert run.state.pending['definition_id'].upper() == room['eventId']
-            step(run, ChooseEventOption(run.state.pending['event_instance_id'], room['eventChoice']))
+            selected = [run.state.deck[i].instance_id for i in room.get('eventDeckIndices', [])]
+            choice = 'overcome_0' if room['eventId'] == 'SLIPPERY_BRIDGE' and room['eventChoice'] == 'overcome' else room['eventChoice']
+            step(run, ChooseEventOption(run.state.pending['event_instance_id'], choice))
+            for card_id_ in selected:
+                step(run, ChooseEventCard(run.state.pending['event_instance_id'], card_id_))
             step(run, next(a for a in run.legal_actions() if isinstance(a, LeaveEvent)))
         elif kind == 'RestSiteRoom':
-            step(run, Rest())
+            if room.get('restUpgradeDeckIndex') is not None:
+                card = run.state.deck[room['restUpgradeDeckIndex']]
+                step(run, Smith())
+                step(run, ChooseUpgrade(card.instance_id))
+            else:
+                step(run, Rest())
             step(run, LeaveRest())
         elif kind == 'TreasureRoom':
             if boosted:

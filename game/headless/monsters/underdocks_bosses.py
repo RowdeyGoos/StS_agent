@@ -126,6 +126,10 @@ class WaterfallGiant(InterruptibleEnemy):
             raise ValueError("Unowned monster death continuation.")
         self.capture_interrupted_move()
         self.about_to_blow = True
+        # Native death cleanup removes ordinary powers after Steam revives it.
+        from game.headless.powers.status import StatusCollection
+        self.statuses = StatusCollection()
+        self.strength = 0
         self.max_hp = self.hp = 999999999
         self._intent_index = 6
 

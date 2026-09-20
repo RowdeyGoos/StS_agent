@@ -93,7 +93,7 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
         state.pending = dict(kind='reward', gold=0, gold_claimed=True, offers=[], card_resolved=True,
             card_modifiers=[], combat_reward=True, encounter_id=encounter_id,
             potion=None, potion_claimed=False, relic=None, relic_claimed=False, relic_instance_id=None,
-            extra_rewards=[], hunt_rewards_earned=0, royalties_earned=0)
+            extra_rewards=[], hunt_rewards_earned=0, royalties_earned=0, gold_bonus_sources=[])
         state.pending['extra_rewards'] = extra_rewards(state, cards, encounter, final_boss=True)
         state.phase = RunPhase.REWARD
         return
@@ -108,7 +108,10 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
         dropped = state.rng.randint("potion_drop", 0, 99) < state.potion_drop_chance
         dropped = dropped or has(state, "white_beast_statue")
         state.potion_drop_chance = max(0, min(100, state.potion_drop_chance + (-10 if dropped else 10)))
-    gold = (state.rng.randint("reward_gold", low, high) if high else 0) + 15 * sum(r.definition_id == "amethyst_aubergine" and not r.data.get("_melted") for r in state.relics)
+    # Reward amounts are fixed before any pickup or card-reward alternative.
+    gold_bonus_sources = [r.instance_id for r in state.relics
+                          if r.definition_id == "amethyst_aubergine" and not r.data.get("_melted")]
+    gold = (state.rng.randint("reward_gold", low, high) if high else 0) + 15 * len(gold_bonus_sources)
     from game.headless.potions.pools import generate
     potion = generate(state.config.reward_potions, state.rng, stream="reward_potion") if dropped else None
     pool = state.config.boss_reward_cards if encounter is not None and encounter.room_kind == "boss" else state.config.reward_cards
@@ -125,7 +128,7 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
     if returned:
         # Initial room rewards populate before relic-added reward batches.
         state.rng.randint('reward_gold', returned, returned)
-    state.pending.update(combat_reward=True, hunt_rewards_earned=extra_cards, royalties_earned=royalties, encounter_id=encounter_id, potion=potion,
+    state.pending.update(combat_reward=True, gold_bonus_sources=gold_bonus_sources, hunt_rewards_earned=extra_cards, royalties_earned=royalties, encounter_id=encounter_id, potion=potion,
                          potion_claimed=False, relic=relic, relic_claimed=False, relic_instance_id=None, extra_rewards=extra_rewards(state, cards, encounter, undamaged=undamaged))
     if encounter_loot is not None:
         state.pending['encounter_loot'] = dict(encounter_loot)

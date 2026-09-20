@@ -657,3 +657,27 @@ retain all 16 reruns, exact result references and cleanup results. Run each mode
 with the command above, adding `--mode MODE` and a fresh `--output` directory;
 compare `evidence.json` results against the matrix's named baseline. Never replace
 historical captures or treat a successful process exit alone as acceptance.
+
+
+`--mode boosted-matrix --campaign-case CASE` declares one of `overgrowth-1`,
+`overgrowth-3`, or `underdocks-4`. It requires the same pinned `--spine-extension`
+as Kaiser. These three paths collectively add Ceremonial Beast, the Kin,
+Waterfall Giant, The Insatiable and Queen. Starting/current max HP is the sole
+setup override. The deterministic legal policy prioritizes Frantic Escape and
+attacks and chooses upgrades at rests; it does not force wins or alter deck,
+monster, reward or RNG results.
+
+Each smith and Amalgamator selection records physical deck indices and requires
+the native selector to consume them. Sea Glass explicitly submits an empty legal
+selection. Small Capsule uses the native TestMode reward selector, which claims
+its actual relic. Amalgamator's native screen shake runs with a scoped off-tree
+NGame/ScreenShake; a finally block clears it before continuing. Mock texture
+resources remain strongly referenced through the complete campaign. Card inputs
+are captured before play because War Hammer can upgrade the backing deck card
+after a winning action. Replays compare the aggregate native gold rows to the
+headless bundle's gold total.
+
+[Three captures and results](../../docs/evidence/headless_generated_route_2026_09_20.md#all-regional-bosses)
+and [five unchanged baseline executions](../../docs/evidence/native_boss_campaign_regressions_2026_09_20.json)
+bind the current fixture to native evidence. Coverage includes all 12 regional
+bosses across six boosted paths, not all event branches or inventory combinations.
