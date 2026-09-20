@@ -548,3 +548,53 @@ def test_shackling_counts_actual_negative_strength_for_rend(strength, bonus):
     card = next(c for c in p.hand if c.definition.definition_id == "rend")
     run.apply(PlayCard(card.instance_id, 0))
     assert e.hp == 1000 - card.spec.base_damage - bonus
+
+
+@pytest.mark.parametrize("potion", ["skill_potion", "distilled_chaos"])
+def test_belt_buckle_waits_for_potion_choice_and_json_continuation(potion):
+    run, item = setup(potion, cards=["discovery", "strike", "strike", "defend"],
+                      relics=["belt_buckle", "reptile_trinket"])
+    if potion == "distilled_chaos":
+        from game.headless.core.resolution import move_out
+        p = run.combat.player
+        card = next(c for c in p.deck.all_cards() if c.definition.definition_id == "discovery")
+        move_out(p, card)
+        p.deck.draw_pile.append(card)
+    use(run, item)
+    p = run.combat.player
+    assert p.rules.selection and p.rules.potion_uses
+    assert p.rules.powers.get("dexterity", 0) == 0
+    assert p.rules.powers.get("reptile_trinket", 0) == 0
+    restored = clone(run)
+    for _ in range(20):
+        if not run.combat.player.rules.selection:
+            break
+        actions = run.legal_actions()
+        action = next((a for a in actions if isinstance(a, ConfirmCombatSelection)), actions[0])
+        run.apply(action)
+        restored.apply(action)
+        assert saved(restored) == saved(run)
+    p = run.combat.player
+    assert not p.rules.potion_uses
+    assert p.rules.powers["dexterity"] == 2
+    assert p.rules.powers["reptile_trinket"] == 3
+
+
+def test_last_lethal_potion_does_not_grant_belt_buckle_power_after_combat():
+    run, item = setup("fire_potion", relics=["belt_buckle"])
+    engine = run.combat
+    for enemy in engine.enemies:
+        enemy.hp = 1 if enemy is engine.enemies[0] else 0
+    use(run, item)
+    assert engine.done
+    assert engine.player.rules.powers.get("dexterity", 0) == 0
+
+
+def test_last_potion_discard_activates_belt_buckle_immediately():
+    run, item = setup("skill_potion", relics=["belt_buckle", "reptile_trinket"])
+    run.apply(DiscardPotion(item.instance_id))
+    p = run.combat.player
+    assert p.rules.potion_slots == p.rules.potion_capacity
+    assert p.rules.powers["dexterity"] == 2
+    assert p.rules.powers.get("reptile_trinket", 0) == 0
+    clone(run)

@@ -30,7 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "event-inventory", "event-roster", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix"), default="queue")
+    parser.add_argument("--mode", choices=("item-status", "queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "event-inventory", "event-roster", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix"), default="queue")
     parser.add_argument("--event-name")
     parser.add_argument("--spine-extension", type=Path)
     parser.add_argument("--campaign-case", choices=("overgrowth-1", "overgrowth-3", "underdocks-4"))
@@ -72,7 +72,7 @@ def main():
         if path.is_file():
             (data / path.name).symlink_to(path)
             native_hashes[path.name] = sha(path)
-    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "enemy_turn.cs", "autoplay.cs", "draw_cards.cs", "remaining_draw.cs", "interactions.cs", "enemy_interactions.cs", "side_start.cs", "end_boundary.cs", "reward_handoff.cs", "event_inventory.cs", "event_roster.cs", "event_minigame.cs", "campaign.cs", "generated_start.cs", "kaiser_presentation.cs", "kaiser_skeleton.spjson", "kaiser_empty.atlas", "empty.tscn"):
+    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "enemy_turn.cs", "autoplay.cs", "draw_cards.cs", "remaining_draw.cs", "interactions.cs", "item_status.cs", "enemy_interactions.cs", "side_start.cs", "end_boundary.cs", "reward_handoff.cs", "event_inventory.cs", "event_roster.cs", "event_minigame.cs", "campaign.cs", "generated_start.cs", "kaiser_presentation.cs", "kaiser_skeleton.spjson", "kaiser_empty.atlas", "empty.tscn"):
         shutil.copyfile(source / name, project / name)
     if args.mode in ("boosted-kaiser", "boosted-matrix"):
         (project / "fixture_spine.gdextension").write_text('[configuration]\nentry_symbol="spine_godot_library_init"\ncompatibility_minimum="4.5"\n[libraries]\nmacos = "' + str(args.spine_extension.resolve()).replace("\\", "\\\\").replace('"', '\\"') + '"\n')

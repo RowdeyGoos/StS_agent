@@ -750,3 +750,20 @@ Creatures, and clears/restores that context in `finally`. It never initializes a
 native run, save manager or engine, and accesses no profile/history/Cloud data.
 The output labels this scalar evidence explicitly: no combat turns or complete
 campaign execute in this mode. See the [ascension evidence](../../docs/evidence/headless_ascensions_2026_09_20.md).
+
+
+### Item and status interactions
+
+Queue-runtime `--mode item-status` executes native potion/card actions and one
+player-end → enemy-turn → next-player boundary on authored combat state. The
+[144-case matrix](../../docs/evidence/native_item_status_2026_09_20.md) retains
+complete active power amounts alongside inventory, resources, physical piles and
+RNG suffixes. It varies potion application order, Artifact, relic order, A0/A10
+and three seeds. The normal queue runner enforces pinned binaries, bounded
+execution, empty stderr and removal of its owned user directory.
+
+The [current baseline report](../../docs/evidence/native_item_status_regressions_2026_09_20.json)
+binds this harness to 13 fresh executions with unchanged retained campaign,
+event-inventory and reward/ending results. Earlier records retain their original
+source identities. This mode does not exercise live UI, disk saves, a full combat
+lifecycle or every power family.

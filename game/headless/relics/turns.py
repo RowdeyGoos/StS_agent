@@ -193,9 +193,7 @@ def hook(p, relic, event, identity):
         elif name == "stone_calendar" and turn == 7:
             area(p, 52)
     elif event == "after_end":
-        if name == "reptile_trinket":
-            p.strength -= m.pop("temporary_strength", 0)
-        elif name == "parrying_shield" and p.block >= 10:
+        if name == "parrying_shield" and p.block >= 10:
             from game.headless.relics.plays import random_damage
 
             random_damage(p, 6)

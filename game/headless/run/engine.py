@@ -290,10 +290,14 @@ class RunEngine:
         for potion in r.potions_generated:
             add_potion(self.state, potion)
         from dataclasses import asdict
+        previous_potions = r.potions
         r.potions = [None if item is None else asdict(item) for item in self.state.potions]
         r.potions_generated.clear()
         r.potion_slots = self.state.potions.count(None)
-        potions_changed(self.combat.player)
+        # Only procurement changes inventory here. Consumption hooks belong
+        # to potion_finish, which may still be waiting on a card selection.
+        if r.potions != previous_potions:
+            potions_changed(self.combat.player)
 
     def finish_combat(self) -> None:
         if self.state.phase is not RunPhase.COMBAT or self.combat is None or not self.combat.done:

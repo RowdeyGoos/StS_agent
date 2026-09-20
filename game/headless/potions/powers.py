@@ -11,6 +11,7 @@ NAMES = frozenset(
         "gigantification",
         "duplication",
         "temporary_strength",
+        "reptile_trinket",
         "temporary_dexterity",
     )
 )
@@ -37,10 +38,18 @@ def after_end(p, key):
 
         heal(p, amount)
         r.powers[key] -= 1
-    elif key == "temporary_strength":
-        p.strength -= r.powers.pop(key, 0)
+    elif key in ("temporary_strength", "reptile_trinket"):
+        from game.headless.powers.underdocks import stat_loss
+
+        amount = r.powers.pop(key, 0)
+        if amount:
+            stat_loss(p, "strength", amount)
     elif key == "temporary_dexterity":
-        r.powers["dexterity"] = r.powers.get("dexterity", 0) - r.powers.pop(key, 0)
+        from game.headless.powers.underdocks import stat_loss
+
+        amount = r.powers.pop(key, 0)
+        if amount:
+            stat_loss(p, "dexterity", amount)
     elif key == "duplication":
         r.powers.pop(key, None)
 

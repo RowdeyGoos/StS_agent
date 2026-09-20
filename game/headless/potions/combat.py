@@ -19,14 +19,20 @@ def start(p, potion, target):
 
 
 def after_use(p):
-    from game.headless.relics.combat import owned, memory
+    from game.headless.relics.combat import owned
     from game.headless.relics.plays import hand_emptied
+    from game.headless.relics.damage import potions_changed
+
+    # Native AfterPotionUsed runs after every potion effect and continuation.
+    potions_changed(p)
 
     relic = owned(p, "reptile_trinket")
     if relic is not None and not p.combat_is_ending:
         p.gain_strength(3)
-        m = memory(p, relic)
-        m["temporary_strength"] = m.get("temporary_strength", 0) + 3
+        # This is a native power: insertion order determines which expiration
+        # Artifact blocks when several temporary stat sources coexist.
+        powers = p.rules.powers
+        powers["reptile_trinket"] = powers.get("reptile_trinket", 0) + 3
     hand_emptied(p)
 
 
@@ -151,9 +157,8 @@ def prevent_death(p):
         if item is not None and item["definition_id"] == "fairy_in_a_bottle":
             p.rules.potions[index] = None
             p.rules.potion_slots += 1
-            from game.headless.relics.damage import potions_changed, hp_changed
+            from game.headless.relics.damage import hp_changed
 
-            potions_changed(p)
             p.hp = max(1, p.max_hp * 30 // 100)
             hp_changed(p)
             after_use(p)
