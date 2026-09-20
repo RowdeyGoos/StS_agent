@@ -7,10 +7,10 @@ from game.headless.core.combat import CombatEngine
 from game.headless.core.resolution import drain
 from game.headless.monsters.catalog import DEFAULT_MONSTERS
 from tests.headless.test_native_item_status import (
-    CURRENT_RECORD, prepare, boundary, expected, apply, saved,
+    FOCUSED_RECORD, prepare, boundary, expected, apply, saved,
 )
 
-ROWS = [r for r in CURRENT_RECORD['result']['rows'] if r['scenario'].startswith('focused_')]
+ROWS = [r for r in FOCUSED_RECORD['result']['rows'] if r['scenario'].startswith('focused_')]
 
 
 def setup(row):

@@ -38,7 +38,7 @@ internal static class DeathDrawOracle
         tables.Add("powers",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"powers",new Dictionary<string,string>{{"STRATAGEM_POWER.selectionScreenPrompt","Choose"},{"FOREGONE_CONCLUSION_POWER.selectionScreenPrompt","Choose"}},null})!);
         tables.Add("combat_messages",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"combat_messages",new Dictionary<string,string>{{"NO_DRAW","No draw"},{"HAND_FULL","Hand full"}},null})!);
         F(loc,"_tables",tables);C(loc,"LoadLocFormatters");T("Localization.LocManager").GetProperty("CultureInfo",flags)!.SetValue(loc,System.Globalization.CultureInfo.InvariantCulture);T("Localization.LocManager").GetProperty("Instance",flags)!.SetValue(null,loc);
-        if(drawCards)tables.Add("monsters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"monsters",new Dictionary<string,string>{{"CHOMPER.name","Chomper"},{"CHOMPER.moves.SCREECH.title","Screech"}},null})!);
+        if(drawCards)tables.Add("monsters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"monsters",new Dictionary<string,string>{{"CHOMPER.name","Chomper"},{"CHOMPER.moves.SCREECH.title","Screech"},{"PARAFRIGHT.name","Parafright"},{"TEST_SUBJECT.name","Test Subject"},{"SPINY_TOAD.name","Spiny Toad"}},null})!);
         if(enemyTurn)tables.Add("card_selection",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"card_selection",new Dictionary<string,string>{{"TO_DISCARD","Discard"}},null})!);
         var rows=new List<object>();
         foreach(string seed in new[]{"0","2","42"})foreach(int fillers in endBoundary ? new[]{3} : drawCards ? new[]{0} : deathStart ? new[]{2,3,8} : enemyInteractions ? new[]{12} : flak ? new[]{6} : enemyTurn ? new[]{1,3,8} : multipleDeaths ? new[]{3,8} : new[]{1,3})
@@ -67,6 +67,7 @@ internal static class DeathDrawOracle
             d.Values["get_Rng"]=rng;d.Values["get_Players"]=Typed(new[]{player},player.GetType());d.Values["get_AscensionLevel"]=itemAscension;d.Values["get_CurrentMapPointHistoryEntry"]=null;
             d.Values["get_CurrentActIndex"]=0;d.Values["get_TotalFloor"]=2;
             d.Values["get_CurrentMapCoord"]=Activator.CreateInstance(T("Map.MapCoord"),new object[]{3,2})!;
+            if(itemStatus && drawCase=="focused_sicem_TestSubject")d.Values["get_ExtraFields"]=Activator.CreateInstance(T("Runs.IRunState").GetProperty("ExtraFields")!.PropertyType)!;
             F(player,"_runState",ctx);
             var encounter=C(Get("Encounter",itemStatus && drawCase=="focused_roster_ovicopter" ? "Encounters.OvicopterNormal" : endBoundary ? "Encounters.ToadpolesWeak" : "Encounters.VantomBoss"),"MutableClone");
             var combat=Activator.CreateInstance(T("Combat.CombatState"),new object?[]{encounter,ctx,null,null,null})!;
@@ -76,7 +77,7 @@ internal static class DeathDrawOracle
             F(manager,"_state",combat);F(manager,"<IsInProgress>k__BackingField",true);C(P(manager,"History"),"Clear");
             var pcs=Activator.CreateInstance(T("Entities.Players.PlayerCombatState"),new[]{player})!;
             F(player,"<PlayerCombatState>k__BackingField",pcs);F(player,"<IsActiveForHooks>k__BackingField",true);
-            var monster=C(Get("Monster",itemStatus && drawCase.StartsWith("focused_possess_") ? "Monsters."+(drawCase.Contains("strength")?"TheLost":"TheForgotten") : itemStatus && drawCase=="focused_roster_ovicopter" ? "Monsters.Ovicopter" : itemStatus && drawCase=="focused_roster_shield" ? "Monsters.LivingShield" : itemStatus && drawCase.StartsWith("focused_monster_") ? "Monsters."+drawCase.Substring("focused_monster_".Length) : deathStart && drawCase=="spawn" ? "Monsters.PhrogParasite" : interactions && drawCase=="binding" ? "Monsters.Queen" : (enemyTurn || autoplay || drawCards) ? "Monsters.Chomper" : attackMode ? "Monsters.PhrogParasite" : "Monsters.Vantom"),"ToMutable");
+            var monster=C(Get("Monster",itemStatus && (drawCase.StartsWith("focused_possess_") || drawCase.StartsWith("focused_death_")) ? "Monsters."+(drawCase.Contains("strength")?"TheLost":"TheForgotten") : itemStatus && drawCase.StartsWith("focused_sicem_") ? "Monsters."+drawCase.Substring("focused_sicem_".Length).Replace("_ending","") : itemStatus && drawCase.StartsWith("focused_illusion_") ? "Monsters."+drawCase.Substring("focused_illusion_".Length) : itemStatus && drawCase=="focused_roster_ovicopter" ? "Monsters.Ovicopter" : itemStatus && drawCase=="focused_roster_shield" ? "Monsters.LivingShield" : itemStatus && drawCase.StartsWith("focused_monster_") ? "Monsters."+drawCase.Substring("focused_monster_".Length) : deathStart && drawCase=="spawn" ? "Monsters.PhrogParasite" : interactions && drawCase=="binding" ? "Monsters.Queen" : (enemyTurn || autoplay || drawCards) ? "Monsters.Chomper" : attackMode ? "Monsters.PhrogParasite" : "Monsters.Vantom"),"ToMutable");
             var target=C(combat,"CreateCreature",monster,Enum.Parse(T("Combat.CombatSide"),"Enemy"),"enemy");C(combat,"AddCreature",target);
             if (attackMode && !autoplay && !drawCards)
             {

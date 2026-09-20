@@ -2,7 +2,7 @@ using System.Reflection;
 
 internal static class ItemStatusOracle
 {
-    public static readonly string[] Scenarios = {"flex", "speed", "binding", "shackles", "ward", "replay", "healing", "duration", "fairy", "chaos", "flex_late", "speed_late", "conditional_skull", "conditional_skull_helmet", "conditional_buckle", "conditional_skull_ending", "conditional_skull_helmet_ending", "conditional_buckle_ending", "focused_tender_first", "focused_ritual_first", "focused_disintegration", "focused_monster_FlailKnight", "focused_monster_HunterKiller", "focused_monster_SludgeSpinner", "focused_monster_Exoskeleton", "focused_monster_BowlbugRock", "focused_roster_ovicopter", "focused_roster_shield", "focused_possess_strength", "focused_possess_dexterity", "focused_possess_strength_ending", "focused_possess_dexterity_ending"};
+    public static readonly string[] Scenarios = {"flex", "speed", "binding", "shackles", "ward", "replay", "healing", "duration", "fairy", "chaos", "flex_late", "speed_late", "conditional_skull", "conditional_skull_helmet", "conditional_buckle", "conditional_skull_ending", "conditional_skull_helmet_ending", "conditional_buckle_ending", "focused_tender_first", "focused_ritual_first", "focused_disintegration", "focused_monster_FlailKnight", "focused_monster_HunterKiller", "focused_monster_SludgeSpinner", "focused_monster_Exoskeleton", "focused_monster_BowlbugRock", "focused_roster_ovicopter", "focused_roster_shield", "focused_possess_strength", "focused_possess_dexterity", "focused_possess_strength_ending", "focused_possess_dexterity_ending", "focused_death_strength", "focused_death_dexterity", "focused_death_strength_ending", "focused_death_dexterity_ending", "focused_illusion_EyeWithTeeth", "focused_illusion_Parafright", "focused_sicem_Parafright", "focused_sicem_TestSubject", "focused_sicem_Chomper_ending", "focused_sicem_SpinyToad_ending"};
 
     public static async Task<object> Run(Assembly asm, object player, object pcs, object pc,
         object combat, object target, object manager, object runManager, object queue,
@@ -80,8 +80,9 @@ internal static class ItemStatusOracle
             runManager.GetType().GetProperty("State",flags)!.SetValue(runManager,null);
             return new{seed,scenario,variant,ascension,relicNames=statNames,before=statBefore,steps=statSteps};
         }
-        bool focused=scenario.StartsWith("focused_"), focusedMonster=scenario.StartsWith("focused_monster_"), focusedRoster=scenario.StartsWith("focused_roster_"), focusedPossess=scenario.StartsWith("focused_possess_");
+        bool focused=scenario.StartsWith("focused_"), focusedMonster=scenario.StartsWith("focused_monster_"), focusedRoster=scenario.StartsWith("focused_roster_"), focusedPossess=scenario.StartsWith("focused_possess_")||scenario.StartsWith("focused_death_"), focusedDeath=scenario.StartsWith("focused_death_"), focusedIllusion=scenario.StartsWith("focused_illusion_"), focusedSicEm=scenario.StartsWith("focused_sicem_");
         var relicNames=focused?new List<string>((focusedMonster||focusedRoster)?Array.Empty<string>():scenario=="focused_disintegration"?new[]{"TungstenRod"}:new[]{"RuinedHelmet"}):new List<string>{"BeltBuckle","ReptileTrinket"};
+        if(focusedDeath)relicNames.Add("GremlinHorn");
         if(scenario is "ward" or "fairy")relicNames.AddRange(new[]{"TungstenRod"});
         if(scenario=="replay")relicNames.AddRange(new[]{"Shuriken","Kunai","OrnamentalFan"});
         if(scenario=="fairy")relicNames.Add("LizardTail");
@@ -111,7 +112,7 @@ internal static class ItemStatusOracle
         C(pcs,"GainEnergy",10m);
         if(scenario=="focused_monster_Exoskeleton")target.GetType().GetProperty("SlotName",flags)!.SetValue(target,"first");
         C(P(target,"Monster"),"SetUpForCombat");C(target,"SetMaxHpInternal",1000m);C(target,"SetCurrentHpInternal",1000m);C(target,"PrepareForNextTurn",P(combat,"PlayerCreatures"),true);
-        if(focusedMonster||focusedPossess)await Await(C(P(target,"Monster"),"AfterAddedToRoom"));
+        if(focusedMonster||focusedPossess||focusedIllusion||focusedSicEm)await Await(C(P(target,"Monster"),"AfterAddedToRoom"));
         if(scenario is "focused_tender_first" or "focused_ritual_first")
         {
             foreach(var name in scenario=="focused_tender_first"?new[]{"TenderPower","RitualPower"}:new[]{"RitualPower","TenderPower"})Power(pc,name,1);
@@ -121,7 +122,7 @@ internal static class ItemStatusOracle
         if(variant){Power(pc,"ArtifactPower",1);Power(target,"ArtifactPower",1);}
         if(scenario=="speed"){Power(pc,"FrailPower",2);C(pc,"GainBlockInternal",8m);}
         var physical=new List<object>();
-        foreach(var name in new[]{"StrikeIronclad","StrikeIronclad","StrikeIronclad","DefendIronclad"}.Concat(Enumerable.Repeat("DefendIronclad",10)))
+        foreach(var name in new[]{focusedSicEm?"Flatten":"StrikeIronclad","StrikeIronclad","StrikeIronclad","DefendIronclad"}.Concat(Enumerable.Repeat("DefendIronclad",10)))
         {var card=C(combat,"CreateCard",Get("Card","Cards."+name),player);physical.Add(card);C(P(pcs,physical.Count<=4?"Hand":"DrawPile"),"AddInternal",card,-1,true);}
         Array Players(){var a=Array.CreateInstance(player.GetType(),1);a.SetValue(player,0);return a;}
         C(T("GameActions.Multiplayer.NetCombatCardDb").GetProperty("Instance")!.GetValue(null)!,"StartCombat",Players());
@@ -162,23 +163,49 @@ internal static class ItemStatusOracle
             C(combat,"SortEnemiesBySlotName");
         }
         object RosterState()=>new{player=State(),enemies=roster.Select(c=>new{type=P(c,"Monster").GetType().Name,hp=P(c,"CurrentHp"),block=P(c,"Block"),powers=Powers(c),move=P(P(P(c,"Monster"),"NextMove"),"Id")}).ToArray()};
-        if(focusedPossess)
+        if(focusedPossess||focusedIllusion||focusedSicEm)
         {
-            Power(pc,"ArtifactPower",1);
+            if(focusedPossess)Power(pc,"ArtifactPower",1);
             if(!scenario.EndsWith("_ending"))
             {
                 var model=C(Get("Monster","Monsters.Chomper"),"ToMutable");
                 var survivor=C(combat,"CreateCreature",model,Enum.Parse(T("Combat.CombatSide"),"Enemy"),"survivor");
                 C(combat,"AddCreature",survivor);C(model,"SetUpForCombat");
                 C(survivor,"SetMaxHpInternal",1000m);C(survivor,"SetCurrentHpInternal",1000m);
+                if(focusedIllusion||focusedSicEm)C(survivor,"PrepareForNextTurn",P(combat,"PlayerCreatures"),true);
             }
         }
-        var before=focusedRoster?RosterState():State();var steps=new List<object>();
+        if(focusedIllusion)
+        {
+            // Authored powers: temporary wrapper and its already-applied stat
+            // loss are separate, matching native TemporaryStrengthPower.
+            Power(target,"StrengthPower",3);Power(target,"EnfeeblingTouchPower",2);
+            Power(target,"PoisonPower",7);Power(target,"DoomPower",1000);Power(target,"WeakPower",2);
+            Power(target,"ArtifactPower",1);
+        }
+        if(focusedSicEm)
+        {
+            var context=Activator.CreateInstance(T("GameActions.Multiplayer.ThrowingPlayerChoiceContext"))!;
+            await Await(C(T("Commands.OstyCmd"),"Summon",context,player,5m,null));
+            var mark=C(Get("Power","Powers.SicEmPower"),"ToMutable",0);
+            C(mark,"ApplyInternal",target,3m,true);mark.GetType().GetProperty("Applier",flags)!.SetValue(mark,pc);
+            if(scenario.EndsWith("TestSubject"))C(target,"SetMaxHpInternal",100m);
+            C(target,"SetCurrentHpInternal",1m);
+            if(scenario.Contains("SpinyToad"))Power(target,"ThornsPower",5);
+        }
+        object PetState()=>new{player=State(),play=Pile("PlayPile"),osty=new{hp=P(P(player,"Osty"),"CurrentHp"),maxHp=P(P(player,"Osty"),"MaxHp")}};
+        var before=focusedSicEm?PetState():focusedRoster?RosterState():State();var steps=new List<object>();
         async Task Execute(object action){C(queue,"EnqueueWithoutSynchronizing",action);Require(ReferenceEquals(C(queue,"GetReadyAction"),action),"Item action not ready");F(executor,"<CurrentlyRunningAction>k__BackingField",action);await Await(C(action,"Execute"));Require(P(action,"State").ToString()=="Finished"&&(bool)P(queue,"IsEmpty"),"Item action did not settle");F(executor,"<CurrentlyRunningAction>k__BackingField",null);}
         async Task Drink(int slot){var potion=slots[slot]!;var type=P(potion,"TargetType").ToString();var recipient=type=="AnyEnemy"?target:type=="AnyPlayer"?pc:null;await Execute(Activator.CreateInstance(T("GameActions.UsePotionAction"),new[]{potion,recipient,true})!);steps.Add(new{kind="potion",index=slot,state=State()});}
         if(focused)
         {
-            if(focusedPossess)
+            if(focusedSicEm)
+            {
+                await Execute(Activator.CreateInstance(T("GameActions.PlayCardAction"),new object?[]{physical[0],target})!);
+                Require((int)P(P(player,"Osty"),"MaxHp")== (scenario.Contains("SpinyToad")?3:8),"Sic Em did not summon before death cleanup");
+                steps.Add(new{kind="pet_lethal",index=0,state=PetState()});
+            }
+            else if(focusedPossess)
             {
                 var model=P(target,"Monster");string opening=(string)P(P(model,"NextMove"),"Id");
                 for(int i=0;i<2;i++)
@@ -188,13 +215,35 @@ internal static class ItemStatusOracle
                     C(target,"PrepareForNextTurn",P(combat,"PlayerCreatures"),true);
                     steps.Add(new{kind="steal",index=i,state=State()});
                 }
-                // Real Possess callback and PowerCmd, with authored death/ending
-                // premise; this case does not claim full combat-end cleanup.
-                var possess=Items(P(target,"Powers")).Single(p=>p.GetType().Name.StartsWith("Possess"));
-                C(target,"SetCurrentHpInternal",0m);
-                Require((bool)P(manager,"IsEnding")==scenario.EndsWith("_ending"),"Wrong possession death premise");
-                await Await(C(possess,"AfterDeath",Activator.CreateInstance(T("GameActions.Multiplayer.ThrowingPlayerChoiceContext"))!,target,false,0f));
-                steps.Add(new{kind="possess_death",index=0,state=State()});
+                if(focusedDeath)
+                {
+                    await Await(T("Commands.CreatureCmd").GetMethod("Kill",new[]{T("Entities.Creatures.Creature"),typeof(bool)})!.Invoke(null,new object[]{target,false})!);
+                    Require((bool)P(manager,"IsEnding")==scenario.EndsWith("_ending"),"Wrong dispatched death premise");
+                    steps.Add(new{kind="dispatched_death",index=0,state=State()});
+                }
+                else
+                {
+                    // Retained callback-only baseline; dispatched cases above
+                    // exercise the complete Kill path and ordinary Horn hooks.
+                    var possess=Items(P(target,"Powers")).Single(p=>p.GetType().Name.StartsWith("Possess"));
+                    C(target,"SetCurrentHpInternal",0m);
+                    Require((bool)P(manager,"IsEnding")==scenario.EndsWith("_ending"),"Wrong possession death premise");
+                    await Await(C(possess,"AfterDeath",Activator.CreateInstance(T("GameActions.Multiplayer.ThrowingPlayerChoiceContext"))!,target,false,0f));
+                    steps.Add(new{kind="possess_death",index=0,state=State()});
+                }
+            }
+            else if(focusedIllusion)
+            {
+                await Await(T("Commands.CreatureCmd").GetMethod("Kill",new[]{T("Entities.Creatures.Creature"),typeof(bool)})!.Invoke(null,new object[]{target,false})!);
+                steps.Add(new{kind="illusion_death",index=0,state=State()});
+                await Await(C(P(target,"Monster"),"PerformMove"));
+                C(target,"PrepareForNextTurn",P(combat,"PlayerCreatures"),true);
+                steps.Add(new{kind="monster_move",index=0,state=State()});
+                C(sync,"SetCombatState",Enum.Parse(T("Entities.Multiplayer.ActionSynchronizerCombatState"),"NotPlayPhase"));
+                await Await(C(manager,"EndPlayerTurnPhaseOneInternal"));
+                await Await(C(manager,"EndPlayerTurnPhaseTwoInternal"));
+                await Await(C(manager,"SwitchFromPlayerToEnemySide",new object?[]{null}));
+                steps.Add(new{kind="end_turn",index=0,state=State()});
             }
             else if(focusedRoster)
             {

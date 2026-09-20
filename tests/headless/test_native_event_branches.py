@@ -91,7 +91,7 @@ def test_current_harness_and_unchanged_native_campaigns_are_bound():
         if name not in {'Oracle.cs', 'death_draw.cs', 'run.py'}:
             assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
     report = json.loads((ROOT / 'docs/evidence/native_item_status_regressions_2026_09_20.json').read_text())
-    current = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_focused_behavior_2026_09_20.json.gz').read_bytes()))
+    current = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_death_fidelity_2026_09_20.json.gz').read_bytes()))
     # Only item-status and its scenario setup/dispatch changed. Other modes in
     # the shared dispatcher have a fresh enemy-turn regression below; unchanged
     # campaign implementations retain their historical identities.
