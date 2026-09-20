@@ -7,6 +7,15 @@ ORDINARY_POTIONS = tuple(k for k, d in POTIONS.items() if d.rarity in ("common",
 COSTS = {"common": 50, "uncommon": 75, "rare": 100}
 
 
+def unlocked_order(pool, rng):
+    """Native character-then-shared definition order for direct uniform draws."""
+    from game.headless.core.content_order import SHAREDPOTIONPOOL, ordered
+    from game.headless.core.native_rng import NativeRng
+    if getattr(rng, "native", False) or isinstance(rng, NativeRng):
+        return ordered(pool, ("blood_potion", "soldiers_stew", "ashwater", *SHAREDPOTIONPOOL))
+    return list(pool)
+
+
 def generate(pool, rng, *, stream=None, in_combat=False, blacklist=()):
     from game.headless.core.content_order import SHAREDPOTIONPOOL, ordered
     from game.headless.core.native_rng import NativeRng

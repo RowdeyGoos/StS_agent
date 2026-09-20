@@ -178,7 +178,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v42 / run v62**.
+than being silently reinterpreted: current schemas are **combat v42 / run v63**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -400,7 +400,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v42 / run v62.
+reject atomically; current formats are combat v42 / run v63.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -427,7 +427,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v42 / run v62**.
+reject atomically. These private formats are **combat v42 / run v63**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -598,7 +598,7 @@ normal-HP winning strategy, live UI scheduling or exhaustive native parity.
 The boosted replay exposed and corrected Parafright/Obscura action order,
 random-hit target enumeration after summons, Bronze Scales using Thorns before
 incoming damage, Paper Cuts after its owner dies, and Fabricator's delayed
-next-move decision after later bots finish. Current **combat v42 / run v62** reject
+next-move decision after later bots finish. Current **combat v42 / run v63** reject
 older continuation semantics. Fabricator's pending roll is owned by the active
 enemy continuation and survives pauses without a second RNG draw.
 
@@ -614,7 +614,7 @@ Fresh native shared bags refill only the requested empty rarity, in canonical
 order without RNG. Ownership is not a global filter; repeated instances have
 separate identities, counters and effects. An entry allocator boundary binds
 chest claims to newly acquired relics and rejects reopening or claiming an old copy.
-Private schemas are combat v42 / run v62. Native disk-save loading drops the
+Private schemas are combat v42 / run v63. Native disk-save loading drops the
 refill configuration; Python JSON preserves the fresh session being continued.
 See [refill and campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
 The [Kaiser campaign](evidence/native_boosted_kaiser_2026_09_20.json) adds Underdocks
@@ -642,13 +642,33 @@ edge regressions preserve Ceremonial Beast's reactive stun and temporary Strengt
 cleanup and Waterfall Giant's post-death power removal. Combat rewards preserve
 the Amethyst Aubergine owners that generated their gold, so later pickups from
 main/extra rewards or Pael's Wing cannot retroactively change the amount. Private
-schemas are combat v42 / run v62; old continuations reject. Boss coverage does not establish every seed,
+schemas are combat v42 / run v63; old continuations reject. Boss coverage does not establish every seed,
 event branch, inventory combination or hidden native state field.
 
-Further event and inventory coverage remains in the
+The solo event branch matrix is described below; broader inventory combinations
+and hidden combat-state comparisons remain in the
 [implementation queue](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment).
 
 ### Event and inventory conformance
+
+The [expanded solo branch matrix](evidence/native_event_branches_2026_09_20.md)
+retains **9,376 native cases across 65 event families**, plus the separately rerun
+Architect ending. It selects all **99 solo Ancient offers**, both Scroll Boxes
+bundles, all nine Tinker Time configurations, Crystal Sphere payments/tools,
+Fake Merchant stock branches, repeated Baths/Conveyor pages and event-combat
+reward continuations. Comparisons include JSON restore before every command,
+ordered inventory/reward state and five RNG streams. Native combats in this
+matrix use authored completion followed by actual hooks/rewards/resume; natural
+combat victories remain established by the separate campaign traces.
+
+The matrix corrected event/potion RNG use, acquisition ordering and Bing Bong
+clones, Ancient offer decoration, Lost Coffer presentation order, and enemy HP
+construction on combat-layout event entry. Run **v63** rejects older continuations;
+combat remains **v42**. This is coverage of declared semantic branches, not every
+seed, physical-card combination, hidden native field or inventory cross-product.
+The evidence document records the exact fixture boundaries and exclusions.
+
+The earlier, narrower inventory matrix remains independently retained:
 
 [144 native event cases](evidence/native_event_inventory_2026_09_20.json) cover
 all three branches of Self-Help Book, Wood Carvings, Tea Master and The Future of

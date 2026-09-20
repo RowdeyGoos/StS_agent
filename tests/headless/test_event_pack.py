@@ -74,7 +74,8 @@ def test_whisper_price_is_fixed_and_payment_happens_once():
         run.legal_actions();assert run.state.rng.snapshot()==before
         step(run,opt(run,'gold'))
         assert run.state.gold==44-price
-        assert run.state.rng.request_count('event.potions')==4
+        assert run.state.rng.request_count('rewards')==4
+        assert run.state.rng.request_count('event.potions')==0
     assert min(prices)>=26 and max(prices)<=44 and len(prices)>10
 
 

@@ -179,9 +179,9 @@ def drain(state, cards):
             pending["stage"] = "potion_rewards"
             return
         if op == "event_potion":
-            from game.headless.potions.pools import ORDINARY_POTIONS
+            from game.headless.potions.pools import ORDINARY_POTIONS, unlocked_order
             from game.headless.potions.base import POTIONS
-            pool = [n for n in ORDINARY_POTIONS if args[0] == "any" or POTIONS[n].rarity == args[0]]
+            pool = [n for n in unlocked_order(ORDINARY_POTIONS, state.rng) if args[0] == "any" or POTIONS[n].rarity == args[0]]
             data["active"] = {"definition_id": state.rng.choice(args[1], pool)}
             pending["stage"] = "potion_rewards"
             return
@@ -252,7 +252,8 @@ def drain(state, cards):
 
             # Legends directly samples unlocked definitions uniformly, without
             # calling the rarity-based potion factory.
-            name = state.rng.choice("event.legends_potion", ORDINARY_POTIONS)
+            from game.headless.potions.pools import unlocked_order
+            name = state.rng.choice("rewards", unlocked_order(ORDINARY_POTIONS, state.rng))
             data["active"] = {"definition_id": name}
             pending["stage"] = "potion_rewards"
             return

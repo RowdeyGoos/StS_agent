@@ -25,6 +25,9 @@ class FlowEvent(StepEvent):
             from game.headless.core.ascension import ancient_heal
             ancient_heal(state)
         context = page(self.definition_id, 'initial', state, cards, rng, [])
+        from game.headless.events.combat_layout import ENCOUNTERS, prepare
+        if self.definition_id in ENCOUNTERS:
+            context['enemy_hp_rng'] = prepare(state, self.definition_id)
         data = dict(choice=None, cursor=0, active=None, receipts=[], eligible=[],
                     variables={}, options=context['options'], originals=[card_record(c) for c in state.deck],
                     pages=[dict(name='initial', context=context, choice=None)])
@@ -96,6 +99,8 @@ class FlowEvent(StepEvent):
         if data['checkpoint'] != capture(state, data):
             raise ValueError('Event state differs from its last successful command.')
         restore_records(data['originals'], state, cards)
+        from game.headless.events.combat_layout import validate
+        validate(state, self.definition_id, data)
         if data['variables'] or not isinstance(data['pages'], list) or not data['pages']:
             raise ValueError('Invalid event pages.')
         expected = 'initial'

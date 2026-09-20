@@ -37,7 +37,6 @@ ALIASES = {
     "relic.curse": "niche",
     "relic.reward_enchantment": "niche",
     "card.transform": "transformations",
-    "event.morphic_transform": "niche",
     "relic.pickup": "niche",
     "relic.potion_generation": "rewards",
 }

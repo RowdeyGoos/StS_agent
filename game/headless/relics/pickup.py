@@ -78,6 +78,8 @@ def begin(state, relic, cards):
                 )
             if name == "lost_coffer":
                 potion_reward(state, relic.instance_id)
+                # Populate cards first, then present the potion first like RewardsSet.
+                state.relic_work.insert(len(state.relic_work) - 2, state.relic_work.pop())
     else:
         from game.headless.relics.neow import begin as neow_begin
 
@@ -211,6 +213,23 @@ def _apply(state, cards, action):
                 state.pending = None
                 state.relic_work.clear()
         return
+    owner = next(r.definition_id for r in state.relics if r.instance_id == work['source'])
+    if work['kind'] == 'card_reward' and owner == 'hefty_tablet':
+        from game.headless.run.deck import add_cards
+        from game.headless.enchantments.base import restore
+        expected = dict(source=work['source'], kind='effect', operation='cards', values=['injury'])
+        if not state.relic_work or state.relic_work[0] != expected:
+            raise ValueError("Hefty Tablet's curse continuation is missing.")
+        state.relic_work.pop(0)
+        batch = []
+        if action.index is not None:
+            offer = work['offers'][action.index]
+            card = cards.create(offer['definition_id'], upgrade_level=offer['upgrade_level'])
+            card.enchantment = restore(offer['enchantment'])
+            batch.append(card)
+        batch.append(cards.create('injury'))
+        added = add_cards(state, batch)
+        return added[0] if action.index is not None else None
     if action.index is None:
         return
     offer = work["offers"][action.index]
@@ -218,9 +237,8 @@ def _apply(state, cards, action):
         from game.headless.run.deck import add_card
         from game.headless.enchantments.base import restore
 
-        card = add_card(state, cards.definition(offer["definition_id"]), upgrade_level=offer["upgrade_level"])
-        if offer["enchantment"] is not None:
-            card.enchantment = restore(offer["enchantment"])
+        card = add_card(state, cards.definition(offer["definition_id"]), upgrade_level=offer["upgrade_level"],
+                        enchantment=restore(offer["enchantment"]))
         return card
     if work["kind"] == "relic_reward":
         from game.headless.run.inventory import add_relic
@@ -246,6 +264,12 @@ def validate(state, cards):
         raise ValueError("Snapshot contains undrained automatic acquisition.")
     owners = {r.instance_id: r.definition_id for r in state.relics}
     for source, name in owners.items():
+        if name == 'hefty_tablet':
+            owned = [(i, w) for i, w in enumerate(state.relic_work) if isinstance(w, dict) and w.get('source') == source]
+            if owned and (len(owned) != 2 or owned[1][0] != owned[0][0] + 1
+                          or owned[0][1].get('kind') != 'card_reward'
+                          or owned[1][1] != dict(source=source, kind='effect', operation='cards', values=['injury'])):
+                raise ValueError('Invalid Hefty Tablet reward and curse continuation.')
         if name == 'kaleidoscope' and sum(w.get('source') == source for w in state.relic_work if isinstance(w, dict)) > 2:
             raise ValueError('Too many Kaleidoscope reward groups.')
     for work in state.relic_work:

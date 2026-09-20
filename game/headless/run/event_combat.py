@@ -20,7 +20,11 @@ def start(engine, request):
             or encounter is None or encounter.event_id != definition.definition_id):
         raise ValueError("Event combat does not match its content definition.")
     # Construction uses isolated RNG; no event, navigation or history changes on failure.
-    rng, combat = engine._prepare_combat(encounter_factory=encounter)
+    from game.headless.events.combat_layout import ENCOUNTERS as layouts, restore
+    saved_hp = (pending['data']['pages'][0]['context'].get('enemy_hp_rng')
+                if definition.definition_id in layouts else None)
+    rng, combat = engine._prepare_combat(encounter_factory=encounter,
+        constructed_hp_rng=restore(saved_hp) if saved_hp is not None else None)
     record = EventCombatRecord(pending["event_instance_id"], definition.definition_id,
                                state.current_node_id, request.encounter_id, state.combats_completed + 1)
     if hasattr(definition, "open_page"):

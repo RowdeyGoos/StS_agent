@@ -94,7 +94,7 @@ def execute(state, cards, operation):
         result=[]
         for original in list(state.deck):
             card=deepcopy(original); card.instance_id=state.allocate_card_id()
-            state.deck.append(card);card_added(state,card,cloned=True);result.append(card_record(card))
+            state.deck.append(card);card_added(state,card);result.append(card_record(card))
         return result
     if op == 'rng_int':
         return state.rng.randint('event.cosmetic',0,args[0]-1)

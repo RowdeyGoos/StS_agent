@@ -279,7 +279,8 @@ def test_claws_preserves_upgrade_and_enchantment():
     run=RunEngine(card_ids=('strike','defend'))
     run.state.deck[0].upgrade();enchant(run.state.deck[0],'sharp',3)
     run.obtain_relic('claws');run.apply(ChooseRelicCard(run.state.deck[0].instance_id));run.apply(ConfirmRelicSelection())
-    card=run.state.deck[0]
+    assert run.state.deck[0].definition.definition_id == 'defend'
+    card=run.state.deck[-1]
     assert card.definition.definition_id=='maul' and card.upgraded and card.enchantment.definition_id=='sharp'
 
 

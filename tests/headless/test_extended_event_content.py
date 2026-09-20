@@ -103,7 +103,7 @@ def test_the_boot_and_hand_drill_only_after_block_is_broken():
     assert enemy.hp==985
 
 
-def test_bing_bong_copies_reward_enchantment_and_reflections_do_not_reclone():
+def test_bing_bong_copies_reward_enchantment_and_reflections_acquisitions():
     from game.headless.run.rewards import acquire_card
     from game.headless.enchantments.base import enchant,record
     from game.headless.events.operations import execute
@@ -112,7 +112,7 @@ def test_bing_bong_copies_reward_enchantment_and_reflections_do_not_reclone():
     acquire_card(run.state,run.cards,'strike',{'strike':{'upgrade_level':0,'enchantment':record(card)}})
     assert run.state.deck[-1].enchantment==run.state.deck[-2].enchantment
     count=len(run.state.deck);execute(run.state,run.cards,('clone_deck',))
-    assert len(run.state.deck)==2*count
+    assert len(run.state.deck)==3*count
     restore(run)
 
 

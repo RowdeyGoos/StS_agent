@@ -4,11 +4,14 @@ from game.headless.potions.base import POTIONS
 from game.headless.run.inventory import add_potion
 
 
-def generate(rng, pool, count):
+def generate(rng, pool, count, *, uniform=False):
     if not pool or any(name not in POTIONS for name in pool):
         raise ValueError("Unsupported event potion pool.")
-    from game.headless.potions.pools import generate_many
-    return [{"definition_id": name, "claimed_id": None} for name in generate_many(pool, rng, count, stream="event.potions")]
+    from game.headless.potions.pools import generate as factory, unlocked_order
+    # Each native PotionReward populates independently; repeats are possible.
+    names = [rng.choice("rewards", unlocked_order(pool, rng)) if uniform
+             else factory(pool, rng, stream="rewards") for _ in range(count)]
+    return [{"definition_id": name, "claimed_id": None} for name in names]
 
 
 def options(pending):

@@ -69,7 +69,12 @@ def begin(state, relic, cards):
             from game.headless.core.content_order import IRONCLADCARDPOOL
             rank={n:i for i,n in enumerate(IRONCLADCARDPOOL)}
             pool.sort(key=lambda d:rank[d.definition_id])
-        add_card(state, state.rng.choice("relic.rare_card", pool))
+        from game.headless.relics.rewards import decorate
+        from game.headless.enchantments.base import restore
+        chosen = state.rng.choice("relic.rare_card", pool)
+        modifier = decorate(state, cards, [chosen.definition_id], card_reward=False)[chosen.definition_id]
+        add_card(state, chosen, upgrade_level=modifier["upgrade_level"],
+                 enchantment=restore(modifier["enchantment"]))
     elif name == "cursed_pearl":
         add_card(state, cards.definition("greed"))
         from game.headless.relics.run_rules import gain_gold

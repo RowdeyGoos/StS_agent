@@ -32,6 +32,23 @@ def add_card(state: RunState, definition, *, upgrade_level: int = 0, enchantment
     return card
 
 
+def add_cards(state: RunState, cards) -> list[Card]:
+    """Acquire a native batch: append every original before acquisition hooks."""
+    from copy import deepcopy
+    batch = [deepcopy(card) for card in cards]
+    if any(card.instance_id is not None for card in batch):
+        raise ValueError("Batch acquisition requires unowned cards.")
+    for card in batch:
+        card.definition.spec_at(card.upgrade_level)
+    for card in batch:
+        card.instance_id = state.allocate_card_id()
+    state.deck.extend(batch)
+    from game.headless.relics.run_rules import card_added
+    for card in batch:
+        card_added(state, card)
+    return batch
+
+
 def remove_card(state: RunState, instance_id: str) -> Card:
     card = find_card(state, instance_id)
     if card.spec.eternal:

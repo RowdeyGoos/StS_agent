@@ -36,7 +36,7 @@ def branch(name,page_name,option,c):
         operations=[('remove_exact',i) for i in keys]
         if option=='unlock_cage': operations += [('freed_repy',),('relic','history_course')]
         else: operations += [('rewards',[['potion','factory','rewards']]*2+[['relic','random','rewards']]*2)]
-        return tuple(operations),None if c['second'] else 'second'
+        return tuple(operations),None if c['second'] or len(c['keys']) <= 1 else 'second'
     if page_name=='initial': return (),'type'
     if page_name=='type': return (),'rider'
     return (('mad_science',c['kind'],option),),None

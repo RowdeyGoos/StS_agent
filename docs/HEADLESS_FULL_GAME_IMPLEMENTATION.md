@@ -1227,14 +1227,15 @@ Dependencies and acceptance cases are in the linked task.
 - **Implemented for solo Ironclad A0–A10, all unlocked/all seen:** every cumulative
   modifier in pinned 0.107.1, per-monster A8/A9 properties, A10 second-boss startup
   draw and route, and native Golden Compass exception. Private schemas are combat
-  v42 / run v62. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
+  v42 / run v63. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
 - **Native campaign acceptance completed:** boosted Overgrowth seed 1 and
   Underdocks seed 4 win through both Glory bosses with exact replay of 52 combats
   and 1,504 actions, resources, rewards, four card piles/enchantments, all 15
   run/player RNG counters and JSON continuation. Pendulum persistence and native
   end-of-hand pile order discrepancies are corrected.
-- **Remaining acceptance:** additional event branches and inventory interactions
-  beyond these bounded trajectories. Retain low-HP/death/revival cases; no
+- **Remaining acceptance:** inventory interactions beyond the
+  [declared solo event branch matrix](evidence/native_event_branches_2026_09_20.md)
+  and bounded campaign trajectories. Retain low-HP/death/revival cases; no
   normal-HP policy victory is required.
   Profile-dependent unlocks, multiplayer and alternate modes remain out of scope.
 
@@ -1322,8 +1323,10 @@ Dependencies and acceptance cases are in the linked task.
 - **Implemented for the solo roster:** Fake Merchant prices/purchases/combat,
   Crystal Sphere tools/reveals/reward batches, repeated Conveyor/Baths choices,
   Trial confirmation/cancellation and Architect victory. JSON continuations and
-  illegal/repeated commands have synthetic regression coverage; broader native
-  differential validation remains open.
+  illegal/repeated commands have regression coverage. The
+  [native solo branch matrix](evidence/native_event_branches_2026_09_20.md) now
+  compares these custom mechanisms and authored combat continuations; live UI
+  and arbitrary inventory/click permutations remain outside that evidence.
 
 - **Depends on:** HF-07/32/35/37/39 and each caller's effects.
 - **Implement:** separate bounded tickets for Fake Merchant inventory/combat,
@@ -1726,7 +1729,7 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      also exercise five ordinary events, explicit smithing/card selections,
      shops, potions and additional relic interactions. Native/headless differences
      found in queues, summons, upgrade RNG and reward continuation are corrected;
-     that change used private schemas combat v40 / run v59 (current: v42 / v62).
+     that change used private schemas combat v40 / run v59 (current: v42 / v63).
      [Evidence and exact limits](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses).
    - **A10 campaign acceptance completed:** two additional paths cover both first
      acts and both Glory bosses per run. All four card piles/enchantments and
@@ -1740,8 +1743,15 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      transformations now append; skill rewards include legacy block cards. Run v62
      validates transformation continuations and Bing Bong copies.
      [Evidence and limits](evidence/events_neow_2026_09_14.md#native-event-and-inventory-conformance--2026-09-20).
-   - **Next acceptance coverage:** remaining ordinary-event branches and richer inventory
-     combinations beyond the eight retained paths; explicit power/status and
+   - **Solo event branch verification completed for the declared matrix:** 9,376
+     native cases cover 65 event families, all 99 solo Ancient offers, selectors,
+     repeated pages, custom events and authored combat reward/resume boundaries.
+     The independently rerun Architect ending covers the 66th family. JSON
+     continuations and five RNG streams are compared. Run v63 owns early event
+     enemy construction and corrected acquisition/potion semantics.
+     [Exact coverage and limits](evidence/native_event_branches_2026_09_20.md).
+   - **Next acceptance coverage:** richer inventory combinations beyond the
+     declared event matrix and eight retained campaign paths; explicit power/status and
      per-monster RNG comparisons where the recorded boundaries cannot expose a defect.
      Keep focused low-HP, death and revival cases alongside boosted campaigns.
      Every encounter branch or seed is not yet demonstrated. Multiplayer and
