@@ -5,7 +5,7 @@ using System.Text.Json;
 // Real native run/reward objects under TestMode and explicit in-memory saves.
 internal static class GeneratedStartOracle
 {
-    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false,bool coverage=false)
+    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false,bool coverage=false,bool kaiser=false)
     {
         const BindingFlags flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -39,9 +39,10 @@ internal static class GeneratedStartOracle
             icon.TakeOverPath("res://images/atlases/power_atlas.sprites/"+C(T("Helpers.StringHelper"),"Slugify",power.Name).ToString()!.ToLowerInvariant()+".tres");
             mockIcons.Add(icon);
         }
+        using var presentation=kaiser?new KaiserPresentation(asm):null;
         var rows=new List<object>();
         foreach(string firstAct in coverage?new[]{"Underdocks"}:new[]{"Overgrowth"})
-        foreach(string seed in coverage?new[]{"1"}:new[]{"0"})
+        foreach(string seed in kaiser?new[]{"0"}:coverage?new[]{"1"}:new[]{"0"})
         {
             var store=Activator.CreateInstance(T("Saves.Test.MockGodotFileIo"),new object[]{"user://isolated-fixture"})!;
             var saves=Activator.CreateInstance(T("Saves.SaveManager"),new object[]{store,true})!;F(saves,"_currentProfileId",0);C(T("Saves.SaveManager"),"MockInstanceForTesting",saves);
@@ -249,6 +250,7 @@ internal static class GeneratedStartOracle
                 var combat=P(room,"CombatState");
                 var clock=System.Diagnostics.Stopwatch.StartNew();
                 while(P(P(manager,"ActionQueueSynchronizer"),"CombatState").ToString()!="PlayPhase"){Require(clock.ElapsedMilliseconds<3000,"Combat start timed out.");await Task.Yield();}
+                presentation?.AfterCombatStarted();
                 var actions=new List<object>();
                 object Card(object c)=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")};
                 object Boundary()
@@ -350,11 +352,21 @@ internal static class GeneratedStartOracle
                         var avoided=new[]{"PAELS_TOOTH","PAELS_CLAW","BEAUTIFUL_BRACELET","JEWELRY_BOX","FUR_COAT"};
                         var chosen=ancientOptions.First(o=>!avoided.Contains(P(P(P(o,"Relic"),"Id"),"Entry").ToString()));
                         var ancientChoice=P(P(P(chosen,"Relic"),"Id"),"Entry").ToString();
+                        var upgradeDeckIndices=Array.Empty<int>();
+                        if(kaiser && ancientChoice=="YUMMY_COOKIE")
+                        {
+                            var deck=Items(P(P(player,"Deck"),"Cards"));
+                            upgradeDeckIndices=Enumerable.Range(0,deck.Length).Where(i=>(bool)P(deck[i],"IsUpgradable")).Take(4).ToArray();
+                            Require(upgradeDeckIndices.Length==4,"Cookie requires four declared upgrades.");
+                            C(selector,"PrepareToSelect",Typed(upgradeDeckIndices.Select(i=>deck[i]),T("Models.CardModel")));
+                        }
                         await Await(C(chosen,"Chosen"));Require((bool)P(ancient,"IsFinished"),"Ancient did not finish.");
-                        AddRoom(new{kind="ActTransition",ancient=P(P(ancient,"Id"),"Entry").ToString(),row=Row(point),col=Col(point),transition,entry=ancientEntry,offers=ancientOffers,choice=ancientChoice,state=RunBoundary()});
+                        if(upgradeDeckIndices.Length>0)Require(Items(selector.GetType().GetField("_cardsToSelectTaskQueue",flags)!.GetValue(selector)!).Length==0,"Cookie choices were not consumed.");
+                        AddRoom(kaiser?(object)new{kind="ActTransition",ancient=P(P(ancient,"Id"),"Entry").ToString(),row=Row(point),col=Col(point),transition,entry=ancientEntry,offers=ancientOffers,choice=ancientChoice,upgradeDeckIndices,state=RunBoundary()}:new{kind="ActTransition",ancient=P(P(ancient,"Id"),"Entry").ToString(),row=Row(point),col=Col(point),transition,entry=ancientEntry,offers=ancientOffers,choice=ancientChoice,state=RunBoundary()});
                     }
                 }
                 }
+                if(kaiser)Require(presentation!.ArmsAttached==2 && presentation.ArmDeaths==2 && presentation.NexusDeaths==1 && presentation.IsClear,"Kaiser presentation was not used and released.");
                 if(coverage)
                 {
                     Require(completed && winningState is not null,"Coverage campaign did not win.");
@@ -367,8 +379,10 @@ internal static class GeneratedStartOracle
                 }
                 else if(campaign)rows.Add(new{seed,offers,choice,rewardsAfterNeow,route,state=RunBoundary(),outcome=(bool)P(P(player,"Creature"),"IsAlive")?"act_complete":"defeat"});
             }
-            finally{C(manager,"CleanUp",true);}
+            finally{presentation?.Dispose();C(manager,"CleanUp",true);}
         }
-        return JsonSerializer.Serialize(new{source=boosted?"Native continuous three-act campaign with explicitly authored 1000000 starting/current max HP; real card actions, rewards and boss wins; manual turn phases and mock persistence; not an ordinary winning run":campaign?"Native generated continuous route with real card actions and rewards, manual turn phases, optional chest/shop skips, mock saves and uploads disabled; no synthetic victories":"Native generated Neow and first combat only; real card action executor, manually invoked end-turn phases, UI-only mock localization/textures, mock saves and uploads disabled; no synthetic victories",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
+        var campaignResult=new{source=boosted?"Native continuous three-act campaign with explicitly authored 1000000 starting/current max HP; real card actions, rewards and boss wins; manual turn phases and mock persistence; not an ordinary winning run":campaign?"Native generated continuous route with real card actions and rewards, manual turn phases, optional chest/shop skips, mock saves and uploads disabled; no synthetic victories":"Native generated Neow and first combat only; real card action executor, manually invoked end-turn phases, UI-only mock localization/textures, mock saves and uploads disabled; no synthetic victories",assemblySha256=digest,rows};
+        object record=kaiser?new{campaignResult.source,campaignResult.assemblySha256,campaignResult.rows,presentation=new{armsAttached=presentation!.ArmsAttached,armDeaths=presentation.ArmDeaths,nexusDeaths=presentation.NexusDeaths,cleared=presentation.IsClear,listenersRemoved=presentation.ListenersRemoved}}:campaignResult;
+        return JsonSerializer.Serialize(record,new JsonSerializerOptions{WriteIndented=true});
     }
 }

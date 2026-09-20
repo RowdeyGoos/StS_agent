@@ -608,12 +608,42 @@ execute `RelicCmd.Obtain` as the absent UI's award callback does. They do not cl
 UI execution. Native TestMode skips potion price rolls, so this mode temporarily
 turns it off **only around synchronous `MerchantPotionEntry.CalcCost`**, restoring
 it in `finally`; this method reads no profiles and performs no save/UI work. All
-other fixture work retains TestMode/mock persistence. Kaiser Crab's visual scene
-is not supplied; seeds requiring it are not accepted full-campaign evidence.
+other fixture work retains TestMode/mock persistence. The additional Kaiser mode
+below supplies the presentation dependencies required by that declared seed.
 The [retained expanded capture](../../docs/evidence/native_boosted_underdocks_2026_09_20.json)
 and [unchanged baseline reruns](../../docs/evidence/native_expanded_campaign_regressions_2026_09_20.json)
 record current identities and timing. Normal-HP test-policy victory is not an
 acceptance requirement; focused low-HP and death/revival tests remain relevant.
+
+`--mode boosted-kaiser` follows Underdocks seed 0 through Soul Fysh, Kaiser Crab,
+Test Subject and the Architect. It retains the same bounds and initial HP override,
+uses seven earned potions, and explicitly selects the first four eligible physical
+deck cards for Yummy Cookie. The native selector must consume that answer; default
+empty selections are not accepted evidence. The current seed has more than four
+eligible cards and exercises manual selection, not native auto-selection.
+
+This mode additionally requires `--spine-extension PATH`, pointing to the installed
+app's `Contents/Frameworks/libspine_godot.macos.template_release.framework/libspine_godot.macos.template_release`.
+The runner verifies SHA-256
+`dde5c7682eb29f3c69e4191f6361a1f0731292188b2603bee02adf726abde0d8` before execution.
+An authored manifest loads only that presentation library. No game extension
+manifest, assets, PCK or autoload is loaded. Authored empty Spine animations let the
+actual native background methods run; no monster, power or damage method is replaced.
+The `.spjson` resource format follows the [Spine loader](https://github.com/EsotericSoftware/spine-runtimes/blob/4.2/spine-godot/spine_godot/SpineSkeletonFileResource.cpp).
+
+Temporary native game/audio/shake nodes stay outside the scene tree; neither
+`NGame._EnterTree` nor `_Ready` runs. The singleton is removed after both native
+Kaiser death hooks, before progress notifications. Soul Nexus's actual synchronous
+`Died` callback is bracketed by setup/teardown of an empty visual room; creature
+lookup returns null. All presentation nodes and listeners are released. Screen
+shake consumes presentation-only `Rng.Chaotic`, which is outside seeded gameplay
+RNG comparisons. This verifies gameplay callbacks with presentation stand-ins,
+not rendered scenes, audio or live UI scheduling.
+
+The [Kaiser capture](../../docs/evidence/native_boosted_kaiser_2026_09_20.json)
+retains presentation usage/cleanup assertions; [four unchanged baseline reruns](../../docs/evidence/native_kaiser_campaign_regressions_2026_09_20.json)
+bind the final sources to fresh executions. The [report](../../docs/evidence/headless_generated_route_2026_09_20.md#kaiser-crab-and-third-boosted-campaign)
+records the Beckon fix and complete JSON replay.
 
 These modes initialize mock preferences with uploads disabled and assert
 `ShouldSave == false`. They do not read or write player profiles. All runner modes

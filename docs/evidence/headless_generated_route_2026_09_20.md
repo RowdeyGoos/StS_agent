@@ -256,3 +256,76 @@ coverage, including native Kaiser Crab presentation support. These two paths do
 not prove every seed, hidden power/pile/RNG field, arbitrary history or native
 save-load behavior. The existing unrelated bridge/frozen-corpus full-suite
 failures were not part of this change and the whole repository suite was not rerun.
+
+
+## Kaiser Crab and third boosted campaign
+
+The [retained native capture](native_boosted_kaiser_2026_09_20.json) follows
+**Underdocks seed 0 → Hive → Glory → the Architect**, with the same single
+1,000,000 starting/current-max-HP override. It records **48 boundaries, 35 combats
+and 712 combat/potion actions**, including seven potion uses. Bosses are **Soul Fysh,
+Kaiser Crab and Test Subject**. Tezcatara grants Yummy Cookie, with four explicitly
+selected physical deck cards upgraded; Nonupeipe grants Delicate Frond. There are
+six rests, one visited shop without purchases, and three opened/skipped chests.
+The run ends at **999,385/1,000,000 HP**, 990 gold, 28 cards and eight relics.
+Rewards/Niche/Shuffle/Shops counters are **435/67/1446/28**. Native victory and
+post-victory disposal checks pass.
+
+Native execution took **2.65 seconds**, after a **1.68-second build**, with empty
+stderr and successful removal of the owned temporary user directory. Four tests,
+including the full action-by-action replay with JSON restoration, passed in
+**66.66 seconds**. The [fresh regression captures](native_kaiser_campaign_regressions_2026_09_20.json)
+show exact unchanged results for generated-start, generated-route, boosted-campaign
+and boosted-coverage. They retain each execution's compiled identity, timing and
+cleanup; historical captures were not repinned. The affected Python regression
+suite passed **595 tests in 286.29 seconds**, covering Underdocks, Hive, Ancient
+relics, both preceding boosted JSON traces, ordinary generated traces and retained
+verification bindings. The new complete Kaiser replay was not repeated in that
+suite. The final five focused checks, including missing/unpinned extension
+rejection before build or launch, also passed in **0.16 seconds**.
+
+This adds only the presentation required for the native callbacks:
+
+- The runner loads the pinned Spine framework through an authored fixture manifest.
+  Real native `NKaiserCrabBossBackground` methods use an authored skeleton with
+  empty named animations and an empty atlas. No game assets, PCK, autoload or game
+  extension manifest are loaded; gameplay methods are not patched or replaced.
+- Off-tree game/audio/shake nodes never execute `NGame._EnterTree` or `_Ready`.
+  Both native arm death callbacks complete before the fixture clears the temporary
+  singleton, ahead of progress/epoch notifications. The trace asserts two attached
+  arms, two deaths, node cleanup and removal of listeners.
+- Soul Nexus's actual synchronous death callback requires a non-null combat-room
+  lookup. A pair of fixture listeners creates and releases an empty native visual
+  room around that callback. The native lookup returns no creature visual. The
+  trace asserts this callback ran once. This is a specific callback fixture, not
+  general UI emulation.
+- Native screen-shake setup/hits consume presentation-only `Rng.Chaotic`. The
+  comparison concerns the recorded seeded gameplay streams, not that visual RNG.
+  All persistence remains in-memory mock storage with uploads disabled.
+
+The trace exposed a production bug before Kaiser: Soul Fysh's randomly inserted
+Beckon used the native top-first index directly in Python's bottom-first draw pile.
+It now converts the position while consuming the same single Shuffle draw. The
+fixture RNG profile retains its prior ordering. A focused regression checks the
+physical insertion and one-draw consumption. Private continuation schemas are
+**combat v39 / run v58**; the preceding versions reject atomically.
+
+An earlier diagnostic run let native TestCardSelector choose no cards for Yummy
+Cookie. That is not accepted campaign evidence. The final fixture supplies four
+eligible physical cards and asserts that the selector consumes them; Python
+replays each selection and confirmation. Initial presentation and build failures
+are diagnostic only. Independent semantic review covered the native callback
+ordering, off-tree lifetime, user-data boundary, Beckon indexing/RNG and Cookie
+selection legality. The reviewer independently reran the five focused identity,
+insertion, schema and extension-rejection checks: **5 passed in 0.15 seconds**.
+Compilation, whitespace and changed-guide local-link checks passed. The whole
+repository suite was not rerun.
+
+These three boosted campaigns cover seven distinct bosses. Remaining campaign
+coverage includes Ceremonial Beast, the Kin, Waterfall Giant, The Insatiable, the
+Queen and additional event
+branches. They do not prove every seed, hidden power/pile/RNG field, arbitrary
+history, real rendering/audio, native disk-save continuation or a winning policy.
+Normal-HP policy victory remains unnecessary; low-HP/death/revival checks remain
+relevant. Multiplayer and alternate modes remain excluded. Overall implementation
+and review elapsed times were not separately measured.

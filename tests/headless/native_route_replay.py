@@ -4,7 +4,7 @@ import re
 from game.headless.core.actions import EndTurn, PlayCard, ChooseCombatCard, ConfirmCombatSelection
 from game.headless.run import ancient
 from game.headless.run.actions import (
-    ChooseAncientRelic, ChooseNode, ChooseRelicReward, ChooseRewardCard,
+    ChooseAncientRelic, ChooseNode, ChooseRelicReward, ChooseRewardCard, ChooseRelicCard, ConfirmRelicSelection,
     ClaimGold, ClaimRelic, LeaveRest, LeaveRewards, LeaveShop, LeaveTreasure,
     Rest, OpenChest, ContinueAct, ChooseEventOption, LeaveEvent, ClaimPotion, UsePotion, BuyShopItem, ClaimTreasureRelic,
 )
@@ -99,6 +99,10 @@ def replay_route(row, *, boosted=False):
             assert run.state.pending['definition_id'].upper() == room['ancient']
             assert [a.option_id.upper() for a in run.legal_actions() if isinstance(a, ChooseEventOption)] == room['offers']
             step(run, ChooseEventOption(run.state.pending['event_instance_id'], room['choice'].lower()))
+            if room.get('upgradeDeckIndices'):
+                for index in room['upgradeDeckIndices']:
+                    step(run, ChooseRelicCard(run.state.deck[index].instance_id))
+                step(run, ConfirmRelicSelection())
             step(run, next(a for a in run.legal_actions() if isinstance(a, LeaveEvent)))
         elif kind == 'CombatRoom':
             slots = {}
