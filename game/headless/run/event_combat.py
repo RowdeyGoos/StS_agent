@@ -159,6 +159,10 @@ def resume(state, cards):
     record.rewards_left = True
     record.resumed = True
     drain(state, cards)
+    # Native Resume finishes the event and immediately grants its outcome;
+    # the result description is not a second player decision.
+    if state.pending and state.pending['stage'] == 'page':
+        EVENTS[record.definition_id].choose(state, state.pending, 'proceed', cards=cards)
     refresh(state)
     return True
 

@@ -82,9 +82,7 @@ def _apply(state, cards, action):
         else:
             pool = [n for n,d in RELICS.items() if d.rarity in ('common','uncommon','rare') and not any(r.definition_id == n for r in state.relics)]
             name = state.rng.choice('relic.reward', pool) if pool else 'circlet'
-        remaining, state.relic_work = state.relic_work, []
-        add_relic(state, name, cards=cards)
-        state.relic_work.extend(remaining)
+        add_relic(state, name, cards=cards, prioritize_pickup=True)
 
 
 def reroll(state, cards, kind, reward):

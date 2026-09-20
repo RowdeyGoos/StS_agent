@@ -178,8 +178,6 @@ def drain(state, cards):
         elif work["operation"] == "relic":
             from game.headless.run.inventory import add_relic
 
-            remaining, state.relic_work = state.relic_work, []
-            add_relic(state, work["values"][0], cards=cards)
-            state.relic_work.extend(remaining)
+            add_relic(state, work["values"][0], cards=cards, prioritize_pickup=True)
         else:
             raise ValueError("Unknown automatic relic acquisition.")

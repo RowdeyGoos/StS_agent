@@ -122,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v35 / run v52**.
+than being silently reinterpreted: current schemas are **combat v35 / run v53**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -344,7 +344,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v35 / run v52.
+reject atomically; current formats are combat v35 / run v53.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -371,7 +371,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v35 / run v52**.
+reject atomically. These private formats are **combat v35 / run v53**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -439,6 +439,40 @@ run-file saving; no real profile/save/history/Cloud or live reward UI is accesse
 Native reward selection, room exit/event resumption, boss/act handoff and complete
 seed/path runs remain outside these vectors. Combat v35 is unchanged; run **v52**
 rejects continuations from the previous end-hook/RNG semantics.
+
+The [reward/handoff record](evidence/native_reward_handoff_2026_09_20.json) adds
+**48 native cases** using real test-run objects and in-memory persistence. It
+registers generated rewards through `RewardsSet.Offer`, claims them through
+`RewardsSetSynchronizer`, supplies replay card choices, skips unclaimed rewards,
+and exits the root combat room into `MapRoom`. First/last card selection, leaving
+all rewards and cancel/reopen are covered across three seeds. Native cancellation
+keeps the selector retryable; headless `ChooseRewardCard(None)` is an explicit
+forfeit, not that UI cancellation.
+
+Authored simultaneous relic rewards cover all three Eggs, Wing Charm, Silver
+Crucible, Silken Tress, Fresnel Lens and fresh Lasting Candy. Acquisition now
+refreshes unresolved factory-generated room/extra/event-batch and relic card
+offers before pickup effects. Pael’s Wing acquisitions refresh the remaining
+Orrery/Lost Coffer/Glass Eye/Dream Catcher offers while preserving nested pickup
+priority. It applies only the acquired relic, preserves indexed duplicates
+and existing modifiers, and does not consume Crucible/Tress uses: native's pickup
+listener calls a different callback from normal reward generation. Fresh Candy
+adds nothing. Explicit manual rewards such as Kaleidoscope remain unsubscribed.
+Python comparisons include inventory, offers, Rewards/Niche suffixes, rollback,
+and JSON continuation before/after pickup and claims.
+
+Actual `ProceedFromTerminalRewardsScreen` resumes a prepared Battleworn Dummy
+parent event for Setting 2 victories/timeouts. Random deck upgrades now occur
+immediately on resume, without an extra result-page decision; the same timing
+applies to its potion/relic outcomes in headless regression tests. Native
+`EnterNextAct` from prepared finished bosses verifies Act 1→2 and Act 2→3 room
+handoffs and unchanged HP. Headless generated-path tests compare those boundaries;
+these are not paired full native paths or native map comparisons.
+
+The fixture bypasses live UI/vote/executor scheduling, authors the completed
+rooms and simultaneous relic grants, and does not verify final Architect/victory
+handoff or complete seed/path runs. Those remain the next acceptance work.
+Combat stays v35; **run v53** rejects older offer-refresh/event-timing semantics.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -2157,7 +2191,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v52`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v53`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,

@@ -90,7 +90,7 @@ def test_dummy_three_turn_timeout_is_not_a_kill_reward(setting):
     for _ in range(3): step(run,EndTurn())
     assert run.combat is None and run.state.event_combats[-1].timed_out
     before=list(run.state.relics)
-    choose(run,'proceed')
+    assert run.state.pending['stage']=='resolved'
     assert run.state.relics==before
 
 
@@ -182,7 +182,7 @@ def test_lantern_key_overrides_unknown_room_and_event_queue_in_act_three():
 
 
 def test_completed_dummy_cannot_restore_an_unconsumed_continuation():
-    run=start('battleworn_dummy');choose(run,'setting_2');win(run);choose(run,'proceed');finish(run)
+    run=start('battleworn_dummy');choose(run,'setting_2');win(run);finish(run)
     before=saved(run);bad=deepcopy(before);bad['state']['event_combats'][-1]['resumed']=False
     with pytest.raises(ValueError):run.restore(bad)
     assert saved(run)==before

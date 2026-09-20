@@ -225,11 +225,9 @@ def _apply(state, cards, action):
     if work["kind"] == "relic_reward":
         from game.headless.run.inventory import add_relic
 
-        remaining, state.relic_work = state.relic_work, []
-        result = add_relic(state, offer, cards=cards)
+        result = add_relic(state, offer, cards=cards, prioritize_pickup=True)
         if next(r for r in state.relics if r.instance_id == work['source']).definition_id == 'toy_box':
             result.data['_wax'] = True
-        state.relic_work.extend(remaining)
         return result
     if work["kind"] == "bundle":
         from game.headless.run.deck import add_card
