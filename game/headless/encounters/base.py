@@ -12,6 +12,7 @@ class EncounterDefinition:
     gives_relic: bool = False
     event_id: str | None = None
     act: int = 1
+    ascension_gold: bool = True
 
     def __call__(self, rng):
         return self.factory(rng)

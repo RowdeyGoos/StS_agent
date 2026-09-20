@@ -222,7 +222,7 @@ def apply(engine, action):
     if isinstance(action, ClaimPotion):
         return rewards.claim_potion(state)
     if isinstance(action, LeaveRewards):
-        return rewards.leave_combat_rewards(state, cards=engine.cards)
+        return rewards.leave_combat_rewards(state, cards=engine.cards, graph=engine.graph)
     if isinstance(action, UseRestRelic):
         return rest_site.use_ancient(state, engine.cards, action.option)
     if isinstance(action, (ChooseCookCard, ConfirmCook)):

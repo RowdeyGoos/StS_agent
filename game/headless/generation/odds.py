@@ -26,7 +26,11 @@ def validate(data):
 
 
 def rarity(state, kind="combat", *, mode="changing"):
+    from game.headless.core.ascension import level
+    scarce = level(state) >= 7
     rare, uncommon = map(single, BASE[kind])
+    if scarce:
+        rare = single({"combat": .0149, "elite": .05, "boss": 1., "shop": .045}[kind])
     roll = state.rng.random("rewards")
     if mode == "base":
         return "rare" if roll < rare else "uncommon" if roll < uncommon else "common"
@@ -37,7 +41,7 @@ def rarity(state, kind="combat", *, mode="changing"):
         state.generation_odds["card_offset"] = (
             single(-0.05)
             if result == "rare"
-            else min(single(state.generation_odds["card_offset"] + single(0.01)), single(0.4))
+            else min(single(state.generation_odds["card_offset"] + single(0.005 if scarce else 0.01)), single(0.4))
         )
     return result
 
@@ -92,7 +96,7 @@ def card_offers(
         if upgrade_roll:
             roll = state.rng.random(stream)
             # A0 Act1 base chance0; native <= still upgrades exact zero.
-            threshold = 0.0 if cards.definition(name).rarity == "rare" else getattr(state, "act_index", 0) * .25
+            threshold = 0.0 if cards.definition(name).rarity == "rare" else getattr(state, "act_index", 0) * (.125 if state.config is not None and state.config.ascension >= 7 else .25)
             if roll <= threshold and len(cards.definition(name).levels) > 1:
                 upgraded.append(name)
     return offers, upgraded

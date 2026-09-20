@@ -6,12 +6,15 @@ from game.headless.core.native_rng import NativeRng, deterministic_hash, single
 class MonsterConstruction:
     """Short-lived constructor inputs; only the AI RNG is retained by monsters."""
 
-    def __init__(self, ai, hp, existing=()):
+    def __init__(self, ai, hp, existing=(), *, ascension=0):
+        self.ascension = ascension
         self.ai = ai
         self.hp = hp
         self.used_hp = [enemy.max_hp for enemy in existing if enemy.is_alive]
 
     def initial_hp(self, low, high):
+        if self.hp is None:
+            return low if low == high else self.ai.randint(low, high)
         eligible = [value for value in range(low, high + 1) if value not in self.used_hp]
         value = self.hp.choice(eligible) if eligible else self.hp.randint(low, high)
         self.used_hp.append(value)
@@ -22,9 +25,9 @@ class MonsterConstruction:
 
 
 class EncounterRandom:
-    def __init__(self, root_seed, floor, native_id, ai, hp):
+    def __init__(self, root_seed, floor, native_id, ai, hp, *, ascension=0):
         self.composition = NativeRng((root_seed + floor + deterministic_hash(native_id)) & 0xFFFFFFFF)
-        self.monster = MonsterConstruction(ai, hp)
+        self.monster = MonsterConstruction(ai, hp, ascension=ascension)
 
     def __getattr__(self, name):
         return getattr(self.composition, name)
@@ -37,11 +40,13 @@ def create(kind, rng, **kwargs):
 def summon(kind, parent, player, **kwargs):
     rng = parent.rng
     if isinstance(rng, NativeRng):
-        rng = MonsterConstruction(rng, player.deck.niche_rng, player.combat_enemies)
+        rng = MonsterConstruction(rng, player.deck.niche_rng, player.combat_enemies, ascension=parent.ascension)
         # Native AfterDeath summons run before the dying parent is removed.
         # Earlier dead stable slots have already left the native creature list.
         if not parent.is_alive:
             rng.used_hp.append(parent.max_hp)
+    if parent.ascension and not isinstance(rng, MonsterConstruction):
+        rng = MonsterConstruction(rng, None, ascension=parent.ascension)
     enemy = kind(rng, **kwargs)
     from game.headless.relics.combat import has, owned, memory
     if has(player, "philosophers_stone"):

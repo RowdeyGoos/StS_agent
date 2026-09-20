@@ -33,7 +33,7 @@ def extend_queue(rng, queue, pool, count):
         queue.append(chosen)
 
 
-def generate(rng, *, act="overgrowth"):
+def generate(rng, *, act="overgrowth", ascension=0):
     pools_by_act = campaign_pools(act)
     if not getattr(rng, "native", False):
         raise ValueError("Native initialization requires a native RNG owner.")
@@ -65,6 +65,9 @@ def generate(rng, *, act="overgrowth"):
                 counter=rng.request_count("up_front"),
             )
         )
+        if index == len(pools_by_act) - 1 and ascension >= 10:
+            acts[-1]["second_boss"] = rng.choice("up_front", [n for n in pools[3] if n != boss])
+            acts[-1]["counter"] = rng.request_count("up_front")
     return dict(profile=f"native_{act}_hive_glory_all_unlocked_v1", subsets=subsets, acts=acts)
 
 
@@ -80,7 +83,7 @@ def validate(state):
     populate(rng)
     if state.config is None:
         raise ValueError("Native initialization requires declared act settings.")
-    expected = generate(rng, act=state.config.first_act)
+    expected = generate(rng, act=state.config.first_act, ascension=state.config.ascension)
     if state.initialization != expected:
         raise ValueError("Native initialization differs from its seed and declared inputs.")
     if state.rng.request_count("up_front") < rng.request_count("up_front"):
@@ -96,7 +99,8 @@ def validate(state):
         act = expected['acts'][index]
         if (name != act['act'] or encounters.normal_queue != [ids[n] for n in act['normal']]
                 or encounters.elite_queue != [ids[n] for n in act['elites']]
-                or encounters.boss != ids[act['boss']]):
+                or encounters.boss != ids[act['boss']]
+                or encounters.second_boss != (ids[act['second_boss']] if act.get('second_boss') else None)):
             raise ValueError('Encounter queues differ from native initialization.')
         if events is not None and events.queue != act['events']:
             raise ValueError('Event queue differs from native initialization.')

@@ -36,7 +36,7 @@ class CombatEngine:
         deck_factory: Callable[[], Sequence[Card]] = create_starter_deck,
         enemy_factory: Callable[[], Enemy] | None = None,
         encounter_factory: EncounterFactory | None = None,
-        player_max_hp: int = 80, energy_per_turn: int = 3, cards_per_turn: int = 5, cards=None,
+        player_max_hp: int = 80, energy_per_turn: int = 3, cards_per_turn: int = 5, cards=None, ascension: int = 0,
     ) -> None:
         if type(seed) is not int:
             raise ValueError("Combat seed must be an explicit integer.")
@@ -44,6 +44,8 @@ class CombatEngine:
             raise ValueError("Player maximum HP must be positive.")
         if any(type(value) is not int or value < 0 for value in (energy_per_turn, cards_per_turn)):
             raise ValueError("Turn energy and draw count must be nonnegative integers.")
+        from game.headless.core.ascension import validate
+        self.ascension = validate(ascension)
         self.card_catalog = cards
         self.rng = make_rng(seed)
         self.native_streams = None
@@ -309,7 +311,13 @@ class CombatEngine:
         return Player(Deck(deepcopy(self.deck_factory()), rng=self.native_streams["shuffle"] if self.native_streams else self.rng, streams=self.native_streams), self.player_max_hp, self.energy_per_turn)
 
     def _build_encounter(self) -> list[Enemy]:
-        result = list(self.encounter_factory(self.encounter_rng or self.rng)) if self.encounter_factory else [self.enemy_factory()]
+        source = self.encounter_rng or self.rng
+        if self.encounter_factory and self.ascension and self.encounter_rng is None:
+            from game.headless.encounters.randomness import MonsterConstruction
+            source = MonsterConstruction(source, None, ascension=self.ascension)
+        result = list(self.encounter_factory(source)) if self.encounter_factory else [self.enemy_factory()]
+        if self.ascension and any(e.ascension != self.ascension for e in result):
+            raise ValueError("Higher ascension requires an encounter factory accepting its construction inputs.")
         if not result:
             raise ValueError("Encounter factory must create at least one enemy.")
         return result

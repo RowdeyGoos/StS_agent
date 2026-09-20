@@ -15,12 +15,12 @@ class CeremonialBeast(InterruptibleEnemy):
 
     def validate_combat_context(self, player):
         super().validate_combat_context(player)
-        if self.is_alive and self.statuses.get("plow") != (150 if self._intent_index == 1 else 0):
+        if self.is_alive and self.statuses.get("plow") != (self.ascension_value('PlowAmount', 150) if self._intent_index == 1 else 0):
             raise ValueError("Plow power differs from the Beast phase.")
 
     def after_move(self, player, intent):
         if self._intent_index == 0:
-            self.statuses.add("plow", 150)
+            self.statuses.add("plow", self.ascension_value('PlowAmount', 150))
 
     def on_damage_taken(self, damage, is_attack):
         if damage > 0 and self.is_alive and self.statuses.get("plow") and self.hp <= self.statuses.get("plow"):

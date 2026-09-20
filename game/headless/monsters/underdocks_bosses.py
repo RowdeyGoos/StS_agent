@@ -92,7 +92,7 @@ class WaterfallGiant(InterruptibleEnemy):
 
     def __init__(self, rng):
         super().__init__(rng)
-        self.pressure_gun = 20
+        self.pressure_gun = self.ascension_value('BasePressureGunDamage', 20)
         self.steam = 0
         self.explosion_damage = 0
         self.about_to_blow = False
@@ -145,9 +145,9 @@ class WaterfallGiant(InterruptibleEnemy):
             self.exploded = True
             self.hp = 0
         else:
-            self.steam += 15 if intent.move_name == 'Pressurize' else 3
+            self.steam += self.ascension_value('PressurizeAmount', 15) if intent.move_name == 'Pressurize' else 3
             if intent.move_name == 'Siphon':
-                self.hp = min(self.max_hp, self.hp + 10)
+                self.hp = min(self.max_hp, self.hp + self.ascension_value('SiphonHeal', 10))
             elif intent.move_name == 'Pressure Gun':
                 self.pressure_gun += 5
 
@@ -161,7 +161,7 @@ class WaterfallGiant(InterruptibleEnemy):
         super().validate_combat_context(player)
         if self.move_interrupted and not self.about_to_blow:
             raise ValueError("Interrupted Giant has no eruption.")
-        if (self.steam < 0 or self.explosion_damage < 0 or self.pressure_gun < 20
+        if (self.steam < 0 or self.explosion_damage < 0 or self.pressure_gun < self.ascension_value('BasePressureGunDamage', 20)
                 or self.about_to_blow != (self.max_hp == 999999999)
                 or self.about_to_blow != (self._intent_index >= 6)):
             raise ValueError('Invalid steam eruption phase.')

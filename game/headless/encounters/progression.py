@@ -90,6 +90,7 @@ class EncounterProgression:
     discovery: str = "all_seen"
     assignments: dict[str, str] = field(default_factory=dict)
     act: str = "overgrowth"
+    second_boss: str | None = None
 
     @classmethod
     def generate(cls, rng, *, discovery="all_seen", act="overgrowth"):
@@ -109,7 +110,7 @@ class EncounterProgression:
 
     def next_encounter(self, kind):
         if kind == "boss":
-            return self.boss
+            return self.second_boss if self.second_boss and self.boss in self.assignments.values() else self.boss
         queue = self.normal_queue if kind == "combat" else self.elite_queue if kind == "elite" else None
         if queue is None:
             raise ValueError("No encounter queue for this room kind.")
@@ -118,6 +119,11 @@ class EncounterProgression:
 
     def validate(self, graph, visited_nodes, *, pending_node=False, room_kinds=None):
         weak, normal, elites, bosses = pools_for(self.act)
+        if self.second_boss is not None and (self.act != "glory" or self.second_boss not in bosses or self.second_boss == self.boss):
+            raise ValueError("Invalid second boss encounter.")
+        from game.headless.map.golden_path import PROFILE as GOLDEN
+        if len([n for n in graph.nodes if n.kind == "boss"]) != 1 + int(self.second_boss is not None and graph.generation != GOLDEN):
+            raise ValueError("Boss queue differs from map endpoints.")
         if self.discovery != "all_seen" or self.boss not in bosses:
             raise ValueError("Unsupported encounter discovery or boss.")
         from game.headless.generation.room_pools import REGION_POOLS
@@ -136,7 +142,7 @@ class EncounterProgression:
         counts = {"combat": 0, "elite": 0, "boss": 0}
         for node_id in expected_nodes:
             kind = kinds[node_id]
-            queue = self.normal_queue if kind == "combat" else self.elite_queue if kind == "elite" else [self.boss]
+            queue = self.normal_queue if kind == "combat" else self.elite_queue if kind == "elite" else [self.boss, *([self.second_boss] if self.second_boss else [])]
             if self.assignments[node_id] != queue[counts[kind] % len(queue)]:
                 raise ValueError("Encounter assignment differs from its queue position.")
             counts[kind] += 1

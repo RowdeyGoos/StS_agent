@@ -35,6 +35,9 @@ class RunEngine:
             from game.headless.generation.relics import populate
             self.state.relic_bags = populate(rng)
         self.state.config = config
+        if config is not None and config.ascension >= 4:
+            self.state.potion_capacity = 2
+            self.state.potions = [None] * 2
         if config is not None:
             for card_id in (*config.reward_cards, *config.boss_reward_cards):
                 cards.definition(card_id)
@@ -49,6 +52,8 @@ class RunEngine:
             card_ids = ("strike",) * 5 + ("defend",) * 4 + ("bash",)
         for definition_id in card_ids:
             add_card(self.state, cards.definition(definition_id))
+        if config is not None and config.ascension >= 5:
+            add_card(self.state, cards.definition("ascenders_bane"))
         self.state.validate()
 
     @classmethod
@@ -61,7 +66,7 @@ class RunEngine:
         overrides = {name: value for name, value in (("boss", boss), ("elite", elite), ("hallway", hallway)) if value is not None}
         if overrides and route != "overgrowth-act1":
             raise ValueError("Encounter overrides require the authored Act 1 route.")
-        engine = cls(seed=seed, max_hp=80, gold=99, config=config,
+        engine = cls(seed=seed, max_hp=80, hp=64 if ascension >= 2 else 80, gold=99, config=config,
                      graph=ROUTES[route](**overrides))
         add_relic(engine.state, "burning_blood")
         return engine
@@ -93,7 +98,7 @@ class RunEngine:
             from game.headless.generation.initialization import generate
             from game.headless.encounters.progression import native_ids
             ids = native_ids(act)
-            engine.state.initialization = generate(engine.state.rng, act=act)
+            engine.state.initialization = generate(engine.state.rng, act=act, ascension=ascension)
             initial = engine.state.initialization["acts"][0]
             engine.state.encounter_progression = EncounterProgression(
                 [ids[n] for n in initial["normal"]], [ids[n] for n in initial["elites"]], ids[initial["boss"]], act=act)
@@ -103,7 +108,7 @@ class RunEngine:
             from game.headless.events.act1_content import DEFINITIONS as remaining_events
             config = replace(config, event_pool=(*config.event_pool, *(d.definition_id for d in remaining_events)))
             engine.state.config = config
-        engine.graph = generate_act1_map(engine.state.rng, event_pool=config.event_pool, act=act, profile=map_profile)
+        engine.graph = generate_act1_map(engine.state.rng, event_pool=config.event_pool, act=act, profile=map_profile, ascension=ascension)
         if engine.graph.generation in PRUNED_PROFILES:
             engine.state.unknown_rooms = UnknownRooms()
             if engine.state.initialization is not None:
@@ -112,17 +117,20 @@ class RunEngine:
             else:
                 engine.state.event_progression = EventProgression.generate(engine.state.rng, config.event_pool)
         add_relic(engine.state, "burning_blood")
+        if ancient_profile is None:
+            from game.headless.core.ascension import ancient_heal
+            ancient_heal(engine.state, neow=True)
         if ancient_profile is not None:
             ancient.begin(engine.state, profile=ancient_profile, cards=engine.cards)
         return engine
 
     @classmethod
-    def ironclad_run(cls, *, seed=0, first_act="overgrowth", last_act="glory", ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS):
+    def ironclad_run(cls, *, seed=0, first_act="overgrowth", last_act="glory", ancient_profile=None, rng_profile="native", cards=DEFAULT_CARDS, ascension=0):
         """Play through Glory and the Architect; optionally stop after Hive."""
         if last_act not in ("hive", "glory"):
             raise ValueError("Unsupported campaign endpoint.")
         engine = cls.ironclad_act1(seed=seed, act=first_act, ancient_profile=ancient_profile,
-                                   rng_profile=rng_profile, cards=cards)
+                                   rng_profile=rng_profile, cards=cards, ascension=ascension)
         engine.state.config = replace(engine.state.config, campaign=(first_act, 'hive', 'glory') if last_act == 'glory' else (first_act, 'hive'))
         return engine
 
@@ -225,7 +233,7 @@ class RunEngine:
         combat = CombatEngine(seed=seed, deck_factory=lambda: deepcopy(deck),
                               encounter_factory=encounter_factory, enemy_factory=enemy_factory,
                               player_max_hp=self.state.max_hp, energy_per_turn=energy_per_turn,
-                              cards_per_turn=cards_per_turn, cards=self.cards)
+                              cards_per_turn=cards_per_turn, cards=self.cards, ascension=self.state.config.ascension if self.state.config else 0)
         if getattr(rng, "native", False):
             from game.headless.core.native_service import COMBAT_STREAMS
             combat.native_streams = {name:rng.stream(name) for name in COMBAT_STREAMS}
@@ -246,7 +254,7 @@ class RunEngine:
                 combat.encounter_rng = EncounterRandom(
                     rng.root_seed, self.state.visited_room_count + ancient_floor,
                     re.sub(r"(?<!^)(?=[A-Z])", "_", native_type).upper(),
-                    combat.rng, combat.native_streams["niche"],
+                    combat.rng, combat.native_streams["niche"], ascension=combat.ascension,
                 )
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         from game.headless.relics.ancient_map import coat_active

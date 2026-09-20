@@ -6,7 +6,7 @@ from game.headless.map.standard import (
 )
 
 
-def generate_act1_map(rng, *, event_pool, act="overgrowth", profile=None):
+def generate_act1_map(rng, *, event_pool, act="overgrowth", profile=None, ascension=0):
     if act not in ('overgrowth', 'underdocks'):
         raise ValueError('Unsupported Act 1 location.')
-    return generate_map(rng, event_pool=event_pool, act=act, profile=profile)
+    return generate_map(rng, event_pool=event_pool, act=act, profile=profile, ascension=ascension)

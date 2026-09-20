@@ -97,7 +97,7 @@ def test_map_rng_is_isolated_from_rewards_and_encounter_queues():
     with pytest.raises(ValueError):
         RunEngine.ironclad_act1(map_profile=PROFILE, discovery='first_run')
     with pytest.raises(ValueError):
-        RunEngine.ironclad_act1(map_profile=PROFILE, ascension=1)
+        RunEngine.ironclad_act1(map_profile=PROFILE, ascension=11)
 
 
 @pytest.mark.parametrize('seed,path', [(0,'left'), (1,'right'), (2,'left'), (3,'right'), (4,'left'), (5,'right')])

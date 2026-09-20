@@ -98,6 +98,8 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
         state.phase = RunPhase.REWARD
         return
     low, high = (10, 20) if encounter is None else encounter.gold_range
+    from game.headless.core.ascension import gold_range
+    low, high = gold_range(state, (low, high)) if encounter is None or encounter.ascension_gold else (low, high)
     low, high = loot.gold_range(low, high, encounter_loot)
     from game.headless.relics.run_rules import has
     kind = encounter.room_kind if encounter is not None else "combat"
@@ -156,7 +158,7 @@ def claim_potion(state):
     return potion
 
 
-def leave_combat_rewards(state, *, cards=None) -> None:
+def leave_combat_rewards(state, *, cards=None, graph=None) -> None:
     reward = _reward(state)
     if not reward.get("combat_reward"):
         raise ValueError("No combat rewards are active.")
@@ -167,8 +169,11 @@ def leave_combat_rewards(state, *, cards=None) -> None:
     state.pending = None
     if encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "boss":
         from game.headless.run.state import ActCompletion
-        state.act_completion = ActCompletion(ENCOUNTERS[encounter_id].act, encounter_id)
-        state.phase = RunPhase.ACT_COMPLETE
+        if state.encounter_progression is not None and state.encounter_progression.second_boss and encounter_id == state.encounter_progression.boss and graph is not None and graph.node(state.current_node_id).next_node_ids:
+            state.phase = RunPhase.ROUTE
+        else:
+            state.act_completion = ActCompletion(ENCOUNTERS[encounter_id].act, encounter_id)
+            state.phase = RunPhase.ACT_COMPLETE
     else:
         state.phase = RunPhase.ROUTE
         from game.headless.run.event_combat import resume

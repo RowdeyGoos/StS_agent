@@ -43,7 +43,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
             return found
     event_choices = [a for a in actions if isinstance(a, ChooseEventOption)]
     if event_choices:
-        return next((a for a in event_choices if a.option_id in ("join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water", "rest", "plant", "take")
+        return next((a for a in event_choices if a.option_id in ("exit_baths", "join_forces", "maintain_control", "loner", "smash", "give_up", "gold", "bottle", "dive_into_water", "rest", "plant", "take")
                      or a.option_id.startswith(("claim_potion_", "overcome_"))), event_choices[0])
     event_cards = [a for a in actions if isinstance(a, ChooseEventCard)]
     if event_cards:
@@ -93,7 +93,7 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     raise ValueError("No supported demo decision is available.")
 
 
-def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="first-slice", path="left", boss=None, elite=None, hallway=None, ancient=None):
+def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="first-slice", path="left", boss=None, elite=None, hallway=None, ancient=None, ascension=0):
     if path not in ("left", "right"):
         raise ValueError("Unknown demo path preference.")
     if ancient not in (None, "neow") or ancient is not None and route not in ("overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive", "overgrowth-glory", "underdocks-glory"):
@@ -103,11 +103,11 @@ def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="firs
             raise ValueError("Generated routes select encounters from owned queues.")
         from game.headless.run.ancient import PROFILE as ANCIENT_PROFILE
         if route.endswith(('-hive', '-glory')):
-            engine = RunEngine.ironclad_run(seed=seed, first_act=route.rsplit('-', 1)[0], last_act=route.rsplit('-', 1)[1], ancient_profile=ANCIENT_PROFILE if ancient else None)
+            engine = RunEngine.ironclad_run(seed=seed, first_act=route.rsplit('-', 1)[0], last_act=route.rsplit('-', 1)[1], ancient_profile=ANCIENT_PROFILE if ancient else None, ascension=ascension)
         else:
-            engine = RunEngine.ironclad_act1(seed=seed, act=route.removesuffix("-generated"), ancient_profile=ANCIENT_PROFILE if ancient else None)
+            engine = RunEngine.ironclad_act1(seed=seed, act=route.removesuffix("-generated"), ancient_profile=ANCIENT_PROFILE if ancient else None, ascension=ascension)
     else:
-        engine = RunEngine.ironclad_slice(seed=seed, route=route, boss=boss, elite=elite, hallway=hallway)
+        engine = RunEngine.ironclad_slice(seed=seed, route=route, boss=boss, elite=elite, hallway=hallway, ascension=ascension)
     trace = []
     for _ in range(2000):
         if not engine.legal_actions():
@@ -135,6 +135,7 @@ def main(argv=None):
         parser.add_argument("--" + option, choices=tuple(name for name, encounter in ENCOUNTERS.items() if encounter.room_kind == kind and encounter.event_id is None),
                             help="Replace this encounter on the authored Act 1 route.")
     parser.add_argument("--ancient", choices=("neow",), help="Begin generated Act 1 with the restricted Neow pickup choices.")
+    parser.add_argument("--ascension", type=int, choices=range(11), default=0)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--route", choices=(*ROUTES, "overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive", "overgrowth-glory", "underdocks-glory"), default="first-slice")
     parser.add_argument("--path", choices=("left", "right"), default="left",
@@ -143,11 +144,11 @@ def main(argv=None):
     parser.add_argument("--verify-restore", action="store_true")
     parser.add_argument("--trace", action="store_true")
     args = parser.parse_args(argv)
-    engine, trace = play_slice(seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path, boss=args.boss, elite=args.elite, hallway=args.hallway, ancient=args.ancient)
+    engine, trace = play_slice(seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path, boss=args.boss, elite=args.elite, hallway=args.hallway, ancient=args.ancient, ascension=args.ascension)
     state = engine.state
-    print(json.dumps({"scope": "ironclad_a0_generated_through_" + state.config.campaign[-1] if state.config.campaign else "restricted_ironclad_a0_generated_act1" if args.route in ("overgrowth-generated", "underdocks-generated") else ("restricted_ironclad_a0_two_combat_slice" if args.route == "first-slice" else ("restricted_ironclad_a0_act1_route" if args.route == "overgrowth-act1" else "restricted_ironclad_a0_overgrowth_route")),
+    print(json.dumps({"scope": f"ironclad_a{args.ascension}_generated_through_" + state.config.campaign[-1] if state.config.campaign else f"restricted_ironclad_a{args.ascension}_generated_act1" if args.route in ("overgrowth-generated", "underdocks-generated") else (f"restricted_ironclad_a{args.ascension}_two_combat_slice" if args.route == "first-slice" else (f"restricted_ironclad_a{args.ascension}_act1_route" if args.route == "overgrowth-act1" else f"restricted_ironclad_a{args.ascension}_overgrowth_route")),
                       "map_profile": engine.graph.generation,
-                      "act": state.config.act,
+                      "act": state.config.act, "ascension": state.config.ascension,
                       "ancient_start": None if state.ancient_start is None else asdict(state.ancient_start),
                       "event_profile": None if state.event_progression is None else state.event_progression.profile,
                       "rooms_visited": state.visited_room_count,

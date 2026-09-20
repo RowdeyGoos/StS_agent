@@ -22,8 +22,8 @@ class FlowEvent(StepEvent):
     def generate(self, rng, *, state, cards):
         from game.headless.events.roster import page, ANCIENTS
         if self.definition_id in ANCIENTS:
-            from game.headless.relics.run_rules import heal
-            heal(state, state.max_hp)
+            from game.headless.core.ascension import ancient_heal
+            ancient_heal(state)
         context = page(self.definition_id, 'initial', state, cards, rng, [])
         data = dict(choice=None, cursor=0, active=None, receipts=[], eligible=[],
                     variables={}, options=context['options'], originals=[card_record(c) for c in state.deck],

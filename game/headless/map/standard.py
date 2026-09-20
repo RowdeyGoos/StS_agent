@@ -58,7 +58,10 @@ def _gaussian_count(rng, mean, low, high, stream="act1.map"):
     raise RuntimeError("Map count sampling exceeded its bound.")
 
 
-def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=None):
+def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=None, ascension=0, second_boss=False):
+    from game.headless.core.ascension import validate
+    validate(ascension)
+    elite_count = 8 if ascension >= 1 else 5
     rows = {"hive": 14, "glory": 13}.get(act, 15)
     prefix = {"hive": "act2", "glory": "act3"}.get(act, "act1")
     stream = "spoils_map" if profile == SPOILS_PROFILE else prefix + ".map"
@@ -120,7 +123,7 @@ def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=Non
         siblings = {child for parent in parents[point] for child in edges[parent]} - {point}
         return not any(kinds[s] == kind for s in siblings)
 
-    queue = deque(["rest"] * rest_count + ["shop"] * 3 + ["elite"] * 5 + [unknown_kind] * event_count)
+    queue = deque(["rest"] * rest_count + ["shop"] * 3 + ["elite"] * elite_count + [unknown_kind] * event_count)
     for _ in range(3):
         unassigned = sorted((p for p, kind in kinds.items() if kind is None), key=(lambda p:(p[1],p[0])) if native else None)
         rng.shuffle(stream, unassigned)
@@ -147,7 +150,7 @@ def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=Non
                 edges[point].add(boss)
                 parents[boss].add(point)
         prune_and_repair(edges, parents, kinds, root, rng,
-                         {"rest": rest_count, "unknown": event_count, "shop": 3, "elite": 5}, valid, stream=stream)
+                         {"rest": rest_count, "unknown": event_count, "shop": 3, "elite": elite_count}, valid, stream=stream)
         if native and profile != SPOILS_PROFILE:
             from game.headless.map.postprocessing import reposition
             edges, parents, kinds = reposition(edges, parents, kinds)
@@ -161,7 +164,11 @@ def generate_map(rng, *, event_pool, act="overgrowth", profile=None, ancient=Non
         children = tuple(identity(p) for p in sorted(edges[point])) if point[0] < rows else (prefix + ".boss",)
         event_id = rng.choice(prefix + ".map.events", event_pool) if kind == "event" else None
         nodes.append(MapNode(identity(point), kind, children, event_id=event_id, row=point[0], column=point[1]))
-    nodes.append(MapNode(prefix + ".boss", "boss", (), row=rows + 1, column=3))
+    nodes.append(MapNode(prefix + ".boss", "boss", (prefix + ".boss2",) if second_boss else (), row=rows + 1, column=3))
+    if second_boss:
+        if act != "glory":
+            raise ValueError("Second boss belongs to Glory.")
+        nodes.append(MapNode(prefix + ".boss2", "boss", (), row=rows + 2, column=3))
     entries = tuple(identity(p) for p in sorted(starts))
     if ancient is not None:
         if ancient not in ancients_for(act):
@@ -183,13 +190,16 @@ def validate_generated_map(graph):
     if root is not None and (not (hive or glory) or root.node_id != prefix + '.ancient' or root.kind != 'event'
             or root.column != 3 or root.event_id not in ancients_for('glory' if glory else 'hive')):
         raise ValueError('Invalid generated Ancient root.')
+    double = any(n.node_id == prefix + ".boss2" for n in graph.nodes)
+    if double and not glory:
+        raise ValueError("Second boss belongs to Glory.")
     points = {}
     for node in graph.nodes:
-        if (type(node.row) is not int or not (0 if root else 1) <= node.row <= rows + 1 or type(node.column) is not int
+        if (type(node.row) is not int or not (0 if root else 1) <= node.row <= rows + 1 + int(double) or type(node.column) is not int
                 or not 0 <= node.column < WIDTH or (node.row, node.column) in points):
             raise ValueError("Invalid generated map coordinates.")
         points[node.row, node.column] = node
-        expected_id = prefix + ".ancient" if node.row == 0 else prefix + ".boss" if node.row == rows + 1 else f"{prefix}.{node.row}.{node.column}"
+        expected_id = prefix + ".boss2" if node.row == rows + 2 else prefix + ".ancient" if node.row == 0 else prefix + ".boss" if node.row == rows + 1 else f"{prefix}.{node.row}.{node.column}"
         if node.node_id != expected_id:
             raise ValueError("Generated map identity differs from its coordinates.")
         if node is root:
@@ -201,7 +211,7 @@ def validate_generated_map(graph):
             raise ValueError("Restricted generated event requires its definition.")
         if node.kind == "unknown" and node.event_id is not None:
             raise ValueError("Unknown map points cannot contain an eventual event.")
-        required = {1: "combat", rows - 6: "treasure", rows: "rest", rows + 1: "boss"}.get(node.row)
+        required = {1: "combat", rows - 6: "treasure", rows: "rest", rows + 1: "boss", rows + 2: "boss"}.get(node.row)
         if required and node.kind != required or not required and node.kind in ("treasure", "boss"):
             raise ValueError("Invalid fixed map row.")
         if node.row < 6 and node.kind in ("rest", "elite") or node.row in (rows - 2, rows - 1) and node.kind == "rest":
@@ -209,8 +219,9 @@ def validate_generated_map(graph):
     if graph.generation == SPOILS_PROFILE and [(n.row, n.column) for n in graph.nodes if n.kind == "treasure"] != [(8, 3)]:
         raise ValueError("Spoils map requires its central treasure.")
     bosses = [n for n in graph.nodes if n.kind == "boss"]
-    if len(bosses) != 1 or bosses[0].next_node_ids or bosses[0].column != 3:
-        raise ValueError("Generated map requires one final boss.")
+    if (len(bosses) != 1 + int(double) or bosses[-1].next_node_ids or any(n.column != 3 for n in bosses)
+            or double and bosses[0].next_node_ids != (prefix + ".boss2",)):
+        raise ValueError("Invalid generated boss sequence.")
     entries = tuple(n.node_id for n in sorted(graph.nodes, key=lambda n: n.column) if n.row == 1)
     if (root.next_node_ids if root else graph.entry_node_ids) != entries or len(entries) < (2 if graph.generation in BASE_PROFILES else 1):
         raise ValueError("Generated map entrances differ from its first row.")

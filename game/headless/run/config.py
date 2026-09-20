@@ -31,8 +31,10 @@ class RunConfig:
             raise ValueError('Current act is outside the declared campaign.')
         if self.act not in ("overgrowth", "underdocks", "hive", "glory"):
             raise ValueError("Unsupported Act 1 location.")
-        if self.character != "ironclad" or type(self.ascension) is not int or self.ascension != 0:
-            raise ValueError("Only Ironclad Ascension 0 is implemented.")
+        from game.headless.core.ascension import validate
+        validate(self.ascension)
+        if self.character != "ironclad":
+            raise ValueError("Only Ironclad runs are implemented.")
         if self.relic_fallback not in (None, "circlet"):
             raise ValueError("Unsupported depleted relic pool fallback.")
         from game.headless.events.catalog import EVENTS

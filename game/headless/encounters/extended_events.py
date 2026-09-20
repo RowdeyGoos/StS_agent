@@ -17,6 +17,6 @@ ENCOUNTERS={
     **{f'battleworn_dummy_{i}':EncounterDefinition(partial(solo,cls),gold_range=(0,0),event_id='battleworn_dummy') for i,cls in enumerate((BattleFriendV1,BattleFriendV2,BattleFriendV3),1)},
     'punch_off_event':EncounterDefinition(punch_off,event_id='punch_off'),
     'mysterious_knight_event':EncounterDefinition(partial(solo,MysteriousKnight),event_id='the_lantern_key'),
-    'fake_merchant_event':EncounterDefinition(partial(solo,FakeMerchantMonster),gold_range=(300,300),event_id='fake_merchant'),
+    'fake_merchant_event':EncounterDefinition(partial(solo,FakeMerchantMonster),gold_range=(300,300),event_id='fake_merchant',ascension_gold=False),
 }
 NATIVE_IDS={**{f'battleworn_dummy_{i}':'BattlewornDummyEventEncounter' for i in range(1,4)},'punch_off_event':'PunchOffEventEncounter','mysterious_knight_event':'MysteriousKnightEventEncounter','fake_merchant_event':'FakeMerchantEventEncounter'}

@@ -16,7 +16,7 @@ class Vantom(Enemy):
     def __init__(self, rng):
         super().__init__("Vantom", 173, rng)
         self._intent_index = 0
-        self.statuses.add(SLIPPERY, 8)
+        self.statuses.add(SLIPPERY, self.ascension_value('SlipperyAmt', 8))
 
     @property
     def intent(self):

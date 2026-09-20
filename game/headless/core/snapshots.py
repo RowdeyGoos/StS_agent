@@ -21,7 +21,7 @@ from game.headless.powers.status import StatusCollection
 
 from game.headless.enchantments import base as enchantments
 
-SCHEMA = "headless_combat_state_v40"
+SCHEMA = "headless_combat_state_v41"
 PILES = ("draw_pile", "discard_pile", "exhaust_pile", "hand", "in_play", "powers", "offered", "sequestered")
 PLAYER_FIELDS = ("max_hp", "hp", "block", "energy_per_turn", "energy", "strength")
 
@@ -121,7 +121,7 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
         "schema": SCHEMA, "cards": cards.snapshot_fingerprint(), "rngs": rngs, "combat_rng": rng_ref(engine.rng),
         "pending_play": None if engine.player.pending_play is None else asdict(engine.player.pending_play),
         "turn": engine.turn, "done": engine.done, "winner": engine.winner,
-        "config": {"player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
+        "config": {"ascension": engine.ascension, "player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
                    "rules": asdict(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
@@ -232,8 +232,12 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
         if type(snapshot["done"]) is not bool or snapshot["done"] != (winner is not None) or snapshot["winner"] != winner:
             raise ValueError("Invalid terminal state.")
         config = snapshot["config"]
-        if set(config) != {"player_max_hp", "energy_per_turn", "cards_per_turn"} or any(type(v) is not int or v < 0 for v in config.values()) or config["player_max_hp"] <= 0:
+        if set(config) != {"ascension", "player_max_hp", "energy_per_turn", "cards_per_turn"} or any(type(v) is not int or v < 0 for v in config.values()) or config["player_max_hp"] <= 0:
             raise ValueError("Invalid combat configuration.")
+        from game.headless.core.ascension import validate as validate_ascension
+        validate_ascension(config["ascension"])
+        if any(e.ascension != config["ascension"] for e in enemies):
+            raise ValueError("Enemy ascension differs from combat owner.")
         if player.max_hp != config["player_max_hp"] + snapshot["player"]["rules"]["max_hp_gained"]:
             raise ValueError("Player maximum HP differs from the combat configuration.")
         if any(c.spec.kind != 'power' for c in deck.powers):

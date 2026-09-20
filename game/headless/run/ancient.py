@@ -90,6 +90,8 @@ def begin(state, *, profile, cards=None):
     if state.event_progression is not None and state.event_progression.profile in NATIVE_PROFILES:
         # Native Neow is an EventRoom and consumes one room-set event position.
         state.event_progression.cursor += 1
+    from game.headless.core.ascension import ancient_heal
+    ancient_heal(state, neow=True)
     state.ancient_start = AncientStart(profile, offers=offers, unavailable=unavailable)
     state.pending = {"kind": "ancient", "profile": profile}
     state.phase = RunPhase.ROOM

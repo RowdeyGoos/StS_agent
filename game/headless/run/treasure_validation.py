@@ -43,10 +43,12 @@ def validate_treasure(state, graph):
     elif (relic_id not in treasure_pool(state) or not state.treasure_relics_drawn
             or state.treasure_relics_drawn[-1] != relic_id):
         raise ValueError("Treasure offer differs from its depleted pool.")
+    from game.headless.core.ascension import gold_range
+    low, high = gold_range(state, ORDINARY_CHEST.gold_range)
     if pending["stage"] == "closed":
         if pending["gold"] is not None:
             raise ValueError("Closed chest cannot have granted gold.")
-    elif type(pending["gold"]) is not int or not ORDINARY_CHEST.gold_range[0] <= pending["gold"] <= ORDINARY_CHEST.gold_range[1]:
+    elif type(pending["gold"]) is not int or not low <= pending["gold"] <= high:
         raise ValueError("Invalid treasure gold.")
     if pending["stage"] == "claimed":
         if not any(r.instance_id == pending["claimed_instance_id"] and r.definition_id == relic_id for r in state.relics):

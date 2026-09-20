@@ -681,3 +681,13 @@ headless bundle's gold total.
 and [five unchanged baseline executions](../../docs/evidence/native_boss_campaign_regressions_2026_09_20.json)
 bind the current fixture to native evidence. Coverage includes all 12 regional
 bosses across six boosted paths, not all event branches or inventory combinations.
+
+## Ascension getter references
+
+Pass `ascensions` as the third argument to execute the native A0–A10 monster HP,
+move-property and run-economy getters. `ascensions.cs` installs a constructor-free,
+process-local RunState and an AscensionManager, constructs in-memory monsters and
+Creatures, and clears/restores that context in `finally`. It never initializes a
+native run, save manager or engine, and accesses no profile/history/Cloud data.
+The output labels this scalar evidence explicitly: no combat turns or complete
+campaign execute in this mode. See the [ascension evidence](../../docs/evidence/headless_ascensions_2026_09_20.md).

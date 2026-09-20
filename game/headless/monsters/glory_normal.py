@@ -32,7 +32,7 @@ class FrogKnight(ScriptedEnemy):
     def __init__(self, rng):
         super().__init__(rng)
         self.charged = False
-        self.plating = self.block = 15
+        self.plating = self.block = self.ascension_value('PlatingAmount', 15)
         self.turns_started = 0
 
     def start_turn(self):
