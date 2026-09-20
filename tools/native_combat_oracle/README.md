@@ -458,3 +458,32 @@ Consumers assert exact piles, draw identities, play/discard counts, resources,
 status/cost state and RNG. Consumers: `test_native_hook_interactions.py` and
 `test_native_enemy_interactions.py`. All exposed boundaries round-trip JSON;
 additional headless tests reject malformed/older continuations atomically.
+
+
+### Simultaneous death choices and side-start reactions (`--mode death-start`)
+
+`side_start.cs` runs actual native `CombatManager.StartTurn` through next-player
+setup. The [144 retained cases](../../docs/evidence/native_death_start_2026_09_20.json)
+combine three seeds, decks of two/three/eight cards, first/last answers and optional
+Tools of the Trade with four scenarios:
+
+- Six Chompers, Thorns, Hellraiser and Gremlin Horn create multiple detached death
+  choices. Three-card cases produce two waiting Horn contexts and a player-setup
+  context; their live draw choices shrink from three to one to zero cards.
+- Poison kills a Chomper before it can move, while Horn's shuffle choice waits.
+- Poison kills Phrog, spawning four Wrigglers that retain their Spawned move.
+  Native TakeTurn's SpawnedThisTurn guard skips them this enemy turn.
+- Accelerant runs multiple poison ticks against a surviving Chomper after the
+  first poison death has parked its Horn choice.
+
+Player HP (and the multiple-death survivor's HP) is authored at 500 to keep these
+nonterminal. Checksums are disabled. Replay answers are delivered after turn
+work, using the actual pending native choice ID; no live executor/UI loop runs.
+Recorded fields include context sources, all decision states, enemy state,
+per-hit damage, move counts and four RNG counters/suffixes. The Python consumer
+`tests/headless/test_native_death_start.py` compares them and restores each
+exposed decision. Empty native screens are automatically settled by headless;
+singleton choices already waiting remain manual. Additional corruption and
+explicit synthetic terminal-disposal tests are separate from native evidence.
+No full combat-end/room/reward/save lifecycle is claimed. This batch validates
+existing rules and leaves combat v35 / run v51 unchanged.
