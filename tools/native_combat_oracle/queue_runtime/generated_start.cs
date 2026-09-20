@@ -5,7 +5,7 @@ using System.Text.Json;
 // Real native run/reward objects under TestMode and explicit in-memory saves.
 internal static class GeneratedStartOracle
 {
-    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false)
+    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false)
     {
         const BindingFlags flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -47,21 +47,25 @@ internal static class GeneratedStartOracle
             try
             {
                 Require(!(bool)P(manager,"ShouldSave"),"Persistent saving must be disabled.");
+                const int boostedHp=1000000;
+                if(boosted){C(P(player,"Creature"),"SetMaxHpInternal",(decimal)boostedHp);C(P(player,"Creature"),"SetCurrentHpInternal",(decimal)boostedHp);}
                 var relicText=new Dictionary<string,string>();
                 foreach(var relic in Items(T("Models.ModelDb").GetProperty("AllRelics")!.GetValue(null)!))foreach(var suffix in new[]{"title","description","eventDescription","selectionScreenPrompt"})relicText[P(P(relic,"Id"),"Entry")+"."+suffix]=P(P(relic,"Id"),"Entry").ToString()!;
                 if(!tables.Contains("relics"))tables.Add("relics",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"relics",relicText,null})!);
                 if(!tables.Contains("events"))tables.Add("events",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"events",new Dictionary<string,string>(),null})!);
-                foreach(var tableName in new[]{"card_keywords","cards","static_hover_tips","powers","enchantments","monsters"})
+                foreach(var tableName in new[]{"card_keywords","cards","static_hover_tips","powers","enchantments","afflictions","monsters"})
                 {
                     var texts=new Dictionary<string,string>();
-                    var names=tableName=="card_keywords"?Enum.GetNames(T("Entities.Cards.CardKeyword")).Select(n=>C(T("Helpers.StringHelper"),"Slugify",n).ToString()!):
+                    var names=tableName=="afflictions"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AfflictionModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
+                        tableName=="card_keywords"?Enum.GetNames(T("Entities.Cards.CardKeyword")).Select(n=>C(T("Helpers.StringHelper"),"Slugify",n).ToString()!):
                         tableName=="static_hover_tips"?Enum.GetNames(T("HoverTips.StaticHoverTip")).Select(n=>C(T("Helpers.StringHelper"),"Slugify",n).ToString()!):
                         tableName=="monsters"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.MonsterModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
                         tableName=="enchantments"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.EnchantmentModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
                         tableName=="cards"?Items(T("Models.ModelDb").GetProperty("AllCards")!.GetValue(null)!).Select(c=>P(P(c,"Id"),"Entry").ToString()!):
                         new[]{"BLOCK","POWER","STRENGTH","VULNERABLE","WEAK","DEXTERITY","DAMAGE","ENERGY","CARD_REWARD"};
                     foreach(var name in names)foreach(var suffix in new[]{"name","title","description","upgradeDescription","selectionScreenPrompt"})texts[name+"."+suffix]=name;
-                    if(tableName=="monsters")foreach(var key in new[]{"BYGONE_EFFIGY.moves.SLEEP.speakLine1","BYGONE_EFFIGY.moves.SLEEP.speakLine2"})texts[key]="Sleep";
+                    if(tableName=="powers")texts["DAMPEN_POWER.banter"]="Dampen";
+                    if(tableName=="monsters")foreach(var key in new[]{"BYGONE_EFFIGY.moves.SLEEP.speakLine1","BYGONE_EFFIGY.moves.SLEEP.speakLine2","HATCHLING.name","CHOMPER.moves.SCREECH.title","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.startLine","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.doneLine","DEVOTED_SCULPTOR.moves.FORBIDDEN_INCANTATION.banter","CALCIFIED_CULTIST.moves.INCANTATION.banter","DAMP_CULTIST.moves.INCANTATION.banter"})texts[key]="Sleep";
                     if(!tables.Contains(tableName))tables.Add(tableName,Activator.CreateInstance(T("Localization.LocTable"),new object?[]{tableName,texts,null})!);
                 }
                 var selector=Activator.CreateInstance(T("TestSupport.TestCardSelector"))!;
@@ -82,10 +86,16 @@ internal static class GeneratedStartOracle
                 object Coord(object p)=>p.GetType().GetField("coord")!.GetValue(p)!;
                 int Row(object p)=>(int)Coord(p).GetType().GetField("row")!.GetValue(Coord(p))!;
                 int Col(object p)=>(int)Coord(p).GetType().GetField("col")!.GetValue(Coord(p))!;
-                object RunBoundary()=>new{hp=P(P(player,"Creature"),"CurrentHp"),gold=P(player,"Gold"),
-                    relics=Items(P(player,"Relics")).Select(r=>P(P(r,"Id"),"Entry").ToString()).ToArray(),
-                    deck=Items(P(P(player,"Deck"),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")}).ToArray(),
-                    rewardsCounter=P(P(P(player,"PlayerRng"),"Rewards"),"Counter"),nicheCounter=P(P(P(state,"Rng"),"Niche"),"Counter"),shuffleCounter=P(P(P(state,"Rng"),"Shuffle"),"Counter")};
+                object RunBoundary()
+                {
+                    var result=new Dictionary<string,object?> {
+                        ["hp"]=P(P(player,"Creature"),"CurrentHp"),["gold"]=P(player,"Gold"),
+                        ["relics"]=Items(P(player,"Relics")).Select(r=>P(P(r,"Id"),"Entry").ToString()).ToArray(),
+                        ["deck"]=Items(P(P(player,"Deck"),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")}).ToArray(),
+                        ["rewardsCounter"]=P(P(P(player,"PlayerRng"),"Rewards"),"Counter"),["nicheCounter"]=P(P(P(state,"Rng"),"Niche"),"Counter"),["shuffleCounter"]=P(P(P(state,"Rng"),"Shuffle"),"Counter")};
+                    if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
+                    return result;
+                }
                 async Task<object> Rewards(object rewardRoom)
                 {
                     var generated=(Task)C(T("Commands.RewardsCmd"),"GenerateForRoomEnd",player,rewardRoom);await Await(generated);
@@ -119,6 +129,9 @@ internal static class GeneratedStartOracle
                     return new{claims=claimed,state=RunBoundary()};
                 }
                 var route=new List<object>();
+                void AddRoom(object room)=>route.Add(boosted?(object)new{actIndex=P(state,"CurrentActIndex"),room}:room);
+                object? winningState=null;
+                bool completed=false;
                 var costs=new Dictionary<object,int>();
                 int RouteCost(object p)
                 {
@@ -139,8 +152,17 @@ internal static class GeneratedStartOracle
                     string kind=room.GetType().Name;
                     if(kind=="RestSiteRoom")await Await(C(Items(P(room,"Options")).Single(o=>P(o,"OptionId").ToString()=="HEAL"),"OnSelect"));
                     else Require(kind is "TreasureRoom" or "MerchantRoom","Unsupported generated room: "+kind);
+                    if(boosted && kind=="TreasureRoom")
+                    {
+                        await Await(C(room,"DoNormalRewards"));await Await(C(room,"DoExtraRewardsIfNeeded"));
+                        // Same completed solo skip action as the opened chest UI.
+                        var skip=Activator.CreateInstance(T("GameActions.PickRelicAction"),new object?[]{player,null})!;
+                        C(P(manager,"ActionQueueSet"),"EnqueueWithoutSynchronizing",skip);
+                        await Await(C(P(manager,"ActionExecutor"),"FinishedExecutingActions"));
+                        Require(P(skip,"State").ToString()=="Finished","Chest skip did not finish.");
+                    }
                     // Both leaving a shop without buying and leaving a closed chest are legal.
-                    route.Add(new{row=Row(next),col=Col(next),kind,entry,state=RunBoundary()});
+                    AddRoom(new{row=Row(next),col=Col(next),kind,entry,state=RunBoundary()});
                     continue;
                 }
                 var combatManager=T("Combat.CombatManager").GetProperty("Instance")!.GetValue(null)!;
@@ -150,9 +172,15 @@ internal static class GeneratedStartOracle
                 while(P(P(manager,"ActionQueueSynchronizer"),"CombatState").ToString()!="PlayPhase"){Require(clock.ElapsedMilliseconds<3000,"Combat start timed out.");await Task.Yield();}
                 var actions=new List<object>();
                 object Card(object c)=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")};
-                object Boundary()=>new{hp=P(P(player,"Creature"),"CurrentHp"),block=P(P(player,"Creature"),"Block"),energy=P(P(player,"PlayerCombatState"),"Energy"),
-                    hand=Items(P(P(P(player,"PlayerCombatState"),"Hand"),"Cards")).Select(Card).ToArray(),
-                    enemies=Items(P(combat,"Enemies")).Select(c=>new{id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}).ToArray()};
+                object Boundary()
+                {
+                    var result=new Dictionary<string,object?> {
+                        ["hp"]=P(P(player,"Creature"),"CurrentHp"),["block"]=P(P(player,"Creature"),"Block"),["energy"]=P(P(player,"PlayerCombatState"),"Energy"),
+                        ["hand"]=Items(P(P(P(player,"PlayerCombatState"),"Hand"),"Cards")).Select(Card).ToArray(),
+                        ["enemies"]=Items(P(combat,"Enemies")).Select(c=>boosted?(object)new{combatId=P(c,"CombatId"),id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}:new{id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}).ToArray()};
+                    if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
+                    return result;
+                }
                 var initial=Boundary();
                 for(int n=0;n<300 && (bool)P(combatManager,"IsInProgress");n++)
                 {
@@ -176,14 +204,17 @@ internal static class GeneratedStartOracle
                         await Await(C(executor,"FinishedExecutingActions"));
                         Require(P(play,"State").ToString()=="Finished","Card action paused unexpectedly.");
                         await Await(C(combatManager,"CheckWinCondition"));
-                        actions.Add(campaign?(object)new{kind="play",index,targetIndex=Array.IndexOf(enemies,target),card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="play",index,card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
+                        actions.Add(boosted?(object)new{kind="play",index,targetCombatId=target is null?null:P(target,"CombatId"),card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:campaign?(object)new{kind="play",index,targetIndex=Array.IndexOf(enemies,target),card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="play",index,card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
                     }
                     else
                     {
+                        bool curse=boosted && living.Any(e=>P(P(e,"Monster"),"Id").ToString()=="MONSTER.KNOWLEDGE_DEMON" && P(P(P(e,"Monster"),"NextMove"),"Id").ToString()=="CURSE_OF_KNOWLEDGE_MOVE");
+                        if(curse)C(selector,"PrepareToSelect",new[]{0});
                         await Await(C(combatManager,"EndPlayerTurnPhaseOneInternal"));
                         if((bool)P(combatManager,"IsInProgress"))await Await(C(combatManager,"EndPlayerTurnPhaseTwoInternal"));
                         if((bool)P(combatManager,"IsInProgress"))await Await(C(combatManager,"SwitchFromPlayerToEnemySide",(object?)null));
-                        actions.Add(new{kind="end",state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
+                        if(curse)Require(Items(selector.GetType().GetField("_indicesToSelectTaskQueue",flags)!.GetValue(selector)!).Length==0,"Curse answer was not consumed.");
+                        actions.Add(boosted?(object)new{kind="end",choiceIndices=curse?new[]{0}:Array.Empty<int>(),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="end",state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
                     }
                 }
                 Require(!(bool)P(combatManager,"IsInProgress"),"Combat action budget exhausted.");
@@ -193,15 +224,49 @@ internal static class GeneratedStartOracle
                 {
                     bool alive=(bool)P(P(player,"Creature"),"IsAlive");
                     var rewards=alive?await Rewards(room):null;
-                    route.Add(new{row=Row(next),col=Col(next),kind="CombatRoom",entry,combat=trace,rewards,state=RunBoundary()});
+                    AddRoom(new{row=Row(next),col=Col(next),kind="CombatRoom",entry,combat=trace,rewards,state=RunBoundary()});
                     if(!alive)break;
-                    if(P(room,"RoomType").ToString()=="Boss")break;
+                    if(P(room,"RoomType").ToString()=="Boss")
+                    {
+                        if(!boosted){completed=true;break;}
+                        await Await(C(manager,"EnterNextAct"));
+                        if((bool)P(P(state,"CurrentRoom"),"IsVictoryRoom"))
+                        {
+                            var ending=C(P(manager,"EventSynchronizer"),"GetLocalEvent");
+                            Require(ending.GetType().Name=="TheArchitect","Expected Architect.");
+                            winningState=RunBoundary();
+                            var saved=C(manager,"ToSave",(object?)null);
+                            await Await(C(manager,"EnterNextAct"));
+                            bool recorded=(bool)manager.GetType().GetField("_runHistoryWasUploaded",flags)!.GetValue(manager)!;
+                            Require(recorded && Convert.ToInt32(P(Items(P(saved,"Players"))[0],"CurrentHp"))>0 && Convert.ToInt32(P(P(player,"Creature"),"CurrentHp"))==0,"Native victory was not recorded before disposal.");
+                            AddRoom(new{kind="Victory",recorded,entry=winningState,savedHp=P(Items(P(saved,"Players"))[0],"CurrentHp"),disposedHp=P(P(player,"Creature"),"CurrentHp"),state=winningState});
+                            completed=true;break;
+                        }
+                        point=P(P(state,"Map"),"StartingMapPoint");costs.Clear();
+                        var transition=RunBoundary();
+                        await Await(C(manager,"EnterMapCoord",Coord(point)));
+                        var ancient=C(P(manager,"EventSynchronizer"),"GetLocalEvent");
+                        var ancientEntry=RunBoundary();
+                        var ancientOptions=Items(P(ancient,"CurrentOptions"));
+                        Require(ancientOptions.Length==3,"Expected Ancient offers.");
+                        var ancientOffers=ancientOptions.Select(o=>P(P(P(o,"Relic"),"Id"),"Entry").ToString()).ToArray();
+                        var avoided=new[]{"PAELS_TOOTH","PAELS_CLAW","BEAUTIFUL_BRACELET","JEWELRY_BOX","FUR_COAT"};
+                        var chosen=ancientOptions.First(o=>!avoided.Contains(P(P(P(o,"Relic"),"Id"),"Entry").ToString()));
+                        var ancientChoice=P(P(P(chosen,"Relic"),"Id"),"Entry").ToString();
+                        await Await(C(chosen,"Chosen"));Require((bool)P(ancient,"IsFinished"),"Ancient did not finish.");
+                        AddRoom(new{kind="ActTransition",ancient=P(P(ancient,"Id"),"Entry").ToString(),row=Row(point),col=Col(point),transition,entry=ancientEntry,offers=ancientOffers,choice=ancientChoice,state=RunBoundary()});
+                    }
                 }
                 }
-                if(campaign)rows.Add(new{seed,offers,choice,rewardsAfterNeow,route,state=RunBoundary(),outcome=(bool)P(P(player,"Creature"),"IsAlive")?"act_complete":"defeat"});
+                if(boosted)
+                {
+                    Require(completed && winningState is not null,"Boosted campaign did not win within room/action budgets.");
+                    rows.Add(new{seed,offers,choice,rewardsAfterNeow,startingHp=boostedHp,startingMaxHp=boostedHp,route,state=winningState,outcome="victory"});
+                }
+                else if(campaign)rows.Add(new{seed,offers,choice,rewardsAfterNeow,route,state=RunBoundary(),outcome=(bool)P(P(player,"Creature"),"IsAlive")?"act_complete":"defeat"});
             }
             finally{C(manager,"CleanUp",true);}
         }
-        return JsonSerializer.Serialize(new{source=campaign?"Native generated continuous route with real card actions and rewards, manual turn phases, optional chest/shop skips, mock saves and uploads disabled; no synthetic victories":"Native generated Neow and first combat only; real card action executor, manually invoked end-turn phases, UI-only mock localization/textures, mock saves and uploads disabled; no synthetic victories",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
+        return JsonSerializer.Serialize(new{source=boosted?"Native continuous three-act campaign with explicitly authored 1000000 starting/current max HP; real card actions, rewards and boss wins; manual turn phases and mock persistence; not an ordinary winning run":campaign?"Native generated continuous route with real card actions and rewards, manual turn phases, optional chest/shop skips, mock saves and uploads disabled; no synthetic victories":"Native generated Neow and first combat only; real card action executor, manually invoked end-turn phases, UI-only mock localization/textures, mock saves and uploads disabled; no synthetic victories",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
     }
 }

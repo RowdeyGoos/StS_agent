@@ -58,6 +58,7 @@ class Ovicopter(ScriptedEnemy):
 
 
 class Parafright(EyeWithTeeth, InterruptibleEnemy):
+    turn_order = 0
     NAME, HP = 'Parafright', (21, 21)
     MOVES = (attack('Slam', 16), Intent('heal', 21, 'Revive'))
 
@@ -75,6 +76,7 @@ class Parafright(EyeWithTeeth, InterruptibleEnemy):
 
 
 class TheObscura(ScriptedEnemy):
+    turn_order = 1
     NAME, HP = 'The Obscura', (123, 123)
     MOVES = (Intent('summon', 1, 'Illusion'), attack('Piercing Gaze', 10),
              Intent('buff', 3, 'Wail'), attack('Hardening Strike', 6, block_gain=6))

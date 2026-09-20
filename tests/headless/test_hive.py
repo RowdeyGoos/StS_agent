@@ -558,3 +558,20 @@ def test_ovicopter_paused_move_binds_cursor_to_stable_target_slot():
         action = next((a for a in legal if isinstance(a, ConfirmCombatSelection)), None)
         step(run, action or next(a for a in legal if isinstance(a, ChooseCombatCard)))
     assert p.rules.player_side
+
+
+def test_obscura_buffs_after_illusion_attack_and_random_hits_use_native_positions(monkeypatch):
+    run = start('the_obscura', ('sword_boomerang',))
+    step(run, EndTurn())
+    player, boss = run.combat.player, run.combat.enemies[0]
+    child = run.combat.enemies[1]
+    boss._intent_index = 2  # Wail must follow the earlier-position Parafright's Slam.
+    hp = player.hp
+    step(run, EndTurn())
+    assert player.hp == hp - 16
+    assert child.strength == boss.strength == 3
+    # Stable action slots remain boss=0, child=1; native random position 0 is child.
+    monkeypatch.setattr(player.deck.target_rng, 'choice', lambda candidates: candidates[0])
+    card = next(c for c in player.hand if c.definition.definition_id == 'sword_boomerang')
+    run.apply(PlayCard(card.instance_id))
+    assert child.hp == 12 and boss.hp == boss.max_hp

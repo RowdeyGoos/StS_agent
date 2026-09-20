@@ -74,10 +74,6 @@ def damage_hook(p, identity, amount, unblockable, attack, source_slot):
     name, m = relic["definition_id"], memory(p, relic)
     if not p.is_alive:
         return
-    if name == "bronze_scales" and attack and source_slot is not None:
-        source = p.combat_enemies[source_slot]
-        if source.is_alive:
-            source.take_damage(3, is_attack=False)
     if not amount:
         return
     if name == "beating_remnant":

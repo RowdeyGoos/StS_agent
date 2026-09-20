@@ -553,7 +553,8 @@ def execute(p, task):
     elif op == "random_hit":
         from game.headless.cards.colorless_effects import hit
 
-        living = [e for e in p.combat_enemies if e.is_alive]
+        from game.headless.core.enemy_turn import turn_order
+        living = [p.combat_enemies[i] for i in turn_order(p.combat_enemies) if p.combat_enemies[i].is_alive]
         if living and not p.combat_is_ending:
             hit(p, find(p, args[0]), p.deck.target_rng.choice(living), extra=args[1])
     elif op == "gigantification_begin":
