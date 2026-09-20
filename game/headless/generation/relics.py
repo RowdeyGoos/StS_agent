@@ -7,10 +7,12 @@ from game.headless.relics.base import RELICS
 RARITIES = ("common", "uncommon", "rare", "shop")
 
 
-def populate(rng):
+def populate(rng, character="ironclad"):
+    from game.headless.characters import definition
+    player_pool = definition(character).relic_pool
     result = {}
     # Native run setup populates shared first, then player, from one UpFront RNG.
-    for owner, pool in (("shared", SHAREDRELICPOOL), ("player", (*SHAREDRELICPOOL, *IRONCLADRELICPOOL))):
+    for owner, pool in (("shared", SHAREDRELICPOOL), ("player", (*SHAREDRELICPOOL, *player_pool))):
         bags = {}
         for name in pool:
             rarity = RELICS[name].rarity
@@ -23,7 +25,9 @@ def populate(rng):
     return result
 
 
-def validate(data):
+def validate(data, character="ironclad"):
+    from game.headless.characters import definition
+    player_pool = (*SHAREDRELICPOOL, *definition(character).relic_pool)
     if not isinstance(data, dict) or set(data) != {"shared", "player"}:
         raise ValueError("Invalid relic bags.")
     for owner, bags in data.items():
@@ -37,6 +41,8 @@ def validate(data):
                 raise ValueError("Invalid relic bag membership.")
             if owner == "shared" and any(n not in SHAREDRELICPOOL for n in bag):
                 raise ValueError("Nonshared relic in shared bag.")
+            if owner == "player" and any(n not in player_pool for n in bag):
+                raise ValueError("Foreign character relic in player bag.")
             seen += bag
         if len(seen) != len(set(seen)):
             raise ValueError("Repeated relic in grab bag.")

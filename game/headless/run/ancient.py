@@ -1,5 +1,6 @@
 """Owned Neow offers and acquisition history, before entering the map."""
 
+from game.headless.characters import character
 from dataclasses import dataclass, field
 from copy import deepcopy
 from game.headless.run.actions import ChooseAncientRelic
@@ -48,7 +49,7 @@ class AncientStart:
             raise ValueError("Invalid Neow content exclusions.")
         from game.headless.cards.catalog import DEFAULT_CARDS
         from game.headless.relics.neow import available
-        expected_unavailable = [n for n in ("kaleidoscope", "scroll_boxes") if not available(n, cards or DEFAULT_CARDS)]
+        expected_unavailable = [n for n in ("kaleidoscope", "scroll_boxes") if not available(n, cards or DEFAULT_CARDS, character(state))]
         if self.unavailable != expected_unavailable:
             raise ValueError("Neow exclusions differ from the configured card catalog.")
         expected = list(OFFERS) if self.profile == RESTRICTED_PROFILE else generate(type(state.rng)(state.seed), self.unavailable)
@@ -84,7 +85,7 @@ def begin(state, *, profile, cards=None):
     if (profile not in (PROFILE, RESTRICTED_PROFILE) or state.ancient_start is not None or state.visited_nodes
             or state.combats_completed or any(r.definition_id in (*POSITIVES, *CURSES, *OFFERS) for r in state.relics)):
         raise ValueError("Unsupported or already started Ancient choice.")
-    unavailable = [n for n in ("kaleidoscope", "scroll_boxes") if not available(n, cards)]
+    unavailable = [n for n in ("kaleidoscope", "scroll_boxes") if not available(n, cards, character(state))]
     offers = list(OFFERS) if profile == RESTRICTED_PROFILE else generate(state.rng, unavailable)
     from game.headless.events.progression import NATIVE_PROFILES
     if state.event_progression is not None and state.event_progression.profile in NATIVE_PROFILES:

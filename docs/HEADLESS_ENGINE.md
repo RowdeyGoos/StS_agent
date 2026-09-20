@@ -62,7 +62,7 @@ game classes. There is one combat implementation, not two simulators to maintain
 
 ## Current completion scope
 
-The supported campaign is solo Ironclad A0–A10 on pinned build 0.107.1, with all content
+The supported campaign includes all five solo characters at A0–A10 on pinned build 0.107.1, with all content
 unlocked, through either Act 1 region, Hive, Glory and the Architect ending.
 The [next assignments](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment)
 track current completion work. Older batch descriptions below retain their original
@@ -76,8 +76,47 @@ seed/path comparison remains acceptance work. A normal-HP test-policy victory is
 not required. Boosted runs use ordinary rules; focused low-HP/death/revival cases
 remain necessary because starting HP changes which branches a route encounters.
 Passing Python progression with synthetic combat wins does not establish that
-fidelity. Other playable character starts, progression-dependent unlocks,
-multiplayer and alternate modes are outside the project scope.
+fidelity. Progression-dependent unlocks, multiplayer and alternate modes remain
+outside the project scope. Character integration has its own evidence below;
+existing native whole-campaign captures remain Ironclad comparisons.
+
+## Playable characters
+
+Use the same engine for Ironclad, Silent, Regent, Necrobinder or Defect:
+
+```python
+from game.headless.run.engine import RunEngine
+
+run = RunEngine.campaign(character="defect", seed=2, ascension=10,
+                         first_act="underdocks")
+actions = run.legal_actions()
+run.apply(actions[0])
+```
+
+`RunEngine.act1(character="silent", seed=2)` stops after Act 1. Existing
+`ironclad_run`/`ironclad_act1` callers remain supported. The existing CLI accepts
+`sts-headless-play --character regent --route overgrowth-glory --seed 2`;
+its simple demo policy is not a trained policy or a normal-HP victory guarantee.
+Other characters use generated routes; the old authored slices remain Ironclad.
+
+The immutable [character catalog](../game/headless/characters.py) owns native
+starting HP/decks/relics, base orb slots and ordered exclusive pools. Shared rule
+modules handle Stars, Forge, Osty, orbs, powers and choices. Rewards, shops,
+transformations, event rewards, Neow and character-dependent Ancient gifts use
+the selected owner. Each ordinary potion pool has 48 entries. The extension adds
+32 exclusive relics, four refined starters, twelve potions and four Ancient cards.
+Forbidden Grimoire earns optional physical-card removal rewards after combat;
+its own Eternal card cannot be removed.
+
+Private combat/run snapshots are v45/v66. Character identity, item counters,
+retained discounts and emitted callback receipts survive JSON continuation;
+foreign exclusive relics cannot be inserted into native player grab bags.
+Old private snapshot versions are intentionally rejected.
+
+[Character evidence](evidence/playable_characters_2026_09_20.md) distinguishes
+native startup callback/potion comparisons from boosted Python integration runs.
+Full native campaign comparisons for the four added characters remain open;
+this implementation does not extend the separate RL/public observation adapters.
 
 ## Ascension levels
 

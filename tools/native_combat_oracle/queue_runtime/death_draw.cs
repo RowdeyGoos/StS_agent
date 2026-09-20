@@ -27,7 +27,7 @@ internal static class DeathDrawOracle
             }
         }
         var db=T("Models.ModelDb");
-        foreach(var t in asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AbstractModel"))&&t.Namespace is "MegaCrit.Sts2.Core.Models.Characters" or "MegaCrit.Sts2.Core.Models.Cards" or "MegaCrit.Sts2.Core.Models.CardPools" or "MegaCrit.Sts2.Core.Models.Monsters" or "MegaCrit.Sts2.Core.Models.Powers" or "MegaCrit.Sts2.Core.Models.Relics" or "MegaCrit.Sts2.Core.Models.Encounters" or "MegaCrit.Sts2.Core.Models.Afflictions" or "MegaCrit.Sts2.Core.Models.Enchantments" or "MegaCrit.Sts2.Core.Models.Potions" or "MegaCrit.Sts2.Core.Models.PotionPools" or "MegaCrit.Sts2.Core.Models.Acts" or "MegaCrit.Sts2.Core.Models.Events" or "MegaCrit.Sts2.Core.Models.RelicPools"))db.GetMethod("Inject")!.Invoke(null,new object[]{t});
+        foreach(var t in asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AbstractModel"))&&t.Namespace is "MegaCrit.Sts2.Core.Models.Characters" or "MegaCrit.Sts2.Core.Models.Cards" or "MegaCrit.Sts2.Core.Models.CardPools" or "MegaCrit.Sts2.Core.Models.Monsters" or "MegaCrit.Sts2.Core.Models.Powers" or "MegaCrit.Sts2.Core.Models.Orbs" or "MegaCrit.Sts2.Core.Models.Relics" or "MegaCrit.Sts2.Core.Models.Encounters" or "MegaCrit.Sts2.Core.Models.Afflictions" or "MegaCrit.Sts2.Core.Models.Enchantments" or "MegaCrit.Sts2.Core.Models.Potions" or "MegaCrit.Sts2.Core.Models.PotionPools" or "MegaCrit.Sts2.Core.Models.Acts" or "MegaCrit.Sts2.Core.Models.Events" or "MegaCrit.Sts2.Core.Models.RelicPools"))db.GetMethod("Inject")!.Invoke(null,new object[]{t});
         object Get(string method,string name)=>db.GetMethods().Single(m=>m.Name==method&&m.IsGenericMethodDefinition).MakeGenericMethod(T("Models."+name)).Invoke(null,null)!;
         T("TestSupport.TestMode").GetProperty("IsOn")!.SetValue(null,true);
         T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,0UL);
@@ -58,13 +58,20 @@ internal static class DeathDrawOracle
             // One scenario per distinct behavior, not a seed/difficulty cross-product.
             if(itemStatus && drawCase.StartsWith("focused_") && (seed!="2" || upgraded || itemAscension!=(drawCase.StartsWith("focused_monster_")?10:0)))continue;
             var player=RuntimeHelpers.GetUninitializedObject(T("Entities.Players.Player"));
-            F(player,"<Character>k__BackingField",Get("Character","Characters.Ironclad"));
+            var charName=itemStatus&&drawCase.StartsWith("focused_character_")?drawCase.Substring("focused_character_".Length).Replace("_refined",""):"Ironclad";
+            var charModel=Get("Character","Characters."+charName);
+            F(player,"<Character>k__BackingField",charModel);
+            if(itemStatus&&drawCase.StartsWith("focused_character_")){
+                player.GetType().GetProperty("BaseOrbSlotCount")!.SetValue(player,P(charModel,"BaseOrbSlotCount"));
+                F(player,"<UnlockState>k__BackingField",T("Unlocks.UnlockState").GetField("all")!.GetValue(null));
+            }
             F(player,"<ExtraFields>k__BackingField",Activator.CreateInstance(T("Entities.Players.ExtraPlayerFields"))!);
             F(player,"<Deck>k__BackingField",Activator.CreateInstance(T("Entities.Cards.CardPile"),new[]{Enum.Parse(T("Entities.Cards.PileType"),"Deck")})!);
             foreach(string n in new[]{"_relics","_potionSlots"}){var f=player.GetType().GetField(n,flags)!;f.SetValue(player,Activator.CreateInstance(f.FieldType));}
             var ctx=DispatchProxy.Create(T("Runs.IRunState"),typeof(DeathDrawContext));var d=(DeathDrawContext)ctx;
             var rng=Activator.CreateInstance(T("Runs.RunRngSet"),new object[]{seed})!;
             d.Values["get_Rng"]=rng;d.Values["get_Players"]=Typed(new[]{player},player.GetType());d.Values["get_AscensionLevel"]=itemAscension;d.Values["get_CurrentMapPointHistoryEntry"]=null;
+            d.Values["get_CardMultiplayerConstraint"]=Enum.Parse(T("Entities.Cards.CardMultiplayerConstraint"),"SingleplayerOnly");
             d.Values["get_CurrentActIndex"]=0;d.Values["get_TotalFloor"]=2;
             d.Values["get_CurrentMapCoord"]=Activator.CreateInstance(T("Map.MapCoord"),new object[]{3,2})!;
             if(itemStatus && drawCase=="focused_sicem_TestSubject")d.Values["get_ExtraFields"]=Activator.CreateInstance(T("Runs.IRunState").GetProperty("ExtraFields")!.PropertyType)!;

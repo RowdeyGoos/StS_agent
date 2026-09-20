@@ -3,7 +3,7 @@
 from game.headless.core.resolution import push, move_out
 
 INSTANCED = frozenset(('orbit', 'monologue'))
-NAMES = frozenset(('arsenal', 'black_hole', 'child_of_the_stars', 'foregone_conclusion',
+NAMES = frozenset(('the_sealed_throne', 'arsenal', 'black_hole', 'child_of_the_stars', 'foregone_conclusion',
     'furnace', 'genesis', 'monarchs_gaze', 'monologue', 'orbit', 'pale_blue_dot',
     'parry', 'pillar_of_creation', 'reflect', 'royalties', 'seeking_edge',
     'spectrum_shift', 'energy_next_turn', 'star_next_turn', 'sword_sage', 'tyranny', 'void_form'))
@@ -65,6 +65,8 @@ def spend(p, energy, stars):
     r.stars -= stars
     if stars and r.powers.get('child_of_the_stars'):
         p.gain_block(stars * r.powers['child_of_the_stars'])
+    from game.headless.relics.character_hooks import spent
+    spent(p, stars)
 
 
 def entered(p, card, *, is_clone=False):
@@ -83,6 +85,7 @@ def generated(p):
 
 
 def before_play(p, card):
+    gain_stars(p, p.rules.powers.get("the_sealed_throne", 0))
     r = p.rules
     r.plays[card.instance_id]['regent_before'] = {key: amount for key, amount in r.powers.items() if key.startswith('monologue:')}
 

@@ -54,7 +54,10 @@ from game.headless.relics.ancient_content import definitions as ancient_definiti
 
 from game.headless.relics.event_content import definitions as event_definitions
 
+from game.headless.relics.character_content import definitions as character_definitions
+
 RELICS = MappingProxyType({
+    **character_definitions(RelicDefinition),
     **event_definitions(RelicDefinition),
     **ancient_definitions(RelicDefinition),
     "byrdpip": RelicDefinition("byrdpip", adds_pet=True, allow_duplicates=True, pickup_transform=("byrdonis_egg", "byrd_swoop")),

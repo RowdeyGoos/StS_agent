@@ -144,6 +144,12 @@ class Player:
         """Apply incoming damage and return the HP damage taken."""
         from game.headless.powers.hive import damage_multiplier
         numerator, denominator = damage_multiplier(self, source)
+        from game.headless.relics.combat import has
+        if is_attack and attacker_statuses is not None and attacker_statuses.get('weak') and has(self, 'paper_krane'):
+            numerator *= 20 if attacker_statuses.get('debilitate') else 60
+            denominator *= 50 if attacker_statuses.get('debilitate') else 75
+        if is_attack and source is not None and source.hp <= source.statuses.get('doom') and has(self, 'undying_sigil'):
+            denominator *= 2
         if is_attack:
             amount += self.rules.powers.get("tainted", 0)
         incoming_damage = (

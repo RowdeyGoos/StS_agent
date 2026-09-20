@@ -62,12 +62,16 @@ class CombatEngine:
         self.done = False
         self.winner: str | None = None
 
-    def reset(self, seed: int | None = None, *, relics=(), initial_hp=None, room_kind="combat", potion_capacity=3, potion_slots=3, potions=(), potion_pool=None, gold=0) -> None:
+    def reset(self, seed: int | None = None, *, relics=(), initial_hp=None, room_kind="combat", potion_capacity=3, potion_slots=3, potions=(), potion_pool=None, gold=0, character="ironclad") -> None:
         if seed is not None:
             if type(seed) is not int:
                 raise ValueError("Combat seed must be an integer.")
             self.rng = make_rng(seed)
+        from game.headless.characters import definition
+        start = definition(character)
         self.player = self._build_player()
+        self.player.rules.character = character
+        self.player.rules.orb_slots = start.orb_slots
         self.player.catalog = self.card_catalog
         self.enemies = self._build_encounter()
         self.player.combat_enemies = self.enemies
@@ -93,6 +97,10 @@ class CombatEngine:
         for enemy in self.enemies:
             enemy.after_joining_combat(self.player)
             enemy.before_side_start(True)
+        from game.headless.core.resolution import push, drain
+        from game.headless.relics.combat import tasks
+        push(self.player, *tasks(self.player, "before_side_start"))
+        drain(self.player)
         self.player.start_turn(draw_count=self.cards_per_turn)
         self._refresh_persistent_statuses()
         self._check_terminal()

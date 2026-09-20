@@ -38,6 +38,11 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     nodes = [a for a in actions if isinstance(a, ChooseNode)]
     if nodes:
         return nodes[0] if path == "left" else nodes[-1]
+    if engine.combat is not None and engine.combat.player.rules.selection:
+        selected = engine.combat.player.rules.selection['selected']
+        if ConfirmCombatSelection() in actions:
+            return ConfirmCombatSelection()
+        return next(a for a in actions if isinstance(a, ChooseCombatCard) and a.instance_id not in selected)
     for kind in (ChooseAncientRelic, ConfirmCombatSelection, ChooseCombatCard, ClaimGold, ClaimPotion, ClaimRelic, OpenChest, ClaimTreasureRelic):
         if found := next((a for a in actions if isinstance(a, kind)), None):
             return found
@@ -93,7 +98,9 @@ def choose_demo_action(engine, rest_choice="smith", path="left"):
     raise ValueError("No supported demo decision is available.")
 
 
-def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="first-slice", path="left", boss=None, elite=None, hallway=None, ancient=None, ascension=0):
+def play_slice(*, character="ironclad", seed=0, rest_choice="smith", verify_restore=False, route="first-slice", path="left", boss=None, elite=None, hallway=None, ancient=None, ascension=0):
+    from game.headless.characters import definition
+    definition(character)
     if path not in ("left", "right"):
         raise ValueError("Unknown demo path preference.")
     if ancient not in (None, "neow") or ancient is not None and route not in ("overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive", "overgrowth-glory", "underdocks-glory"):
@@ -103,10 +110,12 @@ def play_slice(*, seed=0, rest_choice="smith", verify_restore=False, route="firs
             raise ValueError("Generated routes select encounters from owned queues.")
         from game.headless.run.ancient import PROFILE as ANCIENT_PROFILE
         if route.endswith(('-hive', '-glory')):
-            engine = RunEngine.ironclad_run(seed=seed, first_act=route.rsplit('-', 1)[0], last_act=route.rsplit('-', 1)[1], ancient_profile=ANCIENT_PROFILE if ancient else None, ascension=ascension)
+            engine = RunEngine.campaign(character=character, seed=seed, first_act=route.rsplit('-', 1)[0], last_act=route.rsplit('-', 1)[1], ancient_profile=ANCIENT_PROFILE if ancient else None, ascension=ascension)
         else:
-            engine = RunEngine.ironclad_act1(seed=seed, act=route.removesuffix("-generated"), ancient_profile=ANCIENT_PROFILE if ancient else None, ascension=ascension)
+            engine = RunEngine.act1(character=character, seed=seed, act=route.removesuffix("-generated"), ancient_profile=ANCIENT_PROFILE if ancient else None, ascension=ascension)
     else:
+        if character != "ironclad":
+            raise ValueError("Other characters require a generated route.")
         engine = RunEngine.ironclad_slice(seed=seed, route=route, boss=boss, elite=elite, hallway=hallway, ascension=ascension)
     trace = []
     for _ in range(2000):
@@ -135,6 +144,8 @@ def main(argv=None):
         parser.add_argument("--" + option, choices=tuple(name for name, encounter in ENCOUNTERS.items() if encounter.room_kind == kind and encounter.event_id is None),
                             help="Replace this encounter on the authored Act 1 route.")
     parser.add_argument("--ancient", choices=("neow",), help="Begin generated Act 1 with the restricted Neow pickup choices.")
+    from game.headless.characters import CHARACTERS
+    parser.add_argument("--character", choices=tuple(CHARACTERS), default="ironclad")
     parser.add_argument("--ascension", type=int, choices=range(11), default=0)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--route", choices=(*ROUTES, "overgrowth-generated", "underdocks-generated", "overgrowth-hive", "underdocks-hive", "overgrowth-glory", "underdocks-glory"), default="first-slice")
@@ -144,11 +155,11 @@ def main(argv=None):
     parser.add_argument("--verify-restore", action="store_true")
     parser.add_argument("--trace", action="store_true")
     args = parser.parse_args(argv)
-    engine, trace = play_slice(seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path, boss=args.boss, elite=args.elite, hallway=args.hallway, ancient=args.ancient, ascension=args.ascension)
+    engine, trace = play_slice(character=args.character, seed=args.seed, rest_choice=args.rest_choice, verify_restore=args.verify_restore, route=args.route, path=args.path, boss=args.boss, elite=args.elite, hallway=args.hallway, ancient=args.ancient, ascension=args.ascension)
     state = engine.state
-    print(json.dumps({"scope": f"ironclad_a{args.ascension}_generated_through_" + state.config.campaign[-1] if state.config.campaign else f"restricted_ironclad_a{args.ascension}_generated_act1" if args.route in ("overgrowth-generated", "underdocks-generated") else (f"restricted_ironclad_a{args.ascension}_two_combat_slice" if args.route == "first-slice" else (f"restricted_ironclad_a{args.ascension}_act1_route" if args.route == "overgrowth-act1" else f"restricted_ironclad_a{args.ascension}_overgrowth_route")),
+    print(json.dumps({"scope": f"{args.character}_a{args.ascension}_generated_through_" + state.config.campaign[-1] if state.config.campaign else f"restricted_{args.character}_a{args.ascension}_generated_act1" if args.route in ("overgrowth-generated", "underdocks-generated") else (f"restricted_{args.character}_a{args.ascension}_two_combat_slice" if args.route == "first-slice" else (f"restricted_{args.character}_a{args.ascension}_act1_route" if args.route == "overgrowth-act1" else f"restricted_{args.character}_a{args.ascension}_overgrowth_route")),
                       "map_profile": engine.graph.generation,
-                      "act": state.config.act, "ascension": state.config.ascension,
+                      "character": state.config.character, "act": state.config.act, "ascension": state.config.ascension,
                       "ancient_start": None if state.ancient_start is None else asdict(state.ancient_start),
                       "event_profile": None if state.event_progression is None else state.event_progression.profile,
                       "rooms_visited": state.visited_room_count,

@@ -130,7 +130,7 @@ class RunState:
             from game.headless.generation.odds import validate
             validate(self.generation_odds)
             from game.headless.generation.relics import validate as validate_bags
-            validate_bags(self.relic_bags)
+            validate_bags(self.relic_bags, self.config.character if self.config else "ironclad")
         elif self.generation_odds is not None or self.relic_bags is not None:
             raise ValueError("Native odds require native randomness.")
         if self.phase is RunPhase.COMBAT and self.relic_work:

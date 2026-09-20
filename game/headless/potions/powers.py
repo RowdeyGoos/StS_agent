@@ -13,6 +13,7 @@ NAMES = frozenset(
         "temporary_strength",
         "reptile_trinket",
         "temporary_dexterity",
+        "helical_dart",
     )
 )
 
@@ -44,7 +45,7 @@ def after_end(p, key):
         amount = r.powers.pop(key, 0)
         if amount:
             stat_loss(p, "strength", amount)
-    elif key == "temporary_dexterity":
+    elif key in ("temporary_dexterity", "helical_dart"):
         from game.headless.powers.underdocks import stat_loss
 
         amount = r.powers.pop(key, 0)

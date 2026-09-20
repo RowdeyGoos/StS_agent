@@ -2,6 +2,7 @@
 
 
 def mark_setter(state, kind):
+    state.cost_discount_baselines[kind] = state.until_played_discount
     for existing in ('combat', 'turn', 'played'):
         if getattr(state, existing + '_cost_override') is not None and existing not in state.cost_override_order:
             state.cost_override_order.append(existing)
@@ -26,6 +27,9 @@ def latest(state):
 
 
 def validate(values):
+    discounts = values['cost_discount_baselines']
+    if not isinstance(discounts, dict) or any(k not in ('combat', 'turn', 'played') or type(v) is not int or not 0 <= v <= values['until_played_discount'] for k,v in discounts.items()):
+        raise ValueError('Invalid cost discount baselines.')
     cost = values['played_cost_override']
     baseline = values['played_cost_baselines']
     order = values['cost_override_order']

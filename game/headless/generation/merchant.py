@@ -17,7 +17,7 @@ def card_cost(definition):
     return round(single(cost * single(1.15))) if definition.pool == "colorless" else cost
 
 
-def native_slots():
+def native_slots(character="ironclad"):
     result = []
     for kind in TYPES:
         result.append(
@@ -26,7 +26,7 @@ def native_slots():
                 tuple(
                     (d.definition_id, card_cost(d))
                     for d in DEFAULT_CARDS.definitions
-                    if d.pool == "ironclad"
+                    if d.pool == character
                     and d.rarity in COST
                     and ("skill" if d.levels[0].kind == "block" else d.levels[0].kind) == kind
                 ),
@@ -54,10 +54,16 @@ SLOTS = native_slots()
 
 def slots_for(state):
     if getattr(state.rng, "native", False):
-        return SLOTS
+        from game.headless.characters import character
+        return native_slots(character(state))
     from game.headless.shops.catalog import SLOTS as fixture
 
-    return fixture
+    from game.headless.characters import character
+    from dataclasses import replace
+    family = character(state)
+    return tuple(replace(slot, items=tuple((d.definition_id, COST[rarity]) for d in DEFAULT_CARDS.definitions
+                 if d.pool == family and d.rarity == rarity))
+                 for slot, rarity in zip(fixture[:3], COST)) + fixture[3:]
 
 
 def price(state, base, variation, on_sale=False):
@@ -67,8 +73,9 @@ def price(state, base, variation, on_sale=False):
 
 
 def card(state, cards, index, excluded):
-    pool = [n for n, _ in SLOTS[index].items if n not in excluded]
-    pool = ordered(pool, (*IRONCLADCARDPOOL, *COLORLESSCARDPOOL))
+    from game.headless.characters import character, card_order
+    pool = [n for n, _ in native_slots(character(state))[index].items if n not in excluded]
+    pool = ordered(pool, (*card_order(character(state)), *COLORLESSCARDPOOL))
     if index < 5:
         rolled = rarity(state, "shop", mode="unchanged")
         start = RARITIES.index(rolled)

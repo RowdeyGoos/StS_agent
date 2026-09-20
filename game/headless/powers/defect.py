@@ -7,7 +7,7 @@ TEMP_FOCUS = ('focused_strike', 'hotfix', 'synchronize')
 NAMES = frozenset(('focus', *TEMP_FOCUS, 'consuming_shadow', 'coolant', 'creative_ai',
     'echo_form', 'feral', 'hailstorm', 'defect_iteration', 'lightning_rod', 'loop',
     'machine_learning', 'signal_boost', 'smokestack', 'spinner', 'storm', 'subroutine',
-    'thunder', 'trash_to_treasure', 'free_power'))
+    'thunder', 'trash_to_treasure', 'free_power', 'biased_cognition'))
 
 
 def focus(p, amount):
@@ -21,6 +21,9 @@ def apply(p, key, amount):
     if not amount:
         return
     r = p.rules
+    if key == "biased_cognition" and p.statuses.get("artifact"):
+        p.statuses.decrement("artifact")
+        return
     if key == 'focus':
         focus(p, amount)
         return
@@ -123,6 +126,8 @@ def execute(p, op, args):
             push(p, ['def_generate_power'], ['def_before_draw', args[0] - 1])
     elif op == 'def_generate_power':
         generate_power(p)
+    elif op == 'def_side_start' and args[0] == 'biased_cognition':
+        focus(p, -r.powers.get('biased_cognition', 0))
     elif op == 'def_side_start':
         key = args[0]
         if key == 'coolant':

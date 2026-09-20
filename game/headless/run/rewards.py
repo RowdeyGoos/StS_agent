@@ -216,6 +216,9 @@ def acquire_card(state, cards, name, modifiers, *, offer_index=None):
 
 def choose_extra(state, cards, index, name, offer_index=None):
     reward = _reward(state)['extra_rewards'][index]
+    if reward['kind'] == 'remove' and not reward['resolved']:
+        from game.headless.run.removal_rewards import claim
+        return claim(state, reward, name)
     if reward['resolved'] or name is not None and name not in reward['offers']:
         raise ValueError('Extra reward is unavailable.')
     selected = select_offer(reward['offers'], name, offer_index)

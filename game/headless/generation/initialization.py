@@ -80,9 +80,9 @@ def validate(state):
     if not getattr(state.rng, "native", False):
         raise ValueError("Fixture run cannot own native initialization.")
     rng = NativeRandomService(state.seed)
-    populate(rng)
     if state.config is None:
         raise ValueError("Native initialization requires declared act settings.")
+    populate(rng, state.config.character)
     expected = generate(rng, act=state.config.first_act, ascension=state.config.ascension)
     if state.initialization != expected:
         raise ValueError("Native initialization differs from its seed and declared inputs.")

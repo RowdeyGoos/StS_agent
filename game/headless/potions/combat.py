@@ -76,6 +76,9 @@ def effect(p, identity, index):
                 if e.is_alive
             ],
         )
+    elif op == "character":
+        from game.headless.potions.character_effects import apply
+        apply(p, *args)
     elif op == "block":
         p.gain_block(args[0])
     elif op == "fortify":
@@ -118,7 +121,7 @@ def effect(p, identity, index):
     elif op == "select":
         select(p, identity, args[0])
     elif op == "offer":
-        family, kind = ("colorless", None) if args[0] == "colorless" else ("ironclad", args[0])
+        family, kind = ("colorless", None) if args[0] == "colorless" else (p.rules.character, args[0])
         options = pool(p, family, kind)
         offered = [
             create(p, d, destination="offered")
@@ -126,10 +129,19 @@ def effect(p, identity, index):
         ]
         begin(p, identity, offered, minimum=0, free="free_this_turn")
     elif op == "generate_types":
+        from game.headless.core.card_costs import free_this_turn
+        from game.headless.core.piles import after_generated_entry
+        generated = []
         for kind in ("attack", "skill", "power"):
-            options = pool(p, "ironclad", kind)
+            options = pool(p, p.rules.character, kind)
             for definition in select_cards(options, p.deck.generation_rng, 1, distinct=True):
-                create(p, definition).combat_state.free_this_turn = True
+                card = create(p, definition, destination="offered")
+                free_this_turn(card)
+                generated.append(card)
+        for card in generated:
+            p.deck.offered.remove(card)
+            (p.hand if len(p.hand) < 10 else p.deck.discard_pile).append(card)
+            after_generated_entry(p, card)
     elif op == "shuffle_hand":
         from game.headless.core.piles import shuffle
         shuffle(p, include_hand=True)

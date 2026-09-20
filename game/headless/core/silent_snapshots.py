@@ -90,7 +90,7 @@ def validate_task(task, r, p, context):
         if not r.player_side:
             raise ValueError('Side-start dispatch outside player setup.')
     elif op == 'silent_side_start':
-        if args[0] not in ('blur', 'shadow_step', 'noxious_fumes') or not r.player_side:
+        if args[0] not in ('blur', 'shadow_step', 'noxious_fumes', 'wraith_form') or not r.player_side:
             raise ValueError('Invalid side-start power.')
     elif op == 'silent_retain':
         if not r.turn_ending or not r.powers.get('well_laid_plans'):

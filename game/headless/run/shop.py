@@ -201,11 +201,11 @@ def refill(state, cards, offer):
 
 
 def stock_choice(state, slot, pool, rng, *, restock=False):
-    from game.headless.potions.pools import ORDINARY_POTIONS, generate
-    if slot.kind != 'potion' or state.config is None or state.config.reward_potions != ORDINARY_POTIONS:
+    from game.headless.potions.pools import ORDINARY_POTIONS, generate, is_ordinary
+    if slot.kind != 'potion' or state.config is None or not is_ordinary(state.config.reward_potions):
         return rng.choice('shop.stock', pool)
     blacklist = {o['definition_id'] for o in state.pending['offers'] if o['kind'] == 'potion' and not o['sold']} if restock else set()
-    name = generate(ORDINARY_POTIONS, rng, stream='shop.stock', blacklist=blacklist)
+    name = generate(state.config.reward_potions, rng, stream='shop.stock', blacklist=blacklist)
     return name, dict(pool)[name]
 
 

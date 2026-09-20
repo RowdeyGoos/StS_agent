@@ -1,4 +1,5 @@
 """Solo Ancient offers. Relic acquisition owns all nested pickup effects."""
+from game.headless.characters import character, ancient_cards, STARTER_UPGRADES
 from game.headless.enchantments.base import can_enchant
 
 NAMES=('darv','nonupeipe','orobas','pael','tanx','tezcatara','vakuu')
@@ -17,7 +18,7 @@ def page(name,state,rng):
         c['options']=pool[:2]+['dusty_tome'] if rng.randint('event.ancient',0,1)==0 else pool[:3]
         if 'dusty_tome' in c['options']:
             from game.headless.cards.catalog import DEFAULT_CARDS
-            choices=[d.definition_id for d in DEFAULT_CARDS.definitions if d.pool=='ironclad' and d.rarity=='ancient' and d.definition_id!='break']
+            choices=[d.definition_id for d in ancient_cards(character(state), DEFAULT_CARDS)]
             c['tome_card']=rng.choice('rewards',choices)
     elif name=='nonupeipe':
         pool=['blessed_antler','brilliant_scarf','delicate_frond','diamond_diadem','fur_coat','glitter','jewelry_box','looming_fruit','signet_ring']
@@ -44,7 +45,7 @@ def page(name,state,rng):
     elif name=='vakuu':
         c['options']=[shuffled(pool)[0] for pool in (['blood_soaked_rose','whispering_earring','fiddle'],['preserved_fog','sere_talon','distinguished_cape'],['choices_paradox','music_box','lords_parasol','jeweled_mask'])]
     elif name=='orobas':
-        c['family']=choose(['silent','regent','necrobinder','defect'])
+        c['family']=choose([c for c in ('ironclad','silent','regent','necrobinder','defect') if c != character(state)])
         extra='prismatic_gem' if rng.random('event.ancient')<0.3333333 else 'sea_glass'
         options=[choose(['electric_shrymp','glass_eye','sand_castle',extra]),choose(['alchemical_coffer','driftwood','radiant_pearl'])]
         pool=[]

@@ -68,7 +68,7 @@ def settle(run):
 
 def test_scope_matches_independent_pinned_inventory():
     fixture = json.loads((Path(__file__).parents[1] / "fixtures/headless_potion_scope.json").read_text())
-    assert len(POTIONS) == 51
+    assert len(POTIONS) == 63
     assert len(ORDINARY_POTIONS) == 48
     for row in fixture["potions"]:
         actual = asdict(POTIONS[row["definition_id"]])

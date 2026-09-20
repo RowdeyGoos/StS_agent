@@ -48,7 +48,10 @@ def legal_actions(engine) -> tuple:
         if reward["relic"] is not None and not reward["relic_claimed"]:
             actions.append(ClaimRelic())
         for index, extra in enumerate(reward["extra_rewards"]):
-            if not extra["resolved"]:
+            if not extra["resolved"] and extra["kind"] == "remove":
+                from game.headless.run.removal_rewards import options
+                actions.extend(ChooseExtraReward(index, identity) for identity in [*options(state), None])
+            elif not extra["resolved"]:
                 actions.extend(ChooseExtraReward(index, name, i if name is not None and extra["offers"].count(name) > 1 else None) for i, name in enumerate([*(extra["offers"] if extra["kind"] != "potion" or None in state.potions else []), None]))
         actions.append(LeaveRewards())
     elif state.phase is RunPhase.ROOM and state.pending.get("kind") == "rest_site":

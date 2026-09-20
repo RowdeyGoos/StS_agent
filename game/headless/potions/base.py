@@ -29,6 +29,18 @@ class PotionInstance:
 
 
 _DEFINITIONS = (
+    PotionDefinition("poison_potion", "common", "combat", True, True, (("status", "poison", 6),)),
+    PotionDefinition("ghost_in_a_jar", "rare", "combat", False, True, (("power", "intangible", 1),)),
+    PotionDefinition("cunning_potion", "uncommon", "combat", False, True, (("character", "cunning"),)),
+    PotionDefinition("star_potion", "common", "combat", False, True, (("character", "stars", 3),)),
+    PotionDefinition("cosmic_concoction", "rare", "combat", False, True, (("character", "colorless", 3),)),
+    PotionDefinition("kings_courage", "uncommon", "combat", False, True, (("character", "forge", 15),)),
+    PotionDefinition("potion_of_doom", "common", "combat", True, True, (("status", "doom", 33),)),
+    PotionDefinition("pot_of_ghouls", "rare", "combat", False, True, (("character", "souls", 2),)),
+    PotionDefinition("bone_brew", "uncommon", "combat", False, True, (("character", "summon", 15),)),
+    PotionDefinition("focus_potion", "common", "combat", False, True, (("power", "focus", 2),)),
+    PotionDefinition("essence_of_darkness", "rare", "combat", False, True, (("character", "darkness"),)),
+    PotionDefinition("potion_of_capacity", "uncommon", "combat", False, True, (("character", "slots", 2),)),
     PotionDefinition("blood_potion", "common", "anytime", False, True, (("heal_percent", 20),)),
     PotionDefinition("soldiers_stew", "rare", "combat", False, True, (("replay_strikes",),)),
     PotionDefinition("ashwater", "uncommon", "combat", False, True, (("select", "ashwater"),)),

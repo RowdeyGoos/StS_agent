@@ -118,7 +118,7 @@ the selected child effect and map return are verified.
 | Initial event-option policy | `--event-option` chooses an exact legal first option and stops if absent/illegal; subsequent actions use first-legal policy |
 | Results acknowledgment | Pandora's Box nine-card screen Confirm/map passed; preceding automatic transformations are not certified |
 | Reduced headless/actor stack | Structural backend and cloning pipeline accepted; no target-game fidelity or learned live-policy claim |
-| Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): solo Ironclad A0–A10 through Overgrowth or Underdocks, Hive, Glory and the Architect ending, with owned RNG, content catalogs and private JSON continuation. Six boosted native A0 victory captures cover all 12 regional bosses; higher ascensions have native scalar/map references and focused interaction/progression tests. A complete native A10 trajectory remains acceptance work. [Ascension rules and evidence](HEADLESS_ENGINE.md#ascension-levels); [remaining tasks](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment). |
+| Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): all five solo characters at A0–A10 through Overgrowth or Underdocks, Hive, Glory and the Architect, using shared rules and private JSON continuation. Existing native campaign comparisons cover Ironclad; the four added characters have native starter/potion probes and boosted A0/A10 Python campaign wins. [Character evidence and remaining limits](HEADLESS_ENGINE.md#playable-characters). |
 
 One production bridge in `apps/bridge/` combines shared components and original
 core adapters. Modules remain exclusive until native reconciliation and successful

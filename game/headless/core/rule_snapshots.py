@@ -16,7 +16,7 @@ TASK_ARITIES = {
     "potion_status": 4,
     "gigantification_end": 1,
     "gigantification_begin": 1,
-    "relic_hook": 3,
+    "relic_hook": 3, "character_relic_hook": 3,
     "relic_damage": 5,
     "iteration": 1,
     "effect": 2,
@@ -77,6 +77,8 @@ def restore_rules(record, player):
     if not isinstance(record, dict) or set(record) != set(asdict(CombatRules())):
         raise ValueError("Invalid combat rule state fields.")
     r = CombatRules(**deepcopy(record))
+    from game.headless.characters import definition
+    definition(r.character)
     for key in (
         "stars", "stars_gained_turn", "generated_combat", "round_plays",
         "discarded_turn", "drawn_combat", "skills_finished", "shivs_finished", "extra_card_rewards",
@@ -237,7 +239,9 @@ def restore_rules(record, player):
             or len(task) != TASK_ARITIES[task[0]] + 1
         ):
             raise ValueError("Invalid combat task.")
-        if any(type(v) not in (int, bool, str, type(None)) for v in task):
+        if any(type(v) not in (int, bool, str, type(None))
+               and not (task[0] == "nec_doom_after" and index == 1 and isinstance(v, list))
+               for index,v in enumerate(task)):
             raise ValueError("Task must contain plain values.")
         op, *args = task
         if op.startswith("ancient_"):
@@ -307,8 +311,16 @@ def restore_rules(record, player):
             raise ValueError("Queued movement cannot remove an owned play or reservation.")
         elif op in ("autoplay", "exhaust", "ethereal") and args[0] not in player.deck._allocated_ids:
             raise ValueError("Task references an unallocated card.")
-        if op == "relic_hook" and (args[0] not in r.relic_data or args[1] not in ("before_draw", "after_draw", "before_end", "after_end", "after_play", "exhaust", "exhaust_ethereal", "shuffle", "after_side_start") or (args[2] and args[2] not in player.deck._allocated_ids)):
+        if op in ("relic_hook", "character_relic_hook") and (args[0] not in r.relic_data or args[1] not in ("before_draw", "after_draw", "before_end", "after_end", "after_play", "exhaust", "exhaust_ethereal", "shuffle", "after_side_start", "discard", "before_side_start", "after_flush") or (args[2] and args[2] not in player.deck._allocated_ids)):
             raise ValueError("Invalid relic hook continuation.")
+        if op in ("relic_hook", "character_relic_hook"):
+            special = args[1] in ("before_side_start", "after_flush", "discard")
+            if special != (op == "character_relic_hook"):
+                raise ValueError("Character hook requires its emitted receipt.")
+            if (args[1] == "before_side_start" and (r.round_number != 0 or args[2])
+                    or args[1] == "after_flush" and (not r.turn_ending or args[2])
+                    or args[1] == "discard" and (not r.player_side or not args[2])):
+                raise ValueError("Character hook outside its producing boundary.")
         if op == "random_hit" and (type(args[1]) is not int or args[1] < 0):
             raise ValueError("Invalid random attack.")
         if op == "after_card_power" and not valid_power(args[1], r.power_sequence):

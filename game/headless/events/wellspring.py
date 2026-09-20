@@ -1,5 +1,6 @@
 """Wellspring potion reward or permanent removal followed by Guilty."""
 
+from game.headless.characters import character, potion_pool as character_potions
 from copy import deepcopy
 from dataclasses import dataclass
 from game.headless.potions.pools import ORDINARY_POTIONS
@@ -26,7 +27,7 @@ class Wellspring:
         data = pending["data"]
         if option_id == "bottle":
             trial = deepcopy(state)
-            rewards = potion_rewards.generate(trial.rng, self.potion_pool, 1, uniform=True)
+            rewards = potion_rewards.generate(trial.rng, (character_potions(character(state)) if self.potion_pool == ORDINARY_POTIONS else self.potion_pool), 1, uniform=True)
             state.rng = trial.rng
             data.update(choice="bottle", rewards=rewards)
             pending["stage"] = "potion_rewards"
@@ -64,7 +65,7 @@ class Wellspring:
             from game.headless.events.resources import validate
             validate(state, pending, [('cards_added', int(choice == 'bathe' and stage == 'resolved'))])
         if choice == "bottle" and stage in ("potion_rewards", "resolved"):
-            potion_rewards.validate(state, data["rewards"], self.potion_pool, 1)
+            potion_rewards.validate(state, data["rewards"], (character_potions(character(state)) if self.potion_pool == ORDINARY_POTIONS else self.potion_pool), 1)
             if data["guilty_id"] is not None or any(data[k] != v for k,v in deck_choice.empty().items()):
                 raise ValueError("Bottle has deck effects.")
         elif choice == "bathe" and stage in ("select_card", "resolved"):

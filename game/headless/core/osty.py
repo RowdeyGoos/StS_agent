@@ -61,6 +61,9 @@ def kill(p):
 
 def after_attack(p):
     p.rules.osty_attacks_turn += 1
+    from game.headless.relics.combat import has
+    if has(p, "bone_flute") and not p.combat_is_ending:
+        p.gain_block(2)
     for card in p.deck.all_cards():
         if card not in p.deck.offered and card.definition.definition_id == 'flatten':
             v = card.combat_state

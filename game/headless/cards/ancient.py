@@ -1,6 +1,6 @@
 """Cards granted by solo Ancient relics, outside ordinary generation pools."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import partial
 from game.headless.cards.builders import define
 from game.headless.cards.base import CardDefinition, CardSpec
@@ -44,7 +44,14 @@ class AncientOperation:
 card = partial(define, pool='colorless')
 from game.headless.cards.osty_effects import OstyAttack
 
+_GRIMOIRE = define('forbidden_grimoire','Forbidden Grimoire',2,'power','ancient',
+                   (Power('forbidden_grimoire'),),upgraded_cost=1,pool='necrobinder')
+_GRIMOIRE = replace(_GRIMOIRE, levels=tuple(replace(s, eternal=True) for s in _GRIMOIRE.levels))
 DEFINITIONS = (
+    define('wraith_form','Wraith Form',3,'power','ancient',(Power('intangible',2,3),Power('wraith_form')),pool='silent'),
+    define('the_sealed_throne','The Sealed Throne',1,'power','ancient',(Power('the_sealed_throne'),),upgraded_cost=0,star_cost=3,pool='regent'),
+    _GRIMOIRE,
+    define('biased_cognition','Biased Cognition',1,'power','ancient',(Power('focus',4,5),Power('biased_cognition')),pool='defect'),
     define('suppress','Suppress',0,'attack','ancient',(Attack(),Power('weak',3,5,target=True)),damage=11,upgraded_damage=17,base_innate=True,pool='silent'),
     define('protector','Protector',1,'attack','ancient',(OstyAttack(expression='protector'),),damage=10,upgraded_damage=15,upgraded_cost=0,pool='necrobinder'),
     define('meteor_shower','Meteor Shower',0,'attack','ancient',(Attack(all_enemies=True),AncientOperation('meteor')),damage=14,upgraded_damage=21,star_cost=2,target=False,pool='regent'),

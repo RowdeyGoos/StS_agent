@@ -5,7 +5,7 @@ from game.headless.cards.necrobinder_effects import CHOICE_OPS
 CHOICES = frozenset('nec_' + op for op in CHOICE_OPS)
 TASK_ARITIES = {'osty_hit': 5, 'osty_after': 2, 'nec_souls': 3, 'nec_intangible': 0,
     'nec_blight': 3, 'nec_spread': 2, 'nec_copy_debuff': 3, 'nec_enemy_loss': 4, 'nec_summon': 3,
-    'nec_kill_osty': 0, 'nec_doom_kill': 2, 'nec_player_doom': 0,
+    'nec_kill_osty': 0, 'nec_doom_kill': 2, 'nec_doom_after': 2, 'nec_player_doom': 0,
     'nec_side_start': 1, 'nec_start': 0, 'nec_before_draw': 1}
 
 
@@ -125,16 +125,23 @@ def validate_task(task, r, p, context):
             slot(args[2])
             if not any(isinstance(e, OstyAttack) for e in c.definition.effects) or args[0] != p.combat_enemies[args[2]].statuses.get('sic_em') or not args[0]:
                 raise ValueError('Summon has no producing Osty/Sic Em hit.')
-    elif op == 'nec_doom_kill':
-        slot(args[0])
+    elif op in ('nec_doom_kill', 'nec_doom_after'):
+        if op == 'nec_doom_after':
+            from game.headless.relics.combat import has
+            if not has(p, 'book_repair_knife') or not isinstance(args[0], list) or not args[0]:
+                raise ValueError('Unowned Doom batch completion.')
+            for index in args[0]: slot(index)
+            if len(set(args[0])) != len(args[0]):
+                raise ValueError('Repeated Doom batch target.')
+        else:
+            slot(args[0])
         if args[1] == 'enemy_end':
             if r.player_side or r.enemy_turn is None or not r.enemy_turn.get('doom_end'):
                 raise ValueError('Doom kill outside enemy end.')
         elif owner(args[1]).definition.definition_id != 'end_of_days':
             raise ValueError('Doom kill has no End of Days source.')
-        e = p.combat_enemies[args[0]]
-        if not e.is_alive or e.hp > e.statuses.get('doom'):
-            raise ValueError('Doom target was not captured as lethal.')
+        # Both tasks have emitted receipts: a prior death callback may have
+        # killed or changed a later captured victim before this task resumes.
     elif op == 'nec_player_doom':
         if not r.turn_ending: raise ValueError('Player Doom outside turn end.')
     elif op in ('nec_start', 'nec_before_draw', 'nec_side_start'):

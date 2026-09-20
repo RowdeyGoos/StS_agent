@@ -24,7 +24,7 @@ def generate(p, count, attacks_only, upgraded, free, distinct=False):
     from game.headless.cards.colorless_effects import pool, create
     from game.headless.generation.combat import select_cards
 
-    options = pool(p, "ironclad", "attack" if attacks_only else None)
+    options = pool(p, p.rules.character, "attack" if attacks_only else None)
     for definition in select_cards(options, p.deck.generation_rng, count, distinct=distinct):
         create(p, definition, upgraded=upgraded).combat_state.free_this_turn = free
 

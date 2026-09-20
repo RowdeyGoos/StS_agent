@@ -91,12 +91,12 @@ def test_current_harness_and_unchanged_native_campaigns_are_bound():
         if name not in {'Oracle.cs', 'death_draw.cs', 'run.py'}:
             assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
     report = json.loads((ROOT / 'docs/evidence/native_item_status_regressions_2026_09_20.json').read_text())
-    current = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_death_fidelity_2026_09_20.json.gz').read_bytes()))
+    current = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_characters_2026_09_20.json.gz').read_bytes()))
     # Only item-status and its scenario setup/dispatch changed. Other modes in
     # the shared dispatcher have a fresh enemy-turn regression below; unchanged
     # campaign implementations retain their historical identities.
-    assert {k: v for k, v in current['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs'}} == {
-        k: v for k, v in report['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs'}}
+    assert {k: v for k, v in current['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs', 'character.cs', 'run.py'}} == {
+        k: v for k, v in report['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs', 'character.cs', 'run.py'}}
     for name, digest in current['fixtureSources'].items():
         assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
     fresh = current['sharedDispatcherRegression']

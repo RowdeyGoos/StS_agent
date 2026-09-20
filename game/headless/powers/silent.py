@@ -6,7 +6,7 @@ NAMES = frozenset(('accuracy', 'accelerant', 'afterimage', 'anticipate', 'blur',
     'corrosive_wave', 'envenom', 'fan_of_knives', 'free_skill', 'infinite_blades',
     'master_planner', 'noxious_fumes', 'outbreak', 'phantom_blades', 'serpent_form',
     'shadow_step', 'shadowmeld', 'speedster', 'tools_of_the_trade', 'tracking',
-    'well_laid_plans', 'draw_next_turn', 'double_damage'))
+    'well_laid_plans', 'draw_next_turn', 'double_damage', 'wraith_form'))
 SINGLE = frozenset(('fan_of_knives', 'master_planner'))
 
 
@@ -20,6 +20,9 @@ def can_play(p, card):
 
 def apply(p, key, amount):
     r = p.rules
+    if key == "wraith_form" and p.statuses.get("artifact"):
+        p.statuses.decrement("artifact")
+        return
     if key == 'tracking' and key not in r.powers:
         amount += 1
     r.powers[key] = 1 if key in SINGLE else r.powers.get(key, 0) + amount
@@ -185,7 +188,10 @@ def execute(p, op, args):
     elif op == 'silent_side_start':
         key = args[0]
         amount = r.powers.get(key, 0)
-        if key == 'blur' and amount:
+        if key == 'wraith_form' and amount:
+            from game.headless.powers.underdocks import stat_loss
+            stat_loss(p, 'dexterity', amount)
+        elif key == 'blur' and amount:
             r.powers[key] -= 1
         elif key == 'shadow_step' and amount:
             apply(p, 'double_damage', r.powers.pop(key))

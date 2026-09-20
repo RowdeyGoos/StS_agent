@@ -1,4 +1,5 @@
 """Solo Neow pickup rules and explicit dependent-content eligibility."""
+from game.headless.characters import character, potion_pool as character_potions
 
 from game.headless.relics.run_rules import max_hp
 
@@ -33,14 +34,14 @@ NEOW_RELICS = (
 )
 
 
-def available(name, cards):
+def available(name, cards, family="ironclad"):
     if name == "kaleidoscope":
         from game.headless.generation.foreign import complete
-        return complete(cards)
+        return complete(cards, family)
     if name == "scroll_boxes":
         return all(
             sum(
-                d.pool == "ironclad" and d.rarity == rarity
+                d.pool == family and d.rarity == rarity
                 for d in sorted(cards.definitions, key=lambda d: d.definition_id)
             )
             >= count
@@ -63,10 +64,11 @@ def begin(state, relic, cards):
         pool = [
             d
             for d in sorted(cards.definitions, key=lambda d: d.definition_id)
-            if d.pool == "ironclad" and d.rarity == "rare"
+            if d.pool == character(state) and d.rarity == "rare"
         ]
         if getattr(state.rng,"native",False):
-            from game.headless.core.content_order import IRONCLADCARDPOOL
+            from game.headless.characters import card_order
+            IRONCLADCARDPOOL = card_order(character(state))
             rank={n:i for i,n in enumerate(IRONCLADCARDPOOL)}
             pool.sort(key=lambda d:rank[d.definition_id])
         from game.headless.relics.rewards import decorate
@@ -86,7 +88,7 @@ def begin(state, relic, cards):
     elif name == "large_capsule":
         for _ in range(2):
             relic_reward(state, source, automatic=True)
-        effect(state, source, "cards", ["strike", "defend"])
+        effect(state, source, "cards", ["strike", "defend"] if character(state) == "ironclad" else ["strike_" + character(state), "defend_" + character(state)])
     elif name == "small_capsule":
         relic_reward(state, source)
     elif name == "leafy_poultice":
@@ -98,7 +100,7 @@ def begin(state, relic, cards):
                 (c for c in state.deck if c.definition.rarity == "basic" and getattr(c.definition, tag)), None
             )
             if card is not None:
-                transform_card(state, cards, card.instance_id, REWARD_CARDS, stream="card.transform")
+                transform_card(state, cards, card.instance_id, state.config.reward_cards if state.config else REWARD_CARDS, stream="card.transform")
     elif name == "neows_talisman":
         for tag in ("strike", "defend"):
             card = next(
@@ -130,12 +132,12 @@ def begin(state, relic, cards):
         commons = [
             d.definition_id
             for d in sorted(cards.definitions, key=lambda d: d.definition_id)
-            if d.pool == "ironclad" and d.rarity == "common"
+            if d.pool == character(state) and d.rarity == "common"
         ]
         uncommons = [
             d.definition_id
             for d in sorted(cards.definitions, key=lambda d: d.definition_id)
-            if d.pool == "ironclad" and d.rarity == "uncommon"
+            if d.pool == character(state) and d.rarity == "uncommon"
         ]
         if getattr(state.rng,"native",False):
             from game.headless.generation.odds import card_offers
@@ -144,6 +146,9 @@ def begin(state, relic, cards):
             bundles = []
             used = []
             for _ in range(2):
+                if character(state) == "defect" and state.rng.randint("rewards", 0, 99) < 1:
+                    bundles.append(["claw"] * 3)
+                    continue
                 common, _ = card_offers(state, cards, commons, 2, uniform=True,
                                         upgrade_roll=False, blacklist=used)
                 uncommon, _ = card_offers(state, cards, uncommons, 1, uniform=True,
@@ -162,7 +167,7 @@ def begin(state, relic, cards):
         pool = [
             n
             for n in order
-            if n != name and n not in {r.definition_id for r in state.relics} and available(n, cards)
+            if n != name and n not in {r.definition_id for r in state.relics} and available(n, cards, character(state))
         ]
         state.rng.shuffle("relic.neow_rewards", pool)
         for definition in pool[:2]:

@@ -1,4 +1,5 @@
 """Shared acquisition/removal rules with run-owned item identities."""
+from game.headless.characters import character, ancient_cards, STARTER_UPGRADES
 
 from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
@@ -41,7 +42,7 @@ def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_
         data['family'] = card_pool
     if tome_card is not None:
         definition = cards.definition(tome_card)
-        if definition_id != 'dusty_tome' or definition.pool != 'ironclad' or definition.rarity != 'ancient' or tome_card == 'break':
+        if definition_id != 'dusty_tome' or definition not in ancient_cards(character(state), cards):
             raise ValueError('Invalid bound Dusty Tome card.')
         data['card'] = tome_card
     relic = RelicInstance(definition_id, state.allocate_item_id(), data=data)

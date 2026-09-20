@@ -1,4 +1,5 @@
 """Serializable acquisition choices layered over the room that granted a relic."""
+from game.headless.characters import character, potion_pool as character_potions, reward_cards
 
 from copy import deepcopy
 from game.headless.run.actions import ChooseRelicCard, ConfirmRelicSelection, ChooseRelicReward, DiscardPotion
@@ -89,7 +90,7 @@ def begin(state, relic, cards):
 
 
 def card_reward(state, cards, source, *, colorless=False, count=3, rarity=None, is_card_reward=True, family=None, no_pool_changes=False):
-    family = family or ("colorless" if colorless else "ironclad")
+    family = family or ("colorless" if colorless else character(state))
     pool = [
         d
         for d in sorted(cards.definitions, key=lambda d: d.definition_id)
@@ -380,8 +381,8 @@ def validate(state, cards):
             if name == 'kaleidoscope':
                 from game.headless.generation.foreign import complete, ORDINARY
                 definitions = [cards.definition(o['definition_id']) for o in work['offers']]
-                if (not complete(cards) or len(definitions) != 3 or len({d.pool for d in definitions}) != 3
-                        or any(d.definition_id not in ORDINARY.get(d.pool, ()) for d in definitions)):
+                if (not complete(cards, character(state)) or len(definitions) != 3 or len({d.pool for d in definitions}) != 3
+                        or any(d.pool == character(state) or d.definition_id not in reward_cards(d.pool) for d in definitions)):
                     raise ValueError('Invalid Kaleidoscope foreign reward group.')
         elif work.get("kind") == "effect":
             if (
@@ -399,7 +400,7 @@ def validate(state, cards):
                     cards.definition(value)
                 valid = (
                     (name == "hefty_tablet" and work["values"] == ["injury"])
-                    or (name == "large_capsule" and work["values"] == ["strike", "defend"])
+                    or (name == "large_capsule" and work["values"] == (["strike", "defend"] if character(state) == "ironclad" else ["strike_" + character(state), "defend_" + character(state)]))
                     or (
                         name == "neows_bones"
                         and len(work["values"]) == 1
