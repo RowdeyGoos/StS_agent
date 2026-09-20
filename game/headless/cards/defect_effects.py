@@ -100,7 +100,9 @@ def apply(op, card, p, target, amount):
         push(p, ['def_sunder', card.instance_id, p.combat_enemies.index(target), amount])
     elif op == 'scrape':
         r.plays[card.instance_id]['def_scrape'] = []
-        push(p, ['def_scrape_draw', card.instance_id, card.spec.draw_count], ['def_scrape', card.instance_id])
+        from game.headless.relics.combat import has
+        draw = [] if r.powers.get('no_draw') or r.player_side and has(p, 'fiddle') else [['def_scrape_draw', card.instance_id, card.spec.draw_count]]
+        push(p, *draw, ['def_scrape', card.instance_id])
     elif op == 'white_noise':
         from game.headless.powers.defect import generate_power
         generate_power(p, free=True)
@@ -149,9 +151,14 @@ def execute(p, op, args):
             hit(p, card, enemy, extra=p.rules.powers.pop('vigor', 0))
             if not enemy.is_alive:
                 p.gain_energy(args[2])
-    elif op == 'def_scrape_draw':
+    elif op in ('def_scrape_draw', 'def_scrape_after_shuffle'):
         from game.headless.powers.colorless import ensure_draw
-        if args[1] <= 0 or p.rules.powers.get('no_draw') or not ensure_draw(p, [op, *args], hand=False):
+        if args[1] <= 0 or p.combat_is_ending:
+            return
+        if op == 'def_scrape_draw':
+            if not ensure_draw(p, ['def_scrape_after_shuffle', *args]):
+                return
+        elif not p.deck.draw_pile or len(p.hand) >= 10:
             return
         drawn = p.deck.draw(1)
         if drawn:
@@ -161,7 +168,7 @@ def execute(p, op, args):
             p.rules.drawn_turn += 1
             from game.headless.powers.defect import draw_record
             draw_record(p, c)
-            push(p, ['after_draw'], ['silent_draw_hook', False, c.instance_id], ['after_draw_card', c.instance_id], [op, args[0], args[1] - 1])
+            push(p, ['after_draw'], ['silent_draw_hook', False, c.instance_id], ['after_draw_card', c.instance_id], ['def_scrape_draw', args[0], args[1] - 1])
             if p.rules.powers.get('hellraiser') and c.definition.strike:
                 push(p, ['autoplay', c.instance_id, False])
     elif op == 'def_discard':

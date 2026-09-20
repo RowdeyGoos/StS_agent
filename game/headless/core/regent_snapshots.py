@@ -1,7 +1,7 @@
 """Validate Regent resources and owned command continuations."""
 
 TASK_ARITIES = {'regent_forge': 2, 'regent_knockout': 4,
-    'regent_energy_reset': 1, 'regent_before_draw': 1, 'regent_remove': 1,
+    'regent_energy_reset': 1, 'regent_before_draw': 1, 'regent_foregone_after_shuffle': 1, 'regent_remove': 1,
     'regent_side_start_all': 0, 'regent_side_start': 1,
     'regent_start_power': 0, 'regent_end_card': 1, 'regent_preplay': 0}
 CHOICES = frozenset('regent_' + op for op in ('begone', 'begone_up', 'charge', 'charge_up',
@@ -44,13 +44,16 @@ def validate_task(task, r, p, context):
         card = next(c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == args[0])
         if card.definition.definition_id != 'knockout_blow' or any(type(n) is not int or n < 0 for n in args[1:]) or args[1] >= len(p.combat_enemies) or args[3] != 5:
             raise ValueError('Invalid Knockout continuation.')
-    elif op in ('regent_energy_reset', 'regent_before_draw', 'regent_side_start', 'regent_remove'):
+    elif op in ('regent_energy_reset', 'regent_before_draw', 'regent_foregone_after_shuffle', 'regent_side_start', 'regent_remove'):
         allowed = {'regent_energy_reset': ('genesis', 'energy_next_turn', 'star_next_turn'),
                    'regent_before_draw': ('spectrum_shift', 'foregone_conclusion'),
+                   'regent_foregone_after_shuffle': ('foregone_conclusion',),
                    'regent_side_start': ('furnace', 'reflect'),
                    'regent_remove': ('foregone_conclusion',)}[op]
         if args[0] not in allowed or not r.player_side:
             raise ValueError('Invalid Regent setup command.')
+        if op == 'regent_foregone_after_shuffle' and not r.powers.get('foregone_conclusion'):
+            raise ValueError('Unowned Foregone Conclusion continuation.')
     elif op in ('regent_side_start_all', 'regent_preplay') and not r.player_side:
         raise ValueError('Regent setup outside player side.')
     elif op == 'regent_start_power' and not r.powers.get('tyranny'):

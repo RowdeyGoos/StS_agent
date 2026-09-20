@@ -268,6 +268,30 @@ logging without loading localization settings. It does not execute encounter
 entry, complete turns, the live UI/executor frame loop or room/reward/save cleanup.
 Use the command below with `--mode draw-cards` and a fresh output directory.
 
+Pass `--mode remaining-draw` for 180 cases: seeds 0/2/42 × Scrape/Toasty
+Mittens/Foregone Conclusion × two variants × ten prepared setups. Variants are
+Scrape base/upgraded, Mittens turn one/two and Foregone amount two/three. Setups
+include mixed zero/nonzero/X/unplayable cards, singleton/empty piles, hand capacity,
+Fiddle, No Draw, controlled depletion, an Innate-first pile, capacity reached before
+refill and a two-card automatic all-selection. Variant false answers in raw pile
+order; true reverses that order. All have Stratagem 1 and Abacus.
+
+Scrape runs through actual `PlayCardAction`; the other subjects run their actual
+`BeforeHandDraw` callback in an owned native hook context. This tests callbacks
+without running an entire hand-draw/turn sequence. Depletion uses the same explicit
+native pile moves and limited snapshot scope as `draw-cards`. Automatic Foregone
+selection is verified in native physical pile order; explicit choice UI sorting
+is not exercised. Native effects and definitions are not patched.
+
+The [retained record](../../docs/evidence/native_remaining_draw_2026_09_20.json)
+contains recipe definitions, initial/paused/choice/final piles, resources, enemy HP,
+Strength, Foregone amount, actual draw/play history and five RNG counters/suffixes.
+`tests/headless/test_native_remaining_draw.py` checks these values and JSON
+restoration. Its extra Mittens/Dark Embrace test is source-backed, not part of the
+native capture. This mode preserves the shared in-memory save/localization scope
+and omits encounter entry, live UI/executor frames and room/reward/save processing.
+Use `--mode remaining-draw` with the command below and a fresh output directory.
+
 Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
 **Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
 respectively). The runner does not download dependencies. Example:

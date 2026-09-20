@@ -7,7 +7,7 @@ using System.Text.Json;
 // No mode starts a run, live card screen or executor frame loop.
 internal static class DeathDrawOracle
 {
-    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false, bool multipleDeaths = false, bool enemyTurn = false, bool autoplay = false, bool flak = false, bool drawCards = false)
+    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false, bool multipleDeaths = false, bool enemyTurn = false, bool autoplay = false, bool flak = false, bool drawCards = false, bool remainingDraw = false)
     {
         const BindingFlags flags = BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -35,7 +35,7 @@ internal static class DeathDrawOracle
         // initialization (which reads settings/overrides) occurs.
         var loc=RuntimeHelpers.GetUninitializedObject(T("Localization.LocManager"));
         var tables=(System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string),T("Localization.LocTable")))!;
-        tables.Add("powers",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"powers",new Dictionary<string,string>{{"STRATAGEM_POWER.selectionScreenPrompt","Choose"}},null})!);
+        tables.Add("powers",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"powers",new Dictionary<string,string>{{"STRATAGEM_POWER.selectionScreenPrompt","Choose"},{"FOREGONE_CONCLUSION_POWER.selectionScreenPrompt","Choose"}},null})!);
         tables.Add("combat_messages",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"combat_messages",new Dictionary<string,string>{{"NO_DRAW","No draw"},{"HAND_FULL","Hand full"}},null})!);
         F(loc,"_tables",tables);C(loc,"LoadLocFormatters");T("Localization.LocManager").GetProperty("CultureInfo",flags)!.SetValue(loc,System.Globalization.CultureInfo.InvariantCulture);T("Localization.LocManager").GetProperty("Instance",flags)!.SetValue(null,loc);
         if(drawCards)tables.Add("monsters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"monsters",new Dictionary<string,string>{{"CHOMPER.name","Chomper"}},null})!);
@@ -49,8 +49,8 @@ internal static class DeathDrawOracle
         foreach(bool drawFirst in (autoplay && !flak) ? new[]{false,true} : new[]{false})
         foreach(bool withStratagem in (autoplay && !flak) ? new[]{false,true} : new[]{true})
         foreach(bool darkEmbrace in flak ? new[]{false,true} : new[]{false})
-        foreach(string drawCard in drawCards ? new[]{"Pillage","EscapePlan"} : new[]{""})
-        foreach(string drawCase in drawCards ? new[]{"mixed","singleton","attacks","full","empty","fiddle","no-draw","drain"} : new[]{""})
+        foreach(string drawCard in remainingDraw ? new[]{"Scrape","ToastyMittens","ForegoneConclusion"} : drawCards ? new[]{"Pillage","EscapePlan"} : new[]{""})
+        foreach(string drawCase in remainingDraw ? new[]{"mixed","singleton","full","empty","fiddle","no-draw","drain","innate","capacity","auto-all"} : drawCards ? new[]{"mixed","singleton","attacks","full","empty","fiddle","no-draw","drain"} : new[]{""})
         {
             var player=RuntimeHelpers.GetUninitializedObject(T("Entities.Players.Player"));
             F(player,"<Character>k__BackingField",Get("Character","Characters.Ironclad"));
@@ -134,7 +134,7 @@ internal static class DeathDrawOracle
                 }).ToArray();
                 if(drawCards)
                 {
-                    rows.Add(await DrawCardsOracle.Run(asm, player, pcs, pc, combat, target, manager, queue, executor, choices, rng, seed, drawCard, drawCase, upgraded));
+                    rows.Add(await (remainingDraw ? RemainingDrawOracle.Run(asm, player, pcs, pc, combat, target, manager, queue, executor, choices, rng, seed, drawCard, drawCase, upgraded) : DrawCardsOracle.Run(asm, player, pcs, pc, combat, target, manager, queue, executor, choices, rng, seed, drawCard, drawCase, upgraded)));
                     C(cardDb,"OnCombatEnded",new object?[]{null});((IDisposable)choices).Dispose();
                     continue;
                 }
@@ -295,7 +295,7 @@ internal static class DeathDrawOracle
             var shuffle=P(rng,"Shuffle");
             rows.Add(new{seed,fillers,before,paused,after=State(),detached=!completed,selectorCalls=chooser.Calls,options=chooser.Options.Select(c=>"card."+physical.IndexOf(c)),shuffleCounter=P(shuffle,"Counter"),shuffleSuffix=C(shuffle,"NextDouble")});
         }
-        return JsonSerializer.Serialize(new{source=drawCards ? "Actual PlayCardAction for Pillage/EscapePlan with Stratagem/Abacus; blocked/limited draws and controlled native draw-to-discard moves during a paused choice; no live UI/executor loop" : flak ? "Actual Mayhem/FlakCannon with queued Slimed/Wound, optional DarkEmbrace, Stratagem/Abacus and replay choices; explicit callback, no turn manager/UI/executor loop" : autoplay ? "Actual MayhemPower.AfterAutoPrePlayPhaseEntered and CardPileCmd.AutoPlayFromDrawPile, Stratagem/Abacus and replay choices; explicit native hook callback, no turn manager/UI/executor loop" : enemyTurn ? "Actual CombatManager.ExecuteEnemyTurn through next player setup, two Chomper moves with Thorns/Horn/Stratagem/Abacus and optional ToolsOfTheTrade; checksums disabled, native replay answers after enemy work, no UI or executor frame loop" : multipleDeaths ? "Actual PlayCardAction/SwordBoomerang with Strength100 and optional Duplication, death/Horn/Infested and replay choices; explicit native SetCombatState(NotInCombat) cancellation at IsEnding; no full EndCombatInternal, UI or executor loop" : attackMode ? "Actual PlayCardAction/SwordBoomerang, death dispatcher, Horn/Stratagem/Abacus and Infested; in-memory native replay choice, manually driven queue, no UI/executor loop/run" : "Actual GremlinHorn.AfterDeath, CardPileCmd.Draw/Shuffle, StratagemPower, TheAbacus and native hook queue; test selector supplies UI signals/answer; explicit death callback invocation, no death dispatcher/attack/UI/run",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
+        return JsonSerializer.Serialize(new{source=remainingDraw ? "Actual Scrape PlayCardAction and ToastyMittens/ForegoneConclusion BeforeHandDraw callbacks; Stratagem/Abacus with controlled native pile moves during drain cases; no complete turns/UI/executor loop" : drawCards ? "Actual PlayCardAction for Pillage/EscapePlan with Stratagem/Abacus; blocked/limited draws and controlled native draw-to-discard moves during a paused choice; no live UI/executor loop" : flak ? "Actual Mayhem/FlakCannon with queued Slimed/Wound, optional DarkEmbrace, Stratagem/Abacus and replay choices; explicit callback, no turn manager/UI/executor loop" : autoplay ? "Actual MayhemPower.AfterAutoPrePlayPhaseEntered and CardPileCmd.AutoPlayFromDrawPile, Stratagem/Abacus and replay choices; explicit native hook callback, no turn manager/UI/executor loop" : enemyTurn ? "Actual CombatManager.ExecuteEnemyTurn through next player setup, two Chomper moves with Thorns/Horn/Stratagem/Abacus and optional ToolsOfTheTrade; checksums disabled, native replay answers after enemy work, no UI or executor frame loop" : multipleDeaths ? "Actual PlayCardAction/SwordBoomerang with Strength100 and optional Duplication, death/Horn/Infested and replay choices; explicit native SetCombatState(NotInCombat) cancellation at IsEnding; no full EndCombatInternal, UI or executor loop" : attackMode ? "Actual PlayCardAction/SwordBoomerang, death dispatcher, Horn/Stratagem/Abacus and Infested; in-memory native replay choice, manually driven queue, no UI/executor loop/run" : "Actual GremlinHorn.AfterDeath, CardPileCmd.Draw/Shuffle, StratagemPower, TheAbacus and native hook queue; test selector supplies UI signals/answer; explicit death callback invocation, no death dispatcher/attack/UI/run",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
     }
 }
 public class DeathDrawContext:DispatchProxy

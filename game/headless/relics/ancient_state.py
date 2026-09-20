@@ -47,16 +47,16 @@ def validate_data(name, values):
     return data
 
 
-def validate_task(p, op, args):
+def validate_task(rules, op, args):
     if op == 'ancient_preplay':
-        if not p.rules.player_side:
+        if not rules.player_side:
             raise ValueError('Ancient setup outside the player turn.')
         return
     expected = 'whispering_earring' if op == 'ancient_earring' else 'toasty_mittens'
-    relic = next((r for r in p.rules.relics if r['instance_id'] == args[0]), None)
+    relic = next((r for r in rules.relics if r['instance_id'] == args[0]), None)
     if relic is None or relic['definition_id'] != expected or relic['data'].get('_melted'):
         raise ValueError('Unowned Ancient continuation.')
-    if op == 'ancient_earring' and (type(args[1]) is not int or not 0 <= args[1] <= 13 or p.rules.round_number != 1):
+    if op == 'ancient_earring' and (type(args[1]) is not int or not 0 <= args[1] <= 13 or rules.round_number != 1):
         raise ValueError('Invalid Whispering Earring continuation.')
 
 

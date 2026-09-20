@@ -20,7 +20,9 @@ public partial class Oracle : Node
             var godot = context.LoadFromAssemblyName(assembly.GetReferencedAssemblies().Single(a => a.Name == "GodotSharp"));
             if (!ReferenceEquals(godot, typeof(Node).Assembly))
                 throw new InvalidOperationException("Native game resolved a different GodotSharp instance.");
-            var result = OS.GetCmdlineUserArgs().Contains("draw-cards")
+            var result = OS.GetCmdlineUserArgs().Contains("remaining-draw")
+                ? await DeathDrawOracle.Run(assembly, digest, attackMode: true, drawCards: true, remainingDraw: true)
+                : OS.GetCmdlineUserArgs().Contains("draw-cards")
                 ? await DeathDrawOracle.Run(assembly, digest, attackMode: true, drawCards: true)
                 : OS.GetCmdlineUserArgs().Contains("autoplay-flak")
                 ? await DeathDrawOracle.Run(assembly, digest, attackMode: true, autoplay: true, flak: true)

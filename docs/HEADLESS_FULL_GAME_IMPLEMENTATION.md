@@ -1612,15 +1612,27 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      native pile moves during a paused Stratagem choice; those cases verify the
      emptied-pile continuation, not a demonstrated live interleaving. See the
      [engine guide](HEADLESS_ENGINE.md) for precise snapshot and fixture scope.
-   - **Next: remaining card-specific post-shuffle boundaries.** Start with Scrape,
-     Mittens or Foregone Conclusion. Compare native piles, effects, options and RNG
-     before changing caller rules, including an empty live draw pile on resumption.
-     Several paused death contexts and reactive enemy-side-start choices remain
-     separate scheduling cases; Horn plus a paused Tools setup is now verified.
+   - **Scrape, Mittens and Foregone shuffle continuations verified:** 180 native
+     cases cover both Scrape upgrades, first/later-turn Mittens and Foregone amounts
+     two/three. Scrape obeys Fiddle and capacity before refilling; all three retain
+     a completed shuffle phase. Foregone removes itself on empty selection and
+     preserves draw order when automatically taking all cards. Mittens grants
+     Strength even without an exhaust target; its paused save now validates against
+     reconstructed relic ownership. Exact piles, draw order, resources/HP/Strength,
+     power removal and five RNG suffixes match. JSON and malformed-save checks use
+     combat v34 / run v50. [Native vectors](evidence/native_remaining_draw_2026_09_20.json)
+     execute a real Scrape action and actual before-hand-draw callbacks, including
+     controlled pile interference; they do not establish full-turn/live scheduling.
+     Dark Embrace interrupting Mittens' exhaust has additional source-backed coverage.
+   - **Next: drawn-card movement before follow-up effects.** Compare native Scrape
+     with Hellraiser and a discard-trigger relic: a captured drawn card can leave
+     the hand before Scrape's final discard. Inspect physical movement, discard
+     hooks and RNG before changing the captured-card handling. Several paused death
+     contexts and reactive enemy-side-start choices remain separate scheduling cases.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
-     autoplay and further combat boundaries. Ordinary Draw, Mayhem, Pillage and
-     Escape Plan have bounded native evidence; other callers still need their own
-     post-shuffle continuation checks. Reproduce each suspected difference
+     autoplay and further combat boundaries. Ordinary Draw, Mayhem, Pillage,
+     Escape Plan, Scrape, Mittens and Foregone now have bounded native evidence;
+     interacting draw/exhaust/discard hooks still need their own sequence checks. Reproduce each suspected difference
      natively before changing caller semantics. Require actual native sequences;
      passing Python continuation alone is regression evidence.
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
