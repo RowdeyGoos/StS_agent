@@ -232,7 +232,7 @@ class CombatEngine:
         return CombatResult(self.done, self.winner, result.details)
 
     def _advance_enemy_side(self):
-        from game.headless.core.enemy_turn import begin, execute, paused, current_slot
+        from game.headless.core.enemy_turn import begin, execute, paused, current_slot, action_details
         progress = self.player.rules.enemy_turn
         enemy_actions = progress['actions']
         details = {}
@@ -251,10 +251,10 @@ class CombatEngine:
             self._refresh_persistent_statuses()
             self._check_terminal()
             if paused(self.player) and not self.done:
-                return CombatResult(False, None, {'enemy_actions': list(enemy_actions)})
+                return CombatResult(False, None, {'enemy_actions': action_details(enemy_actions)})
             from game.headless.monsters.base import Intent
             executed = Intent(**progress['move']['intent'])
-            enemy_actions.append({'enemy_index': slot, 'enemy_name': enemy.name, 'intent': executed.as_dict()})
+            enemy_actions.append({'enemy_index': slot, 'enemy_name': enemy.name, 'intent': executed.as_dict(), 'roll_next': progress['move']['stage'] == 'deferred'})
             enemy.finish_move()
             progress['slot'] += 1
             progress['move'] = None
@@ -269,9 +269,12 @@ class CombatEngine:
             self._refresh_persistent_statuses()
             self._check_terminal()
             if paused(self.player) and not self.done:
-                return CombatResult(False, None, {'enemy_actions': list(enemy_actions)})
+                return CombatResult(False, None, {'enemy_actions': action_details(enemy_actions)})
+        rolls = {action['enemy_index'] for action in enemy_actions if action['roll_next']}
+        for enemy in self.enemies:
+            enemy.turn_roll_pending = False
         self.player.rules.enemy_turn = None
-        details["enemy_actions"] = enemy_actions
+        details["enemy_actions"] = action_details(enemy_actions)
         if len(enemy_actions) == 1:
             details["enemy_action"] = enemy_actions[0]["intent"]
         if not self.done:
@@ -285,7 +288,13 @@ class CombatEngine:
             from game.headless.powers.ironclad import after_enemy_end
             after_enemy_end(self.player)
             self.player.rules.powers.pop("tainted", None)
-            for enemy in self.enemies:
+            # Native rolls only the surviving roster after enemy-side Doom and
+            # turn-end powers. Completed moves retain stable slot ownership.
+            from game.headless.core.enemy_turn import turn_order
+            for slot in turn_order(self.enemies):
+                enemy = self.enemies[slot]
+                if slot in rolls and enemy.is_alive:
+                    enemy.advance_intent()
                 enemy.prepare_next_turn()
             self.turn += 1
             for enemy in self._living_enemies():

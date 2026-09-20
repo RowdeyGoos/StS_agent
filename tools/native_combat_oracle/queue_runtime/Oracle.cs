@@ -27,7 +27,7 @@ public partial class Oracle : Node
                 : OS.GetCmdlineUserArgs().Contains("event-inventory")
                 ? await EventInventoryOracle.Run(assembly,digest)
                 : OS.GetCmdlineUserArgs().Contains("boosted-matrix")
-                ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true,coverage:true,scenario:OS.GetCmdlineUserArgs()[1],ascension:OS.GetCmdlineUserArgs().Contains("ascension-10")?10:0)
+                ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true,coverage:true,scenario:OS.GetCmdlineUserArgs()[1],ascension:OS.GetCmdlineUserArgs().Contains("ascension-10")?10:0,characterName:System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(OS.GetCmdlineUserArgs().FirstOrDefault(a=>a.StartsWith("character-"))?.Substring(10)??"ironclad"))
                 : OS.GetCmdlineUserArgs().Contains("boosted-kaiser")
                 ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true,coverage:true,kaiser:true)
                 : OS.GetCmdlineUserArgs().Contains("boosted-coverage")

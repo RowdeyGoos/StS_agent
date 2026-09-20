@@ -89,7 +89,8 @@ def execute(p, op, args):
         elif kind == 'frost':
             p.gain_block(amount)
         else:
-            living = [i for i, e in enumerate(p.combat_enemies or ()) if e.is_alive]
+            from game.headless.core.enemy_turn import turn_order
+            living = [i for i in turn_order(p.combat_enemies or ()) if p.combat_enemies[i].is_alive]
             if kind == 'glass':
                 if amount <= 0:
                     return
@@ -105,12 +106,12 @@ def execute(p, op, args):
     elif op == 'orb_damage':
         _, slot, amount = args
         if p.combat_enemies[slot].is_alive:
-            p.combat_enemies[slot].take_damage(amount, is_attack=False)
+            p.combat_enemies[slot].take_damage(amount, is_attack=False, powered=False, attacker_statuses=p.statuses)
     elif op == 'orb_thunder':
         _, slot = args
         amount = r.powers.get('thunder', 0)
         if amount and p.combat_enemies[slot].is_alive:
-            p.combat_enemies[slot].take_damage(amount, is_attack=False)
+            p.combat_enemies[slot].take_damage(amount, is_attack=False, powered=False, attacker_statuses=p.statuses)
     else:
         raise ValueError('Unknown orb continuation.')
 

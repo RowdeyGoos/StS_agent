@@ -16,7 +16,7 @@ class Necro:
 
     @property
     def resolves_after_combat_end(self):
-        return self.operation == 'scythe'
+        return self.operation in ('scythe', 'drain_power')
 
     def apply(self, card, p, target):
         if not p.combat_is_ending or self.resolves_after_combat_end:

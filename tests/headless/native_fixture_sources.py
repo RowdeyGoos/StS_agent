@@ -1,27 +1,39 @@
-"""Bind retained campaign implementations and the separately rerun probe harness."""
+"""Bind retained results to explicit native reruns of the current harness."""
 import gzip
 import hashlib
 import json
 from pathlib import Path
 
-ROOT=Path(__file__).parents[2]
+ROOT = Path(__file__).parents[2]
+REPORT = ROOT / 'docs/evidence/native_character_campaign_regressions_2026_09_21.json'
+
+
+def assert_current_sources():
+    report = json.loads(REPORT.read_text())
+    for name, digest in report['fixtureSources'].items():
+        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    assert len(report['runs']) == 15
+    for row in report['runs']:
+        raw = (ROOT / row['baseline']).read_bytes()
+        baseline = json.loads(gzip.decompress(raw) if row['baseline'].endswith('.gz') else raw)
+        assert hashlib.sha256(raw).hexdigest() == row['baselineSha256']
+        assert hashlib.sha256(json.dumps(baseline['result'], sort_keys=True).encode()).hexdigest() == row['resultSha256']
+        assert row['resultMatchesRetained'] and row['userDirectoryRemoved']
+        assert row['exitCode'] == row['stderrBytes'] == 0
+    return report
 
 
 def assert_campaign_sources(capture):
-    current=json.loads(gzip.decompress((ROOT/'docs/evidence/native_characters_2026_09_20.json.gz').read_bytes()))
-    changed={'death_draw.cs','item_status.cs','character.cs','run.py'}
-    for name,digest in capture['fixtureSources'].items():
+    current = assert_current_sources()
+    # These modules changed across the retained item probes / character work.
+    # Their original hashes remain historical; the report binds fresh executions
+    # of every retained campaign mode to the current sources and equal results.
+    changed = {'death_draw.cs', 'item_status.cs', 'character.cs', 'generated_start.cs', 'Oracle.cs', 'run.py'}
+    for name, digest in capture['fixtureSources'].items():
         if name not in changed:
-            assert current['fixtureSources'][name]==digest
-    for name,digest in current['fixtureSources'].items():
-        assert hashlib.sha256((ROOT/'tools/native_combat_oracle/queue_runtime'/name).read_bytes()).hexdigest()==digest
-    # The runner only stages the new probe module. Its launch/safety/cleanup
-    # behavior remains byte-identical to the retained campaign runner.
-    runner=(ROOT/'tools/native_combat_oracle/queue_runtime/run.py').read_bytes()
-    assert hashlib.sha256(runner.replace(b'"item_status.cs", "character.cs",',b'"item_status.cs",')).hexdigest()==capture['fixtureSources']['run.py']
-    # Current shared-dispatcher execution reproduces the retained enemy turns.
-    fresh=current['sharedDispatcherRegression']
-    baseline=(ROOT/fresh['baseline']).read_bytes()
-    assert fresh['fixtureSources']==current['fixtureSources'] and fresh['userDirectoryRemoved']
-    assert hashlib.sha256(baseline).hexdigest()==fresh['baselineSha256']
-    assert hashlib.sha256(json.dumps(json.loads(baseline)['result'],sort_keys=True).encode()).hexdigest()==fresh['resultSha256']
+            assert current['fixtureSources'][name] == digest
+    if 'result' in capture:
+        digest = hashlib.sha256(json.dumps(capture['result'], sort_keys=True).encode()).hexdigest()
+        assert any(row['resultSha256'] == digest for row in current['runs'])
+    if 'runs' in capture:
+        assert {row['baseline'] for row in capture['runs']} <= {row['baseline'] for row in current['runs']}

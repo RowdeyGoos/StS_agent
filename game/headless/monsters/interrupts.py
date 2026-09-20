@@ -11,9 +11,15 @@ class InterruptibleEnemy(ScriptedEnemy):
         self.move_interrupted = False
         self.interrupted_intent = Intent('stun', 0)
 
-    def capture_interrupted_move(self):
+    def capture_interrupted_move(self, *, must_perform=True):
         p = self.combat_player
         progress = p.rules.enemy_turn if p is not None else None
+        # Native forced stuns must execute before transitioning. Other forced
+        # moves (Queen's Enrage) can still transition at the pending roll.
+        if must_perform and progress and self.turn_roll_pending:
+            self.turn_roll_pending = False
+            slot = p.combat_enemies.index(self)
+            next(a for a in progress['actions'] if a['enemy_index'] == slot)['roll_next'] = False
         if progress and progress['move'] is not None and current_slot(progress) == p.combat_enemies.index(self):
             self.interrupted_intent = Intent(**progress['move']['intent'])
             self.move_interrupted = True

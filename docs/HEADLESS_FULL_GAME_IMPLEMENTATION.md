@@ -252,8 +252,8 @@ A complete simulator for that scope must:
 Faithful reduced-content full runs are an intermediate milestone. Excluding a
 reachable unsupported card from a reward pool changes the game and cannot count
 as full target coverage. Highest-difficulty coverage is a later gate, HF-38.
-Other playable characters now use the shared engine (HF-52); native whole-run
-comparisons and public/policy adapters for those characters remain separate gates. Cooperative multiplayer
+Other playable characters use the shared engine and have A0/A10 native whole-run
+comparisons (HF-52). Public/policy adapters remain a separate gate. Cooperative multiplayer
 and alternate modes are outside this project; HF-53 and the alternate-mode part
 of HF-54 are retained only as excluded historical inventory. Boosted native/Python
 campaign comparisons are accepted; a normal-HP test-policy victory is not required.
@@ -1489,8 +1489,9 @@ Dependencies and acceptance cases are in the linked task.
   eight captured probes. Each added character completes boosted A0 Overgrowth
   and A10 Underdocks three-act Python runs with JSON checkpoints.
   [Usage and scope](HEADLESS_ENGINE.md#playable-characters);
-  [evidence](evidence/playable_characters_2026_09_20.md). Full native campaign
-  comparison and public/RL adapter coverage remain acceptance work.
+  [startup evidence](evidence/playable_characters_2026_09_20.md). Eight complete
+  A0/A10 [native campaign comparisons](evidence/native_character_campaigns_2026_09_21.md)
+  now pass; public/RL adapter coverage remains acceptance work.
 - **Depends on:** HF-01–50's shared facilities and a new per-character scope inventory.
 - **Implement:** one ticket per character for starting deck/relic/stats, resources,
   summons/companions or other unique mechanics, cards/upgrades, restricted items,
@@ -1832,8 +1833,8 @@ Current source/coverage: [combat interactions](evidence/combat_interactions_2026
 [events and Neow](evidence/events_neow_2026_09_14.md).
 A1–A10 rules and two complete native A10 campaign comparisons are implemented
 under HF-38. Broader interaction conformance remains acceptance work;
-character-specific starts are implemented under HF-52. Their native campaign
-comparisons and external policy adapters remain separate acceptance work.
+character-specific starts and eight native A0/A10 campaign comparisons are
+implemented under HF-52. External policy adapters remain separate acceptance work.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

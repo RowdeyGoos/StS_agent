@@ -49,7 +49,8 @@ def after_card_power(p, card, key):
     if key == 'devour_life':
         osty.summon(p, amount)
     elif key == 'haunt':
-        living = [i for i, e in enumerate(p.combat_enemies) if e.is_alive]
+        from game.headless.core.enemy_turn import turn_order
+        living = [i for i in turn_order(p.combat_enemies) if p.combat_enemies[i].is_alive]
         if living:
             push(p, ['nec_enemy_loss', p.deck.target_rng.choice(living), amount, True, key])
 
@@ -177,7 +178,8 @@ def execute(p, op, args):
     elif op == 'nec_side_start':
         key = args[0]
         if key == 'countdown':
-            living = [i for i, e in enumerate(p.combat_enemies) if e.is_alive]
+            from game.headless.core.enemy_turn import turn_order
+            living = [i for i in turn_order(p.combat_enemies) if p.combat_enemies[i].is_alive]
             if living:
                 push(p, ['status', p.deck.target_rng.choice(living), 'doom', r.powers[key]])
         elif key == 'neurosurge':

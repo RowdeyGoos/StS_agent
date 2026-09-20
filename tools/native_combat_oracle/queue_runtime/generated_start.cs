@@ -5,8 +5,9 @@ using System.Text.Json;
 // Real native run/reward objects under TestMode and explicit in-memory saves.
 internal static class GeneratedStartOracle
 {
-    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false,bool coverage=false,bool kaiser=false,string? scenario=null,int ascension=0)
+    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false,bool coverage=false,bool kaiser=false,string? scenario=null,int ascension=0,string characterName="Ironclad")
     {
+        bool characterComparison=characterName!="Ironclad";
         const BindingFlags flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
         object P(object o,string n)=>o.GetType().GetProperty(n,flags)!.GetValue(o)!;
@@ -23,16 +24,19 @@ internal static class GeneratedStartOracle
         foreach(var t in asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AbstractModel"))&&t.Namespace!.StartsWith("MegaCrit.Sts2.Core.Models.")))C(T("Models.ModelDb"),"Inject",t);
         var loc=RuntimeHelpers.GetUninitializedObject(T("Localization.LocManager"));
         var tables=(System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string),T("Localization.LocTable")))!;
-        tables.Add("ancients",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"ancients",new Dictionary<string,string>{{"THE_ARCHITECT.talk.IRONCLAD.0-0.next","Continue"},{"PROCEED.title","Proceed"},{"PROCEED.description","Finished"}},null})!);
+        tables.Add("ancients",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"ancients",new Dictionary<string,string>{{"THE_ARCHITECT.talk."+characterName.ToUpperInvariant()+".0-0.next","Continue"},{"PROCEED.title","Proceed"},{"PROCEED.description","Finished"}},null})!);
         tables.Add("characters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"characters",new[]{"IRONCLAD","SILENT","REGENT","NECROBINDER","DEFECT"}.SelectMany(c=>new[]{"title","titleObject","possessiveAdjective","pronounObject","pronounPossessive","pronounSubject"}.Select(k=>c+"."+k)).ToDictionary(k=>k,k=>k),null})!);
         F(loc,"_tables",tables);C(loc,"LoadLocFormatters");loc.GetType().GetProperty("CultureInfo",flags)!.SetValue(loc,System.Globalization.CultureInfo.InvariantCulture);loc.GetType().GetProperty("Instance",flags)!.SetValue(null,loc);
         tables.Add("intents",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"intents",new Dictionary<string,string>{{"STUN.title","Stun"},{"STUN.description","Stun"}},null})!);
         var cache=T("Assets.PreloadManager").GetProperty("Cache")!.GetValue(null)!;
         var assets=cache.GetType().GetField("_cache",flags)!.GetValue(cache)!;
         C(assets,"TryAdd","res://images/enchantments/missing_enchantment.png",new Godot.CompressedTexture2D());
-        C(assets,"TryAdd","res://images/atlases/ui_atlas.sprites/card/energy_ironclad.tres",new Godot.AtlasTexture());
+        foreach(var name in new[]{"ironclad","silent","regent","necrobinder","defect"})C(assets,"TryAdd","res://images/atlases/ui_atlas.sprites/card/energy_"+name+".tres",new Godot.AtlasTexture());
         C(assets,"TryAdd","res://images/atlases/intent_atlas.sprites/intent_stun.tres",new Godot.GradientTexture2D());
         var mockIcons=new List<Godot.Texture2D>();
+        foreach(var segment in new[]{"front","middle","back"}){var icon=new Godot.GradientTexture2D();icon.TakeOverPath("res://images/monsters/phobia_mode/decimillipede_segment_"+segment+"_phobia.png");mockIcons.Add(icon);}
+        tables.Add("combat_messages",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"combat_messages",new Dictionary<string,string>{{"HAND_FULL","Hand full"},{"NO_DRAW","No draw"}},null})!);
+        foreach(var name in new[]{"lightning","frost","dark","plasma","glass"})C(assets,"TryAdd","res://images/orbs/"+name+"_orb.png",new Godot.CompressedTexture2D());
         foreach(var power in asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.PowerModel"))))
         {
             var icon=new Godot.GradientTexture2D();
@@ -52,7 +56,7 @@ internal static class GeneratedStartOracle
             P(saves,"PrefsSave").GetType().GetProperty("UploadData")!.SetValue(P(saves,"PrefsSave"),false);
             Require(!(bool)P(P(saves,"PrefsSave"),"UploadData"),"Metrics uploads must be disabled.");
             T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,0UL);
-            var player=C(T("Entities.Players.Player"),"CreateForNewRun",Get("Character","Characters.Ironclad"),T("Unlocks.UnlockState").GetField("all")!.GetValue(null),0UL);
+            var player=C(T("Entities.Players.Player"),"CreateForNewRun",Get("Character","Characters."+characterName),T("Unlocks.UnlockState").GetField("all")!.GetValue(null),0UL);
             var acts=firstAct=="Overgrowth"?null:Typed(new[]{Get("Act","Acts.Underdocks"),Get("Act","Acts.Hive"),Get("Act","Acts.Glory")},T("Models.ActModel"));
             var state=C(T("Runs.RunState"),"CreateForTest",Typed(new[]{player},player.GetType()),acts,null,Enum.Parse(T("Runs.GameMode"),"Standard"),ascension,seed);
             var manager=T("Runs.RunManager").GetProperty("Instance")!.GetValue(null)!;
@@ -73,10 +77,10 @@ internal static class GeneratedStartOracle
                 foreach(var pair in new[]{("SELF_HELP_BOOK",new[]{"READ_THE_BACK","READ_PASSAGE","READ_ENTIRE_BOOK","READ_THE_BACK_LOCKED","READ_PASSAGE_LOCKED","READ_ENTIRE_BOOK_LOCKED","NO_OPTIONS"}),("SUNKEN_STATUE",new[]{"GRAB_SWORD","DIVE_INTO_WATER"}),("AMALGAMATOR",new[]{"COMBINE_STRIKES","COMBINE_DEFENDS"}),("TRASH_HEAP",new[]{"DIVE_IN","GRAB"}),("COLOSSAL_FLOWER",new[]{"EXTRACT_CURRENT_PRIZE_1","REACH_DEEPER_1","EXTRACT_CURRENT_PRIZE"}),("SLIPPERY_BRIDGE",new[]{"OVERCOME","HOLD_ON_0"})})
                     foreach(var branch in pair.Item2){foreach(var suffix in new[]{"title","description"})eventText[pair.Item1+".pages.INITIAL.options."+branch+"."+suffix]="Event";eventText[pair.Item1+".pages."+branch+".description"]="Event";}
                 if(!tables.Contains("events"))tables.Add("events",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"events",eventText,null})!);
-                foreach(var tableName in new[]{"card_keywords","cards","static_hover_tips","powers","enchantments","afflictions","monsters"})
+                foreach(var tableName in new[]{"card_keywords","cards","static_hover_tips","powers","enchantments","afflictions","monsters","orbs"})
                 {
                     var texts=new Dictionary<string,string>();
-                    var names=tableName=="powers"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.PowerModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
+                    var names=tableName=="orbs"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.OrbModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):tableName=="powers"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.PowerModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
                         tableName=="afflictions"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AfflictionModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
                         tableName=="card_keywords"?Enum.GetNames(T("Entities.Cards.CardKeyword")).Select(n=>C(T("Helpers.StringHelper"),"Slugify",n).ToString()!):
                         tableName=="static_hover_tips"?Enum.GetNames(T("HoverTips.StaticHoverTip")).Select(n=>C(T("Helpers.StringHelper"),"Slugify",n).ToString()!):
@@ -90,7 +94,9 @@ internal static class GeneratedStartOracle
                     if(!tables.Contains(tableName))tables.Add(tableName,Activator.CreateInstance(T("Localization.LocTable"),new object?[]{tableName,texts,null})!);
                 }
                 var selector=Activator.CreateInstance(T("TestSupport.TestCardSelector"))!;
-                using var selected=(IDisposable)C(T("Commands.CardSelectCmd"),"UseSelector",selector);
+                var policy=(CampaignSelector)DispatchProxy.Create(T("TestSupport.ICardSelector"),typeof(CampaignSelector));
+                policy.Fallback=selector;
+                using var selected=(IDisposable)C(T("Commands.CardSelectCmd"),"UseSelector",characterComparison?policy:selector);
                 C(manager,"GenerateRooms");
                 await Await(C(manager,"EnterAct",0,false));
                 var neow=C(P(manager,"EventSynchronizer"),"GetLocalEvent");
@@ -108,7 +114,12 @@ internal static class GeneratedStartOracle
                 int Row(object p)=>(int)Coord(p).GetType().GetField("row")!.GetValue(Coord(p))!;
                 int Col(object p)=>(int)Coord(p).GetType().GetField("col")!.GetValue(Coord(p))!;
                 var safePotions=new[]{"FIRE_POTION","BLOCK_POTION","STRENGTH_POTION","DEXTERITY_POTION","ENERGY_POTION","EXPLOSIVE_POTION","BLOOD_POTION","FRUIT_JUICE","FEAR_POTION","WEAK_POTION"};
-                var safeCards=new[]{"PERFECTED_STRIKE","POMMEL_STRIKE","SHRUG_IT_OFF","ANGER","IRON_WAVE","TWIN_STRIKE","SWORD_BOOMERANG","BATTLE_TRANCE","INFLAME","METALLICIZE","THUNDERCLAP"};
+                var safeCards=characterName switch {
+                    "Silent"=>new[]{"DEADLY_POISON","POISONED_STAB","DAGGER_SPRAY","DAGGER_THROW","BACKFLIP","FOOTWORK","CLOAK_AND_DAGGER"},
+                    "Regent"=>new[]{"SOLAR_STRIKE","CRESCENT_SPEAR","GATHER_LIGHT","GLOW","BIG_BANG","REFINE_BLADE","COSMIC_INDIFFERENCE"},
+                    "Necrobinder"=>new[]{"BLIGHT_STRIKE","DEATHBRINGER","COUNTDOWN","FEAR","DRAIN_POWER","SOW","GRAVE_WARDEN","FLATTEN","CALCIFY"},
+                    "Defect"=>new[]{"BALL_LIGHTNING","COLD_SNAP","COMPILE_DRIVER","GLACIER","DEFRAGMENT","CAPACITOR","BEAM_CELL"},
+                    _=>new[]{"PERFECTED_STRIKE","POMMEL_STRIKE","SHRUG_IT_OFF","ANGER","IRON_WAVE","TWIN_STRIKE","SWORD_BOOMERANG","BATTLE_TRANCE","INFLAME","METALLICIZE","THUNDERCLAP"}};
                 object?[] Potions()=>Items(P(player,"PotionSlots")).Select(p=>p is null?null:(object?)P(P(p,"Id"),"Entry").ToString()).ToArray();
                 object RngCounters()
                 {
@@ -127,7 +138,7 @@ internal static class GeneratedStartOracle
                         ["deck"]=Items(P(P(player,"Deck"),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")}).ToArray(),
                         ["rewardsCounter"]=P(P(P(player,"PlayerRng"),"Rewards"),"Counter"),["nicheCounter"]=P(P(P(state,"Rng"),"Niche"),"Counter"),["shuffleCounter"]=P(P(P(state,"Rng"),"Shuffle"),"Counter")};
                     if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
-                    if(ascension>0){result["rngCounters"]=RngCounters();result["deckEnchantments"]=Enchantments();}
+                    if(ascension>0||characterComparison){result["rngCounters"]=RngCounters();result["deckEnchantments"]=Enchantments();}
                     if(coverage){result["potions"]=Potions();result["shopsCounter"]=P(P(P(player,"PlayerRng"),"Shops"),"Counter");}
                     return result;
                 }
@@ -223,7 +234,7 @@ internal static class GeneratedStartOracle
                         }
                         if(eventId=="AMALGAMATOR"){
                             var deck=Items(P(P(player,"Deck"),"Cards"));
-                            eventDeckIndices=Enumerable.Range(0,deck.Length).Where(i=>P(P(deck[i],"Id"),"Entry").ToString()=="STRIKE_IRONCLAD" && (bool)P(deck[i],"IsRemovable")).Take(2).ToArray();
+                            eventDeckIndices=Enumerable.Range(0,deck.Length).Where(i=>P(P(deck[i],"Id"),"Entry").ToString()=="STRIKE_"+characterName.ToUpperInvariant() && (bool)P(deck[i],"IsRemovable")).Take(2).ToArray();
                             Require(eventDeckIndices.Length==2,"Amalgamator requires two physical Strikes.");
                             C(selector,"PrepareToSelect",Typed(eventDeckIndices.Select(i=>deck[i]),T("Models.CardModel")));
                             presentation!.BeginEventShake();
@@ -298,14 +309,22 @@ internal static class GeneratedStartOracle
                         ["hand"]=Items(P(P(P(player,"PlayerCombatState"),"Hand"),"Cards")).Select(Card).ToArray(),
                         ["enemies"]=Items(P(combat,"Enemies")).Select(c=>boosted?(object)new{combatId=P(c,"CombatId"),id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}:new{id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}).ToArray()};
                     if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
-                    if(ascension>0){result["rngCounters"]=RngCounters();result["deckEnchantments"]=Enchantments();}
-                    if(ascension>0)result["piles"]=new[]{"Hand","DrawPile","DiscardPile","ExhaustPile"}.ToDictionary(n=>n,n=>(object)Items(P(P(P(player,"PlayerCombatState"),n),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel"),enchantment=c.GetType().GetProperty("Enchantment")!.GetValue(c) is object e?(object)new{id=P(P(e,"Id"),"Entry").ToString(),amount=P(e,"Amount")}:null}).ToArray());
+                    if(characterComparison){
+                        var pcs=P(player,"PlayerCombatState");var osty=P(player,"Osty");
+                        result["resources"]=new{stars=P(pcs,"Stars"),osty=osty is null?null:new{combatId=P(osty,"CombatId"),hp=P(osty,"CurrentHp"),maxHp=P(osty,"MaxHp"),block=P(osty,"Block")},
+                            slots=P(P(pcs,"OrbQueue"),"Capacity"),orbs=Items(P(P(pcs,"OrbQueue"),"Orbs")).Select(o=>new{kind=o.GetType().Name,passive=P(o,"PassiveVal"),evoke=P(o,"EvokeVal")}).ToArray(),
+                            powers=Items(P(P(player,"Creature"),"Powers")).ToDictionary(p=>P(P(p,"Id"),"Entry").ToString()!,p=>P(p,"Amount"))};
+                    }
+                    if(ascension>0||characterComparison){result["rngCounters"]=RngCounters();result["deckEnchantments"]=Enchantments();}
+                    if(ascension>0||characterComparison)result["piles"]=new[]{"Hand","DrawPile","DiscardPile","ExhaustPile"}.ToDictionary(n=>n,n=>(object)Items(P(P(P(player,"PlayerCombatState"),n),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel"),enchantment=c.GetType().GetProperty("Enchantment")!.GetValue(c) is object e?(object)new{id=P(P(e,"Id"),"Entry").ToString(),amount=P(e,"Amount")}:null}).ToArray());
                     if(coverage){result["potions"]=Potions();result["shopsCounter"]=P(P(P(player,"PlayerRng"),"Shops"),"Counter");}
                     return result;
                 }
                 var initial=Boundary();
+                policy.Active=characterComparison;
                 for(int n=0;n<300 && (bool)P(combatManager,"IsInProgress");n++)
                 {
+                    policy.Choices.Clear();
                     var pcs=P(player,"PlayerCombatState");
                     var enemies=Items(P(combat,"Enemies"));
                     var living=enemies.Where(e=>(bool)P(e,"IsAlive"));
@@ -332,7 +351,7 @@ internal static class GeneratedStartOracle
                     var priorities=new[]{"INFLAME","BATTLE_TRANCE","PERFECTED_STRIKE","ANGER","POMMEL_STRIKE","SWORD_BOOMERANG","TWIN_STRIKE","BASH","THUNDERCLAP","IRON_WAVE","STRIKE_IRONCLAD","SHRUG_IT_OFF","DEFEND_IRONCLAD"};
                     int incoming=campaign?living.Sum(e=>Items(P(P(P(e,"Monster"),"NextMove"),"Intents")).Where(i=>T("MonsterMoves.Intents.AttackIntent").IsInstanceOfType(i)).Sum(i=>(int)C(i,"GetTotalDamage",Typed(new[]{P(player,"Creature")},T("Entities.Creatures.Creature")),e))):0;
                     bool slippery=target is not null && Items(P(target,"Powers")).Any(p=>P(P(p,"Id"),"Entry").ToString()=="SLIPPERY_POWER");
-                    int Priority(object c){string id=P(P(c,"Id"),"Entry").ToString()!;if(matrix && id=="FRANTIC_ESCAPE")return -2;if(matrix && id=="ULTIMATE_STRIKE")return 2;if(slippery && id=="SWORD_BOOMERANG")return -1;if(slippery && id=="PERFECTED_STRIKE")return 90;if(!matrix && incoming>Convert.ToInt32(P(P(player,"Creature"),"Block")) && id is "SHRUG_IT_OFF" or "DEFEND_IRONCLAD")return 4;int rank=Array.IndexOf(priorities,id);return rank<0?99:rank;}
+                    int Priority(object c){string id=P(P(c,"Id"),"Entry").ToString()!;if(matrix && id=="FRANTIC_ESCAPE")return -2;if(matrix && id=="ULTIMATE_STRIKE")return 2;if(slippery && id=="SWORD_BOOMERANG")return -1;if(slippery && id=="PERFECTED_STRIKE")return 90;if(!matrix && incoming>Convert.ToInt32(P(P(player,"Creature"),"Block")) && id is "SHRUG_IT_OFF" or "DEFEND_IRONCLAD")return 4;if(characterComparison && id is "DEADLY_POISON" or "REFINE_BLADE" or "BIG_BANG" or "COUNTDOWN" or "DEATHBRINGER" or "CALCIFY")return 0;if(characterComparison && id is "SOVEREIGN_BLADE" or "FEAR" or "FALLING_STAR" or "SOLAR_STRIKE" or "BLIGHT_STRIKE" or "DRAIN_POWER")return 5;if(characterComparison)return P(c,"Type").ToString()=="Attack"?10:P(c,"Type").ToString()=="Power"?20:30;int rank=Array.IndexOf(priorities,id);return rank<0?99:rank;}
                     var card=campaign?playable.OrderBy(Priority).FirstOrDefault():playable.FirstOrDefault();
                     if(card is not null)
                     {
@@ -343,20 +362,21 @@ internal static class GeneratedStartOracle
                         await Await(C(executor,"FinishedExecutingActions"));
                         Require(P(play,"State").ToString()=="Finished","Card action paused unexpectedly.");
                         await Await(C(combatManager,"CheckWinCondition"));
-                        actions.Add(boosted?(object)new{kind="play",index,targetCombatId=target is null?null:P(target,"CombatId"),card=playedCard,state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:campaign?(object)new{kind="play",index,targetIndex=Array.IndexOf(enemies,target),card=playedCard,state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="play",index,card=playedCard,state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
+                        actions.Add(characterComparison?(object)new{kind="play",index,targetCombatId=target is null?null:P(target,"CombatId"),card=playedCard,choices=policy.Choices.ToArray(),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:boosted?(object)new{kind="play",index,targetCombatId=target is null?null:P(target,"CombatId"),card=playedCard,state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:campaign?(object)new{kind="play",index,targetIndex=Array.IndexOf(enemies,target),card=playedCard,state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="play",index,card=playedCard,state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
                     }
                     else
                     {
                         bool curse=boosted && living.Any(e=>P(P(e,"Monster"),"Id").ToString()=="MONSTER.KNOWLEDGE_DEMON" && P(P(P(e,"Monster"),"NextMove"),"Id").ToString()=="CURSE_OF_KNOWLEDGE_MOVE");
-                        if(curse)C(selector,"PrepareToSelect",new[]{0});
+                        if(curse&&!characterComparison)C(selector,"PrepareToSelect",new[]{0});
                         await Await(C(combatManager,"EndPlayerTurnPhaseOneInternal"));
                         if((bool)P(combatManager,"IsInProgress"))await Await(C(combatManager,"EndPlayerTurnPhaseTwoInternal"));
                         if((bool)P(combatManager,"IsInProgress"))await Await(C(combatManager,"SwitchFromPlayerToEnemySide",(object?)null));
                         if(curse)Require(Items(selector.GetType().GetField("_indicesToSelectTaskQueue",flags)!.GetValue(selector)!).Length==0,"Curse answer was not consumed.");
-                        actions.Add(boosted?(object)new{kind="end",choiceIndices=curse?new[]{0}:Array.Empty<int>(),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="end",state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
+                        actions.Add(characterComparison?(object)new{kind="end",choices=policy.Choices.ToArray(),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:boosted?(object)new{kind="end",choiceIndices=curse?new[]{0}:Array.Empty<int>(),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="end",state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
                     }
                 }
                 Require(!(bool)P(combatManager,"IsInProgress"),"Combat action budget exhausted: "+P(P(P(room,"Encounter"),"Id"),"Entry")+" "+JsonSerializer.Serialize(Boundary()));
+                policy.Active=false;
                 var trace=new{seed,offers,choice,rewardsAfterNeow,row=Row(next),col=Col(next),encounter=P(P(P(room,"Encounter"),"Id"),"Entry").ToString(),initial,actions,hp=P(P(player,"Creature"),"CurrentHp")};
                 if(!campaign)rows.Add(trace);
                 else
@@ -413,10 +433,10 @@ internal static class GeneratedStartOracle
                 if(matrix)Require(presentation!.IsClear,"Campaign presentation not released.");
                 if(coverage)
                 {
-                    Require(completed && winningState is not null,"Coverage campaign did not win.");
+                    Require(completed && winningState is not null,"Coverage campaign did not win: "+JsonSerializer.Serialize(route.LastOrDefault()));
                     var row=new{firstAct=firstAct.ToLowerInvariant(),seed,offers,choice,rewardsAfterNeow,startingHp=boostedHp,startingMaxHp=boostedHp,route,state=winningState,outcome="victory"};
-                    if(ascension==0)rows.Add(row);
-                    else { var fields=JsonSerializer.Deserialize<Dictionary<string,object?>>(JsonSerializer.Serialize(row))!;fields["ascension"]=ascension;rows.Add(fields); }
+                    if(ascension==0&&!characterComparison)rows.Add(row);
+                    else { var fields=JsonSerializer.Deserialize<Dictionary<string,object?>>(JsonSerializer.Serialize(row))!;fields["ascension"]=ascension;if(characterComparison)fields["character"]=characterName.ToLowerInvariant();rows.Add(fields); }
                 }
                 else if(boosted)
                 {
@@ -431,5 +451,33 @@ internal static class GeneratedStartOracle
         object record=(kaiser||matrix)?new{campaignResult.source,campaignResult.assemblySha256,campaignResult.rows,presentation=new{armsAttached=presentation!.ArmsAttached,armDeaths=presentation.ArmDeaths,nexusDeaths=presentation.NexusDeaths,cleared=presentation.IsClear,listenersRemoved=presentation.ListenersRemoved}}:campaignResult;
         GC.KeepAlive(mockIcons);
         return JsonSerializer.Serialize(record,new JsonSerializerOptions{WriteIndented=true});
+    }
+}
+
+// Capture the actual native selection call and its legal answer. Outside combat,
+// the established test selector continues to own declared event/reward choices.
+public class CampaignSelector : DispatchProxy
+{
+    public object Fallback = null!;
+    public bool Active;
+    public readonly List<object> Choices = new();
+    protected override object? Invoke(MethodInfo? method, object?[]? args)
+    {
+        if(Active && method!.Name=="GetSelectedCards")
+            return typeof(CampaignSelector).GetMethod(nameof(Select),BindingFlags.NonPublic|BindingFlags.Instance)!
+                .MakeGenericMethod(method.ReturnType.GenericTypeArguments[0].GenericTypeArguments[0]).Invoke(this,args);
+        return method!.Invoke(Fallback,args);
+    }
+    private Task<IEnumerable<T>> Select<T>(IEnumerable<T> source,int minSelect,int maxSelect)
+    {
+        var options=source.ToArray();
+        if(minSelect<0||maxSelect<minSelect||minSelect>options.Length)throw new InvalidOperationException("Invalid native choice cardinality.");
+        string Id(T card){var id=card!.GetType().GetProperty("Id")!.GetValue(card)!;return id.GetType().GetProperty("Entry")!.GetValue(id)!.ToString()!;}
+        // Preserve Frantic Escape when choosing a discard. Other options retain
+        // their native order. Choose-a-card screens pass min=0 to TestMode
+        // even when their real UI forbids skipping, so answer one when allowed.
+        var indices=Enumerable.Range(0,options.Length).OrderBy(i=>Id(options[i])=="FRANTIC_ESCAPE"?1:0).Take(Math.Min(options.Length,Math.Min(maxSelect,Math.Max(1,minSelect)))).ToArray();
+        Choices.Add(new{options=options.Select(c=>new{id=Id(c),upgrade=c!.GetType().GetProperty("CurrentUpgradeLevel")!.GetValue(c)}).ToArray(),indices});
+        return Task.FromResult<IEnumerable<T>>(indices.Select(i=>options[i]).ToArray());
     }
 }

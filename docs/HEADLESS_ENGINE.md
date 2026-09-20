@@ -108,15 +108,19 @@ the selected owner. Each ordinary potion pool has 48 entries. The extension adds
 Forbidden Grimoire earns optional physical-card removal rewards after combat;
 its own Eternal card cannot be removed.
 
-Private combat/run snapshots are v45/v66. Character identity, item counters,
+Private combat/run snapshots are v46/v67. Character identity, item counters,
 retained discounts and emitted callback receipts survive JSON continuation;
 foreign exclusive relics cannot be inserted into native player grab bags.
 Old private snapshot versions are intentionally rejected.
 
 [Character evidence](evidence/playable_characters_2026_09_20.md) distinguishes
 native startup callback/potion comparisons from boosted Python integration runs.
-Full native campaign comparisons for the four added characters remain open;
-this implementation does not extend the separate RL/public observation adapters.
+[Native campaign comparisons](evidence/native_character_campaigns_2026_09_21.md)
+now cover all four added characters through three-act victories at A0 and A10,
+using boosted HP, real native decisions and JSON continuation replay. These
+selected runs cover both first acts and the A10 double boss; they do not prove
+every possible deck/seed interaction. The separate RL/public observation
+adapters remain outside this character extension.
 
 ## Ascension levels
 

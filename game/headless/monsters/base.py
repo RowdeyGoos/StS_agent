@@ -98,6 +98,7 @@ class Enemy(ABC):
         self.rng = rng or Random(0)
         self.combat_player = None
         self.stunned = False
+        self.turn_roll_pending = False
 
     def ascension_value(self, name, default):
         from game.headless.monsters.ascension import value
