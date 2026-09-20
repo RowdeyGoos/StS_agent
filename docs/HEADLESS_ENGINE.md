@@ -122,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v31 / run v47**.
+than being silently reinterpreted: current schemas are **combat v32 / run v48**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -266,6 +266,36 @@ lifecycle nor a live run. Several simultaneously paused **death** contexts,
 reactive enemy-side-start choices, multiplayer queues and the broader hook-order
 audit remain separate work. The shared fixture retains in-memory TestMode save
 and localization isolation.
+
+The `autoplay` mode verifies [96 native Mayhem cases](evidence/native_autoplay_2026_09_20.json)
+through the actual power callback and `CardPileCmd.AutoPlayFromDrawPile`.
+Native gathers the entire available batch into Play before playing any card. The
+headless implementation now does the same: a card discarded by an earlier play
+cannot be reshuffled into the same batch. Each gathering step awaits its shuffle
+once; if Stratagem takes the last card, resumption stops that batch without another
+refill. Owned batch IDs, future card references and collection/play phases remain
+plain snapshot data. Actual plays acquire their targets and play frames only when
+their turn arrives, and move their physical card to the bottom of Play.
+
+A further [12 native Flak Cannon cases](evidence/native_autoplay_flak_2026_09_20.json)
+cover Flak exhausting already gathered Slimed/Wound cards, with optional Dark
+Embrace pausing inside that exhaust work. Native still attempts those future cards
+from their new piles. Headless preserves those references and requires owned
+receipts for pending exhaust tasks, distinguishing legitimate movement from a
+forged snapshot task. Tests compare physical piles, resources, damage, physical
+play order, choice membership and five RNG counters/suffixes, and restore every
+exposed choice through JSON. Nested Havoc/Armaments and terminal cancellation have
+additional source-backed regression coverage. Combat v32 / run v48 reject the old
+alternating gather/play semantics and missing batch ownership.
+
+These modes manually deliver replay answers to prepared native combat callbacks;
+they do not run the full player-turn setup, live UI or executor frame loop. Flak's
+mixed-card candidates are compared as membership, with exact physical draw order
+checked separately; UI sorting is not claimed. The cases share the fixture's
+in-memory save/localization isolation. Havoc and Chaos use the corrected shared
+batch path, but these native captures exercise Mayhem specifically. Card-specific
+post-shuffle continuations (Pillage, Escape Plan, Scrape, Mittens and Foregone
+Conclusion), broader dependent autoplay and whole-run parity remain open.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -1129,7 +1159,7 @@ completed-act records. Shared map rules live in
 a compatibility entry point. Private run **v44** requires campaign/history fields
 and validates each act’s queues, map, event/unknown decisions, global combat count,
 free travel and map relic ownership. Older run snapshots are rejected explicitly;
-combat schema is **v31**. Hive boss reward exit records `ActCompletion(act=2, …)`
+combat schema is **v32**. Hive boss reward exit records `ActCompletion(act=2, …)`
 and stops at `ACT_COMPLETE` when `last_act="hive"`. The default campaign now
 continues through Glory and the Architect as described below.
 
@@ -1198,7 +1228,7 @@ records `VICTORY`. Native post-victory presentation death is not a simulated def
 No Lantern Key or other optional event is required to finish the run.
 
 Private **run v44** saves the epilogue identity and archived Spoils quest records;
-combat uses **v31**. Restore requires the completed campaign/boss, matching
+combat uses **v32**. Restore requires the completed campaign/boss, matching
 Ancient identities in both current and historical maps, and an owned Architect
 event or completed victory. It rejects incomplete victory claims, mixed-act
 history, final-boss ordinary rewards, and missing archived quest owners. Failed
@@ -1984,7 +2014,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v47`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v48`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -1997,7 +2027,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v31`, including the in-play
+Nested combat records now use `headless_combat_state_v32`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
@@ -2008,7 +2038,7 @@ owned orb identities/slots/values and orb-generation RNG, side-end listener orde
 instanced Orbit/Monologue counters, earned Royalties, power duration flags, player
 card-play counts, exact power applier slots, monster phase/spawn counters and
 per-card enchantment trigger state, Ancient hook memory, generic monster stun and
-owned automatic-play continuations. Run records additionally retain stored Ancient
+owned autoplay batches, future card references and automatic-play continuations. Run records additionally retain stored Ancient
 cards, wax state, map marks, reward rerolls and rest/shop continuations.
 Permanent card records retain enchantments
 with an untriggered state.

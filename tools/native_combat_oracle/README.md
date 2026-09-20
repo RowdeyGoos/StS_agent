@@ -213,6 +213,35 @@ The observed schedule allows enemy work to finish before any replay answer;
 other live interleavings and multiple paused death contexts remain unverified.
 Shared TestMode save and localization isolation is unchanged.
 
+Pass `--mode autoplay` for 96 Mayhem cases: seeds 0/2/42 × one/three
+Defends × one/three autoplay count × with/without a card initially in draw ×
+with/without Stratagem × first/last answer. Abacus is present throughout. Actual
+Mayhem's callback invokes native gather-before-play; the fixture records every
+physical pile at the initial state, pause, each replay answer and completion.
+Physical play IDs and five RNG counters/suffixes detect repeated-card plays or
+extra shuffles. [Retained vectors](../../docs/evidence/native_autoplay_2026_09_20.json)
+include automatic singleton choices and batches shortened by Stratagem taking the
+last available card.
+
+Pass `--mode autoplay-flak` for 12 cases: seeds 0/2/42 × with/without Dark Embrace ×
+first/last answer. Mayhem gathers Flak Cannon, Slimed and Wound, with three Defends
+in discard, Stratagem and Abacus. Flak exhausts the queued status cards; Dark
+Embrace can pause before the second status exhaust. Native subsequently attempts
+those queued references from their new piles. The
+[record](../../docs/evidence/native_autoplay_flak_2026_09_20.json) includes final
+enemy HP, exact play order, piles and RNG. Python comparisons in
+`tests/headless/test_native_autoplay.py` restore each exposed choice, including
+pending exhaust work. Mixed-card candidates compare membership: replay candidates
+use raw draw order, not the UI's sort. Physical draw order is checked exactly.
+
+Both modes execute prepared nonterminal callbacks, with owned hook contexts and
+manually supplied native replay actions. They omit full player-turn setup, live
+UI, the executor frame loop, encounter entry and room/reward/save processing.
+They retain the existing in-memory TestMode save/localization isolation. The
+native captures exercise Mayhem; shared Havoc/Chaos semantics and terminal
+cancellation are not independently demonstrated by these captures. Run either mode
+with the same command below plus its `--mode` argument and a fresh output directory.
+
 Use Python 3.10+, .NET 9 and extracted NuGet packages **Godot.NET.Sdk 4.5.1** and
 **Godot.SourceGenerators 4.5.1** (package roots containing `Sdk/` and `analyzers/`
 respectively). The runner does not download dependencies. Example:

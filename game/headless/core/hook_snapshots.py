@@ -88,7 +88,7 @@ def validate_choices(r, p):
         raise ValueError("Unowned offered cards.")
 
 def validate_pending(r, work):
-    """Every queued summon/damage must have one unconsumed event in its context."""
+    """Every queued exhaust/summon/damage has one unconsumed event in its context."""
     from game.headless.core.resolution import requires_receipt
     if not isinstance(r.pending_events, list):
         raise ValueError('Invalid pending reactive events.')

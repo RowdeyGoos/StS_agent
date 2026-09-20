@@ -46,6 +46,8 @@ class CombatRules:
     auxiliaries: dict[str, int] = field(default_factory=dict)
     tasks: list[list] = field(default_factory=list)
     plays: dict[str, dict] = field(default_factory=dict)
+    autoplay_sequence: int = 0
+    autoplay_batches: dict[str, dict] = field(default_factory=dict)
     hook_sequence: int = 0
     active_hook: int = 0
     deferred_hooks: list[dict] = field(default_factory=list)

@@ -48,7 +48,7 @@ class Player:
     @property
     def current_card(self):
         return next((c for c in reversed(self.deck.in_play)
-                     if self.rules.plays[c.instance_id]["context"] == self.rules.active_hook), None)
+                     if self.rules.plays.get(c.instance_id, {}).get("context") == self.rules.active_hook), None)
 
     @property
     def hand(self) -> list[Card]:

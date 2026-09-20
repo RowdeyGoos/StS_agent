@@ -66,7 +66,7 @@ def validate_task(task, r, p, context):
     def owner(identity):
         if identity not in r.plays or r.plays[identity]['context'] != context:
             raise ValueError('Necrobinder command has no owning play.')
-        return next(c for c in p.deck.in_play if c.instance_id == identity)
+        return next(c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == identity)
     if op in ('osty_hit', 'osty_after'):
         c = owner(args[0])
         if not any(isinstance(e, OstyAttack) for e in c.definition.effects):
@@ -97,7 +97,7 @@ def validate_task(task, r, p, context):
         slot(args[0]); natural(args[2])
         if args[1] not in SUPPORTED_STATUS_NAMES:
             raise ValueError('Unknown copied debuff.')
-        if not any(c.definition.definition_id == 'misery' and r.plays[c.instance_id]['context'] == context for c in p.deck.in_play):
+        if not any(c.definition.definition_id == 'misery' and r.plays.get(c.instance_id, {}).get('context') == context for c in p.deck.in_play):
             raise ValueError('Copied debuff has no owning Misery.')
     elif op == 'nec_enemy_loss':
         slot(args[0]); natural(args[1])
@@ -151,7 +151,7 @@ def validate_task(task, r, p, context):
 
 def validate_selection(r, p, s, *, deferred=False):
     from game.headless.cards.necrobinder_effects import Necro, choice_settings
-    source = next((c for c in p.deck.in_play if c.instance_id == s['source']), None)
+    source = next((c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == s['source']), None)
     if source is None:
         raise ValueError('Necrobinder selection has no source.')
     frame = r.plays.get(source.instance_id)
