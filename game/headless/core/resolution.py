@@ -368,11 +368,18 @@ def execute(p, task):
         slot, name, amount = args
         if not p.combat_is_ending and p.combat_enemies[slot].is_alive:
             hooks.apply_power(p, name, amount, p.combat_enemies[slot])
-    elif op == "pillage":
+    elif op in ("pillage", "pillage_after_shuffle"):
         from game.headless.relics.combat import has
-        if p.combat_is_ending or r.powers.get("no_draw") or r.player_side and has(p, "fiddle"):
+        if p.combat_is_ending:
             return
-        if not colorless.ensure_draw(p, task):
+        if op == "pillage":
+            if r.powers.get("no_draw") or r.player_side and has(p, "fiddle"):
+                return
+            if not colorless.ensure_draw(p, ["pillage_after_shuffle"]):
+                return
+        elif not p.deck.draw_pile or len(p.hand) >= 10:
+            # Resume the one native Draw already awaiting its shuffle. A live
+            # choice can consume the last card; do not refill again here.
             return
         drawn = p.deck.draw(1)
         if drawn:

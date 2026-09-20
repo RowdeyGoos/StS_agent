@@ -122,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v32 / run v48**.
+than being silently reinterpreted: current schemas are **combat v33 / run v49**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -293,9 +293,35 @@ they do not run the full player-turn setup, live UI or executor frame loop. Flak
 mixed-card candidates are compared as membership, with exact physical draw order
 checked separately; UI sorting is not claimed. The cases share the fixture's
 in-memory save/localization isolation. Havoc and Chaos use the corrected shared
-batch path, but these native captures exercise Mayhem specifically. Card-specific
-post-shuffle continuations (Pillage, Escape Plan, Scrape, Mittens and Foregone
-Conclusion), broader dependent autoplay and whole-run parity remain open.
+batch path, but these native captures exercise Mayhem specifically. Scrape, Mittens and Foregone Conclusion post-shuffle continuations, broader
+dependent autoplay and whole-run parity remain open.
+
+The `draw-cards` mode verifies [96 native Pillage/Escape Plan cases](evidence/native_draw_cards_2026_09_20.json)
+using actual `PlayCardAction` execution. Three seeds and both upgrades cover mixed
+attack/skill piles, all-attack piles, singleton/empty piles, a hand filled by
+Stratagem, Fiddle, No Draw and an emptied draw pile on resumption. Pillage repeats
+only after an actual attack draw. Escape Plan grants its upgraded/base block only
+after an actual skill draw; Stratagem's selected card is an Add and grants neither
+draw history nor Escape Plan block. Escape Plan now obeys Fiddle during the player
+side, before shuffling or consuming RNG.
+
+Both cards now retain an explicit post-shuffle phase. Resumption checks the live
+draw pile and hand capacity without issuing another shuffle. The emptied-pile
+cases use controlled interference: while the card's Stratagem choice is paused,
+the fixture invokes native `CardPileCmd.Add` to move all but one draw card into
+discard, then answers with the remaining card. This establishes native continuation
+behavior, not a live executor schedule that produces that interference. Tests
+restore the original paused choice, apply the same moves to both copies and compare
+the completed result; the transient externally modified selector is not presented
+as a supported snapshot boundary.
+
+Exact physical piles, draw history/order, damage, resources, actual card completion
+and five RNG counters/suffixes match. Normal choice boundaries and completion
+restore from JSON; malformed Escape Plan ownership/arguments and old schemas
+reject atomically. Private versions are combat v33 / run v49. As with the other
+queue modes, prepared combat state and manual replay omit UI sorting, encounter
+entry, live executor frames and room/reward/save processing. The next card-specific
+checks are Scrape, Mittens and Foregone Conclusion.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -1159,7 +1185,7 @@ completed-act records. Shared map rules live in
 a compatibility entry point. Private run **v44** requires campaign/history fields
 and validates each act’s queues, map, event/unknown decisions, global combat count,
 free travel and map relic ownership. Older run snapshots are rejected explicitly;
-combat schema is **v32**. Hive boss reward exit records `ActCompletion(act=2, …)`
+combat schema is **v33**. Hive boss reward exit records `ActCompletion(act=2, …)`
 and stops at `ACT_COMPLETE` when `last_act="hive"`. The default campaign now
 continues through Glory and the Architect as described below.
 
@@ -1228,7 +1254,7 @@ records `VICTORY`. Native post-victory presentation death is not a simulated def
 No Lantern Key or other optional event is required to finish the run.
 
 Private **run v44** saves the epilogue identity and archived Spoils quest records;
-combat uses **v32**. Restore requires the completed campaign/boss, matching
+combat uses **v33**. Restore requires the completed campaign/boss, matching
 Ancient identities in both current and historical maps, and an owned Architect
 event or completed victory. It rejects incomplete victory claims, mixed-act
 history, final-boss ordinary rewards, and missing archived quest owners. Failed
@@ -2014,7 +2040,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v48`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v49`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -2027,7 +2053,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v32`, including the in-play
+Nested combat records now use `headless_combat_state_v33`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP
