@@ -329,3 +329,75 @@ history, real rendering/audio, native disk-save continuation or a winning policy
 Normal-HP policy victory remains unnecessary; low-HP/death/revival checks remain
 relevant. Multiplayer and alternate modes remain excluded. Overall implementation
 and review elapsed times were not separately measured.
+
+
+## All regional bosses
+
+Three additional captures complete the regional boss census for solo A0 Ironclad
+on pinned build 0.107.1. All begin at 1,000,000 current/max HP with the actual
+starter deck and native generated route, then play legal actions through the
+Architect's recorded victory and cleanup.
+
+| Capture | Bosses | Combats / actions | Final HP / max HP | Native build / execution |
+| --- | --- | --- | --- | --- |
+| [Overgrowth 1](native_boosted_overgrowth_1_2026_09_20.json) | Ceremonial Beast, The Insatiable, Queen | 26 / 618 | 998657 / 999991 | 1.60s / 2.61s |
+| [Overgrowth 3](native_boosted_overgrowth_3_2026_09_20.json) | The Kin, The Insatiable, Queen | 28 / 700 | 998076 / 999972 | 1.61s / 2.96s |
+| [Underdocks 4](native_boosted_underdocks_4_2026_09_20.json) | Waterfall Giant, Knowledge Demon, Aeonglass | 27 / 600 | 999345 / 1000012 | 1.64s / 2.38s |
+
+Together with the preceding three captures, this covers **all 12 regional
+bosses**. The added routes exercise Sunken Statue's sword, Trash Heap's dive,
+Colossal Flower's first extraction, Amalgamator's two-Strike combination and
+Slippery Bridge's first removal. They include 30 smith upgrades, 14 potion uses,
+12 shop purchases and five chest claims. Sea Glass explicitly selects zero cards;
+Yummy Cookie and Amalgamator explicitly select physical cards. The Insatiable is
+beaten using Frantic Escape and earned upgrades; earlier diagnostic policies died
+to Sandpit despite boosted HP, and those attempts are not victory evidence.
+
+The retained native traces exposed and now regress:
+
+- Neow and later Ancient EventRooms consume one room-set event position.
+- Trash Heap and Doll Room fixed-pool relic choices use the event RNG.
+- Gas Bombs occupy native positions before Living Fog while Python keeps stable
+  target indices; random-target selection follows native position order.
+- Summons during AfterDeath exclude the still-present dying parent's maximum HP
+  from the unique-HP candidate set, without excluding previously removed corpses.
+- Stone Cracker upgrades in every combat, with native top-first StableShuffle;
+  Whetstone and War Paint use native card sorting before Niche shuffle.
+- Pending combat rewards record their generation-time Amethyst Aubergine owners.
+  Main/extra reward claims and Pael's Wing pickups preserve the generated gold,
+  including pre-existing duplicate owners; malformed source IDs reject atomically.
+
+Independent source review also identified Ceremonial Beast skipping its mandatory
+stun when Thorns crosses the threshold during Plow, retaining temporary Strength
+wrappers at that transition, and Waterfall Giant retaining ordinary powers after
+revival. Focused JSON regressions cover these corrections; those exact edge cases
+are source-reviewed tests rather than separate native runtime vectors.
+
+The fixture supplies mock event text, scoped off-tree screen shake for
+Amalgamator, explicit legal selectors, and strongly retained mock textures. It
+executes actual native rules; no game PCK/assets/autoload, profile, persistent
+save or upload access is used. Each capture has empty stderr and verifies removal
+of the temporary custom user directory and presentation cleanup. Input cards are
+recorded before play so post-victory War Hammer upgrades cannot rewrite the
+recorded input. Headless gold bundles compare to the sum of native gold rows.
+
+[Five fresh baseline executions](native_boss_campaign_regressions_2026_09_20.json)
+match all retained generated-start, generated-route, boosted-campaign,
+boosted-coverage and boosted-kaiser results exactly. Historical capture identities
+remain unchanged. Current private continuation formats are **combat v40 / run
+v59**; previous formats reject atomically.
+
+The affected monster, Ancient, event, relic and prior native-campaign regression
+selection passed **1,567 tests in 443.35s**. Independent semantic review covered
+native timing/RNG changes and the reward continuation boundary; its final six
+Aubergine cases passed in 0.29s. After the final generation-time gold fix,
+**387 reward, event-combat, Ancient and new campaign tests passed in 209.19s**,
+including all three complete native/headless replays with JSON continuation at
+every action. These selections overlap; their counts are not a unique total.
+`compileall`, diff checks and added local documentation links pass. Overall implementation,
+review and user-wait times were not separately measured. Remaining acceptance is
+broader ordinary-event branches and inventory interactions, plus hidden native
+power/pile/RNG comparisons where useful. These six paths do not establish every
+seed or branch, rendering/audio, native disk-save continuation or a winning policy.
+Normal-HP victory remains unnecessary; low-HP/death/revival tests remain in scope.
+Multiplayer and alternate modes remain excluded.

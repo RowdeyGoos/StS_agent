@@ -56,9 +56,11 @@ def enter_combat(p):
             apply_power(p, "confused", 1)
         elif name == "anchor":
             p.gain_block(10)
-        elif name == "stone_cracker" and p.rules.room_kind == "boss":
+        elif name == "stone_cracker":
             cards = [c for c in p.deck.draw_pile if c.upgrade_level + 1 < len(c.definition.levels)]
-            p.deck.selection_rng.shuffle(cards)
+            from game.headless.core.native_shuffle import stable_shuffle
+            cards.reverse()  # Native draw pile enumeration starts at the top.
+            stable_shuffle(cards, p.deck.selection_rng)
             for card in cards[:2]:
                 upgrade(card)
     from game.headless.relics.damage import hp_changed, potions_changed

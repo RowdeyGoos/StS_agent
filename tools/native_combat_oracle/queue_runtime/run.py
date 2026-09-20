@@ -30,12 +30,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser"), default="queue")
+    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix"), default="queue")
     parser.add_argument("--spine-extension", type=Path)
+    parser.add_argument("--campaign-case", choices=("overgrowth-1", "overgrowth-3", "underdocks-4"))
     args = parser.parse_args()
-    if args.mode == "boosted-kaiser":
+    if args.mode in ("boosted-kaiser", "boosted-matrix"):
         if args.spine_extension is None or sha(args.spine_extension) != "dde5c7682eb29f3c69e4191f6361a1f0731292188b2603bee02adf726abde0d8":
             parser.error("Kaiser fixture requires the pinned Spine extension.")
+    if (args.mode == "boosted-matrix") != (args.campaign_case is not None):
+        parser.error("boosted-matrix requires exactly one declared campaign case.")
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("This pinned exported-runtime fixture requires macOS arm64.")
     engine, native = args.engine.resolve(), args.native_data.resolve()
@@ -65,7 +68,7 @@ def main():
             native_hashes[path.name] = sha(path)
     for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "enemy_turn.cs", "autoplay.cs", "draw_cards.cs", "remaining_draw.cs", "interactions.cs", "enemy_interactions.cs", "side_start.cs", "end_boundary.cs", "reward_handoff.cs", "campaign.cs", "generated_start.cs", "kaiser_presentation.cs", "kaiser_skeleton.spjson", "kaiser_empty.atlas", "empty.tscn"):
         shutil.copyfile(source / name, project / name)
-    if args.mode == "boosted-kaiser":
+    if args.mode in ("boosted-kaiser", "boosted-matrix"):
         (project / "fixture_spine.gdextension").write_text('[configuration]\nentry_symbol="spine_godot_library_init"\ncompatibility_minimum="4.5"\n[libraries]\nmacos = "' + str(args.spine_extension.resolve()).replace("\\", "\\\\").replace('"', '\\"') + '"\n')
     user_name = "StsNativeQueueOracle-" + uuid.uuid4().hex
     user_dir = Path.home() / "Library" / "Application Support" / user_name
@@ -111,7 +114,7 @@ project/assembly_name="queue_oracle"
         for name in ("project.godot", "empty.tscn", "Oracle.cs"):
             archive.write(project / name, name)
         archive.writestr(".godot/global_script_class_cache.cfg", "list=[]\n")
-        if args.mode == "boosted-kaiser":
+        if args.mode in ("boosted-kaiser", "boosted-matrix"):
             archive.write(project / "fixture_spine.gdextension", "fixture_spine.gdextension")
             archive.write(project / "kaiser_skeleton.spjson", "kaiser_skeleton.spjson")
             archive.write(project / "kaiser_empty.atlas", "kaiser_empty.atlas")
@@ -121,8 +124,8 @@ project/assembly_name="queue_oracle"
     started = time.monotonic()
     try:
         run = subprocess.run([str(staged_engine), "--headless", "--main-pack", str(pack),
-                              "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode],
-                             cwd=project, capture_output=True, text=True, timeout=60 if args.mode in ("generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser") else 15)
+                              "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode, *([args.campaign_case] if args.campaign_case else [])],
+                             cwd=project, capture_output=True, text=True, timeout=60 if args.mode in ("generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix") else 15)
         (output / "stdout.log").write_text(run.stdout)
         (output / "stderr.log").write_text(run.stderr)
         run.check_returncode()
@@ -135,7 +138,7 @@ project/assembly_name="queue_oracle"
     elapsed = time.monotonic() - started
     record = {
         "pins": PINS, "nativeDependencies": native_hashes,
-        **({"spineExtensionSha256": sha(args.spine_extension)} if args.mode == "boosted-kaiser" else {}),
+        **({"spineExtensionSha256": sha(args.spine_extension)} if args.mode in ("boosted-kaiser", "boosted-matrix") else {}),
         "fixtureSources": {p.name: sha(p) for p in sorted(source.iterdir()) if p.is_file()},
         "generatorSha256": sha(args.godot_generators / "analyzers/dotnet/cs/Godot.SourceGenerators.dll"),
         "compiledFixtureSha256": sha(data / "queue_oracle.dll"),

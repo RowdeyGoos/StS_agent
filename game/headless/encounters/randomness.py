@@ -38,6 +38,10 @@ def summon(kind, parent, player, **kwargs):
     rng = parent.rng
     if isinstance(rng, NativeRng):
         rng = MonsterConstruction(rng, player.deck.niche_rng, player.combat_enemies)
+        # Native AfterDeath summons run before the dying parent is removed.
+        # Earlier dead stable slots have already left the native creature list.
+        if not parent.is_alive:
+            rng.used_hp.append(parent.max_hp)
     enemy = kind(rng, **kwargs)
     from game.headless.relics.combat import has, owned, memory
     if has(player, "philosophers_stone"):

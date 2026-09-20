@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v58"
+SCHEMA = "headless_run_state_v59"
 
 
 def _restore_graph(record):
@@ -318,7 +318,7 @@ def _validate_pending(state, cards, graph):
     elif kind == "reward":
         expected = {"kind", "gold", "gold_claimed", "offers", "card_resolved", "card_modifiers"}
         if "combat_reward" in pending:
-            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards", "hunt_rewards_earned", "royalties_earned"}
+            expected |= {"combat_reward", "encounter_id", "potion", "potion_claimed", "relic", "relic_claimed", "relic_instance_id", "extra_rewards", "hunt_rewards_earned", "royalties_earned", "gold_bonus_sources"}
         from game.headless.relics.reward_alternatives import validate_marker
         validate_marker(state, pending)
         if pending.get('encounter_id') in ('underdocks_gremlin_merc', 'hive_thieving_hopper'):
@@ -355,12 +355,19 @@ def _validate_pending(state, cards, graph):
             from game.headless.relics.run_rules import has, owned
             from game.headless.relics.rewards import extend_pool
             pool = extend_pool(state, cards, pool)
-            bonus = 15 * sum(r.definition_id == "amethyst_aubergine" and not r.data.get("_melted") for r in state.relics)
+            sources = pending["gold_bonus_sources"]
+            owners = {r.instance_id: r.definition_id for r in state.relics}
+            if (not isinstance(sources, list) or any(not isinstance(i, str) for i in sources)
+                    or len(set(sources)) != len(sources)
+                    or any(owners.get(i) != "amethyst_aubergine" for i in sources)):
+                raise ValueError("Invalid generated gold bonus ownership.")
+            # Later pickups cannot change a previously generated reward amount.
+            bonus = 15 * len(sources)
             low, high = low + bonus, high + bonus
             if final_boss:
                 low = high = 0
                 owners = {r.instance_id: (r.definition_id, r.counter) for r in state.relics}
-                if (not pending['gold_claimed'] or not pending['card_resolved'] or pending['offers']
+                if (sources or not pending['gold_claimed'] or not pending['card_resolved'] or pending['offers']
                         or pending['potion'] is not None or pending['hunt_rewards_earned'] or pending['royalties_earned']
                         or any(owners.get(r['source']) != ('wongos_mystery_ticket', 6) for r in pending['extra_rewards'])):
                     raise ValueError('Final boss cannot offer ordinary combat rewards.')

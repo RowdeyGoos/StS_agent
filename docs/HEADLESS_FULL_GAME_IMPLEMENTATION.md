@@ -1697,13 +1697,21 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      Python replays every boundary with JSON continuation. Soul Fysh's Beckon
      insertion now converts native top-first positions correctly (combat v39 / run v58).
      [Evidence](evidence/headless_generated_route_2026_09_20.md#kaiser-crab-and-third-boosted-campaign).
-   - **Next acceptance coverage:** extend the declared boosted seed/path matrix
-     to remaining bosses (Ceremonial Beast, the Kin, Waterfall Giant, The Insatiable
-     and the Queen), additional
-     event branches and richer inventory interactions. These three campaigns do
-     not establish every encounter branch or seed. Keep focused low-HP, death and
-     revival cases alongside boosted campaigns. Multiplayer and alternate modes
-     are excluded from the project.
+   - **All regional bosses covered:** three additional boosted native victories
+     (Overgrowth 1/3, Underdocks 4) add the five missing bosses, 81 combats and
+     1,918 actions. The six retained campaigns now cover all 12 bosses. New paths
+     also exercise five ordinary events, explicit smithing/card selections,
+     shops, potions and additional relic interactions. Native/headless differences
+     found in queues, summons, upgrade RNG and reward continuation are corrected;
+     current private schemas are combat v40 / run v59.
+     [Evidence and exact limits](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses).
+   - **Next acceptance coverage:** ordinary-event branches and richer inventory
+     combinations beyond the retained six paths; hidden power/pile/RNG state
+     comparison where current public boundary comparisons cannot expose a defect.
+     Keep focused low-HP, death and revival cases alongside boosted campaigns.
+     Every encounter branch or seed is not yet demonstrated. Multiplayer and
+     alternate modes are excluded from the project.
+
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
    Their full 344-card pool inventory, including basic/special entries, is retained

@@ -155,6 +155,9 @@ def pickup(state, relic, cards):
         choices = [
             c for c in state.deck if c.spec.kind in kinds and c.upgrade_level + 1 < len(c.definition.levels)
         ]
+        from game.headless.core.native_shuffle import sort_cards
+        if getattr(state.rng, "native", False):
+            sort_cards(choices)
         state.rng.shuffle("relic.pickup", choices)
         for card in choices[:2]:
             card.upgrade()

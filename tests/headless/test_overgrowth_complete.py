@@ -429,3 +429,32 @@ def test_previous_inklet_combat_and_chest_run_schemas_reject_atomically():
         with pytest.raises(ValueError):
             engine.restore(old)
         assert saved(engine) == before
+
+
+def test_plow_reactive_threshold_keeps_mandatory_stun_with_json_restore():
+    combat = fight('overgrowth_ceremonial_beast')
+    step(combat, EndTurn())
+    enemy = combat.enemies[0]
+    enemy.hp = 151
+    combat.player.rules.powers['thorns'] = 3
+    step(combat, EndTurn())
+    assert enemy.hp == 148 and enemy.intent.move_name == 'Stunned'
+    assert enemy.strength == 2  # Native Plow finishes its post-attack Strength.
+    hp = combat.player.hp
+    step(combat, EndTurn())
+    assert combat.player.hp == hp and enemy.intent.move_name == 'Beast Cry'
+
+
+@pytest.mark.parametrize('power', ['mangle', 'dark_shackles', 'crush_under', 'dying_star',
+                                  'monarchs_gaze_strength_down', 'enfeebling_touch'])
+def test_plow_clears_each_temporary_strength_wrapper(power):
+    combat = fight('overgrowth_ceremonial_beast')
+    step(combat, EndTurn())
+    enemy = combat.enemies[0]
+    enemy.hp = 151
+    enemy.strength = 5
+    enemy.apply_status(power, 9)
+    enemy.take_damage(1, is_attack=False)
+    assert enemy.strength == 0 and enemy.statuses.get(power) == 0
+    step(combat, EndTurn())
+    assert enemy.intent.move_name == 'Beast Cry'

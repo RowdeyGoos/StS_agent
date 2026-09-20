@@ -84,9 +84,12 @@ class EventProgression:
             or set(self.entry_conditions) != set(self.assignments)
         ):
             raise ValueError("Invalid restricted event progression.")
-        expected = EventProgression(list(self.queue), profile=self.profile)
+        expected = EventProgression(list(self.queue), profile=self.profile,
+                                    cursor=int(native and state.act_index == 0 and state.ancient_start is not None))
         for node_id in state.visited_nodes:
             node = room_node(state, graph, node_id)
+            if native and node.kind == "event" and node.row == 0:
+                expected.cursor += 1
             if node.kind == "event" and node.row != 0:
                 conditions = self.entry_conditions.get(node_id)
                 validate_conditions(conditions)
