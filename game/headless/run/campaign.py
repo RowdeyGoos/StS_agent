@@ -113,14 +113,17 @@ def advance(engine):
         initial = trial.initialization['acts'][trial.act_index]
         ids = native_ids(act)
         trial.encounter_progression = EncounterProgression([ids[n] for n in initial['normal']],
-            [ids[n] for n in initial['elites']], ids[initial['boss']], act=act)
+            [ids[n] for n in initial['elites']], ids[initial['boss']], act=act, second_boss=ids[initial['second_boss']] if initial.get('second_boss') else None)
         trial.event_progression = EventProgression(list(initial['events']), profile=native_profile(act))
         ancient = initial['ancient']
     else:
         trial.encounter_progression = EncounterProgression.generate(trial.rng, act=act)
         trial.event_progression = EventProgression.generate(trial.rng, trial.config.event_pool, act=act)
         ancient = trial.rng.choice(f'act{trial.act_index + 1}.ancient', REGION_POOLS[act][4])
-    next_graph = generate_map(trial.rng, event_pool=trial.config.event_pool, act=act, ancient=ancient)
+        if act == 'glory' and trial.config.ascension >= 10:
+            from game.headless.encounters.progression import pools_for
+            trial.encounter_progression.second_boss = trial.rng.choice('act3.encounters', [n for n in pools_for(act)[3] if n != trial.encounter_progression.boss])
+    next_graph = generate_map(trial.rng, event_pool=trial.config.event_pool, act=act, ancient=ancient, ascension=trial.config.ascension, second_boss=bool(trial.encounter_progression.second_boss))
     from game.headless.run import spoils_map
     next_graph = spoils_map.generate(trial, next_graph)
     spoils_map.validate(trial, next_graph)

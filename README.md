@@ -34,6 +34,11 @@ For only the pure-Python simulator, `pip install -e .` is sufficient.
 ## Implementing the game
 
 Start with [`game/headless/`](game/headless/) and the [engine guide](docs/HEADLESS_ENGINE.md).
+Solo Ironclad campaigns support **A0–A10** through all three acts. Select a level
+with `RunEngine.ironclad_run(ascension=10)` or
+`sts-headless-play --route overgrowth-glory --ascension 10 --verify-restore`.
+See [cumulative rules and verification scope](docs/HEADLESS_ENGINE.md#ascension-levels).
+
 Game rules run directly through `CombatEngine` and `RunEngine`, without public
 projections, encoders or training. Cards own their effect/upgrade definitions;
 content catalogs and mutable instances are separate. All 85 single-player Ironclad

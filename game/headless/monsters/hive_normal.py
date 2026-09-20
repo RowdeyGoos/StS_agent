@@ -115,7 +115,7 @@ class LouseProgenitor(ScriptedEnemy):
     def after_player_card(self, player):
         card = player.current_card
         if self.is_alive and card is not None and card.instance_id == self.curl_card:
-            self.gain_block(14)
+            self.gain_block(self.ascension_value('CurlBlock', 14))
             self.curl_up = False
             self.curl_card = ''
 
@@ -208,7 +208,7 @@ class SlumberingBeetle(InterruptibleEnemy):
     def __init__(self, rng):
         super().__init__(rng)
         self.slumber = 3
-        self.plating = self.block = 15
+        self.plating = self.block = self.ascension_value('PlatingAmount', 15)
         self.turns_started = 0
 
     def start_turn(self):

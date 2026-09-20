@@ -3,7 +3,9 @@
 Read-only .NET 9 reference generator for pinned 0.107.1. The program checks the
 assembly SHA-256 before loading it and resolves dependencies from an explicit
 directory. It registers immutable act/encounter/event/relic model definitions;
-it never starts RunManager, launches the game or reads a player profile/save.
+it never initializes a game run, launches the game or reads a player profile/save.
+A scoped constructor-free RunState and AscensionManager supply process-local
+difficulty to native getters; both singleton fields are restored on disposal.
 
 ```sh
 dotnet build tools/native_initialization_oracle/oracle.csproj --artifacts-path /tmp/sts-init-oracle
@@ -43,3 +45,9 @@ Production `generation/room_pools.py` contains immutable metadata extracted from
 these native models. Future-act room sets consume startup randomness and are
 retained as plain run data; they do not register unimplemented playable content.
 Changing the pinned assembly requires a separately reviewed target and evidence.
+
+Pass a fourth argument from `0` through `10` to set ascension. Higher levels emit
+seeds `0`, `4`, `42`; A0 retains the original thirteen seeds. At A10 the mirrored
+RunManager prelude draws a distinct second Glory boss after the final act's rooms,
+and the Glory map includes its second boss point. The retained ascension map
+fixture combines A1/A10 for Overgrowth, Underdocks, Hive, Glory and Spoils.

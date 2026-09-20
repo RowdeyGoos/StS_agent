@@ -69,6 +69,9 @@ def legal_actions(state):
 def open_chest(state):
     pending = _pending(state, "closed")
     gold = state.rng.randint("treasure.gold", *ORDINARY_CHEST.gold_range)
+    from game.headless.core.ascension import level
+    if level(state) >= 3:
+        gold = gold * 3 // 4
     from game.headless.relics.run_rules import gain_gold
     gain_gold(state, gold)
     from game.headless.run.spoils_map import complete

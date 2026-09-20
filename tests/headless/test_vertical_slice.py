@@ -58,7 +58,7 @@ def test_native_ironclad_start_and_explicit_difficulty():
     engine.apply(ChooseNode("fight_1"))
     assert engine.combat.player.energy == 3
     assert len(engine.combat.player.hand) == 5
-    for unsupported in (-1, 1, 10, True, "0"):
+    for unsupported in (-1, 11, True, "0"):
         with pytest.raises(ValueError):
             RunEngine.ironclad_slice(ascension=unsupported)
 
@@ -256,7 +256,7 @@ def test_corrupt_inventory_and_configuration_restore_is_atomic(corruption):
     before = serialized(engine)
     bad = deepcopy(before)
     state = bad["state"]
-    if corruption == "ascension": state["config"]["ascension"] = 1
+    if corruption == "ascension": state["config"]["ascension"] = 11
     elif corruption == "unknown_potion": state["potions"][0]["definition_id"] = "unknown"
     elif corruption == "duplicate_item": state["potions"][1] = state["potions"][0]
     elif corruption == "allocator": state["next_item_id"] = 1

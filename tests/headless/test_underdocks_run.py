@@ -152,7 +152,7 @@ def test_base_map_variant_and_unsupported_inputs(profile):
     assert run.state.unknown_rooms is run.state.event_progression is None
     assert all(n.event_id in run.state.config.event_pool for n in run.graph.nodes if n.kind == 'event')
     clone(run)
-    for kwargs in ({'act': 'hive'}, {'act': 'underdocks', 'map_profile': PROFILE}, {'act': 'underdocks', 'discovery': 'first_run'}, {'act': 'underdocks', 'ascension': 1}):
+    for kwargs in ({'act': 'hive'}, {'act': 'underdocks', 'map_profile': PROFILE}, {'act': 'underdocks', 'discovery': 'first_run'}, {'act': 'underdocks', 'ascension': 11}):
         with pytest.raises(ValueError): RunEngine.ironclad_act1(rng_profile=profile, **kwargs)
 
 

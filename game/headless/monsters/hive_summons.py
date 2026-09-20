@@ -26,7 +26,7 @@ class ToughEgg(ScriptedEnemy):
     def after_move(self, player, intent):
         if intent.move_name == 'Hatch':
             # Native NextInt's upper bound is exclusive here (unlike initial HP).
-            self.max_hp = self.hp = player.deck.niche_rng.randrange(19, 22)
+            self.max_hp = self.hp = player.deck.niche_rng.randrange(self.ascension_value('HatchlingMinHp', 19), self.ascension_value('HatchlingMaxHp', 22))
             self.name = 'Hatchling'
             self.strength = 0
             self.statuses = StatusCollection()

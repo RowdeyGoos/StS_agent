@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v59"
+SCHEMA = "headless_run_state_v60"
 
 
 def _restore_graph(record):
@@ -205,6 +205,8 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
                 raise ValueError("Active combat requires the combat phase.")
             combat = CombatEngine()
             combat.restore(snapshot["combat"], cards=cards)
+            if combat.ascension != (state.config.ascension if state.config else 0):
+                raise ValueError("Combat ascension differs from its run.")
             if getattr(state.rng, "native", False):
                 from game.headless.core.native_service import bind_combat
                 bind_combat(state.rng, combat)
@@ -282,6 +284,10 @@ def _validate_progression(state, graph, cards):
                 raise ValueError('Campaign act is missing its Ancient entrance.')
             if state.initialization is not None and root.event_id != state.initialization['acts'][state.act_index]['ancient']:
                 raise ValueError('Ancient entrance differs from native initialization.')
+        if bool(state.encounter_progression.second_boss) != (state.config.act == "glory" and state.config.ascension >= 10):
+            raise ValueError("Second boss differs from ascension.")
+        if state.act_completion is not None and state.encounter_progression.second_boss and graph.generation != GOLDEN and state.act_completion.boss_encounter_id != state.encounter_progression.second_boss:
+            raise ValueError("Second boss must be defeated before completing the act.")
         if state.encounter_progression.act != state.config.act:
             raise ValueError('Encounter progression differs from declared act.')
         if graph.generation not in (GOLDEN, profile_for(state.config.act), profile_for(state.config.act, base=True), *((SPOILS_PROFILE,) if state.config.act == "hive" else ())):
@@ -292,7 +298,10 @@ def _validate_progression(state, graph, cards):
             raise ValueError("Generated Act 1 success requires boss act completion.")
         if state.current_node_id is not None and room_node(state, graph, state.current_node_id).kind == "boss":
             selecting = state.phase is RunPhase.ROUTE and state.pending is not None and state.pending.get("kind") == "node"
-            if not selecting and state.epilogue_event_id is None and state.phase not in (RunPhase.COMBAT, RunPhase.REWARD, RunPhase.ACT_COMPLETE, RunPhase.DEFEAT):
+            between_bosses = (state.phase is RunPhase.ROUTE and state.pending is None
+                and state.encounter_progression.second_boss is not None and graph.node(state.current_node_id).next_node_ids
+                and state.encounter_progression.assignments.get(state.current_node_id) == state.encounter_progression.boss)
+            if not selecting and not between_bosses and state.epilogue_event_id is None and state.phase not in (RunPhase.COMBAT, RunPhase.REWARD, RunPhase.ACT_COMPLETE, RunPhase.DEFEAT):
                 raise ValueError("Generated boss cannot return to between-room navigation.")
         if any(n.kind == "event" and n.row != 0 and n.event_id not in state.config.event_pool for n in graph.nodes):
             raise ValueError("Generated event differs from its declared pool.")
@@ -346,6 +355,8 @@ def _validate_pending(state, cards, graph):
                 raise ValueError("Unknown reward encounter.")
             encounter = None if encounter_id is None else ENCOUNTERS[encounter_id]
             low, high = (10, 20) if encounter is None else encounter.gold_range
+            from game.headless.core.ascension import gold_range
+            low, high = gold_range(state, (low, high)) if encounter is None or encounter.ascension_gold else (low, high)
             low, high = loot.gold_range(low, high, pending.get("encounter_loot"))
             if graph is not None and state.current_node_id is not None:
                 selected = event_combat.encounter_at_current_room(state) or encounter_at(state, room_node(state, graph, state.current_node_id))

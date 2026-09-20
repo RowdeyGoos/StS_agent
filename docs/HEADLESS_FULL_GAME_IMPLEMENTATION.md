@@ -21,6 +21,14 @@ into validation of changed code.
 
 ## Implementation progress after the assessment
 
+- **2026-09-20 — A1–A10 implemented:** cumulative startup, Ancient healing,
+  gold/removal/card odds, map elite counts, native monster difficulty and the
+  second Glory boss use run-owned difficulty with JSON continuation. Native
+  getters cover all eleven levels; 30 native map/initialization cases and
+  source-backed modifier/encounter/route tests pass. Full native A10 trajectory
+  comparison remains acceptance work. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
+
+
 - **2026-09-19 — duplicate reward edge cases:** Lasting Candy’s fallback now keeps
   separate physical offers through modifiers, choices, rerolls and JSON restoration.
   Slippery Bridge candidate filtering uses native rarity/Eternal eligibility;
@@ -1215,6 +1223,15 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-38 — Implement difficulty and declared unlock variants
 
+- **Implemented for solo Ironclad A0–A10, all unlocked/all seen:** every cumulative
+  modifier in pinned 0.107.1, per-monster A8/A9 properties, A10 second-boss startup
+  draw and route, and native Golden Compass exception. Private schemas are combat
+  v41 / run v60. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
+- **Remaining acceptance:** capture a boosted native A10 three-act victory and
+  compare its decisions, resources and RNG boundaries through both Glory bosses.
+  Retain low-HP/death/revival cases; no normal-HP policy victory is required.
+  Profile-dependent unlocks, multiplayer and alternate modes remain out of scope.
+
 - **Depends on:** HF-01 and the affected combat/run/content tasks.
 - **Implement:** verify the highest standard Ironclad difficulty in the pinned build,
   inventory every modifier, and apply it at its owning layer: starting state,
@@ -1703,7 +1720,7 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      also exercise five ordinary events, explicit smithing/card selections,
      shops, potions and additional relic interactions. Native/headless differences
      found in queues, summons, upgrade RNG and reward continuation are corrected;
-     current private schemas are combat v40 / run v59.
+     that change used private schemas combat v40 / run v59 (current: v41 / v60).
      [Evidence and exact limits](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses).
    - **Next acceptance coverage:** ordinary-event branches and richer inventory
      combinations beyond the retained six paths; hidden power/pile/RNG state
@@ -1755,7 +1772,8 @@ Current source/coverage: [combat interactions](evidence/combat_interactions_2026
 [native initialization](evidence/native_initialization_2026_09_14.md),
 [native RNG and probability](evidence/native_rng_2026_09_14.md),
 [events and Neow](evidence/events_neow_2026_09_14.md).
-Higher ascensions and character-specific run starts remain separate scope.
+A1–A10 rules are implemented under HF-38; a full native A10 campaign comparison
+remains acceptance work. Character-specific run starts remain separate scope.
 
 [build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
 [contract]: ../game/contracts/headless_v0.py

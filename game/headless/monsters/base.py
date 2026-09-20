@@ -80,6 +80,10 @@ class Enemy(ABC):
 
     def __init__(self, name: str, max_hp: int, rng: Random | None = None, *, min_hp: int | None = None) -> None:
         from game.headless.encounters.randomness import MonsterConstruction
+        self.ascension = rng.ascension if isinstance(rng, MonsterConstruction) else 0
+        if self.ascension >= 8:
+            from game.headless.monsters.ascension import initial_hp
+            min_hp, max_hp = initial_hp(self, max_hp if min_hp is None else min_hp, max_hp)
         if isinstance(rng, MonsterConstruction):
             max_hp = rng.initial_hp(max_hp if min_hp is None else min_hp, max_hp)
             rng = rng.ai
@@ -94,6 +98,10 @@ class Enemy(ABC):
         self.rng = rng or Random(0)
         self.combat_player = None
         self.stunned = False
+
+    def ascension_value(self, name, default):
+        from game.headless.monsters.ascension import value
+        return value(self, name, default)
 
     @property
     def is_alive(self) -> bool:
@@ -439,6 +447,9 @@ class Enemy(ABC):
         """Convert a base intent template into its current combat values."""
         if self.stunned:
             return Intent("stun", 0, "Stunned")
+        if self.ascension >= 8:
+            from game.headless.monsters.ascension import scale_intent
+            template = scale_intent(self, template)
         resolved_attack_damage = 0
         if template.attack_damage > 0:
             resolved_attack_damage = modify_attack_damage_for_statuses(

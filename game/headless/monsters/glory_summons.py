@@ -39,7 +39,7 @@ class Axebot(ScriptedEnemy):
         append_child(Axebot, self, player, stock=self.stock - 1, replacement=True)
 
     def after_move(self, player, intent):
-        if intent.move_name == 'Boot Up': self.gain_strength(3 * (2 - self.stock))
+        if intent.move_name == 'Boot Up': self.gain_strength(self.ascension_value('BootUpStrGain', 3) * (2 - self.stock))
         elif intent.move_name == 'Hammer Uppercut':
             player.apply_status('weak', 2, source=self)
             player.apply_status('frail', 2, source=self)

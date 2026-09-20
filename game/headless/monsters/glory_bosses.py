@@ -24,8 +24,8 @@ class Aeonglass(ScriptedEnemy):
             for card in player.deck.all_cards():
                 if card.definition.definition_id == 'wither': card.combat_state.wither_level += 1
             self.wither_upgrades += 1
-            generate(player, 'wither', 'discard_pile', 1)
-            self.gain_strength(3 + self.extra_strength)
+            generate(player, 'wither', 'discard_pile', self.ascension_value('WitherAmount', 1))
+            self.gain_strength(self.ascension_value('IncreasingIntensityBaseStrength', 3) + self.extra_strength)
             self.extra_strength += 1
 
     def after_player_card(self, player):
@@ -150,7 +150,7 @@ class TestSubject(InterruptibleEnemy):
     def after_move(self, player, intent):
         if intent.move_name == 'Respawn':
             self.respawns += 1
-            self.max_hp = self.hp = (100, 200, 300)[self.respawns]
+            self.max_hp = self.hp = tuple(self.ascension_value(n, hp) for n, hp in zip(('FirstFormHp', 'SecondFormHp', 'ThirdFormHp'), (100, 200, 300)))[self.respawns]
             self.reviving = False
         elif intent.move_name == 'Multi Claw': self.extra_claws += 1
 
@@ -163,7 +163,7 @@ class TestSubject(InterruptibleEnemy):
 
     def after_player_card(self, player):
         if self.respawns == 0 and player.current_card is not None and player.current_card.spec.kind in ('skill', 'block'):
-            self.gain_strength(2)
+            self.gain_strength(self.ascension_value('EnrageAmount', 2))
 
     def after_side_end(self):
         if self.respawns == 2: self.nemesis_intangible = not self.nemesis_intangible
@@ -174,7 +174,7 @@ class TestSubject(InterruptibleEnemy):
                 or (self.respawns < 2 and not self.is_alive and not self.reviving)
                 or self.reviving != (self._intent_index == 2) or self.reviving and self.is_alive
                 or self.nemesis_intangible and self.respawns != 2
-                or self.max_hp != (100, 200, 300)[self.respawns]):
+                or self.max_hp != tuple(self.ascension_value(n, hp) for n, hp in zip(('FirstFormHp', 'SecondFormHp', 'ThirdFormHp'), (100, 200, 300)))[self.respawns]):
             raise ValueError('Invalid Test Subject revival state.')
         allowed = ({0, 1, 2}, {2, 3}, {4, 5, 6})[self.respawns]
         if self._intent_index not in allowed: raise ValueError('Test Subject move differs from its form.')

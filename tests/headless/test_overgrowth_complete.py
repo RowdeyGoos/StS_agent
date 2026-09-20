@@ -51,13 +51,13 @@ def fight(encounter, cards=(), hp=10000, draw=0):
     return combat
 
 
-def test_native_census_is_complete_and_only_a0_content_is_enabled():
+def test_native_census_is_complete_and_ascension_bounds_are_enforced():
     assert len(NATIVE_OVERGROWTH_ENCOUNTERS) == 22
     assert set(NATIVE_OVERGROWTH_ENCOUNTERS.values()) == {k for k, v in ENCOUNTERS.items() if k.startswith('overgrowth_')}
     assert len(DEFAULT_MONSTERS) == 108  # Overgrowth, Underdocks, Hive, Glory and events.
     assert sum(ENCOUNTERS[k].room_kind == 'elite' for k in NATIVE_OVERGROWTH_ENCOUNTERS.values()) == 3
     assert sum(ENCOUNTERS[k].room_kind == 'boss' for k in NATIVE_OVERGROWTH_ENCOUNTERS.values()) == 3
-    with pytest.raises(ValueError): RunConfig(ascension=1)
+    with pytest.raises(ValueError): RunConfig(ascension=11)
 
 
 @pytest.mark.parametrize('encounter', tuple(k for k in ENCOUNTERS if ENCOUNTERS[k].act == 1 and not k.startswith('battleworn_dummy_')))

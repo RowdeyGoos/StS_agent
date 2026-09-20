@@ -62,7 +62,7 @@ game classes. There is one combat implementation, not two simulators to maintain
 
 ## Current completion scope
 
-The supported campaign is solo Ironclad A0 on pinned build 0.107.1, with all content
+The supported campaign is solo Ironclad A0–A10 on pinned build 0.107.1, with all content
 unlocked, through either Act 1 region, Hive, Glory and the Architect ending.
 The [next assignments](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment)
 track current completion work. Older batch descriptions below retain their original
@@ -76,8 +76,50 @@ seed/path comparison remains acceptance work. A normal-HP test-policy victory is
 not required. Boosted runs use ordinary rules; focused low-HP/death/revival cases
 remain necessary because starting HP changes which branches a route encounters.
 Passing Python progression with synthetic combat wins does not establish that
-fidelity. Other playable characters, ascensions, progression-dependent unlocks,
+fidelity. Other playable character starts, progression-dependent unlocks,
 multiplayer and alternate modes are outside the project scope.
+
+## Ascension levels
+
+`RunEngine.ironclad_run(seed=4, ascension=10)` and
+`sts-headless-play --route overgrowth-glory --ascension 10 --verify-restore`
+select any integer level from 0 through 10. The default remains 0; rules are
+cumulative and match the pinned 0.107.1 level definitions.
+
+| Level | Added rule |
+| --- | --- |
+| 1 — Swarming Elites | Map generation targets eight elites instead of five, including pruning and Spoils Map. |
+| 2 — Weary Traveler | Ancients heal 80% of missing HP, rounded down; Neow starts Ironclad at 64/80 HP. |
+| 3 — Poverty | Encounter gold bounds are reduced to 75% before sampling; chest gold is reduced after sampling. Fake Merchant retains its fixed 300 gold. |
+| 4 — Tight Belt | Start with two potion slots. Relic capacity changes still apply. |
+| 5 — Ascender's Bane | Add the Eternal, unplayable, Ethereal curse to the starting deck. |
+| 6 — Inflation | Merchant removal starts at 100 gold and increases by 50 per removal, before relic discounts. |
+| 7 — Scarcity | Reduced rare-card odds and rarity-offset growth; non-rare upgrade odds grow by 12.5 percentage points per act instead of 25. |
+| 8 — Tough Enemies | Native per-monster HP, defensive powers and phase thresholds. |
+| 9 — Deadly Enemies | Native per-move damage, hit counts, buffs, generated statuses and other offensive effects. |
+| 10 — Double Boss | Draw a different second Glory boss from UpFront at startup and require both boss fights before the Architect ending. No Ancient heal between them. |
+
+Golden Compass retains the native exception: its replacement Glory map has one
+boss, although startup still selects and records the second boss. Both ordinary
+Glory boss fights retain native final-boss reward suppression; normal relic effects
+and combat-start healing continue to apply.
+
+Difficulty belongs to `RunConfig` and each `CombatEngine`/monster, never a global
+setting. Immutable `monsters/ascension_values.py` and `ascension_moves.py` bind native
+properties to existing rules; phase-dependent effects remain in their monster
+modules. Summons inherit their parent's level. Standalone higher-level combats
+use an `encounter_factory` accepting construction inputs; zero-argument enemy
+factories must not silently create A0 monsters in a higher-level combat.
+Private JSON rejects mismatched run/combat/monster levels and older schemas.
+Historical map-profile names containing `a0` remain stable identifiers; the owned
+ascension config selects difficulty separately.
+
+[Ascension evidence](evidence/headless_ascensions_2026_09_20.md) contains all eleven
+native getter levels and 30 native map/initialization comparisons. Python tests
+exercise every registered encounter at A8/A9, modifiers, summons/revivals and A10
+progression/JSON restoration. The A10 route tests use synthetic combat victories;
+a complete native A10 winning trajectory has not yet been captured. The retained
+six native campaign victories remain A0 evidence.
 
 ## Duplicate card reward choices
 
@@ -126,7 +168,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v40 / run v59**.
+than being silently reinterpreted: current schemas are **combat v41 / run v60**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -348,7 +390,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v40 / run v59.
+reject atomically; current formats are combat v41 / run v60.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -375,7 +417,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v40 / run v59**.
+reject atomically. These private formats are **combat v41 / run v60**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -546,7 +588,7 @@ normal-HP winning strategy, live UI scheduling or exhaustive native parity.
 The boosted replay exposed and corrected Parafright/Obscura action order,
 random-hit target enumeration after summons, Bronze Scales using Thorns before
 incoming damage, Paper Cuts after its owner dies, and Fabricator's delayed
-next-move decision after later bots finish. Current **combat v40 / run v59** reject
+next-move decision after later bots finish. Current **combat v41 / run v60** reject
 older continuation semantics. Fabricator's pending roll is owned by the active
 enemy continuation and survives pauses without a second RNG draw.
 
@@ -562,7 +604,7 @@ Fresh native shared bags refill only the requested empty rarity, in canonical
 order without RNG. Ownership is not a global filter; repeated instances have
 separate identities, counters and effects. An entry allocator boundary binds
 chest claims to newly acquired relics and rejects reopening or claiming an old copy.
-Private schemas are combat v40 / run v59. Native disk-save loading drops the
+Private schemas are combat v41 / run v60. Native disk-save loading drops the
 refill configuration; Python JSON preserves the fresh session being continued.
 See [refill and campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
 The [Kaiser campaign](evidence/native_boosted_kaiser_2026_09_20.json) adds Underdocks
@@ -590,7 +632,7 @@ edge regressions preserve Ceremonial Beast's reactive stun and temporary Strengt
 cleanup and Waterfall Giant's post-death power removal. Combat rewards preserve
 the Amethyst Aubergine owners that generated their gold, so later pickups from
 main/extra rewards or Pael's Wing cannot retroactively change the amount. Private
-schemas are combat v40 / run v59; old continuations reject. Boss coverage does not establish every seed,
+schemas are combat v41 / run v60; old continuations reject. Boss coverage does not establish every seed,
 event branch, inventory combination or hidden native state field.
 
 Further event and inventory coverage remains in the
@@ -646,7 +688,7 @@ relic bags: shared-Ancient allocation, then each act's event shuffle, weak/norma
 elite encounter draws, boss and Ancient selection. All three room sets are retained
 as plain `state.initialization` data, because their startup draws share `up_front`.
 Generated campaigns reuse the saved Hive and Glory room sets on entry to those acts. The declared act sequence
-is **Overgrowth or Underdocks → Hive → Glory**, selected explicitly, solo, A0,
+is **Overgrowth or Underdocks → Hive → Glory**, selected explicitly, solo, A0–A10,
 all unlocked/all seen; the native lobby
 act picker and profile-dependent first-run overrides are outside this profile.
 
@@ -1310,8 +1352,8 @@ legality, reward ownership and adversarial replay/rollback cases. See
 [branch tests](../tests/headless/test_all_solo_events.py) and
 [event content tests](../tests/headless/test_extended_event_content.py). This is not
 an assertion of live end-to-end parity for every event or a complete Act 2/3
-campaign. Generated campaign play still ends at Act 1; higher ascensions,
-profile-dependent unlocks and whole-run native comparisons remain separate work.
+campaign. See the current completion scope for implemented A0–A10 campaigns and
+retained native route comparisons. Profile-dependent unlocks remain separate scope.
 
 ## Neow starting choice
 
@@ -1361,9 +1403,9 @@ This route connects Neow, all 20 Underdocks encounters, ten local events, shared
 events, shops, treasure, rest sites and boss rewards through Act 1 completion.
 Omit `ancient_profile` / `--ancient` for the existing post-Ancient test start.
 `act="overgrowth"` remains the programmatic default. Explicit act selection assumes
-solo Ironclad, A0, all content unlocked and encounters seen; it does not read unlock
-profiles or reproduce the profile-dependent lobby picker. Later-act gameplay and
-higher ascensions remain outside this generated run.
+solo Ironclad, all content unlocked and encounters seen; it does not read unlock
+profiles or reproduce the profile-dependent lobby picker. The default is A0; pass
+`ascension=1` through `10` to apply the cumulative rules described above.
 
 [`map/act1.py`](../game/headless/map/act1.py) shares the pinned map generator between
 both Act 1 locations. Underdocks uses `underdocks_a0_pruned_restricted_v1`: 15 rows
@@ -1804,7 +1846,8 @@ after 114 commands with restore verification enabled. Independent semantic revie
 compilation, documentation links and diff checks passed.
 
 These encounters are also available in the [generated Underdocks route](#generated-underdocks-act-1).
-Multiplayer and ascension modifiers above A0 remain outside this roster. Boss reward
+Multiplayer remains outside this roster; A1–A10 modifiers are now implemented as
+described in [ascension levels](#ascension-levels). Boss reward
 exit records Act 1 completion through the existing lifecycle, not full-game victory.
 
 ## Complete Overgrowth encounter roster at A0

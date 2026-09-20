@@ -73,7 +73,8 @@ def _pending(state, stage="browse"):
 
 
 def removal_price(state):
-    return discounted(state, 75 + 25 * state.shop_removals_used)
+    from game.headless.core.ascension import level
+    return discounted(state, (100 + 50 * state.shop_removals_used) if level(state) >= 6 else (75 + 25 * state.shop_removals_used))
 
 
 def eligible_removals(state):

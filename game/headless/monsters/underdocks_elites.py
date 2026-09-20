@@ -27,7 +27,7 @@ class PhantasmalGardener(ScriptedEnemy):
     def after_card_attack(self, frame):
         damage = frame.get('enemy_attack', {}).get(str(self.combat_player.combat_enemies.index(self)), 0)
         if self.is_alive and not self.skittish_used and damage > 0:
-            self.gain_block(6)
+            self.gain_block(self.ascension_value('SkittishAmount', 6))
             self.skittish_used = True
 
     def after_player_side_end(self):
@@ -76,7 +76,7 @@ class TerrorEel(InterruptibleEnemy):
         return self._resolve_intent(template)
 
     def on_damage_taken(self, damage, is_attack):
-        if self.is_alive and damage > 0 and self.hp <= 70 and self.shriek:
+        if self.is_alive and damage > 0 and self.hp <= self.ascension_value('ShriekAmount', 70) and self.shriek:
             self.capture_interrupted_move()
             self.shriek = False
             self.stunned = True

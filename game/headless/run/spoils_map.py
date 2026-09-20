@@ -13,7 +13,7 @@ def generate(state, graph):
     # advance a persistent run stream, even with several copies in the deck.
     rng = NativeRandomService(state.seed) if getattr(state.rng, 'native', False) else GameRandomService(state.seed)
     root = graph.node('act2.ancient')
-    graph = generate_map(rng, act='hive', event_pool=state.config.event_pool, ancient=root.event_id, profile=SPOILS_PROFILE)
+    graph = generate_map(rng, act='hive', event_pool=state.config.event_pool, ancient=root.event_id, profile=SPOILS_PROFILE, ascension=state.config.ascension)
     state.spoils_map = dict(card_ids=owners, target=first_treasure(graph))
     return graph
 

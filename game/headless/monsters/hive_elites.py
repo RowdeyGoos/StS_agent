@@ -33,7 +33,7 @@ class InfestedPrism(ScriptedEnemy):
 
     def __init__(self, rng):
         super().__init__(rng)
-        self.vital_spark = 2
+        self.vital_spark = self.ascension_value('VitalSparkAmount', 2)
 
     def after_joining_combat(self, player):
         for card in player.deck.all_cards():
@@ -43,7 +43,7 @@ class InfestedPrism(ScriptedEnemy):
 
     def after_move(self, player, intent):
         if intent.move_name == 'Pulsate':
-            self.vital_spark += 2
+            self.vital_spark += self.ascension_value('VitalSparkAmount', 2)
 
     def after_player_card(self, player):
         card = player.current_card
@@ -76,8 +76,8 @@ class DecimillipedeSegment(InterruptibleEnemy):
         others = [e.max_hp for e in player.combat_enemies if e is not self]
         while hp in others:
             hp += 2
-            if hp > 46:
-                hp = 40
+            if hp > self.ascension_value('MaxInitialHp', 46):
+                hp = self.ascension_value('MinInitialHp', 40)
         self.max_hp = self.hp = hp
         self.hp_adjusted = True
 

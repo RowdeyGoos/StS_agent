@@ -18,7 +18,7 @@ class CorpseSlug(ScriptedEnemy):
         self._intent_index = opening
 
     def on_teammate_death(self, other):
-        self.gain_strength(4)
+        self.gain_strength(self.ascension_value('RavenousStr', 4))
         self.stunned = True
 
 
@@ -35,7 +35,7 @@ class CalcifiedCultist(ScriptedEnemy):
 
     def after_move(self, player, intent):
         if intent.move_name == 'Incantation':
-            self.ritual = self.RITUAL
+            self.ritual = self.ascension_value('IncantationAmount', self.RITUAL)
             self.ritual_fresh = True
 
     def after_side_end(self):
@@ -96,8 +96,8 @@ class SewerClam(ScriptedEnemy):
 
     def __init__(self, rng):
         super().__init__(rng)
-        self.plating = 8
-        self.block = 8
+        self.plating = self.ascension_value('PlatingAmount', 8)
+        self.block = self.plating
         self.turns_started = 0
 
     def start_turn(self):
