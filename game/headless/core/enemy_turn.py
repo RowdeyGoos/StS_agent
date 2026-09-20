@@ -14,6 +14,11 @@ def turn_order(enemies):
     return sorted(range(len(enemies)), key=lambda i: getattr(enemies[i], 'turn_order', i))
 
 
+def action_details(actions):
+    """Keep private roll receipts out of the existing action-result contract."""
+    return [{k: v for k, v in action.items() if k != "roll_next"} for action in actions]
+
+
 def current_slot(record):
     return record.get('order', range(record['limit']))[record['slot']]
 
@@ -47,8 +52,15 @@ def execute(enemy, player, continuation):
         drain(player)
         if paused(player): return
     if continuation["stage"] == "advance":
-        enemy.advance_intent()
-        continuation["stage"] = "done"
+        from game.headless.monsters.scripted import DeferredMoveEnemy
+        if isinstance(enemy, DeferredMoveEnemy) or getattr(enemy, 'move_interrupted', False):
+            # Existing roster rolls retain their owned pending flag. Forced state
+            # changes must consume their interrupted-move marker before cleanup.
+            enemy.advance_intent()
+            continuation["stage"] = "done"
+        else:
+            enemy.turn_roll_pending = True
+            continuation["stage"] = "deferred"
 
 
 def begin(enemy):
@@ -59,6 +71,8 @@ def begin(enemy):
 
 def validate(record, player):
     if record is None:
+        if any(e.turn_roll_pending for e in player.combat_enemies):
+            raise ValueError('Unowned enemy move roll.')
         return
     if not isinstance(record, dict) or set(record) - {"poison_start", "started", "doom_end", "order"} != {"limit", "slot", "move", "actions"}:
         raise ValueError("Invalid enemy-side continuation.")
@@ -68,6 +82,16 @@ def validate(record, player):
     expected = turn_order(player.combat_enemies[:record['limit']])
     if (order is not None and (not isinstance(order, list) or any(type(i) is not int for i in order))) or (order if order is not None else list(range(record['limit']))) != expected:
         raise ValueError('Invalid enemy execution order.')
+    actions = record['actions']
+    if (not isinstance(actions, list) or len(actions) > record['slot']
+            or any(not isinstance(a, dict) or set(a) != {'enemy_index', 'enemy_name', 'intent', 'roll_next'}
+                   or type(a['roll_next']) is not bool or type(a['enemy_index']) is not int
+                   or a['enemy_index'] not in expected[:record['slot']] for a in actions)
+            or len({a['enemy_index'] for a in actions}) != len(actions)):
+        raise ValueError('Invalid completed enemy actions.')
+    rolls = {a['enemy_index'] for a in actions if a['roll_next']}
+    if any(e.turn_roll_pending != (i in rolls) for i, e in enumerate(player.combat_enemies)):
+        raise ValueError('Enemy move roll differs from its completed action.')
     if record.get('doom_end') is True:
         if record['slot'] != record['limit'] or not 0 < record['limit'] <= len(player.combat_enemies) or record['move'] is not None or not isinstance(record['actions'], list):
             raise ValueError('Invalid enemy Doom boundary.')
@@ -96,5 +120,3 @@ def validate(record, player):
         raise ValueError("Enemy continuation differs from its current move.")
     if move["stage"] in ("effects", "advance") and move["hit"] != intent.attack_count and player.combat_enemies[current_slot(record)].is_alive:
         raise ValueError("Enemy continuation skips unfinished hits.")
-    if not isinstance(record["actions"], list) or len(record["actions"]) > record["slot"]:
-        raise ValueError("Invalid completed enemy actions.")

@@ -25,8 +25,8 @@ class LagavulinMatriarch(SewerClam):
 
     def advance_intent(self):
         if self._intent_index == 0:
-            # The turn-end decrement happens after move selection.
-            self._intent_index = 0 if self.asleep > 1 else 1
+            # Native move selection follows the turn-end decrement.
+            self._intent_index = 0 if self.asleep > 0 else 1
         else:
             ScriptedEnemy.advance_intent(self)
 

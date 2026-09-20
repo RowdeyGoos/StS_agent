@@ -161,8 +161,8 @@ def test_native_capture_identity_and_case_census():
     assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith(('focused_death_', 'focused_illusion_', 'focused_sicem_', 'focused_character_'))] == FOCUSED_RECORD['result']['rows']
     assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith('focused_character_')] == DEATH_RECORD['result']['rows']
     assert CURRENT_RECORD['userDirectoryRemoved'] and CURRENT_RECORD['pins'] == RECORD['pins']
-    for name, digest in CURRENT_RECORD['fixtureSources'].items():
-        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    from tests.headless.native_fixture_sources import assert_campaign_sources
+    assert_campaign_sources(CURRENT_RECORD)
     scenarios = {'flex', 'speed', 'binding', 'shackles', 'ward', 'replay', 'healing', 'duration', 'fairy', 'chaos', 'flex_late', 'speed_late'}
     rows = RECORD['result']['rows']
     keys = [(r['scenario'], r['seed'], r['ascension'], r['variant']) for r in rows]

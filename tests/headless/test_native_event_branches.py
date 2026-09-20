@@ -88,22 +88,11 @@ def test_current_harness_and_unchanged_native_campaigns_are_bound():
     # Original branch captures keep their own runner identity. Their event
     # implementations are unchanged; the current harness has a fresh rerun.
     for name, digest in MANIFEST['fixtureSources'].items():
-        if name not in {'Oracle.cs', 'death_draw.cs', 'run.py'}:
+        if name not in {'Oracle.cs', 'death_draw.cs', 'run.py', 'generated_start.cs'}:
             assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
     report = json.loads((ROOT / 'docs/evidence/native_item_status_regressions_2026_09_20.json').read_text())
-    current = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_characters_2026_09_20.json.gz').read_bytes()))
-    # Only item-status and its scenario setup/dispatch changed. Other modes in
-    # the shared dispatcher have a fresh enemy-turn regression below; unchanged
-    # campaign implementations retain their historical identities.
-    assert {k: v for k, v in current['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs', 'character.cs', 'run.py'}} == {
-        k: v for k, v in report['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs', 'character.cs', 'run.py'}}
-    for name, digest in current['fixtureSources'].items():
-        assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
-    fresh = current['sharedDispatcherRegression']
-    raw = (ROOT / fresh['baseline']).read_bytes()
-    assert fresh['userDirectoryRemoved'] and fresh['fixtureSources'] == current['fixtureSources']
-    assert hashlib.sha256(raw).hexdigest() == fresh['baselineSha256']
-    assert hashlib.sha256(json.dumps(json.loads(raw)['result'], sort_keys=True).encode()).hexdigest() == fresh['resultSha256']
+    from tests.headless.native_fixture_sources import assert_campaign_sources
+    assert_campaign_sources(report)
     assert len(report['runs']) == 13
     assert {'campaign','reward-handoff','event-inventory'} <= {r['mode'] for r in report['runs']}
     for row in report['runs']:

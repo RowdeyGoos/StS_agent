@@ -775,3 +775,24 @@ item-status case implementation changed; assertions bind the other sources and
 dispatcher to that report. Earlier records retain their original identities.
 This mode does not exercise live UI, disk saves, a full combat lifecycle or every
 power family.
+
+
+### Other-character native campaigns
+
+Use the same `queue_runtime/run.py` command and pinned runtime dependencies, with
+`--mode boosted-matrix --character silent --campaign-case overgrowth-1` for A0,
+or `--character silent --campaign-case underdocks-4 --ascension 10` for A10.
+`--character` also accepts `regent`, `necrobinder`, and `defect`; the default stays
+`ironclad`. Character selection is restricted to declared campaign cases.
+
+These runs use native starting decks/relics, normal owner reward pools and an
+explicit legal policy that selects supported combat choices and skips unwanted
+rewards. The selector records actual offered cards and answers, including
+Knowledge Demon choices whose real UI forbids skipping. All run/player counters,
+ordered piles and character resources are captured at both difficulties. The
+existing empty-directory, mock-save, upload-disabled and cleanup safeguards apply.
+
+[Eight complete comparisons](../../docs/evidence/native_character_campaigns_2026_09_21.md)
+and the [15-mode regression report](../../docs/evidence/native_character_campaign_regressions_2026_09_21.json)
+bind the current harness to fresh native execution. Historical capture identities
+remain unchanged.

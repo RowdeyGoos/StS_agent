@@ -67,7 +67,7 @@ class Queen(InterruptibleEnemy):
         if isinstance(other, TorchHeadAmalgam):
             self.amalgam_died = True
             if self._intent_index == 2:
-                self.capture_interrupted_move()
+                self.capture_interrupted_move(must_perform=False)
                 self._intent_index = 3
 
     def next_index(self):

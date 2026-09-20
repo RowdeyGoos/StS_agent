@@ -35,7 +35,10 @@ def main():
     parser.add_argument("--spine-extension", type=Path)
     parser.add_argument("--campaign-case", choices=("overgrowth-1", "overgrowth-3", "underdocks-4"))
     parser.add_argument("--ascension", type=int, choices=(0, 10), default=0)
+    parser.add_argument("--character", choices=("ironclad", "silent", "regent", "necrobinder", "defect"), default="ironclad")
     args = parser.parse_args()
+    if args.character != "ironclad" and args.mode != "boosted-matrix":
+        parser.error("Character campaigns require boosted-matrix.")
     if args.event_name and args.mode != "event-roster":
         parser.error("event-name requires event-roster.")
     if args.ascension and args.mode != "boosted-matrix":
@@ -130,7 +133,7 @@ project/assembly_name="queue_oracle"
     started = time.monotonic()
     try:
         run = subprocess.run([str(staged_engine), "--headless", *(["--verbose"] if args.mode == "event-roster" else []), "--main-pack", str(pack),
-                              "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode, *([args.event_name] if args.event_name else []), *([args.campaign_case] if args.campaign_case else []), *(["ascension-10"] if args.ascension else [])],
+                              "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode, *([args.event_name] if args.event_name else []), *([args.campaign_case] if args.campaign_case else []), *(["ascension-10"] if args.ascension else []), *(["character-" + args.character] if args.character != "ironclad" else [])],
                              cwd=project, capture_output=True, text=True, timeout=180 if args.mode == "event-roster" else 60 if args.mode in ( "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix") else 15)
         (output / "stdout.log").write_text(run.stdout)
         (output / "stderr.log").write_text(run.stderr)
