@@ -1690,13 +1690,20 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      survive JSON restoration. Eight pinned native boundary vectors cover refill,
      filtering, fallback and duplicate ownership; native disk-loaded bags remain
      a separate configuration, not the meaning of Python JSON continuation.
+   - **Kaiser campaign completed:** Underdocks seed 0 now wins through Soul Fysh,
+     Kaiser Crab and Test Subject with 35 combats, 712 actions and four explicit
+     Yummy Cookie upgrades. Kaiser uses real native callbacks with authored empty
+     Spine animations; Soul Nexus's death callback gets a scoped empty room lookup.
+     Python replays every boundary with JSON continuation. Soul Fysh's Beckon
+     insertion now converts native top-first positions correctly (combat v39 / run v58).
+     [Evidence](evidence/headless_generated_route_2026_09_20.md#kaiser-crab-and-third-boosted-campaign).
    - **Next acceptance coverage:** extend the declared boosted seed/path matrix
-     to other bosses, event branches and richer inventory interactions. Kaiser
-     Crab's native callbacks require a visual background absent from this fixture;
-     add only the necessary presentation support before claiming that full native
-     campaign. Keep focused low-HP, death and revival cases alongside boosted
-     campaigns. Multiplayer and alternate modes are excluded from the project.
-     See [expanded campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
+     to remaining bosses (Ceremonial Beast, the Kin, Waterfall Giant, The Insatiable
+     and the Queen), additional
+     event branches and richer inventory interactions. These three campaigns do
+     not establish every encounter branch or seed. Keep focused low-HP, death and
+     revival cases alongside boosted campaigns. Multiplayer and alternate modes
+     are excluded from the project.
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
    Their full 344-card pool inventory, including basic/special entries, is retained

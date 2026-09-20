@@ -12,7 +12,11 @@ RECORD = json.loads((ROOT / 'docs/evidence/native_boosted_underdocks_2026_09_20.
 
 def test_expanded_boosted_fixture_matches_executed_sources():
     assert RECORD['userDirectoryRemoved']
-    for name, digest in RECORD['fixtureSources'].items():
+    rerun = json.loads((ROOT / 'docs/evidence/native_kaiser_campaign_regressions_2026_09_20.json').read_text())
+    original = next(r for r in rerun['runs'] if r['mode'] == 'boosted-coverage')
+    assert original['resultMatchesRetained']
+    assert original['resultSha256'] == hashlib.sha256(json.dumps(RECORD['result'], sort_keys=True).encode()).hexdigest()
+    for name, digest in rerun['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
 
 

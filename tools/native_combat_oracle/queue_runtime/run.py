@@ -30,8 +30,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage"), default="queue")
+    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser"), default="queue")
+    parser.add_argument("--spine-extension", type=Path)
     args = parser.parse_args()
+    if args.mode == "boosted-kaiser":
+        if args.spine_extension is None or sha(args.spine_extension) != "dde5c7682eb29f3c69e4191f6361a1f0731292188b2603bee02adf726abde0d8":
+            parser.error("Kaiser fixture requires the pinned Spine extension.")
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("This pinned exported-runtime fixture requires macOS arm64.")
     engine, native = args.engine.resolve(), args.native_data.resolve()
@@ -51,15 +55,18 @@ def main():
     staged_engine = output / "QueueOracle"
     shutil.copyfile(engine, staged_engine)
     staged_engine.chmod(0o755)
-    # Only the native distribution's runtime directory is read. No game PCK,
-    # autoload, extension manifest, profile, history or save directory is staged.
+    # Stage runtime DLLs only; Kaiser additionally loads the explicitly pinned
+    # presentation library through an authored manifest. No game PCK, autoload,
+    # game extension manifest, profile, history or save directory is staged.
     native_hashes = {}
     for path in sorted(native.iterdir()):
         if path.is_file():
             (data / path.name).symlink_to(path)
             native_hashes[path.name] = sha(path)
-    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "enemy_turn.cs", "autoplay.cs", "draw_cards.cs", "remaining_draw.cs", "interactions.cs", "enemy_interactions.cs", "side_start.cs", "end_boundary.cs", "reward_handoff.cs", "campaign.cs", "generated_start.cs", "empty.tscn"):
+    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "enemy_turn.cs", "autoplay.cs", "draw_cards.cs", "remaining_draw.cs", "interactions.cs", "enemy_interactions.cs", "side_start.cs", "end_boundary.cs", "reward_handoff.cs", "campaign.cs", "generated_start.cs", "kaiser_presentation.cs", "kaiser_skeleton.spjson", "kaiser_empty.atlas", "empty.tscn"):
         shutil.copyfile(source / name, project / name)
+    if args.mode == "boosted-kaiser":
+        (project / "fixture_spine.gdextension").write_text('[configuration]\nentry_symbol="spine_godot_library_init"\ncompatibility_minimum="4.5"\n[libraries]\nmacos = "' + str(args.spine_extension.resolve()).replace("\\", "\\\\").replace('"', '\\"') + '"\n')
     user_name = "StsNativeQueueOracle-" + uuid.uuid4().hex
     user_dir = Path.home() / "Library" / "Application Support" / user_name
     settings = f'''config_version=5
@@ -104,6 +111,10 @@ project/assembly_name="queue_oracle"
         for name in ("project.godot", "empty.tscn", "Oracle.cs"):
             archive.write(project / name, name)
         archive.writestr(".godot/global_script_class_cache.cfg", "list=[]\n")
+        if args.mode == "boosted-kaiser":
+            archive.write(project / "fixture_spine.gdextension", "fixture_spine.gdextension")
+            archive.write(project / "kaiser_skeleton.spjson", "kaiser_skeleton.spjson")
+            archive.write(project / "kaiser_empty.atlas", "kaiser_empty.atlas")
     # Godot's custom name is relative to Application Support. Own one new empty
     # directory, then remove only that directory. Never change HOME or touch saves.
     user_dir.mkdir()
@@ -111,7 +122,7 @@ project/assembly_name="queue_oracle"
     try:
         run = subprocess.run([str(staged_engine), "--headless", "--main-pack", str(pack),
                               "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode],
-                             cwd=project, capture_output=True, text=True, timeout=60 if args.mode in ("generated-route", "boosted-campaign", "boosted-coverage") else 15)
+                             cwd=project, capture_output=True, text=True, timeout=60 if args.mode in ("generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser") else 15)
         (output / "stdout.log").write_text(run.stdout)
         (output / "stderr.log").write_text(run.stderr)
         run.check_returncode()
@@ -124,6 +135,7 @@ project/assembly_name="queue_oracle"
     elapsed = time.monotonic() - started
     record = {
         "pins": PINS, "nativeDependencies": native_hashes,
+        **({"spineExtensionSha256": sha(args.spine_extension)} if args.mode == "boosted-kaiser" else {}),
         "fixtureSources": {p.name: sha(p) for p in sorted(source.iterdir()) if p.is_file()},
         "generatorSha256": sha(args.godot_generators / "analyzers/dotnet/cs/Godot.SourceGenerators.dll"),
         "compiledFixtureSha256": sha(data / "queue_oracle.dll"),
