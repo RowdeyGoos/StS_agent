@@ -186,15 +186,17 @@ class CombatEngine:
         order = turn_order(self.enemies)
         if order != list(range(len(self.enemies))):
             self.player.rules.enemy_turn['order'] = order
+        # Native initializes every starting participant before any enemy acts.
+        # Reactive attacks must see cleared block on later participants too.
+        self.player.rules.enemy_turn['started'] = True
+        for enemy in self._living_enemies():
+            enemy.start_turn()
         from game.headless.powers.silent import enemy_side_tasks
         tasks = enemy_side_tasks(self.player)
         if any(getattr(e, "sandpit", 0) for e in self.enemies):
             tasks.append(["hive_enemy_start"])
         if tasks:
             self.player.rules.enemy_turn["poison_start"] = True
-            self.player.rules.enemy_turn["started"] = True
-            for enemy in self._living_enemies():
-                enemy.start_turn()
             from game.headless.core.resolution import push, drain
             push(self.player, *tasks)
             drain(self.player)

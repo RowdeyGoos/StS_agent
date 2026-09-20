@@ -169,7 +169,7 @@ def execute(p, op, args):
             from game.headless.powers.defect import draw_record
             draw_record(p, c)
             r.drawn_turn += 1
-            push(p, ['after_draw'], ['silent_draw_hook', False, c.instance_id], ['after_draw_card', c.instance_id], ['silent_escape_block', args[0], args[1], c.spec.kind in ('skill', 'block')])
+            push(p, ['draw_hooks', c.instance_id, False], ['silent_escape_block', args[0], args[1], c.spec.kind in ('skill', 'block')])
             if r.powers.get('hellraiser') and c.definition.strike:
                 push(p, ['autoplay', c.instance_id, False])
     elif op == 'silent_escape_block':

@@ -156,7 +156,10 @@ def end_turn(p, key):
         r.powers['dexterity'] = r.powers.get('dexterity', 0) - r.powers.get(key, 0)
     if key == 'double_damage' and r.powers.get(key):
         r.powers[key] -= 1
-    if key in ('anticipate', 'burst', 'corrosive_wave', 'shadowmeld'):
+    if key == 'corrosive_wave':
+        from game.headless.core.draw_hooks import remove_power
+        remove_power(p, key)
+    elif key in ('anticipate', 'burst', 'shadowmeld'):
         r.powers.pop(key, None)
 
 
@@ -188,18 +191,6 @@ def execute(p, op, args):
             apply(p, 'double_damage', r.powers.pop(key))
         elif key == 'noxious_fumes' and amount:
             push(p, *[['status', i, 'poison', amount] for i, e in enumerate(p.combat_enemies) if e.is_alive])
-    elif op == 'silent_draw_hook':
-        tasks = []
-        for key, amount in r.powers.items():
-            if key == 'pagestorm' and next(c for c in p.deck.all_cards() if c.instance_id == args[1]).spec.ethereal:
-                tasks.append(['draw', amount, False])
-            elif key == 'defect_iteration' and r.status_draws_turn == 1 and next(c for c in p.deck.all_cards() if c.instance_id == args[1]).spec.kind == 'status':
-                tasks.append(['draw', amount, False])
-            elif key == 'corrosive_wave':
-                tasks.extend(['status', i, 'poison', amount] for i, e in enumerate(p.combat_enemies) if e.is_alive)
-            elif key == 'speedster' and not args[0] and r.player_side:
-                tasks.append(['silent_area_damage', amount])
-        push(p, *tasks)
     elif op == 'silent_area_damage':
         area_damage(p, args[0])
     elif op == 'silent_damage':

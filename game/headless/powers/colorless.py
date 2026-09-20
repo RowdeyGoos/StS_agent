@@ -47,15 +47,6 @@ def area(p, amount):
             enemy.take_damage(amount, is_attack=False)
 
 
-def after_draw(p):
-    for key in tuple(p.rules.powers):
-        if name(key) == "automation":
-            p.rules.auxiliaries[key] -= 1
-            if not p.rules.auxiliaries[key]:
-                p.rules.auxiliaries[key] = 10
-                p.gain_energy(p.rules.powers[key])
-
-
 def after_card_power(p, card, key):
     r = p.rules
     if name(key) == "panache":
