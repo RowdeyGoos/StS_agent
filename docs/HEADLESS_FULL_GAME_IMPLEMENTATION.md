@@ -1588,18 +1588,30 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      [Native vectors](evidence/native_enemy_turn_2026_09_19.json) use manually
      delivered replay answers, disabled checksums and explicit combat state; they
      do not demonstrate live executor-frame/UI scheduling or combat-end/run parity.
-   - **Next: native post-shuffle autoplay/selection boundaries.** Use one actual
-     card or power whose `ensure_draw` continuation pauses on Stratagem, consume
-     the remaining draw pile with independent work, then resume. Start with one
-     of autoplay, Pillage, Escape Plan, Scrape, Mittens or Foregone Conclusion.
-     Compare native piles, plays, options and RNG before changing caller rules.
-     Several paused death contexts and reactive enemy-side-start choices remain
-     separate scheduling cases; Horn plus a paused Tools setup is now verified.
+   - **Native autoplay gathering and queued-card movement verified:** 96 Mayhem
+     cases establish gathering the entire batch before any play, including paused
+     Stratagem and empty post-selection draw piles. Twelve Flak Cannon cases add
+     exhaustion of already queued Slimed/Wound cards, optional Dark Embrace and
+     another paused shuffle. Future references survive pile changes; actual plays
+     enter Play at the bottom. Exact piles, resources, damage, play order and five
+     RNG suffixes match; each choice restores from JSON. Mixed-card candidate
+     membership is verified, not UI sorting. Plain owned batches and exhaust
+     receipts reject malformed continuations (combat v32 / run v48). See
+     [Mayhem vectors](evidence/native_autoplay_2026_09_20.json),
+     [Flak vectors](evidence/native_autoplay_flak_2026_09_20.json) and
+     [scope](HEADLESS_ENGINE.md). Native callbacks/replay are manually driven;
+     nested Havoc/Armaments and terminal cleanup have source-backed regressions.
+   - **Next: card-specific post-shuffle selection boundaries.** Start with one of
+     Pillage, Escape Plan, Scrape, Mittens or Foregone Conclusion whose
+     `ensure_draw` continuation pauses on Stratagem. Compare native piles, effects,
+     options and RNG before changing caller rules, including an empty live draw
+     pile on resumption. Several paused death contexts and reactive enemy-side-start
+     choices remain separate scheduling cases; Horn plus a paused Tools setup is
+     now verified.
    - **Broader interaction sequences:** ordered relic/power triggers, dependent
-     autoplay and further combat boundaries. Audit the other `ensure_draw` callers
-     (autoplay, Pillage, Escape Plan, Scrape, Mittens and Foregone Conclusion) for
-     their own post-shuffle continuation boundaries; the verified correction here
-     covers the shared ordinary Draw command. Reproduce each suspected difference
+     autoplay and further combat boundaries. The shared ordinary Draw and Mayhem
+     batch paths have bounded native evidence; other callers still need their own
+     post-shuffle continuation checks. Reproduce each suspected difference
      natively before changing caller semantics. Require actual native sequences;
      passing Python continuation alone is regression evidence.
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80

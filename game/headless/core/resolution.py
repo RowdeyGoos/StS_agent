@@ -4,7 +4,7 @@ from game.headless.core.selection import HandChoice, PendingCardPlay
 
 
 def requires_receipt(op):
-    return op in ('nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_', 'hive_'))
+    return op in ('exhaust', 'nec_summon', 'nec_enemy_loss') or op.startswith(('orb_', 'def_', 'hive_'))
 
 
 def push(player, *tasks):
@@ -29,7 +29,7 @@ def move_out(player, card):
             return
 
 
-def start_play(player, card, target=None, *, auto=False, force_exhaust=False, spend_resources=False):
+def start_play(player, card, target=None, *, auto=False, force_exhaust=False, spend_resources=False, from_reservation=False):
     if player.combat_is_ending:
         return
     from game.headless.cards.curses import can_play
@@ -46,7 +46,7 @@ def start_play(player, card, target=None, *, auto=False, force_exhaust=False, sp
             else:
                 player.deck.discard_card(card)
         return
-    if card in player.deck.in_play:
+    if card in player.deck.in_play and not from_reservation:
         return
     if card.spec.uses_target:
         if target is not None and player.combat_enemies is not None and target not in player.combat_enemies:
@@ -324,17 +324,11 @@ def execute(p, task):
         if card is not None:
             start_play(p, card, auto=True, force_exhaust=force_exhaust)
     elif op == "autoplay_draw":
-        count, force_exhaust = args
-        if count <= 0 or p.combat_is_ending:
-            return
-        if not colorless.ensure_draw(p, task, hand=False):
-            return
-        if p.deck.draw_pile:
-            push(
-                p,
-                ["autoplay", p.deck.draw_pile[-1].instance_id, force_exhaust],
-                ["autoplay_draw", count - 1, force_exhaust],
-            )
+        from game.headless.core.autoplay import begin
+        begin(p, *args)
+    elif op in ("autoplay_collect", "autoplay_take", "autoplay_next"):
+        from game.headless.core.autoplay import execute as autoplay_execute
+        autoplay_execute(p, op, args[0])
     elif op == "exhaust":
         (identity,) = args
         card = find(p, identity)

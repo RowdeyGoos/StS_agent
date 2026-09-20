@@ -35,13 +35,13 @@ def validate_task(task, r, p, context):
     op, *args = task
     if op == 'regent_forge':
         frame = r.plays.get(args[0])
-        card = next((c for c in p.deck.in_play if c.instance_id == args[0]), None)
+        card = next((c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == args[0]), None)
         if frame is None or card is None or frame['context'] != context or card.definition.definition_id != 'beat_into_shape' or type(args[1]) is not int or args[1] != frame.get('forge_amount') or args[1] < (7 if card.upgraded else 5):
             raise ValueError('Unowned queued Forge amount.')
     elif op == 'regent_knockout':
         if args[0] not in r.plays or r.plays[args[0]]['context'] != context:
             raise ValueError('Knockout has no owning play.')
-        card = next(c for c in p.deck.in_play if c.instance_id == args[0])
+        card = next(c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == args[0])
         if card.definition.definition_id != 'knockout_blow' or any(type(n) is not int or n < 0 for n in args[1:]) or args[1] >= len(p.combat_enemies) or args[3] != 5:
             raise ValueError('Invalid Knockout continuation.')
     elif op in ('regent_energy_reset', 'regent_before_draw', 'regent_side_start', 'regent_remove'):
@@ -67,7 +67,7 @@ def validate_selection(r, p, s, *, deferred=False):
     operation = s['operation'].removeprefix('regent_')
     upgraded = operation.endswith('_up')
     operation = operation.removesuffix('_up')
-    source = next((c for c in p.deck.in_play if c.instance_id == s['source']), None)
+    source = next((c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == s['source']), None)
     if operation in ('foregone_conclusion', 'tyranny'):
         if s['source'] != operation or not r.powers.get(operation):
             raise ValueError('Unowned Regent power selection.')

@@ -59,7 +59,7 @@ def validate_task(task, r, p, context):
     if op in PLAY_TASKS:
         if args[0] not in r.plays or r.plays[args[0]]['context'] != context:
             raise ValueError('Silent task has no owning play.')
-        card = next(c for c in p.deck.in_play if c.instance_id == args[0])
+        card = next(c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == args[0])
         expected = {'silent_hunt':'the_hunt', 'silent_echo':'echoing_slash', 'silent_escape_draw':'escape_plan', 'silent_escape_block':'escape_plan'}[op]
         if card.definition.definition_id != expected:
             raise ValueError('Silent task differs from its owning card.')
@@ -107,7 +107,7 @@ def validate_selection(r, p, s, *, deferred=False):
     from game.headless.cards.silent_effects import Silent
     from game.headless.powers.silent import is_sly
     operation = s['operation']
-    source = next((c for c in p.deck.in_play if c.instance_id == s['source']), None)
+    source = next((c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == s['source']), None)
     if source is None:
         key = s['source']
         if key not in ('well_laid_plans', 'tools_of_the_trade') or not r.powers.get(key):

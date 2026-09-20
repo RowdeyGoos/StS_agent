@@ -54,10 +54,12 @@ def activate(p, hook):
 def cancel_deferred(p):
     r = p.rules
     canceled = {h["context"] for h in r.deferred_hooks}
+    from game.headless.core.autoplay import cancel as cancel_autoplay
+    cancel_autoplay(p, contexts=canceled)
     # Combat cleanup disposes interrupted plays without firing further hooks.
     for card in tuple(p.deck.in_play):
-        frame = r.plays[card.instance_id]
-        if frame["context"] in canceled:
+        frame = r.plays.get(card.instance_id)
+        if frame is not None and frame["context"] in canceled:
             p.deck.in_play.remove(card)
             getattr(p.deck, frame["destination"]).append(card)
             del r.plays[card.instance_id]
@@ -146,6 +148,8 @@ def advance_side_start(p, tasks):
 def cancel_terminal_work(p):
     """Dispose interrupted setup after side-start reactions end combat."""
     r = p.rules
+    from game.headless.core.autoplay import cancel as cancel_autoplay
+    cancel_autoplay(p)
     for card in tuple(p.deck.in_play):
         frame = r.plays[card.instance_id]
         p.deck.in_play.remove(card)
@@ -174,7 +178,7 @@ def finish_enemy_work(p):
         if not previous:
             r.hook_sequence += 1
             r.active_hook = r.hook_sequence
-            for frame in r.plays.values():
+            for frame in (*r.plays.values(), *r.autoplay_batches.values()):
                 if frame['context'] == previous:
                     frame['context'] = r.active_hook
             for event in r.pending_events:

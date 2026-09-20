@@ -29,6 +29,7 @@ TASK_ARITIES = {
     "draw_after_shuffle": 2,
     "autoplay": 2,
     "autoplay_draw": 2,
+    "autoplay_collect": 1, "autoplay_take": 1, "autoplay_next": 1,
     "exhaust": 1,
     "block": 2,
     "attack": 7,
@@ -130,9 +131,11 @@ def restore_rules(record, player):
     work = groups(r, player)
     from game.headless.core.hook_snapshots import validate_pending
     validate_pending(r, work)
+    from game.headless.core.autoplay import validate as validate_autoplay
+    reserved = validate_autoplay(r, player, work)
     validate_choices(r, player)
     in_play = {c.instance_id: c for c in player.deck.in_play}
-    if not isinstance(r.plays, dict) or set(r.plays) != set(in_play):
+    if not isinstance(r.plays, dict) or set(r.plays) | (reserved & set(in_play)) != set(in_play):
         raise ValueError("Play ownership mismatch.")
     for identity, frame in r.plays.items():
         required = {
@@ -275,8 +278,8 @@ def restore_rules(record, player):
         ):
             if args[0] not in r.plays:
                 raise ValueError("Task has no owning play.")
-        elif op in ("autoplay", "exhaust", "ethereal") and args[0] in r.plays:
-            raise ValueError("Queued movement cannot remove an active play.")
+        elif op in ("autoplay", "exhaust", "ethereal") and (args[0] in r.plays or (op != "exhaust" and args[0] in reserved)):
+            raise ValueError("Queued movement cannot remove an owned play or reservation.")
         elif op in ("autoplay", "exhaust", "ethereal") and args[0] not in player.deck._allocated_ids:
             raise ValueError("Task references an unallocated card.")
         if op == "relic_hook" and (args[0] not in r.relic_data or args[1] not in ("before_draw", "after_draw", "before_end", "after_end", "after_play", "exhaust", "exhaust_ethereal", "shuffle", "after_side_start") or (args[2] and args[2] not in player.deck._allocated_ids)):
@@ -393,13 +396,13 @@ def restore_rules(record, player):
             r.selection is None
             and frame["context"] == r.active_hook
             and identity == next(c.instance_id for c in reversed(player.deck.in_play)
-                                 if r.plays[c.instance_id]["context"] == r.active_hook)
+                                 if r.plays.get(c.instance_id, {}).get("context") == r.active_hook)
             and tasks[: len(expected)] != expected
         ):
             raise ValueError("Pending selector has unexpected work before its continuation.")
     for context, tasks in work.items():
         if [t[1] for t in tasks if t[0] in ("after_play", "after_enchantment", "repeat")] != [
-            c.instance_id for c in reversed(player.deck.in_play) if r.plays[c.instance_id]["context"] == context
+            c.instance_id for c in reversed(player.deck.in_play) if r.plays.get(c.instance_id, {}).get("context") == context
         ]:
             raise ValueError("Nested plays must finish before their parents in their own context.")
         for task in tasks:

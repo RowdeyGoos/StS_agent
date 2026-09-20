@@ -131,7 +131,7 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         from game.headless.potions.selections import validate
         validate(r, p, s, r.potion_uses[s["source"]]["definition_id"])
         return
-    source = next((c for c in p.deck.in_play if c.instance_id == s["source"]), None)
+    source = next((c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == s["source"]), None)
     if source is None:
         relic = next((v for v in r.relics if v["instance_id"] == s["source"]), None)
         if relic is not None:

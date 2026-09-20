@@ -77,7 +77,7 @@ def validate_task(task, r, p, context):
         if identity not in r.orbs:
             raise ValueError('Unowned orb continuation.')
     def owner(identity, definition):
-        card = next((c for c in p.deck.in_play if c.instance_id == identity), None)
+        card = next((c for c in p.deck.in_play if c.instance_id in r.plays and c.instance_id == identity), None)
         if card is None or card.definition.definition_id != definition or r.plays[identity]['context'] != context:
             raise ValueError('Defect continuation has no owning play.')
         return card
