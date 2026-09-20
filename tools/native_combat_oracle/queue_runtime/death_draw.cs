@@ -55,6 +55,8 @@ internal static class DeathDrawOracle
         foreach(int itemAscension in itemStatus ? new[]{0,10} : new[]{0})
         foreach(string drawCase in itemStatus ? ItemStatusOracle.Scenarios : endBoundary ? new[]{"victory","pending","defeat"} : deathStart ? new[]{"multiple","poison","spawn","accelerant"} : enemyInteractions ? new[]{"block","fiddle"} : interactions ? (drawCard=="Scrape" ? new[]{"direct","shuffle","sly"} : drawCard=="DrumOfBattle" ? new[]{"plain","duplication","burst","axe","ashes"} : new[]{"iteration","automation","confused","binding","slither","removed"}) : remainingDraw ? new[]{"mixed","singleton","full","empty","fiddle","no-draw","drain","innate","capacity","auto-all"} : drawCards ? new[]{"mixed","singleton","attacks","full","empty","fiddle","no-draw","drain"} : new[]{""})
         {
+            // One scenario per distinct behavior, not a seed/difficulty cross-product.
+            if(itemStatus && drawCase.StartsWith("focused_") && (seed!="2" || upgraded || itemAscension!=(drawCase.StartsWith("focused_monster_")?10:0)))continue;
             var player=RuntimeHelpers.GetUninitializedObject(T("Entities.Players.Player"));
             F(player,"<Character>k__BackingField",Get("Character","Characters.Ironclad"));
             F(player,"<ExtraFields>k__BackingField",Activator.CreateInstance(T("Entities.Players.ExtraPlayerFields"))!);
@@ -66,7 +68,7 @@ internal static class DeathDrawOracle
             d.Values["get_CurrentActIndex"]=0;d.Values["get_TotalFloor"]=2;
             d.Values["get_CurrentMapCoord"]=Activator.CreateInstance(T("Map.MapCoord"),new object[]{3,2})!;
             F(player,"_runState",ctx);
-            var encounter=C(Get("Encounter",endBoundary ? "Encounters.ToadpolesWeak" : "Encounters.VantomBoss"),"MutableClone");
+            var encounter=C(Get("Encounter",itemStatus && drawCase=="focused_roster_ovicopter" ? "Encounters.OvicopterNormal" : endBoundary ? "Encounters.ToadpolesWeak" : "Encounters.VantomBoss"),"MutableClone");
             var combat=Activator.CreateInstance(T("Combat.CombatState"),new object?[]{encounter,ctx,null,null,null})!;
             var pc=Activator.CreateInstance(T("Entities.Creatures.Creature"),new object[]{player,80,80})!;
             F(player,"<Creature>k__BackingField",pc);C(combat,"AddPlayer",player);
@@ -74,7 +76,7 @@ internal static class DeathDrawOracle
             F(manager,"_state",combat);F(manager,"<IsInProgress>k__BackingField",true);C(P(manager,"History"),"Clear");
             var pcs=Activator.CreateInstance(T("Entities.Players.PlayerCombatState"),new[]{player})!;
             F(player,"<PlayerCombatState>k__BackingField",pcs);F(player,"<IsActiveForHooks>k__BackingField",true);
-            var monster=C(Get("Monster",deathStart && drawCase=="spawn" ? "Monsters.PhrogParasite" : interactions && drawCase=="binding" ? "Monsters.Queen" : (enemyTurn || autoplay || drawCards) ? "Monsters.Chomper" : attackMode ? "Monsters.PhrogParasite" : "Monsters.Vantom"),"ToMutable");
+            var monster=C(Get("Monster",itemStatus && drawCase.StartsWith("focused_possess_") ? "Monsters."+(drawCase.Contains("strength")?"TheLost":"TheForgotten") : itemStatus && drawCase=="focused_roster_ovicopter" ? "Monsters.Ovicopter" : itemStatus && drawCase=="focused_roster_shield" ? "Monsters.LivingShield" : itemStatus && drawCase.StartsWith("focused_monster_") ? "Monsters."+drawCase.Substring("focused_monster_".Length) : deathStart && drawCase=="spawn" ? "Monsters.PhrogParasite" : interactions && drawCase=="binding" ? "Monsters.Queen" : (enemyTurn || autoplay || drawCards) ? "Monsters.Chomper" : attackMode ? "Monsters.PhrogParasite" : "Monsters.Vantom"),"ToMutable");
             var target=C(combat,"CreateCreature",monster,Enum.Parse(T("Combat.CombatSide"),"Enemy"),"enemy");C(combat,"AddCreature",target);
             if (attackMode && !autoplay && !drawCards)
             {

@@ -53,16 +53,22 @@ def after_card(p, card):
     if p.rules.powers.get('tender'):
         from game.headless.powers.underdocks import stat_loss
         p.rules.auxiliaries['tender'] += 1
-        stat_loss(p, 'strength', 1)
-        stat_loss(p, 'dexterity', 1)
+        if p.is_alive and not p.combat_is_ending:
+            stat_loss(p, 'strength', 1)
+            stat_loss(p, 'dexterity', 1)
+
+
+def after_end(p, name):
+    if name == 'tender':
+        count = p.rules.auxiliaries.get('tender', 0)
+        if count and p.is_alive and not p.combat_is_ending:
+            from game.headless.powers.ironclad import apply_power
+            apply_power(p, 'strength', count)
+            apply_power(p, 'dexterity', count)
+        p.rules.auxiliaries['tender'] = 0
 
 
 def player_end(p):
-    count = p.rules.auxiliaries.get('tender', 0)
-    if count:
-        p.strength += count
-        p.rules.powers['dexterity'] = p.rules.powers.get('dexterity', 0) + count
-        p.rules.auxiliaries['tender'] = 0
     if p.rules.powers.get('disintegration'):
         p.take_damage(p.rules.powers['disintegration'], is_attack=False)
 

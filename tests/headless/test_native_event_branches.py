@@ -91,14 +91,19 @@ def test_current_harness_and_unchanged_native_campaigns_are_bound():
         if name not in {'Oracle.cs', 'death_draw.cs', 'run.py'}:
             assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
     report = json.loads((ROOT / 'docs/evidence/native_item_status_regressions_2026_09_20.json').read_text())
-    current = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_conditional_relic_stats_2026_09_20.json.gz').read_bytes()))
-    # Only the item-status mode changed; the campaign/event implementations and
-    # dispatcher are byte-identical to the 13-run report. Its original identities
-    # remain intact. The extended item's fresh baseline is checked separately.
-    assert {k: v for k, v in current['fixtureSources'].items() if k != 'item_status.cs'} == {
-        k: v for k, v in report['fixtureSources'].items() if k != 'item_status.cs'}
+    current = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_focused_behavior_2026_09_20.json.gz').read_bytes()))
+    # Only item-status and its scenario setup/dispatch changed. Other modes in
+    # the shared dispatcher have a fresh enemy-turn regression below; unchanged
+    # campaign implementations retain their historical identities.
+    assert {k: v for k, v in current['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs'}} == {
+        k: v for k, v in report['fixtureSources'].items() if k not in {'item_status.cs', 'death_draw.cs'}}
     for name, digest in current['fixtureSources'].items():
         assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
+    fresh = current['sharedDispatcherRegression']
+    raw = (ROOT / fresh['baseline']).read_bytes()
+    assert fresh['userDirectoryRemoved'] and fresh['fixtureSources'] == current['fixtureSources']
+    assert hashlib.sha256(raw).hexdigest() == fresh['baselineSha256']
+    assert hashlib.sha256(json.dumps(json.loads(raw)['result'], sort_keys=True).encode()).hexdigest() == fresh['resultSha256']
     assert len(report['runs']) == 13
     assert {'campaign','reward-handoff','event-inventory'} <= {r['mode'] for r in report['runs']}
     for row in report['runs']:

@@ -23,7 +23,8 @@ from game.headless.relics.combat import memory
 
 ROOT = Path(__file__).parents[2]
 RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_item_status_2026_09_20.json.gz').read_bytes()))
-CURRENT_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_conditional_relic_stats_2026_09_20.json.gz').read_bytes()))
+CONDITIONAL_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_conditional_relic_stats_2026_09_20.json.gz').read_bytes()))
+CURRENT_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_focused_behavior_2026_09_20.json.gz').read_bytes()))
 
 
 def slug(name):
@@ -34,14 +35,15 @@ def saved(combat):
     return json.loads(json.dumps(combat.snapshot()))
 
 
-def prepare(row):
+def prepare(row, *, monster=Chomper):
     service = NativeRandomService(int(row['seed']))
     streams = {key: service.stream(key) for key in COMBAT_STREAMS}
     initial_shuffle = streams['shuffle'].getstate()
     construction = MonsterConstruction(streams['monster_ai'], streams['niche'], ascension=row['ascension'])
     engine = CombatEngine(cards=DEFAULT_CARDS, cards_per_turn=0, ascension=row['ascension'],
+        player_max_hp=row['before']['maxHp'],
         deck_factory=lambda: [DEFAULT_CARDS.create(k) for k in ['strike'] * 3 + ['defend'] * 11],
-        encounter_factory=lambda _: [Chomper(construction)])
+        encounter_factory=lambda _: [monster(construction)])
     engine.native_streams, engine.rng = streams, streams['monster_ai']
     potions = [PotionInstance(slug(k), f'potion.{i}') for i, k in enumerate(row['potionNames'])]
     engine.reset(relics=[RelicInstance(slug(k), f'relic.{i}') for i, k in enumerate(row['relicNames'])],
@@ -85,7 +87,7 @@ def power_map(engine, *, enemy=False):
     return result
 
 
-def boundary(engine, identities):
+def boundary(engine, identities, *, move=None):
     p, enemy = engine.player, engine.enemies[0]
     def pile(cards):
         return [identities[c.instance_id] for c in cards]
@@ -96,7 +98,7 @@ def boundary(engine, identities):
         relics.append(dict(id=name.upper(), state=state))
     return dict(hp=p.hp, maxHp=p.max_hp, block=p.block, energy=p.energy, turn=engine.turn,
         powers=power_map(engine), enemy=dict(hp=enemy.hp, block=enemy.block, powers=power_map(engine, enemy=True),
-            move={'Clamp': 'CLAMP_MOVE', 'Screech': 'SCREECH_MOVE'}[enemy.intent.move_name]),
+            move=move or {'Clamp': 'CLAMP_MOVE', 'Screech': 'SCREECH_MOVE'}[enemy.intent.move_name]),
         potions=[None if item is None else item['definition_id'].upper() for item in p.rules.potions],
         relics=relics, hand=pile(p.hand), draw=pile(reversed(p.deck.draw_pile)),
         discard=pile(p.deck.discard_pile), exhaust=pile(p.deck.exhaust_pile))
@@ -152,7 +154,8 @@ def test_native_capture_identity_and_case_census():
     assert RECORD['result']['assemblySha256'] == RECORD['pins']['sts2.dll'] == 'e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18'
     # The extended fixture freshly reruns the original cases without repinning
     # their historical capture. Their parsed results must remain identical.
-    assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith('conditional_')] == RECORD['result']['rows']
+    assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith(('conditional_', 'focused_'))] == RECORD['result']['rows']
+    assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith('focused_')] == CONDITIONAL_RECORD['result']['rows']
     assert CURRENT_RECORD['userDirectoryRemoved'] and CURRENT_RECORD['pins'] == RECORD['pins']
     for name, digest in CURRENT_RECORD['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest

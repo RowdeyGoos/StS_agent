@@ -1227,7 +1227,7 @@ Dependencies and acceptance cases are in the linked task.
 - **Implemented for solo Ironclad A0–A10, all unlocked/all seen:** every cumulative
   modifier in pinned 0.107.1, per-monster A8/A9 properties, A10 second-boss startup
   draw and route, and native Golden Compass exception. Private schemas are combat
-  v43 / run v64. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
+  v44 / run v65. [Rules and evidence](HEADLESS_ENGINE.md#ascension-levels).
 - **Native campaign acceptance completed:** boosted Overgrowth seed 1 and
   Underdocks seed 4 win through both Glory bosses with exact replay of 52 combats
   and 1,504 actions, resources, rewards, four card piles/enchantments, all 15
@@ -1729,7 +1729,7 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      also exercise five ordinary events, explicit smithing/card selections,
      shops, potions and additional relic interactions. Native/headless differences
      found in queues, summons, upgrade RNG and reward continuation are corrected;
-     that change used private schemas combat v40 / run v59 (current: v43 / v64).
+     that change used private schemas combat v40 / run v59 (current: v44 / v65).
      [Evidence and exact limits](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses).
    - **A10 campaign acceptance completed:** two additional paths cover both first
      acts and both Glory bosses per run. All four card piles/enchantments and
@@ -1756,10 +1756,18 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      power application order and Belt Buckle's post-potion timing are corrected.
      Run-level regressions cover paused selectors, discards and lethal potions.
      [Coverage, setup and limits](evidence/native_item_status_2026_09_20.md).
-   - **Next acceptance coverage:** richer inventory combinations beyond the
+   - **Focused interaction/monster gaps closed:** 14 named native scenarios
+     verify Tender/Ritual/Ruined Helmet ordering, low-HP Regen/Disintegration,
+     The Lost/The Forgotten stat refunds and ending guards, two roster-dependent
+     next-move branches, and five representative 20-move traces. The shared
+     deferred roll validates paused choices and actor death. The pinned local
+     monster RNG consumer is cosmetic Tough Egg skin selection; no additional
+     gameplay stream is needed. [Scope and evidence](evidence/native_focused_behavior_2026_09_20.md).
+   - **Further acceptance coverage:** richer inventory combinations beyond the
      declared event/interaction matrices and eight retained campaign paths;
-     additional power families and per-monster RNG comparisons where the recorded
-     boundaries cannot expose a defect.
+     additional power families or monster branches with a concrete uncovered
+     interaction. Prefer one named counterexample over seed/ascension products;
+     dead-slot native power cleanup is not certified by the focused roster cases.
      Keep focused low-HP, death and revival cases alongside boosted campaigns.
      Every encounter branch or seed is not yet demonstrated. Multiplayer and
      alternate modes are excluded from the project.
