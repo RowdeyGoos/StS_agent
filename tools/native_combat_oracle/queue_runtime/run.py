@@ -30,7 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions"), default="queue")
+    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start"), default="queue")
     args = parser.parse_args()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("This pinned exported-runtime fixture requires macOS arm64.")
@@ -58,7 +58,7 @@ def main():
         if path.is_file():
             (data / path.name).symlink_to(path)
             native_hashes[path.name] = sha(path)
-    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "enemy_turn.cs", "autoplay.cs", "draw_cards.cs", "remaining_draw.cs", "interactions.cs", "enemy_interactions.cs", "empty.tscn"):
+    for name in ("queue_oracle.csproj", "Oracle.cs", "paused_hooks.cs", "death_draw.cs", "enemy_turn.cs", "autoplay.cs", "draw_cards.cs", "remaining_draw.cs", "interactions.cs", "enemy_interactions.cs", "side_start.cs", "empty.tscn"):
         shutil.copyfile(source / name, project / name)
     user_name = "StsNativeQueueOracle-" + uuid.uuid4().hex
     user_dir = Path.home() / "Library" / "Application Support" / user_name

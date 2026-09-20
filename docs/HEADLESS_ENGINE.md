@@ -381,10 +381,32 @@ work, without a live executor/UI frame loop. Six power-lifetime cases explicitly
 remove Corrosive Wave through the native command during a paused choice; four
 additional headless regressions reproduce natural end-turn expiry and
 reapplication. The record does not claim all card
-combinations or whole-run parity. Several simultaneous *death* choices, reactive
-side-start choices (for example poison deaths), full combat-end cleanup and the
-seed/path completion gates still need native sequence evidence. Unsupported
+combinations or whole-run parity. Full combat-end cleanup and the seed/path
+completion gates still need native sequence evidence. Unsupported
 foreign-character relics such as Tingsha and Tough Bandages were not added by this audit.
+
+The [death/side-start record](evidence/native_death_start_2026_09_20.json) adds
+**144 native cases**: three seeds, decks of two/three/eight cards, first/last replay
+answers, optional Tools of the Trade, and four prepared scenarios. Six Chompers
+with Thorns/Hellraiser/Horn produce two waiting death contexts plus interrupted
+player setup. Their later live choices shrink to singleton or empty; the
+singleton remains a decision, while the empty choice settles automatically in
+headless. Poison kills a Chomper or Phrog before enemy moves; Accelerant cases
+also complete three poison ticks against a surviving enemy while Horn waits.
+
+All cases match the existing engine without a game-rule change: piles/resources,
+enemy HP/block/Poison/intents, damage history, move counts, four RNG streams and
+JSON continuation agree. Native Phrog children retain their `Spawned` move through
+this turn: although the native move roster is sampled after side-start hooks,
+`Creature.TakeTurn` skips monsters marked `SpawnedThisTurn`. Advancing those
+children immediately would have introduced a timing error.
+
+These cases use actual native `CombatManager.StartTurn` through the next player
+setup, authored 500-HP player/survivor states and manually driven replay answers.
+They do not exercise the live selector/frame loop or full combat-end/room/reward
+lifecycle. Extra tests check malformed queued contexts and explicit synthetic
+terminal disposal of all waiting work; they are not native end-combat evidence.
+Combat v35 / run v51 remain unchanged because this batch adds verification only.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless

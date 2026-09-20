@@ -1637,9 +1637,17 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      and owned Drum exhaust work. See [coverage and limits](HEADLESS_ENGINE.md),
      [84 card/power vectors](evidence/native_interactions_2026_09_20.json) and
      [24 enemy-turn vectors](evidence/native_enemy_interactions_2026_09_20.json).
-   - **Remaining interaction evidence:** native sequences with several simultaneous
-     death choices and reactive enemy-side-start choices, followed by complete
-     combat-end/room boundaries. Ordinary Draw, Mayhem, Pillage, Escape Plan,
+   - **Simultaneous death and reactive side-start evidence complete for the declared
+     cases:** 144 actual native StartTurn sequences cover two Horn contexts plus
+     paused setup, live singleton/empty choices, poison deaths, Phrog spawning,
+     Accelerant's multiple ticks and optional Tools of the Trade. The existing
+     engine matches state, damage, moves, four RNG streams and JSON continuation;
+     no production rules or private schema change was necessary. Wrigglers spawned
+     during the enemy side correctly keep Spawned until their next turn, because
+     native TakeTurn skips SpawnedThisTurn monsters. See [vectors](evidence/native_death_start_2026_09_20.json)
+     and [fixture limits](HEADLESS_ENGINE.md).
+   - **Next grouped acceptance work:** complete native combat-end/room/reward
+     boundaries, followed by declared seed/path completion gates. Ordinary Draw, Mayhem, Pillage, Escape Plan,
      Scrape, Mittens and Foregone and the shared interaction families above now
      have bounded native evidence. Continue as grouped mechanism audits; no finite
      matrix proves all card combinations. Require actual native sequences for new

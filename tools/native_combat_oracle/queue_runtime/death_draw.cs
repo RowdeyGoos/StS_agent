@@ -7,7 +7,7 @@ using System.Text.Json;
 // No mode starts a run, live card screen or executor frame loop.
 internal static class DeathDrawOracle
 {
-    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false, bool multipleDeaths = false, bool enemyTurn = false, bool autoplay = false, bool flak = false, bool drawCards = false, bool remainingDraw = false, bool interactions = false, bool enemyInteractions = false)
+    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false, bool multipleDeaths = false, bool enemyTurn = false, bool autoplay = false, bool flak = false, bool drawCards = false, bool remainingDraw = false, bool interactions = false, bool enemyInteractions = false, bool deathStart = false)
     {
         const BindingFlags flags = BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -41,7 +41,7 @@ internal static class DeathDrawOracle
         if(drawCards)tables.Add("monsters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"monsters",new Dictionary<string,string>{{"CHOMPER.name","Chomper"}},null})!);
         if(enemyTurn)tables.Add("card_selection",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"card_selection",new Dictionary<string,string>{{"TO_DISCARD","Discard"}},null})!);
         var rows=new List<object>();
-        foreach(string seed in new[]{"0","2","42"})foreach(int fillers in drawCards ? new[]{0} : enemyInteractions ? new[]{12} : flak ? new[]{6} : enemyTurn ? new[]{1,3,8} : multipleDeaths ? new[]{3,8} : new[]{1,3})
+        foreach(string seed in new[]{"0","2","42"})foreach(int fillers in drawCards ? new[]{0} : deathStart ? new[]{2,3,8} : enemyInteractions ? new[]{12} : flak ? new[]{6} : enemyTurn ? new[]{1,3,8} : multipleDeaths ? new[]{3,8} : new[]{1,3})
         foreach(bool upgraded in attackMode ? new[]{false,true} : new[]{false})
         foreach(bool terminal in multipleDeaths ? new[]{false,true} : new[]{false})
         foreach(bool withTools in enemyTurn ? new[]{false,true} : new[]{false})
@@ -50,7 +50,7 @@ internal static class DeathDrawOracle
         foreach(bool withStratagem in (autoplay && !flak) ? new[]{false,true} : new[]{true})
         foreach(bool darkEmbrace in flak ? new[]{false,true} : new[]{false})
         foreach(string drawCard in interactions ? new[]{"Scrape","DrumOfBattle","Draw"} : remainingDraw ? new[]{"Scrape","ToastyMittens","ForegoneConclusion"} : drawCards ? new[]{"Pillage","EscapePlan"} : new[]{""})
-        foreach(string drawCase in enemyInteractions ? new[]{"block","fiddle"} : interactions ? (drawCard=="Scrape" ? new[]{"direct","shuffle","sly"} : drawCard=="DrumOfBattle" ? new[]{"plain","duplication","burst","axe","ashes"} : new[]{"iteration","automation","confused","binding","slither","removed"}) : remainingDraw ? new[]{"mixed","singleton","full","empty","fiddle","no-draw","drain","innate","capacity","auto-all"} : drawCards ? new[]{"mixed","singleton","attacks","full","empty","fiddle","no-draw","drain"} : new[]{""})
+        foreach(string drawCase in deathStart ? new[]{"multiple","poison","spawn","accelerant"} : enemyInteractions ? new[]{"block","fiddle"} : interactions ? (drawCard=="Scrape" ? new[]{"direct","shuffle","sly"} : drawCard=="DrumOfBattle" ? new[]{"plain","duplication","burst","axe","ashes"} : new[]{"iteration","automation","confused","binding","slither","removed"}) : remainingDraw ? new[]{"mixed","singleton","full","empty","fiddle","no-draw","drain","innate","capacity","auto-all"} : drawCards ? new[]{"mixed","singleton","attacks","full","empty","fiddle","no-draw","drain"} : new[]{""})
         {
             var player=RuntimeHelpers.GetUninitializedObject(T("Entities.Players.Player"));
             F(player,"<Character>k__BackingField",Get("Character","Characters.Ironclad"));
@@ -71,7 +71,7 @@ internal static class DeathDrawOracle
             F(manager,"_state",combat);F(manager,"<IsInProgress>k__BackingField",true);C(P(manager,"History"),"Clear");
             var pcs=Activator.CreateInstance(T("Entities.Players.PlayerCombatState"),new[]{player})!;
             F(player,"<PlayerCombatState>k__BackingField",pcs);F(player,"<IsActiveForHooks>k__BackingField",true);
-            var monster=C(Get("Monster",interactions && drawCase=="binding" ? "Monsters.Queen" : (enemyTurn || autoplay || drawCards) ? "Monsters.Chomper" : attackMode ? "Monsters.PhrogParasite" : "Monsters.Vantom"),"ToMutable");
+            var monster=C(Get("Monster",deathStart && drawCase=="spawn" ? "Monsters.PhrogParasite" : interactions && drawCase=="binding" ? "Monsters.Queen" : (enemyTurn || autoplay || drawCards) ? "Monsters.Chomper" : attackMode ? "Monsters.PhrogParasite" : "Monsters.Vantom"),"ToMutable");
             var target=C(combat,"CreateCreature",monster,Enum.Parse(T("Combat.CombatSide"),"Enemy"),"enemy");C(combat,"AddCreature",target);
             if (attackMode && !autoplay && !drawCards)
             {
@@ -99,7 +99,7 @@ internal static class DeathDrawOracle
             var horn=C(Get("Relic","Relics.GremlinHorn"),"ToMutable");horn.GetType().GetProperty("Owner")!.SetValue(horn,player);
             if (attackMode && !autoplay && !drawCards) ((System.Collections.IList)P(player,"Relics")).Add(horn);
             var physical=new List<object>();
-            for(int i=0;i<fillers;i++){var c=C(combat,"CreateCard",Get("Card",enemyInteractions && drawCase=="block" && i==0 ? "Cards.StrikeIronclad" : flak && i<3 ? new[]{"Cards.FlakCannon","Cards.Slimed","Cards.Wound"}[i] : "Cards.DefendIronclad"),player);physical.Add(c);C(P(pcs,"DiscardPile"),"AddInternal",c,-1,true);}
+            for(int i=0;i<fillers;i++){var c=C(combat,"CreateCard",Get("Card",(deathStart && drawCase=="multiple" && i<3 || enemyInteractions && drawCase=="block" && i==0) ? "Cards.StrikeIronclad" : flak && i<3 ? new[]{"Cards.FlakCannon","Cards.Slimed","Cards.Wound"}[i] : "Cards.DefendIronclad"),player);physical.Add(c);C(P(pcs,"DiscardPile"),"AddInternal",c,-1,true);}
             if(enemyInteractions)
             {
                 if(drawCase=="block")
@@ -109,6 +109,37 @@ internal static class DeathDrawOracle
                     foreach(var card in physical){C(P(pcs,"DiscardPile"),"RemoveInternal",card,true);C(P(pcs,"DrawPile"),"AddInternal",card,-1,true);}
                 }
                 else {var fiddle=C(Get("Relic","Relics.Fiddle"),"ToMutable");fiddle.GetType().GetProperty("Owner")!.SetValue(fiddle,player);((System.Collections.IList)P(player,"Relics")).Add(fiddle);}
+            }
+            if(deathStart)
+            {
+                C(pc,"SetMaxHpInternal",500m);C(pc,"SetCurrentHpInternal",500m);
+                if(drawCase=="multiple")
+                {
+                    C(Items(P(combat,"Enemies"))[1],"SetCurrentHpInternal",1m);
+                    for(int i=2;i<6;i++)
+                    {
+                        var m=C(Get("Monster","Monsters.Chomper"),"ToMutable");
+                        var e=C(combat,"CreateCreature",m,Enum.Parse(T("Combat.CombatSide"),"Enemy"),"extra."+i);
+                        C(combat,"AddCreature",e);C(m,"SetUpForCombat");
+                        if(i==5)C(e,"SetMaxHpInternal",500m);
+                        C(e,"SetCurrentHpInternal",i==5 ? 500m : 1m);
+                    }
+                    var hellraiser=C(Get("Power","Powers.HellraiserPower"),"ToMutable",0);C(hellraiser,"ApplyInternal",pc,1m,true);
+                }
+                else
+                {
+                    var poison=C(Get("Power","Powers.PoisonPower"),"ToMutable",0);C(poison,"ApplyInternal",target,1m,true);
+                    if(drawCase=="accelerant")
+                    {
+                        C(target,"SetCurrentHpInternal",3m);C(poison,"SetAmount",3,true);
+                        var accel=C(Get("Power","Powers.AccelerantPower"),"ToMutable",0);C(accel,"ApplyInternal",pc,2m,true);
+                        var secondPoison=C(Get("Power","Powers.PoisonPower"),"ToMutable",0);C(secondPoison,"ApplyInternal",Items(P(combat,"Enemies"))[1],4m,true);
+                    }
+                    if(drawCase=="spawn")
+                    {
+                        var infested=C(Get("Power","Powers.InfestedPower"),"ToMutable",0);C(infested,"ApplyInternal",target,1m,true);
+                    }
+                }
             }
             object? attackCard=null;
             if (attackMode && !enemyTurn && !autoplay && !drawCards)
@@ -158,7 +189,7 @@ internal static class DeathDrawOracle
                 }
                 if(enemyTurn)
                 {
-                    rows.Add(await (enemyInteractions ? EnemyInteractionOracle.Run(asm, player, pcs, pc, combat, manager, runManager, queue, sync, executor, choices, rng, physical, seed, fillers, upgraded, withTools, drawCase) : EnemyTurnOracle.Run(asm, player, pcs, pc, combat, manager, runManager, queue, sync, executor, choices, rng, physical, seed, fillers, upgraded, withTools)));
+                    rows.Add(await (deathStart ? SideStartOracle.Run(asm, player, pcs, pc, combat, manager, runManager, queue, sync, executor, choices, rng, physical, seed, fillers, upgraded, withTools, drawCase) : enemyInteractions ? EnemyInteractionOracle.Run(asm, player, pcs, pc, combat, manager, runManager, queue, sync, executor, choices, rng, physical, seed, fillers, upgraded, withTools, drawCase) : EnemyTurnOracle.Run(asm, player, pcs, pc, combat, manager, runManager, queue, sync, executor, choices, rng, physical, seed, fillers, upgraded, withTools)));
                     C(cardDb,"OnCombatEnded",new object?[]{null});((IDisposable)choices).Dispose();
                     continue;
                 }
@@ -305,7 +336,7 @@ internal static class DeathDrawOracle
             var shuffle=P(rng,"Shuffle");
             rows.Add(new{seed,fillers,before,paused,after=State(),detached=!completed,selectorCalls=chooser.Calls,options=chooser.Options.Select(c=>"card."+physical.IndexOf(c)),shuffleCounter=P(shuffle,"Counter"),shuffleSuffix=C(shuffle,"NextDouble")});
         }
-        return JsonSerializer.Serialize(new{source=enemyInteractions ? "Actual CombatManager.StartTurn enemy initialization and moves through next player setup; Thorns/Horn, Hellraiser against a blocked later enemy or Fiddle across a paused draw, optional Tools; replay answers after enemy work, no UI/executor frame loop" : interactions ? "Actual Scrape PlayCardAction, CardCmd.Exhaust(DrumOfBattle), and CardPileCmd.Draw with ordered powers, Sly, replay modifiers and Stratagem replay choices; authored 500 HP target, no live UI/executor loop" : remainingDraw ? "Actual Scrape PlayCardAction and ToastyMittens/ForegoneConclusion BeforeHandDraw callbacks; Stratagem/Abacus with controlled native pile moves during drain cases; no complete turns/UI/executor loop" : drawCards ? "Actual PlayCardAction for Pillage/EscapePlan with Stratagem/Abacus; blocked/limited draws and controlled native draw-to-discard moves during a paused choice; no live UI/executor loop" : flak ? "Actual Mayhem/FlakCannon with queued Slimed/Wound, optional DarkEmbrace, Stratagem/Abacus and replay choices; explicit callback, no turn manager/UI/executor loop" : autoplay ? "Actual MayhemPower.AfterAutoPrePlayPhaseEntered and CardPileCmd.AutoPlayFromDrawPile, Stratagem/Abacus and replay choices; explicit native hook callback, no turn manager/UI/executor loop" : enemyTurn ? "Actual CombatManager.ExecuteEnemyTurn through next player setup, two Chomper moves with Thorns/Horn/Stratagem/Abacus and optional ToolsOfTheTrade; checksums disabled, native replay answers after enemy work, no UI or executor frame loop" : multipleDeaths ? "Actual PlayCardAction/SwordBoomerang with Strength100 and optional Duplication, death/Horn/Infested and replay choices; explicit native SetCombatState(NotInCombat) cancellation at IsEnding; no full EndCombatInternal, UI or executor loop" : attackMode ? "Actual PlayCardAction/SwordBoomerang, death dispatcher, Horn/Stratagem/Abacus and Infested; in-memory native replay choice, manually driven queue, no UI/executor loop/run" : "Actual GremlinHorn.AfterDeath, CardPileCmd.Draw/Shuffle, StratagemPower, TheAbacus and native hook queue; test selector supplies UI signals/answer; explicit death callback invocation, no death dispatcher/attack/UI/run",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
+        return JsonSerializer.Serialize(new{source=deathStart ? "Actual CombatManager.StartTurn through enemy moves and next-player setup; multiple Horn contexts or poison/Infested side-start deaths, optional Tools; authored player/survivor HP500, manually supplied replay choices, no UI/executor frames or complete combat-end lifecycle" : enemyInteractions ? "Actual CombatManager.StartTurn enemy initialization and moves through next player setup; Thorns/Horn, Hellraiser against a blocked later enemy or Fiddle across a paused draw, optional Tools; replay answers after enemy work, no UI/executor frame loop" : interactions ? "Actual Scrape PlayCardAction, CardCmd.Exhaust(DrumOfBattle), and CardPileCmd.Draw with ordered powers, Sly, replay modifiers and Stratagem replay choices; authored 500 HP target, no live UI/executor loop" : remainingDraw ? "Actual Scrape PlayCardAction and ToastyMittens/ForegoneConclusion BeforeHandDraw callbacks; Stratagem/Abacus with controlled native pile moves during drain cases; no complete turns/UI/executor loop" : drawCards ? "Actual PlayCardAction for Pillage/EscapePlan with Stratagem/Abacus; blocked/limited draws and controlled native draw-to-discard moves during a paused choice; no live UI/executor loop" : flak ? "Actual Mayhem/FlakCannon with queued Slimed/Wound, optional DarkEmbrace, Stratagem/Abacus and replay choices; explicit callback, no turn manager/UI/executor loop" : autoplay ? "Actual MayhemPower.AfterAutoPrePlayPhaseEntered and CardPileCmd.AutoPlayFromDrawPile, Stratagem/Abacus and replay choices; explicit native hook callback, no turn manager/UI/executor loop" : enemyTurn ? "Actual CombatManager.ExecuteEnemyTurn through next player setup, two Chomper moves with Thorns/Horn/Stratagem/Abacus and optional ToolsOfTheTrade; checksums disabled, native replay answers after enemy work, no UI or executor frame loop" : multipleDeaths ? "Actual PlayCardAction/SwordBoomerang with Strength100 and optional Duplication, death/Horn/Infested and replay choices; explicit native SetCombatState(NotInCombat) cancellation at IsEnding; no full EndCombatInternal, UI or executor loop" : attackMode ? "Actual PlayCardAction/SwordBoomerang, death dispatcher, Horn/Stratagem/Abacus and Infested; in-memory native replay choice, manually driven queue, no UI/executor loop/run" : "Actual GremlinHorn.AfterDeath, CardPileCmd.Draw/Shuffle, StratagemPower, TheAbacus and native hook queue; test selector supplies UI signals/answer; explicit death callback invocation, no death dispatcher/attack/UI/run",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
     }
 }
 public class DeathDrawContext:DispatchProxy
