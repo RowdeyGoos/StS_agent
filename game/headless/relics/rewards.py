@@ -24,14 +24,14 @@ def extend_pool(state, cards, pool, *, card_reward=True, custom_pool=False, no_p
     return result
 
 
-def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgraded=(), modifiers=None, indexed=False, upgraded_indices=()):
+def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgraded=(), modifiers=None, indexed=False, upgraded_indices=(), only=None):
     instances = [cards.create(name) for name in offers]
     from game.headless.relics.run_rules import counter
     if modifiers is not None:
-        validate_modifiers(cards, offers, modifiers)
+        validate_modifiers(cards, offers, modifiers, indexed=isinstance(modifiers, list))
         from game.headless.enchantments.base import restore
-        for card in instances:
-            saved = modifiers[card.definition.definition_id]
+        for index, card in enumerate(instances):
+            saved = modifiers[index] if isinstance(modifiers, list) else modifiers[card.definition.definition_id]
             card.upgrade_level = saved['upgrade_level']
             card.enchantment = restore(saved['enchantment'])
 
@@ -43,15 +43,17 @@ def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgra
             if card.upgrade_level + 1 < len(card.definition.levels):
                 card.upgrade()
     for relic in tuple(state.relics):
-        if relic.data.get("_melted"):
+        if relic.data.get("_melted") or only is not None and relic.instance_id != only:
             continue
         if relic.definition_id == "silver_crucible" and card_reward and relic.counter < 3:
-            counter(state, relic, relic.counter + 1)
+            if only is None:
+                counter(state, relic, relic.counter + 1)
             for card in instances:
                 if card.upgrade_level + 1 < len(card.definition.levels):
                     card.upgrade()
         elif relic.definition_id == "silken_tress" and card_reward and not relic.counter:
-            counter(state, relic, 1)
+            if only is None:
+                counter(state, relic, 1)
             for card in instances:
                 if can_enchant(card, "glam"):
                     enchant(card, "glam", 1)
@@ -61,7 +63,7 @@ def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgra
                 enchant(state.rng.choice("relic.reward_enchantment", eligible), "swift", 1)
         for card in instances:
             modify_new_card(state, card, only=relic.instance_id)
-    if has(state, "glitter"):
+    if only is None and has(state, "glitter"):
         for card in instances:
             if can_enchant(card, "glam"):
                 enchant(card, "glam", 1)
@@ -292,3 +294,41 @@ def hunt_rewards(state, cards, kind, count, *, undamaged=False):
         result.append(dict(source=f"the_hunt:{index}", kind="card", offers=offers,
             modifiers=combat_modifiers(state, cards, offers, pool, kind=kind, upgrade_all=undamaged and has(state, "lava_lamp"), upgraded=upgraded), resolved=False))
     return result
+
+
+def relic_obtained(state, cards, relic):
+    """Refresh subscribed offers before pickup work, using only the new relic.
+
+    Native CardReward.OnRelicObtained calls AfterModifyingRewards, not the
+    AfterModifyingCardRewardOptions hook that consumes Crucible/Tress uses.
+    Fresh Candy has not seen a triggering combat. Explicit/manual card grids
+    (including Kaleidoscope) do not subscribe to relic acquisition.
+    """
+    if relic.definition_id not in ('molten_egg', 'toxic_egg', 'frozen_egg',
+                                   'wing_charm', 'silver_crucible', 'silken_tress', 'fresnel_lens'):
+        return
+
+    def refresh(offers, modifiers):
+        return decorate(state, cards, offers, modifiers=modifiers,
+                        indexed=isinstance(modifiers, list), only=relic.instance_id)
+
+    pending = state.pending or {}
+    if pending.get('kind') == 'reward':
+        if not pending['card_resolved']:
+            pending['card_modifiers'] = refresh(pending['offers'], pending['card_modifiers'])
+        for row in pending.get('extra_rewards', []):
+            if row['kind'] == 'card' and not row['resolved']:
+                row['modifiers'] = refresh(row['offers'], row['modifiers'])
+    elif pending.get('kind') == 'scripted_event' and pending.get('stage') == 'event_rewards':
+        for row in pending['data']['active']['rewards']:
+            if row['kind'] == 'card' and not row['resolved']:
+                row['modifiers'] = refresh(row['offers'], row['modifiers'])
+
+    owners = {r.instance_id: r.definition_id for r in state.relics}
+    for work in state.relic_work:
+        if work['kind'] != 'card_reward' or owners.get(work['source']) not in (
+                'orrery', 'lost_coffer', 'glass_eye', 'dream_catcher'):
+            continue
+        names = [o['definition_id'] for o in work['offers']]
+        modifiers = [{k: v for k, v in o.items() if k != 'definition_id'} for o in work['offers']]
+        work['offers'] = [dict(definition_id=n, **m) for n, m in zip(names, refresh(names, modifiers))]

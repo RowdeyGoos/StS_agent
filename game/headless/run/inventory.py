@@ -4,20 +4,20 @@ from game.headless.potions.base import POTIONS, PotionInstance
 from game.headless.relics.base import RELICS, RelicInstance
 
 
-def add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None, tome_card=None):
+def add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None, tome_card=None, prioritize_pickup=False):
     # Acquisition may generate nested choices; failures roll back the complete
     # owned state, including RNG, resources and both identity allocators.
     from copy import deepcopy
     before = deepcopy(state)
     try:
-        return _add_relic(state, definition_id, cards=cards, allow_dead=allow_dead, card_pool=card_pool, tome_card=tome_card)
+        return _add_relic(state, definition_id, cards=cards, allow_dead=allow_dead, card_pool=card_pool, tome_card=tome_card, prioritize_pickup=prioritize_pickup)
     except Exception:
         state.__dict__.clear()
         state.__dict__.update(before.__dict__)
         raise
 
 
-def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None, tome_card=None):
+def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None, tome_card=None, prioritize_pickup=False):
     if definition_id not in RELICS or (not RELICS[definition_id].stackable and not RELICS[definition_id].allow_duplicates and any(r.definition_id == definition_id for r in state.relics)):
         raise ValueError("Unsupported or already owned relic.")
     if RELICS[definition_id].pickup_max_hp and (state.phase.value == "combat" or state.hp <= 0 and not allow_dead):
@@ -49,10 +49,18 @@ def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_
     if getattr(state.rng, "native", False):
         from game.headless.generation.relics import remove
         remove(state, definition_id)
+    from game.headless.relics.rewards import relic_obtained
+    relic_obtained(state, cards, relic)
+    # Existing factory rewards receive acquisition before the new pickup opens
+    # nested choices. Then suspend older work until that pickup is resolved.
+    remaining = state.relic_work if prioritize_pickup else []
+    if prioritize_pickup:
+        state.relic_work = []
     RELICS[definition_id].after_obtained(state, cards=cards)
     from game.headless.relics.run_rules import pickup
     pickup(state, relic, cards)
     drain(state, cards)
+    state.relic_work.extend(remaining)
     if not state.hp:
         from game.headless.run.state import RunPhase
         state.phase = RunPhase.DEFEAT

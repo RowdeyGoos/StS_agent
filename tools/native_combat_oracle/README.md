@@ -518,3 +518,34 @@ claims/room exits are regression evidence, not native selector/exit evidence.
 Live UI/executor scheduling, native reward selection, parent events, boss/act
 handoff and whole seed/path runs remain outside this fixture. Run v52 rejects
 previous end-hook/RNG semantics; the combat schema remains v35.
+
+
+### Reward claims and room/act handoffs (`--mode reward-handoff`)
+
+`reward_handoff.cs` uses native `Player.CreateForNewRun`, `RunState.CreateForTest`,
+`RunManager.SetUpTest` and `MockGodotFileIo`. `ModManager.Initialize` under TestMode
+returns before inspecting mods; localization is explicitly injected. Every case
+cleans up its native run in `finally`. No game PCK, real profile/save/history or
+Cloud data is loaded. The runner retains its unique empty user-directory cleanup.
+
+The [48 recorded cases](../../docs/evidence/native_reward_handoff_2026_09_20.json)
+use three seeds. Ordinary room rewards are populated, registered through
+`RewardsSet.Offer`, then claimed through `RewardsSetSynchronizer.SelectLocalReward`
+with replay card answers. Cases choose first/last cards, cancel/reopen, or skip
+all rewards. Authored additional relic rewards exercise the three Eggs, Wing
+Charm, Silver Crucible, Silken Tress, Fresnel Lens and fresh Lasting Candy.
+Snapshots record pre/post offers, permanent deck, gold/potions, counter state and
+Rewards/Niche suffixes. Root Proceed opens the map without popping the combat;
+actual `EnterRoom(MapRoom)` performs its exit.
+
+Prepared parent/finished-child stacks execute actual Dummy Setting 2 resume or
+timeout. Prepared boss rooms execute awaited `EnterNextAct` into Acts 2 and 3.
+The Python consumer compares immediate upgrade timing, event RNG, unchanged HP,
+room/act state and persisted command continuations. It also checks atomic pickup
+failure and excluded resolved/manual offers. Run v53 rejects previous pending
+semantics; combat remains v35.
+
+This is authored boundary evidence, not full native seed/path play. Native UI,
+act voting/executor scheduling, final Architect/victory, other Dummy outcomes and
+all possible nested reward combinations are not demonstrated by these vectors.
+Native null card selection is cancellation; headless decline means forfeit.

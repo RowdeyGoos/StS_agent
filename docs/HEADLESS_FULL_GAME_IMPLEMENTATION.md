@@ -1656,9 +1656,17 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      canceled at the actual end boundary; canceled registry references persist.
      See [vectors](evidence/native_end_boundary_2026_09_20.json) and
      [fixture limits](HEADLESS_ENGINE.md).
-   - **Next grouped acceptance work:** native reward selection and room exit,
-     event resumption and boss/act transitions, followed by declared seed/path
-     completion gates. Ordinary Draw, Mayhem, Pillage, Escape Plan,
+   - **Reward claims and intermediate handoffs verified for declared cases:**
+     48 native cases register/claim/skip actual reward sets, resume a prepared
+     Battleworn Dummy parent and enter Acts 2/3 from finished bosses. Fixes refresh
+     existing factory reward offers on relic acquisition and immediately grant
+     Dummy outcome rewards on resume. Native pickup does not consume Crucible or
+     Tress uses; fresh Candy does not append a power. Run v53 preserves these new
+     pending semantics. See [vectors](evidence/native_reward_handoff_2026_09_20.json)
+     and [scope/limits](HEADLESS_ENGINE.md).
+   - **Next grouped acceptance work:** final Architect/victory native handoff and
+     declared seed/path completion gates. Live UI/act-vote scheduling and all Dummy
+     outcome combinations remain outside the new fixture. Ordinary Draw, Mayhem, Pillage, Escape Plan,
      Scrape, Mittens and Foregone and the shared interaction families above now
      have bounded native evidence. Continue as grouped mechanism audits; no finite
      matrix proves all card combinations. Require actual native sequences for new
