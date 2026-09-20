@@ -115,6 +115,9 @@ class FlowEvent(StepEvent):
                 raise ValueError('Unknown event page option.')
             else:
                 _, expected = branch(self.definition_id, row['name'], row['choice'], row['context'])
+        if self.definition_id == 'crystal_sphere':
+            from game.headless.events.crystal_validation import validate_history
+            validate_history(data['pages'])
         if data['choice'] != data['pages'][0]['choice'] or data['options'] != data['pages'][0]['context']['options']:
             raise ValueError('Event initial choice changed.')
         plan = self.plan(data)

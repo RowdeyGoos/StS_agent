@@ -2,6 +2,7 @@
 
 from dataclasses import asdict
 from types import MappingProxyType
+from game.headless.core.content_snapshots import ContentJson
 
 from game.headless.events.aroma_of_chaos import AromaOfChaos
 from game.headless.events.jungle_maze import JungleMazeAdventure
@@ -30,8 +31,14 @@ EVENTS = MappingProxyType({
     "dense_vegetation": DenseVegetation(), "sapphire_seed": SapphireSeed(), "byrdonis_nest": ByrdonisNest(),
 })
 
+_CATALOG_JSON = ContentJson()
 
-def fingerprint():
+
+def _build_fingerprint():
     # JSON normalization retains immutable tuple fields in content definitions.
     import json
     return json.loads(json.dumps([asdict(event) for event in EVENTS.values()]))
+
+
+def fingerprint():
+    return _CATALOG_JSON.read(EVENTS.values(), _build_fingerprint)

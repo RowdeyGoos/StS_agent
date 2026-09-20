@@ -19,10 +19,11 @@ def saved(run):
     return json.loads(json.dumps(run.snapshot()))
 
 
-def clone(run):
+def clone(run, snapshot=None):
+    snapshot = saved(run) if snapshot is None else snapshot
     other = RunEngine()
-    other.restore(saved(run))
-    assert saved(other) == saved(run)
+    other.restore(snapshot)
+    assert saved(other) == snapshot
     assert other.legal_actions() == run.legal_actions()
     return other
 
@@ -30,8 +31,9 @@ def clone(run):
 def step(run, action):
     other = clone(run)
     run.apply(action); other.apply(action)
-    assert saved(run) == saved(other)
-    clone(run)
+    after = saved(run)
+    assert after == saved(other)
+    clone(run, after)
 
 
 def win(run):

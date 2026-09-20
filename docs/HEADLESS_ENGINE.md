@@ -2495,6 +2495,16 @@ PYTHONPATH=. python -m cProfile -o /tmp/headless-tests.prof -m pytest -q \
 python -m pstats /tmp/headless-tests.prof
 ```
 
+The 2026-09-20 overhead pass fixed the native event prefix cache, reduced the
+campaign helper from eight to five captures per command, added direct Crystal
+Sphere board/history validation, and cached immutable item/event/shop content
+with detached outputs. Both campaign restores and all native comparisons remain.
+Matched sample medians improved by 1.96× for Fake Merchant, 3.91× for Crystal
+Sphere and 1.75× for a campaign prefix, with identical final snapshot bytes.
+The final headless-plus-backend gate passed 7,261 tests in **14m38s**, versus the
+preceding 7,078-test headless run's **27m55s** (47.6% less time with broader checks).
+See the [timings and validation evidence](evidence/headless_test_overhead_2026_09_20.md).
+
 On 2026-09-19, those two cases called `CardCatalog.snapshot_fingerprint()` 90 times;
 repeated catalog serialization took 4.14 of 4.82 profiled seconds (86%). Catalogs
 now reuse their fingerprint only when all definition values are recursively frozen.

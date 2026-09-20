@@ -32,11 +32,31 @@ def capture(entry):
 @pytest.mark.parametrize('entry', ENTRIES, ids=lambda entry: entry['event'])
 def test_native_solo_event_branch_matrix(entry):
     cache = {}
+    active_case = None
     for row in capture(entry):
+        case = (row['seed'], row['ascension'], row['enhanced'],
+                row.get('variant', 0), row.get('selectionVariant', 0))
+        if case != active_case:
+            # Prefixes belong to one scenario. Retaining prior scenarios only
+            # multiplies memory now that the cache actually stores every prefix.
+            cache.clear()
+            active_case = case
         try:
             replay(row, cache)
         except Exception as error:
             raise AssertionError(f"{row['eventName']} seed={row['seed']} A{row['ascension']} enhanced={row['enhanced']} variant={row['variant']} selector={row['selectionVariant']} path={row['path']}") from error
+
+
+def test_replay_prefix_cache_reuses_parent_without_changing_result(monkeypatch):
+    from tests.headless import native_event_replay
+    rows = capture(next(e for e in ENTRIES if e['event'] == 'FakeMerchant'))[:2]
+    assert rows[1]['path'][:-1] == rows[0]['path']
+    expected = replay(rows[1]).snapshot()
+    cache = {}
+    replay(rows[0], cache)
+    monkeypatch.setattr(native_event_replay, 'setup', lambda row: pytest.fail('Cached parent rebuilt'))
+    assert replay(rows[1], cache).snapshot() == expected
+    assert len(cache) == 2 and all(isinstance(key, tuple) for key in cache)
 
 
 def test_native_event_roster_and_all_ancient_offers_are_present():

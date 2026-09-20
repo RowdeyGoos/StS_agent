@@ -94,6 +94,10 @@ def branch(name, page_name, option, c):
 def validate_context(name, page_name, context, cards):
     if not isinstance(context, dict) or not isinstance(context.get('options'),list) or len(context['options']) != len(set(context['options'])) or any(not isinstance(v,str) for v in context['options']):
         raise ValueError('Invalid event page options.')
+    if name == "crystal_sphere":
+        from game.headless.events.crystal_validation import validate_context as validate_crystal
+        validate_crystal(page_name, context)
+        return
     # Check each saved option against the authored branch, never deserialize code.
     for option in context['options']:
         branch(name, page_name, option, context)

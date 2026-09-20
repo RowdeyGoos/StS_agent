@@ -1,9 +1,10 @@
 """Immutable content lookup; no global registration or name-based dispatch."""
 
 from types import MappingProxyType
-from dataclasses import asdict, is_dataclass, dataclass, field, fields
+from dataclasses import asdict, is_dataclass, dataclass, field
 from hashlib import sha256
 import json
+from game.headless.core.content_snapshots import immutable_content as _immutable_content
 from game.headless.cards.base import Card, CardDefinition
 from game.headless.cards.ironclad import DEFINITIONS as IRONCLAD
 from game.headless.cards.status import DEFINITIONS as STATUSES
@@ -14,17 +15,6 @@ from game.headless.cards.colorless import DEFINITIONS as COLORLESS
 from game.headless.cards.event_cards import DEFINITIONS as EVENT_CARDS
 from game.headless.cards.extended_events import DEFINITIONS as EXTENDED_EVENTS
 from game.headless.cards.ancient import DEFINITIONS as ANCIENT
-
-
-def _immutable_content(value):
-    """Cache only recursively frozen authored values, never mutable custom effects."""
-    if type(value) in (str, int, float, bool, type(None)):
-        return True
-    if type(value) is tuple:
-        return all(_immutable_content(item) for item in value)
-    return (not isinstance(value, type) and is_dataclass(value)
-            and value.__dataclass_params__.frozen
-            and all(_immutable_content(getattr(value, item.name)) for item in fields(value)))
 
 
 @dataclass(frozen=True, slots=True, init=False)
