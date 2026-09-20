@@ -579,6 +579,23 @@ The [retained trace](../../docs/evidence/native_generated_route_2026_09_20.json)
 and [scope report](../../docs/evidence/headless_generated_route_2026_09_20.md)
 record current fixture identities and exact acceptance limits.
 
+`--mode boosted-campaign` uses the same fixture with one explicit test override:
+current and maximum HP are set to **1,000,000 before Neow**. It wins all three
+seed-0 acts and the Architect through actual card actions and earned rewards.
+It opens each chest and completes a native skip action, explicitly selects index
+0 (Disintegration) for each Knowledge Demon choice, and records native creature
+IDs to compare summons/revivals without changing headless stable slots. Current
+and max HP are retained at every combat boundary. Victory requires positive saved
+HP, recorded ending and zero disposed HP. The room/action/await/process budgets
+are unchanged from `generated-route`; only initial HP is authored. No combat wins,
+resources after startup or enemy damage are injected.
+
+The [boosted capture](../../docs/evidence/native_boosted_campaign_2026_09_20.json)
+contains 48 records and 917 combat actions. Its
+[regression reruns](../../docs/evidence/native_boosted_campaign_regressions_2026_09_20.json)
+confirm that both ordinary modes still return their exact previous results.
+See [acceptance limits](../../docs/evidence/headless_generated_route_2026_09_20.md#boosted-three-act-campaign).
+
 These modes initialize mock preferences with uploads disabled and assert
 `ShouldSave == false`. They do not read or write player profiles. All runner modes
 now reject nonempty stderr, which catches asynchronous event errors even when the

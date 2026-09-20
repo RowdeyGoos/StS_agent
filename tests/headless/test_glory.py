@@ -484,3 +484,82 @@ def test_legacy_combat_action_mask_respects_bound_card_restriction():
     assert all(a[0] != 'play' or not env.player.hand[a[1]].combat_state.bound for a in legal)
     mask, features = env.encode_policy_inputs()
     assert sum(mask) == 3 and len(features) == len(mask)
+
+
+@pytest.mark.parametrize('scroll_hp,max_loss', [(2, 0), (8, 2)])
+def test_bronze_scales_precedes_paper_cuts_and_does_not_retaliate_twice(scroll_hp, max_loss):
+    from game.headless.run.inventory import add_relic
+    run = RunEngine(seed=7, max_hp=80, config=RunConfig(), card_ids=())
+    add_relic(run.state, 'bronze_scales')
+    run.start_combat(encounter_id='glory_scrolls_of_biting_weak', cards_per_turn=0)
+    player, scroll = run.combat.player, run.combat.enemies[0]
+    scroll.hp = scroll_hp
+    scroll._intent_index = 0
+    player.block = 3
+    scroll.execute_intent(player)
+    assert player.hp == 69  # The in-flight Chomp lands even when Thorns kills its source.
+    assert player.max_hp == 80 - max_loss
+    assert scroll.hp == max(0, scroll_hp - 3)
+    assert player.rules.powers['thorns'] == 3
+    clone(run)
+
+
+def test_fabricator_rolls_after_later_bot_dies_and_clears_pending_on_defeat():
+    from game.headless.monsters.glory_summons import Stabbot, Guardbot
+    from game.headless.monsters.underdocks_summons import append_child
+    for fatal in (False, True):
+        run = start('fabricator')
+        player, boss = run.combat.player, run.combat.enemies[0]
+        append_child(Guardbot, boss, player, position=0)
+        append_child(Guardbot, boss, player, position=1)
+        later = append_child(Stabbot, boss, player, position=3)
+        later.hp = 1
+        player.rules.powers['thorns'] = 3
+        boss._intent_index = 2
+        if fatal:
+            # Survive Fabricator's 11, then die to the later bot's 11.
+            player.hp = 15
+        step(run, EndTurn())
+        assert not later.is_alive
+        assert not boss.move_roll_pending
+        if fatal:
+            assert run.state.phase is RunPhase.DEFEAT
+        else:
+            assert boss.intent.move_name in ('Fabricate', 'Fabricating Strike')
+            clone(run)
+
+
+def test_fabricator_rejects_unowned_deferred_roll():
+    run = start('fabricator')
+    before = saved(run)
+    bad = deepcopy(before)
+    bad['combat']['enemies'][0]['state']['move_roll_pending'] = True
+    with pytest.raises(ValueError):
+        run.restore(bad)
+    assert saved(run) == before
+
+
+def test_fabricator_deferred_roll_survives_paused_later_bot_and_cannot_be_dropped():
+    from game.headless.run.inventory import add_relic
+    from game.headless.monsters.glory_summons import Stabbot
+    from game.headless.monsters.underdocks_summons import append_child
+    run = RunEngine(seed=7, max_hp=1000, config=RunConfig(), card_ids=('strike', 'defend'))
+    add_relic(run.state, 'centennial_puzzle')
+    run.start_combat(encounter_id='glory_fabricator', cards_per_turn=0)
+    player, boss = run.combat.player, run.combat.enemies[0]
+    append_child(Stabbot, boss, player, position=3)
+    boss._intent_index = 0
+    player.rules.powers['stratagem'] = 1
+    player.deck.discard_pile.extend(player.deck.draw_pile)
+    player.deck.draw_pile.clear()
+    step(run, EndTurn())
+    assert player.rules.selection and boss.move_roll_pending
+    before = saved(run)
+    bad = deepcopy(before)
+    bad['combat']['enemies'][0]['state']['move_roll_pending'] = False
+    with pytest.raises(ValueError):
+        run.restore(bad)
+    assert saved(run) == before
+    settle(run)
+    assert not boss.move_roll_pending
+    clone(run)

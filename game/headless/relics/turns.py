@@ -35,6 +35,7 @@ def enter_combat(p):
             apply_power(p, "plating", 4)
         elif name == "bronze_scales":
             memory(p, relic)["thorns"] = 3
+            apply_power(p, "thorns", 3)
         elif name == "ember_tea" and relic["counter"] < 5:
             relic["counter"] += 1
             p.gain_strength(2)

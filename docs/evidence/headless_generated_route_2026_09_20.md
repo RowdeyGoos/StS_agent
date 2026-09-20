@@ -1,4 +1,4 @@
-# Continuous generated Act 1 trace — 2026-09-20
+# Continuous generated route traces — 2026-09-20
 
 The pinned 0.107.1 native fixture now plays seed 0 from actual Neow offers through
 16 Act 1 rooms, ending in **defeat against Vantom**. The 170 combat actions and all
@@ -73,12 +73,12 @@ implementation and review elapsed times were not separately measured.
 
 ## Remaining limits and next implementation
 
-The fixture must gain legal winning decisions and continue through actual Acts
-2/3, their Ancient starts and Architect before full native campaign parity can be
-claimed. It currently avoids unknown rooms, leaves shops and skips potions. One
-unopened chest does not verify a second chest's native synchronizer lifecycle;
-exercise actual opened-skip/claim cleanup before expanding across acts. These
-limits are separate from the existing Python synthetic progression tests and the
+At the ordinary-trace checkpoint, the fixture still needed a winning continuation
+through Acts 2/3 and the Architect. The boosted trajectory below now exercises
+that progression with an explicit HP override; ordinary-HP victory remains open. The ordinary trace avoids unknown rooms, leaves
+shops and skips potions. Its single unopened chest did not establish repeated
+chest cleanup; the boosted trace below now exercises three opened/skipped chests.
+These traces remain distinct from Python synthetic progression tests and the
 native prepared-ending matrix.
 
 Fresh native shared bags also refill an initially empty requested rarity in
@@ -89,3 +89,71 @@ pickup and persistence together. Do not infer native disk-save reload parity
 from Python JSON continuation: native deserialized bags use different refill
 configuration. This is an explicit remaining fidelity task, not part of the
 ownership correction proved by this trace.
+
+
+## Boosted three-act campaign
+
+The user explicitly requested a high-HP test to reach a three-act win. The
+[retained native capture](native_boosted_campaign_2026_09_20.json) sets current and
+maximum HP to **1,000,000 once before Neow**, then wins Vantom, Knowledge Demon,
+Test Subject and the Architect ending using actual combat and reward actions.
+Natural healing, damage and max-HP loss remain enabled. This is a boosted gameplay
+integration test, not evidence of an ordinary winning policy.
+
+The route has **48 records: 35 combats, six rests, three opened/skipped chests,
+one shop exit, two act transitions/Ancient choices and one victory**. It replays
+**917 combat actions** plus three explicit Disintegration selections. The default
+native test selector's null answer is not accepted as a Knowledge Demon choice:
+the fixture queues index 0 and requires that answer to be consumed. Pael offers
+Pael's Horn/Claw/Legion and chooses Horn; Nonupeipe offers Delicate Frond/Glitter/
+Blessed Antler and chooses Frond. The three chest skips run completed native
+`PickRelicAction`s and subsequent room exit clears voting state.
+
+[Shared route replay](../../tests/headless/native_route_replay.py) checks every
+recorded combat, room entry/exit, reward and transition boundary, restoring JSON
+before and after each Python action. New native combat IDs bind once to headless
+creation slots; native encounter ordering and dead-illusion retention do not
+change public headless target indices. It also compares current and maximum HP
+at each combat step. Final retained winning state is **999,533/999,986 HP**, 990
+gold and 31 deck cards; Rewards/Niche/Shuffle counters are **435/118/1853**. Native
+ending is recorded, the serialized winning HP is positive, and subsequent creature
+disposal produces zero HP; headless retains the winning state with no legal actions.
+
+The longer trace exposed these source-confirmed corrections:
+
+- Parafright acts before Obscura, so Wail buffs it after that turn's attack.
+  Random multi-hit targeting enumerates the same native encounter positions,
+  while headless target slots stay stable.
+- Bronze Scales installs the existing Thorns power at combat entry. It retaliates
+  before incoming damage instead of through a late relic callback. A Scroll killed
+  by Thorns still lands its current hit, but its removed Paper Cuts cannot reduce
+  max HP. Surviving Scrolls still apply Paper Cuts once per unblocked hit.
+- Fabricator evaluates its next move at the next player-side setup, after later
+  bots can die. Its serializable pending roll is bound to the completed action
+  in the active enemy continuation, rejects inserted/dropped flags, and clears
+  without RNG on terminal cleanup.
+
+Independent source review confirmed the native ordering and Thorns lifecycle,
+then identified the deferred-roll ownership/terminal cases. Focused tests cover
+those cases including a real reactive-draw pause and JSON restoration. Private
+schemas move to **combat v37 / run v56**; older snapshots reject atomically.
+
+The final native boosted execution took **2.78 seconds**, build **1.61 seconds**,
+with zero stderr and successful owned-directory cleanup. Earlier attempts exposed
+missing mock display text and are not accepted captures. Both ordinary modes
+were freshly rerun: generated-start took 1.83 seconds (build 1.64), generated-route
+1.89 seconds (build 1.65); their exact earlier results remain unchanged in the
+[regression record](native_boosted_campaign_regressions_2026_09_20.json). Historical
+captures are unchanged. The initial complete JSON replay passed in 83.90 seconds;
+939 affected tests passed in 78.47 seconds. The final pass after snapshot hardening
+passed 179 tests in 103.47 seconds, including the complete JSON replay, ordinary
+mode regressions, native verification matrix and affected monster cases. Compilation,
+diff checks and local file links in the changed guides also passed. Overall
+implementation/review times were not separately measured.
+
+This test avoids unknown rooms, skips potions and shop purchases, uses manual
+native turn phases and mock persistence, and samples one Overgrowth path. It does
+not verify every hidden power/pile/RNG field, live UI/vote scheduling, arbitrary
+histories, an Underdocks trajectory or normal-HP winning play. Shared relic-bag
+exhaustion/refill remains the separate limitation described above. The HP boost
+is confined to the fixture and replay setup; ordinary game defaults are unchanged.

@@ -30,7 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "generated-start", "generated-route"), default="queue")
+    parser.add_argument("--mode", choices=("queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "generated-start", "generated-route", "boosted-campaign"), default="queue")
     args = parser.parse_args()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("This pinned exported-runtime fixture requires macOS arm64.")
@@ -111,7 +111,7 @@ project/assembly_name="queue_oracle"
     try:
         run = subprocess.run([str(staged_engine), "--headless", "--main-pack", str(pack),
                               "--path", str(project), "--log-file", str(output / "engine.log"), "--", args.mode],
-                             cwd=project, capture_output=True, text=True, timeout=60 if args.mode == "generated-route" else 15)
+                             cwd=project, capture_output=True, text=True, timeout=60 if args.mode in ("generated-route", "boosted-campaign") else 15)
         (output / "stdout.log").write_text(run.stdout)
         (output / "stderr.log").write_text(run.stderr)
         run.check_returncode()

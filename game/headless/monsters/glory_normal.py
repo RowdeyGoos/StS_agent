@@ -105,7 +105,8 @@ class ScrollOfBiting(ScriptedEnemy):
     def _possible_next_templates(self): return tuple(self.MOVES[i] for i in self.next_indices())
 
     def after_attack_hit(self, player_damage, pet_damage):
-        if player_damage > 0:
+        # Thorns can remove the owner and its Paper Cuts before AfterDamageGiven.
+        if self.is_alive and player_damage > 0:
             p = self.combat_player
             raw_max = p.max_hp - 2
             if p.hp > raw_max: p.lose_hp(p.hp - raw_max)

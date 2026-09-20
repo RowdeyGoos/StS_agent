@@ -123,7 +123,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v36 / run v55**.
+than being silently reinterpreted: current schemas are **combat v37 / run v56**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -345,7 +345,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v36 / run v55.
+reject atomically; current formats are combat v37 / run v56.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -372,7 +372,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v36 / run v55**.
+reject atomically. These private formats are **combat v37 / run v56**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -525,15 +525,32 @@ rests, one unopened chest and one shop exit. See the
 
 This exposed three discrepancies: chest offers must consume only the shared relic
 bag until pickup; Inklet starts with Slippery 1; its equal-weight random branch
-orders Piercing Gaze before Whirlwind. Current **combat v36 / run v55** reject
+orders Piercing Gaze before Whirlwind. That batch’s **combat v36 / run v55** reject
 snapshots using the previous continuation semantics. The first-combat fixture was
 rerun separately and retained its exact earlier result.
 
-The longer trace still does not establish a winning Act 1 or continuous three-act
-campaign. Native shared-bag exhaustion/refill and possible repeated relic ownership
-also remain a specific fidelity boundary. The next assignment below the
-[implementation queue](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment)
-separates these remaining tasks from the accepted trace.
+The ordinary trace still ends in defeat. A separate user-requested
+[boosted-HP campaign](evidence/native_boosted_campaign_2026_09_20.json) starts with
+**1,000,000 current/max HP** and completes Overgrowth, Hive, Glory and the Architect:
+35 real combats, 917 combat actions and 48 room/transition/ending records. Headless
+replays every action with JSON continuation, comparing current/max HP, hands,
+creature identities and damage, reward claims, inventory and the recorded RNG
+counters. Three mandatory Knowledge Demon choices explicitly select Disintegration;
+all three chests open and skip via completed native actions. Victory is checked
+before native disposal. This proves that specific boosted trajectory, not a
+normal-HP winning strategy, live UI scheduling or exhaustive native parity.
+
+The boosted replay exposed and corrected Parafright/Obscura action order,
+random-hit target enumeration after summons, Bronze Scales using Thorns before
+incoming damage, Paper Cuts after its owner dies, and Fabricator's delayed
+next-move decision after later bots finish. Current **combat v37 / run v56** reject
+older continuation semantics. Fabricator's pending roll is owned by the active
+enemy continuation and survives pauses without a second RNG draw.
+
+See [scope and validation](evidence/headless_generated_route_2026_09_20.md#boosted-three-act-campaign).
+Normal-HP victory, a continuous Underdocks path and native shared-bag exhaustion
+remain distinct tasks in the
+[implementation queue](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment).
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -2252,7 +2269,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v55`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v56`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -2265,7 +2282,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v36`, including the in-play
+Nested combat records now use `headless_combat_state_v37`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

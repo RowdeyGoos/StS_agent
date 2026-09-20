@@ -1680,18 +1680,22 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      Fixes preserve shared/player chest bag ownership and Inklet's initial Slippery
      and random branch order (combat v36 / run v55). See the
      [trace report](evidence/headless_generated_route_2026_09_20.md).
-   - **Next acceptance implementation — winning continuous campaign:** extend
-     `queue_runtime/generated_start.cs`'s existing `generated-route` mode with
-     legal potion claims/use, richer card selection answers and room decisions as
-     needed for a winning path. Continue through both actual act transitions,
-     each Ancient start and the Architect; do not force victories or increase HP.
-     Preserve seed, coordinates, choices, inventory/HP, pending decisions and owned
-     RNG counters, and replay the same actions with JSON restoration. Before a
-     second chest, exercise the real opened-skip or claim lifecycle and verify
-     native treasure synchronizer cleanup; the present trace only leaves one
-     unopened chest. Add the second Act 1 region after one complete path works.
-     Live UI/act-vote scheduling and all Dummy outcome combinations remain outside
-     current fixtures. No finite matrix proves every card combination.
+   - **Boosted continuous campaign completed:** with the user's explicit
+     1,000,000 starting/current-max-HP test override, `boosted-campaign` now wins
+     all three acts and reaches the Architect through actual combat. The retained
+     48 records include 35 combats, 917 combat actions, both Ancient entrances,
+     three opened/skipped chests and three explicit Knowledge Demon choices.
+     Every recorded boundary matches headless with JSON continuation. This also
+     fixed summon ordering, Bronze Scales/Paper Cuts timing and Fabricator's next
+     move timing (combat v37 / run v56). See the
+     [boosted report](evidence/headless_generated_route_2026_09_20.md#boosted-three-act-campaign).
+   - **Next acceptance coverage — second region and ordinary-HP victory:** extend
+     the existing boosted mode to one continuous Underdocks→Hive→Glory path using
+     the same trace/replay mechanism; retain native start/region settings, seed,
+     choices and exact recorded boundaries. Separately improve legal decisions
+     (potion use, card selection and room decisions) enough to win with normal
+     HP. Keep ordinary and boosted evidence labeled independently; neither path
+     proves all events, histories, card combinations or live UI/vote scheduling.
    - **Separate fidelity task — exhausted shared relic bags:** fresh native shared
      bags refill an initially empty requested rarity from canonical pool order,
      without shuffling or consuming RNG, then purge globally disallowed entries.
