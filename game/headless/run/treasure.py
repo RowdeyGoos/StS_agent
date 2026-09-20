@@ -32,7 +32,7 @@ def begin(state):
         from copy import deepcopy
         from game.headless.generation.relics import pull
         trial=deepcopy(state);trial.rng=rng
-        relic_id=pull(trial,stream="treasure_room_relics",allowed=treasure_pool(state))
+        relic_id=pull(trial,stream="treasure_room_relics",allowed=treasure_pool(state),owner="shared")
         state.relic_bags=trial.relic_bags
     else:
         relic_id = rng.choice("treasure.relic", pool) if pool else ORDINARY_CHEST.fallback_relic

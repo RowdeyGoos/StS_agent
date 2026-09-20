@@ -55,14 +55,16 @@ def remove(state, name):
                     bag.remove(name)
 
 
-def pull(state, *, rarity=None, back=False, blacklist=(), stream="rewards", allowed=None):
+def pull(state, *, rarity=None, back=False, blacklist=(), stream="rewards", allowed=None, owner="player"):
+    if owner not in ("player", "shared"):
+        raise ValueError("Invalid relic bag owner.")
     rarity = rarity or roll(state.rng, stream)
     order = ("shop", "common", "uncommon", "rare")
     if rarity not in order:
         raise ValueError("Invalid relic draw rarity.")
     owned = {r.definition_id for r in state.relics}
     allowed = set(allowed) if allowed is not None else set(RELICS)
-    bags = state.relic_bags["player"]
+    bags = state.relic_bags[owner]
     from game.headless.relics.eligibility import allowed_in_run
     # GetAvailableDeque removes globally disallowed relics from ALL rarities.
     # Caller-only exclusions stay in place, including when falling to a later rarity.
@@ -76,8 +78,11 @@ def pull(state, *, rarity=None, back=False, blacklist=(), stream="rewards", allo
             if name in blacklist or name not in allowed:
                 continue
             bag.pop(i)
-            for values in state.relic_bags["shared"].values():
-                if name in values:
-                    values.remove(name)
+            # Player offers also remove the shared copy. Chest offers consume
+            # only the shared bag; acquisition later removes both owned copies.
+            if owner == "player":
+                for values in state.relic_bags["shared"].values():
+                    if name in values:
+                        values.remove(name)
             return name
     return "circlet"

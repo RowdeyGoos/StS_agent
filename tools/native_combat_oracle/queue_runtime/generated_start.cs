@@ -5,7 +5,7 @@ using System.Text.Json;
 // Real native run/reward objects under TestMode and explicit in-memory saves.
 internal static class GeneratedStartOracle
 {
-    public static async Task<string> Run(Assembly asm,string digest)
+    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false)
     {
         const BindingFlags flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -61,6 +61,7 @@ internal static class GeneratedStartOracle
                         tableName=="cards"?Items(T("Models.ModelDb").GetProperty("AllCards")!.GetValue(null)!).Select(c=>P(P(c,"Id"),"Entry").ToString()!):
                         new[]{"BLOCK","POWER","STRENGTH","VULNERABLE","WEAK","DEXTERITY","DAMAGE","ENERGY","CARD_REWARD"};
                     foreach(var name in names)foreach(var suffix in new[]{"name","title","description","upgradeDescription","selectionScreenPrompt"})texts[name+"."+suffix]=name;
+                    if(tableName=="monsters")foreach(var key in new[]{"BYGONE_EFFIGY.moves.SLEEP.speakLine1","BYGONE_EFFIGY.moves.SLEEP.speakLine2"})texts[key]="Sleep";
                     if(!tables.Contains(tableName))tables.Add(tableName,Activator.CreateInstance(T("Localization.LocTable"),new object?[]{tableName,texts,null})!);
                 }
                 var selector=Activator.CreateInstance(T("TestSupport.TestCardSelector"))!;
@@ -81,11 +82,69 @@ internal static class GeneratedStartOracle
                 object Coord(object p)=>p.GetType().GetField("coord")!.GetValue(p)!;
                 int Row(object p)=>(int)Coord(p).GetType().GetField("row")!.GetValue(Coord(p))!;
                 int Col(object p)=>(int)Coord(p).GetType().GetField("col")!.GetValue(Coord(p))!;
-                var next=Items(P(point,"Children")).OrderBy(Col).First();
+                object RunBoundary()=>new{hp=P(P(player,"Creature"),"CurrentHp"),gold=P(player,"Gold"),
+                    relics=Items(P(player,"Relics")).Select(r=>P(P(r,"Id"),"Entry").ToString()).ToArray(),
+                    deck=Items(P(P(player,"Deck"),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")}).ToArray(),
+                    rewardsCounter=P(P(P(player,"PlayerRng"),"Rewards"),"Counter"),nicheCounter=P(P(P(state,"Rng"),"Niche"),"Counter"),shuffleCounter=P(P(P(state,"Rng"),"Shuffle"),"Counter")};
+                async Task<object> Rewards(object rewardRoom)
+                {
+                    var generated=(Task)C(T("Commands.RewardsCmd"),"GenerateForRoomEnd",player,rewardRoom);await Await(generated);
+                    var set=P(generated,"Result");var rewards=Items(P(set,"Rewards"));
+                    T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,null);
+                    var offered=(Task)C(set,"Offer");var sync=P(manager,"RewardsSetSynchronizer");var claimed=new List<object>();
+                    foreach(var reward in rewards)
+                    {
+                        var kind=reward.GetType().Name;
+                        if(kind=="GoldReward") { var amount=P(reward,"Amount");await Await(C(sync,"SelectLocalReward",reward));claimed.Add(new{kind,amount}); }
+                        else if(kind=="RelicReward") { var relic=P(P(P(reward,"Relic"),"Id"),"Entry").ToString();await Await(C(sync,"SelectLocalReward",reward));claimed.Add(new{kind,relic}); }
+                        else if(kind=="CardReward")
+                        {
+                            var offeredCards=Items(P(reward,"Cards"));
+                            var safe=new[]{"PERFECTED_STRIKE","POMMEL_STRIKE","SHRUG_IT_OFF","ANGER","IRON_WAVE","TWIN_STRIKE","SWORD_BOOMERANG","BATTLE_TRANCE","INFLAME","METALLICIZE","THUNDERCLAP"};
+                            int index=Enumerable.Range(0,offeredCards.Length).Where(i=>safe.Contains(P(P(offeredCards[i],"Id"),"Entry").ToString())).OrderBy(i=>Array.IndexOf(safe,P(P(offeredCards[i],"Id"),"Entry").ToString())).DefaultIfEmpty(-1).First();
+                            if(index>=0)
+                            {
+                                var selection=(Task)C(sync,"SelectLocalReward",reward);var choices=P(manager,"PlayerChoiceSynchronizer");
+                                var waiting=Items(choices.GetType().GetField("_receivedChoices",flags)!.GetValue(choices)!);Require(waiting.Length==1,"Expected one replay reward choice.");
+                                uint id=(uint)waiting[0].GetType().GetField("choiceId")!.GetValue(waiting[0])!;
+                                var answer=C(T("GameActions.PlayerChoiceResult"),"FromIndex",index);
+                                C(choices,"ReceiveReplayChoice",player,id,C(answer,"ToNetData"));await Await(selection);
+                            }
+                            claimed.Add(new{kind,index,cards=offeredCards.Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")}).ToArray()});
+                        }
+                    }
+                    if(!offered.IsCompleted)C(sync,"SkipLocalRewardsSet");await Await(offered);
+                    T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,0UL);
+                    await Await(C(manager,"ProceedFromTerminalRewardsScreen"));
+                    return new{claims=claimed,state=RunBoundary()};
+                }
+                var route=new List<object>();
+                var costs=new Dictionary<object,int>();
+                int RouteCost(object p)
+                {
+                    if(costs.TryGetValue(p,out int found))return found;
+                    int own=P(p,"PointType").ToString() switch {"Unknown"=>1000,"Elite"=>100,"Monster"=>5,_=>0};
+                    var children=Items(P(p,"Children"));return costs[p]=own+(children.Length==0?0:children.Min(RouteCost));
+                }
+                for(int floor=0;floor<(campaign?60:1);floor++)
+                {
+                var children=Items(P(point,"Children"));Require(children.Length>0,"No next map point.");
+                var next=campaign?children.OrderBy(RouteCost).ThenBy(Col).First():children.OrderBy(Col).First();
+                point=next;
                 await Await(C(manager,"EnterMapCoord",Coord(next)));
-                var combatManager=T("Combat.CombatManager").GetProperty("Instance")!.GetValue(null)!;
                 var room=P(state,"CurrentRoom");
-                Require(room.GetType().Name=="CombatRoom","First map room must be combat.");
+                var entry=RunBoundary();
+                if(room.GetType().Name!="CombatRoom")
+                {
+                    string kind=room.GetType().Name;
+                    if(kind=="RestSiteRoom")await Await(C(Items(P(room,"Options")).Single(o=>P(o,"OptionId").ToString()=="HEAL"),"OnSelect"));
+                    else Require(kind is "TreasureRoom" or "MerchantRoom","Unsupported generated room: "+kind);
+                    // Both leaving a shop without buying and leaving a closed chest are legal.
+                    route.Add(new{row=Row(next),col=Col(next),kind,entry,state=RunBoundary()});
+                    continue;
+                }
+                var combatManager=T("Combat.CombatManager").GetProperty("Instance")!.GetValue(null)!;
+
                 var combat=P(room,"CombatState");
                 var clock=System.Diagnostics.Stopwatch.StartNew();
                 while(P(P(manager,"ActionQueueSynchronizer"),"CombatState").ToString()!="PlayPhase"){Require(clock.ElapsedMilliseconds<3000,"Combat start timed out.");await Task.Yield();}
@@ -98,9 +157,16 @@ internal static class GeneratedStartOracle
                 for(int n=0;n<300 && (bool)P(combatManager,"IsInProgress");n++)
                 {
                     var pcs=P(player,"PlayerCombatState");
-                    var target=Items(P(combat,"Enemies")).FirstOrDefault(e=>(bool)P(e,"IsAlive"));
+                    var enemies=Items(P(combat,"Enemies"));
+                    var living=enemies.Where(e=>(bool)P(e,"IsAlive"));
+                    var target=campaign?living.OrderBy(e=>Convert.ToDecimal(P(e,"CurrentHp"))).FirstOrDefault():living.FirstOrDefault();
                     var hand=Items(P(P(pcs,"Hand"),"Cards"));
-                    var card=hand.FirstOrDefault(c=>(bool)C(c,"CanPlayTargeting",P(c,"TargetType").ToString()=="AnyEnemy"?target:null));
+                    var playable=hand.Where(c=>(bool)C(c,"CanPlayTargeting",P(c,"TargetType").ToString()=="AnyEnemy"?target:null));
+                    var priorities=new[]{"INFLAME","BATTLE_TRANCE","PERFECTED_STRIKE","ANGER","POMMEL_STRIKE","SWORD_BOOMERANG","TWIN_STRIKE","BASH","THUNDERCLAP","IRON_WAVE","STRIKE_IRONCLAD","SHRUG_IT_OFF","DEFEND_IRONCLAD"};
+                    int incoming=campaign?living.Sum(e=>Items(P(P(P(e,"Monster"),"NextMove"),"Intents")).Where(i=>T("MonsterMoves.Intents.AttackIntent").IsInstanceOfType(i)).Sum(i=>(int)C(i,"GetTotalDamage",Typed(new[]{P(player,"Creature")},T("Entities.Creatures.Creature")),e))):0;
+                    bool slippery=target is not null && Items(P(target,"Powers")).Any(p=>P(P(p,"Id"),"Entry").ToString()=="SLIPPERY_POWER");
+                    int Priority(object c){string id=P(P(c,"Id"),"Entry").ToString()!;if(slippery && id=="SWORD_BOOMERANG")return -1;if(slippery && id=="PERFECTED_STRIKE")return 90;if(incoming>Convert.ToInt32(P(P(player,"Creature"),"Block")) && id is "SHRUG_IT_OFF" or "DEFEND_IRONCLAD")return 4;int rank=Array.IndexOf(priorities,id);return rank<0?99:rank;}
+                    var card=campaign?playable.OrderBy(Priority).FirstOrDefault():playable.FirstOrDefault();
                     if(card is not null)
                     {
                         int index=Array.IndexOf(hand,card);
@@ -110,7 +176,7 @@ internal static class GeneratedStartOracle
                         await Await(C(executor,"FinishedExecutingActions"));
                         Require(P(play,"State").ToString()=="Finished","Card action paused unexpectedly.");
                         await Await(C(combatManager,"CheckWinCondition"));
-                        actions.Add(new{kind="play",index,card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
+                        actions.Add(campaign?(object)new{kind="play",index,targetIndex=Array.IndexOf(enemies,target),card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="play",index,card=Card(card),state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
                     }
                     else
                     {
@@ -121,10 +187,21 @@ internal static class GeneratedStartOracle
                     }
                 }
                 Require(!(bool)P(combatManager,"IsInProgress"),"Combat action budget exhausted.");
-                rows.Add(new{seed,offers,choice,rewardsAfterNeow,row=Row(next),col=Col(next),encounter=P(P(P(room,"Encounter"),"Id"),"Entry").ToString(),initial,actions,hp=P(P(player,"Creature"),"CurrentHp")});
+                var trace=new{seed,offers,choice,rewardsAfterNeow,row=Row(next),col=Col(next),encounter=P(P(P(room,"Encounter"),"Id"),"Entry").ToString(),initial,actions,hp=P(P(player,"Creature"),"CurrentHp")};
+                if(!campaign)rows.Add(trace);
+                else
+                {
+                    bool alive=(bool)P(P(player,"Creature"),"IsAlive");
+                    var rewards=alive?await Rewards(room):null;
+                    route.Add(new{row=Row(next),col=Col(next),kind="CombatRoom",entry,combat=trace,rewards,state=RunBoundary()});
+                    if(!alive)break;
+                    if(P(room,"RoomType").ToString()=="Boss")break;
+                }
+                }
+                if(campaign)rows.Add(new{seed,offers,choice,rewardsAfterNeow,route,state=RunBoundary(),outcome=(bool)P(P(player,"Creature"),"IsAlive")?"act_complete":"defeat"});
             }
             finally{C(manager,"CleanUp",true);}
         }
-        return JsonSerializer.Serialize(new{source="Native generated Neow and first combat only; real card action executor, manually invoked end-turn phases, UI-only mock localization/textures, mock saves and uploads disabled; no synthetic victories",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
+        return JsonSerializer.Serialize(new{source=campaign?"Native generated continuous route with real card actions and rewards, manual turn phases, optional chest/shop skips, mock saves and uploads disabled; no synthetic victories":"Native generated Neow and first combat only; real card action executor, manually invoked end-turn phases, UI-only mock localization/textures, mock saves and uploads disabled; no synthetic victories",assemblySha256=digest,rows},new JsonSerializerOptions{WriteIndented=true});
     }
 }

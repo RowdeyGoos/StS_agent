@@ -1672,18 +1672,36 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      preserve Architect RNG draws and Scroll Boxes CCU/CCU draw order (run v54).
      Dummy fixture initialization now succeeds explicitly; stderr fails the runner.
      See [verification report](evidence/headless_verification_2026_09_20.md).
-   - **Remaining acceptance implementation — continuous native campaign trace:**
-     extend `queue_runtime/generated_start.cs` from its first-combat endpoint
-     through reward claims, map choices, room decisions, both act transitions and
-     the Architect. Use legal actions and explicit selector answers, with bounded
-     room/action budgets and mock persistence; do not force victories. Retain the
-     selected seed, coordinates, choices, inventory/HP, pending decisions and owned
-     RNG counters at each boundary. Replay the same actions in headless with JSON
-     restoration and compare before claiming a complete seed/path. Add the second
-     Act 1 region after one end-to-end path works. Live UI/act-vote scheduling and
-     all Dummy outcome combinations remain outside current fixtures. No finite
-     matrix proves every card combination; Python-only paths remain regression
-     evidence. This trace harness is still implementation work, not a passing gate.
+   - **Continuous Act 1 trace implemented through defeat:** `generated-route`
+     replays seed 0 through 16 rooms and 170 actual combat actions, including earned
+     card/gold/relic rewards, three rests, an unopened chest and a shop exit. It
+     reaches Vantom and loses; this is not a winning Act 1 or complete campaign.
+     Exact recorded boundaries match Python with JSON restoration at every action.
+     Fixes preserve shared/player chest bag ownership and Inklet's initial Slippery
+     and random branch order (combat v36 / run v55). See the
+     [trace report](evidence/headless_generated_route_2026_09_20.md).
+   - **Next acceptance implementation — winning continuous campaign:** extend
+     `queue_runtime/generated_start.cs`'s existing `generated-route` mode with
+     legal potion claims/use, richer card selection answers and room decisions as
+     needed for a winning path. Continue through both actual act transitions,
+     each Ancient start and the Architect; do not force victories or increase HP.
+     Preserve seed, coordinates, choices, inventory/HP, pending decisions and owned
+     RNG counters, and replay the same actions with JSON restoration. Before a
+     second chest, exercise the real opened-skip or claim lifecycle and verify
+     native treasure synchronizer cleanup; the present trace only leaves one
+     unopened chest. Add the second Act 1 region after one complete path works.
+     Live UI/act-vote scheduling and all Dummy outcome combinations remain outside
+     current fixtures. No finite matrix proves every card combination.
+   - **Separate fidelity task — exhausted shared relic bags:** fresh native shared
+     bags refill an initially empty requested rarity from canonical pool order,
+     without shuffling or consuming RNG, then purge globally disallowed entries.
+     They do not refill later fallback rarities or a nonempty bag blocked only by
+     caller filters. Current headless exhaustion/owned-item filtering and unique
+     treasure-history validation do not model that boundary. Add small pinned
+     native empty/filter/fallback cases before changing generation, duplicate
+     pickup rules and snapshot validation together. Native disk-loaded bags differ
+     from fresh-run refill configuration; distinguish that from Python JSON
+     continuation. This boundary is not covered by the accepted 16-room trace.
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
    Their full 344-card pool inventory, including basic/special entries, is retained
