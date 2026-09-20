@@ -139,7 +139,6 @@ MEMORY_FIELDS = {
     "unsettling_lamp": {"triggering_card": "card", "used": "bool"},
     "orichalcum": {"orichalcum_ready": "bool"},
     "fake_orichalcum": {"orichalcum_ready": "bool"},
-    "reptile_trinket": {"temporary_strength": 2**31 - 1},
     "joss_paper": {"ethereal_exhausts": 2**31 - 1},
 }
 

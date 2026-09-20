@@ -107,10 +107,12 @@ def apply(engine, action):
         from dataclasses import asdict
         r = engine.combat.player.rules
         r.gold_available = state.gold
+        previous_potions = r.potions
         r.potions = [None if p is None else asdict(p) for p in state.potions]
         r.potion_slots = state.potions.count(None)
         from game.headless.relics.damage import potions_changed
-        potions_changed(engine.combat.player)
+        if r.potions != previous_potions:
+            potions_changed(engine.combat.player)
     if state.relic_work:
         from game.headless.relics.pickup import apply as apply_relic_choice
         result = apply_relic_choice(state, engine.cards, action)
@@ -177,7 +179,11 @@ def apply(engine, action):
         record(state, before)
         if engine.combat is not None:
             from dataclasses import asdict
-            engine.combat.player.rules.potions = [None if p is None else asdict(p) for p in state.potions]
+            p = engine.combat.player
+            p.rules.potions = [None if item is None else asdict(item) for item in state.potions]
+            p.rules.potion_slots = state.potions.count(None)
+            from game.headless.relics.damage import potions_changed
+            potions_changed(p)
         return result
     if isinstance(action, ChooseEventOption):
         from game.headless.events.combat import EventCombatRequest

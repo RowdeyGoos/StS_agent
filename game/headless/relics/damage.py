@@ -31,7 +31,9 @@ def potions_changed(p):
     active = p.rules.potion_slots == p.rules.potion_capacity
     if active != m.get("dexterity_applied", False):
         m["dexterity_applied"] = active
-        p.rules.powers["dexterity"] = p.rules.powers.get("dexterity", 0) + (2 if active else -2)
+        # Native PowerCmd ignores applications after combat starts ending.
+        if not p.combat_is_ending:
+            p.rules.powers["dexterity"] = p.rules.powers.get("dexterity", 0) + (2 if active else -2)
 
 
 def hp_loss_amount(p, amount):

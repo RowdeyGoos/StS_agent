@@ -37,10 +37,8 @@ def use(engine, action):
         p = combat.player
         p.rules.potions = [None if v is None else asdict(v) for v in state.potions]
         p.rules.potion_slots = state.potions.count(None)
-        from game.headless.relics.damage import potions_changed
         from game.headless.potions.combat import start
 
-        potions_changed(p)
         start(p, item, action.target_slot)
         return combat.resolve_external_effect()
     from game.headless.relics.run_rules import heal, gain_gold, max_hp
