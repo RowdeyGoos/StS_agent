@@ -134,12 +134,22 @@ def begin(state, relic, cards):
         ]
         if getattr(state.rng,"native",False):
             from game.headless.generation.odds import card_offers
-            commons,_=card_offers(state,cards,commons,4,uniform=True,upgrade_roll=False)
-            uncommons,_=card_offers(state,cards,uncommons,2,uniform=True,upgrade_roll=False)
+            # Native generates each complete bundle before the next: C, C, U.
+            # Drawing all commons first changes both bundles for the same seed.
+            bundles = []
+            used = []
+            for _ in range(2):
+                common, _ = card_offers(state, cards, commons, 2, uniform=True,
+                                        upgrade_roll=False, blacklist=used)
+                uncommon, _ = card_offers(state, cards, uncommons, 1, uniform=True,
+                                          upgrade_roll=False, blacklist=used)
+                bundle = [*common, *uncommon]
+                bundles.append(bundle)
+                used.extend(bundle)
         else:
             state.rng.shuffle("relic.bundles", commons)
             state.rng.shuffle("relic.bundles", uncommons)
-        bundles = [[*commons[i * 2 : i * 2 + 2], uncommons[i]] for i in range(2)]
+            bundles = [[*commons[i * 2 : i * 2 + 2], uncommons[i]] for i in range(2)]
         state.relic_work.append(dict(source=source, kind="bundle", offers=bundles))
     elif name == "neows_bones":
         from game.headless.run.ancient import CURSES,POSITIVES

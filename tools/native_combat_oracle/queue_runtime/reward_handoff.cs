@@ -23,6 +23,10 @@ internal static class RewardHandoffOracle
         foreach(var t in asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AbstractModel"))&&t.Namespace!.StartsWith("MegaCrit.Sts2.Core.Models.")))C(T("Models.ModelDb"),"Inject",t);
         var loc=RuntimeHelpers.GetUninitializedObject(T("Localization.LocManager"));
         var tables=(System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string),T("Localization.LocTable")))!;
+        var eventText=new Dictionary<string,string>();
+        foreach(var setting in new[]{"SETTING_1","SETTING_2","SETTING_3"})foreach(var suffix in new[]{"title","description"})eventText["BATTLEWORN_DUMMY.pages.INITIAL.options."+setting+"."+suffix]=setting;
+        tables.Add("events",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"events",eventText,null})!);
+        tables.Add("characters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"characters",new[]{"title","titleObject","possessiveAdjective","pronounObject","pronounPossessive","pronounSubject"}.ToDictionary(k=>"IRONCLAD."+k,k=>"Ironclad"),null})!);
         F(loc,"_tables",tables);C(loc,"LoadLocFormatters");loc.GetType().GetProperty("CultureInfo",flags)!.SetValue(loc,System.Globalization.CultureInfo.InvariantCulture);loc.GetType().GetProperty("Instance",flags)!.SetValue(null,loc);
         var rows=new List<object>();
         foreach(string seed in new[]{"0","2","42"})
@@ -30,6 +34,8 @@ internal static class RewardHandoffOracle
         {
             var store=Activator.CreateInstance(T("Saves.Test.MockGodotFileIo"),new object[]{"user://isolated-fixture"})!;
             var saves=Activator.CreateInstance(T("Saves.SaveManager"),new object[]{store,true})!;F(saves,"_currentProfileId",0);C(T("Saves.SaveManager"),"MockInstanceForTesting",saves);
+            C(saves,"InitPrefsDataForTest");
+            P(saves,"PrefsSave").GetType().GetProperty("UploadData")!.SetValue(P(saves,"PrefsSave"),false);
             T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,0UL);
             var player=C(T("Entities.Players.Player"),"CreateForNewRun",Get("Character","Characters.Ironclad"),T("Unlocks.UnlockState").GetField("all")!.GetValue(null),0UL);
             var state=C(T("Runs.RunState"),"CreateForTest",Typed(new[]{player},player.GetType()),null,null,Enum.Parse(T("Runs.GameMode"),"Standard"),0,seed);
@@ -38,6 +44,7 @@ internal static class RewardHandoffOracle
             C(manager,"SetUpTest",state,replay,true,false);
             try
             {
+            Require(!(bool)P(manager,"ShouldSave") && !(bool)P(P(saves,"PrefsSave"),"UploadData"),"Persistence and metrics must be disabled.");
             if(scenario.StartsWith("dummy_"))
             {
                 var canonical=Get("Event","Events.BattlewornDummy");
@@ -45,6 +52,7 @@ internal static class RewardHandoffOracle
                 C(state,"PushRoom",parent);
                 C(P(manager,"EventSynchronizer"),"BeginEvent",canonical,false,null);
                 var model=C(P(manager,"EventSynchronizer"),"GetLocalEvent");
+                Require(Items(P(model,"CurrentOptions")).Length==3,"Dummy initialization failed.");
                 var dummy=C(Get("Encounter","Encounters.BattlewornDummyEventEncounter"),"ToMutable");
                 dummy.GetType().GetProperty("Setting")!.SetValue(dummy,Enum.Parse(dummy.GetType().GetNestedType("DummySetting")!,"Setting2"));
                 dummy.GetType().GetProperty("RanOutOfTime")!.SetValue(dummy,scenario=="dummy_timeout");
@@ -125,6 +133,8 @@ internal static class RewardHandoffOracle
             }
             if(!offered.IsCompleted)C(sync,"SkipLocalRewardsSet");
             await Await(offered);
+            C(saves,"InitPrefsDataForTest");
+            P(saves,"PrefsSave").GetType().GetProperty("UploadData")!.SetValue(P(saves,"PrefsSave"),false);
             T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,0UL);
             await Await(C(manager,"ProceedFromTerminalRewardsScreen"));
             var roomsAfterProceed=P(state,"CurrentRoomCount");

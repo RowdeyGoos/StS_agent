@@ -8,7 +8,12 @@ TRASH_CARDS=('caltrops','clash','distraction','dual_wield','entrench','hello_wor
 
 def page(name,page_name,state,cards,rng,previous):
     if name=='trash_heap': return {'options':['dive_in','grab']}
-    if name=='the_architect': return {'options':['proceed']}
+    if name=='the_architect':
+        if getattr(rng, 'native', False):
+            # The declared fresh-history ending selects its sole dialogue.
+            # Dialogue text/animation are omitted; preserve the owned RNG draw.
+            rng.choice('event.variables', (0,))
+        return {'options':['proceed']}
     if name=='war_historian_repy':
         keys=[c.instance_id for c in state.deck if c.definition.definition_id=='lantern_key']
         options=['unlock_cage','unlock_chest'] if not previous else ([o for o in ('unlock_cage','unlock_chest') if o!=previous[0]['choice']] if keys else ['proceed'])

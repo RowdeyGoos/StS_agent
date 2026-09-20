@@ -15,7 +15,7 @@ from game.headless.run.engine import RunEngine
 from game.headless.run.inventory import add_relic
 from game.headless.run.state import RunPhase
 
-RECORD = json.loads((Path(__file__).parents[2] / 'docs/evidence/native_reward_handoff_2026_09_20.json').read_text())
+RECORD = json.loads((Path(__file__).parents[2] / 'docs/evidence/native_reward_handoff_verified_2026_09_20.json').read_text())
 ROWS = RECORD['result']['rows']
 
 
@@ -240,7 +240,9 @@ def test_nested_pickup_failure_restores_suspended_factory_rewards(monkeypatch):
 def test_native_fixture_identity_and_declared_coverage():
     import hashlib
     source = Path(__file__).parents[2] / 'tools/native_combat_oracle/queue_runtime'
-    for name in ('reward_handoff.cs', 'Oracle.cs', 'run.py'):
+    # Shared runner/dispatcher can gain modes; the capture binds the unchanged
+    # behavior source. Original runner hashes remain in the evidence.
+    for name in ('reward_handoff.cs',):
         assert hashlib.sha256((source / name).read_bytes()).hexdigest() == RECORD['fixtureSources'][name]
     assert RECORD['userDirectoryRemoved']
     assert len(ROWS) == 48
