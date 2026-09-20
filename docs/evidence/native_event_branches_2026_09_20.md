@@ -150,4 +150,35 @@ Final validation completed:
   use socket doubles without `shutdown`, and the differential fixtures reject an
   existing frozen identity mismatch. All nine failures and the shared setup error
   reproduce on unchanged integration commit `9477b72`; historical identities were
-  not repinned to conceal them. The broad repository suite is therefore not green.
+  not repinned to conceal them. That broad repository run was therefore not green.
+
+
+### Repository regression repair
+
+The follow-up repairs the nine failures and shared 63-test setup error above.
+Socket test doubles now require the existing send → write-half-close → receive
+order. Twelve additional failure cases check that a failed half-close closes the
+socket, clears request buffers and never retries or starts receiving. The older
+run acceptance verifier accepts the current reward client's empty
+`collected_items` list; malformed/nonempty lists still reject because that
+historical verifier only establishes gold/card effects. Its legacy input shape
+continues to work.
+
+The offline H4 comparator now checks the original bridge's exact Git blobs at
+`778cadd1a5e24de1c316a45831ffd1aa4be4f1dc`, the revision recorded in the original
+acceptance, alongside the current Python source inputs, runtime fingerprints,
+wire vectors and synthetic bodies. The original `offline_fixture_identity.json`,
+evidence pins and captures are unchanged. The separate current-inventory verifier
+still rejects source drift. A passing retained comparison does not certify today's
+C# bridge. Running these historical fixture checks requires that Git revision
+locally; missing history fails explicitly without a substitute identity.
+
+All twelve affected standalone fixture scripts passed in 1.88 seconds, including
+41 bounded-transport cases. The differential and focused transport/acceptance
+checks passed 236 tests in 2.84 seconds. Independent semantic review found no
+blockers and separately passed 156 focused tests in 2.24 seconds. Compilation
+and diff checks passed. The final affected integration command
+`PYTHONPATH=. python -m pytest -q tests/backends/live tests/differential tests/conformance`
+passed **350 tests in 76.75 seconds**. The full repository suite was not repeated.
+No game rules or native oracle inputs changed, so the previously accepted native
+matrix was not repeated for this fixture repair.

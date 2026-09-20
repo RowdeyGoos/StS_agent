@@ -98,6 +98,7 @@ class _Socket:
     def __init__(self, transcript: _Transcript, ordinal: int, response: bytes) -> None:
         self.transcript, self.ordinal, self.response = transcript, ordinal, response
         self.closed = False
+        self.write_shutdown = False
         self.request_buffer: bytearray | None = None
 
     def settimeout(self, value: float) -> None:
@@ -109,7 +110,14 @@ class _Socket:
         if self.ordinal == 3 and self.transcript.fault == "post_send":
             raise OSError(_ERROR_CANARY)
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not (self.request_buffer is not None) or self.write_shutdown or self.closed:
+            fail(EXIT_MISMATCH, "compare_reward_gold_live_fixture_half_close")
+        self.write_shutdown = True
+
     def recv(self, amount: int) -> bytes:
+        if not self.write_shutdown:
+            fail(EXIT_MISMATCH, "compare_reward_gold_live_fixture_receive_before_half_close")
         # Maintained mutations happen during the FIRST actual recv, once per
         # complete CLI execution, before any adapter result can be returned.
         if not self.transcript.first_recv:

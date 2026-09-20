@@ -138,6 +138,7 @@ class _Socket:
     def __init__(self, response: bytes | TimeoutError, expected: bytes) -> None:
         self.response, self.expected, self.offset = response, expected, 0
         self.closed = False
+        self.write_shutdown = False
         self.sent: bytearray | None = None
 
     def settimeout(self, value: float) -> None:
@@ -149,7 +150,14 @@ class _Socket:
             fail(EXIT_MISMATCH, "entry_wire_request_order_or_bytes")
         self.sent = value
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not (self.sent is not None) or self.write_shutdown or self.closed:
+            fail(EXIT_MISMATCH, "apply_run_entry_wire_fixture_half_close")
+        self.write_shutdown = True
+
     def recv(self, maximum: int) -> bytes:
+        if not self.write_shutdown:
+            fail(EXIT_MISMATCH, "apply_run_entry_wire_fixture_receive_before_half_close")
         if maximum != probe._RECEIVE_CHUNK_BYTES:
             fail(EXIT_MISMATCH, "entry_wire_receive_bound")
         if isinstance(self.response, TimeoutError):

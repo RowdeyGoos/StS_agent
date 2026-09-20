@@ -19,5 +19,5 @@ def test_bounded_transport_fixture_gate() -> None:
     assert completed.stderr == ""
     assert completed.stdout == (
         '{"schema_version":1,"status":"passed","suite":"bounded_transport_fixtures",'
-        '"check_count":29}\n'
+        '"check_count":41}\n'
     )

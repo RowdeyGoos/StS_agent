@@ -319,6 +319,7 @@ class Socket:
         self.receives = 0
         self.request: Optional[bytearray] = None
         self.closed = False
+        self.write_shutdown = False
         self.advanced = False
 
     def settimeout(self, value: float) -> None:
@@ -330,7 +331,14 @@ class Socket:
         _require(bytes(request) == self.exchange.expected, "room_diagnostic_exact_request")
         self.transcript.posts += request.startswith(b"POST ")
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not (self.request is not None) or self.write_shutdown or self.closed:
+            fail(EXIT_MISMATCH, "diagnose_run_room_wire_fixture_half_close")
+        self.write_shutdown = True
+
     def recv(self, maximum: int) -> bytes:
+        if not self.write_shutdown:
+            fail(EXIT_MISMATCH, "diagnose_run_room_wire_fixture_receive_before_half_close")
         owner = self.transcript
         _require(maximum == probe._RECEIVE_CHUNK_BYTES, "room_diagnostic_receive_bound")
         if isinstance(self.exchange.response, BaseException):
