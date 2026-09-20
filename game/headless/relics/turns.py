@@ -157,8 +157,6 @@ def hook(p, relic, event, identity):
     elif event == "after_draw":
         if name == "mercury_hourglass":
             area(p, 3)
-        elif name == "pendulum" and turn % 3 == 0:
-            push(p, ["draw", 1, False])
         elif turn == 1:
             if name == "blood_vial":
                 heal(p, 2)

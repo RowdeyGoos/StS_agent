@@ -21,7 +21,7 @@ public partial class Oracle : Node
             if (!ReferenceEquals(godot, typeof(Node).Assembly))
                 throw new InvalidOperationException("Native game resolved a different GodotSharp instance.");
             var result = OS.GetCmdlineUserArgs().Contains("boosted-matrix")
-                ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true,coverage:true,scenario:OS.GetCmdlineUserArgs().Last())
+                ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true,coverage:true,scenario:OS.GetCmdlineUserArgs()[1],ascension:OS.GetCmdlineUserArgs().Contains("ascension-10")?10:0)
                 : OS.GetCmdlineUserArgs().Contains("boosted-kaiser")
                 ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true,coverage:true,kaiser:true)
                 : OS.GetCmdlineUserArgs().Contains("boosted-coverage")

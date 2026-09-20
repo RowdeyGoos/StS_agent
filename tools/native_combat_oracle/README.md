@@ -682,6 +682,30 @@ and [five unchanged baseline executions](../../docs/evidence/native_boss_campaig
 bind the current fixture to native evidence. Coverage includes all 12 regional
 bosses across six boosted paths, not all event branches or inventory combinations.
 
+### A10 native campaigns
+
+Add `--ascension 10` to `--mode boosted-matrix --campaign-case overgrowth-1`
+or `underdocks-4`. The native RunState owns difficulty; `SetUpTest` applies its
+starting modifiers. The fixture keeps the first Glory boss's map child and enters
+that second combat normally before calling `EnterNextAct` for the Architect.
+Starting/current maximum HP remains the sole gameplay override: 1,000,000 before
+Neow, reduced to 800,000 by the actual A2 Neow entry heal.
+
+A10 captures add difficulty, all 15 run/player RNG counters, deck enchantments and
+ordered Hand/Draw/Discard/Exhaust piles with card upgrades/enchantments at every
+live combat boundary. Map/event/per-monster RNG states and every power/status are
+not recorded by this extension. Native rewards, shops, rest selections and event
+choices use the existing legal policy. Self-Help Book selects the first eligible
+physical attack card for Sharp and verifies native selector consumption.
+
+[Two A10 victories](../../docs/evidence/headless_ascensions_2026_09_20.md#a10-native-campaigns)
+cover 52 combats and 1,504 actions. The
+[fresh eight-baseline report](../../docs/evidence/native_a10_campaign_regressions_2026_09_20.json)
+binds final fixture sources to actual executions with unchanged A0 results.
+Historical captures and their original identities remain unchanged. Replays also
+check JSON continuation at every action; full pile comparison exposed incorrect
+end-of-hand discard ordering that hand-only comparisons could not see.
+
 ## Ascension getter references
 
 Pass `ascensions` as the third argument to execute the native A0–A10 monster HP,

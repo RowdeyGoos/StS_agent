@@ -113,7 +113,7 @@ RELICS = MappingProxyType({
     "ornamental_fan": RelicDefinition("ornamental_fan", rarity="uncommon"),
     "parrying_shield": RelicDefinition("parrying_shield", rarity="uncommon"),
     "pen_nib": RelicDefinition("pen_nib", rarity="uncommon", counter_limit=9),
-    "pendulum": RelicDefinition("pendulum", rarity="common"),
+    "pendulum": RelicDefinition("pendulum", rarity="common", counter_limit=2),
     "permafrost": RelicDefinition("permafrost", rarity="uncommon"),
     "pocketwatch": RelicDefinition("pocketwatch", rarity="rare"),
     "rainbow_ring": RelicDefinition("rainbow_ring", rarity="rare"),

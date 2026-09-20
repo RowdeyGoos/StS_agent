@@ -12,7 +12,8 @@ The pinned assembly SHA-256 is
 Both reference programs verify it before loading. They use explicit process-local
 in-memory context, without game launch or profile/save/history/Cloud access.
 Difficulty context is restored/cleared on exit; the getter output records cleanup.
-No native combat turns or complete native campaign execute in these new captures.
+No native combat turns or complete campaign execute in the getter/map captures
+below; the later A10 campaign section records separate actual gameplay evidence.
 
 - [`headless_native_ascension_vectors.json`](../../tests/fixtures/headless_native_ascension_vectors.json):
   11 levels, 102 native monster classes and 4,917 HP/move-property getter evaluations,
@@ -97,12 +98,102 @@ Private schemas advance to **combat v41 / run v60**. Run/combat/monster difficul
 mismatches and older formats reject atomically. No public observation encoding or
 combat projection was changed. Runtime difficulty has no global mutable owner.
 
+## A10 native campaigns
+
+The same pinned queue-runtime harness now executes two **boosted A10 victories**
+with actual native actions from Neow through the Architect. Starting current/max
+HP is set to 1,000,000 before Neow; native A2 healing leaves 800,000 on first map
+entry. No subsequent HP, deck, enemy outcomes, resources or RNG are injected.
+The existing native setup applies A4 potion capacity and A5 Ascender's Bane.
+
+| First act / seed | Bosses | Combats | Combat actions | Final saved HP |
+| --- | --- | ---: | ---: | ---: |
+| Overgrowth / 1 | Ceremonial Beast → Insatiable → Queen → Aeonglass | 25 | 737 | 997,025 |
+| Underdocks / 4 | Waterfall Giant → Knowledge Demon → Aeonglass → Queen | 27 | 767 | 998,018 |
+
+Each path has 49 room/transition/ending records, including exactly two Ancient
+transitions and two consecutive, distinct Glory bosses. Both final-act boss
+reward sets are empty; no Ancient heal occurs between them. Architect acceptance
+requires positive HP in the native saved record, native completion recording,
+and zero HP after disposal. Python reaches terminal `VICTORY` with no actions.
+
+Retained native records (compacted JSON; values unchanged):
+
+- [Overgrowth A10](native_a10_overgrowth_1_2026_09_20.json): native build 1.53 seconds,
+  execution 2.79 seconds.
+- [Underdocks A10](native_a10_underdocks_4_2026_09_20.json): build 1.57 seconds,
+  execution 2.62 seconds.
+- [Eight fresh A0 baseline executions](native_a10_campaign_regressions_2026_09_20.json):
+  generated start/route and all six boosted paths return their exact retained
+  results under the final sources. Builds total 12.93 seconds; executions total
+  19.87 seconds. Old evidence bytes/hashes remain unchanged.
+
+The records retain pinned engine/assembly/dependencies, generator and compiled
+fixture identities, every fixture source hash, timings and cleanup assertions.
+Every process exits successfully with empty stderr and removes its unique empty
+fixture user directory. TestMode, mock saves, uploads disabled, authored mock
+localization/textures and scoped presentation dependencies remain in effect.
+These are native gameplay callbacks in an isolated harness, not live UI evidence.
+No game profile, save, history or Cloud data is read or written.
+
+Reproduce with the existing queue-runtime runner and pinned dependencies described
+in its [guide](../../tools/native_combat_oracle/README.md#a10-native-campaigns):
+`--mode boosted-matrix --campaign-case overgrowth-1 --ascension 10`, then repeat
+with `underdocks-4`, always using a fresh output directory.
+
+### Comparisons and corrections
+
+Python replays every recorded choice, target and action. At every action it also
+restores a JSON clone, checks legal actions, applies the same action to both, and
+compares complete snapshots. Native comparisons include HP/max HP, block/energy,
+enemies, potion slots, deck/relic identities, offers/claims, card upgrades,
+enchantments and ordered Hand/Draw/Discard/Exhaust piles. All **15 run/player RNG
+counters** are compared at live combat and room boundaries; event/map/per-monster
+streams and all power/status internals are outside this capture's observations.
+Solo creature IDs are bound to creation order (player ID 0), preserving stable
+slots even when startup autoplay kills an enemy before the first boundary.
+
+Two production discrepancies were corrected:
+
+1. **Pendulum:** native `TurnsSeen` persists modulo three across combats; headless
+   used the combat-local turn number. The owned relic counter now persists and
+   validates in the range 0–2. An admitted ordinary turn-start callback still
+   increments after earlier same-pass lethal damage, while a pass skipped after
+   lethal hand-draw autoplay does not increment. Pending callbacks carry receipts.
+2. **End-of-hand cards:** native statuses/curses move Hand → Play → Discard before
+   the ordinary hand flush. Headless kept them in hand, changing discard tie order
+   and later choosing a different enchanted Strike after reshuffling. The wrapper
+   now holds the card outside draw/refill candidates through suspended damage
+   hooks, then discards or exhausts it. Restore rejects missing/duplicate ownership.
+
+Private schemas advance to **combat v42 / run v61**; old snapshots reject
+atomically rather than silently reinterpreting counters or continuations.
+Independent semantic review verified these rules against pinned native source,
+including lethal hook ordering, missing receipts and suspended JSON resumption.
+
+### Validation
+
+The final focused run passes **1,844 tests in 222.62 seconds (3:43)**, including
+both strict A10 replays, all ascension tests, affected relic/event/transform/monster
+rules and native draw, death, hook and end-boundary regressions. The A10 replays
+cover 1,504 combat actions with full JSON continuation, in addition to room,
+reward and selector commands. Compilation, local documentation links and diff
+checks pass. Independent semantic review has no remaining blockers.
+
+The separate retained-campaign run passes **23 tests in 436.74 seconds**: all six
+A0 victories with JSON continuation, generated start/ordinary route, evidence
+bindings and related regressions. The two final commands ran concurrently;
+together they passed **1,867 tests**. The full repository suite's unrelated bridge
+failures documented in the previous section remain outside this change; no
+historical bridge pins change.
+
 ## Remaining acceptance scope
 
-The six existing native three-act victory captures remain A0 evidence. A boosted
-native A10 three-act capture, including both Glory bosses and their intervening
-resources/RNG, is the next useful acceptance case. No normal-HP test-policy victory
-is required. Continue focused low-HP/death/revival cases because boosted HP changes
-branch reachability. Native getter and generator parity does not establish every
-higher-ascension interaction, inventory combination or seed. Multiplayer,
-alternate modes and profile-dependent unlocks remain outside the project scope.
+Six native A0 victories and two native A10 victories establish these eight paths,
+not every seed, event branch or inventory combination. The next useful work is
+broader event/inventory conformance and explicit power/status/per-monster RNG
+observations for interactions not distinguishable from current captures. Retain
+focused low-HP/death/revival cases: boosted HP changes which branches are reached.
+No normal-HP test-policy victory is required. Multiplayer, alternate modes and
+profile-dependent unlocks remain outside scope; other playable character run
+starts are separate scope.

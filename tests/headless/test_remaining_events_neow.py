@@ -572,3 +572,49 @@ def test_full_curse_catalog_and_special_rules():
     assert hp - p.hp == 13 and p.block == 20
     assert {c.definition.definition_id for c in p.deck.exhaust_pile} == {"ascenders_bane", "folly"}
     clone(run)
+
+
+def test_end_hand_status_is_discarded_before_ordinary_hand_flush():
+    from game.headless.powers.ironclad import end_turn
+
+    run = RunEngine(card_ids=['defend', 'wither', 'strike', 'infection'])
+    run.start_combat(cards_per_turn=0)
+    p = run.combat.player
+    by_id = {c.definition.definition_id: c for c in p.deck.draw_pile}
+    p.hand[:] = [by_id[n] for n in ('defend', 'wither', 'strike', 'infection')]
+    p.deck.draw_pile.clear()
+    end_turn(p)
+    assert [c.definition.definition_id for c in p.deck.discard_pile] == ['wither', 'infection', 'defend', 'strike']
+    assert not p.deck.in_play
+
+
+def test_end_hand_wrapper_is_owned_while_damage_draw_hooks_pause():
+    from copy import deepcopy
+    run = RunEngine(card_ids=['regret', 'debt', 'defend', 'strike', 'defend', 'strike'])
+    add_relic(run.state, 'centennial_puzzle')
+    run.start_combat(cards_per_turn=0)
+    p = run.combat.player
+    regret = next(c for c in p.deck.draw_pile if c.definition.definition_id == 'regret')
+    p.deck.draw_pile.remove(regret)
+    p.hand.append(regret)
+    p.deck.discard_pile.extend(p.deck.draw_pile)
+    p.deck.draw_pile.clear()
+    p.rules.powers['stratagem'] = 1
+    run.apply(EndTurn())
+    assert p.rules.selection is not None
+    assert p.deck.in_play == [regret]
+    assert regret.instance_id not in p.rules.selection['candidates']
+    clone(run)
+    before = saved(run)
+    bad = deepcopy(before)
+    def remove_finish(value):
+        if isinstance(value, dict):
+            if 'tasks' in value:
+                value['tasks'] = [t for t in value['tasks'] if t[0] != 'finish_end_hand_card']
+            for v in value.values(): remove_finish(v)
+        elif isinstance(value, list):
+            for v in value: remove_finish(v)
+    remove_finish(bad)
+    with pytest.raises(ValueError):
+        run.restore(bad)
+    assert saved(run) == before

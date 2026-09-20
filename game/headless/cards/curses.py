@@ -80,7 +80,7 @@ def can_play(player, card=None, *, auto=False):
 
 
 def end_in_hand(player, card):
-    if card not in player.hand or player.combat_is_ending:
+    if card not in player.deck.in_play or player.combat_is_ending:
         return
     name = card.definition.definition_id
     if name == "debt":

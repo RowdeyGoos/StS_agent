@@ -117,9 +117,19 @@ ascension config selects difficulty separately.
 [Ascension evidence](evidence/headless_ascensions_2026_09_20.md) contains all eleven
 native getter levels and 30 native map/initialization comparisons. Python tests
 exercise every registered encounter at A8/A9, modifiers, summons/revivals and A10
-progression/JSON restoration. The A10 route tests use synthetic combat victories;
-a complete native A10 winning trajectory has not yet been captured. The retained
-six native campaign victories remain A0 evidence.
+progression/JSON restoration. Two boosted native A10 campaigns now win from
+Overgrowth and Underdocks through both Glory bosses and the Architect: 52 combats
+and 1,504 combat actions. Replays compare all four card piles and enchantments,
+resources, rewards and all 15 run/player RNG counters, with JSON continuation at
+every action. Six earlier native victories remain separate A0 coverage. This is
+bounded trajectory evidence, not exhaustive seed/inventory coverage.
+
+Those comparisons corrected Pendulum's persistent three-turn counter and native
+end-of-hand status/curse movement through Play and Discard before ordinary hand
+flush. Pendulum counts a turn admitted to the ordinary turn-start listener pass,
+even if an earlier listener wins combat; it does not count a pass skipped because
+the preceding hand draw already won. Suspended callbacks and end-of-hand wrappers
+have owned, validated continuations. Older private schemas reject atomically.
 
 ## Duplicate card reward choices
 
@@ -168,7 +178,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v41 / run v60**.
+than being silently reinterpreted: current schemas are **combat v42 / run v61**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -390,7 +400,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v41 / run v60.
+reject atomically; current formats are combat v42 / run v61.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -417,7 +427,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v41 / run v60**.
+reject atomically. These private formats are **combat v42 / run v61**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -588,7 +598,7 @@ normal-HP winning strategy, live UI scheduling or exhaustive native parity.
 The boosted replay exposed and corrected Parafright/Obscura action order,
 random-hit target enumeration after summons, Bronze Scales using Thorns before
 incoming damage, Paper Cuts after its owner dies, and Fabricator's delayed
-next-move decision after later bots finish. Current **combat v41 / run v60** reject
+next-move decision after later bots finish. Current **combat v42 / run v61** reject
 older continuation semantics. Fabricator's pending roll is owned by the active
 enemy continuation and survives pauses without a second RNG draw.
 
@@ -604,7 +614,7 @@ Fresh native shared bags refill only the requested empty rarity, in canonical
 order without RNG. Ownership is not a global filter; repeated instances have
 separate identities, counters and effects. An entry allocator boundary binds
 chest claims to newly acquired relics and rejects reopening or claiming an old copy.
-Private schemas are combat v41 / run v60. Native disk-save loading drops the
+Private schemas are combat v42 / run v61. Native disk-save loading drops the
 refill configuration; Python JSON preserves the fresh session being continued.
 See [refill and campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
 The [Kaiser campaign](evidence/native_boosted_kaiser_2026_09_20.json) adds Underdocks
@@ -632,7 +642,7 @@ edge regressions preserve Ceremonial Beast's reactive stun and temporary Strengt
 cleanup and Waterfall Giant's post-death power removal. Combat rewards preserve
 the Amethyst Aubergine owners that generated their gold, so later pickups from
 main/extra rewards or Pael's Wing cannot retroactively change the amount. Private
-schemas are combat v41 / run v60; old continuations reject. Boss coverage does not establish every seed,
+schemas are combat v42 / run v61; old continuations reject. Boss coverage does not establish every seed,
 event branch, inventory combination or hidden native state field.
 
 Further event and inventory coverage remains in the

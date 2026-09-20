@@ -25,7 +25,12 @@ def test_remaining_boss_campaign_with_json_continuation(case, combats, actions):
     assert evidence['userDirectoryRemoved']
     assert evidence['result']['presentation']['cleared']
     assert evidence['result']['presentation']['listenersRemoved']
-    for name, digest in evidence['fixtureSources'].items():
+    rerun = json.loads((ROOT / 'docs/evidence/native_a10_campaign_regressions_2026_09_20.json').read_text())
+    fresh = next(r for r in rerun['runs'] if r.get('case') == case.replace('_', '-'))
+    assert fresh['userDirectoryRemoved'] and fresh['resultMatchesRetained']
+    assert fresh['exitCode'] == fresh['stderrBytes'] == 0
+    assert hashlib.sha256(json.dumps(evidence['result'], sort_keys=True).encode()).hexdigest() == fresh['resultSha256']
+    for name, digest in rerun['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
     row, = evidence['result']['rows']
     rooms = [r['room'] for r in row['route']]
