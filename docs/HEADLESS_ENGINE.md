@@ -666,6 +666,14 @@ Private schemas **combat v43 / run v64** reject the older relic-memory layout.
 This is a bounded interaction matrix, not every item combination or power family;
 the evidence records authored setup and the single enemy-turn boundary.
 
+[72 additional conditional relic cases](evidence/native_conditional_relic_stats_2026_09_20.md)
+cover Red Skull/Belt Buckle activation and removal, Artifact protection, Ruined
+Helmet and combat-ending guards at 720 boundaries. Bonus removal now uses the
+Artifact-aware stat-loss rule; saved active flags track the condition even when
+the power change is blocked. Repeated callbacks and reactivation after a protected
+loss match native results and JSON continuation. The original 144 interaction
+cases were rerun natively with identical results. Snapshot formats are unchanged.
+
 ### Event and inventory conformance
 
 The [expanded solo branch matrix](evidence/native_event_branches_2026_09_20.md)

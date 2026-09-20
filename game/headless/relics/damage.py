@@ -12,15 +12,29 @@ def strength_gain(p, amount):
     return amount
 
 
+def _conditional_stat(p, name, amount):
+    # Relic bonuses use native PowerCmd semantics in both directions. Losing a
+    # bonus is a debuff (Artifact may prevent it), even if the resulting stat
+    # would still be positive. Ending combat suppresses either application.
+    if p.combat_is_ending:
+        return
+    if amount < 0:
+        from game.headless.powers.underdocks import stat_loss
+        stat_loss(p, name, -amount)
+    else:
+        from game.headless.powers.ironclad import apply_power
+        apply_power(p, name, amount)
+
+
 def hp_changed(p):
     relic = owned(p, "red_skull")
-    if relic is None or not p.is_alive:
+    if relic is None:
         return
     m = memory(p, relic)
     active = p.hp * 2 <= p.max_hp
     if active != m.get("strength_applied", False):
         m["strength_applied"] = active
-        p.gain_strength(3) if active else setattr(p, "strength", p.strength - 3)
+        _conditional_stat(p, "strength", 3 if active else -3)
 
 
 def potions_changed(p):
@@ -31,9 +45,7 @@ def potions_changed(p):
     active = p.rules.potion_slots == p.rules.potion_capacity
     if active != m.get("dexterity_applied", False):
         m["dexterity_applied"] = active
-        # Native PowerCmd ignores applications after combat starts ending.
-        if not p.combat_is_ending:
-            p.rules.powers["dexterity"] = p.rules.powers.get("dexterity", 0) + (2 if active else -2)
+        _conditional_stat(p, "dexterity", 2 if active else -2)
 
 
 def hp_loss_amount(p, amount):
