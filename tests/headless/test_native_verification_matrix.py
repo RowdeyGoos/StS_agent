@@ -26,5 +26,6 @@ def test_consolidated_native_matrix_matches_retained_results():
 
 def test_new_native_fixtures_match_executed_behavior_sources():
     source = ROOT / 'tools/native_combat_oracle/queue_runtime'
-    for name in ('campaign.cs', 'generated_start.cs'):
+    # Generated-start's extended source is bound by test_native_generated_route.
+    for name in ('campaign.cs',):
         assert hashlib.sha256((source / name).read_bytes()).hexdigest() == RECORD['fixtureSources'][name]

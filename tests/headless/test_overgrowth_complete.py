@@ -405,3 +405,27 @@ def test_snapshot_rejects_a_live_but_wrong_power_applier_and_wrong_beast_phase()
     bad['enemies'][0]['state']['_intent_index']=4
     with pytest.raises(ValueError):beast.restore(bad)
     assert saved(beast)==before
+
+
+def test_inklet_slippery_caps_only_first_unblocked_hit_and_restores():
+    combat = fight('overgrowth_inklets', cards=('strike', 'strike'), draw=2)
+    enemy = combat.enemies[0]
+    assert enemy.statuses.get('slippery') == 1
+    before = enemy.hp
+    for damage in (1, 6):
+        action = next(a for a in combat.legal_actions() if isinstance(a, PlayCard) and a.target_slot == 0)
+        step(combat, action)
+        assert enemy.hp == before - damage
+        assert enemy.statuses.get('slippery') == 0
+        before = enemy.hp
+
+
+def test_previous_inklet_combat_and_chest_run_schemas_reject_atomically():
+    for engine, old_schema in ((fight('overgrowth_inklets'), 'headless_combat_state_v35'),
+                               (RunEngine.ironclad_run(seed=0), 'headless_run_state_v54')):
+        before = saved(engine)
+        old = deepcopy(before)
+        old['schema'] = old_schema
+        with pytest.raises(ValueError):
+            engine.restore(old)
+        assert saved(engine) == before

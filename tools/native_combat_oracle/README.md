@@ -566,8 +566,21 @@ are invoked explicitly. UI localization and two textures are in-memory placehold
 The native test selector supplies the bundle choice. Every await and action loop
 is bounded; no damage, victory or extra HP is injected.
 
-Both modes initialize mock preferences with uploads disabled and assert
-`ShouldSave == false`. Neither reads or writes player profiles. All runner modes
+`--mode generated-route` extends that fixture through a deterministic seed-0 Act 1
+path: 16 rooms, 11 combats and 170 play/end-turn actions, ending in Vantom defeat.
+It claims selected card, gold and relic rewards via native reward objects, heals
+at rests and leaves one closed chest and one shop. The policy uses legal cards,
+visible intents and fixed card preferences; no synthetic HP or victories are used.
+Card target indices refer to the native current enemy list; the replay maps them
+to headless stable slots. Unknown rooms and later acts are not supported by this
+mode yet. Its budget is 60 rooms, 300 actions per combat, three seconds per await
+and 60 seconds for the native process (other modes retain 15 seconds).
+The [retained trace](../../docs/evidence/native_generated_route_2026_09_20.json)
+and [scope report](../../docs/evidence/headless_generated_route_2026_09_20.md)
+record current fixture identities and exact acceptance limits.
+
+These modes initialize mock preferences with uploads disabled and assert
+`ShouldSave == false`. They do not read or write player profiles. All runner modes
 now reject nonempty stderr, which catches asynchronous event errors even when the
 process exits successfully. Reward-handoff's Dummy initialization supplies mock
 localization and requires all three options before testing its prepared child room.

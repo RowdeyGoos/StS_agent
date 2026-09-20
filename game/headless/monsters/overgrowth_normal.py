@@ -55,9 +55,10 @@ class Inklet(ScriptedEnemy):
     def __init__(self, rng, *, middle=False):
         super().__init__(rng)
         self._intent_index = 1 if middle else 0
+        self.statuses.add("slippery", 1)
 
     def advance_intent(self):
-        self._intent_index = branch(self.rng, (1, 2)) if self._intent_index == 0 else 0
+        self._intent_index = branch(self.rng, (2, 1)) if self._intent_index == 0 else 0
 
     def _possible_next_templates(self):
         return self.MOVES[1:] if self._intent_index == 0 else self.MOVES[:1]
