@@ -26,7 +26,7 @@ class Wellspring:
         data = pending["data"]
         if option_id == "bottle":
             trial = deepcopy(state)
-            rewards = potion_rewards.generate(trial.rng, self.potion_pool, 1)
+            rewards = potion_rewards.generate(trial.rng, self.potion_pool, 1, uniform=True)
             state.rng = trial.rng
             data.update(choice="bottle", rewards=rewards)
             pending["stage"] = "potion_rewards"
@@ -76,6 +76,16 @@ class Wellspring:
                         or guilty.instance_id in [r["instance_id"] for r in data["originals"]]):
                     raise ValueError("Wellspring Guilty grant differs from the deck.")
                 extra = (guilty.instance_id,)
+                from game.headless.relics.run_rules import has
+                if has(state, "bing_bong"):
+                    from game.headless.core.snapshots import card_record
+                    original_ids = {r["instance_id"] for r in data["originals"]}
+                    clones = [c for c in state.deck if c.instance_id not in {*original_ids, guilty.instance_id}]
+                    if len(clones) != 1 or {k: v for k, v in card_record(clones[0]).items() if k != "instance_id"} != {k: v for k, v in card_record(guilty).items() if k != "instance_id"}:
+                        raise ValueError("Wellspring clone differs from Guilty.")
+                    extra += (clones[0].instance_id,)
+                if tuple(c.instance_id for c in state.deck[-len(extra):]) != extra:
+                    raise ValueError("Wellspring grants are not appended in acquisition order.")
             elif data["guilty_id"] is not None:
                 raise ValueError("Pending removal already granted Guilty.")
             deck_choice.validate(state, data, cards, operation="remove", finished=stage=="resolved", extra=extra)

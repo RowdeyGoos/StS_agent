@@ -34,7 +34,8 @@ def replace_preserving(state, original, definition):
                   upgrade_level=min(original.upgrade_level, len(definition.levels) - 1))
     if original.enchantment and can_enchant(result, original.enchantment.definition_id):
         result.enchantment = deepcopy(original.enchantment)
-    state.deck[state.deck.index(original)] = result
+    state.deck.remove(original)
+    state.deck.append(result)
     from game.headless.relics.run_rules import card_added
     card_added(state, result)
     return result
@@ -164,8 +165,8 @@ def apply_grid(state, cards, action):
     state.relic_work.pop(0)
     for index in work['selected']:
         offer = work['offers'][index]
-        card = add_card(state, cards.definition(offer['definition_id']), upgrade_level=offer['upgrade_level'])
-        card.enchantment = restore(offer['enchantment'])
+        add_card(state, cards.definition(offer['definition_id']), upgrade_level=offer['upgrade_level'],
+                 enchantment=restore(offer['enchantment']))
 
 
 def validate_grid(state, cards, work, name):

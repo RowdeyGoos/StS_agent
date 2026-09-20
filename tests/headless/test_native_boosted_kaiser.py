@@ -21,7 +21,7 @@ def test_kaiser_fixture_identity_and_presentation_cleanup():
     assert RECORD['spineExtensionSha256'] == 'dde5c7682eb29f3c69e4191f6361a1f0731292188b2603bee02adf726abde0d8'
     assert RECORD['result']['presentation'] == dict(
         armsAttached=2, armDeaths=2, nexusDeaths=1, cleared=True, listenersRemoved=True)
-    rerun = json.loads((ROOT / 'docs/evidence/native_event_campaign_regressions_2026_09_20.json').read_text())
+    rerun = json.loads((ROOT / 'docs/evidence/native_event_branch_regressions_2026_09_20.json').read_text())
     row = next(r for r in rerun['runs'] if r['mode'] == 'boosted-kaiser')
     assert row['resultMatchesRetained'] and row['exitCode'] == row['stderrBytes'] == 0
     assert row['resultSha256'] == hashlib.sha256(json.dumps(RECORD['result'], sort_keys=True).encode()).hexdigest()

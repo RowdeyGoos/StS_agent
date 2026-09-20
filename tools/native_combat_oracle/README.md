@@ -719,9 +719,27 @@ normal reward claims. No profile/history file or real scene is read.
 [The retained event capture](../../docs/evidence/native_event_inventory_2026_09_20.json)
 records ordered inventory, all reward offers and four RNG counters/next values.
 [Ten unchanged native baseline executions](../../docs/evidence/native_event_campaign_regressions_2026_09_20.json)
-bind the current dispatcher/staged sources to the retained A0/A10 campaign results;
+bind that earlier dispatcher/staged source revision to the retained A0/A10 campaign results;
 original capture bytes remain unchanged. This verifies the declared event choices,
 not tea combat hooks, arbitrary selections or live UI behavior.
+
+### Complete solo event branch matrix
+
+Use `--mode event-roster --event-name <NativeEventName>` with the same isolated
+queue runner inputs and a fresh output directory. `event_roster.cs` explores native
+options, physical selections, reward claims/declines and Ancient offer discovery;
+`event_minigame.cs` drives native Crystal Sphere callbacks. Each invocation is
+bounded and rejects native stderr or unconfirmed cleanup. Per-family captures
+are compressed without changing their original JSON bytes.
+
+The [matrix evidence](../../docs/evidence/native_event_branches_2026_09_20.md)
+describes 9,376 cases, all 99 Ancient offers, JSON replay and exact boundary limits.
+Event-combat completion is authored before actual native hooks/rewards/resume.
+Calling Bell, Trial and Crystal Sphere have explicit source/callback boundaries;
+Scroll Boxes uses the actual remote-choice waiter for both bundles. No live UI or
+full native combat cleanup is claimed. The [fresh baseline report](../../docs/evidence/native_event_branch_regressions_2026_09_20.json)
+binds the current harness to unchanged campaign, inventory, reward-handoff and
+Architect results without rewriting historical capture identities.
 
 ## Ascension getter references
 

@@ -4,13 +4,13 @@ from game.headless.potions.base import POTIONS
 
 
 def prepare(state, cards, descriptors):
-    from game.headless.potions.pools import ORDINARY_POTIONS, generate
+    from game.headless.potions.pools import ORDINARY_POTIONS, generate, unlocked_order
     from game.headless.events.operations import pull_relic
     from game.headless.generation.odds import card_offers
     from game.headless.relics.rewards import decorate, extend_pool
     # Crystal Sphere creates its explicit potions while constructing rewards;
     # the remaining factories run in the subsequent population pass.
-    potions = {i: state.rng.choice(d[2], [n for n in ORDINARY_POTIONS if d[1] == 'any' or POTIONS[n].rarity == d[1]])
+    potions = {i: state.rng.choice(d[2], [n for n in unlocked_order(ORDINARY_POTIONS, state.rng) if d[1] == 'any' or POTIONS[n].rarity == d[1]])
                for i,d in enumerate(descriptors) if d[0]=='potion' and d[1]!='factory'}
     result=[]
     reserved=[]
@@ -18,7 +18,11 @@ def prepare(state, cards, descriptors):
         kind=d[0]; modifiers={}
         if kind=='relic': offers=[pull_relic(state,stream=d[2],exclude=reserved) if d[1]=='random' else d[1]]
         elif kind=='potion': offers=[potions[i] if i in potions else generate(ORDINARY_POTIONS,state.rng,stream=d[2])]
-        elif kind=='gold': offers=['gold'];modifiers={'gold':d[1]}
+        elif kind=='gold':
+            # GoldReward.Populate consumes a draw even for a fixed amount.
+            if getattr(state.rng, 'native', False):
+                state.rng.randint(d[2] if len(d)>2 else 'rewards', d[1], d[1])
+            offers=['gold'];modifiers={'gold':d[1]}
         elif kind=='special_card': offers=[d[1]]
         elif kind=='card':
             flags=d[5] if len(d)>5 else {}

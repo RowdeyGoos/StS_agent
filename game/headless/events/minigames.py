@@ -107,6 +107,6 @@ def branch(name,page_name,option,c):
         if kind=='relic': rewards.append(['relic','random','event.crystal'])
         elif kind.startswith('potion_'): rewards.append(['potion',kind[7:],'event.crystal'])
         elif kind.startswith('card_'): rewards.append(['card','ironclad',kind[5:],3,'event.crystal'])
-        elif kind.startswith('gold_'): rewards.append(['gold',30 if kind=='gold_big' else 10])
+        elif kind.startswith('gold_'): rewards.append(['gold',30 if kind=='gold_big' else 10,'event.crystal'])
     if rewards: ops.append(('rewards',rewards))
     return tuple(ops),None

@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v62"
+SCHEMA = "headless_run_state_v63"
 
 
 def _restore_graph(record):
@@ -60,8 +60,13 @@ def _restore_relic(record):
 
 
 def _item_definitions():
-    return json.loads(json.dumps({"relics": [asdict(v) for v in RELICS.values()],
-                                  "potions": [asdict(v) for v in POTIONS.values()]}))
+    # These frozen content records contain JSON scalars/tuples. JSON already
+    # creates detached containers; recursively deep-copying every field with
+    # asdict before encoding repeats the same work at every decision boundary.
+    def records(definitions):
+        return [{name: getattr(value, name) for name in value.__dataclass_fields__}
+                for value in definitions.values()]
+    return json.loads(json.dumps({"relics": records(RELICS), "potions": records(POTIONS)}))
 
 
 def capture_run(engine) -> dict:

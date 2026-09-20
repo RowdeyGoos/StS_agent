@@ -25,7 +25,7 @@ def test_remaining_boss_campaign_with_json_continuation(case, combats, actions):
     assert evidence['userDirectoryRemoved']
     assert evidence['result']['presentation']['cleared']
     assert evidence['result']['presentation']['listenersRemoved']
-    rerun = json.loads((ROOT / 'docs/evidence/native_event_campaign_regressions_2026_09_20.json').read_text())
+    rerun = json.loads((ROOT / 'docs/evidence/native_event_branch_regressions_2026_09_20.json').read_text())
     fresh = next(r for r in rerun['runs'] if r.get('case') == case.replace('_', '-') and r['ascension'] == 0)
     assert fresh['userDirectoryRemoved'] and fresh['resultMatchesRetained']
     assert fresh['exitCode'] == fresh['stderrBytes'] == 0

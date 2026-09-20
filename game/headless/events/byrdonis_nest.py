@@ -54,6 +54,12 @@ class ByrdonisNest:
                     or egg.upgrade_level or egg.combats_seen or egg.enchantment is not None):
                 raise ValueError("Invalid Nest egg grant.")
             expected.append(card_record(egg))
+            from game.headless.relics.run_rules import has
+            if has(state, 'bing_bong'):
+                clones = [c for c in state.deck if c.instance_id not in {*ids, egg.instance_id}]
+                if len(clones) != 1 or {k: v for k, v in card_record(clones[0]).items() if k != 'instance_id'} != {k: v for k, v in card_record(egg).items() if k != 'instance_id'}:
+                    raise ValueError("Nest clone differs from its egg.")
+                expected.append(card_record(clones[0]))
         elif data["egg_id"] is not None:
             raise ValueError("Unchosen egg grant.")
         if expected != [card_record(c) for c in state.deck]:

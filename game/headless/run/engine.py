@@ -224,7 +224,7 @@ class RunEngine:
             self.finish_combat()
         return combat
 
-    def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5):
+    def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5, constructed_hp_rng=None):
         # Build against an independent stream snapshot, committing only on success.
         from game.headless.core.rng import from_snapshot
         rng = from_snapshot(self.state.rng.snapshot())
@@ -254,7 +254,7 @@ class RunEngine:
                 combat.encounter_rng = EncounterRandom(
                     rng.root_seed, self.state.visited_room_count + ancient_floor,
                     re.sub(r"(?<!^)(?=[A-Z])", "_", native_type).upper(),
-                    combat.rng, combat.native_streams["niche"], ascension=combat.ascension,
+                    combat.rng, constructed_hp_rng if constructed_hp_rng is not None else combat.native_streams["niche"], ascension=combat.ascension,
                 )
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         from game.headless.relics.ancient_map import coat_active

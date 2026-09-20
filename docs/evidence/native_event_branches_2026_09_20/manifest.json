@@ -1,0 +1,1036 @@
+{
+  "schema": "native_event_branch_capture_v1",
+  "scope": "Solo Ironclad event semantic branches; bounded seeds, inventories, selectors and authored combat outcomes. Architect is covered by the separately rerun native campaign ending.",
+  "fixtureSources": {
+    "Oracle.cs": "b080d2085826b04dfdd26d18d063268ae1352d775c2f31bbe4fefc27ecb0705f",
+    "autoplay.cs": "c8b8b235a1b2e85dc892dd53c6e6fbeea94518059dcefbb0a07dd8333e9bc30b",
+    "campaign.cs": "30774923a1cbcf208e1a16893e6fa0121ecea7565c8ec8d44b7f77af25dd3477",
+    "death_draw.cs": "a03977ab94ab79292a778aa423134a1f7f168c989f99ca2921852885abc5d52e",
+    "draw_cards.cs": "860495a2b4a1620b2947fe2fb26e508b551ae38c5d9a8ff2129e8ef69764c421",
+    "empty.tscn": "cccb4ea7de5f98a9849e78bc13a7cd20ce5a5c53a01db3cf01dda48a0962125a",
+    "end_boundary.cs": "69760662425e28b36e60df8aa6760d0ee2812a6802461ffcbb300656ad731fc2",
+    "enemy_interactions.cs": "75c0fe143e914f6a5ca2ff762d0e7b60d05d23a5542f7f6d533a5b7ae3f782ba",
+    "enemy_turn.cs": "81b6217531a6a9df9d9a5f37fcab2569be741c94391e216aae34c9fbb91f2cac",
+    "event_inventory.cs": "fc96cef83ef396ee77b55f4bcced3969d3c088d2d3a44014408486bae4af81ba",
+    "event_minigame.cs": "4ce80e8905ed24562f1b52a6d7be3c685c8c037a403c513d59dab780799a3b5e",
+    "event_roster.cs": "75595510c6f276213f8691814b4947392886f5cb313bf7dec1caa478f51ed5a3",
+    "generated_start.cs": "93a15eecc67d785c80db2b5f6ff1b05445a42e0f0f616fcf63745d63b3add90c",
+    "interactions.cs": "f1f8d68dcc68f80480f4edd240b690930aaeb6d7da3ad3146ad3f52ad0d7f778",
+    "kaiser_empty.atlas": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "kaiser_presentation.cs": "cb36f353b2e7fa15c9055eb4b614c60fe23c692610220898e8d80873082cb0ab",
+    "kaiser_skeleton.spjson": "9a741f32c5d254b8b7548e8f50cdbcda3dfc883f5ee69b38dd2894a86feb200d",
+    "paused_hooks.cs": "fd9a8a9126e65e096374aa861561888034d2898948c9b95b0a09d2dcd444ae78",
+    "queue_oracle.csproj": "37532e3cb3942cb6ab4cd5e068708838cd83c3a203ff840cb1d565cd51cfbc68",
+    "remaining_draw.cs": "df6f6af4016d022406908a18a9ee1678ee6050ff6fdb28310a29b130df80fc39",
+    "reward_handoff.cs": "a21a80f35869eaeb29e771ed7ab48ecc269aa3e4d44ce001d17cc10228c24db9",
+    "run.py": "21a28238fb7ef054b46f6c591a02610b8a52c7018b6ea4e9a0b62ec5ee82e98e",
+    "side_start.cs": "24441f5e61f83b7b52379e1ddd92504c5fdb1aa049f8a5f7b0ee0a24dd024c78"
+  },
+  "events": [
+    {
+      "event": "AbyssalBaths",
+      "file": "AbyssalBaths.json.gz",
+      "cases": 322,
+      "choices": [
+        "ABYSSAL_BATHS.pages.ALL.options.EXIT_BATHS",
+        "ABYSSAL_BATHS.pages.ALL.options.LINGER",
+        "ABYSSAL_BATHS.pages.INITIAL.options.ABSTAIN",
+        "ABYSSAL_BATHS.pages.INITIAL.options.IMMERSE"
+      ],
+      "rawSha256": "6828d3f0f3c8ae161fae862f47e5e52b5041695fad39b8fed5a2851e71146578",
+      "compressedSha256": "b9207ecfa7e2b7d0b9bb858e0c256d3cea2e8a10ffad45ba63b97bfa187296e8",
+      "buildSeconds": 1.8735825,
+      "executionSeconds": 1.9969528749999994
+    },
+    {
+      "event": "Amalgamator",
+      "file": "Amalgamator.json.gz",
+      "cases": 42,
+      "choices": [
+        "AMALGAMATOR.pages.INITIAL.options.COMBINE_DEFENDS",
+        "AMALGAMATOR.pages.INITIAL.options.COMBINE_STRIKES"
+      ],
+      "rawSha256": "57aeabb50e522e082ae1df91418180a6927438e6d674a9289809c62b4fac8025",
+      "compressedSha256": "561ccc30c47386a977b79d6113719823a5005c1aaca860dc91149d136a69b1ff",
+      "buildSeconds": 2.001205208,
+      "executionSeconds": 11.320612292
+    },
+    {
+      "event": "AromaOfChaos",
+      "file": "AromaOfChaos.json.gz",
+      "cases": 42,
+      "choices": [
+        "AROMA_OF_CHAOS.pages.INITIAL.options.LET_GO",
+        "AROMA_OF_CHAOS.pages.INITIAL.options.MAINTAIN_CONTROL"
+      ],
+      "rawSha256": "e628aa1150fae1a588d7df8ecb4e49426dde08774bd4e933fce5c96e3ad849b9",
+      "compressedSha256": "ae19744c7232f6c9c46ea482c1789a692f315b07ef12797d3c2eedae6e6fc4e6",
+      "buildSeconds": 2.011866708,
+      "executionSeconds": 1.7668419159999997
+    },
+    {
+      "event": "BattlewornDummy",
+      "file": "BattlewornDummy.json.gz",
+      "cases": 96,
+      "choices": [
+        "BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_1",
+        "BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2",
+        "BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_3"
+      ],
+      "rawSha256": "0f250799e502183b0fa61c176d29746e25159451250e89b53d808f649b1ae107",
+      "compressedSha256": "f02354ab8a7a10b6191db436b63e320c8b0f3dcbae6d86f1d4e7e812c1119ce9",
+      "buildSeconds": 2.0551880419999997,
+      "executionSeconds": 1.9186282500000003
+    },
+    {
+      "event": "BrainLeech",
+      "file": "BrainLeech.json.gz",
+      "cases": 42,
+      "choices": [
+        "BRAIN_LEECH.pages.INITIAL.options.RIP",
+        "BRAIN_LEECH.pages.INITIAL.options.SHARE_KNOWLEDGE"
+      ],
+      "rawSha256": "e5812c07fa291bca579d5e9e7985c9c7036e506a35238294281309a945df584a",
+      "compressedSha256": "91c7845c8bc5791473cc554d6d86220970d3b72592d7c84d114e19dee0e0d3e1",
+      "buildSeconds": 2.168728125,
+      "executionSeconds": 2.5190452910000003
+    },
+    {
+      "event": "Bugslayer",
+      "file": "Bugslayer.json.gz",
+      "cases": 42,
+      "choices": [
+        "BUGSLAYER.pages.INITIAL.options.EXTERMINATION",
+        "BUGSLAYER.pages.INITIAL.options.SQUASH"
+      ],
+      "rawSha256": "be70ca004b821fa1400f8eeef6451050e8d152161d0eee726d85d4071c905b02",
+      "compressedSha256": "c37a75bfde64d34ce08f44ade205a819f6b3dc4c9de7042632b0ee84c223bb3f",
+      "buildSeconds": 2.115283,
+      "executionSeconds": 2.6138386669999996
+    },
+    {
+      "event": "ByrdonisNest",
+      "file": "ByrdonisNest.json.gz",
+      "cases": 42,
+      "choices": [
+        "BYRDONIS_NEST.pages.INITIAL.options.EAT",
+        "BYRDONIS_NEST.pages.INITIAL.options.TAKE"
+      ],
+      "rawSha256": "3b33390267f53261faa104a813d130584611d027788d7f93d2ee9231f787729a",
+      "compressedSha256": "71fba7f3eb96b7e52035c5b6e0e83cce8c65aaf144ba99209b8bc16fd2772d43",
+      "buildSeconds": 2.2297061670000002,
+      "executionSeconds": 3.274981167
+    },
+    {
+      "event": "ColorfulPhilosophers",
+      "file": "ColorfulPhilosophers.json.gz",
+      "cases": 56,
+      "choices": [
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.DEFECT",
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.NECROBINDER",
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.REGENT",
+        "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.SILENT"
+      ],
+      "rawSha256": "74d0e50ca2dc3531710856c12cd9a3f90bde76f4f8c9e28a3a934037c2266bf2",
+      "compressedSha256": "523c1a3e77272a338ae87c6a0b0d532e4af1b5c247d9807e8e6b10773b19b340",
+      "buildSeconds": 1.8744426660000002,
+      "executionSeconds": 1.8927748330000003
+    },
+    {
+      "event": "ColossalFlower",
+      "file": "ColossalFlower.json.gz",
+      "cases": 98,
+      "choices": [
+        "COLOSSAL_FLOWER.pages.INITIAL.options.EXTRACT_CURRENT_PRIZE_1",
+        "COLOSSAL_FLOWER.pages.INITIAL.options.REACH_DEEPER_1",
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_1.options.EXTRACT_CURRENT_PRIZE_2",
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_1.options.REACH_DEEPER_2",
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_2.options.EXTRACT_INSTEAD",
+        "COLOSSAL_FLOWER.pages.REACH_DEEPER_2.options.POLLINOUS_CORE"
+      ],
+      "rawSha256": "5b9567cf05bfad3d22c2c0305180016bc59c73b154748d00ea5e5a04a4a42405",
+      "compressedSha256": "d31f79c64c0e523c30356e9a4220a98240933cb3cb58a0a418b14842f32a6e2b",
+      "buildSeconds": 1.873278458,
+      "executionSeconds": 1.6908729999999998
+    },
+    {
+      "event": "CrystalSphere",
+      "file": "CrystalSphere.json.gz",
+      "cases": 780,
+      "choices": [
+        "CRYSTAL_SPHERE.pages.INITIAL.options.PAYMENT_PLAN",
+        "CRYSTAL_SPHERE.pages.INITIAL.options.UNCOVER_FUTURE"
+      ],
+      "rawSha256": "6f8a6d46a4fcba2f1c8eead6a82c2739f5f76cb87e7788b0509ea490be78df1c",
+      "compressedSha256": "48320208bba0eff2530dff93029c64552b2e39b49902ef057c8224e31f4026fc",
+      "buildSeconds": 2.037444083,
+      "executionSeconds": 4.443150833
+    },
+    {
+      "event": "Darv",
+      "file": "Darv.json.gz",
+      "cases": 128,
+      "choices": [
+        "ASTROLABE",
+        "BLACK_STAR",
+        "CALLING_BELL",
+        "DUSTY_TOME",
+        "ECTOPLASM",
+        "EMPTY_CAGE",
+        "PANDORAS_BOX",
+        "PHILOSOPHERS_STONE",
+        "RUNIC_PYRAMID",
+        "SNECKO_EYE",
+        "SOZU",
+        "VELVET_CHOKER"
+      ],
+      "rawSha256": "61a0b98ea5b75c117b0eba7f6a268e1877d7c554b73331411c241f89b43b4b4a",
+      "compressedSha256": "f6ba925c3ba330f74cf9f9903c8d57cf9975ab5208536a90c70a672e7248b384",
+      "buildSeconds": 1.837631042,
+      "executionSeconds": 2.285290041
+    },
+    {
+      "event": "DenseVegetation",
+      "file": "DenseVegetation.json.gz",
+      "cases": 56,
+      "choices": [
+        "DENSE_VEGETATION.pages.INITIAL.options.REST",
+        "DENSE_VEGETATION.pages.INITIAL.options.TRUDGE_ON",
+        "DENSE_VEGETATION.pages.REST.options.FIGHT"
+      ],
+      "rawSha256": "265278eb410ac1a27a1c726b7f021cec1544022c50b9d7a3e88a062ef8628336",
+      "compressedSha256": "779c1ded1250a47d51d6a729b51562663b6fe72339cb216853322d24bcf13b6e",
+      "buildSeconds": 1.97105575,
+      "executionSeconds": 1.9175407080000002
+    },
+    {
+      "event": "DollRoom",
+      "file": "DollRoom.json.gz",
+      "cases": 126,
+      "choices": [
+        "BingBong",
+        "DOLL_ROOM.pages.INITIAL.options.EXAMINE",
+        "DOLL_ROOM.pages.INITIAL.options.RANDOM",
+        "DOLL_ROOM.pages.INITIAL.options.TAKE_SOME_TIME",
+        "DaughterOfTheWind",
+        "MrStruggles"
+      ],
+      "rawSha256": "87801e731f58c68865b6ad3c8c912143d710e1da43ce88a2fb8c3599c0cb6d8c",
+      "compressedSha256": "347461b0361bc4ff21e1b67472deb593cbc98db0b9ca545d40047c85945d34e7",
+      "buildSeconds": 1.8772535840000002,
+      "executionSeconds": 1.7719456670000002
+    },
+    {
+      "event": "DoorsOfLightAndDark",
+      "file": "DoorsOfLightAndDark.json.gz",
+      "cases": 42,
+      "choices": [
+        "DOORS_OF_LIGHT_AND_DARK.pages.INITIAL.options.DARK",
+        "DOORS_OF_LIGHT_AND_DARK.pages.INITIAL.options.LIGHT"
+      ],
+      "rawSha256": "8db9c171677a7c176fcc53d89ddb2aadd2ecb2b822230a9a54017b7751f4d787",
+      "compressedSha256": "03b66c9d3d28b615e32691c5df585930f99a3771aaea8922bdb34e8a1340c5ef",
+      "buildSeconds": 1.83204475,
+      "executionSeconds": 2.8385561660000005
+    },
+    {
+      "event": "DrowningBeacon",
+      "file": "DrowningBeacon.json.gz",
+      "cases": 42,
+      "choices": [
+        "DROWNING_BEACON.pages.INITIAL.options.BOTTLE",
+        "DROWNING_BEACON.pages.INITIAL.options.CLIMB"
+      ],
+      "rawSha256": "84a374ca8225a3bdd0451f653ee1f8e0f764d70405cc171017cd646b21ad0e26",
+      "compressedSha256": "7131396ca07226d69ec8537e3284ba7b07c64b2b8db434e1f5fb98087da47747",
+      "buildSeconds": 1.789943375,
+      "executionSeconds": 1.665602916
+    },
+    {
+      "event": "EndlessConveyor",
+      "file": "EndlessConveyor.json.gz",
+      "cases": 376,
+      "choices": [
+        "ENDLESS_CONVEYOR.pages.ALL.options.CAVIAR",
+        "ENDLESS_CONVEYOR.pages.ALL.options.CLAM_ROLL",
+        "ENDLESS_CONVEYOR.pages.ALL.options.FRIED_EEL",
+        "ENDLESS_CONVEYOR.pages.ALL.options.GOLDEN_FYSH",
+        "ENDLESS_CONVEYOR.pages.ALL.options.JELLY_LIVER",
+        "ENDLESS_CONVEYOR.pages.ALL.options.SEAPUNK_SALAD",
+        "ENDLESS_CONVEYOR.pages.ALL.options.SPICY_SNAPPY",
+        "ENDLESS_CONVEYOR.pages.ALL.options.SUSPICIOUS_CONDIMENT",
+        "ENDLESS_CONVEYOR.pages.GRAB_SOMETHING_OFF_THE_BELT.options.LEAVE",
+        "ENDLESS_CONVEYOR.pages.INITIAL.options.OBSERVE_CHEF"
+      ],
+      "rawSha256": "77ca8d6684a72f1f01dde54b904f9d0cdc39ac1e67aa946d7b8fecfa34c23d8c",
+      "compressedSha256": "996b84cd40da78c9ba1a1209cd0396e694b8b2bc53b631e8f9236a566a673b8d",
+      "buildSeconds": 1.9001271249999998,
+      "executionSeconds": 2.291927333
+    },
+    {
+      "event": "FakeMerchant",
+      "file": "FakeMerchant.json.gz",
+      "cases": 3852,
+      "choices": [
+        "FAKE_ANCHOR",
+        "FAKE_BLOOD_VIAL",
+        "FAKE_HAPPY_FLOWER",
+        "FAKE_LEES_WAFFLE",
+        "FAKE_MANGO",
+        "FAKE_ORICHALCUM",
+        "FAKE_SNECKO_EYE",
+        "FAKE_STRIKE_DUMMY",
+        "FAKE_VENERABLE_TEA_SET",
+        "LEAVE",
+        "THROW_FOUL_POTION"
+      ],
+      "rawSha256": "5a1b950ee37086b1d4e2971ab3cb4d225bd25bca8a0825d69ea3c1876c84eceb",
+      "compressedSha256": "00267efd7c2c1bd455534c6d2389d5200638552dd28386bd03972ed44e545ac3",
+      "buildSeconds": 1.9150738339999998,
+      "executionSeconds": 7.666335542000001
+    },
+    {
+      "event": "FieldOfManSizedHoles",
+      "file": "FieldOfManSizedHoles.json.gz",
+      "cases": 42,
+      "choices": [
+        "FIELD_OF_MAN_SIZED_HOLES.pages.INITIAL.options.ENTER_YOUR_HOLE",
+        "FIELD_OF_MAN_SIZED_HOLES.pages.INITIAL.options.RESIST"
+      ],
+      "rawSha256": "8e00937b84f1ceaadc956047bd13244bad260004a9994ba655297b89319f2801",
+      "compressedSha256": "bc80802a2874815c38a21ea45395ff93f9af58dc0450a948ab4eb43baa8d2eea",
+      "buildSeconds": 1.760227958,
+      "executionSeconds": 1.76538575
+    },
+    {
+      "event": "GraveOfTheForgotten",
+      "file": "GraveOfTheForgotten.json.gz",
+      "cases": 42,
+      "choices": [
+        "GRAVE_OF_THE_FORGOTTEN.pages.INITIAL.options.ACCEPT",
+        "GRAVE_OF_THE_FORGOTTEN.pages.INITIAL.options.CONFRONT"
+      ],
+      "rawSha256": "e77b487ecdd4489797b3d8ac594c2b0c8e2ab4e55bb0b061b835266b35bad1e2",
+      "compressedSha256": "559f3d8c4e77223a91af780d1d32f4a4247239284cff54146a86d1adc18478ca",
+      "buildSeconds": 1.821559208,
+      "executionSeconds": 1.778039917
+    },
+    {
+      "event": "HungryForMushrooms",
+      "file": "HungryForMushrooms.json.gz",
+      "cases": 42,
+      "choices": [
+        "BIG_MUSHROOM",
+        "FRAGRANT_MUSHROOM"
+      ],
+      "rawSha256": "5cb33289b9bb176e90e1dffa72c06254a94aac0114dbf8467b73b9381a390501",
+      "compressedSha256": "e1f8399a72ed24b9b833b2599a33e69f0a172c63e559e9b6d73e8c8fe2b7ceac",
+      "buildSeconds": 1.819972834,
+      "executionSeconds": 1.694785958
+    },
+    {
+      "event": "InfestedAutomaton",
+      "file": "InfestedAutomaton.json.gz",
+      "cases": 42,
+      "choices": [
+        "INFESTED_AUTOMATON.pages.INITIAL.options.STUDY",
+        "INFESTED_AUTOMATON.pages.INITIAL.options.TOUCH_CORE"
+      ],
+      "rawSha256": "02b56d4413bee2dadeab96f2fc11a49785cd3991d009cf2ba5ab591d49d72679",
+      "compressedSha256": "f8c33595dce0bbb08069d5d031328242318dcb0ad0fa2f84ca38417eeb8353e9",
+      "buildSeconds": 1.892215125,
+      "executionSeconds": 1.9006213330000001
+    },
+    {
+      "event": "JungleMazeAdventure",
+      "file": "JungleMazeAdventure.json.gz",
+      "cases": 42,
+      "choices": [
+        "JUNGLE_MAZE_ADVENTURE.pages.INITIAL.options.JOIN_FORCES",
+        "JUNGLE_MAZE_ADVENTURE.pages.INITIAL.options.SOLO_QUEST"
+      ],
+      "rawSha256": "166485d78b9ce7f93b9327ce2c5a80e73767e040f69643db9d2de50e5886e425",
+      "compressedSha256": "d784fc8ec5281b98b53c0daf0a8994a5180ce7f6df13d998ed854b654f4c343d",
+      "buildSeconds": 1.878388875,
+      "executionSeconds": 1.779702875
+    },
+    {
+      "event": "LostWisp",
+      "file": "LostWisp.json.gz",
+      "cases": 42,
+      "choices": [
+        "LOST_WISP.pages.INITIAL.options.CLAIM",
+        "LOST_WISP.pages.INITIAL.options.SEARCH"
+      ],
+      "rawSha256": "591dde7731a881ad18ccdb5df28a2b6a4e212c76637e94c2a3b9818f5357482b",
+      "compressedSha256": "ab799d86fb3f295feb1f0c91bdbb664233aef1682c316c25377b8461ba9cd9a3",
+      "buildSeconds": 1.9859596250000002,
+      "executionSeconds": 1.8411643749999995
+    },
+    {
+      "event": "LuminousChoir",
+      "file": "LuminousChoir.json.gz",
+      "cases": 42,
+      "choices": [
+        "LUMINOUS_CHOIR.pages.INITIAL.options.OFFER_TRIBUTE",
+        "LUMINOUS_CHOIR.pages.INITIAL.options.REACH_INTO_THE_FLESH"
+      ],
+      "rawSha256": "e78817e6d3b8d7ca0880dd5a940768789416c74fa83e6108a8f7bdeb73a7e9c5",
+      "compressedSha256": "c486899541ed2cfc412eeba398aaccdb42b75e1405b0dbe54089a2f5dd969523",
+      "buildSeconds": 2.0417409170000003,
+      "executionSeconds": 3.8417887499999996
+    },
+    {
+      "event": "MorphicGrove",
+      "file": "MorphicGrove.json.gz",
+      "cases": 42,
+      "choices": [
+        "MORPHIC_GROVE.pages.INITIAL.options.GROUP",
+        "MORPHIC_GROVE.pages.INITIAL.options.LONER"
+      ],
+      "rawSha256": "40882172d03409651b28ca762522f3cfefb7b4cb420c207ea192c4e9b1db1bc7",
+      "compressedSha256": "7eafefb230d54d438f015aaaa84a4dcd28c0878394437616dbefb960ff5bba4e",
+      "buildSeconds": 2.023588542,
+      "executionSeconds": 2.736294042
+    },
+    {
+      "event": "Neow",
+      "file": "Neow.json.gz",
+      "cases": 90,
+      "choices": [
+        "ARCANE_SCROLL",
+        "BOOMING_CONCH",
+        "CURSED_PEARL",
+        "FISHING_ROD",
+        "GOLDEN_PEARL",
+        "HEFTY_TABLET",
+        "KALEIDOSCOPE",
+        "LARGE_CAPSULE",
+        "LAVA_ROCK",
+        "LEAD_PAPERWEIGHT",
+        "LEAFY_POULTICE",
+        "LOST_COFFER",
+        "NEOWS_BONES",
+        "NEOWS_TALISMAN",
+        "NEOWS_TORMENT",
+        "NEW_LEAF",
+        "NUTRITIOUS_OYSTER",
+        "PHIAL_HOLSTER",
+        "POMANDER",
+        "PRECARIOUS_SHEARS",
+        "PRECISE_SCISSORS",
+        "SCROLL_BOXES",
+        "SILKEN_TRESS",
+        "SILVER_CRUCIBLE",
+        "SMALL_CAPSULE",
+        "STONE_HUMIDIFIER",
+        "WINGED_BOOTS"
+      ],
+      "rawSha256": "4e683339c0308b98abe294217addbbe1a19bfdeb687d86174a6e74f347d3ce82",
+      "compressedSha256": "57e3e09e8bf0f2c305010528bf7290091feed15d9d90e33473340cb2680d64f3",
+      "buildSeconds": 2.0665531660000003,
+      "executionSeconds": 2.473432667
+    },
+    {
+      "event": "Nonupeipe",
+      "file": "Nonupeipe.json.gz",
+      "cases": 67,
+      "choices": [
+        "BEAUTIFUL_BRACELET",
+        "BLESSED_ANTLER",
+        "BRILLIANT_SCARF",
+        "DELICATE_FROND",
+        "DIAMOND_DIADEM",
+        "FUR_COAT",
+        "GLITTER",
+        "JEWELRY_BOX",
+        "LOOMING_FRUIT",
+        "SIGNET_RING"
+      ],
+      "rawSha256": "d33f4cc4ef66d3861858853207e6bfeb010091404e0d9fe50411ebbdcba0af95",
+      "compressedSha256": "c9749a2ee2de6de042037c2e04f52eead7eec6d152c415611d43cd0130166fec",
+      "buildSeconds": 1.916168084,
+      "executionSeconds": 2.1145420829999995
+    },
+    {
+      "event": "Orobas",
+      "file": "Orobas.json.gz",
+      "cases": 67,
+      "choices": [
+        "ALCHEMICAL_COFFER",
+        "ARCHAIC_TOOTH",
+        "DRIFTWOOD",
+        "ELECTRIC_SHRYMP",
+        "GLASS_EYE",
+        "PRISMATIC_GEM",
+        "RADIANT_PEARL",
+        "SAND_CASTLE",
+        "SEA_GLASS",
+        "TOUCH_OF_OROBAS"
+      ],
+      "rawSha256": "bb814c08d74d23bf437c432b939ec80f8c308bad618f5b73da2c84670e4543f3",
+      "compressedSha256": "98dccf9500eb9e04db5cc99d2a365afc0e7f1c77c289254680d6d461f2fa5d8e",
+      "buildSeconds": 2.00111475,
+      "executionSeconds": 2.2100581669999997
+    },
+    {
+      "event": "Pael",
+      "file": "Pael.json.gz",
+      "cases": 65,
+      "choices": [
+        "PAELS_BLOOD",
+        "PAELS_CLAW",
+        "PAELS_EYE",
+        "PAELS_FLESH",
+        "PAELS_GROWTH",
+        "PAELS_HORN",
+        "PAELS_LEGION",
+        "PAELS_TEARS",
+        "PAELS_TOOTH",
+        "PAELS_WING"
+      ],
+      "rawSha256": "458b46b53565897228fd0ddf19af7ac878401bedca3baa35bd41dffe058cf0a2",
+      "compressedSha256": "e7b0964673db176f5289c3e7faea8082eb7e08248d90b1a30acba9beebe925ac",
+      "buildSeconds": 2.0340879999999997,
+      "executionSeconds": 2.204144083
+    },
+    {
+      "event": "PotionCourier",
+      "file": "PotionCourier.json.gz",
+      "cases": 42,
+      "choices": [
+        "POTION_COURIER.pages.INITIAL.options.GRAB_POTIONS",
+        "POTION_COURIER.pages.INITIAL.options.RANSACK"
+      ],
+      "rawSha256": "f4ade37d17c2785d7c3a77cc0adeda37f1e1147769eb796babe801f56758f3fb",
+      "compressedSha256": "924282313cb689b7660f87f74526b9d2cb5a519357346db795d4fe7ee7ef0417",
+      "buildSeconds": 1.8592277079999997,
+      "executionSeconds": 1.690376584
+    },
+    {
+      "event": "PunchOff",
+      "file": "PunchOff.json.gz",
+      "cases": 56,
+      "choices": [
+        "PUNCH_OFF.pages.INITIAL.options.I_CAN_TAKE_THEM",
+        "PUNCH_OFF.pages.INITIAL.options.NAB",
+        "PUNCH_OFF.pages.I_CAN_TAKE_THEM.options.FIGHT"
+      ],
+      "rawSha256": "ce996e6ddaeaae6fc68324de60642f30285ab2aa76da8eb81339a6b1b0a9d8a6",
+      "compressedSha256": "00373336e6dbcd39257e2e0f099387c0c157aac1a301674f8acc5b8224952a9c",
+      "buildSeconds": 1.998980833,
+      "executionSeconds": 2.0250501659999998
+    },
+    {
+      "event": "RanwidTheElder",
+      "file": "RanwidTheElder.json.gz",
+      "cases": 56,
+      "choices": [
+        "RANWID_THE_ELDER.pages.INITIAL.options.GOLD",
+        "RANWID_THE_ELDER.pages.INITIAL.options.POTION",
+        "RANWID_THE_ELDER.pages.INITIAL.options.RELIC"
+      ],
+      "rawSha256": "70d76b44d2715ab215e7ca0a008dc892665b2b5dee22f86265d30224dff2eb25",
+      "compressedSha256": "0cad4234ad992990e31124b547972e60683bd31570aa205f0c7f987d0a93fa7a",
+      "buildSeconds": 1.8294618340000002,
+      "executionSeconds": 1.6976245420000002
+    },
+    {
+      "event": "Reflections",
+      "file": "Reflections.json.gz",
+      "cases": 42,
+      "choices": [
+        "REFLECTIONS.pages.INITIAL.options.SHATTER",
+        "REFLECTIONS.pages.INITIAL.options.TOUCH_A_MIRROR"
+      ],
+      "rawSha256": "28ad3eb6aa5adef4e1838f453f33a337083482bf88b9541d6fa7526dadbab1b8",
+      "compressedSha256": "ac6db9fdf6d7cbb33ddcc2cfb939e76883e777fa6cd1ca1983d2e869e187201b",
+      "buildSeconds": 1.919668459,
+      "executionSeconds": 1.751195167
+    },
+    {
+      "event": "RelicTrader",
+      "file": "RelicTrader.json.gz",
+      "cases": 56,
+      "choices": [
+        "RELIC_TRADER.pages.INITIAL.options.BOTTOM",
+        "RELIC_TRADER.pages.INITIAL.options.MIDDLE",
+        "RELIC_TRADER.pages.INITIAL.options.TOP"
+      ],
+      "rawSha256": "43f3a66ee819444cb7e4ddbca9ecdeb941bd7df5e5c539db095b38196e4adf31",
+      "compressedSha256": "7e0dcbb0f26155ce5235850dbb9abb617b74e94dd77654ad07615f80f89bae6c",
+      "buildSeconds": 1.940080083,
+      "executionSeconds": 1.6833618750000001
+    },
+    {
+      "event": "RoomFullOfCheese",
+      "file": "RoomFullOfCheese.json.gz",
+      "cases": 42,
+      "choices": [
+        "ROOM_FULL_OF_CHEESE.pages.INITIAL.options.GORGE",
+        "ROOM_FULL_OF_CHEESE.pages.INITIAL.options.SEARCH"
+      ],
+      "rawSha256": "177a4ee8ef1a220620d380137dbfdd29053eeb0e8d32499044f97bd1030c0bfe",
+      "compressedSha256": "c68c48adfc13c03a3864de2bcc49b96bd183fd598bb3a0bd181ce8367fb05346",
+      "buildSeconds": 2.170149834,
+      "executionSeconds": 3.6725130839999998
+    },
+    {
+      "event": "RoundTeaParty",
+      "file": "RoundTeaParty.json.gz",
+      "cases": 56,
+      "choices": [
+        "ROUND_TEA_PARTY.pages.INITIAL.options.ENJOY_TEA",
+        "ROUND_TEA_PARTY.pages.INITIAL.options.PICK_FIGHT",
+        "ROUND_TEA_PARTY.pages.PICK_FIGHT.options.CONTINUE_FIGHT"
+      ],
+      "rawSha256": "36b54be3cb07a75b8da7648621e3e695251f344e1c905fa8f5c3c676369bb09c",
+      "compressedSha256": "cdb2f8d6ba885b5807c5f2a27f03daa869e40aebac65cb686b77a533b2497a90",
+      "buildSeconds": 1.821909792,
+      "executionSeconds": 1.6898732919999997
+    },
+    {
+      "event": "SapphireSeed",
+      "file": "SapphireSeed.json.gz",
+      "cases": 42,
+      "choices": [
+        "SAPPHIRE_SEED.pages.INITIAL.options.EAT",
+        "SAPPHIRE_SEED.pages.INITIAL.options.PLANT"
+      ],
+      "rawSha256": "05b9a93f7e292ebd1da53454fda05e4a048774f12a0f6c87180f2425d4d175c9",
+      "compressedSha256": "612b3cb0b3ec34a74aba5de6ac789775bcd0df683ddd0cf9e3bf6a4231145d3c",
+      "buildSeconds": 2.202565417,
+      "executionSeconds": 2.4860284590000004
+    },
+    {
+      "event": "SelfHelpBook",
+      "file": "SelfHelpBook.json.gz",
+      "cases": 56,
+      "choices": [
+        "SELF_HELP_BOOK.pages.INITIAL.options.READ_ENTIRE_BOOK",
+        "SELF_HELP_BOOK.pages.INITIAL.options.READ_PASSAGE",
+        "SELF_HELP_BOOK.pages.INITIAL.options.READ_THE_BACK"
+      ],
+      "rawSha256": "e88f414a2979d9e20ec533f00d163efc4f7e865471b648e84efe7247b83b4c87",
+      "compressedSha256": "edfd8f7ae021a02f3a8f0bef4e3d9b912a18fa206c851a9e26c6f598bc60fdd1",
+      "buildSeconds": 1.833331625,
+      "executionSeconds": 1.7957267080000001
+    },
+    {
+      "event": "SlipperyBridge",
+      "file": "SlipperyBridge.json.gz",
+      "cases": 266,
+      "choices": [
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_0.options.HOLD_ON_1",
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_1.options.HOLD_ON_2",
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_2.options.HOLD_ON_3",
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_3.options.HOLD_ON_4",
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_4.options.HOLD_ON_5",
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_5.options.HOLD_ON_6",
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_6.options.HOLD_ON_LOOP",
+        "SLIPPERY_BRIDGE.pages.HOLD_ON_LOOP.options.HOLD_ON_LOOP",
+        "SLIPPERY_BRIDGE.pages.INITIAL.options.HOLD_ON_0",
+        "SLIPPERY_BRIDGE.pages.INITIAL.options.OVERCOME"
+      ],
+      "rawSha256": "c7109a0f9595b805521b79160c5745649ecc9eb948f95839343b431dee06ce2e",
+      "compressedSha256": "6e301af0881634bac6551962b0e0eb7a97dedad5eef8e556a199ab31839b3741",
+      "buildSeconds": 2.044305208,
+      "executionSeconds": 5.127192582999999
+    },
+    {
+      "event": "SpiralingWhirlpool",
+      "file": "SpiralingWhirlpool.json.gz",
+      "cases": 42,
+      "choices": [
+        "SPIRALING_WHIRLPOOL.pages.INITIAL.options.DRINK",
+        "SPIRALING_WHIRLPOOL.pages.INITIAL.options.OBSERVE"
+      ],
+      "rawSha256": "d710e57e6fa7f863f5b0489e17101f6897a487c581af94696e5ef79c9fe22615",
+      "compressedSha256": "5dd37ba4a523226d58d6edea1825367c238633696f63730641835d01b54c6f89",
+      "buildSeconds": 1.904695042,
+      "executionSeconds": 1.907491792
+    },
+    {
+      "event": "SpiritGrafter",
+      "file": "SpiritGrafter.json.gz",
+      "cases": 42,
+      "choices": [
+        "SPIRIT_GRAFTER.pages.INITIAL.options.LET_IT_IN",
+        "SPIRIT_GRAFTER.pages.INITIAL.options.REJECTION"
+      ],
+      "rawSha256": "ec03961b64eec80196feba66758178f562ba3d67c31ec9d4112bd66d0e8743b3",
+      "compressedSha256": "331afc8e7370fc8cb9a6877d34dc0c71f09fd713ac32c189f156791f10119045",
+      "buildSeconds": 1.9367097089999998,
+      "executionSeconds": 1.7915019170000002
+    },
+    {
+      "event": "StoneOfAllTime",
+      "file": "StoneOfAllTime.json.gz",
+      "cases": 42,
+      "choices": [
+        "STONE_OF_ALL_TIME.pages.INITIAL.options.LIFT",
+        "STONE_OF_ALL_TIME.pages.INITIAL.options.PUSH"
+      ],
+      "rawSha256": "413e32fdb354b6bbabed2114419518c5bb031a420b8f06fb41a41875e2eaef96",
+      "compressedSha256": "71b24cb4ffa1da8bdfb2156f6a853bf107528a0e6a2860ce867d279b397ab975",
+      "buildSeconds": 1.9511781670000001,
+      "executionSeconds": 1.770157417
+    },
+    {
+      "event": "SunkenStatue",
+      "file": "SunkenStatue.json.gz",
+      "cases": 42,
+      "choices": [
+        "SUNKEN_STATUE.pages.INITIAL.options.DIVE_INTO_WATER",
+        "SUNKEN_STATUE.pages.INITIAL.options.GRAB_SWORD"
+      ],
+      "rawSha256": "06f1e38e7d6e5b96c5c0064554bff097cef98395d6e2ebc15400c41ce5abec62",
+      "compressedSha256": "8056107b462c49c84aad9874bbc77af41faf78f923f87cc520bfa0fd0272cf10",
+      "buildSeconds": 1.8347674170000001,
+      "executionSeconds": 3.8365057499999997
+    },
+    {
+      "event": "SunkenTreasury",
+      "file": "SunkenTreasury.json.gz",
+      "cases": 42,
+      "choices": [
+        "SUNKEN_TREASURY.pages.INITIAL.options.FIRST_CHEST",
+        "SUNKEN_TREASURY.pages.INITIAL.options.SECOND_CHEST"
+      ],
+      "rawSha256": "58250893cfc5450516afd281aa1f4dd5a6819d983d78a31d9d2d98e7f57a290b",
+      "compressedSha256": "7d981b3a5912aa8b4a746361d4db13d51a87ee8631077cc8fda29397035c3446",
+      "buildSeconds": 2.055167667,
+      "executionSeconds": 1.779676667
+    },
+    {
+      "event": "Symbiote",
+      "file": "Symbiote.json.gz",
+      "cases": 42,
+      "choices": [
+        "SYMBIOTE.pages.INITIAL.options.APPROACH",
+        "SYMBIOTE.pages.INITIAL.options.KILL_WITH_FIRE"
+      ],
+      "rawSha256": "8cccf119e998ee35cc21e645e56eef9d6b24494102e04f5b178b81a310add00a",
+      "compressedSha256": "c83bdfd6cc1178388037ad9fef370486742a038cb779a184736e7cc3d4efb503",
+      "buildSeconds": 2.017516416,
+      "executionSeconds": 1.7745253330000001
+    },
+    {
+      "event": "TabletOfTruth",
+      "file": "TabletOfTruth.json.gz",
+      "cases": 154,
+      "choices": [
+        "TABLET_OF_TRUTH.pages.DECIPHER.options.GIVE_UP",
+        "TABLET_OF_TRUTH.pages.DECIPHER_1.options.DECIPHER",
+        "TABLET_OF_TRUTH.pages.DECIPHER_2.options.DECIPHER",
+        "TABLET_OF_TRUTH.pages.DECIPHER_3.options.DECIPHER",
+        "TABLET_OF_TRUTH.pages.DECIPHER_4.options.DECIPHER",
+        "TABLET_OF_TRUTH.pages.INITIAL.options.DECIPHER_1",
+        "TABLET_OF_TRUTH.pages.INITIAL.options.SMASH"
+      ],
+      "rawSha256": "f39f0cdbe316fcba836ace2a25da9b3e785876a11b31aad4a85f1b8378360ca0",
+      "compressedSha256": "e985657dbbeb03f94cecc2f0ec70ad568228dc3bd82cd7bf74d5568a43819776",
+      "buildSeconds": 2.029610666,
+      "executionSeconds": 3.8148489999999997
+    },
+    {
+      "event": "Tanx",
+      "file": "Tanx.json.gz",
+      "cases": 67,
+      "choices": [
+        "CLAWS",
+        "CROSSBOW",
+        "IRON_CLUB",
+        "MEAT_CLEAVER",
+        "SAI",
+        "SPIKED_GAUNTLETS",
+        "TANXS_WHISTLE",
+        "THROWING_AXE",
+        "TRI_BOOMERANG",
+        "WAR_HAMMER"
+      ],
+      "rawSha256": "15ff053b05c8fb3ade0c796cb8b461ef2a54133fabfcb23e7135ee23ce4df752",
+      "compressedSha256": "d2b83b9040ea81e5bcb130d345b70d89189bf918f5e87c9d6c8cd56b5b41bdbd",
+      "buildSeconds": 2.017097041,
+      "executionSeconds": 2.094567875
+    },
+    {
+      "event": "TeaMaster",
+      "file": "TeaMaster.json.gz",
+      "cases": 56,
+      "choices": [
+        "TEA_MASTER.pages.INITIAL.options.BONE_TEA",
+        "TEA_MASTER.pages.INITIAL.options.EMBER_TEA",
+        "TEA_MASTER.pages.INITIAL.options.TEA_OF_DISCOURTESY"
+      ],
+      "rawSha256": "07913a6922316ddafc55170fa39f2b22aaa960a5cc72f787795c4ff336314cbe",
+      "compressedSha256": "83a43e19e57c94ee18c5d5ac7ecf32345dda46ed21fede392c9488f6fd91771d",
+      "buildSeconds": 1.837562084,
+      "executionSeconds": 1.6912907089999996
+    },
+    {
+      "event": "Tezcatara",
+      "file": "Tezcatara.json.gz",
+      "cases": 65,
+      "choices": [
+        "BIIIG_HUG",
+        "GOLDEN_COMPASS",
+        "NUTRITIOUS_SOUP",
+        "PUMPKIN_CANDLE",
+        "SEAL_OF_GOLD",
+        "STORYBOOK",
+        "TOASTY_MITTENS",
+        "TOY_BOX",
+        "VERY_HOT_COCOA",
+        "YUMMY_COOKIE"
+      ],
+      "rawSha256": "d21da761fd9ef4bd7a180502d1a3e56473daab83e87c2352fac5dc244b5447e0",
+      "compressedSha256": "e49e0c4656c4a8833f642f04c7b5955233d604f3cbb4d1a693b3a1544bb11fea",
+      "buildSeconds": 2.0768463329999998,
+      "executionSeconds": 2.593797125
+    },
+    {
+      "event": "TheFutureOfPotions",
+      "file": "TheFutureOfPotions.json.gz",
+      "cases": 42,
+      "choices": [
+        "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.POTION"
+      ],
+      "rawSha256": "7f36e85a51968e00e58bdb0fb2a42d115891317e05ba1b422d3d2494a6b483d9",
+      "compressedSha256": "14366ba25b68c05472d4cac8127e2e495bd37a7e05d0bff977b8e96c006401d4",
+      "buildSeconds": 1.866718375,
+      "executionSeconds": 1.898852125
+    },
+    {
+      "event": "TheLanternKey",
+      "file": "TheLanternKey.json.gz",
+      "cases": 56,
+      "choices": [
+        "THE_LANTERN_KEY.pages.INITIAL.options.KEEP_THE_KEY",
+        "THE_LANTERN_KEY.pages.INITIAL.options.RETURN_THE_KEY",
+        "THE_LANTERN_KEY.pages.KEEP_THE_KEY.options.FIGHT"
+      ],
+      "rawSha256": "2c5ae598645298a3c5278a4489a8fbfc52402b6fdf253bc9bcf282410ffa893a",
+      "compressedSha256": "0e0774afde1d33166192a9ccb15c24750d9a55c8a595b75cfc193470514f21ba",
+      "buildSeconds": 2.044044708,
+      "executionSeconds": 1.9134406670000002
+    },
+    {
+      "event": "TheLegendsWereTrue",
+      "file": "TheLegendsWereTrue.json.gz",
+      "cases": 42,
+      "choices": [
+        "THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.NAB_THE_MAP",
+        "THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.SLOWLY_FIND_AN_EXIT"
+      ],
+      "rawSha256": "0a1b5c8c547737429bb2036dc3e9a5024a1a5fdd113baf2ce916d00b5c463bb8",
+      "compressedSha256": "cd293d3a5242b19dd4b93aa748bbfc3582577091f13053fd4959057fa927c168",
+      "buildSeconds": 2.256842625,
+      "executionSeconds": 2.694297958
+    },
+    {
+      "event": "ThisOrThat",
+      "file": "ThisOrThat.json.gz",
+      "cases": 42,
+      "choices": [
+        "THIS_OR_THAT.pages.INITIAL.options.ORNATE",
+        "THIS_OR_THAT.pages.INITIAL.options.PLAIN"
+      ],
+      "rawSha256": "9809834845db14748b12d0f993ce1d25ad03647bb6dc4592b2bb988a60f44412",
+      "compressedSha256": "3d2037d8dc51ed77c5f324c2d18cc8adf492176e6ee93adb9e81129d106fd6e4",
+      "buildSeconds": 2.195024834,
+      "executionSeconds": 3.6633818330000003
+    },
+    {
+      "event": "TinkerTime",
+      "file": "TinkerTime.json.gz",
+      "cases": 320,
+      "choices": [
+        "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.ATTACK",
+        "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.POWER",
+        "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.SKILL",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.CHAOS",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.CHOKING",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.CURIOUS",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.ENERGIZED",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.EXPERTISE",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.IMPROVEMENT",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.SAPPING",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.VIOLENCE",
+        "TINKER_TIME.pages.CHOOSE_RIDER.options.WISDOM",
+        "TINKER_TIME.pages.INITIAL.options.CHOOSE_CARD_TYPE"
+      ],
+      "rawSha256": "9489b56086cb68b8d1da0bed647769f2f2e84e73dd8534383d83fc8a50c999b6",
+      "compressedSha256": "a0b16992e5b607995028796c88353478b781e7e6138b978cd28fe11ccfca09ec",
+      "buildSeconds": 1.858822208,
+      "executionSeconds": 2.03103975
+    },
+    {
+      "event": "TrashHeap",
+      "file": "TrashHeap.json.gz",
+      "cases": 42,
+      "choices": [
+        "TRASH_HEAP.pages.INITIAL.options.DIVE_IN",
+        "TRASH_HEAP.pages.INITIAL.options.GRAB"
+      ],
+      "rawSha256": "c6e4ac925d09807a9b63077120bd9392f8a1f1942d93228c66fc80f5d12098d8",
+      "compressedSha256": "f69db74c7c0084b77a9e624a837d81d16f9bb2ae9600ad25a4cbfc0b8016d623",
+      "buildSeconds": 1.834141916,
+      "executionSeconds": 1.7909274579999996
+    },
+    {
+      "event": "Trial",
+      "file": "Trial.json.gz",
+      "cases": 135,
+      "choices": [
+        "CANCEL",
+        "CONFIRM",
+        "TRIAL.pages.INITIAL.options.ACCEPT",
+        "TRIAL.pages.INITIAL.options.REJECT",
+        "TRIAL.pages.MERCHANT.options.GUILTY",
+        "TRIAL.pages.MERCHANT.options.INNOCENT",
+        "TRIAL.pages.NOBLE.options.GUILTY",
+        "TRIAL.pages.NOBLE.options.INNOCENT",
+        "TRIAL.pages.NONDESCRIPT.options.GUILTY",
+        "TRIAL.pages.NONDESCRIPT.options.INNOCENT",
+        "TRIAL.pages.REJECT.options.ACCEPT",
+        "TRIAL.pages.REJECT.options.DOUBLE_DOWN"
+      ],
+      "rawSha256": "ce7c8a2d77573a766309c4bde5a3ef9d0e913bb465557875b279508ec77e3b4a",
+      "compressedSha256": "6994c35ebb4f07f9f340e137667e45ad41255317094cebb8906a005988d81162",
+      "buildSeconds": 1.8583981250000001,
+      "executionSeconds": 2.0198665
+    },
+    {
+      "event": "UnrestSite",
+      "file": "UnrestSite.json.gz",
+      "cases": 42,
+      "choices": [
+        "UNREST_SITE.pages.INITIAL.options.KILL",
+        "UNREST_SITE.pages.INITIAL.options.REST"
+      ],
+      "rawSha256": "c81d3b4c81259ae3cdd64038d73b75c082b745d291817bcc12c0607a09f785c2",
+      "compressedSha256": "73d79af80c9b90f1be2278b0a283442038a09e200b541f5faf690ea86b24b5bd",
+      "buildSeconds": 2.3340618340000003,
+      "executionSeconds": 3.5064385
+    },
+    {
+      "event": "Vakuu",
+      "file": "Vakuu.json.gz",
+      "cases": 62,
+      "choices": [
+        "BLOOD_SOAKED_ROSE",
+        "CHOICES_PARADOX",
+        "DISTINGUISHED_CAPE",
+        "FIDDLE",
+        "JEWELED_MASK",
+        "LORDS_PARASOL",
+        "MUSIC_BOX",
+        "PRESERVED_FOG",
+        "SERE_TALON",
+        "WHISPERING_EARRING"
+      ],
+      "rawSha256": "610ebc418151bddbc04ea5756ee4a9d3ba94c08516094d8a75a953c84572840e",
+      "compressedSha256": "e27d5709edd647949ab98f66c89281e4ae02c3a71b64a93cc2658ce4e8c3a1f7",
+      "buildSeconds": 1.969331334,
+      "executionSeconds": 2.108146375
+    },
+    {
+      "event": "WarHistorianRepy",
+      "file": "WarHistorianRepy.json.gz",
+      "cases": 154,
+      "choices": [
+        "WAR_HISTORIAN_REPY.pages.INITIAL.options.UNLOCK_CAGE",
+        "WAR_HISTORIAN_REPY.pages.INITIAL.options.UNLOCK_CHEST"
+      ],
+      "rawSha256": "6e923d88000b9d7c6d08380b6785bbac1e147590d974668765e4e91e39100c53",
+      "compressedSha256": "a4a1a3410ffd191420ac0c747d1b977bec68fadb9612333c6895734a78f8abfb",
+      "buildSeconds": 1.9920754580000002,
+      "executionSeconds": 2.02065225
+    },
+    {
+      "event": "WaterloggedScriptorium",
+      "file": "WaterloggedScriptorium.json.gz",
+      "cases": 56,
+      "choices": [
+        "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.BLOODY_INK",
+        "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.PRICKLY_SPONGE",
+        "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.TENTACLE_QUILL"
+      ],
+      "rawSha256": "70620ed1235f7635dd16ecb736fdea18ca4c68e5de5219b5ca965bfc73418552",
+      "compressedSha256": "0ef8f7fac151df31d619d4d3a70430256670f9fa2cf48da11ebf3107321add61",
+      "buildSeconds": 1.867456208,
+      "executionSeconds": 1.776815875
+    },
+    {
+      "event": "WelcomeToWongos",
+      "file": "WelcomeToWongos.json.gz",
+      "cases": 70,
+      "choices": [
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.BARGAIN_BIN",
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.FEATURED_ITEM",
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.LEAVE",
+        "WELCOME_TO_WONGOS.pages.INITIAL.options.MYSTERY_BOX"
+      ],
+      "rawSha256": "ea9f9bb2ac63acd1d44b07ead20cd06363946406353704d9a8b65da700997000",
+      "compressedSha256": "d1521c33f51aeea36495127c83b03617f27f9e4c541b9cd058f7e2e40d85205b",
+      "buildSeconds": 1.905803125,
+      "executionSeconds": 1.6964390000000003
+    },
+    {
+      "event": "Wellspring",
+      "file": "Wellspring.json.gz",
+      "cases": 42,
+      "choices": [
+        "WELLSPRING.pages.INITIAL.options.BATHE",
+        "WELLSPRING.pages.INITIAL.options.BOTTLE"
+      ],
+      "rawSha256": "b9803c725ddf55544b5000c77e7119b2a52834249915a07c27a03832c77e22ed",
+      "compressedSha256": "5cdfd1868c6aabdb0957495fba7c009191f77947de7c48030a36a0cb7191a191",
+      "buildSeconds": 2.291049166,
+      "executionSeconds": 4.879778125
+    },
+    {
+      "event": "WhisperingHollow",
+      "file": "WhisperingHollow.json.gz",
+      "cases": 42,
+      "choices": [
+        "WHISPERING_HOLLOW.pages.INITIAL.options.GOLD",
+        "WHISPERING_HOLLOW.pages.INITIAL.options.HUG"
+      ],
+      "rawSha256": "c5488f2a1f964ac9981f48f4a2dba2278508769037a7056f5f9ce4f66a171396",
+      "compressedSha256": "0ee00e4bab060bd84d5838e1d7bdf99bf4ddf9149d9195c91161c1b5adbce7a4",
+      "buildSeconds": 2.318029125,
+      "executionSeconds": 1.8773132910000006
+    },
+    {
+      "event": "WoodCarvings",
+      "file": "WoodCarvings.json.gz",
+      "cases": 56,
+      "choices": [
+        "WOOD_CARVINGS.pages.INITIAL.options.BIRD",
+        "WOOD_CARVINGS.pages.INITIAL.options.SNAKE",
+        "WOOD_CARVINGS.pages.INITIAL.options.TORUS"
+      ],
+      "rawSha256": "1b5325e3626cbaa981ff7de6a5f6e12bf86724c12f500760be50d0df325e37eb",
+      "compressedSha256": "c36647a5fc7f84feb1b487b34e61e01870cbf25c8b8ba08bff62b55b39d371d1",
+      "buildSeconds": 1.920320958,
+      "executionSeconds": 1.858286208
+    },
+    {
+      "event": "ZenWeaver",
+      "file": "ZenWeaver.json.gz",
+      "cases": 56,
+      "choices": [
+        "ZEN_WEAVER.pages.INITIAL.options.ARACHNID_ACUPUNCTURE",
+        "ZEN_WEAVER.pages.INITIAL.options.BREATHING_TECHNIQUES",
+        "ZEN_WEAVER.pages.INITIAL.options.EMOTIONAL_AWARENESS"
+      ],
+      "rawSha256": "18e53355b5b9c35e3bdba7dff0a63feb9ea9b8d6f210bb94575ef05378983687",
+      "compressedSha256": "9916cba8ee386ab5339f9a4b940eeb545ed52209b37789a87f462b39a8922036",
+      "buildSeconds": 1.949447375,
+      "executionSeconds": 1.7779056669999997
+    }
+  ],
+  "cases": 9376
+}

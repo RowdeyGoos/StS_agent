@@ -15,6 +15,11 @@ class JungleMazeAdventure:
     def generate(self, rng, *, state=None, cards=None):
         # Native values are 150/50 + NextFloat(-15, 15), then truncated on gain.
         # Integer sampling of the resulting amounts is authored, not native RNG.
+        if getattr(rng, "native", False):
+            from game.headless.core.native_rng import single
+            def gold(base):
+                return int(base + single(single(-15) + single(rng.random("event.jungle_maze") * single(30))))
+            return {"solo_gold": gold(150), "join_gold": gold(50), "choice": None}
         return {"solo_gold": rng.randint("event.jungle_maze", *self.solo_gold_range),
                 "join_gold": rng.randint("event.jungle_maze", *self.join_gold_range),
                 "choice": None}
@@ -25,6 +30,9 @@ class JungleMazeAdventure:
     def choose(self, state, pending, option_id, *, cards=None):
         data = pending["data"]
         if option_id == "solo_quest":
+            if getattr(state.rng, "native", False):
+                # Native shuffles its three cosmetic effects on the event stream.
+                state.rng.shuffle("event.jungle_maze", [0, 1, 2])
             apply_effect(state, "lose_hp", self.solo_damage)
             # Native awaits damage, then grants gold without an alive guard.
             apply_effect(state, "gain_gold", data["solo_gold"])
