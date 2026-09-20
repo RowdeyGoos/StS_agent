@@ -549,3 +549,32 @@ This is authored boundary evidence, not full native seed/path play. Native UI,
 act voting/executor scheduling, final Architect/victory, other Dummy outcomes and
 all possible nested reward combinations are not demonstrated by these vectors.
 Native null card selection is cancellation; headless decline means forfeit.
+
+
+### Grouped verification and campaign boundaries
+
+Use the existing queue runner with `--mode campaign` for 12 authored final-boss
+reward→Architect→WinRun cases (seeds 0/2/42, plain/Maw Bank/Wongo/both). It compares
+ending entry RNG and room effects, exact final ticket rewards, winning serialization
+and subsequent creature disposal. It does not play earlier acts or drive UI votes.
+
+`--mode generated-start` executes seed 0's real generated Neow offers, selects the
+second offer (Scroll Boxes) and first bundle, enters the leftmost first combat,
+and plays through it using actual card actions and enemy turns. This is one first
+combat, not a complete campaign. Card actions use the native executor; turn phases
+are invoked explicitly. UI localization and two textures are in-memory placeholders.
+The native test selector supplies the bundle choice. Every await and action loop
+is bounded; no damage, victory or extra HP is injected.
+
+Both modes initialize mock preferences with uploads disabled and assert
+`ShouldSave == false`. Neither reads or writes player profiles. All runner modes
+now reject nonempty stderr, which catches asynchronous event errors even when the
+process exits successfully. Reward-handoff's Dummy initialization supplies mock
+localization and requires all three options before testing its prepared child room.
+
+The [grouped report](../../docs/evidence/headless_verification_2026_09_20.md) and
+[final matrix](../../docs/evidence/native_verification_final_2026_09_20.json)
+retain all 16 reruns, exact result references and cleanup results. Run each mode
+with the command above, adding `--mode MODE` and a fresh `--output` directory;
+compare `evidence.json` results against the matrix's named baseline. Never replace
+historical captures or treat a successful process exit alone as acceptance.

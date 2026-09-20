@@ -1664,13 +1664,26 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      Tress uses; fresh Candy does not append a power. Run v53 preserves these new
      pending semantics. See [vectors](evidence/native_reward_handoff_2026_09_20.json)
      and [scope/limits](HEADLESS_ENGINE.md).
-   - **Next grouped acceptance work:** final Architect/victory native handoff and
-     declared seed/path completion gates. Live UI/act-vote scheduling and all Dummy
-     outcome combinations remain outside the new fixture. Ordinary Draw, Mayhem, Pillage, Escape Plan,
-     Scrape, Mittens and Foregone and the shared interaction families above now
-     have bounded native evidence. Continue as grouped mechanism audits; no finite
-     matrix proves all card combinations. Require actual native sequences for new
-     parity claims; Python continuation alone is regression evidence.
+   - **Grouped verification completed for the existing fixture matrix:** all 16
+     native modes rerun together, covering 955 rows plus queue lifecycle assertions.
+     Twelve final reward/Architect/WinRun cases verify exact Wongo relics, Maw Bank,
+     RNG suffixes and victory before disposal. One generated seed-0 Neow→first
+     combat trace matches all 15 actions and Python JSON continuations. Repairs
+     preserve Architect RNG draws and Scroll Boxes CCU/CCU draw order (run v54).
+     Dummy fixture initialization now succeeds explicitly; stderr fails the runner.
+     See [verification report](evidence/headless_verification_2026_09_20.md).
+   - **Remaining acceptance implementation — continuous native campaign trace:**
+     extend `queue_runtime/generated_start.cs` from its first-combat endpoint
+     through reward claims, map choices, room decisions, both act transitions and
+     the Architect. Use legal actions and explicit selector answers, with bounded
+     room/action budgets and mock persistence; do not force victories. Retain the
+     selected seed, coordinates, choices, inventory/HP, pending decisions and owned
+     RNG counters at each boundary. Replay the same actions in headless with JSON
+     restoration and compare before claiming a complete seed/path. Add the second
+     Act 1 region after one end-to-end path works. Live UI/act-vote scheduling and
+     all Dummy outcome combinations remain outside current fixtures. No finite
+     matrix proves every card combination; Python-only paths remain regression
+     evidence. This trace harness is still implementation work, not a passing gate.
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
    Their full 344-card pool inventory, including basic/special entries, is retained

@@ -41,6 +41,10 @@ def begin(engine):
     trial.epilogue_event_id = trial.next_event_id
     trial.phase = RunPhase.ROUTE
     begin_event(trial, 'the_architect', cards=engine.cards)
+    if getattr(trial.rng, 'native', False):
+        # EventRoom builds the Architect's fixed-HP presentation creature.
+        # Native CreateCreature samples even a singleton HP range.
+        trial.rng.choice('niche', (9999,))
     # Native EnterRoom invokes room-entry relics but never EnterMapCoord here:
     # no extra floor, map travel, encounter roll, or Ancient heal.
     entered_room(trial, 'event')

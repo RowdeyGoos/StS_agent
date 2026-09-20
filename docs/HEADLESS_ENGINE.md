@@ -69,8 +69,9 @@ track current completion work. Older batch descriptions below retain their origi
 validation limits; their mentions of missing later acts, cards or generation do
 not override the implemented campaign and catalogs described above.
 
-The remaining acceptance work is native composed combat/choice/turn comparison,
-then native complete-run seed/path comparison and repairs for observed mismatches.
+The grouped native combat/choice/turn, reward and ending fixtures have been rerun
+together; see [consolidated verification](#consolidated-native-verification).
+Complete native run seed/path comparison remains open.
 Passing Python progression with synthetic combat wins does not establish that
 fidelity. Other playable characters, ascensions, progression-dependent unlocks,
 multiplayer and alternate modes are outside this declared campaign scope.
@@ -122,7 +123,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v35 / run v53**.
+than being silently reinterpreted: current schemas are **combat v35 / run v54**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -344,7 +345,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v35 / run v53.
+reject atomically; current formats are combat v35 / run v54.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -371,7 +372,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v35 / run v53**.
+reject atomically. These private formats are **combat v35 / run v54**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -471,8 +472,48 @@ these are not paired full native paths or native map comparisons.
 
 The fixture bypasses live UI/vote/executor scheduling, authors the completed
 rooms and simultaneous relic grants, and does not verify final Architect/victory
-handoff or complete seed/path runs. Those remain the next acceptance work.
+handoff or complete seed/path runs. The ending is covered by the later grouped
+verification below; complete native paths remain open.
 Combat stays v35; **run v53** rejects older offer-refresh/event-timing semantics.
+
+## Consolidated native verification
+
+The [2026-09-20 verification report](evidence/headless_verification_2026_09_20.md)
+records the repository sweep, final affected checks and fresh native execution of
+all **16 fixture modes** (955 data rows plus the queue lifecycle probe). The
+[aggregate](evidence/native_verification_final_2026_09_20.json) retains current
+source/toolchain identities, result hashes, timings and cleanup results. Original
+captures remain unchanged; result equality is checked against the named captures.
+
+The [ending fixture](evidence/native_campaign_ending_2026_09_20.json) executes
+actual final-boss reward generation, Architect entry and `WinRun` for three seeds
+and four inventories. Final baseline rewards are suppressed while Wongo still
+generates its three exact relics. Architect entry applies Maw Bank without another
+floor or heal. Native initialization consumes one Niche draw for its fixed-HP
+presentation creature and one owned event draw for fresh-history dialogue. Both
+are now preserved. Winning HP is compared before native disposal sets it to zero;
+terminal snapshots preserve the winning state and reject further actions.
+
+The [generated-start trace](evidence/native_generated_start_verified_2026_09_20.json)
+covers seed 0 from actual Neow offers and Scroll Boxes pickup through a generated
+Nibbit combat and all 15 play/end-turn actions, without synthetic combat wins.
+Neow offers, the Rewards counter, hand order, energy, block, enemy HP and final
+player HP match with Python JSON continuation at every action. This exposed and
+fixed Scroll Boxes drawing all commons first: native draws **common, common,
+uncommon for each bundle**, excluding cards already used by either bundle.
+
+The reward-handoff rerun exposed missing mock localization during Dummy event
+initialization. Its [fresh capture](evidence/native_reward_handoff_verified_2026_09_20.json)
+preserves the earlier 48 results, now with all three initial options checked and
+no native stderr. The runner rejects stderr instead of accepting asynchronous
+initialization errors behind a successful process exit.
+
+These fixtures use in-memory saves with persistent saving and uploads disabled,
+mock display text/textures, and bounded execution. The generated-start harness
+uses the real card executor and manually invokes native end-turn phases; the
+ending fixture starts from authored finished bosses. Neither establishes a full
+native campaign, live UI/vote scheduling, arbitrary histories or all Dummy outcomes.
+Combat remains v35; **run v54** rejects pre-fix ending RNG and Scroll Boxes semantics.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -2191,7 +2232,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v53`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v54`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
