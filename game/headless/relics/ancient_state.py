@@ -90,12 +90,11 @@ def sync_cards(state, p):
             card.enchantment.amount = version.enchantment.amount
 
 
-def after_combat(state, cards, *, elite=False):
+def after_combat(state, cards, *, elite=False, relics=None):
     from game.headless.relics.run_rules import counter
     from game.headless.run.deck import add_card
-    for relic in tuple(state.relics):
-        if relic.data.get('_melted'):
-            continue
+    listeners = tuple(r for r in state.relics if not r.data.get('_melted')) if relics is None else relics
+    for relic in listeners:
         name = relic.definition_id
         if name == 'pumpkin_candle':
             counter(state, relic, max(0, relic.counter - 1))

@@ -122,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v35 / run v51**.
+than being silently reinterpreted: current schemas are **combat v35 / run v52**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -344,7 +344,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v35 / run v51.
+reject atomically; current formats are combat v35 / run v52.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -371,7 +371,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v35 / run v51**.
+reject atomically. These private formats are **combat v35 / run v52**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -381,8 +381,8 @@ work, without a live executor/UI frame loop. Six power-lifetime cases explicitly
 remove Corrosive Wave through the native command during a paused choice; four
 additional headless regressions reproduce natural end-turn expiry and
 reapplication. The record does not claim all card
-combinations or whole-run parity. Full combat-end cleanup and the seed/path
-completion gates still need native sequence evidence. Unsupported
+combinations or whole-run parity. The combat-ending record below extends cleanup
+evidence; full room/act transitions and seed/path completion remain open. Unsupported
 foreign-character relics such as Tingsha and Tough Bandages were not added by this audit.
 
 The [death/side-start record](evidence/native_death_start_2026_09_20.json) adds
@@ -406,7 +406,39 @@ setup, authored 500-HP player/survivor states and manually driven replay answers
 They do not exercise the live selector/frame loop or full combat-end/room/reward
 lifecycle. Extra tests check malformed queued contexts and explicit synthetic
 terminal disposal of all waiting work; they are not native end-combat evidence.
-Combat v35 / run v51 remain unchanged because this batch adds verification only.
+That verification-only batch left combat v35 / run v51 unchanged; the subsequent
+combat-ending batch below advances the run format.
+
+The [combat-ending record](evidence/native_end_boundary_2026_09_20.json) adds
+**180 native cases** through actual `CheckWinCondition`: full `EndCombatInternal`
+on victory, `ProcessPendingLoss` on defeat, and `RewardsCmd.GenerateForRoomEnd`
+after victory. Three seeds, four HP thresholds and five relic inventories cover
+plain victories, lethal Sword Boomerang with a waiting Horn, and explicit native
+`CreatureCmd.Kill` defeats. The encounter shell is an ordinary room with authored
+Phrog/Infested combat, Strength/Duplication and already-exhausted persistent cards;
+it is not a native generated encounter or seed/path run.
+
+The comparisons fixed persistent end-hook ordering. Defeat no longer advances
+Guilty, Pumpkin Candle or Toy Box. Victory expires run cards, applies Improvement,
+then runs captured relic end callbacks in inventory order before fresh early and
+ordinary victory passes. Chosen Cheese now precedes Meat on the Bone; Fishing Rod
+uses shared Niche RNG. Toy Box does not suppress an already-captured end callback,
+but melted relics are excluded from the later victory pass, including healing and
+Sword of Stone evolution. At 40/80 HP, Cheese followed by Meat/Burning Blood now
+finishes at 47/81, rather than incorrectly receiving Meat's extra 12 healing.
+
+The native fixture asserts finished-room and won/ended events, power/block/pile
+cleanup, canceled queued Horn actions and no runnable combat work. It manually
+enqueues replay hooks before the win check; native retains canceled references in
+its hook registry. It compares persistent HP/deck/relic state, generated gold,
+potion/card offers, changing rarity/potion odds and Rewards/Niche counters and
+suffixes. JSON tests resume before lethal resolution, at the finished-combat
+handoff and at rewards; additional headless commands claim rewards and leave the
+room. Explicit `MockGodotFileIo` stores mock progress in memory. Replay suppresses
+run-file saving; no real profile/save/history/Cloud or live reward UI is accessed.
+Native reward selection, room exit/event resumption, boss/act handoff and complete
+seed/path runs remain outside these vectors. Combat v35 is unchanged; run **v52**
+rejects continuations from the previous end-hook/RNG semantics.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -2125,7 +2157,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v51`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v52`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,

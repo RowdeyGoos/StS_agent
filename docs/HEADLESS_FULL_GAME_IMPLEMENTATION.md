@@ -1646,8 +1646,19 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      during the enemy side correctly keep Spawned until their next turn, because
      native TakeTurn skips SpawnedThisTurn monsters. See [vectors](evidence/native_death_start_2026_09_20.json)
      and [fixture limits](HEADLESS_ENGINE.md).
-   - **Next grouped acceptance work:** complete native combat-end/room/reward
-     boundaries, followed by declared seed/path completion gates. Ordinary Draw, Mayhem, Pillage, Escape Plan,
+   - **Combat end through reward generation verified for declared cases:** 180
+     native sequences execute full victory/loss dispatch and ordinary-room reward
+     generation with mock in-memory persistence. Fixes cover defeat-only dispatch,
+     ordered card/power/relic end hooks, Cheese before Meat, Fishing Rod's shared
+     Niche RNG, captured Toy Box listeners and fresh victory eligibility. Exact
+     persistent state, generated offers, changing odds and RNG match, with terminal
+     and reward JSON continuation (run v52, combat v35). Native queued Horns are
+     canceled at the actual end boundary; canceled registry references persist.
+     See [vectors](evidence/native_end_boundary_2026_09_20.json) and
+     [fixture limits](HEADLESS_ENGINE.md).
+   - **Next grouped acceptance work:** native reward selection and room exit,
+     event resumption and boss/act transitions, followed by declared seed/path
+     completion gates. Ordinary Draw, Mayhem, Pillage, Escape Plan,
      Scrape, Mittens and Foregone and the shared interaction families above now
      have bounded native evidence. Continue as grouped mechanism audits; no finite
      matrix proves all card combinations. Require actual native sequences for new

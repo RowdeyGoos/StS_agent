@@ -306,12 +306,8 @@ class RunEngine:
         encounter_loot = capture_loot(encounter_id, self.combat.enemies)
         from game.headless.encounters.theft import finish as finish_theft
         finish_theft(self.state, encounter_loot)
-        if self.state.phase is RunPhase.ROUTE:
-            choices = [c for c in self.state.deck if c.upgrade_level + 1 < len(c.definition.levels)]
-            for _ in range(min(len(choices), self.combat.player.rules.powers.get("improvement", 0))):
-                card = self.combat.player.deck.selection_rng.choice(choices)
-                choices.remove(card)
-                card.upgrade()
+        improvement = self.combat.player.rules.powers.get("improvement", 0)
+        selection_rng = self.combat.player.deck.selection_rng
         if self.state.event_combats and self.state.event_combats[-1].outcome is None:
             self.state.event_combats[-1].timed_out = any(getattr(e, "timed_out", False) for e in self.combat.enemies)
         self.combat = None
@@ -319,15 +315,10 @@ class RunEngine:
         finish(self.state, encounter_id, won=self.state.phase is RunPhase.ROUTE)
         from game.headless.run.lifecycle import after_combat
         after_combat(self.state, won=self.state.phase is RunPhase.ROUTE,
-                     elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite")
-        from game.headless.relics.ancient_state import after_combat as ancient_after
-        ancient_after(self.state, self.cards, elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite")
+                     elite=encounter_id is not None and ENCOUNTERS[encounter_id].room_kind == "elite",
+                     cards=self.cards, improvement=improvement, selection_rng=selection_rng,
+                     room_kind=ENCOUNTERS[encounter_id].room_kind if encounter_id is not None else "combat")
         if self.state.phase is RunPhase.ROUTE:
-            from game.headless.relics.run_rules import victory
-            victory(self.state, room_kind=ENCOUNTERS[encounter_id].room_kind if encounter_id is not None else "combat")
-            for relic in self.state.relics:
-                if not relic.data.get("_melted"):
-                    RELICS[relic.definition_id].after_combat_victory(self.state)
             if encounter_id and encounter_id.startswith("battleworn_dummy_"):
                 from game.headless.run.event_combat import resume
                 resume(self.state, self.cards)
