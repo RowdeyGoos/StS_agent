@@ -762,8 +762,16 @@ RNG suffixes. It varies potion application order, Artifact, relic order, A0/A10
 and three seeds. The normal queue runner enforces pinned binaries, bounded
 execution, empty stderr and removal of its owned user directory.
 
-The [current baseline report](../../docs/evidence/native_item_status_regressions_2026_09_20.json)
-binds this harness to 13 fresh executions with unchanged retained campaign,
-event-inventory and reward/ending results. Earlier records retain their original
-source identities. This mode does not exercise live UI, disk saves, a full combat
-lifecycle or every power family.
+The mode also includes [72 conditional relic cases](../../docs/evidence/native_conditional_relic_stats_2026_09_20.md)
+at 720 boundaries: actual Red Skull/Belt Buckle callbacks and PowerCmd, optional
+Artifact/Ruined Helmet, repeated activation/removal and authored ending conditions.
+These cases supply HP/inventory changes directly; Python regressions separately
+test their production dispatch. The fresh capture also reruns all original 144
+cases and requires identical parsed results.
+
+The [13-run baseline report](../../docs/evidence/native_item_status_regressions_2026_09_20.json)
+retains unchanged campaign, event-inventory and reward/ending results. Only the
+item-status case implementation changed; assertions bind the other sources and
+dispatcher to that report. Earlier records retain their original identities.
+This mode does not exercise live UI, disk saves, a full combat lifecycle or every
+power family.

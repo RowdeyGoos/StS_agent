@@ -2,7 +2,7 @@ using System.Reflection;
 
 internal static class ItemStatusOracle
 {
-    public static readonly string[] Scenarios = {"flex", "speed", "binding", "shackles", "ward", "replay", "healing", "duration", "fairy", "chaos", "flex_late", "speed_late"};
+    public static readonly string[] Scenarios = {"flex", "speed", "binding", "shackles", "ward", "replay", "healing", "duration", "fairy", "chaos", "flex_late", "speed_late", "conditional_skull", "conditional_skull_helmet", "conditional_buckle", "conditional_skull_ending", "conditional_skull_helmet_ending", "conditional_buckle_ending"};
 
     public static async Task<object> Run(Assembly asm, object player, object pcs, object pc,
         object combat, object target, object manager, object runManager, object queue,
@@ -25,6 +25,61 @@ internal static class ItemStatusOracle
         runManager.GetType().GetProperty("State",flags)!.SetValue(runManager,runMarker);
         runManager.GetType().GetProperty("AscensionManager")!.SetValue(runManager,Activator.CreateInstance(T("Entities.Ascension.AscensionManager"),new object[]{ascension}));
         Require((bool)C(runManager,"HasAscension",Enum.Parse(T("Entities.Ascension.AscensionLevel"),"DeadlyEnemies"))==(ascension>=9),"Ascension fixture inactive");
+        if(scenario.StartsWith("conditional_"))
+        {
+            // Actual relic callbacks/PowerCmd on an authored active combat. The
+            // fixture controls HP and potion membership; it does not claim the
+            // surrounding HP/inventory command dispatch or full combat cleanup.
+            bool buckle=scenario.Contains("buckle"), helmet=scenario.Contains("helmet");
+            var statNames=helmet?new[]{"RedSkull","RuinedHelmet"}:new[]{buckle?"BeltBuckle":"RedSkull"};
+            var statRelics=(System.Collections.IList)P(player,"Relics");statRelics.Clear();
+            foreach(var name in statNames){var r=C(Get("Relic","Relics."+name),"ToMutable");r.GetType().GetProperty("Owner")!.SetValue(r,player);statRelics.Add(r);}
+            var conditionalRelic=statRelics[0]!;
+            var statSlots=(System.Collections.IList)player.GetType().GetField("_potionSlots",flags)!.GetValue(player)!;
+            for(int i=0;i<3;i++)statSlots.Add(null);
+            var heldPotion=C(Get("Potion","Potions.FoulPotion"),"ToMutable");
+            C(player,"AddPotionInternal",heldPotion,-1,false);
+            C(pc,"SetCurrentHpInternal",41m);
+            C(P(target,"Monster"),"SetUpForCombat");C(target,"SetMaxHpInternal",1000m);C(target,"SetCurrentHpInternal",1000m);
+            if(variant)Power(pc,"ArtifactPower",1);
+            object StatState()=>new{hp=P(pc,"CurrentHp"),maxHp=P(pc,"MaxHp"),ending=P(manager,"IsEnding"),
+                powers=Items(P(pc,"Powers")).Select(p=>new{id=P(P(p,"Id"),"Entry"),amount=P(p,"Amount")}).ToArray(),
+                active=P(conditionalRelic,buckle?"DexterityApplied":"StrengthApplied"),
+                helmetUsed=helmet?P(statRelics[1]!,"UsedThisCombat"):null,
+                potionCount=statSlots.Cast<object?>().Count(p=>p is not null)};
+            var statBefore=StatState();var statSteps=new List<object>();
+            async Task Toggle(bool active)
+            {
+                if(buckle)
+                {
+                    bool empty=!statSlots.Cast<object?>().Any(p=>p is not null);
+                    if(active&&!empty)C(player,"DiscardPotionInternal",heldPotion,true);
+                    if(!active&&empty)C(player,"AddPotionInternal",heldPotion,-1,false);
+                    await Await(C(conditionalRelic,active?"AfterPotionDiscarded":"AfterPotionProcured",heldPotion));
+                }
+                else
+                {
+                    int oldHp=(int)P(pc,"CurrentHp");C(pc,"SetCurrentHpInternal",active?40m:41m);
+                    await Await(C(conditionalRelic,"AfterCurrentHpChanged",pc,(decimal)((int)P(pc,"CurrentHp")-oldHp)));
+                }
+                Require((bool)P(queue,"IsEmpty")&&!Items(sync.GetType().GetField("_hookActions",flags)!.GetValue(sync)!).Any(),"Conditional stat hook did not settle");
+                statSteps.Add(new{kind=active?"activate":"deactivate",state=StatState()});
+            }
+            if(scenario.EndsWith("_ending"))
+            {
+                C(target,"SetCurrentHpInternal",0m);Require((bool)P(manager,"IsEnding"),"Conditional fixture not ending");
+                statSteps.Add(new{kind="ending",state=StatState()});
+            }
+            foreach(bool active in new[]{true,true,false,false,true,false,true})await Toggle(active);
+            if(!scenario.EndsWith("_ending"))
+            {
+                C(target,"SetCurrentHpInternal",0m);Require((bool)P(manager,"IsEnding"),"Conditional fixture not ending");
+                statSteps.Add(new{kind="ending",state=StatState()});
+                await Toggle(false);await Toggle(true);
+            }
+            runManager.GetType().GetProperty("State",flags)!.SetValue(runManager,null);
+            return new{seed,scenario,variant,ascension,relicNames=statNames,before=statBefore,steps=statSteps};
+        }
         var relicNames=new List<string>{"BeltBuckle","ReptileTrinket"};
         if(scenario is "ward" or "fairy")relicNames.AddRange(new[]{"TungstenRod"});
         if(scenario=="replay")relicNames.AddRange(new[]{"Shuriken","Kunai","OrnamentalFan"});

@@ -23,6 +23,7 @@ from game.headless.relics.combat import memory
 
 ROOT = Path(__file__).parents[2]
 RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_item_status_2026_09_20.json.gz').read_bytes()))
+CURRENT_RECORD = json.loads(gzip.decompress((ROOT / 'docs/evidence/native_conditional_relic_stats_2026_09_20.json.gz').read_bytes()))
 
 
 def slug(name):
@@ -149,7 +150,11 @@ def test_native_potion_relic_powers_and_turn_continuation(row):
 def test_native_capture_identity_and_case_census():
     assert RECORD['userDirectoryRemoved']
     assert RECORD['result']['assemblySha256'] == RECORD['pins']['sts2.dll'] == 'e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18'
-    for name, digest in RECORD['fixtureSources'].items():
+    # The extended fixture freshly reruns the original cases without repinning
+    # their historical capture. Their parsed results must remain identical.
+    assert [r for r in CURRENT_RECORD['result']['rows'] if not r['scenario'].startswith('conditional_')] == RECORD['result']['rows']
+    assert CURRENT_RECORD['userDirectoryRemoved'] and CURRENT_RECORD['pins'] == RECORD['pins']
+    for name, digest in CURRENT_RECORD['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
     scenarios = {'flex', 'speed', 'binding', 'shackles', 'ward', 'replay', 'healing', 'duration', 'fairy', 'chaos', 'flex_late', 'speed_late'}
     rows = RECORD['result']['rows']
