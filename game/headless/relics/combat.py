@@ -75,7 +75,6 @@ def validate(records, data, card_ids=()):
     if not isinstance(records, list) or not isinstance(data, dict):
         raise ValueError("Invalid combat relic inventory.")
     ids = []
-    names = []
     for record in records:
         if not isinstance(record, dict) or set(record) != {"definition_id", "instance_id", "counter", "data"}:
             raise ValueError("Invalid combat relic record.")
@@ -88,8 +87,6 @@ def validate(records, data, card_ids=()):
             raise ValueError("Invalid persistent relic counter.")
         validate_data(name, record["data"])
         ids.append(identity)
-        if not definition.stackable and not definition.allow_duplicates:
-            names.append(name)
         values = data.get(identity)
         schema = MEMORY_FIELDS.get(name, {})
         required = {k for k in schema if k.startswith("turn_")} if not record.get("data", {}).get("_melted") else set()
@@ -109,7 +106,7 @@ def validate(records, data, card_ids=()):
                 valid = type(value) is int and 0 <= value <= kind
             if not valid:
                 raise ValueError("Invalid transient relic memory value.")
-    if len(set(ids)) != len(ids) or len(set(names)) != len(names) or set(data) != set(ids):
+    if len(set(ids)) != len(ids) or set(data) != set(ids):
         raise ValueError("Unowned or duplicate combat relic state.")
 
 

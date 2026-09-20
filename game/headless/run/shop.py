@@ -85,7 +85,7 @@ def can_buy(state, offer, *, ignore_cost=False):
     from game.headless.relics.base import RELICS
     return (not offer["sold"] and (ignore_cost or state.gold >= offer["price"])
             and (offer["kind"] != "potion" or None in state.potions)
-            and (offer["kind"] != "relic" or RELICS[offer["definition_id"]].stackable or RELICS[offer["definition_id"]].allow_duplicates or not any(r.definition_id == offer["definition_id"] for r in state.relics)))
+            and (offer["kind"] != "relic" or getattr(state.rng, "native", False) or RELICS[offer["definition_id"]].stackable or RELICS[offer["definition_id"]].allow_duplicates or not any(r.definition_id == offer["definition_id"] for r in state.relics)))
 
 
 def legal_actions(state):

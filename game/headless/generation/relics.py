@@ -62,14 +62,18 @@ def pull(state, *, rarity=None, back=False, blacklist=(), stream="rewards", allo
     order = ("shop", "common", "uncommon", "rare")
     if rarity not in order:
         raise ValueError("Invalid relic draw rarity.")
-    owned = {r.definition_id for r in state.relics}
     allowed = set(allowed) if allowed is not None else set(RELICS)
     bags = state.relic_bags[owner]
     from game.headless.relics.eligibility import allowed_in_run
     # GetAvailableDeque removes globally disallowed relics from ALL rarities.
     # Caller-only exclusions stay in place, including when falling to a later rarity.
     for bag in bags.values():
-        bag[:] = [n for n in bag if n not in owned and allowed_in_run(state, n)]
+        bag[:] = [n for n in bag if allowed_in_run(state, n)]
+    # Fresh native shared bags refresh only the requested empty rarity, after
+    # global eligibility removal. Filters and fallback rarities never refill.
+    if owner == "shared" and not bags.get(rarity):
+        bags[rarity] = [n for n in SHAREDRELICPOOL
+                        if RELICS[n].rarity == rarity and allowed_in_run(state, n)]
     for kind in order[order.index(rarity) :]:
         bag = bags.get(kind, [])
         indices = range(len(bag) - 1, -1, -1) if back else range(len(bag))

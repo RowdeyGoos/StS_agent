@@ -9,7 +9,7 @@ from game.headless.relics.pools import treasure_pool
 
 def validate_treasure(state, graph):
     pending = state.pending
-    if set(pending) != {"kind", "definition_id", "treasure_id", "stage", "relic_id", "gold", "claimed_instance_id"}:
+    if set(pending) != {"kind", "definition_id", "treasure_id", "stage", "relic_id", "gold", "claimed_instance_id", "item_id_on_entry"}:
         raise ValueError("Invalid treasure state fields.")
     if (state.phase is not RunPhase.ROOM or pending["stage"] not in ("closed", "open", "claimed", "empty")
             or pending["definition_id"] != ORDINARY_CHEST.definition_id):
@@ -19,6 +19,16 @@ def validate_treasure(state, graph):
         raise ValueError("Invalid owned treasure identity.")
     if graph is not None and (state.current_node_id is None or room_node(state, graph, state.current_node_id).kind != "treasure"):
         raise ValueError("Treasure differs from its room.")
+    boundary = pending["item_id_on_entry"]
+    if type(boundary) is not int or not 0 <= boundary <= state.next_item_id:
+        raise ValueError("Invalid chest acquisition boundary.")
+    new_offered = [r.instance_id for r in state.relics if r.definition_id == pending["relic_id"]
+                   and int(r.instance_id.rsplit('.', 1)[1]) >= boundary]
+    if pending["stage"] == "claimed":
+        if new_offered != [pending["claimed_instance_id"]]:
+            raise ValueError("Chest claim differs from its acquired instance.")
+    elif new_offered:
+        raise ValueError("Unclaimed chest already acquired its offered instance.")
     if pending["stage"] == "empty":
         from game.headless.relics.run_rules import owned
         relic = owned(state, "silver_crucible")
@@ -28,7 +38,7 @@ def validate_treasure(state, graph):
     relic_id = pending["relic_id"]
     if relic_id == ORDINARY_CHEST.fallback_relic:
         from game.headless.run.treasure import eligible_relics
-        if eligible_relics(state):
+        if not getattr(state.rng, "native", False) and eligible_relics(state):
             raise ValueError("Treasure fallback requires an exhausted pool.")
     elif (relic_id not in treasure_pool(state) or not state.treasure_relics_drawn
             or state.treasure_relics_drawn[-1] != relic_id):
@@ -41,5 +51,5 @@ def validate_treasure(state, graph):
     if pending["stage"] == "claimed":
         if not any(r.instance_id == pending["claimed_instance_id"] and r.definition_id == relic_id for r in state.relics):
             raise ValueError("Claimed treasure relic is not owned.")
-    elif pending["claimed_instance_id"] is not None or (relic_id != ORDINARY_CHEST.fallback_relic and any(r.definition_id == relic_id for r in state.relics)):
+    elif pending["claimed_instance_id"] is not None or (not getattr(state.rng, "native", False) and relic_id != ORDINARY_CHEST.fallback_relic and any(r.definition_id == relic_id for r in state.relics)):
         raise ValueError("Invalid unclaimed treasure relic.")

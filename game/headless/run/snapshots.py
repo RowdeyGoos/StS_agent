@@ -26,7 +26,7 @@ from game.headless.run.ancient import AncientStart
 from game.headless.events.combat import EventCombatRecord
 from game.headless.run import event_combat
 
-SCHEMA = "headless_run_state_v56"
+SCHEMA = "headless_run_state_v57"
 
 
 def _restore_graph(record):
@@ -355,8 +355,8 @@ def _validate_pending(state, cards, graph):
             from game.headless.relics.run_rules import has, owned
             from game.headless.relics.rewards import extend_pool
             pool = extend_pool(state, cards, pool)
-            if has(state, "amethyst_aubergine"):
-                low, high = low+15, high+15
+            bonus = 15 * sum(r.definition_id == "amethyst_aubergine" and not r.data.get("_melted") for r in state.relics)
+            low, high = low + bonus, high + bonus
             if final_boss:
                 low = high = 0
                 owners = {r.instance_id: (r.definition_id, r.counter) for r in state.relics}
@@ -364,11 +364,12 @@ def _validate_pending(state, cards, graph):
                         or pending['potion'] is not None or pending['hunt_rewards_earned'] or pending['royalties_earned']
                         or any(owners.get(r['source']) != ('wongos_mystery_ticket', 6) for r in pending['extra_rewards'])):
                     raise ValueError('Final boss cannot offer ordinary combat rewards.')
-            extra_power = has(state, "lasting_candy") and owned(state, "lasting_candy").counter == 0
+            from game.headless.relics.rewards import active_power_options
+            extra_power = active_power_options(state)
             if (pending["combat_reward"] is not True or state.config is None
                     or type(pending["potion_claimed"]) is not bool
                     or not low <= pending["gold"] <= high
-                    or len(pending["offers"]) not in ((0,) if final_boss else (3, 4) if extra_power else (3,))
+                    or len(pending["offers"]) not in ((0,) if final_boss else range(3, 4 + extra_power))
                     or not set(pending["offers"]) <= set(pool)
                     or (pending["potion"] is not None and pending["potion"] not in state.config.reward_potions)
                     or (pending["potion"] is None and pending["potion_claimed"])):

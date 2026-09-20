@@ -22,9 +22,16 @@ The project has not yet earned a complete autonomous, strong or near-optimal cla
 - Report policy-only and planner-enhanced inference separately under declared
   per-decision and whole-run compute budgets. Combat-local reward shaping does
   not redefine the full-game objective.
-- Other characters, co-op, custom/challenge modes, gameplay mods, cross-patch
-  comparisons, save-scumming and manual intervention in scored runs are outside
-  this initial target. Controlled development setups are separate from scored runs.
+- Cooperative multiplayer and alternate modes are outside the project scope.
+- Other characters, gameplay mods, cross-patch comparisons, save-scumming and
+  manual intervention in scored runs are outside the initial Ironclad target.
+  Controlled development setups are separate from scored runs.
+- Headless campaign acceptance may use an explicitly declared boosted starting
+  HP/max HP in both native and Python runs. Normal-HP victory by a test policy is
+  not a simulator completion requirement. Actual damage, healing, HP thresholds,
+  death/revival and all other rules remain enabled; focused boundary tests cover
+  behavior that a high-HP campaign may not encounter. Agent evaluation retains
+  ordinary gameplay conditions and its separate victory-probability objective.
 
 ## Unresolved evaluation requirements
 

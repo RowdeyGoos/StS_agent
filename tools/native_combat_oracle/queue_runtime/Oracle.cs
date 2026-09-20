@@ -20,7 +20,9 @@ public partial class Oracle : Node
             var godot = context.LoadFromAssemblyName(assembly.GetReferencedAssemblies().Single(a => a.Name == "GodotSharp"));
             if (!ReferenceEquals(godot, typeof(Node).Assembly))
                 throw new InvalidOperationException("Native game resolved a different GodotSharp instance.");
-            var result = OS.GetCmdlineUserArgs().Contains("boosted-campaign")
+            var result = OS.GetCmdlineUserArgs().Contains("boosted-coverage")
+                ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true,coverage:true)
+                : OS.GetCmdlineUserArgs().Contains("boosted-campaign")
                 ? await GeneratedStartOracle.Run(assembly,digest,campaign:true,boosted:true)
                 : OS.GetCmdlineUserArgs().Contains("generated-route")
                 ? await GeneratedStartOracle.Run(assembly,digest,campaign:true)

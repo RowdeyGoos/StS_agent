@@ -21,7 +21,7 @@ def begin(state):
     if crucible is not None:
         crucible.data["treasures"] += 1
         if crucible.data["treasures"] == 1:
-            state.pending = {"kind": "treasure", "definition_id": ORDINARY_CHEST.definition_id, "treasure_id": state.next_treasure_id, "stage": "empty", "relic_id": None, "gold": 0, "claimed_instance_id": None}
+            state.pending = {"kind": "treasure", "definition_id": ORDINARY_CHEST.definition_id, "treasure_id": state.next_treasure_id, "stage": "empty", "relic_id": None, "gold": 0, "claimed_instance_id": None, "item_id_on_entry": state.next_item_id}
             state.next_treasure_id += 1
             state.phase = RunPhase.ROOM
             return
@@ -40,7 +40,7 @@ def begin(state):
         raise ValueError("Unsupported treasure relic.")
     pending = {"kind": "treasure", "definition_id": ORDINARY_CHEST.definition_id,
                "treasure_id": state.next_treasure_id, "stage": "closed", "relic_id": relic_id,
-               "gold": None, "claimed_instance_id": None}
+               "gold": None, "claimed_instance_id": None, "item_id_on_entry": state.next_item_id}
     # Like a native grab-bag pull, an offered relic is consumed even if skipped.
     # Fixture profiles also retain their original treasure-specific draw history.
     if relic_id != ORDINARY_CHEST.fallback_relic:

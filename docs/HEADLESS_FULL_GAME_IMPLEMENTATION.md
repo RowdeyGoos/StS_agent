@@ -243,8 +243,10 @@ A complete simulator for that scope must:
 Faithful reduced-content full runs are an intermediate milestone. Excluding a
 reachable unsupported card from a reward pool changes the game and cannot count
 as full target coverage. Highest-difficulty coverage is a later gate, HF-38.
-Other characters, co-op and alternate modes have separate breadth tasks HF-52–54;
-they are not implied by completion of the initial Ironclad target.
+Other playable characters remain later breadth (HF-52). Cooperative multiplayer
+and alternate modes are outside this project; HF-53 and the alternate-mode part
+of HF-54 are retained only as excluded historical inventory. Boosted native/Python
+campaign comparisons are accepted; a normal-HP test-policy victory is not required.
 
 ## Assessed implementation at the September 12 baseline
 
@@ -485,8 +487,8 @@ Dependencies and acceptance cases are in the linked task.
 | [HF-50](#hf-50--deliver-a-reproducible-supported-simulator-package) | Deliver a reproducible supported simulator package |
 | [HF-51](#hf-51--test-whether-reusing-native-game-rules-shortens-the-fidelity-work) | Test whether reusing native game rules shortens the fidelity work |
 | [HF-52](#hf-52--add-every-other-single-player-character) | Add every other single-player character |
-| [HF-53](#hf-53--add-cooperative-multiplayer-semantics) | Add cooperative multiplayer semantics |
-| [HF-54](#hf-54--add-alternate-modes-and-maintain-later-game-builds) | Add alternate modes and maintain later game builds |
+| [HF-53](#hf-53--add-cooperative-multiplayer-semantics) | Excluded: cooperative multiplayer |
+| [HF-54](#hf-54--add-alternate-modes-and-maintain-later-game-builds) | Alternate modes excluded; optional later-build maintenance |
 
 ## Foundation tasks
 
@@ -1468,30 +1470,16 @@ Dependencies and acceptance cases are in the linked task.
 
 ### HF-53 — Add cooperative multiplayer semantics
 
-- **Status:** outside the initial single-player target; requires its own target contract.
-- **Depends on:** HF-52 as required by selected teams, plus shared run/state infrastructure.
-- **Implement:** multiple player inventories/resources, action ownership and ordering,
-  shared room decisions, ally targeting, team-only content, scaling, death/revival,
-  reward ownership and multiplayer RNG semantics. Define each actor's observable
-  information and legal choices. Simulate gameplay scheduling independently of any
-  optional network-transport adapter.
-- **Accept:** two players with independent policies complete representative combats,
-  shared choices and a full run; schedule/replay ordering is deterministic and one
-  player cannot act for another. Test disconnect/abandon semantics only if they are
-  in the declared gameplay scope. Add team differential and information-boundary cases.
+**Excluded from the project by user decision, 2026-09-20.** This historical task
+ID is retained for navigation; multiplayer is not a completion requirement or a
+future implementation assignment.
 
 ### HF-54 — Add alternate modes and maintain later game builds
 
-- **Status:** outside the pinned standard-mode target; select explicit mode/build tickets.
-- **Depends on:** HF-01/38/48/50 and each selected mode's mechanics.
-- **Implement:** inventory custom/challenge/daily-style modes actually present in
-  the chosen build, their seeds, modifiers, content eligibility, scoring and endings.
-  For a new patch, capture a new immutable build identity, diff the content/rules
-  inventory, implement changed semantics and rerun affected conformance. Keep
-  cross-build snapshots, data and checkpoints explicitly compatible or rejected.
-- **Accept:** each claimed mode/build has reproducible configuration, complete
-  coverage accounting and its own completion gate. Existing pinned runs keep their
-  original behavior/evidence; no historical manifest is overwritten to imply a port.
+**Alternate modes are excluded from the project by user decision, 2026-09-20.**
+Maintenance against a separately selected future build remains possible work:
+version its content/rules identities and rerun affected native comparisons. Do not
+reinterpret evidence from the pinned build as evidence for a newer build.
 
 ## Next bounded implementation assignment
 
@@ -1689,23 +1677,26 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
      fixed summon ordering, Bronze Scales/Paper Cuts timing and Fabricator's next
      move timing (combat v37 / run v56). See the
      [boosted report](evidence/headless_generated_route_2026_09_20.md#boosted-three-act-campaign).
-   - **Next acceptance coverage — second region and ordinary-HP victory:** extend
-     the existing boosted mode to one continuous Underdocks→Hive→Glory path using
-     the same trace/replay mechanism; retain native start/region settings, seed,
-     choices and exact recorded boundaries. Separately improve legal decisions
-     (potion use, card selection and room decisions) enough to win with normal
-     HP. Keep ordinary and boosted evidence labeled independently; neither path
-     proves all events, histories, card combinations or live UI/vote scheduling.
-   - **Separate fidelity task — exhausted shared relic bags:** fresh native shared
-     bags refill an initially empty requested rarity from canonical pool order,
-     without shuffling or consuming RNG, then purge globally disallowed entries.
-     They do not refill later fallback rarities or a nonempty bag blocked only by
-     caller filters. Current headless exhaustion/owned-item filtering and unique
-     treasure-history validation do not model that boundary. Add small pinned
-     native empty/filter/fallback cases before changing generation, duplicate
-     pickup rules and snapshot validation together. Native disk-loaded bags differ
-     from fresh-run refill configuration; distinguish that from Python JSON
-     continuation. This boundary is not covered by the accepted 16-room trace.
+   - **Expanded boosted campaign completed:** Underdocks seed 1 reaches the
+     Architect through 26 combats and 1,093 combat/potion actions, five earned card
+     purchases, two chest claims and Sunken Treasury. Both Ancient starts and all
+     recorded resource/inventory/RNG boundaries match with JSON continuation.
+     The existing Overgrowth boosted trace remains unchanged. These are simulator
+     acceptance runs; a normal-HP winning test policy is not required.
+   - **Shared relic-bag refill implemented:** requested empty shared rarities
+     refill in original order without RNG after global filtering; caller-only
+     exclusions and later fallback rarities do not refill. Player bags stay
+     depleted. Independent duplicate instances, effects and chest claim ownership
+     survive JSON restoration. Eight pinned native boundary vectors cover refill,
+     filtering, fallback and duplicate ownership; native disk-loaded bags remain
+     a separate configuration, not the meaning of Python JSON continuation.
+   - **Next acceptance coverage:** extend the declared boosted seed/path matrix
+     to other bosses, event branches and richer inventory interactions. Kaiser
+     Crab's native callbacks require a visual background absent from this fixture;
+     add only the necessary presentation support before claiming that full native
+     campaign. Keep focused low-HP, death and revival cases alongside boosted
+     campaigns. Multiplayer and alternate modes are excluded from the project.
+     See [expanded campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
 3. **HF-28 / foreign-card acquisition:** the pinned solo census contains **80
    ordinary cards in each of Silent, Regent, Necrobinder and Defect** (320 total).
    Their full 344-card pool inventory, including basic/special entries, is retained
@@ -1737,7 +1728,7 @@ and [campaign evidence](HEADLESS_ENGINE.md#generated-campaign-through-glory).
 5. **Act 3 integration — implemented:** generated Glory progression includes its
    Ancient, eligible events, saved room queues and native map profile. Hive and
    Spoils history survives continuation, and the Architect records explicit victory.
-   The next acceptance work is a declared native three-act seed/path comparison:
+   Two boosted native three-act paths now match. Extend the declared seed/path matrix:
    compare room/RNG boundaries, final-boss reward modifiers and ending transitions,
    then resolve observed differences. Synthetic victories are not native acceptance.
 

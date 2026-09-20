@@ -24,6 +24,11 @@ Actual native methods provide:
   exclusions obtained by removing that epoch from an otherwise unlocked context.
 - Eight bag sequences (four seeds at two floor boundaries), each with nine
   front/back/filtered/fallback pulls, shared/player bags, RNG counter and suffix.
+- Eight additional authored bag boundaries verify fresh shared refill order,
+  front/back draws, player exhaustion, caller-filter and fallback behavior, global
+  eligibility removal and native duplicate instance ownership. They are retained
+  in [refill vectors](../../tests/fixtures/headless_relic_refill_vectors.json); prior
+  predicate/pool/bag/card/potion output was rerun unchanged.
 - Six Dingy Rug contexts: marked reward, direct grant, pool changes blocked,
   custom pool, already-colorless pool and rare-only marked reward.
 - Eight potion batches with blacklists and combat eligibility, including distinct

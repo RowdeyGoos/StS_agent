@@ -71,33 +71,37 @@ def decorate(state, cards, offers, *, upgrade_all=False, card_reward=True, upgra
     return values if indexed else dict(zip(offers, values))
 
 
-def add_power_option(state, cards, offers, pool, *, kind="combat"):
-    if not has(state, "lasting_candy") or owned(state, "lasting_candy").counter:
-        return []
+def active_power_options(state):
+    return sum(r.definition_id == "lasting_candy" and not r.counter and not r.data.get("_melted")
+               for r in state.relics)
+
+
+def add_power_option(state, cards, offers, pool, *, kind="combat", upgraded_indices=None):
     powers = [name for name in pool if cards.definition(name).levels[0].kind == "power"]
-    choices = [name for name in powers if name not in offers]
-    if not choices:
-        choices = powers
-    if choices:
+    upgrades = []
+    for _ in range(active_power_options(state)):
+        choices = [name for name in powers if name not in offers] or powers
+        if not choices:
+            continue
         if getattr(state.rng, "native", False):
             from game.headless.generation.odds import card_offers
             # Native creates one custom-pool reward with Source.Other: base odds,
             # no further pool/options hooks, but a normal upgrade roll.
             extra, upgraded = card_offers(state, cards, choices, 1, kind=kind, mode="base")
+            if extra and extra[0] in upgraded and upgraded_indices is not None:
+                upgraded_indices.append(len(offers))
             offers.extend(extra)
-            return upgraded
-        offers.append(state.rng.choice("relic.power_reward", choices))
-    return []
+            upgrades.extend(upgraded)
+        else:
+            offers.append(state.rng.choice("relic.power_reward", choices))
+    return upgrades
 
 
 
 def combat_modifiers(state, cards, offers, pool, *, upgraded=(), kind="combat", upgrade_all=False):
     """One modifier per offer position, including independently generated duplicates."""
     indices = [i for i, name in enumerate(offers) if name in upgraded]
-    count = len(offers)
-    extra_upgrades = add_power_option(state, cards, offers, pool, kind=kind)
-    if len(offers) > count and offers[-1] in extra_upgrades:
-        indices.append(count)
+    add_power_option(state, cards, offers, pool, kind=kind, upgraded_indices=indices)
     return decorate(state, cards, offers, indexed=True, upgraded_indices=indices, upgrade_all=upgrade_all)
 
 
@@ -170,13 +174,13 @@ def extra_rewards(state, cards, encounter, *, undamaged=False, final_boss=False)
 
 
 def validate_combat_offers(state, cards, offers):
-    if len(set(offers)) == len(offers):
+    if len(offers) <= 3 and len(set(offers)) == len(offers):
         return
-    # The factory samples without replacement; only Candy's appended power can
-    # repeat an earlier definition. Its own modifiers still occupy a separate slot.
-    if (not has(state, "lasting_candy") or owned(state, "lasting_candy").counter
-            or len(offers) != 4 or len(set(offers[:-1])) != 3
-            or offers[-1] not in offers[:-1] or cards.definition(offers[-1]).levels[0].kind != "power"):
+    # The factory samples without replacement; every position appended by a
+    # Candy is a Power, whether it repeats an earlier definition or is distinct.
+    if (not 3 < len(offers) <= 3 + active_power_options(state)
+            or len(set(offers[:3])) != 3
+            or any(cards.definition(name).levels[0].kind != "power" for name in offers[3:])):
         raise ValueError("Duplicated reward lacks its Lasting Candy offer.")
 
 
@@ -262,7 +266,7 @@ def validate_extra(state, cards, rewards, *, hunt_rewards_earned=0, royalties_ea
         if (
             reward["kind"] != "card"
             or not isinstance(reward["offers"], list)
-            or len(reward["offers"]) not in ((3, 4) if has(state,"lasting_candy") and owned(state,"lasting_candy").counter == 0 else (3,))
+            or len(reward["offers"]) not in range(3, 4 + active_power_options(state))
         ):
             raise ValueError("Invalid extra card offers.")
         sources.append(reward["source"])

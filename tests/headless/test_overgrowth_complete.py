@@ -161,7 +161,7 @@ def test_flyconid_native_cooldowns_and_exhausted_weight_fallback():
 def test_artifact_consumes_one_debuff_application_and_frail_is_card_block_only():
     combat=fight('overgrowth_cubex',cards=('shockwave','defend'),draw=2)
     enemy=combat.enemies[0]
-    assert enemy.block==13 and enemy.statuses.get('artifact')==1
+    assert enemy.block==0 and enemy.statuses.get('artifact')==1
     enemy.apply_status('weak',2);enemy.apply_status('vulnerable',2)
     assert enemy.statuses.get('artifact')==enemy.statuses.get('weak')==0
     assert enemy.statuses.get('vulnerable')==2

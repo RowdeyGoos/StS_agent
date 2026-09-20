@@ -115,7 +115,7 @@ def begin(state, relic, cards):
 
         pool = state.config.reward_potions if state.config is not None else ("fire_potion", "block_potion")
         from game.headless.potions.pools import generate_many
-        generated = generate_many(pool, state.rng, 2, stream="relic.potion_generation")
+        generated = generate_many(pool, state.rng, 2, stream="combat_potion_generation" if getattr(state.rng, "native", False) else "relic.potion_generation")
         for potion in generated:
             if None in state.potions:
                 add_potion(state, potion)

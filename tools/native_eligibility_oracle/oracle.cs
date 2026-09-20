@@ -89,6 +89,32 @@ foreach(int seed in new[]{0,1,2,42}) foreach(int floor in new[]{0,41}) {
  }
  bagRows.Add(new{seed,floor,initial,steps,suffix=Call(rng,"NextDouble")});
 }
+// Fresh shared bags alone refresh; authored deques isolate each boundary.
+var bagEdges=new List<object>();
+foreach(string mode in new[]{"empty_front","empty_back","player_empty","filtered_nonempty","fallback_empty","purged_then_refill","refill_purges","owned_repeat"}) {
+ data.Values["get_TotalFloor"]=mode=="purged_then_refill"||mode=="refill_purges"?41:0;
+ var rng=Activator.CreateInstance(rngType,new object[]{0U,0})!;
+ var bag=Activator.CreateInstance(bagType,new object[]{mode!="player_empty"})!;
+ var originals=Items(Call(Get("RelicPool","RelicPools.SharedRelicPool"),"GetUnlockedRelics",unlock));
+ Call(bag,"Populate",Typed(originals,relicType),rng);
+ var deques=(System.Collections.IDictionary)bagType.GetField("_deques",flags)!.GetValue(bag)!;
+ foreach(var value in deques.Values)((System.Collections.IList)value).Clear();
+ string rarity=mode=="refill_purges"?"Uncommon":"Common";
+ var requested=Enum.Parse(T("Entities.Relics.RelicRarity"),rarity);
+ var common=(System.Collections.IList)deques[Enum.Parse(T("Entities.Relics.RelicRarity"),"Common")]!;
+ if(mode=="filtered_nonempty"||mode=="fallback_empty")common.Add(Get("Relic","Relics.Anchor"));
+ if(mode=="purged_then_refill")common.Add(Get("Relic","Relics.MealTicket"));
+ if(mode=="filtered_nonempty")((System.Collections.IList)deques[Enum.Parse(T("Entities.Relics.RelicRarity"),"Uncommon")]!).Add(Get("Relic","Relics.MoltenEgg"));
+ var ownedList=Activator.CreateInstance(typeof(List<>).MakeGenericType(relicType))!;
+ Field(player,"_relics",ownedList);
+ if(mode=="owned_repeat")Call(player,"AddRelicInternal",Call(Get("Relic","Relics.AmethystAubergine"),"ToMutable"),-1,true);
+ var initial=DumpBag(bag);
+ var filter=Predicate(relicType,r=>mode is not ("filtered_nonempty" or "fallback_empty")||Id(r)=="molten_egg");
+ var counter=Prop(rng,"Counter");
+ var found=Call(bag,mode=="empty_back"?"PullFromBack":"PullFromFront",requested,filter,context);
+ if(mode=="owned_repeat")Call(player,"AddRelicInternal",Call(found!,"ToMutable"),-1,true);
+ bagEdges.Add(new{owned=Items(ownedList).Select(Id),mode,rarity=rarity.ToLowerInvariant(),floor=data.Values["get_TotalFloor"],initial,selected=found is null?"circlet":Id(found),final=DumpBag(bag),counterBefore=counter,counterAfter=Prop(rng,"Counter"),suffix=Call(rng,"NextDouble")});
+}
 data.Values["get_TotalFloor"]=0;
 var rug=Call(Get("Relic","Relics.DingyRug"),"ToMutable");
 rug.GetType().GetProperty("Owner",flags)!.SetValue(rug,player);
@@ -112,7 +138,7 @@ foreach(bool combat in new[]{false,true}) foreach(int seed in new[]{0,1,2,42}) {
  var generated=T("Factories.PotionFactory").GetMethod("CreateRandomPotion",flags)!.Invoke(null,new object[]{Typed(options,T("Models.PotionModel")),3,rng})!;
  potionRows.Add(new{seed,combat,blacklist=new[]{"fire_potion"},available=options.Select(Id),selected=Items(generated).Select(Id),counter=Prop(rng,"Counter"),suffix=Call(rng,"NextDouble")});
 }
-Console.Write(JsonSerializer.Serialize(new{source="Pinned assembly execution over explicit in-memory solo contexts; no run launch or profile access",metadata,predicates,pools,bagRows,cardRows,potionRows},new JsonSerializerOptions{WriteIndented=true}));
+Console.Write(JsonSerializer.Serialize(new{source="Pinned assembly execution over explicit in-memory solo contexts; no run launch or profile access",metadata,predicates,pools,bagRows,bagEdges,cardRows,potionRows},new JsonSerializerOptions{WriteIndented=true}));
 public class Context:DispatchProxy {
  public Dictionary<string,object> Values=new();
  protected override object? Invoke(MethodInfo? method,object?[]? args)=>Values.TryGetValue(method!.Name,out var value)?value:throw new InvalidOperationException("Unexpected native context access: "+method.Name);

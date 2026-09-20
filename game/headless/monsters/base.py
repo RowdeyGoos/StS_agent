@@ -246,10 +246,10 @@ class Enemy(ABC):
                 after_death(self.combat_player)
             settle_enemies(self.combat_player)
             if previous_hp > 0 and self.hp <= 0 and not self.combat_player.combat_is_ending:
-                from game.headless.relics.combat import has
                 from game.headless.core.resolution import push
-                if has(self.combat_player, "gremlin_horn"):
-                    push(self.combat_player, ["death_hook", self.combat_player.combat_enemies.index(self)])
+                for relic in self.combat_player.rules.relics:
+                    if relic["definition_id"] == "gremlin_horn" and not relic.get("data", {}).get("_melted"):
+                        push(self.combat_player, ["death_hook", self.combat_player.combat_enemies.index(self)])
             if previous_hp > 0 and self.hp <= 0 and not self.combat_player._resolving:
                 from game.headless.core.resolution import drain
                 drain(self.combat_player)
