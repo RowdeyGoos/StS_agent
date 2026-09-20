@@ -41,7 +41,7 @@ def remove_card(state: RunState, instance_id: str) -> Card:
 
 
 def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *, stream="card.transform") -> Card:
-    """Replace an exact master-deck card in place with a fresh base-level instance.
+    """Replace an exact master-deck card with a fresh instance at the deck end.
 
     The caller owns source eligibility and pool composition. Validate all content
     before drawing; failed transformations preserve the card, allocator and RNG.
@@ -67,9 +67,9 @@ def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *
     from game.headless.core.rng import from_snapshot
     rng = from_snapshot(state.rng.snapshot())
     definition = rng.choice(stream, definitions)
-    index = state.deck.index(original)
     replacement = Card(definition, instance_id=state.allocate_card_id())
-    state.deck[index] = replacement
+    state.deck.remove(original)
+    state.deck.append(replacement)
     state.rng = rng
     from game.headless.relics.run_rules import card_added
     card_added(state, replacement)
@@ -77,12 +77,12 @@ def transform_card(state: RunState, cards, instance_id: str, replacement_pool, *
 
 
 def replace_card(state: RunState, instance_id: str, definition) -> Card:
-    """Deterministic fresh replacement in place, for explicit content results."""
+    """Deterministic fresh replacement at the deck end, for explicit results."""
     definition.spec_at(0)
     original = find_card(state, instance_id)
-    index = state.deck.index(original)
     result = Card(definition, instance_id=state.allocate_card_id())
-    state.deck[index] = result
+    state.deck.remove(original)
+    state.deck.append(result)
     from game.headless.relics.run_rules import card_added
     card_added(state, result)
     return result

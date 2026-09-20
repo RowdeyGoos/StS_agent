@@ -85,12 +85,12 @@ def test_exact_permanent_upgrade_excludes_maxed_cards_and_uses_no_rng():
     assert all(c.upgrade_level == 1 for c in combat_cards)
 
 
-def test_transform_preserves_position_and_other_duplicates_but_not_upgrade_or_identity():
+def test_transform_appends_and_preserves_other_duplicates_but_not_upgrade_or_identity():
     run=aroma(); original=run.state.deck[1]; original.upgrade()
     keep=run.state.deck[0]; last=run.state.deck[2]; next_id=run.state.next_card_id
     step(run,option(run,"let_go")); step(run,select(run,original.instance_id))
-    replacement=run.state.deck[1]
-    assert run.state.deck[0] is keep and run.state.deck[2] is last
+    replacement=run.state.deck[-1]
+    assert run.state.deck[0] is keep and run.state.deck[1] is last
     assert replacement.instance_id == f"run.card.{next_id}" and replacement.upgrade_level == 0
     assert replacement.definition.definition_id in AromaOfChaos().transform_pool
     assert all(c.instance_id != original.instance_id for c in run.state.deck)

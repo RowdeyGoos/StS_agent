@@ -1,4 +1,4 @@
-"""A rest-site action grants Byrdpip and replaces all owned eggs in place."""
+"""A rest-site action grants Byrdpip and replaces all owned eggs at the deck end."""
 
 from copy import deepcopy
 from game.headless.core.snapshots import card_record, restore_card
@@ -45,9 +45,14 @@ def validate(state, cards):
     relic = next((r for r in state.relics if r.instance_id == pending["relic_id"]), None)
     if relic is None or relic.definition_id != "byrdpip":
         raise ValueError("Hatch has no owned Byrdpip.")
-    if len(originals) != len(state.deck):
+    from game.headless.relics.run_rules import has
+    copies = 2 if has(state, "bing_bong") else 1
+    egg_count = sum(c.definition.definition_id == "byrdonis_egg" for c in originals)
+    if len(originals) + egg_count * (copies - 1) != len(state.deck):
         raise ValueError("Hatch changed deck size.")
-    for original, current in zip(originals, state.deck):
+    ordered = ([c for c in originals if c.definition.definition_id != "byrdonis_egg"]
+               + [c for c in originals if c.definition.definition_id == "byrdonis_egg" for _ in range(copies)])
+    for original, current in zip(ordered, state.deck):
         if original.definition.definition_id == "byrdonis_egg":
             if (current.instance_id in ids or current.definition.definition_id != "byrd_swoop"
                     or not valid_new_card(state, current) or current.combats_seen):

@@ -96,7 +96,7 @@ def test_egg_unplayable_not_ethereal_and_removable():
     assert Hatch() not in run.legal_actions()
 
 
-def test_hatch_all_eggs_in_place_keeps_other_card_state_and_allows_duplicate_pet():
+def test_hatch_appends_swoops_keeps_other_card_state_and_allows_duplicate_pet():
     run = RunEngine(card_ids=['byrdonis_egg', 'strike', 'byrdonis_egg', 'defend'])
     run.state.deck[1].upgrade()
     enchant(run.state.deck[1])
@@ -104,15 +104,15 @@ def test_hatch_all_eggs_in_place_keeps_other_card_state_and_allows_duplicate_pet
     strike = card_record(run.state.deck[1])
     # A repeated event after the supported queue is exhausted can grant another egg.
     add_relic(run.state, 'byrdpip', cards=run.cards)
-    for i in (0, 2):
+    for i in (2, 3):
         run.state.deck[i] = run.cards.create('byrdonis_egg', instance_id=run.state.allocate_card_id())
     rest_site.begin_rest_site(run.state)
     step(run, Smith())
     step(run, ChooseUpgrade(None))
     assert Hatch() in run.legal_actions()
     step(run, Hatch())
-    assert [c.definition.definition_id for c in run.state.deck] == ['byrd_swoop', 'strike', 'byrd_swoop', 'defend']
-    assert card_record(run.state.deck[1]) == strike
+    assert [c.definition.definition_id for c in run.state.deck] == ['strike', 'defend', 'byrd_swoop', 'byrd_swoop']
+    assert card_record(run.state.deck[0]) == strike
     assert len(run.state.relics) == 2
     assert len({r.instance_id for r in run.state.relics}) == 2
     before = saved(run)

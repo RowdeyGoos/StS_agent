@@ -111,3 +111,57 @@ Work began at 16:51 UTC. Implementation, source inspection and review overlapped
 these phases were not separately timed. Validation times are recorded above.
 Installed packaging and final documentation finished around 17:28 UTC. No user
 readiness wait or live release/install step was required.
+
+## Native event and inventory conformance — 2026-09-20
+
+The [retained capture](native_event_inventory_2026_09_20.json) adds 144 actual
+native choices: four events × three branches × seeds 0/2/42 × A0/A10 × two
+inventories. Self-Help Book selects Attack/Skill/Power for Sharp/Nimble/Swift;
+Wood Carvings selects a Basic for Peck/Toric Toughness or a Slither-eligible card;
+Tea Master buys each tea, including an existing identical tea; The Future of
+Potions trades each of common/uncommon/rare potions and claims the first reward.
+
+Authored setup is HP31/maxHP80/gold250, native starter deck plus Inflame and two
+upgraded basics. Enhanced setup adds Molten/Toxic/Frozen Egg, Wing Charm and a
+Slither-enchanted Strike. A10 potion cases obtain Potion Belt to fit three bottles.
+Selection indices identify physical cards; singleton grids use native auto-selection.
+The fixture checks legality and selection consumption, uses actual event/reward
+commands and in-memory run history, and cleans up each mock-persistence run.
+The final native capture built in 1.557s and executed in 1.851s with empty stderr
+and successful removal of its isolated user directory. No player files were read.
+
+Python compares ordered deck values/enchantments, HP/maxHP/gold, duplicate relics,
+potion slots and release of potion restrictions, every generated reward offer,
+and event/Rewards/Niche/Transformations counters plus next-value suffixes. Every
+choice is replayed from JSON, including the intermediate card/reward selection.
+
+This exposed two engine discrepancies. Native `CardCmd.Transform` removes a
+permanent-deck source and appends its replacement; only combat-pile transforms
+reuse their old position. Shared random/explicit deck replacement and the Morphic,
+Whispering Hollow, partial-selection and Hatch validators now follow that order.
+Bing Bong copies remain adjacent to each replacement. The event reward type filter
+also needs to treat the internal `block` category as native Skill: excluding Shrug
+It Off had changed The Future of Potions' seed42 common-skill offers.
+Run schema v62 rejects earlier transformation continuation semantics; combat v42
+is unchanged. Focused regressions include partial two-card transformation restores,
+physical duplicates, egg upgrades, Bing Bong copies, Hatch ordering, invalid deck
+reordering and old-schema rejection. An independent semantic review checked native
+transformation behavior, the four affected validators and fixture isolation.
+
+[Ten freshly executed native baselines](native_event_campaign_regressions_2026_09_20.json)
+match their original A0/A10 results exactly and bind the extended harness to those
+unchanged captures. Their older evidence identities are preserved. None of these
+retained campaign paths contains the newly corrected event/transform callers;
+new focused event replays exercise those behaviors directly.
+
+This capture proves the specified inventories and first-eligible/first-reward
+choices, not every eligible target, tea combat activation, every event branch,
+all relic combinations or live UI behavior. Continue conformance with additional
+ordinary-event branches and inventory interactions under the declared solo scope.
+
+Final validation: **1,378 passed in 162.66s**, covering the new 144 native cases,
+transformation/restore consumers, all-solo event branches, relic/Ancient acquisition,
+foreign cards and native reward handoffs. Compileall, diff checks and changed-document
+relative links passed. The ten native baseline runs took 15.905s total compilation
+and 25.059s execution. Independent focused checks took 0.43s; total implementation
+and review wall times were not measured. No release packaging or user wait was needed.

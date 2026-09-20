@@ -178,7 +178,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v42 / run v61**.
+than being silently reinterpreted: current schemas are **combat v42 / run v62**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -400,7 +400,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v42 / run v61.
+reject atomically; current formats are combat v42 / run v62.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -427,7 +427,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v42 / run v61**.
+reject atomically. These private formats are **combat v42 / run v62**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -598,7 +598,7 @@ normal-HP winning strategy, live UI scheduling or exhaustive native parity.
 The boosted replay exposed and corrected Parafright/Obscura action order,
 random-hit target enumeration after summons, Bronze Scales using Thorns before
 incoming damage, Paper Cuts after its owner dies, and Fabricator's delayed
-next-move decision after later bots finish. Current **combat v42 / run v61** reject
+next-move decision after later bots finish. Current **combat v42 / run v62** reject
 older continuation semantics. Fabricator's pending roll is owned by the active
 enemy continuation and survives pauses without a second RNG draw.
 
@@ -614,7 +614,7 @@ Fresh native shared bags refill only the requested empty rarity, in canonical
 order without RNG. Ownership is not a global filter; repeated instances have
 separate identities, counters and effects. An entry allocator boundary binds
 chest claims to newly acquired relics and rejects reopening or claiming an old copy.
-Private schemas are combat v42 / run v61. Native disk-save loading drops the
+Private schemas are combat v42 / run v62. Native disk-save loading drops the
 refill configuration; Python JSON preserves the fresh session being continued.
 See [refill and campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
 The [Kaiser campaign](evidence/native_boosted_kaiser_2026_09_20.json) adds Underdocks
@@ -642,11 +642,35 @@ edge regressions preserve Ceremonial Beast's reactive stun and temporary Strengt
 cleanup and Waterfall Giant's post-death power removal. Combat rewards preserve
 the Amethyst Aubergine owners that generated their gold, so later pickups from
 main/extra rewards or Pael's Wing cannot retroactively change the amount. Private
-schemas are combat v42 / run v61; old continuations reject. Boss coverage does not establish every seed,
+schemas are combat v42 / run v62; old continuations reject. Boss coverage does not establish every seed,
 event branch, inventory combination or hidden native state field.
 
 Further event and inventory coverage remains in the
 [implementation queue](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment).
+
+### Event and inventory conformance
+
+[144 native event cases](evidence/native_event_inventory_2026_09_20.json) cover
+all three branches of Self-Help Book, Wood Carvings, Tea Master and The Future of
+Potions. The matrix uses seeds 0/2/42, A0/A10, and baseline/enhanced authored
+inventories. Enhanced inventories contain all three upgrade Eggs and Wing Charm;
+Tea Master begins with an existing copy of the chosen tea, and an already enchanted
+Strike tests selection exclusion. Potion trades use common/uncommon/rare bottles.
+
+The replay compares initial legal options, the selected physical card, ordered deck
+upgrades/enchantments, HP/gold, duplicate relics, potion slots, complete reward
+offers, and event/Rewards/Niche/Transformations RNG counters and next values.
+Every headless choice continues identically after JSON restore. Actual native
+option/reward commands run under TestMode with mock persistence; the fixture uses
+first-eligible card and first-reward choices, with no live UI or combat. Tea usage
+and arbitrary selections are outside this capture.
+
+Two discrepancies are corrected: permanent-deck transformations append their
+replacement, and event skill rewards include the legacy `block` category such as
+Shrug It Off. Morphic Grove, Whispering Hollow, partial event selections and Hatch
+validate the resulting order, including adjacent Bing Bong copies. Combat-pile
+transformations still preserve position. Run v62 rejects previous continuation
+semantics; combat remains v42. [Detailed evidence and limits](evidence/events_neow_2026_09_14.md#native-event-and-inventory-conformance--2026-09-20).
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -2010,8 +2034,10 @@ uses no upgrade RNG. Each repeated page and automatic result restores exactly.
 gold, then requires two original deck cards. With more than two candidates,
 `ChooseEventCard` nominates one at a time; the first nomination changes no card and
 reveals no transformation. Both replacements resolve together after the second
-nomination, using the same restricted Ironclad pool as Aroma. They retain deck
-positions and receive fresh unupgraded identities. There is no cancel or duplicate
+nomination, using the same restricted Ironclad pool as Aroma. They append to the
+deck in selection order with fresh base identities;
+acquisition relics can upgrade/enchant them, and Bing Bong appends each copy
+immediately after its replacement. There is no cancel or duplicate
 nomination. If at most two cards exist, all are selected automatically, including
 the zero-card case reachable through native exhausted-pool fallback. A failure
 while preparing either replacement preserves the paid selection, deck and RNG.
@@ -2129,7 +2155,8 @@ native exhausted-pool fallback can still repeat it.
 
 An egg enables `Hatch` alongside normal rest/smith options. Hatching consumes that
 rest site's action, grants an owned Byrdpip relic and replaces **every** permanent
-egg in place with a fresh base Byrd Swoop. Other cards retain identity, upgrades
+egg with a fresh Byrd Swoop appended to the deck, including acquisition hooks.
+Other cards retain identity, upgrades
 and enchantments. Repeated acquisition keeps independently owned Byrdpip relics.
 Choosing Rest or Smith instead preserves the egg for a later site; canceling
 Smith restores Hatch availability. The demo prefers Take and Hatch.

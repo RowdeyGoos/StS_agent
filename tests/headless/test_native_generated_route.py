@@ -11,7 +11,7 @@ LEGACY = json.loads((ROOT / 'docs/evidence/native_generated_start_route_regressi
 
 
 def test_route_fixture_identity_and_first_combat_regression():
-    rerun = json.loads((ROOT / 'docs/evidence/native_a10_campaign_regressions_2026_09_20.json').read_text())
+    rerun = json.loads((ROOT / 'docs/evidence/native_event_campaign_regressions_2026_09_20.json').read_text())
     assert {r['mode'] for r in rerun['runs']} == {'generated-start', 'generated-route', 'boosted-campaign', 'boosted-coverage', 'boosted-kaiser', 'boosted-matrix'}
     for name, digest in rerun['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
