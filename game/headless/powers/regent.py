@@ -158,17 +158,22 @@ def execute(p, op, args):
             gain_stars(p, r.powers.get(key, 0))
         if key in ('star_next_turn', 'energy_next_turn'):
             r.powers.pop(key, None)
-    elif op == 'regent_before_draw':
+    elif op in ('regent_before_draw', 'regent_foregone_after_shuffle'):
         key = args[0]
         amount = r.powers.get(key, 0)
         if key == 'spectrum_shift':
             colorless(p, amount)
         elif amount:
             from game.headless.powers.colorless import ensure_draw
-            if not ensure_draw(p, [op, *args], hand=False):
+            if op == 'regent_before_draw' and not p.deck.draw_pile and p.deck.discard_pile:
+                ensure_draw(p, ['regent_foregone_after_shuffle', key], hand=False)
                 return
             from game.headless.core.piles import stratagem_cards
-            begin(p, key, stratagem_cards(p), operation='regent_foregone_conclusion', minimum=amount, maximum=amount)
+            cards = stratagem_cards(p)
+            from game.headless.core.native_rng import NativeRng
+            if amount >= len(cards) and isinstance(p.deck.rng, NativeRng):
+                cards = list(reversed(p.deck.draw_pile))
+            begin(p, key, cards, operation='regent_foregone_conclusion', minimum=amount, maximum=amount)
             push(p, ['regent_remove', key])
     elif op == 'regent_remove':
         r.powers.pop(args[0], None)

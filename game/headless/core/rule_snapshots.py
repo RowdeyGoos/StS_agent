@@ -9,7 +9,7 @@ from game.headless.core.choice_snapshots import validate_selection, valid_power
 
 TASK_ARITIES = {
     "begin_card_attack": 1, "end_card_attack": 1, "monster_death": 1,
-    "ancient_preplay": 0, "ancient_mittens": 1, "ancient_strength": 1, "ancient_earring": 2,
+    "ancient_preplay": 0, "ancient_mittens": 1, "ancient_mittens_after_shuffle": 1, "ancient_strength": 1, "ancient_earring": 2,
     "end_hand_card": 1, "hand_draw": 1,
     "potion_effect": 2,
     "potion_finish": 1,
@@ -233,7 +233,7 @@ def restore_rules(record, player):
         op, *args = task
         if op.startswith("ancient_"):
             from game.headless.relics.ancient_state import validate_task
-            validate_task(player, op, args)
+            validate_task(r, op, args)
         if op == "death_hook":
             slot = args[0]
             if (type(slot) is not int or not 0 <= slot < len(player.combat_enemies)

@@ -5,7 +5,7 @@ from game.headless.core.orbs import KINDS
 TASK_ARITIES = {'orb_channel': 1, 'orb_insert': 1, 'orb_evoke': 2, 'orb_phase': 1,
     'orb_front_passive': 0, 'orb_trigger': 3, 'orb_damage': 3, 'orb_thunder': 2,
     'def_compact': 2, 'def_flak': 2, 'def_sunder': 3, 'def_scrape': 1,
-    'def_scrape_draw': 2, 'def_discard': 1, 'def_status': 1,
+    'def_scrape_draw': 2, 'def_scrape_after_shuffle': 2, 'def_discard': 1, 'def_status': 1,
     'def_energy_reset': 1, 'def_decrement': 1, 'def_before_draw': 1,
     'def_generate_power': 0, 'def_side_start': 1, 'def_start_power': 1,
     'def_early_end': 1, 'def_end_power': 1, 'def_generated': 2, 'def_rocket': 1,
@@ -108,8 +108,8 @@ def validate_task(task, r, p, context):
     elif op == 'def_compact':
         owner(args[0], 'compact')
         if args[1] not in p.deck._allocated_ids: raise ValueError('Unowned transformed status.')
-    elif op in ('def_flak', 'def_sunder', 'def_scrape', 'def_scrape_draw'):
-        definition = {'def_flak':'flak_cannon', 'def_sunder':'sunder', 'def_scrape':'scrape', 'def_scrape_draw':'scrape'}[op]
+    elif op in ('def_flak', 'def_sunder', 'def_scrape', 'def_scrape_draw', 'def_scrape_after_shuffle'):
+        definition = {'def_flak':'flak_cannon', 'def_sunder':'sunder', 'def_scrape':'scrape', 'def_scrape_draw':'scrape', 'def_scrape_after_shuffle':'scrape'}[op]
         owner(args[0], definition)
         for n in args[1:]: natural(n)
         if op == 'def_sunder':

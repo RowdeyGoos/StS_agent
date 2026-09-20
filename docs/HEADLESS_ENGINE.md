@@ -122,7 +122,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v33 / run v49**.
+than being silently reinterpreted: current schemas are **combat v34 / run v50**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -293,8 +293,8 @@ they do not run the full player-turn setup, live UI or executor frame loop. Flak
 mixed-card candidates are compared as membership, with exact physical draw order
 checked separately; UI sorting is not claimed. The cases share the fixture's
 in-memory save/localization isolation. Havoc and Chaos use the corrected shared
-batch path, but these native captures exercise Mayhem specifically. Scrape, Mittens and Foregone Conclusion post-shuffle continuations, broader
-dependent autoplay and whole-run parity remain open.
+batch path, but these native captures exercise Mayhem specifically. Broader dependent autoplay and whole-run parity remain open; the remaining
+card-specific shuffle cases are described below.
 
 The `draw-cards` mode verifies [96 native Pillage/Escape Plan cases](evidence/native_draw_cards_2026_09_20.json)
 using actual `PlayCardAction` execution. Three seeds and both upgrades cover mixed
@@ -320,8 +320,39 @@ and five RNG counters/suffixes match. Normal choice boundaries and completion
 restore from JSON; malformed Escape Plan ownership/arguments and old schemas
 reject atomically. Private versions are combat v33 / run v49. As with the other
 queue modes, prepared combat state and manual replay omit UI sorting, encounter
-entry, live executor frames and room/reward/save processing. The next card-specific
-checks are Scrape, Mittens and Foregone Conclusion.
+entry, live executor frames and room/reward/save processing. Scrape and before-hand-draw callbacks are covered separately below.
+
+The `remaining-draw` mode adds [180 native cases](evidence/native_remaining_draw_2026_09_20.json)
+for Scrape and the actual `BeforeHandDraw` callbacks of Toasty Mittens and Foregone
+Conclusion. Three seeds and two variants cover ten setups: mixed costs (including
+zero, X and unplayable), singleton/empty piles, full hands, Fiddle, No Draw,
+controlled depletion, Innate selection, capacity reached before another refill,
+and automatic selection of every card. Variants exercise both Scrape upgrades,
+Mittens on turns one/two and Foregone amounts two/three.
+
+Scrape now checks draw permission once for its draw operation, honors hand capacity
+before shuffling, and resumes a completed shuffle without refilling again. Its
+captured actual draws determine the later cost-based discard; Stratagem additions
+are excluded. Mittens similarly resumes once, skips Innate cards on turn one when
+a non-Innate card exists, and grants Strength even when no card remains to exhaust.
+Foregone removes its power when its selection is empty and preserves native
+physical draw order when automatically taking all remaining cards. Explicit
+selections retain their existing candidate sorting.
+
+Snapshots preserve each new phase and the existing Defect event receipts. Ancient
+continuation validation now reads reconstructed saved rules, fixing rejection of
+legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
+pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
+Malformed ownership/arguments, missing Scrape receipts and older private formats
+reject atomically; current formats are combat v34 / run v50.
+
+The native comparisons check exact piles, draw order, damage, block/energy/Strength,
+Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
+Depletion uses explicit native pile moves during a paused Stratagem choice, with
+the same controlled-interference and snapshot limits as `draw-cards`. These are
+not complete player turns or live executor/UI runs. Draw hooks that move the drawn
+cards before Scrape's discard (for example Hellraiser), several simultaneous death
+choices, reactive enemy-side-start choices and whole-run parity remain open.
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
 The native ordinary pools contain 78 eligible Ironclad and 50 eligible colorless
@@ -1185,7 +1216,7 @@ completed-act records. Shared map rules live in
 a compatibility entry point. Private run **v44** requires campaign/history fields
 and validates each act’s queues, map, event/unknown decisions, global combat count,
 free travel and map relic ownership. Older run snapshots are rejected explicitly;
-combat schema is **v33**. Hive boss reward exit records `ActCompletion(act=2, …)`
+combat schema is **v34**. Hive boss reward exit records `ActCompletion(act=2, …)`
 and stops at `ACT_COMPLETE` when `last_act="hive"`. The default campaign now
 continues through Glory and the Architect as described below.
 
@@ -1254,7 +1285,7 @@ records `VICTORY`. Native post-victory presentation death is not a simulated def
 No Lantern Key or other optional event is required to finish the run.
 
 Private **run v44** saves the epilogue identity and archived Spoils quest records;
-combat uses **v33**. Restore requires the completed campaign/boss, matching
+combat uses **v34**. Restore requires the completed campaign/boss, matching
 Ancient identities in both current and historical maps, and an owned Architect
 event or completed victory. It rejects incomplete victory claims, mixed-act
 history, final-boss ordinary rewards, and missing archived quest owners. Failed
@@ -2040,7 +2071,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v49`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v50`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -2053,7 +2084,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v33`, including the in-play
+Nested combat records now use `headless_combat_state_v34`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

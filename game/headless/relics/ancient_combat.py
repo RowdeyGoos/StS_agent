@@ -174,10 +174,11 @@ def execute(p, op, args):
     relic = next(r for r in p.rules.relics if r['instance_id'] == args[0])
     if p.combat_is_ending:
         return
-    if op == 'ancient_mittens':
+    if op in ('ancient_mittens', 'ancient_mittens_after_shuffle'):
         from game.headless.powers.colorless import ensure_draw
         # Refill may emit selectable hooks before the exhaust can continue.
-        if p.deck.discard_pile and not ensure_draw(p, [op, *args], hand=False):
+        if op == 'ancient_mittens' and not p.deck.draw_pile and p.deck.discard_pile:
+            ensure_draw(p, ['ancient_mittens_after_shuffle', *args], hand=False)
             return
         choices = list(reversed(p.deck.draw_pile))
         card = next((c for c in choices if not c.spec.innate), None) if p.rules.round_number == 1 else None
