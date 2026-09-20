@@ -1,6 +1,6 @@
 """Glory replacement lives and Fabricator's stable, ordered summon slots."""
 from game.headless.monsters.base import Intent
-from game.headless.monsters.scripted import ScriptedEnemy
+from game.headless.monsters.scripted import ScriptedEnemy, DeferredMoveEnemy
 from game.headless.monsters.underdocks_normal import attack
 from game.headless.monsters.underdocks_summons import append_child
 from game.headless.encounters.randomness import branch
@@ -104,7 +104,7 @@ class Noisebot(Bot):
         generate(player, 'dazed', 'draw_pile', 1, random_position=True)
 
 
-class Fabricator(ScriptedEnemy):
+class Fabricator(DeferredMoveEnemy):
     NAME, HP = 'Fabricator', (150, 150)
     MOVES = (Intent('summon', 2, 'Fabricate'), attack('Fabricating Strike', 18), attack('Disintegrate', 11))
     turn_order = 2
@@ -112,7 +112,6 @@ class Fabricator(ScriptedEnemy):
     def __init__(self, rng):
         super().__init__(rng)
         self.last_spawn = ''
-        self.move_roll_pending = False
         self._intent_index = branch(self.rng, (0, 1))
 
     def spawn(self, player, kinds):
@@ -130,39 +129,12 @@ class Fabricator(ScriptedEnemy):
     def next_indices(self):
         return (2,) if self.combat_player is not None and sum(e.is_alive for e in self.combat_player.combat_enemies) >= 4 else (0, 1)
 
-    def advance_intent(self):
-        # Native rolls at next player-side setup, after later bots can die.
-        if self.combat_player is not None and self.combat_player.rules.enemy_turn is not None:
-            self.move_roll_pending = True
-            return
+    def roll_next_intent(self):
         choices = self.next_indices()
         self._intent_index = choices[0] if choices == (2,) else branch(self.rng, choices)
 
-    def prepare_next_turn(self):
-        if self.move_roll_pending:
-            self.move_roll_pending = False
-            if self.is_alive:
-                self.advance_intent()
-
     def _possible_next_templates(self): return tuple(self.MOVES[i] for i in self.next_indices())
 
-    def on_combat_state_changed(self, player):
-        if not player.is_alive or player.combat_is_ending:
-            self.move_roll_pending = False
-
     def validate_combat_context(self, player):
-        progress = player.rules.enemy_turn
-        completed = False
-        if progress is not None and player.is_alive and not player.combat_is_ending:
-            slot = player.combat_enemies.index(self)
-            names = {move.move_name for move in self.MOVES}
-            completed = any(action['enemy_index'] == slot and action['intent']['move_name'] in names
-                            for action in progress['actions'])
-            move = progress.get('move')
-            if move is not None:
-                from game.headless.core.enemy_turn import current_slot
-                completed |= (current_slot(progress) == slot and move['stage'] == 'done'
-                              and move['intent']['move_name'] in names)
-        if self.move_roll_pending != completed:
-            raise ValueError('Fabricator move roll differs from its enemy continuation.')
+        super().validate_combat_context(player)
         if self.last_spawn not in ('', 'Guardbot', 'Noisebot', 'Zapbot', 'Stabbot'): raise ValueError('Invalid Fabricator history.')

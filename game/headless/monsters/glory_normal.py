@@ -1,7 +1,7 @@
 """Glory hallway moves and source-owned reactive rules at solo A0."""
 from dataclasses import replace
 from game.headless.monsters.base import Intent
-from game.headless.monsters.scripted import ScriptedEnemy
+from game.headless.monsters.scripted import ScriptedEnemy, DeferredMoveEnemy
 from game.headless.monsters.underdocks_normal import attack
 from game.headless.encounters.randomness import branch
 
@@ -151,8 +151,9 @@ class TheLost(ScriptedEnemy):
     def on_combat_state_changed(self, player):
         if not self.is_alive and not self.returned:
             self.returned = True
-            if self.STAT == 'strength': player.strength += self.stolen
-            else: player.rules.powers['dexterity'] = player.rules.powers.get('dexterity', 0) + self.stolen
+            if self.stolen and player.is_alive and not player.combat_is_ending:
+                from game.headless.powers.ironclad import apply_power
+                apply_power(player, self.STAT, self.stolen)
 
 
 class TheForgotten(TheLost):
@@ -171,7 +172,7 @@ class TheForgotten(TheLost):
         return self._resolve_intent(template)
 
 
-class LivingShield(ScriptedEnemy):
+class LivingShield(DeferredMoveEnemy):
     NAME, HP = 'Living Shield', (55, 55)
     MOVES = (attack('Shield Slam', 6), attack('Smash', 16, strength_gain=3))
 
@@ -187,7 +188,7 @@ class LivingShield(ScriptedEnemy):
         if self._intent_index == 1: return 1
         return 0 if self.combat_player is None or any(e is not self and e.is_alive for e in self.combat_player.combat_enemies) else 1
 
-    def advance_intent(self): self._intent_index = self.next_index()
+    def roll_next_intent(self): self._intent_index = self.next_index()
     def _possible_next_templates(self): return (self.MOVES[self.next_index()],)
 
 

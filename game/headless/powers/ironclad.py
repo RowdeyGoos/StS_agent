@@ -353,6 +353,8 @@ def begin_end_hooks(p):
 
 
 def after_player_end(p, name):
+    from game.headless.powers.hive import after_end as hive_end
+    hive_end(p, name)
     from game.headless.potions.powers import after_end
     after_end(p, name)
     from game.headless.powers.silent import end_turn as silent_end

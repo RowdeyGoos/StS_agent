@@ -1,6 +1,6 @@
 """Hive summons, hatching and persistent illusion slots."""
 from game.headless.monsters.base import Intent
-from game.headless.monsters.scripted import ScriptedEnemy
+from game.headless.monsters.scripted import ScriptedEnemy, DeferredMoveEnemy
 from game.headless.monsters.underdocks_normal import attack
 from game.headless.monsters.underdocks_summons import append_child
 from game.headless.monsters.fogmog import EyeWithTeeth
@@ -33,7 +33,7 @@ class ToughEgg(ScriptedEnemy):
             self.statuses.add('minion', 1)
 
 
-class Ovicopter(ScriptedEnemy):
+class Ovicopter(DeferredMoveEnemy):
     turn_order = 6
     NAME, HP = 'Ovicopter', (124, 130)
     MOVES = (Intent('summon', 3, 'Lay Eggs'), attack('Smash', 16),
@@ -46,7 +46,7 @@ class Ovicopter(ScriptedEnemy):
             for position in sorted(set(range(1, 6)) - used, reverse=True)[:3]:
                 append_child(ToughEgg, self, player, position=position)
 
-    def advance_intent(self):
+    def roll_next_intent(self):
         count = sum(e.is_alive for e in self.combat_player.combat_enemies) if self.combat_player else 1
         self._intent_index = (0 if count <= 3 else 3) if self._intent_index == 2 else (2 if self._intent_index == 1 else 1)
 

@@ -225,7 +225,8 @@ def test_stolen_stats_return_only_actual_loss_and_forgotten_uses_dexterity(artif
     kill(run, lost)
     assert p.strength == 0
     kill(run, forgotten)
-    assert p.rules.powers['dexterity'] == 0
+    # Native PowerCmd suppresses the refund once the last enemy dies.
+    assert p.rules.powers['dexterity'] == -4
     clone(run)
 
 
