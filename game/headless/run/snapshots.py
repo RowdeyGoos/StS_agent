@@ -6,6 +6,7 @@ from dataclasses import asdict
 
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.combat import CombatEngine
+from game.headless.core.content_snapshots import ContentJson
 from game.headless.core.rng import GameRandomService
 from game.headless.core.snapshots import card_record, restore_card
 from game.headless.map.graph import MapGraph, MapNode
@@ -58,8 +59,10 @@ def _restore_relic(record):
         raise ValueError("Invalid relic state fields.")
     return RelicInstance(**record)
 
+_ITEM_JSON = ContentJson()
 
-def _item_definitions():
+
+def _build_item_definitions():
     # These frozen content records contain JSON scalars/tuples. JSON already
     # creates detached containers; recursively deep-copying every field with
     # asdict before encoding repeats the same work at every decision boundary.
@@ -67,6 +70,10 @@ def _item_definitions():
         return [{name: getattr(value, name) for name in value.__dataclass_fields__}
                 for value in definitions.values()]
     return json.loads(json.dumps({"relics": records(RELICS), "potions": records(POTIONS)}))
+
+
+def _item_definitions():
+    return _ITEM_JSON.read((*RELICS.values(), None, *POTIONS.values()), _build_item_definitions)
 
 
 def capture_run(engine) -> dict:

@@ -245,10 +245,10 @@ def replay(row, cache=None):
             assert set(actual) == set(expected), (actual, expected)
     else:
         assert run.state.hp <= 0 or run.state.pending is None or run.state.pending.get('stage') == 'resolved' or row.get('combat') and run.combat is not None
-    for key, stream in [('eventRng', 'event:' + name.upper()), ('rewards', 'rewards'), ('niche', 'niche'), ('transformations', 'transformations'), ('shops', 'shops')]:
+    for rng_key, stream in [('eventRng', 'event:' + name.upper()), ('rewards', 'rewards'), ('niche', 'niche'), ('transformations', 'transformations'), ('shops', 'shops')]:
         rng = run.state.rng.stream(stream)
-        assert rng.counter == row['rng'][key]['counter'], (key, rng.counter, row['rng'][key])
-        assert deepcopy(rng).next_double() == row['rng'][key]['suffix'], key
+        assert rng.counter == row['rng'][rng_key]['counter'], (rng_key, rng.counter, row['rng'][rng_key])
+        assert deepcopy(rng).next_double() == row['rng'][rng_key]['suffix'], rng_key
     if cache is not None:
         cache[key] = run.snapshot()
     return run

@@ -5,6 +5,7 @@ pool/RNG parity. Prices round to even before the card sale's integer halving.
 """
 
 from game.headless.cards.catalog import DEFAULT_CARDS
+from game.headless.core.content_snapshots import ContentJson
 from dataclasses import asdict, dataclass
 from game.headless.cards.pools import COMMON_CARDS, UNCOMMON_CARDS, RARE_CARDS
 
@@ -35,9 +36,16 @@ def price(base_cost, scale, on_sale=False):
     rounded = round(base_cost * scale / 10000)
     return rounded // 2 if on_sale else rounded
 
+_CATALOG_JSON = ContentJson()
 
-def fingerprint():
+
+def _build_fingerprint():
     # JSON primitives even before serialization, for exact installed continuation.
     from game.headless.generation.merchant import SLOTS as native_slots
     return {"catalog_id": SHOP_ID, "native_slots": [{**asdict(s), "items": [list(item) for item in s.items]} for s in native_slots], "slots": [
         {**asdict(s), "items": [list(item) for item in s.items]} for s in SLOTS]}
+
+
+def fingerprint():
+    from game.headless.generation.merchant import SLOTS as native_slots
+    return _CATALOG_JSON.read((SHOP_ID, *native_slots, None, *SLOTS), _build_fingerprint)
