@@ -179,7 +179,7 @@ class RunState:
         if (type(self.next_treasure_id) is not int or self.next_treasure_id < 0
                 or not isinstance(self.treasure_relics_drawn, list)
                 or any(r not in treasure_pool(self) for r in self.treasure_relics_drawn)
-                or len(set(self.treasure_relics_drawn)) != len(self.treasure_relics_drawn)
+                or not getattr(self.rng, "native", False) and len(set(self.treasure_relics_drawn)) != len(self.treasure_relics_drawn)
                 or len(self.treasure_relics_drawn) > self.next_treasure_id):
             raise ValueError("Invalid treasure counters or depleted pool.")
         if type(self.next_item_id) is not int or self.next_item_id < 0:
@@ -216,7 +216,7 @@ class RunState:
         nonstackable = [r.definition_id for r in self.relics if not RELICS[r.definition_id].stackable and not RELICS[r.definition_id].allow_duplicates]
         if any(type(r.counter) is not int or not 0 <= r.counter <= max(RELICS[r.definition_id].counter_limit, RELICS[r.definition_id].evolve_after_elites - 1) for r in self.relics):
             raise ValueError("Invalid relic progression counter.")
-        if len(set(nonstackable)) != len(nonstackable):
+        if not getattr(self.rng, "native", False) and len(set(nonstackable)) != len(nonstackable):
             raise ValueError("Duplicate relic definition.")
         if any(p is not None and (not isinstance(p, PotionInstance) or p.definition_id not in POTIONS) for p in self.potions):
             raise ValueError("Unsupported potion.")

@@ -104,5 +104,9 @@ def hook(p, relic, event, identity):
 
 
 def hand_emptied(p):
-    if not p.hand and p.rules.player_side and not p.rules.turn_ending and has(p, "unceasing_top"):
-        push(p, ["draw", 1, False])
+    if not p.hand and p.rules.player_side and not p.rules.turn_ending:
+        # The empty-hand event is captured once. Each native Top listener draws
+        # even when an earlier listener has already filled the hand.
+        push(p, *[["draw", 1, False] for relic in p.rules.relics
+                  if relic["definition_id"] == "unceasing_top"
+                  and not relic.get("data", {}).get("_melted")])

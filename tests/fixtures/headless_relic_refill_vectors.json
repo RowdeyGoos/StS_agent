@@ -1,0 +1,353 @@
+{
+  "source": "Pinned assembly execution over explicit in-memory solo contexts; no run launch or profile access",
+  "assemblySha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "fixtureSha256": "4b52a6be5634b86b0c9be64b114e8968024c160201ed4c6a67a26f902e8568ca",
+  "existingVectorsUnchanged": true,
+  "rows": [
+    {
+      "owned": [],
+      "mode": "empty_front",
+      "rarity": "common",
+      "floor": 0,
+      "initial": {
+        "uncommon": [],
+        "common": [],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "amethyst_aubergine",
+      "final": {
+        "uncommon": [],
+        "common": [
+          "anchor",
+          "bag_of_marbles",
+          "bag_of_preparation",
+          "blood_vial",
+          "book_of_five_rings",
+          "bronze_scales",
+          "centennial_puzzle",
+          "festive_popper",
+          "gorget",
+          "happy_flower",
+          "juzu_bracelet",
+          "lantern",
+          "meal_ticket",
+          "oddly_smooth_stone",
+          "pendulum",
+          "potion_belt",
+          "red_mask",
+          "regal_pillow",
+          "strawberry",
+          "strike_dummy",
+          "vajra",
+          "venerable_tea_set",
+          "war_paint",
+          "whetstone"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    },
+    {
+      "owned": [],
+      "mode": "empty_back",
+      "rarity": "common",
+      "floor": 0,
+      "initial": {
+        "uncommon": [],
+        "common": [],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "whetstone",
+      "final": {
+        "uncommon": [],
+        "common": [
+          "amethyst_aubergine",
+          "anchor",
+          "bag_of_marbles",
+          "bag_of_preparation",
+          "blood_vial",
+          "book_of_five_rings",
+          "bronze_scales",
+          "centennial_puzzle",
+          "festive_popper",
+          "gorget",
+          "happy_flower",
+          "juzu_bracelet",
+          "lantern",
+          "meal_ticket",
+          "oddly_smooth_stone",
+          "pendulum",
+          "potion_belt",
+          "red_mask",
+          "regal_pillow",
+          "strawberry",
+          "strike_dummy",
+          "vajra",
+          "venerable_tea_set",
+          "war_paint"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    },
+    {
+      "owned": [],
+      "mode": "player_empty",
+      "rarity": "common",
+      "floor": 0,
+      "initial": {
+        "uncommon": [],
+        "common": [],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "circlet",
+      "final": {
+        "uncommon": [],
+        "common": [],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    },
+    {
+      "owned": [],
+      "mode": "filtered_nonempty",
+      "rarity": "common",
+      "floor": 0,
+      "initial": {
+        "uncommon": [
+          "molten_egg"
+        ],
+        "common": [
+          "anchor"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "molten_egg",
+      "final": {
+        "uncommon": [],
+        "common": [
+          "anchor"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    },
+    {
+      "owned": [],
+      "mode": "fallback_empty",
+      "rarity": "common",
+      "floor": 0,
+      "initial": {
+        "uncommon": [],
+        "common": [
+          "anchor"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "circlet",
+      "final": {
+        "uncommon": [],
+        "common": [
+          "anchor"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    },
+    {
+      "owned": [],
+      "mode": "purged_then_refill",
+      "rarity": "common",
+      "floor": 41,
+      "initial": {
+        "uncommon": [],
+        "common": [
+          "meal_ticket"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "anchor",
+      "final": {
+        "uncommon": [],
+        "common": [
+          "bag_of_marbles",
+          "bag_of_preparation",
+          "blood_vial",
+          "bronze_scales",
+          "centennial_puzzle",
+          "festive_popper",
+          "gorget",
+          "happy_flower",
+          "lantern",
+          "oddly_smooth_stone",
+          "pendulum",
+          "potion_belt",
+          "red_mask",
+          "regal_pillow",
+          "strawberry",
+          "strike_dummy",
+          "vajra",
+          "venerable_tea_set",
+          "war_paint",
+          "whetstone"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    },
+    {
+      "owned": [],
+      "mode": "refill_purges",
+      "rarity": "uncommon",
+      "floor": 41,
+      "initial": {
+        "uncommon": [],
+        "common": [],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "akabeko",
+      "final": {
+        "uncommon": [
+          "candelabra",
+          "eternal_feather",
+          "gremlin_horn",
+          "horn_cleat",
+          "joss_paper",
+          "kusarigama",
+          "letter_opener",
+          "mercury_hourglass",
+          "miniature_cannon",
+          "nunchaku",
+          "orichalcum",
+          "ornamental_fan",
+          "pantograph",
+          "parrying_shield",
+          "pear",
+          "pen_nib",
+          "permafrost",
+          "petrified_toad",
+          "reptile_trinket",
+          "ripple_basin",
+          "sparkling_rouge",
+          "stone_cracker",
+          "tiny_mailbox",
+          "tuning_fork",
+          "vambrace"
+        ],
+        "common": [],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    },
+    {
+      "owned": [
+        "amethyst_aubergine",
+        "amethyst_aubergine"
+      ],
+      "mode": "owned_repeat",
+      "rarity": "common",
+      "floor": 0,
+      "initial": {
+        "uncommon": [],
+        "common": [],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "selected": "amethyst_aubergine",
+      "final": {
+        "uncommon": [],
+        "common": [
+          "anchor",
+          "bag_of_marbles",
+          "bag_of_preparation",
+          "blood_vial",
+          "book_of_five_rings",
+          "bronze_scales",
+          "centennial_puzzle",
+          "festive_popper",
+          "gorget",
+          "happy_flower",
+          "juzu_bracelet",
+          "lantern",
+          "meal_ticket",
+          "oddly_smooth_stone",
+          "pendulum",
+          "potion_belt",
+          "red_mask",
+          "regal_pillow",
+          "strawberry",
+          "strike_dummy",
+          "vajra",
+          "venerable_tea_set",
+          "war_paint",
+          "whetstone"
+        ],
+        "rare": [],
+        "shop": [],
+        "event": [],
+        "ancient": []
+      },
+      "counterBefore": 112,
+      "counterAfter": 112,
+      "suffix": 0.24901904108292705
+    }
+  ]
+}

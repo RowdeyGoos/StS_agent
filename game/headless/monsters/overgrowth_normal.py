@@ -15,7 +15,8 @@ class CubexConstruct(ScriptedEnemy):
 
     def __init__(self, rng):
         super().__init__(rng)
-        self.block = 13
+        # Native setup calls GainBlock before IsInProgress; that command returns
+        # without granting block in the pinned build. Artifact still applies.
         self.statuses.add("artifact", 1)
 
 

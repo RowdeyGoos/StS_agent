@@ -157,3 +157,102 @@ not verify every hidden power/pile/RNG field, live UI/vote scheduling, arbitrary
 histories, an Underdocks trajectory or normal-HP winning play. Shared relic-bag
 exhaustion/refill remains the separate limitation described above. The HP boost
 is confined to the fixture and replay setup; ordinary game defaults are unchanged.
+
+## Expanded Underdocks campaign and relic refill
+
+The user clarified the acceptance scope on 2026-09-20: boosted native/Python
+campaigns are valid simulator integration evidence, a normal-HP test-policy win
+is not required, and multiplayer/alternate modes are excluded from the project.
+This supersedes the earlier next-step wording above. Starting HP can change which
+thresholds are reached; focused low-HP, death and revival cases remain alongside
+these campaigns. Ordinary agent evaluation is still a separate objective.
+
+The [expanded native trace](native_boosted_underdocks_2026_09_20.json) starts
+Underdocks seed 1 with 1,000,000 current/max HP and uses actual earned resources.
+Its **48 records** include **26 combats, 1,093 combat/potion actions, ten rests,
+five shops, three chests, Sunken Treasury, two Ancient transitions and victory**.
+It buys five cards, drinks seven potions and claims Bag of Preparation and Lantern
+from chests. Phial Holster's Skill Potion remains unused. Pael grants Pael's Tears;
+Tanx grants Throwing Axe. Lagavulin Matriarch, Knowledge Demon and Aeonglass are
+beaten through actual native actions, followed by the Architect ending.
+
+Every recorded run/combat boundary matches headless, including hand contents,
+creature identities/HP/block, player current/max HP, energy/block, potion slots,
+deck/inventory/gold and Rewards/Niche/Shuffle/Shops counters. Every Python action
+also resumes from JSON. Final retained state is **999,161/999,955 HP**, **646 gold**,
+25 deck cards and eight relics. Rewards/Niche/Shuffle/Shops counters finish at
+**376/57/1636/140**. This is the second matching continuous three-act trajectory;
+the previous Overgrowth trace remains intact.
+
+This trace fixed two further source-confirmed rules:
+
+- Phial Holster generates its starting potions through the native
+  `CombatPotionGeneration` stream, rather than Rewards.
+- Cubex's setup calls `GainBlock(13)` before `IsInProgress` becomes true. The native
+  command returns without granting block; Artifact still applies. Headless now
+  starts Cubex at zero block, matching the actual pinned lifecycle.
+
+The fixture uses mock display resources and manual native turn phases. Chest
+claims execute `PickRelicAction`, require a matching `RelicsAwarded` result, then
+invoke the actual `RelicCmd.Obtain` used by the absent UI callback. This verifies
+native voting/acquisition rules, not UI animation or scheduling. Native TestMode
+suppresses three shop potion-price RNG draws. Coverage mode temporarily turns
+TestMode off only around synchronous `MerchantPotionEntry.CalcCost`, restoring it
+in `finally`. That method only computes prices and consumes Shops RNG. For this
+trace, applying those draws after room entry is equivalent; this is not evidence
+for arbitrary room-entry hooks which might themselves consume Shops RNG.
+
+The final native run took **2.88 seconds**, build **1.64 seconds**, with empty
+stderr and successful isolated-directory cleanup. The three existing modes were
+freshly rerun with current sources and their exact previous results matched:
+generated-start **1.82 seconds**, generated-route **1.97 seconds**, boosted-campaign
+**2.86 seconds**, with builds **1.72/1.77/1.77 seconds**. The
+[regression record](native_expanded_campaign_regressions_2026_09_20.json) binds those
+executions to unchanged historical captures. Earlier diagnostic attempts exposed
+mock-text gaps, a minion-targeting loop and Kaiser Crab's missing presentation
+scene; none are accepted captures. This mode uses highest-HP targeting and a
+bounded declared set of simple potion/card/event choices.
+
+The separate [eight native relic-bag vectors](../../tests/fixtures/headless_relic_refill_vectors.json)
+execute front/back refill, player exhaustion, nonempty caller filtering, empty
+fallback, global eligibility purge and duplicate ownership. Existing eligibility
+oracle outputs were rerun and remained unchanged. Production behavior now matches:
+
+- Fresh shared bags refill only the requested physically empty rarity after
+  global `IsAllowed` removal, in original pool order without RNG. Later fallback
+  rarities and nonempty queues blocked only by caller filters do not refill.
+- Player bags remain depleted. Ownership is not a global eligibility predicate;
+  repeated offered/picked relics have independent IDs. Nonstackable pickup removes
+  both bag copies; stackable pickup retains native bag semantics.
+- Repeated chest history survives restoration. A persisted entry allocator
+  boundary binds a claim to its newly acquired offered instance, rejects reopening
+  an already claimed chest, and rejects pretending a preexisting copy was claimed.
+- Source-backed duplicate effects cover independent Lizard Tails, Tungsten Rods,
+  Pen Nibs, Vambraces, Unsettling Lamps, Strike Dummies, Miniature Cannons, Meat on
+  the Bone, rest rewards, Gremlin Horns, Unceasing Tops and Lasting Candy. Candy
+  upgrades remain attached to physical offer positions. Tiny Mailbox also now
+  grants the native two potion rewards per instance. Aubergine gold sums per copy.
+
+Private schemas are **combat v38 / run v57**. Fixture-profile uniqueness behavior
+is retained where it was part of that declared fixture. Python JSON continues the
+fresh native session semantics; native disk-loaded bags discard refill settings
+and are not claimed equivalent. Independent semantic review covered bag rules,
+duplicate consumers, chest forgery rejection, Phial RNG, Cubex and the fixture's
+native award/price callbacks.
+
+The new complete JSON trace and identity tests passed **2 tests in 96.61 seconds**.
+Focused refill/duplicate cases passed **40 tests in 0.45 seconds**, then chest and
+forgery coverage passed **55 tests in 7.88 seconds**. A broader affected run passed
+**1,327 tests in 67.89 seconds** with one old Cubex expected-block assertion failing;
+that assertion was corrected to the source/native-supported value. The final
+regression run passed **127 tests in 99.62 seconds**, covering that correction,
+the previous campaign traces, current fixture bindings and focused Phial/Cubex
+cases. The already-passed expanded JSON replay was excluded from that repeat run.
+Compilation, diff whitespace and changed-guide local-link checks passed. Overall
+implementation/review elapsed times were not separately measured.
+
+Remaining acceptance work is broader declared boosted boss/event/interaction
+coverage, including native Kaiser Crab presentation support. These two paths do
+not prove every seed, hidden power/pile/RNG field, arbitrary history or native
+save-load behavior. The existing unrelated bridge/frozen-corpus full-suite
+failures were not part of this change and the whole repository suite was not rerun.

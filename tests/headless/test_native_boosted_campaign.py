@@ -18,7 +18,11 @@ RECORD = json.loads((ROOT / 'docs/evidence/native_boosted_campaign_2026_09_20.js
 def test_boosted_fixture_matches_executed_sources():
     assert RECORD['userDirectoryRemoved']
     assert '1000000' in RECORD['result']['source']
-    for name, digest in RECORD['fixtureSources'].items():
+    rerun = json.loads((ROOT / 'docs/evidence/native_expanded_campaign_regressions_2026_09_20.json').read_text())
+    original = next(r for r in rerun['runs'] if r['mode'] == 'boosted-campaign')
+    assert original['resultMatchesRetained']
+    assert original['resultSha256'] == hashlib.sha256(json.dumps(RECORD['result'], sort_keys=True).encode()).hexdigest()
+    for name, digest in rerun['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
 
 

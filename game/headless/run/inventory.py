@@ -18,7 +18,7 @@ def add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_p
 
 
 def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_pool=None, tome_card=None, prioritize_pickup=False):
-    if definition_id not in RELICS or (not RELICS[definition_id].stackable and not RELICS[definition_id].allow_duplicates and any(r.definition_id == definition_id for r in state.relics)):
+    if definition_id not in RELICS or (not getattr(state.rng, "native", False) and not RELICS[definition_id].stackable and not RELICS[definition_id].allow_duplicates and any(r.definition_id == definition_id for r in state.relics)):
         raise ValueError("Unsupported or already owned relic.")
     if RELICS[definition_id].pickup_max_hp and (state.phase.value == "combat" or state.hp <= 0 and not allow_dead):
         raise ValueError("Max-HP relic pickup requires a living run outside combat.")
@@ -46,7 +46,7 @@ def _add_relic(state, definition_id: str, *, cards=None, allow_dead=False, card_
         data['card'] = tome_card
     relic = RelicInstance(definition_id, state.allocate_item_id(), data=data)
     state.relics.append(relic)
-    if getattr(state.rng, "native", False):
+    if getattr(state.rng, "native", False) and not RELICS[definition_id].stackable:
         from game.headless.generation.relics import remove
         remove(state, definition_id)
     from game.headless.relics.rewards import relic_obtained

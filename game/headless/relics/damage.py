@@ -47,10 +47,16 @@ def hp_loss_amount(p, amount):
 
 
 def prevent_death(p):
-    relic = owned(p, "lizard_tail")
-    if p.hp <= 0 and relic is not None and not relic["counter"]:
-        relic["counter"] = 1
-        p.hp = max(1, p.max_hp // 2)
+    if p.hp > 0:
+        return
+    # Native ShouldDieLate picks the first listener that can prevent death.
+    # A used earlier instance must not hide a fresh Tail from a shared refill.
+    for relic in p.rules.relics:
+        if (relic["definition_id"] == "lizard_tail" and not relic["counter"]
+                and not relic.get("data", {}).get("_melted")):
+            relic["counter"] = 1
+            p.hp = max(1, p.max_hp // 2)
+            return
 
 
 def after_damage(p, amount, *, unblockable=False, attack=False, source=None):
@@ -99,24 +105,28 @@ def attack_bonus(p, card):
         if enchantment is not None
         else 0
     )
-    return (
-        extra
-        + (3 if enchantment is not None and enchantment.definition_id == "tezcataras_ember" else 0)
-        + (3 if card.definition.strike and has(p, "strike_dummy") else 0)
-        + (1 if card.definition.strike and has(p, "fake_strike_dummy") else 0)
-        + (3 if card.upgraded and has(p, "miniature_cannon") else 0)
-        + (9 if card.enchantment is not None and has(p, "mystic_lighter") else 0)
-    )
+    extra += 3 if enchantment is not None and enchantment.definition_id == "tezcataras_ember" else 0
+    for relic in p.rules.relics:
+        if relic.get("data", {}).get("_melted"):
+            continue
+        name = relic["definition_id"]
+        if card.definition.strike and name in ("strike_dummy", "fake_strike_dummy"):
+            extra += 3 if name == "strike_dummy" else 1
+        elif name == "miniature_cannon" and card.upgraded:
+            extra += 3
+        elif name == "mystic_lighter" and card.enchantment is not None:
+            extra += 9
+    return extra
 
 
 def attack_multiplier(p, card):
     result = 2 if card and card.enchantment and card.enchantment.definition_id == "instinct" else 1
     if card and card.enchantment and card.enchantment.definition_id == "corrupted":
         result *= 1.5
-    relic = owned(p, "pen_nib")
-    if relic is not None and card is not None:
-        if memory(p, relic).get("attack_to_double") == card.instance_id:
-            return result * 2
+    for relic in p.rules.relics:
+        if (relic["definition_id"] == "pen_nib" and not relic.get("data", {}).get("_melted")
+                and card is not None and memory(p, relic).get("attack_to_double") == card.instance_id):
+            result *= 2
     return result
 
 
@@ -125,9 +135,9 @@ def block_multiplier(p, gain):
     if card is None or gain <= 0:
         return 1
     result = 1
-    for name in ('vambrace', 'paels_legion'):
-        relic = owned(p, name)
-        if relic is None:
+    for relic in p.rules.relics:
+        name = relic["definition_id"]
+        if name not in ('vambrace', 'paels_legion') or relic.get("data", {}).get("_melted"):
             continue
         m = memory(p, relic)
         unavailable = m.get('used') if name == 'vambrace' else m.get('cooldown', 0) > 0
@@ -138,12 +148,15 @@ def block_multiplier(p, gain):
 
 
 def debuff_amount(p, card, amount):
-    relic = owned(p, "unsettling_lamp")
-    if relic is None or card is None or amount <= 0:
+    if card is None or amount <= 0:
         return amount
-    m = memory(p, relic)
-    if m.get("used"):
-        return amount
-    if "triggering_card" not in m:
-        m["triggering_card"] = card.instance_id
-    return amount * (2 if m["triggering_card"] == card.instance_id else 1)
+    for relic in p.rules.relics:
+        if relic["definition_id"] != "unsettling_lamp" or relic.get("data", {}).get("_melted"):
+            continue
+        m = memory(p, relic)
+        if m.get("used"):
+            continue
+        m.setdefault("triggering_card", card.instance_id)
+        if m["triggering_card"] == card.instance_id:
+            amount *= 2
+    return amount

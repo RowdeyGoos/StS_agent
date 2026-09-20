@@ -108,7 +108,7 @@ def _begin_combat_rewards(state, cards, *, encounter_id=None, undamaged=False, e
         dropped = state.rng.randint("potion_drop", 0, 99) < state.potion_drop_chance
         dropped = dropped or has(state, "white_beast_statue")
         state.potion_drop_chance = max(0, min(100, state.potion_drop_chance + (-10 if dropped else 10)))
-    gold = (state.rng.randint("reward_gold", low, high) if high else 0) + (15 if has(state, "amethyst_aubergine") else 0)
+    gold = (state.rng.randint("reward_gold", low, high) if high else 0) + 15 * sum(r.definition_id == "amethyst_aubergine" and not r.data.get("_melted") for r in state.relics)
     from game.headless.potions.pools import generate
     potion = generate(state.config.reward_potions, state.rng, stream="reward_potion") if dropped else None
     pool = state.config.boss_reward_cards if encounter is not None and encounter.room_kind == "boss" else state.config.reward_cards

@@ -126,8 +126,10 @@ def after_combat_relic(state, relic, *, room_kind):
 
 def victory(state, *, room_kind="combat"):
     # Native starts fresh early/ordinary victory passes after end hooks.
-    if has(state, "meat_on_the_bone") and state.hp * 2 <= state.max_hp:
-        heal(state, 12)
+    for relic in tuple(state.relics):
+        if (relic.definition_id == "meat_on_the_bone" and not relic.data.get("_melted")
+                and state.hp * 2 <= state.max_hp):
+            heal(state, 12)
     from game.headless.relics.base import RELICS
     from game.headless.run.lifecycle import evolve_relic
     for relic in tuple(r for r in state.relics if not r.data.get("_melted")):
@@ -163,27 +165,33 @@ def pickup(state, relic, cards):
 
 
 def damage(state, amount):
-    if has(state, "tungsten_rod"):
-        amount = max(0, amount - 1)
+    for relic in state.relics:
+        if relic.definition_id == "tungsten_rod" and not relic.data.get("_melted"):
+            amount = max(0, amount - 1)
     previous = state.hp
     state.hp = max(0, state.hp - amount)
     from game.headless.potions.use import prevent_death
     prevent_death(state)
-    tail = owned(state, "lizard_tail")
-    if not state.hp and tail is not None and not tail.counter:
-        counter(state, tail, 1)
-        state.hp = max(1, state.max_hp // 2)
+    if not state.hp:
+        for tail in state.relics:
+            if tail.definition_id == "lizard_tail" and not tail.counter and not tail.data.get("_melted"):
+                counter(state, tail, 1)
+                state.hp = max(1, state.max_hp // 2)
+                break
     return max(0, previous - state.hp)
 
 
 def rest_rewards(state, *, cards=None):
-    if has(state, "dream_catcher"):
-        from game.headless.relics.pickup import card_reward
-        from game.headless.cards.catalog import DEFAULT_CARDS
-        card_reward(state, cards or DEFAULT_CARDS, owned(state, "dream_catcher").instance_id)
-    if has(state, "stone_humidifier"):
-        max_hp(state, 5)
-    if has(state, "tiny_mailbox"):
-        from game.headless.relics.pickup import potion_reward
-
-        potion_reward(state, owned(state, "tiny_mailbox").instance_id)
+    for relic in tuple(state.relics):
+        if relic.data.get("_melted"):
+            continue
+        if relic.definition_id == "dream_catcher":
+            from game.headless.relics.pickup import card_reward
+            from game.headless.cards.catalog import DEFAULT_CARDS
+            card_reward(state, cards or DEFAULT_CARDS, relic.instance_id)
+        elif relic.definition_id == "stone_humidifier":
+            max_hp(state, 5)
+        elif relic.definition_id == "tiny_mailbox":
+            from game.headless.relics.pickup import potion_reward
+            potion_reward(state, relic.instance_id)
+            potion_reward(state, relic.instance_id)

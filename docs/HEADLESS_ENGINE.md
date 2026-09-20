@@ -71,10 +71,13 @@ not override the implemented campaign and catalogs described above.
 
 The grouped native combat/choice/turn, reward and ending fixtures have been rerun
 together; see [consolidated verification](#consolidated-native-verification).
-Complete native run seed/path comparison remains open.
+Boosted Overgrowth and Underdocks three-act trajectories match native execution; broader
+seed/path comparison remains acceptance work. A normal-HP test-policy victory is
+not required. Boosted runs use ordinary rules; focused low-HP/death/revival cases
+remain necessary because starting HP changes which branches a route encounters.
 Passing Python progression with synthetic combat wins does not establish that
 fidelity. Other playable characters, ascensions, progression-dependent unlocks,
-multiplayer and alternate modes are outside this declared campaign scope.
+multiplayer and alternate modes are outside the project scope.
 
 ## Duplicate card reward choices
 
@@ -123,7 +126,7 @@ Generated `RunEngine.ironclad_act1()` runs default to `rng_profile="native"`.
 Native runs accept integer or text seeds programmatically: integer `2` is hashed
 as text `"2"`, while `"002"` is a different seed. The CLI currently accepts integers.
 Changing profiles changes seeded trajectories. Old private snapshots reject rather
-than being silently reinterpreted: current schemas are **combat v37 / run v56**.
+than being silently reinterpreted: current schemas are **combat v38 / run v57**.
 
 The pinned 0.107.1 assembly uses **MegaRandom (xoshiro256\*\*, SplitMix64 initialization)**,
 not `System.Random`. `core/native_rng.py` implements its UTF-16 seed hash, integer,
@@ -345,7 +348,7 @@ continuation validation now reads reconstructed saved rules, fixing rejection of
 legitimate paused Mittens saves. Source-backed coverage also restores Dark Embrace
 pausing inside Mittens' exhaust: Strength arrives only after that draw completes.
 Malformed ownership/arguments, missing Scrape receipts and older private formats
-reject atomically; current formats are combat v37 / run v56.
+reject atomically; current formats are combat v38 / run v57.
 
 The native comparisons check exact piles, draw order, damage, block/energy/Strength,
 Foregone removal and five RNG counters/suffixes at prepared callbacks and choices.
@@ -372,7 +375,7 @@ Every exposed decision restores from JSON and continues to matching piles,
 resources, enemy state and RNG. Drum exhaust and captured draw-power work have
 emitted-event receipts;
 invalid owners, task shapes, missing receipts and previous combat/run schemas
-reject atomically. These private formats are **combat v37 / run v56**.
+reject atomically. These private formats are **combat v38 / run v57**.
 
 The 84 card/power cases execute native card actions or draw/exhaust commands against
 an authored 500-HP target (Chomper or Queen); 24 enemy cases execute native
@@ -543,13 +546,26 @@ normal-HP winning strategy, live UI scheduling or exhaustive native parity.
 The boosted replay exposed and corrected Parafright/Obscura action order,
 random-hit target enumeration after summons, Bronze Scales using Thorns before
 incoming damage, Paper Cuts after its owner dies, and Fabricator's delayed
-next-move decision after later bots finish. Current **combat v37 / run v56** reject
+next-move decision after later bots finish. Current **combat v38 / run v57** reject
 older continuation semantics. Fabricator's pending roll is owned by the active
 enemy continuation and survives pauses without a second RNG draw.
 
 See [scope and validation](evidence/headless_generated_route_2026_09_20.md#boosted-three-act-campaign).
-Normal-HP victory, a continuous Underdocks path and native shared-bag exhaustion
-remain distinct tasks in the
+The [expanded Underdocks trace](evidence/native_boosted_underdocks_2026_09_20.json)
+adds 26 combats, 1,093 combat/potion actions, five card purchases, two chest claims
+and Sunken Treasury before the Architect. It checks shop RNG as well as prior
+boundaries and restores each Python decision. Phial Holster now generates starting
+potions with the native combat-potion stream; Cubex starts with zero block because
+its native setup block command runs before combat becomes active. Artifact applies.
+
+Fresh native shared bags refill only the requested empty rarity, in canonical
+order without RNG. Ownership is not a global filter; repeated instances have
+separate identities, counters and effects. An entry allocator boundary binds
+chest claims to newly acquired relics and rejects reopening or claiming an old copy.
+Private schemas are combat v38 / run v57. Native disk-save loading drops the
+refill configuration; Python JSON preserves the fresh session being continued.
+See [refill and campaign evidence](evidence/headless_generated_route_2026_09_20.md#expanded-underdocks-campaign-and-relic-refill).
+Broader boosted boss/event/interaction coverage remains in the
 [implementation queue](HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment).
 
 `generation/combat.py` shares the supported combat card pool and selection rules.
@@ -2269,7 +2285,7 @@ consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
 its encoder size does not configure game capacity. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
-Private run snapshots now use `headless_run_state_v56`, including campaign configuration,
+Private run snapshots now use `headless_run_state_v57`, including campaign configuration,
 completed-act maps and paths, historical encounter/event/unknown-room queues,
 map replacement provenance and owned Spoils Map quest targets,
 native stream state, seed-bound initialization for all three room sets,
@@ -2282,7 +2298,7 @@ shop/treasure/event catalog fingerprints, event node IDs and pending event data,
 act-completion record and every pending decision. Card combat lifetimes and
 independent relic evolution counters are explicit owned data. Event combat history
 binds each fight to its event/node identity, combat number, outcome and reward exit.
-Nested combat records now use `headless_combat_state_v37`, including the in-play
+Nested combat records now use `headless_combat_state_v38`, including the in-play
 played-power and offered-card piles, nested plain-data continuations, selection/target/generation/potion/HP RNG,
 optional multi-card selections and independent colorless power timers,
 ordered player powers, temporary card values, per-turn/combat counters, Feed maximum-HP

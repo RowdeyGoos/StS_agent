@@ -596,6 +596,25 @@ contains 48 records and 917 combat actions. Its
 confirm that both ordinary modes still return their exact previous results.
 See [acceptance limits](../../docs/evidence/headless_generated_route_2026_09_20.md#boosted-three-act-campaign).
 
+`--mode boosted-coverage` follows Underdocks seed 1 through Hive/Glory with
+1,000,000 starting/current-max HP, affordable whitelisted card purchases, earned
+simple potions, selected chest claims and Sunken Treasury's first chest. It
+records potion slots and Shops counters, and targets the highest-HP living enemy
+to avoid endlessly attacking replacement minions. Unused selector potions remain
+in inventory. Room/action/await/process bounds remain 60/300/3 seconds/60 seconds.
+
+Chest claims require an actual native voting result for the local player, then
+execute `RelicCmd.Obtain` as the absent UI's award callback does. They do not claim
+UI execution. Native TestMode skips potion price rolls, so this mode temporarily
+turns it off **only around synchronous `MerchantPotionEntry.CalcCost`**, restoring
+it in `finally`; this method reads no profiles and performs no save/UI work. All
+other fixture work retains TestMode/mock persistence. Kaiser Crab's visual scene
+is not supplied; seeds requiring it are not accepted full-campaign evidence.
+The [retained expanded capture](../../docs/evidence/native_boosted_underdocks_2026_09_20.json)
+and [unchanged baseline reruns](../../docs/evidence/native_expanded_campaign_regressions_2026_09_20.json)
+record current identities and timing. Normal-HP test-policy victory is not an
+acceptance requirement; focused low-HP and death/revival tests remain relevant.
+
 These modes initialize mock preferences with uploads disabled and assert
 `ShouldSave == false`. They do not read or write player profiles. All runner modes
 now reject nonempty stderr, which catches asynchronous event errors even when the

@@ -5,7 +5,7 @@ using System.Text.Json;
 // Real native run/reward objects under TestMode and explicit in-memory saves.
 internal static class GeneratedStartOracle
 {
-    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false)
+    public static async Task<string> Run(Assembly asm,string digest,bool campaign=false,bool boosted=false,bool coverage=false)
     {
         const BindingFlags flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -24,14 +24,24 @@ internal static class GeneratedStartOracle
         var loc=RuntimeHelpers.GetUninitializedObject(T("Localization.LocManager"));
         var tables=(System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string),T("Localization.LocTable")))!;
         tables.Add("ancients",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"ancients",new Dictionary<string,string>{{"THE_ARCHITECT.talk.IRONCLAD.0-0.next","Continue"},{"PROCEED.title","Proceed"},{"PROCEED.description","Finished"}},null})!);
-        tables.Add("characters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"characters",new[]{"title","titleObject","possessiveAdjective","pronounObject","pronounPossessive","pronounSubject"}.ToDictionary(k=>"IRONCLAD."+k,k=>"Ironclad"),null})!);
+        tables.Add("characters",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"characters",new[]{"IRONCLAD","SILENT","REGENT","NECROBINDER","DEFECT"}.SelectMany(c=>new[]{"title","titleObject","possessiveAdjective","pronounObject","pronounPossessive","pronounSubject"}.Select(k=>c+"."+k)).ToDictionary(k=>k,k=>k),null})!);
         F(loc,"_tables",tables);C(loc,"LoadLocFormatters");loc.GetType().GetProperty("CultureInfo",flags)!.SetValue(loc,System.Globalization.CultureInfo.InvariantCulture);loc.GetType().GetProperty("Instance",flags)!.SetValue(null,loc);
+        tables.Add("intents",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"intents",new Dictionary<string,string>{{"STUN.title","Stun"},{"STUN.description","Stun"}},null})!);
         var cache=T("Assets.PreloadManager").GetProperty("Cache")!.GetValue(null)!;
         var assets=cache.GetType().GetField("_cache",flags)!.GetValue(cache)!;
         C(assets,"TryAdd","res://images/enchantments/missing_enchantment.png",new Godot.CompressedTexture2D());
         C(assets,"TryAdd","res://images/atlases/ui_atlas.sprites/card/energy_ironclad.tres",new Godot.AtlasTexture());
+        C(assets,"TryAdd","res://images/atlases/intent_atlas.sprites/intent_stun.tres",new Godot.GradientTexture2D());
+        var mockIcons=new List<Godot.Texture2D>();
+        foreach(var power in asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.PowerModel"))))
+        {
+            var icon=new Godot.GradientTexture2D();
+            icon.TakeOverPath("res://images/atlases/power_atlas.sprites/"+C(T("Helpers.StringHelper"),"Slugify",power.Name).ToString()!.ToLowerInvariant()+".tres");
+            mockIcons.Add(icon);
+        }
         var rows=new List<object>();
-        foreach(string seed in new[]{"0"})
+        foreach(string firstAct in coverage?new[]{"Underdocks"}:new[]{"Overgrowth"})
+        foreach(string seed in coverage?new[]{"1"}:new[]{"0"})
         {
             var store=Activator.CreateInstance(T("Saves.Test.MockGodotFileIo"),new object[]{"user://isolated-fixture"})!;
             var saves=Activator.CreateInstance(T("Saves.SaveManager"),new object[]{store,true})!;F(saves,"_currentProfileId",0);C(T("Saves.SaveManager"),"MockInstanceForTesting",saves);
@@ -40,7 +50,8 @@ internal static class GeneratedStartOracle
             Require(!(bool)P(P(saves,"PrefsSave"),"UploadData"),"Metrics uploads must be disabled.");
             T("Context.LocalContext").GetProperty("NetId")!.SetValue(null,0UL);
             var player=C(T("Entities.Players.Player"),"CreateForNewRun",Get("Character","Characters.Ironclad"),T("Unlocks.UnlockState").GetField("all")!.GetValue(null),0UL);
-            var state=C(T("Runs.RunState"),"CreateForTest",Typed(new[]{player},player.GetType()),null,null,Enum.Parse(T("Runs.GameMode"),"Standard"),0,seed);
+            var acts=firstAct=="Overgrowth"?null:Typed(new[]{Get("Act","Acts.Underdocks"),Get("Act","Acts.Hive"),Get("Act","Acts.Glory")},T("Models.ActModel"));
+            var state=C(T("Runs.RunState"),"CreateForTest",Typed(new[]{player},player.GetType()),acts,null,Enum.Parse(T("Runs.GameMode"),"Standard"),0,seed);
             var manager=T("Runs.RunManager").GetProperty("Instance")!.GetValue(null)!;
             var replay=Activator.CreateInstance(T("Multiplayer.NetReplayGameService"),new object[]{0UL})!;
             C(manager,"SetUpTest",state,replay,true,false);
@@ -51,12 +62,16 @@ internal static class GeneratedStartOracle
                 if(boosted){C(P(player,"Creature"),"SetMaxHpInternal",(decimal)boostedHp);C(P(player,"Creature"),"SetCurrentHpInternal",(decimal)boostedHp);}
                 var relicText=new Dictionary<string,string>();
                 foreach(var relic in Items(T("Models.ModelDb").GetProperty("AllRelics")!.GetValue(null)!))foreach(var suffix in new[]{"title","description","eventDescription","selectionScreenPrompt"})relicText[P(P(relic,"Id"),"Entry")+"."+suffix]=P(P(relic,"Id"),"Entry").ToString()!;
+                foreach(var character in new[]{"IRONCLAD","SILENT","REGENT","NECROBINDER","DEFECT"})foreach(var suffix in new[]{"title","description","eventDescription"})relicText["SEA_GLASS."+character+"."+suffix]="Sea Glass";
                 if(!tables.Contains("relics"))tables.Add("relics",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"relics",relicText,null})!);
-                if(!tables.Contains("events"))tables.Add("events",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"events",new Dictionary<string,string>(),null})!);
+                var eventText=new Dictionary<string,string>();
+                foreach(var key in new[]{"SUNKEN_TREASURY.pages.INITIAL.options.FIRST_CHEST","SUNKEN_TREASURY.pages.INITIAL.options.SECOND_CHEST","SUNKEN_TREASURY.pages.FIRST_CHEST","SUNKEN_TREASURY.pages.SECOND_CHEST","PROCEED","GENERIC.youAreDead"})foreach(var suffix in new[]{"title","description"})eventText[key+"."+suffix]="Event";
+                if(!tables.Contains("events"))tables.Add("events",Activator.CreateInstance(T("Localization.LocTable"),new object?[]{"events",eventText,null})!);
                 foreach(var tableName in new[]{"card_keywords","cards","static_hover_tips","powers","enchantments","afflictions","monsters"})
                 {
                     var texts=new Dictionary<string,string>();
-                    var names=tableName=="afflictions"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AfflictionModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
+                    var names=tableName=="powers"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.PowerModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
+                        tableName=="afflictions"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.AfflictionModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
                         tableName=="card_keywords"?Enum.GetNames(T("Entities.Cards.CardKeyword")).Select(n=>C(T("Helpers.StringHelper"),"Slugify",n).ToString()!):
                         tableName=="static_hover_tips"?Enum.GetNames(T("HoverTips.StaticHoverTip")).Select(n=>C(T("Helpers.StringHelper"),"Slugify",n).ToString()!):
                         tableName=="monsters"?asm.GetTypes().Where(t=>!t.IsAbstract&&t.IsSubclassOf(T("Models.MonsterModel"))).Select(t=>C(T("Helpers.StringHelper"),"Slugify",t.Name).ToString()!):
@@ -65,7 +80,7 @@ internal static class GeneratedStartOracle
                         new[]{"BLOCK","POWER","STRENGTH","VULNERABLE","WEAK","DEXTERITY","DAMAGE","ENERGY","CARD_REWARD"};
                     foreach(var name in names)foreach(var suffix in new[]{"name","title","description","upgradeDescription","selectionScreenPrompt"})texts[name+"."+suffix]=name;
                     if(tableName=="powers")texts["DAMPEN_POWER.banter"]="Dampen";
-                    if(tableName=="monsters")foreach(var key in new[]{"BYGONE_EFFIGY.moves.SLEEP.speakLine1","BYGONE_EFFIGY.moves.SLEEP.speakLine2","HATCHLING.name","CHOMPER.moves.SCREECH.title","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.startLine","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.doneLine","DEVOTED_SCULPTOR.moves.FORBIDDEN_INCANTATION.banter","CALCIFIED_CULTIST.moves.INCANTATION.banter","DAMP_CULTIST.moves.INCANTATION.banter"})texts[key]="Sleep";
+                    if(tableName=="monsters")foreach(var key in new[]{"BYGONE_EFFIGY.moves.SLEEP.speakLine1","BYGONE_EFFIGY.moves.SLEEP.speakLine2","HATCHLING.name","CHOMPER.moves.SCREECH.title","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.startLine","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.doneLine","DEVOTED_SCULPTOR.moves.FORBIDDEN_INCANTATION.banter","CALCIFIED_CULTIST.moves.INCANTATION.banter","DAMP_CULTIST.moves.INCANTATION.banter","BIG_DUMMY.name","BYGONE_EFFIGY.moves.SLEEP.speakLine1","BYGONE_EFFIGY.moves.SLEEP.speakLine2","CHOMPER.moves.SCREECH.title","DECIMILLIPEDE_SEGMENT.name","FAT_GREMLIN.moves.FLEE.banter","GREMLIN_MERC.moves.GIMME.banter","HATCHLING.name","KIN_PRIEST.followersDeathLine","KIN_PRIEST.moves.RITUAL.speakLine1","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.doneLine","KNOWLEDGE_DEMON.moves.CURSE_OF_KNOWLEDGE.startLine","QUEEN.amalgamDeathSpeakLine","QUEEN.banter"})texts[key]="Sleep";
                     if(!tables.Contains(tableName))tables.Add(tableName,Activator.CreateInstance(T("Localization.LocTable"),new object?[]{tableName,texts,null})!);
                 }
                 var selector=Activator.CreateInstance(T("TestSupport.TestCardSelector"))!;
@@ -86,6 +101,9 @@ internal static class GeneratedStartOracle
                 object Coord(object p)=>p.GetType().GetField("coord")!.GetValue(p)!;
                 int Row(object p)=>(int)Coord(p).GetType().GetField("row")!.GetValue(Coord(p))!;
                 int Col(object p)=>(int)Coord(p).GetType().GetField("col")!.GetValue(Coord(p))!;
+                var safePotions=new[]{"FIRE_POTION","BLOCK_POTION","STRENGTH_POTION","DEXTERITY_POTION","ENERGY_POTION","EXPLOSIVE_POTION","BLOOD_POTION","FRUIT_JUICE","FEAR_POTION","WEAK_POTION"};
+                var safeCards=new[]{"PERFECTED_STRIKE","POMMEL_STRIKE","SHRUG_IT_OFF","ANGER","IRON_WAVE","TWIN_STRIKE","SWORD_BOOMERANG","BATTLE_TRANCE","INFLAME","METALLICIZE","THUNDERCLAP"};
+                object?[] Potions()=>Items(P(player,"PotionSlots")).Select(p=>p is null?null:(object?)P(P(p,"Id"),"Entry").ToString()).ToArray();
                 object RunBoundary()
                 {
                     var result=new Dictionary<string,object?> {
@@ -94,6 +112,7 @@ internal static class GeneratedStartOracle
                         ["deck"]=Items(P(P(player,"Deck"),"Cards")).Select(c=>new{id=P(P(c,"Id"),"Entry").ToString(),upgrade=P(c,"CurrentUpgradeLevel")}).ToArray(),
                         ["rewardsCounter"]=P(P(P(player,"PlayerRng"),"Rewards"),"Counter"),["nicheCounter"]=P(P(P(state,"Rng"),"Niche"),"Counter"),["shuffleCounter"]=P(P(P(state,"Rng"),"Shuffle"),"Counter")};
                     if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
+                    if(coverage){result["potions"]=Potions();result["shopsCounter"]=P(P(P(player,"PlayerRng"),"Shops"),"Counter");}
                     return result;
                 }
                 async Task<object> Rewards(object rewardRoom)
@@ -107,10 +126,16 @@ internal static class GeneratedStartOracle
                         var kind=reward.GetType().Name;
                         if(kind=="GoldReward") { var amount=P(reward,"Amount");await Await(C(sync,"SelectLocalReward",reward));claimed.Add(new{kind,amount}); }
                         else if(kind=="RelicReward") { var relic=P(P(P(reward,"Relic"),"Id"),"Entry").ToString();await Await(C(sync,"SelectLocalReward",reward));claimed.Add(new{kind,relic}); }
+                        else if(coverage && kind=="PotionReward")
+                        {
+                            string potion=P(P(P(reward,"Potion"),"Id"),"Entry").ToString()!;
+                            if(safePotions.Contains(potion) && (bool)P(player,"HasOpenPotionSlots"))
+                            {await Await(C(sync,"SelectLocalReward",reward));claimed.Add(new{kind,potion});}
+                        }
                         else if(kind=="CardReward")
                         {
                             var offeredCards=Items(P(reward,"Cards"));
-                            var safe=new[]{"PERFECTED_STRIKE","POMMEL_STRIKE","SHRUG_IT_OFF","ANGER","IRON_WAVE","TWIN_STRIKE","SWORD_BOOMERANG","BATTLE_TRANCE","INFLAME","METALLICIZE","THUNDERCLAP"};
+                            var safe=safeCards;
                             int index=Enumerable.Range(0,offeredCards.Length).Where(i=>safe.Contains(P(P(offeredCards[i],"Id"),"Entry").ToString())).OrderBy(i=>Array.IndexOf(safe,P(P(offeredCards[i],"Id"),"Entry").ToString())).DefaultIfEmpty(-1).First();
                             if(index>=0)
                             {
@@ -146,23 +171,77 @@ internal static class GeneratedStartOracle
                 point=next;
                 await Await(C(manager,"EnterMapCoord",Coord(next)));
                 var room=P(state,"CurrentRoom");
+                if(coverage && room.GetType().Name=="MerchantRoom")
+                {
+                    // Native TestMode suppresses exactly these three price draws.
+                    // Execute the production CalcCost method only; no UI/save work.
+                    T("TestSupport.TestMode").GetProperty("IsOn")!.SetValue(null,false);
+                    try { foreach(var item in Items(P(Items(P(room,"Inventories"))[0],"PotionEntries")))C(item,"CalcCost"); }
+                    finally { T("TestSupport.TestMode").GetProperty("IsOn")!.SetValue(null,true); }
+                }
                 var entry=RunBoundary();
                 if(room.GetType().Name!="CombatRoom")
                 {
                     string kind=room.GetType().Name;
+                    var purchases=new List<object>();string? chestClaim=null;string? eventId=null;string? eventChoice=null;
                     if(kind=="RestSiteRoom")await Await(C(Items(P(room,"Options")).Single(o=>P(o,"OptionId").ToString()=="HEAL"),"OnSelect"));
+                    else if(coverage && kind=="EventRoom")
+                    {
+                        var evt=C(P(manager,"EventSynchronizer"),"GetLocalEvent");
+                        eventId=P(P(evt,"Id"),"Entry").ToString();
+                        Require(eventId=="SUNKEN_TREASURY","Undeclared event in coverage route: "+eventId);
+                        var selectedOption=Items(P(evt,"CurrentOptions"))[0];
+                        eventChoice=P(selectedOption,"TextKey").ToString()!.Split('.').Last().ToLowerInvariant();
+                        await Await(C(selectedOption,"Chosen"));Require((bool)P(evt,"IsFinished"),"Event did not finish.");
+                    }
                     else Require(kind is "TreasureRoom" or "MerchantRoom","Unsupported generated room: "+kind);
+                    if(coverage && kind=="MerchantRoom")
+                    {
+                        var inventory=Items(P(room,"Inventories"))[0];
+                        var entries=Items(P(inventory,"CharacterCardEntries"));
+                        for(int i=0;i<entries.Length;i++)
+                        {
+                            var item=entries[i];var card=P(P(item,"CreationResult"),"Card");
+                            var id=P(P(card,"Id"),"Entry").ToString()!;
+                            if(!safeCards.Contains(id) || !(bool)P(item,"EnoughGold"))continue;
+                            int cost=Convert.ToInt32(P(item,"Cost"));int upgrade=Convert.ToInt32(P(card,"CurrentUpgradeLevel"));
+                            var buy=(Task)C(item,"OnTryPurchaseWrapper",inventory,false);await Await(buy);
+                            Require((bool)P(buy,"Result"),"Purchase failed.");purchases.Add(new{slot=i,id,upgrade,cost});
+                        }
+                    }
                     if(boosted && kind=="TreasureRoom")
                     {
                         await Await(C(room,"DoNormalRewards"));await Await(C(room,"DoExtraRewardsIfNeeded"));
                         // Same completed solo skip action as the opened chest UI.
-                        var skip=Activator.CreateInstance(T("GameActions.PickRelicAction"),new object?[]{player,null})!;
+                        var chestRelics=Items(P(P(manager,"TreasureRoomRelicSynchronizer"),"CurrentRelics"));
+                        var chestName=chestRelics.Length==0?null:P(P(chestRelics[0],"Id"),"Entry").ToString();
+                        var claimable=new[]{"ANCHOR","BAG_OF_MARBLES","BAG_OF_PREPARATION","BLOOD_VIAL","BRONZE_SCALES","LANTERN","STRAWBERRY","PEAR","MANGO","VAJRA","ODDLY_SMOOTH_STONE","PEN_NIB","STRIKE_DUMMY","MEAT_ON_THE_BONE","TUNGSTEN_ROD","LIZARD_TAIL"};
+                        int? pick=coverage && claimable.Contains(chestName)?0:null;
+                        if(pick.HasValue)chestClaim=chestName;
+                        var treasureSync=P(manager,"TreasureRoomRelicSynchronizer");
+                        object[]? awarded=null;
+                        var awardEvent=treasureSync.GetType().GetEvent("RelicsAwarded")!;
+                        var argument=System.Linq.Expressions.Expression.Parameter(awardEvent.EventHandlerType!.GetMethod("Invoke")!.GetParameters()[0].ParameterType);
+                        Action<object> capture=value=>awarded=Items(value);
+                        var callback=System.Linq.Expressions.Expression.Lambda(awardEvent.EventHandlerType,System.Linq.Expressions.Expression.Invoke(System.Linq.Expressions.Expression.Constant(capture),System.Linq.Expressions.Expression.Convert(argument,typeof(object))),argument).Compile();
+                        awardEvent.AddEventHandler(treasureSync,callback);
+                        var skip=Activator.CreateInstance(T("GameActions.PickRelicAction"),new object?[]{player,pick})!;
                         C(P(manager,"ActionQueueSet"),"EnqueueWithoutSynchronizing",skip);
                         await Await(C(P(manager,"ActionExecutor"),"FinishedExecutingActions"));
-                        Require(P(skip,"State").ToString()=="Finished","Chest skip did not finish.");
+                        Require(P(skip,"State").ToString()=="Finished","Chest decision did not finish.");
+                        awardEvent.RemoveEventHandler(treasureSync,callback);
+                        if(pick.HasValue)
+                        {
+                            Require(awarded is not null && awarded.Length==1,"Chest award was not emitted.");
+                            var result=awarded![0];var winner=result.GetType().GetField("player")!.GetValue(result)!;
+                            var relic=result.GetType().GetField("relic")!.GetValue(result)!;
+                            Require(ReferenceEquals(winner,player) && P(P(relic,"Id"),"Entry").ToString()==chestClaim,"Chest award differs from vote.");
+                            // The UI's award callback invokes this actual native obtain command.
+                            await Await(C(T("Commands.RelicCmd"),"Obtain",C(relic,"ToMutable"),winner,-1));
+                        }
                     }
                     // Both leaving a shop without buying and leaving a closed chest are legal.
-                    AddRoom(new{row=Row(next),col=Col(next),kind,entry,state=RunBoundary()});
+                    AddRoom(coverage?(object)new{row=Row(next),col=Col(next),kind,entry,purchases,chestClaim,eventId,eventChoice,state=RunBoundary()}:new{row=Row(next),col=Col(next),kind,entry,state=RunBoundary()});
                     continue;
                 }
                 var combatManager=T("Combat.CombatManager").GetProperty("Instance")!.GetValue(null)!;
@@ -179,6 +258,7 @@ internal static class GeneratedStartOracle
                         ["hand"]=Items(P(P(P(player,"PlayerCombatState"),"Hand"),"Cards")).Select(Card).ToArray(),
                         ["enemies"]=Items(P(combat,"Enemies")).Select(c=>boosted?(object)new{combatId=P(c,"CombatId"),id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}:new{id=P(P(P(c,"Monster"),"Id"),"Entry").ToString(),hp=P(c,"CurrentHp"),block=P(c,"Block")}).ToArray()};
                     if(boosted)result["maxHp"]=P(P(player,"Creature"),"MaxHp");
+                    if(coverage){result["potions"]=Potions();result["shopsCounter"]=P(P(P(player,"PlayerRng"),"Shops"),"Counter");}
                     return result;
                 }
                 var initial=Boundary();
@@ -187,7 +267,24 @@ internal static class GeneratedStartOracle
                     var pcs=P(player,"PlayerCombatState");
                     var enemies=Items(P(combat,"Enemies"));
                     var living=enemies.Where(e=>(bool)P(e,"IsAlive"));
-                    var target=campaign?living.OrderBy(e=>Convert.ToDecimal(P(e,"CurrentHp"))).FirstOrDefault():living.FirstOrDefault();
+                    var target=coverage?living.OrderByDescending(e=>Convert.ToDecimal(P(e,"CurrentHp"))).FirstOrDefault():campaign?living.OrderBy(e=>Convert.ToDecimal(P(e,"CurrentHp"))).FirstOrDefault():living.FirstOrDefault();
+                    if(coverage)
+                    {
+                        var potion=Items(P(player,"Potions")).FirstOrDefault(p=>safePotions.Contains(P(P(p,"Id"),"Entry").ToString()));
+                        if(potion is not null)
+                        {
+                            int slot=Array.IndexOf(Items(P(player,"PotionSlots")),potion);
+                            string id=P(P(potion,"Id"),"Entry").ToString()!;
+                            var aim=P(potion,"TargetType").ToString()=="AnyEnemy"?target:null;
+                            var use=Activator.CreateInstance(T("GameActions.UsePotionAction"),new object?[]{potion,aim,true})!;
+                            C(P(manager,"ActionQueueSet"),"EnqueueWithoutSynchronizing",use);
+                            await Await(C(P(manager,"ActionExecutor"),"FinishedExecutingActions"));
+                            Require(P(use,"State").ToString()=="Finished","Potion action did not finish.");
+                            await Await(C(combatManager,"CheckWinCondition"));
+                            actions.Add(new{kind="potion",slot,id,targetCombatId=aim is null?null:P(aim,"CombatId"),state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
+                            continue;
+                        }
+                    }
                     var hand=Items(P(P(pcs,"Hand"),"Cards"));
                     var playable=hand.Where(c=>(bool)C(c,"CanPlayTargeting",P(c,"TargetType").ToString()=="AnyEnemy"?target:null));
                     var priorities=new[]{"INFLAME","BATTLE_TRANCE","PERFECTED_STRIKE","ANGER","POMMEL_STRIKE","SWORD_BOOMERANG","TWIN_STRIKE","BASH","THUNDERCLAP","IRON_WAVE","STRIKE_IRONCLAD","SHRUG_IT_OFF","DEFEND_IRONCLAD"};
@@ -217,7 +314,7 @@ internal static class GeneratedStartOracle
                         actions.Add(boosted?(object)new{kind="end",choiceIndices=curse?new[]{0}:Array.Empty<int>(),state=(bool)P(combatManager,"IsInProgress")?Boundary():null}:new{kind="end",state=(bool)P(combatManager,"IsInProgress")?Boundary():null});
                     }
                 }
-                Require(!(bool)P(combatManager,"IsInProgress"),"Combat action budget exhausted.");
+                Require(!(bool)P(combatManager,"IsInProgress"),"Combat action budget exhausted: "+P(P(P(room,"Encounter"),"Id"),"Entry")+" "+JsonSerializer.Serialize(Boundary()));
                 var trace=new{seed,offers,choice,rewardsAfterNeow,row=Row(next),col=Col(next),encounter=P(P(P(room,"Encounter"),"Id"),"Entry").ToString(),initial,actions,hp=P(P(player,"Creature"),"CurrentHp")};
                 if(!campaign)rows.Add(trace);
                 else
@@ -258,7 +355,12 @@ internal static class GeneratedStartOracle
                     }
                 }
                 }
-                if(boosted)
+                if(coverage)
+                {
+                    Require(completed && winningState is not null,"Coverage campaign did not win.");
+                    rows.Add(new{firstAct=firstAct.ToLowerInvariant(),seed,offers,choice,rewardsAfterNeow,startingHp=boostedHp,startingMaxHp=boostedHp,route,state=winningState,outcome="victory"});
+                }
+                else if(boosted)
                 {
                     Require(completed && winningState is not null,"Boosted campaign did not win within room/action budgets.");
                     rows.Add(new{seed,offers,choice,rewardsAfterNeow,startingHp=boostedHp,startingMaxHp=boostedHp,route,state=winningState,outcome="victory"});
