@@ -30,7 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("engine", "native-data", "godot-sdk", "godot-generators", "dotnet", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--mode", choices=("item-status", "queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "event-inventory", "event-roster", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix"), default="queue")
+    parser.add_argument("--mode", choices=("character-interactions", "item-status", "queue", "death-draw", "attack-hooks", "multiple-deaths", "enemy-turn", "autoplay", "autoplay-flak", "draw-cards", "remaining-draw", "interactions", "enemy-interactions", "death-start", "end-boundary", "reward-handoff", "campaign", "event-inventory", "event-roster", "generated-start", "generated-route", "boosted-campaign", "boosted-coverage", "boosted-kaiser", "boosted-matrix"), default="queue")
     parser.add_argument("--event-name")
     parser.add_argument("--spine-extension", type=Path)
     parser.add_argument("--campaign-case", choices=("overgrowth-1", "overgrowth-3", "underdocks-4"))

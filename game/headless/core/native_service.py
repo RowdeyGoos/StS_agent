@@ -85,6 +85,9 @@ class NativeRandomService:
         name = self._name(name)
         if name not in self._streams:
             salt = name.split(":", 1)[1] if name.startswith(("event:", "relic:")) else name
+            # Native exposes CombatOrbGeneration, but seeds the CombatOrbs enum.
+            if name == "combat_orb_generation":
+                salt = "combat_orbs"
             self._streams[name] = NativeRng((self.root_seed + deterministic_hash(salt)) & 0xFFFFFFFF)
         return self._streams[name]
 

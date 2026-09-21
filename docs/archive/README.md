@@ -9,6 +9,7 @@ work. Consult an archived record only for a specific semantic or evidence questi
 
 | Topic | Historical references |
 | --- | --- |
+| Headless implementation assessment and completed batches | [September 12–21 backlog](HEADLESS_FULL_GAME_IMPLEMENTATION_2026_09_21.md); [current tasks](../HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Earlier architecture decisions | [Decision log](DECISIONS_2026_09_08.md) |
 | Target and evaluation design | [Original charter](phase-0/PHASE_0_TARGET_CHARTER.md); [current target](../TARGET.md) owns the concise definition |
 | Profile design and access history | [Fixture plan](phase-0/PHASE_0_PROFILE_FIXTURE_PLAN.md), [baseline request](phase-0/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md), [stopped attempt](phase-0/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md) |

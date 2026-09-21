@@ -7,7 +7,7 @@ using System.Text.Json;
 // No mode starts a run, live card screen or executor frame loop.
 internal static class DeathDrawOracle
 {
-    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false, bool multipleDeaths = false, bool enemyTurn = false, bool autoplay = false, bool flak = false, bool drawCards = false, bool remainingDraw = false, bool interactions = false, bool enemyInteractions = false, bool deathStart = false, bool endBoundary = false, bool itemStatus = false)
+    public static async Task<string> Run(Assembly asm, string digest, bool attackMode = false, bool multipleDeaths = false, bool enemyTurn = false, bool autoplay = false, bool flak = false, bool drawCards = false, bool remainingDraw = false, bool interactions = false, bool enemyInteractions = false, bool deathStart = false, bool endBoundary = false, bool itemStatus = false, bool characterInteractions = false)
     {
         const BindingFlags flags = BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
         Type T(string n)=>asm.GetType("MegaCrit.Sts2.Core."+n,true)!;
@@ -53,12 +53,12 @@ internal static class DeathDrawOracle
         foreach(string endLoadout in endBoundary ? new[]{"plain","cheese","wax_before","wax_after","fishing"} : new[]{""})
         foreach(int boundaryHp in endBoundary ? new[]{38,40,41,74} : new[]{80})
         foreach(int itemAscension in itemStatus ? new[]{0,10} : new[]{0})
-        foreach(string drawCase in itemStatus ? ItemStatusOracle.Scenarios : endBoundary ? new[]{"victory","pending","defeat"} : deathStart ? new[]{"multiple","poison","spawn","accelerant"} : enemyInteractions ? new[]{"block","fiddle"} : interactions ? (drawCard=="Scrape" ? new[]{"direct","shuffle","sly"} : drawCard=="DrumOfBattle" ? new[]{"plain","duplication","burst","axe","ashes"} : new[]{"iteration","automation","confused","binding","slither","removed"}) : remainingDraw ? new[]{"mixed","singleton","full","empty","fiddle","no-draw","drain","innate","capacity","auto-all"} : drawCards ? new[]{"mixed","singleton","attacks","full","empty","fiddle","no-draw","drain"} : new[]{""})
+        foreach(string drawCase in characterInteractions ? new[]{"focused_character_Silent_interaction","focused_character_Regent_interaction","focused_character_Necrobinder_interaction","focused_character_Defect_interaction"} : itemStatus ? ItemStatusOracle.Scenarios : endBoundary ? new[]{"victory","pending","defeat"} : deathStart ? new[]{"multiple","poison","spawn","accelerant"} : enemyInteractions ? new[]{"block","fiddle"} : interactions ? (drawCard=="Scrape" ? new[]{"direct","shuffle","sly"} : drawCard=="DrumOfBattle" ? new[]{"plain","duplication","burst","axe","ashes"} : new[]{"iteration","automation","confused","binding","slither","removed"}) : remainingDraw ? new[]{"mixed","singleton","full","empty","fiddle","no-draw","drain","innate","capacity","auto-all"} : drawCards ? new[]{"mixed","singleton","attacks","full","empty","fiddle","no-draw","drain"} : new[]{""})
         {
             // One scenario per distinct behavior, not a seed/difficulty cross-product.
             if(itemStatus && drawCase.StartsWith("focused_") && (seed!="2" || upgraded || itemAscension!=(drawCase.StartsWith("focused_monster_")?10:0)))continue;
             var player=RuntimeHelpers.GetUninitializedObject(T("Entities.Players.Player"));
-            var charName=itemStatus&&drawCase.StartsWith("focused_character_")?drawCase.Substring("focused_character_".Length).Replace("_refined",""):"Ironclad";
+            var charName=itemStatus&&drawCase.StartsWith("focused_character_")?drawCase.Substring("focused_character_".Length).Replace("_refined","").Replace("_interaction",""):"Ironclad";
             var charModel=Get("Character","Characters."+charName);
             F(player,"<Character>k__BackingField",charModel);
             if(itemStatus&&drawCase.StartsWith("focused_character_")){

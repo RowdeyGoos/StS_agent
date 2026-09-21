@@ -25,7 +25,7 @@ def distinct(p):
 
 def phase(p, side):
     # Keep physical identities even when a later reaction removes an orb.
-    push(p, *[['orb_trigger', i, 'passive', None] for i in tuple(p.rules.orb_order)
+    push(p, *[['orb_phase_trigger', i, 'passive', None] for i in tuple(p.rules.orb_order)
               if (p.rules.orbs[i]['kind'] == 'plasma') == (side == 'start')])
 
 
@@ -74,9 +74,10 @@ def execute(p, op, args):
     elif op == 'orb_front_passive':
         if r.orb_order:
             push(p, ['orb_trigger', r.orb_order[0], 'passive', None])
-    elif op == 'orb_trigger':
+    elif op in ('orb_trigger', 'orb_phase_trigger'):
         from game.headless.relics.combat import has
-        count = 2 if args[1] == 'passive' and r.orb_order and args[0] == r.orb_order[0] and has(p, 'gold_plated_cables') else 1
+        # Cables modifies natural phase counts, not direct card/power passives.
+        count = 2 if op == 'orb_phase_trigger' and args[1] == 'passive' and r.orb_order and args[0] == r.orb_order[0] and has(p, 'gold_plated_cables') else 1
         push(p, *[['orb_trigger_once', *args] for _ in range(count)])
     elif op == 'orb_trigger_once':
         identity, mode, target = args

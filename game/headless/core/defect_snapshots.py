@@ -3,7 +3,7 @@
 from game.headless.core.orbs import KINDS
 
 TASK_ARITIES = {'orb_channel': 1, 'orb_insert': 1, 'orb_evoke': 2, 'orb_phase': 1,
-    'orb_front_passive': 0, 'orb_trigger_once': 3, 'orb_trigger': 3, 'orb_damage': 3, 'orb_thunder': 2,
+    'orb_front_passive': 0, 'orb_phase_trigger': 3, 'orb_trigger_once': 3, 'orb_trigger': 3, 'orb_damage': 3, 'orb_thunder': 2,
     'def_compact': 2, 'def_flak': 2, 'def_sunder': 3, 'def_scrape': 1,
     'def_scrape_draw': 2, 'def_scrape_after_shuffle': 2, 'def_discard': 1, 'def_status': 1,
     'def_energy_reset': 1, 'def_decrement': 1, 'def_before_draw': 1,
@@ -92,8 +92,11 @@ def validate_task(task, r, p, context):
             raise ValueError('Invalid orb phase.')
         if (args[0] == 'end') != r.turn_ending or not r.player_side:
             raise ValueError('Orb passive outside its owner phase.')
-    elif op in ('orb_trigger', 'orb_trigger_once'):
+    elif op in ('orb_trigger', 'orb_trigger_once', 'orb_phase_trigger'):
         orb(args[0])
+        if op == 'orb_phase_trigger' and (args[1:] != ['passive', None] or not r.player_side
+                or (r.orbs[args[0]]['kind'] == 'plasma') == r.turn_ending):
+            raise ValueError('Natural orb trigger outside its owner phase.')
         if args[1] not in ('passive', 'evoke'):
             raise ValueError('Invalid orb trigger kind.')
         if args[2] is not None:

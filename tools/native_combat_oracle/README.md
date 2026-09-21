@@ -796,3 +796,13 @@ existing empty-directory, mock-save, upload-disabled and cleanup safeguards appl
 and the [15-mode regression report](../../docs/evidence/native_character_campaign_regressions_2026_09_21.json)
 bind the current harness to fresh native execution. Historical capture identities
 remain unchanged.
+
+### Focused character interactions
+
+`queue_runtime/run.py --mode character-interactions` uses the same pinned runtime
+and isolated fixture setup to execute four authored mechanism probes: temporary
+Dexterity expiry, star-spend relics, retained cost modifiers, and natural/direct
+orb passives plus random channels. See the [audit and comparisons](../../docs/evidence/native_character_interactions_2026_09_21.md).
+This mode deliberately calls selected phase hooks; it is not a complete-turn or
+live-UI test. The [23 retained baseline reruns](../../docs/evidence/native_character_interaction_regressions_2026_09_21.json)
+bind the extended shared harness to unchanged campaign and interaction results.
