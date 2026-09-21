@@ -78,7 +78,7 @@ remain necessary because starting HP changes which branches a route encounters.
 Passing Python progression with synthetic combat wins does not establish that
 fidelity. Progression-dependent unlocks, multiplayer and alternate modes remain
 outside the project scope. Character integration has its own evidence below;
-existing native whole-campaign captures remain Ironclad comparisons.
+native A0/A10 campaigns now cover each added character as described below.
 
 ## Playable characters
 
@@ -108,7 +108,7 @@ the selected owner. Each ordinary potion pool has 48 entries. The extension adds
 Forbidden Grimoire earns optional physical-card removal rewards after combat;
 its own Eternal card cannot be removed.
 
-Private combat/run snapshots are v46/v67. Character identity, item counters,
+Private combat/run snapshots are v47/v68. Character identity, item counters,
 retained discounts and emitted callback receipts survive JSON continuation;
 foreign exclusive relics cannot be inserted into native player grab bags.
 Old private snapshot versions are intentionally rejected.
@@ -121,6 +121,13 @@ using boosted HP, real native decisions and JSON continuation replay. These
 selected runs cover both first acts and the A10 double boss; they do not prove
 every possible deck/seed interaction. The separate RL/public observation
 adapters remain outside this character extension.
+
+The [focused character interaction audit](evidence/native_character_interactions_2026_09_21.md)
+checks exclusive relic combinations and fixes direct orb passive counts and the
+native random-orb seed salt. Natural turn phases apply Gold-Plated Cables; direct
+Loop, Emotion Chip, Darkness and Tesla Coil passives do not. The current
+[implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) separates completed
+gameplay from open public/agent adapters.
 
 ## Ascension levels
 
@@ -903,7 +910,7 @@ or full runs. See [acquisition evidence](evidence/foreign_acquisition_2026_09_19
 `game.headless.cards.catalog.SILENT_CARDS` extends `IRONCLAD_CARDS` with all
 **80 ordinary solo Silent cards**, their upgrades, four starter cards and Shiv.
 It supports acquired Silent cards in the existing Ironclad run/combat owner;
-it does not add a playable Silent character.
+playable Silent campaigns are now available through the shared character factory.
 Suppress and Wraith Form are Ancient entries outside this ordinary-family batch.
 
 Shared rules cover explicit discard/Sly ordering, Poison/Accelerant/Outbreak,

@@ -124,7 +124,7 @@ def test_character_damage_counters_and_orb_passives():
     first=p.rules.orb_order[0]
     assert value(p,p.rules.orbs[first],'evoke') == 9
     execute(p,'orb_trigger',[first,'passive',None]); drain(p)
-    assert before-enemy.hp == 8
+    assert before-enemy.hp == 4  # Direct passive excludes Cables' natural-phase bonus.
     clone(run)
 
 

@@ -1,6 +1,5 @@
 """Full native solo victories, with JSON continuation for every replay command."""
 import gzip
-import hashlib
 import json
 from pathlib import Path
 
@@ -18,8 +17,8 @@ def test_native_character_campaign(character, ascension):
     path = ROOT / f'docs/evidence/native_campaign_{character}_a{ascension}_2026_09_21.json.gz'
     evidence = json.loads(gzip.decompress(path.read_bytes()))
     assert evidence['userDirectoryRemoved']
-    for name, digest in evidence['fixtureSources'].items():
-        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    from tests.headless.native_fixture_sources import assert_campaign_sources
+    assert_campaign_sources(evidence)
     presentation = evidence['result']['presentation']
     assert presentation['cleared'] and presentation['listenersRemoved']
     row, = evidence['result']['rows']
