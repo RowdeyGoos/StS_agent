@@ -12,6 +12,7 @@ def run_item_cases(args: Any, host: Any, exchange_type: Any, completed_history: 
         ex = exchange_type(args.dotnet, args.native_fixture, scenario, native=True)
         request = ex.request if wrapper is None else lambda m, r, b: wrapper(ex, m, r, b)
         def choose(view: Any) -> str:
+            if view.kind=='item_policy':return host.item_policy_action(view.payload,'replace-first' if scenario=='I_POLICY_REPLACE' else 'skip-full')
             if scenario == 'I_MIXED_VARIABLE' and view.kind != 'parent' and view.payload.get('operation') == 'transform' and view.payload.get('phase') == 'selecting' and len(view.payload.get('selected_slots', ())) == 2:
                 return 'preview'
             return host.first_legal(view)
@@ -23,6 +24,14 @@ def run_item_cases(args: Any, host: Any, exchange_type: Any, completed_history: 
 
     def item_decisions(ex: Any) -> list[dict]:
         return [v for v in ex.envelopes if v['kind'] == 'decision' and v['child'] and v['child']['kind'] == 'item']
+
+    for scenario,count in [('I_POLICY_SKIP',0),('I_POLICY_REPLACE',1)]:
+        result,ex=run(scenario)
+        assert result['status']=='resolved',(scenario,result,ex.envelopes[-1:])
+        assert result['completed_item_children']==1 and result['child_reconciled']==(1 if count==0 else 2)
+        assert ex.telemetry[-1]['collect_calls']==count and ex.telemetry[-1]['map_open']
+        assert ex.telemetry[-1]['potion_keys'][1:]==['OLD_1','OLD_2']
+        checks+=1
 
     for scenario, count in [('I_SET_CAPACITY', 3), ('I_SET_CAPACITY_DELAY', 3), ('I_SET_CAPACITY_TWO_BELTS', 6), ('I_SET_TWO', 2), ('I_SET_MIXED', 4), ('I_SET_EIGHT', 8),
                             ('I_SET_COLLECTION', 2), ('I_SET_OFFER', 2), ('I_SET_CHOSEN', 2)]:

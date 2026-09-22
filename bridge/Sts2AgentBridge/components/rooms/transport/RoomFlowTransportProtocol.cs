@@ -171,7 +171,7 @@ internal static class RoomFlowTransportRequestParser
         if (selection == RoomFlowSelection.Event)
             return CanonicalIndexed(value, "choose:"u8, 7);
         return value.SequenceEqual("inventory:close"u8) || value.SequenceEqual("leave"u8) ||
-            CanonicalIndexed(value, "buy:card:"u8, 31);
+            CanonicalIndexed(value, "buy:card:"u8, 31) || CanonicalIndexed(value, "buy:potion:"u8, 31) || CanonicalIndexed(value, "buy:relic:"u8, 31) || CanonicalIndexed(value, "remove:"u8, 511) || CanonicalIndexed(value,"discard:"u8,7);
     }
 
     private static bool CanonicalIndexed(ReadOnlySpan<byte> value, ReadOnlySpan<byte> prefix, int maximum)

@@ -61,8 +61,11 @@ internal sealed class GenericEventV7Binding
     internal GenericEventV7ResultsAdapter? Results;
     internal GenericEventV7OfferAdapter? Offer;
     internal CardSelectorPrefs Prefs;
-    internal bool Failed,Closed,ChosenSeen,RequestSeen,ScreenSeen;
+    internal volatile bool Failed;
+    internal bool Closed,ChosenSeen,RequestSeen,ScreenSeen;
     internal Task? ChosenTask;
+    internal GenericEventV7Terminal? Terminal;
+    internal GenericEventV7ItemPolicySession? ItemPolicy;
     internal Task? ItemParentTask=>Combat?.Resumes==true?Combat.ResumeTask:ChosenTask;
     internal bool ItemContextValid()=>Combat?.Resumes==true?GenericEventV7Hooks.OwnsResume(this)&&Combat.ItemContextValid():!Closed&&GenericEventV7Hooks.Owns(this)&&ContextValid(false);
     internal Task<IEnumerable<CardModel>>? RequestTask;

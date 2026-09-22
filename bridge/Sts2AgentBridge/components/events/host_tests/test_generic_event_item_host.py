@@ -118,3 +118,47 @@ class ItemHostTests(unittest.TestCase):
     def test_empty_summary_has_both_zero_counters(self):
         result=host.run_event(lambda *args:None,provider=None)
         self.assertEqual((result['completed_item_children'],result['completed_card_children']),(0,0))
+
+
+class ItemPolicyHostTests(unittest.TestCase):
+    def payload(self,offers,actions,history=None,phase='items',cards=None,slots=None):
+        return dict(version='item_policy_v1',session_nonce=N,status='ready',phase=phase,decision_id='a'*64,
+                    offers=[dict(index=i,kind=kind,key=key,capacity_gain=gain,settled=False) for i,(kind,key,gain) in enumerate(offers)],
+                    card_options=cards or [],potion_slots=slots or ['OLD'],can_skip=True,legal_actions=actions,prior_results=history or [])
+    def test_replacement_requires_an_unclaimed_potion(self):
+        p=self.payload([('relic','POTION_BELT',2)],['discard:0','skip_remaining'],slots=['OLD']*8)
+        self.assertEqual(host.item_policy_action(p,'replace-first'),'skip_remaining')
+        p=self.payload([('potion','POTION',0)],['discard:0','skip_remaining'])
+        self.assertEqual(host.item_policy_action(p,'replace-first'),'discard:0')
+        self.assertEqual(host.item_policy_action(p,'skip-full'),'skip_remaining')
+    def test_capacity_precedes_replacement_and_card_menu_is_explicit(self):
+        p=self.payload([('potion','POTION',0),('relic','POTION_BELT',2)],['collect:1','discard:0','skip_remaining'])
+        self.assertEqual(host.item_policy_action(p,'replace-first'),'collect:1')
+        p=self.payload([('card','CARD_REWARD',0)],['choose:0','choose:1','skip_card'],phase='choose_card')
+        self.assertEqual(host.item_policy_action(p),'choose:0')
+    def test_mixed_history_and_native_dismissal(self):
+        tracker=host.ItemPolicyTracker(N);receipts=[]
+        p=self.payload([('card','CARD_REWARD',0),('potion','POTION',0)],['collect:0','discard:0','skip_remaining'])
+        self.assertEqual(tracker.read(p,receipts),'ready')
+        receipts.append(('a'*64,'collect:0'));history=[dict(decision_id='a'*64,action_id='collect:0',result='opened')]
+        p=self.payload([('card','CARD_REWARD',0),('potion','POTION',0)],['choose:0','skip_card'],history,phase='choose_card',cards=[dict(slot=0,key='CARD',upgrade_level=0)])
+        self.assertEqual(tracker.read(p,receipts),'ready')
+        receipts.append(('a'*64,'skip_card'));history=history+[dict(decision_id='a'*64,action_id='skip_card',result='card_skipped')]
+        p=self.payload([('card','CARD_REWARD',0),('potion','POTION',0)],['skip_remaining'],history);p['offers'][0]['settled']=True
+        self.assertEqual(tracker.read(p,receipts),'ready')
+        receipts.append(('a'*64,'skip_remaining'));history=history+[dict(decision_id='a'*64,action_id='skip_remaining',result='skipped')]
+        p.update(status='resolved',phase='complete',decision_id='',offers=[],potion_slots=[],card_options=[],legal_actions=[],prior_results=history)
+        self.assertEqual(tracker.read(p,receipts),'resolved')
+    def test_inventory_shape_and_claim_flags_reject_tampering(self):
+        for change in ('settled','illegal_collect','extra'):
+            p=self.payload([('potion','POTION',0)],['skip_remaining'])
+            if change=='settled':p['offers'][0]['settled']=True
+            if change=='illegal_collect':p['legal_actions']=['collect:0']
+            if change=='extra':p['hidden']='not_public'
+            with self.assertRaises(Exception):host.ItemPolicyTracker(N).read(p,[])
+
+    def test_empty_failure_has_no_skip_permission(self):
+        p=self.payload([('potion','POTION',0)],['skip_remaining']);tracker=host.ItemPolicyTracker(N)
+        self.assertEqual(tracker.read(p,[]),'ready')
+        p.update(status='unsupported',phase='unsupported',decision_id='',offers=[],card_options=[],potion_slots=[],legal_actions=[],can_skip=False)
+        self.assertEqual(tracker.read(p,[]),'unsupported')

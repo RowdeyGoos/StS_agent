@@ -24,24 +24,35 @@ namespace MegaCrit.Sts2.Core.ControllerInput { public static class MegaInput { p
 namespace MegaCrit.Sts2.Core.Commands { public static class CardSelectCmd { public static object? Selector; } }
 namespace MegaCrit.Sts2.Core.Entities.Cards
 {
+    public enum UnplayableReason { None, Energy }
+    public enum CardType { Attack }
+    public enum TargetType { AnyEnemy, Self }
     public enum PileType { None, Draw, Hand, Discard, Exhaust, Play, Deck }
     public class CardPile { public PileType Type; public List<MegaCrit.Sts2.Core.Models.CardModel> Cards = new(); }
     public static class PileTypeExtensions { public static CardPile GetPile(this PileType type, MegaCrit.Sts2.Core.Entities.Players.Player p) => p.Piles[type]; }
 }
 namespace MegaCrit.Sts2.Core.Entities.Players
 {
-    public class Player { public object? PlayerCombatState = new(); public Dictionary<MegaCrit.Sts2.Core.Entities.Cards.PileType, MegaCrit.Sts2.Core.Entities.Cards.CardPile> Piles = new(); }
+    public class Player { public PlayerCombatState? PlayerCombatState = new(); public MegaCrit.Sts2.Core.Entities.Creatures.Creature Creature = new(); public Dictionary<MegaCrit.Sts2.Core.Entities.Cards.PileType, MegaCrit.Sts2.Core.Entities.Cards.CardPile> Piles = new(); }
+    public class PlayerCombatState { public int Energy=3,TurnNumber=1; public MegaCrit.Sts2.Core.Combat.PlayerTurnPhase Phase=MegaCrit.Sts2.Core.Combat.PlayerTurnPhase.Play; public MegaCrit.Sts2.Core.Entities.Cards.CardPile Hand=new(); }
 }
 namespace MegaCrit.Sts2.Core.Models
 {
     public class ModelId { public string Entry = "STRIKE"; }
-    public class CardModel { public ModelId Id = new(); public int CurrentUpgradeLevel; public MegaCrit.Sts2.Core.Entities.Players.Player Owner = null!; }
+    public class CardModel { public ModelId Id = new(); public int CurrentUpgradeLevel; public MegaCrit.Sts2.Core.Entities.Players.Player Owner = null!; public MegaCrit.Sts2.Core.Entities.Cards.CardType Type=MegaCrit.Sts2.Core.Entities.Cards.CardType.Attack; public MegaCrit.Sts2.Core.Entities.Cards.TargetType TargetType=MegaCrit.Sts2.Core.Entities.Cards.TargetType.AnyEnemy; public EnergyCost EnergyCost=new(); public bool Playable=true; public bool CanPlay(out MegaCrit.Sts2.Core.Entities.Cards.UnplayableReason reason,out object? auxiliary){reason=Playable?MegaCrit.Sts2.Core.Entities.Cards.UnplayableReason.None:MegaCrit.Sts2.Core.Entities.Cards.UnplayableReason.Energy;auxiliary=null;return Playable;} }
+    public class EnergyCost {public bool CostsX;public int Amount=3;public int GetAmountToSpend()=>Amount;}
+    public class MonsterModel {public ModelId Id=new();public MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine.MoveState? NextMove;}
 }
+namespace MegaCrit.Sts2.Core.Entities.Creatures {public enum CombatSide {Player,Enemy} public class Creature {public bool IsAlive=true;public int CurrentHp=80,MaxHp=80,Block;public MegaCrit.Sts2.Core.Models.MonsterModel? Monster;}}
+namespace MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine {public class MoveState {public List<Intent> Intents=new();} public class Intent {public IntentType IntentType=IntentType.Attack;} public enum IntentType {Attack}}
 namespace MegaCrit.Sts2.Core.Combat
 {
-    public class CombatState { public List<MegaCrit.Sts2.Core.Entities.Players.Player> Players = new(); }
-    public class CombatManager { public static CombatManager? Instance; public bool IsInProgress = true, IsOverOrEnding; public CombatState State = new(); public CombatState DebugOnlyGetState() => State; }
+    public enum PlayerTurnPhase {Play,Other}
+    public class CombatState { public List<MegaCrit.Sts2.Core.Entities.Players.Player> Players = new(); public List<MegaCrit.Sts2.Core.Entities.Creatures.Creature> Enemies=new(),HittableEnemies=new();public int RoundNumber=1;public MegaCrit.Sts2.Core.Entities.Creatures.CombatSide CurrentSide=MegaCrit.Sts2.Core.Entities.Creatures.CombatSide.Player; }
+    public class CombatManager { public static CombatManager? Instance; public bool IsInProgress = true, IsOverOrEnding,PlayerActionsDisabled,ReadyToEnd; public CombatState State = new(); public CombatState DebugOnlyGetState() => State;public bool IsPlayerReadyToEndTurn(MegaCrit.Sts2.Core.Entities.Players.Player p)=>ReadyToEnd; }
 }
+namespace MegaCrit.Sts2.Core.GameActions {public class PlayCardAction {public PlayCardAction(MegaCrit.Sts2.Core.Models.CardModel card,MegaCrit.Sts2.Core.Entities.Creatures.Creature? target){Card=card;Target=target;}public object Card;public object? Target;}public class EndPlayerTurnAction {public EndPlayerTurnAction(MegaCrit.Sts2.Core.Entities.Players.Player p,int turn){}}}
+namespace MegaCrit.Sts2.Core.Runs {public class RunManager {public static RunManager Instance=new();public QueueSynchronizer ActionQueueSynchronizer=new();}public class QueueSynchronizer {public List<object> Actions=new();public bool ThrowAfterEnqueue;public void RequestEnqueue(object action){Actions.Add(action);if(ThrowAfterEnqueue)throw new InvalidOperationException("uncertain enqueue");}}}
 namespace MegaCrit.Sts2.Core.Nodes
 {
     public class NRun : Godot.Control { public static NRun? Instance; public GlobalUi GlobalUi = new(); }

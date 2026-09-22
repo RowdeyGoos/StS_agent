@@ -47,7 +47,13 @@ internal static partial class Program
             var parent=f.Session.Read();Check(parent.Phase=="proceed"&&parent.CompletedItemChildren==1,"capacity event returns to Proceed");
             f.Session.Apply(parent.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete"&&f.CompletionValid,"capacity event to map");
         }
-        foreach(var mode in new[]{"before","overflow","too_many","one","three","filled","survivor","spoof","late_value","late_shrink","late_grow","delayed","lost"}) {
+        using(var f=new ItemFixture("CAPACITY_AFTER_POTION","potion",itemKinds:new[]{"potion","relic"})) {
+            PreparePolicy(f,false);ConfigureEventCapacity(f,new[]{1});
+            var c=f.Start();Check(c.Child?.Kind=="item_policy","policy reorders capacity before blocked potion");
+            PolicyAct(f,c,"collect:1");PolicyRead(f,c);PolicyAct(f,c,"collect:0");Check(PolicyRead(f,c).Status=="resolved","capacity-first policy resolves native offer");
+            var parent=f.Session.Read();f.Session.Apply(parent.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","reordered capacity to map");
+        }
+        foreach(var mode in new[]{"overflow","too_many","one","three","filled","survivor","spoof","late_value","late_shrink","late_grow","delayed","lost"}) {
             var kinds=mode=="before"?new[]{"potion","relic"}:mode=="too_many"?new[]{"relic","relic","relic"}:new[]{"relic","potion"};
             using var f=new ItemFixture("EVENT_BAD_CAPACITY",kinds[0],itemKinds:kinds,delayedOffer:mode.StartsWith("late_"),delayedCollection:mode=="delayed");
             ConfigureEventCapacity(f,kinds.Select((k,i)=>(k,i)).Where(x=>x.k=="relic").Select(x=>x.i).ToArray(),size:mode=="overflow"?7:3);

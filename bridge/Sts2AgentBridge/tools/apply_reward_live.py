@@ -165,7 +165,7 @@ def _validate_reward(raw_reward: object, expected_slot: int, schema: int = 1) ->
             "gold_amount",
             "cards",
             "card_selection_can_skip",
-        ) + (("item_key",) if schema >= 3 else ()) + (("potion_capacity_gain",) if schema == 5 else ()),
+        ) + (("item_key",) if schema >= 3 else ()) + (("potion_capacity_gain",) if schema >= 5 else ()) + (("heal_amount",) if schema == 6 else ()),
     )
     if reward["reward_slot"] != expected_slot:
         raise ValueError("reward slot")
@@ -209,7 +209,7 @@ def _validate_reward(raw_reward: object, expected_slot: int, schema: int = 1) ->
         raise ValueError("reward kind")
     if schema >= 3 and reward["kind"] not in ("potion", "relic") and reward["item_key"] is not None:
         raise ValueError("unexpected item key")
-    if schema == 5:
+    if schema >= 5:
         gain=reward["potion_capacity_gain"]
         if type(gain) is not int or gain not in (0,2) or gain and (reward["kind"]!="relic" or reward["item_key"]!="POTION_BELT"):
             raise ValueError("capacity gain")
@@ -306,7 +306,7 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         revision = root["decision_revision"]
         screen_kind = root["screen_kind"]
         if (
-            type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2, 3, 4, 5)
+            type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2, 3, 4, 5, 6)
             or root["status"] != "ready"
             or root["decision_kind"] != "reward"
             or root["actionable"] is not True
@@ -330,6 +330,10 @@ def _validate_ready(body: bytes) -> dict[str, object]:
             reward = _validate_reward(raw_reward, slot, root["schema_version"])
             if int(reward["reward_index"]) <= previous_index:
                 raise ValueError("reward index order")
+            if schema == 6:
+                heal=reward["heal_amount"]
+                expected=player["max_hp"]//10 if reward["kind"]=="relic" and reward["item_key"]=="FAKE_LEES_WAFFLE" else 0
+                if type(heal) is not int or heal!=expected:raise ValueError("healing effect")
             previous_index = int(reward["reward_index"])
             rewards.append(reward)
 
@@ -383,7 +387,8 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         "rewards": rewards,
         "legal_actions": actions,
         **({"potion_slots": potions} if schema >= 4 else {}),
-        **({"capacity_rewards": True} if schema == 5 else {}),
+        **({"capacity_rewards": True} if schema >= 5 else {}),
+        **({"healing_rewards": True} if schema == 6 else {}),
     }
 
 
@@ -537,9 +542,11 @@ def _validate_transition(
     elif kind == "collect_item":
         reward = before["rewards"][int(action["reward_slot"])]
         remaining = [r for r in after.get("rewards", []) if r["reward_index"] == reward["reward_index"]]
-        if (after["screen_kind"] != "rewards" or not _same_player(before_player, after_player) or
+        expected=dict(before_player)
+        expected["hp"]=min(expected["max_hp"],expected["hp"]+reward.get("heal_amount",0))
+        if (after["screen_kind"] != "rewards" or expected != after_player or
                 any(r["successfully_selected"] is not True or any(r.get(k) != reward.get(k) for k in
-                    ("kind", "gold_amount", "cards", "card_selection_can_skip", "item_key", "potion_capacity_gain")) for r in remaining)):
+                    ("kind", "gold_amount", "cards", "card_selection_can_skip", "item_key", "potion_capacity_gain", "heal_amount")) for r in remaining)):
             fail(EXIT_MISMATCH, "item_claim_reconciliation_failed")
     elif kind == "claim_special_card":
         expected = dict(before_player)
@@ -580,6 +587,9 @@ def _validate_transition(
             valid = new == old
         if not valid:
             fail(EXIT_MISMATCH, "item_claim_reconciliation_failed")
+
+    if before.get("healing_rewards") and after["screen_kind"]!="map" and not after.get("healing_rewards"):
+        fail(EXIT_MISMATCH,"reward_response_mismatch")
 
     if before.get("capacity_rewards") and after["screen_kind"]!="map" and not after.get("capacity_rewards"):
         fail(EXIT_MISMATCH,"reward_response_mismatch")

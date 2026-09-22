@@ -230,7 +230,7 @@ internal static partial class Program
     }
     private static void ResumeItemCases()
     {
-        foreach(var mode in new[]{"capacity","capacity_owner","capacity_shrink","potion","relic","set","delayed","full","wrong_set","foreign_offer","nested","fault","revoke","duplicate","moved","offer_task","collection_task","finished_potion"}) {
+        foreach(var mode in new[]{"policy_skip","policy_replace","capacity","capacity_owner","capacity_shrink","potion","relic","set","delayed","full","wrong_set","foreign_offer","nested","fault","revoke","duplicate","moved","offer_task","collection_task","finished_potion"}) {
             using var f=new Fixture("RESUME_ITEMS");
             var run=(RunState)f.Player.RunState;
             var original=new MegaCrit.Sts2.Core.Rooms.EventRoom{LocalMutableEvent=f.Model};run.CurrentRoom=original;f.Model.Node=f.Room.Layout;
@@ -253,6 +253,7 @@ internal static partial class Program
                 relic=new MegaCrit.Sts2.Core.Models.Relics.PotionBelt();r.Relic=relic;
                 FillEventBelt(f.Player);set.Rewards.Clear();set.Rewards.Add(r);set.Rewards.Add(p);
             }
+            if(mode.StartsWith("policy_")){FillEventBelt(f.Player);foreach(var card in f.Cards)card.Owner=f.Player;set.DisallowSkipping=false;}
             if(mode=="full")for(int i=0;i<f.Player.PotionSlots.Count;i++)f.Player.PotionSlots[i]=new PotionModel();
             var screenDone=new TaskCompletionSource();var creation=new TaskCompletionSource();var resumeDone=new TaskCompletionSource();
             var buttons=new List<MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton>();
@@ -266,10 +267,12 @@ internal static partial class Program
                         if(reward is MegaCrit.Sts2.Core.Rewards.PotionReward pr){pr.ClaimedPotion=pr.Potion;f.Player.PotionSlots[mode.StartsWith("capacity")?f.Player.PotionSlots.FindIndex(p=>p is null):0]=pr.Potion;}
                         else {((MegaCrit.Sts2.Core.Rewards.RelicReward)reward).ClaimedRelic=relic;if(mode.StartsWith("capacity"))ApplyBeltPickup(f.Player,reward);}
                         if(s.Rewards.All(x=>x.SuccessfullySelected)){f.Overlays.Screens.Clear();screenDone.SetResult();}
+                        if(mode.StartsWith("policy_")){potion.Owner=f.Player;screen.Children.Remove(button);button.InstanceValid=false;}
                         if(mode=="nested")f.Overlays.Screens.Add(new Control());
                         return Task.CompletedTask;
                     };
                 }
+                if(mode.StartsWith("policy_"))screen.BindProceed(new NProceedButton{IsEnabled=true,Clicked=()=>{f.Overlays.Screens.Clear();screenDone.SetResult();}});
                 f.Overlays.Screens.Add(screen);return screen;
             };
             set.OfferHandler=async()=>{
@@ -282,6 +285,7 @@ internal static partial class Program
                 if(mode!="foreign_offer")await set.Offer();
                 if(mode=="delayed")await resumeDone.Task;
             };
+            if(mode.StartsWith("policy_"))MegaCrit.Sts2.Core.Combat.CombatManager.Instance.IsInProgress=false;
             run.CurrentRoom=original;_=f.Model.Resume(room);
             var node=new NEventRoom();f.Run.EventRoom=node;NEventRoom.Instance=node;f.Model.Node=node.Layout;
             if(mode=="foreign_offer")_=set.Offer();
@@ -292,6 +296,14 @@ internal static partial class Program
                 Check(failed&&buttons.Sum(b=>b.ForceClickCalls)==0,"full inventory stops before collection");continue;
             }
             Check(f.Adapter.CombatResume!()=="item","owned resume reward advertised");
+            if(mode.StartsWith("policy_")) {
+                foreach(var action in mode=="policy_skip"?new[]{"skip_remaining"}:new[]{"discard:0","collect:0"}) {
+                    var o=(GenericEventV7RewardRead)f.Adapter.ReadResumeItem();Check(o.Status=="ready"&&o.LegalActions.Contains(action),"resume policy action ready");
+                    Check(f.Adapter.ApplyResumeItem(o.DecisionId,action) is GenericEventV7RewardReceipt {Outcome:"accepted"},"resume policy receipt accepted");
+                }
+                Check(f.Adapter.ReadResumeItem() is GenericEventV7RewardRead {Status:"resolved"},"resume policy native tasks settled");
+                Check(f.Adapter.CombatResume!()=="resumed","resume policy returns exact event node");continue;
+            }
             for(int i=0;i<set.Rewards.Count;i++) {
                 var value=f.Adapter.ReadResumeItem();
                 var offer=value is GenericEventV7ItemSetRead sr?sr.Current:value;
@@ -331,12 +343,19 @@ internal static partial class Program
     {
         if(args.SequenceEqual(new[]{"--abandon-popup"})){AbandonPopupCases();Console.WriteLine("abandon popup checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--sphere"})){SphereCases();Console.WriteLine("sphere checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--shop-removal"})){ShopRemovalCases();Console.WriteLine("shop removal checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--shop-pickups"})){ShopPickupCases();Console.WriteLine("shop pickup checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--merchant-fight"})){MerchantFightCases();Console.WriteLine("merchant fight checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--item-policy"})){ItemPolicyCases();Console.WriteLine("item policy checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--terminal"})){TerminalCases();Console.WriteLine("terminal checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--shop-relics"})){ShopRelicCases();ShopPickupCases();MerchantFightCases();Console.WriteLine("shop relic checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--shop-potions"})){ShopPotionOwnershipCases();Console.WriteLine("shop potion ownership checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--merchant-screen"})){MerchantScreenCases();Console.WriteLine("merchant screen checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--reward-surface"})){RewardSurfaceTests();RewardTests();Console.WriteLine("reward surface checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--baseline"})){BaselineRetirement();return;}
         if(args.SequenceEqual(new[]{"--pre-selector-additions"})){PreSelectorAdditionTests();Console.WriteLine("pre-selector addition checks: "+_checks);return;}
-        if(args.SequenceEqual(new[]{"--event-capacity"})){EventCapacityCases();ResumeItemCases();Console.WriteLine("event capacity checks: "+_checks);return;}
-        if(args.SequenceEqual(new[]{"--item-set"})){ItemSetTests();EventCapacityCases();Console.WriteLine("item-set checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--event-capacity"})){EventCapacityCases(); ItemPolicyCases();ResumeItemCases();Console.WriteLine("event capacity checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--item-set"})){ItemSetTests();EventCapacityCases(); ItemPolicyCases();Console.WriteLine("item-set checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--multi-enchantment"})){MultiEnchantmentTests();Console.WriteLine("multi-enchantment checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-reward-set"})){CardRewardSetTests();Console.WriteLine("card-reward-set checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--card-reward"})){CardRewardTests();Console.WriteLine("card-reward checks: "+_checks);return;}
@@ -481,7 +500,7 @@ internal static partial class Program
         RemovalHitboxTests();
         RemovalLayoutTests();
         MultiEnchantmentTests();
-        ItemSetTests();EventCapacityCases();MerchantScreenCases();SphereCases();AbandonPopupCases();
+        ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
         CardRewardTests();
         CardRewardSetTests();
         CombatHandoffCases();OwnershipDiagnosticCases();
@@ -743,7 +762,7 @@ internal static partial class Program
     private static void IncrementalHooks()
     {
         using(var native=new PreparingNative())using(var session=new GenericEventV7Session(native,new string('a',32))) {
-            for(int i=0;i<34;i++)Check(session.Read().Status=="waiting","preparation has bounded initial waiting window");
+            for(int i=0;i<35;i++)Check(session.Read().Status=="waiting","preparation has bounded initial waiting window");
             Check(session.Read().Status=="unsupported"&&native.Dispatches==0,"preparation read limit stops without mutation");
         }
         foreach(bool pending in new[]{false,true}) {
@@ -760,18 +779,18 @@ internal static partial class Program
             Check(installed==0,"deferred construction installs no hooks");
             bool protectedLease=false;try{GenericEventV7Hooks.RecoverFailedInstallation();}catch(InvalidOperationException){protectedLease=true;}
             Check(protectedLease,"partial active lease cannot be stolen by recovery");
-            for(int i=1;i<=33;i++) {
+            for(int i=1;i<=34;i++) {
                 bool ready=hooks.PrepareNext();
-                Check(installed==i&&ready==(i==33),"exactly one target installed per read");
+                Check(installed==i&&ready==(i==34),"exactly one target installed per read");
                 if(!ready){bool blocked=false;try{GenericEventV7Hooks.Arm(null!);}catch(InvalidOperationException){blocked=true;}Check(blocked,"partial installation cannot arm input");}
             }
-            Check(hooks.PrepareNext()&&installed==33,"ready does not reinstall hooks");
+            Check(hooks.PrepareNext()&&installed==34,"ready does not reinstall hooks");
         }
         Check(HarmonyLib.Harmony.GetPatchInfo(target)?.Owners.Count is null or 0,"full preparation cleanup");
         using(var hooks=new GenericEventV7Hooks(true)){Check(!hooks.PrepareNext(),"partial preparation waiting");}
         Check(HarmonyLib.Harmony.GetPatchInfo(target)?.Owners.Count is null or 0,"partial preparation cleanup");
         using(var f=new Fixture("DEFERRED",incrementalHooks:true)) {
-            for(int i=0;i<32;i++)Check(f.Session.Read().Status=="waiting"&&f.OptionCalls==0,"no native option before preparation ready");
+            for(int i=0;i<33;i++)Check(f.Session.Read().Status=="waiting"&&f.OptionCalls==0,"no native option before preparation ready");
             Check(f.Session.Read().Status=="ready","prepared event becomes ready");
         }
         var prefix=typeof(Program).GetMethod(nameof(ForeignPrefix),BindingFlags.NonPublic|BindingFlags.Static)!;

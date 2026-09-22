@@ -41,29 +41,30 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             throw new ArgumentException("Expected a 32-digit session nonce.", nameof(sessionNonce));
         _nonce = sessionNonce;
     }
+    private void Fail(){_unsupported=true;(_native as IGenericEventV7AbortableNative)?.AbortPending();}
     private bool Enter()
     {
         if (_inside || Environment.CurrentManagedThreadId != _thread || _disposed)
-        { _unsupported = true; return false; }
+        { Fail(); return false; }
         _inside = true; return true;
     }
     public GenericEventV7Observation Read()
     {
         if (!Enter()) return Observation("unsupported", "unsupported");
         try { return ReadCore(); }
-        catch { _unsupported = true; return Observation("unsupported", "unsupported"); }
+        catch { Fail(); return Observation("unsupported", "unsupported"); }
         finally { _inside = false; }
     }
     private GenericEventV7Observation ReadCore()
     {
-        if (++_reads > GenericEventV7Limits.MaximumHostReads) _unsupported = true;
+        if (++_reads > GenericEventV7Limits.MaximumHostReads) Fail();
         if (_unsupported) return Observation("unsupported", "unsupported");
         if (_complete) return Observation("complete", _destination);
         if (_card is not null)
         {
             if (!_resolvedDelivered) return Observation("child", "child");
             _card.Dispose(); _card = null;
-            _effects = (_child!.Kind is "card_results" or "crystal_sphere" or "abandon_confirmation"||_child.ContractVersion=="card_offer_v2")?"unverified":_child.Kind == "item" ? "item_effect_verified" : "card_effect_verified";
+            _effects = (_child!.Kind is "card_results" or "crystal_sphere" or "abandon_confirmation"||_child.ContractVersion=="card_offer_v2")?"unverified":_child.Kind is "item" or "item_policy" ? "item_effect_verified" : "card_effect_verified";
             _child = null;
             Reconcile(_abandoned?"run_abandoned":"child_completed");
             if(_abandoned){_destination="run_abandoned";_complete=true;return Observation("complete",_destination);}
@@ -71,7 +72,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         GenericEventV7NativeCapture capture = _native.Capture();
         if (_unsupported || capture.Status == "unsupported") return Stop();
         if(capture.Status=="preparing")
-            return !_pending&&_published is null&&_attempted==0&&_reads<=34
+            return !_pending&&_published is null&&_attempted==0&&_reads<=35
                 ? Observation("waiting","waiting") : Stop();
         if (capture.Status == "parent" && !ValidParent(capture)) return Stop();
         if (_pending)
@@ -91,6 +92,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                     GenericEventV7ResultsAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r),
                     GenericEventV7OfferAdmission o => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,o.OfferCount,o.Bundle?"bundle_offer_v1":o.CanSkip?"card_offer_v2":"card_offer_v1"),
                     GenericEventV7RewardAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r.OfferCount,true,r.Mixed),
+                    GenericEventV7ItemPolicyAdmission i => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,i),
                     GenericEventV7ItemAdmission i => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,i.OfferCount),
                     _ => null };
                 if (_child is null || !TypedChild()) return Stop();
@@ -98,6 +100,9 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 _itemPublished=null; _itemReceipt=null; _itemResults.Clear();
                 _resolvedDelivered = false;
                 return Observation("child", "child");
+            }
+            if(capture.Status=="run_won" && capture.ChildIdentity is null && capture.Admission is null) {
+                _destination="run_won";Reconcile(_destination);_complete=true;return Observation("complete",_destination);
             }
             if (_proceed)
             {
@@ -152,24 +157,24 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             if (!selected.Enabled || selected.Dangerous&&!selected.OpensAbandonConfirmation)
                 return Result(decisionId, actionId, "illegal_action");
             if (_attempted >= 12 || _attempted + _childAttempted >= 52)
-            { _unsupported = true; return Result(decisionId, actionId, "budget_exhausted"); }
+            { Fail(); return Result(decisionId, actionId, "budget_exhausted"); }
             var recapture = _native.Capture();
             if (_unsupported || recapture.Status != "parent" || DecisionStamp(recapture) != DecisionStamp(_published) ||
                 recapture.Options.Count != _published.Options.Count ||
                 recapture.Options.Where((x,i) => !ReferenceEquals(x.Identity,_published.Options[i].Identity)).Any())
-            { _unsupported = true; return Result(decisionId, actionId, "unsupported"); }
+            { Fail(); return Result(decisionId, actionId, "unsupported"); }
             _pending = true; _proceed = selected.IsProceed&&!selected.OpensAbandonConfirmation; _pendingReads = 0;
             _pendingDecision = decisionId!; _pendingAction = actionId!;
             foreach (var option in _published.Options) _retiredOptions.Add(option.Identity);
             _attempted++; _effects = "unverified";
             _published = null; _decision = "";
             try { _native.Dispatch(selected.Identity, _nonce, decisionId!, actionId!); }
-            catch { _unsupported = true; return Result(decisionId, actionId, "uncertain"); }
+            catch { Fail(); return Result(decisionId, actionId, "uncertain"); }
             if (_unsupported) return Result(decisionId, actionId, "uncertain");
             _accepted++;
             return Result(decisionId, actionId, "accepted");
         }
-        catch { _unsupported = true; return Result(decisionId, actionId, "uncertain"); }
+        catch { Fail(); return Result(decisionId, actionId, "uncertain"); }
         finally { _inside = false; }
     }
     public GenericEventV7ChildRead ReadChild(string? parentDecisionId, string? parentActionId, int childOrdinal)
@@ -177,13 +182,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         if (!Enter()) return ChildFailure();
         try
         {
-            if (!Lineage(parentDecisionId,parentActionId,childOrdinal)) { _unsupported = true; return ChildFailure(); }
-            if (!TypedChild()) { _unsupported = true; return ChildFailure(); }
+            if (!Lineage(parentDecisionId,parentActionId,childOrdinal)) { Fail(); return ChildFailure(); }
+            if (!TypedChild()) { Fail(); return ChildFailure(); }
             if(_card is IGenericEventV7RewardChildSession reward) {
                 var read=reward.Read();_childReconciled=_completedChildActions+read.PriorResults.Count;
-                if(read.Status=="unsupported")_unsupported=true;
+                if(read.Status=="unsupported")Fail();
                 if(read.Status=="resolved"&&_child!.Kind=="abandon_confirmation")_abandoned=read.Phase=="abandoned";
-                if(read.Status=="resolved"){if(!_resolvedDelivered&&_child!.Kind is not ("crystal_sphere" or "abandon_confirmation"))_completedCardChildren++;_resolvedDelivered=true;}
+                if(read.Status=="resolved"){if(!_resolvedDelivered){if(_child!.Kind=="item_policy")_completedItemChildren++;else if(_child.Kind is not ("crystal_sphere" or "abandon_confirmation"))_completedCardChildren++;}_resolvedDelivered=true;}
                 return new GenericEventV7RewardChildRead(read,ChildContract());
             }
             if (_card is IGenericEventV7ItemChildSession item) {
@@ -204,25 +209,25 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                     }else if(set.Status=="ready") {
                         if(_itemReceipt is not null||set.Collected.Count>=set.OfferCount||set.Current is not ItemV1Observation {Status:"ready",Offers.Count:1} next)return StopItemSet();
                         _itemPublished=next;
-                    }else if(set.Status=="unsupported")_unsupported=true;
+                    }else if(set.Status=="unsupported")Fail();
                     else if(set.Status!="waiting")return StopItemSet();
                     return new GenericEventV7ItemRead(set,ChildContract());
                 }
                 if(_child!.ContractVersion!="item_v1")return StopItemSet();
                 if (itemValue is ItemV1Observation o) {
-                    if (o.Status == "unsupported") _unsupported=true;
+                    if (o.Status == "unsupported") Fail();
                     else if (o.Status == "ready") _itemPublished=o;
-                    else if (o.Status != "waiting") _unsupported=true;
+                    else if (o.Status != "waiting") Fail();
                 } else if (itemValue is ItemV1ResolvedResult done) {
                     var offer=_itemPublished?.Offers.SingleOrDefault();
                     if (_itemReceipt is null || offer is null || done.SessionNonce != _nonce || done.SurfaceOrdinal != 1 ||
                         done.DecisionId != _itemReceipt.DecisionId || done.ActionId != _itemReceipt.ActionId ||
                         done.ActionId != "collect:"+offer.Index || done.OfferIndex != offer.Index || done.Kind != offer.Kind ||
-                        done.Key != offer.Key || done.Result != "collected") { _unsupported=true; return ChildFailure(); }
+                        done.Key != offer.Key || done.Result != "collected") { Fail(); return ChildFailure(); }
                     _childReconciled=_completedChildActions+1;
                     if (!_resolvedDelivered) _completedItemChildren++;
                     _resolvedDelivered=true;
-                } else { _unsupported=true; return ChildFailure(); }
+                } else { Fail(); return ChildFailure(); }
                 return new GenericEventV7ItemRead(itemValue);
             }
             var value = ((IGenericEventV7CardChildSession)_card!).Read();
@@ -230,7 +235,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             {
                 _childReconciled = Math.Max(_childReconciled,
                     _completedChildActions + observation.PriorResults.Count);
-                if (observation.Status == "unsupported") _unsupported = true;
+                if (observation.Status == "unsupported") Fail();
             }
             else if (value is CardSelectionV1ResolvedResult resolved)
             {
@@ -238,13 +243,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 if (!_resolvedDelivered) _completedCardChildren++;
                 _resolvedDelivered = true;
             }
-            else _unsupported = true;
+            else Fail();
             return new GenericEventV7CardRead(ChildContract(), value);
         }
-        catch { _unsupported = true; return ChildFailure(); }
+        catch { Fail(); return ChildFailure(); }
         finally { _inside = false; }
     }
-    private GenericEventV7ChildRead StopItemSet(){_unsupported=true;return ChildFailure();}
+    private GenericEventV7ChildRead StopItemSet(){Fail();return ChildFailure();}
     private bool ValidItemResult(ItemV1ResolvedResult done) {
         var offer=_itemPublished?.Offers.SingleOrDefault();
         return _itemReceipt is not null&&offer is not null&&done.SessionNonce==_nonce&&done.SurfaceOrdinal==1&&
@@ -262,13 +267,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         {
             if (!Lineage(parentDecisionId,parentActionId,childOrdinal) || _resolvedDelivered ||
                 _attempted + _childAttempted >= 52)
-            { _unsupported = true; return ApplyFailure("unsupported",decisionId,actionId); }
-            if (!TypedChild()) { _unsupported = true; return ApplyFailure("unsupported",decisionId,actionId); }
+            { Fail(); return ApplyFailure("unsupported",decisionId,actionId); }
+            if (!TypedChild()) { Fail(); return ApplyFailure("unsupported",decisionId,actionId); }
             if(_card is IGenericEventV7RewardChildSession reward) {
                 var read=reward.Read();
                 if(read.Status!="ready"||read.DecisionId!=decisionId||!read.LegalActions.Contains(actionId??""))return ApplyFailure("rejected",decisionId,actionId);
                 _childAttempted++;var outcome=reward.Apply(decisionId,actionId);
-                if(outcome.Outcome=="accepted")_childAccepted++;else _unsupported=true;
+                if(outcome.Outcome=="accepted")_childAccepted++;else Fail();
                 return new GenericEventV7RewardChildApply(outcome,ChildContract());
             }
             if (_card is IGenericEventV7ItemChildSession item) {
@@ -282,7 +287,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 var outcome=item.Apply(decisionId,actionId);
                 if (outcome is ItemV1DispatchReceipt receipt && receipt.SessionNonce == _nonce &&
                     receipt.DecisionId == decisionId && receipt.ActionId == actionId) { _itemReceipt=receipt; _childAccepted++; }
-                else _unsupported=true;
+                else Fail();
                 return new GenericEventV7ItemApply(outcome,ChildContract());
             }
             // Validate advertised child action before counting a native attempt.
@@ -293,10 +298,10 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
             _childAttempted++;
             var result = ((IGenericEventV7CardChildSession)_card).Apply(decisionId, actionId);
             if (result is CardSelectionV1DispatchReceipt) _childAccepted++;
-            else _unsupported = true;
+            else Fail();
             return new GenericEventV7CardApply(ChildContract(), result);
         }
-        catch { _unsupported = true; return ApplyFailure("unsupported",decisionId,actionId); }
+        catch { Fail(); return ApplyFailure("unsupported",decisionId,actionId); }
         finally { _inside = false; }
     }
     private bool Lineage(string? decision,string? action,int ordinal) => !_unsupported &&
@@ -304,13 +309,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         action == _child.ParentActionId && ordinal == _child.Ordinal;
     private string ChildContract() => _child?.ContractVersion ?? "card_selection_v1";
     private bool TypedChild() => _card is not null && _child is not null && _card.ContractVersion == ChildContract() &&
-        (_child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
+        (_child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
             _card is IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession);
-    private GenericEventV7ChildRead ChildFailure() => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildRead ChildFailure() => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null,ItemPolicy:_child?.Kind=="item_policy"?new(Array.Empty<GenericEventV7ItemPolicyOffer>(),Array.Empty<string?>(),false):null),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemRead(_child!.OfferCount>1 ? new GenericEventV7ItemSetRead(_nonce,"unsupported",_child.OfferCount,Array.AsReadOnly(_itemResults.ToArray()),null) : ItemV1Observation.Fixed(_nonce,"unsupported"),ChildContract())
         : new GenericEventV7CardRead(ChildContract(),CardSelectionV1Observation.Fixed(
             _nonce,"unsupported","unsupported",Array.Empty<CardSelectionV1ActionResult>()));
-    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemApply(new ItemV1ApplyFailure(_nonce,outcome),ChildContract())
         : new GenericEventV7CardApply(ChildContract(),new CardSelectionV1ApplyFailure(_nonce,outcome));
     private void Reconcile(string result)
@@ -319,7 +324,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         _completedChildActions = _childReconciled;
         _history.Add(new GenericEventV7PriorResult(_pendingDecision,_pendingAction,result));
     }
-    private GenericEventV7Observation Stop() { _unsupported = true; return Observation("unsupported","unsupported"); }
+    private GenericEventV7Observation Stop() { Fail(); return Observation("unsupported","unsupported"); }
     private GenericEventV7ApplyResult Result(string? decision,string? action,string outcome) =>
         new(_nonce,decision ?? "",action ?? "",outcome);
     private GenericEventV7Observation Observation(string status,string phase)
@@ -349,7 +354,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
     private static string DecisionStamp(GenericEventV7NativeCapture capture) => Stamp(capture) + string.Concat(capture.Options.Select(x => "|" + x.RenderedText.Length + ":" + x.RenderedText));
     public void Dispose()
     {
-        if (Environment.CurrentManagedThreadId != _thread || _inside) { _unsupported = true; throw new InvalidOperationException("Owner thread cleanup required."); }
-        _unsupported = true; _card?.Dispose(); _native.Dispose(); _disposed = true;
+        if (Environment.CurrentManagedThreadId != _thread || _inside) { Fail(); throw new InvalidOperationException("Owner thread cleanup required."); }
+        _unsupported=true; try { _card?.Dispose(); } finally { _native.Dispose(); } _disposed = true;
     }
 }

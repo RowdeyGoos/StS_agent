@@ -3,11 +3,25 @@
   <ItemGroup>
     <Compile Include="MerchantScreenFixtures.cs" />
     <Compile Include="MerchantScreenStubs.cs" />
+    <Compile Include="ShopPickupStubs.cs" />
+    <Compile Include="ShopPotionFixtures.cs" />
+    <Compile Include="ShopRelicFixtures.cs" />
+    <Compile Include="ShopPickupFixtures.cs" />
+    <Compile Include="MerchantFightFixtures.cs" />
+    <Compile Include="ShopRemovalFixtures.cs" />
+    <Compile Include="../../rooms/shop/native/ShopPotionOwnership.cs" />
+    <Compile Include="../../rooms/shop/native/ShopRelicRules.cs" />
+    <Compile Include="../../rooms/shop/native/PinnedShopRemovalDispatch.cs" />
+    <Compile Include="../../rooms/shop/native/PinnedDeckCardChoice.cs" />
+    <Compile Include="../../rooms/shop/native/PinnedShopPickupDispatch.cs" />
     <Compile Include="SphereStubs.cs" />
     <Compile Include="AbandonPopupStubs.cs" />
     <Compile Include="SphereFixtures.cs" /><Compile Include="AbandonPopupFixtures.cs" />
+    <Compile Include="TerminalFixtures.cs" />
     <Compile Include="EventCapacityFixtures.cs" />
+    <Compile Include="ItemPolicyFixtures.cs" />
     <Compile Include="../../items/native/PinnedPotionCapacity.cs" />
+    <Compile Include="../../items/native/PinnedPotionDiscard.cs" />
     <Compile Include="CardRewardFixtures.cs" />
     <Compile Include="CardRewardSetFixtures.cs" />
     <Compile Include="PostRemovalAdditionFixtures.cs" />
@@ -40,6 +54,7 @@
     <Compile Include="CombatItemFixtures.cs" />
     <Compile Include="PotionDiscardFixtures.cs" />
     <Compile Include="PotionCapacityFixtures.cs" />
+    <Compile Include="HealingRewardFixtures.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardAction.cs" />
@@ -54,11 +69,15 @@
     <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Native/GenericEventV7CardAdapter.cs" />
     <Compile Include="../native/GenericEventV7Hooks.cs" Link="Native/GenericEventV7Hooks.cs" />
     <Compile Include="../native/GenericEventV7MerchantScreen.cs" />
+    <Compile Include="../native/GenericEventV7MerchantFight.cs" />
     <Compile Include="../native/GenericEventV7SphereSession.cs" />
     <Compile Include="../native/GenericEventV7AbandonPopup.cs" />
+    <Compile Include="../native/GenericEventV7ItemPolicySession.cs" />
+    <Compile Include="../native/GenericEventV7Terminal.cs" />
     <Compile Include="../native/PinnedGenericEventV7NativeAdapter.cs" Link="Native/PinnedGenericEventV7NativeAdapter.cs" />
     <Compile Include="../../cards/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
     <ProjectReference Include="../core/GenericEventV7.Core.csproj" />
     <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
   </ItemGroup>
+<ItemGroup><Compile Include="../../rooms/shop/core/ShopV1Contracts.cs" /><Compile Include="../../rooms/common/RoomFlowContracts.cs" /></ItemGroup>
 </Project>

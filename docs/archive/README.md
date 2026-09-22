@@ -21,6 +21,7 @@ work. Consult an archived record only for a specific semantic or evidence questi
 | Card selection semantics | [Selection](phase-1/PHASE_1_CARD_SELECTION_V1_CONTRACT.md), [completion](phase-1/PHASE_1_CARD_SELECTION_COMPLETION_V1_CONTRACT.md) |
 | Generic event semantics | [G7 contract](phase-1/PHASE_1_GENERIC_EVENT_V7_CONTRACT.md), [G7 results](phase-1/research/PHASE_1_GENERIC_EVENT_V7_ACCEPTANCE.md); earlier versions are in the same directories |
 | Direct off-screen selection | [V10 contract](phase-1/PHASE_1_GENERIC_EVENT_RELEASE_V10_CONTRACT.md), [successful result](phase-1/research/PHASE_1_GENERIC_EVENT_RELEASE_V10_ACCEPTANCE.md) |
+| Dated native event census and gap comparison | [September 10 research map](EVENT_INTERACTION_MAP_2026_09_10.md); [current research entry and corrections](../EVENT_INTERACTION_MAP.md) |
 | Original release/source identities | [Bridge release history](../../bridge/Sts2AgentBridge/releases/history/README.md) |
 
 `phase-0/` and `phase-1/` retain original filenames; each `research/` directory
@@ -74,3 +75,10 @@ comparisons and bridge release identities were not repinned.
 The engine chronology and architecture plan archived on 2026-09-22 preserve the
 bodies from `5389796666da9e2cefff30839612288ce7875ccf`, with archive labels and
 relative links adjusted. Recorded hashes and evidence artifacts were not repinned.
+
+The event research narrative was relocated on 2026-09-19 from
+`cd3dc76:docs/EVENT_INTERACTION_MAP.md`. Its recorded hashes and comparison at
+`4d3516f` remain unchanged; navigation links were rebased and a historical notice
+was added. Use that Git blob for original document bytes. The accompanying
+`docs/evidence/event_interactions_2026_09_09/` inventory/scanner artifacts were not
+changed. Superseded status/coverage prose from this cleanup remains in `cd3dc76`.

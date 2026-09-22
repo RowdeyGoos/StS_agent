@@ -14,6 +14,8 @@ public enum GenericEventV7ResumeDiagnostic {
     node_combat_layout, node_ui, node_travel, node_replaced, read_exception
 }
 
+public interface IGenericEventV7AbortableNative { void AbortPending(); }
+
 public interface IGenericEventV7NativeAdapter : IDisposable
 {
     // While a parent action is pending, "parent" requires its owned Chosen
@@ -42,6 +44,7 @@ public abstract record GenericEventV7Admission(object Identity) {
         GenericEventV7ResultsAdmission r => r.CardCount is >=1 and <=64,
         GenericEventV7OfferAdmission o => o.OfferCount is >=1 and <=5 && (!o.CanSkip || !o.Bundle && o.OfferCount<=3),
         GenericEventV7RewardAdmission r => r.OfferCount is >=1 and <=8 && (!r.Mixed || r.OfferCount>=2),
+        GenericEventV7ItemPolicyAdmission i => i.OfferCount is >=1 and <=8,
         GenericEventV7ItemAdmission i => i.OfferCount is >= 1 and <= 8,
         _ => false });
 }
@@ -52,6 +55,7 @@ public sealed record GenericEventV7SphereAdmission(object AdmissionIdentity):Gen
 public sealed record GenericEventV7ResultsAdmission(object AdmissionIdentity,int CardCount):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7OfferAdmission(object AdmissionIdentity,int OfferCount,bool Bundle,bool CanSkip=false):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7RewardAdmission(object AdmissionIdentity,int OfferCount=1,bool Mixed=false) : GenericEventV7Admission(AdmissionIdentity);
+public sealed record GenericEventV7ItemPolicyAdmission(object AdmissionIdentity,int OfferCount):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7ItemAdmission(object AdmissionIdentity, int OfferCount) : GenericEventV7Admission(AdmissionIdentity);
 
 public static class GenericEventV7Families

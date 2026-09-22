@@ -60,7 +60,7 @@ internal static partial class Program
         internal bool HasPendingCreation,HasPendingCollection,HasPendingOffer,HasPendingChosen;
         internal bool Terminal,ExtraReward,HiddenExtraButton,Linked,WrongPlayer,WrongRun,Shortcut,DuplicateScreen,FaultCollection,FaultOffer,FaultChosen,CancelCollection,CancelOffer,CancelChosen;
         internal Action? BeforeScreen=null,AfterScreen=null,BeforeCollection=null,AfterCollection=null;
-        internal bool DisableDuringRelease,DerivedButton;
+        internal bool DisableDuringRelease,DerivedButton,PolicyInventory;
         internal readonly List<Reward> CompletedRewards=new();
         internal readonly List<Task> CollectionTasks=new();
         internal ItemFixture(string name,string kind,int index=7,bool delayedCreation=false,bool delayedCollection=false,bool delayedOffer=false,bool delayedChosen=false,int repeatItems=1,bool mixed=false,int? transformMinimum=null,int transformMaximum=1,string[]? itemKinds=null)
@@ -80,6 +80,7 @@ internal static partial class Program
                 }
                 Button=Buttons[0];
                 if(HiddenExtraButton)Screen.Children.Add(new NRewardButton{Reward=Reward,Visible=false});
+                if(!set.DisallowSkipping)Screen.BindProceed(new MegaCrit.Sts2.Core.Nodes.CommonUi.NProceedButton{IsEnabled=true,Clicked=()=>{Overlays.Screens.Clear();Screen.Visible=false;Screen.InstanceValid=false;_screenDone.SetResult();}});
                 Overlays.Screens.Add(Screen);AfterScreen?.Invoke();return Screen;
             };
             ShowItem();
@@ -98,7 +99,7 @@ internal static partial class Program
                 if(_chosen){HasPendingChosen=true;await _chosenGate.Task;HasPendingChosen=false;}
                 if(CancelChosen)throw new OperationCanceledException();if(FaultChosen)throw new InvalidOperationException("chosen fault");
                 if(_mixed&&ItemCompletions==1){_world.AfterUpgrade=ShowTransform;_world.ShowUpgradeOption();}
-                else if(ItemCompletions<_repeat)ShowItem();else ShowProceed();
+                else if(!PolicyInventory&&ItemCompletions<_repeat)ShowItem();else ShowProceed();
             }});
         }
         private void ShowTransform()
@@ -131,6 +132,10 @@ internal static partial class Program
             if(CancelCollection)throw new OperationCanceledException();if(FaultCollection)throw new InvalidOperationException("collection fault");
             if(reward is PotionReward p){p.ClaimedPotion=p.Potion;int at=Player.PotionSlots.FindIndex(x=>x is null);if(at>=0)Player.PotionSlots[at]=p.Potion;}
             else{var r=(RelicReward)reward;r.ClaimedRelic=r.Relic;}
+            if(PolicyInventory) {
+                if(reward is PotionReward ownedPotion)ownedPotion.Potion.Owner=Player;
+                else if(reward is RelicReward ownedRelic && ownedRelic.Relic is not MegaCrit.Sts2.Core.Models.Relics.PotionBelt){ownedRelic.Relic.Owner=Player;Player.Relics.Add(ownedRelic.Relic);}
+            }
             reward.SuccessfullySelected=true;ItemCompletions++;CompletedRewards.Add(reward);
             // Native reward claimed removes/frees its control and nonterminal screen.
             Screen.Children.Remove(button);button.InstanceValid=false;

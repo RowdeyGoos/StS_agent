@@ -72,7 +72,79 @@ class DecisionView:
 
 def first_legal(view: DecisionView) -> str:
     """Deterministic fixture policy; callers explicitly choose their policy."""
-    return view.payload['legal_actions'][0]
+    return item_policy_action(view.payload,'skip-full') if view.kind=='item_policy' else view.payload['legal_actions'][0]
+
+
+def item_policy_action(payload,policy='skip-full'):
+    if policy not in ('skip-full','skip-all','replace-first','stop-on-full'):raise ValueError('Unknown potion policy')
+    offers=payload['offers'];actions=payload['legal_actions']
+    choices=[a for a in actions if a.startswith('choose:')]
+    if choices:return choices[0]
+    collections=[a for a in actions if a.startswith('collect:') and (policy!='skip-all' or offers[int(a[-1])]['kind']!='potion')]
+    # Prefer an available capacity grant before consuming a replacement.
+    capacity=[a for a in collections if offers[int(a[-1])]['capacity_gain']>0]
+    if capacity:return capacity[0]
+    if collections:return collections[0]
+    discards=[a for a in actions if a.startswith('discard:')]
+    if policy=='replace-first' and discards and any(o['kind']=='potion' and not o['settled'] for o in offers):return discards[0]
+    if policy!='stop-on-full' and 'skip_remaining' in actions:return 'skip_remaining'
+    raise ValueError('Potion inventory has no allowed continuation')
+
+class ItemPolicyTracker:
+    def __init__(self,nonce,count=None):
+        self.nonce,self.count=nonce,count
+        self.history=[];self.offers=None;self.can_skip=None;self.menus={}
+    def read(self,p,receipts):
+        _keys(p,('version','session_nonce','status','phase','decision_id','offers','card_options','potion_slots','can_skip','legal_actions','prior_results'))
+        _require(p['version']=='item_policy_v1' and p['session_nonce']==self.nonce and type(p['can_skip']) is bool)
+        history=p['prior_results'];actions=p['legal_actions'];offers=p['offers'];slots=p['potion_slots'];cards=p['card_options'];status=p['status']
+        _require(type(history) is list and len(self.history)<=len(history)<=len(receipts)<=25 and history[:len(self.history)]==self.history)
+        settled=set();active=None
+        for i,h in enumerate(history):
+            _keys(h,('decision_id','action_id','result'));a=receipts[i][1]
+            _require((h['decision_id'],h['action_id'])==receipts[i])
+            if a.startswith('collect:'):
+                index=int(a[-1]);_require(active is None and index not in settled)
+                if h['result']=='opened':active=index
+                else:_require(h['result']=='collected');settled.add(index)
+            elif a.startswith('choose:') or a=='skip_card':
+                _require(active is not None and h['result']==('card_skipped' if a=='skip_card' else 'collected'));settled.add(active);active=None
+            else:_require(active is None and h['result']==('skipped' if a=='skip_remaining' else 'discarded'))
+        _require(type(actions) is list and len(actions)==len(set(actions))<=25 and type(offers) is list and type(slots) is list and type(cards) is list)
+        if status=='ready':
+            _require(self.can_skip is None or self.can_skip==p['can_skip']);self.can_skip=p['can_skip']
+            _require(p['phase']==('items' if active is None else 'choose_card') and _hex(p['decision_id'],64) and len(history)==len(receipts) and 1<=len(offers)<=8 and len(slots)<=8)
+            _require(self.count is None or self.count==len(offers));self.count=len(offers)
+            for i,o in enumerate(offers):
+                _keys(o,('index','kind','key','capacity_gain','settled'))
+                _require(type(o['index']) is int and o['index']==i and o['kind'] in ('card','potion','relic') and _policy_key(o['key']) and type(o['capacity_gain']) is int and o['capacity_gain'] in (0,2) and type(o['settled']) is bool)
+                _require(o['capacity_gain']==0 or o['kind']=='relic' and o['key']=='POTION_BELT')
+                _require(o['settled']==(i in settled))
+            shape=[(o['kind'],o['key'],o['capacity_gain']) for o in offers]
+            _require(self.offers is None or self.offers==shape);self.offers=shape
+            _require(all(x is None or _policy_key(x) for x in slots) and actions)
+            if active is not None:
+                _require(offers[active]['kind']=='card' and 1<=len(cards)<=5)
+                for i,c in enumerate(cards):
+                    _keys(c,('slot','key','upgrade_level'));_require(type(c['slot']) is int and c['slot']==i and _policy_key(c['key']) and type(c['upgrade_level']) is int and c['upgrade_level']>=0)
+                _require(active not in self.menus or self.menus[active]==cards);self.menus[active]=cards
+                _require(actions==[f'choose:{i}' for i in range(len(cards))] or p['can_skip'] and actions==[f'choose:{i}' for i in range(len(cards))]+['skip_card'])
+            else:
+                _require(cards==[])
+                for a in actions:
+                    _require(type(a) is str)
+                    if a=='skip_remaining':_require(p['can_skip']);continue
+                    _require(len(a)==9 and a[:8] in ('collect:','discard:') and a[-1] in '01234567');i=int(a[-1])
+                    if a.startswith('discard:'):_require(i<len(slots) and None not in slots and not any(x==a for _,x in receipts))
+                    else:_require(i<len(offers) and not offers[i]['settled'] and (None in slots if offers[i]['kind']=='potion' else len(slots)+offers[i]['capacity_gain']<=8))
+        else:
+            _require(p['decision_id']=='' and offers==slots==cards==actions==[] and (status,p['phase']) in (('waiting','waiting'),('unsupported','unsupported'),('resolved','complete')))
+            if status=='resolved':_require(self.offers is not None and active is None and len(history)==len(receipts) and (receipts[-1][1]=='skip_remaining' or len(settled)==len(self.offers)))
+        self.history=history
+        return status
+
+def _policy_key(value):
+    return type(value) is str and 1<=len(value)<=128 and all(c.isascii() and (c.isalnum() or c=='_') for c in value)
 
 
 def _pairs(rows: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -112,10 +184,12 @@ def _decode(body: Any) -> dict[str, Any]:
         _require(v['kind'] in ('decision', 'action', 'error'))
         if v['child'] is not None:
             c = v['child']
-            _keys(c, _ITEM_CHILD if c.get('kind') in ('item','card_reward','card_offer','card_results','crystal_sphere','abandon_confirmation') else _CHILD)
+            _keys(c, _ITEM_CHILD if c.get('kind') in ('item','card_reward','card_offer','card_results','crystal_sphere','abandon_confirmation','item_policy') else _CHILD)
             _require(_integer(c['ordinal'], 4) and c['ordinal'] >= 1)
             _require(_hex(c['parent_decision_id'], 64) and _parent_action(c['parent_action_id']))
-            if c['kind']=='abandon_confirmation':
+            if c['kind']=='item_policy':
+                _require(type(c['offer_count']) is int and 1<=c['offer_count']<=8 and c['contract_version']=='item_policy_v1')
+            elif c['kind']=='abandon_confirmation':
                 _require(type(c['offer_count']) is int and c['offer_count']==2 and c['contract_version']=='abandon_confirmation_v1')
             elif c['kind']=='crystal_sphere':
                 _require(type(c['offer_count']) is int and c['offer_count']==121 and c['contract_version']=='crystal_sphere_v1')
@@ -210,6 +284,7 @@ class _Controller:
         self.child_history: list[dict[str, Any]] = []
         self.child_shape = None
         self.sphere_ready = None
+        self.policy_tracker = None
         self.item_set_history = []
         self.reward_set_history = []; self.reward_kinds = None
         self.enchantment = None
@@ -254,7 +329,7 @@ class _Controller:
                 self.counts['parent_attempted'] += 1
                 lineage = None
             else:
-                if len(self.child_receipts) >= (1 if self.child['kind']=='abandon_confirmation' else 40 if self.child['kind']=='crystal_sphere' else 1 if self.child['kind']=='card_results' else 2 if self.child['kind']=='card_offer' else 2*self.child['offer_count']+1 if self.child['kind']=='card_reward' else self.child['offer_count'] if self.child['kind'] == 'item' else 16 if self.child['contract_version']=='card_add_v2' else 10):
+                if len(self.child_receipts) >= (25 if self.child['kind']=='item_policy' else 1 if self.child['kind']=='abandon_confirmation' else 40 if self.child['kind']=='crystal_sphere' else 1 if self.child['kind']=='card_results' else 2 if self.child['kind']=='card_offer' else 2*self.child['offer_count']+1 if self.child['kind']=='card_reward' else self.child['offer_count'] if self.child['kind'] == 'item' else 16 if self.child['contract_version']=='card_add_v2' else 10):
                     raise _Stop('action_limit')
                 self.counts['child_attempted'] += 1
                 lineage = {k: self.child[k] for k in _CHILD[:3]}
@@ -284,7 +359,7 @@ class _Controller:
         _keys(p, _PARENT)
         _require(p['status'] in ('ready', 'waiting', 'child', 'unsupported', 'complete'))
         phases = {'ready': ('choose_option', 'proceed'), 'waiting': ('waiting',),
-                  'child': ('child',), 'unsupported': ('unsupported',), 'complete': ('map_handoff', 'combat_handoff', 'combat_resume_handoff', 'run_abandoned')}
+                  'child': ('child',), 'unsupported': ('unsupported',), 'complete': ('map_handoff', 'combat_handoff', 'combat_resume_handoff', 'run_won', 'run_abandoned')}
         _require(p['phase'] in phases[p['status']])
         _require(p['effects'] in ('none_attempted', 'unverified', 'card_effect_verified', 'item_effect_verified'))
         _require(_integer(p['completed_card_children'], 4) and
@@ -299,10 +374,12 @@ class _Controller:
         for i, row in enumerate(history):
             _keys(row, ('decision_id', 'action_id', 'result'))
             _require((row['decision_id'], row['action_id']) == self.parent_receipts[i])
-            _require(row['result'] in ('option_transition', 'child_completed', 'map_handoff', 'combat_handoff', 'combat_resume_handoff', 'run_abandoned'))
+            _require(row['result'] in ('option_transition', 'child_completed', 'map_handoff', 'combat_handoff', 'combat_resume_handoff', 'run_won', 'run_abandoned'))
             owner = self.parent_receipts[i]
             if row['result'] in ('child_completed','run_abandoned'):
                 _require(owner in self.child_parents and (i < len(self.parent_history) or self.child_done))
+            if row['result']=='run_won':
+                _require(i==len(self.parent_receipts)-1 and owner not in self.child_parents and p['status']=='complete' and p['phase']=='run_won')
             if row['result'] == 'map_handoff':
                 _require(i == len(self.parent_receipts) - 1 and self.last_proceed and p['status'] == 'complete')
             if row['result']=='run_abandoned':
@@ -382,10 +459,12 @@ class _Controller:
             self.child_parents.add(owner)
             self.counts['child_episodes'] += 1
             self.child = c
+            self.policy_tracker=None
             self.child_receipts = []
             self.child_history = []
             self.child_shape = None
             self.sphere_ready = None
+            self.policy_tracker = None
             self.item_set_history = []
             self.reward_set_history = []; self.reward_kinds = None
             self.enchantment = None
@@ -453,6 +532,7 @@ class _Controller:
         self.transform._validate_envelope(normalized)
 
     def child_read(self, p: Any) -> str:
+        if self.child['kind']=='item_policy':return self.item_policy_read(p)
         if self.child['kind']=='abandon_confirmation':return self.abandon_read(p)
         if self.child['kind']=='crystal_sphere':return self.sphere_read(p)
         if self.child['kind']=='card_results':return self.results_read(p)
@@ -676,6 +756,16 @@ class _Controller:
         self.counts['child_reconciled']+=len(history)-len(self.child_history);self.child_history=history
         return status
 
+    def item_policy_read(self,p):
+        if self.policy_tracker is None:self.policy_tracker=ItemPolicyTracker(self.nonce,self.child['offer_count'])
+        status=self.policy_tracker.read(p,self.child_receipts)
+        self.counts['child_reconciled']+=len(p['prior_results'])-len(self.child_history)
+        self.child_history=p['prior_results']
+        if status=='resolved':
+            owner=(self.child['parent_decision_id'],self.child['parent_action_id'])
+            _require(owner not in self.completed_children);self.completed_children.add(owner);self.completed_items.add(owner);self.child_done=True
+        return status
+
     def reward_read(self, p: Any) -> str:
         if self.child['offer_count']>1:
             return self.reward_set_read(p)
@@ -866,7 +956,7 @@ class _Controller:
         return status
 
     def replay_key(self, decision: str) -> Any:
-        if self.child is not None and self.child['kind'] in ('item','card_reward','card_offer','card_results','crystal_sphere','abandon_confirmation'):
+        if self.child is not None and self.child['kind'] in ('item','card_reward','card_offer','card_results','crystal_sphere','abandon_confirmation','item_policy'):
             return tuple(self.child[k] for k in ('parent_decision_id', 'parent_action_id', 'ordinal', 'contract_version')) + (decision,)
         return decision
 
@@ -895,7 +985,7 @@ class _Controller:
             _keys(receipt, ('version', 'session_nonce', 'decision_id', 'action_id', 'outcome'))
             _require(receipt['version'] == VERSION and receipt['session_nonce'] == self.nonce)
             _require((receipt['decision_id'], receipt['action_id']) == (decision, action))
-        elif self.child['kind'] in ('card_reward','card_offer','card_results','crystal_sphere','abandon_confirmation'):
+        elif self.child['kind'] in ('card_reward','card_offer','card_results','crystal_sphere','abandon_confirmation','item_policy'):
             _keys(receipt,('version','session_nonce','decision_id','action_id','outcome'))
             _require(receipt['version']==self.child['contract_version'] and receipt['session_nonce']==self.nonce and
                      (receipt['decision_id'],receipt['action_id'])==(decision,action))

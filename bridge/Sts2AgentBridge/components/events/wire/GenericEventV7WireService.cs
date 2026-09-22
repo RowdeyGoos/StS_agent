@@ -101,14 +101,14 @@ public sealed class GenericEventV7WireService : IDisposable
                 {
                     Require(child.Ordinal == _ordinal + 1);
                     _child = child; _ordinal = child.Ordinal;
-                    _domain = null; _offerDomain=null; _enchantment = null; _itemDomain = null; _rewardCards=null; _rewardCanSkip=null; _rewardKinds=null; _rewardSettled=Array.Empty<GenericEventV7RewardSettlement>(); _itemSetHistory.Clear(); _childAccepted.Clear(); _history = 0; _previewSeen = false;
+                    _domain = null; _policyOffers=null;_policySkip=null; _offerDomain=null; _enchantment = null; _itemDomain = null; _rewardCards=null; _rewardCanSkip=null; _rewardKinds=null; _rewardSettled=Array.Empty<GenericEventV7RewardSettlement>(); _itemSetHistory.Clear(); _childAccepted.Clear(); _history = 0; _previewSeen = false;
                 }
                 else Require(SameChild(child, _child));
                 var tagged = _session.ReadChild(child.ParentDecisionId, child.ParentActionId, child.Ordinal);
                 Require(tagged.ContractVersion == child.ContractVersion);
                 object value = tagged switch {
                     GenericEventV7ItemRead i when child.Kind == "item" => i.Value,
-                    GenericEventV7RewardChildRead r when child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation"=>r.Value,
+                    GenericEventV7RewardChildRead r when child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy"=>r.Value,
                     GenericEventV7CardRead c when child.Kind == "card_selection" => c.Value,
                     _ => throw new InvalidOperationException() };
                 ValidateChild(value);
@@ -151,16 +151,16 @@ public sealed class GenericEventV7WireService : IDisposable
         }
         Require(!_childResolved && request.Ordinal == _child.Ordinal &&
             request.ParentDecision == _child.ParentDecisionId && request.ParentAction == _child.ParentActionId &&
-            _childAccepted.Count < (_child.Kind=="abandon_confirmation"?1:_child.Kind=="crystal_sphere"?40:_child.Kind=="card_results"?1:_child.Kind=="card_offer"?2:_child.Kind=="card_reward"?2*_child.OfferCount+1:_child.Kind == "item" ? _child.OfferCount : _child.ContractVersion=="card_add_v2"?16:10));
+            _childAccepted.Count < (_child.Kind=="item_policy"?25:_child.Kind=="abandon_confirmation"?1:_child.Kind=="crystal_sphere"?40:_child.Kind=="card_results"?1:_child.Kind=="card_offer"?2:_child.Kind=="card_reward"?2*_child.OfferCount+1:_child.Kind == "item" ? _child.OfferCount : _child.ContractVersion=="card_add_v2"?16:10));
         var tagged = _session.ApplyChild(request.ParentDecision, request.ParentAction,
             request.Ordinal, request.Decision, request.Action);
         Require(tagged.ContractVersion == _child.ContractVersion);
         object childResult = tagged switch {
             GenericEventV7ItemApply i when _child.Kind == "item" => i.Value,
-            GenericEventV7RewardChildApply r when _child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation"=>r.Value,
+            GenericEventV7RewardChildApply r when _child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy"=>r.Value,
             GenericEventV7CardApply c when _child.Kind == "card_selection" => c.Value,
             _ => throw new InvalidOperationException() };
-        if(_child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation") {
+        if(_child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy") {
             Require(childResult is GenericEventV7RewardReceipt);
             var receipt=(GenericEventV7RewardReceipt)childResult;
             Require(receipt.SessionNonce==_nonce&&receipt.DecisionId==request.Decision&&receipt.ActionId==request.Action&&receipt.Outcome is "accepted" or "rejected" or "unsupported" or "uncertain");
@@ -195,11 +195,12 @@ public sealed class GenericEventV7WireService : IDisposable
         finally { Array.Clear(bytes); }
     }
 
-    private byte[] EncodeChild(object value) => _child!.Kind=="abandon_confirmation"?GenericEventV7WireCodec.Abandon(value):_child!.Kind=="crystal_sphere"?GenericEventV7WireCodec.Sphere(value):_child!.Kind=="card_results"?GenericEventV7WireCodec.CardResults(value):_child.Kind=="card_offer"?GenericEventV7WireCodec.CardOffer(value,_child.ContractVersion):_child.Kind=="card_reward"?GenericEventV7WireCodec.CardReward(value,_child.ContractVersion):_child.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
+    private byte[] EncodeChild(object value) => _child!.Kind=="item_policy"?GenericEventV7WireCodec.ItemPolicy(value):_child!.Kind=="abandon_confirmation"?GenericEventV7WireCodec.Abandon(value):_child!.Kind=="crystal_sphere"?GenericEventV7WireCodec.Sphere(value):_child!.Kind=="card_results"?GenericEventV7WireCodec.CardResults(value):_child.Kind=="card_offer"?GenericEventV7WireCodec.CardOffer(value,_child.ContractVersion):_child.Kind=="card_reward"?GenericEventV7WireCodec.CardReward(value,_child.ContractVersion):_child.Kind == "item" ? EncodeItem(value) : _child.Operation == "enchant"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardEnchantV1WireCodec.Encode(value,_child.MaxSelect>1) : _child.Operation == "remove"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardRemoveV2WireCodec.Encode(value) : _child.Operation == "transform" || _child.ContractVersion=="card_add_v2"
         ? Sts2AgentBridge.Successors.GenericEventV5.CardTransformV2WireCodec.Encode(value,_child.ContractVersion) : CardSelectionV1WireCodec.Encode(value);
     public static byte[] EncodeItem(object value) {
+        if(value is GenericEventV7RewardRead or GenericEventV7RewardReceipt)return GenericEventV7WireCodec.ItemPolicy(value);
         if(value is GenericEventV7ItemSetRead set) {
             using var stream=new System.IO.MemoryStream();
             using(var w=new Utf8JsonWriter(stream)) {
@@ -250,7 +251,7 @@ public sealed class GenericEventV7WireService : IDisposable
         Require((_child is null && request.Ordinal == 0 && ParentAction(action)) ||
             (_child is not null && request.Ordinal == _child.Ordinal &&
              request.ParentDecision == _child.ParentDecisionId && request.ParentAction == _child.ParentActionId &&
-             (_child.Kind=="abandon_confirmation"?action is "cancel" or "confirm_abandon":_child.Kind=="crystal_sphere"?SphereAction(action):_child.Kind=="card_results"?action=="confirm":_child.Kind=="card_offer"?(action=="skip"&&_child.ContractVersion=="card_offer_v2"||action=="confirm"&&_child.ContractVersion=="bundle_offer_v1"||action.Length==8&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7]>='0'&&action[7]-'0'<_child.OfferCount):_child.Kind=="card_reward"?(_child.OfferCount>1?RewardSetAction(action)||_child.ContractVersion=="mixed_reward_set_v1"&&MixedCollect(action):RewardAction(action)):_child.Kind == "item" ? ItemWireV1Protocol.IsCanonicalActionId(action,out _) : CardSelectionV1WireProtocol.IsChildAction(action))));
+             (_child.Kind=="item_policy"?PolicyAction(action):_child.Kind=="abandon_confirmation"?action is "cancel" or "confirm_abandon":_child.Kind=="crystal_sphere"?SphereAction(action):_child.Kind=="card_results"?action=="confirm":_child.Kind=="card_offer"?(action=="skip"&&_child.ContractVersion=="card_offer_v2"||action=="confirm"&&_child.ContractVersion=="bundle_offer_v1"||action.Length==8&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7]>='0'&&action[7]-'0'<_child.OfferCount):_child.Kind=="card_reward"?(_child.OfferCount>1?RewardSetAction(action)||_child.ContractVersion=="mixed_reward_set_v1"&&MixedCollect(action):RewardAction(action)):_child.Kind == "item" ? ItemWireV1Protocol.IsCanonicalActionId(action,out _) : CardSelectionV1WireProtocol.IsChildAction(action))));
         // Exact canonical requests have no text-bearing fields or alternative JSON encodings.
         byte[] canonical = GenericEventV7WireCodec.Request(request.Decision, request.Action,
             request.Ordinal, request.ParentDecision, request.ParentAction);
@@ -263,7 +264,7 @@ public sealed class GenericEventV7WireService : IDisposable
     {
         Require(p.Version == GenericEventV7Limits.Version && p.SessionNonce == _nonce);
         Require((p.Status, p.Phase) is ("ready", "choose_option") or ("ready", "proceed") or
-            ("waiting", "waiting") or ("child", "child") or ("complete", "map_handoff") or ("complete", "combat_handoff") or ("complete", "combat_resume_handoff") or ("complete", "run_abandoned") or
+            ("waiting", "waiting") or ("child", "child") or ("complete", "map_handoff") or ("complete", "combat_handoff") or ("complete", "combat_resume_handoff") or ("complete", "run_won") or ("complete", "run_abandoned") or
             ("unsupported", "unsupported"));
         Require(p.ParentAttempted >= 0 && p.ParentAttempted <= _parentAttempts &&
             p.ParentReconciled >= 0 && p.ParentReconciled <= p.ParentAccepted &&
@@ -291,7 +292,7 @@ public sealed class GenericEventV7WireService : IDisposable
         Require(p.PriorResults.Count == p.ParentReconciled && p.PriorResults.Count <= 12);
         foreach (GenericEventV7PriorResult r in p.PriorResults)
             Require(Hex(r.DecisionId, 64) && ParentAction(r.ActionId) &&
-                r.Result is "option_transition" or "child_completed" or "map_handoff" or "combat_handoff" or "combat_resume_handoff" or "run_abandoned");
+                r.Result is "option_transition" or "child_completed" or "map_handoff" or "combat_handoff" or "combat_resume_handoff" or "run_won" or "run_abandoned");
         if (_previous is not null)
         {
             Require(p.ParentAttempted >= _previous.ParentAttempted && p.ParentAccepted >= _previous.ParentAccepted &&
@@ -324,7 +325,7 @@ public sealed class GenericEventV7WireService : IDisposable
         if (p.Status == "complete") Require(p.PriorResults.Count > 0 && p.PriorResults[^1].Result == p.Phase &&
             p.ParentAttempted == p.ParentAccepted && p.ParentAccepted == p.ParentReconciled &&
             p.PriorResults[^1].DecisionId == _lastParentDecision && p.PriorResults[^1].ActionId == _lastParentAction &&
-            _lastParentProceed == (p.Phase == "map_handoff"));
+            (p.Phase=="run_won" || _lastParentProceed == (p.Phase == "map_handoff")));
         _previous = p;
     }
 
@@ -341,6 +342,7 @@ public sealed class GenericEventV7WireService : IDisposable
     private void ValidateChild(object value)
     {
         Require(_child is not null);
+        if(_child.Kind=="item_policy"){ValidatePolicy(value);return;}
         if(_child.Kind=="abandon_confirmation"){ValidateAbandon(value);return;}
         if(_child.Kind=="crystal_sphere"){ValidateSphere(value);return;}
         if(_child.Kind=="card_results"){ValidateResults(value);return;}
@@ -454,11 +456,11 @@ public sealed class GenericEventV7WireService : IDisposable
         Require(Hex(decision, 64) && !_used.Contains(ReplayKey(decision)) && legal.Count>0 && legal.Count<=(_child?.Kind=="crystal_sphere"?123:66));
         _decision = decision; _legal = legal.ToArray();
     }
-    private string ReplayKey(string decision) => _child?.Kind is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation"
+    private string ReplayKey(string decision) => _child?.Kind is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy"
         ? _child.Kind+":"+_child.ParentDecisionId+":"+_child.ParentActionId+":"+_child.Ordinal+":"+_child.ContractVersion+":"+decision : decision;
     private static void ValidateDescriptor(GenericEventV7Child c) => Require(c.Ordinal is >= 1 and <= 4 &&
         Hex(c.ParentDecisionId,64) && ParentAction(c.ParentActionId) &&
-        (c.Kind=="abandon_confirmation"?c.OfferCount==2&&c.ContractVersion=="abandon_confirmation_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="crystal_sphere"?c.OfferCount==121&&c.ContractVersion=="crystal_sphere_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_results"?c.OfferCount is >=1 and <=64&&c.ContractVersion=="card_results_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_offer"?c.OfferCount is >=1 and <=5&&(c.ContractVersion!="card_offer_v2"||c.OfferCount<=3)&&c.ContractVersion is "card_offer_v1" or "card_offer_v2" or "bundle_offer_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_reward"?c.OfferCount is >=1 and <=8&&(c.ContractVersion==(c.OfferCount==1?"card_reward_v1":"card_reward_set_v1")||c.OfferCount>=2&&c.ContractVersion=="mixed_reward_set_v1")&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
+        (c.Kind=="item_policy"?c.OfferCount is >=1 and <=8&&c.ContractVersion=="item_policy_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="abandon_confirmation"?c.OfferCount==2&&c.ContractVersion=="abandon_confirmation_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="crystal_sphere"?c.OfferCount==121&&c.ContractVersion=="crystal_sphere_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_results"?c.OfferCount is >=1 and <=64&&c.ContractVersion=="card_results_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_offer"?c.OfferCount is >=1 and <=5&&(c.ContractVersion!="card_offer_v2"||c.OfferCount<=3)&&c.ContractVersion is "card_offer_v1" or "card_offer_v2" or "bundle_offer_v1"&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind=="card_reward"?c.OfferCount is >=1 and <=8&&(c.ContractVersion==(c.OfferCount==1?"card_reward_v1":"card_reward_set_v1")||c.OfferCount>=2&&c.ContractVersion=="mixed_reward_set_v1")&&c.Operation==""&&c.MinSelect==0&&c.MaxSelect==0&&c.DomainCount==0&&c.CommitMode=="":c.Kind == "item" ? c.OfferCount is >=1 and <=8 && c.ContractVersion == (c.OfferCount==1?"item_v1":"item_set_v1") && c.Operation == "" &&
             c.MinSelect == 0 && c.MaxSelect == 0 && c.CommitMode == "" && c.DomainCount == 0 :
          c.Kind == "card_selection" && c.OfferCount == 0 && c.ContractVersion == GenericEventV7Families.ContractVersion(c.Operation,c.MaxSelect,c.MinSelect) &&
             GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount)));
@@ -473,6 +475,47 @@ public sealed class GenericEventV7WireService : IDisposable
     private static bool RewardAction(string action)=>action is "open" or "skip" or "dismiss"||action.Length==8&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7] is >= '0' and <= '4';
     private GenericEventV7Offer[]? _offerDomain;
     private static bool SphereAction(string action)=>GenericEventV7SphereRules.Action(action);
+    internal static bool PolicyAction(string action)=>action is "skip_remaining" or "skip_card" || action.Length==8&&action.StartsWith("choose:",StringComparison.Ordinal)&&action[7] is >= '0' and <= '4' || action.Length==9 && (action.StartsWith("collect:",StringComparison.Ordinal)||action.StartsWith("discard:",StringComparison.Ordinal))&&action[8] is >= '0' and <= '7';
+    private GenericEventV7ItemPolicyOffer[]? _policyOffers;
+    private bool? _policySkip;
+    private void ValidatePolicy(object value) {
+        Require(value is GenericEventV7RewardRead);var p=(GenericEventV7RewardRead)value;var view=p.ItemPolicy;
+        Require(view is not null&&p.SessionNonce==_nonce&&p.PriorResults.Count>=_history&&p.PriorResults.Count<=_childAccepted.Count&&_childAccepted.Count<=25);
+        var settled=new HashSet<int>();int? active=null;
+        for(int i=0;i<p.PriorResults.Count;i++) {
+            var h=p.PriorResults[i];var a=_childAccepted[i];Require(h.DecisionId==a.Decision&&h.ActionId==a.Action&&PolicyAction(a.Action));
+            if(a.Action.StartsWith("collect:",StringComparison.Ordinal)) {int index=a.Action[8]-'0';Require(active is null&&!settled.Contains(index));if(h.Result=="opened")active=index;else {Require(h.Result=="collected");settled.Add(index);}}
+            else if(a.Action.StartsWith("choose:",StringComparison.Ordinal)||a.Action=="skip_card") {Require(active is not null&&h.Result==(a.Action=="skip_card"?"card_skipped":"collected"));settled.Add(active!.Value);active=null;}
+            else Require(active is null&&h.Result==(a.Action=="skip_remaining"?"skipped":"discarded"));
+        }
+        _history=p.PriorResults.Count;_policySkip??=view!.CanSkip;Require(_policySkip==view!.CanSkip);
+        if(p.Status=="ready") {
+            Require(p.Phase==(active is null?"items":"choose_card")&&_history==_childAccepted.Count&&view.Offers.Count==_child!.OfferCount&&view.PotionSlots.Count<=8&&view.PotionSlots.All(x=>x is null||StableKey(x)));
+            for(int i=0;i<view.Offers.Count;i++){var o=view.Offers[i];Require(o.Index==i&&o.Kind is "card" or "potion" or "relic"&&StableKey(o.Key)&&o.CapacityGain is 0 or 2&&
+                (o.CapacityGain==0||o.Kind=="relic"&&o.Key=="POTION_BELT")&&o.Settled==settled.Contains(i));}
+            if(_policyOffers is not null)Require(view.Offers.Select(o=>o with{Settled=false}).SequenceEqual(_policyOffers));else _policyOffers=view.Offers.Select(o=>o with{Settled=false}).ToArray();
+            Require(p.LegalActions.Count>0&&p.LegalActions.Distinct().Count()==p.LegalActions.Count&&p.LegalActions.All(PolicyAction));
+            if(active is not null) {
+                Require(view.Offers[active.Value].Kind=="card"&&p.Cards.Count is >=1 and <=5&&p.Cards.Select((c,i)=>c.Slot==i&&StableKey(c.Key)&&c.UpgradeLevel>=0).All(x=>x));
+                Require(p.LegalActions.SequenceEqual(p.Cards.Select(c=>"choose:"+c.Slot).Concat(p.CanSkip?new[]{"skip_card"}:Array.Empty<string>())));
+            } else {
+                Require(p.Cards.Count==0&&!p.CanSkip);
+                foreach(string action in p.LegalActions) {
+                    if(action=="skip_remaining"){Require(view.CanSkip);continue;}
+                    Require(action.StartsWith("collect:",StringComparison.Ordinal)||action.StartsWith("discard:",StringComparison.Ordinal));int i=action[8]-'0';
+                    if(action.StartsWith("discard:",StringComparison.Ordinal))Require(i<view.PotionSlots.Count&&view.PotionSlots.All(x=>x is not null));
+                    else {Require(i<view.Offers.Count&&!view.Offers[i].Settled);var o=view.Offers[i];Require(o.Kind=="potion"?view.PotionSlots.Any(x=>x is null):view.PotionSlots.Count+o.CapacityGain<=8);}
+                }
+            }
+            Publish(p.DecisionId,p.LegalActions);
+        } else {
+            Require(view.Offers.Count==0&&view.PotionSlots.Count==0&&p.Cards.Count==0&&p.DecisionId==""&&p.LegalActions.Count==0&&((p.Status,p.Phase) is ("waiting","waiting") or ("unsupported","unsupported") or ("resolved","complete")));
+            if(p.Status=="resolved") {
+                Require(_policyOffers is not null&&active is null&&_history==_childAccepted.Count&&(_childAccepted.LastOrDefault().Action=="skip_remaining"||settled.Count==_policyOffers.Length));
+                Require(_completedChildren.Add((_child!.ParentDecisionId,_child.ParentActionId)));_completedItems.Add((_child.ParentDecisionId,_child.ParentActionId));_childResolved=true;
+            }
+        }
+    }
     private bool _confirmedAbandon;
     private void ValidateAbandon(object value) {
         Require(value is GenericEventV7RewardRead);var p=(GenericEventV7RewardRead)value;

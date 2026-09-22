@@ -103,6 +103,17 @@ public static class PublicCombatDecisionIdentity
 {
     public const int EncodedCharacterCount = 64;
 
+    public static string Compute(PublicCombatDecisionSnapshot snapshot, string combatScope)
+    {
+        if (combatScope is null || combatScope.Length != 32 ||
+            !System.Linq.Enumerable.All(combatScope, c => c is >= '0' and <= '9' or >= 'a' and <= 'f'))
+            throw new ArgumentException("Invalid combat identity scope.", nameof(combatScope));
+        // Keep the canonical public-state digest, bound to one native encounter.
+        // The scope is opaque and is not derived from the game's RNG or private state.
+        byte[] content = Encoding.UTF8.GetBytes("native-combat-v1:" + combatScope + ":" + Compute(snapshot));
+        return Convert.ToHexString(SHA256.HashData(content)).ToLowerInvariant();
+    }
+
     public static string Compute(PublicCombatDecisionSnapshot snapshot)
     {
         if (snapshot.Status != PublicDecisionStatus.Ready)

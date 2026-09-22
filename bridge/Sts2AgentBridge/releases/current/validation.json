@@ -1,1083 +1,570 @@
 {
   "active_batch": {
-    "last_attempt": {
-      "case": "punch_fight",
-      "diagnostic_path": "/private/tmp/sts-embedded-punch-diagnostic.jsonl",
-      "diagnostic_sha256": "cd6f223f72cd62226352697138f0d960e2327508f670b19bc5d4dbebea3d7eb6",
-      "limits": "Representative combat-layout event and deferred potion/relic extras with available capacity. Does not establish full-inventory policies, arbitrary pickup effects or strategic quality.",
-      "observed": "Same process after Lantern Key pass. User prepared Punch Off Fight after I can take them, HP80/80 gold128 deck6 floor15, two occupied potion slots. Entry1/1/1 with32reads. Combat13attempted/9accepted/9reconciled,4 known no-mutation stale rejections,139reads125choiceprobes,victory. Rewards6/6/6 with14reads:10gold,STAMPEDE,SHACKLING_POTION,BAG_OF_PREPARATION. Map passed1read1candidate. UI verified open map,HP38/80 gold138 deck7,all3potion slots occupied and new relic visible. No map candidate selected.",
-      "release_manifest_sha256": "6cc54f193c98028f1bfe94d8f65558fc3d513ef2793125b692969c1c83c68319",
-      "result": {
-        "code": null,
-        "combat_flow": {
+    "cases": [
+      {
+        "acceptance": "Entry combat_resume_handoff; normal bridge combat kills Dummy before expiry; event_resumed, native Proceed and actionable map all reconcile. Independently inspect deck after completion: same four Bludgeons, exactly two at upgrade1 and two at upgrade0. Automatic upgrades are native visual evidence; do not relabel parent effects as bridge-verified or claim a multi-card selector.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "77392cb81223c6d662936d8cadedad02d0b67eb702e5470a744c010cb9ab3db0",
+          "--capability",
+          "event-combat-map",
+          "--event-option",
+          "BATTLEWORN_DUMMY.pages.INITIAL.options.SETTING_2"
+        ],
+        "diagnostic_path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-dummy_setting2_victory-diagnostic.jsonl",
+        "diagnostic_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 14.576,
+        "exit_code": 0,
+        "id": "dummy_setting2_victory",
+        "result": {
           "code": null,
-          "combat": {
-            "accepted": 9,
-            "attempted": 13,
-            "choice_probes": 125,
-            "choices": [],
+          "combat_flow": {
             "code": null,
-            "outcome": "victory",
-            "reads": 139,
-            "reconciled": 9,
-            "schema_version": 1,
-            "stale_rejections": 4,
+            "combat": {
+              "accepted": 7,
+              "attempted": 7,
+              "choice_probes": 34,
+              "choices": [],
+              "code": null,
+              "native_terminal_outcome": null,
+              "outcome": "event_resumed",
+              "reads": 57,
+              "reconciled": 7,
+              "resume_items": [],
+              "resume_reads": 57,
+              "schema_version": 1,
+              "stale_rejections": 0,
+              "status": "resolved"
+            },
+            "map_handoff": {
+              "candidate_count": 1,
+              "code": null,
+              "reads": 1,
+              "status": "passed"
+            },
+            "resumed_event": {
+              "child_accepted": 0,
+              "child_attempted": 0,
+              "child_episodes": 0,
+              "child_reconciled": 0,
+              "code": null,
+              "completed_card_children": 0,
+              "completed_item_children": 0,
+              "destination": "map_handoff",
+              "effects": "unverified",
+              "parent_accepted": 1,
+              "parent_attempted": 1,
+              "parent_reconciled": 1,
+              "reads": 35,
+              "schema_version": 1,
+              "session_nonce": "177a0792f9d0d1e9e27b0d33c65a932f",
+              "status": "resolved",
+              "total_attempted": 1
+            },
             "status": "resolved"
           },
-          "map_handoff": {
-            "candidate_count": 1,
+          "event": {
+            "child_accepted": 0,
+            "child_attempted": 0,
+            "child_episodes": 0,
+            "child_reconciled": 0,
             "code": null,
-            "reads": 1,
-            "status": "passed"
-          },
-          "rewards": {
-            "accepted": 6,
-            "after_player": {
-              "deck_count": 7,
-              "gold": 138,
-              "hp": 38,
-              "max_hp": 80
-            },
-            "attempted": 6,
-            "before_player": {
-              "deck_count": 6,
-              "gold": 128,
-              "hp": 38,
-              "max_hp": 80
-            },
-            "claimed_gold": 10,
-            "claimed_special_cards": [],
-            "code": null,
-            "collected_items": [
-              {
-                "key": "SHACKLING_POTION",
-                "kind": "potion",
-                "reward_index": 1
-              },
-              {
-                "key": "BAG_OF_PREPARATION",
-                "kind": "relic",
-                "reward_index": 2
-              }
-            ],
-            "discarded_potions": [],
-            "policy": "first-card",
-            "potion_capacity_gains": [],
-            "potion_policy": "stop-on-full",
-            "reads": 14,
-            "reconciled": 6,
+            "completed_card_children": 0,
+            "completed_item_children": 0,
+            "destination": "combat_resume_handoff",
+            "effects": "unverified",
+            "parent_accepted": 1,
+            "parent_attempted": 1,
+            "parent_reconciled": 1,
+            "reads": 45,
             "schema_version": 1,
-            "selected_cards": [
-              "STAMPEDE"
-            ],
-            "skipped_card_rewards": 0,
-            "skipped_potions": [],
-            "stale_rejections": 0,
-            "status": "resolved"
+            "session_nonce": "9fa8fe95a740fa3f20e3b78fca417b9d",
+            "status": "resolved",
+            "total_attempted": 1
           },
           "schema_version": 1,
-          "stage": "map",
           "status": "resolved"
         },
-        "event": {
+        "result_path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-dummy_setting2_victory.json",
+        "result_sha256": "1bf4583eef81b96d0ffc0dcddf35ad2171fd19becf70b356790f12b712aa1ba5",
+        "setup": "Untouched Dummy initial screen, four unupgraded Bludgeons and three +1-energy relics verified. Native Setting2 advertises150HP and three turns. Expected energy6 permits two32-damage Bludgeons per turn, killing on turn3 before training expires. No console/UI mutation during the owned flow.",
+        "setup_evidence": {
+          "console_and_deck_closed": true,
+          "deck": [
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON"
+          ],
+          "expected_combat_energy": 6,
+          "fresh_standard_ironclad_no_ascension": true,
+          "gold": 99,
+          "hp": 80,
+          "initial_choices_untouched": true,
+          "max_hp": 80,
+          "native_commands": "remove_card four STRIKE_IRONCLAD, four DEFEND_IRONCLAD, BASH from Deck; card BLUDGEON Deck four times; relic SOZU, PHILOSOPHERS_STONE, VELVET_CHOKER; event BATTLEWORN_DUMMY. All acknowledged.",
+          "native_deck_verified": true,
+          "native_prior_room": "Connected left room, enemy37/37HP, player80/80HP; no combat actions",
+          "native_setting2_hp": 150,
+          "neow": "Precise Scissors; removed one Strike through native preview/Confirm",
+          "potions": [
+            null,
+            null,
+            null
+          ],
+          "profile": 3,
+          "relics": [
+            "BURNING_BLOOD",
+            "PRECISE_SCISSORS",
+            "SOZU",
+            "PHILOSOPHERS_STONE",
+            "VELVET_CHOKER"
+          ],
+          "upgrade_levels": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "status": "passed",
+        "visual_evidence": {
+          "deck": [
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON"
+          ],
+          "gold": 99,
+          "hp": 80,
+          "max_hp": 80,
+          "native_map_open": true,
+          "native_victory_text": "YOU PASS THE TRAINING!",
+          "potions": [
+            null,
+            null,
+            null
+          ],
+          "relics_unchanged": true,
+          "upgrade_levels_in_obtained_order": [
+            1,
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "acceptance": "Ready actionable map with legal candidate; native UI enters one connected known room and verifies it settles before Architect setup.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "77392cb81223c6d662936d8cadedad02d0b67eb702e5470a744c010cb9ab3db0",
+          "--capability",
+          "core",
+          "--route",
+          "/probe/v0/public/map-decision"
+        ],
+        "diagnostic_path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-dummy_map-diagnostic.jsonl",
+        "diagnostic_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 0.094,
+        "exit_code": 0,
+        "id": "dummy_map",
+        "result": {
+          "response": {
+            "actionable": true,
+            "candidates": [
+              {
+                "candidate_index": 0,
+                "col": 0,
+                "kind": "monster",
+                "row": 2
+              }
+            ],
+            "decision_id": "1465e389cd1de38a9c7e24db0582648d438870be526040731b22f6b70cd91e56",
+            "decision_kind": "map",
+            "destination": null,
+            "legal_actions": [
+              {
+                "action_id": "select:0",
+                "candidate_index": 0,
+                "kind": "select_map_node"
+              }
+            ],
+            "schema_version": 1,
+            "screen_kind": "map",
+            "status": "ready"
+          },
+          "status": "passed"
+        },
+        "result_path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-dummy_map.json",
+        "result_sha256": "230433a4d4917fa2ffc921b7800421240e562f8573869bfd48581637da8e9c3d",
+        "setup": "Previous complete flow resolved and native map visible. Inspect deck and close deck UI before this read.",
+        "setup_evidence": "Combined flow and native upgrade/map checks passed; deck overlay closed.",
+        "status": "passed",
+        "visual_evidence": "Native connected column0/row2 room settled with enemies25/25 and22/22, player80/80HP, six energy, same four Bludgeons/two upgrades."
+      },
+      {
+        "acceptance": "Bridge final PROCEED must retain native readiness vote, queued action, EnterNextAct and WinRun tasks to successful run_won. Independently observe terminal native UI; zeroHP alone is insufficient. No map required after win. Finish normal quit, stopped runtime and exact owned cleanup.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "77392cb81223c6d662936d8cadedad02d0b67eb702e5470a744c010cb9ab3db0",
+          "--capability",
+          "events",
+          "--event-option",
+          "PROCEED"
+        ],
+        "diagnostic_path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-architect_win-diagnostic.jsonl",
+        "diagnostic_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 2.242,
+        "exit_code": 4,
+        "id": "architect_win",
+        "investigation": {
+          "evidence": "static_il_not_execution",
+          "finding": "Initial admission failed before dispatch. Result does not retain the exact native predicate. Source admission checks room/layout, embedded combat, map/travel, capstone, overlay and exact options; no predicate is proven causal.",
+          "no_guard_changes": true,
+          "no_retry": true,
+          "static_il_path": "/private/tmp/sts-architect-admission-il.json",
+          "static_il_sha256": "f15461c78759bcc0980a49178a590eed559b03bb0a8a34f376a291daeac08b53"
+        },
+        "result": {
           "child_accepted": 0,
           "child_attempted": 0,
           "child_episodes": 0,
           "child_reconciled": 0,
-          "code": null,
+          "code": "unsupported_state",
           "completed_card_children": 0,
           "completed_item_children": 0,
-          "destination": "combat_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 32,
+          "effects": "none_attempted",
+          "parent_accepted": 0,
+          "parent_attempted": 0,
+          "parent_reconciled": 0,
+          "reads": 34,
           "schema_version": 1,
-          "session_nonce": "d6275f04f45a0dc473d38700a3ed0bca",
-          "status": "resolved",
-          "total_attempted": 1
+          "status": "failed",
+          "total_attempted": 0
         },
+        "result_path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-architect_win.json",
+        "result_sha256": "f90d12f4dfdaf7b40295ffbccc15c73b36672ee7ecac45b5f349f268fcea1579",
+        "setup": "Only after Dummy flow and next-room UI check pass, with no bridge owner. Native act 3 (integer path) enters the final act. Use native travel toggle and visible boss map node to enter the actual final boss room; disable debug travel before final acceptance and verify its native acknowledgment. Never use event THE_ARCHITECT (known catalog rejection). Native win may be used solely as explicitly recorded boss-combat setup: static code removes monster powers/kills combat enemies and checks combat victory; it does not call RunManager.WinRun. Allow one command per freshly identified boss encounter, at most two encounters; no repeated command for an uncertain result. Resolve ordinary loot through native UI and native Proceed/readiness until Architect appears. Record this as assisted setup, not bridge boss-combat or run-win evidence. If a phase/transition does not settle, stop setup and record its outcome. Advance Architect dialogue natively, bounded30 steps, stopping before final untouched PROCEED. Record living HP, deck, gold, belt, relics and exact final event UI; close console and other overlays. No forced run-win flags or direct WinRun call.",
+        "setup_evidence": {
+          "assisted_boss_combats": 1,
+          "console_closed": true,
+          "current_dialogue": "Enemy... Kill...",
+          "debug_travel_disabled": true,
+          "deck": [
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON"
+          ],
+          "exact_option_pre_dispatch_guard": "Maintained --event-option PROCEED requires exact unique legal stable ID before native input",
+          "gold": 99,
+          "hp": 80,
+          "max_hp": 80,
+          "native_boss_proceed": "Entered Architect directly, no ordinary loot collection",
+          "native_commands": [
+            "act 3: Navigated to act 3",
+            "travel: enabled",
+            "Native map boss node selected; enemies199/199 and400/400 settled",
+            "travel: disabled",
+            "win once: Killed [TORCH_HEAD_AMALGAM,QUEEN]"
+          ],
+          "native_dialogue_advances": 1,
+          "native_dialogue_choice": "Threaten",
+          "no_pending_overlay": true,
+          "no_run_win_flag_mutation": true,
+          "potions": [
+            null,
+            null,
+            null
+          ],
+          "relics": [
+            "BURNING_BLOOD",
+            "PRECISE_SCISSORS",
+            "SOZU",
+            "PHILOSOPHERS_STONE",
+            "VELVET_CHOKER"
+          ],
+          "upgrade_levels_in_obtained_order": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "visible_option": "Proceed"
+        },
+        "status": "failed",
+        "visual_evidence": "Architect still displayed Enemy... Kill... and untouched Proceed at80/80HP after unsupported_state. No native win effect and no bridge input."
+      }
+    ],
+    "cleanup": {
+      "artifact_bindings": [
+        {
+          "path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-cleanup-stopped.json",
+          "sha256": "3a3b3c065af86698d03ae85e2a0a6760a4d2492412b8a9b7ebd2315b580f88f5"
+        },
+        {
+          "path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-quarantine.json",
+          "sha256": "cf5c923e05bf27bc6cfef078a6ecc6c09c832c4c3a6edce9c9bf65c2a02d0848"
+        },
+        {
+          "path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-purge.json",
+          "sha256": "059f3910ede58c369046039f9819a77cfca98beee04a3311a6977fa4824ca508"
+        }
+      ],
+      "normal_quit": true,
+      "purge": {
+        "campaign_id": "UNIFIED-BRIDGE-V1",
+        "generated_files_removed": 4,
+        "mode": "purge",
+        "phase": "absent",
         "schema_version": 1,
-        "status": "resolved"
+        "status": "passed"
       },
-      "result_path": "/private/tmp/sts-embedded-punch-result.json",
-      "result_sha256": "05b9a0dbfbdba2fe491469670ded8b22f16229d0d7d97a8836af5e9b2cc8f169",
+      "quarantine": {
+        "campaign_id": "UNIFIED-BRIDGE-V1",
+        "mode": "quarantine",
+        "phase": "quarantined",
+        "schema_version": 1,
+        "state_sha256": "d2657d223584d5151bd5f17d40a1b0d8f979182c6867663401a5a3694c8759db",
+        "status": "passed"
+      },
+      "release_manifest_sha256": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+      "runtime": {
+        "game_process_running": false,
+        "mode": "require-stopped",
+        "port_accepting": false,
+        "port_samples": 2,
+        "process_samples": 3,
+        "schema_version": 1,
+        "status": "passed"
+      },
       "status": "passed"
     },
-    "passed": [
-      "lantern_fight",
-      "punch_fight"
+    "deferred": [
+      "Shop stock-dependent passive/Potion Belt purchases and pickup selectors.",
+      "Capacity-first terminal/event/resume reward callers; native direct relic grants do not substitute for pickup evidence.",
+      "Sphere tool/reward variants.",
+      "Trial Merchant fixed-two upgrade selector; Dummy automatic upgrades do not exercise a selector."
     ],
-    "queue": "/private/tmp/sts-embedded-combat-batch-20260912.json",
-    "release_manifest_sha256": "6cc54f193c98028f1bfe94d8f65558fc3d513ef2793125b692969c1c83c68319",
-    "remaining": [],
-    "status": "completed_passed_cleaned_up"
+    "execution": "Two feature cases in one fresh game process. Dummy uses maintained event-combat-map orchestration so its exact resume nonce/owner remains bound. Independently inspect two automatic upgrades and map/next-room UI after clean completion. Then use native final-act setup for Architect, last. Do not split Dummy combat into an unrelated combat invocation.",
+    "failure_rule": "Any uncertain bridge mutation, timeout or failed cleanup stops the batch without retry. Record partial counts and normal owned cleanup. A native setup command explicit no-mutation rejection may be investigated narrowly; no mutation guessing loops. Do not invoke private APIs, edit run flags or access profile/save/history/Cloud files.",
+    "first_setup": "Manually launch Profile 3 to main menu; do not start/continue a run. Agent prepares a fresh standard no-ascension Ironclad run through native UI, abandoning the prior disposable test run through native menu if necessary. Choose and record a native Neow option, enter one connected room and wait for it to settle. Before any bridge read, use native remove_card/card commands to leave exactly four unupgraded BLUDGEON in Deck. Grant SOZU, PHILOSOPHERS_STONE and VELVET_CHOKER via native relic commands, only if not already held. Verify four original Bludgeons at upgrade0, living player, no unexpected deck effects, empty belt and exact relic list. Native event BATTLEWORN_DUMMY; leave its initial choices untouched and console closed. Record setup assistance and actual baseline. No core reward read is needed.",
+    "inspection": {
+      "evidence": "static_il_not_execution",
+      "findings": [
+        "BattleFriendV2 has150HP and time-limit power3; Setting2 victory upgrades up to two eligible deck cards with native shuffle/Take(2)/Upgrade.",
+        "Sozu, PhilosophersStone and VelvetChoker each add1 maximum energy; Choker limits six card plays, above the planned two each turn. Sozu prevents potion procurement; no potion acceptance is included.",
+        "EventConsole catalog excludes Architect. EnterNextAct creates its EventRoom when current act is last; subsequent native progression calls WinRun.",
+        "NRewardsScreen terminal boss Proceed uses native ActChangeSynchronizer readiness, except a first boss with an actual second boss map point, which returns to map. Native map boss entry preserves map identity.",
+        "WinConsoleCmd only completes current combat through native monster power removal/CreatureCmd.Kill/CheckWinCondition; this is setup assistance only, not final terminal proof."
+      ],
+      "native_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+      "path": "/private/tmp/sts-next-batch-il.json",
+      "sha256": "79f7fa408055f5d9cfee9f80cce6ac286ca7492fa60589cc56e5e43d16eb6d9f",
+      "timer": {
+        "evidence": "static_il_not_execution",
+        "finding": "Timer decrements after the owner monster side turn; at amount1 it marks RanOutOfTime and escapes. Three player attack turns are available.",
+        "path": "/private/tmp/sts-dummy-timer-il.json",
+        "sha256": "ad3be4e72590156568bcb6af23bedebdfc9559d0d22cc578030ef2af60c3f089"
+      }
+    },
+    "installation_preflight": {
+      "credential_read": false,
+      "gameplay_connection": false,
+      "status": "passed"
+    },
+    "installed_state_sha256": "77392cb81223c6d662936d8cadedad02d0b67eb702e5470a744c010cb9ab3db0",
+    "limits": {
+      "combat_accepted_limit": 48,
+      "combat_round_limit": 12,
+      "core_reward_sessions_maximum": 3,
+      "core_reward_sessions_planned": 0,
+      "core_visible_reward_limit": 8,
+      "event_sessions_planned": 3,
+      "host_feature_session_limit": 64,
+      "native_architect_boss_setups_maximum": 2,
+      "native_architect_dialogue_advances_maximum": 30
+    },
+    "live_actions_sent": true,
+    "manual_launch": true,
+    "prior_completed_queue": "/private/tmp/sts-merchant-healing-live-20260913.json",
+    "queue": "/private/tmp/sts-dummy-upgrade-architect-live-20260913.json",
+    "queue_sha256": "12a4a70b86a576bab4cca70c34fbe6d034f38e0b9e468b0391b3d7e598547ea7",
+    "release_manifest_sha256": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+    "runner": "/private/tmp/sts-run-dummy-architect-stage.py",
+    "runner_sha256": "b7967731691bf4a51f9d44dcd3538b7b69ea8938691e06c8df5be423bb243aad",
+    "schema_version": 1,
+    "status": "completed_dummy_passed_architect_read_failed",
+    "test_profile": 3,
+    "timing_limits": "Accepted prior release gate71 groups262.450 seconds is reused because transitive release sources match. Record actual live stage times; preparation/review/user wait not separately timed.",
+    "totals": {
+      "accepted": 9,
+      "attempted": 9,
+      "core_reward_sessions_used": 0,
+      "empty_diagnostic_streams": 3,
+      "policy_elapsed_seconds": 16.912,
+      "reconciled": 9,
+      "stale_rejections": 0
+    }
   },
-  "change": "Trial DoubleDown owned abandonment confirmation; default cancellation returns to the exact retained event choices, explicit confirmation verifies the exact native task, abandoned state and HP zero; generic_event_v10 publishes the narrow lethal/Proceed popup distinction. Stale/replaced state and unresolved abandonment fail closed; cleanup and terminal outcomes revalidated.",
+  "build_environment": {
+    "archive_sha512": "410999907d6092c52155afc59c3bcac149811851db7318f6fe215e37b377ac1b316cbb595bb21cb526791f396da4cd439e4b2db76d45a825b57cc2f4729a2e2e",
+    "installed_archive_files_compared": 4844,
+    "installed_files_changed": 0,
+    "reason": "Reused the previously verified SDK extraction and exact pinned references; no toolchain or analyzer settings changed.",
+    "sdk_path": "/private/tmp/sts-sdk-9.0.303-shop-yj2yzus0/dotnet",
+    "sdk_version": "9.0.303"
+  },
+  "change": "Exact native FakeLeesWaffle terminal healing reconciliation and safe retained-reward verification after native button removal. Ready schema6 declares and binds heal_amount; Python verifies exact capped effect and stable schema. Existing ownership, inventory, limits and no-retry semantics remain.",
   "cleanup": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "generated_files_removed": 4,
-    "installed_state_sha256": "1107dfcbce43e361eb6e597bd6a17f443a8f60f35070f1337bece5fe1a74733f",
+    "artifact_bindings": [
+      {
+        "path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-cleanup-stopped.json",
+        "sha256": "3a3b3c065af86698d03ae85e2a0a6760a4d2492412b8a9b7ebd2315b580f88f5"
+      },
+      {
+        "path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-quarantine.json",
+        "sha256": "cf5c923e05bf27bc6cfef078a6ecc6c09c832c4c3a6edce9c9bf65c2a02d0848"
+      },
+      {
+        "path": "/private/tmp/sts-dummy-upgrade-architect-live-20260913-purge.json",
+        "sha256": "059f3910ede58c369046039f9819a77cfca98beee04a3311a6977fa4824ca508"
+      }
+    ],
     "normal_quit": true,
-    "overlay_count": 0,
-    "phase": "absent",
-    "port_samples": 2,
-    "process_samples": 3,
-    "quarantined_state_sha256": "838555ecd2479b19bfac369fa121ba7f358534721fecaa3f0604905f4cdc9c61",
+    "purge": {
+      "campaign_id": "UNIFIED-BRIDGE-V1",
+      "generated_files_removed": 4,
+      "mode": "purge",
+      "phase": "absent",
+      "schema_version": 1,
+      "status": "passed"
+    },
+    "quarantine": {
+      "campaign_id": "UNIFIED-BRIDGE-V1",
+      "mode": "quarantine",
+      "phase": "quarantined",
+      "schema_version": 1,
+      "state_sha256": "d2657d223584d5151bd5f17d40a1b0d8f979182c6867663401a5a3694c8759db",
+      "status": "passed"
+    },
+    "release_manifest_sha256": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+    "runtime": {
+      "game_process_running": false,
+      "mode": "require-stopped",
+      "port_accepting": false,
+      "port_samples": 2,
+      "process_samples": 3,
+      "schema_version": 1,
+      "status": "passed"
+    },
     "status": "passed"
   },
-  "date": "2026-09-12",
-  "evidence_limits": {
-    "autonomous_full_run": false,
-    "current_package_installed": false,
-    "current_package_live_tested": false,
-    "native_fixture_objects_are_inert": true,
-    "profile_save_history_cloud_files_accessed": false
+  "date": "2026-09-13",
+  "evidence_limits": [
+    "Live Merchant path used native ordinary gold/potion/card collection before the first core reward read; original ten-entry screen exceeds eight-entry reader limit.",
+    "Exact Waffle healing33\u219241 at max80 passed live as sixth of seven relic pickups; capped/full-health/rounding variants retain fixture coverage.",
+    "Dummy automatic two-card upgrades observed natively; parent effects remain unverified and no multi-card selector was exercised.",
+    "Architect native final-act setup reached the untouched ending Proceed. Initial bridge admission returned unsupported_state with zero attempted/accepted/reconciled actions; exact failed predicate is unproven. Native terminal win remains untested."
+  ],
+  "fixture_followup": {
+    "initial_failed_gate": "/private/tmp/sts-bridge-vh4f807r/log-033.txt",
+    "path": "/private/tmp/sts-bridge-i10_a29y/result.json",
+    "reason": "Initial release build exposed missing FakeLeesWaffle/BaseValue stubs in direct-input fixture; fixture updated and focused check passed.",
+    "seconds": 3.061,
+    "status": "passed"
+  },
+  "focused_validation": {
+    "native_checks": 11432,
+    "path": "/private/tmp/sts-bridge-4vlya_h1/result.json",
+    "seconds": 192.284,
+    "sha256": "80320543eba03e2d909759ce5cbc6c55b362dafdacef1c550193504f08c9e2af",
+    "status": "passed"
   },
   "independent_semantic_review": {
-    "scope": "Exact pinned Trial.DoubleDown flags and private callback identity, owned popup and singleplayer abandonment task, unchanged postclick cancellation baseline, revalidation before terminal reconciliation and disposal, pending/changed cleanup failure, public wire/classifier/client policy and receipt binding. All concrete findings corrected; final independent review found no blocker.",
+    "findings": "No blocking semantic findings. Python direct-test entrypoint placement corrected.",
+    "reviewer": "healing_review",
+    "static_evidence": [
+      {
+        "kind": "static_pe_not_execution",
+        "path": "/private/tmp/sts-waffle-review-il.json",
+        "sha256": "479a5d33554ed1d34af3a1ef5e4d812c6ab0dcae54e16d93ad5bfcb362d14fa1"
+      },
+      {
+        "kind": "static_pe_not_execution",
+        "path": "/private/tmp/sts-waffle-modelid-review/il.json",
+        "sha256": "1a406b2952de65718915950a271f2d09030ed824a8aa32332ec3f42c4d03deb2"
+      },
+      {
+        "kind": "static_pe_not_execution",
+        "path": "/private/tmp/sts-waffle-console-il.json",
+        "sha256": "5dbb461536ec60a6abc06db80be723e97eb6c744974140a7aadb883129388fb8"
+      }
+    ],
     "status": "passed"
   },
   "installation": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "live_input_sent": true,
-    "overlay_count": 0,
-    "pre_install_overlay_count": 0,
-    "pre_install_runtime": "Fresh stopped process/closed port check passed",
-    "release_manifest_sha256": "6cc54f193c98028f1bfe94d8f65558fc3d513ef2793125b692969c1c83c68319",
-    "state_sha256": "1107dfcbce43e361eb6e597bd6a17f443a8f60f35070f1337bece5fe1a74733f",
-    "status": "removed_after_successful_batch"
+    "campaign_id": "UNIFIED-BRIDGE-V1",
+    "current_phase": "absent",
+    "mode": "install",
+    "mods_parent_created": true,
+    "phase": "installed",
+    "schema_version": 1,
+    "state_sha256": "77392cb81223c6d662936d8cadedad02d0b67eb702e5470a744c010cb9ab3db0",
+    "status": "passed"
+  },
+  "installation_preflight": {
+    "credential_read": false,
+    "gameplay_connection": false,
+    "status": "passed"
   },
   "last_completed_batch": {
-    "failed": [
-      "lantern_fight"
-    ],
-    "last_attempt": {
-      "case": "lantern_fight",
-      "diagnostic_path": "/private/tmp/sts-finished-travel-lantern-diagnostic.jsonl",
-      "diagnostic_sha256": "db6901b9698d05fa6110b934023455014a8ebe3b807046494d086cbbf429a709",
-      "interpretation_update": "Subsequent source inspection found PendingOwnership remained set after Owns passed while CombatHandoff.Capture ran. The reported label does not establish an ownership failure; exact failing combat/ownership condition remains unconfirmed.",
-      "native_diagnostic": "pending_ownership",
-      "observed": "Same process after both Dummy cases and Dense Vegetation. User prepared Fight after Keep the Key;HP80/80 gold111 deck5 floor13,two occupied potion slots. Event attempted1 accepted1 reconciled0,32reads; terminal unsupported_state with pending_ownership. UI showed combat started against101HP enemy,player80HP,turn1. No bridge combat actions, reward input or map input. Pinned TheLanternKey.Fight IL calls generic EventModel.EnterCombatWithoutExitingEvent with special-card extras. Exact failing Owns predicate remains unknown; no retry.",
-      "release_manifest_sha256": "0ee889be012b9a8428fcdb75d5cc4c370b68eee33c9f33b92aedfe704cf78e78",
-      "result": {
-        "code": "unsupported_state",
-        "combat_flow": {
-          "code": null,
-          "status": "not_attempted"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "unsupported_state",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 0,
-          "reads": 32,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-finished-travel-lantern-result.json",
-      "result_sha256": "0fd1ae980a2dc61fbe0fcd2d3ce55ae50a2845c6d892c36c4a07ea46de36cfd3",
-      "status": "failed"
-    },
-    "passed": [
-      "dummy_setting2",
-      "dummy_setting1",
-      "dense_fight"
-    ],
-    "queue": "/private/tmp/sts-finished-travel-batch-20260912.json",
-    "release_manifest_sha256": "0ee889be012b9a8428fcdb75d5cc4c370b68eee33c9f33b92aedfe704cf78e78",
-    "remaining": [
-      "lantern_fight",
-      "punch_fight"
-    ],
-    "status": "stopped_lantern_handoff_failure_cleaned_up"
-  },
-  "last_completed_cleanup": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "generated_files_removed": 4,
-    "installed_state_sha256": "1107dfcbce43e361eb6e597bd6a17f443a8f60f35070f1337bece5fe1a74733f",
-    "normal_quit": true,
-    "overlay_count": 0,
-    "phase": "absent",
-    "port_samples": 2,
-    "process_samples": 3,
-    "quarantined_state_sha256": "838555ecd2479b19bfac369fa121ba7f358534721fecaa3f0604905f4cdc9c61",
-    "status": "passed"
-  },
-  "last_diagnostic_batch": {
-    "last_attempt": {
-      "case": "lantern_fight_prepared_encounter_diagnostic",
-      "diagnosis": "Pinned EventModel entry ignores the newly supplied encounter argument for Combat layouts and reuses _combatStateForCombatLayout. Native clears EventModel.Node, then transitions the existing embedded NCombatRoom to active visuals. Bridge incorrectly required the ignored encounter argument identity.",
-      "diagnostic_path": "/private/tmp/sts-handoff-diagnostic-lantern-diagnostic.jsonl",
-      "diagnostic_sha256": "462632ad2d9d4d8fd5ff0c2afc12a1565761fa37f91dd10e1b75a363e48681eb",
-      "native_diagnostic": "combat_encounter",
-      "observed": "User prepared Lantern Key Fight after Keep the Key, HP80/80 gold111 deck4 floor13, two occupied potion slots. Event attempted/accepted/reconciled1/1/0 with32reads. UI showed turn1 against101HP Mysterious Knight, player80HP,3energy,4Bludgeons. No bridge combat, reward or map input; no retry. Punch Off not attempted.",
-      "release_manifest_sha256": "28a95ff64c53339cfe007bd50d094118b4c9a79935a4636718427be66fac1c35",
-      "result": {
-        "code": "unsupported_state",
-        "combat_flow": {
-          "code": null,
-          "status": "not_attempted"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "unsupported_state",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 0,
-          "reads": 32,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-handoff-diagnostic-lantern-result.json",
-      "result_sha256": "0fd1ae980a2dc61fbe0fcd2d3ce55ae50a2845c6d892c36c4a07ea46de36cfd3",
-      "status": "failed"
-    },
-    "queue": "/private/tmp/sts-handoff-diagnostic-batch-20260912.json",
-    "release_manifest_sha256": "28a95ff64c53339cfe007bd50d094118b4c9a79935a4636718427be66fac1c35",
-    "remaining": [
-      "lantern_fight",
-      "punch_fight"
-    ],
-    "status": "stopped_combat_encounter_failure_cleaned_up"
-  },
-  "live_results": [
-    {
-      "case": "Crystal Sphere / Uncover Future initial observation",
-      "diagnosis": "First GET invalid_response, no gameplay POST attempted; one read-only follow-up ConnectionRefusedError. Initial failure cause unproven. Separately found missing sphere request grammar in Python and C# transport; corrected offline and real-socket tested.",
-      "release_manifest_sha256": "e2f24a7cfc670cf1fb13f43b539b07fa4cea3b2503873cdeda90b07a47df488a",
-      "result": {
-        "code": "invalid_response",
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "invalid_response",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "none_attempted",
-          "parent_accepted": 0,
-          "parent_attempted": 0,
-          "parent_reconciled": 0,
-          "reads": 1,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 0
-        },
-        "map_handoff": {
-          "candidate_count": 0,
-          "code": null,
-          "reads": 0,
-          "status": "not_attempted"
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-crystal-sphere-live-20260912-result.json",
-      "result_sha256": "d38fbac48a99daa173e454d5e81009413cf5b6deb5e43ae189ff5e2a56cd9567",
-      "seconds": 0.469,
-      "status": "failed",
-      "user_visible_setup": "Untouched Crystal Sphere initial options; 119 gold, two free potion slots; Profile 3 confirmed by user readiness."
-    },
-    {
-      "case": "Crystal Sphere / Uncover Future corrected transport",
-      "diagnosis": "Pinned native Proceed only opens map and retains sphere overlay. Fixture wrongly cleared overlays. Corrected exact completed-overlay removal during parent-owned cleanup; no mutation retry.",
-      "diagnostic_path": "/private/tmp/sts-crystal-sphere-live-20260912-attempt2-diagnostic.jsonl",
-      "diagnostic_sha256": "fdcb160021376cfb8c2f6bba5232e987160e678e9a63b18316e554f9ee3e7ef2",
-      "observed": "Original choice and four sphere child actions accepted; all four child actions reconciled. Original callback completed; native Leave accepted and map visually open; cleanup blocked final handoff. Visible gold119 before and78 after (51 entry cost and10 earned gold).",
-      "release_manifest_sha256": "e77bfc9bc23ce05d0d60ccadcaf9a73985c4c3ea59a5189d394286138efa5546",
-      "result": {
-        "code": "unsupported_state",
-        "event": {
-          "child_accepted": 4,
-          "child_attempted": 4,
-          "child_episodes": 1,
-          "child_reconciled": 4,
-          "code": "unsupported_state",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "unverified",
-          "parent_accepted": 2,
-          "parent_attempted": 2,
-          "parent_reconciled": 1,
-          "reads": 274,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 6
-        },
-        "map_handoff": {
-          "candidate_count": 0,
-          "code": null,
-          "reads": 0,
-          "status": "not_attempted"
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-crystal-sphere-live-20260912-attempt2.json",
-      "result_sha256": "02341ccfe4797bd848c0aa9623faaac13db3b3e97a89e5f267f209fbb36539ea",
-      "status": "partial_failed_exit_reconciliation"
-    },
-    {
-      "case": "Crystal Sphere / Uncover Future exact overlay cleanup",
-      "diagnostic_path": "/private/tmp/sts-crystal-sphere-live-20260912-attempt3-diagnostic.jsonl",
-      "diagnostic_sha256": "e75960871efb0112497a2f59cb5450b2a5fb940e44244c466cd3bd86c4ed111a",
-      "limits": "Representative Uncover Future/reveal/gold/exit path only; Payment Plan, both explicit tool-switch directions, card/item reward variants and strategic quality are not established by this live case.",
-      "observed": "User prepared Profile3 initial event choices; UI confirmed119 gold and two free potion slots. Both parent actions and all4 child actions reconciled. Exact completed-overlay cleanup succeeded; independent core map read returned1 legal candidate. UI confirmed map open and78 gold. No map node selected.",
-      "release_manifest_sha256": "7db195a80d67296c6930b135785724505fa26ea3c4475588bfc55fabeacecccf",
-      "result": {
-        "code": null,
-        "event": {
-          "child_accepted": 4,
-          "child_attempted": 4,
-          "child_episodes": 1,
-          "child_reconciled": 4,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "map_handoff",
-          "effects": "unverified",
-          "parent_accepted": 2,
-          "parent_attempted": 2,
-          "parent_reconciled": 2,
-          "reads": 18,
-          "schema_version": 1,
-          "session_nonce": "aac12e54d0f97c6c9a5bb9a3ac8e1f61",
-          "status": "resolved",
-          "total_attempted": 6
-        },
-        "map_handoff": {
-          "candidate_count": 1,
-          "code": null,
-          "reads": 1,
-          "status": "passed"
-        },
-        "schema_version": 1,
-        "status": "resolved"
-      },
-      "result_path": "/private/tmp/sts-crystal-sphere-live-20260912-attempt3.json",
-      "result_sha256": "ba54b0b6ae6ba057cc1f99423905a27e2d754407579c4638fcddbaf96ebeaf34",
-      "status": "passed"
-    },
-    {
-      "case": "Fake Merchant inventory/purchase/close/map",
-      "diagnostic_path": "/private/tmp/sts-multicase-20260912-fake_merchant-diagnostic.jsonl",
-      "diagnostic_sha256": "cc2107563d8ae231bb3e36ebb1d84ed1336fbfe7220870a5f481ab04fceb03e6",
-      "observed": "Native closed inventory entry; open, two relic purchases, close, Leave; five parent actions reconciled. Independent map read passed with one candidate. UI confirmed map, gold119\u219224, HP64/80\u219267/83 and two added relic icons. HP change is observed, not independently certified. Game kept open for next case.",
-      "release_manifest_sha256": "7db195a80d67296c6930b135785724505fa26ea3c4475588bfc55fabeacecccf",
-      "result": {
-        "code": null,
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "map_handoff",
-          "effects": "unverified",
-          "parent_accepted": 5,
-          "parent_attempted": 5,
-          "parent_reconciled": 5,
-          "reads": 6,
-          "schema_version": 1,
-          "session_nonce": "8f4fee8bd3c67d6bcad15d193f110ccf",
-          "status": "resolved",
-          "total_attempted": 5
-        },
-        "map_handoff": {
-          "candidate_count": 1,
-          "code": null,
-          "reads": 1,
-          "status": "passed"
-        },
-        "schema_version": 1,
-        "status": "resolved"
-      },
-      "result_path": "/private/tmp/sts-multicase-20260912-fake_merchant.json",
-      "result_sha256": "0956332b50e6d59152424862e01725bd12321f29567aadf07abbd7e85a74ff6f",
-      "status": "passed"
-    },
-    {
-      "case": "Crystal Sphere Payment Plan/reveals/rewards/map",
-      "diagnostic_path": "/private/tmp/sts-multicase-20260912-sphere_payment_plan-diagnostic.jsonl",
-      "diagnostic_sha256": "1845e43a371eab27214752e678a135641f1e7194e05f1d3b7d5960f451554ef9",
-      "observed": "Payment Plan selected by exact stable ID. Both parent actions and all8 child actions reconciled;23 event reads and1 independent map read with1 candidate. UI confirmed map, gold124\u2192144 and deck count12\u219213; native automatic Debt effect is not independently certified. Same game process retained after Fake Merchant.",
-      "release_manifest_sha256": "7db195a80d67296c6930b135785724505fa26ea3c4475588bfc55fabeacecccf",
-      "result": {
-        "code": null,
-        "event": {
-          "child_accepted": 8,
-          "child_attempted": 8,
-          "child_episodes": 1,
-          "child_reconciled": 8,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "map_handoff",
-          "effects": "unverified",
-          "parent_accepted": 2,
-          "parent_attempted": 2,
-          "parent_reconciled": 2,
-          "reads": 23,
-          "schema_version": 1,
-          "session_nonce": "a32158e76bfc78c787042679cc052ab2",
-          "status": "resolved",
-          "total_attempted": 10
-        },
-        "map_handoff": {
-          "candidate_count": 1,
-          "code": null,
-          "reads": 1,
-          "status": "passed"
-        },
-        "schema_version": 1,
-        "status": "resolved"
-      },
-      "result_path": "/private/tmp/sts-multicase-20260912-sphere_payment_plan.json",
-      "result_sha256": "7fb3d75b534c97f97ecd1ff8feba57eedcd19f1c1235090deec791c0b45ceeef",
-      "status": "passed"
-    },
-    {
-      "case": "Battleworn Dummy training expiry/resumed event/map",
-      "diagnostic_path": "/private/tmp/sts-multicase-20260912-dummy_setting2-diagnostic.jsonl",
-      "diagnostic_sha256": "4fa062e02957a14c3d590581de825a2c939d81f597ad728b13cf1ea71c608e7b",
-      "observed": "Setting2 entered exact resuming combat. UI returned to Battleworn Dummy humiliation/Proceed page. Event entry reconciled1/1/1; combat attempted15, accepted13, reconciled12, stale_rejections2. Continuation ended with backend_fault after waiting; host reported invalid_event_resume. No Proceed or map input sent; no mutation retry. Root cause not yet established.",
-      "release_manifest_sha256": "7db195a80d67296c6930b135785724505fa26ea3c4475588bfc55fabeacecccf",
-      "result": {
-        "code": "invalid_event_resume",
-        "combat_flow": {
-          "code": "invalid_event_resume",
-          "combat": {
-            "accepted": 13,
-            "attempted": 15,
-            "choice_probes": 51,
-            "choices": [],
-            "code": "invalid_event_resume",
-            "native_terminal_outcome": null,
-            "outcome": null,
-            "reads": 86,
-            "reconciled": 12,
-            "resume_items": [],
-            "resume_reads": 86,
-            "schema_version": 1,
-            "stale_rejections": 2,
-            "status": "failed"
-          },
-          "map_handoff": {
-            "candidate_count": 0,
-            "code": null,
-            "reads": 0,
-            "status": "not_attempted"
-          },
-          "resumed_event": {
-            "code": null,
-            "status": "not_attempted"
-          },
-          "status": "failed"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_resume_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 12,
-          "schema_version": 1,
-          "session_nonce": "1de324dddf0b4bca10a2ee8c2d4a6eed",
-          "status": "resolved",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-multicase-20260912-dummy_setting2.json",
-      "result_sha256": "f46e614ba73b0cdf39114769d8ccb1d936b61d9315578eeb8237f41ef81a5c27",
-      "status": "failed"
-    },
-    {
-      "case": "dummy_setting2_initial_read",
-      "diagnostic_path": "/private/tmp/sts-resume-dummy2-diagnostic.jsonl",
-      "diagnostic_sha256": "3f0b46edaa4e32e6c4338cbbd6de7f994011fee65b5c5a58994459cac1eeab9a",
-      "observed": "User-ready Battleworn Dummy initial choices visually confirmed; HP68/83, gold134, deck13, floor16. First GET received zero bytes, parser response_header. Zero attempted/accepted/reconciled actions; no mutation retry. Native resumption not exercised.",
-      "release_manifest_sha256": "25af10183a8bb254dcb4ce7bfab4cf8016b530b233095c039762bfb9b63e4750",
-      "result": {
-        "code": "invalid_response",
-        "combat_flow": {
-          "code": null,
-          "status": "not_attempted"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "invalid_response",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "none_attempted",
-          "parent_accepted": 0,
-          "parent_attempted": 0,
-          "parent_reconciled": 0,
-          "reads": 1,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 0
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-resume-dummy2-result.json",
-      "result_sha256": "d47cd1a3b47973a9b27f1d12d4f0c30889fec72bb0c406a49a647a1fd53e99d1",
-      "status": "failed"
-    },
-    {
-      "case": "dummy_setting2_diagnostic_release",
-      "diagnostic_path": "/private/tmp/sts-diagnostic-dummy2-diagnostic.jsonl",
-      "diagnostic_sha256": "a575751dde860cf4a62658dbd8040391d6068c4f4342d9884c502ddad6f1bb0e",
-      "observed": "Initial read succeeded. Initial choices visibly confirmed HP68/83 gold134 deck13 floor16. Setting2 entry reconciled1/1/1. Combat9 attempted/accepted,8 reconciled,78 combat/continuation reads,50 choice probes. Final backend_fault/invalid_event_resume; UI resumed humiliation Proceed page HP69/83 gold124. No resumed Proceed/map input; no retry. Roster correction alone did not resolve handoff; first-read failure did not recur.",
-      "release_manifest_sha256": "9dae293a74a3b8ab9bac9268263cc80d22d24577e1a22c5803d5af5cd5592291",
-      "result": {
-        "code": "invalid_event_resume",
-        "combat_flow": {
-          "code": "invalid_event_resume",
-          "combat": {
-            "accepted": 9,
-            "attempted": 9,
-            "choice_probes": 50,
-            "choices": [],
-            "code": "invalid_event_resume",
-            "native_terminal_outcome": null,
-            "outcome": null,
-            "reads": 78,
-            "reconciled": 8,
-            "resume_items": [],
-            "resume_reads": 78,
-            "schema_version": 1,
-            "stale_rejections": 0,
-            "status": "failed"
-          },
-          "map_handoff": {
-            "candidate_count": 0,
-            "code": null,
-            "reads": 0,
-            "status": "not_attempted"
-          },
-          "resumed_event": {
-            "code": null,
-            "status": "not_attempted"
-          },
-          "status": "failed"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_resume_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 13,
-          "schema_version": 1,
-          "session_nonce": "66227ff2b96fdf5d6f6c8d0ae3a542e6",
-          "status": "resolved",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-diagnostic-dummy2-result.json",
-      "result_sha256": "06dd4dcefd02c7889289e04d70b0b5a08293670a8e26363b3d63866fc5fee955",
-      "status": "failed"
-    },
-    {
-      "case": "dummy_setting2_layout_first_read",
-      "diagnostic_path": "/private/tmp/sts-layout-dummy2-diagnostic.jsonl",
-      "diagnostic_sha256": "b2dda37ce596a8052debea8b304c28d506c075d17bd149a90bea2ee9b451434d",
-      "observed": "Untouched initial choices visually confirmed: HP80/80 gold99 deck10 floor3. First GET returned dispatch_timeout_after_claim, proving callback began but missed500ms result deadline. Zero actions attempted/accepted/reconciled. Layout correction not exercised; no retry. No conclusion about which callback work consumed the time.",
-      "release_manifest_sha256": "a204ee937b08a91d77a3463a6c92c2066874235361f857c27bcb04131ecd8207",
-      "result": {
-        "code": "invalid_response",
-        "combat_flow": {
-          "code": null,
-          "status": "not_attempted"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "invalid_response",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "none_attempted",
-          "parent_accepted": 0,
-          "parent_attempted": 0,
-          "parent_reconciled": 0,
-          "reads": 1,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 0
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-layout-dummy2-result.json",
-      "result_sha256": "d47cd1a3b47973a9b27f1d12d4f0c30889fec72bb0c406a49a647a1fd53e99d1",
-      "status": "failed"
-    },
-    {
-      "case": "dummy_setting2_incremental_first_read",
-      "diagnostic_path": "/private/tmp/sts-incremental-dummy2-diagnostic.jsonl",
-      "diagnostic_sha256": "b2dda37ce596a8052debea8b304c28d506c075d17bd149a90bea2ee9b451434d",
-      "observed": "Untouched initial choices visually confirmed HP80/80 gold99 deck10 floor3. First GET returned dispatch_timeout_after_claim, zero actions. Incremental hook setup did not suffice to avoid first-read timeout; exact initialization stage remains unknown. No retry; resumption not exercised.",
-      "release_manifest_sha256": "cf181cbe61e88ccb4a099a7fec339bba8e3051dcbccf713ee5d6fc1d10a75d35",
-      "result": {
-        "code": "invalid_response",
-        "combat_flow": {
-          "code": null,
-          "status": "not_attempted"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "invalid_response",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "none_attempted",
-          "parent_accepted": 0,
-          "parent_attempted": 0,
-          "parent_reconciled": 0,
-          "reads": 1,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 0
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-incremental-dummy2-result.json",
-      "result_sha256": "d47cd1a3b47973a9b27f1d12d4f0c30889fec72bb0c406a49a647a1fd53e99d1",
-      "status": "failed"
-    },
-    {
-      "case": "dummy_setting2_stage_release",
-      "diagnostic_path": "/private/tmp/sts-stage-dummy2-diagnostic.jsonl",
-      "diagnostic_sha256": "189f09562d247014360277fcc67319cd0298109dcf35f663288c044eb5ef57ce",
-      "observed": "Startup and staged preparation succeeded. Setting2 entry1/1/1,43eventreads. Combat attempted13 accepted10 reconciled9,3known no-mutation stale rejections,73combat/continuationreads,42choiceprobes. Final backend_fault/invalid_event_resume at visible humiliation Proceedpage,HP80/80 gold99. No resumed Proceed/map input. No uncertain retry. No timeout stage timing report emitted; startup intermittency remains unexplained.",
-      "release_manifest_sha256": "3c959b417806235373fa6aea7af00d85eeecd6c312529debcaa1d556483aa2fa",
-      "result": {
-        "code": "invalid_event_resume",
-        "combat_flow": {
-          "code": "invalid_event_resume",
-          "combat": {
-            "accepted": 10,
-            "attempted": 13,
-            "choice_probes": 42,
-            "choices": [],
-            "code": "invalid_event_resume",
-            "native_terminal_outcome": null,
-            "outcome": null,
-            "reads": 73,
-            "reconciled": 9,
-            "resume_items": [],
-            "resume_reads": 73,
-            "schema_version": 1,
-            "stale_rejections": 3,
-            "status": "failed"
-          },
-          "map_handoff": {
-            "candidate_count": 0,
-            "code": null,
-            "reads": 0,
-            "status": "not_attempted"
-          },
-          "resumed_event": {
-            "code": null,
-            "status": "not_attempted"
-          },
-          "status": "failed"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_resume_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 43,
-          "schema_version": 1,
-          "session_nonce": "5bb6f60cea186d533f54d16ee811b635",
-          "status": "resolved",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-stage-dummy2-result.json",
-      "result_sha256": "a79fc67caa0998bce8d5c814f38cdd6059f461dda5399366a01ec4135e7eba45",
-      "status": "failed"
-    },
-    {
-      "case": "dummy_setting2_resume_diagnostic",
-      "diagnostic_path": "/private/tmp/sts-resume-diagnostic-dummy2-diagnostic.jsonl",
-      "diagnostic_sha256": "61b22adfb6d61019283d1affb82dc2aa8f3f2d4322bb5d282b1a0052ad306d76",
-      "observed": "Initial untouched choices visually confirmed: HP80/80 gold99 deck10 floor5. Entry1/1/1,41eventreads. Combat10attempted10accepted9reconciled,0stale,68combat/resumereads,41choiceprobes. Visible humiliation Proceed page; no Proceed/map input, no retry. Pinned CombatManager.EndCombatInternal IL calls SetTravelEnabled(true) at offset1119.",
-      "release_manifest_sha256": "c626e0cf6b66d708afc3eda1fd165d62d1a0715bb083c0d35f6f24e16ef8f86a",
-      "result": {
-        "code": "invalid_event_resume",
-        "combat_flow": {
-          "code": "invalid_event_resume",
-          "combat": {
-            "accepted": 10,
-            "attempted": 10,
-            "choice_probes": 41,
-            "choices": [],
-            "code": "invalid_event_resume",
-            "native_terminal_outcome": null,
-            "outcome": null,
-            "reads": 68,
-            "reconciled": 9,
-            "resume_items": [],
-            "resume_reads": 68,
-            "schema_version": 1,
-            "stale_rejections": 0,
-            "status": "failed"
-          },
-          "map_handoff": {
-            "candidate_count": 0,
-            "code": null,
-            "reads": 0,
-            "status": "not_attempted"
-          },
-          "resumed_event": {
-            "code": null,
-            "status": "not_attempted"
-          },
-          "status": "failed"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_resume_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 41,
-          "schema_version": 1,
-          "session_nonce": "d0a98e99f83525724e6e7d08a6faa6a4",
-          "status": "resolved",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-resume-diagnostic-dummy2-result.json",
-      "result_sha256": "4745c1de3b7b4646d88b7db18034a52431023a1a48d15a65765e0a6d020f93a1",
-      "resume_diagnostic": "context_travel_enabled",
-      "status": "failed"
-    },
-    {
-      "case": "dummy_setting2_finished_travel",
-      "diagnostic_path": "/private/tmp/sts-finished-travel-dummy2-diagnostic.jsonl",
-      "diagnostic_sha256": "bb10f1a29d3f585b282100f9da92eab52d8ace214f8f9f22c00417e6bec4e39e",
-      "observed": "Initial untouched choices visually confirmed: HP80/80 gold99 deck10 floor7. Event entry1/1/1,42reads. Combat12attempted10accepted10reconciled,2known no-mutation stale rejections,73combat/continuationreads,43choiceprobes. Resumed Proceed1/1/1,32reads. Map handoff passed in1read,5candidates; visibly open map HP80/80 gold99. No map candidate selected. Game left open for next batch case.",
-      "release_manifest_sha256": "0ee889be012b9a8428fcdb75d5cc4c370b68eee33c9f33b92aedfe704cf78e78",
-      "result": {
-        "code": null,
-        "combat_flow": {
-          "code": null,
-          "combat": {
-            "accepted": 10,
-            "attempted": 12,
-            "choice_probes": 43,
-            "choices": [],
-            "code": null,
-            "native_terminal_outcome": null,
-            "outcome": "event_resumed",
-            "reads": 73,
-            "reconciled": 10,
-            "resume_items": [],
-            "resume_reads": 73,
-            "schema_version": 1,
-            "stale_rejections": 2,
-            "status": "resolved"
-          },
-          "map_handoff": {
-            "candidate_count": 5,
-            "code": null,
-            "reads": 1,
-            "status": "passed"
-          },
-          "resumed_event": {
-            "child_accepted": 0,
-            "child_attempted": 0,
-            "child_episodes": 0,
-            "child_reconciled": 0,
-            "code": null,
-            "completed_card_children": 0,
-            "completed_item_children": 0,
-            "destination": "map_handoff",
-            "effects": "unverified",
-            "parent_accepted": 1,
-            "parent_attempted": 1,
-            "parent_reconciled": 1,
-            "reads": 32,
-            "schema_version": 1,
-            "session_nonce": "c79accc5f844c210009e23e1e9995db4",
-            "status": "resolved",
-            "total_attempted": 1
-          },
-          "status": "resolved"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_resume_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 42,
-          "schema_version": 1,
-          "session_nonce": "5758bd2c1660e57b8bae1383e1c6ea33",
-          "status": "resolved",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "resolved"
-      },
-      "result_path": "/private/tmp/sts-finished-travel-dummy2-result.json",
-      "result_sha256": "ed18ac4d45eb8d305ba6ccadde7d0c11c40169750c70e01a169e586854db2258",
-      "status": "passed"
-    },
-    {
-      "case": "dummy_setting1_potion",
-      "diagnostic_path": "/private/tmp/sts-finished-travel-dummy1-diagnostic.jsonl",
-      "diagnostic_sha256": "2589f7dabcc7cd2ca2e5f4a5b1700bdbe622cd58bd10e55cf9617d9dfa78c00c",
-      "observed": "Same game process as Setting2. User-prepared untouched choices, HP80/80 gold99 deck4 floor9, one occupied potion slot and two free slots. Entry1/1/1,43reads. Combat5/5/5,0stale,57combat/continuationreads,36choiceprobes. Owned Attack Potion collection1/1/1,2reads. Resumed Proceed1/1/1,32reads. Map handoff passed in1read,4candidates; visibly open map HP80/80 gold99 and newly occupied second potion slot. No map candidate selected. Game left open for Dense Vegetation.",
-      "release_manifest_sha256": "0ee889be012b9a8428fcdb75d5cc4c370b68eee33c9f33b92aedfe704cf78e78",
-      "result": {
-        "code": null,
-        "combat_flow": {
-          "code": null,
-          "combat": {
-            "accepted": 5,
-            "attempted": 5,
-            "choice_probes": 36,
-            "choices": [],
-            "code": null,
-            "native_terminal_outcome": null,
-            "outcome": "event_resumed",
-            "reads": 57,
-            "reconciled": 5,
-            "resume_items": [
-              {
-                "accepted": 1,
-                "attempted": 1,
-                "code": null,
-                "collected": [
-                  {
-                    "index": 2,
-                    "key": "ATTACK_POTION",
-                    "kind": "potion"
-                  }
-                ],
-                "reads": 2,
-                "reconciled": 1,
-                "status": "resolved"
-              }
-            ],
-            "resume_reads": 57,
-            "schema_version": 1,
-            "stale_rejections": 0,
-            "status": "resolved"
-          },
-          "map_handoff": {
-            "candidate_count": 4,
-            "code": null,
-            "reads": 1,
-            "status": "passed"
-          },
-          "resumed_event": {
-            "child_accepted": 0,
-            "child_attempted": 0,
-            "child_episodes": 0,
-            "child_reconciled": 0,
-            "code": null,
-            "completed_card_children": 0,
-            "completed_item_children": 0,
-            "destination": "map_handoff",
-            "effects": "unverified",
-            "parent_accepted": 1,
-            "parent_attempted": 1,
-            "parent_reconciled": 1,
-            "reads": 32,
-            "schema_version": 1,
-            "session_nonce": "ba5dda5bf181aa46b895e5187ac4c83b",
-            "status": "resolved",
-            "total_attempted": 1
-          },
-          "status": "resolved"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_resume_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 43,
-          "schema_version": 1,
-          "session_nonce": "b3a1481d00b54c9f829122a810f4518c",
-          "status": "resolved",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "resolved"
-      },
-      "result_path": "/private/tmp/sts-finished-travel-dummy1-result.json",
-      "result_sha256": "0a13d70a23ba16cd2677a84732ee31834086bf814c300656e5c78cdf87a8a1de",
-      "status": "passed"
-    },
-    {
-      "case": "dense_fight",
-      "diagnostic_path": "/private/tmp/sts-finished-travel-dense-diagnostic.jsonl",
-      "diagnostic_sha256": "8ec402c9034664bb35e708961454b532e0d390873ddafba25f7fc95b08d92e2c",
-      "observed": "Same process as both Dummy cases. User prepared Dense Vegetation Fight after Rest; HP80/80 gold99 deck4 floor11, two occupied potion slots. Event1/1/1,43reads. Combat11attempted7accepted7reconciled,4known no-mutation stale rejections,140reads128choiceprobes,victory. Rewards5/5/5,12reads:12gold,VICIOUS,FIRE_POTION. Map passed1read5candidates. UI confirms map,HP49/80 gold111 deck5,all3potion slots occupied. No map candidate selected. Game open awaiting Lantern Key.",
-      "release_manifest_sha256": "0ee889be012b9a8428fcdb75d5cc4c370b68eee33c9f33b92aedfe704cf78e78",
-      "result": {
-        "code": null,
-        "combat_flow": {
-          "code": null,
-          "combat": {
-            "accepted": 7,
-            "attempted": 11,
-            "choice_probes": 128,
-            "choices": [],
-            "code": null,
-            "outcome": "victory",
-            "reads": 140,
-            "reconciled": 7,
-            "schema_version": 1,
-            "stale_rejections": 4,
-            "status": "resolved"
-          },
-          "map_handoff": {
-            "candidate_count": 5,
-            "code": null,
-            "reads": 1,
-            "status": "passed"
-          },
-          "rewards": {
-            "accepted": 5,
-            "after_player": {
-              "deck_count": 5,
-              "gold": 111,
-              "hp": 49,
-              "max_hp": 80
-            },
-            "attempted": 5,
-            "before_player": {
-              "deck_count": 4,
-              "gold": 99,
-              "hp": 49,
-              "max_hp": 80
-            },
-            "claimed_gold": 12,
-            "claimed_special_cards": [],
-            "code": null,
-            "collected_items": [
-              {
-                "key": "FIRE_POTION",
-                "kind": "potion",
-                "reward_index": 1
-              }
-            ],
-            "discarded_potions": [],
-            "policy": "first-card",
-            "potion_capacity_gains": [],
-            "potion_policy": "stop-on-full",
-            "reads": 12,
-            "reconciled": 5,
-            "schema_version": 1,
-            "selected_cards": [
-              "VICIOUS"
-            ],
-            "skipped_card_rewards": 0,
-            "skipped_potions": [],
-            "stale_rejections": 0,
-            "status": "resolved"
-          },
-          "schema_version": 1,
-          "stage": "map",
-          "status": "resolved"
-        },
-        "event": {
+    "cases": [
+      {
+        "acceptance": "Exactly one native Foul Potion action consumes slot0; exact event combat handoff and seven extra relic reward identities bound before release. Record initial stock from supported public evidence if available; never open inventory merely to inspect. Stop on unexpected/illegal target.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "beb1095b7bda6dd5a6731993282d95d2064315f7b02479956fa43fcd9b0c96d1",
+          "--capability",
+          "events",
+          "--event-option",
+          "FAKE_MERCHANT.FOUL_POTION.0"
+        ],
+        "diagnostic_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_foul_entry-diagnostic.jsonl",
+        "diagnostic_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 4.618,
+        "exit_code": 0,
+        "id": "merchant_foul_entry",
+        "result": {
           "child_accepted": 0,
           "child_attempted": 0,
           "child_episodes": 0,
@@ -1090,608 +577,791 @@
           "parent_accepted": 1,
           "parent_attempted": 1,
           "parent_reconciled": 1,
-          "reads": 43,
+          "reads": 59,
           "schema_version": 1,
-          "session_nonce": "1767cecb9d00910fb39b868a7b3e59f4",
+          "session_nonce": "1f7c24be9237d4e2ef6cbc3704af9c05",
           "status": "resolved",
           "total_attempted": 1
         },
-        "schema_version": 1,
-        "status": "resolved"
+        "result_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_foul_entry.json",
+        "result_sha256": "e2fa4b59466cafa6165e5267bad906df9259573734f95e1e4929acf9a82c0d94",
+        "setup": "Fresh disposable standard Ironclad run, no ascension. Complete Neow through UI and enter settled native room. Native console prepares four Bludgeons, HP80/80, Foul Potion in slot0, other slots empty, then event FAKE_MERCHANT. Verify actual deck/HP/belt and initial closed inventory; never open or purchase before fight. If baseline relic effects undermine controlled combat, resolve setup before event entry.",
+        "setup_evidence": {
+          "ascension": 0,
+          "baseline_verified_ui": true,
+          "character": "Ironclad",
+          "console_closed": true,
+          "deck": [
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON"
+          ],
+          "event": "FAKE_MERCHANT",
+          "fresh_disposable_run": true,
+          "fresh_process": true,
+          "gold": 99,
+          "hp": 80,
+          "inventory_ever_opened": false,
+          "max_hp": 80,
+          "native_prior_room": "First left connected room with enemy HP11/35/7",
+          "potions": [
+            "FOUL_POTION",
+            null,
+            null
+          ],
+          "profile": 3,
+          "purchases": 0,
+          "relics": [
+            "BURNING_BLOOD",
+            "NEOWS_TALISMAN"
+          ],
+          "upgrade_levels": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "status": "passed",
+        "visual_evidence": "Enemy165/165HP, player80/80HP, empty belt, four Bludgeons and turn1 ready."
       },
-      "result_path": "/private/tmp/sts-finished-travel-dense-result.json",
-      "result_sha256": "cdbf98fa1714798344c8bb12b03d69d0b0d604b5c21e7fd333e95cc53928616e",
-      "status": "passed"
-    },
-    {
-      "case": "lantern_fight",
-      "diagnostic_path": "/private/tmp/sts-finished-travel-lantern-diagnostic.jsonl",
-      "diagnostic_sha256": "db6901b9698d05fa6110b934023455014a8ebe3b807046494d086cbbf429a709",
-      "interpretation_update": "Subsequent source inspection found PendingOwnership remained set after Owns passed while CombatHandoff.Capture ran. The reported label does not establish an ownership failure; exact failing combat/ownership condition remains unconfirmed.",
-      "native_diagnostic": "pending_ownership",
-      "observed": "Same process after both Dummy cases and Dense Vegetation. User prepared Fight after Keep the Key;HP80/80 gold111 deck5 floor13,two occupied potion slots. Event attempted1 accepted1 reconciled0,32reads; terminal unsupported_state with pending_ownership. UI showed combat started against101HP enemy,player80HP,turn1. No bridge combat actions, reward input or map input. Pinned TheLanternKey.Fight IL calls generic EventModel.EnterCombatWithoutExitingEvent with special-card extras. Exact failing Owns predicate remains unknown; no retry.",
-      "release_manifest_sha256": "0ee889be012b9a8428fcdb75d5cc4c370b68eee33c9f33b92aedfe704cf78e78",
-      "result": {
-        "code": "unsupported_state",
-        "combat_flow": {
+      {
+        "acceptance": "Bounded native combat victory, all accepted plays/end-turns reconciled, expected <=6 attack turns within 12-round/48-accepted-action budget; no force kill or guard changes.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "beb1095b7bda6dd5a6731993282d95d2064315f7b02479956fa43fcd9b0c96d1",
+          "--capability",
+          "combat"
+        ],
+        "diagnostic_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_combat-diagnostic.jsonl",
+        "diagnostic_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 21.258,
+        "exit_code": 0,
+        "id": "merchant_combat",
+        "result": {
+          "accepted": 11,
+          "attempted": 17,
+          "choice_probes": 143,
+          "choices": [],
           "code": null,
-          "status": "not_attempted"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "unsupported_state",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 0,
-          "reads": 32,
+          "outcome": "victory",
+          "reads": 161,
+          "reconciled": 11,
           "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-finished-travel-lantern-result.json",
-      "result_sha256": "0fd1ae980a2dc61fbe0fcd2d3ce55ae50a2845c6d892c36c4a07ea46de36cfd3",
-      "status": "failed"
-    },
-    {
-      "case": "lantern_fight_prepared_encounter_diagnostic",
-      "diagnosis": "Pinned EventModel entry ignores the newly supplied encounter argument for Combat layouts and reuses _combatStateForCombatLayout. Native clears EventModel.Node, then transitions the existing embedded NCombatRoom to active visuals. Bridge incorrectly required the ignored encounter argument identity.",
-      "diagnostic_path": "/private/tmp/sts-handoff-diagnostic-lantern-diagnostic.jsonl",
-      "diagnostic_sha256": "462632ad2d9d4d8fd5ff0c2afc12a1565761fa37f91dd10e1b75a363e48681eb",
-      "native_diagnostic": "combat_encounter",
-      "observed": "User prepared Lantern Key Fight after Keep the Key, HP80/80 gold111 deck4 floor13, two occupied potion slots. Event attempted/accepted/reconciled1/1/0 with32reads. UI showed turn1 against101HP Mysterious Knight, player80HP,3energy,4Bludgeons. No bridge combat, reward or map input; no retry. Punch Off not attempted.",
-      "release_manifest_sha256": "28a95ff64c53339cfe007bd50d094118b4c9a79935a4636718427be66fac1c35",
-      "result": {
-        "code": "unsupported_state",
-        "combat_flow": {
-          "code": null,
-          "status": "not_attempted"
-        },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": "unsupported_state",
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 0,
-          "reads": 32,
-          "schema_version": 1,
-          "status": "failed",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "failed"
-      },
-      "result_path": "/private/tmp/sts-handoff-diagnostic-lantern-result.json",
-      "result_sha256": "0fd1ae980a2dc61fbe0fcd2d3ce55ae50a2845c6d892c36c4a07ea46de36cfd3",
-      "status": "failed"
-    },
-    {
-      "case": "lantern_fight_prepared_combat",
-      "diagnostic_path": "/private/tmp/sts-embedded-lantern-diagnostic.jsonl",
-      "diagnostic_sha256": "7d58bf6468b128c263d9c3fc9e33b0c845a950c827ff80cbace2ac73a00e22b7",
-      "limits": "Representative combat-layout entry and exact special-card collection; no all-event or strategic-quality claim. Game remains open for Punch Off; final batch cleanup pending.",
-      "observed": "User prepared Profile3 Lantern Key Fight after Keep the Key, HP80/80 gold111 deck4 floor13 and two occupied potion slots. Entry1/1/1 with32reads. Combat11attempted/7accepted/7reconciled with4 known no-mutation stale rejections,97reads85choiceprobes, victory. Rewards5/5/5 with13reads:17gold,TREMBLE,LANTERN_KEY special card. Map passed1read6candidates. UI verified open map, HP29/80 gold128 deck6, same two occupied potion slots. No map candidate selected.",
-      "release_manifest_sha256": "6cc54f193c98028f1bfe94d8f65558fc3d513ef2793125b692969c1c83c68319",
-      "result": {
-        "code": null,
-        "combat_flow": {
-          "code": null,
-          "combat": {
-            "accepted": 7,
-            "attempted": 11,
-            "choice_probes": 85,
-            "choices": [],
-            "code": null,
-            "outcome": "victory",
-            "reads": 97,
-            "reconciled": 7,
-            "schema_version": 1,
-            "stale_rejections": 4,
-            "status": "resolved"
-          },
-          "map_handoff": {
-            "candidate_count": 6,
-            "code": null,
-            "reads": 1,
-            "status": "passed"
-          },
-          "rewards": {
-            "accepted": 5,
-            "after_player": {
-              "deck_count": 6,
-              "gold": 128,
-              "hp": 29,
-              "max_hp": 80
-            },
-            "attempted": 5,
-            "before_player": {
-              "deck_count": 4,
-              "gold": 111,
-              "hp": 29,
-              "max_hp": 80
-            },
-            "claimed_gold": 17,
-            "claimed_special_cards": [
-              "LANTERN_KEY"
-            ],
-            "code": null,
-            "collected_items": [],
-            "discarded_potions": [],
-            "policy": "first-card",
-            "potion_capacity_gains": [],
-            "potion_policy": "stop-on-full",
-            "reads": 13,
-            "reconciled": 5,
-            "schema_version": 1,
-            "selected_cards": [
-              "TREMBLE"
-            ],
-            "skipped_card_rewards": 0,
-            "skipped_potions": [],
-            "stale_rejections": 0,
-            "status": "resolved"
-          },
-          "schema_version": 1,
-          "stage": "map",
+          "stale_rejections": 6,
           "status": "resolved"
         },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 32,
-          "schema_version": 1,
-          "session_nonce": "5fcbce6201e25149287aac74bcf1c3e7",
-          "status": "resolved",
-          "total_attempted": 1
+        "result_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_combat.json",
+        "result_sha256": "f0e142da8abdd33107e6cb9a12130cf33f4016c8986decdf521f17b23e6afd4c",
+        "setup": "Only after preceding event result resolves combat_handoff and native combat is visibly ready. Expected no-ascension enemyHP165, four-Bludgeon deck and sufficient health; exact legal actions remain native-validated. No reward reader call yet.",
+        "setup_evidence": {
+          "belt": "empty",
+          "enemy_hp": 165,
+          "energy": 3,
+          "hand": "four Bludgeons",
+          "hp": 80,
+          "prior_owner": "resolved combat_handoff"
         },
-        "schema_version": 1,
-        "status": "resolved"
+        "status": "passed",
+        "visual_evidence": "Loot visible at33/80HP,99gold, empty belt after victory; seven relics plus300gold, Energy Potion and ordinary card offer."
       },
-      "result_path": "/private/tmp/sts-embedded-lantern-result.json",
-      "result_sha256": "20825a54db43c13f3e7bccd6d608a218d3a814846cbba8bd5feb0c00199c5552",
-      "status": "passed"
-    },
-    {
-      "case": "punch_fight",
-      "diagnostic_path": "/private/tmp/sts-embedded-punch-diagnostic.jsonl",
-      "diagnostic_sha256": "cd6f223f72cd62226352697138f0d960e2327508f670b19bc5d4dbebea3d7eb6",
-      "limits": "Representative combat-layout event and deferred potion/relic extras with available capacity. Does not establish full-inventory policies, arbitrary pickup effects or strategic quality.",
-      "observed": "Same process after Lantern Key pass. User prepared Punch Off Fight after I can take them, HP80/80 gold128 deck6 floor15, two occupied potion slots. Entry1/1/1 with32reads. Combat13attempted/9accepted/9reconciled,4 known no-mutation stale rejections,139reads125choiceprobes,victory. Rewards6/6/6 with14reads:10gold,STAMPEDE,SHACKLING_POTION,BAG_OF_PREPARATION. Map passed1read1candidate. UI verified open map,HP38/80 gold138 deck7,all3potion slots occupied and new relic visible. No map candidate selected.",
-      "release_manifest_sha256": "6cc54f193c98028f1bfe94d8f65558fc3d513ef2793125b692969c1c83c68319",
-      "result": {
-        "code": null,
-        "combat_flow": {
+      {
+        "acceptance": "Bridge collects seven exact offered relics, reconciles effects and native Proceed. Report separately from native ordinary-reward assistance; this is not proof of automatic resolution of the original >8-entry screen. Verify Fake Lees Waffle exact healing if present and use supported before/after player observations plus independent native UI to verify health; final reward button may be freed but native terminal parent must remain. If stock omits Waffle, record healing acceptance deferred, not passed.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "beb1095b7bda6dd5a6731993282d95d2064315f7b02479956fa43fcd9b0c96d1",
+          "--capability",
+          "rewards",
+          "--potion-policy",
+          "skip-all",
+          "--reward-policy",
+          "first-card"
+        ],
+        "diagnostic_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_seven_relics-diagnostic.jsonl",
+        "diagnostic_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 1.125,
+        "exit_code": 0,
+        "id": "merchant_seven_relics",
+        "result": {
+          "accepted": 8,
+          "after_player": {
+            "deck_count": 5,
+            "gold": 399,
+            "hp": 41,
+            "max_hp": 80
+          },
+          "attempted": 8,
+          "before_player": {
+            "deck_count": 5,
+            "gold": 399,
+            "hp": 33,
+            "max_hp": 80
+          },
+          "claimed_gold": 0,
+          "claimed_special_cards": [],
           "code": null,
-          "combat": {
-            "accepted": 9,
-            "attempted": 13,
-            "choice_probes": 125,
-            "choices": [],
-            "code": null,
-            "outcome": "victory",
-            "reads": 139,
-            "reconciled": 9,
-            "schema_version": 1,
-            "stale_rejections": 4,
-            "status": "resolved"
-          },
-          "map_handoff": {
-            "candidate_count": 1,
-            "code": null,
-            "reads": 1,
-            "status": "passed"
-          },
-          "rewards": {
-            "accepted": 6,
-            "after_player": {
-              "deck_count": 7,
-              "gold": 138,
-              "hp": 38,
-              "max_hp": 80
+          "collected_items": [
+            {
+              "key": "FAKE_MERCHANTS_RUG",
+              "kind": "relic",
+              "reward_index": 0
             },
-            "attempted": 6,
-            "before_player": {
-              "deck_count": 6,
-              "gold": 128,
-              "hp": 38,
-              "max_hp": 80
+            {
+              "key": "FAKE_VENERABLE_TEA_SET",
+              "kind": "relic",
+              "reward_index": 1
             },
-            "claimed_gold": 10,
-            "claimed_special_cards": [],
-            "code": null,
-            "collected_items": [
+            {
+              "key": "FAKE_ORICHALCUM",
+              "kind": "relic",
+              "reward_index": 2
+            },
+            {
+              "key": "FAKE_HAPPY_FLOWER",
+              "kind": "relic",
+              "reward_index": 3
+            },
+            {
+              "key": "FAKE_ANCHOR",
+              "kind": "relic",
+              "reward_index": 4
+            },
+            {
+              "key": "FAKE_LEES_WAFFLE",
+              "kind": "relic",
+              "reward_index": 5
+            },
+            {
+              "key": "FAKE_STRIKE_DUMMY",
+              "kind": "relic",
+              "reward_index": 6
+            }
+          ],
+          "discarded_potions": [],
+          "policy": "first-card",
+          "potion_capacity_gains": [],
+          "potion_policy": "skip-all",
+          "reads": 9,
+          "reconciled": 8,
+          "schema_version": 1,
+          "selected_cards": [],
+          "skipped_card_rewards": 0,
+          "skipped_potions": [],
+          "stale_rejections": 0,
+          "status": "resolved"
+        },
+        "result_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_seven_relics.json",
+        "result_sha256": "ec29d19d708dd6c47cb4f85c9e7492a328679aaacfc04e6e6edb9b34a28281ab",
+        "setup": "After clean bridge combat victory, inspect native reward list BEFORE requesting reward reader. Core reader allows at most8 visible entries. Native UI collects ordinary gold and resolves/skips ordinary card/potion rewards as needed, leaving seven untouched relic offers (including Fake Merchants Rug). Record exact visible offers, native setup assistance and before-state. No reward controller has observed/reserved this screen yet. Do not remove relics or change inventory after its first read. If native stock omits the healing relic, continue the ordinary seven-relic acceptance only and record healing deferred. No direct console relic grant substitutes for a reward pickup.",
+        "setup_evidence": {
+          "all_seven_relics_untouched": true,
+          "console_closed": true,
+          "core_reward_sessions_before": 0,
+          "deck": [
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON",
+            "BLUDGEON",
+            "PILLAGE"
+          ],
+          "expected_heal": 8,
+          "gold": 399,
+          "hp": 33,
+          "max_hp": 80,
+          "native_assistance": [
+            "Collected300gold",
+            "Collected Energy Potion into empty slot0",
+            "Collected Pillage from Pillage/True Grit/Setup Strike card offer"
+          ],
+          "offers": [
+            "The Merchant\u2019s Rug???",
+            "Venerable Tea Set???",
+            "Orichalcum???",
+            "Happy Flower???",
+            "Anchor???",
+            "Lee\u2019s Waffle???",
+            "Strike Dummy???"
+          ],
+          "potions": [
+            "ENERGY_POTION",
+            null,
+            null
+          ],
+          "relics_before": [
+            "BURNING_BLOOD",
+            "NEOWS_TALISMAN"
+          ]
+        },
+        "status": "passed",
+        "visual_evidence": {
+          "all_seven_relic_icons_visible": true,
+          "deck_count": 5,
+          "gold": 399,
+          "hp": 41,
+          "max_hp": 80,
+          "native_map_open": true,
+          "potions": [
+            "ENERGY_POTION",
+            null,
+            null
+          ]
+        }
+      },
+      {
+        "acceptance": "Ready actionable map with at least one legal candidate, independently checked in UI. Enter one connected native room and verify it settles before Architect setup.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "beb1095b7bda6dd5a6731993282d95d2064315f7b02479956fa43fcd9b0c96d1",
+          "--capability",
+          "core",
+          "--route",
+          "/probe/v0/public/map-decision"
+        ],
+        "diagnostic_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_map-diagnostic.jsonl",
+        "diagnostic_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "elapsed_seconds": 0.104,
+        "exit_code": 0,
+        "id": "merchant_map",
+        "result": {
+          "response": {
+            "actionable": true,
+            "candidates": [
               {
-                "key": "SHACKLING_POTION",
-                "kind": "potion",
-                "reward_index": 1
+                "candidate_index": 0,
+                "col": 0,
+                "kind": "unknown",
+                "row": 2
               },
               {
-                "key": "BAG_OF_PREPARATION",
-                "kind": "relic",
-                "reward_index": 2
+                "candidate_index": 1,
+                "col": 1,
+                "kind": "monster",
+                "row": 2
               }
             ],
-            "discarded_potions": [],
-            "policy": "first-card",
-            "potion_capacity_gains": [],
-            "potion_policy": "stop-on-full",
-            "reads": 14,
-            "reconciled": 6,
-            "schema_version": 1,
-            "selected_cards": [
-              "STAMPEDE"
+            "decision_id": "65e06d4347661ab6fa15e538d72bd496cb8ca3c5a78a0b06a2d0e871f4feda6a",
+            "decision_kind": "map",
+            "destination": null,
+            "legal_actions": [
+              {
+                "action_id": "select:0",
+                "candidate_index": 0,
+                "kind": "select_map_node"
+              },
+              {
+                "action_id": "select:1",
+                "candidate_index": 1,
+                "kind": "select_map_node"
+              }
             ],
-            "skipped_card_rewards": 0,
-            "skipped_potions": [],
-            "stale_rejections": 0,
-            "status": "resolved"
+            "schema_version": 1,
+            "screen_kind": "map",
+            "status": "ready"
           },
-          "schema_version": 1,
-          "stage": "map",
-          "status": "resolved"
+          "status": "passed"
         },
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "combat_handoff",
-          "effects": "unverified",
-          "parent_accepted": 1,
-          "parent_attempted": 1,
-          "parent_reconciled": 1,
-          "reads": 32,
-          "schema_version": 1,
-          "session_nonce": "d6275f04f45a0dc473d38700a3ed0bca",
-          "status": "resolved",
-          "total_attempted": 1
-        },
-        "schema_version": 1,
-        "status": "resolved"
+        "result_path": "/private/tmp/sts-merchant-healing-live-20260913-merchant_map.json",
+        "result_sha256": "9d776057bd41e9f193d273d6f071d90b2cbb9927816fd9273f50b7955f49b2eb",
+        "setup": "After reward controller resolves native Proceed.",
+        "setup_evidence": "Reward Proceed resolved8/8/8 and native map independently visible.",
+        "status": "passed",
+        "visual_evidence": {
+          "map_open": true,
+          "native_next_room": "Connected column1/row2 monster entered; settled enemy42/42HP, player41/80HP, gold399, deck5, Energy Potion in slot0. No combat input followed."
+        }
       },
-      "result_path": "/private/tmp/sts-embedded-punch-result.json",
-      "result_sha256": "05b9a0dbfbdba2fe491469670ded8b22f16229d0d7d97a8836af5e9b2cc8f169",
+      {
+        "acceptance": "Exact final Proceed triggers native readiness vote, queued execution, EnterNextAct and WinRun tasks; only completed native win is run_won. Independently observe terminal game UI; HP zero alone is not victory evidence. No map required afterward; finish normal cleanup.",
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-B",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/apps/bridge/client/run_live.py",
+          "--release-manifest",
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/bridge/Sts2AgentBridge/releases/current/bridge.json",
+          "--release-sha256",
+          "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+          "--expected-state-sha256",
+          "beb1095b7bda6dd5a6731993282d95d2064315f7b02479956fa43fcd9b0c96d1",
+          "--capability",
+          "events",
+          "--event-option",
+          "PROCEED"
+        ],
+        "diagnostic_path": "/private/tmp/sts-merchant-healing-live-20260913-architect_win-diagnostic.jsonl",
+        "id": "architect_win",
+        "result_path": "/private/tmp/sts-merchant-healing-live-20260913-architect_win.json",
+        "setup": "LAST case. After clean Merchant stage completion and next native room entry, use native event THE_ARCHITECT. Its EventRoom is natively a victory room. Advance any dialogue through UI to the final untouched Proceed to keep the bridge callback within its30-second bound. Record living pre-callback state, deck/gold/potions/relics; console closed and no pending modal. Do not invoke win via console or mutate run flags.",
+        "setup_evidence": {
+          "alternate_commands_sent": 0,
+          "bridge_actions": 0,
+          "bridge_reads": 0,
+          "command": "event THE_ARCHITECT",
+          "finding": "Event console only searches AllEvents plus AllAncients. Architect is excluded; RunManager.EnterNextAct creates it at final-act completion. CreateRoom has no direct victory-room branch. Future setup must use native final-act progression; this route was not exercised.",
+          "native_response": "Event 'THE_ARCHITECT' not found"
+        },
+        "status": "deferred_setup_unavailable"
+      }
+    ],
+    "cleanup": {
+      "artifact_bindings": [
+        {
+          "path": "/private/tmp/sts-merchant-healing-live-20260913-stopped.json",
+          "sha256": "3a3b3c065af86698d03ae85e2a0a6760a4d2492412b8a9b7ebd2315b580f88f5"
+        },
+        {
+          "path": "/private/tmp/sts-merchant-healing-live-20260913-quarantine.json",
+          "sha256": "bab502dc44d118ac56c34b6be77fe3d7bc9f43852e197daa6137c0e4ae1f4b25"
+        },
+        {
+          "path": "/private/tmp/sts-merchant-healing-live-20260913-purge.json",
+          "sha256": "059f3910ede58c369046039f9819a77cfca98beee04a3311a6977fa4824ca508"
+        }
+      ],
+      "normal_quit": true,
+      "purge": {
+        "campaign_id": "UNIFIED-BRIDGE-V1",
+        "generated_files_removed": 4,
+        "mode": "purge",
+        "phase": "absent",
+        "schema_version": 1,
+        "status": "passed"
+      },
+      "quarantine": {
+        "campaign_id": "UNIFIED-BRIDGE-V1",
+        "mode": "quarantine",
+        "phase": "quarantined",
+        "schema_version": 1,
+        "state_sha256": "f0ec0a1343aa54d2472c0845775afb8296b85cb41591f1d371322fc983d94373",
+        "status": "passed"
+      },
+      "release_manifest_sha256": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+      "runtime": {
+        "game_process_running": false,
+        "mode": "require-stopped",
+        "port_accepting": false,
+        "port_samples": 2,
+        "process_samples": 3,
+        "schema_version": 1,
+        "status": "passed"
+      },
       "status": "passed"
+    },
+    "deferred": [
+      "Trial Merchant two-card upgrade: native branch unavailable in prior batch.",
+      "Stock-dependent shop passive/Potion Belt and pickup selectors.",
+      "Other Sphere and capacity-first event/resume reward variants."
+    ],
+    "execution": "Two feature cases in one game process, split into five maintained-client stages. Each stage requires successful reconciliation before the next. Native ordinary reward collection is explicit setup assistance between combat and the first reward read. Architect terminal Proceed is last.",
+    "failure_rule": "Stop on uncertainty, failed mutation, unsupported ownership, lost response, failed disposal or unavailable safe setup. Never retry/adopt. Do not continue independent gameplay while a bridge owner is pending. Normal quit and fresh stopped/closed checks precede exact owned quarantine/purge.",
+    "first_setup": "User manually launches Profile3 and leaves main menu open. Agent abandons prior disposable run via native UI, creates a fresh standard Ironclad/no-ascension run and controlled Fake Merchant setup. Never continue the failed reward owner.",
+    "healing_setup_limit": "Native console has no chosen reward command. Relic direct grant bypasses reward collection and is not a substitute. Fresh Merchant stock controls whether the healing relic is offered.",
+    "inspection": {
+      "architect_route": {
+        "evidence": "static_il_not_execution",
+        "native_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+        "path": "/private/tmp/sts-architect-route-il.json",
+        "sha256": "0015254b05abef34e9488377f3bf2da9af243831850fc131b57fe7c5c329cdb8"
+      },
+      "evidence": "static_il_not_execution",
+      "findings": [
+        "Fake Merchant encounter no-ascensionHP165 and gold300; inherits ordinary rewards.",
+        "FoulPotionThrown supplies Rug plus6 untouched stock relics.",
+        "AbstractRoom.IsVictoryRoom recognizes EventRoom with canonical TheArchitect. Direct event console construction is unavailable because its catalog excludes this model; EnterNextAct constructs it after final-act completion.",
+        "Architect terminal stable option is PROCEED; readiness/WinRun ownership guards retained."
+      ],
+      "healing_review": [
+        {
+          "evidence": "static_il_not_execution",
+          "path": "/private/tmp/sts-waffle-review-il.json",
+          "sha256": "479a5d33554ed1d34af3a1ef5e4d812c6ab0dcae54e16d93ad5bfcb362d14fa1"
+        },
+        {
+          "evidence": "static_il_not_execution",
+          "path": "/private/tmp/sts-waffle-modelid-review/il.json",
+          "sha256": "1a406b2952de65718915950a271f2d09030ed824a8aa32332ec3f42c4d03deb2"
+        },
+        {
+          "evidence": "static_il_not_execution",
+          "path": "/private/tmp/sts-waffle-console-il.json",
+          "sha256": "5dbb461536ec60a6abc06db80be723e97eb6c744974140a7aadb883129388fb8"
+        }
+      ],
+      "native_sha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+      "path": "/private/tmp/sts-merchant-ending-il.json",
+      "sha256": "5fedd17900b33574d3cee0821de1a331562e24b563058f2ac900b270244f8052"
+    },
+    "installation_preflight": "passed_installed_package_and_owned_metadata_without_connection",
+    "installed_state_sha256": "beb1095b7bda6dd5a6731993282d95d2064315f7b02479956fa43fcd9b0c96d1",
+    "limits": {
+      "combat_accepted_limit": 48,
+      "combat_round_limit": 12,
+      "core_reward_sessions_maximum": 3,
+      "core_reward_sessions_planned": 1,
+      "core_visible_reward_limit": 8,
+      "event_sessions_planned": 2,
+      "host_feature_session_limit": 64,
+      "reward_accepted_limit": 17
+    },
+    "live_actions_sent": true,
+    "manual_launch": true,
+    "previous_failed_queue": "/private/tmp/sts-merchant-architect-live-20260913.json",
+    "queue": "/private/tmp/sts-merchant-healing-live-20260913.json",
+    "queue_sha256": "b471e5e55ce5527cbc3d254be35f7f17c86402680249b19eb85f8610feeb5433",
+    "release_manifest_sha256": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+    "remaining_limit": "The original seven-extra-relic plus ordinary reward screen can exceed the current8-entry core projection. Assisted collection tests the seven-relic path only; end-to-end original-screen support remains separate.",
+    "schema_version": 1,
+    "status": "completed_with_deferred_case",
+    "test_profile": 3,
+    "timing_limits": "Record actual per-stage policy times. Preparation, user wait and cleanup not separately timed unless measured.",
+    "totals": {
+      "accepted": 20,
+      "attempted": 26,
+      "empty_diagnostic_streams": 4,
+      "known_no_mutation_stale_rejections": 6,
+      "policy_elapsed_seconds": 27.105,
+      "reconciled": 20
     }
-  ],
-  "previous_batch": {
-    "case_ids": [
-      "fake_merchant",
-      "sphere_payment_plan",
-      "dummy_setting2",
-      "dummy_setting1",
-      "dense_fight",
-      "lantern_fight",
-      "punch_fight"
-    ],
-    "failed": [
-      "dummy_setting2"
-    ],
-    "not_attempted": [
-      "dummy_setting1",
-      "dense_fight",
-      "lantern_fight",
-      "punch_fight"
-    ],
-    "passed": [
-      "fake_merchant",
-      "sphere_payment_plan"
-    ],
-    "record_path": "/private/tmp/sts-multicase-20260912.json",
-    "release_reuse": "All 334 current source/test inputs and exact package hashes verified against the accepted release; no source changes or rebuild needed.",
-    "status": "stopped_after_resumption_failure_cleaned_up"
   },
-  "previous_release": {
-    "live_evidence": "The retained live_results, completed batches, installation and cleanup belong to their original recorded releases.",
-    "release_manifest_sha256": "6cc54f193c98028f1bfe94d8f65558fc3d513ef2793125b692969c1c83c68319",
-    "scratch": "/private/tmp/sts-bridge-48hn8tm5",
-    "source_inventory_sha256": "8c82116d5da690a4ee099cc5aa915d361241dfba03842af556cebfee825a4f9c"
-  },
-  "prior_attempt_cleanup": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "generated_files_removed": 4,
+  "last_completed_cleanup": {
+    "artifact_bindings": [
+      {
+        "path": "/private/tmp/sts-merchant-healing-live-20260913-stopped.json",
+        "sha256": "3a3b3c065af86698d03ae85e2a0a6760a4d2492412b8a9b7ebd2315b580f88f5"
+      },
+      {
+        "path": "/private/tmp/sts-merchant-healing-live-20260913-quarantine.json",
+        "sha256": "bab502dc44d118ac56c34b6be77fe3d7bc9f43852e197daa6137c0e4ae1f4b25"
+      },
+      {
+        "path": "/private/tmp/sts-merchant-healing-live-20260913-purge.json",
+        "sha256": "059f3910ede58c369046039f9819a77cfca98beee04a3311a6977fa4824ca508"
+      }
+    ],
     "normal_quit": true,
-    "overlay_count": 0,
-    "phase": "absent",
+    "purge": {
+      "campaign_id": "UNIFIED-BRIDGE-V1",
+      "generated_files_removed": 4,
+      "mode": "purge",
+      "phase": "absent",
+      "schema_version": 1,
+      "status": "passed"
+    },
+    "quarantine": {
+      "campaign_id": "UNIFIED-BRIDGE-V1",
+      "mode": "quarantine",
+      "phase": "quarantined",
+      "schema_version": 1,
+      "state_sha256": "f0ec0a1343aa54d2472c0845775afb8296b85cb41591f1d371322fc983d94373",
+      "status": "passed"
+    },
+    "release_manifest_sha256": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
+    "runtime": {
+      "game_process_running": false,
+      "mode": "require-stopped",
+      "port_accepting": false,
+      "port_samples": 2,
+      "process_samples": 3,
+      "schema_version": 1,
+      "status": "passed"
+    },
     "status": "passed"
   },
-  "release_manifest_sha256": "0dd12fd10f84125eb5e8b32ea7bde6da91809358b2d85b8261d5458d2696737c",
+  "previous_release": {
+    "manifest_sha256": "593fed9a09e7a9ee69c73903dfbdc9dbdc1f28d55f8bb12b3556c4e3563851d2",
+    "package": "/private/tmp/sts-unified-bridge-release-retained-593fed9a",
+    "record": "/private/tmp/sts-healing-previous-release-593fed9a",
+    "validation_sha256": "e7f138dc2a3a9acc9e9d71e8b38a2ddc7e5184515e85c882a104aead3b40e8af"
+  },
+  "release_manifest_sha256": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0",
   "schema_version": 1,
-  "source_commit": "267b36be3d343fb1715ba2b3bc8991478a71d531",
-  "source_inventory_sha256": "c0a58785beb9b2459eb815cacb0e856af36a03109fa253c733e2e5ce0b81ef30",
-  "source_state": "Uncommitted working checkout based on source_commit; exact 338 release inputs are bound by bridge.json, not claimed to exist at that base commit. Verified source input copy retained in release scratch.",
-  "status": "passed",
+  "source_commit": "73348735724e80d5898a28aa0786f4f0d39f6cf6",
+  "source_inventory_sha256": "9a780e3fc6b00bc8d982ba3897fab5bc54a69812c89f41e5c262fc776913b916",
+  "source_state": "uncommitted_working_checkout",
+  "status": "accepted_release_dummy_live_passed_architect_read_failed_cleaned",
   "target": "bridge",
-  "timing_limits": "Final release gate 212.643 seconds; focused native-to-host surfaces 28.696 seconds. Implementation, review, packaging and user wait were not separately measured. A preceding full gate failed on an obsolete startup hook-count assertion; the corrected focused startup suite passed before this final gate.",
+  "timing_limits": "Focused checks and final gate have measured wall times; implementation, review, preparation and user wait were not separately measured.",
   "validation": {
-    "check_groups": 71,
     "checks": {
       "apps/bridge/operations/check_live_runtime_fixtures.py": {
         "log": "log-011.txt",
-        "seconds": 0.055,
+        "seconds": 0.06,
         "status": "passed"
       },
       "apps/bridge/operations/manage_live_campaign_fixtures.py": {
         "log": "log-012.txt",
-        "seconds": 2.877,
+        "seconds": 3.058,
         "status": "passed"
       },
       "apps/bridge/operations/predecessor_conflict_fixtures.py": {
         "log": "log-013.txt",
-        "seconds": 0.833,
+        "seconds": 0.914,
         "status": "passed"
       },
       "build:apps/bridge/production/Sts2AgentBridge.csproj": {
         "log": "log-001.txt",
-        "seconds": 1.433,
+        "seconds": 1.592,
         "status": "passed"
       },
       "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-015.txt",
-        "seconds": 1.372,
+        "seconds": 1.461,
         "status": "passed"
       },
       "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
         "log": "log-066.txt",
-        "seconds": 1.101,
+        "seconds": 1.214,
         "status": "passed"
       },
       "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-017.txt",
-        "seconds": 1.121,
+        "seconds": 1.208,
         "status": "passed"
       },
       "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-019.txt",
-        "seconds": 1.139,
+        "seconds": 1.181,
         "status": "passed"
       },
       "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-021.txt",
-        "seconds": 1.811,
+        "seconds": 2.001,
         "status": "passed"
       },
       "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-023.txt",
-        "seconds": 1.933,
+        "seconds": 2.013,
         "status": "passed"
       },
       "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-025.txt",
-        "seconds": 1.058,
+        "seconds": 1.13,
         "status": "passed"
       },
       "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-027.txt",
-        "seconds": 1.256,
+        "seconds": 1.326,
         "status": "passed"
       },
       "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-029.txt",
-        "seconds": 1.277,
+        "seconds": 1.316,
         "status": "passed"
       },
       "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-031.txt",
-        "seconds": 2.014,
+        "seconds": 2.132,
         "status": "passed"
       },
       "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-033.txt",
-        "seconds": 1.662,
+        "seconds": 1.847,
         "status": "passed"
       },
       "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
         "log": "log-059.txt",
-        "seconds": 2.529,
+        "seconds": 2.752,
         "status": "passed"
       },
       "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
         "log": "log-058.txt",
-        "seconds": 1.218,
+        "seconds": 1.26,
         "status": "passed"
       },
       "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-035.txt",
-        "seconds": 1.912,
+        "seconds": 2.076,
         "status": "passed"
       },
       "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-037.txt",
-        "seconds": 1.72,
+        "seconds": 1.843,
         "status": "passed"
       },
       "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-038.txt",
-        "seconds": 1.224,
+        "seconds": 1.311,
         "status": "passed"
       },
       "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-040.txt",
-        "seconds": 1.227,
+        "seconds": 1.378,
         "status": "passed"
       },
       "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-042.txt",
-        "seconds": 1.134,
+        "seconds": 1.159,
         "status": "passed"
       },
       "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-044.txt",
-        "seconds": 1.097,
+        "seconds": 1.183,
         "status": "passed"
       },
       "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-046.txt",
-        "seconds": 3.297,
+        "seconds": 3.493,
         "status": "passed"
       },
       "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-048.txt",
-        "seconds": 1.328,
+        "seconds": 1.334,
         "status": "passed"
       },
       "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-050.txt",
-        "seconds": 1.233,
+        "seconds": 1.248,
         "status": "passed"
       },
       "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-052.txt",
-        "seconds": 2.715,
+        "seconds": 2.755,
         "status": "passed"
       },
       "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-054.txt",
-        "seconds": 1.978,
+        "seconds": 2.03,
         "status": "passed"
       },
       "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-056.txt",
-        "seconds": 2.028,
+        "seconds": 2.217,
         "status": "passed"
       },
       "cards:combat_host_native": {
         "log": "log-062.txt",
-        "seconds": 0.188,
+        "seconds": 0.193,
         "status": "passed"
       },
       "cards:host_wire": {
         "log": "log-063.txt",
-        "seconds": 0.126,
+        "seconds": 0.127,
         "status": "passed"
       },
       "clean_install": {
         "log": "log-070.txt",
-        "seconds": 0.074,
+        "seconds": 0.09,
         "status": "passed"
       },
       "client": {
         "log": "log-008.txt",
-        "seconds": 0.285,
+        "seconds": 0.318,
         "status": "passed"
       },
       "components/cards/host_tests": {
         "log": "log-003.txt",
-        "seconds": 0.047,
+        "seconds": 0.05,
         "status": "passed"
       },
       "components/events/host_tests": {
         "log": "log-004.txt",
-        "seconds": 2.411,
+        "seconds": 2.589,
         "status": "passed"
       },
       "components/item_transport/transport_tests": {
         "log": "log-005.txt",
-        "seconds": 0.044,
+        "seconds": 0.061,
         "status": "passed"
       },
       "components/item_wire/host_tests": {
         "log": "log-006.txt",
-        "seconds": 0.05,
+        "seconds": 0.058,
         "status": "passed"
       },
       "core_client": {
         "log": "log-009.txt",
-        "seconds": 0.037,
+        "seconds": 0.042,
         "status": "passed"
       },
       "events:host_native": {
         "log": "log-061.txt",
-        "seconds": 77.095,
+        "seconds": 79.763,
         "status": "passed"
       },
       "package": {
         "log": "log-069.txt",
-        "seconds": 0.067,
+        "seconds": 0.083,
         "status": "passed"
       },
       "package_identity": {
         "log": "log-002.txt",
-        "seconds": 0.028,
+        "seconds": 0.032,
         "status": "passed"
       },
       "package_output": {
         "log": "log-071.txt",
-        "seconds": 0.029,
+        "seconds": 0.036,
         "status": "passed"
       },
       "production_surface": {
         "log": "log-067.txt",
-        "seconds": 0.048,
+        "seconds": 0.051,
         "status": "passed"
       },
       "production_surface_rejections": {
         "log": "log-068.txt",
-        "seconds": 0.078,
+        "seconds": 0.083,
         "status": "passed"
       },
       "reproducible_build": {
         "log": "log-065.txt",
-        "seconds": 1.448,
+        "seconds": 1.657,
         "status": "passed"
       },
       "reward_codec": {
         "log": "log-010.txt",
-        "seconds": 0.039,
+        "seconds": 0.043,
         "status": "passed"
       },
       "sdk": {
         "log": "log-014.txt",
-        "seconds": 0.046,
+        "seconds": 0.051,
         "status": "passed"
       },
       "shared_client:socket": {
         "log": "log-064.txt",
-        "seconds": 29.022,
+        "seconds": 61.822,
         "status": "passed"
       },
       "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-016.txt",
-        "seconds": 2.616,
+        "seconds": 2.634,
         "status": "passed"
       },
       "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-018.txt",
-        "seconds": 0.056,
+        "seconds": 0.06,
         "status": "passed"
       },
       "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-020.txt",
-        "seconds": 0.052,
+        "seconds": 0.054,
         "status": "passed"
       },
       "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-022.txt",
-        "seconds": 0.039,
+        "seconds": 0.041,
         "status": "passed"
       },
       "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
@@ -1701,106 +1371,114 @@
       },
       "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-026.txt",
-        "seconds": 0.024,
+        "seconds": 0.027,
         "status": "passed"
       },
       "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-028.txt",
-        "seconds": 0.044,
+        "seconds": 0.046,
         "status": "passed"
       },
       "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-030.txt",
-        "seconds": 0.047,
+        "seconds": 0.05,
         "status": "passed"
       },
       "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-032.txt",
-        "seconds": 0.054,
+        "seconds": 0.058,
         "status": "passed"
       },
       "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-034.txt",
-        "seconds": 0.997,
+        "seconds": 1.011,
         "status": "passed"
       },
       "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-036.txt",
-        "seconds": 0.034,
+        "seconds": 0.037,
         "status": "passed"
       },
       "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-060.txt",
-        "seconds": 120.847,
+        "seconds": 134.115,
         "status": "passed"
       },
       "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-039.txt",
-        "seconds": 0.076,
+        "seconds": 0.093,
         "status": "passed"
       },
       "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-041.txt",
-        "seconds": 0.099,
+        "seconds": 0.098,
         "status": "passed"
       },
       "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-043.txt",
-        "seconds": 0.027,
+        "seconds": 0.03,
         "status": "passed"
       },
       "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-045.txt",
-        "seconds": 0.267,
+        "seconds": 0.253,
         "status": "passed"
       },
       "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-047.txt",
-        "seconds": 6.465,
+        "seconds": 6.459,
         "status": "passed"
       },
       "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-049.txt",
-        "seconds": 0.034,
+        "seconds": 0.036,
         "status": "passed"
       },
       "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-051.txt",
-        "seconds": 0.038,
+        "seconds": 0.04,
         "status": "passed"
       },
       "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-053.txt",
-        "seconds": 0.042,
+        "seconds": 0.044,
         "status": "passed"
       },
       "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-055.txt",
-        "seconds": 0.036,
+        "seconds": 0.038,
         "status": "passed"
       },
       "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-057.txt",
-        "seconds": 0.037,
+        "seconds": 0.052,
         "status": "passed"
       },
       "tests/maintenance": {
         "log": "log-007.txt",
-        "seconds": 0.873,
+        "seconds": 1.095,
         "status": "passed"
       }
     },
-    "client_tests": 69,
-    "event_integration_cases": 485,
-    "focused_abandon_popup_assertions": 140,
-    "focused_incremental_hook_assertions": 161,
-    "focused_surfaces_cases": 55,
-    "focused_surfaces_seconds": 28.696,
-    "host_tests": 128,
-    "native_assertions": 10358,
-    "production_native_integration_cases": 423,
-    "release_gate_seconds": 212.643,
-    "scratch": "/private/tmp/sts-bridge-u3w9okb9",
-    "shared_bridge_checks": 1233
+    "component": "all",
+    "event_groups": [],
+    "integration_jobs": 4,
+    "live_campaign_started": false,
+    "release_manifests": {
+      "bridge": "cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0"
+    },
+    "seconds": 262.45,
+    "selected_checks": [],
+    "source": {
+      "files": 359,
+      "projects": 46,
+      "targets": 1
+    },
+    "status": "passed",
+    "suite": "release",
+    "target_game_executed": false,
+    "targets": [
+      "bridge"
+    ]
   }
 }

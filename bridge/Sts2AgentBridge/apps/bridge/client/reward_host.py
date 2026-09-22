@@ -25,6 +25,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
     discarded_potions = []
     capacity_gains = []
     capacity_schema = None
+    healing_schema = None
     pending = None
     finished = set()
     offers = None
@@ -35,12 +36,14 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
         require(clock() < deadline, 'reward_timeout')
 
     def offer(reward):
-        return (reward['kind'], reward['gold_amount'], tuple(reward['cards']), reward.get('item_key'), reward.get('potion_capacity_gain',0))
+        return (reward['kind'], reward['gold_amount'], tuple(reward['cards']), reward.get('item_key'), reward.get('potion_capacity_gain',0), reward.get('heal_amount',0))
 
     def validate_domain(state):
-        nonlocal offers, capacity_schema
+        nonlocal offers, capacity_schema, healing_schema
         if capacity_schema is None:capacity_schema=state.get('capacity_rewards',False)
         require(state.get('capacity_rewards',False)==capacity_schema,'reward_offer_changed')
+        if healing_schema is None:healing_schema=state.get('healing_rewards',False)
+        require(state.get('healing_rewards',False)==healing_schema,'reward_offer_changed')
         for slot, reward in enumerate(state['rewards']):
             require(type(reward['reward_slot']) is int and reward['reward_slot'] == slot)
             require(reward['kind'] != 'unsupported' or reward['successfully_selected'], 'unsupported_reward')

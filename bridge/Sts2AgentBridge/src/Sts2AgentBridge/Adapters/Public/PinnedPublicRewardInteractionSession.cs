@@ -163,6 +163,7 @@ internal sealed class PinnedPublicRewardInteractionSession
     private readonly List<(Reward Reward,NRewardButton Button,object Model,string Key)> _itemTargets=new();
     private readonly List<PinnedPublicItemRewardClaim> _settledItems=new();
     internal bool CapacityRewards {get;private set;}
+    internal bool HealingRewards {get;private set;}
     internal bool UsesItemIndices => _itemDomain is not null;
     internal bool SettledItemsValid() {
         var growth=_pending?.Item;
@@ -188,7 +189,8 @@ internal sealed class PinnedPublicRewardInteractionSession
             for(int i=0;i<rows.Count;i++)_itemDomain.Add(rows[i].Reward,(i,rows[i].Reward.RewardsSetIndex));
         }
         if(_itemDomain is null)return;
-        CapacityRewards |= rows.Any(row=>PinnedPublicItemRewardClaim.CapacityGain(row.Reward)>0);
+        HealingRewards |= rows.Any(row=>PinnedPublicItemRewardClaim.HealingReward(row.Reward));
+        CapacityRewards |= HealingRewards || rows.Any(row=>PinnedPublicItemRewardClaim.CapacityGain(row.Reward)>0);
         foreach(var row in rows)if(!_itemDomain.TryGetValue(row.Reward,out var entry)||entry.Native!=row.Reward.RewardsSetIndex)
             throw new InvalidOperationException("Item reward domain replaced.");
         foreach(var reward in _itemDomain.Keys)if(!reward.SuccessfullySelected&&!WasSkipped(reward)&&!rows.Exists(row=>ReferenceEquals(row.Reward,reward)))
@@ -363,7 +365,7 @@ internal sealed class PinnedPublicRewardInteractionSession
             _acceptedDecisionIds.Clear();
             _skippedCardRewards.Clear();
             _specialTargets.Clear();
-            _itemDomain=null;CapacityRewards=false;_initialPotions=null;_initialPotionKeys=null;_itemTargets.Clear();_settledItems.Clear();
+            _itemDomain=null;CapacityRewards=false;HealingRewards=false;_initialPotions=null;_initialPotionKeys=null;_itemTargets.Clear();_settledItems.Clear();
             _decisionRevision = 0;
             _completedSession = false;
             _currentDecisionId = string.Empty;

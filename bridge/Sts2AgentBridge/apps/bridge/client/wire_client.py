@@ -40,8 +40,8 @@ def build_request(method: str, route: str, body: bytearray | None, token: bytear
             expected.add("child")
         require(type(value) is dict and set(value) == expected, "action_fields")
         require(type(value["decision_id"]) is str and re.fullmatch("[0-9a-f]{64}", value["decision_id"]), "decision")
-        require(type(value["action_id"]) is str and (re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
-                route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:card:(?:[0-9]|[12][0-9]|3[01])|inventory:close)", value["action_id"]) or
+        require(type(value["action_id"]) is str and (route != "/probe/room-flows-v1/public/action" and re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
+                route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:(?:card|potion|relic):(?:[0-9]|[12][0-9]|3[01])|remove:(?:[0-9]|[1-9][0-9]|[1-4][0-9]{2}|50[0-9]|51[01])|discard:[0-7]|inventory:close|leave|choose:[0-7])", value["action_id"]) or
                 event and type(value.get("child")) is dict and re.fullmatch(
                     r"(?:tool:(?:small|big)|reward:(?:(?:claim|collect|open):[0-7]|choose:[0-4]|skip_card))", value["action_id"])), "action")
         fields = "X-Sts2-Decision-Id: " + value["decision_id"] + "\r\nX-Sts2-Action-Id: " + value["action_id"] + "\r\n"
@@ -83,6 +83,52 @@ def parse_response(response: bytearray, *, event: bool) -> bytearray:
         raise
 
 
+def read_failure_diagnostic(response: bytearray):
+    """Retain only the runtime's closed error vocabulary, never raw response data."""
+    stages = ('dispatch', 'router', 'module_create', 'module_handle', 'harmony_guard',
+              'event_adapter', 'hook_targets', 'hook_validation', 'hook_install',
+              'event_session', 'event_wire', 'event_read', 'hook_prepare', 'native_capture', 'reply')
+    codes = ('dispatch_unavailable', 'dispatch_busy', 'dispatch_timeout_before_claim',
+             'dispatch_timeout_after_claim', 'dispatch_fault', 'dispatch_invalid_result')
+    body = None
+    def unique_pairs(pairs):
+        value = {}
+        for key, item in pairs:
+            require(key not in value, 'duplicate_field')
+            value[key] = item
+        return value
+    try:
+        # Router terminal errors have ordinary headers even on an event route.
+        # This diagnostic read does not relax the normal response parser below.
+        header = response[:response.find(b'\r\n\r\n')].split(b'\r\n')
+        body = parse_response(response, event=len(header) == 7)
+        value = json.loads(body, object_pairs_hook=unique_pairs)
+        require(type(value) is dict and type(value.get('schema_version')) is int
+                and value['schema_version'] == 1 and value.get('kind') == 'error', 'diagnostic')
+        code = value.get('code')
+        if code in ('bridge_stopped', 'capability_busy'):
+            require(set(value) == {'schema_version', 'kind', 'code'}, 'diagnostic_fields')
+            return {'code': code, 'stages': []}
+        require(type(code) is str and code in codes and
+                set(value) == {'schema_version', 'kind', 'code', 'stages'}, 'diagnostic_fields')
+        rows = value['stages']
+        require(type(rows) is list and 1 <= len(rows) <= len(stages), 'diagnostic_stages')
+        names = []
+        for row in rows:
+            require(type(row) is dict and set(row) == {'stage', 'elapsed_ms', 'active'}, 'diagnostic_stage')
+            require(type(row['stage']) is str and row['stage'] in stages and
+                    type(row['elapsed_ms']) is int and 0 <= row['elapsed_ms'] <= 3000 and
+                    type(row['active']) is bool, 'diagnostic_stage')
+            names.append(row['stage'])
+        require(len(set(names)) == len(names) and sum(row['active'] for row in rows) == 1, 'diagnostic_stages')
+        return {'code': code, 'stages': rows}
+    except (ValueError, TypeError, KeyError, UnicodeError, RecursionError):
+        return None
+    finally:
+        if body is not None:
+            body[:] = b'\0' * len(body)
+
+
 class BridgeClient:
     def __init__(self, credential: bytearray, *, connector=None, clock=time.monotonic, sleep=time.sleep):
         require(type(credential) is bytearray and re.fullmatch(b"[0-9a-f]{64}", credential), "credential")
@@ -90,6 +136,7 @@ class BridgeClient:
         self._sleep, self._next_exchange = sleep, float('-inf')
         self._connector = connector or (lambda: socket.create_connection(("127.0.0.1", 43117), timeout=2))
         self._failed, self._requests = False, 0
+        self.read_diagnostic = None
 
     def exchange(self, method, route, body=None, *, deadline=None):
         require(not self._failed and self._requests < 16896, "client_stopped")
@@ -121,6 +168,8 @@ class BridgeClient:
                     break
                 response.extend(chunk)
                 require(len(response) <= 66560, "response_limit")
+            if method == 'GET' and self.read_diagnostic is None:
+                self.read_diagnostic = read_failure_diagnostic(response)
             return parse_response(response, event=route.startswith("/probe/generic-event-v7/"))
         except BaseException:
             self._failed = True

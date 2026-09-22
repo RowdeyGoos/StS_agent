@@ -10,6 +10,7 @@
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicPotionDiscard.cs" />
     <Compile Include="../../items/native/PinnedPotionCapacity.cs" />
+    <Compile Include="../../items/native/PinnedPotionDiscard.cs" />
     <Compile Include="GenericEventV7ItemState.cs" />
     <Compile Include="GenericEventV7ItemAdapter.cs" />
     <Compile Include="GenericEventV7CardRewardAdapter.cs" />
@@ -30,8 +31,11 @@
     <Compile Include="GenericEventV7CardAdapter.cs" />
     <Compile Include="GenericEventV7Hooks.cs" />
     <Compile Include="GenericEventV7MerchantScreen.cs" />
+    <Compile Include="GenericEventV7MerchantFight.cs" />
     <Compile Include="GenericEventV7SphereSession.cs" />
     <Compile Include="GenericEventV7AbandonPopup.cs" />
+    <Compile Include="GenericEventV7ItemPolicySession.cs" />
+    <Compile Include="GenericEventV7Terminal.cs" />
     <Compile Include="PinnedGenericEventV7NativeAdapter.cs" />
     <Compile Include="../../cards/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
     <ProjectReference Include="../core/GenericEventV7.Core.csproj" />

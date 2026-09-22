@@ -131,7 +131,7 @@ internal sealed class NativeBridgeModule : IBridgeModule
                         var value=request.IsPost?native.ApplyResumeItem(request.Decision,request.Action):native.ReadResumeItem();
                         byte[] itemBody=GenericEventV7WireService.EncodeItem(value);
                         using var itemJson=JsonDocument.Parse(itemBody);
-                        string? status=Text(itemJson.RootElement,"status");
+                        string? status=Text(itemJson.RootElement,"status")??Text(itemJson.RootElement,"outcome");
                         return new(itemBody,Terminal:status is not ("ready" or "waiting" or "accepted" or "resolved"));
                     }
                     byte[]? command = request.IsPost ? GenericEventTransportServiceBody.Build(request.Decision!, request.Action!,
@@ -144,7 +144,7 @@ internal sealed class NativeBridgeModule : IBridgeModule
                     var classification = GenericEventTerminalClassifier.Classify(route, GenericEventReleaseSelection.Generic, _nonce, 200, body);
                     return Checked(body, (int)classification, root => !request.IsPost && Text(root, "kind") == "decision" &&
                         root.TryGetProperty("parent", out var parent) && parent.ValueKind == JsonValueKind.Object &&
-                        Text(parent, "status") == "complete" && Text(parent, "phase") is "map_handoff" or "combat_handoff" or "combat_resume_handoff" or "run_abandoned") with { Diagnostic = native.LastDiagnostic, EventDiagnostic = true, CombatScope=native.CombatScope, CombatResume=native.CombatResume, CombatResumeDiagnostic=()=>native.CombatResumeDiagnostic, EventNonce=_nonce };
+                        Text(parent, "status") == "complete" && Text(parent, "phase") is "map_handoff" or "combat_handoff" or "combat_resume_handoff" or "run_won" or "run_abandoned") with { Diagnostic = native.LastDiagnostic, EventDiagnostic = true, CombatScope=native.CombatScope, CombatResume=native.CombatResume, CombatResumeDiagnostic=()=>native.CombatResumeDiagnostic, EventNonce=_nonce };
                 };
     }
     private static string? Text(JsonElement value, string name) =>

@@ -1,27 +1,27 @@
 # Current unified release
 
-[bridge.json](bridge.json) binds accepted release `0dd12fd10f84125eb5e8b32ea7bde6da91809358b2d85b8261d5458d2696737c` to the exact
-source, toolchain, tests and package of the single production bridge.
+This directory owns the **accepted artifact identity and validation binding**.
+[Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns the
+latest operational result, installation record and capability limits;
+[bridge usage](../../README.md) owns build/install/client/cleanup commands.
 
-This release adds Trial’s owned abandonment popup: Cancel returns to the same
-verified event choices; explicit confirmation ends the run only after the exact
-native task, abandoned flag, HP zero and modal closure are verified. Default
-policy is cancellation. The parent protocol is `generic_event_v10`, with unchanged
-routes. Unresolved or changed outcomes cannot release a clean owner.
+| Record | Meaning |
+| --- | --- |
+| [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
+| [validation.json](validation.json) | Accepted validation and retained live/cleanup evidence bindings |
 
-Independent semantic review found no remaining blocker. All 71 release groups
-passed in 212.643 seconds: 10,358 native assertions, 1,233 shared
-checks, 485 C#/Python integration cases (423 native), 69 client tests,
-128 event-host tests, real socket actions, reproducible packaging and owned
-installation/cleanup fixtures. This package has not been installed or live-tested.
+Manifest SHA-256:
+`cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0`.
+It binds 359 exact source/test inputs captured from the working checkout based on
+`7334873`. That original build provenance is retained after the implementation
+commit `cd3dc76`; documentation edits do not repin the manifest.
 
-The preceding release `6cc54f193c98028f1bfe94d8f65558fc3d513ef2793125b692969c1c83c68319`
-passed Lantern Key and Punch Off combat/rewards/map in one live process, including
-special-card and deferred potion/relic rewards. Normal quit and exact cleanup
-passed with 429 unchanged base files and zero overlays. Those results retain
-their original identities in [validation.json](validation.json) and the
-[multi-case evidence](../../../../docs/evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md).
-They are not live evidence for this popup increment.
+The accepted gate passed **71 groups in 262.450 seconds**, including reproducible
+production build, package and owned installation/cleanup checks. Independent
+semantic review and focused native/client/codec/unified/socket checks preceded it
+(11,432 native checks; 192.284 seconds). The release includes the exact terminal
+Fake Lee’s Waffle healing and freed reward-button reconciliation corrections.
 
-Current capability and limits are in [status](../../../../docs/STATUS.md).
-See the [bridge guide](../../README.md) for usage.
+The [September 12–13 ledger](../../../../docs/evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md)
+retains original failed attempts and later passes under their own releases.
+Earlier manifests and test counts are not evidence for a different artifact.

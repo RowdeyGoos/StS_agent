@@ -149,7 +149,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
         var after=ProjectPlayer(player);
         bool good=pending.Kind switch {
             PublicRewardActionKind.ClaimGold=>target.Reward is GoldReward gold&&target.Reward.SuccessfullySelected&&gold.Amount==target.Projection.GoldAmount&&SameHealth(after,pending.BeforePlayer)&&after.DeckCount==pending.BeforePlayer.DeckCount&&(long)after.Gold==(long)pending.BeforePlayer.Gold+target.Projection.GoldAmount,
-            PublicRewardActionKind.CollectItem=>target.Reward.SuccessfullySelected&&pending.Item?.Completed==true&&SamePlayer(after,pending.BeforePlayer),
+            PublicRewardActionKind.CollectItem=>target.Reward.SuccessfullySelected&&pending.Item?.Completed==true&&pending.Item.MatchesPlayer(pending.BeforePlayer,after),
             PublicRewardActionKind.ChooseCard=>target.Reward.SuccessfullySelected&&pending.CardTarget is {} card&&SameHealth(after,pending.BeforePlayer)&&after.Gold==pending.BeforePlayer.Gold&&after.DeckCount==pending.BeforePlayer.DeckCount+1&&CountCardCopies(player,card.Model.Id.Entry)==pending.ChosenCardCopiesBefore+1,
             PublicRewardActionKind.SkipCard=>!target.Reward.SuccessfullySelected&&SamePlayer(after,pending.BeforePlayer),
             _=>false};
@@ -179,14 +179,14 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
     private PublicRewardDecisionSnapshot ReconcileItem(PinnedPublicRewardPendingMutation pending, Node top)
     {
         var target=pending.ParentTarget;var item=pending.Item;
-        if(target is null||item is null||!ReferenceEquals(top,pending.ParentScreen)||top is not NRewardsScreen screen||
-            !ReferenceEquals(target.Button.Reward,target.Reward))return FailClosed();
+        if(target is null||item is null||!ReferenceEquals(top,pending.ParentScreen)||top is not NRewardsScreen screen)return FailClosed();
         if(!target.Reward.SuccessfullySelected) {
-            if(!ContainsNode(screen,target.Button)||(!item.Valid(false)&&!item.Valid(true)))return FailClosed();
+            if(!GodotObject.IsInstanceValid(target.Button)||!ReferenceEquals(target.Button.Reward,target.Reward)||
+                !ContainsNode(screen,target.Button)||(!item.Valid(false)&&!item.Valid(true)))return FailClosed();
             return PublicRewardDecisionSnapshot.Waiting();
         }
         var player=ProjectPlayer(target.Reward.Player);
-        if(!item.Completed||!SamePlayer(player,pending.BeforePlayer))return FailClosed();
+        if(!item.Completed||!item.MatchesPlayer(pending.BeforePlayer,player))return FailClosed();
         _session.SettleItem(item);_session.ResolveClaim(player);
         return ReadParent(screen);
     }
@@ -382,7 +382,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             projectedPlayer,
             rewards,
             legalActions,
-            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(player), _session.CapacityRewards);
+            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(player), _session.CapacityRewards, _session.HealingRewards);
         snapshot = snapshot with
         {
             DecisionId = PublicRewardDecisionIdentity.Compute(snapshot),
@@ -447,7 +447,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             projectedPlayer,
             new[] { parentTarget.Projection with { CardSelectionCanSkip = skipAvailable } },
             legalActions,
-            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(cardReward.Player), _session.CapacityRewards);
+            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(cardReward.Player), _session.CapacityRewards, _session.HealingRewards);
         snapshot = snapshot with
         {
             DecisionId = PublicRewardDecisionIdentity.Compute(snapshot),
@@ -647,7 +647,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
                 if(!reward.SuccessfullySelected)_=new PinnedPublicItemRewardClaim(reward);
                 targets.Add(new PinnedPublicRewardParentTarget(slot,button,reward,
                     new PublicRewardItem(rewardIndex,model is PotionModel?PublicRewardKind.Potion:PublicRewardKind.Relic,
-                        reward.SuccessfullySelected,0,Array.Empty<string>(),false,key,PinnedPublicItemRewardClaim.CapacityGain(reward)),Array.Empty<CardModel>()));
+                        reward.SuccessfullySelected,0,Array.Empty<string>(),false,key,PinnedPublicItemRewardClaim.CapacityGain(reward),PinnedPublicItemRewardClaim.HealingAmount(reward)),Array.Empty<CardModel>()));
                 continue;
             }
 

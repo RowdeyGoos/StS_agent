@@ -22,8 +22,8 @@ def run_surface_cases(args: Any, host: Any, exchange_type: Any) -> int:
         return result,ex
     result,ex=run('INCREMENTAL')
     assert not ex.cleanup_failed and result['status']=='resolved',result
-    assert all(v['kind']=='decision' and v['parent']['status']=='waiting' for v in ex.envelopes[:32])
-    assert ex.envelopes[32]['parent']['status']=='ready'
+    assert all(v['kind']=='decision' and v['parent']['status']=='waiting' for v in ex.envelopes[:33])
+    assert ex.envelopes[33]['parent']['status']=='ready'
     assert result['parent_attempted']==result['parent_accepted']==result['parent_reconciled']==2,result
     checks+=1
     for scenario in ('AB_CANCEL','AB_CONFIRM','AB_DELAY','AB_FAULT','AB_STALE'):

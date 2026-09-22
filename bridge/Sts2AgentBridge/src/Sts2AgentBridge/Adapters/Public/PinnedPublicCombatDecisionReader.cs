@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -20,6 +22,9 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
 
     private bool _observedCombatInProgress;
     private PublicCombatDecisionSnapshot? _terminalSnapshot;
+    // Returning to an already observed native object must retain its identity:
+    // BeginObservedCombat and waiting periods cannot make an old action reusable.
+    private readonly ConditionalWeakTable<object, string> _combatScopes = new();
 
     // Called only after the unified event transfer certifies an in-progress
     // exact combat. Do not reuse a prior encounter's terminal observation.
@@ -222,7 +227,8 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
             PublicCombatOutcome.None);
         return snapshot with
         {
-            DecisionId = PublicCombatDecisionIdentity.Compute(snapshot),
+            DecisionId = PublicCombatDecisionIdentity.Compute(snapshot,
+                _combatScopes.GetValue(combat, _ => Convert.ToHexString(RandomNumberGenerator.GetBytes(16)).ToLowerInvariant())),
         };
     }
 

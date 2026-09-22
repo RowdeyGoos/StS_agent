@@ -68,7 +68,7 @@ internal sealed class CoreBridgeModule : IDisposable
         "/probe/v0/public/map-action" => PublicMapActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         "/probe/v0/public/room-action" => PublicRoomActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         ResumeItemAction => Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsCanonicalDecisionId(r.Decision)&&
-            Sts2AgentBridge.Successors.ItemWireV1.ItemWireV1Protocol.IsCanonicalActionId(r.Action,out _),
+            (Sts2AgentBridge.Successors.ItemWireV1.ItemWireV1Protocol.IsCanonicalActionId(r.Action,out _)||r.Action=="skip_remaining"||r.Action is {Length:9}&&r.Action.StartsWith("discard:",StringComparison.Ordinal)&&r.Action[8] is >= '0' and <= '7'),
         CombatCardChoiceService.ActionRoute => CombatCardChoiceService.IsAction(r.Decision, r.Action),
         _ => false,
     };

@@ -15,8 +15,36 @@ internal static partial class Program
         CombatManager.Instance!.IsInProgress=false;
         for(int i=0;i<8;i++){var potion=new PotionModel{Owner=f.World.Player};potion.Id.Entry="OLD_"+i;f.World.Player.PotionSlots[i]=potion;}
     }
+    private static void SharedPotionDiscardCases() {
+        foreach(string mode in new[]{"success","context","slot","other_slot","gold","deck","relic","queued","locked","network","pending_dispose","completed_changed"}) {
+            using var f=new CombatItemsFixture(2);FillBelt(f);bool context=true;
+            var queue=RunManager.Instance!.ActionQueueSynchronizer;DiscardPotionGameAction? action=null;queue.Handler=a=>action=a;
+            var discard=new Sts2AgentBridge.Items.Native.PinnedPotionDiscard(f.World.Player,0,()=>context);
+            discard.Dispatch();Check(action is not null&&action.DiscardCalls==0,"shared discard queued once");
+            switch(mode) {
+                case "context":context=false;break;
+                case "slot":f.World.Player.PotionSlots[0]=new PotionModel{Owner=f.World.Player};break;
+                case "other_slot":f.World.Player.PotionSlots[1]=null;break;
+                case "gold":f.World.Player.Gold--;break;
+                case "deck":f.World.Player.Deck.Cards.Clear();break;
+                case "relic":f.World.Player.Relics.Add(new RelicModel{Owner=f.World.Player});break;
+                case "queued":f.World.Player.PotionSlots[0]!.IsQueued=true;break;
+                case "locked":f.World.Player.CanRemovePotions=false;break;
+                case "network":queue.SetNetwork(2);break;
+                case "pending_dispose":try{discard.Dispose();}catch(InvalidOperationException){}break;
+            }
+            bool rejected=false;try{action!.Execute();}catch(InvalidOperationException){rejected=true;}
+            if(mode is "success" or "completed_changed") {
+                Check(!rejected&&action!.DiscardCalls==1&&discard.Read()==1,"shared exact discard completed");
+                if(mode=="completed_changed"){f.World.Player.Gold--;Check(discard.Read()==-1,"settled discard revalidates context");}
+            } else Check(rejected&&action!.DiscardCalls==0,"shared execution guard: "+mode);
+            bool cleanupFailed=false;try{discard.Dispose();}catch(InvalidOperationException){cleanupFailed=true;}
+            Check(cleanupFailed==(mode!="success"),"shared discard cleanup: "+mode);
+        }
+    }
     private static void PotionDiscardCases()
     {
+        SharedPotionDiscardCases();
         foreach(int slot in new[]{0,7}) {
             using var f=new CombatItemsFixture(4);FillBelt(f);
             var first=f.Reader.Read();

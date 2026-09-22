@@ -10,12 +10,14 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | --- | --- |
 | Project overview and commands | [Project README](../README.md) |
 | Session workflow and validation | [AGENTS](../AGENTS.md) |
-| Implemented capabilities, evidence and limits | [Status](STATUS.md) |
+| Current bridge support, failures and remaining work | [Status](STATUS.md) |
 | Priorities | [Roadmap](../ROADMAP.md) |
 | Architecture decisions | [Decisions](../DECISIONS.md) |
 | Live bridge development and testing | [Live development](LIVE_DEVELOPMENT.md), [bridge commands](../bridge/Sts2AgentBridge/README.md) |
 | Combat bridge selectors and host | [Combat choices](COMBAT_CHOICES.md) |
-| Generic event architecture and coverage | [Generic events](GENERIC_EVENTS.md), [coverage](EVENT_COVERAGE.md), [all-event research map](EVENT_INTERACTION_MAP.md) |
+| Generic event semantics | [Contract reference](GENERIC_EVENTS.md) |
+| Named event live evidence | [Caller evidence index](EVENT_COVERAGE.md) |
+| Static native event census (historical gap labels) | [Research map and corrections](EVENT_INTERACTION_MAP.md) |
 | Full-game headless implementation tasks | [Current implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Headless game logic and architecture | [Game engine](HEADLESS_ENGINE.md) |
 | Agent-evaluation scope and information boundary | [Target](TARGET.md) |
@@ -24,10 +26,11 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 ## References and results
 
 - Retired simulator, actor and experiment guides: [archive](archive/README.md#retired-simulator-pipelines).
-- Latest live results: [combined September 9–10 batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md).
-  [Status](STATUS.md) also records newer offline-validated work awaiting live tests.
-  The [September 8 unified smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) remains
-  earlier supporting evidence.
+- Latest live results: [September 12–13 multi-case ledger](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md)
+  and [Crystal Sphere](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md). Earlier supporting
+  evidence: [September 9–10 combined batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
+  and [September 8 unified smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md).
+  Use [status](STATUS.md) for the current conclusion, not a ledger's first failed attempt.
 - Build identity: [game manifest guide](../manifests/game-builds/README.md),
   [current bridge release](../bridge/Sts2AgentBridge/releases/current/README.md).
 - Historical contracts, plans, reviews and results: [archive index](archive/README.md),
@@ -35,6 +38,12 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
   [earlier architecture plan](archive/LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md).
 - Profile work: read the [user-data boundary](LIVE_DEVELOPMENT.md#user-data-boundary)
   only when that work is explicitly requested.
+
+For a capability update, edit the relevant support row and remaining-work category
+in status. For a live test, put setup, release binding, attempt chronology and exact
+counts in the evidence ledger, then update the caller index. For a protocol change,
+update the technical reference and schema. Keep CLI instructions in the bridge guide.
+Do not append the same result to every document.
 
 Update the guide that owns the changed fact. Keep substantial experiment results
 in `evidence/` and link them from status. Routine checks belong in the change
