@@ -162,17 +162,16 @@ def test_invalid_duration_snapshot_rejects_atomically(flag):
     assert saved(combat) == before
 
 
-def test_search_clone_and_key_own_duration_flags():
-    from game.analysis.bruteforce import clone_combat_env, _freeze
-    from game.simulation.core import CombatEnv
-    combat = CombatEnv()
+def test_restored_combat_owns_duration_flags():
+    combat = CombatEngine()
     combat.reset()
     combat.player.apply_status(VULNERABLE, 2)
-    clone = clone_combat_env(combat)
-    assert _freeze(combat.player.statuses) == _freeze(clone.player.statuses)
+    clone = CombatEngine()
+    clone.restore(saved(combat))
+    assert saved(combat) == saved(clone)
     clone.player.statuses.after_enemy_side_turn_end()
     assert clone.player.statuses.get(VULNERABLE) == combat.player.statuses.get(VULNERABLE)
-    assert _freeze(combat.player.statuses) != _freeze(clone.player.statuses)
+    assert saved(combat) != saved(clone)
     assert combat.player.statuses._skip_next_tick == {VULNERABLE}
 
 

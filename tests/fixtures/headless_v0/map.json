@@ -1,1 +1,0 @@
-{"fixture_id":"map","schema":"headless_v0_fixture_v1","steps":[{"action":"map.choose_node","phase":"map","routes":{"recorded":1},"status":"actionable"},{"phase":"terminal","status":"terminal"}]}

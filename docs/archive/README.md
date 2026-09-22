@@ -50,4 +50,21 @@ checker does not depend on these archived documentation paths.
 The redundant Astra handoff was removed. Superseded status and coverage chronology
 remain in Git at the commit above. The accepted headless JSON schema remains at
 its [existing consumer path](../research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json)
-because executable tests use it; it is a contract fixture, not a progress report.
+as a historical contract fixture; its executable pipeline is retired.
+
+## Retired simulator pipelines
+
+On 2026-09-22 the old simulator wrappers, reduced backend and RL/search/training/
+benchmark pipelines were removed without compatibility support. The current
+engine and production bridge remain. These guides describe the retired system:
+
+- [Combat context](legacy-simulator/PROJECT_CONTEXT.md), [agent flow](legacy-simulator/AGENT_FLOW.md)
+- [Reduced actor](legacy-simulator/HEADLESS_ACTOR.md), [card representation](legacy-simulator/CARD_REPRESENTATION.md)
+- [Experiment workflows](legacy-simulator/EXPERIMENT_WORKFLOWS.md), [benchmarks](legacy-simulator/BENCHMARKS.md), [benchmark suite](legacy-simulator/BENCHMARK_SUITE.md)
+- [Old Ironclad scope](legacy-simulator/IRONCLAD_CARDS.md), [old Overgrowth pool](legacy-simulator/OVERGROWTH_HARD_V1.md)
+
+The original guides, code, fixtures and removed reward-gold comparison tools are
+available at commit `9d8d1c75069f9bfb04e161c25706343c5b63ea42`. Navigation links
+were adjusted; recorded evidence hashes retain their original meaning. For exact
+bytes, use `git show <revision>:<original-path>`. The retained native engine
+comparisons and bridge release identities were not repinned.

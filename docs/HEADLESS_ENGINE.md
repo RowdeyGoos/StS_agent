@@ -2,9 +2,9 @@
 
 Implement game rules in `game/headless/`. It runs without public projections,
 Gymnasium, encoders, training, bridge clients or artifact manifests. The older
-combat research API consumes the same combat rules; the accepted reduced public
-run backend remains a compatibility fixture. New gameplay does not go through
-that fixture's protocol gates.
+combat research API and reduced public backend were retired on 2026-09-22.
+Use `CombatEngine`, `RunEngine` and `sts-headless-play` directly; future public
+observations and policy/data adapters are tracked in HF-44–47.
 
 ## Why this structure
 
@@ -53,12 +53,14 @@ adapters. The refactor removes these dependencies from the gameplay path.
 | [`map/graph.py`](../game/headless/map/graph.py), [`events/safe.py`](../game/headless/events/safe.py) | Authored navigation with explicit encounter/event IDs and shared primitive effects |
 | [`core/rng.py`](../game/headless/core/rng.py), [`core/snapshots.py`](../game/headless/core/snapshots.py), [`run/snapshots.py`](../game/headless/run/snapshots.py) | Owned RNG streams and private JSON continuation |
 | [`generation/`](../game/headless/generation/), [`core/native_rng.py`](../game/headless/core/native_rng.py), [`core/native_service.py`](../game/headless/core/native_service.py) | Native RNG, stream ownership, probability rules, relic bags and merchant generation |
-| `game/simulation/`, `game/backends/`, `game/contracts/`, actor/data/training packages | Compatibility, encoding, public-information policy and external consumption |
+| `game/cli/headless_play.py` | Direct gameplay demonstration and continuation checks |
+| `game/backends/live/r0i_wire.py` | Bridge wire fixture codec; independent of game rules |
 
 The enforced import rule is one-way: consumers may import `game.headless`; that
-package may import only itself and the standard library. Existing symbols such as
-`game.simulation.card.StrikeCard` remain importable, but re-export the canonical
-game classes. There is one combat implementation, not two simulators to maintain.
+package may import only itself and the standard library. Import game classes from
+their canonical `game.headless` modules. Legacy re-exports, card constructor subclasses, partial encounter samplers, the
+string-based custom card constructor and isolated `Card.play` helper are removed. Define cards with
+`CardDefinition` and execute legal commands through `CombatEngine`/`RunEngine`.
 
 ## Current completion scope
 
@@ -917,7 +919,7 @@ Shared rules cover explicit discard/Sly ordering, Poison/Accelerant/Outbreak,
 Shiv generation and enchantment/targeting powers, play/draw/discard histories,
 turn-scoped costs and keywords, ordered Nightmare templates, optional retention,
 and The Hunt's earned post-combat rewards. Choices and delayed effects are owned
-plain data. The existing legacy encoder vocabulary remains unchanged.
+plain data.
 
 ```python
 from game.headless.cards.catalog import SILENT_CARDS
@@ -1235,7 +1237,7 @@ its event choice and inventory legality.
 `use.py` consumes run-owned instances before effects. Pending use records contain
 only IDs, targets and effect cursors; nested autoplay/draw/exhaust work completes
 before Reptile Trinket and the final Unceasing Top check. Private snapshots are
-combat v24 and run v36. Legacy RL encoders retain their frozen vocabulary.
+combat v24 and run v36 at that revision.
 
 - Damage/status/block/stat/energy potions share combat rules, including Artifact,
   damage caps, Dexterity and temporary Strength/Dexterity expiration.
@@ -2356,20 +2358,17 @@ basis-point variation; this is not native pool composition, rarity weighting,
 float precision or RNG parity. Generated native-profile merchants use the 13-slot
 composition and exact arithmetic described above. Membership Card discounts, The Courier restocking and relic pickup selectors now use the shared relic rules. See [source and validation evidence](evidence/first_shop_2026_09_13.md).
 
-## Compatibility and limits
+## Authored scenarios and limits
 
-`CombatEnv` keeps legacy observations, discrete masks, reward shaping and trajectory
-recording around `CombatEngine`. Its fixed vocabulary remains intentionally small.
-The previous `strike_upgrade_v1` constructor option was an unreleased experiment
-at commit `7ca5f77` and has been removed. Strike+ now runs directly in the game
-engine; old profiles are not silently reinterpreted. The existing `headless_v0`
-contract and accepted base backend fingerprints are unchanged.
+The old `CombatEnv`, reduced `game/engine` rules, public `headless_v0` contracts,
+RL/search/training/benchmark pipelines and reduced reward-gold comparison tool
+were retired on 2026-09-22. Their original evidence remains historical; no old
+fingerprints or manifests were repinned. The production bridge and its wire codec
+remain independent. Future full-game consumers belong to
+[HF-44–47](HEADLESS_FULL_GAME_IMPLEMENTATION.md#open-assignments).
 
-The old `game/engine` map/reward/room decision machinery and
-`ReducedRunBackend` continue serving their fixed synthetic protocol fixtures.
-They are not the implementation destination for new game content. Replacing that
-consumer with a generic adapter over `RunEngine` is deferred integration work,
-not an invitation to maintain two evolving rule sets.
+Authored scenarios below remain useful focused game-rule fixtures within the
+current engine. They are not the removed reduced backend.
 
 The first slice starts Ironclad with 80 HP, 99 gold, the ten-card starter deck,
 Burning Blood and three empty potion slots. Its authored route is Nibbit →
@@ -2513,8 +2512,7 @@ other permanent combat-produced deck changes need their own explicit rules.
 
 Ordinary draws stop at the native ten-card hand limit, checked before each draw
 and any needed reshuffle. Overflow stays in its current piles; a full-hand draw
-consumes no shuffle RNG. The same rule applies through the legacy `CombatEnv`;
-its encoder size does not configure game capacity. See the
+consumes no shuffle RNG. See the
 [draw source check](evidence/hand_limit_2026_09_13.md) for scope and remaining hooks.
 
 Private run snapshots now use `headless_run_state_v65`, including campaign configuration,
@@ -2548,10 +2546,8 @@ with an untriggered state.
 Creature context references are rebound from owned state, never serialized.
 Earlier combat
 v1–v24 and run v1–v36 formats are rejected rather than assigning invented item
-or progression defaults. Public reduced fixture schemas are unchanged. The fixed legacy action vocabulary
-and brute-force oracle do not support combat choices, Weak or the new card families.
-The legacy status encoder retains its two-name vocabulary; Ironclad power stacks are inspected through `player.rules.powers`, and enemy
-debuffs through `enemy.statuses`.
+or progression defaults. Ironclad power stacks are inspected through
+`player.rules.powers`, and enemy debuffs through `enemy.statuses`.
 Snapshots bind card values/effect composition and item values automatically,
 and restore RNG aliases and exact piles. Use the same game-rule implementation
 when restoring: these are development continuation records, not release provenance
@@ -2629,7 +2625,7 @@ persistent identities, canceled smithing, defeat and malformed snapshots.
 [`test_slice_cards.py`](../tests/headless/test_slice_cards.py) and
 [`test_slice_encounters.py`](../tests/headless/test_slice_encounters.py) cover the
 completed reward upgrades, generated Slimed, move cycles, branch restrictions,
-terminal effects and clone ownership. Existing simulation,
-search and headless adapter tests cover compatibility. Broaden checks when a shared
-rule or consumer actually changes; bridge builds and historical frozen-evidence
+terminal effects and snapshot branch ownership. Former legacy-consumer checks
+are retired; gameplay ownership and legality cases use the direct engine.
+Broaden checks when a shared rule or consumer actually changes; bridge builds and historical frozen-evidence
 repinning are not part of ordinary card implementation.

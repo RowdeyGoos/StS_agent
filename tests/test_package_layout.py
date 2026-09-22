@@ -1,43 +1,23 @@
-"""Tests for canonical package paths and command implementations."""
+"""Maintained package boundaries and installed command declarations."""
 
-from __future__ import annotations
-
-import importlib
-
-import game
-from game.agents import ppo
-from game.analysis import benchmark, bruteforce
-from game.cli import benchmark as benchmark_cli
-from game.cli import benchmark_suite as benchmark_suite_cli
-from game.cli import brute_force, sweep, train, watch_policy
-from game.simulation import core
-from game.training import profile
+from pathlib import Path
+import subprocess
+import sys
 
 
-def test_public_symbols_come_from_canonical_modules() -> None:
-    assert game.CombatEnv is core.CombatEnv
-    assert game.PPOAgent is ppo.PPOAgent
-    assert game.brute_force_combat is bruteforce.brute_force_combat
+def test_package_has_only_current_engine_cli_and_bridge_wire_codec():
+    root = Path(__file__).resolve().parents[1]
+    # Git deletion may leave ignored bytecode directories in an existing checkout.
+    packages = {p.relative_to(root / "game").parts[0]
+                for p in (root / "game").rglob("*.py")
+                if len(p.relative_to(root / "game").parts) > 1}
+    assert packages == {"headless", "cli", "backends"}
+    assert {p.stem for p in (root / "game/cli").glob("*.py")} == {"__init__", "headless_play"}
 
 
-def test_packaged_cli_modules_are_directly_usable() -> None:
-    assert train.parse_args([]).policy == "compare"
-    assert sweep.parse_args([]).policy == "double_dqn"
-    assert watch_policy.parse_args(["--policy", "heuristic"]).policy == "heuristic"
-    assert brute_force.parse_args([]).encounter == "simple"
-    assert benchmark_cli.parse_args(["--encounter", "simple"]).encounter == [
-        "simple"
-    ]
-    assert benchmark_suite_cli.parse_args([]).config.endswith(
-        "full_system_benchmark_balanced.json"
-    )
-    assert benchmark.BENCHMARK_FORMAT_VERSION == 2
-    assert profile.TrainingProfiler is not None
-
-
-def test_removed_flat_module_paths_do_not_silently_resolve() -> None:
-    try:
-        importlib.import_module("game.core")
-    except ModuleNotFoundError:
-        return
-    raise AssertionError("Legacy game.core unexpectedly remains importable.")
+def test_direct_cli_help_works_without_optional_dependencies():
+    result = subprocess.run([sys.executable, "-S", "-m", "game.cli.headless_play", "--help"],
+                            capture_output=True, text=True, timeout=30,
+                            cwd=Path(__file__).resolve().parents[1])
+    assert result.returncode == 0, result.stderr
+    assert "--character" in result.stdout and "--verify-restore" in result.stdout

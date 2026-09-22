@@ -63,28 +63,21 @@ Prioritize faithful game logic in the [independent engine](docs/HEADLESS_ENGINE.
 Implement and test cards, monsters, powers, items and run progression directly,
 then integrate mature capabilities into actor/bridge consumers when useful.
 Projection, encoding and training work must not gate ordinary gameplay features.
-Keep the existing reduced fixtures and experiment commands usable through their
-compatibility boundaries; do not extend them into a second evolving simulator.
+The old simulator/reduced backend and research pipelines are retired. Future
+public observations and policy/data adapters must consume the current engine.
 
 The [full-game backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md) owns feature
 scope and acceptance cases. Strike+ is now ordinary game content; the experimental
 per-upgrade profile is retired. Headless and bridge work can proceed in parallel
 with disjoint source ownership and shared pinned-game rule evidence.
 
-Retain these research priorities as evidence-driven options:
-
-- compare action-conditioned and shared-enemy models on matched seeds/budgets;
-- integrate semantic card records with an explicit representation/retraining boundary;
-- add deterministic mixed-deck training after establishing per-deck baselines;
-- use trace/oracle mistakes to choose mechanics, observation or training changes;
-- extend encounter/status/card coverage where it improves the research benchmark.
-
-Avoid more algorithms, content volume or training infrastructure without an
-identified bottleneck or evaluation question.
+Next implement HF-44: sufficient public full-run observations, then encoding,
+datasets and agent execution in HF-45–47. Establish faithful public inputs before
+selecting training algorithms or investing in search infrastructure.
 
 ## Long-term destination
 
-Build one faithful reduced-content full-run environment, then stronger policy/value
+Use the faithful full-run engine to develop stronger policy/value
 models and optional tactical/strategic search over shared legal candidates.
 Expand content and certify performance under the pinned target, public-information
 boundary and declared compute budget. See the

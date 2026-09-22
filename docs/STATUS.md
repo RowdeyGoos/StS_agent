@@ -117,7 +117,7 @@ the selected child effect and map return are verified.
 | Trial abandonment popup | Implemented offline: exact native Double Down callback → owned modal; Cancel verifies unchanged event return, explicit confirmation verifies the native task, abandoned state and HP zero. Cancel is the default; live coverage remains open |
 | Initial event-option policy | `--event-option` chooses an exact legal first option and stops if absent/illegal; subsequent actions use first-legal policy |
 | Results acknowledgment | Pandora's Box nine-card screen Confirm/map passed; preceding automatic transformations are not certified |
-| Reduced headless/actor stack | Structural backend and cloning pipeline accepted; no target-game fidelity or learned live-policy claim |
+| Legacy simulator/actor pipelines | Retired 2026-09-22; historical acceptance remains archival. Current engine and production bridge retained; full-game public adapters are HF-44–47. |
 | Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): all five solo characters at A0–A10 through Overgrowth or Underdocks, Hive, Glory and the Architect, using shared rules and private JSON continuation. Existing native campaign comparisons cover Ironclad; the four added characters have native starter/potion probes and boosted A0/A10 Python campaign wins. [Character evidence and remaining limits](HEADLESS_ENGINE.md#playable-characters). |
 
 One production bridge in `apps/bridge/` combines shared components and original
