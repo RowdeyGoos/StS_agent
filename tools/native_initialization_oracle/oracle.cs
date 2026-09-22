@@ -1,0 +1,122 @@
+using System.Reflection;
+using System.Runtime.Loader;
+using System.Text.Json;
+// Read-only reflection: no game initialization or player-profile access.
+if (args.Length is < 2 or > 4) throw new ArgumentException("Usage: oracle <pinned-sts2.dll> <dependency-directory> [overgrowth|underdocks|hive|spoils|glory] [ascension0..10]");
+var mode = args.Length >= 3 ? args[2] : "overgrowth";
+if (mode is not ("overgrowth" or "underdocks" or "hive" or "spoils" or "glory")) throw new ArgumentException("Unsupported act mode.");
+var ascension = args.Length == 4 ? int.Parse(args[3]) : 0;
+if (ascension is < 0 or > 10) throw new ArgumentException("Invalid ascension.");
+var firstAct = mode == "underdocks" ? "underdocks" : "overgrowth";
+var mapIndex = mode == "glory" ? 2 : mode is "hive" or "spoils" ? 1 : 0;
+var assemblyPath = Path.GetFullPath(args[0]);
+var dependencyDirectory = Path.GetFullPath(args[1]);
+var digest = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(assemblyPath))).ToLowerInvariant();
+if (digest != "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18")
+    throw new InvalidOperationException("Assembly differs from the pinned 0.107.1 build.");
+AssemblyLoadContext.Default.Resolving += (context,name) => {
+    var path = Path.Combine(dependencyDirectory, name.Name + ".dll");
+    return File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
+};
+var asm=AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+var flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
+using var ascensionScope = new NativeAscensionScope(asm, ascension);
+var db=asm.GetType("MegaCrit.Sts2.Core.Models.ModelDb",true)!;
+var abstractType=asm.GetType("MegaCrit.Sts2.Core.Models.AbstractModel",true)!;
+foreach(var modelType in asm.GetTypes().Where(t=>!t.IsAbstract && t.IsSubclassOf(abstractType) && t.Namespace is "MegaCrit.Sts2.Core.Models.Acts" or "MegaCrit.Sts2.Core.Models.Encounters" or "MegaCrit.Sts2.Core.Models.Events" or "MegaCrit.Sts2.Core.Models.RelicPools" or "MegaCrit.Sts2.Core.Models.Relics"))
+    db.GetMethod("Inject")!.Invoke(null,new object[]{modelType});
+object Get(string method,string suffix)=>db.GetMethods().Single(m=>m.Name==method&&m.IsGenericMethodDefinition).MakeGenericMethod(asm.GetType("MegaCrit.Sts2.Core.Models."+suffix,true)!).Invoke(null,null)!;
+object Prop(object o,string n)=>o.GetType().GetProperty(n,flags)!.GetValue(o)!;
+object Call(object o,string n,params object?[] a)=>o.GetType().GetMethods(flags).Single(m=>m.Name==n&&!m.IsGenericMethodDefinition&&m.GetParameters().Length==a.Length&&m.GetParameters().Select((p,i)=>a[i] is null||p.ParameterType.IsInstanceOfType(a[i])).All(x=>x)).Invoke(o,a)!;
+object[] Items(object o)=>((System.Collections.IEnumerable)o).Cast<object>().ToArray();
+string Id(object o)=>Prop(Prop(o,"Id"),"Entry").ToString()!.ToLowerInvariant();
+var actType=asm.GetType("MegaCrit.Sts2.Core.Models.ActModel",true)!;
+var unlock=asm.GetType("MegaCrit.Sts2.Core.Unlocks.UnlockState",true)!.GetField("all")!.GetValue(null)!;
+var rngType=asm.GetType("MegaCrit.Sts2.Core.Random.Rng",true)!;
+var hash=asm.GetType("MegaCrit.Sts2.Core.Helpers.StringHelper",true)!.GetMethod("GetDeterministicHashCode")!;
+uint Hash(string text)=>unchecked((uint)(int)hash.Invoke(null,new object[]{text})!);
+object Rng(string seed,string salt)=>Activator.CreateInstance(rngType,new object[]{unchecked(Hash(seed)+Hash(salt)),0})!;
+object Mutable(object a)=>Call(a,"MutableClone");
+object[] actModels={Get("Act",firstAct == "underdocks" ? "Acts.Underdocks" : "Acts.Overgrowth"),Get("Act","Acts.Hive"),Get("Act","Acts.Glory")};
+var sharedEvents=Items(db.GetProperty("AllSharedEvents")!.GetValue(null)!);
+var sharedAncients=Items(Prop(unlock,"SharedAncients"));
+var catalog=actModels.Select(a=>new {act=Id(a),rooms=Call(a,"GetNumberOfRooms",false),weakCount=Prop(a,"NumberOfWeakEncounters"),
+ events=Items(Prop(a,"AllEvents")).Select(Id),ancients=Items(Call(a,"GetUnlockedAncients",unlock)).Select(Id),
+ encounters=Items(Prop(a,"AllEncounters")).Select(e=>new {name=e.GetType().Name,id=Id(e),kind=Prop(e,"RoomType").ToString(),weak=Prop(e,"IsWeak"),tags=Items(Prop(e,"Tags")).Select(Convert.ToInt32)})}).ToArray();
+var sharedRelics=Items(Call(Get("RelicPool","RelicPools.SharedRelicPool"),"GetUnlockedRelics",unlock));
+var ironcladRelics=Items(Call(Get("RelicPool","RelicPools.IroncladRelicPool"),"GetUnlockedRelics",unlock));
+void Shuffle(object rng,object list,Type element)=>rngType.GetMethod("Shuffle")!.MakeGenericMethod(element).Invoke(rng,new[]{list});
+Array Typed(object[] values,Type t){var a=Array.CreateInstance(t,values.Length);Array.Copy(values,a,values.Length);return a;}
+var rows=new List<object>();
+foreach(var seed in (ascension == 0 ? new[]{"0","1","2","3","4","5","6","7","8","9","42","ABC123","😀"} : new[]{"0","4","42"})) {
+ var rng=Rng(seed,"up_front");
+ var bagType=asm.GetType("MegaCrit.Sts2.Core.Runs.RelicGrabBag",true)!;
+ var relicType=asm.GetType("MegaCrit.Sts2.Core.Models.RelicModel",true)!;
+ foreach(var pool in new[]{sharedRelics,sharedRelics.Concat(ironcladRelics).Where(r=>new[]{"Common","Uncommon","Rare","Shop"}.Contains(Prop(r,"Rarity").ToString())).ToArray()}) {
+  var bag=Activator.CreateInstance(bagType,new object[]{true})!;Call(bag,"Populate",Typed(pool,relicType),rng);
+ }
+ int afterBags=(int)Prop(rng,"Counter");
+ var acts=actModels.Select(Mutable).ToArray();
+ var ancientType=asm.GetType("MegaCrit.Sts2.Core.Models.AncientEventModel",true)!;
+ var remaining=sharedAncients.ToList();Shuffle(rng,remaining,typeof(object));
+ var subsets=new List<string[]>();
+ for(int i=1;i<3;i++) {int count=(int)Call(rng,"NextInt",remaining.Count+1);var chosen=remaining.Take(count).ToArray();remaining=remaining.Skip(count).ToList();actType.GetMethod("SetSharedAncientSubset")!.Invoke(acts[i],new object[]{Activator.CreateInstance(typeof(List<>).MakeGenericType(ancientType),new object[]{Typed(chosen,ancientType)})!});subsets.Add(chosen.Select(Id).ToArray());}
+ int afterAllocation=(int)Prop(rng,"Counter");
+ var generated=new List<object>();
+ foreach(var act in acts) {
+  Call(act,"GenerateRooms",rng,unlock,false);
+  var rooms=actType.GetField("_rooms",flags)!.GetValue(act)!;
+  if (ascension >= 10 && act == acts[^1]) {
+   var candidates=Items(Prop(act,"AllBossEncounters")).Where(e=>Id(e)!=Id(Prop(act,"BossEncounter"))).ToArray();
+   var second=candidates[(int)Call(rng,"NextInt",candidates.Length)];
+   Call(act,"SetSecondBossEncounter",second);
+  }
+  var record=new Dictionary<string,object>{["act"]=Id(act),["events"]=Items(rooms.GetType().GetField("events")!.GetValue(rooms)!).Select(Id),["normal"]=Items(rooms.GetType().GetField("normalEncounters")!.GetValue(rooms)!).Select(e=>e.GetType().Name),["elites"]=Items(rooms.GetType().GetField("eliteEncounters")!.GetValue(rooms)!).Select(e=>e.GetType().Name),["boss"]=Prop(rooms,"Boss").GetType().Name,["ancient"]=Id(Prop(rooms,"Ancient")),["counter"]=Prop(rng,"Counter")};
+  if (ascension >= 10 && act == acts[^1]) record["second_boss"]=Prop(act,"SecondBossEncounter").GetType().Name;
+  generated.Add(record);
+ }
+ var mapRng=Rng(seed,$"act_{mapIndex + 1}_map");
+ object map;
+ if (mode == "spoils") {
+  var run = DispatchProxy.Create(asm.GetType("MegaCrit.Sts2.Core.Runs.IRunState",true)!, typeof(MapRunProxy));
+  var playerType = asm.GetType("MegaCrit.Sts2.Core.Entities.Players.Player",true)!;
+  ((MapRunProxy)run).Values = new() {
+   ["get_Act"] = acts[1],
+   ["get_Players"] = Array.CreateInstance(playerType, 1),
+   ["get_Rng"] = Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Runs.RunRngSet",true)!, new object[]{seed})!
+  };
+  map = Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Map.SpoilsActMap",true)!, new object?[]{run, null})!;
+  mapRng = map.GetType().GetField("_rng",flags)!.GetValue(map)!;
+ } else {
+  map=Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Map.StandardActMap",true)!,new object?[]{mapRng,acts[mapIndex],false,false,ascension>=10&&mapIndex==2,null,true})!;
+ }
+ int[] Coord(object point){var c=point.GetType().GetField("coord")!.GetValue(point)!;return new[]{(int)c.GetType().GetField("row")!.GetValue(c)!,(int)c.GetType().GetField("col")!.GetValue(c)!};}
+ var points=Items(Call(map,"GetAllMapPoints")).Append(Prop(map,"BossMapPoint"));
+ if (ascension>=10 && mapIndex==2) points=points.Append(Prop(map,"SecondBossMapPoint"));
+ var nodes=points.Select(p=>new{coord=Coord(p),kind=Prop(p,"PointType").ToString(),children=Items(Prop(p,"Children")).Select(Coord).OrderBy(c=>c[0]).ThenBy(c=>c[1])}).OrderBy(p=>p.coord[0]).ThenBy(p=>p.coord[1]);
+ rows.Add(new{seed,afterBags,afterAllocation,subsets,acts=generated,upFrontCounter=Prop(rng,"Counter"),upFrontSuffix=Call(rng,"NextDouble"),map=new{nodes,starts=Items(map.GetType().GetField("startMapPoints")!.GetValue(map)!).Select(Coord).OrderBy(c=>c[0]).ThenBy(c=>c[1]),counter=Prop(mapRng,"Counter"),suffix=Call(mapRng,"NextDouble")}});
+}
+Console.Write(JsonSerializer.Serialize(new{source=$"Pinned assembly metadata, RelicGrabBag.Populate, ActModel.GenerateRooms and { (mode == "spoils" ? "SpoilsActMap" : "StandardActMap") } execution; explicit solo all-unlocked {firstAct}/Hive/Glory inputs, no profile access",dllSha256=digest,ascension,catalog,sharedEvents=sharedEvents.Select(Id),sharedAncients=sharedAncients.Select(Id),rows},new JsonSerializerOptions{WriteIndented=true}));
+
+public class MapRunProxy : DispatchProxy {
+ public Dictionary<string, object> Values = new();
+ protected override object? Invoke(MethodInfo? method, object?[]? args) =>
+  Values.TryGetValue(method!.Name, out var value) ? value : throw new InvalidOperationException("Unexpected map run access: " + method.Name);
+}
+
+// Process-owned context for native AscensionHelper getters; never initializes a run,
+// save manager, profile, history or engine. Restore singleton fields even on failure.
+internal sealed class NativeAscensionScope : IDisposable {
+ readonly object manager; readonly PropertyInfo state, asc; readonly object? prior;
+ public NativeAscensionScope(Assembly asm,int level) {
+  var flags=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static;
+  var type=asm.GetType("MegaCrit.Sts2.Core.Runs.RunManager",true)!;
+  manager=type.GetProperty("Instance")!.GetValue(null)!;
+  state=type.GetProperty("State",flags)!; asc=type.GetProperty("AscensionManager",flags)!;
+  if(state.GetValue(manager) is not null) throw new InvalidOperationException("Fresh process required.");
+  prior=asc.GetValue(manager);
+  state.SetValue(manager,System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(asm.GetType("MegaCrit.Sts2.Core.Runs.RunState",true)!));
+  asc.SetValue(manager,Activator.CreateInstance(asm.GetType("MegaCrit.Sts2.Core.Entities.Ascension.AscensionManager",true)!,new object[]{level}));
+ }
+ public void Dispose(){state.SetValue(manager,null);asc.SetValue(manager,prior);}
+}

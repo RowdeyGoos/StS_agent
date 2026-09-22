@@ -9,6 +9,9 @@ work. Consult an archived record only for a specific semantic or evidence questi
 
 | Topic | Historical references |
 | --- | --- |
+| Headless implementation assessment and completed batches | [September 12–21 backlog](HEADLESS_FULL_GAME_IMPLEMENTATION_2026_09_21.md); [current tasks](../HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
+| Headless game-rule chronology and original reference analysis | [September 22 engine record](HEADLESS_ENGINE_2026_09_22.md); [current guide](../HEADLESS_ENGINE.md) |
+| Earlier architecture and research plan | [Archived design](LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md); [current target](../TARGET.md) and [backlog](../HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Earlier architecture decisions | [Decision log](DECISIONS_2026_09_08.md) |
 | Target and evaluation design | [Original charter](phase-0/PHASE_0_TARGET_CHARTER.md); [current target](../TARGET.md) owns the concise definition |
 | Profile design and access history | [Fixture plan](phase-0/PHASE_0_PROFILE_FIXTURE_PLAN.md), [baseline request](phase-0/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md), [stopped attempt](phase-0/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md) |
@@ -50,7 +53,28 @@ checker does not depend on these archived documentation paths.
 The redundant Astra handoff was removed. Superseded status and coverage chronology
 remain in Git at the commit above. The accepted headless JSON schema remains at
 its [existing consumer path](../research/PHASE_1_HEADLESS_ENCODING_SCHEMA.json)
-because executable tests use it; it is a contract fixture, not a progress report.
+as a historical contract fixture; its executable pipeline is retired.
+
+## Retired simulator pipelines
+
+On 2026-09-22 the old simulator wrappers, reduced backend and RL/search/training/
+benchmark pipelines were removed without compatibility support. The current
+engine and production bridge remain. These guides describe the retired system:
+
+- [Combat context](legacy-simulator/PROJECT_CONTEXT.md), [agent flow](legacy-simulator/AGENT_FLOW.md)
+- [Reduced actor](legacy-simulator/HEADLESS_ACTOR.md), [card representation](legacy-simulator/CARD_REPRESENTATION.md)
+- [Experiment workflows](legacy-simulator/EXPERIMENT_WORKFLOWS.md), [benchmarks](legacy-simulator/BENCHMARKS.md), [benchmark suite](legacy-simulator/BENCHMARK_SUITE.md)
+- [Old Ironclad scope](legacy-simulator/IRONCLAD_CARDS.md), [old Overgrowth pool](legacy-simulator/OVERGROWTH_HARD_V1.md)
+
+The original guides, code, fixtures and removed reward-gold comparison tools are
+available at commit `9d8d1c75069f9bfb04e161c25706343c5b63ea42`. Navigation links
+were adjusted; recorded evidence hashes retain their original meaning. For exact
+bytes, use `git show <revision>:<original-path>`. The retained native engine
+comparisons and bridge release identities were not repinned.
+
+The engine chronology and architecture plan archived on 2026-09-22 preserve the
+bodies from `5389796666da9e2cefff30839612288ce7875ccf`, with archive labels and
+relative links adjusted. Recorded hashes and evidence artifacts were not repinned.
 
 The event research narrative was relocated on 2026-09-19 from
 `cd3dc76:docs/EVENT_INTERACTION_MAP.md`. Its recorded hashes and comparison at

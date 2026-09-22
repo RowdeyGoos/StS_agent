@@ -99,6 +99,7 @@ class _Socket:
         self._expected_request = expected_request
         self._offset = 0
         self.closed = False
+        self.write_shutdown = False
         self.request: bytearray | None = None
 
     def settimeout(self, value: float) -> None:
@@ -110,7 +111,14 @@ class _Socket:
             fail(EXIT_MISMATCH, "wire_request_order_or_bytes")
         self.request = request
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not (self.request is not None) or self.write_shutdown or self.closed:
+            fail(EXIT_MISMATCH, "apply_run_wire_fixture_half_close")
+        self.write_shutdown = True
+
     def recv(self, maximum: int) -> bytes:
+        if not self.write_shutdown:
+            fail(EXIT_MISMATCH, "apply_run_wire_fixture_receive_before_half_close")
         if maximum != probe._RECEIVE_CHUNK_BYTES:
             fail(EXIT_MISMATCH, "wire_receive_bound")
         if isinstance(self._response, TimeoutError):

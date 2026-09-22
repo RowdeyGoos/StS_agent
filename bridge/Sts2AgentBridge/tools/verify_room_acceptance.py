@@ -427,6 +427,12 @@ def _component(value: object, milestone: str) -> dict[str, object]:
             "room_ordinal", "accepted_action_count", "actions", "final", "routes_checked",
         },
     }
+    if milestone == "r0i_reward_resolution" and "collected_items" in value:
+        # Current reward clients always report this list. This historical
+        # acceptance case only proves gold/cards, so item claims still reject.
+        schemas[milestone].add("collected_items")
+        if type(value["collected_items"]) is not list or value["collected_items"]:
+            fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     if set(value) != schemas[milestone]:
         fail(EXIT_MISMATCH, "run_acceptance_result_mismatch")
     if type(value["decision_provider"]) is not str or not value["decision_provider"]:

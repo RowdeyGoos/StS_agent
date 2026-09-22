@@ -1,0 +1,74 @@
+"""Implemented Ironclad cards. Add each verified card family in this layer."""
+
+from dataclasses import replace
+from game.headless.cards.base import Card, CardDefinition, CardSpec
+from game.headless.cards.effects import ApplyTargetStatus, DealDamage, DrawCards, GainBlock, SelectHandCard, ApplyDebuffs, RandomEnemyAttack
+from game.headless.powers.status import VULNERABLE, WEAK
+
+STRIKE = CardDefinition("strike", (
+    CardSpec("Strike", 1, "attack", base_damage=6),
+    CardSpec("Strike+", 1, "attack", base_damage=9),
+), (DealDamage(),))
+DEFEND = CardDefinition("defend", (
+    CardSpec("Defend", 1, "block", block_gain=5, uses_target=False),
+    CardSpec("Defend+", 1, "block", block_gain=8, uses_target=False),
+), (GainBlock(),))
+BASH = CardDefinition("bash", (
+    CardSpec("Bash", 2, "attack", base_damage=8,
+             applies_status_name=VULNERABLE, applies_status_stacks=2),
+    CardSpec("Bash+", 2, "attack", base_damage=10,
+             applies_status_name=VULNERABLE, applies_status_stacks=3),
+), (DealDamage(), ApplyTargetStatus()))
+POMMEL_STRIKE = CardDefinition("pommel_strike", (
+    CardSpec("Pommel Strike", 1, "attack", base_damage=9, draw_count=1),
+    CardSpec("Pommel Strike+", 1, "attack", base_damage=10, draw_count=2),
+), (DealDamage(), DrawCards()))
+SHRUG_IT_OFF = CardDefinition("shrug_it_off", (
+    CardSpec("Shrug It Off", 1, "block", block_gain=8, draw_count=1, uses_target=False),
+    CardSpec("Shrug It Off+", 1, "block", block_gain=11, draw_count=1, uses_target=False),
+), (GainBlock(), DrawCards()))
+IRON_WAVE = CardDefinition("iron_wave", (
+    CardSpec("Iron Wave", 1, "attack", base_damage=5, block_gain=5),
+    CardSpec("Iron Wave+", 1, "attack", base_damage=7, block_gain=7),
+), (GainBlock(), DealDamage()))
+BODY_SLAM = CardDefinition("body_slam", (
+    CardSpec("Body Slam", 1, "attack", damage_equals_player_block=True),
+    CardSpec("Body Slam+", 0, "attack", damage_equals_player_block=True),
+), (DealDamage(),))
+
+ARMAMENTS = CardDefinition("armaments", (
+    CardSpec("Armaments", 1, "skill", block_gain=5, uses_target=False),
+    CardSpec("Armaments+", 1, "skill", block_gain=5, uses_target=False),
+), (GainBlock(), SelectHandCard("upgrade", upgraded_mode="all")))
+TRUE_GRIT = CardDefinition("true_grit", (
+    CardSpec("True Grit", 1, "skill", block_gain=7, uses_target=False),
+    CardSpec("True Grit+", 1, "skill", block_gain=9, uses_target=False),
+), (GainBlock(), SelectHandCard("exhaust", mode="random")))
+
+UPPERCUT = CardDefinition("uppercut", (
+    CardSpec("Uppercut", 2, "attack", base_damage=13, applies_status_stacks=1),
+    CardSpec("Uppercut+", 2, "attack", base_damage=13, applies_status_stacks=2),
+), (DealDamage(), ApplyDebuffs((WEAK, VULNERABLE))))
+
+SWORD_BOOMERANG = CardDefinition("sword_boomerang", (
+    CardSpec("Sword Boomerang", 1, "attack", base_damage=3, uses_target=False),
+    CardSpec("Sword Boomerang+", 1, "attack", base_damage=3, uses_target=False),
+), (RandomEnemyAttack(hits=3, upgraded_hits=4),))
+
+STRIKE = replace(STRIKE, pool="ironclad", rarity="basic", strike=True)
+DEFEND = replace(DEFEND, pool="ironclad", rarity="basic", defend=True)
+BASH = replace(BASH, pool="ironclad", rarity="basic", strike=False)
+POMMEL_STRIKE = replace(POMMEL_STRIKE, pool="ironclad", rarity="common", strike=True)
+SHRUG_IT_OFF = replace(SHRUG_IT_OFF, pool="ironclad", rarity="common", strike=False)
+IRON_WAVE = replace(IRON_WAVE, pool="ironclad", rarity="common", strike=False)
+BODY_SLAM = replace(BODY_SLAM, pool="ironclad", rarity="common", strike=False)
+ARMAMENTS = replace(ARMAMENTS, pool="ironclad", rarity="common", strike=False)
+TRUE_GRIT = replace(TRUE_GRIT, pool="ironclad", rarity="common", strike=False)
+UPPERCUT = replace(UPPERCUT, pool="ironclad", rarity="uncommon", strike=False)
+SWORD_BOOMERANG = replace(SWORD_BOOMERANG, pool="ironclad", rarity="common", strike=False)
+
+DEFINITIONS = (SWORD_BOOMERANG, STRIKE, DEFEND, BASH, POMMEL_STRIKE, SHRUG_IT_OFF, IRON_WAVE,
+               BODY_SLAM, ARMAMENTS, TRUE_GRIT, UPPERCUT)
+
+def create_starter_deck() -> list[Card]:
+    return [Card(STRIKE) for _ in range(5)] + [Card(DEFEND) for _ in range(4)] + [Card(BASH)]

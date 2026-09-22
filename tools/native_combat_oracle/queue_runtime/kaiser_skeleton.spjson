@@ -1,0 +1,37 @@
+{
+  "skeleton": {
+    "spine": "4.2.0"
+  },
+  "bones": [
+    {
+      "name": "root"
+    }
+  ],
+  "animations": {
+    "body/die": {},
+    "left/idle_loop": {},
+    "left/attack_heavy": {},
+    "left/attack_double": {},
+    "left/buff": {},
+    "left/attack_med": {},
+    "left/hurt": {},
+    "left/die": {},
+    "right/idle_loop": {},
+    "right/attack": {},
+    "right/attack_med": {},
+    "right/hurt": {},
+    "right/hurt_charged": {},
+    "right/hurt_resting": {},
+    "right/charged_loop": {},
+    "right/rest_loop": {},
+    "right/die": {},
+    "right/die_resting": {},
+    "right/charge_up": {},
+    "right/attack_heavy": {},
+    "right/wake_up": {},
+    "reactions/attack_left": {},
+    "reactions/attack_right": {},
+    "reactions/hurt_left": {},
+    "reactions/hurt_right": {}
+  }
+}

@@ -38,10 +38,13 @@ _POST_ROOM = (
 
 
 class _Socket:
-    def __init__(self, events: list[object], *, close_error: BaseException | None = None) -> None:
+    def __init__(self, events: list[object], *, close_error: BaseException | None = None,
+                 shutdown_error: BaseException | None = None) -> None:
         self._events = iter(events)
         self._close_error = close_error
+        self._shutdown_error = shutdown_error
         self.closed = False
+        self.write_shutdown = False
         self.requests: list[bytearray] = []
         self.sent_bytes: list[bytes] = []
         self.timeouts: list[float] = []
@@ -56,7 +59,16 @@ class _Socket:
         self.requests.append(request)
         self.sent_bytes.append(bytes(request))
 
+    def shutdown(self, how: int) -> None:
+        if how != probe.socket.SHUT_WR or not (self.requests) or self.write_shutdown or self.closed:
+            fail(EXIT_MISMATCH, "bounded_transport_fixture_half_close")
+        self.write_shutdown = True
+        if self._shutdown_error is not None:
+            raise self._shutdown_error
+
     def recv(self, maximum: int) -> bytes | bytearray | memoryview:
+        if not self.write_shutdown:
+            fail(EXIT_MISMATCH, "bounded_transport_fixture_receive_before_half_close")
         if maximum != probe._RECEIVE_CHUNK_BYTES:
             fail(EXIT_MISMATCH, "transport_fixture_receive_bound")
         self.receive_calls += 1
@@ -145,6 +157,8 @@ def _assert_socket(
         fail(EXIT_MISMATCH, "transport_fixture_receive_count")
     if any(any(request) for request in socket.requests):
         fail(EXIT_MISMATCH, "transport_fixture_request_not_zeroed")
+    if expected_request is not None and not socket.write_shutdown:
+        fail(EXIT_MISMATCH, "transport_fixture_half_close_missing")
     if expected_request is not None and not socket.timeouts:
         fail(EXIT_MISMATCH, "transport_fixture_timeout_missing")
 
@@ -287,6 +301,29 @@ def _inflight_close_precedence() -> None:
                 fail(EXIT_MISMATCH, f"{label}_{failure_name}_close_response_not_zeroed")
 
 
+def _half_close_failures() -> None:
+    for label, call, request in (
+        ("probe", _probe_get, _GET_HEALTH),
+        ("room", _room_get, _GET_ROOM),
+        ("room", _room_post, _POST_ROOM),
+    ):
+        for failure in (OSError("synthetic"), TimeoutError("synthetic"),
+                        KeyboardInterrupt(), RuntimeError("synthetic")):
+            connector = _Connector(_Socket([], shutdown_error=failure))
+            with _clock():
+                if isinstance(failure, OSError):
+                    _expect_failure(lambda: call(connector), f"{label}_transport_failure")
+                else:
+                    try:
+                        call(connector)
+                    except type(failure):
+                        pass
+                    else:
+                        fail(EXIT_MISMATCH, "transport_fixture_shutdown_error_swallowed")
+            # The send may have reached the server: close/zero, never retry/read.
+            _assert_socket(connector, request, receives=0)
+
+
 def operation() -> dict[str, object]:
     _success_case(_probe_get, _GET_HEALTH)
     _success_case(_room_get, _GET_ROOM)
@@ -298,11 +335,12 @@ def operation() -> dict[str, object]:
     _exceptional_cleanup()
     _close_precedence()
     _inflight_close_precedence()
+    _half_close_failures()
     return {
         "schema_version": 1,
         "status": "passed",
         "suite": "bounded_transport_fixtures",
-        "check_count": 29,
+        "check_count": 41,
     }
 
 

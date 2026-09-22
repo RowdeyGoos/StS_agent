@@ -1,1068 +1,166 @@
-# Headless full-game implementation backlog
+# Headless implementation backlog
 
-Assessment date: 2026-09-12. Gameplay sources inspected at
-`73348735724e80d5898a28aa0786f4f0d39f6cf6`; ongoing live-bridge changes were outside
-this assessment. This is a source-and-test assessment and implementation guide,
-not a new gameplay validation result. No gameplay suite, game launch, installation
-inspection or profile access was performed for this documentation change.
+Updated 2026-09-22. This document owns remaining headless assignments;
+[the engine guide](HEADLESS_ENGINE.md) owns usage and supported gameplay.
+The [original assessment and completed-batch chronology](archive/HEADLESS_FULL_GAME_IMPLEMENTATION_2026_09_21.md)
+is historical. Its old “partial” and “remaining” labels are not current tasks.
+Original HF identifiers are retained below for continuity.
 
-The headless environment has a substantial deterministic execution and research
-pipeline, but only a small structural gameplay model. Completing its route does
-not simulate completing Slay the Spire 2. The largest remaining work is faithful
-rules, persistent items and card changes, run generation and progression, content
-coverage, and independent conformance evidence. Another learning algorithm is not
-required to close those gaps.
+## Current scope and completion
 
-[Status](STATUS.md) owns current capability claims; [roadmap](../ROADMAP.md) owns
-priorities. This document owns the headless implementation task breakdown. Update
-task status and dependencies here when implementation lands. Preserve the dated
-assessment below as a baseline; do not silently turn its historical test references
-into validation of changed code.
+The independent `game/headless` engine implements all five solo characters,
+A0–A10, either Act 1 region, Hive, Glory and the Architect ending on pinned build
+0.107.1, with all content unlocked. Cards, powers, monsters, items, generation,
+shops, rests, events and Ancient choices use shared game-owned rules and plain
+serializable continuations. Gameplay does not depend on projections or encoders.
 
-## Scope and definition of complete
-
-The first target follows [TARGET.md](TARGET.md): standard single-player Ironclad,
-initially Ascension 0, against the pinned Slay the Spire 2 `v0.107.1`, Steam build
-`23811903`. The [build manifest][build] owns the binary identity. Full-game coverage
-means every decision and mechanic reachable in the declared mode, unlock profile,
-act selection and difficulty, including neutral, generated, curse, status, special
-and other-character content if it can enter that Ironclad run.
-
-The repository does not yet have a complete target-content census or a finalized
-unlock profile. Therefore an exact total of missing cards, relics, encounters or
-branches cannot honestly be supplied from the reduced registry. HF-01 closes that
-inventory gap. Until then, this is a complete workstream breakdown with explicitly
-identified discovery dependencies, not a claim that every target model has already
-been enumerated. The existing event inventory supplies a useful partial census.
-
-A complete simulator for that scope must:
-
-- Initialize a declared run and progress through all its acts, rooms, rewards and
-  intermediate choices to the game's actual victory, defeat or abandonment.
-- Implement all reachable content and interactions with correct legality, effect
-  order, persistent changes, random distributions and relevant seed semantics.
-- Expose player-visible state, observable history and every legal decision without
-  exposing hidden draw order, future outcomes, world RNG or seed-derived features.
-- Support deterministic reset, action replay, isolated branching and snapshot
-  continuation at every supported decision boundary.
-- Have named, independent evidence for rules and generation, plus complete-run
-  integration checks. Test agreement with itself is insufficient for fidelity.
-- Run through the maintained Python API and `sts-headless` workflow with accurate
-  outcomes, failures and reproducible artifacts.
-
-Faithful reduced-content full runs are an intermediate milestone. Excluding a
-reachable unsupported card from a reward pool changes the game and cannot count
-as full target coverage. Highest-difficulty coverage is a later gate, HF-38.
-Other characters, co-op and alternate modes have separate breadth tasks HF-52–54;
-they are not implied by completion of the initial Ironclad target.
-
-## Assessed implementation
-
-| Area | Implemented in the inspected checkout | Limit and implementation consequence |
+| Workstream | Current status | Evidence and ownership |
 | --- | --- | --- |
-| Public backend interface | [Contract][contract] has typed observations, legal candidates, decision bindings, stale/rejected responses, evidence manifests and a separate `PolicyView` | Four actionable phase families: combat, reward, map and room. Eleven candidate kinds. Shops, items and selectors cannot be added by changing only the backend. HF-03/44/45/46 |
-| Fixture playback | [Fixture backend][fixture] replays a small committed corpus and supports cursor snapshots | Playback is not counterfactual simulation. Do not count these fixtures as gameplay implementation |
-| Combat adapter | [CombatV0Backend][combat-adapter] wraps `CombatEnv`, projects a public subset, maps candidates, accepts persistent decks and restores by action replay | `combat_v0` evidence only. It rejects upgraded persistent cards. No relic, potion or general selection interface. HF-09/13/16/24/26 |
-| Reduced run composer | [ReducedRunBackend][composer], version `reduced_headless_v3`, composes combat → reward → map → rest/event → combat/reward → route completion | One configured encounter scenario is reused at every combat node. No acts, bosses, shop or true run lifecycle. HF-28–43 |
-| Persistent state | [WorldState][state] stores HP/max HP, gold, ordered master-deck instances, map nodes/history, pending decision, continuation queue, terminal result, IDs and RNG | No character/difficulty/act state, relics, potions, encounter history, generation pools or generalized card modifiers. HF-04 |
-| Combat persistence | `CombatLaunchSpec` carries HP/max HP and ordered card instances; `CombatResolution` binds to the issued launch | Only final HP returns from combat. Temporary combat cards stay out of the master deck, but permanent combat changes and item counters cannot survive. HF-09 |
-| Randomness | [GameRandomService][rng] provides seeded Python MT19937 streams, isolated names, operation counts and snapshots | Structural stream names are `combat_launch`, `reward_offer`, `event_effect`; legacy combat uses a shared Python RNG internally. Target-game parity of the algorithm, seed derivation and draw order is unverified. HF-05 |
-| Snapshots | [WorldSnapshotCodec][snapshots] serializes private state; composed restore checks manifests, phase ownership, provenance and accepted action history | Combat restore replays the combat prefix; composed restore also verifies outer history. Correctness infrastructure exists, but fast state cloning and full-game state coverage do not. HF-08/49 |
-| Cards | [Card implementations][cards] and [reduced content][content] contain Strike, Defend, Bash, Pommel Strike, Shrug It Off, Iron Wave, Body Slam and Slimed | Seven persistent rewardable definitions; Slimed is combat-generated. No upgraded execution, power cards, general card keywords or full card pool. HF-13–18 |
-| Enemy content | [Enemies][enemies] implement SimpleEnemy, Nibbit, Shrinker Beetle, Fuzzy Wurm Crawler, Mawler and four Leaf/Twig Slime size variants | SimpleEnemy is a synthetic smoke enemy. Eight named game enemy variants are partial combat research content, not a complete first-act pool. HF-19–23 |
-| Combat scenarios | [Scenario adapter][scenarios] combines ten encounter selectors with two deck presets; the factory offers easy and partial hard Overgrowth pools and fixed encounters | Reduced runs admit only `simple__starter` and `nibbit__starter`; standalone combat breadth is not reduced-run breadth. HF-20/21/30 |
-| Combat rules | Energy, block, Strength, Vulnerable, Shrink, turn cycling, multi-hit attacks, stable enemy slots, draw/discard/exhaust, Slimed generation | No general effect queue, trigger system, power lifecycle, summons, selections or items. `Deck.draw` has no hand-cap rule while the default discrete encoder accepts ten slots. HF-06/11–16/19 |
-| Maps | Two fixed templates: `two_combat_rest` has two combats and a rest/event branch; `short_rest_path` has one combat and a rest | No procedural topology, room distributions, map modifiers, unknown-room resolution or act transitions. HF-29/30/37 |
-| Rewards | Two tables: 25 gold with Strike/Defend/Bash; 35 gold with the four sequencing cards. Opening shuffles the entire fixed list once; choose/skip and proceed are supported | Fixed gold, no rarity/pool sampling, no relic/potion drops. Gold must be claimed and the card reward resolved before proceeding. These are fixture rules. HF-31/32 |
-| Rooms/events | Rest heals a fixed 15 HP, capped at max HP. `quiet_cache` grants 20 gold; `cool_spring` heals 8 HP | No smithing, optional rest actions or target event catalog. At full HP, `cool_spring` reaches an explicit unsupported boundary because the fixture cannot express its no-effect case. HF-34/39–43 |
-| Run outcomes | Terminal defeat and structural `route_complete`; the latter exposes `RunOutcome.VICTORY` while retaining the distinct non-policy reason | No actual final-boss/ending validation. Preserve the distinction in all future statistics and training labels. HF-37/46/47 |
-| Runner and collection | [Episode runner][runner], baseline choosers, spawned workers, budgets, cancellation and deterministic matched panels | The generic runner stops on `WAITING`; the maintained collector factory admits only `reduced_headless` and three baseline chooser kinds. Extend existing seams for new rules. HF-07/47 |
-| Data and actor | [Trajectories][trajectories] separate policy, target and audit streams; datasets bind accepted sources; variable-candidate encoder/model and deterministic CPU cloning exist | Encoder vocabularies, contract/content fingerprints and feature widths are frozen. The actor is a structural imitation smoke, not a full-run learner. HF-45/46 |
-| Conformance | Contract/replay/metamorphic/public-boundary tests, a synthetic common-subset comparator, bounded named gold-transfer evidence/corpus tools | No broad target-game rules or generation certification. Comparison currently omits many identities, intents, costs, piles and ordering details. HF-02/48 |
+| HF-01–10: scope, core state, commands, RNG, continuation and validation | Implemented game-engine foundation; public-contract expansion belongs to HF-44–47 | [Engine architecture and ownership](HEADLESS_ENGINE.md#ownership), [RNG](#hf-05--match-target-rng-algorithms-domains-and-consumption) |
+| HF-11–18: combat, card lifecycle and reachable solo card families | Implemented catalogs/rules; interaction conformance remains bounded | [Cards and character rules](HEADLESS_ENGINE.md#playable-characters) |
+| HF-19–23: encounters and monster lifecycle | All regional normal/elite/boss rosters implemented; 12 bosses covered by native campaigns | [Monster comparisons](evidence/native_focused_behavior_2026_09_20.md), [regional campaigns](evidence/headless_generated_route_2026_09_20.md#all-regional-bosses) |
+| HF-24–27: relics and potions | Solo content, exclusive items, generation and shared hooks implemented | [Character items](evidence/playable_characters_2026_09_20.md), [item comparisons](evidence/native_item_status_2026_09_20.md) |
+| HF-28–38: initialization, generation, rooms, rewards, acts and difficulty | Implemented for the declared profile through victory | [Ascensions](evidence/headless_ascensions_2026_09_20.md), [native character campaigns](evidence/native_character_campaigns_2026_09_21.md) |
+| HF-39–43: events and Ancients | Full solo roster implemented; 9,376 native cases plus separate Architect ending coverage | [Event branch scope](evidence/native_event_branches_2026_09_20.md) |
+| HF-52: playable characters | All five implemented; the four added characters have A0/A10 native victories | [Campaign evidence](evidence/native_character_campaigns_2026_09_21.md), [focused interaction audit](evidence/native_character_interactions_2026_09_21.md) |
+| HF-44–47: public observations, encoding, datasets and operational adapters | Open for the complete game | Assignments below |
+| HF-48: fidelity acceptance | Retained full campaigns and focused comparisons pass; ongoing discrepancy-driven work | [Acceptance task](#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps) |
+| HF-49–50: throughput and delivery | Test-overhead improvements landed; training/search workloads and full-game consumer delivery remain | Assignments below |
 
-### Evidence that can and cannot be reused
-
-The current tests directly encode deterministic continuation, exact legality,
-rejected-action atomicity, public/private separation, snapshot tamper rejection,
-worker cancellation and artifact integrity. Relevant entry points are listed in
-the validation map below. Their presence and the recorded acceptance establish
-what was designed and previously checked; no new pass count is claimed here.
-
-The [actor acceptance record][actor-evidence] documents an integrated September 5
-cloning smoke on tiny structural datasets. Its successful training and persistence
-do not establish strategy or game fidelity. [Card documentation][card-notes] and
-[hard-pool documentation][enemy-notes] cite earlier wiki-based content research;
-those are implementation references, not pinned-build differential acceptance.
-
-The existing [gold case][gold-spec] checks a *conditional transfer* of 25 or 35
-gold plus preservation of HP/max HP/deck count. It does not check reward generation,
-card identity, complete world correspondence or RNG. The recorded
-[September 4 live attempt][gold-evidence] encountered an unsupported gold amount,
-issued zero gold-claim POSTs, and produced no eligible effect comparison. Do not
-describe that result as a successful live gold-transfer conformance test.
-
-Recent live bridge event, shop and item coverage is useful for selecting native
-reference cases. It does not mean those rules exist in `game/engine/`. The
-[event research map][event-map] covers 68 types and 105 branch groups, with source
-references in its retained inventory; it is not an executable headless event engine
-or a complete inventory of every gameplay content family.
-
-## How an agent should pick up a task
-
-All tasks below are **open at this assessment**. “Extend” includes adding missing
-behavior to an existing subsystem; it does not imply starting that subsystem over.
-HF-01, HF-02 case design, HF-10 and the HF-14 hand-cap investigation can start from
-the current checkout. HF-51 is a conditional backend experiment, not a prerequisite
-for every Python change.
-
-1. Read [AGENTS.md](../AGENTS.md), check the current checkout, then read the chosen
-   task and its linked sources/tests. Recheck its status against code before acting.
-2. Select one observable slice. Dependencies mean the portions required by that
-   slice, not completion of every sibling content ticket. Implement one real caller
-   through state, rules, decisions, persistence and validation before generalizing.
-3. Establish exact rules from the pinned build or accepted evidence. Where a value,
-   timing rule or reachable content ID is unknown, record that uncertainty and run
-   the smallest applicable source inspection or controlled experiment. Do not copy
-   Slay the Spire 1 behavior or infer native rules from a Python fixture.
-4. Make the change through existing package boundaries. Keep the combat research
-   interface usable. Evolve schemas deliberately when semantics change, and retain
-   historical artifact identities. Never “fix” a fingerprint assertion by repinning
-   old evidence to new source.
-5. Run the task's focused checks and affected consumers. For public information,
-   protocol, RNG or persistence changes, apply the independent semantic review and
-   integration requirements in AGENTS.md. Documentation alone needs document checks.
-6. Record implementation, focused evidence, remaining cases and available elapsed
-   times in the change summary. Mark the completed task/slice here, update Status
-   only where capability meaning changes, and retain substantial native evidence
-   under `docs/evidence/`.
-
-For a content task, use a concrete instance such as `HF-18/<definition_id>` or
-`HF-43/<event_id>/<branch_id>`. Before implementation, fill in the exact IDs,
-reachable pool, difficulty variants, effect dependencies and reference cases from
-HF-01. Keep the instance in the single coverage inventory; do not create a new
-plan/handoff document for every card. A family is complete only when every in-scope
-inventory row is covered or explicitly excluded by the declared target.
-
-### Shared acceptance requirements
-
-Every gameplay task must add an observable legal path and its meaningful edge case,
-preserve invalid/stale-action atomicity, and support snapshot/replay at any new
-decision. Validate legal-action **completeness** as well as rejection of illegal
-actions. A hidden-state change must not alter the policy view until it produces a
-player-observable difference. RNG consumption follows the target's domains and
-ordering; independent streams are appropriate only where the target is independent.
-
-Extend the bounded failure vocabulary when necessary. Unsupported behavior must
-stop explicitly; exceptions, infinite effect loops and representation overflow
-must not be converted into a normal loss, victory or successful room completion.
-An artificial transition budget is truncation, not natural defeat. These common
-checks are part of each task, not a reason to run the entire suite on every edit.
-
-### Validation map
-
-The named groups below identify **existing starting tests**, not a fixed acceptance
-matrix. Add a focused test beside the affected subsystem when no case exists.
-
-| Group | Existing test locations |
-| --- | --- |
-| Contract | `tests/contracts/test_headless_v0.py`, `tests/conformance/test_headless_v0_contract.py`, `tests/conformance/test_headless_v0_public_boundary.py`, `tests/conformance/test_headless_v0_capabilities.py` |
-| State | `tests/engine/test_headless_state.py`, `test_random_service.py`, `test_headless_snapshots.py` in the same directory |
-| Combat | `tests/simulation/test_basic.py`, `test_cards.py`, `test_encounters.py`, `test_integrated_workstreams.py`; `tests/backends/headless/test_combat_v0_backend.py`, `test_combat_candidates.py`, `test_combat_projection.py`, `test_combat_v0_characterization.py` |
-| Content | `tests/content/test_reduced_v0.py`, `tests/backends/headless/test_scenarios.py` |
-| Progression | `tests/engine/test_map_rules.py`, `test_reward_rules.py`, `test_room_rules.py`; `tests/backends/headless/test_reduced_run_backend.py` |
-| Replay | `tests/conformance/test_headless_v0_replay.py`, `test_headless_v0_metamorphic.py`; `tests/runtime/test_episode_runner.py` |
-| Differential | `tests/differential/test_common_public_subset.py`, `test_reward_gold_conformance.py`, `test_conformance_evidence.py`, `test_conformance_corpus.py` |
-| Actor/data | `tests/agents/test_headless_encoding.py`, `test_headless_candidate_policy.py`; `tests/data/test_headless_trajectory.py`, `test_headless_policy_dataset.py`; `tests/training/test_headless_behavior_clone.py` |
-| Operation | `tests/cli/test_headless.py`; `tests/training/test_headless_rollout.py`, `test_headless_benchmark.py`, `test_headless_matched_panel.py`, `test_headless_reporting.py`; `tests/test_lazy_public_api.py`, `test_package_layout.py` |
-
-For example, an upgrade change should run its new upgrade regression plus the
-affected combat adapter, projection, state and encoding tests. Use the existing
-environment: `PYTHONPATH=. python3 -m pytest -q <selected test paths>`. For a stable
-broad integration milestone, follow AGENTS.md's `compileall` and full pytest gate.
-Do not launch the game or rebuild the bridge solely for a documentation change.
-
-## Delivery order
-
-| Milestone | Observable completion | Main tasks |
-| --- | --- | --- |
-| M0: trusted first mechanic | One named combat transition has independent expected legality, effects and post-state against the pinned target | HF-01/02 and the necessary part of HF-03–17; evaluate HF-51 only if it could change backend direction |
-| M1: persistent gameplay slice | Start a declared run; use a real card upgrade, one relic and one potion; finish two encounters with exact persistent effects and replay | HF-04–17, HF-24/26/28/31/32/34/44/47, each limited to representative content |
-| M2: full-length reduced-content run | Traverse the target act structure, representative rooms and bosses to an actual ending, with explicit restricted-content labeling | HF-19–43 as required by the selected slice, plus HF-08/44/46/47/48 |
-| M3: complete Ironclad A0 scope | Every reachable inventory row and decision family is implemented, all identified divergences resolved, full-run conformance accepted | All required HF-01–50 work for A0; no silent pool exclusions |
-| M4: target difficulty | Verified highest standard Ironclad difficulty and every applicable modifier/variant pass the same gates | HF-38 and affected content/conformance cases |
-
-This ordering does not supersede live-bridge priorities in ROADMAP.md. M2 does not
-require every card to exist, and M1 does not require a general framework for every
-event. Each milestone must state its content restriction and evidence scope.
-
-## Task index
-
-All entries are open. Dependencies and acceptance cases are in the linked task.
-
-| ID | Feature |
-| --- | --- |
-| [HF-01](#hf-01--establish-the-target-content-and-rules-inventory) | Establish the target content and rules inventory |
-| [HF-02](#hf-02--add-usable-differential-fixtures-for-named-mechanics) | Add usable differential fixtures for named mechanics |
-| [HF-03](#hf-03--evolve-the-decision-contract-for-the-first-new-gameplay-slice) | Evolve the decision contract for the first new gameplay slice |
-| [HF-04](#hf-04--extend-persistent-state-for-real-runs) | Extend persistent state for real runs |
-| [HF-05](#hf-05--match-target-rng-algorithms-domains-and-consumption) | Match target RNG algorithms, domains and consumption |
-| [HF-06](#hf-06--introduce-ordered-effects-and-trigger-resolution) | Introduce ordered effects and trigger resolution |
-| [HF-07](#hf-07--suspend-and-resume-nested-decisions) | Suspend and resume nested decisions |
-| [HF-08](#hf-08--snapshot-every-full-game-decision-and-support-isolated-branches) | Snapshot every full-game decision and support isolated branches |
-| [HF-09](#hf-09--preserve-all-combat-produced-run-changes) | Preserve all combat-produced run changes |
-| [HF-10](#hf-10--distinguish-unsupported-rules-from-engine-defects) | Distinguish unsupported rules from engine defects |
-| [HF-11](#hf-11--complete-damage-block-hp-and-terminal-semantics) | Complete damage, block, HP and terminal semantics |
-| [HF-12](#hf-12--implement-status-and-power-lifecycles) | Implement status and power lifecycles |
-| [HF-13](#hf-13--execute-upgraded-and-modified-card-instances) | Execute upgraded and modified card instances |
-| [HF-14](#hf-14--complete-card-zone-draw-and-hand-limit-behavior) | Complete card-zone, draw and hand-limit behavior |
-| [HF-15](#hf-15--extend-card-costs-play-legality-and-targeting) | Extend card costs, play legality and targeting |
-| [HF-16](#hf-16--support-decisions-inside-card-resolution) | Support decisions inside card resolution |
-| [HF-17](#hf-17--verify-and-finish-the-existing-eight-card-definitions) | Verify and finish the existing eight card definitions |
-| [HF-18](#hf-18--implement-all-remaining-reachable-card-content) | Implement all remaining reachable card content |
-| [HF-19](#hf-19--generalize-enemy-behavior-and-combat-entity-lifecycle) | Generalize enemy behavior and combat entity lifecycle |
-| [HF-20](#hf-20--verify-the-existing-overgrowth-enemy-slice) | Verify the existing Overgrowth enemy slice |
-| [HF-21](#hf-21--complete-normal-encounters-across-every-target-act) | Complete normal encounters across every target act |
-| [HF-22](#hf-22--implement-all-target-elite-encounters) | Implement all target elite encounters |
-| [HF-23](#hf-23--implement-all-target-boss-encounters) | Implement all target boss encounters |
-| [HF-24](#hf-24--add-relic-inventory-lifecycle-hooks-and-the-starter-relic) | Add relic inventory, lifecycle hooks and the starter relic |
-| [HF-25](#hf-25--complete-reachable-relic-content-and-interactions) | Complete reachable relic content and interactions |
-| [HF-26](#hf-26--add-potion-inventory-use-discard-and-replacement) | Add potion inventory, use, discard and replacement |
-| [HF-27](#hf-27--complete-reachable-potion-definitions-and-generation-rules) | Complete reachable potion definitions and generation rules |
-| [HF-28](#hf-28--initialize-declared-runs-and-starting-choices) | Initialize declared runs and starting choices |
-| [HF-29](#hf-29--generate-and-expose-target-maps) | Generate and expose target maps |
-| [HF-30](#hf-30--select-encounters-events-and-room-outcomes-from-real-pools) | Select encounters, events and room outcomes from real pools |
-| [HF-31](#hf-31--generate-real-combat-and-room-rewards) | Generate real combat and room rewards |
-| [HF-32](#hf-32--resolve-mixed-rewards-and-nested-pickup-effects) | Resolve mixed rewards and nested pickup effects |
-| [HF-33](#hf-33--apply-permanent-deck-changes-and-modifiers) | Apply permanent deck changes and modifiers |
-| [HF-34](#hf-34--implement-actual-rest-site-options) | Implement actual rest-site options |
-| [HF-35](#hf-35--implement-shops-and-repeatable-purchases) | Implement shops and repeatable purchases |
-| [HF-36](#hf-36--implement-treasure-and-remaining-non-event-room-families) | Implement treasure and remaining non-event room families |
-| [HF-37](#hf-37--implement-act-transitions-and-real-run-termination) | Implement act transitions and real run termination |
-| [HF-38](#hf-38--implement-difficulty-and-declared-unlock-variants) | Implement difficulty and declared unlock variants |
-| [HF-39](#hf-39--add-a-real-event-state-machine-and-ordinary-choices) | Add a real event state machine and ordinary choices |
-| [HF-40](#hf-40--compose-event-selectors-card-offers-and-deck-mutations) | Compose event selectors, card offers and deck mutations |
-| [HF-41](#hf-41--run-event-combat-and-resume-its-parent) | Run event combat and resume its parent |
-| [HF-42](#hf-42--model-custom-event-interactions-and-terminal-branches) | Model custom event interactions and terminal branches |
-| [HF-43](#hf-43--complete-the-event-and-ancient-catalog) | Complete the event and ancient catalog |
-| [HF-44](#hf-44--expose-sufficient-public-run-state-and-observable-history) | Expose sufficient public run state and observable history |
-| [HF-45](#hf-45--extend-encoding-and-policies-without-dropping-legal-choices) | Extend encoding and policies without dropping legal choices |
-| [HF-46](#hf-46--carry-full-run-semantics-through-datasets-and-artifacts) | Carry full-run semantics through datasets and artifacts |
-| [HF-47](#hf-47--run-the-new-environment-through-existing-apis-and-cli) | Run the new environment through existing APIs and CLI |
-| [HF-48](#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps) | Accept complete-run fidelity and close coverage gaps |
-| [HF-49](#hf-49--measure-and-improve-full-runbranching-performance) | Measure and improve full-run/branching performance |
-| [HF-50](#hf-50--deliver-a-reproducible-supported-simulator-package) | Deliver a reproducible supported simulator package |
-| [HF-51](#hf-51--test-whether-reusing-native-game-rules-shortens-the-fidelity-work) | Test whether reusing native game rules shortens the fidelity work |
-| [HF-52](#hf-52--add-every-other-single-player-character) | Add every other single-player character |
-| [HF-53](#hf-53--add-cooperative-multiplayer-semantics) | Add cooperative multiplayer semantics |
-| [HF-54](#hf-54--add-alternate-modes-and-maintain-later-game-builds) | Add alternate modes and maintain later game builds |
-
-## Foundation tasks
-
-### HF-01 — Establish the target content and rules inventory
-
-- **Depends on:** none; exact profile-sensitive reachability remains explicit until
-  the declared profile is settled.
-- **Implement:** one versioned inventory of character setup, acts, room kinds,
-  encounters, enemies, cards/upgrades/modifiers, powers, relics, potions, events,
-  ancients, rewards, RNG domains and difficulty changes. Record stable target ID,
-  source/build reference, reachable pools, rule dependencies, simulator entry point,
-  implementation/evidence status and concrete task instance. Reuse [content] and
-  the [event inventory][event-inventory]; do not reinterpret the latter's old bridge
-  gap labels as headless coverage.
-- **Accept:** every inspected registry member is accounted for; missing or unknown
-  semantics are explicit. Produce a coverage query grouped by family/status and
-  named first-slice IDs. Changing the target build invalidates affected coverage.
-  Check registry uniqueness, dependency references and source identities in Content
-  and Differential tests. Do not commit game binaries or raw source dumps.
-
-### HF-02 — Add usable differential fixtures for named mechanics
-
-- **Depends on:** HF-01's selected mechanic; fixture design can begin immediately.
-- **Implement:** extend [conformance tools][conformance] and [common comparator]
-  with pre-state/action/post-state cases that establish entity correspondence,
-  complete legal choices and relevant ordered effects. Start with one existing
-  card against one existing enemy; separately cover a reward transfer. Expected
-  results must come from independent pinned rules/observations, not the simulator's
-  computed post-state. Preserve provenance and the old narrow gold case unchanged.
-- **Accept:** a deliberately wrong amount, target, order or missing legal candidate
-  fails with a bounded field-level difference; an absent fact remains unobserved.
-  Distinguish synthetic tests, source-derived expectations and observed native
-  comparisons. New native collection follows the live guide and current authority.
-  Tests: Differential, Contract, selected Combat/Progression cases.
-
-### HF-03 — Evolve the decision contract for the first new gameplay slice
-
-- **Depends on:** HF-01/02 for the chosen slice; coordinate with HF-13 or HF-16.
-- **Implement:** a versioned evolution of [contract] supporting the slice's new
-  state/action semantics, initially upgraded card records or a suspended selection.
-  Define candidate identity, reference lifetime, action binding, transition events
-  and public fields. Extend phase families only when needed; a new content ID does
-  not inherently require a new phase. Keep runtime control bindings out of policy
-  inputs and retain strict codecs and manifest compatibility checks.
-- **Accept:** the representative feature runs through the backend and a public
-  chooser; old artifacts either remain readable under their original contract or
-  reject incompatibility clearly. Stale/forged candidates and private-field injection
-  fail without mutation. Tests: Contract, Replay and affected Actor/data consumers.
-
-### HF-04 — Extend persistent state for real runs
-
-- **Depends on:** HF-01; HF-03 where fields become public.
-- **Implement:** extend [state] with declared character/difficulty/settings, current
-  act/floor, persistent inventory and counters, card instance metadata, room/encounter
-  history and generation-pool state as each first caller needs them. Give relics,
-  potions, cards, rooms and combat entities durable engine identities and separate
-  observable references. Use typed/versioned records rather than unstructured
-  feature-specific blobs or global mutable registries.
-- **Accept:** two same-definition instances remain distinguishable; two independent
-  runs do not share mutable objects; state serializes and validates at entry, room
-  exit and combat boundaries. Invalid references and incompatible versions reject
-  atomically. Tests: State, Progression, Contract and Replay.
+“Implemented” describes executable rules, not exhaustive native equivalence.
+Boosted native campaigns are accepted; a normal-HP test-policy victory is not a
+completion gate. Low-HP/death/revival rules need separate focused comparisons.
+Multiplayer, alternate modes and progression-dependent unlock histories are
+excluded. Native UI and on-disk saves are not simulated by Python JSON restoration.
 
 ### HF-05 — Match target RNG algorithms, domains and consumption
 
-- **Depends on:** HF-01's RNG findings and HF-02 reference vectors.
-- **Implement:** evolve [rng] and its consumers for target seed conversion, integer
-  ranges, weighted draws, shuffle, stream ownership and snapshot state. Map combat
-  draw order, enemy moves, encounters, maps, reward rarity, relic/potion pools, shops
-  and events to the actual domains. Keep policy/worker randomness separate. Preserve
-  structural RNG behavior under its original identity where old fixtures need it.
-- **Accept:** golden random vectors and at least one complete sequence of dependent
-  game draws match the reference. Reads/rejections consume no unauthorized draws;
-  restore reproduces the suffix. Test both independence and intentional coupling.
-  Label distribution-only versus exact seeded parity separately. Tests: State,
-  Differential and affected generation/combat tests.
-
-### HF-06 — Introduce ordered effects and trigger resolution
-
-- **Depends on:** a HF-02 reference case and HF-04; use HF-05 for random effects.
-- **Implement:** a serializable resolution mechanism under `game/engine/`, integrating
-  [combat core], [cards], [statuses] and [enemies]. Establish ordering for play/cost,
-  damage, block, HP loss, draw, discard/exhaust, status changes, death and turn
-  boundaries. Start with an existing card and one real trigger caller. Track source,
-  owner and target; allow effects to enqueue effects without recursively bypassing
-  decisions. Keep public events distinct from private execution records.
-- **Accept:** exact order is asserted for a multi-effect card and a triggered effect;
-  lethal damage interrupts subsequent work according to the target. A runaway
-  effect chain produces a bounded infrastructure failure. Tests: Combat, State,
-  Replay and Differential. Do not build an unused general-purpose rules language.
-
-### HF-07 — Suspend and resume nested decisions
-
-- **Depends on:** HF-03/04/06.
-- **Implement:** evolve `PendingDecision`, `AutomaticTransition` and [composer] to
-  retain serializable parent/effect continuations. Drive automatic work to the next
-  player decision or terminal boundary with a bounded drain. Cover card selection,
-  reward pickup children and event combat without executable closures in snapshots.
-  Preserve single-owner phase semantics. A synchronous simulator must not leave
-  harmless internal work as a `WAITING` boundary that permanently stops [runner].
-- **Accept:** one parent → child choice → parent completion path executes once,
-  survives restore inside the child, and rejects stale parent choices. Cancellation,
-  death and unsupported children have explicit outcomes. Tests: State, Replay,
-  Progression and Contract.
-
-### HF-08 — Snapshot every full-game decision and support isolated branches
-
-- **Depends on:** HF-04/05/06/07 for implemented fields; extend incrementally.
-- **Implement:** extend [snapshots], [combat-adapter] and [composer] to capture card
-  instance state, entity state, effects, pending choices, RNG, inventories and run
-  progression. Keep deterministic replay verification; measure restore cost before
-  choosing direct state cloning or checkpoints. Define gameplay semantic keys
-  separately from operational counters and policy-visible information keys.
-- **Accept:** restore at combat, selector, reward, shop, event and act boundaries
-  reproduces identical legal candidates and suffixes; branching cannot mutate its
-  parent. Corrupt or incompatible snapshots reject atomically. Measure prefix-length
-  dependence for later HF-49 work. Tests: State and Replay.
-
-### HF-09 — Preserve all combat-produced run changes
-
-- **Depends on:** HF-04/06. Integrate concrete item effects alongside HF-24/26;
-  those effects are consumers of the extended handoff, not prerequisites for it.
-- **Implement:** extend `CombatLaunchSpec`, `CombatResolution`, [combat-adapter] and
-  [composer] beyond final HP. Include item state/counters, consumed potions, max-HP
-  changes, gold and intentional permanent card mutations, with exact identity and
-  one-time launch/resolution binding. Keep temporary generated cards and temporary
-  upgrades separate. Apply victory/defeat/end-combat hooks in target order.
-- **Accept:** an item counter and one permanent change survive two combats; a
-  temporary change does not. Duplicate/stale/foreign resolutions reject, and defeat
-  cannot accidentally award victory rewards. Tests: State, Combat, Progression and
-  Replay, extending the existing HP-only handoff tests.
-
-### HF-10 — Distinguish unsupported rules from engine defects
-
-- **Depends on:** none for a focused current-backend improvement.
-- **Implement:** inspect [composer]'s broad exception-to-`REJECTED_BY_RULES` path and
-  [combat-adapter]'s rollback boundary. Add bounded non-policy diagnostics and
-  explicit handling for unsupported content, representational limits, invalid input
-  and internal failures. Preserve transactional rollback, and keep raw exception
-  messages/private state out of actor data and ordinary public responses.
-- **Accept:** inject a failure before and after a mutation and verify unchanged
-  state/RNG; the collector reports the right stop category and never retries an
-  uncertain action. An implementation bug is distinguishable from an illegal move.
-  Tests: Combat, Progression, Replay and Operation.
-
-## Combat and card tasks
-
-### HF-11 — Complete damage, block, HP and terminal semantics
-
-- **Depends on:** HF-02/06.
-- **Implement:** verify and implement target modifier order, integer rounding,
-  Strength and other attributes, block gain/loss/caps, attack versus non-attack
-  damage, direct HP loss, healing/max-HP changes, multi-hit effects and death timing.
-  Replace assumptions in [combat core], [player], [enemies], [statuses] and damage
-  helpers only where the pinned reference establishes the rule. Include simultaneous
-  lethal effects, revival and victory checks when a reachable caller requires them.
-- **Accept:** focused cases distinguish blocked hits, direct HP cost, per-hit
-  rounding, negative modifiers and lethal trigger chains. The known simple combat
-  path remains usable; changed legacy behavior has an explicit compatibility boundary.
-  Tests: Combat and Differential; affected action-feature consumers must agree.
-
-### HF-12 — Implement status and power lifecycles
-
-- **Depends on:** HF-04/06/11.
-- **Implement:** replace the two-status limitation with supported, typed status/power
-  definitions and instance state. Cover application, stacking/replacement, removal,
-  owner/source lifetime, duration timing, temporary attributes and triggered effects.
-  Start with a verified missing basic status and retain Vulnerable/Shrink cases;
-  then add each reachable status/power as an HF-12 content instance.
-- **Accept:** source death, reapplication, zero stacks, owner-turn decay, immunity or
-  prevention where applicable, and snapshot continuation match named references.
-  Generalize Shrink's enemy-name cleanup only with equivalent verified behavior.
-  Project visible stacks without private intent state. Tests: Combat, State,
-  Contract and Differential.
-
-### HF-13 — Execute upgraded and modified card instances
-
-- **Depends on:** HF-01/03/04; coordinate persistent mutation with HF-33.
-- **Implement:** extend [cards], [content], [combat-adapter] and [projection] so
-  `PersistentCardInstance.upgraded` affects actual effects/costs and public records.
-  Start with a single verified starter-card upgrade. Preserve instance identity
-  through materialization and distinguish permanent upgrades from temporary combat
-  changes. Add levels/modifiers only where target content needs them; do not assume
-  every card supports exactly one boolean upgrade.
-- **Accept:** upgrade one of two identical cards, observe the correct preview, play
-  both with different effects, restore, and enter another combat with the correct
-  permanent version. Unsupported variants still reject explicitly. Tests: State,
-  Combat, Progression, Contract and Actor/data.
-
-### HF-14 — Complete card-zone, draw and hand-limit behavior
-
-- **Depends on:** HF-02 for exact semantics; HF-04/06 for new instance/lifecycle state.
-- **Implement:** first resolve the concrete mismatch between unbounded [deck] draw
-  and the ten-slot default [combat encoder]. Implement the target's overflow/no-draw
-  rule where gameplay belongs. Then cover shuffle timing, draw exhaustion, discard,
-  exhaust, retain/ethereal/innate or equivalent reachable keywords, inserted cards,
-  and cards in play/resolution. Preserve instance identity and conservation rules.
-- **Accept:** draw at/beyond the hand limit, reshuffle during a multi-draw, retain
-  while ending a turn, and generate/exhaust a temporary card without corrupting
-  the master deck. All legal hands remain representable; no silent encoder truncation.
-  Tests: Combat, State, Replay and Differential.
-
-### HF-15 — Extend card costs, play legality and targeting
-
-- **Depends on:** HF-03/06/11/13.
-- **Implement:** add real current/base costs, temporary reductions, variable/X costs,
-  alternate costs and play restrictions when the inventory establishes callers.
-  Support self, one enemy, all enemies, random target and other reachable target
-  modes through authoritative candidate generation. Keep stable enemy identities
-  and one canonical action for untargeted cards. Inspect [actions], [candidates],
-  [combat encoder] and [action features] together.
-- **Accept:** zero energy, insufficient alternate resource, changed costs, dead
-  targets and multi-target effects produce exactly the reference legal set. The
-  actor cannot select the outcome of a random target. Tests: Combat, Contract,
-  Differential and affected baselines/demo formatting.
-
-### HF-16 — Support decisions inside card resolution
-
-- **Depends on:** HF-07/13/14/15.
-- **Implement:** first add one target-game card that asks for a hand/discard/draw-pile
-  selection. Support operation, eligible originals, min/max count, optionality,
-  ordering and confirmation semantics; extend to offered cards and bundles as
-  required. Resume the originating effect exactly once. Handle copy/replay/autoplay
-  callers with explicit cost, targeting and trigger semantics rather than recursive
-  calls that skip the action boundary.
-- **Accept:** zero/partial/full allowed choices, duplicate-definition cards,
-  cancellation where legal and lethal follow-up effects work; restore within a
-  selection yields the same suffix. Tests: Combat, Contract, State and Replay.
-
-### HF-17 — Verify and finish the existing eight card definitions
-
-- **Depends on:** HF-02 and the applicable HF-11–15 behavior.
-- **Implement:** separate named cases for Strike, Defend, Bash, Pommel Strike,
-  Shrug It Off, Iron Wave, Body Slam and Slimed. Verify costs, targets, effect order,
-  base/upgraded versions where applicable, tags and interactions against the pinned
-  target. Correct static [CardSpec][cards] and public metadata alongside execution;
-  seven rewardable cards and generated Slimed have different pool eligibility.
-- **Accept:** each definition has an independent positive case and a relevant
-  modifier/order edge case; metadata and runtime results agree. Body Slam scaling,
-  Bash application order and draw-after-play behavior have explicit cases. Tests:
-  Combat and Differential; update [card notes][card-notes] only when facts change.
-
-### HF-18 — Implement all remaining reachable card content
-
-- **Depends on:** HF-01 inventory and the required HF-11–16 primitives.
-- **Implement:** one bounded `HF-18/<definition_id>` ticket per base/upgrade family.
-  Cover attacks (multi-hit, area/random targeting, conditional/variable damage),
-  skills (block, draw, energy, HP costs, pile selection), powers (persistent hooks),
-  curses/statuses and special/generated/off-color cards. Record generation pools,
-  rarity, obtainability and upgrade restrictions. A novel rule becomes a small
-  prerequisite extension to its owning mechanic task, not a silent approximation.
-- **Accept:** every in-scope card inventory row has execution, metadata, acquisition
-  eligibility and differential cases for each semantic variant. Pairwise cases
-  cover meaningful trigger/keyword interactions; unsupported rows cannot enter a
-  purported complete run. Tests: Content, Combat, Progression and Differential.
-
-## Enemy and encounter tasks
-
-### HF-19 — Generalize enemy behavior and combat entity lifecycle
-
-- **Depends on:** HF-04/05/06/11/12.
-- **Implement:** extend [enemies] for history-dependent/random move selection,
-  visible intent updates, enemy-specific counters, phases, summoned entities,
-  transformations, escape, death prevention/revival and encounter completion as
-  required by a first named caller. Keep dead-target and new-entity identities
-  stable; lift fixed capacity only through explicit representation changes.
-- **Accept:** move restrictions and RNG consumption match the reference; source
-  death and summons cannot renumber another target; a defeated phase or escaping
-  enemy does not incorrectly finish the encounter. Hidden move state stays private.
-  Tests: Combat, State, Contract, Replay and Differential.
-
-### HF-20 — Verify the existing Overgrowth enemy slice
-
-- **Depends on:** HF-02/05 and relevant HF-11/12/19 rules.
-- **Implement:** per-enemy tickets for Nibbit, Shrinker Beetle, Fuzzy Wurm Crawler,
-  Mawler, Leaf Slime S/M and Twig Slime S/M. Verify HP sampling, opening moves,
-  damage, debuffs/generated cards, repetition restrictions, probabilities and
-  difficulty variants. Verify the three-slime composition and slot ordering.
-  Keep SimpleEnemy explicitly synthetic.
-- **Accept:** each real enemy has full-cycle or branch-covering reference traces;
-  stochastic constraints/distributions and deterministic continuations are checked
-  separately. Easy/hard pool names retain honest partial-coverage labels until
-  HF-21/30 complete them. Tests: Combat and Differential.
-
-### HF-21 — Complete normal encounters across every target act
-
-- **Depends on:** HF-01/19 and each enemy's implemented mechanics. HF-30 later
-  integrates these encounter definitions into run sampling.
-- **Implement:** `HF-21/<act_id>/<encounter_id>` tickets for each missing easy/hard
-  hallway encounter. Specify members, positions, count/HP variation, shared powers,
-  scripted coordination and entry conditions. Reuse enemy definitions and scenario
-  factories; do not duplicate the registry in the run composer.
-- **Accept:** every encounter is constructible, projects all legal decisions,
-  reaches victory/defeat and restores exactly. Verify mixed-enemy interactions and
-  difficulty variants. HF-30 owns normal-run pool and history-rule acceptance.
-  Tests: Content, Combat, Progression and Differential.
-
-### HF-22 — Implement all target elite encounters
-
-- **Depends on:** HF-01/19 and the elite's card/status mechanics. Integrate the
-  resulting definition with HF-30/31 when run sampling/rewards are available.
-- **Implement:** one `HF-22/<encounter_id>` ticket per elite, including phase/counter
-  rules, opening/conditional moves, group mechanics, difficulty variants and
-  elite-specific reward routing. Reuse combat execution; elite is encounter metadata,
-  not another combat backend.
-- **Accept:** representative victories and defeats plus every special transition
-  match references; expose the exact encounter outcome for HF-30/31 integration.
-  Dead allies, summons and on-death effects have cases
-  where applicable. Tests: Combat, Progression and Differential.
-
-### HF-23 — Implement all target boss encounters
-
-- **Depends on:** HF-01/19 and the boss's mechanics. HF-30/31/37 consume the
-  resulting encounter; they are not prerequisites for implementing its combat.
-- **Implement:** `HF-23/<encounter_id>` tickets for every selectable boss in every
-  target act. Include phase transitions, invulnerability/revival, minions, special
-  resources, turn/card limits or rule overrides only where that boss has them.
-  Distinguish defeating a body/phase from winning the encounter.
-- **Accept:** all boss-specific branches and true victory/defeat boundaries have
-  reference cases; expose an unambiguous outcome for the HF-31/37 reward and act
-  transitions. Restore on both sides of a phase boundary. Tests: Combat, State,
-  Progression, Replay and Differential.
-
-## Relic and potion tasks
-
-### HF-24 — Add relic inventory, lifecycle hooks and the starter relic
-
-- **Depends on:** HF-01/04/06/09/11.
-- **Implement:** introduce relic definition/instance state, acquisition/removal,
-  counters, charges, disabled state and ordered hooks. Wire the pinned Ironclad
-  starter relic through new-run setup, combat completion and persistence first.
-  Inventory changes can schedule child choices through HF-07. Do not store relic
-  behavior solely in the live bridge or attach ad hoc callbacks to each room.
-- **Accept:** the starter relic's actual effect occurs at its exact boundary,
-  persists correctly over two fights, and respects HP caps and death semantics.
-  Duplicate obtain/removal and restore do not double-trigger. Tests: State, Combat,
-  Progression, Replay and Differential.
-
-### HF-25 — Complete reachable relic content and interactions
-
-- **Depends on:** HF-01/24 and mechanic-specific tasks.
-- **Implement:** per-ID relic tickets covering combat triggers, persistent counters,
-  resource/cost changes, map/rest/shop/reward modifiers, pickup selectors, pool
-  replacement/exclusion and event/ancient-specific items. Include relic removal,
-  replacement and ordering when multiple relics react to the same effect. The
-  [event inventory][event-inventory] already identifies immediate pickup interactions.
-- **Accept:** every reachable relic has obtain/use/remove cases where applicable;
-  pickup children resume correctly and counters survive rooms, acts and snapshots.
-  Interactions with cards/potions and generation use the same authoritative hooks.
-  Tests: State, Combat, Progression, Contract and Differential.
-
-### HF-26 — Add potion inventory, use, discard and replacement
-
-- **Depends on:** HF-03/04/06/07/09/15.
-- **Implement:** potion instances and slots/capacity, legal use contexts and targets,
-  consumption timing, discard, acquisition and full-inventory replacement/skip.
-  Implement one verified targeted and one untargeted potion end to end. Distinguish
-  player choice from automatic potion effects and let capacity-changing relics use
-  shared inventory rules. Expose only actually legal item candidates.
-- **Accept:** use costs no unintended card energy, consumes exactly the correct
-  instance and persists to the next room; wrong targets/context reject. Full and
-  expanding inventory, duplicate definitions, nested choices and restoration work.
-  Tests: Contract, State, Combat, Progression and Replay.
-
-### HF-27 — Complete reachable potion definitions and generation rules
-
-- **Depends on:** HF-01/26 and the relevant effect/status/card primitives.
-- **Implement:** per-ID cases for damage, block, healing, attributes/statuses,
-  card/resource generation, selection, delayed and automatic effects in the target
-  potion inventory. Include rarity/pool eligibility, potency modifiers and character
-  restrictions; implement target drop-state behavior with HF-30/31 rather than
-  embedding arbitrary chance in individual potion classes.
-- **Accept:** each legal context, consumption boundary and effect matches a named
-  reference; item modifiers and potion-triggered selections have integration cases.
-  Failed/illegal uses do not consume inventory or RNG. Tests: Content, Combat,
-  Progression and Differential.
-
-## Run progression and room tasks
-
-### HF-28 — Initialize declared runs and starting choices
-
-- **Depends on:** HF-01/04 and starter content, including HF-24. A first starting
-  choice can be implemented with HF-39; HF-43 later completes the offer catalog.
-- **Implement:** replace the composer's forced initial combat with a target run
-  configuration: character, difficulty, unlock/settings manifest, base deck, HP,
-  gold, inventory, act setup and starting/ancient choices. Distinguish structural
-  debug configurations from target configurations. Consume supplied configuration;
-  normal headless reset must not read the user's profile or save files.
-- **Accept:** reset matches the declared starting state and legal choices; identical
-  settings/seeds reproduce the run, unknown settings/content reject before mutation,
-  and the first map/combat receives the chosen effects. Tests: State, Content,
-  Progression, Contract and Operation.
-
-### HF-29 — Generate and expose target maps
-
-- **Depends on:** HF-01/04/05/28.
-- **Implement:** extend [map rules] beyond the two templates to target topology,
-  coordinates/edges, starting destinations, room placement constraints, visible
-  boss/act information and map-altering effects. Preserve graph/history across
-  rooms and acts. Represent visibly unknown nodes without revealing their private
-  eventual outcomes. Retain fixed templates as explicit fixture configurations.
-- **Accept:** golden map cases and structural constraints match the pinned target;
-  only reachable next nodes are legal, visited nodes cannot be replayed, and map
-  changes preserve identity/history. Tests: Progression, State, Contract and
-  Differential, including generation distributions.
-
-### HF-30 — Select encounters, events and room outcomes from real pools
-
-- **Depends on:** HF-01/04/05/29 and the selected content implementations.
-- **Implement:** persistent pool state for act-specific easy/hard encounters,
-  elites/bosses, event eligibility/weights, unknown-room resolution, no-repeat rules,
-  seen flags and any target pity/exclusion counters. Stop reusing one `scenario_id`
-  at every combat node. Relic/difficulty modifiers must act at the correct selection
-  boundary. Never reroll because the selected content is unimplemented.
-- **Accept:** complete sampled sequences match target restrictions and seeded
-  references where available; marginal/conditional distributions have independent
-  expectations. Reads and rejected map actions do not consume rolls. Tests:
-  Content, State, Progression and Differential.
-
-### HF-31 — Generate real combat and room rewards
-
-- **Depends on:** HF-01/04/05/30; applicable HF-18/25/27 content.
-- **Implement:** extend [reward rules] for actual gold ranges/modifiers, card count,
-  rarity and upgrade chances, pool exclusions, persistent rarity/drop state,
-  relic/potion rewards, elite/boss variations and special combat extras. Determine
-  when outcomes are sampled and revealed; shuffling a fixed complete card list is
-  not target reward generation. Keep generation separate from collection choices.
-- **Accept:** known random vectors, pool membership, count/order and modifier cases
-  match references; repeated observation/opening cannot reroll an offer. Generation
-  distribution evidence is distinct from conditional transfer evidence. Tests:
-  Content, Progression, State and Differential.
-
-### HF-32 — Resolve mixed rewards and nested pickup effects
-
-- **Depends on:** HF-03/07/24/26/31; HF-33 for pickup selectors.
-- **Implement:** gold, card, relic, potion and special reward entries, including
-  multiple card menus, optional selections, bundles, item skip/replacement and
-  pickup-triggered children. Match native leave/proceed legality instead of assuming
-  every gold/card entry must be resolved as in the structural fixture. Maintain
-  exact reward identity and parent progress across nested choices.
-- **Accept:** choose/skip/choose through multiple entries, fill/replace potion slots,
-  obtain a relic with a selector, restore inside it and finish the parent once.
-  No repeated claims or duplicated rewards on replay. Tests: Progression, State,
-  Contract, Replay and Differential.
-
-### HF-33 — Apply permanent deck changes and modifiers
-
-- **Depends on:** HF-04/07/13 and target metadata from HF-01.
-- **Implement:** shared add/remove/upgrade/transform/enchant operations used by
-  rests, shops, events and relic pickups. Retain exact original-card identity,
-  selection eligibility, counts, order, generated replacements and modifier
-  stacking/replacement. Support automatic/zero-choice paths and multi-card/bundle
-  choices when target semantics require them. Temporary combat state remains separate.
-- **Accept:** changing one of two identical cards affects only that instance;
-  removal plus grant, multi-transform, optional empty choice and an upgraded
-  replacement survive the next combat and restore. Tests: State, Progression,
-  Combat, Contract and Differential.
-
-### HF-34 — Implement actual rest-site options
-
-- **Depends on:** HF-01/07/11/13/33; HF-24/25 for modifier-driven options.
-- **Implement:** extend [room rules] with pinned rest healing/rounding and smithing,
-  legal card selection, one-use/leave semantics, disabled choices and additional
-  relic/character/difficulty-enabled actions. Use shared deck and heal effects.
-  Preserve the fixed-15 fixture under its own content identity rather than
-  presenting it as native healing.
-- **Accept:** damaged/full-HP visits, no eligible upgrade, duplicate cards and a
-  relic-modified rest all offer the right legal choices and return to the map once.
-  Upgrade → next combat works end to end. Tests: Progression, State, Combat,
-  Contract and Differential.
-
-### HF-35 — Implement shops and repeatable purchases
-
-- **Depends on:** HF-01/05/07/24/26/33; HF-29/30 for normal entry.
-- **Implement:** shop inventory generation and display, prices/sales/discounts,
-  cards/relics/potions, repeat purchases, sold-out/restock rules, card-removal service
-  and persistent removal pricing. Re-evaluate affordability and legality after every
-  purchase and pickup child. Distinguish normal shops from event-owned shops while
-  sharing item and deck effects. Add explicit enter/leave lifecycle to [composer].
-- **Accept:** buy two different items, run a removal/pickup selector, decline an
-  unaffordable item and leave; balances, inventory and parent continuation are exact.
-  Snapshot midway and exercise price-changing relics. Tests: Progression, State,
-  Contract, Replay and Differential.
-
-### HF-36 — Implement treasure and remaining non-event room families
-
-- **Depends on:** HF-01's room census, HF-07/25/29/30/32.
-- **Implement:** chest/treasure generation, open/leave choices, pool effects and
-  pickup children, then one ticket per other fixed room family reachable in the
-  target. Route rooms through the existing composer; do not encode unsupported
-  room kinds as harmless events. Share reward acquisition with HF-32.
-- **Accept:** normal, modified and empty/exhausted-pool cases follow reference
-  rules; collected rewards persist and cannot be claimed twice; leaving reaches
-  the correct next map/act boundary. Tests: Content, Progression, State, Contract
-  and Differential.
-
-### HF-37 — Implement act transitions and real run termination
-
-- **Depends on:** HF-23/28/29/31/32. Add event/ancient-specific transition callers
-  through HF-42/43 after the base act lifecycle exists.
-- **Implement:** act completion, inter-act state/reset/healing rules, boss rewards,
-  next act/ancient selection, final encounter/ending requirements and explicit
-  abandonment. Define which counters persist or reset. Update [composer], outcome
-  contracts and reports so only the target's ending becomes a full-run victory;
-  preserve the existing `route_complete` fixture distinction.
-- **Accept:** boss → rewards → next act and final boss → actual ending are separate
-  tested paths. Death and abandonment stop at any reachable phase; no post-terminal
-  actions or double rewards. Tests: Progression, State, Contract, Replay and
-  Operation, with target references for the ending conditions.
-
-### HF-38 — Implement difficulty and declared unlock variants
-
-- **Depends on:** HF-01 and the affected combat/run/content tasks.
-- **Implement:** verify the highest standard Ironclad difficulty in the pinned build,
-  inventory every modifier, and apply it at its owning layer: starting state,
-  encounters/moves, rewards, map/room generation, rest/shop rules or terminal flow.
-  Model unlock/settings effects through explicit configuration and pool eligibility.
-  Never infer that difficulty is only an enemy-HP multiplier.
-- **Accept:** boundary cases isolate each modifier and combined target-difficulty
-  runs exercise their composition. A0 behavior remains separately tested; identical
-  content/settings identities reproduce results. Tests: Content, Combat, Progression
-  and Differential. User profile construction/access is separately authorized work.
-
-## Event and ancient tasks
-
-### HF-39 — Add a real event state machine and ordinary choices
-
-- **Depends on:** HF-01/05/06/07/11. HF-28 consumes this engine for starting choices;
-  a directly initialized event fixture is sufficient for the first implementation.
-- **Implement:** event definitions and instance state for eligibility, pages,
-  conditional choices, prices/HP costs, random branches, repeated options and
-  explicit finish. Start with one pinned ordinary event, using [event-map] source
-  references. Keep native event semantics separate from the structural `quiet_cache`
-  and `cool_spring` fixtures. Shared effects should execute rewards, healing and loss.
-- **Accept:** disabled/unaffordable choices, revisiting a page, a legal no-effect
-  option at full HP, random resolution and death during an event behave correctly.
-  The unchanged `cool_spring` fixture can remain explicitly unsupported. Tests:
-  Progression, State, Contract, Replay and Differential.
-
-### HF-40 — Compose event selectors, card offers and deck mutations
-
-- **Depends on:** HF-07/32/33/39.
-- **Implement:** event-owned removal, upgrade, transformation, enchantment, offered
-  cards and bundles. Cover mutations before selection, mutations after selection,
-  repeated/nested children and automatic selection. Named implementation candidates
-  in the retained research include Amalgamator, Wood Carvings, Scroll Boxes and
-  Colorful Philosophers; confirm the exact target branch before choosing one.
-- **Accept:** a selector plus subsequent grant resumes its parent correctly;
-  optional zero/partial/full selection and a sequence of card reward menus conserve
-  identities and effects. Snapshot inside each child. Tests: Progression, State,
-  Contract, Replay and Differential. Bridge acceptance alone is not headless parity.
-
-### HF-41 — Run event combat and resume its parent
-
-- **Depends on:** HF-07/09/19/31/32/39.
-- **Implement:** event-selected encounters, temporary combat rules/objectives,
-  bounded training/expiry where applicable, victory/defeat/escape result handling,
-  non-resuming exits and resuming event pages with rewards/selectors. Start with a
-  named Battleworn Dummy or Dense Vegetation branch; add the target's extra special
-  rewards through the common reward engine.
-- **Accept:** training expiry is distinguishable from ordinary combat victory;
-  death cannot resume the parent; victory can return through a reward child to the
-  right event page. No duplicate combat launch or grant after restore. Tests:
-  Combat, State, Progression, Replay and Differential.
-
-### HF-42 — Model custom event interactions and terminal branches
-
-- **Depends on:** HF-03/07/32/35/37/39 and each caller's effects.
-- **Implement:** separate bounded tickets for Fake Merchant inventory/combat,
-  Crystal Sphere tools/fog/reveals/rewards, Trial's abandonment decision and any
-  Architect progression branch required by HF-01. Represent game decisions and
-  state transitions headlessly; UI geometry/animation does not need simulation.
-  Hidden custom-screen contents remain private until revealed by a legal action.
-- **Accept:** each custom interaction has a public legal path to completion and
-  a meaningful cancellation/terminal/failure case; repeated reveals/purchases
-  cannot repeat rewards. Match any gameplay-relevant timing as a rule, not wall-clock
-  sleeps. Tests: Contract, State, Progression, Replay and Differential.
-
-### HF-43 — Complete the event and ancient catalog
-
-- **Depends on:** HF-01/24/25/28/39–42 as applicable.
-- **Implement:** instantiate a ticket for each reachable event/ancient branch in
-  the [retained inventory][event-inventory], incorporating the corrections linked
-  from [event-map]. Cover initial/act-specific offers, pool eligibility, item
-  selection, immediate relic pickup effects, special cards, automatic transformations
-  and finish/terminal conditions. Add newly discovered branches to the same census.
-- **Accept:** every in-scope branch has exact prerequisites, legal choices, effects,
-  RNG behavior and completion evidence. Zero-choice/empty-pool and nested pickup
-  variants are included. “Shared selector implemented” does not mark all its event
-  callers complete. Tests: Content, Progression and Differential.
-
-## Public data, operation and completion tasks
+Native algorithms, stream ownership, generation and selected complete trajectories
+are implemented and compared. The September 21 character audit corrected the
+random-orb seed salt: native's `CombatOrbGeneration` property uses the
+`CombatOrbs` enum name (`combat_orbs`). The engine keeps its existing logical
+stream key while matching that native seed. New random-orb choices and suffixes
+are compared directly; old private saves are rejected by combat/run v47/v68.
+
+Further RNG work must start from a concrete caller, differing sequence or missing
+mechanism probe. Broader seeds are evidence expansion, not a known missing RNG
+implementation. Profile/lobby discovery and unlock history remain excluded.
+
+## Next bounded implementation assignment
+
+The four-character interaction audit is complete for its declared probes. It
+corrected Gold-Plated Cables applying to direct passives and the random-orb seed
+salt. Silent temporary Dexterity, Regent star-spend hooks and Necrobinder retained
+cost modifiers match the recorded native cases. See the
+[audit, exact checks and limits](evidence/native_character_interactions_2026_09_21.md).
+
+The old simulator/reduced backend and its research pipelines were retired on
+2026-09-22 by user request. They are not implementation starting points or
+compatibility targets. Keep the current engine and production bridge independent.
+
+**Next: HF-44, public full-run observations.** Implement one versioned read-only
+adapter over the mature game engine. Start with states for all five characters
+and a combat → reward → map sequence, including a nested card choice. Preserve
+the independent rules layer; do not add projection work to individual cards.
+Then carry the same decisions through HF-45–47. This audit does not implement
+those external adapters or certify every character/item permutation.
+
+## Open assignments
 
 ### HF-44 — Expose sufficient public run state and observable history
 
-- **Depends on:** HF-03/04 and each new mechanic.
-- **Implement:** evolve [projection] and phase observations to include the visible
-  master deck/modifiers, relics/counters, potions/slots, act/floor/difficulty,
-  inspectable pile contents in their public form, map context and public event
-  history needed to choose intelligently. The present reward/map/room views expose
-  only deck size. Distinguish unknown, absent and empty fields, and define reference
-  lifetimes and observable-memory updates across phases.
-- **Accept:** two decks or inventories with different visible effects are
-  distinguishable; two privately different states with identical public history
-  remain indistinguishable. Inspection never advances RNG or resolves a hidden
-  outcome. Tests: Contract, Replay, Differential and Actor/data.
+- **Implement:** define a versioned public adapter over `RunEngine` with visible deck
+  instances/modifiers, relics/counters, potions, character resources, act/floor,
+  ascension, map context, public pile information and pending decision candidates.
+  Represent Stars/Forge, Osty and orbs without exposing hidden RNG or draw order.
+  Distinguish unknown, absent and empty fields.
+- **Acceptance:** publicly different inventories remain distinguishable; states
+  differing only in hidden information produce identical observations. Reading
+  observations changes neither game state nor RNG. Exercise all five characters,
+  a nested combat choice and a combat/reward/map handoff.
+- **Start:** `game/headless/run/engine.py`, `game/headless/core/actions.py` and
+  `game/headless/run/actions.py`. Keep the adapter outside the game-rule package;
+  the retained bridge wire codec is not a full-game headless contract.
 
-### HF-45 — Extend encoding and policies without dropping legal choices
+### HF-45 — Encode public decisions without dropping legal choices
 
-- **Depends on:** HF-03/44 and the first new content/action family.
-- **Implement:** version [headless encoding] and its schema/candidate joins for new
-  entities, actions and public fields. Preserve variable candidate scoring, masks,
-  semantic identities and padding. Audit the 128-item contract limit, fixed legacy
-  combat capacities and frozen categorical vocabularies against reachable states.
-  Explicitly migrate/retrain incompatible checkpoints. [Card records][card-records]
-  are a possible reuse source, not an already integrated solution.
-- **Accept:** all legal candidates survive encoding/collation, permutation tests
-  remain sound and no private identifier/seed becomes a feature. Test large legal
-  states, unknown semantics and old checkpoint rejection. Tests: Actor/data,
-  Contract and affected combat encoders/baselines.
+- **Depends on:** HF-44's versioned public view.
+- **Implement:** build actor encoders and candidate scoring for every
+  supported action/resource family using HF-44. Derive capacities and categorical
+  vocabularies from reachable states rather than the retired fixed limits. Version
+  the representation and checkpoints; keep private identifiers and seeds out of model features.
+- **Acceptance:** every legal candidate survives encoding/collation, including
+  duplicate cards, multi-selection, potions and event actions. Permutation and
+  hidden-information checks pass. No legacy fixture compatibility is required.
+- **Start:** HF-44's action schema and focused direct-engine scenarios.
 
 ### HF-46 — Carry full-run semantics through datasets and artifacts
 
-- **Depends on:** HF-03/37/44/45; extend for each schema change.
-- **Implement:** evolve [trajectories], [policy dataset], [reporting] and [cloning]
-  schemas for new decisions, content/build/rules/settings identities, run progress,
-  actual outcomes and truncations. Keep policy history, hindsight targets and
-  operational/private diagnostics separated. Preserve externally anchored manifests,
-  split separation and cancellation-safe publication. Existing trajectory evidence
-  admission accepts only `combat_v0`/`structural_fixture`; broaden it deliberately
-  if new evidence classes are needed, never by relabeling old files.
-- **Accept:** a multi-act trajectory round-trips and trains/loads through affected
-  consumers without losing item/selection candidates. Structural completion cannot
-  become a real victory label; held-out sources and private fields remain excluded.
-  Tests: Actor/data, Replay and Operation.
+- **Depends on:** HF-44/45.
+- **Implement:** record trajectories, policy datasets and reports to
+  retain the new decisions, build/rules identity, real victory/defeat and truncation.
+  Preserve public history/private diagnostics separation, held-out splits and
+  cancellation-safe publication. Never relabel structural fixtures as real runs.
+- **Acceptance:** a recorded multi-act run round-trips through dataset and training
+  loaders without losing candidates or changing its outcome. Unsupported artifact
+  versions reject explicitly; retired artifacts have no compatibility requirement.
+- **Start:** HF-44/45 outputs and the engine's game-owned command boundaries.
 
-### HF-47 — Run the new environment through existing APIs and CLI
+### HF-47 — Deliver full-game agent execution and CLI
 
-- **Depends on:** HF-03/07/28/37/46 for the delivered slice.
-- **Implement:** extend the existing backend factory/configuration, [runner],
-  [rollouts] and [headless CLI] for the declared target mode. Preserve bounded
-  transitions, cancellation/worker cleanup, independent policy RNG and artifact
-  reporting. Supply a simple public-only chooser that handles each new action
-  family; strategy can remain basic. Keep pure headless help/execution free of
-  unnecessary Torch/Gymnasium imports.
-- **Accept:** one maintained command starts and finishes the supported run scope,
-  another configuration reproduces it in a worker, and failures/budgets/unsupported
-  cases are accurately reported. Add a dedicated full-run smoke configuration;
-  the current 16-transition smoke is not a complete-run gate. Tests: Operation,
-  Replay, Contract and package/lazy-import checks.
+- **Depends on:** HF-44–46 for the delivered adapter.
+- **Implement:** add agent execution, bounded workers and recording around
+  the full engine and HF-44–46 adapters. Reuse `sts-headless-play` for direct gameplay;
+  add full-run configuration to the agent-facing path without another simulator.
+  Include a public-only chooser for every legal decision family.
+- **Acceptance:** a documented command resets, steps, records and terminates the
+  supported scope; worker execution reproduces it. Budgets, cancellation, illegal
+  actions and cleanup remain bounded. Pure headless commands do not import Torch
+  or Gymnasium unnecessarily. Policy strength is a separate research question.
 
 ### HF-48 — Accept complete-run fidelity and close coverage gaps
 
-- **Depends on:** HF-02 and all mechanics/content in the proposed coverage scope.
-- **Implement:** extend named conformance into multi-decision, cross-room and
-  cross-act sequences. Compare every meaningful public boundary and legal set,
-  relevant ordered effects and independently authorized private diagnostics.
-  Add generated action-sequence tests for conservation, legality, ownership and
-  liveness; minimize mismatches into regression cases. Track untested and divergent
-  inventory rows explicitly, separate from implementation status.
-- **Accept:** selected reference runs and held-out sequences match under declared
-  content/settings, targeted negative controls fail, and every known reachable
-  discrepancy is resolved or narrows the claim. Report generation/seed parity and
-  conditional effect parity separately. Tests: Differential, Replay, integration.
-  A full agent win-rate or near-optimality campaign is a separate research task.
+- **Status:** selected native campaigns, complete declared event branches and
+  focused item/monster/character interactions have retained evidence. No unresolved
+  gameplay mismatch is identified by the September 21 character audit.
+- **Ongoing work:** choose a concrete untested mechanism or observed mismatch,
+  reproduce it natively, and add one focused regression after fixing it. Campaign
+  inventories exercise a small portion of possible combinations; additional
+  character-specific card/item compositions and low-HP boundaries remain useful.
+- **Acceptance:** compare relevant legal decisions, resources, ordered effects,
+  RNG consumption and JSON continuation. Record any canonical representation
+  differences. Do not treat metadata checks as gameplay proof or repeat large
+  seed × difficulty × inventory matrices without a distinct question.
+- **Start:** existing `tools/native_combat_oracle` and `tests/headless` fixtures;
+  preserve native isolation and original retained evidence identities.
 
 ### HF-49 — Measure and improve full-run/branching performance
 
-- **Depends on:** a stable faithful slice, HF-08/47; optimize only measured costs.
-- **Implement:** benchmark reset, action application, observation/candidate building,
-  snapshot/restore, branching, recording and worker throughput/memory under declared
-  hardware/settings. Investigate replay-prefix cost and repeated whole-state
-  validation before adding accelerators. Reuse current process collectors and
-  profiling mechanisms. Add direct snapshots/checkpoints, batching or caching only
-  when measurements justify them.
-- **Accept:** before/after matched workloads report throughput, latency, memory and
-  full-run/branch costs; deterministic traces and the affected conformance suite
-  remain equal. Multiple runs/workers share no mutable state. Choose numerical
-  throughput targets from actual training/search needs, not invented acceptance
-  claims. Tests: State, Replay and Operation.
+- **Status:** measured test/catalog/restore overhead improvements are implemented;
+  full training/search throughput is not established by pytest wall time.
+- **Implement:** measure reset, step, observation/candidate creation, snapshot,
+  restore, branching and worker throughput/memory on representative full-game
+  workloads. Optimize measured bottlenecks through existing mechanisms.
+- **Acceptance:** matched before/after workloads improve while native decisions,
+  deterministic traces and worker isolation remain unchanged. Set throughput
+  targets from actual training/search needs.
 
 ### HF-50 — Deliver a reproducible supported simulator package
 
-- **Depends on:** HF-47/48 and HF-49 measurements for the declared milestone.
-- **Implement:** maintain installable canonical packages and `sts-headless`, target
-  configuration examples, content/rules/build manifests and a concise support matrix.
-  Provide documented local content preparation if required, without bundling game
-  binaries/assets. Verify source-to-package identity and retain validation evidence;
-  avoid a second CLI/package pipeline for each mechanic.
-- **Accept:** a clean declared environment installs, resets, executes, records,
-  validates and restores the supported scope from documented commands. Incompatible
-  inputs fail clearly, dependencies and Python 3.10+ policy are explicit, and current
-  evidence never borrows historical hashes. Tests: package/lazy imports, Operation
-  and one final milestone integration gate.
+- **Depends on:** the chosen HF-44–49 consumer milestone.
+- **Implement:** reconcile headless integration with main, preserve concurrent
+  bridge work, and validate clean installation of canonical packages/commands.
+  Document supported build/content/settings and full-run examples without bundling
+  game binaries or introducing a second package pipeline.
+- **Acceptance:** a clean declared Python 3.10+ environment installs, resets,
+  executes, records and restores the supported scope. Package/source identities
+  and relevant integration evidence match the released behavior.
 
-## Conditional backend and later breadth tasks
+## Excluded and optional work
 
-### HF-51 — Test whether reusing native game rules shortens the fidelity work
-
-- **Status:** optional investigation before committing to a large reimplementation;
-  not a requirement to replace the current Python backend.
-- **Depends on:** one HF-02 reference case and a bounded setup consistent with the
-  [live development guide](LIVE_DEVELOPMENT.md). See the [backend design question]
-  for the existing architectural option.
-- **Implement:** test one representative combat plus one nested noncombat decision
-  through actual engine-hosted rules, if feasible. Measure deterministic reset,
-  snapshot/branching, isolation, headless execution and throughput through the same
-  public backend interface. Record lifecycle and local setup/distribution constraints.
-- **Accept:** evidence supports retain-Python, native-backed or hybrid ownership of
-  rules. Map every affected backlog task to the chosen implementation; native reuse
-  does not eliminate observation, persistence, content coverage or conformance work.
-  Do not create another production bridge/mod or read user profiles for this spike.
-
-### HF-52 — Add every other single-player character
-
-- **Status:** outside the initial Ironclad target; implement when breadth is selected.
-- **Depends on:** HF-01–50's shared facilities and a new per-character scope inventory.
-- **Implement:** one ticket per character for starting deck/relic/stats, resources,
-  summons/companions or other unique mechanics, cards/upgrades, restricted items,
-  generation pools, character-specific events/ancients and difficulty modifiers.
-  Shared off-color content reachable by Ironclad already belongs in HF-18/25/27.
-- **Accept:** each character has mechanic reference cases and complete A0 and target
-  difficulty runs under its declared profile; public representation and policies
-  handle its full action set. Reuse the same simulator and CLI. Tests: all affected
-  mechanic groups plus HF-48's per-character completion gate.
-
-### HF-53 — Add cooperative multiplayer semantics
-
-- **Status:** outside the initial single-player target; requires its own target contract.
-- **Depends on:** HF-52 as required by selected teams, plus shared run/state infrastructure.
-- **Implement:** multiple player inventories/resources, action ownership and ordering,
-  shared room decisions, ally targeting, team-only content, scaling, death/revival,
-  reward ownership and multiplayer RNG semantics. Define each actor's observable
-  information and legal choices. Simulate gameplay scheduling independently of any
-  optional network-transport adapter.
-- **Accept:** two players with independent policies complete representative combats,
-  shared choices and a full run; schedule/replay ordering is deterministic and one
-  player cannot act for another. Test disconnect/abandon semantics only if they are
-  in the declared gameplay scope. Add team differential and information-boundary cases.
-
-### HF-54 — Add alternate modes and maintain later game builds
-
-- **Status:** outside the pinned standard-mode target; select explicit mode/build tickets.
-- **Depends on:** HF-01/38/48/50 and each selected mode's mechanics.
-- **Implement:** inventory custom/challenge/daily-style modes actually present in
-  the chosen build, their seeds, modifiers, content eligibility, scoring and endings.
-  For a new patch, capture a new immutable build identity, diff the content/rules
-  inventory, implement changed semantics and rerun affected conformance. Keep
-  cross-build snapshots, data and checkpoints explicitly compatible or rejected.
-- **Accept:** each claimed mode/build has reproducible configuration, complete
-  coverage accounting and its own completion gate. Existing pinned runs keep their
-  original behavior/evidence; no historical manifest is overwritten to imply a port.
-
-## Suggested first implementation request
-
-> Implement HF-13 for one pinned starter-card upgrade, with the minimum HF-03/04
-> changes it needs. Carry the upgraded instance through public observation, combat
-> execution, snapshot/restore and a second combat. Verify the upgraded rule against
-> the pinned target, preserve duplicate-card identity, and keep existing structural
-> artifacts honestly versioned. Use the HF-17 base-card case as a regression. Leave
-> other upgrades as explicit unsupported content until they have their own cases.
-
-This has a visible end-to-end result and exposes the current state → content →
-combat → projection coupling without requiring a complete event engine or a large
-training run. HF-01's broader census and HF-02's reference-case work can progress as
-separate selected tasks; they should not turn this one feature into an unbounded
-architecture rewrite.
-
-[build]: ../manifests/game-builds/sts2-steam-main-build-23811903-macos-universal.json
-[contract]: ../game/contracts/headless_v0.py
-[fixture]: ../game/backends/headless/fixture_backend.py
-[composer]: ../game/backends/headless/reduced_run_backend.py
-[combat-adapter]: ../game/backends/headless/combat_v0_backend.py
-[state]: ../game/engine/headless_state.py
-[rng]: ../game/engine/random_service.py
-[snapshots]: ../game/engine/snapshots.py
-[content]: ../game/content/reduced_v0.py
-[cards]: ../game/simulation/card.py
-[enemies]: ../game/simulation/enemy.py
-[scenarios]: ../game/backends/headless/scenarios.py
-[combat core]: ../game/simulation/core.py
-[player]: ../game/simulation/player.py
-[statuses]: ../game/simulation/status.py
-[deck]: ../game/simulation/deck.py
-[combat encoder]: ../game/simulation/encoding.py
-[actions]: ../game/simulation/actions.py
-[action features]: ../game/simulation/action_features.py
-[candidates]: ../game/backends/headless/combat_candidates.py
-[projection]: ../game/backends/headless/combat_projection.py
-[map rules]: ../game/engine/map_rules.py
-[reward rules]: ../game/engine/reward_rules.py
-[room rules]: ../game/engine/room_rules.py
-[runner]: ../game/runtime/episode_runner.py
-[rollouts]: ../game/training/headless_rollout.py
-[headless CLI]: ../game/cli/headless.py
-[trajectories]: ../game/data/headless_trajectory.py
-[policy dataset]: ../game/data/headless_policy_dataset.py
-[headless encoding]: ../game/agents/headless_encoding.py
-[cloning]: ../game/training/headless_behavior_clone.py
-[reporting]: ../game/training/headless_reporting.py
-[card-records]: ../game/simulation/card_records.py
-[conformance]: ../game/analysis/conformance_evidence.py
-[common comparator]: ../tests/differential/common_public_subset.py
-[gold-spec]: ../tests/differential/reward_gold_case_spec.json
-[gold-evidence]: archive/phase-1/research/PHASE_1_NEXT_INCREMENT_ACCEPTANCE.md#live-result-and-claim-boundary
-[actor-evidence]: archive/phase-1/research/PHASE_1_ACTOR_READY_ACCEPTANCE.md#2026-09-05--cloning-smoke-acceptance-and-final-headless-join
-[card-notes]: IRONCLAD_CARDS.md
-[enemy-notes]: OVERGROWTH_HARD_V1.md
-[event-map]: EVENT_INTERACTION_MAP.md
-[event-inventory]: evidence/event_interactions_2026_09_09/inventory.json
-[backend design question]: LONG_TERM_ARCHITECTURE_ROADMAP.md#104-fast-backend-decision
+HF-51 (replace Python rules with a native backend) is an optional investigation,
+not a completion dependency. HF-53 multiplayer and HF-54 alternate modes remain
+excluded. Supporting later game builds requires an explicit new compatibility
+scope; the present evidence applies to the pinned build. Arbitrary unlock/profile
+histories are also outside this project scope. Strong policies and win-rate
+optimization follow a usable agent interface; they are not game-rule acceptance.

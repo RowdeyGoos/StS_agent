@@ -1,0 +1,663 @@
+{
+  "source": "pinned assembly Rng reflection; Neow source-derived composition with explicit Kaleidoscope and multiplayer exclusions",
+  "results": [
+    {
+      "seed": 0,
+      "rows": [
+        {
+          "op": "int",
+          "max": 1,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 2,
+          "value": 1
+        },
+        {
+          "op": "int",
+          "max": 17,
+          "value": 1
+        },
+        {
+          "op": "int",
+          "max": 2147483647,
+          "value": 894618232
+        },
+        {
+          "op": "float",
+          "value": 0.73299676
+        },
+        {
+          "op": "float",
+          "value": 0.9997484
+        },
+        {
+          "op": "float",
+          "value": 0.42221153
+        },
+        {
+          "op": "float",
+          "value": 0.53565484
+        },
+        {
+          "op": "float",
+          "value": 0.85551715
+        },
+        {
+          "op": "double",
+          "value": 0.9188580127069649
+        },
+        {
+          "op": "double",
+          "value": 0.11429746440648769
+        },
+        {
+          "op": "double",
+          "value": 0.06723189101342542
+        },
+        {
+          "op": "double",
+          "value": 0.10667465014124933
+        },
+        {
+          "op": "double",
+          "value": 0.6548331676545119
+        }
+      ],
+      "shuffle": [
+        6,
+        9,
+        10,
+        11,
+        2,
+        8,
+        0,
+        4,
+        1,
+        7,
+        3,
+        5
+      ],
+      "counter": 25
+    },
+    {
+      "seed": 1,
+      "rows": [
+        {
+          "op": "int",
+          "max": 1,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 2,
+          "value": 1
+        },
+        {
+          "op": "int",
+          "max": 17,
+          "value": 9
+        },
+        {
+          "op": "int",
+          "max": 2147483647,
+          "value": 840371773
+        },
+        {
+          "op": "float",
+          "value": 0.6971784
+        },
+        {
+          "op": "float",
+          "value": 0.14357203
+        },
+        {
+          "op": "float",
+          "value": 0.07104521
+        },
+        {
+          "op": "float",
+          "value": 0.38118446
+        },
+        {
+          "op": "float",
+          "value": 0.8671525
+        },
+        {
+          "op": "double",
+          "value": 0.5517098634105853
+        },
+        {
+          "op": "double",
+          "value": 0.9325724420709283
+        },
+        {
+          "op": "double",
+          "value": 0.9572181668844163
+        },
+        {
+          "op": "double",
+          "value": 0.9327727011134207
+        },
+        {
+          "op": "double",
+          "value": 0.6690967822694573
+        }
+      ],
+      "shuffle": [
+        3,
+        6,
+        1,
+        8,
+        5,
+        2,
+        11,
+        10,
+        4,
+        0,
+        9,
+        7
+      ],
+      "counter": 25
+    },
+    {
+      "seed": 42,
+      "rows": [
+        {
+          "op": "int",
+          "max": 1,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 2,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 17,
+          "value": 11
+        },
+        {
+          "op": "int",
+          "max": 2147483647,
+          "value": 1985762978
+        },
+        {
+          "op": "float",
+          "value": 0.9918039
+        },
+        {
+          "op": "float",
+          "value": 0.76973945
+        },
+        {
+          "op": "float",
+          "value": 0.7192586
+        },
+        {
+          "op": "float",
+          "value": 0.8500084
+        },
+        {
+          "op": "float",
+          "value": 0.76137435
+        },
+        {
+          "op": "double",
+          "value": 0.5833493097373993
+        },
+        {
+          "op": "double",
+          "value": 0.6824528696125193
+        },
+        {
+          "op": "double",
+          "value": 0.29067776176424165
+        },
+        {
+          "op": "double",
+          "value": 0.8010242975288078
+        },
+        {
+          "op": "double",
+          "value": 0.3214116333153503
+        }
+      ],
+      "shuffle": [
+        2,
+        10,
+        3,
+        1,
+        11,
+        0,
+        4,
+        5,
+        7,
+        6,
+        9,
+        8
+      ],
+      "counter": 25
+    },
+    {
+      "seed": 2147483647,
+      "rows": [
+        {
+          "op": "int",
+          "max": 1,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 2,
+          "value": 1
+        },
+        {
+          "op": "int",
+          "max": 17,
+          "value": 4
+        },
+        {
+          "op": "int",
+          "max": 2147483647,
+          "value": 1381188471
+        },
+        {
+          "op": "float",
+          "value": 0.6885933
+        },
+        {
+          "op": "float",
+          "value": 0.17003211
+        },
+        {
+          "op": "float",
+          "value": 0.3693075
+        },
+        {
+          "op": "float",
+          "value": 0.519264
+        },
+        {
+          "op": "float",
+          "value": 0.97081333
+        },
+        {
+          "op": "double",
+          "value": 0.12795777377255368
+        },
+        {
+          "op": "double",
+          "value": 0.38899410504174947
+        },
+        {
+          "op": "double",
+          "value": 0.9814927990157842
+        },
+        {
+          "op": "double",
+          "value": 0.525262053508422
+        },
+        {
+          "op": "double",
+          "value": 0.481377375284996
+        }
+      ],
+      "shuffle": [
+        2,
+        5,
+        4,
+        1,
+        7,
+        6,
+        10,
+        9,
+        8,
+        11,
+        0,
+        3
+      ],
+      "counter": 25
+    },
+    {
+      "seed": 2147483648,
+      "rows": [
+        {
+          "op": "int",
+          "max": 1,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 2,
+          "value": 1
+        },
+        {
+          "op": "int",
+          "max": 17,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 2147483647,
+          "value": 865642370
+        },
+        {
+          "op": "float",
+          "value": 0.47483793
+        },
+        {
+          "op": "float",
+          "value": 0.6370011
+        },
+        {
+          "op": "float",
+          "value": 0.8493707
+        },
+        {
+          "op": "float",
+          "value": 0.640531
+        },
+        {
+          "op": "float",
+          "value": 0.7706782
+        },
+        {
+          "op": "double",
+          "value": 0.9842838438678286
+        },
+        {
+          "op": "double",
+          "value": 0.9738402381108769
+        },
+        {
+          "op": "double",
+          "value": 0.06882679538084258
+        },
+        {
+          "op": "double",
+          "value": 0.1628735053617848
+        },
+        {
+          "op": "double",
+          "value": 0.13102110604756556
+        }
+      ],
+      "shuffle": [
+        8,
+        10,
+        2,
+        6,
+        11,
+        4,
+        7,
+        5,
+        1,
+        9,
+        3,
+        0
+      ],
+      "counter": 25
+    },
+    {
+      "seed": 4294967295,
+      "rows": [
+        {
+          "op": "int",
+          "max": 1,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 2,
+          "value": 0
+        },
+        {
+          "op": "int",
+          "max": 17,
+          "value": 8
+        },
+        {
+          "op": "int",
+          "max": 2147483647,
+          "value": 131322908
+        },
+        {
+          "op": "float",
+          "value": 0.9056227
+        },
+        {
+          "op": "float",
+          "value": 0.45948133
+        },
+        {
+          "op": "float",
+          "value": 0.1743376
+        },
+        {
+          "op": "float",
+          "value": 0.06501139
+        },
+        {
+          "op": "float",
+          "value": 0.95115507
+        },
+        {
+          "op": "double",
+          "value": 0.5246225739869346
+        },
+        {
+          "op": "double",
+          "value": 0.38537229444133025
+        },
+        {
+          "op": "double",
+          "value": 0.4609990727449427
+        },
+        {
+          "op": "double",
+          "value": 0.10000312454055227
+        },
+        {
+          "op": "double",
+          "value": 0.007078767826948162
+        }
+      ],
+      "shuffle": [
+        10,
+        3,
+        6,
+        7,
+        11,
+        0,
+        4,
+        5,
+        9,
+        8,
+        1,
+        2
+      ],
+      "counter": 25
+    }
+  ],
+  "hashes": [
+    {
+      "input": "",
+      "value": 757602046
+    },
+    {
+      "input": "0",
+      "value": -842352754
+    },
+    {
+      "input": "2",
+      "value": -842352752
+    },
+    {
+      "input": "ABC123",
+      "value": 1272354734
+    },
+    {
+      "input": "shuffle",
+      "value": -1986686621
+    },
+    {
+      "input": "rewards",
+      "value": -459048038
+    },
+    {
+      "input": "NEOW",
+      "value": 348630327
+    },
+    {
+      "input": "😀",
+      "value": 970947761
+    }
+  ],
+  "gaussian": [
+    {
+      "seed": 0,
+      "values": [
+        5,
+        5,
+        5,
+        7,
+        5,
+        6,
+        3,
+        4,
+        5,
+        6
+      ],
+      "counter": 24,
+      "suffix": 0.9867479586107714
+    },
+    {
+      "seed": 1,
+      "values": [
+        5,
+        3,
+        3,
+        4,
+        6,
+        6,
+        7,
+        5,
+        5,
+        5
+      ],
+      "counter": 22,
+      "suffix": 0.6107921480828804
+    },
+    {
+      "seed": 42,
+      "values": [
+        4,
+        6,
+        7,
+        7,
+        7,
+        4,
+        6,
+        5,
+        7,
+        6
+      ],
+      "counter": 32,
+      "suffix": 0.8631626799785315
+    },
+    {
+      "seed": 4294967295,
+      "values": [
+        3,
+        4,
+        4,
+        5,
+        6,
+        5,
+        5,
+        4,
+        5,
+        5
+      ],
+      "counter": 22,
+      "suffix": 0.09058831295167813
+    }
+  ],
+  "neow": [
+    {
+      "seed": "0",
+      "offers": [
+        "lead_paperweight",
+        "arcane_scroll",
+        "silver_crucible"
+      ],
+      "counter": 18
+    },
+    {
+      "seed": "1",
+      "offers": [
+        "neows_torment",
+        "fishing_rod",
+        "leafy_poultice"
+      ],
+      "counter": 17
+    },
+    {
+      "seed": "2",
+      "offers": [
+        "scroll_boxes",
+        "winged_boots",
+        "hefty_tablet"
+      ],
+      "counter": 17
+    },
+    {
+      "seed": "3",
+      "offers": [
+        "winged_boots",
+        "golden_pearl",
+        "leafy_poultice"
+      ],
+      "counter": 17
+    },
+    {
+      "seed": "4",
+      "offers": [
+        "fishing_rod",
+        "arcane_scroll",
+        "silver_crucible"
+      ],
+      "counter": 18
+    },
+    {
+      "seed": "42",
+      "offers": [
+        "arcane_scroll",
+        "lead_paperweight",
+        "neows_bones"
+      ],
+      "counter": 18
+    },
+    {
+      "seed": "ABC123",
+      "offers": [
+        "precise_scissors",
+        "nutritious_oyster",
+        "leafy_poultice"
+      ],
+      "counter": 17
+    },
+    {
+      "seed": "😀",
+      "offers": [
+        "lost_coffer",
+        "scroll_boxes",
+        "precarious_shears"
+      ],
+      "counter": 17
+    }
+  ]
+}

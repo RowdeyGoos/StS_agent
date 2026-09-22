@@ -1,0 +1,2394 @@
+{
+  "assemblySha256": "e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18",
+  "rows": [
+    {
+      "id": "abrasive",
+      "type": "Abrasive",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "ThornsPower": 4,
+            "DexterityPower": 1
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "ThornsPower": 6,
+            "DexterityPower": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "accelerant",
+      "type": "Accelerant",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Accelerant": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Accelerant": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "accuracy",
+      "type": "Accuracy",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "AccuracyPower": 4
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "AccuracyPower": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "acrobatics",
+      "type": "Acrobatics",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "adrenaline",
+      "type": "Adrenaline",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Energy": 1,
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Energy": 2,
+            "Cards": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "afterimage",
+      "type": "Afterimage",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "AfterimagePower": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Innate"
+          ],
+          "vars": {
+            "AfterimagePower": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "anticipate",
+      "type": "Anticipate",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "DexterityPower": 2
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "DexterityPower": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "assassinate",
+      "type": "Assassinate",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Innate",
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 10,
+            "VulnerablePower": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Innate",
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 13,
+            "VulnerablePower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "backflip",
+      "type": "Backflip",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 5,
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8,
+            "Cards": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "backstab",
+      "type": "Backstab",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust",
+            "Innate"
+          ],
+          "vars": {
+            "Damage": 11
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust",
+            "Innate"
+          ],
+          "vars": {
+            "Damage": 15
+          }
+        }
+      ]
+    },
+    {
+      "id": "blade_of_ink",
+      "type": "BladeOfInk",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "blade_dance",
+      "type": "BladeDance",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Cards": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Cards": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "blur",
+      "type": "Blur",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 5,
+            "Blur": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8,
+            "Blur": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "bouncing_flask",
+      "type": "BouncingFlask",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "RandomEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPower": 3,
+            "Repeat": 3
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPower": 3,
+            "Repeat": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "bubble_bubble",
+      "type": "BubbleBubble",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPower": 9
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPower": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "bullet_time",
+      "type": "BulletTime",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "burst",
+      "type": "Burst",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Skills": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Skills": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "calculated_gamble",
+      "type": "CalculatedGamble",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust",
+            "Retain"
+          ],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "cloak_and_dagger",
+      "type": "CloakAndDagger",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 6,
+            "Cards": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 6,
+            "Cards": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "corrosive_wave",
+      "type": "CorrosiveWave",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CorrosiveWave": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CorrosiveWave": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "dagger_spray",
+      "type": "DaggerSpray",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 4
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "dagger_throw",
+      "type": "DaggerThrow",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 9
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "dash",
+      "type": "Dash",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10,
+            "Block": 10
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 13,
+            "Block": 13
+          }
+        }
+      ]
+    },
+    {
+      "id": "deadly_poison",
+      "type": "DeadlyPoison",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPower": 5
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPower": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "defend_silent",
+      "type": "DefendSilent",
+      "kind": "Skill",
+      "rarity": "Basic",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 5
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "deflect",
+      "type": "Deflect",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 4
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "dodge_and_roll",
+      "type": "DodgeAndRoll",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 4
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "echoing_slash",
+      "type": "EchoingSlash",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 13
+          }
+        }
+      ]
+    },
+    {
+      "id": "envenom",
+      "type": "Envenom",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "EnvenomPower": 1
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "EnvenomPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "escape_plan",
+      "type": "EscapePlan",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 3
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "expertise",
+      "type": "Expertise",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 6
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "expose",
+      "type": "Expose",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Power": 2
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Power": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "fan_of_knives",
+      "type": "FanOfKnives",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Shivs": 4
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Shivs": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "finisher",
+      "type": "Finisher",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flechettes",
+      "type": "Flechettes",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 5,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 7,
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedHits": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flick_flack",
+      "type": "FlickFlack",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Damage": 6
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Damage": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "scare",
+      "type": "Scare",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "footwork",
+      "type": "Footwork",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "DexterityPower": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "DexterityPower": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "grand_finale",
+      "type": "GrandFinale",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 60
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 75
+          }
+        }
+      ]
+    },
+    {
+      "id": "hand_trick",
+      "type": "HandTrick",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 7
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "haze",
+      "type": "Haze",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "PoisonPower": 4
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "PoisonPower": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "hidden_daggers",
+      "type": "HiddenDaggers",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2,
+            "Shivs": 2
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2,
+            "Shivs": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "infinite_blades",
+      "type": "InfiniteBlades",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Innate"
+          ],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "knife_trap",
+      "type": "KnifeTrap",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedShivs": 0
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedShivs": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "leading_strike",
+      "type": "LeadingStrike",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Shivs": 2,
+            "Damage": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Shivs": 2,
+            "Damage": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "leg_sweep",
+      "type": "LegSweep",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 11,
+            "WeakPower": 2
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 14,
+            "WeakPower": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "malaise",
+      "type": "Malaise",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": true,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        },
+        {
+          "cost": 0,
+          "x": true,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "master_planner",
+      "type": "MasterPlanner",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "memento_mori",
+      "type": "MementoMori",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 9,
+            "ExtraDamage": 4,
+            "CalculatedDamage": 9
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 11,
+            "ExtraDamage": 5,
+            "CalculatedDamage": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "mirage",
+      "type": "Mirage",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedBlock": 0
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "CalculationBase": 0,
+            "CalculationExtra": 1,
+            "CalculatedBlock": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "murder",
+      "type": "Murder",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 1,
+            "ExtraDamage": 1,
+            "CalculatedDamage": 1
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 1,
+            "ExtraDamage": 1,
+            "CalculatedDamage": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "neutralize",
+      "type": "Neutralize",
+      "kind": "Attack",
+      "rarity": "Basic",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 3,
+            "WeakPower": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 4,
+            "WeakPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "nightmare",
+      "type": "Nightmare",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "noxious_fumes",
+      "type": "NoxiousFumes",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPerTurn": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PoisonPerTurn": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "outbreak",
+      "type": "Outbreak",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "OutbreakPower": 11,
+            "Repeat": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "OutbreakPower": 15,
+            "Repeat": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "phantom_blades",
+      "type": "PhantomBlades",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PhantomBladesPower": 9
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "PhantomBladesPower": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "piercing_wail",
+      "type": "PiercingWail",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "StrengthLoss": 6
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "StrengthLoss": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "pinpoint",
+      "type": "Pinpoint",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 15
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 19
+          }
+        }
+      ]
+    },
+    {
+      "id": "poisoned_stab",
+      "type": "PoisonedStab",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6,
+            "PoisonPower": 3
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "PoisonPower": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "pounce",
+      "type": "Pounce",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 14
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "precise_cut",
+      "type": "PreciseCut",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 13,
+            "ExtraDamage": 2,
+            "CalculatedDamage": 13
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "CalculationBase": 16,
+            "ExtraDamage": 2,
+            "CalculatedDamage": 16
+          }
+        }
+      ]
+    },
+    {
+      "id": "predator",
+      "type": "Predator",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 15
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "prepared",
+      "type": "Prepared",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "reflex",
+      "type": "Reflex",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Cards": 2
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Cards": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "ricochet",
+      "type": "Ricochet",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "RandomEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Damage": 3,
+            "Repeat": 4
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Damage": 3,
+            "Repeat": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "serpent_form",
+      "type": "SerpentForm",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "SerpentFormPower": 4
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "SerpentFormPower": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "shadow_step",
+      "type": "ShadowStep",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 3
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "shadowmeld",
+      "type": "Shadowmeld",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Power": 1
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Power": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "skewer",
+      "type": "Skewer",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": true,
+          "keywords": [],
+          "vars": {
+            "Damage": 8
+          }
+        },
+        {
+          "cost": 0,
+          "x": true,
+          "keywords": [],
+          "vars": {
+            "Damage": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "slice",
+      "type": "Slice",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "snakebite",
+      "type": "Snakebite",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Retain"
+          ],
+          "vars": {
+            "PoisonPower": 7
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Retain"
+          ],
+          "vars": {
+            "PoisonPower": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "speedster",
+      "type": "Speedster",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "SpeedsterPower": 2
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Innate"
+          ],
+          "vars": {
+            "SpeedsterPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "storm_of_steel",
+      "type": "StormOfSteel",
+      "kind": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "strangle",
+      "type": "Strangle",
+      "kind": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "StranglePower": 2
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10,
+            "StranglePower": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "strike_silent",
+      "type": "StrikeSilent",
+      "kind": "Attack",
+      "rarity": "Basic",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 6
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "sucker_punch",
+      "type": "SuckerPunch",
+      "kind": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 8,
+            "WeakPower": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Damage": 10,
+            "WeakPower": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "suppress",
+      "type": "Suppress",
+      "kind": "Attack",
+      "rarity": "Ancient",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Innate"
+          ],
+          "vars": {
+            "Damage": 11,
+            "WeakPower": 3
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Innate"
+          ],
+          "vars": {
+            "Damage": 17,
+            "WeakPower": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "survivor",
+      "type": "Survivor",
+      "kind": "Skill",
+      "rarity": "Basic",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 8
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Block": 11
+          }
+        }
+      ]
+    },
+    {
+      "id": "tactician",
+      "type": "Tactician",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Energy": 1
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Energy": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "the_hunt",
+      "type": "TheHunt",
+      "kind": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "generate": false,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 10
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 15
+          }
+        }
+      ]
+    },
+    {
+      "id": "tools_of_the_trade",
+      "type": "ToolsOfTheTrade",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "tracking",
+      "type": "Tracking",
+      "kind": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {}
+        }
+      ]
+    },
+    {
+      "id": "untouchable",
+      "type": "Untouchable",
+      "kind": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Block": 6
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [
+            "Sly"
+          ],
+          "vars": {
+            "Block": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "up_my_sleeve",
+      "type": "UpMySleeve",
+      "kind": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 3
+          }
+        },
+        {
+          "cost": 2,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "Cards": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "well_laid_plans",
+      "type": "WellLaidPlans",
+      "kind": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "RetainAmount": 1
+          }
+        },
+        {
+          "cost": 1,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "RetainAmount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "wraith_form",
+      "type": "WraithForm",
+      "kind": "Power",
+      "rarity": "Ancient",
+      "target": "Self",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "IntangiblePower": 2,
+            "WraithFormPower": 1
+          }
+        },
+        {
+          "cost": 3,
+          "x": false,
+          "keywords": [],
+          "vars": {
+            "IntangiblePower": 3,
+            "WraithFormPower": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "shiv",
+      "type": "Shiv",
+      "kind": "Attack",
+      "rarity": "Token",
+      "target": "AnyEnemy",
+      "generate": true,
+      "levels": [
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 4
+          }
+        },
+        {
+          "cost": 0,
+          "x": false,
+          "keywords": [
+            "Exhaust"
+          ],
+          "vars": {
+            "Damage": 6
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -18,17 +18,14 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Generic event semantics | [Contract reference](GENERIC_EVENTS.md) |
 | Named event live evidence | [Caller evidence index](EVENT_COVERAGE.md) |
 | Static native event census (historical gap labels) | [Research map and corrections](EVENT_INTERACTION_MAP.md) |
-| Reduced headless actor and datasets | [Headless actor](HEADLESS_ACTOR.md) |
-| Headless assessment and full-game implementation tasks | [Headless full-game backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
-| Combat simulator | [Project context](PROJECT_CONTEXT.md) |
-| Training, profiling and evaluation | [Experiment workflows](EXPERIMENT_WORKFLOWS.md), [benchmarks](BENCHMARKS.md), [benchmark suite](BENCHMARK_SUITE.md) |
-| Full-game scope and research destination | [Target](TARGET.md), relevant sections of [long-term architecture](LONG_TERM_ARCHITECTURE_ROADMAP.md) |
+| Full-game headless implementation tasks | [Current implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
+| Headless game logic and architecture | [Game engine](HEADLESS_ENGINE.md) |
+| Agent-evaluation scope and information boundary | [Target](TARGET.md) |
 | Delegated work, when needed | [Multi-agent guide](MULTI_AGENT_EXECUTION.md) |
 
 ## References and results
 
-- Combat: [agent flow](AGENT_FLOW.md), [card representation](CARD_REPRESENTATION.md),
-  [Ironclad cards](IRONCLAD_CARDS.md), [Overgrowth hard pool](OVERGROWTH_HARD_V1.md).
+- Retired simulator, actor and experiment guides: [archive](archive/README.md#retired-simulator-pipelines).
 - Latest live results: [September 12–13 multi-case ledger](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md)
   and [Crystal Sphere](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md). Earlier supporting
   evidence: [September 9–10 combined batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
@@ -36,7 +33,9 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
   Use [status](STATUS.md) for the current conclusion, not a ledger's first failed attempt.
 - Build identity: [game manifest guide](../manifests/game-builds/README.md),
   [current bridge release](../bridge/Sts2AgentBridge/releases/current/README.md).
-- Historical contracts, plans, reviews and results: [archive index](archive/README.md).
+- Historical contracts, plans, reviews and results: [archive index](archive/README.md),
+  including the [engine chronology](archive/HEADLESS_ENGINE_2026_09_22.md) and
+  [earlier architecture plan](archive/LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md).
 - Profile work: read the [user-data boundary](LIVE_DEVELOPMENT.md#user-data-boundary)
   only when that work is explicitly requested.
 

@@ -13,7 +13,7 @@
 
 This charter makes the first target concrete. It instantiates the scope and
 evidence requirements from
-[`LONG_TERM_ARCHITECTURE_ROADMAP.md`](../../LONG_TERM_ARCHITECTURE_ROADMAP.md), which
+[`LONG_TERM_ARCHITECTURE_ROADMAP.md`](../LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md), which
 remains the authority for the project's long-term architecture and dependency
 order. This file owns the initial benchmark definition and its unresolved Phase
 0 decisions. It does not replace the short-term [`ROADMAP.md`](../../../ROADMAP.md).

@@ -333,7 +333,21 @@ def _relabel_map_destination(value: dict[str, object], kind: str) -> None:
 def _result_contracts() -> None:
     stale_terminal = _stale_terminal_combat()
     acceptance._component(stale_terminal, "r0e_complete_combat")
-    acceptance._component(_child_reward_result(), "r0i_reward_resolution")
+    child_reward = _child_reward_result()
+    acceptance._component(child_reward, "r0i_reward_resolution")
+    legacy_reward = copy.deepcopy(child_reward)
+    del legacy_reward["collected_items"]
+    acceptance._component(legacy_reward, "r0i_reward_resolution")
+    for invalid_items in (None, False, {}, (), [{"kind": "potion", "key": "FIRE_POTION", "reward_index": 0}]):
+        invalid_reward = copy.deepcopy(child_reward)
+        invalid_reward["collected_items"] = invalid_items
+        try:
+            acceptance._component(invalid_reward, "r0i_reward_resolution")
+        except ToolFailure as error:
+            if error.error_code != "run_acceptance_result_mismatch":
+                raise
+        else:
+            fail(EXIT_MISMATCH, "run_acceptance_fixture_item_claim_admitted")
     acceptance._component(_card_reward_result(), "r0i_reward_resolution")
     detached_trace = copy.deepcopy(stale_terminal)
     detached_trace["actions"][0]["player_hp_after"] = 79

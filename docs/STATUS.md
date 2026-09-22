@@ -232,5 +232,18 @@ This documentation review did not recheck the running machine or launch the game
 
 Earlier failures remain in those dated records; a later pass does not rewrite their
 artifact identity or counts. Keep future chronology there and update the relevant
-support row here. The separate simulator/headless systems are documented in
-[project context](PROJECT_CONTEXT.md) and [headless actor](HEADLESS_ACTOR.md).
+support row here.
+
+## Headless game engine
+
+The independent [game engine](HEADLESS_ENGINE.md) supports all five solo characters
+at A0–A10 through Overgrowth or Underdocks, Hive, Glory and the Architect. Selected
+native campaigns cover Ironclad and all four added characters, including boosted
+A0/A10 victories with Python JSON continuation replay. See the
+[character comparisons and limits](HEADLESS_ENGINE.md#playable-characters).
+This simulator evidence is separate from live-bridge acceptance above.
+
+The legacy simulator, reduced backend and actor/training pipelines were retired
+on 2026-09-22; their evidence remains [archival](archive/README.md#retired-simulator-pipelines).
+Full-game public observations and policy/data adapters are HF-44–47 in the
+[current backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md).

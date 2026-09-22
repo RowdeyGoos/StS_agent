@@ -52,36 +52,31 @@ Plan shared capabilities from native dependencies, not event-name rules.
 
 ## Headless and learning direction
 
-Keep the reduced backend and actor pipeline usable while improving fidelity of
-named mechanics against the pinned game. The accepted cloning smoke proves
-training/artifact plumbing on structural data; scale training when the relevant
-rules and useful evaluation cases justify it.
+Prioritize faithful game logic in the [independent engine](docs/HEADLESS_ENGINE.md).
+Implement and test cards, monsters, powers, items and run progression directly,
+then integrate mature capabilities into actor/bridge consumers when useful.
+Projection, encoding and training work must not gate ordinary gameplay features.
+The old simulator/reduced backend and research pipelines are retired. Future
+public observations and policy/data adapters must consume the current engine.
 
-The [headless full-game backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md) breaks
-the remaining simulation work into selectable tasks with dependencies and acceptance
-cases. Start with a pinned mechanic/reference case and one persistent gameplay slice
-(for example HF-13, one executable card upgrade), then full-length reduced-content
-runs, complete reachable Ironclad A0 content, and target-difficulty coverage. This
-headless sequence does not reorder the live-bridge priorities above.
+The [full-game backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md) owns feature
+scope and acceptance cases. Strike+ is now ordinary game content; the experimental
+per-upgrade profile is retired. Headless and bridge work can proceed in parallel
+with disjoint source ownership and shared pinned-game rule evidence.
 
-Retain these research priorities as evidence-driven options:
-
-- compare action-conditioned and shared-enemy models on matched seeds/budgets;
-- integrate semantic card records with an explicit representation/retraining boundary;
-- add deterministic mixed-deck training after establishing per-deck baselines;
-- use trace/oracle mistakes to choose mechanics, observation or training changes;
-- extend encounter/status/card coverage where it improves the research benchmark.
-
-Avoid more algorithms, content volume or training infrastructure without an
-identified bottleneck or evaluation question.
+Next implement HF-44: sufficient public full-run observations, then encoding,
+datasets and agent execution in HF-45–47. Establish faithful public inputs before
+selecting training algorithms or investing in search infrastructure.
 
 ## Long-term destination
 
-Build one faithful reduced-content full-run environment, then stronger policy/value
+Use the faithful full-run engine to develop stronger policy/value
 models and optional tactical/strategic search over shared legal candidates.
 Expand content and certify performance under the pinned target, public-information
 boundary and declared compute budget. See the
-[long-term architecture](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md) for design detail.
+[target](docs/TARGET.md) for current evaluation requirements and the
+[archived architecture plan](docs/archive/LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md)
+for historical design detail.
 
 Update this file when priorities change, not after every test run. For substantial
 features, use available phase timings to check whether the streamlined process

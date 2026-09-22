@@ -1,18 +1,16 @@
 # StS Agent
 
-Research toward a functional, eventually near-optimal Slay the Spire 2 agent.
-The repository contains three complementary systems:
+Research toward a functional Slay the Spire 2 agent, built around two systems:
 
-- A deterministic combat simulator for RL experiments, traces and exact small-combat search.
-- A reduced headless run environment with public decision contracts, datasets and
-  a deterministic behavior-cloning smoke. Progression rules are structural fixtures.
-- A live-game bridge with bounded combat, reward, map, shop, rest and generic
-  event capabilities. Supported event interactions are discovered by shared
-  mechanisms, without adding an event-name registration for each caller.
+- An independent headless game engine with content, combat and persistent run rules.
+- One live-game bridge with bounded combat, reward, map, shop, rest and event capabilities.
 
-This is not yet a complete autonomous agent or a verified full-game simulator.
-[Current status](docs/STATUS.md) distinguishes implemented,
-fixture-tested and live-demonstrated behavior, known failures and implementation gaps.
+The engine supports all five solo characters at A0–A10 through either Act 1 region,
+Hive, Glory and the Architect ending on pinned build 0.107.1, with all content
+unlocked. Native comparisons cover selected full campaigns and focused interactions;
+this is not a claim of exhaustive equivalence or a complete autonomous agent.
+[Current status](docs/STATUS.md) distinguishes implemented, fixture-tested and
+live-demonstrated bridge behavior, known failures and implementation gaps.
 
 Requires Python 3.10+. New coding sessions follow [AGENTS.md](AGENTS.md).
 
@@ -21,70 +19,61 @@ Requires Python 3.10+. New coding sessions follow [AGENTS.md](AGENTS.md).
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements-dev.txt
-pip install -e .
+python -m pip install -e '.[dev]'
 ```
 
-For only the pure-Python simulator, `pip install -e .` is sufficient.
-`requirements.txt` adds Gymnasium, PyTorch and Optuna.
+For runtime only, `python -m pip install -e .` is sufficient. The engine and its
+CLI use the standard library; no Gymnasium, PyTorch or NumPy dependency is needed.
 
-## Combat experiments
+## Playing and implementing the game
 
 ```bash
-sts-demo
-sts-train --policy compare --episodes 500 --eval-episodes 100
-sts-train --config configs/double_dqn_overgrowth.json
-sts-train --config configs/masked_ppo_overgrowth.json
-sts-watch --policy heuristic --encounter slimes --deck ironclad_sequencing --seed 7
-sts-oracle --encounter simple --seed 7
-sts-benchmark-suite --dry-run
+# Short authored smoke with JSON restoration checked before each command
+sts-headless-play --seed 2 --rest-choice smith --verify-restore
+
+# Generated three-act campaigns
+sts-headless-play --character defect --route overgrowth-glory --ancient neow --seed 2
+sts-headless-play --character silent --route underdocks-glory --ascension 10 --seed 2
+
+# Run directly from a checkout without installing the console command
+python -m game.cli.headless_play --help
 ```
 
-The default deck is `starter`; the optional `ironclad_sequencing` deck adds draw
-and block/damage sequencing. Supported policies include random, heuristic,
-Q-learning, DQN, Double DQN, Dueling Double DQN and masked PPO. Neural families
-default to action-conditioned scoring, with opt-in `shared_enemy` architectures.
+The CLI uses a simple demonstration policy that can lose. The default authored
+route ends at `slice_complete`; generated `*-glory` campaigns continue through
+the Architect to full-game victory when won. Use `--trace` to print commands and
+`--verify-restore` to check continuation before each command.
 
-JSON configuration uses CLI names in snake_case; explicit CLI arguments override
-the file. Prefer `output_dir` for a unique run folder containing the checkpoint,
-resolved configuration and run metadata. Saved-agent tools accept a checkpoint
-or its run directory. The legacy `save_agent` plus sidecars remains supported.
+Game rules live in [`game/headless/`](game/headless/) and run directly through
+`CombatEngine` and `RunEngine`. For example:
 
-Use [experiment workflows](docs/EXPERIMENT_WORKFLOWS.md) for configuration,
-sweeps, profiling, device choice, tracing and oracle/regret analysis.
-[Benchmarks](docs/BENCHMARKS.md) and the [benchmark suite](docs/BENCHMARK_SUITE.md)
-describe comparable fixed-seed and controlled-budget evaluations.
-Each command's `--help` lists its complete options.
+```python
+from game.headless.run.engine import RunEngine
 
-## Reduced headless experiments
+run = RunEngine.campaign(character="defect", seed=2)
+actions = run.legal_actions()
+run.apply(actions[0])
+private_state = run.snapshot()
+```
+
+Snapshots contain private game/RNG state and must not be supplied to policies as
+public observations. Cards own their effects and upgrade values; explicit catalogs
+separate immutable content from mutable instances. Consult the
+[engine guide](docs/HEADLESS_ENGINE.md) for rules, character scope, commands,
+continuation and native verification limits, and the
+[implementation backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md) for remaining work.
+
+## Validation
 
 ```bash
-sts-headless --help
-sts-headless run --config configs/headless_smoke.json --output-root runs/headless-smoke
-sts-headless benchmark --config configs/headless_smoke.json --output-root runs/headless-benchmark
-sts-headless validate --output-root runs/headless-smoke --manifest-sha256 "<reported-manifest-sha256>"
+python -m compileall game tests
+PYTHONPATH=. python -m pytest -q
 ```
 
-Use a new output directory for every invocation and keep the printed manifest
-hash separately. `run` requires one repetition; `benchmark` uses the configured
-count. The smoke config has a small transition budget and is not a training run.
-Help and pure headless commands do not import Torch or Gymnasium. Current CLI
-input/cancellation hardening was validated on POSIX systems.
-
-Artifacts preserve declared settings, trajectories and cancellation accounting.
-They do not prove target-game fidelity or independently authenticate declared seeds.
-
-The separate programmatic actor path uses `game.agents.headless_encoding`,
-`game.data.headless_policy_dataset`, `game.agents.headless_candidate_policy`
-and `game.training.headless_behavior_clone`. `train_headless_behavior_clone`
-takes separated, manifest-anchored development/held-out sources, an accepted
-backend manifest and a `BehaviorCloneConfig`. An optional new `output_root`
-publishes a report, CPU checkpoint and completion marker; cancellation does not
-publish an accepted artifact. Keep the returned report and logical checkpoint
-hashes for `load_behavior_clone_artifact`. This smoke establishes plumbing on
-structural data, not strategic strength or a new `sts-train` policy.
-[Headless actor guide](docs/HEADLESS_ACTOR.md) links the source, schema and evidence.
+Use focused files under `tests/headless/` during gameplay development. The full
+suite also checks the retained bridge wire codec and offline operational fixtures.
+Native reference harnesses live under `tools/`; their guides explain build inputs
+and evidence boundaries.
 
 ## Live integration
 
@@ -98,19 +87,21 @@ to find exact tested branches and the [event contracts](docs/GENERIC_EVENTS.md)
 for protocol/effect details. Dated ledgers retain test history and setup assistance.
 Complete autonomous runs remain an open target.
 
-## Project layout and documentation
+## Package layout
 
 | Location | Purpose |
 | --- | --- |
-| `game/simulation/` | Combat rules, observations, action encoding and factories |
-| `game/agents/`, `game/training/` | Policies, persistence, collectors and training |
-| `game/contracts/`, `game/backends/`, `game/data/` | Full-game interfaces, reduced backend and artifacts |
-| `game/analysis/`, `game/cli/` | Evaluation, inspection and installed commands |
-| `bridge/Sts2AgentBridge/` | One production bridge, shared capability modules and focused checks |
-| `configs/`, `tests/`, `manifests/game-builds/` | Experiments, regression coverage and pinned build identities |
+| `game/headless/` | Canonical game rules, content, combat, persistent state and private continuation |
+| `game/cli/headless_play.py` | Direct gameplay CLI (`sts-headless-play`) |
+| `game/backends/live/r0i_wire.py` | Retained bridge wire fixture codec and identity checks |
+| `bridge/Sts2AgentBridge/` | Production bridge, shared capabilities, client and focused checks |
+| `tools/`, `tests/`, `manifests/game-builds/` | Native reference harnesses, regression coverage and pinned build identities |
 
-Use canonical subpackage imports and installed `sts-*` commands; there are no
-flat-module aliases or root CLI wrappers.
+The old `CombatEnv`, RL/search/training/benchmark pipelines, reduced backend,
+public fixture contracts and their commands were retired on 2026-09-22. They are
+not compatibility APIs. Historical guides and exact source references remain in
+the [archive](docs/archive/README.md#retired-simulator-pipelines).
+Full-game public observations and subsequent policy/data adapters are future work
+over the current engine, tracked as HF-44–47; they must not duplicate game rules.
 
-[Documentation index](docs/README.md) · [Roadmap](ROADMAP.md) ·
-[Decisions](DECISIONS.md) · [Combat context](docs/PROJECT_CONTEXT.md)
+[Documentation index](docs/README.md) · [Roadmap](ROADMAP.md) · [Decisions](DECISIONS.md)

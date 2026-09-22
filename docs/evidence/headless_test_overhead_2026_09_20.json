@@ -1,0 +1,184 @@
+{
+  "date": "2026-09-20",
+  "baselineCommit": "4d541e9",
+  "runtime": "Existing repository Python 3.11.15 venv, same machine, serial pytest",
+  "method": "Three unprofiled repetitions per sample; median wall time; original native assertions enabled; SHA256 over final serialized snapshots. Baseline measured during preceding inspection.",
+  "samples": {
+    "FakeMerchant": {
+      "scope": "First 64 of 3,852 native branch rows",
+      "baseline": {
+        "seconds": [
+          3.3111657921690494,
+          3.285715791862458,
+          3.2921039171051234
+        ],
+        "median": 3.2921039171051234,
+        "snapshotDigest": "127f5439f81300e2c503947e0e44f570a3c3765eb7775d0534945c5778dd43ba",
+        "prefixHits": 0,
+        "cacheEntries": 1
+      },
+      "improved": {
+        "seconds": [
+          1.6923467919696122,
+          1.6745986670721322,
+          1.6780095410067588
+        ],
+        "median": 1.6780095410067588,
+        "snapshotDigest": "127f5439f81300e2c503947e0e44f570a3c3765eb7775d0534945c5778dd43ba",
+        "prefixHits": 63,
+        "cacheEntries": 64
+      },
+      "speedup": 1.961910130218898,
+      "snapshotBytesMatch": true
+    },
+    "CrystalSphere": {
+      "scope": "First 12 of 780 native branch rows",
+      "baseline": {
+        "seconds": [
+          3.7598701249808073,
+          3.792746542021632,
+          3.7509541250765324
+        ],
+        "median": 3.7598701249808073,
+        "snapshotDigest": "224f72c6296ff45d3466f973e4515623f994b7e8087b60613f6a36608907ece5",
+        "prefixHits": 0,
+        "cacheEntries": 1
+      },
+      "improved": {
+        "seconds": [
+          0.9611331250052899,
+          0.9829332090448588,
+          0.9622172499075532
+        ],
+        "median": 0.9622172499075532,
+        "snapshotDigest": "224f72c6296ff45d3466f973e4515623f994b7e8087b60613f6a36608907ece5",
+        "prefixHits": 2,
+        "cacheEntries": 12
+      },
+      "speedup": 3.907506465241653,
+      "snapshotBytesMatch": true
+    },
+    "campaign_40_commands": {
+      "scope": "First 40 commands; diagnostic prefix, not a victory claim",
+      "baseline": {
+        "seconds": [
+          1.7636276669800282,
+          1.7647134999278933,
+          1.7514353331644088
+        ],
+        "median": 1.7636276669800282,
+        "snapshotDigest": "7852d3587447265468ed70bc072fe61c8aa3b1bd354b9514e8743a8e93b91507"
+      },
+      "improved": {
+        "seconds": [
+          1.0095541670452803,
+          1.0081501670647413,
+          1.0133630419149995
+        ],
+        "median": 1.0095541670452803,
+        "snapshotDigest": "7852d3587447265468ed70bc072fe61c8aa3b1bd354b9514e8743a8e93b91507"
+      },
+      "speedup": 1.7469371377483762,
+      "snapshotBytesMatch": true
+    }
+  },
+  "sourceSha256": {
+    "game/headless/core/content_snapshots.py": "f7b8548ade930e3b88f1f798e6bc796c94dd2278409b6b05d850c63c9bba7f5c",
+    "game/headless/cards/catalog.py": "65e766f0ef0fd6deadbc04f69cd201581352a147633c6a960fc4f4dbe2f30bfd",
+    "game/headless/events/catalog.py": "6e4ab4b22c4b6a0cdbc34b7d8e973d0c19817d3eec267b5ad4cc01d1e7aaf871",
+    "game/headless/events/crystal_validation.py": "0967f5be25c9129ce4cb91e07a2089d8fd63a06c61240ba510f354bb84413ba8",
+    "game/headless/events/flow.py": "f175cf886a675d57fcf8b047d2f6cc517de40881141a3bfe71d90393591158a5",
+    "game/headless/events/roster.py": "548c1d42eff06b19f90da12f410511409f0e44b4a2b4ed70e1710becddb97b8c",
+    "game/headless/run/snapshots.py": "5d8796224f34f8717ebaca2ea603b50b442700e55cb943b13ae97b1bd7371d9d",
+    "game/headless/shops/catalog.py": "0802b1c4929e9b424a7b3a8d6efb3f7b88a742927ed4981d293600a8072fb39b",
+    "tests/headless/native_event_replay.py": "466ec37da3177c9bd67209f41699daff342226a2542ffc21ff484ede6add9bc6",
+    "tests/headless/test_act2_run.py": "f8fdb665a68019e587967191764d9bbb1124a1228db6ec496032c5c71464010b",
+    "tests/headless/test_native_event_branches.py": "b1291d32e226eec4ab9ceeb53a1d6029a1fe11bb7986b912b22ecb1a6310e806",
+    "tests/headless/test_content_snapshot_cache.py": "14f39092b3e4be454fe3b1901b5ac82ecf3f652d8baaa8aa3285a8a1d32455e5",
+    "tests/headless/test_crystal_validation.py": "a8e13e9d3dcddb0c1c87fb556638ba62de2eb0c7bce5184deefd9d304014e985"
+  },
+  "validation": {
+    "focused": {
+      "passed": 112,
+      "seconds": 10.18
+    },
+    "independentReview": {
+      "result": "No blocking semantic findings",
+      "focusedPassed": 26,
+      "seconds": 0.89
+    },
+    "broad": {
+      "command": "PYTHONPATH=. python -m pytest tests/headless tests/backends/headless -q --durations=15",
+      "passed": 7261,
+      "seconds": 878.78,
+      "baselinePassed": 7078,
+      "baselineSeconds": 1675.74,
+      "baselineScope": "tests/headless, before the final potion-discard regression",
+      "timeReductionPercent": 47.55869048897801,
+      "slowest": [
+        {
+          "seconds": 117.47,
+          "test": "tests/headless/test_native_event_branches.py::test_native_solo_event_branch_matrix[FakeMerchant]"
+        },
+        {
+          "seconds": 74.46,
+          "test": "tests/headless/test_native_event_branches.py::test_native_solo_event_branch_matrix[CrystalSphere]"
+        },
+        {
+          "seconds": 47.8,
+          "test": "tests/headless/test_native_boosted_underdocks.py::test_native_underdocks_three_act_victory_and_json_continuation"
+        },
+        {
+          "seconds": 42.38,
+          "test": "tests/headless/test_native_boosted_campaign.py::test_boosted_three_act_native_victory_with_json_continuation"
+        },
+        {
+          "seconds": 35.68,
+          "test": "tests/headless/test_native_a10_campaigns.py::test_native_a10_campaign_with_json_continuation[underdocks_4-27-767]"
+        },
+        {
+          "seconds": 35.59,
+          "test": "tests/headless/test_native_a10_campaigns.py::test_native_a10_campaign_with_json_continuation[overgrowth_1-25-737]"
+        },
+        {
+          "seconds": 34.0,
+          "test": "tests/headless/test_native_boss_coverage.py::test_remaining_boss_campaign_with_json_continuation[overgrowth_3-28-700]"
+        },
+        {
+          "seconds": 32.9,
+          "test": "tests/headless/test_native_boosted_kaiser.py::test_native_kaiser_three_act_victory_with_json_continuation"
+        },
+        {
+          "seconds": 29.33,
+          "test": "tests/headless/test_native_boss_coverage.py::test_remaining_boss_campaign_with_json_continuation[overgrowth_1-26-618]"
+        },
+        {
+          "seconds": 27.72,
+          "test": "tests/headless/test_native_boss_coverage.py::test_remaining_boss_campaign_with_json_continuation[underdocks_4-27-600]"
+        },
+        {
+          "seconds": 8.72,
+          "test": "tests/headless/test_act3_run.py::test_three_acts_and_architect_with_restored_decisions[fixture-underdocks]"
+        },
+        {
+          "seconds": 8.53,
+          "test": "tests/headless/test_act3_run.py::test_three_acts_and_architect_with_restored_decisions[fixture-overgrowth]"
+        },
+        {
+          "seconds": 7.44,
+          "test": "tests/headless/test_act3_run.py::test_three_acts_and_architect_with_restored_decisions[native-overgrowth]"
+        },
+        {
+          "seconds": 7.19,
+          "test": "tests/headless/test_act3_run.py::test_three_acts_and_architect_with_restored_decisions[native-underdocks]"
+        },
+        {
+          "seconds": 5.47,
+          "test": "tests/headless/test_native_generated_route.py::test_generated_route_matches_native_through_boss_defeat"
+        }
+      ]
+    },
+    "compileall": "game tests passed",
+    "nativeLaunch": false
+  }
+}
