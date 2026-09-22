@@ -1,5 +1,10 @@
 # Long-Term Architecture and Research Roadmap
 
+> Historical architecture and research plan, archived 2026-09-22. “Current”, “remaining” and
+> schema/version claims describe their original batches. Use the [current engine guide](../HEADLESS_ENGINE.md),
+> [backlog](../HEADLESS_FULL_GAME_IMPLEMENTATION.md) and [target](../TARGET.md) for new work.
+> Original bytes: `5389796666da9e2cefff30839612288ce7875ccf:docs/LONG_TERM_ARCHITECTURE_ROADMAP.md`.
+
 - **Status:** strategic north-star document
 - **Last reviewed:** 2026-08-31
 - **Scope:** a functional, single-player Slay the Spire 2 agent that can
@@ -7,31 +12,31 @@
 
 This document describes the destination and the dependency order for reaching
 it. It complements, but does not replace, the short-horizon work in
-[`ROADMAP.md`](../ROADMAP.md). The short-term roadmap may continue to evolve as
+[`ROADMAP.md`](../../ROADMAP.md). The short-term roadmap may continue to evolve as
 the current combat research environment improves; this document should change
 only when the full-project strategy or end-state architecture changes.
 
 The legacy simulator and research pipelines described here were retired on
 2026-09-22 (D69). Their migration plans are superseded by the current engine and
-[HF-44–47 adapter assignments](HEADLESS_FULL_GAME_IMPLEMENTATION.md#open-assignments).
+[HF-44–47 adapter assignments](../HEADLESS_FULL_GAME_IMPLEMENTATION.md#open-assignments).
 
 This is a specialist design reference, not a mandatory startup checklist.
 Its dated descriptions of repository state and proposed increments are historical;
-use [current status](STATUS.md) and [ROADMAP.md](../ROADMAP.md)
-for present capabilities and priorities. [AGENTS.md](../AGENTS.md) owns the
+use [current status](../STATUS.md) and [ROADMAP.md](../../ROADMAP.md)
+for present capabilities and priorities. [AGENTS.md](../../AGENTS.md) owns the
 streamlined development process, including proportionate review and validation.
 
 Program references (read only the relevant one):
 
-- [Current target](TARGET.md) defines the initial scope, information boundary,
+- [Current target](../TARGET.md) defines the initial scope, information boundary,
   objective and unresolved evaluation requirements; the archived charter retains detail.
-- [`PHASE_1_INTEGRATION_SPIKE.md`](archive/phase-1/PHASE_1_INTEGRATION_SPIKE.md) preserves the
+- [`PHASE_1_INTEGRATION_SPIKE.md`](phase-1/PHASE_1_INTEGRATION_SPIKE.md) preserves the
   earlier evidence campaign for selecting the live truth path and fast backend.
-- [Current status](STATUS.md) records the unified bridge capabilities, evidence
+- [Current status](../STATUS.md) records the unified bridge capabilities, evidence
   levels and exclusions.
-- [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](archive/phase-1/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
+- [`PHASE_1_ACTOR_READY_EXECUTION_PLAN.md`](phase-1/PHASE_1_ACTOR_READY_EXECUTION_PLAN.md)
   preserves completed bridge/headless packet contracts; it is not the active queue.
-- [`MULTI_AGENT_EXECUTION.md`](MULTI_AGENT_EXECUTION.md) defines how parallel
+- [`MULTI_AGENT_EXECUTION.md`](../MULTI_AGENT_EXECUTION.md) defines how parallel
   work is owned, reviewed, integrated, and reported to the user.
 
 It is intentionally not a promise of dates. The simulator-fidelity work and the
@@ -1031,7 +1036,7 @@ latency, restart/resume, desynchronization, and recovery rate.
 
 Current progress: the adopt/fork/build design decision is now **build a lean
 project-owned bridge**, staged from a minimal read-only probe. See the
-[`Phase 1 restricted bridge design`](archive/phase-1/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md).
+[`Phase 1 restricted bridge design`](phase-1/PHASE_1_RESTRICTED_BRIDGE_DESIGN.md).
 This resolves the source-boundary choice only; the Phase 1 compile, load,
 passivity, coverage, control, and fast-backend exit gates remain open.
 
@@ -1342,8 +1347,8 @@ the first point at which a credible staffing/compute schedule can be produced.
 
 ## 21. Open decisions
 
-The [current target](TARGET.md#unresolved-evaluation-requirements) owns unresolved
-evaluation requirements. The [original decision register](archive/phase-0/PHASE_0_TARGET_CHARTER.md#9-decision-register)
+The [current target](../TARGET.md#unresolved-evaluation-requirements) owns unresolved
+evaluation requirements. The [original decision register](phase-0/PHASE_0_TARGET_CHARTER.md#9-decision-register)
 preserves their historical detail. Do not duplicate resolved choices here.
 
 - What inference latency/node budgets define policy-only and planner-enhanced

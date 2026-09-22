@@ -10,6 +10,8 @@ work. Consult an archived record only for a specific semantic or evidence questi
 | Topic | Historical references |
 | --- | --- |
 | Headless implementation assessment and completed batches | [September 12–21 backlog](HEADLESS_FULL_GAME_IMPLEMENTATION_2026_09_21.md); [current tasks](../HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
+| Headless game-rule chronology and original reference analysis | [September 22 engine record](HEADLESS_ENGINE_2026_09_22.md); [current guide](../HEADLESS_ENGINE.md) |
+| Earlier architecture and research plan | [Archived design](LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md); [current target](../TARGET.md) and [backlog](../HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Earlier architecture decisions | [Decision log](DECISIONS_2026_09_08.md) |
 | Target and evaluation design | [Original charter](phase-0/PHASE_0_TARGET_CHARTER.md); [current target](../TARGET.md) owns the concise definition |
 | Profile design and access history | [Fixture plan](phase-0/PHASE_0_PROFILE_FIXTURE_PLAN.md), [baseline request](phase-0/PHASE_0_PROFILE_BASELINE_HASH_REQUEST.md), [stopped attempt](phase-0/research/PHASE_0_PROFILE_BASELINE_HASH_ATTEMPT_1_RESULT.md) |
@@ -68,3 +70,7 @@ available at commit `9d8d1c75069f9bfb04e161c25706343c5b63ea42`. Navigation links
 were adjusted; recorded evidence hashes retain their original meaning. For exact
 bytes, use `git show <revision>:<original-path>`. The retained native engine
 comparisons and bridge release identities were not repinned.
+
+The engine chronology and architecture plan archived on 2026-09-22 preserve the
+bodies from `5389796666da9e2cefff30839612288ce7875ccf`, with archive labels and
+relative links adjusted. Recorded hashes and evidence artifacts were not repinned.

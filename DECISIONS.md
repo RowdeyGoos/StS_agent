@@ -133,8 +133,9 @@ legacy checkpoint or fixture compatibility obligation.
 
 Detailed native semantics are in the selected component contracts, reached through
 [current status](docs/STATUS.md). The [target](docs/TARGET.md)
-and [long-term architecture](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md) retain the
-full-game objective, information rules and eventual evaluation requirements.
+owns the full-game objective and information rules. The
+[archived architecture plan](docs/archive/LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md)
+retains the earlier research design; the current backlog owns implementation tasks.
 
 ## Historical training and analysis choices
 

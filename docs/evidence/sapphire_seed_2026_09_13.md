@@ -94,6 +94,6 @@ change is required.
 
 Other enchantments, duplication/replay card effects, full reward and transform
 pools, native RNG parity and remaining events are still open. The
-[engine guide](../HEADLESS_ENGINE.md#sapphire-seed-and-sown) describes extension
+[engine guide](../archive/HEADLESS_ENGINE_2026_09_22.md#sapphire-seed-and-sown) describes extension
 points; [next assignments](../HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment)
 retain Byrdonis Nest's egg/hatch lifecycle and Luminous Choir's dependencies.

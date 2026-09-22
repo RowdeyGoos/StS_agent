@@ -85,7 +85,7 @@ those external adapters or certify every character/item permutation.
 ### HF-45 — Encode public decisions without dropping legal choices
 
 - **Depends on:** HF-44's versioned public view.
-- **Implement:** implement actor encoders and candidate scoring for every
+- **Implement:** build actor encoders and candidate scoring for every
   supported action/resource family using HF-44. Derive capacities and categorical
   vocabularies from reachable states rather than the retired fixed limits. Version
   the representation and checkpoints; keep private identifiers and seeds out of model features.
@@ -97,7 +97,7 @@ those external adapters or certify every character/item permutation.
 ### HF-46 — Carry full-run semantics through datasets and artifacts
 
 - **Depends on:** HF-44/45.
-- **Implement:** implement trajectories, policy datasets and reports to
+- **Implement:** record trajectories, policy datasets and reports to
   retain the new decisions, build/rules identity, real victory/defeat and truncation.
   Preserve public history/private diagnostics separation, held-out splits and
   cancellation-safe publication. Never relabel structural fixtures as real runs.
@@ -109,7 +109,7 @@ those external adapters or certify every character/item permutation.
 ### HF-47 — Deliver full-game agent execution and CLI
 
 - **Depends on:** HF-44–46 for the delivered adapter.
-- **Implement:** implement agent execution, bounded workers and recording around
+- **Implement:** add agent execution, bounded workers and recording around
   the full engine and HF-44–46 adapters. Reuse `sts-headless-play` for direct gameplay;
   add full-run configuration to the agent-facing path without another simulator.
   Include a public-only chooser for every legal decision family.

@@ -39,27 +39,27 @@ into validation of changed code.
   separate physical offers through modifiers, choices, rerolls and JSON restoration.
   Slippery Bridge candidate filtering uses native rarity/Eternal eligibility;
   an empty deck is correctly ineligible, not a missing fallback. Native reward
-  hook vectors cover 135 isolated contexts. [Rules and evidence](../HEADLESS_ENGINE.md#duplicate-card-reward-choices).
+  hook vectors cover 135 isolated contexts. [Rules and evidence](HEADLESS_ENGINE_2026_09_22.md#duplicate-card-reward-choices).
   Composed native combat and complete-run differential acceptance remain next.
 
 - **2026-09-19 — Glory campaign integration:** all 18 solo A0 encounters now enter
   full generated campaigns from either Act 1 region, through Hive and Glory’s
   Ancient/map/events to the Architect and explicit run victory. Native map and
   construction vectors, source-backed ending rules and JSON regressions cover the
-  implementation. [Scope and evidence](../HEADLESS_ENGINE.md#generated-campaign-through-glory).
+  implementation. [Scope and evidence](HEADLESS_ENGINE_2026_09_22.md#generated-campaign-through-glory).
   Native whole-run differential acceptance remains open.
 
 - **2026-09-19 — generated campaign through Hive:** both Act 1 regions now continue
   into Hive’s Ancient, native map, encounters, events, rewards and boss. Act history,
   global event/floor ownership and Spoils Map’s hourglass/600-gold quest continue
-  through JSON saves. [Scope and evidence](../HEADLESS_ENGINE.md#generated-campaign-through-hive).
+  through JSON saves. [Scope and evidence](HEADLESS_ENGINE_2026_09_22.md#generated-campaign-through-hive).
   Whole-run native differential acceptance remains open.
 
 - **2026-09-19 — all solo events:** all 66 regular/Ancient event models are
   implemented, including the existing Neow path; deprecated placeholders are
   excluded. Custom interactions, training timeout, event combat extra rewards,
   17 event cards, 27 relics and owned page/reward continuations are covered by
-  source-backed regression tests. [Current scope and usage](../HEADLESS_ENGINE.md#all-solo-events-across-acts).
+  source-backed regression tests. [Current scope and usage](HEADLESS_ENGINE_2026_09_22.md#all-solo-events-across-acts).
   Live/native differential acceptance remains open.
 
 - **2026-09-19 — foreign acquisition enabled:** all 320 ordinary foreign cards are
@@ -74,7 +74,7 @@ into validation of changed code.
   pickup choices. Generated runs use complete ordinary/merchant relic pools.
   Kaleidoscope requires foreign card catalogs absent from the default environment;
   curse generation and native pool fidelity retain declared restrictions.
-  See [the relic guide](../HEADLESS_ENGINE.md#relics) and
+  See [the relic guide](HEADLESS_ENGINE_2026_09_22.md#relics) and
   [validation record](../evidence/relics_2026_09_13.md). HF-25's reachable solo rule
   implementation is covered; dependent content and differential acceptance remain.
 
@@ -962,7 +962,7 @@ Dependencies and acceptance cases are in the linked task.
   implemented. Remaining acceptance: complete dependent potion/curse/character
   catalogs, complete runtime acquisition eligibility and differential evidence.
   Native generation weights/shared depletion are implemented in the native profile.
-  [Implementation and exact limits](../HEADLESS_ENGINE.md#relics).
+  [Implementation and exact limits](HEADLESS_ENGINE_2026_09_22.md#relics).
 
 - **Depends on:** HF-01/24 and mechanic-specific tasks.
 - **Implement:** per-ID relic tickets covering combat triggers, persistent counters,
@@ -983,7 +983,7 @@ Dependencies and acceptance cases are in the linked task.
   Generated routes and potion-granting events use the full ordinary pool. Authored
   fixture pools remain explicit. Other-character potions, native unlock/RNG parity
   and unimplemented granting events remain outside this acceptance.
-  [Guide](../HEADLESS_ENGINE.md#potions) · [Evidence](../evidence/potions_2026_09_14.md).
+  [Guide](HEADLESS_ENGINE_2026_09_22.md#potions) · [Evidence](../evidence/potions_2026_09_14.md).
 
 - **Depends on:** HF-04/06/07/09/15.
 - **Implement:** potion instances and slots/capacity, legal use contexts and targets,
@@ -1004,7 +1004,7 @@ Dependencies and acceptance cases are in the linked task.
   Generated routes and potion-granting events use the full ordinary pool. Authored
   fixture pools remain explicit. Other-character potions, native unlock/RNG parity
   and unimplemented granting events remain outside this acceptance.
-  [Guide](../HEADLESS_ENGINE.md#potions) · [Evidence](../evidence/potions_2026_09_14.md).
+  [Guide](HEADLESS_ENGINE_2026_09_22.md#potions) · [Evidence](../evidence/potions_2026_09_14.md).
 
 - **Depends on:** HF-01/26 and the relevant effect/status/card primitives.
 - **Implement:** per-ID cases for damage, block, healing, attributes/statuses,
@@ -1531,7 +1531,7 @@ complete Act 1 map generation match direct assembly reference vectors. Lobby act
 selection and unlock/discovery histories remain outside that profile. Map
 generation and progression are now implemented for Hive and Glory, through the
 Architect ending. See [initialization evidence](../evidence/native_initialization_2026_09_14.md)
-and [campaign evidence](../HEADLESS_ENGINE.md#generated-campaign-through-glory).
+and [campaign evidence](HEADLESS_ENGINE_2026_09_22.md#generated-campaign-through-glory).
 
 1. **HF-05B is implemented for the declared all-unlocked solo profile:** 161 relic
    predicates, merchant filters, global versus caller bag exclusions, Dingy Rug

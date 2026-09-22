@@ -91,5 +91,5 @@ review overlapped, so separate phase durations were not measured.
 Private run schema is `headless_run_state_v17`, event profile
 `supported_events_all_unlocked_v6`, and combat schema remains v7 with a new content
 fingerprint. Older private snapshots reject; no bridge/projection changes are
-required. See the [engine guide](../HEADLESS_ENGINE.md#byrdonis-nest-and-hatch) and
+required. See the [engine guide](../archive/HEADLESS_ENGINE_2026_09_22.md#byrdonis-nest-and-hatch) and
 [remaining implementation queue](../HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment).

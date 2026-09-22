@@ -101,5 +101,5 @@ combat history; older private run schemas reject. Combat remains v6. The default
 event progression profile is `supported_events_all_unlocked_v4`. Public adapters,
 projections and bridge code are unchanged.
 
-See the [engine guide](../HEADLESS_ENGINE.md#dense-vegetation-and-event-combat) and
+See the [engine guide](../archive/HEADLESS_ENGINE_2026_09_22.md#dense-vegetation-and-event-combat) and
 [next implementation assignments](../HEADLESS_FULL_GAME_IMPLEMENTATION.md#next-bounded-implementation-assignment).

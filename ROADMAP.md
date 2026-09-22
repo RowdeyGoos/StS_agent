@@ -81,7 +81,9 @@ Use the faithful full-run engine to develop stronger policy/value
 models and optional tactical/strategic search over shared legal candidates.
 Expand content and certify performance under the pinned target, public-information
 boundary and declared compute budget. See the
-[long-term architecture](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md) for design detail.
+[target](docs/TARGET.md) for current evaluation requirements and the
+[archived architecture plan](docs/archive/LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md)
+for historical design detail.
 
 Update this file when priorities change, not after every test run. For substantial
 features, use available phase timings to check whether the streamlined process

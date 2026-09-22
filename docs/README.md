@@ -18,7 +18,7 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Generic event architecture and coverage | [Generic events](GENERIC_EVENTS.md), [coverage](EVENT_COVERAGE.md), [all-event research map](EVENT_INTERACTION_MAP.md) |
 | Full-game headless implementation tasks | [Current implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Headless game logic and architecture | [Game engine](HEADLESS_ENGINE.md) |
-| Full-game scope and research destination | [Target](TARGET.md), relevant sections of [long-term architecture](LONG_TERM_ARCHITECTURE_ROADMAP.md) |
+| Agent-evaluation scope and information boundary | [Target](TARGET.md) |
 | Delegated work, when needed | [Multi-agent guide](MULTI_AGENT_EXECUTION.md) |
 
 ## References and results
@@ -30,7 +30,9 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
   earlier supporting evidence.
 - Build identity: [game manifest guide](../manifests/game-builds/README.md),
   [current bridge release](../bridge/Sts2AgentBridge/releases/current/README.md).
-- Historical contracts, plans, reviews and results: [archive index](archive/README.md).
+- Historical contracts, plans, reviews and results: [archive index](archive/README.md),
+  including the [engine chronology](archive/HEADLESS_ENGINE_2026_09_22.md) and
+  [earlier architecture plan](archive/LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md).
 - Profile work: read the [user-data boundary](LIVE_DEVELOPMENT.md#user-data-boundary)
   only when that work is explicitly requested.
 

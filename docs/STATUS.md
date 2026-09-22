@@ -118,7 +118,7 @@ the selected child effect and map return are verified.
 | Initial event-option policy | `--event-option` chooses an exact legal first option and stops if absent/illegal; subsequent actions use first-legal policy |
 | Results acknowledgment | Pandora's Box nine-card screen Confirm/map passed; preceding automatic transformations are not certified |
 | Legacy simulator/actor pipelines | Retired 2026-09-22; historical acceptance remains archival. Current engine and production bridge retained; full-game public adapters are HF-44–47. |
-| Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): all five solo characters at A0–A10 through Overgrowth or Underdocks, Hive, Glory and the Architect, using shared rules and private JSON continuation. Existing native campaign comparisons cover Ironclad; the four added characters have native starter/potion probes and boosted A0/A10 Python campaign wins. [Character evidence and remaining limits](HEADLESS_ENGINE.md#playable-characters). |
+| Headless game engine | [Independent gameplay package](HEADLESS_ENGINE.md): all five solo characters at A0–A10 through Overgrowth or Underdocks, Hive, Glory and the Architect, using shared rules and private JSON continuation. Selected native campaigns cover Ironclad and all four added characters, including boosted A0/A10 victories with Python JSON continuation replay. [Character evidence and remaining limits](HEADLESS_ENGINE.md#playable-characters). |
 
 One production bridge in `apps/bridge/` combines shared components and original
 core adapters. Modules remain exclusive until native reconciliation and successful

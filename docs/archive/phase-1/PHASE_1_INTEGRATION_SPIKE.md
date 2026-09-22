@@ -10,7 +10,7 @@
 - **Decision owners/reviewers:** `TBD`
 
 This document operationalizes Phase 1 of the
-[`LONG_TERM_ARCHITECTURE_ROADMAP.md`](../../LONG_TERM_ARCHITECTURE_ROADMAP.md).
+[`LONG_TERM_ARCHITECTURE_ROADMAP.md`](../LONG_TERM_ARCHITECTURE_ROADMAP_2026_09_22.md).
 It is an evidence plan, not an implementation design. Its purpose is to decide,
 with reproducible observations, which live-game bridge should establish semantic
 ground truth and whether the fast backend should be Python, engine-hosted, or a
