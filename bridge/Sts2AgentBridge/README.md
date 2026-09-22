@@ -24,7 +24,7 @@ Start with [support and known limits](../../docs/STATUS.md). This guide owns
 | Event combat continuation | `/probe/event-combat-v2/public/decision`; owned child `/probe/event-combat-v2/public/item-decision` and `item-action` |
 | Combat discard/exhaust choice | `/probe/combat-choice-v1/public/decision` and `action` |
 | Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
-| Shop and standard room flows | `/probe/room-flows-v1/public/decision` and `action` |
+| Shop, standard room flows and additional rest options | `/probe/room-flows-v1/public/decision` and `action` |
 | Standalone card selection | `/card-selection-v1/parent`, `parent/action`, `child`, `child/action` |
 | Generic events and their children | `/probe/generic-event-v7/public/decision` and `action` |
 
@@ -251,6 +251,57 @@ accepted and reconciled parent/child counts, including on failure.
 Recognized read failures retain `read_diagnostic` with the fixed runtime code and
 bounded stage timings described above. Raw response bodies and exception/native
 data are not retained. Diagnostics do not relax stop/cleanup behavior.
+
+## Rest options
+
+Use `--capability rest --rest-option lift|kindle|dig|cook|clone|hatch` with the
+unified client's usual release/installation arguments. These additions are
+implemented and validated offline in source; the existing release is unchanged.
+Build/package the combined bridge before installing through the normal workflow.
+
+Cook removes the first two removable originals by default. Add
+`--rest-cook-slots 0 3` to choose specific **zero-based original deck slots**, in
+increasing order. The chosen pair must be advertised as legal; unavailable pairs
+stop before input. Dig handles one native deck/enchantment pickup selector by
+choosing the first eligible originals up to its native maximum (at most three).
+Other pickup follow-up surfaces stop without attempting unrelated input.
+
+The existing room-flow routes select `flow_kind: rest`, `version: rest_v2`.
+Ready observations contain `phase: choose_option`, `decision_id`, `options`
+(`action_id`, `counter`, `enabled`, `amount`), `cards` (`slot`, `key`, `upgrade`,
+`removable`), `legal_actions`, and null `result`. The digest binds the session,
+option order/counters/amounts/flags and public card list. Actions are `lift`,
+`kindle`, `dig`, `clone`, `hatch`, or `cook:<first-slot>:<second-slot>`.
+Cook publishes all legal pairs within the 64-card starting-deck bound; selected
+native models are bound separately to reject same-valued replacements.
+
+| Option | Reconciled effect | Public counter |
+| --- | --- | --- |
+| Lift | Same Girya, +1 | Lifts used |
+| Kindle | Same Pumpkin Candle, +5 | Remaining combat count |
+| Dig | Exact new relic and completed native pickup callback | Relic count |
+| Cook | Exact selected originals removed and +9 max HP | Max HP |
+| Clone | Copies of all Clone-enchanted originals, verified through native insertion results; add-time upgrades allowed | Deck count; `amount` is the number of copies |
+| Hatch | Exact Byrdpip obtained and every original egg transformed into Byrd Swoop | Relic count |
+
+Accepted actions return `waiting`/`action_waiting` until their native effect and
+`AfterSelectingOptionAsync` finish. Hooks must detach before `complete` is
+published. Completion has empty options/cards/actions and a `result` containing
+the accepted `decision_id`, `action_id`, `before`, and `after`. The client returns
+`handoff: rest`; it does not press Proceed or consume additional Miniature Tent
+options. A stale binding, wrong effect, failed task, lost receipt or failed cleanup
+stops without retrying the action. Native Cook cancellation is not exposed.
+
+`rest_v2` replaces the unreleased Lift/Kindle-only `rest_v1` contract to add card
+identities, target pairs and non-counter effects. Other room-flow versions retain
+their existing semantics.
+
+Focused checks: `--component rooms --suite test` covers core/native and Python/C#
+integration; `--component rooms --suite python` covers controller failures.
+The unified tests and `shared_client:socket` exercise the public parser, client
+and router for all six actions. Native fixtures use inert game surfaces with real
+Harmony; the existing pickup fixtures cover the shared card-input driver.
+Production builds use pinned game references. These are not live gameplay results.
 
 ## Shop policies
 

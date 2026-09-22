@@ -223,6 +223,9 @@ class Gate:
                 command += ["--group", group]
             event_commands.append(("events:host_native", command))
         self.run_parallel(event_commands)
+        if self.component in ("all", "rooms") and self.selected("rooms:rest_host_native"):
+            self.run("rooms:rest_host_native", [sys.executable, "-B", str(self.source / "components/rooms/rest/host_tests/run_rest_integration.py"),
+                self.dotnet, str(self.build("components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj"))])
         if self.component in ("all", "cards"):
             if self.selected("cards:combat_host_native"):
                 self.run("cards:combat_host_native", [sys.executable, "-B", str(self.source / "components/cards/host_tests/run_combat_choice.py"),

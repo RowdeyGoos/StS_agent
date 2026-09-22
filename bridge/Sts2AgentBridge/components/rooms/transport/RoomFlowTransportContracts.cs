@@ -4,4 +4,5 @@ public enum RoomFlowSelection
 {
     Shop = 1,
     Event = 2,
+    Rest = 3,
 }

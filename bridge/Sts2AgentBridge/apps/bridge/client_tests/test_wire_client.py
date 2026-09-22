@@ -9,6 +9,18 @@ from run_live import core_summary, retain_read_diagnostic
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_rest_actions_and_exact_cook_pair(self):
+        route = '/probe/room-flows-v1/public/action'
+        token = bytearray(b'a' * 64)
+        for action in ('lift', 'kindle', 'dig', 'clone', 'hatch', 'cook:0:2', 'cook:1:63'):
+            body = bytearray(json.dumps(dict(decision_id='b' * 64, action_id=action)).encode())
+            request = build_request('POST', route, body, token)
+            self.assertIn(('X-Sts2-Action-Id: ' + action + '\r\n').encode(), request)
+        for action in ('cook', 'cook:2:0', 'cook:1:1', 'cook:00:1', 'cook:0:64', 'cook:0:1:2', 'Dig', 'dig:0'):
+            body = bytearray(json.dumps(dict(decision_id='b' * 64, action_id=action)).encode())
+            with self.assertRaises(ValueError):
+                build_request('POST', route, body, token)
+
     def test_read_failure_details_survive_host_failure_without_changing_counts(self):
         for event in (False, True):
             sent = []

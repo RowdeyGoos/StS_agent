@@ -79,4 +79,6 @@
   <Compile Include="../../../src/Sts2AgentBridge/Core/Transport/ProbeRequestParser.cs" />
   <Compile Include="Program.cs" /><Compile Include="../../../components/rooms/shop/tests/MultiplePurchaseFixture.cs" /><Compile Include="ShopSocketFixture.cs" />
   <Compile Include="EventBoundaryTests.cs" />
-</ItemGroup></Project>
+</ItemGroup><ItemGroup><Compile Include="../../../components/rooms/rest/core/RestV2Session.cs" /></ItemGroup>
+<ItemGroup><Compile Include="RestFlowTests.cs" /><Compile Include="RestSocketFixture.cs" /></ItemGroup>
+</Project>

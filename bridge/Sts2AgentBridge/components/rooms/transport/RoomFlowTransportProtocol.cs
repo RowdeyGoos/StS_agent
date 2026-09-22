@@ -170,8 +170,20 @@ internal static class RoomFlowTransportRequestParser
             return CanonicalIndexed(value, "collect:"u8, 255);
         if (selection == RoomFlowSelection.Event)
             return CanonicalIndexed(value, "choose:"u8, 7);
+        if (selection == RoomFlowSelection.Rest)
+            return RestAction(value);
         return value.SequenceEqual("inventory:close"u8) || value.SequenceEqual("leave"u8) ||
             CanonicalIndexed(value, "buy:card:"u8, 31) || CanonicalIndexed(value, "buy:potion:"u8, 31) || CanonicalIndexed(value, "buy:relic:"u8, 31) || CanonicalIndexed(value, "remove:"u8, 511) || CanonicalIndexed(value,"discard:"u8,7);
+    }
+
+    private static bool RestAction(ReadOnlySpan<byte> value)
+    {
+        if (value.SequenceEqual("lift"u8) || value.SequenceEqual("kindle"u8) || value.SequenceEqual("dig"u8) || value.SequenceEqual("clone"u8) || value.SequenceEqual("hatch"u8)) return true;
+        if (!value.StartsWith("cook:"u8)) return false;
+        var slots = value[5..]; int split = slots.IndexOf((byte)':');
+        if (split < 1 || !CanonicalIndexed(slots[..split], ReadOnlySpan<byte>.Empty, 63) || !CanonicalIndexed(slots[(split + 1)..], ReadOnlySpan<byte>.Empty, 63)) return false;
+        int Number(ReadOnlySpan<byte> digits) { int n = 0; foreach (byte b in digits) n = n * 10 + b - (byte)'0'; return n; }
+        return Number(slots[..split]) < Number(slots[(split + 1)..]);
     }
 
     private static bool CanonicalIndexed(ReadOnlySpan<byte> value, ReadOnlySpan<byte> prefix, int maximum)

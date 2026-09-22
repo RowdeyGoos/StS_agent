@@ -1,4 +1,4 @@
-"""Bounded shop/event controllers over injected exchange; no I/O or retained text."""
+"""Bounded shop/event/rest controllers over injected exchange; no I/O or retained text."""
 from __future__ import annotations
 
 import hashlib
@@ -44,6 +44,11 @@ def stable_key(value: Any) -> bool:
 def action(flow: str, value: Any) -> bool:
     if type(value) is not str:
         return False
+    if flow == "rest":
+        if value in ("lift", "kindle", "dig", "clone", "hatch"):
+            return True
+        parts = value.split(":")
+        return len(parts) == 3 and parts[0] == "cook" and all(p.isascii() and p.isdecimal() and str(int(p)) == p for p in parts[1:]) and 0 <= int(parts[1]) < int(parts[2]) < 64
     if flow == "shop" and value in ("inventory:close", "leave"):
         return True
     prefix, maximum = ("buy:relic:" if value.startswith("buy:relic:") else "buy:potion:" if value.startswith("buy:potion:") else "buy:card:", 31) if flow == "shop" else ("choose:", 7)
@@ -78,7 +83,7 @@ def decode(body: bytearray, flow: str) -> dict[str, Any]:
         require(json.dumps(value, ensure_ascii=True, allow_nan=False, separators=(",", ":")).encode("ascii") == raw)
         require(type(value) is dict)
         require(type(value.get("schema_version")) is int and value["schema_version"] == 1)
-        require(value.get("protocol") == "room_flows_v1" and value.get("version") == ("shop_v6" if flow=="shop" else flow + "_v1") and value.get("flow_kind") == flow)
+        require(value.get("protocol") == "room_flows_v1" and value.get("version") == ("shop_v6" if flow=="shop" else "rest_v2" if flow=="rest" else flow + "_v1") and value.get("flow_kind") == flow)
         require(hex_id(value.get("session_nonce"), 32))
         require(type(value.get("parent_ordinal")) is int and value["parent_ordinal"] == 1)
         status = value.get("status")
@@ -94,6 +99,8 @@ def decode(body: bytearray, flow: str) -> dict[str, Any]:
             pass  # Fixed apply failure, distinct from an observation.
         elif flow == "shop":
             _shop(value)
+        elif flow == "rest":
+            _rest(value)
         elif status == "resolved":
             keys(value, COMMON + ("decision_id", "action_id", "result"))
             require(hex_id(value["decision_id"], 64) and action(flow, value["action_id"]) and value["result"] == "map_handoff")
@@ -104,6 +111,113 @@ def decode(body: bytearray, flow: str) -> dict[str, Any]:
         raise
     except (ValueError, TypeError, KeyError, UnicodeError, OverflowError, RecursionError):
         raise InvalidResponse() from None
+
+
+def rest_kind(action_id):
+    return action_id.split(":")[0]
+
+
+def rest_delta(action_id, amount=0):
+    return {"lift": 1, "kindle": 5, "dig": 1, "hatch": 1, "cook": 9, "clone": amount}[rest_kind(action_id)]
+
+
+def rest_counter(kind, value):
+    return integer(value, {"lift": 2, "kindle": 2147483642, "dig": 127, "hatch": 127, "clone": 64, "cook": 2147483638}[kind]) and (kind != "cook" or value > 0)
+
+
+def rest_actions(options, cards):
+    legal = []
+    for option in options:
+        if not option["enabled"]:
+            continue
+        if option["action_id"] != "cook":
+            legal.append(option["action_id"])
+        else:
+            slots = [c["slot"] for c in cards if c["removable"]]
+            legal.extend(f"cook:{a}:{b}" for i, a in enumerate(slots) for b in slots[i + 1:])
+    return legal
+
+
+def rest_digest(nonce, options, cards=()):
+    text = "rest_v2;" + nonce + ";"
+    for option in options:
+        text += option["action_id"] + ";" + str(option["counter"]) + ";" + ("1" if option["enabled"] else "0") + ";" + str(option["amount"]) + ";"
+    text += "|"
+    for card in cards:
+        text += str(card["slot"]) + ";" + card["key"] + ";" + str(card["upgrade"]) + ";" + ("1" if card["removable"] else "0") + ";"
+    return hashlib.sha256(text.encode("ascii")).hexdigest()
+
+
+def _rest(v):
+    keys(v, COMMON + ("phase", "decision_id", "options", "cards", "legal_actions", "result"))
+    require(v["status"] in ("ready", "waiting", "unsupported", "complete"))
+    require(type(v["options"]) is list and len(v["options"]) <= 6 and type(v["legal_actions"]) is list)
+    require(type(v["cards"]) is list and len(v["cards"]) <= 64)
+    for slot, card in enumerate(v["cards"]):
+        keys(card, ("slot", "key", "upgrade", "removable"))
+        require(type(card["slot"]) is int and card["slot"] == slot and stable_key(card["key"]) and integer(card["upgrade"]) and type(card["removable"]) is bool)
+    if v["status"] == "ready":
+        require(v["phase"] == "choose_option" and v["result"] is None)
+        seen = set()
+        for option in v["options"]:
+            keys(option, ("action_id", "counter", "enabled", "amount"))
+            a = option["action_id"]
+            require(a in ("lift", "kindle", "dig", "clone", "hatch", "cook") and a not in seen and type(option["enabled"]) is bool)
+            require(rest_counter(a, option["counter"]) and integer(option["amount"], 64) and (a == "clone" or option["amount"] == 0))
+            seen.add(a)
+        legal = rest_actions(v["options"], v["cards"])
+        require(bool(legal) and v["legal_actions"] == legal and v["decision_id"] == rest_digest(v["session_nonce"], v["options"], v["cards"]))
+    else:
+        require(v["options"] == [] and v["cards"] == [] and v["legal_actions"] == [] and v["decision_id"] == "")
+        if v["status"] == "complete":
+            r = v["result"]
+            keys(r, ("decision_id", "action_id", "before", "after"))
+            require(v["phase"] == "complete" and hex_id(r["decision_id"], 64) and action("rest", r["action_id"]))
+            require(rest_counter(rest_kind(r["action_id"]), r["before"]) and integer(r["after"]))
+            require(0 <= r["after"] - r["before"] <= 64 if r["action_id"] == "clone" else r["after"] == r["before"] + rest_delta(r["action_id"]))
+        else:
+            require(v["result"] is None and v["phase"] in (("unknown", "action_waiting") if v["status"] == "waiting" else ("unknown",)))
+
+
+def run_rest(exchange, option, *, cook_slots=None, clock=time.monotonic, sleep=time.sleep):
+    """One explicit option; Cook precommits an exact pair of original deck slots."""
+    if option not in ("lift", "kindle", "dig", "clone", "hatch", "cook"):
+        raise ValueError("Invalid rest option.")
+    if cook_slots is not None and (option != "cook" or type(cook_slots) not in (tuple, list) or len(cook_slots) != 2 or not all(integer(i, 63) for i in cook_slots) or cook_slots[0] >= cook_slots[1]):
+        raise ValueError("Cook requires two increasing deck slots.")
+    controller = Controller("rest", exchange, clock, sleep)
+    pending = None
+    before = delta = None
+    try:
+        while True:
+            v = controller.call()
+            if v["status"] == "waiting":
+                require(v["phase"] == ("unknown" if pending is None else "action_waiting"))
+                controller.pause()
+            elif v["status"] == "ready":
+                require(pending is None)
+                chosen = option
+                if option == "cook":
+                    choices = [a for a in v["legal_actions"] if a.startswith("cook:")]
+                    chosen = f"cook:{cook_slots[0]}:{cook_slots[1]}" if cook_slots is not None else (choices[0] if choices else "cook")
+                if chosen not in v["legal_actions"]:
+                    raise Stop("rest_option_unavailable")
+                offer = next(o for o in v["options"] if o["action_id"] == option)
+                before, delta = offer["counter"], rest_delta(chosen, offer["amount"])
+                pending = controller.receipt(v, chosen)
+            elif v["status"] == "complete":
+                r = v["result"]
+                require(pending == (r["decision_id"], r["action_id"]) and before == r["before"] and r["after"] == before + delta)
+                controller.reconciled = 1
+                return {**controller.summary("passed"), "action": r["action_id"], "before": before, "after": r["after"], "handoff": "rest"}
+            else:
+                raise InvalidResponse()
+    except Stop as error:
+        return controller.summary("failed", error.code)
+    except InvalidResponse:
+        return controller.summary("failed", "invalid_response")
+    except Exception:
+        return controller.summary("failed", "internal_failure")
 
 
 def _shop(v: dict[str, Any]) -> None:

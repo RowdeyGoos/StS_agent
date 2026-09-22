@@ -72,8 +72,8 @@ internal static class BridgeRequestParser
                 Text(head, items.DecisionOffset, items.DecisionLength), Text(head, items.ActionOffset, items.ActionLength));
             return true;
         }
-        // Shop and event use different action alphabets on the same room routes.
-        foreach (var selection in new[] { RoomFlowSelection.Shop, RoomFlowSelection.Event })
+        // Room capabilities use distinct action alphabets on shared routes.
+        foreach (var selection in new[] { RoomFlowSelection.Shop, RoomFlowSelection.Event, RoomFlowSelection.Rest })
             if (RoomFlowTransportRequestParser.TryParse(head, selection, out var rooms))
             {
                 request = new(Capability.Rooms, path, rooms.IsPost, rooms.AuthorizationOffset, 64,

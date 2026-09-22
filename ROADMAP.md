@@ -38,8 +38,8 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 [Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
 owns the missing-feature list, separately from implemented capabilities awaiting
-live coverage. The confirmed gaps include Dig/Lift/Cook/Clone/Kindle/Hatch rest
-actions and wider reward-screen bounds. Unsupported selector/pickup shapes without a concrete caller
+live coverage. The confirmed gaps include rest selector cancellation,
+additional Dig pickup follow-ups and wider reward-screen bounds. Unsupported selector/pickup shapes without a concrete caller
 are explicitly separated from that list; multi-card Smith is not a native gameplay
 requirement in the pinned assembly. This documentation cleanup does not
 promote every unsupported variant into an immediate priority.

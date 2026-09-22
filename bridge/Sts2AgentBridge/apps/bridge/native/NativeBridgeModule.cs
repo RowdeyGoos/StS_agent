@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Sts2AgentBridge.Rooms.Rest;
 using Sts2AgentBridge.Successors.ItemV1.Native;
 using Sts2AgentBridge.Successors.ItemWireV1;
 using Sts2AgentBridge.Successors.RoomFlowsV1;
@@ -81,6 +82,14 @@ internal sealed class NativeBridgeModule : IBridgeModule
                     _roomSelection = RoomFlowSelection.Shop;
                     var shop = new ShopV1Session(_nonce, shopNative); _cleanup = shop.Dispose;
                     rooms = new RoomFlowWireService(_nonce, shop);
+                }
+                else if (PinnedRestV2NativeAdapter.IsAvailable)
+                {
+                    if (!PinnedGenericEventHarmonyGuard.Verify()) throw new InvalidOperationException("Native dependency mismatch.");
+                    _roomSelection = RoomFlowSelection.Rest;
+                    var restNative = new PinnedRestV2NativeAdapter(); _cleanup = restNative.Dispose;
+                    var rest = new RestV2Session(_nonce, restNative); _cleanup = rest.Dispose;
+                    rooms = new RoomFlowWireService(_nonce, rest);
                 }
                 else
                 {

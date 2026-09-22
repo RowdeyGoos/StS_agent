@@ -26,6 +26,7 @@ internal static partial class Program
         try
         {
             if (args.Length == 2 && args[0] == "--serve-shop") return ServeShop(args[1]);
+            if (args.Length == 2 && args[0] == "--serve-rest") return ServeRest(args[1]);
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
             if (args.SequenceEqual(new[] { "--serve-read-timeout" })) return Serve(readTimeout:true);
             if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
@@ -38,7 +39,7 @@ internal static partial class Program
             if (args.SequenceEqual(new[] { "--serve-special-card" })) return Serve(true,true,specialCard:true);
             if (args.SequenceEqual(new[] { "--serve-resume-items" })) return Serve(eventResume:true,resumeItems:true);
             if (args.SequenceEqual(new[] { "--serve-event-resume" })) return Serve(eventResume:true);
-            EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
+            RestFlowTests.Run(Check); EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
@@ -276,6 +277,10 @@ internal static partial class Program
     }
     private static void Parser()
     {
+        foreach (string action in new[] { "lift", "kindle", "dig", "clone", "hatch", "cook:0:2", "cook:1:63" })
+            Check(BridgeRequestParser.TryParse(Head("/probe/room-flows-v1/public/action", action), out var rest) && rest.Capability == Capability.Rooms && rest.Action == action, "rest request grammar");
+        foreach (string action in new[] { "lift:0", "kindle:0", "cook", "cook:2:0", "cook:0:0", "cook:00:1", "cook:0:64", "Lift", "kindle ", "lift\r\nOrigin: evil" })
+            Check(!BridgeRequestParser.TryParse(Head("/probe/room-flows-v1/public/action", action), out _), "rest request rejected");
         string lineage="X-Sts2-Child-Ordinal: 1\r\nX-Sts2-Parent-Decision-Id: "+Decision+"\r\nX-Sts2-Parent-Action-Id: choose:0\r\n";
         foreach(string action in new[]{"cancel","confirm_abandon","tool:small","tool:big","reveal:0","reveal:120","reward:claim:7","reward:collect:7","reward:open:7","reward:choose:4","reward:skip_card","dismiss"}) {
             Check(BridgeRequestParser.TryParse(Head("/probe/generic-event-v7/public/action",action,extra:lineage),out var parsed)&&parsed.IsPost,"sphere child header "+action);

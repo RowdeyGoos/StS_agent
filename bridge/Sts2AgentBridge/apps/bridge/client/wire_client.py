@@ -41,9 +41,12 @@ def build_request(method: str, route: str, body: bytearray | None, token: bytear
         require(type(value) is dict and set(value) == expected, "action_fields")
         require(type(value["decision_id"]) is str and re.fullmatch("[0-9a-f]{64}", value["decision_id"]), "decision")
         require(type(value["action_id"]) is str and (route != "/probe/room-flows-v1/public/action" and re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
-                route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:(?:card|potion|relic):(?:[0-9]|[12][0-9]|3[01])|remove:(?:[0-9]|[1-9][0-9]|[1-4][0-9]{2}|50[0-9]|51[01])|discard:[0-7]|inventory:close|leave|choose:[0-7])", value["action_id"]) or
+                route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:(?:card|potion|relic):(?:[0-9]|[12][0-9]|3[01])|remove:(?:[0-9]|[1-9][0-9]|[1-4][0-9]{2}|50[0-9]|51[01])|discard:[0-7]|inventory:close|leave|choose:[0-7]|lift|kindle|dig|clone|hatch|cook:(?:[0-9]|[1-5][0-9]|6[0-3]):(?:[0-9]|[1-5][0-9]|6[0-3]))", value["action_id"]) or
                 event and type(value.get("child")) is dict and re.fullmatch(
                     r"(?:tool:(?:small|big)|reward:(?:(?:claim|collect|open):[0-7]|choose:[0-4]|skip_card))", value["action_id"])), "action")
+        if route == "/probe/room-flows-v1/public/action" and value["action_id"].startswith("cook:"):
+            _, first, second = value["action_id"].split(":")
+            require(int(first) < int(second), "cook_slots")
         fields = "X-Sts2-Decision-Id: " + value["decision_id"] + "\r\nX-Sts2-Action-Id: " + value["action_id"] + "\r\n"
         child = value.get("child")
         if child is not None:

@@ -29,7 +29,7 @@ public static class RoomFlowIdentity
 {
     public static bool IsNonce(string? value) => IsLowerHex(value, 32);
     public static bool IsDecisionId(string? value) => IsLowerHex(value, 64);
-    public static bool IsFlowKind(string? value) => value is "shop" or "event";
+    public static bool IsFlowKind(string? value) => value is "shop" or "event" or "rest";
 
     public static bool IsLowerHex(string? value, int length)
     {
@@ -41,6 +41,15 @@ public static class RoomFlowIdentity
 
     public static bool IsActionId(string? flowKind, string? value)
     {
+        if (flowKind == "rest") {
+            if (value is "lift" or "kindle" or "dig" or "clone" or "hatch") return true;
+            var parts = value?.Split(':');
+            return parts is { Length: 3 } && parts[0] == "cook" &&
+                int.TryParse(parts[1], out int first) && int.TryParse(parts[2], out int second) &&
+                first >= 0 && first < second && second < 64 &&
+                first.ToString(System.Globalization.CultureInfo.InvariantCulture) == parts[1] &&
+                second.ToString(System.Globalization.CultureInfo.InvariantCulture) == parts[2];
+        }
         if (flowKind == "shop" && value is "inventory:close" or "leave") return true;
         string prefix;
         int maximum;

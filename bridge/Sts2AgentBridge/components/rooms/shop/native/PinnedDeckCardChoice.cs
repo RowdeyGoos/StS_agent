@@ -36,6 +36,7 @@ internal sealed class PinnedDeckCardChoice {
     private int _selected;
     private bool _confirmed,_failed;
     internal bool Completed=>!_failed&&_confirmed&&SelectedExactly();
+    internal bool ConfirmationDispatched=>_confirmed;
     internal bool OwnsForeground=>!_failed&&Valid(_screen)&&_overlays.ScreenCount==1&&ReferenceEquals(_overlays.Peek(),_screen);
     internal PinnedDeckCardChoice(Control screen,NOverlayStack overlays,IReadOnlyList<CardModel> domain,CardModel[] targets,Func<bool> context,EnchantmentModel? enchantment,int amount,int maximum) {
         _screen=screen;_overlays=overlays;_domain=domain.ToArray();_targets=targets.ToArray();_context=context;_enchantment=enchantment;_amount=amount;_maximum=maximum;
@@ -49,6 +50,9 @@ internal sealed class PinnedDeckCardChoice {
     internal void Advance() {
         Require(!_failed&&!_selection.IsFaulted&&!_selection.IsCanceled);
         if(_selection.IsCompleted){Require(Completed);return;}
+        // Native effects may finish before our independent CardsSelected waiter.
+        // Once confirmation was dispatched, observe only; the caller verifies effects.
+        if(_confirmed){Require(_context());return;}
         Require(OwnsForeground&&_context());
         if(!_screen.IsVisibleInTree())return;
         var grid=_screen.GetNodeOrNull<NCardGrid>("%CardGrid");Require(Valid(grid));

@@ -156,4 +156,5 @@
   <Target Name="RequirePinnedReferences" BeforeTargets="ResolveAssemblyReferences">
     <Error Condition="'$(STS2GameDataDir)' == ''" Text="STS2GameDataDir is required." />
   </Target>
+<ItemGroup><Compile Include="../../../components/rooms/rest/core/RestV2Session.cs" /><Compile Include="../../../components/rooms/rest/native/PinnedRestV2NativeAdapter.cs" /><Compile Include="../../../components/rooms/rest/native/RestNativeState.cs" /><Compile Include="../../../components/rooms/rest/native/RestNativeEffect.cs" /></ItemGroup>
 </Project>

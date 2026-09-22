@@ -33,7 +33,7 @@ are verified. Final Proceed does not erase earlier verified child results.
 | Combat → rewards → map | Bounded combat, gold/card/item rewards, card choice or Skip, actionable-map check | Both card policies demonstrated; no autonomous full-run acceptance |
 | Combat card choices | Owned discard/exhaust selections, including optional zero confirmation | Neow’s Fury zero/two-card choices and resumed victory demonstrated; other fixed/exhaust callers offline only |
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
-| Rest | Ordinary Heal/Proceed and Smith (one card) | Demonstrated. Six additional single-player actions are real but unsupported; see the native action table below. No multi-card Smith caller found |
+| Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch in source | Heal/Smith demonstrated. The six additional actions have offline fixtures/build coverage only; see the native action table and limits below |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Passive relics, capacity and other policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, then separate inventory close and Leave | Demonstrated through map return; removing a card does not itself leave the shop |
 | Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Implemented and offline tested; live coverage open. Other pickup callbacks are not generally supported |
@@ -42,20 +42,35 @@ are verified. Final Proceed does not erase earlier verified child results.
 
 These are actual options in the pinned game, with their enabling callers checked
 in native IL. Availability still depends on the current run. The bridge supports
-ordinary Heal and Smith; generic event selector support does not admit these other
-rest-site parents.
+ordinary Heal and Smith, plus the six additional single-player options in source.
+The new rest flow has its own native effect and selector checks.
 
 | Option | Native source / trigger | Native behavior | Bridge |
 | --- | --- | --- | --- |
 | Heal | Default rest option | Heal, then run rest hooks and any generated rewards | Ordinary Heal/Proceed demonstrated; relic-triggered follow-up rewards not covered by that result |
 | Smith | Default rest option | Select and upgrade **one** card | Supported; native cancellation is not exposed by the bridge |
-| Dig | Shovel | Obtain a relic directly | Not implemented |
-| Lift | Girya, fewer than three lifts | Increase its lift counter, granting Strength in later combats | Not implemented |
-| Cook | Meat Cleaver | Remove two cards, gain nine max HP; native selection can be canceled | Not implemented |
-| Clone | Pael’s Growth | Copy the deck’s Clone-enchanted cards | Not implemented |
-| Kindle | Pumpkin Candle | Add five to its remaining combat counter | Not implemented |
-| Hatch | Byrdonis Egg card | Obtain Byrdpip | Not implemented |
+| Dig | Shovel | Obtain a relic directly, including its pickup callback | Implemented in source; exact new relic and callback completion. One owned deck/enchantment selector of up to three cards; other follow-up surfaces stop |
+| Lift | Girya, fewer than three lifts | Increase its lift counter, granting Strength in later combats | Implemented in source; exact +1 and native task completion checked. Offline fixtures/build only; not released or live demonstrated |
+| Cook | Meat Cleaver | Remove two cards, gain nine max HP; native selection can be canceled | Implemented in source; exact requested original pair and +9 max HP. Cancellation remains unsupported |
+| Clone | Pael’s Growth | Copy the deck’s Clone-enchanted cards | Implemented in source; scoped native insertion results, including add-time upgrades |
+| Kindle | Pumpkin Candle | Add five to its remaining combat counter | Implemented in source; exact +5 and native task completion checked. Offline fixtures/build only; not released or live demonstrated |
+| Hatch | Byrdonis Egg card | Obtain Byrdpip and transform every egg into Byrd Swoop | Implemented in source; exact relic and all egg transformations |
 | Mend | Generated only with multiple players | Target and heal another player | Outside the current single-player bridge scope |
+
+The six new options use `rest_v2` on the existing room-flow routes. They are
+implemented and validated offline, **not released or live demonstrated**. A flow
+starts with at most 64 deck cards, executes one option, waits for the native effect
+and rest continuation, verifies hook removal, then returns at the rest site without
+pressing Proceed. Remaining Miniature Tent choices stay available for the next
+interaction. Cook precommits two original deck slots; the client defaults to the
+first two removable cards and accepts an explicit pair. Dig's one-selector pickup
+policy selects the first eligible originals up to the native maximum (at most
+three); arbitrary popup/reward/multiple-selector follow-ups remain unsupported.
+
+Validation covers real Harmony with inert native surfaces, Python/C# integration,
+shared-client loopback tests, and the affected shared card-input fixtures. These
+checks do not establish live animation or relic coverage.
+[Usage and contract](../bridge/Sts2AgentBridge/README.md#rest-options)
 
 **Smith correction:** its constructor sets `SmithCount = 1`. An assembly-wide
 IL scan found no call to `set_SmithCount` and no other write to its backing field
@@ -132,8 +147,9 @@ extend standalone rest/shop contracts.
 
 ### Confirmed game interactions outside current support
 
-- **Six additional single-player rest actions:** Dig, Lift, Cook, Clone, Kindle and
-  Hatch, with concrete enabling callers listed above. Mend belongs to multiplayer.
+- **Additional rest pickup follow-ups:** Dig supports one native deck/enchantment
+  selector of up to three cards. Other popup/reward/multiple-selector surfaces are
+  not supported. Mend belongs to multiplayer.
 - **Native selector cancellation at rest:** Smith and Cook explicitly allow it.
   The bridge does not expose cancel; this is a real optional interaction, not
   required to complete the ordinary successful Smith path.

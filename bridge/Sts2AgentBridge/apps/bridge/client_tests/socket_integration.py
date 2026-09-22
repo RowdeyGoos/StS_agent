@@ -18,6 +18,28 @@ sys.path.insert(0, str(ROOT / "components/rooms/host"))
 import room_flow_host
 
 
+def rest(action):
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-rest', action], stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        try:
+            result = room_flow_host.run_rest(client.item_exchange, action.split(":")[0], cook_slots=(0, 2) if action.startswith("cook:") else None)
+            assert result['status'] == 'passed' and result['handoff'] == 'rest', result
+            assert result['attempted'] == result['accepted'] == result['reconciled'] == 1, result
+            # A subsequent core read proves the room module relinquished ownership.
+            assert verify_map_handoff(client.exchange)['status'] == 'passed'
+        finally:
+            client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
+
+
 def combat(reward_policy=None, event_resume=False, resume_items=False, special_card=False, item_rewards=False, full_potions=False, replace_potions=False, capacity_potions=False, healing_relic=False, potion_policy="stop-on-full"):
     process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-healing-relic' if healing_relic else '--serve-capacity-potions' if capacity_potions else '--serve-replace-potions' if replace_potions else '--serve-full-potions' if full_potions else '--serve-combat-items' if item_rewards else '--serve-special-card' if special_card else '--serve-resume-items' if resume_items else '--serve-event-resume' if event_resume else '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -263,6 +285,12 @@ def main():
         shop({"potion_policy":"replace-first","purchase_policy":"potions","max_purchases":8},2,"replacement_potion",expected_potions=2,expected_discards=2,slots=["POTION_0","POTION_0"])
 
         read_timeout()
+        rest('lift')
+        rest('kindle')
+        rest('dig')
+        rest('clone')
+        rest('hatch')
+        rest('cook:0:2')
         combat()
         combat('first-card')
         combat('skip-card')

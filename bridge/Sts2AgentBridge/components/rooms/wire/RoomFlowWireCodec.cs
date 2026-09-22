@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using Sts2AgentBridge.Rooms.Rest;
 using Sts2AgentBridge.Successors.RoomFlowsV1.Event;
 using Sts2AgentBridge.Successors.RoomFlowsV1.Shop;
 
@@ -18,7 +19,7 @@ internal static class RoomFlowWireCodec
         {
             w.WriteStartObject();
             w.WriteNumber("schema_version", 1); S(w,"protocol","room_flows_v1");
-            S(w,"version",flow=="shop"?ShopV1Constants.Version:flow+"_v1"); S(w,"flow_kind",flow); S(w,"session_nonce",nonce);
+            S(w,"version",flow=="shop"?ShopV1Constants.Version:flow=="rest"?"rest_v2":flow+"_v1"); S(w,"flow_kind",flow); S(w,"session_nonce",nonce);
             w.WriteNumber("parent_ordinal",1);
             switch (value)
             {
@@ -28,6 +29,24 @@ internal static class RoomFlowWireCodec
                     S(w,"status","accepted"); S(w,"decision_id",receipt.DecisionId); S(w,"action_id",receipt.ActionId); break;
                 case RoomFlowApplyFailure failure:
                     S(w,"status",failure.Outcome); break;
+                case RestV2Observation rest:
+                    S(w,"status",rest.Status); S(w,"phase",rest.Phase); S(w,"decision_id",rest.DecisionId);
+                    w.WriteStartArray("options");
+                    foreach (var option in rest.Options)
+                    {
+                        w.WriteStartObject(); S(w,"action_id",option.ActionId); w.WriteNumber("counter",option.Counter);
+                        w.WriteBoolean("enabled",option.Enabled); w.WriteNumber("amount",option.Amount); w.WriteEndObject();
+                    }
+                    w.WriteEndArray(); w.WriteStartArray("cards");
+                    foreach (var card in rest.Cards) { w.WriteStartObject(); w.WriteNumber("slot",card.Slot); S(w,"key",card.Key); w.WriteNumber("upgrade",card.Upgrade); w.WriteBoolean("removable",card.Removable); w.WriteEndObject(); }
+                    w.WriteEndArray(); Actions(w,rest.LegalActions);
+                    if (rest.Result is null) w.WriteNull("result");
+                    else
+                    {
+                        w.WriteStartObject("result"); S(w,"decision_id",rest.Result.DecisionId); S(w,"action_id",rest.Result.ActionId);
+                        w.WriteNumber("before",rest.Result.Before); w.WriteNumber("after",rest.Result.After); w.WriteEndObject();
+                    }
+                    break;
                 case ShopV1Observation shop:
                     S(w,"status",shop.Status); S(w,"phase",shop.Phase); S(w,"decision_id",shop.DecisionId);
                     w.WriteStartObject("player"); w.WriteNumber("gold",shop.Player.Gold); w.WriteNumber("deck_count",shop.Player.DeckCount); w.WriteStartArray("potion_slots"); foreach (string? potion in shop.Player.PotionSlots) { if (potion is null) w.WriteNullValue(); else w.WriteStringValue(potion); } w.WriteEndArray(); w.WriteStartArray("relics"); foreach (string relic in shop.Player.Relics) w.WriteStringValue(relic); w.WriteEndArray(); w.WriteEndObject();

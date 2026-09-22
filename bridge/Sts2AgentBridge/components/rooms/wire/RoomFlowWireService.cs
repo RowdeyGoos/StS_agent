@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sts2AgentBridge.Rooms.Rest;
 using Sts2AgentBridge.Successors.ItemWireV1;
 using Sts2AgentBridge.Successors.RoomFlowsV1.Event;
 using Sts2AgentBridge.Successors.RoomFlowsV1.Shop;
@@ -30,9 +32,11 @@ public sealed class RoomFlowWireService : IDisposable
     private bool _failed;
     private bool _disposed;
     private int _attempted;
+    private int _restBefore, _restDelta;
 
     public RoomFlowWireService(string nonce, ShopV1Session session) : this(nonce, (IRoomFlowSession)session) { }
     public RoomFlowWireService(string nonce, EventV1Session session) : this(nonce, (IRoomFlowSession)session) { }
+    public RoomFlowWireService(string nonce, RestV2Session session) : this(nonce, (IRoomFlowSession)session) { }
     private RoomFlowWireService(string nonce, IRoomFlowSession session)
     {
         if (!RoomFlowIdentity.IsNonce(nonce)) throw new ArgumentException("Invalid nonce.");
@@ -71,7 +75,7 @@ public sealed class RoomFlowWireService : IDisposable
                     ValidateRead(value);
                     owned = RoomFlowWireCodec.Encode(_nonce, _session.FlowKind, value);
                     _published = value;
-                    if (value is EventV1ResolvedResult || value is ShopV1Observation { Status: "complete" })
+                    if (value is EventV1ResolvedResult || value is ShopV1Observation { Status: "complete" } || value is RestV2Observation { Status: "complete" })
                         _terminal = value;
                 }
                 else if (method == "POST" && route == RoomFlowWireProtocol.ActionRoute &&
@@ -80,7 +84,12 @@ public sealed class RoomFlowWireService : IDisposable
                     if (!CanApply(decisionId!, actionId!) || _attempted >= (_session.FlowKind == "shop" ? ShopV1Constants.MaximumReservations : 12))
                         return Error("invalid_request");
                     _attempted++; // Reserve before invoking the real module.
-                    string phase = _published is ShopV1Observation shop ? shop.Phase : ((EventV1Observation)_published!).Phase;
+                    string phase = _published switch { ShopV1Observation shop => shop.Phase, RestV2Observation rest => rest.Phase, EventV1Observation ev => ev.Phase, _ => throw new InvalidOperationException() };
+                    if (_published is RestV2Observation restReady)
+                    {
+                        var option = restReady.Options.Single(o => o.ActionId == RestV2Session.Kind(actionId!));
+                        _restBefore = option.Counter; _restDelta = RestV2Session.Delta(actionId!, option.Amount);
+                    }
                     _published = null;
                     IRoomFlowApplyValue result = _session.Apply(decisionId, actionId);
                     if (result is RoomFlowDispatchReceipt receipt)
@@ -142,6 +151,8 @@ public sealed class RoomFlowWireService : IDisposable
     private bool CanApply(string decision, string action)
     {
         if (_childPublished || _terminal is not null) return false;
+        if (_published is RestV2Observation rest)
+            return _accepted is null && rest.Status == "ready" && rest.DecisionId == decision && Contains(rest.LegalActions, action);
         if (_published is ShopV1Observation shop)
             return shop.Status == "ready" && shop.DecisionId == decision &&
                 Contains(shop.LegalActions, action) && (_accepted is null || _shopReconciled);
@@ -153,6 +164,34 @@ public sealed class RoomFlowWireService : IDisposable
     private void ValidateRead(IRoomFlowReadValue value)
     {
         _childPublished = false;
+        if (value is RestV2Observation rest && _session.FlowKind == "rest")
+        {
+            Common("rest", rest.SessionNonce, 1);
+            if (rest.Status == "ready")
+            {
+                if (_accepted is not null || rest.Phase != "choose_option" || rest.Result is not null ||
+                    rest.Options.Count is < 1 or > 6 || rest.Options.Select(x => x.ActionId).Distinct().Count() != rest.Options.Count ||
+                    rest.Options.Any(x => !RestV2Session.ValidCounter(x.ActionId, x.Counter) || x.Amount is < 0 or > 64 || x.ActionId != "clone" && x.Amount != 0) ||
+                    !rest.LegalActions.SequenceEqual(RestV2Session.Actions(rest.Options, rest.Cards)) ||
+                    rest.LegalActions.Count == 0 || RestV2Session.Digest(_nonce, rest.Options, rest.Cards) != rest.DecisionId)
+                    throw new InvalidOperationException();
+            }
+            else
+            {
+                if (rest.DecisionId != "" || rest.Options.Count != 0 || rest.Cards.Count != 0 || rest.LegalActions.Count != 0) throw new InvalidOperationException();
+                if (rest.Status == "complete")
+                {
+                    var r = rest.Result;
+                    if (rest.Phase != "complete" || _accepted is null || r is null || r.DecisionId != _accepted.DecisionId ||
+                        r.ActionId != _accepted.ActionId || !RestV2Session.ValidCounter(RestV2Session.Kind(r.ActionId), r.Before) ||
+                        r.Before != _restBefore || r.After != checked(_restBefore + _restDelta)) throw new InvalidOperationException();
+                }
+                else if (rest.Result is not null || !(rest.Status == "waiting" && rest.Phase == (_accepted is null ? "unknown" : "action_waiting") ||
+                    rest.Status == "unsupported" && rest.Phase == "unknown")) throw new InvalidOperationException();
+            }
+            if (rest.Status == "unsupported") _failed = true;
+            return;
+        }
         if (value is ShopV1Observation shop && _session.FlowKind == "shop")
         {
             Common(shop.FlowKind, shop.SessionNonce, shop.ParentOrdinal);
