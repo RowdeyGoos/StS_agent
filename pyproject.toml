@@ -5,34 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sts-agent"
 version = "0.1.0"
-description = "Minimal Slay-the-Spire-style combat simulator for reinforcement learning experiments."
+description = "Independent Slay the Spire 2 headless game engine."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
-rl = [
-    "numpy>=1.26,<3.0",
-    "gymnasium>=0.29,<1.1",
-    "torch>=2.2,<3.0",
-    "optuna>=3.6,<5.0",
-]
 dev = [
     "pytest>=8.0,<9.0",
 ]
 
 [project.scripts]
-sts-headless = "game.cli.headless:main"
 sts-headless-play = "game.cli.headless_play:main"
-sts-train = "game.cli.train:main"
-sts-sweep = "game.cli.sweep:main"
-sts-watch = "game.cli.watch_policy:main"
-sts-oracle = "game.cli.brute_force:main"
-sts-analyze-trace = "game.cli.analyze_trace:main"
-sts-analyze-training = "game.cli.analyze_training:main"
-sts-benchmark = "game.cli.benchmark:main"
-sts-benchmark-suite = "game.cli.benchmark_suite:main"
-sts-demo = "game.cli.demo:run_demo"
 
 [tool.setuptools.packages.find]
 include = ["game*"]

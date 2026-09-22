@@ -186,7 +186,7 @@ def test_orobic_acid_full_hand_keeps_all_generated_instances_and_draws():
     p = run.combat.player
     assert len(p.hand) == 10
     assert ids(p.deck.discard_pile) == [name for call in row["calls"] for name in call["selected"]]
-    assert all(c.combat_state.free_this_turn for c in p.deck.discard_pile)
+    assert all(p.card_cost(c) == 0 and p.star_cost(c) == 0 for c in p.deck.discard_pile)
     assert len({c.instance_id for c in p.deck.all_cards()}) == 13
     assert p.deck.generation_rng.counter == row["counter"]
     clone(run)

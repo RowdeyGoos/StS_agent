@@ -32,7 +32,6 @@ MONARCHS_GAZE = "monarchs_gaze_strength_down"
 CONQUEROR = "conqueror"
 NECRO_STATUSES = ("doom", "debilitate", "enfeebling_touch", "hang", "oblivion", "sic_em")
 SUPPORTED_STATUS_NAMES: tuple[str, ...] = (*NECRO_STATUSES, SHRINK, VULNERABLE, WEAK, TERRITORIAL, SLIPPERY, FRAIL, ARTIFACT, CONSTRICT, TANGLED, RINGING, SLOW, PLOW, MINION, ILLUSION, INFESTED, MANGLE, DARK_SHACKLES, DEMISE, POISON, STRANGLE, CONQUEROR, CRUSH_UNDER, DYING_STAR, MONARCHS_GAZE)
-STATUS_STACK_SCALE = 5.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,10 +92,6 @@ class StatusCollection:
             return
         self._counts.pop(status_name, None)
         self._skip_next_tick.discard(status_name)
-
-    def on_turn_end(self) -> None:
-        """Compatibility alias for an isolated enemy's end-of-turn tick."""
-        self.after_enemy_side_turn_end()
 
     def after_enemy_side_turn_end(self) -> None:
         for name, definition in STATUS_DEFINITIONS.items():

@@ -353,17 +353,15 @@ def test_feral_stacking_preserves_used_return_count_after_replay():
     play(c,'claw');assert claw in p.hand and p.rules.auxiliaries['feral']==2
 
 
-def test_legacy_search_clone_owns_orb_rng_and_keys_its_state():
-    from game.simulation.core import CombatEnv
-    from game.analysis.bruteforce import clone_combat_env, _combat_state_key, _RngStateRegistry, _CardStateRegistry
-    env=CombatEnv(seed=4,deck_factory=lambda:[DEFECT_CARDS.create('chaos')])
-    env.reset();other=clone_combat_env(env)
-    before=env.player.deck.orb_rng.getstate()
-    rngs,cards=_RngStateRegistry(),_CardStateRegistry()
-    key=_combat_state_key(other,rngs,cards)
+def test_restored_combat_owns_orb_rng_and_snapshots_its_state():
+    env = CombatEngine(seed=4, deck_factory=lambda: [DEFECT_CARDS.create('chaos')])
+    env.reset()
+    other = CombatEngine()
+    other.restore(env.snapshot())
+    before = env.snapshot()
     other.player.deck.orb_rng.random()
-    assert env.player.deck.orb_rng.getstate()==before
-    assert _combat_state_key(other,rngs,cards)!=key
+    assert env.snapshot() == before
+    assert other.snapshot() != before
 
 
 def test_rocket_discount_is_local_survives_restore_and_resets_after_play():

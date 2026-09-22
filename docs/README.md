@@ -16,18 +16,14 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Live bridge development and testing | [Live development](LIVE_DEVELOPMENT.md), [bridge commands](../bridge/Sts2AgentBridge/README.md) |
 | Combat bridge selectors and host | [Combat choices](COMBAT_CHOICES.md) |
 | Generic event architecture and coverage | [Generic events](GENERIC_EVENTS.md), [coverage](EVENT_COVERAGE.md), [all-event research map](EVENT_INTERACTION_MAP.md) |
-| Reduced headless actor and datasets | [Headless actor](HEADLESS_ACTOR.md) |
 | Full-game headless implementation tasks | [Current implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Headless game logic and architecture | [Game engine](HEADLESS_ENGINE.md) |
-| Combat simulator | [Project context](PROJECT_CONTEXT.md) |
-| Training, profiling and evaluation | [Experiment workflows](EXPERIMENT_WORKFLOWS.md), [benchmarks](BENCHMARKS.md), [benchmark suite](BENCHMARK_SUITE.md) |
 | Full-game scope and research destination | [Target](TARGET.md), relevant sections of [long-term architecture](LONG_TERM_ARCHITECTURE_ROADMAP.md) |
 | Delegated work, when needed | [Multi-agent guide](MULTI_AGENT_EXECUTION.md) |
 
 ## References and results
 
-- Combat: [agent flow](AGENT_FLOW.md), [card representation](CARD_REPRESENTATION.md),
-  [Ironclad cards](IRONCLAD_CARDS.md), [Overgrowth hard pool](OVERGROWTH_HARD_V1.md).
+- Retired simulator, actor and experiment guides: [archive](archive/README.md#retired-simulator-pipelines).
 - Latest live results: [combined September 9–10 batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md).
   [Status](STATUS.md) also records newer offline-validated work awaiting live tests.
   The [September 8 unified smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) remains

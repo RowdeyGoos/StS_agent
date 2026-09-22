@@ -1,6 +1,6 @@
 # Headless implementation backlog
 
-Updated 2026-09-21. This document owns remaining headless assignments;
+Updated 2026-09-22. This document owns remaining headless assignments;
 [the engine guide](HEADLESS_ENGINE.md) owns usage and supported gameplay.
 The [original assessment and completed-batch chronology](archive/HEADLESS_FULL_GAME_IMPLEMENTATION_2026_09_21.md)
 is historical. Its old “partial” and “remaining” labels are not current tasks.
@@ -54,6 +54,10 @@ salt. Silent temporary Dexterity, Regent star-spend hooks and Necrobinder retain
 cost modifiers match the recorded native cases. See the
 [audit, exact checks and limits](evidence/native_character_interactions_2026_09_21.md).
 
+The old simulator/reduced backend and its research pipelines were retired on
+2026-09-22 by user request. They are not implementation starting points or
+compatibility targets. Keep the current engine and production bridge independent.
+
 **Next: HF-44, public full-run observations.** Implement one versioned read-only
 adapter over the mature game engine. Start with states for all five characters
 and a combat → reward → map sequence, including a nested card choice. Preserve
@@ -65,7 +69,7 @@ those external adapters or certify every character/item permutation.
 
 ### HF-44 — Expose sufficient public run state and observable history
 
-- **Implement:** extend the existing public projection/contracts with visible deck
+- **Implement:** define a versioned public adapter over `RunEngine` with visible deck
   instances/modifiers, relics/counters, potions, character resources, act/floor,
   ascension, map context, public pile information and pending decision candidates.
   Represent Stars/Forge, Osty and orbs without exposing hidden RNG or draw order.
@@ -74,39 +78,39 @@ those external adapters or certify every character/item permutation.
   differing only in hidden information produce identical observations. Reading
   observations changes neither game state nor RNG. Exercise all five characters,
   a nested combat choice and a combat/reward/map handoff.
-- **Start:** `game/contracts`, `game/backends`, `game/simulation`; consult the
-  [actor guide](HEADLESS_ACTOR.md) for affected consumers.
+- **Start:** `game/headless/run/engine.py`, `game/headless/core/actions.py` and
+  `game/headless/run/actions.py`. Keep the adapter outside the game-rule package;
+  the retained bridge wire codec is not a full-game headless contract.
 
-### HF-45 — Extend encoding and policies without dropping legal choices
+### HF-45 — Encode public decisions without dropping legal choices
 
 - **Depends on:** HF-44's versioned public view.
-- **Implement:** extend existing actor encoders and candidate scoring for every
-  supported action/resource family. Audit fixed capacities, the 128-item contract
-  limit and categorical vocabularies against reachable states. Version incompatible
-  checkpoints; keep private identifiers and seeds out of model features.
+- **Implement:** implement actor encoders and candidate scoring for every
+  supported action/resource family using HF-44. Derive capacities and categorical
+  vocabularies from reachable states rather than the retired fixed limits. Version
+  the representation and checkpoints; keep private identifiers and seeds out of model features.
 - **Acceptance:** every legal candidate survives encoding/collation, including
   duplicate cards, multi-selection, potions and event actions. Permutation and
-  hidden-information checks pass. The existing reduced fixture remains usable.
-- **Start:** `game/agents/headless_encoding.py`, action schemas and affected
-  baseline policies. Update only consumers touched by the new interface.
+  hidden-information checks pass. No legacy fixture compatibility is required.
+- **Start:** HF-44's action schema and focused direct-engine scenarios.
 
 ### HF-46 — Carry full-run semantics through datasets and artifacts
 
 - **Depends on:** HF-44/45.
-- **Implement:** evolve existing trajectories, policy datasets and reports to
+- **Implement:** implement trajectories, policy datasets and reports to
   retain the new decisions, build/rules identity, real victory/defeat and truncation.
   Preserve public history/private diagnostics separation, held-out splits and
   cancellation-safe publication. Never relabel structural fixtures as real runs.
 - **Acceptance:** a recorded multi-act run round-trips through dataset and training
-  loaders without losing candidates or changing its outcome. Old artifacts reject
-  clearly or remain readable through their original contract.
-- **Start:** `game/data`, `game/training`, existing reporting and rollout code.
+  loaders without losing candidates or changing its outcome. Unsupported artifact
+  versions reject explicitly; retired artifacts have no compatibility requirement.
+- **Start:** HF-44/45 outputs and the engine's game-owned command boundaries.
 
-### HF-47 — Run the new environment through existing APIs and CLI
+### HF-47 — Deliver full-game agent execution and CLI
 
 - **Depends on:** HF-44–46 for the delivered adapter.
-- **Implement:** connect the full engine to the existing backend factory, runner,
-  workers and installed commands. Reuse `sts-headless-play` for direct gameplay;
+- **Implement:** implement agent execution, bounded workers and recording around
+  the full engine and HF-44–46 adapters. Reuse `sts-headless-play` for direct gameplay;
   add full-run configuration to the agent-facing path without another simulator.
   Include a public-only chooser for every legal decision family.
 - **Acceptance:** a documented command resets, steps, records and terminates the

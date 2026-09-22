@@ -6,8 +6,7 @@ from random import Random
 
 import pytest
 
-from game.analysis.bruteforce import clone_combat_env
-from game.headless.cards.ironclad import PommelStrikeCard, StrikeCard
+from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.actions import EndTurn, PlayCard
 from game.headless.core.combat import CombatEngine
 from game.headless.core.deck import Deck
@@ -16,7 +15,6 @@ from game.headless.encounters.overgrowth import build_overgrowth_slimes_encounte
 from game.headless.monsters.overgrowth import (
     Nibbit, LeafSlimeSmall, LeafSlimeMedium, TwigSlimeSmall, TwigSlimeMedium, SimpleEnemy,
 )
-from game.simulation.core import CombatEnv
 
 
 def snapshot(combat):
@@ -181,11 +179,12 @@ def test_lethal_nibbit_slice_stops_block_gain_and_later_enemy_actions():
     assert not combat.player.deck.discard_pile
 
 
-def test_search_clone_rebinds_draw_liveness_to_its_own_enemy_graph():
-    env = CombatEnv(seed=0, deck_factory=lambda: [PommelStrikeCard(), StrikeCard()],
+def test_restore_rebinds_draw_liveness_to_its_own_enemy_graph():
+    env = CombatEngine(seed=0, deck_factory=lambda: [DEFAULT_CARDS.create("pommel_strike"), DEFAULT_CARDS.create("strike")],
                     enemy_factory=lambda: SimpleEnemy(max_hp=9), cards_per_turn=2)
     env.reset()
-    cloned = clone_combat_env(env)
+    cloned = CombatEngine()
+    cloned.restore(snapshot(env))
     assert cloned.player.combat_enemies is cloned.enemies
     assert cloned.player.combat_enemies is not env.enemies
     # Change only the clone's HP to make its Pommel nonlethal, then draw.
@@ -196,7 +195,7 @@ def test_search_clone_rebinds_draw_liveness_to_its_own_enemy_graph():
         player.hand.remove(strike)
         player.deck.discard_pile.append(strike)
     card = next(c for c in env.player.hand if c.name == "Pommel Strike")
-    CombatEngine.apply(env, PlayCard(card.instance_id, 0))
-    CombatEngine.apply(cloned, PlayCard(card.instance_id, 0))
+    env.apply(PlayCard(card.instance_id, 0))
+    cloned.apply(PlayCard(card.instance_id, 0))
     assert env.player.hand == []
     assert [c.name for c in cloned.player.hand] == ["Strike"]

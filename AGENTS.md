@@ -16,8 +16,7 @@ do not falsify hashes, bypass runtime safeguards or broaden user-data access.
    | --- | --- |
    | Live bridge or generic events | [Current status](docs/STATUS.md), then relevant source/contract; [live guide](docs/LIVE_DEVELOPMENT.md) before build/install/live work |
    | Headless game rules or architecture | [Headless engine](docs/HEADLESS_ENGINE.md), affected `game/headless/` source and tests |
-   | Combat simulator or RL | Relevant sections of [project context](docs/PROJECT_CONTEXT.md), affected source and tests |
-   | Headless actor/data | [Headless actor guide](docs/HEADLESS_ACTOR.md), then affected source/schema and tests |
+   | Full-game observations, actor or data | [Implementation backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md), then current engine source and tests; legacy pipelines are retired |
    | Architecture or priorities | [Decisions](DECISIONS.md) and [roadmap](ROADMAP.md) |
    | Documentation | The document and its direct references |
 
@@ -119,15 +118,16 @@ evidence or bypass a failing runtime safeguard.
 
 - Python 3.10+; explicit seeded RNG; no new global mutable simulator state.
 - Keep state serializable and structured observations separate from RL encoding.
-- Preserve stable enemy slots, legal-action masks and the simple combat path.
+- Preserve stable enemy slots, legal game commands and the simple combat path.
 - Keep canonical subpackage imports and installed `sts-*` commands; no flat aliases
   or root CLI wrappers.
 - Implement game logic in `game/headless/`, which must not import adapters, public
   contracts, encoders or training. Game-content changes do not require projection
   or policy changes unless that consumer integration is explicitly in scope.
-- Changes to supported observation/action adapters require checking `game/simulation/core.py`,
-  `encoding.py`, `actions.py`, `action_features.py` and affected baselines,
-  demo formatting and tests. Update only affected consumers.
+- The old simulator, reduced backend and research pipelines are retired. Build
+  future public observations and policy/data adapters over `game/headless/`; do
+  not restore compatibility modules or duplicate game rules. Check affected
+  consumers when changing a supported interface.
 - Preserve public/privileged separation and distinguish synthetic, released and
   live-demonstrated evidence. Full-game utility is run victory probability;
   combat-local HP reward shaping does not redefine it.

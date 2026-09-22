@@ -6,7 +6,6 @@ from random import Random
 
 import pytest
 
-from game.analysis.bruteforce import clone_combat_env
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.actions import PlayCard
 from game.headless.core.combat import CombatEngine
@@ -15,7 +14,6 @@ from game.headless.monsters.vantom import Vantom
 from game.headless.run.engine import RunEngine
 from game.headless.run.actions import ChooseNode, ChooseRewardCard
 from game.cli.headless_play import choose_demo_action
-from game.simulation.core import CombatEnv
 
 
 def saved(combat):
@@ -124,17 +122,6 @@ def test_target_rng_restore_rejects_missing_or_invalid_reference_atomically():
         assert saved(combat) == before
 
 
-def test_search_clone_keeps_target_rng_independent_even_without_encoding_new_cards():
-    env = CombatEnv(deck_factory=lambda: [DEFAULT_CARDS.create("sword_boomerang")])
-    # Direct engine setup avoids claiming that the legacy encoder supports the card.
-    CombatEngine.reset(env)
-    clone = clone_combat_env(env)
-    assert clone.player.deck.target_rng is not env.player.deck.target_rng
-    before = env.player.deck.target_rng.getstate()
-    clone.player.deck.target_rng.random()
-    assert env.player.deck.target_rng.getstate() == before
-
-
 def test_act1_reward_pool_can_acquire_and_permanently_upgrade_boomerang(original_slice_rewards):
     selected = None
     for seed in range(20):
@@ -161,13 +148,10 @@ def test_act1_reward_pool_can_acquire_and_permanently_upgrade_boomerang(original
     assert saved(clone) == saved(selected)
 
 
-def test_state_key_distinguishes_future_target_and_hand_selection_rng():
-    from game.analysis.bruteforce import _combat_state_key, _RngStateRegistry, _CardStateRegistry
-    env = CombatEnv()
-    env.reset()
-    rngs, cards = _RngStateRegistry(), _CardStateRegistry()
-    before = _combat_state_key(env, rngs, cards)
-    env.player.deck.target_rng.random()
-    after_target = _combat_state_key(env, rngs, cards)
-    env.player.deck.selection_rng.random()
-    assert before != after_target != _combat_state_key(env, rngs, cards)
+def test_snapshot_distinguishes_future_target_and_hand_selection_rng():
+    combat = setup()
+    before = saved(combat)
+    combat.player.deck.target_rng.random()
+    after_target = saved(combat)
+    combat.player.deck.selection_rng.random()
+    assert before != after_target != saved(combat)

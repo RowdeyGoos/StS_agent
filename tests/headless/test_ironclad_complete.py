@@ -452,30 +452,22 @@ def test_infernal_blade_free_x_attack_uses_energy_without_spending_it():
     assert c.enemies[0].hp == 976 and c.player.energy == 3
 
 
-def test_combat_clone_owns_rule_state_generated_card_values_and_rng():
-    from game.analysis.bruteforce import (
-        clone_combat_env,
-        _combat_state_key,
-        _RngStateRegistry,
-        _CardStateRegistry,
-    )
-    from game.simulation.core import CombatEnv
-
-    env = CombatEnv()
+def test_restored_combat_owns_rule_state_generated_card_values_and_rng():
+    env = CombatEngine()
     env.reset()
     apply_power(env.player, "pyre", 1)
-    clone = clone_combat_env(env)
+    clone = CombatEngine()
+    clone.restore(saved(env))
     clone.player.rules.powers["pyre"] = 9
     clone.player.deck.hand[0].combat_state.extra_damage = 8
     assert env.player.rules.powers["pyre"] == 1
     assert env.player.deck.hand[0].combat_state.extra_damage == 0
     assert clone.player.deck.owner is clone.player
-    rngs, cards = _RngStateRegistry(), _CardStateRegistry()
-    before = _combat_state_key(env, rngs, cards)
+    before = saved(env)
     clone.player.deck.generation_rng.random()
-    assert _combat_state_key(env, rngs, cards) == before
+    assert saved(env) == before
     env.player.deck.generation_rng.random()
-    assert _combat_state_key(env, rngs, cards) != before
+    assert saved(env) != before
 
 
 def test_lethal_damage_does_not_trigger_flame_barrier_retaliation():
@@ -486,18 +478,15 @@ def test_lethal_damage_does_not_trigger_flame_barrier_retaliation():
     assert c.winner == "enemy" and c.enemies[0].hp == 4
 
 
-def test_search_key_preserves_power_hook_order():
-    from game.analysis.bruteforce import _combat_state_key, _RngStateRegistry, _CardStateRegistry
-    from game.simulation.core import CombatEnv
-
-    env = CombatEnv()
+def test_snapshot_preserves_power_hook_order():
+    env = CombatEngine()
     env.reset()
     apply_power(env.player, "no_draw", 1)
     apply_power(env.player, "dark_embrace", 1)
-    rngs, cards = _RngStateRegistry(), _CardStateRegistry()
-    first = _combat_state_key(env, rngs, cards)
     env.player.rules.powers = dict(reversed(tuple(env.player.rules.powers.items())))
-    assert _combat_state_key(env, rngs, cards) != first
+    clone = CombatEngine()
+    clone.restore(saved(env))
+    assert list(clone.player.rules.powers) == list(env.player.rules.powers)
 
 
 @pytest.mark.parametrize("count,expected", [(1, 5), (7, 7), (12, 10)])
@@ -537,20 +526,7 @@ def test_generated_cards_use_supplied_catalog_with_order_independent_sampling():
     assert results[0] == results[1]
 
 
-def test_legacy_isolated_effect_targets_are_scoped_to_each_call():
-    from random import Random
-    from game.headless.core.player import Player
-    from game.headless.core.deck import Deck
-
-    p = Player(Deck([], Random(0)))
-    first, second = SimpleEnemy(), SimpleEnemy()
-    for target in (first, second):
-        DEFAULT_CARDS.create("strike").play(p, target)
-        assert target.hp == 34 and p.combat_enemies is None
-        assert p.deck.in_play == [] and p.rules.plays == {} and p.rules.tasks == []
-
-
-def test_legacy_player_rejects_foreign_target_before_mutating_state():
+def test_player_rejects_foreign_target_before_mutating_state():
     c = fight("strike")
     before = saved(c)
     with pytest.raises(ValueError):

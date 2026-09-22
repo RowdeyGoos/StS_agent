@@ -82,11 +82,9 @@ mutable instances, combat rules and persistent run state. It imports only its ow
 modules and the standard library. Game definitions drive execution directly;
 adding a card does not require another projection or encoder registration.
 
-`CombatEnv` owns the older observation, mask, shaping and trajectory interface
-around the canonical combat engine. The existing reduced public run backend stays
-a fixed synthetic compatibility fixture. New rules go into the game package;
-consumer integration happens when selected, after the behavior is independently
-usable. The unreleased per-card upgrade profile is retired rather than multiplied.
+The initially retained `CombatEnv` and reduced-backend compatibility layers were
+subsequently retired by D69. New rules stay in the game package, independently of
+consumer integration.
 
 Content catalogs are immutable and explicit, identity/RNG belongs to each run,
 and pending game state contains values instead of callback closures. Private
@@ -95,19 +93,28 @@ Future mechanics may extend state and lifecycle operations; unrelated consumers
 must not constrain that work. The [engine guide](docs/HEADLESS_ENGINE.md) records
 the reference-repository analysis, actual migration and remaining limits.
 
+## D69. Retire the legacy simulator and research pipelines
+
+Requested 2026-09-22, with no backward compatibility requirement. Keep the current
+`game/headless` engine, direct gameplay CLI and production bridge. Remove old
+simulation wrappers, reduced rules/contracts, policies, training, datasets,
+benchmarks, search, configs and their commands/tests. The historical reward-gold
+comparison tool is also retired because it executes the removed reduced rules;
+bridge execution and the independent wire codec remain intact.
+
+Preserve game-rule regressions through direct engine commands and JSON continuation.
+Historical guides, evidence and original source identities remain archival;
+do not repin their fingerprints. Full-game public observations and subsequent
+policy/data consumers are new adapters over the engine (HF-44–47), without a
+legacy checkpoint or fixture compatibility obligation.
+
 ## Core architecture
 
-- **Combat research remains a separate interface (D1–D6, D12, D30).** Structured
-  observations are the debugging truth; encoders produce fixed-width RL inputs.
-  Stable enemy slots, fixed masked actions, explicit seeded RNG, serializable
-  state and canonical subpackages remain. Combat HP shaping is local to this
-  research environment.
-- **Full-game backends share typed public decisions (D37, D44–D46).** Live,
-  simulator and replay consumers use variable legal candidates with semantic
-  identities. Keep private world/RNG state and hindsight outside deployed policy
-  inputs. Use the pinned game as the fidelity authority; optimize complete-run
-  victory probability. Heuristic, learned and optional search strategies remain
-  interchangeable host-side consumers.
+- **Game rules are independent of agent representations (D68–D69).** Preserve
+  stable enemy slots, legal commands, explicit seeded RNG, serializable state and
+  canonical subpackages. Future public adapters expose legal candidates while
+  keeping private world/RNG state and hindsight outside policy inputs. Use the
+  pinned game as the fidelity authority and complete-run victory as the objective.
 - **Generic events follow shared interactions.** Reserve parent context before
   dispatch; obtain operation, counts, originals and tasks at owned native request
   and screen-creation boundaries. Event names identify ownership/tests, not a
@@ -129,21 +136,11 @@ Detailed native semantics are in the selected component contracts, reached throu
 and [long-term architecture](docs/LONG_TERM_ARCHITECTURE_ROADMAP.md) retain the
 full-game objective, information rules and eventual evaluation requirements.
 
-## Training and analysis defaults
+## Historical training and analysis choices
 
-| Area | Durable choice |
-| --- | --- |
-| Neural agents | Keep DQN, Double DQN, Dueling Double DQN and masked PPO separate; action-conditioned scoring is default, shared-enemy encoding is opt-in |
-| Devices and throughput | Shared CUDA/MPS/CPU resolution; PPO sampling avoids the recorded MPS masked-action issue; batched collection and explicit worker settings |
-| Reproducibility | Seeded factories, named decks/encounters, resolved configuration and provenance-bound checkpoints/run directories |
-| Comparison | Matched seeds and budgets; separate equal-transition rankings from equal-time diagnostics |
-| Search | Seeded hindsight oracle orders victory, HP, enemy HP and actions; report proof status and keep information-aware analysis separate |
-| Representation | Semantic card records remain experimental; incompatible encoding changes require an explicit retraining boundary |
-
-Use [experiment workflows](docs/EXPERIMENT_WORKFLOWS.md) for commands and
-[combat context](docs/PROJECT_CONTEXT.md) for the implemented research API.
-Old numeric defaults and checkpoint versions are documented in the historical
-log and current code; do not infer a migration from this summary.
+The earlier algorithms, defaults and checkpoint formats belong to the retired
+research pipelines. See the archived experiment guides for their original scope.
+New full-game consumers follow HF-44–47 and have no legacy checkpoint requirement.
 
 ## D47. Separate Room Identity From Foreground And Completion Evidence
 

@@ -470,21 +470,20 @@ def test_first_card_affliction_cannot_be_overwritten(first, second):
     assert [name for name in NAMES if getattr(card.combat_state, name)] == [first]
 
 
-def test_legacy_combat_action_mask_respects_bound_card_restriction():
-    from game.simulation.core import CombatEnv
+def test_combat_commands_respect_bound_card_restriction():
+    from game.headless.core.combat import CombatEngine
     from game.headless.cards.catalog import DEFAULT_CARDS
-    env = CombatEnv(seed=7, encounter_factory=ENCOUNTERS['glory_queen'],
-                    deck_factory=lambda: [DEFAULT_CARDS.create('strike') for _ in range(4)],
-                    player_max_hp=1000, cards_per_turn=4, max_enemy_count=2)
-    env.reset()
-    env.step(('end_turn',))
-    index = next(i for i,c in enumerate(env.player.hand) if c.combat_state.bound)
-    env.step(('play', index, 0))
-    legal = env.get_legal_actions()
+    combat = CombatEngine(seed=7, encounter_factory=ENCOUNTERS['glory_queen'],
+                          deck_factory=lambda: [DEFAULT_CARDS.create('strike') for _ in range(4)],
+                          player_max_hp=1000, cards_per_turn=4)
+    combat.reset()
+    combat.apply(EndTurn())
+    card = next(c for c in combat.player.hand if c.combat_state.bound)
+    combat.apply(PlayCard(card.instance_id, 0))
+    legal = combat.legal_actions()
     assert len(legal) == 3  # One unbound card against two targets, plus end turn.
-    assert all(a[0] != 'play' or not env.player.hand[a[1]].combat_state.bound for a in legal)
-    mask, features = env.encode_policy_inputs()
-    assert sum(mask) == 3 and len(features) == len(mask)
+    bound_ids = {c.instance_id for c in combat.player.hand if c.combat_state.bound}
+    assert all(not isinstance(a, PlayCard) or a.instance_id not in bound_ids for a in legal)
 
 
 @pytest.mark.parametrize('scroll_hp,max_loss', [(2, 0), (8, 2)])

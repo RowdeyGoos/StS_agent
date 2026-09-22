@@ -372,17 +372,17 @@ def test_last_primary_death_stops_draw_suffix_immediately():
     assert combat.winner=='player' and len(player.deck.draw_pile)==1 and not player.hand
 
 
-def test_oracle_clone_owns_context_and_power_sources_independently():
-    from game.simulation.core import CombatEnv
-    from game.analysis.bruteforce import clone_combat_env, _combat_state_key, _RngStateRegistry, _CardStateRegistry
-    env=CombatEnv();env.reset()
-    clone=clone_combat_env(env)
+def test_restored_combat_owns_context_and_power_sources_independently():
+    env = CombatEngine()
+    env.reset()
+    clone = CombatEngine()
+    clone.restore(saved(env))
     assert clone.player.power_sources is not env.player.power_sources
     assert all(e.combat_player is clone.player for e in clone.enemies)
-    rngs,cards=_RngStateRegistry(),_CardStateRegistry()
-    before=_combat_state_key(env,rngs,cards)
-    env.player.cards_played_this_turn+=1
-    assert _combat_state_key(env,rngs,cards)!=before
+    before = saved(env)
+    env.player.cards_played_this_turn += 1
+    assert saved(env) != before
+    assert saved(clone) == before
 
 
 @pytest.mark.parametrize('hp,phase', [(0,0),(6,1)])

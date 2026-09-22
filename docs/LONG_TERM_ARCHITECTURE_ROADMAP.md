@@ -11,6 +11,10 @@ it. It complements, but does not replace, the short-horizon work in
 the current combat research environment improves; this document should change
 only when the full-project strategy or end-state architecture changes.
 
+The legacy simulator and research pipelines described here were retired on
+2026-09-22 (D69). Their migration plans are superseded by the current engine and
+[HF-44–47 adapter assignments](HEADLESS_FULL_GAME_IMPLEMENTATION.md#open-assignments).
+
 This is a specialist design reference, not a mandatory startup checklist.
 Its dated descriptions of repository state and proposed increments are historical;
 use [current status](STATUS.md) and [ROADMAP.md](../ROADMAP.md)
@@ -210,11 +214,11 @@ contracts.
 
 | Current asset | Long-term value | Scaling boundary |
 | --- | --- | --- |
-| [`CombatEnv`](../game/simulation/core.py) | Deterministic tactical vertical slice, inspectable state, legal actions, rewards, and traces | One reset is one isolated fight; it owns too many layers and has no run state |
-| Structured observations plus [`ObservationEncoder`](../game/simulation/encoding.py) | Correct instinct to keep debuggable state separate from neural features | The rules environment currently constructs the encoder, and production features are fixed-width one-hots |
+| [`CombatEnv`](https://github.com/RowdeyGoos/StS_agent/blob/9d8d1c75069f9bfb04e161c25706343c5b63ea42/game/simulation/core.py) | Deterministic tactical vertical slice, inspectable state, legal actions, rewards, and traces | One reset is one isolated fight; it owns too many layers and has no run state |
+| Structured observations plus [`ObservationEncoder`](https://github.com/RowdeyGoos/StS_agent/blob/9d8d1c75069f9bfb04e161c25706343c5b63ea42/game/simulation/encoding.py) | Correct instinct to keep debuggable state separate from neural features | The rules environment currently constructs the encoder, and production features are fixed-width one-hots |
 | Stable enemy slots and action masks | Reliable current targeting and legality tests | Engine identity must become stable entity IDs; padding and slots belong only in representations |
-| [`action_features.py`](../game/simulation/action_features.py) | Early evidence that action-conditioned scoring is better than unrelated output classes | Card effects, `CardSpec`, and handcrafted previews duplicate semantics and will drift |
-| [`card_records.py`](../game/simulation/card_records.py) and shared card encoder | Useful append-only semantic identity experiment | Definition IDs are not card-instance IDs; fixed capacities and cards-only scope are not a final schema |
+| [`action_features.py`](https://github.com/RowdeyGoos/StS_agent/blob/9d8d1c75069f9bfb04e161c25706343c5b63ea42/game/simulation/action_features.py) | Early evidence that action-conditioned scoring is better than unrelated output classes | Card effects, `CardSpec`, and handcrafted previews duplicate semantics and will drift |
+| [`card_records.py`](https://github.com/RowdeyGoos/StS_agent/blob/9d8d1c75069f9bfb04e161c25706343c5b63ea42/game/simulation/card_records.py) and shared card encoder | Useful append-only semantic identity experiment | Definition IDs are not card-instance IDs; fixed capacities and cards-only scope are not a final schema |
 | DQN-family and masked PPO agents | Useful baselines, regression learners, and fast policy-only fallbacks | Small feed-forward MLPs, combat-local rewards, fixed action capacity, and no belief/search integration |
 | Shared-enemy architectures | Useful permutation-equivariant precursor | Mean pooling does not model rich card/enemy/relic/status interactions |
 | PPO worker pool and experiment configs | Starting point for parallel actors and reproducible jobs | Training loops and a large CLI dispatcher will not scale to datasets, planners, reanalysis, curricula, and exact resume |
@@ -1263,9 +1267,9 @@ tests/                 # unit, property, differential, replay, integration, camp
 docs/                  # contracts, decisions, coverage, operations, research reports
 ```
 
-The current `game/simulation`, agents, and analysis packages migrate gradually
-behind adapters. Do not perform a wholesale rename before the new boundaries
-have executable contracts and tests.
+The original plan proposed gradual migration of `game/simulation`, agents and
+analysis behind adapters. D69 supersedes that migration: those pipelines are
+retired, and future consumers are built over `game/headless`.
 
 ## 18. Main risks and mitigations
 
