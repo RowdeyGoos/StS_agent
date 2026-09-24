@@ -96,11 +96,16 @@ internal static class BridgeRequestParser
         if (rest && action)
         {
             string? value = request.Action;
-            return value is not null && value.Length <= 64 && System.Text.RegularExpressions.Regex.IsMatch(value,
-                @"\A(?:option:(?:heal|smith|lift|kindle|dig|cook|clone|hatch)|(?:de)?select:(?:[0-9]|[1-5][0-9]|6[0-3])|confirm|cancel|reward:(?:(?:open|collect):[0-7]|choose:[0-4]|skip_card|dismiss))\z");
+            return value is not null && value.Length <= 64 &&
+                (value is "option:heal" or "option:smith" or "option:lift" or "option:kindle" or "option:dig" or "option:cook" or "option:clone" or "option:hatch" or
+                    "confirm" or "cancel" or "reward:skip_card" or "reward:dismiss" ||
+                 RestIndex(value, "select:", 63) || RestIndex(value, "deselect:", 63) ||
+                 RestIndex(value, "reward:open:", 7) || RestIndex(value, "reward:collect:", 7) || RestIndex(value, "reward:choose:", 4));
         }
         return !action || CoreBridgeModule.IsValidAction(request);
     }
+    private static bool RestIndex(string value, string prefix, int maximum) => value.StartsWith(prefix, StringComparison.Ordinal) &&
+        int.TryParse(value[prefix.Length..], out int index) && index >= 0 && index <= maximum && value == prefix + index;
     private static string? Text(ReadOnlySpan<byte> source, int start, int length) =>
         length == 0 ? null : Encoding.ASCII.GetString(source.Slice(start, length));
 }
