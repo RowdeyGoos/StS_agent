@@ -1,291 +1,271 @@
 {
+  "feature_commit": "24f620d505da9817acceaa48cf85f9fab7115048",
   "focused_validation": {
-    "automatic_removal_cases": {
-      "added_edges": [
-        "null-filter domain matches entire result",
-        "one removable plus Eternal survivor",
-        "nonempty domain with empty result rejected",
-        "Eternal returned instead of eligible card rejected",
-        "custom filter never re-invoked"
-      ],
-      "call_shapes": [
-        "awaited_wrapper",
-        "exact_task_forwarding",
-        "direct_generic",
-        "outer_wrapper_only"
-      ],
-      "checks": 320,
-      "old_guard_reproduction": "New wrapper-only case failed the previous generic-hook requirement before the correction.",
-      "output": "/private/tmp/sts-removal-wrapper-focus-next",
-      "status": "passed"
-    },
-    "native_full_regression": {
-      "checks": 12799,
-      "output": "/private/tmp/sts-bridge-hzudn88q",
-      "status": "passed"
-    },
-    "pre_release_native_regression": {
-      "checks": 12791,
-      "note": "Before the final two additional negative cases; both included in the final gate.",
-      "output": "/private/tmp/sts-removal-wrapper-focus",
-      "status": "passed"
-    }
+    "all_included_in_final_gate": true,
+    "native_full_regression_checks": 12925,
+    "rest_host_native_scenarios": 18,
+    "rest_host_tests": 22,
+    "rest_native_checks": 625,
+    "rest_reward_checks": 87,
+    "target_game_executed": false,
+    "unified_router_checks": 1546
   },
+  "full_shared_native_interface_complete": false,
   "gate": {
     "checks": {
       "agent:paired": {
         "log": "log-076.txt",
-        "seconds": 0.145,
+        "seconds": 0.152,
         "status": "passed"
       },
       "apps/bridge/operations/check_live_runtime_fixtures.py": {
         "log": "log-013.txt",
-        "seconds": 0.058,
+        "seconds": 0.062,
         "status": "passed"
       },
       "apps/bridge/operations/manage_live_campaign_fixtures.py": {
         "log": "log-014.txt",
-        "seconds": 2.982,
+        "seconds": 2.815,
         "status": "passed"
       },
       "apps/bridge/operations/predecessor_conflict_fixtures.py": {
         "log": "log-015.txt",
-        "seconds": 0.911,
+        "seconds": 0.84,
         "status": "passed"
       },
       "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-017.txt",
-        "seconds": 1.155,
+        "seconds": 1.165,
         "status": "passed"
       },
       "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-019.txt",
-        "seconds": 3.318,
+        "seconds": 3.194,
         "status": "passed"
       },
       "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-021.txt",
-        "seconds": 1.116,
+        "seconds": 1.092,
         "status": "passed"
       },
       "build:apps/bridge/production/Sts2AgentBridge.csproj": {
         "log": "log-001.txt",
-        "seconds": 1.636,
+        "seconds": 1.511,
         "status": "passed"
       },
       "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-023.txt",
-        "seconds": 1.399,
+        "seconds": 1.335,
         "status": "passed"
       },
       "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
         "log": "log-078.txt",
-        "seconds": 1.072,
+        "seconds": 1.052,
         "status": "passed"
       },
       "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-025.txt",
-        "seconds": 1.139,
+        "seconds": 1.133,
         "status": "passed"
       },
       "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-027.txt",
-        "seconds": 1.109,
+        "seconds": 1.093,
         "status": "passed"
       },
       "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-029.txt",
-        "seconds": 1.857,
+        "seconds": 1.795,
         "status": "passed"
       },
       "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-031.txt",
-        "seconds": 1.867,
+        "seconds": 1.876,
         "status": "passed"
       },
       "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-033.txt",
-        "seconds": 1.063,
+        "seconds": 1.024,
         "status": "passed"
       },
       "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-035.txt",
-        "seconds": 1.263,
+        "seconds": 1.212,
         "status": "passed"
       },
       "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-037.txt",
-        "seconds": 1.231,
+        "seconds": 1.239,
         "status": "passed"
       },
       "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-039.txt",
-        "seconds": 1.995,
+        "seconds": 1.914,
         "status": "passed"
       },
       "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-041.txt",
-        "seconds": 1.666,
+        "seconds": 1.701,
         "status": "passed"
       },
       "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
         "log": "log-069.txt",
-        "seconds": 2.551,
+        "seconds": 2.553,
         "status": "passed"
       },
       "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
         "log": "log-068.txt",
-        "seconds": 1.194,
+        "seconds": 1.211,
         "status": "passed"
       },
       "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-043.txt",
-        "seconds": 1.948,
+        "seconds": 1.893,
         "status": "passed"
       },
       "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-045.txt",
-        "seconds": 1.776,
+        "seconds": 1.8,
         "status": "passed"
       },
       "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-046.txt",
-        "seconds": 1.226,
+        "seconds": 1.199,
         "status": "passed"
       },
       "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-048.txt",
-        "seconds": 1.218,
+        "seconds": 1.193,
         "status": "passed"
       },
       "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-050.txt",
-        "seconds": 1.076,
+        "seconds": 1.097,
         "status": "passed"
       },
       "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-052.txt",
-        "seconds": 1.1,
+        "seconds": 1.072,
         "status": "passed"
       },
       "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-054.txt",
-        "seconds": 2.661,
+        "seconds": 2.649,
         "status": "passed"
       },
       "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-056.txt",
-        "seconds": 1.282,
+        "seconds": 1.298,
         "status": "passed"
       },
       "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-058.txt",
-        "seconds": 1.218,
+        "seconds": 1.198,
         "status": "passed"
       },
       "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-060.txt",
-        "seconds": 2.027,
+        "seconds": 1.994,
         "status": "passed"
       },
       "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-062.txt",
-        "seconds": 1.958,
+        "seconds": 1.961,
         "status": "passed"
       },
       "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-064.txt",
-        "seconds": 2.852,
+        "seconds": 2.881,
         "status": "passed"
       },
       "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-066.txt",
-        "seconds": 1.324,
+        "seconds": 1.291,
         "status": "passed"
       },
       "cards:combat_host_native": {
         "log": "log-073.txt",
-        "seconds": 0.422,
+        "seconds": 0.368,
         "status": "passed"
       },
       "cards:host_wire": {
         "log": "log-074.txt",
-        "seconds": 0.129,
+        "seconds": 0.117,
         "status": "passed"
       },
       "clean_install": {
         "log": "log-082.txt",
-        "seconds": 0.075,
+        "seconds": 0.072,
         "status": "passed"
       },
       "client": {
         "log": "log-009.txt",
-        "seconds": 0.793,
+        "seconds": 0.777,
         "status": "passed"
       },
       "components/cards/host_tests": {
         "log": "log-003.txt",
-        "seconds": 0.056,
+        "seconds": 0.048,
         "status": "passed"
       },
       "components/events/host_tests": {
         "log": "log-004.txt",
-        "seconds": 2.528,
+        "seconds": 2.401,
         "status": "passed"
       },
       "components/item_transport/transport_tests": {
         "log": "log-005.txt",
-        "seconds": 0.048,
+        "seconds": 0.043,
         "status": "passed"
       },
       "components/item_wire/host_tests": {
         "log": "log-006.txt",
-        "seconds": 0.055,
+        "seconds": 0.051,
         "status": "passed"
       },
       "components/rooms/rest/host_tests": {
         "log": "log-007.txt",
-        "seconds": 0.046,
+        "seconds": 0.047,
         "status": "passed"
       },
       "core_client": {
         "log": "log-010.txt",
-        "seconds": 0.041,
+        "seconds": 0.049,
         "status": "passed"
       },
       "events:host_native": {
         "log": "log-071.txt",
-        "seconds": 70.302,
+        "seconds": 71.424,
         "status": "passed"
       },
       "package": {
         "log": "log-081.txt",
-        "seconds": 0.07,
+        "seconds": 0.067,
         "status": "passed"
       },
       "package_identity": {
         "log": "log-002.txt",
-        "seconds": 0.032,
+        "seconds": 0.028,
         "status": "passed"
       },
       "package_output": {
         "log": "log-083.txt",
-        "seconds": 0.029,
+        "seconds": 0.027,
         "status": "passed"
       },
       "production_surface": {
         "log": "log-079.txt",
-        "seconds": 0.046,
+        "seconds": 0.044,
         "status": "passed"
       },
       "production_surface_rejections": {
         "log": "log-080.txt",
-        "seconds": 0.077,
+        "seconds": 0.072,
         "status": "passed"
       },
       "reproducible_build": {
         "log": "log-077.txt",
-        "seconds": 1.481,
+        "seconds": 1.497,
         "status": "passed"
       },
       "reward_codec": {
@@ -295,42 +275,42 @@
       },
       "room_codec": {
         "log": "log-012.txt",
-        "seconds": 0.152,
+        "seconds": 0.148,
         "status": "passed"
       },
       "rooms:rest_host_native": {
         "log": "log-072.txt",
-        "seconds": 2.623,
+        "seconds": 6.039,
         "status": "passed"
       },
       "sdk": {
         "log": "log-016.txt",
-        "seconds": 0.046,
+        "seconds": 0.049,
         "status": "passed"
       },
       "shared_client:socket": {
         "log": "log-075.txt",
-        "seconds": 86.987,
+        "seconds": 86.996,
         "status": "passed"
       },
       "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-018.txt",
-        "seconds": 0.076,
+        "seconds": 0.075,
         "status": "passed"
       },
       "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-020.txt",
-        "seconds": 0.407,
+        "seconds": 0.418,
         "status": "passed"
       },
       "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-022.txt",
-        "seconds": 0.308,
+        "seconds": 0.306,
         "status": "passed"
       },
       "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-024.txt",
-        "seconds": 11.836,
+        "seconds": 11.838,
         "status": "passed"
       },
       "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
@@ -355,27 +335,27 @@
       },
       "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-034.txt",
-        "seconds": 0.025,
+        "seconds": 0.024,
         "status": "passed"
       },
       "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-036.txt",
-        "seconds": 0.043,
+        "seconds": 0.042,
         "status": "passed"
       },
       "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-038.txt",
-        "seconds": 0.046,
+        "seconds": 0.045,
         "status": "passed"
       },
       "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-040.txt",
-        "seconds": 0.054,
+        "seconds": 0.053,
         "status": "passed"
       },
       "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-042.txt",
-        "seconds": 0.952,
+        "seconds": 0.929,
         "status": "passed"
       },
       "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
@@ -385,12 +365,12 @@
       },
       "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-070.txt",
-        "seconds": 133.468,
+        "seconds": 134.358,
         "status": "passed"
       },
       "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-047.txt",
-        "seconds": 0.077,
+        "seconds": 0.073,
         "status": "passed"
       },
       "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
@@ -405,17 +385,17 @@
       },
       "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-053.txt",
-        "seconds": 0.182,
+        "seconds": 0.24,
         "status": "passed"
       },
       "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-055.txt",
-        "seconds": 6.477,
+        "seconds": 6.486,
         "status": "passed"
       },
       "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-057.txt",
-        "seconds": 0.034,
+        "seconds": 0.035,
         "status": "passed"
       },
       "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
@@ -425,17 +405,17 @@
       },
       "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-061.txt",
-        "seconds": 0.041,
+        "seconds": 0.043,
         "status": "passed"
       },
       "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-063.txt",
-        "seconds": 0.037,
+        "seconds": 0.035,
         "status": "passed"
       },
       "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-065.txt",
-        "seconds": 0.361,
+        "seconds": 0.477,
         "status": "passed"
       },
       "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
@@ -445,7 +425,7 @@
       },
       "tests/maintenance": {
         "log": "log-008.txt",
-        "seconds": 1.138,
+        "seconds": 1.078,
         "status": "passed"
       }
     },
@@ -454,12 +434,12 @@
     "integration_jobs": 4,
     "live_campaign_started": false,
     "release_manifests": {
-      "bridge": "308e9683a74a3d60ef2071e3dd6f97583e2ace1adb2494778a9aaee73e89105e"
+      "bridge": "1926afc8917efd6b27165057d412bb63bd33a2bfed4ba6570773ca19083e54e5"
     },
-    "seconds": 304.387,
+    "seconds": 307.672,
     "selected_checks": [],
     "source": {
-      "files": 416,
+      "files": 423,
       "projects": 51,
       "targets": 1
     },
@@ -470,570 +450,237 @@
       "bridge"
     ]
   },
-  "install_inputs": "/private/tmp/sts-unified-bridge-release",
+  "install_inputs": {
+    "package": {
+      "Sts2AgentBridgeUnified-1.0.0.zip": [
+        1471158,
+        "864a26888a86c25fa4cc1fce18d00ab9d044c3e61bcde7367e721c06f0d06277"
+      ],
+      "Sts2AgentBridgeUnified.dll": [
+        1470464,
+        "b1a4252411a14ee32b5708bf01ea41e24cefb2d54aaa7f9ceb65963df90e4441"
+      ],
+      "Sts2AgentBridgeUnified.json": [
+        322,
+        "bfb70a5edd38b1f9bcf8254e5fea117c6d9bf5ef3988431d2077436aca710955"
+      ]
+    },
+    "path": "/private/tmp/sts-unified-bridge-release"
+  },
   "live": {
-    "authenticated_health": {
-      "correlation_id": "b522a59f1152f6169080906bd50aee02",
+    "authenticated_health": null,
+    "cleanup": "pending live checks; no native action dispatched by this release yet",
+    "controller_running": false,
+    "install_result": {
+      "campaign_id": "UNIFIED-BRIDGE-V1",
+      "mode": "install",
+      "mods_parent_created": true,
+      "phase": "installed",
+      "schema_version": 1,
+      "state_sha256": "577d5a5d30c190a81466fc4dd7d13bb1e0f80d330bfabad9da4ed93e9ea27d02",
       "status": "passed"
     },
-    "automatic_removal": {
-      "result": {
-        "code": null,
-        "event": {
-          "child_accepted": 0,
-          "child_attempted": 0,
-          "child_episodes": 0,
-          "child_reconciled": 0,
-          "code": null,
-          "completed_card_children": 0,
-          "completed_item_children": 0,
-          "destination": "map_handoff",
-          "effects": "unverified",
-          "parent_accepted": 2,
-          "parent_attempted": 2,
-          "parent_reconciled": 2,
-          "reads": 36,
-          "schema_version": 1,
-          "session_nonce": "01c1c62addebada7f31968d6ffd893ed",
-          "status": "resolved",
-          "total_attempted": 2
-        },
-        "map_handoff": {
-          "candidate_count": 2,
-          "code": null,
-          "reads": 1,
-          "status": "passed"
-        },
-        "schema_version": 1,
-        "status": "resolved"
-      },
-      "retry_performed": false,
-      "scope": "One eligible card, null-filter automatic removal. Automatic parent effects retain the result effects: unverified label.",
-      "setup": "Native Continue restored Tea Master with four Bludgeons and Headbutt. Native console replaced those five cards with one unupgraded Bash and entered Doors of Light and Dark. Deck UI verified sole Bash; console and deck closed before dispatch.",
-      "status": "passed",
-      "ui_after": "Actionable map with two legal destinations, zero-card deck header and unchanged 21/83 HP and 399 gold. No selection screen or child action."
-    },
-    "base_files_verified": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "cleanup": {
-      "base_files_verified": 429,
+    "installation_state_sha256": "577d5a5d30c190a81466fc4dd7d13bb1e0f80d330bfabad9da4ed93e9ea27d02",
+    "installation_verification": {
+      "base_file_count": 429,
       "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantine_state_sha256": "ea83baff394c229f34ae1ed64e3ce8305ba33261c2b007fedafc0668eac9f83f",
-      "status": "passed",
-      "verified_by_utc": "2026-09-24 20:58:54"
+      "mode": "overlay",
+      "overlay_count": 2,
+      "schema_version": 1,
+      "status": "passed"
     },
-    "controller_running": false,
-    "installation_state_sha256": "dd497f3685e7bf26fc7bdd62a5496f20e32303dcfa9e9a9e6a0bbe6c3b46a856",
-    "merchant_retest_required": false,
-    "overlay_count": 2,
+    "readiness_requested_by_utc": "2026-09-24T22:24:52Z",
     "requested_cases": [
-      "Doors of Light and Dark automatic removal with one eligible card"
+      "Smith cancellation before selection and from preview",
+      "Cook cancellation and original deck/HP retention",
+      "Heal-owned Dream Catcher card and Tiny Mailbox potion rewards"
     ],
-    "status": "automatic_removal_passed_cleanup_complete",
-    "target_game_executed": true,
-    "verified_by_utc": "2026-09-24 20:47:21"
+    "status": "installed_awaiting_manual_launch",
+    "target_game_executed": false,
+    "user_setup": "Manually open Profile 3 at the main menu and keep it foreground; use native Continue for the saved controlled test run.",
+    "verified_by_utc": "2026-09-24T22:24:52Z"
   },
-  "milestone_acceptance": {
-    "continuous_single_controller_claim": false,
-    "date": "2026-09-24",
-    "fresh_repeat_required": false,
-    "milestone": 7,
-    "original_operational_record": "/private/tmp/sts-agent-m7-campaign-waterfall-release/operational-validation.json",
-    "original_operational_record_sha256": "fbe326179b0cf2cfa1fc916523c850919ee199d761da4f1851fff038de8bd5c4",
-    "original_results_unchanged": true,
-    "scope": "Assisted potion campaign with policy-controlled gameplay throughout; one native save/reload for the Waterfall Giant bridge correction, then native victory without further assistance.",
-    "status": "accepted_by_user",
-    "user_statement": "I think this pretty much counts as a uninterrupted campaign"
-  },
-  "prior_evidence": {
-    "git_commit": "dbd7861",
-    "milestone_7_operational_record": "/private/tmp/sts-agent-m7-campaign-waterfall-release/operational-validation.json",
-    "milestone_7_operational_record_sha256": "fbe326179b0cf2cfa1fc916523c850919ee199d761da4f1851fff038de8bd5c4",
-    "release_manifest_sha256": "96f48a88aed4dca0da4dcaf6a3530f565b6954f890219438a0cac5db38bcfe8f",
-    "retained_validation": "/private/tmp/sts-bridge-xymdirnk/previous-validation.json",
-    "validation_path": "bridge/Sts2AgentBridge/releases/current/validation.json",
-    "validation_sha256": "ecd84d4e17f4df1570aa70cd0750e730cccd5812f83b7658f74bccf61c8a0bcd"
-  },
-  "prior_expanded_attempt": {
+  "prior_release": {
+    "evidence_commit": "b6e406c",
     "live": {
       "authenticated_health": {
-        "correlation_id": "60bb2cbb9e89d965546b207ac0d8dc9f",
+        "correlation_id": "b522a59f1152f6169080906bd50aee02",
         "status": "passed"
       },
       "automatic_removal": {
-        "reason": "Stopped the host after the unreconciled merchant pickup.",
-        "status": "not_attempted"
-      },
-      "base_files_verified": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "cleanup": {
-        "base_files_verified": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantine_state_sha256": "a1c79c0a4b7c33fccb2185d39a589067609fc8b294505f980ac41639b78fa187",
-        "status": "passed",
-        "verified_by_utc": "2026-09-24 19:56:46"
-      },
-      "controller_running": false,
-      "expanded_rewards": {
-        "count_basis": "Eight accepted pickups plus two visible unclaimed entries. Seven pickups reconciled; Fake Mango max-HP effect did not reconcile.",
-        "expanded_count": 10,
         "result": {
-          "code": "unsupported_reward",
-          "combat_flow": {
-            "code": "unsupported_reward",
-            "combat": {
-              "accepted": 11,
-              "attempted": 11,
-              "choice_probes": 165,
-              "choices": [],
-              "code": null,
-              "outcome": "victory",
-              "reads": 177,
-              "reconciled": 11,
-              "schema_version": 1,
-              "stale_rejections": 0,
-              "status": "resolved"
-            },
-            "map_handoff": {
-              "candidate_count": 0,
-              "code": null,
-              "reads": 0,
-              "status": "not_attempted"
-            },
-            "rewards": {
-              "accepted": 8,
-              "after_player": {
-                "deck_count": 4,
-                "gold": 399,
-                "hp": 18,
-                "max_hp": 80
-              },
-              "attempted": 8,
-              "before_player": {
-                "deck_count": 4,
-                "gold": 99,
-                "hp": 10,
-                "max_hp": 80
-              },
-              "claimed_gold": 300,
-              "claimed_special_cards": [],
-              "code": "unsupported_reward",
-              "collected_items": [
-                {
-                  "key": "REGEN_POTION",
-                  "kind": "potion",
-                  "reward_index": 1
-                },
-                {
-                  "key": "FAKE_MERCHANTS_RUG",
-                  "kind": "relic",
-                  "reward_index": 2
-                },
-                {
-                  "key": "FAKE_SNECKO_EYE",
-                  "kind": "relic",
-                  "reward_index": 3
-                },
-                {
-                  "key": "FAKE_ORICHALCUM",
-                  "kind": "relic",
-                  "reward_index": 4
-                },
-                {
-                  "key": "FAKE_ANCHOR",
-                  "kind": "relic",
-                  "reward_index": 5
-                },
-                {
-                  "key": "FAKE_LEES_WAFFLE",
-                  "kind": "relic",
-                  "reward_index": 6
-                }
-              ],
-              "destination": null,
-              "discarded_potions": [],
-              "policy": "first-card",
-              "potion_capacity_gains": [],
-              "potion_policy": "stop-on-full",
-              "reads": 16,
-              "reconciled": 7,
-              "schema_version": 1,
-              "selected_cards": [],
-              "skipped_card_rewards": 0,
-              "skipped_potions": [],
-              "stale_rejections": 0,
-              "status": "failed"
-            },
-            "schema_version": 1,
-            "stage": "rewards",
-            "status": "failed"
-          },
-          "event": {
-            "child_accepted": 0,
-            "child_attempted": 0,
-            "child_episodes": 0,
-            "child_reconciled": 0,
-            "code": null,
-            "completed_card_children": 0,
-            "completed_item_children": 0,
-            "destination": "combat_handoff",
-            "effects": "unverified",
-            "parent_accepted": 1,
-            "parent_attempted": 1,
-            "parent_reconciled": 1,
-            "reads": 59,
-            "schema_version": 1,
-            "session_nonce": "f6c1f658c03a36c4141a71138e19d05e",
-            "status": "resolved",
-            "total_attempted": 1
-          },
-          "schema_version": 1,
-          "status": "failed"
-        },
-        "retry_performed": false,
-        "setup": "Profile 3 continued the first combat checkpoint: Ironclad A0, 80/80 HP, 99 gold, 11 starter cards. Native console replaced the deck with four Bludgeons, added Foul Potion and White Beast Statue, then entered Fake Merchant. Deck UI verified all four Bludgeons before dispatch.",
-        "ui_after": "21/83 HP, 399 gold, Fake Mango in relic bar; only Fake Happy Flower and the card reward remain."
-      },
-      "installation_state_sha256": "1ec832a47e0c474f6625d92085af3688911f0384cd6f2d568bd7961e49a86e29",
-      "overlay_count": 2,
-      "requested_cases": [
-        "Fake Merchant expanded terminal reward screen",
-        "Doors of Light and Dark automatic removal with one eligible card"
-      ],
-      "status": "stopped_after_unreconciled_fake_mango",
-      "target_game_executed": true,
-      "verified_by_utc": "2026-09-24 19:45:45"
-    },
-    "release_manifest_sha256": "6f4ea3b6d43d409a7310d0aed1625e9ad77cd3bb311493041e3fa77a6d4f0fb4",
-    "retained_gate": "/private/tmp/sts-bridge-w6abxojb",
-    "validation": "/private/tmp/sts-bridge-ktzq938k/previous-validation.json",
-    "validation_sha256": "9381f20ea536f1e9cd31cb8ade2f2174e9163fac799236b0366e9898f59af6d1"
-  },
-  "prior_gap_attempt": {
-    "live": {
-      "authenticated_health": {
-        "correlation_id": "2d3a52eaf0dbbdd5a01f8362caf3c95f",
-        "status": "passed"
-      },
-      "automatic_removal": {
-        "cause": "Not established; original client omitted the pending native diagnostic category",
-        "result": {
-          "code": "unsupported_state",
-          "event": {
-            "child_accepted": 0,
-            "child_attempted": 0,
-            "child_episodes": 0,
-            "child_reconciled": 0,
-            "code": "unsupported_state",
-            "completed_card_children": 0,
-            "completed_item_children": 0,
-            "effects": "unverified",
-            "parent_accepted": 1,
-            "parent_attempted": 1,
-            "parent_reconciled": 0,
-            "reads": 35,
-            "schema_version": 1,
-            "status": "failed",
-            "total_attempted": 1
-          },
-          "map_handoff": {
-            "candidate_count": 0,
-            "code": null,
-            "reads": 0,
-            "status": "not_attempted"
-          },
-          "schema_version": 1,
-          "status": "failed"
-        },
-        "retry_performed": false,
-        "ui_after": "Empty deck and finished event Proceed visible",
-        "ui_before": "Profile 3; Ironclad A0; one unupgraded Bash in the deck; Dark Door untouched; console and deck closed"
-      },
-      "base_files_verified": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "cleanup": {
-        "base_files_verified": 429,
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantine_state_sha256": "576d9a40481682700fe50deb6922ddaaedd5b1b0ea1138a5f5a4f685db292afe",
-        "status": "passed",
-        "verified_by_utc": "2026-09-24 19:21:13"
-      },
-      "controller_running": false,
-      "expanded_rewards": {
-        "status": "not_attempted"
-      },
-      "installation_state_sha256": "a7ad795684658ea688c08bbdb2d2561888c40938408ab69ab06719cdf8a2f7a4",
-      "overlay_count": 2,
-      "requested_cases": [
-        "Fake Merchant original ten-entry terminal reward screen",
-        "Doors of Light and Dark automatic removal with one eligible card"
-      ],
-      "status": "stopped_after_unreconciled_removal",
-      "target_game_executed": true,
-      "verified_by_utc": "2026-09-24 19:12:52"
-    },
-    "release_manifest_sha256": "cc10a350f1f2ae3f4311d50b76f1f9d0fb4cf5f4968e2302985cc478badf12a6",
-    "retained_gate": "/private/tmp/sts-bridge-xymdirnk",
-    "validation": "/private/tmp/sts-bridge-w6abxojb/previous-validation.json",
-    "validation_sha256": "da8f2690b8eda08bc0fac3e47a4fcc6d4cd7660a5d50d6998e2e7f64906ea2f9"
-  },
-  "prior_reward_removal_attempt": {
-    "live": {
-      "authenticated_health": {
-        "correlation_id": "fee855a021719dcf211d96a0bba45c80",
-        "status": "passed"
-      },
-      "automatic_removal": {
-        "cause": "Stopped at automatic-removal validation (pending_selectorless_request); exact predicate not emitted by this release.",
-        "result": {
-          "code": "unsupported_state",
-          "event": {
-            "child_accepted": 0,
-            "child_attempted": 0,
-            "child_episodes": 0,
-            "child_reconciled": 0,
-            "code": "unsupported_state",
-            "completed_card_children": 0,
-            "completed_item_children": 0,
-            "effects": "unverified",
-            "parent_accepted": 1,
-            "parent_attempted": 1,
-            "parent_reconciled": 0,
-            "reads": 35,
-            "schema_version": 1,
-            "status": "failed",
-            "total_attempted": 1
-          },
-          "map_handoff": {
-            "candidate_count": 0,
-            "code": null,
-            "reads": 0,
-            "status": "not_attempted"
-          },
-          "native_diagnostic": "pending_selectorless_request",
-          "schema_version": 1,
-          "status": "failed"
-        },
-        "retry_performed": false,
-        "status": "failed",
-        "ui_after": "Finished event Proceed visible with empty deck; no child selector appeared.",
-        "ui_before": "After native map entry to Tea Master, console replaced four Bludgeons and Headbutt with one unupgraded Bash and entered Doors of Light and Dark. Deck UI verified sole Bash; console/deck closed before dispatch."
-      },
-      "base_files_verified": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "cleanup": {
-        "base_files_verified": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantine_state_sha256": "eb4d541f0fd6cf8325dc82d409010a632be5cf97b500f5cdbc16b9dddfbb307b",
-        "status": "passed",
-        "verified_by_utc": "2026-09-24 20:31:55"
-      },
-      "controller_running": false,
-      "expanded_rewards": {
-        "expanded_count": 10,
-        "result": {
-          "accepted": 12,
-          "after_player": {
-            "deck_count": 5,
-            "gold": 399,
-            "hp": 21,
-            "max_hp": 83
-          },
-          "attempted": 12,
-          "before_player": {
-            "deck_count": 4,
-            "gold": 99,
-            "hp": 10,
-            "max_hp": 80
-          },
-          "claimed_gold": 300,
-          "claimed_special_cards": [],
           "code": null,
-          "collected_items": [
-            {
-              "key": "REGEN_POTION",
-              "kind": "potion",
-              "reward_index": 1
-            },
-            {
-              "key": "FAKE_MERCHANTS_RUG",
-              "kind": "relic",
-              "reward_index": 2
-            },
-            {
-              "key": "FAKE_SNECKO_EYE",
-              "kind": "relic",
-              "reward_index": 3
-            },
-            {
-              "key": "FAKE_ORICHALCUM",
-              "kind": "relic",
-              "reward_index": 4
-            },
-            {
-              "key": "FAKE_ANCHOR",
-              "kind": "relic",
-              "reward_index": 5
-            },
-            {
-              "key": "FAKE_LEES_WAFFLE",
-              "kind": "relic",
-              "reward_index": 6
-            },
-            {
-              "key": "FAKE_MANGO",
-              "kind": "relic",
-              "reward_index": 7
-            },
-            {
-              "key": "FAKE_HAPPY_FLOWER",
-              "kind": "relic",
-              "reward_index": 8
-            }
-          ],
-          "destination": "map",
-          "discarded_potions": [],
-          "policy": "first-card",
-          "potion_capacity_gains": [],
-          "potion_policy": "stop-on-full",
-          "reads": 13,
-          "reconciled": 12,
+          "event": {
+            "child_accepted": 0,
+            "child_attempted": 0,
+            "child_episodes": 0,
+            "child_reconciled": 0,
+            "code": null,
+            "completed_card_children": 0,
+            "completed_item_children": 0,
+            "destination": "map_handoff",
+            "effects": "unverified",
+            "parent_accepted": 2,
+            "parent_attempted": 2,
+            "parent_reconciled": 2,
+            "reads": 36,
+            "schema_version": 1,
+            "session_nonce": "01c1c62addebada7f31968d6ffd893ed",
+            "status": "resolved",
+            "total_attempted": 2
+          },
+          "map_handoff": {
+            "candidate_count": 2,
+            "code": null,
+            "reads": 1,
+            "status": "passed"
+          },
           "schema_version": 1,
-          "selected_cards": [
-            "HEADBUTT"
-          ],
-          "skipped_card_rewards": 0,
-          "skipped_potions": [],
-          "stale_rejections": 0,
           "status": "resolved"
         },
         "retry_performed": false,
-        "setup": "Native Continue restored the entire prior merchant reward list at 10/80 HP, 99 gold, four Bludgeons and empty potion inventory. Fresh bridge attachment; no event or combat replay in this attempt.",
+        "scope": "One eligible card, null-filter automatic removal. Automatic parent effects retain the result effects: unverified label.",
+        "setup": "Native Continue restored Tea Master with four Bludgeons and Headbutt. Native console replaced those five cards with one unupgraded Bash and entered Doors of Light and Dark. Deck UI verified sole Bash; console and deck closed before dispatch.",
         "status": "passed",
-        "ui_after": "Actionable map, 21/83 HP, 399 gold, five cards, Regen Potion and all seven fake relics."
+        "ui_after": "Actionable map with two legal destinations, zero-card deck header and unchanged 21/83 HP and 399 gold. No selection screen or child action."
       },
-      "installation_state_sha256": "b5c4a8b660aff7f471a26b566e5a31509702e7e423f9babf9583f5733dfaeef8",
+      "base_files_verified": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "cleanup": {
+        "base_files_verified": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantine_state_sha256": "ea83baff394c229f34ae1ed64e3ce8305ba33261c2b007fedafc0668eac9f83f",
+        "status": "passed",
+        "verified_by_utc": "2026-09-24 20:58:54"
+      },
+      "controller_running": false,
+      "installation_state_sha256": "dd497f3685e7bf26fc7bdd62a5496f20e32303dcfa9e9a9e6a0bbe6c3b46a856",
+      "merchant_retest_required": false,
       "overlay_count": 2,
       "requested_cases": [
-        "Doors of Light and Dark automatic removal with one eligible card",
-        "Fake Merchant original ten-entry terminal reward screen"
+        "Doors of Light and Dark automatic removal with one eligible card"
       ],
-      "status": "merchant_rewards_passed_automatic_removal_unreconciled",
+      "status": "automatic_removal_passed_cleanup_complete",
       "target_game_executed": true,
-      "verified_by_utc": "2026-09-24 20:12:14"
+      "verified_by_utc": "2026-09-24 20:47:21"
     },
-    "release_manifest_sha256": "00280cad681d0e074ec174ca548b273e1c77edfd58e838b10c6426f6a7827fe8",
-    "retained_gate": "/private/tmp/sts-bridge-ktzq938k",
-    "source_commit": "4a03c3c",
-    "validation": "/private/tmp/sts-bridge-hzudn88q/previous-validation.json",
-    "validation_sha256": "60cb764207c28713489d2cebd22f9beb0c00aef85142de760ffe0ef41e94be69"
+    "note": "Original automatic-removal acceptance and cleanup retain their own artifact identity. Earlier merchant and campaign records remain in Git b6e406c and their dated evidence.",
+    "release_manifest_sha256": "308e9683a74a3d60ef2071e3dd6f97583e2ace1adb2494778a9aaee73e89105e",
+    "retained_gate": "/private/tmp/sts-bridge-hzudn88q",
+    "source_commit": "b7ee84b"
   },
-  "release_manifest_sha256": "308e9683a74a3d60ef2071e3dd6f97583e2ace1adb2494778a9aaee73e89105e",
-  "retained_gate": "/private/tmp/sts-bridge-hzudn88q",
-  "schema_version": 1,
-  "semantic_review": {
-    "elapsed_seconds": 417,
-    "independent_python_seconds": 0.05,
-    "independent_python_tests": 4,
-    "read_only": true,
-    "remaining_blockers": [],
-    "resolved_findings": [
-      "Final deck owner/run binding",
-      "Exclude observed preview and upgrade clones from appended grant"
-    ],
-    "reviewer": "/root/semantic_review",
-    "scope": "Schema-9 expanded terminal reward identity, limits, exact ownership and reconciliation; selectorless native automatic removal completion and survivor checks",
-    "status": "passed",
-    "window_utc": [
-      "2026-09-24 18:48:13",
-      "2026-09-24 18:55:10"
-    ]
-  },
-  "semantic_review_followup": [
+  "release_corrections": [
     {
-      "elapsed_seconds": 309,
-      "independent_python_seconds": 0.22,
-      "independent_python_tests": 2,
-      "remaining_blockers": [],
-      "resolved_findings": [
-        "Direct generic removal admission and exact-task forwarding",
-        "Do not retain transient waiting diagnostics as failures"
-      ],
-      "reviewer": "/root/semantic_review",
-      "status": "passed",
-      "window_utc": [
-        "2026-09-24 19:21:41",
-        "2026-09-24 19:26:50"
-      ]
+      "gate": "/private/tmp/sts-bridge-zkf6mj6_",
+      "reason": "Shared test entry point referenced rest fixture outside its conditional compilation group. Focused direct-input check passed after correction.",
+      "status": "failed_before_manifest"
     },
     {
-      "elapsed_seconds": 86,
-      "remaining_blockers": [],
-      "reviewer": "/root/semantic_review",
-      "scope": "Known removal prompt classifies removal; one append remains unverified and does not certify a transform mapping",
-      "status": "passed",
-      "window_utc": [
-        "2026-09-24 19:36:02",
-        "2026-09-24 19:37:28"
-      ]
-    },
-    {
-      "elapsed_seconds": 253,
-      "independent_python_tests": 2,
-      "remaining_blockers": [],
-      "resolved_findings": [
-        "Reject schema downgrade before reconciliation credit",
-        "Reject old-schema Fake Mango even with zero declared effect"
-      ],
-      "reviewer": "/root/semantic_review",
-      "scope": "Exact Fake Mango +3 max HP/+3 HP; sticky schema10 and rejection of unsupported old-schema declaration before input",
-      "status": "passed",
-      "window_utc": [
-        "2026-09-24 20:01:19",
-        "2026-09-24 20:05:32"
-      ]
-    },
-    {
-      "additional_cases_added": [
-        "empty result from nonempty domain",
-        "Eternal card returned instead of sole eligible original"
-      ],
-      "elapsed_seconds": 134,
-      "live_cause": "Not proven by the previous fixed diagnostic.",
-      "read_only": true,
-      "remaining_blockers": [],
-      "reviewer": "/root/semantic_review",
-      "scope": "Exact outer removal request without redundant generic-hook observation; automatic whole-domain equality, request/parent tasks, ownership, deck delta and fixed diagnostics.",
-      "status": "passed",
-      "window_utc": [
-        "2026-09-24 20:36:51",
-        "2026-09-24 20:39:05"
-      ]
+      "gate": "/private/tmp/sts-bridge-9xichba5",
+      "reason": "The new regex added an unapproved production dependency. Replaced with equivalent bounded parsing; metadata verifier and 1546 router checks passed before the final release gate.",
+      "status": "failed_before_manifest"
     }
   ],
-  "source_base_commit": "4a03c3c",
-  "source_commit": "b7ee84b",
-  "source_kind": "committed_source",
-  "toolchain": {
-    "checks_or_analyzers_disabled": false,
-    "files_verified_equal_to_previously_verified_sdk": 4844,
-    "isolated_copy": "/private/tmp/sts-agent-m7-sdk-9.0.303",
-    "mismatches": 0,
-    "sdk": "9.0.303"
-  }
+  "release_manifest_sha256": "1926afc8917efd6b27165057d412bb63bd33a2bfed4ba6570773ca19083e54e5",
+  "retained_gate": "/private/tmp/sts-bridge-cscqj2sh",
+  "schema_version": 1,
+  "semantic_review": {
+    "corrections": [
+      "exact synchronous holder input and preview/animation settlement",
+      "exact owner/run/synchronizer/reward set/menu retained before input",
+      "native card Skip returns to reward parent for separate dismissal",
+      "automatic closure requires every reward successfully selected",
+      "unopened offers remain hidden; stale underlying decision rejected",
+      "late responses retain evidence but fail the time budget",
+      "Smith/Cook cancel result must match child cancellation",
+      "reward commands use current positions after collection compacts buttons"
+    ],
+    "execution": "read-only independent review; validation executed by parent",
+    "implementation_seconds": null,
+    "implementation_timing_note": "Implementation start was not measured. Review intervals and checker timings are recorded separately.",
+    "reviewer": "/root/semantic_review",
+    "scopes": [
+      {
+        "scope": "shared card-input helper",
+        "seconds": [
+          379,
+          155,
+          19
+        ],
+        "utc_intervals": [
+          [
+            "2026-09-24T21:10:37Z",
+            "2026-09-24T21:16:56Z"
+          ],
+          [
+            "2026-09-24T21:17:54Z",
+            "2026-09-24T21:20:29Z"
+          ],
+          [
+            "2026-09-24T21:23:57Z",
+            "2026-09-24T21:24:16Z"
+          ]
+        ]
+      },
+      {
+        "scope": "rest native ownership and rewards",
+        "seconds": [
+          577,
+          410
+        ],
+        "utc_intervals": [
+          [
+            "2026-09-24T21:32:31Z",
+            "2026-09-24T21:42:08Z"
+          ],
+          [
+            "2026-09-24T21:44:57Z",
+            "2026-09-24T21:51:47Z"
+          ]
+        ]
+      },
+      {
+        "scope": "interactive client and transport",
+        "seconds": [
+          178,
+          163,
+          15
+        ],
+        "utc_intervals": [
+          [
+            "2026-09-24T22:00:44Z",
+            "2026-09-24T22:03:42Z"
+          ],
+          [
+            "2026-09-24T22:04:24Z",
+            "2026-09-24T22:07:07Z"
+          ],
+          [
+            "2026-09-24T22:08:43Z",
+            "2026-09-24T22:08:58Z"
+          ]
+        ]
+      },
+      {
+        "scope": "dependency-free transport grammar correction",
+        "seconds": [
+          20
+        ],
+        "utc_intervals": [
+          [
+            "2026-09-24T22:16:28Z",
+            "2026-09-24T22:16:48Z"
+          ]
+        ]
+      }
+    ],
+    "status": "clear"
+  },
+  "source_base_commit": "b6e406c",
+  "source_commit": "ff3cb5ffc6285224ab2eefb6657f13158babeea5",
+  "source_kind": "committed_tree"
 }
